@@ -1412,6 +1412,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_MY_FILES_CONTAINER_INFO:
+		{
+			BinderInfo binderInfo = GwtServerHelper.getMyFilesContainerInfo( this, getRequest( ri ) );
+			response = new VibeRpcResponse( binderInfo );
+			return response;
+		}
+		
 		case GET_MY_TASKS:
 		{
 			List<TaskInfo> results;

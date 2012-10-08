@@ -111,6 +111,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMyFilesContainerInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderPinningStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveSharedFilesStateCmd;
@@ -1882,10 +1883,49 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the files drop box on the folder.
-			BinderViewsHelper.invokeDropBox(
-				getFolderInfo(),
-				getEntryMenuPanel().getAddFilesMenuItem());
+			BinderInfo fi = getFolderInfo();
+			if (fi.isBinderCollection() && (CollectionType.MY_FILES.equals(fi.getCollectionType()))) {
+				final GetMyFilesContainerInfoCmd cmd = new GetMyFilesContainerInfoCmd();
+				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						GwtClientHelper.handleGwtRPCFailure(
+							caught,
+							GwtTeaming.getMessages().rpcFailure_GetMyFilesContainerInfo());
+					}
+
+					@Override
+					public void onSuccess(VibeRpcResponse result) {
+						onInvokeDropBoxAsync((BinderInfo) result.getResponseData());
+					}
+				});
+			}
+			else {
+				onInvokeDropBoxAsync(fi);
+			}
 		}
+	}
+
+	/*
+	 * Asynchronously invokes the drop box on the given folder.
+	 */
+	private void onInvokeDropBoxAsync(final BinderInfo dropTarget) {
+		Scheduler.ScheduledCommand doDrop = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				onInvokeDropBoxNow(dropTarget);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doDrop);
+	}
+	
+	/*
+	 * Synchronously invokes the drop box on the given folder.
+	 */
+	private void onInvokeDropBoxNow(BinderInfo dropTarget) {
+		BinderViewsHelper.invokeDropBox(
+			dropTarget,
+			getEntryMenuPanel().getAddFilesMenuItem());
 	}
 	
 	/**

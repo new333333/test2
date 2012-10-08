@@ -224,7 +224,7 @@ import static org.kablink.util.search.Restrictions.like;
  */
 public class GwtViewHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtViewHelper.class);
-
+	
 	// Attribute names used for items related to milestones.
 	public static final String RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME	= "responsible_groups";
 	public static final String RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME			= "responsible";
@@ -2346,25 +2346,63 @@ public class GwtViewHelper {
 		switch (ct) {
 		default:
 		case MY_FILES:
+			// Are we supposed to use this user's home folder as the
+			// root of their 'My Files' area?
+			Long	myFilesRootId;
+			boolean	usingHomeAsMyFiles = GwtServerHelper.useHomeAsMyFiles();
+			if (usingHomeAsMyFiles) {
+				// Yes!  Can we find their home folder?
+				myFilesRootId        = GwtServerHelper.getHomeFolderId(bs);
+				usingHomeAsMyFiles = (null != myFilesRootId);
+				if (!usingHomeAsMyFiles) {
+					// No!  Just use the binder we were given.
+					binder.getId();
+				}
+			}
+			else {
+				// No, we aren't supposed to use this user's home
+				// folder as the root of their 'My Files' area!  Use
+				// the binder we were given.
+				myFilesRootId = binder.getId();
+			}
+
 			// Search for file folders within the binder...
-			crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-			crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(binder.getId())}));
-			crit.add(in(Constants.FAMILY_FIELD,            fileFamilies));
-			crit.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
+			Disjunction	root     = disjunction(); crit.add(root    );
+			Conjunction	rootConj = conjunction(); root.add(rootConj);
+			rootConj.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+			rootConj.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(myFilesRootId)}));
+			rootConj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
+			rootConj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
 
 			// ...that are non-mirrored...
     		disj = disjunction();
-			crit.add(disj);
+			rootConj.add(disj);
     		conj = conjunction();
 			conj.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
 			disj.add(conj);
+	
+			if (!usingHomeAsMyFiles) {
+				// ...or configured mirrored File Home Folders.
+	    		conj = conjunction();
+				conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+				conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+				conj.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
+				disj.add(conj);
+			}
 
-			// ...or configured mirrored File Home Folders.
-    		conj = conjunction();
-			conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
-			conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
-			conj.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
-			disj.add(conj);
+			// Do we have a folder to populate as their 'My Files'?
+			Long myFilesId;
+			if (usingHomeAsMyFiles)
+			     myFilesId = myFilesRootId;
+			else myFilesId = GwtServerHelper.getMyFilesFolderId(bs);
+			if (null != myFilesId) {
+				// Yes!  Search for any file entries in there as well.
+				conj = conjunction();
+				conj.add(in(Constants.DOC_TYPE_FIELD,  new String[]{Constants.DOC_TYPE_ENTRY}));
+				conj.add(in(Constants.FAMILY_FIELD,    new String[]{Definition.FAMILY_FILE}));
+				conj.add(in(Constants.BINDER_ID_FIELD, new String[]{String.valueOf(myFilesId)}));
+				root.add(conj);
+			}
 			
 			break;
 
@@ -3664,7 +3702,7 @@ public class GwtViewHelper {
 		}
 		return reply;
 	}
-	
+
 	/*
 	 * Extracts a Long value from a entry Map.
 	 */

@@ -600,7 +600,7 @@ public class GwtMenuHelper {
 	 * 4. The folder is not a mirror file folder or it's a configured,
 	 *    writable mirrored file folder. 
 	 */
-	private static void constructEntryDropBoxItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
+	private static void constructEntryDropBoxItem(ToolbarItem entryToolbar) {
 		ToolbarItem dropBoxTBI = new ToolbarItem("dropBox");
 		markTBITitle(dropBoxTBI, "toolbar.menu.dropBox.dialog");
 		markTBIEvent(dropBoxTBI, TeamingEvents.INVOKE_DROPBOX);
@@ -2303,12 +2303,13 @@ public class GwtMenuHelper {
 			toolbarItems.add(entryToolbar);
 			
 			// Access the binder/folder/workspace.
-			Long		folderId = folderInfo.getBinderIdAsLong();
-			Binder		binder   = bs.getBinderModule().getBinder(folderId);
-			Folder		folder   = ((binder instanceof Folder)    ? ((Folder)    binder) : null);
-			Workspace	ws       = ((binder instanceof Workspace) ? ((Workspace) binder) : null);
-			boolean		isFolder = (null != folder);
-			String		viewType = (isFolder ? DefinitionUtils.getViewType(folder) : null);
+			boolean		supportsApplets = SsfsUtil.supportApplets(request);
+			Long		folderId        = folderInfo.getBinderIdAsLong();
+			Binder		binder          = bs.getBinderModule().getBinder(folderId);
+			Folder		folder          = ((binder instanceof Folder)    ? ((Folder)    binder) : null);
+			Workspace	ws              = ((binder instanceof Workspace) ? ((Workspace) binder) : null);
+			boolean		isFolder        = (null != folder);
+			String		viewType        = (isFolder ? DefinitionUtils.getViewType(folder) : null);
 
 			// Construct the item for viewing pinned vs. non-pinned
 			// items.
@@ -2348,6 +2349,9 @@ public class GwtMenuHelper {
 				    constructEntryShareItem(           entryToolbar, bs, request                                                             );
 				}
 				constructEntryDeleteItem(              entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null));
+				if (isCollectionMyFiles && supportsApplets && (null != GwtServerHelper.getMyFilesContainerId(bs))) {
+					constructEntryDropBoxItem(         entryToolbar                                                                          );
+				}
 				constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null));
 			}
 			
@@ -2396,12 +2400,12 @@ public class GwtMenuHelper {
 		
 						// Can the user add entries to the folder and
 						// are applets supported?
-						if (addAllowed && SsfsUtil.supportApplets(request)) {
+						if (addAllowed && supportsApplets) {
 							// Yes!  Is it other than a mini-blog or a mirrored
 							// file that can't be written to?
 							if ((!(isViewMiniBlog(viewType))) && ((!(folder.isMirrored())) || isFolderWritableMirrored(folder))) {
 								// Yes!  The the 'drop box' item.
-								constructEntryDropBoxItem(entryToolbar, bs, request, viewType, folder);
+								constructEntryDropBoxItem(entryToolbar);
 							}
 						}
 					}
