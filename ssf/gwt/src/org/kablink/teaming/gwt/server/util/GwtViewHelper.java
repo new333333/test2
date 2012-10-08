@@ -1927,7 +1927,7 @@ public class GwtViewHelper {
 	 * Scans the List<FolderRow> and sets the access rights for the
 	 * current user for each row.
 	 */
-	private static void fixupFRs(AllModulesInjected bs, List<FolderRow> frList) {
+	private static void fixupFRs(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> frList) {
 		// If we don't have any FolderRow's to complete...
 		if (!(MiscUtil.hasItems(frList))) {
 			// ..bail.
@@ -1998,6 +1998,9 @@ public class GwtViewHelper {
 					fr.setBinderIcon(binder.getIconName(),                BinderIconSize.SMALL );
 					fr.setBinderIcon(binder.getIconName(IconSize.MEDIUM), BinderIconSize.MEDIUM);
 					fr.setBinderIcon(binder.getIconName(IconSize.LARGE ), BinderIconSize.LARGE );
+					
+					// ...store a BinderInfo for it...
+					fr.setBinderInfo(GwtServerHelper.getBinderInfo(request, bs, binder));
 
 					// ...and the user's rights to that Binder.
 					fr.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
@@ -2356,10 +2359,11 @@ public class GwtViewHelper {
 			conj.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
 			disj.add(conj);
 
-			// ...or configured mirrored File Folders.
+			// ...or configured mirrored File Home Folders.
     		conj = conjunction();
 			conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
 			conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+			conj.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
 			disj.add(conj);
 			
 			break;
@@ -3595,7 +3599,7 @@ public class GwtViewHelper {
 			
 			// Walk the List<FolderRow>'s performing any remaining
 			// fixups on each as necessary.
-			fixupFRs(bs, folderRows);
+			fixupFRs(bs, request, folderRows);
 
 			// Is the user viewing pinned entries?
 			if (viewPinnedEntries) {

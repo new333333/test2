@@ -68,6 +68,18 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource folder_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/folder_home.png")
+	public ImageResource folderHome();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/folder_home_36.png")
+	public ImageResource folderHome_medium();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/folder_home_48.png")
+	public ImageResource folderHome_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder_shared.png")
 	public ImageResource folderShared();
 	

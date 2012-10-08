@@ -582,25 +582,31 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 				break;
 				
 			case FOLDER:
-				switch (m_binderInfo.getFolderType()) {
-				case BLOG:         reply = wsTreeImages.folder_comment();   break;
-				case CALENDAR:     reply = wsTreeImages.folder_calendar();  break;
-				case DISCUSSION:   reply = wsTreeImages.folder_comment();   break;
-				case FILE:         reply = wsTreeImages.folder_file();      break;
-				case GUESTBOOK:    reply = wsTreeImages.folder_guestbook(); break;
-				case MILESTONE:    reply = wsTreeImages.folder_milestone(); break;
-				case MINIBLOG:     reply = wsTreeImages.folder_comment();   break;
-				case MIRROREDFILE: reply = wsTreeImages.folder_file();      break;
-				case PHOTOALBUM:   reply = wsTreeImages.folder_photo();     break;
-				case SURVEY:       reply = wsTreeImages.folder_survey();    break;
-				case TASK:         reply = wsTreeImages.folder_task();      break;
-				case TRASH:        reply = wsTreeImages.folder_trash();     break;
-				case WIKI:         reply = wsTreeImages.folder_wiki();      break;
-				case OTHER:                                                 break;
+				if (m_binderInfo.isFolderHome()) {
+					reply = filrImages.folderHome();
 				}
 				
-				if (null == reply) {
-					reply = wsTreeImages.folder_generic();
+				else {
+					switch (m_binderInfo.getFolderType()) {
+					case BLOG:         reply = wsTreeImages.folder_comment();   break;
+					case CALENDAR:     reply = wsTreeImages.folder_calendar();  break;
+					case DISCUSSION:   reply = wsTreeImages.folder_comment();   break;
+					case FILE:         reply = wsTreeImages.folder_file();      break;
+					case GUESTBOOK:    reply = wsTreeImages.folder_guestbook(); break;
+					case MILESTONE:    reply = wsTreeImages.folder_milestone(); break;
+					case MINIBLOG:     reply = wsTreeImages.folder_comment();   break;
+					case MIRROREDFILE: reply = wsTreeImages.folder_file();      break;
+					case PHOTOALBUM:   reply = wsTreeImages.folder_photo();     break;
+					case SURVEY:       reply = wsTreeImages.folder_survey();    break;
+					case TASK:         reply = wsTreeImages.folder_task();      break;
+					case TRASH:        reply = wsTreeImages.folder_trash();     break;
+					case WIKI:         reply = wsTreeImages.folder_wiki();      break;
+					case OTHER:                                                 break;
+					}
+				
+					if (null == reply) {
+						reply = wsTreeImages.folder_generic();
+					}
 				}
 				
 				break;
@@ -660,25 +666,31 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 				break;
 				
 			case FOLDER:
-				switch (m_binderInfo.getFolderType()) {
-				case BLOG:         reply = wsTreeImages.folder_comment_medium();   break;
-				case CALENDAR:     reply = wsTreeImages.folder_calendar_medium();  break;
-				case DISCUSSION:   reply = wsTreeImages.folder_comment_medium();   break;
-				case FILE:         reply = wsTreeImages.folder_file_medium();      break;
-				case GUESTBOOK:    reply = wsTreeImages.folder_guestbook_medium(); break;
-				case MILESTONE:    reply = wsTreeImages.folder_milestone_medium(); break;
-				case MINIBLOG:     reply = wsTreeImages.folder_comment_medium();   break;
-				case MIRROREDFILE: reply = wsTreeImages.folder_file_medium();      break;
-				case PHOTOALBUM:   reply = wsTreeImages.folder_photo_medium();     break;
-				case SURVEY:       reply = wsTreeImages.folder_survey_medium();    break;
-				case TASK:         reply = wsTreeImages.folder_task_medium();      break;
-				case TRASH:        reply = wsTreeImages.folder_trash_medium();     break;
-				case WIKI:         reply = wsTreeImages.folder_wiki_medium();      break;
-				case OTHER:                                                        break;
+				if (m_binderInfo.isFolderHome()) {
+					reply = filrImages.folderHome_medium();
 				}
+
+				else {
+					switch (m_binderInfo.getFolderType()) {
+					case BLOG:         reply = wsTreeImages.folder_comment_medium();   break;
+					case CALENDAR:     reply = wsTreeImages.folder_calendar_medium();  break;
+					case DISCUSSION:   reply = wsTreeImages.folder_comment_medium();   break;
+					case FILE:         reply = wsTreeImages.folder_file_medium();      break;
+					case GUESTBOOK:    reply = wsTreeImages.folder_guestbook_medium(); break;
+					case MILESTONE:    reply = wsTreeImages.folder_milestone_medium(); break;
+					case MINIBLOG:     reply = wsTreeImages.folder_comment_medium();   break;
+					case MIRROREDFILE: reply = wsTreeImages.folder_file_medium();      break;
+					case PHOTOALBUM:   reply = wsTreeImages.folder_photo_medium();     break;
+					case SURVEY:       reply = wsTreeImages.folder_survey_medium();    break;
+					case TASK:         reply = wsTreeImages.folder_task_medium();      break;
+					case TRASH:        reply = wsTreeImages.folder_trash_medium();     break;
+					case WIKI:         reply = wsTreeImages.folder_wiki_medium();      break;
+					case OTHER:                                                        break;
+					}
 				
-				if (null == reply) {
-					reply = wsTreeImages.folder_generic_medium();
+					if (null == reply) {
+						reply = wsTreeImages.folder_generic_medium();
+					}
 				}
 				
 				break;
@@ -738,25 +750,31 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 				break;
 				
 			case FOLDER:
-				switch (m_binderInfo.getFolderType()) {
-				case BLOG:         reply = wsTreeImages.folder_comment_large();   break;
-				case CALENDAR:     reply = wsTreeImages.folder_calendar_large();  break;
-				case DISCUSSION:   reply = wsTreeImages.folder_comment_large();   break;
-				case FILE:         reply = wsTreeImages.folder_file_large();      break;
-				case GUESTBOOK:    reply = wsTreeImages.folder_guestbook_large(); break;
-				case MILESTONE:    reply = wsTreeImages.folder_milestone_large(); break;
-				case MINIBLOG:     reply = wsTreeImages.folder_comment_large();   break;
-				case MIRROREDFILE: reply = wsTreeImages.folder_file_large();      break;
-				case PHOTOALBUM:   reply = wsTreeImages.folder_photo_large();     break;
-				case SURVEY:       reply = wsTreeImages.folder_survey_large();    break;
-				case TASK:         reply = wsTreeImages.folder_task_large();      break;
-				case TRASH:        reply = wsTreeImages.folder_trash_large();     break;
-				case WIKI:         reply = wsTreeImages.folder_wiki_large();      break;
-				case OTHER:                                                       break;
+				if (m_binderInfo.isFolderHome()) {
+					reply = filrImages.folderHome_large();
 				}
+
+				else {
+					switch (m_binderInfo.getFolderType()) {
+					case BLOG:         reply = wsTreeImages.folder_comment_large();   break;
+					case CALENDAR:     reply = wsTreeImages.folder_calendar_large();  break;
+					case DISCUSSION:   reply = wsTreeImages.folder_comment_large();   break;
+					case FILE:         reply = wsTreeImages.folder_file_large();      break;
+					case GUESTBOOK:    reply = wsTreeImages.folder_guestbook_large(); break;
+					case MILESTONE:    reply = wsTreeImages.folder_milestone_large(); break;
+					case MINIBLOG:     reply = wsTreeImages.folder_comment_large();   break;
+					case MIRROREDFILE: reply = wsTreeImages.folder_file_large();      break;
+					case PHOTOALBUM:   reply = wsTreeImages.folder_photo_large();     break;
+					case SURVEY:       reply = wsTreeImages.folder_survey_large();    break;
+					case TASK:         reply = wsTreeImages.folder_task_large();      break;
+					case TRASH:        reply = wsTreeImages.folder_trash_large();     break;
+					case WIKI:         reply = wsTreeImages.folder_wiki_large();      break;
+					case OTHER:                                                       break;
+					}
 				
-				if (null == reply) {
-					reply = wsTreeImages.folder_generic_large();
+					if (null == reply) {
+						reply = wsTreeImages.folder_generic_large();
+					}
 				}
 				
 				break;

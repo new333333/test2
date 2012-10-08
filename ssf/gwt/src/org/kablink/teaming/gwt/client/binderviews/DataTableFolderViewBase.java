@@ -39,6 +39,7 @@ import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
@@ -231,7 +232,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private String						m_quickFilter;				// Any quick filter that's active.
 	private VibeDataGrid<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
 	
-	protected GwtTeamingDataTableImageBundle m_images;	//
+	protected GwtTeamingDataTableImageBundle	m_images;		//
+	protected GwtTeamingFilrImageBundle			m_filrImages;	//
 
 	// The following controls whether the display data read from the
 	// server is dumped as part of the content of the view.
@@ -1012,23 +1014,45 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private String getRowImageUrl(FolderRow fr, EntryTitleInfo eti) {
 		// Is the row a binder?
-		String reply;
+		BinderIconSize	bis = BinderIconSize.getListViewIconSize();
+		ImageResource	imgRes;
+		String			reply;
 		if (fr.isBinder()) {
-			// Yes!  Do we have a specific image for it?
-			String binderIcon = fr.getBinderIcon(BinderIconSize.getListViewIconSize());
-			if (GwtClientHelper.hasString(binderIcon)) {
-				// Yes!  Use it to construct the URL.
-				String imagesPath = GwtClientHelper.getRequestInfo().getImagesPath();
-				if (binderIcon.startsWith("/"))
-				     reply = (imagesPath + binderIcon.substring(1));
-				else reply = (imagesPath + binderIcon);
+			// Yes!  Is this the user's home folder?
+			if (fr.getBinderInfo().isFolderHome()) {
+				// Yes!
+				switch (bis) {
+				default:
+				case SMALL:   imgRes = m_filrImages.folderHome();        break; 
+				case MEDIUM:  imgRes = m_filrImages.folderHome_medium(); break;
+				case LARGE:   imgRes = m_filrImages.folderHome_large();  break;
+				}
+				reply  = imgRes.getSafeUri().asString();
 			}
 			
 			else {
-				// No, we don't have a specific image for it!  Use the
-				// generic folder image.
-				ImageResource binderImgRes = GwtTeaming.getFilrImageBundle().folder();
-				reply = binderImgRes.getSafeUri().asString();
+				// No, this isn't the user's home folder!  Do we have a
+				// specific image for it?
+				String binderIcon = fr.getBinderIcon(bis);
+				if (GwtClientHelper.hasString(binderIcon)) {
+					// Yes!  Use it to construct the URL.
+					String imagesPath = GwtClientHelper.getRequestInfo().getImagesPath();
+					if (binderIcon.startsWith("/"))
+					     reply = (imagesPath + binderIcon.substring(1));
+					else reply = (imagesPath + binderIcon);
+				}
+				
+				else {
+					// No, we don't have a specific image for it!  Use
+					// the generic folder image.
+					switch (bis) {
+					default:
+					case SMALL:   imgRes = m_filrImages.folder();        break;
+					case MEDIUM:  imgRes = m_filrImages.folder_medium(); break;
+					case LARGE:   imgRes = m_filrImages.folder_large();  break;
+					}
+					reply = imgRes.getSafeUri().asString();
+				}
 			}
 		}
 		
@@ -1045,8 +1069,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Do we have a specific icon from an entry?
 			if (null == reply) {
 				// No!  Use the generic entry image.
-				ImageResource binderImgRes = GwtTeaming.getFilrImageBundle().entry();
-				reply = binderImgRes.getSafeUri().asString();
+				switch (bis) {
+				default:
+				case SMALL:   imgRes = m_filrImages.entry();        break;
+				case MEDIUM:  imgRes = m_filrImages.entry_medium(); break;
+				case LARGE:   imgRes = m_filrImages.entry_large();  break;
+				}
+				reply = imgRes.getSafeUri().asString();
 			}
 		}
 		
@@ -1146,6 +1175,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		m_columnWidths = new HashMap<String, ColumnWidth>();
 
 		// ...initialize the remaining data members...
+		m_filrImages  = GwtTeaming.getFilrImageBundle();
 		m_images      = GwtTeaming.getDataTableImageBundle();
 		m_fixedLayout = isFixedLayoutImpl(m_dataTable);
 		if (m_fixedLayout)

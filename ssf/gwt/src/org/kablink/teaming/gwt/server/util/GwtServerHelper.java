@@ -3504,7 +3504,8 @@ public class GwtServerHelper {
 		BinderInfo reply = new BinderInfo();
 		                                    reply.setBinderId(     binder.getId()                                 );
 		                                    reply.setBinderTitle(  binder.getTitle()                              );
-		                                    reply.setIsLibrary(    binder.isLibrary()                             );
+		                                    reply.setFolderHome(   binder.isHomeDir()                             );
+		                                    reply.setLibrary(      binder.isLibrary()                             );
 		                                    reply.setEntityType(   getBinderEntityType(                   binder ));
 		                                    reply.setBinderType(   getBinderType(                         binder ));
 		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderTypeFromViewDef(bs, ((Folder) binder)));
