@@ -1576,6 +1576,7 @@ public class GwtActivityStreamHelper {
     		conj = conjunction();
 			conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
 			conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+			conj.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
 			disj.add(conj);
 			
 			Map searchResults = bs.getBinderModule().executeSearchQuery(

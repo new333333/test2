@@ -866,8 +866,13 @@ public class EntryMenuPanel extends ToolPanelBase
 						break;
 
 					case INVOKE_ADD_NEW_FOLDER:
-						String folderTemplateId = simpleTBI.getQualifierValue("folderTemplateId");
-						event = new InvokeAddNewFolderEvent(folderId, Long.parseLong(folderTemplateId));
+						String	folderTemplateId = simpleTBI.getQualifierValue("folderTemplateId");
+						String	folderTargetIdS  = simpleTBI.getQualifierValue("folderTargetId"  );
+						Long	folderTargetId;
+						if (GwtClientHelper.hasString(folderTargetIdS))
+						     folderTargetId = Long.parseLong(folderTargetIdS);
+						else folderTargetId = folderId;
+						event = new InvokeAddNewFolderEvent(folderTargetId, Long.parseLong(folderTemplateId));
 						break;
 						
 					case SET_FOLDER_SORT:

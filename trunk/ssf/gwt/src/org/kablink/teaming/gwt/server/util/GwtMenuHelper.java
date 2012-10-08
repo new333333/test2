@@ -378,7 +378,7 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem for adding a new file folder the
 	 * workspace.
 	 */
-	private static void constructEntryAddFileFolderItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws) {
+	private static void constructEntryAddFileFolderItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws, Long homeFolderTargetId) {
 		// Can the user add a folder to this workspace?
 		if (bs.getBinderModule().testAccess(ws, BinderOperation.addFolder)) {
 			// Yes!  Can we access any folder templates?
@@ -390,8 +390,12 @@ public class GwtMenuHelper {
 			}
 			if ((null != folderTemplates) && (0 < folderTemplates.size())) {
 				// Yes!  Can we find the template ID for a file folder?
-				TemplateBinder	libraryTemplate  = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY);
-				Long			folderTemplateId = ((null == libraryTemplate) ? null : libraryTemplate.getId());
+				TemplateBinder	libraryTemplate;
+				if (null == homeFolderTargetId)
+				     libraryTemplate  = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY      );
+				else libraryTemplate  = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_MIRRORED_FILE);
+				Long folderTemplateId = ((null == libraryTemplate) ? null : libraryTemplate.getId());
+				
 				if (null != folderTemplateId) {
 					// Yes!  Use the information we've got to add a
 					// ToolbarItem to add a new folder.
@@ -402,6 +406,7 @@ public class GwtMenuHelper {
 					markTBITitle(           addFolderTBI, "toolbar.menu.addFolder"           );
 					markTBIEvent(           addFolderTBI, TeamingEvents.INVOKE_ADD_NEW_FOLDER);
 					markTBIFolderTemplateId(addFolderTBI, folderTemplateId                   );
+					markTBIFolderTargetId(  addFolderTBI, homeFolderTargetId                 );
 					addTBI.addNestedItem(addFolderTBI);
 					
 					entryToolbar.addNestedItem(addTBI);
@@ -2340,19 +2345,23 @@ public class GwtMenuHelper {
 				boolean isCollectionSharedByMe   = (CollectionType.SHARED_BY_ME   == folderInfo.getCollectionType());
 				boolean isCollectionSharedWithMe = (CollectionType.SHARED_WITH_ME == folderInfo.getCollectionType());
 				if ((!(Utils.checkIfFilr())) && (isCollectionSharedByMe || isCollectionSharedWithMe)) {
-					constructEntryToggleSharedViewItem(entryToolbar, bs, request                                                             );
+					constructEntryToggleSharedViewItem(entryToolbar, bs, request                                                                         );
 				}
 				if (isCollectionMyFiles) {
-					constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws        );
+					Long homeFolderTargetId;
+					if (GwtServerHelper.useHomeAsMyFiles())
+					     homeFolderTargetId = GwtServerHelper.getHomeFolderId(bs);
+					else homeFolderTargetId = null;
+					constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws, homeFolderTargetId);
 				}
 				if (isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe) {
-				    constructEntryShareItem(           entryToolbar, bs, request                                                             );
+				    constructEntryShareItem(           entryToolbar, bs, request                                                                         );
 				}
-				constructEntryDeleteItem(              entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null));
+				constructEntryDeleteItem(              entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null)            );
 				if (isCollectionMyFiles && supportsApplets && (null != GwtServerHelper.getMyFilesContainerId(bs))) {
-					constructEntryDropBoxItem(         entryToolbar                                                                          );
+					constructEntryDropBoxItem(         entryToolbar                                                                                      );
 				}
-				constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null));
+				constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null)            );
 			}
 			
 			else {
@@ -2848,6 +2857,15 @@ public class GwtMenuHelper {
 	 */
 	private static void markTBIEvent(ToolbarItem tbi, TeamingEvents event) {
 		tbi.setTeamingEvent(event);
+	}
+	
+	/*
+	 * Marks a ToolbarItem with a folder target ID qualifier.
+	 */
+	private static void markTBIFolderTargetId(ToolbarItem tbi, Long homeFolderTargetId) {
+		if (null != homeFolderTargetId) {
+			tbi.addQualifier("folderTargetId", String.valueOf(homeFolderTargetId));
+		}
 	}
 	
 	/*
