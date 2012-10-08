@@ -4,8 +4,8 @@ Ant 1.6.2
 Ant Contrib 0.6
 Antlr 2.7.6 (needed by Hibernate)
 aopalliance 1.0 (needed and included by Spring)
-Apache HttpClient 4.2 (not to be confused with Apache Commons HttpClient)
-Apache HttpCore 4.2.1
+Apache HttpClient 4.2 (not to be confused with Apache Commons HttpClient) (used by openid4java)
+Apache HttpCore 4.2.1 (Used by HttpClient)
 ASM 3.1.0 (from spring distribution, needed by cglib and jersey)
 Asm-attrs 1.5.3 (from spring distribution, needed by cglib)
 Axis 1.4 (removed log4j.properties)
@@ -40,7 +40,7 @@ Ehcache 2.2.0 (needed by Hibernate)
 ezmorph 1.0.1
 firebug-lite 1.2
 groovy 1.8.5
-Guice 3.0
+Guice 3.0 (used by openid4java)
 gwt 2.5rc1 (Google Web Toolkit)
 gwt-cal 0.9.3 (GWT Calendar widget)
 gwt-dnd 3.1.2 (GWT drag-and-drop support)
@@ -105,7 +105,7 @@ Lucene 3.4.0
 Lucene contrib analyzers 3.4.0 (previous Lucene snowball library is removed because it is contained in this new library)
 Lucene contrib queries 3.4.0
 Milton 1.7.3 snapshot build
-Mime Type Detection Utility 2.1.3 (http://sourceforge.net/projects/mime-util/files/mime-util) 
+Mime Type Detection Utility 2.1.3 (http://sourceforge.net/projects/mime-util/files/mime-util) (used by Milton)
 MINA (Apache) mina-core.jar 1.1.6
 MINA (Apache) mina-filter-ssl.jar 1.1.6
 MINA (Apache) mina-integration-jmx.jar 1.1.3
