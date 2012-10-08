@@ -40,6 +40,7 @@ import java.util.Map;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderIcons;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
@@ -64,12 +65,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FolderRow implements IsSerializable {
-	private BinderIcons								m_binderIcons = new BinderIcons();
-	private boolean									m_canModify;				//
-	private boolean									m_canPurge;					//
-	private boolean									m_canShare;					//
-	private boolean									m_canTrash;					//
-	private boolean									m_pinned;					//
+	private BinderIcons								m_binderIcons;				// Hold binder icons of various sizes for a binder. 
+	private BinderInfo								m_binderInfo;				// Set if the row represents a binder.
+	private boolean									m_canModify;				// true -> The user has rights to modify the row's entity.  false -> They don't.
+	private boolean									m_canPurge;					// true -> The user has rights to purge  the row's entity.  false -> They don't.
+	private boolean									m_canShare;					// true -> The user has rights to share  the row's entity.  false -> They don't.
+	private boolean									m_canTrash;					// true -> The user has rights to trash  the row's entity.  false -> They don't.
+	private boolean									m_pinned;					// true -> The row is pinned.  false -> It's not.
 	private EntityId								m_entityId;					// The entity ID of the FolderEntry this FolderRow corresponds to.
 	private List<FolderColumn>						m_columns;					// The FolderColumns that contribute to this FolderRow.
 	private Map<String, Boolean>					m_rowOverdueDates;			// A map of column names to Boolean indicators of an overdue date possibly stored for a column.
@@ -96,8 +98,11 @@ public class FolderRow implements IsSerializable {
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public FolderRow() {
-		// Simply initialize the super class.
+		// Initialize the super class...
 		super();
+		
+		// ...and initialize anything else that needs it.
+		m_binderIcons = new BinderIcons();
 	}
 
 	/**
@@ -107,12 +112,12 @@ public class FolderRow implements IsSerializable {
 	 * @param columns
 	 */
 	public FolderRow(EntityId entityId, List<FolderColumn> columns) {
-		// Initialize the class...
+		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
-		m_entityId = entityId;
-		m_columns  = columns;
+		setEntityId(entityId);
+		setColumns( columns );
 	}
 
 	/**
@@ -125,6 +130,7 @@ public class FolderRow implements IsSerializable {
 	public boolean                                 getCanShare()                          {                               return m_canShare;           }
 	public boolean                                 getCanTrash()                          {                               return m_canTrash;           }
 	public boolean                                 getPinned()                            {                               return m_pinned;             }
+	public BinderInfo                              getBinderInfo()                        {                               return m_binderInfo;         }
 	public EntityId                                getEntityId()                          {                               return m_entityId;           }
 	public List<FolderColumn>                      getColumns()                           {                               return m_columns;            }
 	public Map<String, Boolean>                    getRowOverdueDates()                   {validateMapOverdueDates();     return m_rowOverdueDates;    }
@@ -147,12 +153,15 @@ public class FolderRow implements IsSerializable {
 	 * 
 	 * @param
 	 */
-	public void setCanModify( boolean canModify)                           {m_canModify = canModify;                          }
-	public void setCanPurge(  boolean canPurge)                            {m_canPurge  = canPurge;                           }
-	public void setCanShare(  boolean canShare)                            {m_canShare  = canShare;                           }
-	public void setCanTrash(  boolean canTrash)                            {m_canTrash  = canTrash;                           }
-	public void setPinned(    boolean pinned)                              {m_pinned    = pinned;                             }
-	public void setBinderIcon(String  binderIcon, BinderIconSize iconSize) {m_binderIcons.setBinderIcon(binderIcon, iconSize);}
+	public void setCanModify( boolean            canModify)                           {m_canModify  = canModify;                         }
+	public void setCanPurge(  boolean            canPurge)                            {m_canPurge   = canPurge;                          }
+	public void setCanShare(  boolean            canShare)                            {m_canShare   = canShare;                          }
+	public void setCanTrash(  boolean            canTrash)                            {m_canTrash   = canTrash;                          }
+	public void setColumns(   List<FolderColumn> columns)                             {m_columns    = columns;                           }
+	public void setEntityId(  EntityId           entityId)                            {m_entityId   = entityId;                          }
+	public void setPinned(    boolean            pinned)                              {m_pinned     = pinned;                            }
+	public void setBinderIcon(String             binderIcon, BinderIconSize iconSize) {m_binderIcons.setBinderIcon(binderIcon, iconSize);}
+	public void setBinderInfo(BinderInfo         binderInfo)                          {m_binderInfo = binderInfo;                        }
 	
 	/**
 	 * Clears the binder icons being tracked in this TreeInfo.

@@ -45,12 +45,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	private BinderType    	m_binderType               = BinderType.OTHER;					//
 	private boolean       	m_binderDescExpanded       = true;								//
-	private boolean       	m_binderDescHTML           = false;								//
-	private boolean       	m_isLibrary                = false;								//
-	private boolean       	m_mirroredDriverConfigured = false;								//
+	private boolean       	m_binderDescHTML;												//
+	private boolean       	m_folderHome;													//
+	private boolean       	m_library;														//
+	private boolean       	m_mirroredDriverConfigured;										//
 	private CollectionType	m_collectionType           = CollectionType.NOT_A_COLLECTION;	//
 	private FolderType    	m_folderType               = FolderType.NOT_A_FOLDER;			//
-	private Long          	m_numUnread                = 0L;								// Number of unread entries in this binder and sub binders.
+	private Long          	m_numUnread;													// Number of unread entries in this binder and sub binders.
 	private String        	m_binderId                 = "";								//
 	private String        	m_binderTitle              = "";								//
 	private String		  	m_binderDesc	           = "";								//
@@ -85,8 +86,9 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		reply.setEntityType(              m_entityType              );
 		reply.setBinderType(              m_binderType              );
 		reply.setCollectionType(          m_collectionType          );
+		reply.setFolderHome(              m_folderHome              );
 		reply.setFolderType(              m_folderType              );
-		reply.setIsLibrary(               m_isLibrary               );
+		reply.setLibrary(                 m_library                 );
 		reply.setWorkspaceType(           m_wsType                  );
 		reply.setMirroredDriverConfigured(m_mirroredDriverConfigured);
 		return reply;
@@ -101,7 +103,8 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	public boolean        isBinderAccessible()         {return (!(BinderType.OTHER.equals(m_binderType)));           }
 	public boolean        isBinderDescExpanded()       {return                            m_binderDescExpanded;      }
 	public boolean        isBinderDescHTML()           {return                            m_binderDescHTML;          }
-	public boolean        isLibrary()                  {return                            m_isLibrary;               }
+	public boolean        isFolderHome()               {return                            m_folderHome;              }
+	public boolean        isLibrary()                  {return                            m_library;                 }
 	public boolean        isMirroredDriverConfigured() {return                            m_mirroredDriverConfigured;}
 	public CollectionType getCollectionType()          {return                            m_collectionType;          }
 	public FolderType     getFolderType()              {return                            m_folderType;              }
@@ -337,12 +340,21 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	}
 	
 	/**
+	 * Stores whether the given binder is a home folder.
+	 * 
+	 * @param folderHome
+	 */
+	public void setFolderHome(boolean folderHome) {
+		m_folderHome = folderHome;
+	}
+
+	/**
 	 * Stores whether the given binder is a library.
 	 * 
-	 * @param isLibrary
+	 * @param library
 	 */
-	public void setIsLibrary(boolean isLibrary) {
-		m_isLibrary = isLibrary;
+	public void setLibrary(boolean library) {
+		m_library = library;
 	}
 
 	/**
