@@ -48,6 +48,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.Binding;
 import javax.naming.Context;
@@ -102,7 +104,6 @@ import org.kablink.teaming.module.ldap.LdapSyncResults.SyncStatus;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
-import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
@@ -164,8 +165,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private static final String HOST_RESOURCE_NAME_ATTRIBUTE = "hostResourceName";
 	private static final String HOST_SERVER_ATTRIBUTE = "hostServer";
 	private static final String NETWORK_ADDRESS_ATTRIBUTE = "networkAddress";
+	private static final String HOME_DRIVE_ATTRIBUTE = "homeDrive";
+	private static final String AD_HOME_DIR_ATTRIBUTE = "homeDirectory";
 	private static int ADDR_TYPE_TCP = 9;
-	
+
+	private static Pattern m_pattern_uncPath = Pattern.compile( "^\\\\\\\\([a-z0-9_.$]+)\\\\([a-z0-9_.$]+)", Pattern.CASE_INSENSITIVE );
+
 	protected String [] principalAttrs = new String[]{
 												ObjectKeys.FIELD_PRINCIPAL_NAME,
 												ObjectKeys.FIELD_ID,
@@ -406,11 +411,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private HomeDirInfo readHomeDirInfoFromLdap(
 		LdapContext ldapContext,
 		LdapDirType dirType,
-		String dn )
+		String userDn )
 	{
 		HomeDirInfo homeDirInfo = null;
-		
-		logger.info( "reading home directory information for: " + dn );
 		
 		if ( dirType == LdapDirType.EDIR )
 		{
@@ -424,7 +427,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			try
 			{
-				attrs = ldapContext.getAttributes( dn, attributeNames );
+				attrs = ldapContext.getAttributes( userDn, attributeNames );
 				if ( attrs != null )
 				{
 					attrib = attrs.get( NDS_HOME_DIR_ATTRIBUTE );
@@ -512,7 +515,97 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			catch ( Exception ex )
 			{
-				logger.error( "Error reading ndsHomeDirectory attribute for user: " + dn + " " + ex.toString() );
+				logger.error( "Error reading ndsHomeDirectory attribute for user: " + userDn + " " + ex.toString() );
+			}
+		}
+		else if ( dirType == LdapDirType.AD )
+		{
+			String[] attributeNames;
+			Attributes attrs;
+			Attribute attrib;
+			
+			attributeNames = new String[3];
+			attributeNames[0] = HOME_DRIVE_ATTRIBUTE;
+			attributeNames[1] = AD_HOME_DIR_ATTRIBUTE;
+			attributeNames[2] = SAM_ACCOUNT_NAME_ATTRIBUTE;
+			
+			try
+			{
+				Object value;
+				String homeDrive;
+				String uncPath;
+				String userDir = null;
+				String server = null;
+				String volume = null;
+			    Matcher matcher;
+				
+				// Read the "homeDrive" and "homeDirectory" attributes from the given user
+				attrs = ldapContext.getAttributes( userDn, attributeNames );
+				if ( attrs == null )
+					return null;
+				
+				// Get the homeDrive attribute
+				attrib = attrs.get( HOME_DRIVE_ATTRIBUTE );
+				if ( attrib == null )
+					return null;
+				
+				value = attrib.get();
+				if ( value == null || (value instanceof String) == false )
+					return null;
+				
+				// If homeDrive is not empty it means that homeDirectory contains a unc path.
+				// Otherwise, homeDirectory is a fully qualified local path including the drive
+				// letter which would be useless to FAMT.
+				homeDrive = (String) value;
+				if ( homeDrive.length() == 0 )
+					return null;
+				
+				// Get the homeDirectory attribute.
+				attrib = attrs.get( AD_HOME_DIR_ATTRIBUTE );
+				if ( attrib == null )
+					return null;
+				
+				value = attrib.get();
+				if ( value == null || (value instanceof String) == false )
+					return null;
+				
+				// Do we have a unc path to the user's home directory?
+				uncPath = (String) value;
+				if ( uncPath.length() == 0 )
+					return null;
+				
+				// The name of the user's directory will be the value of the
+				// sAMAccountName attribute.  Get the sAMAccountName
+				userDir = getSamAccountName( attrs );
+				
+			    matcher = m_pattern_uncPath.matcher( uncPath );
+			    if ( matcher.find() && matcher.groupCount() == 2 )
+			    {
+					String path = null;
+					
+		    		server = matcher.group( 1 );
+		    		volume = matcher.group( 2 );
+		    		path = matcher.replaceFirst( "" );
+		    		if ( path != null && path.length() > 0 )
+		    		{
+		    			if ( path.charAt( 0 ) == '\\' )
+		    				userDir = path.substring( 1 ) + "\\" + userDir;
+		    			else
+		    				userDir = path + "\\" + userDir;
+		    		}
+
+					if ( server != null && volume != null && userDir != null )
+					{
+						homeDirInfo = new HomeDirInfo();
+						homeDirInfo.setServerAddr( server );
+						homeDirInfo.setVolume( volume );
+						homeDirInfo.setPath( userDir );
+					}
+				}
+			}
+			catch ( Exception ex )
+			{
+				logger.error( "Error reading homeDrive and homeDirectory attributes from the user: " + userDn + " " + ex.toString() );
 			}
 		}
 		
