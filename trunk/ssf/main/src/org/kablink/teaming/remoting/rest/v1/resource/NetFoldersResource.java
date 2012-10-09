@@ -34,8 +34,6 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
@@ -51,7 +49,6 @@ import org.kablink.util.search.Restrictions;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -84,7 +81,7 @@ public class NetFoldersResource extends AbstractResource {
         crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
         Map map = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), map, "/net_folders", nextParams, offset);
         return results;
@@ -98,6 +95,7 @@ public class NetFoldersResource extends AbstractResource {
                                                                  @QueryParam("folder_entries") @DefaultValue("true") boolean includeFolderEntries,
                                                                  @QueryParam("files") @DefaultValue("true") boolean includeFiles,
                                                                  @QueryParam("replies") @DefaultValue("true") boolean includeReplies,
+                                                                 @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                  @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                                  @QueryParam("keyword") String keyword,
                                                                  @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -122,11 +120,14 @@ public class NetFoldersResource extends AbstractResource {
             }
             criterion.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
             criterion.add(buildLibraryCriterion(true));
-            Map<String, String> nextParams = new HashMap<String, String>();
+            Map<String, Object> nextParams = new HashMap<String, Object>();
             nextParams.put("recursive", Boolean.toString(recursive));
+            nextParams.put("binders", Boolean.toString(includeBinders));
+            nextParams.put("folder_entries", Boolean.toString(includeFolderEntries));
+            nextParams.put("files", Boolean.toString(includeFiles));
+            nextParams.put("replies", Boolean.toString(includeReplies));
+            nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
             if (keyword!=null) {
-                criterion.add(buildKeywordCriterion(keyword));
-                //TODO: URL encode the keyword
                 nextParams.put("keyword", keyword);
             }
             nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
@@ -136,15 +137,24 @@ public class NetFoldersResource extends AbstractResource {
             SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
                     "/net_folders/library_entities", nextParams, offset);
         }
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
         return results;
     }
 
     @GET
     @Path("/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<SearchableObject> getRecentActivity(@QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
-                @QueryParam("first") @DefaultValue("0") Integer offset,
-                @QueryParam("count") @DefaultValue("20") Integer maxCount) {
+    public SearchResultList<SearchableObject> getRecentActivity(
+            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
+            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+            @QueryParam("first") @DefaultValue("0") Integer offset,
+            @QueryParam("count") @DefaultValue("20") Integer maxCount) {
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+
         SearchResultList<BinderBrief> folders = getNetFolders(true, 0, -1);
         if (folders.getCount()==0) {
             return new SearchResultList<SearchableObject>();
@@ -154,7 +164,7 @@ public class NetFoldersResource extends AbstractResource {
             binders.add(binder.getId().toString());
         }
         Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binders, null, null, true, Constants.LASTACTIVITY_FIELD);
-        return _getRecentActivity(textDescriptions, offset, maxCount, criteria, "/net_folders/recent_activity");
+        return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, "/net_folders/recent_activity", nextParams);
     }
 
 }

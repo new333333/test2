@@ -87,6 +87,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
     		Locale.class,
     		LongIdLinkPair.class,
     		Operation.class,
+    		ParentBinder.class,
     		Permission.class,
     		PrincipalBrief.class,
             ReleaseInfo.class,

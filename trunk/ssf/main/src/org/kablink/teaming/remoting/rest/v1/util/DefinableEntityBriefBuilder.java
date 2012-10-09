@@ -33,11 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.dom4j.Element;
-import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
-import org.kablink.teaming.rest.v1.model.DefinitionBrief;
-import org.kablink.teaming.rest.v1.model.HistoryStamp;
-import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
-import org.kablink.teaming.rest.v1.model.StringIdLinkPair;
+import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.Validator;
@@ -88,7 +84,7 @@ abstract public class DefinableEntityBriefBuilder {
 
         Long parentBinderId = getLong(entry, parentBinderField);
         if (parentBinderId!=null) {
-            model.setParentBinder(new LongIdLinkPair(parentBinderId, LinkUriUtil.getBinderLinkUri(parentBinderId)));
+            model.setParentBinder(new ParentBinder(parentBinderId, LinkUriUtil.getBinderLinkUri(parentBinderId)));
         }
 
         Long creator = Long.valueOf((String) entry.get(Constants.CREATORID_FIELD));

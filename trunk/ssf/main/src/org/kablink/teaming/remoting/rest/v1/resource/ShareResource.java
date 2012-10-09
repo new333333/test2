@@ -116,7 +116,8 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/by_user/{id}/entries")
-    public SearchResultList<SharedFolderEntryBrief> getEntriesSharedByUser(@PathParam("id") Long userId) {
+    public SearchResultList<SharedFolderEntryBrief> getEntriesSharedByUser(@PathParam("id") Long userId,
+                                                                           @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         _getUser(userId);
         ShareItemSelectSpec spec = new ShareItemSelectSpec();
         spec.setSharerId(userId);
@@ -131,29 +132,71 @@ public class ShareResource extends AbstractResource {
                 logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
             }
         }
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
         return results;
     }
 
     @GET
     @Path("/by_user/{id}/files")
     public SearchResultList<FileProperties> getFilesSharedByUser(@PathParam("id") Long userId,
-                                                                 @QueryParam("recursive") @DefaultValue("false") boolean recursive) {
+                                                                 @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                                 @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.appendAll(getSharedByFiles(userId, false));
         if (recursive) {
             results.appendAll(getSubFiles(getSharedByBinders(userId, false), false));
         }
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
+        return results;
+    }
+
+    @GET
+    @Path("/by_user/{id}/library_entities")
+    public SearchResultList<SearchableObject> getLibraryEntitiesSharedByUser(@PathParam("id") Long userId,
+                                                                               @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                                               @QueryParam("binders") @DefaultValue("true") boolean includeBinders,
+                                                                               @QueryParam("folder_entries") @DefaultValue("true") boolean includeFolderEntries,
+                                                                               @QueryParam("files") @DefaultValue("true") boolean includeFiles,
+                                                                               @QueryParam("replies") @DefaultValue("true") boolean includeReplies,
+                                                                               @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
+                                                                               @QueryParam("keyword") String keyword,
+                                                                               @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                                               @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                                               @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        _getUser(userId);
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("recursive", Boolean.toString(recursive));
+        nextParams.put("binders", Boolean.toString(includeBinders));
+        nextParams.put("folder_entries", Boolean.toString(includeFolderEntries));
+        nextParams.put("files", Boolean.toString(includeFiles));
+        nextParams.put("replies", Boolean.toString(includeReplies));
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        if (keyword!=null) {
+            nextParams.put("keyword", keyword);
+        }
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        ShareItemSelectSpec spec = new ShareItemSelectSpec();
+        spec.setSharerId(userId);
+        SearchResultList<SearchableObject> results = _getLibraryEntities(recursive, includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword, textDescriptions, offset, maxCount, "/with_user/" + userId + "/library_entities", nextParams, spec);
         return results;
     }
 
     @GET
     @Path("/by_user/{id}/library_files")
     public SearchResultList<FileProperties> getLibraryFilesSharedByUser(@PathParam("id") Long userId,
-                                                                          @QueryParam("recursive") @DefaultValue("false") boolean recursive) {
+                                                                        @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                                        @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.appendAll(getSharedByFiles(userId, true));
         if (recursive) {
             results.appendAll(getSubFiles(getSharedByBinders(userId, true), true));
+        }
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
         }
         return results;
     }
@@ -163,12 +206,17 @@ public class ShareResource extends AbstractResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<SearchableObject> getRecentActivityInSharedByUser(
             @PathParam("id") Long userId,
+            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("20") Integer maxCount) {
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+
         ShareItemSelectSpec spec = new ShareItemSelectSpec();
         spec.setSharerId(userId);
-        return _getRecentActivity(textDescriptions, offset, maxCount, spec, "/shares/by_user/" + userId + "/recent_activity");
+        return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, spec, "/shares/by_user/" + userId + "/recent_activity", nextParams);
     }
 
     @GET
@@ -217,62 +265,33 @@ public class ShareResource extends AbstractResource {
                                                       @QueryParam("folder_entries") @DefaultValue("true") boolean includeFolderEntries,
                                                       @QueryParam("files") @DefaultValue("true") boolean includeFiles,
                                                       @QueryParam("replies") @DefaultValue("true") boolean includeReplies,
+                                                      @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                       @QueryParam("keyword") String keyword,
                                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                       @QueryParam("first") @DefaultValue("0") Integer offset,
                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         _getUser(userId);
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("recursive", Boolean.toString(recursive));
+        nextParams.put("binders", Boolean.toString(includeBinders));
+        nextParams.put("folder_entries", Boolean.toString(includeFolderEntries));
+        nextParams.put("files", Boolean.toString(includeFiles));
+        nextParams.put("replies", Boolean.toString(includeReplies));
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        if (keyword!=null) {
+            nextParams.put("keyword", keyword);
+        }
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         ShareItemSelectSpec spec = new ShareItemSelectSpec();
         spec.setRecipientsFromUserMembership(userId);
-        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
-        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
-        if (shareItems.size()>0) {
-            Junction criterion = Restrictions.conjunction();
-            Junction searchContext = Restrictions.disjunction();
-            for (ShareItem shareItem : shareItems) {
-                Junction shareCrit = Restrictions.conjunction();
-                if (keyword!=null) {
-                    shareCrit.add(buildKeywordCriterion(keyword));
-                }
-                EntityIdentifier entityId = shareItem.getSharedEntityIdentifier();
-                if (entityId.getEntityType()==EntityIdentifier.EntityType.folderEntry) {
-                    shareCrit.add(Restrictions.disjunction()
-                        .add(buildEntryCriterion(entityId.getEntityId()))
-                        .add(buildAttachmentCriterion(entityId.getEntityId()))
-                    );
-                } else if (entityId.getEntityType()==EntityIdentifier.EntityType.folder ||
-                        entityId.getEntityType()==EntityIdentifier.EntityType.workspace) {
-                    if (recursive) {
-                        shareCrit.add(buildSearchBinderCriterion(entityId.getEntityId(), true));
-                    } else {
-                        shareCrit.add(buildBinderCriterion(entityId.getEntityId()));
-                    }
-                }
-                searchContext.add(shareCrit);
-            }
-            criterion.add(searchContext);
-            criterion.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
-            criterion.add(buildLibraryCriterion(true));
-            Map<String, String> nextParams = new HashMap<String, String>();
-            nextParams.put("recursive", Boolean.toString(recursive));
-            nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-            if (keyword!=null) {
-                criterion.add(buildKeywordCriterion(keyword));
-                //TODO: URL encode the keyword
-                nextParams.put("keyword", keyword);
-            }
-            Criteria crit = new Criteria();
-            crit.add(criterion);
-            Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-            SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
-                    "/with_user/" + userId + "/library_entities", nextParams, offset);
-        }
+        SearchResultList<SearchableObject> results = _getLibraryEntities(recursive, includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword, textDescriptions, offset, maxCount, "/with_user/" + userId + "/library_entities", nextParams, spec);
         return results;
     }
 
     @GET
     @Path("/with_user/{id}/entries")
-    public SearchResultList<SharedFolderEntryBrief> getEntriesSharedWithUser(@PathParam("id") Long userId) {
+    public SearchResultList<SharedFolderEntryBrief> getEntriesSharedWithUser(@PathParam("id") Long userId,
+                                                                             @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         _getUser(userId);
         ShareItemSelectSpec spec = new ShareItemSelectSpec();
         spec.setRecipientsFromUserMembership(userId);
@@ -287,17 +306,24 @@ public class ShareResource extends AbstractResource {
                 }
             }
         }
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
         return results;
     }
 
     @GET
     @Path("/with_user/{id}/files")
     public SearchResultList<FileProperties> getFilesSharedWithUser(@PathParam("id") Long userId,
-                                                                         @QueryParam("recursive") @DefaultValue("false") boolean recursive) {
+                                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                                   @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.appendAll(getSharedWithFiles(userId, false));
         if (recursive) {
             results.appendAll(getSubFiles(getSharedWithBinders(userId, false), false));
+        }
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
         }
         return results;
     }
@@ -305,11 +331,15 @@ public class ShareResource extends AbstractResource {
     @GET
     @Path("/with_user/{id}/library_files")
     public SearchResultList<FileProperties> getLibraryFilesSharedWithUser(@PathParam("id") Long userId,
-                                                                          @QueryParam("recursive") @DefaultValue("false") boolean recursive) {
+                                                                          @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                                          @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.appendAll(getSharedWithFiles(userId, true));
         if (recursive) {
             results.appendAll(getSubFiles(getSharedWithBinders(userId, true), true));
+        }
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
         }
         return results;
     }
@@ -327,15 +357,20 @@ public class ShareResource extends AbstractResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<SearchableObject> getRecentActivityInSharedWithUser(
             @PathParam("id") Long userId,
+            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("20") Integer maxCount) {
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+
         ShareItemSelectSpec spec = new ShareItemSelectSpec();
         spec.setRecipientsFromUserMembership(userId);
-        return _getRecentActivity(textDescriptions, offset, maxCount, spec, "/shares/with_user/" + userId + "/recent_activity");
+        return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, spec, "/shares/with_user/" + userId + "/recent_activity", nextParams);
     }
 
-    private SearchResultList<SearchableObject> _getRecentActivity(boolean textDescriptions, Integer offset, Integer maxCount, ShareItemSelectSpec spec, String nextUrl) {
+    private SearchResultList<SearchableObject> _getRecentActivity(boolean includeParentPaths, boolean textDescriptions, Integer offset, Integer maxCount, ShareItemSelectSpec spec, String nextUrl, Map<String, Object> nextParams) {
         List<String> binderIds = new ArrayList<String>();
         List<String> entryIds = new ArrayList<String>();
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
@@ -351,7 +386,7 @@ public class ShareResource extends AbstractResource {
             }
         }
         Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binderIds, entryIds, null, true, Constants.LASTACTIVITY_FIELD);
-        return _getRecentActivity(textDescriptions, offset, maxCount, criteria, nextUrl);
+        return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, nextUrl, nextParams);
     }
 
     protected SharedBinderBrief [] getSharedByBinders(Long userId, boolean onlyLibrary)  {
@@ -462,4 +497,47 @@ public class ShareResource extends AbstractResource {
         }
         return Restrictions.in(Constants.ENTRY_ANCESTRY, idList);
     }
+
+    private SearchResultList<SearchableObject> _getLibraryEntities(boolean recursive, boolean includeBinders, boolean includeFolderEntries, boolean includeFiles, boolean includeReplies, boolean includeParentPaths, String keyword, boolean textDescriptions, Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams, ShareItemSelectSpec spec) {
+        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
+        if (shareItems.size()>0) {
+            Junction criterion = Restrictions.conjunction();
+            Junction searchContext = Restrictions.disjunction();
+            for (ShareItem shareItem : shareItems) {
+                Junction shareCrit = Restrictions.conjunction();
+                if (keyword!=null) {
+                    shareCrit.add(buildKeywordCriterion(keyword));
+                }
+                EntityIdentifier entityId = shareItem.getSharedEntityIdentifier();
+                if (entityId.getEntityType()==EntityIdentifier.EntityType.folderEntry) {
+                    shareCrit.add(Restrictions.disjunction()
+                            .add(buildEntryCriterion(entityId.getEntityId()))
+                            .add(buildAttachmentCriterion(entityId.getEntityId()))
+                    );
+                } else if (entityId.getEntityType()==EntityIdentifier.EntityType.folder ||
+                        entityId.getEntityType()==EntityIdentifier.EntityType.workspace) {
+                    if (recursive) {
+                        shareCrit.add(buildSearchBinderCriterion(entityId.getEntityId(), true));
+                    } else {
+                        shareCrit.add(buildBinderCriterion(entityId.getEntityId()));
+                    }
+                }
+                searchContext.add(shareCrit);
+            }
+            criterion.add(searchContext);
+            criterion.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
+            criterion.add(buildLibraryCriterion(true));
+            Criteria crit = new Criteria();
+            crit.add(criterion);
+            Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+            SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
+                    nextUrl, nextParams, offset);
+        }
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
+        return results;
+    }
+
 }

@@ -43,7 +43,7 @@ import java.util.List;
  */
 public abstract class DefinableEntity extends SearchableObject {
     private Long id;
-   	private LongIdLinkPair parentBinder;
+   	private ParentBinder parentBinder;
    	private String title;
     private StringIdLinkPair definition;
     private String entityType;
@@ -147,11 +147,11 @@ public abstract class DefinableEntity extends SearchableObject {
     }
 
     @XmlElement(name="parent_binder")
-    public LongIdLinkPair getParentBinder() {
+    public ParentBinder getParentBinder() {
         return parentBinder;
     }
 
-    public void setParentBinder(LongIdLinkPair parentBinder) {
+    public void setParentBinder(ParentBinder parentBinder) {
         this.parentBinder = parentBinder;
     }
 

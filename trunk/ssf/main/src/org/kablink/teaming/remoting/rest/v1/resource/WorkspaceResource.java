@@ -90,7 +90,7 @@ public class WorkspaceResource extends AbstractBinderResource {
         Document queryDoc = buildQueryDocument("<query/>", buildWorkspacesCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/workspaces", nextParams, offset);
         return results;
@@ -106,7 +106,7 @@ public class WorkspaceResource extends AbstractBinderResource {
         Document queryDoc = buildQueryDocument(query, buildWorkspacesCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/workspaces/legacy_query", nextParams, offset);
         return results;
@@ -124,7 +124,7 @@ public class WorkspaceResource extends AbstractBinderResource {
                                                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                        @QueryParam("first") @DefaultValue("0") Integer offset,
                                                        @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         return getSubBinders(id, null, offset, maxCount, "/workspaces/" + id + "/binders", nextParams, textDescriptions);
     }
@@ -148,7 +148,7 @@ public class WorkspaceResource extends AbstractBinderResource {
                                                           @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
 			@QueryParam("first") @DefaultValue("0") Integer offset,
 			@QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         return getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_WORKSPACE),
                 offset, maxCount, "/workspaces/" + id + "/workspaces", nextParams, textDescriptions);
@@ -179,7 +179,7 @@ public class WorkspaceResource extends AbstractBinderResource {
                                                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
 			@QueryParam("first") @DefaultValue("0") int offset,
 			@QueryParam("count") @DefaultValue("-1") int maxCount) {
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         return getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
                 offset, maxCount, "/workspaces/" + id + "/folders", nextParams, textDescriptions);
@@ -225,18 +225,24 @@ public class WorkspaceResource extends AbstractBinderResource {
                                                   @QueryParam("folder_entries") @DefaultValue("true") boolean includeFolderEntries,
                                                   @QueryParam("files") @DefaultValue("true") boolean includeFiles,
                                                   @QueryParam("replies") @DefaultValue("true") boolean includeReplies,
+                                                  @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                   @QueryParam("keyword") String keyword,
                                                   @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("recursive", Boolean.toString(recursive));
+        nextParams.put("binders", Boolean.toString(includeBinders));
+        nextParams.put("folder_entries", Boolean.toString(includeFolderEntries));
+        nextParams.put("files", Boolean.toString(includeFiles));
+        nextParams.put("replies", Boolean.toString(includeReplies));
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         if (keyword!=null) {
             nextParams.put("keyword", keyword);
         }
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         return getSubEntities(id, recursive, includeBinders, includeFolderEntries, includeFiles, includeReplies, true,
-                keyword, offset, maxCount, "/workspaces/" + id + "/library_entities", nextParams, textDescriptions);
+                includeParentPaths, keyword, offset, maxCount, "/workspaces/" + id + "/library_entities", nextParams, textDescriptions);
 	}
 
     @Override

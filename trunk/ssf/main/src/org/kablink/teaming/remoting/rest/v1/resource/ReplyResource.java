@@ -104,7 +104,7 @@ public class ReplyResource extends AbstractFolderEntryResource {
         Document queryDoc = buildQueryDocument("<query/>", criterion);
         Map replies = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<ReplyBrief> results = new SearchResultList<ReplyBrief>(offset);
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         SearchResultBuilderUtil.buildSearchResults(results, new ReplyBriefBuilder(textDescriptions), replies, "/replies", nextParams, offset);
         return results;
