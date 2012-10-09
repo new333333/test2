@@ -4565,9 +4565,11 @@ public class GwtViewHelper {
 			}
 		}
 		
-		else if (action.equals(WebKeys.ACTION_VIEW_WS_LISTING) || action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING)) {
-			// A view workspace or folder listing!  Is this a request
-			// to show team members on this binder?
+		else if (action.equals(WebKeys.ACTION_VIEW_WS_LISTING)     ||
+		         action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING) ||
+		         action.equals(WebKeys.ACTION_VIEW_PROFILE_LISTING)) {
+			// A view workspace, folder or profiles listing!  Is this a
+			// request to show team members on this binder?
 			if (op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
 				// Yes!  Simply mark the ViewInfo as such.
 				vi.setViewType(ViewType.ADD_FOLDER_ENTRY);
