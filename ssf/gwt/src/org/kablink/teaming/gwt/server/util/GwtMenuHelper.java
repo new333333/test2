@@ -652,9 +652,9 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for deleting the selected entries.
 	 */
-	private static void constructEntryDeleteItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws) {
+	private static void constructEntryDeleteItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws, boolean isMyFilesCollection) {
 		// If the user has rights to do it...
-		if ((null == ws) || bs.getBinderModule().testAccess(ws, BinderOperation.deleteBinder)) {
+		if ((null == ws) || isMyFilesCollection || bs.getBinderModule().testAccess(ws, BinderOperation.preDeleteBinder)) {
 			// ...add a Delete item.
 			constructEntryDeleteItem(entryToolbar);
 		}
@@ -712,10 +712,11 @@ public class GwtMenuHelper {
 	 *		Subscribe...
 	 *		Access Control... (Future)
 	 */
-	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long folderId, String viewType, Folder folder, Workspace ws) {
-		User    user     = GwtServerHelper.getCurrentUser();
-		boolean isGuest  = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
-		boolean isFolder = (null != folder);
+	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long folderId, String viewType, Folder folder, Workspace ws, boolean isMyFilesCollection) {
+		User    user             = GwtServerHelper.getCurrentUser();
+		boolean isGuest          = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+		boolean isFolder         = (null != folder);
+		boolean isEntryContainer = (isFolder || isMyFilesCollection);
 		
 		// Create the more toolbar item...
 		ToolbarItem moreTBI = new ToolbarItem("1_more");
@@ -748,14 +749,14 @@ public class GwtMenuHelper {
 		}
 		else {
 			// ...and for which the user has rights to do it...
-			if ((null == ws) || bm.testAccess(ws, BinderOperation.deleteBinder)) {
+			if ((null == ws) || isEntryContainer || bm.testAccess(ws, BinderOperation.deleteBinder)) {
 				// ...add the Purge item...
 				constructEntryMorePurgeItem(moreTBI);
 			}
 		}
 
-		// ...for folders...
-		if (isFolder) {
+		// ...for views that can contain entries...
+		if (isEntryContainer) {
 			// ...add the lock item....
 			tbi = new ToolbarItem("1_lockSelected");
 			markTBITitle(tbi, "toolbar.lock");
@@ -785,11 +786,11 @@ public class GwtMenuHelper {
 		}
 		
 		// ...add a separator item...
-		if (moreTBI.hasNestedToolbarItems() && (isFolder || (!isGuest))) {
+		if (moreTBI.hasNestedToolbarItems() && (isEntryContainer || (!isGuest))) {
 			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
 		}
 		
-		if (isFolder && (!(Utils.checkIfFilr()))) {
+		if (isEntryContainer && (!(Utils.checkIfFilr()))) {
 			// ...add the change entry type item when not Filr....
 			tbi = new ToolbarItem("1_changeEntryTypeSelected");
 			markTBITitle(tbi, "toolbar.changeEntryType");
@@ -2345,23 +2346,23 @@ public class GwtMenuHelper {
 				boolean isCollectionSharedByMe   = (CollectionType.SHARED_BY_ME   == folderInfo.getCollectionType());
 				boolean isCollectionSharedWithMe = (CollectionType.SHARED_WITH_ME == folderInfo.getCollectionType());
 				if ((!(Utils.checkIfFilr())) && (isCollectionSharedByMe || isCollectionSharedWithMe)) {
-					constructEntryToggleSharedViewItem(entryToolbar, bs, request                                                                         );
+					constructEntryToggleSharedViewItem(entryToolbar, bs, request                                                                                  );
 				}
 				if (isCollectionMyFiles) {
 					Long homeFolderTargetId;
 					if (GwtServerHelper.useHomeAsMyFiles())
 					     homeFolderTargetId = GwtServerHelper.getHomeFolderId(bs);
 					else homeFolderTargetId = null;
-					constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws, homeFolderTargetId);
+					constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws, homeFolderTargetId         );
 				}
 				if (isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe) {
-				    constructEntryShareItem(           entryToolbar, bs, request                                                                         );
+				    constructEntryShareItem(           entryToolbar, bs, request                                                                                  );
 				}
-				constructEntryDeleteItem(              entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null)            );
+				constructEntryDeleteItem(              entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
 				if (isCollectionMyFiles && supportsApplets && (null != GwtServerHelper.getMyFilesContainerId(bs))) {
-					constructEntryDropBoxItem(         entryToolbar                                                                                      );
+					constructEntryDropBoxItem(         entryToolbar                                                                                               );
 				}
-				constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null)            );
+				constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
 			}
 			
 			else {
@@ -2431,7 +2432,8 @@ public class GwtMenuHelper {
 							folderId,
 							viewType,
 							folder,
-							null);	// null -> Not a Workspace.
+							null,	// null  -> Not a Workspace.
+							false);	// false -> Not a My Files collection.
 					}
 					
 					// Are we working on a calendar folder?
