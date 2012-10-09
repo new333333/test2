@@ -36,11 +36,10 @@ import javax.activation.FileTypeMap;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.repository.RepositorySession;
 import org.kablink.teaming.repository.fi.FIRepositorySessionFactoryAdapter;
 import org.kablink.teaming.repository.impl.AbstractRepositorySessionFactory;
-import org.kablink.teaming.security.function.WorkAreaOperation;
-
 
 public abstract class AbstractFIRepositorySessionFactoryAdapter 
 	extends AbstractRepositorySessionFactory implements FIRepositorySessionFactoryAdapter {
@@ -53,8 +52,8 @@ public abstract class AbstractFIRepositorySessionFactoryAdapter
 		}
 		
 		@Override
-		protected RepositorySession createSessionForDataSource(Binder binder, DefinableEntity entity, WorkAreaOperation operation) {
-			return openSession(_binder, _entity, _binder.getResourceDriverName(), operation);
+		protected RepositorySession createReadSessionForDataSource() {
+			return openSession(_binder.getResourceDriverName(), ResourceDriverManager.FileOperation.READ, _entity);
 		}
 	}
 

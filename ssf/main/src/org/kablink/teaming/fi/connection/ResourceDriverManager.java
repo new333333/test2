@@ -38,11 +38,19 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.fi.FIException;
-import org.kablink.teaming.security.function.WorkAreaOperation;
-
 
 public interface ResourceDriverManager {
 
+	public enum FileOperation {
+		CREATE_FILE,
+		CREATE_FOLDER,
+		READ,
+		UPDATE,
+		DELETE,
+		MOVE_FILE,
+		MOVE_FOLDER
+	}
+	
 	public List<ResourceDriver> getAllowedResourceDrivers();
 	public List<ResourceDriver> getAllResourceDrivers();
 	public List<ResourceDriverConfig> getAllResourceDriverConfigs();
@@ -51,7 +59,7 @@ public interface ResourceDriverManager {
 	public ResourceDriver getDriver(String driverName) throws FIException;
 	public ResourceDriverConfig getDriverConfig(String driverName);
 
-	public ResourceSession getSession(DefinableEntity entityToCheckPermissionOn, ResourceDriver driver, WorkAreaOperation operation)
+	public ResourceSession getSession(ResourceDriver driver, FileOperation fileOperation, DefinableEntity ... entitiesToCheckPermissionOn)
 	throws FIException, UncheckedIOException;
 	
 	/**
