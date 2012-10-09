@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
-import static org.kablink.util.search.Restrictions.in;
-
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.text.Collator;
@@ -111,6 +109,8 @@ import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
+import org.kablink.teaming.domain.TemplateBinder;
+import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
@@ -241,6 +241,9 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
+import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.security.runwith.RunWithCallback;
+import org.kablink.teaming.security.runwith.RunWithTemplate;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
@@ -279,6 +282,8 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.servlet.StringServletResponse;
 
+import static org.kablink.util.search.Restrictions.in;
+
 /**
  * Helper methods for the GWT UI server code.
  *
@@ -289,8 +294,7 @@ public class GwtServerHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtServerHelper.class);
 
 	// Used to control various upcoming features of My Files.
-	private static final boolean TEST_USING_FILES_AS_MYFILES_CONTAINER	= false;	// If available, use a user's 'Files' folder as their My Files container. 
-	private static final boolean TEST_USING_HOME_AS_MYFILES				= false;	// Force all user's to use their Home Net Folder as their My Files root.
+	private static final boolean TEST_USING_HOME_AS_MYFILES	= false;	// Force all user's to use their Home Net Folder as their My Files root.
 	
 	// The following are used to classify various binders based on
 	// their default view definition.  See getFolderType() and
@@ -1682,6 +1686,72 @@ public class GwtServerHelper {
 		}
 		
 		return newGroup;
+	}
+
+	/*
+	 * Creates a user's My Files container and returns its ID.
+	 */
+	private static Long createMyFilesFolder(AllModulesInjected bs) {
+		// Can we determine the template to use for the My Files
+		// folder?
+		TemplateBinder	mfFolderTemplate   = bs.getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY);
+		Long			mfFolderTemplateId = ((null == mfFolderTemplate) ? null : mfFolderTemplate.getId());
+		if (null == mfFolderTemplateId) {
+			// No!  Then we can't create it.
+			return null;
+		}
+
+		// Generate a unique name for the folder.
+		Long				reply       = null;
+		final String		mfTitleBase = NLT.get("collection.myFiles.folder");
+		final BinderModule	bm          = bs.getBinderModule();
+		for (int tries = 0; true; tries += 1) {
+			try {
+				// For tries beyond the first, we simply bump a counter
+				// until we find a name to use.
+				String mfTitle = mfTitleBase;
+				if (0 < tries) {
+					mfTitle += ("-" + tries);
+				}
+				
+				// Can we create a folder with this name?
+				final Long		mfFolderId = bs.getTemplateModule().addBinder(mfFolderTemplateId, getCurrentUser().getWorkspaceId(), mfTitle, null).getId();
+				final Binder	mfFolder   = bm.getBinder(mfFolderId); 
+				if (null != mfFolder) {
+					// Yes!  Mark it as being the My Files folder...
+					bm.setProperty(mfFolderId, ObjectKeys.BINDER_PROPERTY_MYFILES_DIR, Boolean.TRUE);
+					bm.indexBinder(mfFolderId                                                      );
+					
+					// ...and to inherit its team membership.
+					RunWithTemplate.runWith(new RunWithCallback() {
+							@Override
+							public Object runWith() {
+								bm.setTeamMembershipInherited(mfFolderId, true);			
+								return null;
+							}
+						},
+						new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION},
+						null);
+					
+					// Return the ID of the folder we created.
+					reply = mfFolderId;
+					break;
+				}
+			}
+			
+			catch (Exception e) {
+				// If the create fails because of a naming conflict...
+				if (e instanceof TitleException) {
+					// ...simply try again with a new name.
+					continue;
+				}
+				break;
+			}
+		}
+
+		// If we get here, reply is null or refers to the ID of the
+		// newly created folder.  Return it.
+		return reply;
 	}
 	
 	/**
@@ -5483,17 +5553,11 @@ public class GwtServerHelper {
 	 */
 	public static Long getMyFilesContainerId(AllModulesInjected bs) {
 		Long reply;
-		if (TEST_USING_FILES_AS_MYFILES_CONTAINER) {
-//!			...this needs to be implemented...
-			if (GwtServerHelper.useHomeAsMyFiles())
-			     reply = GwtServerHelper.getHomeFolderId(bs);
-			else reply = null;
-			if (null == reply) {
-				reply = GwtServerHelper.getMyFilesFolderId(bs);
-			}
-		}
-		else {
-			reply = null;
+		if (GwtServerHelper.useHomeAsMyFiles())
+		     reply = GwtServerHelper.getHomeFolderId(bs);
+		else reply = null;
+		if (null == reply) {
+			reply = GwtServerHelper.getMyFilesFolderId(bs, true);	// true -> Create it if it doesn't exist.
 		}
 		return reply;
 	}
@@ -5525,9 +5589,9 @@ public class GwtServerHelper {
 		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(GwtServerHelper.getCurrentUser().getWorkspaceId())}));
 		
 		// ...that are marked as their My Files folder...
-		crit.add(in(Constants.FAMILY_FIELD,     new String[]{Definition.FAMILY_FILE}));
-		crit.add(in(Constants.IS_LIBRARY_FIELD,	new String[]{Constants.TRUE}));
-		crit.add(in(Constants.SORT_TITLE_FIELD, new String[]{"files"}));	//! ...this needs to be implemented...
+		crit.add(in(Constants.FAMILY_FIELD,         new String[]{Definition.FAMILY_FILE}));
+		crit.add(in(Constants.IS_LIBRARY_FIELD,	    new String[]{Constants.TRUE}));
+		crit.add(in(Constants.IS_MYFILES_DIR_FIELD, new String[]{Constants.TRUE}));
 
 		// ...that are not mirrored File Folders.
 		crit.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
@@ -5561,14 +5625,14 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static Long getMyFilesFolderId(AllModulesInjected bs) {
+	public static Long getMyFilesFolderId(AllModulesInjected bs, boolean createIfNeccessary) {
 		Long reply;
-		if (TEST_USING_FILES_AS_MYFILES_CONTAINER) {
-//!			...this needs to be implemented...
-			List<Long> homeFolderIds = getMyFilesFolderIds(bs);
-			if ((null != homeFolderIds) && (!(homeFolderIds.isEmpty())))
-			     reply = homeFolderIds.get(0);
-			else reply = null;
+		List<Long> mfFolderIds = getMyFilesFolderIds(bs);
+		if ((null != mfFolderIds) && (!(mfFolderIds.isEmpty()))) {
+			reply = mfFolderIds.get(0);
+		}
+		else if (createIfNeccessary) {
+			reply = createMyFilesFolder(bs);
 		}
 		else {
 			reply = null;

@@ -852,7 +852,6 @@ public class EntityIndexUtils {
    		addBinderAcls(parent, binder, includeTitleAcl);
     }
     private static String getWfEntryAccess(WorkflowSupport wEntry) {
-    	@SuppressWarnings("unused")
     	boolean personal = false;
     	if (wEntry instanceof FolderEntry) 
     		personal = Utils.isWorkareaInProfilesTree(((FolderEntry)wEntry).getParentBinder());
@@ -1244,6 +1243,15 @@ public class EntityIndexUtils {
 
     public static void addBinderIsHomeDir(Document doc, Binder binder, boolean fieldsOnly) {
 		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_HOME_DIR_FIELD, (binder.isHomeDir() ? Constants.TRUE : Constants.FALSE));
+		doc.add(path);
+    }
+
+    public static void addBinderIsMyFilesDir(Document doc, Binder binder, boolean fieldsOnly) {
+    	Boolean isMyFilesDir = ((Boolean) binder.getProperty(ObjectKeys.BINDER_PROPERTY_MYFILES_DIR));
+    	if (null == isMyFilesDir) {
+    		isMyFilesDir = Boolean.FALSE;
+    	}
+		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_MYFILES_DIR_FIELD, (isMyFilesDir ? Constants.TRUE : Constants.FALSE));
 		doc.add(path);
     }
 
