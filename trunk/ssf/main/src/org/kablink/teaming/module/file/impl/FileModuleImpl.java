@@ -95,6 +95,7 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileLock;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
+import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -418,7 +419,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			}
 		}
 		
-		RepositoryUtil.readVersioned(fa, binder, entry, versionName, latestVersionName, out);			
+		RepositoryUtil.readVersionedFile(fa, binder, entry, versionName, latestVersionName, out);			
 	}
 	
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
@@ -445,7 +446,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			}
 		}
 		
-		return RepositoryUtil.readVersioned(fa, binder, entry, versionName, latestVersionName, readRawFile);
+		return RepositoryUtil.readVersionedFile(fa, binder, entry, versionName, latestVersionName, readRawFile);
 	}
 	
     public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
@@ -956,7 +957,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			throws UncheckedIOException, RepositoryServiceException {
 		if(fileExistsInRepository(fa)) {
 			// Rename the file in the repository
-			RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
+			RepositoryUtil.moveFile(fa.getRepositoryName(), binder, entity, 
 					fa.getFileItem().getName(), binder, entity, newName);
 		}
 		else {
@@ -1033,7 +1034,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
        	for(FileAttachment fa :atts) {   
     		toFileName = (toFileNames != null)? toFileNames[i] : fa.getFileItem().getName();
        		if(!ObjectKeys.FI_ADAPTER.equals(fa.getRepositoryName())) { // regular repository
-       	 		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
+       	 		RepositoryUtil.moveFile(fa.getRepositoryName(), binder, entity, 
        					fa.getFileItem().getName(), destBinder, destEntity, 
        					toFileName);       			
        		}
@@ -1055,7 +1056,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if(binder.getResourceDriverName().equals(destBinder.getResourceDriverName())) {
 			// Both source and destination binders use the same resource
 			// driver. Move is possible.
-   	 		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
+   	 		RepositoryUtil.moveFile(fa.getRepositoryName(), binder, entity, 
    					fa.getFileItem().getName(), destBinder, destEntity, 
    					toFileName);       								
 		}
@@ -1063,7 +1064,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// Source and destination binders do not share the same driver. 
 			// Move is not possible in this case. We have to mimic it by
 			// copy followed by delete. 
-			RepositorySession session = RepositorySessionFactoryUtil.openSession(destBinder, destEntity, fa.getRepositoryName(), WorkAreaOperation.BINDER_ADMINISTRATION);
+			RepositorySession session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName(), destBinder.getResourceDriverName(), ResourceDriverManager.FileOperation.CREATE_FILE, destBinder);
 			try {
 				InputStream is = readFile(binder, entity, fa);
 				long size = fa.getFileItem().getLength();
@@ -1083,7 +1084,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				session.close();
 			}
 			
-			session = RepositorySessionFactoryUtil.openSession(binder, entity, fa.getRepositoryName(), WorkAreaOperation.BINDER_ADMINISTRATION);
+			session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName(), binder.getResourceDriverName(), ResourceDriverManager.FileOperation.DELETE, binder);
 			try {
 				session.delete(binder, entity, fa.getFileItem().getName());
 			}
@@ -1408,7 +1409,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private void deletePrimaryFile(Binder binder, DefinableEntity entry,
 			String relativeFilePath, String repositoryName, FilesErrors errors) {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entry, repositoryName, WorkAreaOperation.DELETE_ENTRIES);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.DELETE, binder);
 		
 		try {
 			try {
@@ -1897,7 +1898,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
     	boolean isNew = false;
     	
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entry, repositoryName, (fAtt == null)? WorkAreaOperation.CREATE_ENTRIES:WorkAreaOperation.MODIFY_ENTRIES);
+		RepositorySession session;
+		
+		if(fAtt == null) // New file
+			session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.CREATE_FILE, binder);
+		else // Existing file
+			session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.UPDATE, entry);
 
     	try {
     		boolean versionCreated = false;
@@ -2603,7 +2609,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private boolean closeExpiredLock(Binder binder, DefinableEntity entity, 
     		FileAttachment fa, boolean commit, List newObjs) throws RepositoryServiceException,
     		UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entity, fa.getRepositoryName(), WorkAreaOperation.MODIFY_ENTRIES);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName(), binder.getResourceDriverName(), ResourceDriverManager.FileOperation.UPDATE, entity);
 
 		try {
 			return closeExpiredLock(session, binder, entity, fa, commit, newObjs);
@@ -2641,7 +2647,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private boolean commitPendingChanges(Binder binder, DefinableEntity entity,
     		FileAttachment fa, FileAttachment.FileLock lock, List newObjs)
     	throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entity, fa.getRepositoryName(), WorkAreaOperation.MODIFY_ENTRIES);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName(), binder.getResourceDriverName(), ResourceDriverManager.FileOperation.UPDATE, entity);
 
 		try {
 			return commitPendingChanges(session, binder, entity, fa,

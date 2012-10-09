@@ -39,15 +39,14 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.fi.FIException;
+import org.kablink.teaming.fi.connection.ResourceDriverManager.FileOperation;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositorySession;
-import org.kablink.teaming.security.function.WorkAreaOperation;
-
 
 public class NullFIRepositorySessionFactoryAdapter extends AbstractFIRepositorySessionFactoryAdapter {
 
 	@Override
-	public RepositorySession openSession(Binder binder, DefinableEntity entity, String resourceDriverName, WorkAreaOperation operation) 
+	public RepositorySession openSession(String resourceDriverName, FileOperation fileOperation, DefinableEntity ... entitiesToCheckPermissionOn) 
 			throws FIException, UncheckedIOException {
 		return null;
 	}

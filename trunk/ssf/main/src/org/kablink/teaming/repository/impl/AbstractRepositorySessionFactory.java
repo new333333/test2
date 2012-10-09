@@ -43,6 +43,7 @@ import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.fi.connection.ResourceDriverManager.FileOperation;
 import org.kablink.teaming.module.file.impl.CryptoFileEncryption;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositorySession;
@@ -93,7 +94,7 @@ public abstract class AbstractRepositorySessionFactory implements RepositorySess
 		}
 
 		public InputStream getInputStream() throws IOException {
-			RepositorySession session = createSessionForDataSource(_binder, _entity, WorkAreaOperation.READ_ENTRIES);
+			RepositorySession session = createReadSessionForDataSource();
 			InputStream in = null;
 			try {
 				in = session.readVersioned(_binder, _entity, _relativeFilePath, _versionName, null);
@@ -116,6 +117,6 @@ public abstract class AbstractRepositorySessionFactory implements RepositorySess
 			return null;
 		}
 		
-		protected abstract RepositorySession createSessionForDataSource(Binder binder, DefinableEntity entity, WorkAreaOperation operation);
+		protected abstract RepositorySession createReadSessionForDataSource();
 	}
 }

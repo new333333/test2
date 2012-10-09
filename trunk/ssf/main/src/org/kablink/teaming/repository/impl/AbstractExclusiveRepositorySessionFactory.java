@@ -52,7 +52,7 @@ public abstract class AbstractExclusiveRepositorySessionFactory
 		}
 		
 		@Override
-		protected RepositorySession createSessionForDataSource(Binder binder, DefinableEntity entity, WorkAreaOperation operation) {
+		protected RepositorySession createReadSessionForDataSource() {
 			return openSession();
 		}
 	}

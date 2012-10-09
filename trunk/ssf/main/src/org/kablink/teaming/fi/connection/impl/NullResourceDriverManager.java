@@ -42,6 +42,7 @@ import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.fi.connection.ResourceSession;
+import org.kablink.teaming.fi.connection.ResourceDriverManager.FileOperation;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 
 
@@ -90,7 +91,7 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 	}
 
 	@Override
-	public ResourceSession getSession(DefinableEntity entity, ResourceDriver driver, WorkAreaOperation operation)
+	public ResourceSession getSession(ResourceDriver driver, FileOperation fileOperation, DefinableEntity ... entitiesToCheckPermissionOn)
 			throws FIException, UncheckedIOException {
 		return null;
 	}
