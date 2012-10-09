@@ -77,7 +77,7 @@ public class SearchResultBuilderUtil {
         buildSearchResults(results, builder, resultMap, null, null, 0);
     }
 
-    public static <T> void buildSearchResults(SearchResultList<T> results, SearchResultBuilder<T> builder, Map resultMap, String nextUrl, Map<String, String> nextParams, int offset) {
+    public static <T> void buildSearchResults(SearchResultList<T> results, SearchResultBuilder<T> builder, Map resultMap, String nextUrl, Map<String, Object> nextParams, int offset) {
         results.setFirst(offset);
         results.setCount((Integer)resultMap.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED));
         results.setTotal((Integer)resultMap.get(ObjectKeys.TOTAL_SEARCH_COUNT));

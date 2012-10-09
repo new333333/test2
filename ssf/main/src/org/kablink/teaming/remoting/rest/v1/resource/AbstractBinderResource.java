@@ -174,7 +174,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                                            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                            @QueryParam("first") @DefaultValue("0") Integer offset,
                                                            @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         return getSubBinders(id, SearchUtils.libraryFolders(), offset, maxCount, getBasePath() + id + "/library_folders", nextParams, textDescriptions);
    	}
@@ -196,11 +196,13 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<FileProperties> getLibraryFiles(@PathParam("id") long id,
                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                  @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                   @QueryParam("first") Integer offset,
                                                   @QueryParam("count") Integer maxCount) {
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("recursive", Boolean.toString(recursive));
-        return getSubFiles(id, recursive, true, offset, maxCount, getBasePath() + id + "/library_files", nextParams);
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        return getSubFiles(id, recursive, true, includeParentPaths, offset, maxCount, getBasePath() + id + "/library_files", nextParams);
 	}
 
     // Read entries
@@ -209,24 +211,31 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<FileProperties> getFiles(@PathParam("id") long id,
                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                  @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                   @QueryParam("first") Integer offset,
                                                   @QueryParam("count") Integer maxCount) {
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("recursive", Boolean.toString(recursive));
-        return getSubFiles(id, recursive, false, offset, maxCount, getBasePath() + id + "/files", nextParams);
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        return getSubFiles(id, recursive, false, includeParentPaths, offset, maxCount, getBasePath() + id + "/files", nextParams);
 	}
 
     @GET
     @Path("{id}/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<SearchableObject> getRecentActivity(@PathParam("id") Long id,
+                                                                @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                 @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                 @QueryParam("first") @DefaultValue("0") Integer offset,
                 @QueryParam("count") @DefaultValue("20") Integer maxCount) {
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+
         List<String> binders = new ArrayList<String>();
         binders.add(id.toString());
         Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binders, null, null, true, Constants.LASTACTIVITY_FIELD);
-        return _getRecentActivity(textDescriptions, offset, maxCount, criteria, this.getBasePath() + id + "/recent_activity");
+        return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, this.getBasePath() + id + "/recent_activity", nextParams);
     }
 
     @GET
@@ -389,8 +398,8 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     protected SearchResultList<SearchableObject> getSubEntities(long id, boolean recursive, boolean includeBinders,
                                                                 boolean includeFolderEntries, boolean includeFiles,
                                                                 boolean includeReplies,
-                                                                boolean onlyLibrary, String keyword,
-                                                                Integer offset, Integer maxCount, String nextUrl, Map<String, String> nextParams, boolean textDescriptions) {
+                                                                boolean onlyLibrary, boolean includeParentPaths, String keyword,
+                                                                Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams, boolean textDescriptions) {
         _getBinder(id);
         Junction criterion = Restrictions.conjunction();
 
@@ -407,11 +416,14 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap, nextUrl, nextParams, offset);
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
         return results;
     }
 
-    protected SearchResultList<FileProperties> getSubFiles(long id, boolean recursive, boolean onlyLibraryFiles,
-                                                           Integer offset, Integer maxCount, String nextUrl, Map<String, String> nextParams) {
+    protected SearchResultList<FileProperties> getSubFiles(long id, boolean recursive, boolean onlyLibraryFiles, boolean includeParentPaths,
+                                                           Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams) {
         _getBinder(id);
         Junction criterion = Restrictions.conjunction()
             .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT));
@@ -429,11 +441,15 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
             results.append(ResourceUtil.buildFileProperties(file));
         }
 
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
+
         return results;
     }
 
     protected SearchResultList<BinderBrief> getSubBinders(long id, Criterion filter, Integer offset, Integer maxCount,
-                                                          String nextUrl, Map<String, String> nextParams, boolean textDescriptions) {
+                                                          String nextUrl, Map<String, Object> nextParams, boolean textDescriptions) {
         _getBinder(id);
         if (offset==null) {
             offset = 0;

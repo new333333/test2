@@ -96,11 +96,11 @@ public class SearchResultList<T> {
         this.next = next;
     }
 
-    public void setNextIfNecessary(String nextUrl, Map<String, String> nextParams) {
+    public void setNextIfNecessary(String nextUrl, Map<String, Object> nextParams) {
         if (nextUrl!=null) {
             int offset = first + count;
             if (offset<total) {
-                Map<String, String> params = new LinkedHashMap<String, String>();
+                Map<String, Object> params = new LinkedHashMap<String, Object>();
                 if (nextParams!=null) {
                     params.putAll(nextParams);
                 }
@@ -108,7 +108,7 @@ public class SearchResultList<T> {
                 params.put("count", Integer.toString(count));
                 StringBuilder builder = new StringBuilder(nextUrl);
                 boolean first = true;
-                for (Map.Entry<String, String> entry : params.entrySet()) {
+                for (Map.Entry<String, Object> entry : params.entrySet()) {
                     if (first) {
                         builder.append("?");
                         first = false;
@@ -116,9 +116,24 @@ public class SearchResultList<T> {
                         builder.append("&");
                     }
                     try {
-                        builder.append(URLEncoder.encode(entry.getKey(), "UTF-8"))
-                               .append("=")
-                               .append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+                        Object value = entry.getValue();
+                        if (value instanceof Collection) {
+                            boolean subFirst = true;
+                            for (Object v : (Collection)value) {
+                                if (subFirst) {
+                                    subFirst = false;
+                                } else {
+                                    builder.append("&");
+                                }
+                                builder.append(URLEncoder.encode(entry.getKey(), "UTF-8"))
+                                        .append("=")
+                                        .append(URLEncoder.encode((String)v, "UTF-8"));
+                            }
+                        } else {
+                            builder.append(URLEncoder.encode(entry.getKey(), "UTF-8"))
+                                   .append("=")
+                                   .append(URLEncoder.encode((String)entry.getValue(), "UTF-8"));
+                        }
                     } catch (UnsupportedEncodingException e) {
                         throw new RuntimeException(e);
                     }

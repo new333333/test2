@@ -54,6 +54,7 @@ import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
 import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
 import org.kablink.teaming.rest.v1.model.Operation;
@@ -76,9 +77,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Path("/folders")
 @Singleton
@@ -97,7 +101,7 @@ public class FolderResource extends AbstractBinderResource {
         Document queryDoc = buildQueryDocument("<query/>", buildFoldersCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/folders", nextParams, offset);
         return results;
@@ -114,7 +118,7 @@ public class FolderResource extends AbstractBinderResource {
         Document queryDoc = buildQueryDocument(query, buildFoldersCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/folders/legacy_query", nextParams, offset);
         return results;
@@ -185,7 +189,7 @@ public class FolderResource extends AbstractBinderResource {
                                                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                        @QueryParam("first") @DefaultValue("0") Integer offset,
                                                        @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         return getSubBinders(id, null, offset, maxCount, "/folders/" + id + "/binders", nextParams, textDescriptions);
     }
@@ -198,7 +202,7 @@ public class FolderResource extends AbstractBinderResource {
                                                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
 			@QueryParam("first") @DefaultValue("0") Integer offset,
 			@QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         return getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
                 offset, maxCount, "/folders/" + id + "/folders", nextParams, textDescriptions);
@@ -226,6 +230,7 @@ public class FolderResource extends AbstractBinderResource {
 	@Path("{id}/entries")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<FolderEntryBrief> getFolderEntries(@PathParam("id") long id,
+                                                               @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                             @QueryParam("first") Integer offset,
                                                             @QueryParam("count") Integer maxCount,
@@ -253,9 +258,13 @@ public class FolderResource extends AbstractBinderResource {
             }
             Map resultMap = getFolderModule().getEntries(id, options);
             results.setFirst(offset);
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("parent_binder_paths", Boolean.toString(includeParentPaths));
             params.put("text_descriptions", Boolean.toString(textDescriptions));
             SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(textDescriptions), resultMap, "/folders/" + id + "/entries", params, offset);
+        }
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
         }
 		return results;
 	}
@@ -307,19 +316,87 @@ public class FolderResource extends AbstractBinderResource {
                                                   @QueryParam("folder_entries") @DefaultValue("true") boolean includeFolderEntries,
                                                   @QueryParam("files") @DefaultValue("true") boolean includeFiles,
                                                   @QueryParam("replies") @DefaultValue("true") boolean includeReplies,
+                                                  @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                   @QueryParam("keyword") String keyword,
                                                   @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("recursive", Boolean.toString(recursive));
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         if (keyword!=null) {
             nextParams.put("keyword", keyword);
         }
         return getSubEntities(id, recursive, includeBinders, includeFolderEntries, includeFiles, includeReplies,
-                true, keyword, offset, maxCount, "/folders/" + id + "/library_entities", nextParams, textDescriptions);
+                true, includeParentPaths, keyword, offset, maxCount, "/folders/" + id + "/library_entities", nextParams, textDescriptions);
 	}
+
+    @POST
+    @Path("{id}/library_files")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public FileProperties addLibraryFileFromMultipart(@PathParam("id") long id,
+                                         @QueryParam("file_name") String fileName,
+                                         @QueryParam("data_name") String dataName,
+                                         @QueryParam("mod_date") String modDateISO8601,
+                                         @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
+        Folder folder = _getFolder(id);
+        if (fileName==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing file_name query parameter");
+        }
+        InputStream is = getInputStreamFromMultipartFormdata(request);
+        return createEntryWithAttachment(id, fileName, dataName, modDateISO8601, folder, is);
+    }
+
+    @POST
+    @Path("{id}/library_files")
+    @Consumes("*/*")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public FileProperties addLibraryFile(@PathParam("id") long id,
+                                         @QueryParam("file_name") String fileName,
+                                         @QueryParam("data_name") String dataName,
+                                         @QueryParam("mod_date") String modDateISO8601,
+                                         @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
+        Folder folder = _getFolder(id);
+        if (fileName==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing file_name query parameter");
+        }
+        InputStream is = getRawInputStream(request);
+        return createEntryWithAttachment(id, fileName, dataName, modDateISO8601, folder, is);
+    }
+
+    private FileProperties createEntryWithAttachment(long id, String fileName, String dataName, String modDateISO8601, Folder folder, InputStream is) throws WriteFilesException, WriteEntryDataException {
+        FolderEntry entry = new FolderEntry();
+        entry.setTitle(fileName);
+        Definition def = folder.getDefaultFileEntryDef();
+        String defId = def.getId();
+        SimpleProfiler.start("REST_folder_createFolderEntry");
+        HashMap options = new HashMap();
+        populateTimestamps(options, entry);
+        org.kablink.teaming.domain.FolderEntry result = getFolderModule().addEntry(id, defId, new RestModelInputData(entry), null, options);
+        SimpleProfiler.stop("REST_folder_createFolderEntry");
+        FileProperties fileProperties = null;
+        try
+        {
+            //TODO: make sure a file with that name doesn't exist
+            try {
+                fileProperties = writeNewFileContent(EntityIdentifier.EntityType.folderEntry, result.getId(), fileName, dataName, modDateISO8601, is);
+            }
+            finally {
+                try {
+                    is.close();
+                }
+                catch(IOException ignore) {}
+            }
+
+        } finally {
+            if (fileProperties==null) {
+                getFolderModule().deleteEntry(folder.getId(), result.getId());
+            }
+        }
+        return fileProperties;
+    }
 
     @Override
     protected Binder _getBinder(long id) {

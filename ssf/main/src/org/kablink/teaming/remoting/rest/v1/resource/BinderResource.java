@@ -97,7 +97,7 @@ public class BinderResource extends AbstractResource {
         Document queryDoc = buildQueryDocument(query, buildBindersCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/binders/legacy_query", nextParams, offset);
         return results;

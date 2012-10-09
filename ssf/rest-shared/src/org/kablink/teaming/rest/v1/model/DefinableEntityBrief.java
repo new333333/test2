@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public abstract class DefinableEntityBrief extends SearchableObject {
     private Long id;
-   	private LongIdLinkPair parentBinder;
+   	private ParentBinder parentBinder;
    	private String title;
     private Description description;
     private StringIdLinkPair definition;
@@ -78,11 +78,11 @@ public abstract class DefinableEntityBrief extends SearchableObject {
     }
 
     @XmlElement(name = "parent_binder")
-    public LongIdLinkPair getParentBinder() {
+    public ParentBinder getParentBinder() {
         return parentBinder;
     }
 
-    public void setParentBinder(LongIdLinkPair parentBinder) {
+    public void setParentBinder(ParentBinder parentBinder) {
         this.parentBinder = parentBinder;
     }
 

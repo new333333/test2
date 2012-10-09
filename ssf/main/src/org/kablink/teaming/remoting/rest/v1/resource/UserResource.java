@@ -35,6 +35,7 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -49,6 +50,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.spi.resource.Singleton;
+import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -74,6 +76,9 @@ import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.UserBrief;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Junction;
+import org.kablink.util.search.Restrictions;
 
 @Path("/users")
 @Singleton
@@ -83,38 +88,37 @@ public class UserResource extends AbstractPrincipalResource {
 	@GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<UserBrief> getUsers(
-		@QueryParam("name") String name,
-		@QueryParam("email") String email,
-        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
-		@QueryParam("first") Integer offset,
-		@QueryParam("count") Integer maxCount) {
-        Map<String, Object> options = new HashMap<String, Object>();
-        Map<String, String> nextParams = new HashMap<String, String>();
-        SearchFilter searchTermFilter = new SearchFilter();
+            @QueryParam("id") Set<Long> ids,
+            @QueryParam("name") String name,
+            @QueryParam("email") String email,
+            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+            @QueryParam("first") @DefaultValue("0") Integer offset,
+            @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        Junction criterion = Restrictions.conjunction();
+        criterion.add(buildUsersCriterion());
+        if (ids!=null) {
+            Junction or = Restrictions.disjunction();
+            for (Long id : ids) {
+                or.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
+            }
+            criterion.add(or);
+            nextParams.put("id", ids);
+        }
+        if (name!=null) {
+            criterion.add(Restrictions.like(Constants.LOGINNAME_FIELD, name));
+            nextParams.put("name", name);
+        }
+        if (email!=null) {
+            criterion.add(Restrictions.like(Constants.EMAIL_FIELD, email.replace('@', '?')));
+            nextParams.put("email", email);
+        }
+
         String nextUrl = "/users";
-        if (name!=null || email!=null) {
-            String params = null;
-            if (name!=null) {
-                searchTermFilter.addLoginNameFilter(name);
-                nextParams.put("name", name);
-            }
-            if (email!=null) {
-                searchTermFilter.addEmailFilter(email.replace('@', '?'));
-                nextParams.put("email", email);
-            }
-            options.put( ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter() );
-            nextUrl += params;
-        }
-        if (offset!=null) {
-            options.put(ObjectKeys.SEARCH_OFFSET, offset);
-        } else {
-            offset = 0;
-        }
-        if (maxCount!=null) {
-            options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
-        }
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        Map resultMap = getProfileModule().getUsers(options);
+        Document queryDoc = buildQueryDocument("<query/>", criterion);
+        Map resultMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<UserBrief> results = new SearchResultList<UserBrief>();
         SearchResultBuilderUtil.buildSearchResults(results, new UserBriefBuilder(textDescriptions), resultMap, nextUrl, nextParams, offset);
 		return results;

@@ -34,10 +34,7 @@ package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.apache.lucene.document.DateTools;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.rest.v1.model.FileProperties;
-import org.kablink.teaming.rest.v1.model.HistoryStamp;
-import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
-import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
+import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.search.Constants;
 
@@ -59,7 +56,7 @@ public class FilePropertiesBuilder implements SearchResultBuilder<FileProperties
         fp.setName((String) doc.get(Constants.FILENAME_FIELD));
         fp.setId((String) doc.get(Constants.FILE_ID_FIELD));
         Long binderId = Long.valueOf((String) doc.get(Constants.BINDER_ID_FIELD));
-        fp.setBinder(new LongIdLinkPair(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
+        fp.setBinder(new ParentBinder(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
         String owningEntityTypeStr = (String) doc.get(Constants.ENTITY_FIELD);
         EntityIdentifier.EntityType owningEntityType = EntityIdentifier.EntityType.valueOf(owningEntityTypeStr);
         Long owningEntityId = Long.valueOf((String) doc.get(Constants.DOCID_FIELD));

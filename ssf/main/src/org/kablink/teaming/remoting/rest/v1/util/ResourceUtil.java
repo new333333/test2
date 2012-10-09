@@ -146,7 +146,7 @@ public class ResourceUtil {
         fp.setId(fa.getId());
         fp.setOwningEntity(buildEntityId(fa.getOwningEntityType(), fa.getOwningEntityId()));
         fp.setPermaLink(PermaLinkUtil.getPermalink(fa.getOwningEntityId(), fa.getOwningEntityType(), true));
-        fp.setBinder(new LongIdLinkPair(fa.getBinderId(), LinkUriUtil.getBinderLinkUri(fa.getBinderId())));
+        fp.setBinder(new ParentBinder(fa.getBinderId(), LinkUriUtil.getBinderLinkUri(fa.getBinderId())));
         fp.setName(fa.getName());
         fp.setCreation(new HistoryStamp(new LongIdLinkPair(fa.getCreatorId(), LinkUriUtil.getUserLinkUri(fa.getCreatorId())),
                 fa.getCreatedDate()));
@@ -191,7 +191,7 @@ public class ResourceUtil {
         fp.setOwningEntity(buildEntityId(entity.getEntityType(), entity.getId()));
         fp.setPermaLink(PermaLinkUtil.getPermalink(entity.getId(), entity.getEntityType(), true));
         Long binderId = entity.getParentBinder().getId();
-        fp.setBinder(new LongIdLinkPair(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
+        fp.setBinder(new ParentBinder(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
         LinkUriUtil.populateFileLinks(fp);
     }
 
@@ -425,7 +425,7 @@ public class ResourceUtil {
 
         if (entity.getParentBinder() != null) {
             Long binderId = entity.getParentBinder().getId();
-            model.setParentBinder(new LongIdLinkPair(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
+            model.setParentBinder(new ParentBinder(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
         }
 
         if(entity.getEntryDefId() != null)

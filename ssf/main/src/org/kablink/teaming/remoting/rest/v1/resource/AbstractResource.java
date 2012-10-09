@@ -55,12 +55,7 @@ import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
-import org.kablink.teaming.rest.v1.model.DefinableEntity;
-import org.kablink.teaming.rest.v1.model.EntityId;
-import org.kablink.teaming.rest.v1.model.HistoryStamp;
-import org.kablink.teaming.rest.v1.model.SearchResultList;
-import org.kablink.teaming.rest.v1.model.SearchableObject;
-import org.kablink.teaming.rest.v1.model.Share;
+import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
@@ -74,9 +69,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public abstract class AbstractResource extends AbstractAllModulesInjected {
 
@@ -111,13 +104,18 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return (org.kablink.teaming.domain.User) entry;
     }
 
-    protected SearchResultList<SearchableObject> _getRecentActivity(boolean textDescriptions, Integer offset, Integer maxCount, Criteria criteria, String nextUrl) {
+    protected SearchResultList<SearchableObject> _getRecentActivity(boolean includeParentPaths, boolean textDescriptions,
+                                                                    Integer offset, Integer maxCount, Criteria criteria,
+                                                                    String nextUrl, Map<String, Object> nextParams) {
         Map resultsMap = getBinderModule().executeSearchQuery(criteria, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
-        Map<String, String> nextParams = new HashMap<String, String>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
                 nextUrl, nextParams, offset);
+
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
+
         return results;
     }
 
@@ -283,6 +281,12 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                     .add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
     }
 
+    protected Criterion buildUsersCriterion() {
+        return Restrictions.conjunction()
+                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
+                .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER));
+    }
+
     protected Criterion buildBindersCriterion() {
         return Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER);
     }
@@ -393,4 +397,93 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
         return new ShareItem(getLoggedInUserId(), entity, share.getComment(), share.getEndDate(), recType, recipient.getId(), rights);
     }
+
+    protected void populateParentBinderPaths(SearchResultList list) {
+        Set<Long> binderIds = new HashSet<Long>();
+        for (Object o : list.getResults()) {
+            if (o instanceof FileProperties) {
+                ParentBinder binder = ((FileProperties) o).getBinder();
+                if (binder!=null) {
+                    binderIds.add(binder.getId());
+                }
+            }
+            else if (o instanceof DefinableEntity) {
+                ParentBinder binder = ((DefinableEntity) o).getParentBinder();
+                if (binder!=null) {
+                    binderIds.add(binder.getId());
+                }
+            }
+            else if (o instanceof DefinableEntityBrief) {
+                ParentBinder binder = ((DefinableEntityBrief) o).getParentBinder();
+                if (binder!=null) {
+                    binderIds.add(binder.getId());
+                }
+            }
+        }
+
+        Map<Long, String> binderPaths = lookUpBinderPaths(binderIds, 500);
+        for (Object o : list.getResults()) {
+            if (o instanceof FileProperties) {
+                ParentBinder binder = ((FileProperties) o).getBinder();
+                if (binder!=null) {
+                    binder.setPath(binderPaths.get(binder.getId()));
+                }
+            }
+            else if (o instanceof DefinableEntity) {
+                ParentBinder binder = ((DefinableEntity) o).getParentBinder();
+                if (binder!=null) {
+                    binder.setPath(binderPaths.get(binder.getId()));
+                }
+            }
+            else if (o instanceof DefinableEntityBrief) {
+                ParentBinder binder = ((DefinableEntityBrief) o).getParentBinder();
+                if (binder!=null) {
+                    binder.setPath(binderPaths.get(binder.getId()));
+                }
+            }
+        }
+    }
+
+    protected Map<Long, String> lookUpBinderPaths(Set<Long> ids, int batchSize) {
+        int count = 0;
+        Map<Long, String> binderPaths = new HashMap<Long, String>();
+        Junction idCriterion = null;
+        for (Long id : ids) {
+            if (idCriterion==null) {
+                idCriterion = Restrictions.disjunction();
+            }
+            idCriterion.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
+            count++;
+            if (count>=batchSize) {
+                fillPathMap(binderPaths, searchForBinders(idCriterion));
+                idCriterion = null;
+                count = 0;
+            }
+        }
+        if (count>0) {
+            fillPathMap(binderPaths, searchForBinders(idCriterion));
+        }
+        return binderPaths;
+    }
+
+    protected Map searchForBinders(Criterion criterion) {
+        Junction outerCriterion = Restrictions.conjunction()
+                .add(buildBindersCriterion()).add(criterion);
+        Criteria crit = new Criteria();
+        crit.add(outerCriterion);
+        return getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1);
+    }
+
+    protected void fillPathMap(Map<Long, String> binderPaths, Map resultMap) {
+        List<Map> entries = (List<Map>)resultMap.get(ObjectKeys.SEARCH_ENTRIES);
+        for (Map entry : entries) {
+            String binderIdStr = (String) entry.get(Constants.DOCID_FIELD);
+            Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
+            String path = (String) entry.get(Constants.ENTITY_PATH);
+            if (binderId!=null && path!=null) {
+                binderPaths.put(binderId, path);
+            }
+        }
+    }
+
 }

@@ -66,7 +66,7 @@ public class GroupResource extends AbstractPrincipalResource {
 		@QueryParam("count") Integer maxCount) {
         Map<String, Object> options = new HashMap<String, Object>();
         SearchFilter searchTermFilter = new SearchFilter();
-        Map<String, String> nextParams = new HashMap<String, String>();
+        Map<String, Object> nextParams = new HashMap<String, Object>();
         if (name!=null) {
             searchTermFilter.addGroupNameFilter(name);
             options.put( ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter() );
