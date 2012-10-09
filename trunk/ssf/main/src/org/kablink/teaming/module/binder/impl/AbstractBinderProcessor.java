@@ -2445,6 +2445,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	EntityIndexUtils.addBinderIsLibrary(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsMirrored(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsHomeDir(indexDoc, (Binder) entity, fieldsOnly);
+        	EntityIndexUtils.addBinderIsMyFilesDir(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderHasResourceDriver(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsTopFolder(indexDoc, (Binder) entity, fieldsOnly);
         }

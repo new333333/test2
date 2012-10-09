@@ -1625,6 +1625,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	@Override
 	public void setSelectedBinder(OnSelectBinderInfo osbInfo) {
 		// If the selection is for a collection...
+		RequestInfo ri = GwtClientHelper.getRequestInfo();
 		if (osbInfo.isCollection()) {
 			// ...select it.
 			TreeInfo collectionTI = TreeInfo.findCollectionTI(
@@ -1633,7 +1634,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			
 			if (null != collectionTI) {
 				selectBinder(collectionTI);
-				return;
+				if (!(ri.isRefreshSidebarTree())) {
+					return;
+				}
 			}
 		}
 		
@@ -1663,7 +1666,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		if (null != targetTI) {
 			// Yes!  Should the request cause the tree to be refreshed?
 			setSelectedBinderInfo(binderInfo);
-			RequestInfo ri = GwtClientHelper.getRequestInfo();
 			final boolean forceRefresh =
 				(ri.isRefreshSidebarTree() ||
 				 ri.isRerootSidebarTree());

@@ -2373,7 +2373,7 @@ public class GwtViewHelper {
 			Long mfContainerId;
 			if (usingHomeAsMF)
 			     mfContainerId = mfRootId;
-			else mfContainerId = GwtServerHelper.getMyFilesFolderId(bs);
+			else mfContainerId = GwtServerHelper.getMyFilesFolderId(bs, false);	// false -> Don't create it if it doesn't exist.
 			boolean	hasMFContainerId = (null != mfContainerId);
 			String	mfContainerIdS   = (hasMFContainerId ? String.valueOf(mfContainerId) : null);
 			
