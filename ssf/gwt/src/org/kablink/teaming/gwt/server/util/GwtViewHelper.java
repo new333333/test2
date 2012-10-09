@@ -2429,13 +2429,18 @@ public class GwtViewHelper {
 			}
 
 			// Add the criteria for top level mirrored file folders
-			// that have been configured.
+			// that have been configured...
 			crit.add(in(Constants.DOC_TYPE_FIELD,            new String[]{Constants.DOC_TYPE_BINDER}));
 			crit.add(in(Constants.ENTRY_ANCESTRY,            new String[]{topWSId}));
 			crit.add(in(Constants.FAMILY_FIELD,              new String[]{Definition.FAMILY_FILE}));
 			crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
 			crit.add(in(Constants.IS_TOP_FOLDER_FIELD,       new String[]{Constants.TRUE}));
     		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+
+    		// ...that are not Home folders.
+			Junction noHome = not();
+			crit.add(noHome);
+			noHome.add(in(Constants.IS_HOME_DIR_FIELD, new String[]{Constants.TRUE}));
 			
 			break;
 			
@@ -3533,7 +3538,11 @@ public class GwtViewHelper {
 									if (MiscUtil.hasString(value)) {
 										// Yes!  Load any localized
 										// name we might have for it.
-										value = NLT.get(("__folder_" + value), value);
+										String nltKeyBase;
+										if (entityType.equals(EntityType.folderEntry.name()))
+										     nltKeyBase = "__entry_";
+										else nltKeyBase = "__folder_";
+										value = NLT.get((nltKeyBase + value), value);
 									}
 									
 									// Use what ever String value we

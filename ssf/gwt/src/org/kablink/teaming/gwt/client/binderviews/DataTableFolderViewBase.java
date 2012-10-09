@@ -1020,7 +1020,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		String			reply;
 		if (fr.isBinder()) {
 			// Yes!  Is this the user's home folder?
-			if (fr.getBinderInfo().isFolderHome()) {
+			BinderInfo bi = fr.getBinderInfo();
+			if ((null != bi) && bi.isFolderHome()) {
 				// Yes!
 				switch (bis) {
 				default:
