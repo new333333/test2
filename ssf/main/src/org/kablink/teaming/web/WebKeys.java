@@ -145,8 +145,10 @@ public class WebKeys {
 	public static final String URL_PRODUCT_NOVELL="novell";
 	public static final String URL_VIBEONPREM_ROOT_FLAG_DEPRECATED="vibeonprem_root";
 	public static final String URL_VIBEONPREM_URL_FLAG_DEPRECATED="vibeonprem_url";	
-	public static final String URL_VIBE_ROOT_FLAG="vibe_root";
-	public static final String URL_VIBE_URL_FLAG="vibe_url";	
+	public static final String URL_VIBE_ROOT_FLAG_DEPRECATED="vibe_root";
+	public static final String URL_VIBE_URL_FLAG_DEPRECATED="vibe_url";	
+	public static final String URL_NOVL_ROOT_FLAG="novl_root";
+	public static final String URL_NOVL_URL_FLAG="novl_url";	
 	public static final String URL_CONTEXT="context";
 	public static final String URL_CSS_SHEET="sheet";
 	public static final String URL_CSS_THEME="theme";

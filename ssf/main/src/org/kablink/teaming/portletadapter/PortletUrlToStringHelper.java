@@ -42,6 +42,11 @@ import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 @SuppressWarnings("unchecked")
 public class PortletUrlToStringHelper implements PortletUrlToStringHelperInterface {
 	@Override
@@ -120,7 +125,7 @@ public class PortletUrlToStringHelper implements PortletUrlToStringHelperInterfa
 			}
 		}
 		
-		// Add the "vibe_url" parameter to every URL.  This is needed starting in
+		// Add the GWT URL parameter to every URL.  This is needed starting in
 		// Durango so that we don't display the pre-Durango ui.  LoginFilter.java will look for
 		// this parameter.
 		{
@@ -133,7 +138,7 @@ public class PortletUrlToStringHelper implements PortletUrlToStringHelperInterfa
 				sb.append( Constants.AMPERSAND );
 			}
 			
-			sb.append( WebKeys.URL_VIBE_URL_FLAG );
+			sb.append( WebKeys.URL_NOVL_URL_FLAG );
 			
 			if( adaptedPortletUrl.crawler )
 				sb.append( Constants.SLASH );
@@ -145,5 +150,4 @@ public class PortletUrlToStringHelper implements PortletUrlToStringHelperInterfa
 		
 		return sb.toString();
 	}
-
 }

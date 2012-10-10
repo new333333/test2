@@ -1116,18 +1116,25 @@ public class GwtUIHelper {
 	 */
 	private static boolean isVibeRootRequest(PortletRequest pRequest) {
 		// Is the base request a Vibe root URL?
-		String urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_VIBE_ROOT_FLAG, "");
+		String urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_NOVL_ROOT_FLAG, "");
 		boolean reply = MiscUtil.hasString(urlParam);
 		if (!(reply)) {
-			urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_VIBEONPREM_ROOT_FLAG_DEPRECATED, "");
+			urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_VIBE_ROOT_FLAG_DEPRECATED, "");
 			reply = MiscUtil.hasString(urlParam);
+			if (!(reply)) {
+				urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_VIBEONPREM_ROOT_FLAG_DEPRECATED, "");
+				reply = MiscUtil.hasString(urlParam);
+			}
 		}
 		if (!(reply)) {
 			// No!  Does the request refer to a Vibe root URL?
 			urlParam = getRefererUrl(pRequest);
-			reply = (0 < urlParam.indexOf(WebKeys.URL_VIBE_ROOT_FLAG));
+			reply = (0 < urlParam.indexOf(WebKeys.URL_NOVL_ROOT_FLAG));
 			if (!reply) {
-				reply = (0 < urlParam.indexOf(WebKeys.URL_VIBEONPREM_ROOT_FLAG_DEPRECATED));
+				reply = (0 < urlParam.indexOf(WebKeys.URL_VIBE_ROOT_FLAG_DEPRECATED));
+				if (!reply) {
+					reply = (0 < urlParam.indexOf(WebKeys.URL_VIBEONPREM_ROOT_FLAG_DEPRECATED));
+				}
 			}
 		}
 		

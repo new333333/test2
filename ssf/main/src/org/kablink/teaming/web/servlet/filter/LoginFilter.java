@@ -79,8 +79,12 @@ import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 public class LoginFilter  implements Filter {
-
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 	}
@@ -335,8 +339,8 @@ public class LoginFilter  implements Filter {
 		String reply = getWorkspaceURLImpl(req);
 		if (MiscUtil.hasString(reply)) {
 			if (0 < reply.indexOf("/do?"))
-			     reply += ("?" + WebKeys.URL_VIBE_ROOT_FLAG + "=1");
-			else reply += ("/" + WebKeys.URL_VIBE_ROOT_FLAG + "/1");
+			     reply += ("?" + WebKeys.URL_NOVL_ROOT_FLAG + "=1");
+			else reply += ("/" + WebKeys.URL_NOVL_ROOT_FLAG + "/1");
 		}
 		return reply;
 	}
@@ -541,12 +545,13 @@ public class LoginFilter  implements Filter {
 	 * Look at the url in the request and determine if it should be converted to a permalink.
 	 * The url needs to be converted to a permalink if the action parameter equals
 	 * "view_ws_listing" or "view_folder_listing" or "view_profile_listing" or "view_folder_entry" or "view_profile_entry"
-	 * and the url does NOT have the parameter "vibe_url"
+	 * and the url does NOT have the GWT URL parameter marking.
 	 */
 	private boolean shouldUrlBeConvertedToAPermalink( HttpServletRequest req )
 	{
-		// Does the URL have the "vibe_url" parameter.
-		if (MiscUtil.hasString( req.getParameter( WebKeys.URL_VIBE_URL_FLAG )) ||
+		// Does the URL have the GWT URL parameter.
+		if (MiscUtil.hasString( req.getParameter( WebKeys.URL_NOVL_URL_FLAG                  )) ||
+		    MiscUtil.hasString( req.getParameter( WebKeys.URL_VIBE_URL_FLAG_DEPRECATED       )) ||
 			MiscUtil.hasString( req.getParameter( WebKeys.URL_VIBEONPREM_URL_FLAG_DEPRECATED )))
 		{
 			// Yes, no need to convert it.
