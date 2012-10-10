@@ -133,6 +133,7 @@ public class LinkUriUtil {
     }
 
     public static void populateDefinableEntityLinks(BaseRestObject model) {
+        model.addAdditionalLink("ancestry", model.getLink() + "/ancestry");
         model.addAdditionalLink("attachments", model.getLink() + "/attachments");
     }
 
@@ -199,6 +200,7 @@ public class LinkUriUtil {
         fp.setLink(getFilePropertiesLinkUri(fp));
         String baseUrl = getFileBaseLinkUri(fp);
         fp.addAdditionalLink("content", baseUrl);
+        fp.addAdditionalLink("ancestry", fp.getOwningEntity().getLink() + "/ancestry");
         fp.addAdditionalLink("major_version", baseUrl + "/major_version");
         fp.addAdditionalLink("name", baseUrl + "/name");
         fp.addAdditionalLink("parent_folder", baseUrl + "/parent_folder");
