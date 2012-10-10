@@ -1912,6 +1912,8 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_ServerAlreadyExists();
 	String modifyNetFolderServerDlg_ServerPathLabel();
 	String modifyNetFolderServerDlg_SelectPrincipalsLabel();
+	String modifyNetFolderServerDlg_SyncAllNetFoldersPrompt();
+	String modifyNetFolderServerDlg_SyncOfAssociatedNetFoldersStarted();
 	String modifyNetFolderServerDlg_TestConnectionLabel();
 	String modifyNetFolderServerDlg_TypeLabel();
 	String modifyNetFolderServerDlg_TypeCol();

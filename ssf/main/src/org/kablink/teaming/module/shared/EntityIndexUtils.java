@@ -1269,5 +1269,19 @@ public class EntityIndexUtils {
     		doc.add(path);
     	}
     }
+    
+    /**
+     * 
+     */
+    public static void addBinderResourceDriverName( Document doc, Binder binder, boolean fieldsOnly )
+    {
+    	if ( (binder instanceof Folder) && binder.isMirrored() && binder.getResourceDriverName() != null )
+    	{
+    		Field path;
+    		
+    		path = FieldFactory.createFieldStoredNotAnalyzed( RESOURCE_DRIVER_NAME_FIELD, binder.getResourceDriverName() );
+    		doc.add( path );
+    	}
+    }
 
 }

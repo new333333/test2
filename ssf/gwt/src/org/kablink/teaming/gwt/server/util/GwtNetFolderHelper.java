@@ -307,10 +307,15 @@ public class GwtNetFolderHelper
 	}
 
 	/**
-	 * Return a list of all the net folders 
+	 * Return a list of all the net folders.
+	 * If includeHomeDirNetFolders is true we will include "home directory" net folders in our list.
+	 * If rootName is not null, we will only return net folders associated with the given net folder root. 
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public static List<NetFolder> getAllNetFolders( AllModulesInjected ami, boolean includeHomeDirNetFolders )
+	public static List<NetFolder> getAllNetFolders(
+		AllModulesInjected ami,
+		boolean includeHomeDirNetFolders,
+		String rootName )
 	{
 		Criteria criteria;
 		Criterion criterion;
@@ -354,6 +359,24 @@ public class GwtNetFolderHelper
 		criteria.add( criterion );
 		criterion = Restrictions.in(Constants.IS_TOP_FOLDER_FIELD, new String[]{Constants.TRUE} );
 		criteria.add( criterion );
+		
+		// Are we looking for a net folder that is associated with a specific net folder root?
+		if ( rootName != null && rootName.length() > 0 )
+		{
+			// Yes
+			criterion = Restrictions.in( Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE} );
+			criteria.add( criterion );
+			criterion = Restrictions.in( Constants.RESOURCE_DRIVER_NAME_FIELD, new String[]{rootName} );
+			criteria.add( criterion );
+		}
+
+		// Are we including "home directory" net folders?
+		if ( includeHomeDirNetFolders == false )
+		{
+			// No
+			criterion = Restrictions.in( Constants.IS_HOME_DIR_FIELD, new String[]{Constants.FALSE} );
+			criteria.add( criterion );
+		}
 
 		// Add in the sort information...
 		sortAscend = false;
@@ -376,17 +399,6 @@ public class GwtNetFolderHelper
 			
 			binderId = GwtServerHelper.getStringFromEntryMap( entryMap, Constants.DOCID_FIELD );
 			netFolder = GwtNetFolderHelper.getNetFolder( ami, Long.valueOf( binderId ) );
-			
-			// Is this a "home directory" net folder?
-			if ( netFolder.getIsHomeDir() )
-			{
-				// Are we supposed to include those?
-				if ( includeHomeDirNetFolders == false )
-				{
-					// No,
-					continue;
-				}
-			}
 			
 			listOfNetFolders.add( netFolder );
 		}
@@ -847,7 +859,7 @@ public class GwtNetFolderHelper
 	public static Set<NetFolder> syncNetFolders(
 		AllModulesInjected ami,
 		HttpServletRequest req,
-		Set<NetFolder> netFolders ) throws GwtTeamingException
+		Set<NetFolder> netFolders )
 	{
 		for ( NetFolder nextNetFolder : netFolders )
 		{
@@ -872,12 +884,7 @@ public class GwtNetFolderHelper
 			}
 			catch ( Exception e )
 			{
-				GwtTeamingException gwtEx;
-				
 				m_logger.error( "Error syncing next net folder: " + nextNetFolder.getName() + ", " + e.toString() );
-				
-				gwtEx = GwtServerHelper.getGwtTeamingException( e );
-				throw gwtEx;
 			}
 		}
 		

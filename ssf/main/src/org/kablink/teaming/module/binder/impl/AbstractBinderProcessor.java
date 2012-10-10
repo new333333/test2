@@ -2448,6 +2448,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	EntityIndexUtils.addBinderIsMyFilesDir(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderHasResourceDriver(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsTopFolder(indexDoc, (Binder) entity, fieldsOnly);
+        	EntityIndexUtils.addBinderResourceDriverName( indexDoc, (Binder) entity, fieldsOnly );
         }
  
         // Add data fields driven by the entry's definition object. 

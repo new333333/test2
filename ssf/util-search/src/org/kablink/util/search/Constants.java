@@ -275,6 +275,7 @@ public class Constants {
 	public static final String IDENTITY_SOURCE_FIELD = "_identitySource";
 	public static final String IS_HOME_DIR_FIELD = "_isHomeDir";
 	public static final String IS_MYFILES_DIR_FIELD = "_isMyFilesDir";
+	public static final String RESOURCE_DRIVER_NAME_FIELD = "_resourceDriverName";
 
 
 	public Constants() {

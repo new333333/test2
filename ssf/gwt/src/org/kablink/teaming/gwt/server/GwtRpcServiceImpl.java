@@ -636,7 +636,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetNetFoldersCmd gnfCmd;
 			
 			gnfCmd = (GetNetFoldersCmd) cmd;
-			result = GwtNetFolderHelper.getAllNetFolders( this, gnfCmd.getIncludeHomeDirNetFolders() );
+			result = GwtNetFolderHelper.getAllNetFolders(
+													this,
+													gnfCmd.getIncludeHomeDirNetFolders(),
+													gnfCmd.getRootName() );
 			responseData = new GetNetFoldersRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
