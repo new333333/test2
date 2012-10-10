@@ -296,7 +296,9 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     }
 
     protected Criterion buildParentBinderCriterion(Long id) {
-        return Restrictions.eq(Constants.BINDER_ID_FIELD, ((Long) id).toString());
+        return  Restrictions.disjunction()
+                .add(Restrictions.eq(Constants.BINDER_ID_FIELD, id.toString()))
+                .add(Restrictions.eq(Constants.BINDERS_PARENT_ID_FIELD, id.toString()));
     }
 
     protected Criterion buildSearchBinderCriterion(Long id, boolean recursive) {
