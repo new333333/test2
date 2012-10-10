@@ -54,6 +54,7 @@ public class NetFolder
 	private NetFolderStatus m_status;
 	private String m_statusTicketId;
 	private GwtSchedule m_syncSchedule;
+	private boolean m_isHomeDir;
 	
 	/**
 	 * The different statuses of a net Folder
@@ -73,6 +74,7 @@ public class NetFolder
 	public NetFolder()
 	{
 		// Nothing to do.
+		m_isHomeDir = false;
 	}	
 	
 	/**
@@ -86,6 +88,7 @@ public class NetFolder
 		m_netFolderRootName = netFolder.getNetFolderRootName();
 		m_statusTicketId = netFolder.getStatusTicketId();
 		m_syncSchedule = netFolder.getSyncSchedule();
+		m_isHomeDir = netFolder.getIsHomeDir();
 	}
 	
 	/**
@@ -94,6 +97,14 @@ public class NetFolder
 	public Long getId()
 	{
 		return m_id;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getIsHomeDir()
+	{
+		return m_isHomeDir;
 	}
 	
 	/**
@@ -150,6 +161,14 @@ public class NetFolder
 	public void setId( Long id )
 	{
 		m_id = id;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIsHomeDir( boolean isHomeDir )
+	{
+		m_isHomeDir = isHomeDir;
 	}
 
 	/**
