@@ -39,11 +39,13 @@
 
 function ss_initSearchOptions() {
 	<c:if test="${! empty ss_filterMap.additionalFilters}">
+	  <ssf:ifNotFilr>
 		<c:if test="${!empty ss_filterMap.additionalFilters.tag}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.tag}">
 				ss_addInitializedTag("<ssf:escapeJavaScript value="${block.communityTag}"/>", "<ssf:escapeJavaScript value="${block.personalTag}"/>");
 			</c:forEach>
 		</c:if>
+	  </ssf:ifNotFilr>
 		<c:if test="${!empty ss_filterMap.additionalFilters.creator_by_id}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.creator_by_id}">
 				ss_addInitializedAuthor("${block.authorId}", "<ssf:escapeJavaScript value="${block.authorTitle}"/>");
@@ -64,6 +66,7 @@ function ss_initSearchOptions() {
 				ss_addInitializedModificationDate("${block.startDate}", "${block.endDate}");
 			</c:forEach>
 		</c:if>
+		<ssf:ifNotFilr>
 		<c:if test="${!empty ss_filterMap.additionalFilters.workflow}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.workflow}">
 				<c:set var="wf_blockId" value="${block.searchWorkflow}"/>
@@ -84,18 +87,25 @@ function ss_initSearchOptions() {
 				--%>[${wf_stepNamesChecked}], [${wf_stepCaptions}]);
 			</c:forEach>
 		</c:if>
+		</ssf:ifNotFilr>
+		<ssf:ifNotFilr>
 		<c:if test="${!empty ss_filterMap.additionalFilters.entry}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.entry}">
 				ss_addInitializedEntry("<ssf:escapeJavaScript value="${block.entryType}"/>", "<ssf:escapeJavaScript value="${block.entryElement}"/>", "<ssf:escapeJavaScript value="${block.entryValuesNotFormatted}"/>", "<ssf:escapeJavaScript value="${block.entryValues}"/>", "<ssf:escapeJavaScript value="${block.valueType}"/>", "<ssf:escapeJavaScript value="${block.title}"/>");
 			</c:forEach>
 		</c:if>
+		</ssf:ifNotFilr>
 		
+		<ssf:ifNotFilr>
 		<c:if test="${empty ss_filterMap.additionalFilters.workflow}">
 			ss_addOption('workflow');
 		</c:if>
+		</ssf:ifNotFilr>
+		<ssf:ifNotFilr>
 		<c:if test="${empty ss_filterMap.additionalFilters.tag}">
 			ss_addOption('tag');
 		</c:if>
+		</ssf:ifNotFilr>
 		<c:if test="${empty ss_filterMap.additionalFilters.creation_date}">
 			ss_addOption('creation_date');
 		</c:if>
@@ -108,18 +118,26 @@ function ss_initSearchOptions() {
 		<c:if test="${empty ss_filterMap.additionalFilters.last_activity}">
 			ss_addOption('last_activity');
 		</c:if>
+		<ssf:ifNotFilr>
 		<c:if test="${empty ss_filterMap.additionalFilters.entry}">
 			ss_addOption('entry');
 		</c:if>
+		</ssf:ifNotFilr>
 		
 	</c:if>
 	<c:if test="${empty ss_filterMap.additionalFilters}">
 		ss_addOption('creation_date');
 		ss_addOption('modification_date');
-		ss_addOption('tag');
-		ss_addOption('workflow');
+		<ssf:ifNotFilr>
+		  ss_addOption('tag');
+		</ssf:ifNotFilr>
+		<ssf:ifNotFilr>
+		  ss_addOption('workflow');
+		</ssf:ifNotFilr>
 		ss_addOption('creator_by_id');
-		ss_addOption('entry');
+		<ssf:ifNotFilr>
+		  ss_addOption('entry');
+		</ssf:ifNotFilr>
 		ss_addOption('last_activity');
 	</c:if>		
 	  ss_searchMoreInitialized = true;

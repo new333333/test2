@@ -277,6 +277,7 @@
 					</div>
 				  </td>
 			    </tr>
+			  <ssf:ifNotFilr>
 			    <tr>
 			      <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.Tag"/></div></td>
 			      <td class="ss_fixed_TD">
@@ -288,6 +289,8 @@
 					</div>	
 			      </td>
 			    </tr>
+			  </ssf:ifNotFilr>
+			  <ssf:ifNotFilr>
 			    <tr>
 			      <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.Workflow"/></div></td>
 			      <td class="ss_fixed_TD">
@@ -299,6 +302,8 @@
 					</div>			      
 			      </td>
 			    </tr>
+			  </ssf:ifNotFilr>
+			  <ssf:ifNotFilr>
 				<tr>
 				  <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.Entry"/></div></td>
 				  <td class="ss_fixed_TD">
@@ -310,6 +315,7 @@
 					</div>				  
 				  </td>
 				</tr>
+			  </ssf:ifNotFilr>
 				<tr>
 				  <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.LastActivity"/></div></td>
 				  <td class="ss_fixed_TD">
