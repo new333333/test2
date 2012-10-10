@@ -236,31 +236,72 @@ public class WhoHasAccessDlg extends DlgBox {
 	 */
 	private String getEntityImageUrl() {
 		// Is the entity a binder?
-		String reply;
+		BinderIconSize	bis = BinderIconSize.getListViewIconSize();
+		ImageResource	imgRes;
+		String			reply;
 		if (m_entityId.isBinder()) {
-			// Yes!  Do we have a specific image for it?
-			String binderIcon = m_whoHasAccessInfo.getEntityIcon(BinderIconSize.getListViewIconSize());
-			if (GwtClientHelper.hasString(binderIcon)) {
-				// Yes!  Use it to construct the URL.
-				String imagesPath = GwtClientHelper.getRequestInfo().getImagesPath();
-				if (binderIcon.startsWith("/"))
-				     reply = (imagesPath + binderIcon.substring(1));
-				else reply = (imagesPath + binderIcon);
+			// Yes!  Is it a Home folder?
+			if (m_whoHasAccessInfo.isEntityHomeFolder()) {
+				// Yes!  Display the Home folder image for it.
+				switch (bis) {
+				default:
+				case SMALL:   imgRes = m_filrImages.folderHome();        break; 
+				case MEDIUM:  imgRes = m_filrImages.folderHome_medium(); break;
+				case LARGE:   imgRes = m_filrImages.folderHome_large();  break;
+				}
+				reply  = imgRes.getSafeUri().asString();
+				
 			}
 			
 			else {
-				// No, we don't have a specific image for it!  Use the
-				// generic folder image.
-				ImageResource binderImgRes = m_filrImages.folder();
-				reply = binderImgRes.getSafeUri().asString();
+				// No, it isn't a Home folder!  Do we have a specific
+				// image for it?
+				String binderIcon = m_whoHasAccessInfo.getEntityIcon(bis);
+				if (GwtClientHelper.hasString(binderIcon)) {
+					// Yes!  Use it to construct the URL.
+					String imagesPath = GwtClientHelper.getRequestInfo().getImagesPath();
+					if (binderIcon.startsWith("/"))
+					     reply = (imagesPath + binderIcon.substring(1));
+					else reply = (imagesPath + binderIcon);
+				}
+				
+				else {
+					// No, we don't have a specific image for it!  Use
+					// the generic folder image.
+					switch (bis) {
+					default:
+					case SMALL:   imgRes = m_filrImages.folder();        break;
+					case MEDIUM:  imgRes = m_filrImages.folder_medium(); break;
+					case LARGE:   imgRes = m_filrImages.folder_large();  break;
+					}
+					reply = imgRes.getSafeUri().asString();
+				}
 			}
 		}
 		
 		else {
-			// No, the entity isn't a binder!  Use the generic entry
-			// image.
-			ImageResource entryImgRes = m_filrImages.entry();
-			reply = entryImgRes.getSafeUri().asString();
+			// No, the entity isn't a binder!  Do we have a specific
+			// image for it?
+			String entryIcon = m_whoHasAccessInfo.getEntityIcon(bis);
+			if (GwtClientHelper.hasString(entryIcon)) {
+				// Yes!  Use it to construct the URL.
+				String imagesPath = GwtClientHelper.getRequestInfo().getImagesPath();
+				if (entryIcon.startsWith("/"))
+				     reply = (imagesPath + entryIcon.substring(1));
+				else reply = (imagesPath + entryIcon);
+			}
+			
+			else {
+				// No, we don't have a specific image for it!  Use
+				// the generic entry image.
+				switch (bis) {
+				default:
+				case SMALL:   imgRes = m_filrImages.entry();        break;
+				case MEDIUM:  imgRes = m_filrImages.entry_medium(); break;
+				case LARGE:   imgRes = m_filrImages.entry_large();  break;
+				}
+				reply = imgRes.getSafeUri().asString();
+			}
 		}
 		
 		// If we get here, reply refers to the URL for the entity's

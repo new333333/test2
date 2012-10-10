@@ -46,6 +46,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class WhoHasAccessInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private boolean				m_entityHomeFolder;	//
 	private BinderIcons			m_entityIcons;		//
 	private List<AccessInfo>	m_groups;			//
 	private List<AccessInfo>	m_users;			//
@@ -216,6 +217,7 @@ public class WhoHasAccessInfoRpcResponseData implements IsSerializable, VibeRpcR
 	 * 
 	 * @return
 	 */
+	public boolean          isEntityHomeFolder()                         {                     return m_entityHomeFolder;    }
 	public List<AccessInfo> getGroups()                                  {validateGroupList(); return m_groups;              }
 	public List<AccessInfo> getUsers()                                   {validateUserList();  return m_users;               }
 	public String           getEntityIcon(BinderIconSize entityIconSize) {return m_entityIcons.getBinderIcon(entityIconSize);}
@@ -226,10 +228,11 @@ public class WhoHasAccessInfoRpcResponseData implements IsSerializable, VibeRpcR
 	 * 
 	 * @param
 	 */
-	public void setGroupList(  List<AccessInfo> groups)                                    {m_groups      = groups;                                 }
-	public void setUserList(   List<AccessInfo> users)                                     {m_users       = users;                                  }
-	public void setEntityIcon( String           entityIcon, BinderIconSize entityIconSize) {m_entityIcons.setBinderIcon(entityIcon, entityIconSize);}
-	public void setEntityTitle(String           entityTitle)                               {m_entityTitle = entityTitle;                            }
+	public void setEntityHomeFolder(boolean          entityHomeFolder)                          {m_entityHomeFolder = entityHomeFolder;                  }
+	public void setGroupList(       List<AccessInfo> groups)                                    {m_groups           = groups;                            }
+	public void setUserList(        List<AccessInfo> users)                                     {m_users            = users;                             }
+	public void setEntityIcon(      String           entityIcon, BinderIconSize entityIconSize) {m_entityIcons.setBinderIcon(entityIcon, entityIconSize);}
+	public void setEntityTitle(     String           entityTitle)                               {m_entityTitle      = entityTitle;                       }
 
 	/*
 	 * List validation.  Used to guard against null pointer references
