@@ -251,10 +251,12 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	
 	//Routine to get the Role that best matches the RightSet for this ShareItem
 	public Role getRole() {
-		if (this.getRightSet().equals(Role.VIEWER.getRightSet())) return Role.VIEWER;
-		if (this.getRightSet().equals(Role.EDITOR.getRightSet())) return Role.EDITOR;
-		if (this.getRightSet().equals(Role.CONTRIBUTOR.getRightSet())) return Role.CONTRIBUTOR;
-		if (this.getRightSet().equals(Role.NONE.getRightSet())) return Role.NONE;
+        RightSet testSet = (RightSet) this.getRightSet().clone();
+        testSet.setAllowSharing(false);
+		if (testSet.equals(Role.VIEWER.getRightSet())) return Role.VIEWER;
+		if (testSet.equals(Role.EDITOR.getRightSet())) return Role.EDITOR;
+		if (testSet.equals(Role.CONTRIBUTOR.getRightSet())) return Role.CONTRIBUTOR;
+		if (testSet.equals(Role.NONE.getRightSet())) return Role.NONE;
 		return Role.CUSTOM;
 	}
 	

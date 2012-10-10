@@ -48,6 +48,7 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem;
@@ -179,6 +180,21 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             logger.error("Error reading data", e);
             throw new UncheckedIOException(e);
         }
+    }
+
+    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec) {
+        return getShareItems(spec, null);
+    }
+
+    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer) {
+        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+        List<ShareItem> filteredItems = new ArrayList<ShareItem>(shareItems.size());
+        for (ShareItem item : shareItems) {
+            if (!item.isExpired() && item.isLatest() && (excludedSharer==null || excludedSharer!=item.getSharerId())) {
+                filteredItems.add(item);
+            }
+        }
+        return filteredItems;
     }
 
     protected void populateTimestamps(Map options, DefinableEntity entry)

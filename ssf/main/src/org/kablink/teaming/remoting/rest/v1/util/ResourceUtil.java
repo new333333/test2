@@ -728,21 +728,21 @@ public class ResourceUtil {
     public static SharedBinderBrief buildSharedBinderBrief(ShareItem shareItem, org.kablink.teaming.domain.Binder binder) {
         SharedBinderBrief model = new SharedBinderBrief();
         populateBinderBrief(model, binder);
-        model.setShareInfo(buildShare(shareItem));
+        model.addShare(buildShare(shareItem));
         return model;
     }
 
     public static SharedFileProperties buildSharedFileProperties(ShareItem shareItem, FileAttachment attachment) {
         SharedFileProperties model = new SharedFileProperties();
         populateFileProperties(model, attachment);
-        model.setShareInfo(buildShare(shareItem));
+        model.addShare(buildShare(shareItem));
         return model;
     }
 
     public static SharedFolderEntryBrief buildSharedFolderEntryBrief(ShareItem shareItem, org.kablink.teaming.domain.FolderEntry entry) {
         SharedFolderEntryBrief model = new SharedFolderEntryBrief();
         populateEntryBrief(model, entry);
-        model.setShareInfo(buildShare(shareItem));
+        model.addShare(buildShare(shareItem));
         return model;
     }
 }

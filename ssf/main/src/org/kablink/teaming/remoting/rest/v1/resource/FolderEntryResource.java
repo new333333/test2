@@ -218,9 +218,10 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         _getFolderEntry(id);
         ShareItemSelectSpec spec = new ShareItemSelectSpec();
         spec.setSharerId(getLoggedInUserId());
+        spec.setLatest(true);
         spec.setSharedEntityIdentifier(new EntityIdentifier(id, EntityIdentifier.EntityType.folderEntry));
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+        List<ShareItem> shareItems = getShareItems(spec);
         for (ShareItem shareItem : shareItems) {
             results.append(ResourceUtil.buildShare(shareItem));
         }
