@@ -686,18 +686,12 @@ public class GwtViewHelper {
 			entryMap.put(Constants.TITLE_FIELD,  entity.getTitle());
 			String binderIdField;
 			if (entity instanceof FolderEntry) {
-				// Yes!  Scan its attachments.
-				Collection<FileAttachment>	atts = entity.getFileAttachments();
-		        for (FileAttachment fa : atts) {
-		        	// Does this attachment have a filename?
-		        	String fName = fa.getFileItem().getName();
-		        	if (MiscUtil.hasString(fName)) {
-		        		// Yes!  Store it in the Map and stop scanning
-		        		// the attachments.
-						entryMap.put(Constants.FILENAME_FIELD, fName);
-						break;
-		        	}
-		        }
+				// Yes!  Can we find a filename for this entity?
+				String fName = getFileEntrysFilename(bs, ((FolderEntry) entity), false);
+	        	if (MiscUtil.hasString(fName)) {
+	        		// Yes!  Store it in the Map.
+					entryMap.put(Constants.FILENAME_FIELD, fName);
+	        	}
 
 		        // Store the total replies, last activity and
 		        // modification date for this entry in the Map.
@@ -755,24 +749,82 @@ public class GwtViewHelper {
 	 * given binderId/entryId pair.
 	 */
 	private static ViewFolderEntryInfo buildViewFolderEntryInfo(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long entryId) {
+		// Create the ViewFolderEntryInfo to return...
+		EntityId			eid   = new EntityId(binderId, entryId, EntityId.FOLDER_ENTRY);
+		ViewFolderEntryInfo	reply = new ViewFolderEntryInfo(eid);
+
+		// ...set its view style... 
 		String viewStyle = GwtServerHelper.getPersonalPreferences(bs, request).getDisplayStyle();
 		if (!(MiscUtil.hasString(viewStyle))) {
 			viewStyle = ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE;
 		}
-		FolderEntry fe = bs.getFolderModule().getEntry(binderId, entryId);
+		reply.setViewStyle(viewStyle);
+		
+		// ...set the entry's family, creation date, modification date
+		// ...and path... 
+		FolderEntry fe    = bs.getFolderModule().getEntry(binderId, entryId);
+		FolderEntry feTop = fe.getTopEntry();
+		if (null == feTop) {
+			feTop = fe;
+		}
+		reply.setFamily(          GwtServerHelper.getFolderEntityFamily(bs, feTop)                                                      );
+		reply.setCreationDate(    GwtServerHelper.getDateTimeString(fe.getCreation().getDate(),     DateFormat.MEDIUM, DateFormat.SHORT));
+		reply.setModificationDate(GwtServerHelper.getDateTimeString(fe.getModification().getDate(), DateFormat.MEDIUM, DateFormat.SHORT));
+		reply.setPath(            feTop.getParentBinder().getPathName()                                                                 );
+		
+		// ...set the presence information for the creator...
+		Long			creatorId = fe.getCreation().getPrincipal().getId();
+		ProfileModule	pm        = bs.getProfileModule();
+		User			creator   = pm.getUserDeadOrAlive(creatorId);
+		GwtPresenceInfo presenceInfo;
+		if (GwtServerHelper.isPresenceEnabled())
+		     presenceInfo = GwtServerHelper.getPresenceInfo(creator);
+		else presenceInfo = null;
+		if (null == presenceInfo) {
+			presenceInfo = GwtServerHelper.getPresenceInfoDefault();
+		}
+		if (null != presenceInfo) {
+			reply.setCreatorPresence(    presenceInfo                                 );
+			reply.setCreatorPresenceDude(GwtServerHelper.getPresenceDude(presenceInfo));
+		}
+		
+		// ...set the creator's title and avatar URLs...
+		reply.setCreatorTitle( GwtServerHelper.getUserTitle(pm, Utils.canUserOnlySeeCommonGroupMembers(), String.valueOf(creatorId), Utils.getUserTitle(creator)));
+		reply.setCreatorAvatar(GwtServerHelper.getUserAvatarUrl(bs, request, creator));
+
+		// ...set the entry's title... 
 		String feTitle = fe.getTitle();
 		if (!(MiscUtil.hasString(feTitle))) {
 			feTitle = ("--" + NLT.get("entry.noTitle") + "--");
 		}
-		return
-			new ViewFolderEntryInfo(
-				binderId,
-				entryId,
-				feTitle,
-				GwtServerHelper.getFolderEntityFamily(
-					bs,
-					fe),
-				viewStyle);
+		reply.setTitle(feTitle);
+		
+		// ...set information about the entry's comments... 
+		CommentsInfo ci = new CommentsInfo(eid, feTitle, fe.getReplies().size());
+		reply.setComments(ci);
+
+		// ...if this a file entry with a filename...
+		String fName = getFileEntrysFilename(bs, feTop);
+		if (MiscUtil.hasString(fName)) {
+			// ...store the icons for the file...
+			reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.SMALL)),  BinderIconSize.SMALL );
+			reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.MEDIUM)), BinderIconSize.MEDIUM);
+			reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.LARGE)),  BinderIconSize.LARGE );
+		}
+		
+		// ...set the entry's description...
+		Description	feDesc     = fe.getDescription();
+		boolean		feDescHtml = (Description.FORMAT_HTML == feDesc.getFormat());
+		reply.setDescIsHtml(feDescHtml              );
+		reply.setDesc(      feDesc.getText()        );
+		reply.setDescTxt(   feDesc.getStrippedText());
+		
+		// ...and finally, set the view's toolbar items.
+		reply.setToolbarItems(GwtMenuHelper.getViewEntryToolbarItems(bs, request, fe));
+		
+		// If we get here, reply refers to the ViewFolderEntryInfo that
+		// describes the entry.  Return it.
+		return reply;
 	}
 
 	/*
@@ -2647,6 +2699,38 @@ public class GwtViewHelper {
 		}
 	}
 
+	/*
+	 * Returns a file entry's filename or null if the entry isn't a
+	 * file entry or a name can't be determined.
+	 */
+	private static String getFileEntrysFilename(AllModulesInjected bs, FolderEntry fileEntry, boolean validateAsFileEntry) {
+		// Is the FolderEntry a file entry?
+		String reply = null;
+		if ((!validateAsFileEntry) || GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, fileEntry))) {
+			// Yes!  Scan its attachments.
+			Collection<FileAttachment> atts = fileEntry.getFileAttachments();
+	        for (FileAttachment fa : atts) {
+	        	// Does this attachment have a filename?
+	        	String fName = fa.getFileItem().getName();
+	        	if (MiscUtil.hasString(fName)) {
+	        		// Return it as the filename.
+					reply = fName;
+					break;
+	        	}
+	        }
+		}
+		
+		// If we get here, reply refers to the to the file entry's
+		// filename or null if the entry isn't a file entry or a name
+		// can't be determined.  Return it.
+        return reply;
+	}
+	
+	private static String getFileEntrysFilename(AllModulesInjected bs, FolderEntry fileEntry) {
+		// Always use the initial form of the method.
+		return getFileEntrysFilename(bs, fileEntry, true);
+	}
+	
 	/*
 	 * Returns a String[] of the names of the columns to display in a
 	 * given folder type.
@@ -4806,27 +4890,13 @@ public class GwtViewHelper {
 					fe = feTop;
 				}
 
-				// Is this file entry?
-				if (GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, fe))) {
-					// Yes!  Scan it's attachments.
-					Collection<FileAttachment>	atts  = fe.getFileAttachments();
-					String						fName = null; 
-			        for (FileAttachment fa : atts) {
-			        	// Does this attachment have a filename?
-			        	fName = fa.getFileItem().getName();
-			        	if (MiscUtil.hasString(fName)) {
-			        		// Yes!  Stop scanning the attachments.
-							break;
-			        	}
-			        }
-
-			        // Do we have a filename for this entry?
-					if (MiscUtil.hasString(fName)) {
-						// Yes!  Store the appropriate icons for it.
-						reply.setEntityIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.SMALL)),  BinderIconSize.SMALL );
-						reply.setEntityIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.MEDIUM)), BinderIconSize.MEDIUM);
-						reply.setEntityIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.LARGE)),  BinderIconSize.LARGE );
-					}
+				// Is this file entry we can determine a filename for?
+				String fName = getFileEntrysFilename(bs, fe);
+				if (MiscUtil.hasString(fName)) {
+					// Yes!  Store the appropriate icons for it.
+					reply.setEntityIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.SMALL)),  BinderIconSize.SMALL );
+					reply.setEntityIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.MEDIUM)), BinderIconSize.MEDIUM);
+					reply.setEntityIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.LARGE)),  BinderIconSize.LARGE );
 				}
 				
 				// If the entry has its own ACLs, we use it as the work
