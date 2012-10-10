@@ -4787,10 +4787,11 @@ public class GwtViewHelper {
 			if (entityId.isBinder()) {
 				// Yes!  We use it directly as the work are. 
 				Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(entityId.getEntityId());
-				reply.setEntityTitle(binder.getTitle()                                         );
-				reply.setEntityIcon( binder.getIconName(),                BinderIconSize.SMALL );
-				reply.setEntityIcon( binder.getIconName(IconSize.MEDIUM), BinderIconSize.MEDIUM);
-				reply.setEntityIcon( binder.getIconName(IconSize.LARGE ), BinderIconSize.LARGE );
+				reply.setEntityTitle(     binder.getTitle()                                         );
+				reply.setEntityIcon(      binder.getIconName(),                BinderIconSize.SMALL );
+				reply.setEntityIcon(      binder.getIconName(IconSize.MEDIUM), BinderIconSize.MEDIUM);
+				reply.setEntityIcon(      binder.getIconName(IconSize.LARGE ), BinderIconSize.LARGE );
+				reply.setEntityHomeFolder(binder.isHomeDir()                                        );
 				workArea = binder;
 			}
 			
@@ -4803,6 +4804,29 @@ public class GwtViewHelper {
 				FolderEntry	feTop = fe.getTopEntry();
 				if (null != feTop) {
 					fe = feTop;
+				}
+
+				// Is this file entry?
+				if (GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, fe))) {
+					// Yes!  Scan it's attachments.
+					Collection<FileAttachment>	atts  = fe.getFileAttachments();
+					String						fName = null; 
+			        for (FileAttachment fa : atts) {
+			        	// Does this attachment have a filename?
+			        	fName = fa.getFileItem().getName();
+			        	if (MiscUtil.hasString(fName)) {
+			        		// Yes!  Stop scanning the attachments.
+							break;
+			        	}
+			        }
+
+			        // Do we have a filename for this entry?
+					if (MiscUtil.hasString(fName)) {
+						// Yes!  Store the appropriate icons for it.
+						reply.setEntityIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.SMALL)),  BinderIconSize.SMALL );
+						reply.setEntityIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.MEDIUM)), BinderIconSize.MEDIUM);
+						reply.setEntityIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.LARGE)),  BinderIconSize.LARGE );
+					}
 				}
 				
 				// If the entry has its own ACLs, we use it as the work
