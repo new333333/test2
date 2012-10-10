@@ -2750,6 +2750,30 @@ public class GwtMenuHelper {
 		}
 	}
 
+	/**
+	 * Returns a List<ToolbarItem> containing the ToolbarItem's for a
+	 * folder entry given the current user's rights to that entry.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param fe
+	 * 
+	 * @return
+	 */
+	public static List<ToolbarItem> getViewEntryToolbarItems(AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
+		SimpleProfiler.start("GwtMenuHelper.getViewEntryToolbarItems()");
+		try {
+			List<ToolbarItem> reply = new ArrayList<ToolbarItem>();
+			
+//!			...this needs to be implemented...
+			
+			return reply;
+		}
+		finally {
+			SimpleProfiler.stop("GwtMenuHelper.getViewEntryToolbarItems()");
+		}
+	}
+	
 	/*
 	 * Returns true if the given binder supports trash operations
 	 * and false otherwise.
