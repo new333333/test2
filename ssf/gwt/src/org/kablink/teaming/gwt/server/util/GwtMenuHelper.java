@@ -92,6 +92,7 @@ import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
+import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
@@ -2763,10 +2764,112 @@ public class GwtMenuHelper {
 	public static List<ToolbarItem> getViewEntryToolbarItems(AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
 		SimpleProfiler.start("GwtMenuHelper.getViewEntryToolbarItems()");
 		try {
+			// Allocate a List<ToolbarItem> we can return with the
+			// view entry toolbar items.
 			List<ToolbarItem> reply = new ArrayList<ToolbarItem>();
+
+			// Define some variables we'll need to build the toolbar
+			// items.
+			User    		user    = GwtServerHelper.getCurrentUser();
+			boolean			isGuest = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+			String			feId    = String.valueOf(fe.getId());
+			ToolbarItem		actionTBI;
+
+			// Does the user have rights to share this entry?
+			SharingModule sm = bs.getSharingModule();
+			if ((!isGuest) && sm.isSharingEnabled() && sm.testAddShareEntity(fe)) {
+				// Yes!  Add a share toolbar item for it.
+				actionTBI = new ToolbarItem(SHARE);
+				markTBITitle(  actionTBI, "toolbar.shareSelected"             );
+				markTBIEvent(  actionTBI, TeamingEvents.SHARE_SELECTED_ENTRIES);
+				markTBIEntryId(actionTBI, feId                                );
+				reply.add(actionTBI);
+			}
+
+			// Does the user have rights to modify this entry?
+			Folder			folder   = fe.getParentFolder();
+			String			folderId = String.valueOf(folder.getId());
+			FolderModule	fm       = bs.getFolderModule();
+			if (fm.testAccess(folder, FolderOperation.modifyEntry)) {
+				// Yes!  Add an edit toolbar item for it.
+				AdaptedPortletURL url = createActionUrl(request);
+				url.setParameter(WebKeys.ACTION,         WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
+				url.setParameter(WebKeys.URL_ENTRY_TYPE, fe.getEntityTypedId()             );
+				url.setParameter(WebKeys.URL_BINDER_ID,  folderId                          );
+				url.setParameter(WebKeys.URL_ENTRY_ID,   feId                              );
+				
+				actionTBI = new ToolbarItem(MODIFY);
+				markTBIPopup(actionTBI                );
+				markTBITitle(actionTBI, "toolbar.edit");
+				markTBIUrl(  actionTBI, url           );
+				reply.add(actionTBI);
+			}
+			
+			// Does the user have rights to move this entry to the
+			// trash?
+			if (fm.testAccess(folder, FolderOperation.preDeleteEntry)) {
+				// Yes!  Add a delete toolbar item for it.
+				actionTBI = new ToolbarItem(DELETE);
+				markTBITitle(  actionTBI, "toolbar.delete"                     );
+				markTBIEvent(  actionTBI, TeamingEvents.DELETE_SELECTED_ENTRIES);
+				markTBIEntryId(actionTBI, feId                                 );
+				reply.add(actionTBI);
+			}
+			
+			// More items:
+			// - Access Control...
+			// - Lock Selected Entries...
+			// - Share this Entry...
+			// - Move...
+			// - Copy...
+			// - Change Entry Type...
+			ToolbarItem dropdownTBI = new ToolbarItem("1_more");
+			markTBITitle(dropdownTBI, "toolbar.more");
 			
 //!			...this needs to be implemented...
 			
+			// If we added anything to the more toolbar...
+			if (!(dropdownTBI.getNestedItemsList().isEmpty())) {
+				// ...and it to the view entry toolbar.
+				reply.add(dropdownTBI);
+			}
+			
+			// Reports:
+			// - Activity Report
+			// - Workflow History
+//!			...this needs to be implemented...
+			
+			// Status:
+			// - --none--
+			// - Official
+			// - Draft
+			// - Obsolete
+//!			...this needs to be implemented...
+			
+			// File Actions:
+			// - View This File
+			// - View This File as HTML
+			// - Edit This File
+			// - Download This File in a Zip File
+			// - Download All Files
+			// - Edit File Note...
+			// - Increment Major Version Number...
+			// - Delete This Version...
+			// - WebDAV URL
+//!			...this needs to be implemented...
+			
+			// Edit This File
+//!			...this needs to be implemented...
+			
+			// Footer commands:
+			// - E-mail Contributors...
+			// - Subscribe to This Entry
+			// - Export this entry
+//!			...this needs to be implemented...
+
+			// If we get here, reply refers to the List<ToolbarItem>
+			// containing the toolbar items for the entry view.  Return
+			// it.
 			return reply;
 		}
 		finally {
@@ -2878,6 +2981,19 @@ public class GwtMenuHelper {
 		tbi.addQualifier("default", "true");
 	}
 
+	/*
+	 * Marks a ToolbarItem with a entry ID.
+	 */
+	private static void markTBIEntryId(ToolbarItem tbi, String entryId) {
+		tbi.addQualifier("entryId", entryId);
+	}
+	
+	@SuppressWarnings("unused")
+	private static void markTBIEntryId(ToolbarItem tbi, Long entryId) {
+		// Always use the initial form of the method.
+		markTBIEntryId(tbi, String.valueOf(entryId));
+	}
+	
 	/*
 	 * Marks a ToolbarItem's event.
 	 */
