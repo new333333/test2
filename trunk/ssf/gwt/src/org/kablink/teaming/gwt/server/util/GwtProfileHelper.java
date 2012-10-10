@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
-import static org.kablink.util.search.Constants.MODIFICATION_DATE_FIELD;
-
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -50,8 +48,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -75,7 +75,6 @@ import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.SearchUtils;
@@ -98,6 +97,8 @@ import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Criteria;
 
+import static org.kablink.util.search.Constants.MODIFICATION_DATE_FIELD;
+
 /**
  * Helper methods for the GWT based user profile features.
  * 
@@ -105,8 +106,6 @@ import org.kablink.util.search.Criteria;
  */
 @SuppressWarnings("unchecked")
 public class GwtProfileHelper {
-	
-	
 	protected static Log logger = LogFactory.getLog(GwtServerHelper.class);
 	
 	/**
@@ -198,7 +197,7 @@ public class GwtProfileHelper {
 	
 	public static ProfileAttribute getProfileAvatars(HttpServletRequest request, AllModulesInjected bs, Long binderId) {
 		//get the binder
-		Binder binder = bs.getBinderModule().getBinder(Long.valueOf(binderId));
+		Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck((Long.valueOf(binderId)));
 		Principal owner = binder.getCreation().getPrincipal(); //creator is user
 		return getProfileAvatars(request, bs, owner);
 	}
