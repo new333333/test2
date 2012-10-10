@@ -16,7 +16,10 @@
 package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: david
@@ -25,14 +28,22 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="shared_folder_entry_brief")
 public class SharedFolderEntryBrief extends FolderEntryBrief {
-    private Share shareInfo;
+    private List<Share> shares;
 
-    public Share getShareInfo() {
-        return shareInfo;
+    public List<Share> getShares() {
+        return shares;
     }
 
-    @XmlElement(name = "share")
-    public void setShareInfo(Share shareInfo) {
-        this.shareInfo = shareInfo;
+    @XmlElementWrapper(name="shares")
+    @XmlElement(name="share")
+    public void setShares(List<Share> shares) {
+        this.shares = shares;
+    }
+
+    public void addShare(Share share) {
+        if (this.shares==null) {
+            this.shares = new ArrayList<Share>();
+        }
+        this.shares.add(share);
     }
 }

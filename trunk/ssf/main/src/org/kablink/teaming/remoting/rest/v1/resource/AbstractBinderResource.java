@@ -244,9 +244,10 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
         ShareItemSelectSpec spec = new ShareItemSelectSpec();
         spec.setSharerId(getLoggedInUserId());
+        spec.setLatest(true);
         spec.setSharedEntityIdentifier(new EntityIdentifier(id, binder.getEntityType()));
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+        List<ShareItem> shareItems = getShareItems(spec);
         for (ShareItem shareItem : shareItems) {
             results.append(ResourceUtil.buildShare(shareItem));
         }

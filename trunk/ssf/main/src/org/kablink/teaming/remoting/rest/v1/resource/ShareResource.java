@@ -32,11 +32,7 @@ import org.kablink.util.search.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * User: david
@@ -80,10 +76,9 @@ public class ShareResource extends AbstractResource {
     @Path("/by_user/{id}")
     public SearchResultList<Share> getSharedByUser(@PathParam("id") Long userId) {
         _getUser(userId);
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setSharerId(userId);
+        ShareItemSelectSpec spec = getSharedBySpec(userId);
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+        List<ShareItem> shareItems = getShareItems(spec);
         for (ShareItem shareItem : shareItems) {
             results.append(ResourceUtil.buildShare(shareItem));
         }
@@ -119,23 +114,8 @@ public class ShareResource extends AbstractResource {
     public SearchResultList<SharedFolderEntryBrief> getEntriesSharedByUser(@PathParam("id") Long userId,
                                                                            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         _getUser(userId);
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setSharerId(userId);
-        SearchResultList<SharedFolderEntryBrief> results = new SearchResultList<SharedFolderEntryBrief>();
-        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
-        for (ShareItem shareItem : shareItems) {
-            try {
-                if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
-                    results.append(ResourceUtil.buildSharedFolderEntryBrief(shareItem, (FolderEntry) getSharingModule().getSharedEntity(shareItem)));
-                }
-            } catch (AccessControlException e) {
-                logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
-            }
-        }
-        if (includeParentPaths) {
-            populateParentBinderPaths(results);
-        }
-        return results;
+        ShareItemSelectSpec spec = getSharedBySpec(userId);
+        return _getSharedEntries(spec, null, includeParentPaths);
     }
 
     @GET
@@ -179,9 +159,8 @@ public class ShareResource extends AbstractResource {
             nextParams.put("keyword", keyword);
         }
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setSharerId(userId);
-        SearchResultList<SearchableObject> results = _getLibraryEntities(recursive, includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword, textDescriptions, offset, maxCount, "/with_user/" + userId + "/library_entities", nextParams, spec);
+        ShareItemSelectSpec spec = getSharedBySpec(userId);
+        SearchResultList<SearchableObject> results = _getLibraryEntities(null, recursive, includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword, textDescriptions, offset, maxCount, "/with_user/" + userId + "/library_entities", nextParams, spec);
         return results;
     }
 
@@ -214,19 +193,17 @@ public class ShareResource extends AbstractResource {
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
 
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setSharerId(userId);
-        return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, spec, "/shares/by_user/" + userId + "/recent_activity", nextParams);
+        ShareItemSelectSpec spec = getSharedBySpec(userId);
+        return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, spec, null, "/shares/by_user/" + userId + "/recent_activity", nextParams);
     }
 
     @GET
     @Path("/with_user/{id}")
     public SearchResultList<Share> getSharedWithUser(@PathParam("id") Long userId) {
         _getUser(userId);
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setRecipientsFromUserMembership(userId);
+        ShareItemSelectSpec spec = getSharedWithSpec(userId);
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+        List<ShareItem> shareItems = getShareItems(spec, userId);
         for (ShareItem shareItem : shareItems) {
             results.append(ResourceUtil.buildShare(shareItem));
         }
@@ -282,9 +259,8 @@ public class ShareResource extends AbstractResource {
             nextParams.put("keyword", keyword);
         }
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setRecipientsFromUserMembership(userId);
-        SearchResultList<SearchableObject> results = _getLibraryEntities(recursive, includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword, textDescriptions, offset, maxCount, "/with_user/" + userId + "/library_entities", nextParams, spec);
+        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+        SearchResultList<SearchableObject> results = _getLibraryEntities(userId, recursive, includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword, textDescriptions, offset, maxCount, "/with_user/" + userId + "/library_entities", nextParams, spec);
         return results;
     }
 
@@ -293,23 +269,8 @@ public class ShareResource extends AbstractResource {
     public SearchResultList<SharedFolderEntryBrief> getEntriesSharedWithUser(@PathParam("id") Long userId,
                                                                              @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         _getUser(userId);
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setRecipientsFromUserMembership(userId);
-        SearchResultList<SharedFolderEntryBrief> results = new SearchResultList<SharedFolderEntryBrief>();
-        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
-        for (ShareItem shareItem : shareItems) {
-            if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
-                try {
-                    results.append(ResourceUtil.buildSharedFolderEntryBrief(shareItem, (FolderEntry) getSharingModule().getSharedEntity(shareItem)));
-                } catch (AccessControlException e) {
-                    logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
-                }
-            }
-        }
-        if (includeParentPaths) {
-            populateParentBinderPaths(results);
-        }
-        return results;
+        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+        return _getSharedEntries(spec, userId, includeParentPaths);
     }
 
     @GET
@@ -365,15 +326,14 @@ public class ShareResource extends AbstractResource {
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
 
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setRecipientsFromUserMembership(userId);
-        return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, spec, "/shares/with_user/" + userId + "/recent_activity", nextParams);
+        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+        return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, spec, userId, "/shares/with_user/" + userId + "/recent_activity", nextParams);
     }
 
-    private SearchResultList<SearchableObject> _getRecentActivity(boolean includeParentPaths, boolean textDescriptions, Integer offset, Integer maxCount, ShareItemSelectSpec spec, String nextUrl, Map<String, Object> nextParams) {
+    private SearchResultList<SearchableObject> _getRecentActivity(boolean includeParentPaths, boolean textDescriptions, Integer offset, Integer maxCount, ShareItemSelectSpec spec, Long excludedSharerId, String nextUrl, Map<String, Object> nextParams) {
         List<String> binderIds = new ArrayList<String>();
         List<String> entryIds = new ArrayList<String>();
-        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId);
         if (shareItems.size()==0) {
             return new SearchResultList<SearchableObject>();
         }
@@ -391,61 +351,69 @@ public class ShareResource extends AbstractResource {
 
     protected SharedBinderBrief [] getSharedByBinders(Long userId, boolean onlyLibrary)  {
         _getUser(userId);
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setSharerId(userId);
-        return _getSharedBinders(spec, onlyLibrary);
+        ShareItemSelectSpec spec = getSharedBySpec(userId);
+        return _getSharedBinders(spec, null, onlyLibrary);
     }
 
     protected SharedFileProperties [] getSharedByFiles(Long userId, boolean onlyLibrary)  {
         _getUser(userId);
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setSharerId(userId);
-        return _getSharedFiles(spec, onlyLibrary);
+        ShareItemSelectSpec spec = getSharedBySpec(userId);
+        return _getSharedFiles(spec, null, onlyLibrary);
     }
 
     protected SharedBinderBrief [] getSharedWithBinders(Long userId, boolean onlyLibrary)  {
         _getUser(userId);
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setRecipientsFromUserMembership(userId);
-        return _getSharedBinders(spec, onlyLibrary);
+        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+        return _getSharedBinders(spec, userId, onlyLibrary);
     }
 
     protected SharedFileProperties [] getSharedWithFiles(Long userId, boolean onlyLibrary)  {
         _getUser(userId);
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setRecipientsFromUserMembership(userId);
-        return _getSharedFiles(spec, onlyLibrary);
+        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+        return _getSharedFiles(spec, userId, onlyLibrary);
     }
 
-    protected SharedBinderBrief [] _getSharedBinders(ShareItemSelectSpec spec, boolean onlyLibrary)  {
-        List<SharedBinderBrief> results = new ArrayList<SharedBinderBrief>();
-        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+    private SearchResultList<SharedFolderEntryBrief> _getSharedEntries(ShareItemSelectSpec spec, Long excludedSharerId, boolean includeParentPaths) {
+        Map<Long, SharedFolderEntryBrief> resultMap = new LinkedHashMap<Long, SharedFolderEntryBrief>();
+        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId);
         for (ShareItem shareItem : shareItems) {
-            if (shareItem.getSharedEntityIdentifier().getEntityType().isBinder()) {
+            if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
                 try {
-                    Binder binder = (Binder) getSharingModule().getSharedEntity(shareItem);
-                    if (!onlyLibrary || binder.getEntityType() == EntityIdentifier.EntityType.workspace || binder.isLibrary()) {
-                        results.add(ResourceUtil.buildSharedBinderBrief(shareItem, binder));
+                    FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
+                    SharedFolderEntryBrief binderBrief = resultMap.get(entry.getId());
+                    if (binderBrief!=null) {
+                        binderBrief.addShare(ResourceUtil.buildShare(shareItem));
+                    } else {
+                        binderBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, entry);
+                        resultMap.put(entry.getId(), binderBrief);
                     }
                 } catch (AccessControlException e) {
                     logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
                 }
             }
         }
-        return results.toArray(new SharedBinderBrief[results.size()]);
+        SearchResultList<SharedFolderEntryBrief> results = new SearchResultList<SharedFolderEntryBrief>();
+        results.appendAll(resultMap.values());
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
+        return results;
     }
 
-    protected SharedFileProperties [] _getSharedFiles(ShareItemSelectSpec spec, boolean onlyLibrary)  {
-        List<SharedFileProperties> results = new ArrayList<SharedFileProperties>();
-        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+    protected SharedBinderBrief [] _getSharedBinders(ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary)  {
+        Map<Long, SharedBinderBrief> resultMap = new LinkedHashMap<Long, SharedBinderBrief>();
+        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId);
         for (ShareItem shareItem : shareItems) {
-            if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+            if (shareItem.getSharedEntityIdentifier().getEntityType().isBinder()) {
                 try {
-                    FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
-                    Set<Attachment> attachments = entry.getAttachments();
-                    for (Attachment attachment : attachments) {
-                        if (attachment instanceof FileAttachment) {
-                            results.add(ResourceUtil.buildSharedFileProperties(shareItem, (FileAttachment) attachment));
+                    Binder binder = (Binder) getSharingModule().getSharedEntity(shareItem);
+                    if (!onlyLibrary || binder.getEntityType() == EntityIdentifier.EntityType.workspace || binder.isLibrary()) {
+                        SharedBinderBrief binderBrief = resultMap.get(binder.getId());
+                        if (binderBrief!=null) {
+                            binderBrief.addShare(ResourceUtil.buildShare(shareItem));
+                        } else {
+                            binderBrief = ResourceUtil.buildSharedBinderBrief(shareItem, binder);
+                            resultMap.put(binder.getId(), binderBrief);
                         }
                     }
                 } catch (AccessControlException e) {
@@ -453,6 +421,37 @@ public class ShareResource extends AbstractResource {
                 }
             }
         }
+        List<SharedBinderBrief> results = new ArrayList<SharedBinderBrief>();
+        results.addAll(resultMap.values());
+        return results.toArray(new SharedBinderBrief[results.size()]);
+    }
+
+    protected SharedFileProperties [] _getSharedFiles(ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary)  {
+        Map<String, SharedFileProperties> resultMap = new LinkedHashMap<String, SharedFileProperties>();
+        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId);
+        for (ShareItem shareItem : shareItems) {
+            if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+                try {
+                    FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
+                    Set<Attachment> attachments = entry.getAttachments();
+                    for (Attachment attachment : attachments) {
+                        if (attachment instanceof FileAttachment) {
+                            SharedFileProperties fileProps = resultMap.get(attachment.getId());
+                            if (fileProps!=null) {
+                                fileProps.addShare(ResourceUtil.buildShare(shareItem));
+                            } else {
+                                fileProps = ResourceUtil.buildSharedFileProperties(shareItem, (FileAttachment) attachment);
+                                resultMap.put(attachment.getId(), fileProps);
+                            }
+                        }
+                    }
+                } catch (AccessControlException e) {
+                    logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
+                }
+            }
+        }
+        List<SharedFileProperties> results = new ArrayList<SharedFileProperties>();
+        results.addAll(resultMap.values());
         return results.toArray(new SharedFileProperties[results.size()]);
     }
 
@@ -498,8 +497,8 @@ public class ShareResource extends AbstractResource {
         return Restrictions.in(Constants.ENTRY_ANCESTRY, idList);
     }
 
-    private SearchResultList<SearchableObject> _getLibraryEntities(boolean recursive, boolean includeBinders, boolean includeFolderEntries, boolean includeFiles, boolean includeReplies, boolean includeParentPaths, String keyword, boolean textDescriptions, Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams, ShareItemSelectSpec spec) {
-        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+    private SearchResultList<SearchableObject> _getLibraryEntities(Long excludedSharerId, boolean recursive, boolean includeBinders, boolean includeFolderEntries, boolean includeFiles, boolean includeReplies, boolean includeParentPaths, String keyword, boolean textDescriptions, Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams, ShareItemSelectSpec spec) {
+        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         if (shareItems.size()>0) {
             Junction criterion = Restrictions.conjunction();
@@ -538,6 +537,20 @@ public class ShareResource extends AbstractResource {
             populateParentBinderPaths(results);
         }
         return results;
+    }
+
+    private ShareItemSelectSpec getSharedWithSpec(Long userId) {
+        ShareItemSelectSpec spec = new ShareItemSelectSpec();
+        spec.setRecipientsFromUserMembership(userId);
+        spec.setLatest(true);
+        return spec;
+    }
+
+    private ShareItemSelectSpec getSharedBySpec(Long userId) {
+        ShareItemSelectSpec spec = new ShareItemSelectSpec();
+        spec.setSharerId(userId);
+        spec.setLatest(true);
+        return spec;
     }
 
 }
