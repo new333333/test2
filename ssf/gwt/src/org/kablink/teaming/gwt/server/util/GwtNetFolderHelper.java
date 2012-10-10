@@ -310,7 +310,7 @@ public class GwtNetFolderHelper
 	 * Return a list of all the net folders 
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public static List<NetFolder> getAllNetFolders( AllModulesInjected ami )
+	public static List<NetFolder> getAllNetFolders( AllModulesInjected ami, boolean includeHomeDirNetFolders )
 	{
 		Criteria criteria;
 		Criterion criterion;
@@ -376,6 +376,17 @@ public class GwtNetFolderHelper
 			
 			binderId = GwtServerHelper.getStringFromEntryMap( entryMap, Constants.DOCID_FIELD );
 			netFolder = GwtNetFolderHelper.getNetFolder( ami, Long.valueOf( binderId ) );
+			
+			// Is this a "home directory" net folder?
+			if ( netFolder.getIsHomeDir() )
+			{
+				// Are we supposed to include those?
+				if ( includeHomeDirNetFolders == false )
+				{
+					// No,
+					continue;
+				}
+			}
 			
 			listOfNetFolders.add( netFolder );
 		}
@@ -630,6 +641,7 @@ public class GwtNetFolderHelper
 		netFolder.setNetFolderRootName( binder.getResourceDriverName() );
 		netFolder.setRelativePath( binder.getResourcePath() );
 		netFolder.setStatus( NetFolderStatus.READY );
+		netFolder.setIsHomeDir( binder.isHomeDir() );
 		
 		// Get the net folder's sync schedule.
 		gwtSchedule = getGwtSyncSchedule( ami, binder );

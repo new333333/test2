@@ -43,12 +43,15 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  */
 public class GetNetFoldersCmd extends VibeRpcCmd
 {
+	private boolean m_includeHomeDirNetFolders;
+	
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
 	public GetNetFoldersCmd()
 	{
 		super();
+		m_includeHomeDirNetFolders = false;
 	}
 	
 	/**
@@ -62,5 +65,21 @@ public class GetNetFoldersCmd extends VibeRpcCmd
 	public int getCmdType()
 	{
 		return VibeRpcCmdType.GET_ALL_NET_FOLDERS.ordinal();
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getIncludeHomeDirNetFolders()
+	{
+		return m_includeHomeDirNetFolders;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIncludeHomeDirNetFolders( boolean include )
+	{
+		m_includeHomeDirNetFolders = include;
 	}
 }

@@ -667,6 +667,7 @@ public class ManageNetFoldersDlg extends DlgBox
 
 		// Issue an ajax request to get a list of all the net folders.
 		cmd = new GetNetFoldersCmd();
+		cmd.setIncludeHomeDirNetFolders( false );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 	
