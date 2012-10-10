@@ -33,25 +33,24 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import org.kablink.teaming.NoObjectByTheIdException;
-import org.kablink.teaming.domain.Attachment;
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
+import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.BaseFileProperties;
+import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.Permission;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.search.SearchFieldResult;
+import org.kablink.util.api.ApiErrorCode;
+import org.kablink.util.search.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -65,8 +64,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * User: david
@@ -74,6 +72,70 @@ import java.util.Set;
  * Time: 11:11 AM
  */
 public abstract class AbstractDefinableEntityResource extends AbstractFileResource {
+    @GET
+    @Path("{id}/ancestry")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public BinderBrief [] getAncestry(@PathParam("id") long id) {
+        Criterion criterion = null;
+        DefinableEntity entity = getDefinableEntity(id);
+        if (entity instanceof Entry) {
+            criterion = super.buildEntryCriterion(id);
+        } else if (entity instanceof Binder) {
+            criterion = super.buildBinderCriterion(id);
+        }
+
+        if (criterion==null) {
+            throw new BadRequestException(ApiErrorCode.SERVER_ERROR, "Unsupported entity type: " + entity.getEntityTypedId());
+        }
+        BinderBrief [] binders = new BinderBrief[0];
+        Criteria crit = new Criteria();
+        crit.add(criterion);
+        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1);
+        List<Map> entries = (List<Map>)resultMap.get(ObjectKeys.SEARCH_ENTRIES);
+        Map entry = entries.iterator().next();
+        if (entry!=null) {
+            Set<String> binderIds = null;
+            Object value = entry.get(Constants.ENTRY_ANCESTRY);
+            if (value instanceof SearchFieldResult) {
+                SearchFieldResult ancestry = (SearchFieldResult) entry.get(Constants.ENTRY_ANCESTRY);
+                binderIds = ancestry.getValueSet();
+            } else {
+                binderIds = new HashSet<String>();
+                binderIds.add((String)value);
+            }
+            int idCount = 0;
+            Junction idJunction = Restrictions.disjunction();
+            for (String binderId : binderIds) {
+                if (!((entity instanceof Binder) && binderId.equals(Long.toString(id)))) {
+                    idJunction.add(Restrictions.eq(Constants.DOCID_FIELD, binderId));
+                    idCount++;
+                }
+            }
+            if (idCount>0) {
+                Junction outer = Restrictions.conjunction();
+                outer.add(buildBindersCriterion());
+                outer.add(idJunction);
+                crit = new Criteria();
+                crit.add(outer);
+                resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1);
+                entries = (List<Map>)resultMap.get(ObjectKeys.SEARCH_ENTRIES);
+                BinderBriefBuilder builder = new BinderBriefBuilder();
+                List<BinderBrief> binderList = new ArrayList<BinderBrief>(entries.size());
+                for (Map binderEntry : entries) {
+                    binderList.add(builder.build(binderEntry));
+                }
+                Collections.sort(binderList, new Comparator<BinderBrief>() {
+                    public int compare(BinderBrief o1, BinderBrief o2) {
+                        return o1.getPath().compareTo(o2.getPath());
+                    }
+                });
+                binders = binderList.toArray(new BinderBrief[binderList.size()]);
+            }
+        }
+
+        return binders;
+    }
+
     @GET
     @Path("{id}/attachments")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
