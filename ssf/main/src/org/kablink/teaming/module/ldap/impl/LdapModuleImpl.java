@@ -488,10 +488,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							// Get the name of the user's home directory
 							{
 								String dirName;
-								boolean firstChar = true;
+								int numChars;
 								
 								strBuffer = new StringBuffer();
-								
+								numChars = 0;
+
 								while ( i < bytes.length )
 								{
 									char ch;
@@ -500,10 +501,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 									++i;
 									
 									// We don't want a \ as the first character in the name
-									if ( firstChar && ch == '\\' )
+									if ( numChars == 0 && ch == '\\' )
 										continue;
 									
 									strBuffer.append( ch );
+									++numChars;
 								}
 								
 								dirName = strBuffer.toString();
