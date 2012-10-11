@@ -534,7 +534,7 @@ public class ResourceUtil {
     private static void populatePrincipal(Principal model, org.kablink.teaming.domain.Principal principal, boolean includeAttachments, boolean textDescriptions) {
         populateEntry(model, principal, includeAttachments, textDescriptions);
         model.setEmailAddress(principal.getEmailAddress());
-        model.setDisabled(principal.isDeleted());
+        model.setDisabled(principal.isDisabled());
         model.setReserved(principal.isReserved());
         model.setName(principal.getName());
         model.setLink(LinkUriUtil.getPrincipalLinkUri(principal));
