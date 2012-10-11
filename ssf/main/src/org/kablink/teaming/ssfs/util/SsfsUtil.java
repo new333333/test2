@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -51,7 +51,6 @@ import org.kablink.teaming.web.util.UserAppConfig;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.BrowserSniffer;
 
-
 /**
  * ?
  *  
@@ -63,9 +62,12 @@ public class SsfsUtil {
 	
 	private static Boolean hudsonWebdavEnabled;
 	
-	public static String getEntryUrl(PortletRequest req, Binder binder, 
+	private static String getEntryUrl(PortletRequest pReq, HttpServletRequest hReq, Binder binder, 
 			DefinableEntity entity, String strRepositoryName) {
-		StringBuffer sb = getInternalCommonPart(req, binder, entity);
+		StringBuffer sb;
+		if (null != pReq)
+		     sb = getInternalCommonPart(pReq, binder, entity);
+		else sb = getInternalCommonPart(hReq, binder, entity);
 		
 		if(isHudsonWebdavEnabled()) {
 			return sb.toString();
@@ -76,8 +78,17 @@ public class SsfsUtil {
 			append("/").toString();
 		}
 	}
+	
+	public static String getEntryUrl(PortletRequest pReq, Binder binder, 
+			DefinableEntity entity, String strRepositoryName) {
+		return getEntryUrl(pReq, null, binder, entity, strRepositoryName);
+	}
+	
+	public static String getEntryUrl(HttpServletRequest hReq, Binder binder, 
+			DefinableEntity entity, String strRepositoryName) {
+		return getEntryUrl(null, hReq, binder, entity, strRepositoryName);
+	}
 		
-	@SuppressWarnings("unused")
 	public static String getInternalAttachmentUrl(HttpServletRequest req, 
 			Binder binder, DefinableEntity entity, FileAttachment fa) {
 		StringBuffer sb = getInternalCommonPart(req, binder, entity);
@@ -99,7 +110,6 @@ public class SsfsUtil {
 		return sb.toString();
 	}
 
-	@SuppressWarnings("unused")
 	public static String getInternalAttachmentUrlEncoded(PortletRequest req, Binder binder, 
 			DefinableEntity entity, FileAttachment fa) throws Exception {
 		StringBuffer sb = getInternalCommonPart(req, binder, entity);

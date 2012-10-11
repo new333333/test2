@@ -1465,7 +1465,8 @@ public interface GwtTeamingMessages extends Messages
 	String vibeBinderFooter_Filr_RSSUrl();
 	String vibeBinderFooter_Filr_RSSUrlHint();
 	String vibeBinderFooter_Filr_WebDAVUrl();
-	String vibeBinderFooter_Filr_WebDAVUrlHint();
+	String vibeBinderFooter_Filr_WebDAVUrlHintEntry();
+	String vibeBinderFooter_Filr_WebDAVUrlHintFolder();
 	String vibeBinderFooter_Vibe_AtomUrl();
 	String vibeBinderFooter_Vibe_EmailAddresses();
 	String vibeBinderFooter_Vibe_EmailAddressesHint();
@@ -1478,7 +1479,8 @@ public interface GwtTeamingMessages extends Messages
 	String vibeBinderFooter_Vibe_RSSUrl();
 	String vibeBinderFooter_Vibe_RSSUrlHint();
 	String vibeBinderFooter_Vibe_WebDAVUrl();
-	String vibeBinderFooter_Vibe_WebDAVUrlHint();
+	String vibeBinderFooter_Vibe_WebDAVUrlHintEntry();
+	String vibeBinderFooter_Vibe_WebDAVUrlHintFolder();
 	
 	// Strings used by the entry menu bar in the various binder views.
 	String vibeEntryMenu_Alt_ClearFilter();

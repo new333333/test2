@@ -861,6 +861,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_EDIT_IN_PLACE:
+				// An InvokeEditInPlaceEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof InvokeEditInPlaceEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeEditInPlaceEvent.registerEvent(eventBus, ((InvokeEditInPlaceEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case INVOKE_EMAIL_NOTIFICATION:
 				// An InvokeEmailNotificationEvent!  Can the event
 				// handler we were given handle that?
@@ -2103,6 +2112,7 @@ public class EventHelper {
 			case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	hasHandler = (eventHandler instanceof InvokeConfigureFileSyncAppDlgEvent.Handler); break;
 			case INVOKE_CONFIGURE_USER_ACCESS_DLG:		hasHandler = (eventHandler instanceof InvokeConfigureUserAccessDlgEvent.Handler);  break;
 			case INVOKE_DROPBOX:						hasHandler = (eventHandler instanceof InvokeDropBoxEvent.Handler);                 break;
+			case INVOKE_EDIT_IN_PLACE:					hasHandler = (eventHandler instanceof InvokeEditInPlaceEvent.Handler);             break;
 			case INVOKE_EMAIL_NOTIFICATION:         	hasHandler = (eventHandler instanceof InvokeEmailNotificationEvent.Handler);       break;
 			case INVOKE_HELP:                       	hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                    break;
 			case INVOKE_IMPORT_ICAL_FILE:           	hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);          break;

@@ -57,7 +57,9 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.ProfileBinder;
+import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.SimpleName.SimpleNamePK;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -125,6 +127,7 @@ public class GwtMenuHelper {
 
 	private final static String ABOUT					= "about";
 	private final static String ACCESS_CONTROL			= "accessControl";
+	private final static String ACTIVITY_REPORT			= "activityReport";
 	private final static String ADD_BINDER				= "addBinder";
 	private final static String ADD_FOLDER				= "addFolder";
 	private final static String ADD_WORKSPACE			= "addWorkspace";
@@ -132,6 +135,7 @@ public class GwtMenuHelper {
 	private final static String BRANDING				= "branding";
 	private final static String CALENDAR				= "calendar";
 	private final static String CATEGORIES				= "categories";
+	private final static String CHANGE_ENTRY_TYPE		= "changeEntryType";
 	private final static String CLIPBOARD				= "clipboard";
 	private final static String CONFIGURATION			= "configuration";
 	private final static String CONFIGURE_ACCESSORIES	= "configureAccessories";
@@ -141,32 +145,39 @@ public class GwtMenuHelper {
 	private final static String COPY					= "copy";
 	private final static String DELETE					= "delete";
 	private final static String DISPLAY_STYLES			= "display_styles";
+	private final static String EDIT_IN_PLACE			= "editInPlace";
 	private final static String EMAIL					= "email";
 	private final static String FOLDER_VIEWS			= "folderViews";
 	private final static String ICALENDAR				= "iCalendar";
 	private final static String IMPORT_EXPORT			= "importExport";
+	private final static String LOCK					= "lock"; 
 	private final static String MANAGE_DEFINITIONS		= "manageDefinitions";
 	private final static String MANAGE_TEMPLATES		= "manageTemplates";
 	private final static String MANUAL_SYNC				= "manualSync";
 	private final static String MOBILE_UI				= "mobileUI";
 	private final static String MODIFY					= "modify";
+	private final static String MORE					= "more";
 	private final static String MOVE					= "move";
 	private final static String PERMALINK				= "permalink";
 	private final static String PURGE					= "purge";
 	private final static String REPORTS					= "reports";
 	private final static String SCHEDULE_SYNC			= "scheduleSync";
+	private final static String SEEN					= "seen";
 	private final static String SEND_EMAIL				= "sendEmail";
 	private final static String SHARE					= "share";
 	private final static String SIMPLE_NAMES			= "simpleNames";
 	private final static String SS_FORUM				= "ss_forum";
+	private final static String SUBSCRIBE			    = "subscribe";
 	private final static String SUBSCRIBE_ATOM			= "subscribeAtom";
 	private final static String SUBSCRIBE_RSS			= "subscribeRSS";
 	private final static String TRASH					= "trash";
+	private final static String UNLOCK					= "unlock"; 
 	private final static String UNSEEN					= "unseen";
 	private final static String VIEW_AS_WEBDAV			= "viewaswebdav";
 	private final static String WEBDAVURL				= "webdavUrl";
 	private final static String WHATS_NEW				= "whatsnew";
 	private final static String WHO_HAS_ACCESS			= "whohasaccess";
+	private final static String WORKFLOW_HISTORY_REPORT	= "workflowHistoryReport";
 
 	/*
 	 * Inhibits this class from being instantiated. 
@@ -1723,11 +1734,16 @@ public class GwtMenuHelper {
 		if (!(fe.isPreDeleted())) {
 			// No!  Generate the toolbar item for the permalink to the
 			// entry.
-			boolean hasEvents = MiscUtil.hasItems(fe.getEvents());
+			FileAttachment	fa           = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
+			String			webDavUrl    = ((null == fa) ? null : SsfsUtil.getInternalAttachmentUrl(request, fe.getParentBinder(), fe, fa));
+			boolean			hasWebDavUrl = MiscUtil.hasString(webDavUrl     );
+			boolean			hasEvents    = MiscUtil.hasItems( fe.getEvents());
+			
 			String key;
-			if (hasEvents)
-			     key = "toolbar.menu.folderEntryPermalink.iCal";
-			else key = "toolbar.menu.folderEntryPermalink";
+			if      (hasEvents && hasWebDavUrl) key = "toolbar.menu.folderEntryPermalink.iCal.webdav";
+			else if (hasEvents)                 key = "toolbar.menu.folderEntryPermalink.iCal";
+			else if (hasWebDavUrl)              key = "toolbar.menu.folderEntryPermalink.webdav";
+			else                                key = "toolbar.menu.folderEntryPermalink";
 			String permaLink = PermaLinkUtil.getPermalink(request, fe);
 			ToolbarItem permalinkTBI = new ToolbarItem(PERMALINK);
 			markTBITitle(permalinkTBI, key          );
@@ -1742,6 +1758,15 @@ public class GwtMenuHelper {
 				markTBITitle(icalTBI, "toolbar.menu.iCalendar" );
 				markTBIUrl(  icalTBI, icalUrl                  );
 				footerToolbar.addNestedItem(icalTBI);
+			}
+			
+			// Can we get a WebDAV URL for this entry?
+			if (hasWebDavUrl) {
+				// Yes!  Generate a WebDAV URL toolbar item.
+				ToolbarItem webDavTBI = new ToolbarItem(WEBDAVURL);
+				markTBITitle(webDavTBI, "toolbar.menu.webdavUrl" );
+				markTBIUrl(  webDavTBI, webDavUrl                );
+				footerToolbar.addNestedItem(webDavTBI            );
 			}
 		}
 	}
@@ -2758,63 +2783,246 @@ public class GwtMenuHelper {
 
 			// Define some variables we'll need to build the toolbar
 			// items.
-			User    		user    = GwtServerHelper.getCurrentUser();
-			boolean			isGuest = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
-			String			feId    = String.valueOf(fe.getId());
-			ToolbarItem		actionTBI;
+			User    			user     = GwtServerHelper.getCurrentUser();
+			boolean				isGuest  = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+			boolean				isFilr   = Utils.checkIfFilr();
+			Folder				folder   = fe.getParentFolder();
+			String				feId     = String.valueOf(fe.getId());
+			String				folderId = String.valueOf(folder.getId());
+			FolderModule		fm       = bs.getFolderModule();
+			AdaptedPortletURL	url;
+			ToolbarItem			actionTBI;
 
 			// Does the user have rights to share this entry?
 			SharingModule sm = bs.getSharingModule();
 			if ((!isGuest) && sm.isSharingEnabled() && sm.testAddShareEntity(fe)) {
 				// Yes!  Add a share toolbar item for it.
 				actionTBI = new ToolbarItem(SHARE);
-				markTBITitle(  actionTBI, "toolbar.shareSelected"             );
-				markTBIEvent(  actionTBI, TeamingEvents.SHARE_SELECTED_ENTRIES);
-				markTBIEntryId(actionTBI, feId                                );
+				markTBITitle(   actionTBI, "toolbar.shareSelected"             );
+				markTBIEvent(   actionTBI, TeamingEvents.SHARE_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                  );
 				reply.add(actionTBI);
 			}
 
+			// Can the user run the edit-in-place editor on this item's
+			// file?
+			HistoryStamp	lStamp = fe.getReservation();
+			boolean			locked = (null != lStamp); 
+			if ((!locked) && fm.testAccess(fe, FolderOperation.modifyEntry)) {
+				FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
+				if (null != fa) {
+					String operatingSystem  = BrowserSniffer.getOSInfo(request);
+					String relativeFilePath = fa.getFileItem().getName();
+					String strOpenInEditor  = SsfsUtil.openInEditor(relativeFilePath, operatingSystem);
+					if (MiscUtil.hasString(strOpenInEditor)) {
+						String strEditorType;
+						if (BrowserSniffer.is_ie(request))
+						     strEditorType = SsfsUtil.attachmentEditTypeForIE();
+						else strEditorType = SsfsUtil.attachmentEditTypeForNonIE();
+						if (MiscUtil.hasString(strEditorType)) {
+							// Yes!  Added an edit-in-place toolbar
+							// item for it.
+							actionTBI = new ToolbarItem(EDIT_IN_PLACE);
+							markTBITitle(   actionTBI, "file.editFile"                   );
+							markTBIEvent(   actionTBI, TeamingEvents.INVOKE_EDIT_IN_PLACE);
+							markTBIEntryIds(actionTBI, fe                                );
+							markTBIEditInPlace(
+								actionTBI,
+								strOpenInEditor,
+								strEditorType,
+								fa.getId(),
+								SsfsUtil.getInternalAttachmentUrl(request, folder, fe, fa));
+							reply.add(actionTBI);
+						}
+					}
+				}
+			}
+
+			// Does the user have rights to move this entry to the
+			// trash?
+			if (fm.testAccess(fe, FolderOperation.preDeleteEntry)) {
+				// Yes!  Add a delete toolbar item for it.
+				actionTBI = new ToolbarItem(DELETE);
+				markTBITitle(   actionTBI, "toolbar.delete"                     );
+				markTBIEvent(   actionTBI, TeamingEvents.DELETE_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                   );
+				reply.add(actionTBI);
+			}
+			
+
+			// - - - //
+			// More  //
+			// - - - //
+			
+			// Construct the More menu drop down Toolbar menu items.
+			ToolbarItem dropdownTBI = new ToolbarItem(MORE);
+			markTBITitle(dropdownTBI, "toolbar.more");
+
+			// Can the user copy this entry?
+			if (fe.isTop() && fm.testAccess(fe, FolderOperation.copyEntry)) {
+				// Yes!  Add a copy toolbar item for it.
+				actionTBI = new ToolbarItem(COPY);
+				markTBITitle(actionTBI, "toolbar.copy"                     );
+				markTBIEvent(actionTBI, TeamingEvents.COPY_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                              );
+				dropdownTBI.addNestedItem(actionTBI);
+			}
+			
+			// Can the user move this entry?
+			boolean isLockedByLoggedInUser = (locked && lStamp.getPrincipal().getId().equals(user.getId()));
+			if (((!locked) || isLockedByLoggedInUser) && fe.isTop() && fm.testAccess(fe, FolderOperation.moveEntry)) {
+				// Yes!  Add a move toolbar item for it.
+				actionTBI = new ToolbarItem(MOVE);
+				markTBITitle(   actionTBI, "toolbar.move"                     );
+				markTBIEvent(   actionTBI, TeamingEvents.MOVE_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                 );
+				dropdownTBI.addNestedItem(actionTBI);
+			}
+			
+			// Does the user have rights to purge this entry?
+			if (fm.testAccess(fe, FolderOperation.deleteEntry)) {
+				// Yes!  Add a purge toolbar item for it.
+				actionTBI = new ToolbarItem(PURGE);
+				markTBITitle(   actionTBI, "toolbar.purge"                     );
+				markTBIEvent(   actionTBI, TeamingEvents.PURGE_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                  );
+				reply.add(actionTBI);
+			}
+			
+			// Can the user lock this entry?
+			if (fm.testAccess(fe, FolderOperation.reserveEntry)) {
+				// Yes!  Is the entry currently locked?
+				if (!locked) {
+					// No!  Add a lock toolbar item for it.
+					actionTBI = new ToolbarItem(LOCK);
+					markTBITitle(   actionTBI, "toolbar.lock.entry");
+					markTBIEvent(   actionTBI, TeamingEvents.LOCK_SELECTED_ENTRIES);
+					markTBIEntryIds(actionTBI, fe                                 );
+					dropdownTBI.addNestedItem(actionTBI);
+				}
+				
+				else {
+					// Yes, the entry is currently locked!  If the
+				    // person who has locked the entry and the logged
+					// in user are the same or the person who has
+					// logged in is the binder administrator we allow
+					// an unlock.
+					boolean	isBinderAdmin = fm.testAccess(fe, FolderOperation.overrideReserveEntry);
+					if (isBinderAdmin || isLockedByLoggedInUser) {
+						actionTBI = new ToolbarItem(UNLOCK);
+						markTBITitle(   actionTBI, "toolbar.unlock.entry");
+						markTBIEvent(   actionTBI, TeamingEvents.UNLOCK_SELECTED_ENTRIES);
+						markTBIEntryIds(actionTBI, fe                                   );
+						dropdownTBI.addNestedItem(actionTBI);
+					}
+				}
+			}
+
+			// Add an toolbar item for marking the item read or unread.
+			SeenMap seenMap = bs.getProfileModule().getUserSeenMap(null);
+			boolean entrySeen = seenMap.checkIfSeen(fe);
+			if (entrySeen) {
+				actionTBI = new ToolbarItem(UNSEEN);
+				markTBITitle(   actionTBI, "toolbar.markUnread.entry"                );
+				markTBIEvent(   actionTBI, TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                        );
+				dropdownTBI.addNestedItem(actionTBI);
+			}
+			else {
+				actionTBI = new ToolbarItem(SEEN);
+				markTBITitle(   actionTBI, "toolbar.markRead.entry"                );
+				markTBIEvent(   actionTBI, TeamingEvents.MARK_READ_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                      );
+				dropdownTBI.addNestedItem(actionTBI);
+			}
+
+			// Add a separate between the main the above and the entry
+			// management commands.
+			dropdownTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+
 			// Does the user have rights to modify this entry?
-			Folder			folder   = fe.getParentFolder();
-			String			folderId = String.valueOf(folder.getId());
-			FolderModule	fm       = bs.getFolderModule();
 			if (fm.testAccess(fe, FolderOperation.modifyEntry)) {
-				// Yes!  Add an edit toolbar item for it.
-				AdaptedPortletURL url = createActionUrl(request);
+				// Yes!  Add an edit details toolbar item for it.
+				url = createActionUrl(request);
 				url.setParameter(WebKeys.ACTION,         WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
 				url.setParameter(WebKeys.URL_ENTRY_TYPE, fe.getEntityTypedId()             );
 				url.setParameter(WebKeys.URL_BINDER_ID,  folderId                          );
 				url.setParameter(WebKeys.URL_ENTRY_ID,   feId                              );
 				
 				actionTBI = new ToolbarItem(MODIFY);
-				markTBIPopup(actionTBI                );
-				markTBITitle(actionTBI, "toolbar.edit");
-				markTBIUrl(  actionTBI, url           );
+				markTBIPopup(actionTBI                        );
+				markTBITitle(actionTBI, "toolbar.edit.details");
+				markTBIUrl(  actionTBI, url                   );
 				reply.add(actionTBI);
 			}
 			
-			// Does the user have rights to move this entry to the
-			// trash?
-			if (fm.testAccess(fe, FolderOperation.preDeleteEntry)) {
-				// Yes!  Add a delete toolbar item for it.
-				actionTBI = new ToolbarItem(DELETE);
-				markTBITitle(  actionTBI, "toolbar.delete"                     );
-				markTBIEvent(  actionTBI, TeamingEvents.DELETE_SELECTED_ENTRIES);
-				markTBIEntryId(actionTBI, feId                                 );
-				reply.add(actionTBI);
+			// Can the user manage access controls on this entry?
+			if (fm.testAccess(fe, FolderOperation.readEntry) && fe.isTop()) {
+				// Yes!  Add an access control toolbar item for it.
+				url = createActionUrl(request);
+				url.setParameter(WebKeys.ACTION,            WebKeys.ACTION_ACCESS_CONTROL);
+				url.setParameter(WebKeys.URL_WORKAREA_ID,   feId                         );
+				url.setParameter(WebKeys.URL_WORKAREA_TYPE, fe.getWorkAreaType()         );
+				
+				actionTBI = new ToolbarItem(ACCESS_CONTROL);
+				markTBIPopup(actionTBI                              );
+				markTBITitle(actionTBI, "toolbar.menu.accessControl");
+				markTBIUrl(  actionTBI, url                         );
+				dropdownTBI.addNestedItem(actionTBI);
 			}
-			
-			// More items:
-			// - Access Control...
-			// - Lock Selected Entries...
-			// - Share this Entry...
-			// - Move...
-			// - Copy...
-			// - Change Entry Type...
-			ToolbarItem dropdownTBI = new ToolbarItem("1_more");
-			markTBITitle(dropdownTBI, "toolbar.more");
-			
-//!			...this needs to be implemented...
+
+			// Can the user change entry types of this entry?
+			if ((!isFilr) && fm.testAccess(fe, FolderOperation.changeEntryType)) {
+				// Yes!  Add a change entry type toolbar item for it.
+				actionTBI = new ToolbarItem(CHANGE_ENTRY_TYPE);
+				markTBITitle(   actionTBI, "toolbar.changeEntryType"                       );
+				markTBIEvent(   actionTBI, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                              );
+				dropdownTBI.addNestedItem(actionTBI);
+			}
+
+			// If this isn't the guest user...
+			if (!isGuest) {
+				// ...add a subscribe toolbar item.
+				actionTBI = new ToolbarItem(SUBSCRIBE);
+				markTBITitle(   actionTBI, "toolbar.menu.subscribeToEntrySelected" );
+				markTBIEvent(   actionTBI, TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                      );
+				dropdownTBI.addNestedItem(actionTBI);
+
+				// Does the user have an email address?
+				if (MiscUtil.hasString(user.getEmailAddress())) {
+					// Yes!  Add an email contributors toolbar item for
+					// it.
+					url = createActionUrl(request);
+					url.setParameter(WebKeys.ACTION,        WebKeys.ACTION_SEND_ENTRY_EMAIL);
+					url.setParameter(WebKeys.URL_BINDER_ID, folderId                       );
+					url.setParameter(WebKeys.URL_ENTRY_ID,  feId                           );
+					
+					actionTBI = new ToolbarItem(SEND_EMAIL                         );
+					markTBITitle(actionTBI, "toolbar.menu.sendMail"                );
+					markTBIEvent(actionTBI, TeamingEvents.INVOKE_SEND_EMAIL_TO_TEAM);
+					markTBIUrl(  actionTBI, url                                    );
+					dropdownTBI.addNestedItem(actionTBI);
+				}
+
+				// Can the use export this entry?
+				if (fe.isTop() && bs.getBinderModule().testAccess(folder, BinderOperation.export)) {
+					// Yes!  Add an export toolbar item for it.
+					url = createActionUrl(request);
+					url.setParameter(WebKeys.ACTION,        WebKeys.ACTION_EXPORT_IMPORT);
+					url.setParameter(WebKeys.OPERATION,     WebKeys.OPERATION_EXPORT    );
+					url.setParameter(WebKeys.URL_BINDER_ID, folderId                    );
+					url.setParameter(WebKeys.URL_ENTRY_ID,  feId                        ); 
+					url.setParameter(WebKeys.URL_SHOW_MENU, "false"                     );
+					
+					actionTBI = new ToolbarItem(IMPORT_EXPORT);
+					markTBIPopup(actionTBI                            );
+					markTBITitle(actionTBI, "toolbar.menu.exportEntry");
+					markTBIUrl(  actionTBI, url                       );
+					dropdownTBI.addNestedItem(actionTBI);
+				}
+			}
 			
 			// If we added anything to the more toolbar...
 			if (!(dropdownTBI.getNestedItemsList().isEmpty())) {
@@ -2822,39 +3030,53 @@ public class GwtMenuHelper {
 				reply.add(dropdownTBI);
 			}
 			
-			// Reports:
-			// - Activity Report
-			// - Workflow History
-//!			...this needs to be implemented...
-			
-			// Status:
-			// - --none--
-			// - Official
-			// - Draft
-			// - Obsolete
-//!			...this needs to be implemented...
-			
-			// File Actions:
-			// - View This File
-			// - View This File as HTML
-			// - Edit This File
-			// - Download This File in a Zip File
-			// - Download All Files
-			// - Edit File Note...
-			// - Increment Major Version Number...
-			// - Delete This Version...
-			// - WebDAV URL
-//!			...this needs to be implemented...
-			
-			// Edit This File
-//!			...this needs to be implemented...
-			
-			// Footer commands:
-			// - E-mail Contributors...
-			// - Subscribe to This Entry
-			// - Export this entry
-//!			...this needs to be implemented...
 
+			// - - - - //
+			// Reports //
+			// - - - - //
+			
+			// Can the user perform reports on this entry?
+			if (fm.testAccess(fe, FolderOperation.report)) {
+				// Yes!  Construct the Reports menu drop down Toolbar
+				// menu items.
+				dropdownTBI = new ToolbarItem(REPORTS);
+				markTBITitle(dropdownTBI, "toolbar.reports");
+
+				// Add an activity reports toolbar item.
+				String servletUrl =
+					(WebUrlUtil.getServletRootURL(request)         +
+					WebKeys.SERVLET_DOWNLOAD_REPORT                +
+					"?" + WebKeys.URL_BINDER_ID   + "=" + folderId +
+					"&" + WebKeys.URL_ENTRY_ID    + "=" + feId     +
+					"&" + WebKeys.URL_REPORT_TYPE + "=entry"       +
+					"&forumOkBtn=OK"); 
+			
+				actionTBI = new ToolbarItem(ACTIVITY_REPORT);
+				markTBIPopup(actionTBI                            );
+				markTBITitle(actionTBI, "toolbar.reports.activity");
+				markTBIUrl(  actionTBI, servletUrl                );
+				dropdownTBI.addNestedItem(actionTBI);
+
+				// Are we in Filr mode?
+				if (!isFilr) {
+					// No!  Add a workflow history report toolbar item.
+					url = createActionUrl(request);
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WORKFLOW_HISTORY);
+					url.setParameter(WebKeys.URL_ENTITY_ID, feId);
+					url.setParameter(WebKeys.URL_FOLDER_ID, folderId);
+					
+					actionTBI = new ToolbarItem(WORKFLOW_HISTORY_REPORT);
+					markTBIPopup(actionTBI                                   );
+					markTBITitle(actionTBI, "toolbar.reports.workflowHistory");
+					markTBIUrl(  actionTBI, url                              );
+					dropdownTBI.addNestedItem(actionTBI);
+				}
+				
+				// Add the reports drop down toolbar item to the view
+				// entry toolbar.
+				reply.add(dropdownTBI);
+			}
+			
 			// If we get here, reply refers to the List<ToolbarItem>
 			// containing the toolbar items for the entry view.  Return
 			// it.
@@ -2970,16 +3192,34 @@ public class GwtMenuHelper {
 	}
 
 	/*
+	 * Marks a ToolbarItem with qualifiers for edit-in-place editing.
+	 */
+	private static void markTBIEditInPlace(ToolbarItem tbi, String openInEditor, String editorType, String attachmentId, String attachmentUrl) {
+		tbi.addQualifier("openInEditor",  openInEditor );
+		tbi.addQualifier("editorType",    editorType   );
+		tbi.addQualifier("attachmentId",  attachmentId );
+		tbi.addQualifier("attachmentUrl", attachmentUrl);
+	}
+	
+	/*
 	 * Marks a ToolbarItem with a entry ID.
 	 */
 	private static void markTBIEntryId(ToolbarItem tbi, String entryId) {
 		tbi.addQualifier("entryId", entryId);
 	}
 	
-	@SuppressWarnings("unused")
 	private static void markTBIEntryId(ToolbarItem tbi, Long entryId) {
 		// Always use the initial form of the method.
 		markTBIEntryId(tbi, String.valueOf(entryId));
+	}
+
+	/*
+	 * Marks a ToolbarItem with both the entry ID and binder ID from a
+	 * folder entry.
+	 */
+	private static void markTBIEntryIds(ToolbarItem tbi, FolderEntry fe) {
+		markTBIEntryId( tbi, fe.getId()                  );
+		markTBIBinderId(tbi, fe.getParentBinder().getId());
 	}
 	
 	/*
