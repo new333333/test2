@@ -176,7 +176,10 @@ public class UserResource extends AbstractPrincipalResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public void updateUser(@PathParam("id") long id, User user)
             throws WriteFilesException, WriteEntryDataException {
-        _getUser(id);
+        org.kablink.teaming.domain.User existing = _getUser(id);
+        if (user.isDisabled()!=null && user.isDisabled()!=existing.isDisabled()) {
+            getProfileModule().disableEntry(id, user.isDisabled());
+        }
         getProfileModule().modifyEntry(id, new RestModelInputData(user));
     }
 
