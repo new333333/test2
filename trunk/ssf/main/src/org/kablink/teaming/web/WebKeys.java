@@ -994,6 +994,7 @@ public class WebKeys {
     public static final String FOLDER_DOM_TREE="ssFolderDomTree";
     public static final String FOLDER_END_DATE="ssFolderEndDate";
     public static final String FOLDER_ENTRIES="ssFolderEntries";
+    public static final String FOLDER_ENTRIES_TOP_ENTRIES="ssFolderEntriesTopEntries";
     public static final String FOLDER_ENTRIES_WEBDAVURLS="ssFolderEntriesWebDAVURLs";
     public static final String FOLDER_ENTRYPEOPLE="ssFolderEntryPeople";
     public static final String FOLDER_ENTRYPLACES="ssFolderEntryPlaces";
@@ -1421,6 +1422,7 @@ public class WebKeys {
     public static final String TYPE3="ss_type3";
     public static final String SEARCH_NODES="ssSearchNodes";
 	public static final Object SEARCH_SCOPE = "ss_searchScope";
+	public static final Object SEARCH_INCLUDE_NESTED_BINDERS = "ss_searchIncludeNestedBinders";
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String SIDEBAR_WORKSPACE_TREE="ssSidebarWsTree";
     public static final String SIDEBAR_CURRENT_WORKSPACE="ssSidebarCurrentWorkspace";

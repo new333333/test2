@@ -396,6 +396,11 @@ public interface ObjectKeys {
     public static final String SEARCH_USER_MAX_HITS = "userMaxHits";
     public static final String SEARCH_USER_OFFSET = "userOffset";
     public static final String SEARCH_INCLUDE_NESTED_BINDERS = "includeNestedBinders";
+    public static final String SEARCH_SCOPE = "scope";
+    public static final String SEARCH_SCOPE_ALL = "all";
+    public static final String SEARCH_SCOPE_MY_FILES = "myFiles";
+    public static final String SEARCH_SCOPE_NET_FOLDERS = "netFolders";
+    public static final String SEARCH_SCOPE_CURRENT = "current";
     public static final int SEARCH_MAX_HITS_DEFAULT = 10;
     public static final int SEARCH_MAX_HITS_SUB_BINDERS = 1000;
     public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES = 1000;
@@ -419,6 +424,8 @@ public interface ObjectKeys {
     public static final String SEARCH_END_DATE = "endDate";
     public static final String SEARCH_FILTER_AND = "searchFilterAnd";
     public static final String SEARCH_FILTER_OR = "searchFilterOr";
+    public static final String SEARCH_CRITERIA_AND = "searchCriteriaAnd";
+    public static final String SEARCH_CRITERIA_OR = "searchCriteriaOr";
     public static final String SEARCH_DASHBOARD_CURRENT_BINDER_ID = "searchDashboardBinderId";
     public static final String PAGE_ENTRIES_PER_PAGE = "entriesPerPage";
     public static final String SEARCH_PAGE_ENTRIES_PER_PAGE = "entriesPerSearchPage";

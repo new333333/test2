@@ -72,6 +72,7 @@ import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
 
 
 public class SearchUtils {
@@ -280,7 +281,23 @@ public class SearchUtils {
   			currentBinderId = (String)options.get(ObjectKeys.SEARCH_DASHBOARD_CURRENT_BINDER_ID);
   		}
   		org.dom4j.Document qTree = SearchFilterToSearchBooleanConverter.convertSearchFilterToSearchBoolean(searchFilter, currentBinderId);
-   		return qTree;
+   		
+  		//See if there are criteria to be merged
+  		if (options != null && options.containsKey(ObjectKeys.SEARCH_CRITERIA_AND)) {
+  			Criteria crit = (Criteria)options.get(ObjectKeys.SEARCH_CRITERIA_AND);
+  			if (crit != null) {
+  				Element rootEle = crit.toQuery().getRootElement();
+  				if (rootEle != null) {
+  						Element critEle = rootEle.element(Constants.AND_ELEMENT);
+  						Element qTreeRootEle = qTree.getRootElement();
+  						if (critEle != null && qTreeRootEle != null && 
+  								qTreeRootEle.element(Constants.AND_ELEMENT) != null) {
+  							qTreeRootEle.element(Constants.AND_ELEMENT).add((Element)critEle.clone());
+  						}
+  				}
+  			}
+  		}
+  		return qTree;
   	}
   	
   	public static void getQueryFields(org.dom4j.Document queryTree, Map options) {

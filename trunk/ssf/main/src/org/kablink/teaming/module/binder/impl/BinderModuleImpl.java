@@ -269,6 +269,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				getAccessControlManager().checkOperation(binder,
 						WorkAreaOperation.BINDER_ADMINISTRATION);
 				break;
+			case changeACL:
+				getAccessControlManager().checkOperation(binder,
+						WorkAreaOperation.CHANGE_ACCESS_CONTROL);
+				break;
 			case moveBinder:
 				if(binder.isAclExternallyControlled()) { // Net Folder or its sub-folder
 					getAccessControlManager().checkOperation(binder.getParentBinder(), WorkAreaOperation.DELETE_ENTRIES);
@@ -333,6 +337,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					getAccessControlManager().checkOperation(binder,
 							WorkAreaOperation.READ_ENTRIES);
 				}
+				break;
+			case allowSharing:
+				getAccessControlManager().checkOperation(binder,
+						WorkAreaOperation.ALLOW_SHARING);
 				break;
 			default:
 				throw new NotSupportedException(operation.toString(),

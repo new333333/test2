@@ -74,6 +74,7 @@ public interface BinderModule {
 	public enum BinderOperation {
 		addFolder,
 		addWorkspace,
+		changeACL,
 		copyBinder,
 		restoreBinder,
 		preDeleteBinder,
@@ -94,7 +95,8 @@ public interface BinderModule {
 		manageSimpleName,
 		export,
 		deleteEntries,
-		updateModificationTime
+		updateModificationTime,
+		allowSharing
 	}
     /**
      * Add a new <code>Folder</code> or <code>Workspace</code>.  Use definition type to determine which

@@ -101,6 +101,7 @@ public interface FolderModule {
 	   changeEntryTimestamps(true, false),
 	   entryOwnerSetAcl(true, false),
 	   setEntryAcl(true, false),
+	   changeACL(true, true),
 	   updateModificationStamp(false, true),
 	   allowSharing(false, true),
 	   
