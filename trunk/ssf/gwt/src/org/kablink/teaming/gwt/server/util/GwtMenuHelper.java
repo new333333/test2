@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.server.util;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1215,42 +1214,31 @@ public class GwtMenuHelper {
 	 * selected entry.
 	 */
 	private static void constructEntryViewHtmlItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
-		// Is the entry a file entry?
-		String family = GwtServerHelper.getFolderEntityFamily(bs, fe);
-		if (GwtServerHelper.isFamilyFile(family)) {
-			Collection<FileAttachment>	atts = fe.getFileAttachments();
-			// Yes!  Scan its attachments.
-	        for (FileAttachment fa : atts) {
-	        	// Does this attachment have a filename?
-	        	String fName = fa.getFileItem().getName();
-	        	if (MiscUtil.hasString(fName)) {
-	    			// Yes!  Do we support viewing that type of file as
-	        		// HTML?
-	        		if (SsfsUtil.supportsViewAsHtml(fName)) {
-						try {
-			        		// Yes!  Generate a toolbar item contain
-							// the URL to view its HTML.
-							ViewFileInfo vfi = new ViewFileInfo();
-							vfi.setFileId(     fa.getId());
-							vfi.setEntityId(   new EntityId(fe.getParentFolder().getId(), fe.getId(), EntityType.folderEntry.name()));
-							vfi.setFileTime(   String.valueOf(fa.getModification().getDate().getTime()));
-							vfi.setViewFileUrl(GwtServerHelper.getViewFileUrl(request, vfi));
-							
-			    			ToolbarItem viewHtmlTBI = new ToolbarItem("1_viewHtml");
-			    			markTBITitle(              viewHtmlTBI, "toolbar.view.html" );
-			    			markTBIUrlAsTargetedAnchor(viewHtmlTBI, vfi.getViewFileUrl());
-			    			entryToolbar.addNestedItem(viewHtmlTBI                      );
-						}
-						catch (GwtTeamingException ex) {/* Ignored. */}
-	        		}
-
-	        		// We stop with the first attachment that has a
-	        		// file name.  If we can't view that as HTML, we
-	        		// don't include the menu option.
-					break;
-	        	}
-	        }
-		}
+		// Is the entry a file entry with an attachment with a
+		// filename?
+		FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
+		if (null != fa) {
+			// Yes!  Do we support viewing that type of file as
+    		// HTML?
+			String fName = fa.getFileItem().getName();
+    		if (SsfsUtil.supportsViewAsHtml(fName)) {
+				try {
+	        		// Yes!  Generate a toolbar item contain the URL to
+					// view its HTML.
+					ViewFileInfo vfi = new ViewFileInfo();
+					vfi.setFileId(     fa.getId());
+					vfi.setEntityId(   new EntityId(fe.getParentFolder().getId(), fe.getId(), EntityType.folderEntry.name()));
+					vfi.setFileTime(   String.valueOf(fa.getModification().getDate().getTime()));
+					vfi.setViewFileUrl(GwtServerHelper.getViewFileUrl(request, vfi));
+					
+	    			ToolbarItem viewHtmlTBI = new ToolbarItem("1_viewHtml");
+	    			markTBITitle(              viewHtmlTBI, "toolbar.view.html" );
+	    			markTBIUrlAsTargetedAnchor(viewHtmlTBI, vfi.getViewFileUrl());
+	    			entryToolbar.addNestedItem(viewHtmlTBI                      );
+				}
+				catch (GwtTeamingException ex) {/* Ignored. */}
+    		}
+    	}
 	}
 	
 	/*
@@ -2790,7 +2778,7 @@ public class GwtMenuHelper {
 			Folder			folder   = fe.getParentFolder();
 			String			folderId = String.valueOf(folder.getId());
 			FolderModule	fm       = bs.getFolderModule();
-			if (fm.testAccess(folder, FolderOperation.modifyEntry)) {
+			if (fm.testAccess(fe, FolderOperation.modifyEntry)) {
 				// Yes!  Add an edit toolbar item for it.
 				AdaptedPortletURL url = createActionUrl(request);
 				url.setParameter(WebKeys.ACTION,         WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
@@ -2807,7 +2795,7 @@ public class GwtMenuHelper {
 			
 			// Does the user have rights to move this entry to the
 			// trash?
-			if (fm.testAccess(folder, FolderOperation.preDeleteEntry)) {
+			if (fm.testAccess(fe, FolderOperation.preDeleteEntry)) {
 				// Yes!  Add a delete toolbar item for it.
 				actionTBI = new ToolbarItem(DELETE);
 				markTBITitle(  actionTBI, "toolbar.delete"                     );

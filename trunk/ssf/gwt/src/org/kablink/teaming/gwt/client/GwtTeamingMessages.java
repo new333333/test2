@@ -461,6 +461,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveEmailNotificationInfo();
 	String rpcFailure_SaveFileSyncAppConfiguration();
 	String rpcFailure_SaveFolderColumns();
+	String rpcFailure_SaveFolderEntryDlgPosition();
 	String rpcFailure_SaveFolderPinningState();
 	String rpcFailure_SaveFolderSort();
 	String rpcFailure_SavePersonalPreferences();

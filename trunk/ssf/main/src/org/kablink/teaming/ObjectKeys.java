@@ -488,6 +488,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_APPCONFIGS = "userAppConfigs";
     public static final String USER_PROPERTY_FAVORITES = "userFavorites";
     public static final String USER_PROPERTY_FOLDER_COLUMNS = "userFolderColumns";
+    public static final String USER_PROPERTY_FOLDER_ENTRY_DLG_POSITION = "userFolderEntryDlgPosition";
     public static final String USER_PROPERTY_BINDER_SHOW_ACCESSORIES = "userBinderShowAccessories";
     public static final String USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER = "userFolderColumnSortOrder";
     public static final String USER_PROPERTY_FOLDER_COLUMN_TITLES = "userFolderColumnTitles";

@@ -38,7 +38,12 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryComposite.FolderEntryCompositeClient;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.EditCanceledHandler;
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderEntryDlgPositionCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -48,6 +53,7 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -88,8 +94,20 @@ public class FolderEntryDlg extends DlgBox {
 		addStyleName("vibe-folderEntryDlgBox");
 		createAllDlgContent(
 			"",										// Caption displayed by FolderEntryComposite, not the dialog.
-			DlgBox.getSimpleSuccessfulHandler(),	// The dialog's EditSuccessfulHandler.
-			DlgBox.getSimpleCanceledHandler(),		// The dialog's EditCanceledHandler.
+			new EditSuccessfulHandler() {			// The dialog's EditSuccessfulHandler.
+				@Override
+				public boolean editSuccessful(Object callbackData) {
+					savePositionAsync();
+					return true;
+				}
+			},
+			new EditCanceledHandler() {				// The dialog's EditCanceledHandler.
+				@Override
+				public boolean editCanceled() {
+					savePositionAsync();
+					return true;
+				}
+			},
 			null);									// Create callback data.  Unused. 
 	}
 
@@ -271,6 +289,48 @@ public class FolderEntryDlg extends DlgBox {
 		
 		// ...and start populating the dialog.
 		populateDlgAsync();
+	}
+
+	/*
+	 * Asynchronously saves the position of the view dialog in the
+	 * user's preferences.
+	 */
+	private void savePositionAsync() {
+		// Get the dialog's current position...
+		final int x  = getAbsoluteLeft();
+		final int y  = getAbsoluteTop();
+		final int cx = m_fp.getOffsetWidth();
+		final int cy = m_fp.getOffsetHeight();
+		
+		ScheduledCommand doRun = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				// ...and save it.
+				savePositionNow(x, y, cx, cy);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doRun);
+	}
+	
+	/*
+	 * Synchronously saves the position of the view dialog in the
+	 * user's preferences.
+	 */
+	private void savePositionNow(int x, int y, int cx, int cy) {
+		SaveFolderEntryDlgPositionCmd cmd = new SaveFolderEntryDlgPositionCmd(x, y, cx, cy);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_SaveFolderEntryDlgPosition());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Nothing to do.
+			}
+		});
 	}
 
 	/*
