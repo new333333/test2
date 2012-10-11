@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,6 +52,7 @@ import java.util.regex.Pattern;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -113,7 +114,12 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.springframework.core.io.ClassPathResource;
 
-
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings({"unchecked", "unused"})
 public class DefinitionHelper {
 	protected static final Log logger = LogFactory.getLog(Definition.class);
 	
@@ -457,7 +463,7 @@ public class DefinitionHelper {
 		return true;
 	}
 
-    public static String getWebDAVURL(PortletRequest req, Folder folder, FolderEntry entry) {
+    private static String getWebDAVURL(PortletRequest pReq, HttpServletRequest hReq, Folder folder, FolderEntry entry) {
     	String strEntryURL = "";
 		if (entry.getEntryDefId() == null) {
 			getInstance().getDefinitionModule().setDefaultEntryDefinition(entry);
@@ -481,9 +487,18 @@ public class DefinitionHelper {
 				
 			}
 		}
-		strEntryURL = SsfsUtil.getEntryUrl(req, folder, entry, strRepositoryName);
+		if (null != pReq)
+		     strEntryURL = SsfsUtil.getEntryUrl(pReq, folder, entry, strRepositoryName);
+		else strEntryURL = SsfsUtil.getEntryUrl(hReq, folder, entry, strRepositoryName);
 		
 		return strEntryURL;
+    }
+    public static String getWebDAVURL(PortletRequest pReq, Folder folder, FolderEntry entry) {
+    	return getWebDAVURL(pReq, null, folder, entry);
+    }
+    
+    public static String getWebDAVURL(HttpServletRequest hReq, Folder folder, FolderEntry entry) {
+    	return getWebDAVURL(null, hReq, folder, entry);
     }
 	
     public static String findCaptionForValue(Document definitionConfig, Element configElement, String value)

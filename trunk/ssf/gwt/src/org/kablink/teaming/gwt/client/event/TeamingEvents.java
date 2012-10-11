@@ -108,6 +108,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,	// Invokes the Configure File Sync App dialog.
 	INVOKE_CONFIGURE_USER_ACCESS_DLG,	// Invokes the Configure User Access dialog.
 	INVOKE_DROPBOX,						// Invokes the files drop box (i.e., the file drag&drop applet.)
+	INVOKE_EDIT_IN_PLACE,				// Invokes the edit-in-place on the specified file.
 	INVOKE_EMAIL_NOTIFICATION,			// Invokes the Email Notification dialog.
 	INVOKE_MANAGE_NET_FOLDERS_DLG,		// Invokes the Manage Net Folders dialog
 	INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,	// Invokes the Manage Net Folder Roots dialog

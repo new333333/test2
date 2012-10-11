@@ -106,7 +106,8 @@ public class FooterPanel extends ToolPanelBase {
 		KEY_ICAL,
 		KEY_PERMALINK,
 		KEY_RSS,
-		KEY_WEBDAV,
+		KEY_WEBDAV_ENTRY,
+		KEY_WEBDAV_FOLDER,
 	}
 	private Map<StringIds, String> m_strMap;
 	
@@ -161,7 +162,8 @@ public class FooterPanel extends ToolPanelBase {
 			m_strMap.put(StringIds.KEY_ICAL,                m_messages.vibeBinderFooter_Filr_iCalUrlHint());
 			m_strMap.put(StringIds.KEY_PERMALINK,           m_messages.vibeBinderFooter_Filr_PermalinkHint());
 			m_strMap.put(StringIds.KEY_RSS,                 m_messages.vibeBinderFooter_Filr_RSSUrlHint());
-			m_strMap.put(StringIds.KEY_WEBDAV,              m_messages.vibeBinderFooter_Filr_WebDAVUrlHint());
+			m_strMap.put(StringIds.KEY_WEBDAV_ENTRY,        m_messages.vibeBinderFooter_Filr_WebDAVUrlHintEntry());
+			m_strMap.put(StringIds.KEY_WEBDAV_FOLDER,       m_messages.vibeBinderFooter_Filr_WebDAVUrlHintFolder());
 		}
 		
 		else {
@@ -180,7 +182,8 @@ public class FooterPanel extends ToolPanelBase {
 			m_strMap.put(StringIds.KEY_ICAL,                m_messages.vibeBinderFooter_Vibe_iCalUrlHint());
 			m_strMap.put(StringIds.KEY_PERMALINK,           m_messages.vibeBinderFooter_Vibe_PermalinkHint());
 			m_strMap.put(StringIds.KEY_RSS,                 m_messages.vibeBinderFooter_Vibe_RSSUrlHint());
-			m_strMap.put(StringIds.KEY_WEBDAV,              m_messages.vibeBinderFooter_Vibe_WebDAVUrlHint());
+			m_strMap.put(StringIds.KEY_WEBDAV_ENTRY,        m_messages.vibeBinderFooter_Vibe_WebDAVUrlHintEntry());
+			m_strMap.put(StringIds.KEY_WEBDAV_FOLDER,       m_messages.vibeBinderFooter_Vibe_WebDAVUrlHintFolder());
 		}
 	}
 	
@@ -449,8 +452,9 @@ public class FooterPanel extends ToolPanelBase {
 		}
 
 		// ...if there's a WebDAV URL defined...
-		ToolbarItem webDavTBI = m_footerTBI.getNestedToolbarItem("webdavUrl");
-		if (null != webDavTBI) {
+		ToolbarItem webDavTBI    = m_footerTBI.getNestedToolbarItem("webdavUrl");
+		boolean		hasWebDAVUrl = (null != webDavTBI);
+		if (hasWebDAVUrl) {
 			// ...add a link for it...
 			rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_WEBDAV));
 			renderRowLink(rowDataPanel, webDavTBI.getUrl());
@@ -482,14 +486,18 @@ public class FooterPanel extends ToolPanelBase {
 		cf.setColSpan(    0, 0, 2 );
 
 		// ...add rows for each item type...
-		boolean showWebDAV = (null != m_binderInfo);
+		boolean showWebDAV = hasWebDAVUrl;
 		if (!showWebDAV) {
-			showWebDAV = (!(m_entityId.isEntry()));
+			showWebDAV = (null != m_binderInfo);
+			if (!showWebDAV) {
+				showWebDAV = (!(m_entityId.isEntry()));
+			}
 		}
 		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_PERMALINK), m_strMap.get(StringIds.KEY_PERMALINK)      );
 		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),      m_strMap.get(StringIds.KEY_EMAIL_ADDRESSES));
 		if (showWebDAV) {
-			renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_WEBDAV),    m_strMap.get(StringIds.KEY_WEBDAV)         );
+			StringIds webDavId = ((null != m_binderInfo) ? StringIds.KEY_WEBDAV_FOLDER : StringIds.KEY_WEBDAV_ENTRY);
+			renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_WEBDAV),    m_strMap.get(webDavId)                     );
 		}
 		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),      m_strMap.get(StringIds.KEY_ICAL)           );
 		if (!m_isFilr) {

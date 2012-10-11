@@ -46,6 +46,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class ViewFolderEntryInfo implements IsSerializable {
+	//! Add a read/unread flag.
+	
 	private BinderIcons			m_entryIcons;			// The icons related to the entry in various sizes.
 	private boolean				m_descIsHtml;			// true -> The entry's description is in HTML.  false -> It's in plain text.
 	private boolean				m_lockedByCurrentUser;	// true -> The entry is locked by the current user.  false -> It's not locked, or locked by somebody else.
