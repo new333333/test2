@@ -37,6 +37,12 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ page import="org.kablink.teaming.web.util.WebHelper" %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
+
+<%
+boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
+%>
 
 <c:if test="${empty ss_namespace}">
 	<c:set var="ss_namespace" value="${renderResponse.namespace}" />
@@ -46,11 +52,16 @@
 	<c:set var="isDashboard" value="no"/>
 </c:if>
 
+<%
+	Map entriesSeen = new HashMap();
+%>
 
 		<ul class="ss_searchResult ss_nobullet">
 		<c:forEach var="entry" items="${ssFolderEntriesResults}" varStatus="status">
 			<jsp:useBean id="entry" type="java.util.HashMap" />
 			<%
+			if (!isFilr || (isFilr && !entriesSeen.containsKey(entry.get("_docId")))) {
+
 				String parentBinderId = "";
 				if (entry.containsKey("_binderId")) parentBinderId = (String)entry.get("_binderId");
 				boolean parentBinderPreDeleted = true;
@@ -581,6 +592,10 @@
 			    </c:otherwise>
 			</c:choose>	
 			</li>
+		  <%
+			entriesSeen.put(entry.get("_docId"), "1");
+		  }
+		  %>
 		</c:forEach>
 		</ul>
 		

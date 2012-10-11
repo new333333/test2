@@ -57,8 +57,10 @@ import org.kablink.teaming.jobs.ExpiredShareHandler;
 import org.kablink.teaming.jobs.LicenseMonitor;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.sharing.SharingModule;
@@ -115,13 +117,15 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			//Check that the user is either the entity owner, or has the right to share entities
 			if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
 				FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
-				if (accessControlManager.testOperation(user, fe, WorkAreaOperation.ALLOW_SHARING)) {
+				if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
 					return;
 				}
 				//User didn't have AllowSharing, so now check if user is owner of the entity
 				if (user.getId().equals(fe.getCreation().getPrincipal().getId())) {
-					//This is the owner of the entry. Allow the sharing.
-					return;
+					//This is the owner of the entry. Allow the sharing if the user has right to change acl.
+					if (folderModule.testAccess(fe, FolderOperation.changeACL)) {
+						return;
+					}
 				}
 			} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
 					entityIdentifier.getEntityType().equals(EntityType.workspace)) {
@@ -131,13 +135,15 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 						!SPropsUtil.getBoolean("sharing.netFolders.allowed", false)) {
 					throw new AccessControlException("errorcode.sharing.netfolders.notAllowed", new Object[] {});
 				}
-				if (accessControlManager.testOperation(user, binder, WorkAreaOperation.ALLOW_SHARING)) {
+				if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
 					return;
 				}
 				//User didn't have AllowSharing, so now check if user is owner of the entity
 				if (user.getId().equals(binder.getCreation().getPrincipal().getId())) {
-					//This is the owner of the binder. Allow the sharing.
-					return;
+					//This is the owner of the binder. Allow the sharing if the user has right to change acl.
+					if (binderModule.testAccess(binder, BinderOperation.changeACL)) {
+						return;
+					}
 				}
 			}
 			break;
@@ -150,13 +156,15 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			//Check if this is the owner of the entity
 			if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
 				FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
-				if (accessControlManager.testOperation(user, fe, WorkAreaOperation.ALLOW_SHARING)) {
+				if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
 					return;
 				}
 				//User didn't have AllowSharing, so now check if user is owner of the entity
 				if (user.getId().equals(fe.getCreation().getPrincipal().getId())) {
 					//This is the owner of the entry. Allow the modification.
-					return;
+					if (folderModule.testAccess(fe, FolderOperation.changeACL)) {
+						return;
+					}
 				}
 			} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
 					entityIdentifier.getEntityType().equals(EntityType.workspace)) {
@@ -166,12 +174,14 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 						!SPropsUtil.getBoolean("sharing.netFolders.allowed", false)) {
 					throw new AccessControlException("errorcode.sharing.netfolders.notAllowed", new Object[] {});
 				}
-				if (accessControlManager.testOperation(user, binder, WorkAreaOperation.ALLOW_SHARING)) {
+				if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
 					return;
 				}
 				if (user.getId().equals(binder.getCreation().getPrincipal().getId())) {
 					//This is the owner of the binder. Allow the modification.
-					return;
+					if (binderModule.testAccess(binder, BinderOperation.changeACL)) {
+						return;
+					}
 				}
 			}
 			break;
@@ -186,14 +196,18 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
 				if (user.getId().equals(fe.getCreation().getPrincipal().getId())) {
 					//This is the owner of the entry. Allow the modification.
-					return;
+					if (folderModule.testAccess(fe, FolderOperation.changeACL)) {
+						return;
+					}
 				}
 			} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
 					entityIdentifier.getEntityType().equals(EntityType.workspace)) {
 				Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
 				if (user.getId().equals(binder.getCreation().getPrincipal().getId())) {
 					//This is the owner of the binder. Allow the modification.
-					return;
+					if (binderModule.testAccess(binder, BinderOperation.changeACL)) {
+						return;
+					}
 				}
 			}
 			//Check for site administrator
@@ -247,15 +261,17 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			if (de.getEntityType().equals(EntityType.folderEntry)) {
 				// Yes!  Does the user have AllowSharing rights on it?
 				FolderEntry fe = ((FolderEntry) de);
-				if (accessControlManager.testOperation(user, fe, WorkAreaOperation.ALLOW_SHARING)) {
+				if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
 					// Yes!
 					reply = true;
 				}
 				
 				// Is the user the owner of the folder entry?
 				else if (user.getId().equals(fe.getCreation().getPrincipal().getId())) {
-					// Yes!
-					reply = true;
+					// Yes, but also check if the owner has the Change Acl right!
+					if (folderModule.testAccess(fe, FolderOperation.changeACL)) {
+						reply = true;
+					}
 				}
 				
 			}
@@ -269,15 +285,17 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				//Also check that the folder isn't a Net Folder. Sharing Net Folders is not allowed
 				if (!binder.isAclExternallyControlled() || 
 						SPropsUtil.getBoolean("sharing.netFolders.allowed", false)) {
-					if (accessControlManager.testOperation(user, binder, WorkAreaOperation.ALLOW_SHARING)) {
+					if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
 						// Yes!
 						reply = true;
 					}
 					
 					// Is the user the owner of the binder?
 					else if (user.getId().equals(binder.getCreation().getPrincipal().getId())) {
-						// Yes.
-						reply = true;
+						// Yes, but also check if the owner has the Change Acl right.
+						if (binderModule.testAccess(binder, BinderOperation.changeACL)) {
+							reply = true;
+						}
 					}
 				}
 			}

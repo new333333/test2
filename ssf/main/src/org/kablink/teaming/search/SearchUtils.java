@@ -39,11 +39,18 @@ import java.util.Map;
 
 import org.apache.lucene.document.DateTools;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.search.*;
+import org.kablink.util.search.Junction.Conjunction;
 import org.kablink.util.search.Junction.Disjunction;
 
 import static org.kablink.util.search.Constants.*;
@@ -540,4 +547,67 @@ public class SearchUtils {
 		// Always use the initial form of the method.
 		return getUserProperties(bs, userId, null);
 	}
+	
+	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String userWSId = String.valueOf(user.getWorkspaceId());
+		
+		// Based on the installed license, what definition families do
+		// we consider as 'file'?
+		String[] fileFamilies;
+		if (Utils.checkIfFilr())
+		     fileFamilies = new String[]{Definition.FAMILY_FILE};
+		else fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
+		
+		Criteria crit = new Criteria();
+		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{userWSId}));
+		crit.add(in(Constants.FAMILY_FIELD,            fileFamilies));
+		crit.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
+
+		// ...that are non-mirrored...
+		Disjunction disj = disjunction();
+		crit.add(disj);
+		Conjunction conj = conjunction();
+		conj.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
+		disj.add(conj);
+
+		// ...or configured mirrored File Folders.
+		conj = conjunction();
+		conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+		conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+		conj.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
+		disj.add(conj);
+		return crit;
+	}
+	
+	public static Criteria getNetFoldersSearchCriteria(AllModulesInjected bs) {
+		// Can we access the ID of the top workspace?
+		Long topWSId = bs.getWorkspaceModule().getTopWorkspaceId();
+
+		// Add the criteria for top level mirrored file folders
+		// that have been configured.
+		Criteria crit = new Criteria();
+		crit.add(in(Constants.DOC_TYPE_FIELD,            new String[]{Constants.DOC_TYPE_BINDER}));
+		crit.add(in(Constants.ENTRY_ANCESTRY,            new String[]{String.valueOf(topWSId)}));
+		crit.add(in(Constants.FAMILY_FIELD,              new String[]{Definition.FAMILY_FILE}));
+		crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+		crit.add(in(Constants.IS_TOP_FOLDER_FIELD,       new String[]{Constants.TRUE}));
+		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+
+		return crit;
+	}
+	
+	public static Criteria getBinderEntriesSearchCriteria(AllModulesInjected bs, List binderIds, boolean entriesOnly) {
+		Criteria crit =
+			SearchUtils.entriesForTrackedPlacesEntriesAndPeople(
+				bs,
+				binderIds,
+				null,
+				null,
+				entriesOnly,	// true -> Entries only (no replies.)
+				Constants.LASTACTIVITY_FIELD);
+		return crit;
+	}
+
 }

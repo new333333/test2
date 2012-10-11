@@ -3515,6 +3515,59 @@ public class BinderHelper {
 		else {
 			options = prepareSearchOptions(bs, request);			
 		}
+		//See if this is a request to search within the My Files collection
+		if (ObjectKeys.SEARCH_SCOPE_MY_FILES.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
+			//Build the ancilary criteria for searching within the My Files collection
+			Criteria crit = SearchUtils.getMyFilesSearchCriteria(bs);
+			// Perform the search for the binders to search...
+			int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+			Map searchResults = bs.getBinderModule().executeSearchQuery(
+				crit,
+				Constants.SEARCH_MODE_NORMAL,
+				0,
+				maxResults);
+			
+			// Get the binder hits
+			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+			List binderIds = new ArrayList();
+			for (Map entryMap:  searchEntries) {
+				String docId = (String)entryMap.get(Constants.DOCID_FIELD);
+				String docType = (String)entryMap.get(Constants.DOC_TYPE_FIELD);
+				if (docId != null && Constants.DOC_TYPE_BINDER.equals(docType)) {
+					binderIds.add(docId);
+				}
+			}
+			//Now, using the binderIds, get the entries that match the search options
+			crit = SearchUtils.getBinderEntriesSearchCriteria(bs, binderIds, false);
+			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
+		} else if (ObjectKeys.SEARCH_SCOPE_NET_FOLDERS.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
+			//Search just the user's net folders
+			//Build the ancilary criteria for searching within the My Files collection
+			Criteria crit = SearchUtils.getNetFoldersSearchCriteria(bs);
+			// Perform the search for the binders to search...
+			int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+			Map searchResults = bs.getBinderModule().executeSearchQuery(
+				crit,
+				Constants.SEARCH_MODE_NORMAL,
+				0,
+				maxResults);
+			
+			// Get the binder hits
+			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+			List binderIds = new ArrayList();
+			for (Map entryMap:  searchEntries) {
+				String docId = (String)entryMap.get(Constants.DOCID_FIELD);
+				String docType = (String)entryMap.get(Constants.DOC_TYPE_FIELD);
+				if (docId != null && Constants.DOC_TYPE_BINDER.equals(docType)) {
+					binderIds.add(docId);
+				}
+			}
+			//Now, using the binderIds, get the entries that match the search options
+			crit = SearchUtils.getBinderEntriesSearchCriteria(bs, binderIds, false);
+			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
+		} else if (ObjectKeys.SEARCH_SCOPE_CURRENT.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
+			//Search the current folder (if known)
+		}
 		
 		Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, Constants.SEARCH_MODE_NORMAL, options);
 		
@@ -3538,7 +3591,7 @@ public class BinderHelper {
 		model.putAll(prepareSavedQueries(bs));
 
 		// this function puts also proper part of entries list into a model
-		preparePagination(model, results, options, tab);
+		preparePagination(bs, model, results, options, tab);
 		
 		model.put(WebKeys.SEARCH_FORM_CASE_SENSITIVE, options.get(ObjectKeys.SEARCH_CASE_SENSITIVE));
 		model.put(WebKeys.SEARCH_FORM_PREDELETED_ONLY, options.get(ObjectKeys.SEARCH_PRE_DELETED));
@@ -3546,6 +3599,8 @@ public class BinderHelper {
 		model.put("summaryWordCount", (Integer)options.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
 		model.put(WebKeys.SEARCH_SEARCH_SORT_BY, options.get( ObjectKeys.SEARCH_SORT_BY ) );
 		model.put(WebKeys.SEARCH_SEARCH_SORT_BY_SECONDARY, options.get( ObjectKeys.SEARCH_SORT_BY_SECONDARY ) );
+		model.put(WebKeys.SEARCH_SCOPE, options.get(ObjectKeys.SEARCH_SCOPE));
+		model.put(WebKeys.SEARCH_INCLUDE_NESTED_BINDERS, ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS);
 
 		model.put("quickSearch", options.get(WebKeys.SEARCH_FORM_QUICKSEARCH));
 		
@@ -3588,6 +3643,11 @@ public class BinderHelper {
 		if ((searchPreDeletedOnly != null) && searchPreDeletedOnly) { 
 			options.put(ObjectKeys.SEARCH_PRE_DELETED, searchPreDeletedOnly);
 		}
+		//Get the scope
+		String searchScope = PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_SCOPE, ObjectKeys.SEARCH_SCOPE_ALL);
+		options.put(ObjectKeys.SEARCH_SCOPE, searchScope);
+		Boolean includeSubfolders = PortletRequestUtils.getBooleanParameter(request, ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
+		options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, includeSubfolders);
 		
 		//If the entries per page is not present in the user properties, then it means the
 		//number of records per page is obtained from the ssf properties file, so we do not have 
@@ -3888,7 +3948,8 @@ public class BinderHelper {
 		}
 	}
 	
-	private static void preparePagination(Map model, Map results, Map options, Tabs.TabEntry tab) {
+	private static void preparePagination(AllModulesInjected bs, Map model, Map results, Map options, Tabs.TabEntry tab) {
+		Map<Long,FolderEntry> topEntries = new HashMap<Long,FolderEntry>();
 		int totalRecordsFound = (Integer) results.get(ObjectKeys.SEARCH_COUNT_TOTAL);
 		int pageInterval = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
 		if (options != null && options.get(ObjectKeys.SEARCH_USER_MAX_HITS) != null) {
@@ -3912,7 +3973,7 @@ public class BinderHelper {
 			userOffsetEnd = userOffsetStart + (allResultsList.size() - userOffsetStart);
 		}		
 		
-		List shownOnPage = allResultsList.subList(userOffsetStart, userOffsetEnd);
+		List<Map> shownOnPage = allResultsList.subList(userOffsetStart, userOffsetEnd);
 		
 		int pageNo = 1;
 		if (options != null && options.get(WebKeys.URL_PAGE_NUMBER) != null) {
@@ -3933,6 +3994,35 @@ public class BinderHelper {
 		
 		model.put(WebKeys.FOLDER_ENTRIES, shownOnPage);
 		model.put(WebKeys.PAGE_NUMBER, currentPageNo);
+		
+		//Get the top entries of any item that is either an attachment of a reply
+		for (Map item : shownOnPage) {
+			String entryType = (String)item.get(Constants.ENTRY_TYPE_FIELD);
+			String entityType = (String)item.get(Constants.ENTITY_FIELD);
+			String docType = (String)item.get(Constants.DOC_TYPE_FIELD);
+			String isLibrary = (String)item.get(Constants.IS_LIBRARY_FIELD);
+			String entryId = (String)item.get(Constants.DOCID_FIELD);
+			if (Constants.ENTRY_TYPE_REPLY.equals(entryType)) {
+				//This is a reply. We need to get its top entry
+				String topEntryId = (String)item.get(Constants.ENTRY_TOP_ENTRY_ID_FIELD);
+				if (topEntryId != null) {
+					try {
+						FolderEntry topEntry = bs.getFolderModule().getEntry(null, Long.valueOf(topEntryId));
+						topEntries.put(topEntry.getId(), topEntry);
+					} catch(Exception e) {}
+				}
+				
+			} else if (Constants.DOC_TYPE_ATTACHMENT.equals(docType)) {
+				//This is an attachment. We need to get its owning entry
+				if (entryId != null) {
+					try {
+						FolderEntry entry = bs.getFolderModule().getEntry(null, Long.valueOf(entryId));
+						topEntries.put(entry.getId(), entry);
+					} catch(Exception e) {}
+				}
+			}
+		}
+		model.put(WebKeys.FOLDER_ENTRIES_TOP_ENTRIES, topEntries);
 		
 		List pageNos = new ArrayList();
 		int startFrom = 1;

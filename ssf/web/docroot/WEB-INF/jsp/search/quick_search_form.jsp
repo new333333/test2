@@ -53,6 +53,55 @@
 							<input type="hidden" name="operation" value="ss_searchResults"/>
 						</td>
 					</tr>
+					
+					<tr>
+						<td></td>
+						<td colspan="2">
+						  <table cellspacing="0" cellpadding="0" style="padding-bottom:16px;">
+						    <tr>
+						      <td width="20">
+								<input type="radio" name="scope" value="all"
+								<c:if test="${ss_searchScope == 'all'}"> checked="checked" </c:if>
+								style="width:20px;">
+							  </td>
+							  <td nowrap>
+								<ssf:nlt tag="search.scope.all"/>
+							  </td>
+							</tr>
+						    <tr>
+						      <td width="20">
+								<input type="radio" name="scope" value="myFiles"
+								  <c:if test="${ss_searchScope == 'myFiles'}"> checked="checked" </c:if>
+								  style="width:20px;">
+							  </td>
+							  <td nowrap>
+								<ssf:nlt tag="search.scope.myFiles"/>
+							  </td>
+							</tr>
+						    <tr>
+						      <td width="20">
+								<input type="radio" name="scope" value="netFolders" 
+								<c:if test="${ss_searchScope == 'netFolders'}"> checked="checked" </c:if>
+								style="width:20px;">
+							  </td>
+							  <td>
+								<ssf:nlt tag="search.scope.netFolders"/>
+							  </td>
+							</tr>
+						    <tr>
+						      <td width="20">
+								<input type="radio" name="scope" value="current" 
+								<c:if test="${ss_searchScope == 'current'}"> checked="checked" </c:if>
+								style="width:20px;">
+							  </td>
+							  <td>
+								<ssf:nlt tag="search.scope.current"/>
+							  </td>
+							</tr>
+						  </table>
+						</td>
+					</tr>
+					
 					<tr>
 						<td></td>
 						<td>
