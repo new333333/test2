@@ -2554,12 +2554,22 @@ public class GwtViewHelper {
 
 			// Do we have a folder to populate as their My Files?
 			if (hasMFContainerId) {
-				// Yes!  Search for any file entries in there as well.
+				// Yes!  Search for any file entries...
+	    		disj = disjunction();
+	    		root.add(disj);
 				conj = conjunction();
 				conj.add(in(Constants.DOC_TYPE_FIELD,  new String[]{Constants.DOC_TYPE_ENTRY}));
-				conj.add(in(Constants.FAMILY_FIELD,    new String[]{Definition.FAMILY_FILE}));
 				conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerIdS}));
-				root.add(conj);
+				conj.add(in(Constants.FAMILY_FIELD,    fileFamilies));
+				disj.add(conj);
+
+ 				// ... or folders in there as well.
+				conj = conjunction();
+				conj.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+				conj.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{mfContainerIdS}));
+				conj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
+				conj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
+				disj.add(conj);
 			}
 			
 			break;
