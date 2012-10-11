@@ -153,6 +153,7 @@ public class LinkUriUtil {
         model.setLink(getFolderEntryLinkUri(id));
         populateBaseFolderEntryLinks(model);
         model.addAdditionalLink("reservation", model.getLink() + "/reservation");
+        model.addAdditionalLink("shares", model.getLink() + "/shares");
     }
 
     public static void populateUserLinks(BaseRestObject model) {
@@ -180,6 +181,7 @@ public class LinkUriUtil {
         model.addAdditionalLink("title", model.getLink() + "/title");
         model.addAdditionalLink("parent_binder", model.getLink() + "/parent_binder");
         model.addAdditionalLink("recent_activity", model.getLink() + "/recent_activity");
+        model.addAdditionalLink("shares", model.getLink() + "/shares");
         model.addAdditionalLink("team_members", model.getLink() + "/team_members");
         model.addAdditionalLink("tags", model.getLink() + "/tags");
     }
@@ -204,6 +206,7 @@ public class LinkUriUtil {
         fp.addAdditionalLink("major_version", baseUrl + "/major_version");
         fp.addAdditionalLink("name", baseUrl + "/name");
         fp.addAdditionalLink("parent_folder", baseUrl + "/parent_folder");
+        fp.addAdditionalLink("shares", fp.getOwningEntity().getLink() + "/shares");
         fp.addAdditionalLink("versions", baseUrl + "/versions");
         fp.addAdditionalLink("current_version", baseUrl + "/versions/current");
     }
