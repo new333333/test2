@@ -325,7 +325,6 @@ public class FolderEntryComposite extends ResizeComposite
 				}
 			}
 		});
-		
 	}
 
 	/*

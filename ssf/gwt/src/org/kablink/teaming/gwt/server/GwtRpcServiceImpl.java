@@ -2320,6 +2320,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_FOLDER_ENTRY_DLG_POSITION:
+		{
+			SaveFolderEntryDlgPositionCmd sfedpCmd = ((SaveFolderEntryDlgPositionCmd) cmd);
+			GwtViewHelper.saveFolderEntryDlgPosition( this, getRequest( ri ), sfedpCmd.getX(), sfedpCmd.getY(), sfedpCmd.getCX(), sfedpCmd.getCY() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( true ));
+			return response;
+		}
+		
 		case SAVE_FOLDER_PINNING_STATE:
 		{
 			SaveFolderPinningStateCmd sfpsCmd = ((SaveFolderPinningStateCmd) cmd);

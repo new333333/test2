@@ -825,7 +825,7 @@ public class GwtServerHelper {
 			// There are already too many favorites, some must be
 			// deleted first Construct a GwtTeamingException for this
 			// error condition.
-			throw GwtServerHelper.getGwtTeamingException(flee);
+			throw getGwtTeamingException(flee);
 		}
 		
 		bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
@@ -1518,7 +1518,7 @@ public class GwtServerHelper {
 				// No, we aren't making this binder a favorite!  Can we
 				// determine the ID of the favorite to remove?
 				String favoriteId = null;
-				List<FavoriteInfo> favorites = GwtServerHelper.getFavorites(bs);
+				List<FavoriteInfo> favorites = getFavorites(bs);
 				for (FavoriteInfo favorite:  favorites) {
 					Long favoriteBinderId = Long.parseLong(favorite.getValue());
 					if (favoriteBinderId.equals(binderId)) {
@@ -4097,7 +4097,7 @@ public class GwtServerHelper {
 			return reply;
 		}
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw getGwtTeamingException(ex);
 		}		
 	}
 	
@@ -4507,6 +4507,60 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Returns a file entry's FileAttachment or null if the entry isn't
+	 * a file entry or a FileAttachment with a name can't be found.
+	 * 
+	 * @param bs
+	 * @param fileEntry
+	 * @param validateAsFileEntry
+	 */
+	public static FileAttachment getFileEntrysFileAttachment(AllModulesInjected bs, FolderEntry fileEntry, boolean validateAsFileEntry) {
+		// Is the FolderEntry a file entry?
+		FileAttachment reply = null;
+		if ((!validateAsFileEntry) || isFamilyFile(getFolderEntityFamily(bs, fileEntry))) {
+			// Yes!  Scan its attachments.
+			Collection<FileAttachment> atts = fileEntry.getFileAttachments();
+	        for (FileAttachment fa : atts) {
+	        	// Does this attachment have a filename?
+	        	String fName = fa.getFileItem().getName();
+	        	if (MiscUtil.hasString(fName)) {
+	        		// Return it as the filename.
+					reply = fa;
+					break;
+	        	}
+	        }
+		}
+		
+		// If we get here, reply refers to the to the file entry's
+		// FileAttachment or null if the entry isn't a file entry or an
+		// attachment with a named file can't be found.  Return it.
+        return reply;
+	}
+	
+	public static FileAttachment getFileEntrysFileAttachment(AllModulesInjected bs, FolderEntry fileEntry) {
+		// Always use the initial form of the method.
+		return getFileEntrysFileAttachment(bs, fileEntry, true);
+	}
+	
+	/**
+	 * Returns a file entry's filename or null if the entry isn't a
+	 * file entry or a name can't be determined.
+	 * 
+	 * @param bs
+	 * @param fileEntry
+	 * @param validateAsFileEntry
+	 */
+	public static String getFileEntrysFilename(AllModulesInjected bs, FolderEntry fileEntry, boolean validateAsFileEntry) {
+		FileAttachment fa = getFileEntrysFileAttachment(bs, fileEntry, validateAsFileEntry);
+		return ((null == fa) ? null : fa.getFileItem().getName());
+	}
+	
+	public static String getFileEntrysFilename(AllModulesInjected bs, FolderEntry fileEntry) {
+		// Always use the initial form of the method.
+		return getFileEntrysFilename(bs, fileEntry, true);
+	}
+	
+	/**
 	 * Determines the family of a FolderEntry or Folder entity and
 	 * returns it.  If the family can't be determined, null is
 	 * returned.
@@ -4631,7 +4685,7 @@ public class GwtServerHelper {
 		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			throw getGwtTeamingException( e );
 		}
 		
 		return folder;
@@ -5008,7 +5062,7 @@ public class GwtServerHelper {
 		// Build a search for the user's binders...
 		Criteria crit = new Criteria();
 		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(GwtServerHelper.getCurrentUser().getWorkspaceId())}));
+		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(getCurrentUser().getWorkspaceId())}));
 		
 		// ...that are file folders...
 		crit.add(in(Constants.FAMILY_FIELD,     new String[]{Definition.FAMILY_FILE}));
@@ -5028,7 +5082,7 @@ public class GwtServerHelper {
 			for (Map entryMap:  searchEntries) {
 				// ...extracting their IDs from from the search
 				// ...results.
-				String   docIdS   = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
+				String   docIdS   = getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
 				Long     docId    = Long.parseLong(docIdS);
 				reply.add(docId);
 			}
@@ -5553,11 +5607,11 @@ public class GwtServerHelper {
 	 */
 	public static Long getMyFilesContainerId(AllModulesInjected bs) {
 		Long reply;
-		if (GwtServerHelper.useHomeAsMyFiles())
-		     reply = GwtServerHelper.getHomeFolderId(bs);
+		if (useHomeAsMyFiles())
+		     reply = getHomeFolderId(bs);
 		else reply = null;
 		if (null == reply) {
-			reply = GwtServerHelper.getMyFilesFolderId(bs, true);	// true -> Create it if it doesn't exist.
+			reply = getMyFilesFolderId(bs, true);	// true -> Create it if it doesn't exist.
 		}
 		return reply;
 	}
@@ -5586,7 +5640,7 @@ public class GwtServerHelper {
 		// Build a search for the user's binders...
 		Criteria crit = new Criteria();
 		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(GwtServerHelper.getCurrentUser().getWorkspaceId())}));
+		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(getCurrentUser().getWorkspaceId())}));
 		
 		// ...that are marked as their My Files folder...
 		crit.add(in(Constants.FAMILY_FIELD,         new String[]{Definition.FAMILY_FILE}));
@@ -5605,7 +5659,7 @@ public class GwtServerHelper {
 			for (Map entryMap:  searchEntries) {
 				// ...extracting their IDs from from the search
 				// ...results.
-				String   docIdS   = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
+				String   docIdS   = getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
 				Long     docId    = Long.parseLong(docIdS);
 				reply.add(docId);
 			}
@@ -6104,7 +6158,7 @@ public class GwtServerHelper {
 		GwtPersonalPreferences personalPrefs = new GwtPersonalPreferences();
 		try {
 			// Are we dealing with the guest user?
-			User user = GwtServerHelper.getCurrentUser();
+			User user = getCurrentUser();
 			if (!(ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
 				// No!  Get the user's display style preference.
 				String displayStyle = user.getDisplayStyle();
@@ -7367,7 +7421,7 @@ public class GwtServerHelper {
 			}
 			catch (Exception e)
 			{
-				throw GwtServerHelper.getGwtTeamingException( e );
+				throw getGwtTeamingException( e );
 			}
 		}
 		
@@ -7974,6 +8028,7 @@ public class GwtServerHelper {
 		case SAVE_COLUMN_WIDTHS:
 		case SAVE_EMAIL_NOTIFICATION_INFORMATION:
 		case SAVE_FILE_SYNC_APP_CONFIGURATION:
+		case SAVE_FOLDER_ENTRY_DLG_POSITION:
 		case SAVE_FOLDER_PINNING_STATE:
 		case SAVE_FOLDER_SORT:
 		case SAVE_PERSONAL_PREFERENCES:
