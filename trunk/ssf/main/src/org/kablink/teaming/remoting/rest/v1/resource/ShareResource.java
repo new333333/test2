@@ -58,7 +58,7 @@ public class ShareResource extends AbstractResource {
         ShareItem origItem = getSharingModule().getShareItem(id);
         // You can't change the shared entity or the recipient via this API.  Perhaps I should fail if the client supplies
         // these values and they don't match?
-        share.setSharedEntity(new EntityId(origItem.getEntityIdentifier().getEntityId(), origItem.getEntityType().name(), null));
+        share.setSharedEntity(new EntityId(origItem.getSharedEntityIdentifier().getEntityId(), origItem.getSharedEntityIdentifier().getEntityType().name(), null));
         share.setRecipient(new EntityId(origItem.getRecipientId(), origItem.getRecipientType().name(), null));
         ShareItem shareItem = toShareItem(share);
         getSharingModule().modifyShareItem(shareItem, id);
