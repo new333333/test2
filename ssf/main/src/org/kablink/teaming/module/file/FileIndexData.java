@@ -67,6 +67,7 @@ public class FileIndexData {
 	private Date createdDate; // created date
 	private Date modifiedDate; // modified date
 	private Long size; // size in bytes - this field is new in Hudson, so may not exist in old index
+    private Integer versionNumber;
 	
 	public FileIndexData(org.apache.lucene.document.Document doc)  throws IllegalArgumentException {
 		name = doc.get(Constants.FILENAME_FIELD);
@@ -99,6 +100,11 @@ public class FileIndexData {
 			size = Long.valueOf(sizeStr);
 		else
 			size = null;
+        String versionStr = (String) doc.get(Constants.FILE_VERSION_FIELD);
+        if(versionStr != null)
+            versionNumber = Integer.valueOf(versionStr);
+        else
+            versionNumber = null;
 	}
 
 	public String getName() {
@@ -152,8 +158,12 @@ public class FileIndexData {
 	public Long getSize() {
 		return size;
 	}
-	
-	private EntityType entityTypeFromString(String entityTypeStr) throws IllegalArgumentException {
+
+    public Integer getVersionNumber() {
+        return versionNumber;
+    }
+
+    private EntityType entityTypeFromString(String entityTypeStr) throws IllegalArgumentException {
 		if(entityTypeStr == null)
 			throw new IllegalArgumentException("Entity type is null");
 		return EntityType.valueOf(entityTypeStr);

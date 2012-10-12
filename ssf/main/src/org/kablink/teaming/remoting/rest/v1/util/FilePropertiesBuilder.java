@@ -80,6 +80,13 @@ public class FilePropertiesBuilder implements SearchResultBuilder<FileProperties
         else
             size = null;
         fp.setLength(size);
+        String versionStr = (String) doc.get(Constants.FILE_VERSION_FIELD);
+        Integer version;
+        if(versionStr != null)
+            version = Integer.valueOf(versionStr);
+        else
+            version = null;
+        fp.setVersionNumber(version);
         LinkUriUtil.populateFileLinks(fp);
         return fp;
     }
