@@ -61,6 +61,7 @@ public class ViewFolderEntryInfo implements IsSerializable {
 	private String				m_path;					// The full path to the entry.
 	private String				m_title;				// The title of the folder entry.
 	private String				m_viewStyle;			// The style to run the entry viewer.
+	private String[]			m_contributors;			// The IDs of the contributors to this entry.
 	private UserInfo			m_creator;				// The creator of the entry.
 	private UserInfo			m_locker;				// The user that has the entry locked.  null -> The entry is not locked.
 	private UserInfo			m_modifier;				// The last modifier of the entry.
@@ -173,6 +174,7 @@ public class ViewFolderEntryInfo implements IsSerializable {
 	public String            getPath()                {return m_path;                }
 	public String            getTitle()               {return m_title;               }
 	public String            getViewStyle()           {return m_viewStyle;           }
+	public String[]          getContributors()        {return m_contributors;        }
 	public UserInfo          getCreator()             {return m_creator;             }
 	public UserInfo          getLocker()              {return m_locker;              }
 	public UserInfo          getModifier()            {return m_modifier;            }
@@ -200,6 +202,7 @@ public class ViewFolderEntryInfo implements IsSerializable {
 	public void setPath(                String            path)                 {m_path                 = path;                }
 	public void setTitle(               String            title)                {m_title                = title;               }
 	public void setViewStyle(           String            viewStyle)            {m_viewStyle            = viewStyle;           }
+	public void setContributors(        String[]          contributors)         {m_contributors         = contributors;        }
 	public void setCreator(             UserInfo          creator)              {m_creator              = creator;             }
 	public void setLocker(              UserInfo          locker)               {m_locker               = locker;              }
 	public void setModifier(            UserInfo          modifier)             {m_modifier             = modifier;            }

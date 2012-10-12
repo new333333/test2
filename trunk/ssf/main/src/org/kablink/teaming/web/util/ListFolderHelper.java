@@ -123,7 +123,8 @@ import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 /**
- * 
+ * ?
+ *  
  * @author ?
  */
 @SuppressWarnings({"unchecked", "unused"})
@@ -2596,5 +2597,33 @@ public class ListFolderHelper {
 		}
 		bs.getProfileModule().setUserProperty(userId, binderId, WebKeys.FOLDER_MODE_PREF, modeType);
 		return modeType;
+	}
+	
+	/**
+	 * Returns a String[] of the IDs of the contributors to an entry.
+	 * 
+	 * @param entry
+	 * 
+	 * @return
+	 */
+	public static String[] collectContributorIds(FolderEntry entry) {		
+		Set principals = new HashSet();
+		collectCreatorAndMoficationIdsRecursive(entry, principals);
+		String[] as = new String[principals.size()];
+		principals.toArray(as);
+		return as;
+	}
+
+	/*
+	 * Recursively collects the contributor Principals to an entry into
+	 * the given set.
+	 */
+	private static void collectCreatorAndMoficationIdsRecursive(FolderEntry entry, Set principals) {		
+		principals.add(entry.getCreation().getPrincipal().getId().toString());
+		principals.add(entry.getModification().getPrincipal().getId().toString());
+		Iterator repliesIt = entry.getReplies().iterator();
+		while (repliesIt.hasNext()) {
+			collectCreatorAndMoficationIdsRecursive((FolderEntry)repliesIt.next(), principals);
+		}
 	}
 }

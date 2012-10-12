@@ -43,14 +43,15 @@
 	-->
 	
     <!-- Specify the application specific style sheets. -->
-	<stylesheet src='GwtTeaming.css'     />
-    <stylesheet src='GwtProfile.css'     />		
-    <stylesheet src='GwtLandingPage.css' />		
-    <stylesheet src='GwtBinderViews.css' />		
-    <stylesheet src='GwtMenus.css'       />		
-    <stylesheet src='VibeCellTable.css'  />		
-    <stylesheet src='VibeDataGrid.css'   />
-    <stylesheet src='VibeWidgets.css'    />
+	<stylesheet src='GwtTeaming.css'         />
+    <stylesheet src='GwtProfile.css'         />		
+    <stylesheet src='GwtLandingPage.css'     />		
+    <stylesheet src='GwtBinderViews.css'     />		
+    <stylesheet src='GwtMenus.css'           />		
+    <stylesheet src='GwtFolderEntryView.css' />		
+    <stylesheet src='VibeCellTable.css'      />		
+    <stylesheet src='VibeDataGrid.css'       />
+    <stylesheet src='VibeWidgets.css'        />
 	
 	<!-- Limit support of which browsers we compile for.  Speeds up -->
 	<!-- compilation during development.                            -->

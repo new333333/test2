@@ -1011,7 +1011,7 @@ public class ViewEntryController extends  SAbstractController {
 				footerToolbar.addToolbarMenu("4_subscribe", NLT.get("toolbar.menu.subscribeToEntry"), adapterSubscriptionUrl.toString(), qualifiers);
 			}
 			
-			String[] contributorIds = collectContributorIds(entry);
+			String[] contributorIds = ListFolderHelper.collectContributorIds(entry);
 			
 			if (!user.getEmailAddresses().isEmpty() && 
 					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
@@ -1122,23 +1122,6 @@ public class ViewEntryController extends  SAbstractController {
 		}
 	}
 
-	private String[] collectContributorIds(FolderEntry entry) {		
-		Set principals = new HashSet();
-		collectCreatorAndMoficationIdsRecursive(entry, principals);
-		String[] as = new String[principals.size()];
-		principals.toArray(as);
-		return as;
-	}
-		
-	private void collectCreatorAndMoficationIdsRecursive(FolderEntry entry, Set principals) {		
-		principals.add(entry.getCreation().getPrincipal().getId().toString());
-		principals.add(entry.getModification().getPrincipal().getId().toString());
-		Iterator repliesIt = entry.getReplies().iterator();
-		while (repliesIt.hasNext()) {
-			collectCreatorAndMoficationIdsRecursive((FolderEntry)repliesIt.next(), principals);
-		}
-	}
-	
 	protected FolderEntry getShowEntry(String entryId, Map formData, RenderRequest req, RenderResponse response, 
 			Long folderId, Map model, String viewType)  {
 		Folder folder = null;
