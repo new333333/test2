@@ -4060,13 +4060,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 																nextTask.getNetFolderServerId() );
 					serverName = nextTask.getNetFolderServerId();
 					if ( rdConfig != null )
+					{
 						serverName = rdConfig.getName();
 					
-					gwtTask = new GwtEnterProxyCredentialsTask();
-					gwtTask.setServerId( nextTask.getNetFolderServerId() );
-					gwtTask.setServerName( serverName );
-					
-					upgradeInfo.addFilrAdminTask( gwtTask );
+						gwtTask = new GwtEnterProxyCredentialsTask();
+						gwtTask.setServerId( nextTask.getNetFolderServerId() );
+						gwtTask.setServerName( serverName );
+						
+						upgradeInfo.addFilrAdminTask( gwtTask );
+					}
+					else
+					{
+						Long netFolderServerId;
+						
+						// Remove the task for the administrator to enter the proxy credentials for this net folder server.
+						netFolderServerId = new Long( nextTask.getNetFolderServerId() );
+						filrAdminTasks.deleteEnterNetFolderServerProxyCredentialsTask( netFolderServerId );
+					}
 				}
 			}
 		}

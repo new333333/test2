@@ -32,36 +32,31 @@
  */
 package org.kablink.teaming.module.resourcedriver.impl;
 
-import java.io.InputStream;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.dom4j.Document;
+import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
-import org.kablink.teaming.module.authentication.AuthenticationModule;
-import org.kablink.teaming.module.definition.DefinitionModule.DefinitionOperation;
-import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.jobs.DefaultNetFolderServerSynchronization;
+import org.kablink.teaming.jobs.NetFolderServerSynchronization;
+import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
-import org.kablink.teaming.repository.RepositoryServiceException;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.Function;
@@ -71,7 +66,9 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SimpleProfiler;
-import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.StatusTicket;
+import org.kablink.teaming.web.util.NetFolderHelper;
+import org.kablink.util.search.Constants;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -85,6 +82,9 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
     private ResourceDriverManager resourceDriverManager;
     private AccessControlManager accessControlManager;
 	private TransactionTemplate transactionTemplate;
+	private FolderModule folderModule;
+	private BinderModule binderModule;
+	private WorkspaceModule workspaceModule;
 	
     protected CoreDao getCoreDao() {
 		return coreDao;
@@ -123,7 +123,55 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
 		this.transactionTemplate = transactionTemplate;
 	}
+
+	/**
+	 * 
+	 */
+	protected FolderModule getFolderModule()
+	{
+		return folderModule;
+	}
 	
+	/**
+	 * 
+	 */
+	public void setFolderModule( FolderModule folderModule )
+	{
+		this.folderModule = folderModule;
+	}
+
+	/**
+	 * 
+	 */
+	protected BinderModule getBinderModule()
+	{
+		return binderModule;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setBinderModule( BinderModule binderModule )
+	{
+		this.binderModule = binderModule;
+	}
+
+	/**
+	 * 
+	 */
+	protected WorkspaceModule getWorkspaceModule()
+	{
+		return workspaceModule;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setWorkspaceModule( WorkspaceModule workspaceModule )
+	{
+		this.workspaceModule = workspaceModule;
+	}
+
 	@Override
 	public boolean testAccess(ResourceDriverOperation operation) {
 		try {
@@ -418,5 +466,143 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		
 		//Remove this resource driver from the list of drivers
 		getResourceDriverManager().resetResourceDriverList();
+	}
+
+	/**
+	 * 
+	 */
+	private NetFolderServerSynchronization getSynchronizationScheduleObject() 
+	{
+		return new DefaultNetFolderServerSynchronization();
+    }    
+
+	/**
+	 * Get the sync schedule for the given driver.
+	 */
+	@Override
+	public ScheduleInfo getSynchronizationSchedule( Long zoneId, Long driverId )
+	{
+  		return getSynchronizationScheduleObject().getScheduleInfo( zoneId, driverId );
+	}
+
+	/**
+	 * Set the sync schedule for this driver.
+	 */
+	@Override
+	public void setSynchronizationSchedule( ScheduleInfo config, Long driverId )
+	{
+		checkAccess( ResourceDriverOperation.manageResourceDrivers );
+    
+    	// data is stored with job
+        getSynchronizationScheduleObject().setScheduleInfo( config, driverId );
+    }    
+
+	/**
+	 * Synchronize all of the net folders associated with the given net folder server.
+	 * If a net folder has a sync schedule enabled, that net folder will not be synchronized.
+	 */
+	@SuppressWarnings("rawtypes")
+	private boolean doSynchronize(
+		ResourceDriverConfig rdConfig,
+		StatusTicket statusTicket )
+	{
+		FolderModule folderModule;
+		List<Map> searchEntries;
+		
+		if ( rdConfig == null )
+			return false;
+		
+		folderModule = getFolderModule();
+
+		// Find all of the net folders that reference this net folder server.
+		searchEntries = NetFolderHelper.getAllNetFolders(
+													getBinderModule(),
+													getWorkspaceModule(),
+													rdConfig.getName(),
+													true );
+
+		if ( searchEntries != null )
+		{
+			for ( Map entryMap:  searchEntries )
+			{
+				Long binderId = null;
+				Object value;
+				
+				value = entryMap.get( Constants.DOCID_FIELD );
+				if ( value != null && value instanceof String )
+					binderId = new Long( (String) value );
+				
+				if ( binderId != null )
+				{
+					Long zoneId;
+					ScheduleInfo scheduleInfo;
+					
+					// Does this net folder have a sync schedule that is enabled?
+					zoneId = RequestContextHolder.getRequestContext().getZoneId();
+					scheduleInfo = folderModule.getSynchronizationSchedule( zoneId, binderId );
+					if ( scheduleInfo == null || scheduleInfo.isEnabled() == false )
+					{
+						// No, sync this net folder
+						folderModule.synchronize( binderId, statusTicket );
+					}
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Synchronize all of the net folders associated with the given net folder server.
+	 * If a net folder has a sync schedule enabled, that net folder will not be synchronized.
+	 */
+	@Override
+	public boolean synchronize(
+		Long netFolderServerId,
+		StatusTicket statusTicket ) throws FIException, UncheckedIOException, ConfigurationException
+	{
+		try
+		{
+			ResourceDriverConfig rdConfig = null;
+			String rootPath;
+			String proxyName;
+			String proxyPwd;
+			
+			try
+			{
+				rdConfig = (ResourceDriverConfig) getCoreDao().load( ResourceDriverConfig.class, netFolderServerId );
+			}
+			catch ( Exception e )
+			{
+				//!!!logger.warn( e.toString() );
+				return false;
+			}
+			
+			if ( rdConfig == null )
+				return false;
+			
+			// Is everything configured?
+			rootPath = rdConfig.getRootPath();
+			proxyName = rdConfig.getAccountName();
+			proxyPwd = rdConfig.getPassword();
+			if ( rootPath != null && rootPath.length() > 0 &&
+				 proxyName != null && proxyName.length() > 0 &&
+				 proxyPwd != null && proxyPwd.length() > 0 )
+			{
+				// Yes
+				return doSynchronize( rdConfig, statusTicket );
+			}
+			else
+			{
+				//!!!logger.warn( "Did not start synchronization of net folder server, " + rdConfig.getName() + ", because it is not configured completely." );
+				return false;
+			}
+		}
+		finally
+		{
+			// It is important to call this at the end of the processing no matter how it went.
+			if( statusTicket != null )
+				statusTicket.done();
+		}
 	}
 }

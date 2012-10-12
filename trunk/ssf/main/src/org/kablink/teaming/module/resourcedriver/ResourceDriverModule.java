@@ -32,24 +32,18 @@
  */
 package org.kablink.teaming.module.resourcedriver;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.UncheckedIOException;
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
-import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
-import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.module.shared.InputDataAccessor;
-import org.kablink.teaming.repository.RepositoryServiceException;
+import org.kablink.teaming.fi.FIException;
+import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.StatusTicket;
 
 
 /**
@@ -127,4 +121,34 @@ public interface ResourceDriverModule {
          */
           public void deleteResourceDriver(String name) 
          	throws AccessControlException, RDException;
+
+    /**
+     * Get the synchronization schedule
+     * 
+     * @param zoneId
+     * @param driverId
+     * @return
+     */
+    public ScheduleInfo getSynchronizationSchedule( Long zoneId, Long driverId );
+    
+    /**
+     * Set the sync schedule
+     * @param config
+     * @param driverId
+     */
+    public void setSynchronizationSchedule( ScheduleInfo config, Long driverId );
+
+	/**
+	 * Synchronize all of the net folders associated with the give net folder server. 
+	 * This initiates the work and returns immediately without waiting for
+	 * the work to finish, hence working asynchronously. 
+	 * 
+	 * @param netFolderServerId this should be a ResourceDriverConfig
+	 * @param statusTicket
+	 * @throws AccessControlException
+	 * @throws FIException
+	 * @throws UncheckedIOException
+	 */
+	public boolean synchronize( Long netFolderServerId, StatusTicket statusTicket )
+		throws AccessControlException, FIException, UncheckedIOException, ConfigurationException;
 }
