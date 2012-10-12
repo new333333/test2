@@ -15,9 +15,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
@@ -132,7 +137,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				file = new File("/filrinstall/installer.xml");
 			}
 
-			if (file.exists())
+			if (file != null && file.exists())
 			{
 				is = new FileInputStream(file);
 			}
@@ -289,28 +294,28 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		if (webServiceNode != null)
 		{
 			// Web Service enabled?
-			webService.setEnabled(getBooleanValue(webServiceNode.getAttribute("enabled")));
+			webService.setEnabled(getBooleanValue(webServiceNode.getAttribute("enable")));
 		}
 
 		// Web Service Basic
 		Element basicNode = getElement(networkNode, "WebServicesBasic");
 		if (basicNode != null)
 		{
-			webService.setBasicEnabled(getBooleanValue(basicNode.getAttribute("enabled")));
+			webService.setBasicEnabled(getBooleanValue(basicNode.getAttribute("enable")));
 		}
 
 		// Web Service Token
 		Element tokenNode = getElement(networkNode, "WebServicesToken");
 		if (tokenNode != null)
 		{
-			webService.setTokenEnabled(getBooleanValue(tokenNode.getAttribute("enabled")));
+			webService.setTokenEnabled(getBooleanValue(tokenNode.getAttribute("enable")));
 		}
 
 		// Web Service Anonymous
 		Element anonymousNode = getElement(networkNode, "WebServicesAnonymous");
 		if (anonymousNode != null)
 		{
-			webService.setAnonymousEnabled(getBooleanValue(anonymousNode.getAttribute("enabled")));
+			webService.setAnonymousEnabled(getBooleanValue(anonymousNode.getAttribute("enable")));
 		}
 
 		// Session Time out minutes
@@ -1049,11 +1054,21 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		Document document = getDocument();
 		ProductInfo productInfo = getProductInfo();
 
-		// Update the installer.xml
-		saveDatabaseConfiguration(config, document);
+		// Save each sections
+		{
+			saveDatabaseConfiguration(config, document);
 
-		// TODO: For lucene configuration, we need to update the changes to the lucene server
-		saveLuceneConfiguration(config, document);
+			// TODO: For lucene configuration, we need to update the changes to the lucene server
+			saveLuceneConfiguration(config, document);
+
+			saveMemoryConfiguration(config, document);
+
+			saveWebDavConfiguration(config, document);
+
+			saveNetworkConfiguration(config, document);
+
+			saveWebServiceConfiguration(config, document);
+		}
 
 		// Save the changes to installer.xml
 		if (productInfo.getType().equals(ProductType.NOVELL_FILR))
@@ -1067,8 +1082,17 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				LSOutput lsOutput = impl.createLSOutput();
 				lsOutput.setEncoding("UTF-8");
 
-				// TODO: Save it to installer.xml
-				lsOutput.setByteStream(new FileOutputStream("/filrinstall/installer.xml"));
+				// Temporary, so that we can all the work from a Windows Box
+				String osName = System.getProperty("os.name");
+				if (osName.startsWith("Win"))
+				{
+					String str = getServletContext().getRealPath("/WEB-INF/installer.xml");
+					lsOutput.setByteStream(new FileOutputStream(str));
+				}
+				else
+				{
+					lsOutput.setByteStream(new FileOutputStream("/filrinstall/installer.xml"));
+				}
 				LSSerializer serializer = impl.createLSSerializer();
 
 				serializer.write(document, lsOutput);
@@ -1098,10 +1122,10 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				throw new ConfigurationSaveException();
 			}
 
-			//Wizard configuration is done, put a temp file there
+			// Wizard configuration is done, put a temp file there
 			File file = new File("/filrinstall/configured");
-			//If it exists, ignore
-			if (!file.exists())
+			// If it exists, ignore
+			if (!System.getProperty("os.name").startsWith("Win") && !file.exists())
 			{
 				try
 				{
@@ -1220,6 +1244,102 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		}
 
 		// TODO: Handle high availability nodes
+	}
+
+	private void saveMemoryConfiguration(InstallerConfig config, Document document)
+	{
+		if (config.getJvmMemory() == null)
+			return;
+
+		Element memoryElement = getElement(document.getDocumentElement(), "Memory");
+		Element jvmElement = getElement(memoryElement, "JavaVirtualMachine");
+
+		jvmElement.setAttribute("mx", config.getJvmMemory());
+	}
+
+	private void saveWebDavConfiguration(InstallerConfig config, Document document)
+	{
+		if (config.getWebDav() == null)
+			return;
+
+		Element webDavElement = getElement(document.getDocumentElement(), "WebDAV");
+
+		String value = "basic";
+		if (config.getWebDav().equals(WebDAV.DIGEST))
+			value = "digest";
+		webDavElement.setAttribute("method", value);
+	}
+
+	private void saveNetworkConfiguration(InstallerConfig config, Document document)
+	{
+		Network network = config.getNetwork();
+
+		if (network == null)
+			return;
+
+		Element webDavElement = getElement(document.getDocumentElement(), "Network");
+		Element hostElement = getElement(webDavElement, "Host");
+
+		if (hostElement != null)
+		{
+			hostElement.setAttribute("name", network.getHost());
+			hostElement.setAttribute("port", String.valueOf(network.getPort()));
+			hostElement.setAttribute("listenPort", String.valueOf(network.getListenPort()));
+			hostElement.setAttribute("securePort", String.valueOf(network.getSecurePort()));
+			hostElement.setAttribute("secureListenPort", String.valueOf(network.getSecureListenPort()));
+			hostElement.setAttribute("shutdownPort", String.valueOf(network.getShutdownPort()));
+			hostElement.setAttribute("ajpPort", String.valueOf(network.getAjpPort()));
+			hostElement.setAttribute("keystoreFile", network.getKeystoreFile());
+		}
+	}
+
+	private void saveWebServiceConfiguration(InstallerConfig config, Document document)
+	{
+		Network network = config.getNetwork();
+		if (network == null)
+			return;
+
+		WebService webService = network.getWebService();
+
+		if (webService == null)
+			return;
+
+		Element networkElement = getElement(document.getDocumentElement(), "Network");
+
+		// WebServices
+		Element webServicesElement = getElement(networkElement, "WebServices");
+		if (webServicesElement != null)
+		{
+			webServicesElement.setAttribute("enable", String.valueOf(webService.isEnabled()));
+		}
+
+		// Basic WebServices
+		Element basicWSElement = getElement(networkElement, "WebServicesBasic");
+		if (basicWSElement != null)
+		{
+			basicWSElement.setAttribute("enable", String.valueOf(webService.isBasicEnabled()));
+		}
+
+		// Token WebServices
+		Element tokenWSElement = getElement(networkElement, "WebServicesToken");
+		if (tokenWSElement != null)
+		{
+			tokenWSElement.setAttribute("enable", String.valueOf(webService.isTokenEnabled()));
+		}
+
+		// Anonymous WebServices
+		Element anonymousWSElement = getElement(networkElement, "WebServicesAnonymous");
+		if (anonymousWSElement != null)
+		{
+			anonymousWSElement.setAttribute("enable", String.valueOf(webService.isAnonymousEnabled()));
+		}
+
+		// Session Timeout
+		Element sessionElement = getElement(networkElement, "Session");
+		if (sessionElement != null)
+		{
+			sessionElement.setAttribute("sessionTimeoutMinutes", String.valueOf(network.getSessionTimeoutMinutes()));
+		}
 	}
 
 	/**
@@ -1606,5 +1726,44 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				connection.disconnect();
 			}
 		}
+	}
+
+	@Override
+	public Map<String, String> getTimeZones()
+	{
+		TreeMap<String,String> timeZoneMap = TimeZoneHelper.getTimeZoneIdDisplayStrings();
+		return sortMapByValues(timeZoneMap);
+	}
+
+	public static <K, V extends Comparable< ? super V>> Map<K, V>
+	sortMapByValues(final Map <K, V> mapToSort)
+	{
+	    List<Map.Entry<K, V>> entries =
+	        new ArrayList<Map.Entry<K, V>>(mapToSort.size());  
+
+	    entries.addAll(mapToSort.entrySet());
+
+	    Collections.sort(entries,
+	                     new Comparator<Map.Entry<K, V>>()
+	    {
+	        @Override
+	        public int compare(
+	               final Map.Entry<K, V> entry1,
+	               final Map.Entry<K, V> entry2)
+	        {
+	            return entry1.getValue().compareTo(entry2.getValue());
+	        }
+	    });      
+
+	    Map<K, V> sortedMap = new LinkedHashMap<K, V>();      
+
+	    for (Map.Entry<K, V> entry : entries)
+	    {
+	        sortedMap.put(entry.getKey(), entry.getValue());
+
+	    }      
+
+	    return sortedMap;
+
 	}
 }

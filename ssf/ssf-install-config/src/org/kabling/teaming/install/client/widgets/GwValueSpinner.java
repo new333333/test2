@@ -130,6 +130,10 @@ public class GwValueSpinner extends Composite
 		return valSpinner.getValue();
 	}
 
+	public int getValueAsInt()
+	{
+		return (int)valSpinner.getValue();
+	}
 	public void setValue(long value)
 	{
 		valSpinner.setValue(value);
@@ -150,5 +154,10 @@ public class GwValueSpinner extends Composite
 				valSpinnerLabel.removeStyleName("disabled");
 			}
 		}
+	}
+	
+	public InlineLabel getValSpinnerLabel()
+	{
+		return valSpinnerLabel;
 	}
 }

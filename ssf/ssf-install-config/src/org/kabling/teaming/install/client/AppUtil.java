@@ -16,6 +16,7 @@ public final class AppUtil
 	private final static InstallServiceAsync INSTALL_SERVICE = GWT.create(InstallService.class);
 	private final static EventBus EVENT_BUS = GWT.create(SimpleEventBus.class);
 	private static ProductInfo productInfo = null;
+
 	private AppUtil()
 	{
 	}
@@ -59,12 +60,16 @@ public final class AppUtil
 	{
 		return EVENT_BUS;
 	}
-	
+
+	/**
+	 * Get the product information 
+	 * @return
+	 */
 	public static ProductInfo getProductInfo()
 	{
 		return productInfo;
 	}
-	
+
 	public static void setProductInfo(ProductInfo info)
 	{
 		productInfo = info;

@@ -53,8 +53,8 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 			content.add(hostTable);
 			{
 				row = 0;
-				// Merge Factor
-				InlineLabel keyLabel = new InlineLabel(RBUNDLE.luceneServerAddressColon());
+				// Host Name or IP Address
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.hostNameColon());
 				hostTable.setWidget(row, 0, keyLabel);
 				hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
@@ -70,7 +70,8 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 				hostTable.setWidget(row, 0, keyLabel);
 				hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-				rmiPortSpinner = new GwValueSpinner(1199, 1024, 9999, null);
+				rmiPortSpinner = new GwValueSpinner(1199, 1024, 9999, RBUNDLE.defaultIs1199());
+				rmiPortSpinner.addStyleName("luceneConfigWizRmiSpinnerLabel");
 				hostTable.setWidget(row, 1, rmiPortSpinner);
 				hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 			}
@@ -102,7 +103,7 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 	public boolean isValid()
 	{
 		String host = luceneAddrTextBox.getText();
-		long port = rmiPortSpinner.getValue();
+		long port = rmiPortSpinner.getValueAsInt();
 
 		if (host.isEmpty() || port < 1024)
 		{

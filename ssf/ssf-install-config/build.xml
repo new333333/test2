@@ -123,6 +123,7 @@
 		 		<include name="log4j.jar"/>
 		 		<include name="libpam4j-1.6.jar"/>
 		 		<include name="jna-3.4.0.jar"/>
+		 		<include name="joda-time.jar"/>
 		 		<include name="mysql-connector-java-5.1.22-bin.jar"/>
 		 	 </fileset>
 		  </copy>

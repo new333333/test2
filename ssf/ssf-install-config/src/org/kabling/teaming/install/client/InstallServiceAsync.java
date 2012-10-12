@@ -1,5 +1,7 @@
 package org.kabling.teaming.install.client;
 
+import java.util.Map;
+
 import org.kabling.teaming.install.shared.ConfigurationSaveException;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.InstallerConfig;
@@ -30,4 +32,6 @@ public interface InstallServiceAsync
 	void authenticateDbCredentials(String url, String userName, String password, AsyncCallback<Void> callback);
 
 	void isLuceneServerValid(String host, long port, AsyncCallback<Boolean> callback);
+
+	void getTimeZones(AsyncCallback<Map<String, String>> callback);
 }

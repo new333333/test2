@@ -11,7 +11,6 @@ public class WebService implements Serializable
 	private boolean basicEnabled;
 	private boolean tokenEnabled;
 	private boolean anonymousEnabled;
-	private int sessionTimeoutMinutes;
 
 	public WebService()
 	{
@@ -53,15 +52,5 @@ public class WebService implements Serializable
 
 	public void setAnonymousEnabled(boolean anonymousEnabled) {
 		this.anonymousEnabled = anonymousEnabled;
-	}
-
-	public int getSessionTimeoutMinutes()
-	{
-		return sessionTimeoutMinutes;
-	}
-
-	public void setSessionTimeoutMinutes(int sessionTimeoutMinutes)
-	{
-		this.sessionTimeoutMinutes = sessionTimeoutMinutes;
 	}
 }
