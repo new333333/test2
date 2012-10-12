@@ -1910,6 +1910,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_NameLabel();
 	String modifyNetFolderServerDlg_NameRequired();
 	String modifyNetFolderServerDlg_NoPrivilegedPrincipalsHint();
+	String modifyNetFolderServerDlg_NotFullyConfigured();
 	String modifyNetFolderServerDlg_PrivilegedPrincipalsHint();
 	String modifyNetFolderServerDlg_ProxyNameLabel();
 	String modifyNetFolderServerDlg_ProxyPwdLabel();

@@ -205,6 +205,22 @@ public class NetFolderRoot
 	}
 	
 	/**
+	 * Is this net folder root fully configured with server path and proxy credentials.
+	 */
+	public boolean isConfigured()
+	{
+		if ( m_rootPath == null || m_rootPath.length() == 0 )
+			return false;
+		
+		if ( m_proxyName == null || m_proxyName.length() == 0 )
+			return false;
+		
+		if ( m_proxyPwd == null || m_proxyPwd.length() == 0 )
+			return false;
+		
+		return true;
+	}
+	/**
 	 * 
 	 */
 	public void setAllowSelfSignedCerts( boolean allow )
