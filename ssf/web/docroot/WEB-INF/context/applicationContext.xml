@@ -608,7 +608,7 @@
 		<property name="relevanceManager"><ref bean="relevanceManager"/></property>
 	</bean>
 	
-	<bean id="processorDependencyTemplate" parent="dependOnCommonServicesTemplate" abstract="true">
+	<bean id="processorDependencyTemplate" parent="dependOnCommonServicesTemplate" depends-on="coreDao" abstract="true">
 		<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="workflowModule"><ref bean="workflowModule"/></property>

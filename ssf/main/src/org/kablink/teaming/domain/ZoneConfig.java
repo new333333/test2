@@ -66,6 +66,8 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Long fsaMaxFileSize;
 	private OpenIDConfig openIDConfig;
 	private Boolean externalUserEnabled;
+	private String localeLanguage;
+	private String localeCountry;
 
 	public ZoneConfig()
 	{
@@ -315,5 +317,25 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	}
 	public void setExternalUserEnabled(boolean externalUserEnabled) {
 		this.externalUserEnabled = externalUserEnabled;
+	}
+	
+	public String getLocaleLanguage() {
+		if(localeLanguage != null)
+			return localeLanguage;
+		else
+			return SPropsUtil.getString("i18n.default.locale.language", "");
+	}
+	public void setLocaleLanguage(String localeLanguage) {
+		this.localeLanguage = localeLanguage;
+	}
+	
+	public String getLocaleCountry() {
+		if(localeCountry != null)
+			return localeCountry;
+		else
+			return SPropsUtil.getString("i18n.default.locale.country", "");
+	}
+	public void setLocaleCountry(String localeCountry) {
+		this.localeCountry = localeCountry;
 	}
 }

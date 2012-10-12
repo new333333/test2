@@ -68,6 +68,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.LocaleUtils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -1002,8 +1003,8 @@ public class BuildDefinitionDivs extends TagSupport {
 							map.put(user.getLocale().getDisplayName(user.getLocale()), user.getLocale());
 						}
 						Locale userLocale = null;
-			    		String language = SPropsUtil.getString("i18n.default.locale.language", "");
-			    		String country = SPropsUtil.getString("i18n.default.locale.country", "");
+			    		String language = LocaleUtils.getLocaleLanguage();
+			    		String country = LocaleUtils.getLocaleCountry();
 			    		if (!language.equals("")) {
 			    			if (!country.equals("")) userLocale = new Locale(language, country);
 			    			else userLocale = new Locale(language);

@@ -38,6 +38,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import org.kablink.teaming.util.LocaleUtils;
+
 public class PropsUtil {
 	// This is a singleton class. 
 	
@@ -263,8 +265,8 @@ public class PropsUtil {
 
 	public static Locale getTeamingLocale() {
 		if (null == teamingLocale) {
-			String language = getString("i18n.default.locale.language", "");
-			String country  = getString("i18n.default.locale.country",  "");
+			String language = LocaleUtils.getLocaleLanguage();
+			String country  = LocaleUtils.getLocaleCountry();
 			if ((null != language) && (0 < language.length())) {
 				if ((null != country) && (0 < country.length())) teamingLocale = new Locale(language, country);
 				else                                             teamingLocale = new Locale(language);

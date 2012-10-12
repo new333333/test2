@@ -119,6 +119,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.LocaleUtils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -2564,8 +2565,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						}
 					} else {
 						Locale userLocale = null;
-			    		String language = SPropsUtil.getString("i18n.default.locale.language", "");
-			    		String country = SPropsUtil.getString("i18n.default.locale.country", "");
+			    		String language = LocaleUtils.getLocaleLanguage();
+			    		String country = LocaleUtils.getLocaleCountry();
 			    		if (!language.equals("")) {
 			    			if (!country.equals("")) userLocale = new Locale(language, country);
 			    			else userLocale = new Locale(language);
