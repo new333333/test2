@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -75,6 +77,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 
 public class ResourceDriverModuleImpl implements ResourceDriverModule {
+	
+	private Log logger = LogFactory.getLog(getClass());
 	
 	private CoreDao coreDao;
     private FunctionManager functionManager;
@@ -542,8 +546,14 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 					scheduleInfo = folderModule.getSynchronizationSchedule( zoneId, binderId );
 					if ( scheduleInfo == null || scheduleInfo.isEnabled() == false )
 					{
-						// No, sync this net folder
-						folderModule.synchronize( binderId, statusTicket );
+						try {
+							// No, sync this net folder
+							folderModule.synchronize( binderId, statusTicket );
+						}
+						catch(Exception e) {
+							logger.error("Error during synchronization of net folder '" + binderId + "'", e);
+							continue; // Continue to the next net folder to sync.
+						}
 					}
 				}
 			}
@@ -574,7 +584,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			}
 			catch ( Exception e )
 			{
-				//!!!logger.warn( e.toString() );
+				logger.warn( e.toString() );
 				return false;
 			}
 			
@@ -594,7 +604,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			}
 			else
 			{
-				//!!!logger.warn( "Did not start synchronization of net folder server, " + rdConfig.getName() + ", because it is not configured completely." );
+				logger.warn( "Did not start synchronization of net folder server, " + rdConfig.getName() + ", because it is not configured completely." );
 				return false;
 			}
 		}
