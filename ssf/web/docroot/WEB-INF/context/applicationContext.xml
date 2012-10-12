@@ -936,6 +936,9 @@
 				<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
 				<property name="accessControlManager"><ref bean="accessControlManager"/></property>
 				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+				<property name="folderModule"><ref bean="folderModule"/></property>
+				<property name="binderModule"><ref bean="binderModule"/> </property>
+				<property name="workspaceModule"><ref bean="workspaceModule"/></property>
 			</bean>
 		</property>
 	</bean>			

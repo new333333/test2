@@ -216,7 +216,8 @@ public class GwtNetFolderHelper
 												netFolderRoot.getListOfPrincipalIds(),
 												netFolderRoot.getHostUrl(),
 												netFolderRoot.getAllowSelfSignedCerts(),
-												netFolderRoot.getIsSharePointServer() );
+												netFolderRoot.getIsSharePointServer(),
+												null );
 
 		if ( rdConfig != null )
 		{
@@ -314,90 +315,29 @@ public class GwtNetFolderHelper
 		boolean includeHomeDirNetFolders,
 		String rootName )
 	{
-		Criteria criteria;
-		Criterion criterion;
-		String topWSId;
-		int start;
-		int maxHits;
-		boolean sortAscend;
-		String  sortBy;
 		List<Map> searchEntries;
-		Map searchResults;
-		BinderModule binderModule;
 		ArrayList<NetFolder> listOfNetFolders;
 		
 		listOfNetFolders = new ArrayList<NetFolder>();
 		
-		// Can we access the ID of the top workspace?
-		topWSId = GwtUIHelper.getTopWSIdSafely( ami, false );
-		if ( MiscUtil.hasString( topWSId ) == false )
+		searchEntries = NetFolderHelper.getAllNetFolders(
+													ami.getBinderModule(),
+													ami.getWorkspaceModule(),
+													rootName,
+													includeHomeDirNetFolders );
+
+		if ( searchEntries != null )
 		{
-			// No!  Then we can't search for net folders.  Bail.
-			return listOfNetFolders;
-		}
-
-		binderModule = ami.getBinderModule();
-		
-		criteria = new Criteria();
-
-		start = 0;
-		maxHits = ObjectKeys.SEARCH_MAX_HITS_LIMIT;
-
-		// Add the criteria for top level net folders that have been configured.
-		criterion = Restrictions.in( Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_BINDER} );
-		criteria.add( criterion );
-		criterion = Restrictions.in(Constants.ENTRY_ANCESTRY, new String[]{topWSId} );
-		criteria.add( criterion );
-		criterion = Restrictions.in(Constants.FAMILY_FIELD, new String[]{Definition.FAMILY_FILE} );
-		criteria.add( criterion );
-		criterion = Restrictions.in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.TRUE} );
-		criteria.add( criterion );
-		criterion = Restrictions.in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE} );
-		criteria.add( criterion );
-		criterion = Restrictions.in(Constants.IS_TOP_FOLDER_FIELD, new String[]{Constants.TRUE} );
-		criteria.add( criterion );
-		
-		// Are we looking for a net folder that is associated with a specific net folder root?
-		if ( rootName != null && rootName.length() > 0 )
-		{
-			// Yes
-			criterion = Restrictions.in( Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE} );
-			criteria.add( criterion );
-			criterion = Restrictions.in( Constants.RESOURCE_DRIVER_NAME_FIELD, new String[]{rootName} );
-			criteria.add( criterion );
-		}
-
-		// Are we including "home directory" net folders?
-		if ( includeHomeDirNetFolders == false )
-		{
-			// No
-			criterion = Restrictions.in( Constants.IS_HOME_DIR_FIELD, new String[]{Constants.FALSE} );
-			criteria.add( criterion );
-		}
-
-		// Add in the sort information...
-		sortAscend = false;
-		sortBy = Constants.SORT_TITLE_FIELD;
-		criteria.addOrder( new Order( Constants.ENTITY_FIELD, sortAscend ) );
-		criteria.addOrder( new Order( sortBy, sortAscend ) );
-
-		searchResults = binderModule.executeSearchQuery(
-													criteria,
-													Constants.SEARCH_MODE_NORMAL,
-													start,
-													maxHits );
-		searchEntries = ((List<Map>) searchResults.get( ObjectKeys.SEARCH_ENTRIES ) );
-		//totalRecords = ((Integer) searchResults.get( ObjectKeys.SEARCH_COUNT_TOTAL ) ).intValue();
-		
-		for ( Map entryMap:  searchEntries )
-		{
-			NetFolder netFolder;
-			String binderId;
-			
-			binderId = GwtServerHelper.getStringFromEntryMap( entryMap, Constants.DOCID_FIELD );
-			netFolder = GwtNetFolderHelper.getNetFolder( ami, Long.valueOf( binderId ) );
-			
-			listOfNetFolders.add( netFolder );
+			for ( Map entryMap:  searchEntries )
+			{
+				NetFolder netFolder;
+				String binderId;
+				
+				binderId = GwtServerHelper.getStringFromEntryMap( entryMap, Constants.DOCID_FIELD );
+				netFolder = GwtNetFolderHelper.getNetFolder( ami, Long.valueOf( binderId ) );
+				
+				listOfNetFolders.add( netFolder );
+			}
 		}
 		
 		return listOfNetFolders;

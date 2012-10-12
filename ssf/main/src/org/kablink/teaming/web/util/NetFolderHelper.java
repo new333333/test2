@@ -43,12 +43,14 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
+import org.kablink.teaming.jobs.Schedule;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -61,10 +63,16 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.Utils;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Criterion;
+import org.kablink.util.search.Order;
+import org.kablink.util.search.Restrictions;
 
 /**
  * Helper class dealing with net folders and net folder roots
@@ -136,11 +144,25 @@ public class NetFolderHelper
 		if ( rdConfig == null )
 		{
 			String rootName;
+			ScheduleInfo scheduleInfo;
+			Schedule schedule;
+			Long zoneId;
 			
 			// No
 			// Create a net folder root.  The administrator will need to fill in credentials.
 			rootName = serverAddr + "-" + volume;
 			m_logger.info( "About to create a net folder server called: " + rootName  );
+			
+			// Create a default schedule for syncing the net folders associated with this net folder server
+			// The schedule is configured to run every day at 11:00pm
+			zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			scheduleInfo = new ScheduleInfo( zoneId );
+			scheduleInfo.setEnabled( true );
+			schedule = new Schedule( "" );
+			schedule.setDaily( true );
+			schedule.setHours( "23" );
+			schedule.setMinutes( "0" );
+			scheduleInfo.setSchedule( schedule );
 			
 			rdConfig = NetFolderHelper.createNetFolderRoot(
 														adminModule,
@@ -153,7 +175,8 @@ public class NetFolderHelper
 														null,
 														null,
 														false,
-														false );
+														false,
+														scheduleInfo );
 			
 			// Add a task for the administrator to enter the proxy credentials for this server.
 			{
@@ -339,7 +362,8 @@ public class NetFolderHelper
 		Set<Long> memberIds,
 		String hostUrl,
 		boolean allowSelfSignedCerts,
-		boolean isSharePointServer )
+		boolean isSharePointServer,
+		ScheduleInfo scheduleInfo )
 	{
 		Map options;
 		ResourceDriverConfig rdConfig = null;
@@ -372,15 +396,20 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE );
 
 		//Add this resource driver
+		rdConfig = resourceDriverModule.addResourceDriver(
+														name,
+														driverType, 
+														path,
+														memberIds,
+														options );
+
+		// Set the net folder server's sync schedule
+		if ( scheduleInfo != null )
 		{
-			rdConfig = resourceDriverModule.addResourceDriver(
-															name,
-															driverType, 
-															path,
-															memberIds,
-															options );
+			scheduleInfo.setFolderId( rdConfig.getId() );
+			resourceDriverModule.setSynchronizationSchedule( scheduleInfo, rdConfig.getId() );
 		}
-		
+
 		return rdConfig;
 	}
 
@@ -464,6 +493,95 @@ public class NetFolderHelper
 		
 		// If we get here we did not find a net folder root with the given unc.
 		return null;
+	}
+	
+	/**
+	 * Return all the net folders that are associated with the given net folder server
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public static List<Map> getAllNetFolders(
+		BinderModule binderModule,
+		WorkspaceModule workspaceModule,
+		String rootName,
+		boolean includeHomeDirNetFolders )
+	{
+		Criteria criteria;
+		Criterion criterion;
+		Long topWSId;
+		int start;
+		int maxHits;
+		boolean sortAscend;
+		String  sortBy;
+		List<Map> searchEntries;
+		Map searchResults;
+		
+		// Can we access the ID of the top workspace?
+		try
+		{
+			topWSId = workspaceModule.getTopWorkspaceId();
+		}
+		catch ( Exception e )
+		{
+			topWSId = null;
+		}
+		if ( topWSId == null )
+		{
+			// No!  Then we can't search for net folders.  Bail.
+			return null;
+		}
+
+		criteria = new Criteria();
+
+		start = 0;
+		maxHits = ObjectKeys.SEARCH_MAX_HITS_LIMIT;
+
+		// Add the criteria for top level net folders that have been configured.
+		criterion = Restrictions.in( Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_BINDER} );
+		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.ENTRY_ANCESTRY, new String[]{String.valueOf( topWSId )} );
+		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.FAMILY_FIELD, new String[]{Definition.FAMILY_FILE} );
+		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.TRUE} );
+		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE} );
+		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.IS_TOP_FOLDER_FIELD, new String[]{Constants.TRUE} );
+		criteria.add( criterion );
+		
+		// Are we looking for a net folder that is associated with a specific net folder root?
+		if ( rootName != null && rootName.length() > 0 )
+		{
+			// Yes
+			criterion = Restrictions.in( Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE} );
+			criteria.add( criterion );
+			criterion = Restrictions.in( Constants.RESOURCE_DRIVER_NAME_FIELD, new String[]{rootName} );
+			criteria.add( criterion );
+		}
+
+		// Are we including "home directory" net folders?
+		if ( includeHomeDirNetFolders == false )
+		{
+			// No
+			criterion = Restrictions.in( Constants.IS_HOME_DIR_FIELD, new String[]{Constants.FALSE} );
+			criteria.add( criterion );
+		}
+
+		// Add in the sort information...
+		sortAscend = false;
+		sortBy = Constants.SORT_TITLE_FIELD;
+		criteria.addOrder( new Order( Constants.ENTITY_FIELD, sortAscend ) );
+		criteria.addOrder( new Order( sortBy, sortAscend ) );
+
+		searchResults = binderModule.executeSearchQuery(
+													criteria,
+													Constants.SEARCH_MODE_NORMAL,
+													start,
+													maxHits );
+		searchEntries = ((List<Map>) searchResults.get( ObjectKeys.SEARCH_ENTRIES ) );
+		//totalRecords = ((Integer) searchResults.get( ObjectKeys.SEARCH_COUNT_TOTAL ) ).intValue();
+		
+		return searchEntries;
 	}
 	
 	/**
