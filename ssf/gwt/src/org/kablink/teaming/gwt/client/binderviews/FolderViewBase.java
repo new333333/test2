@@ -57,7 +57,6 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -1020,8 +1019,8 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 			checkReadyness();
 		}
 		
-		else if (GwtClientHelper.getRequestInfo().isDebugUI()) {
-			Window.alert("FolderViewBase.toolPanelReady( *Internal Error* ):  Unexpected call to toolPanelReady() method.");
+		else {
+			GwtClientHelper.debugAlert("FolderViewBase.toolPanelReady( *Internal Error* ):  Unexpected call to toolPanelReady() method.");
 		}
 	}
 
@@ -1065,8 +1064,8 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 			checkReadyness();
 		}
 		
-		else if (GwtClientHelper.getRequestInfo().isDebugUI()) {
-			Window.alert("FolderViewBase.viewReady( *Internal Error* ):  Unexpected call to viewReady() method.");
+		else {
+			GwtClientHelper.debugAlert("FolderViewBase.viewReady( *Internal Error* ):  Unexpected call to viewReady() method.");
 		}
 	}
 }

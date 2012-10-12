@@ -1,0 +1,22 @@
+/* */
+
+/* ########################################################################################################### */
+
+
+/* Start:  GWT folder entry view styles. */
+	/* Start:  Header styles. */
+		.vibe-feView-headerPanel {display: block; position: relative; padding: 0px 380px 10px 10px;}
+	/* End:  Header styles. */
+	
+	/* Start:  Menu styles. */
+		.vibe-feView-menuPanel {display: block; padding: 10px 380px 10px 10px; border-top: 1px solid #CCC; border-bottom: 1px solid #CCC; box-shadow: #E0E0E0 0px 2px 3px;}
+	/* End:  Menu styles. */
+	
+	/* Start:  Document styles. */
+		.vibe-feView-documentPanel {display: block; overflow: auto; padding: 10px;}
+	/* End:  Document styles. */
+	
+	/* Start:  Comments styles. */
+		.vibe-feView-commentsPanel {display: block;}
+	/* End:  Comments styles. */
+/* End:  GWT folder entry view styles. */

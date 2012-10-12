@@ -843,6 +843,9 @@ public class GwtViewHelper {
 			HistoryStamp lStamp = fe.getReservation();
 			reply.setLocker(buildViewFolderEntryUser(bs, request, lStamp));
 			reply.setLockedByLoggedInUser((null != lStamp) && lStamp.getPrincipal().getId().equals(userId));
+
+			// ...set the contributor's to this entry...
+			reply.setContributors(ListFolderHelper.collectContributorIds(fe));
 			
 			// ...set the entry's title... 
 			String feTitle = fe.getTitle();

@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
+import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -76,17 +77,19 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * 
  * @author drfoster@novell.com
  */
-public class FolderEntryComposite extends ResizeComposite
-	implements ToolPanelReady,
+public class FolderEntryComposite extends ResizeComposite	
+	implements FolderEntryCallback, ToolPanelReady,
 		// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler
 {
 	public static final boolean SHOW_GWT_ENTRY_VIEWER	= false;	// DRF:  Leave false on checkin until it's finished.
 
+	private boolean							m_compositeReady;			// Set true once the composite and all its components are ready.
 	private boolean							m_isDialog;					// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.
 	private FooterPanel						m_footerPanel;				//
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
+	private int								m_readyComponents;			// Components that are ready, incremented as they callback.
 	private Label							m_caption;					// 
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ViewReady						m_viewReady;				// Stores a ViewReady created for the classes that extends it.
@@ -98,6 +101,14 @@ public class FolderEntryComposite extends ResizeComposite
 	private final static int MINIMUM_CONTENT_HEIGHT	= 150;	// The minimum height (in pixels) of the composite's content panel.
 	private final static int FOOTER_ADJUST_DLG		=  20;	// Height adjustment required for adequate spacing below the footer when hosted in a dialog.
 	private final static int FOOTER_ADJUST_VIEW		=  30;	// Height adjustment required for adequate spacing below the footer when hosted in a view.
+	
+	// Number of components to coordinate with during construction:
+	// - Header;
+	// - Menu;
+	// - Document;
+	// - Comments; and
+	// - Footer.
+	private final static int FOLDER_ENTRY_COMPONENTS = 5;	//
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -138,6 +149,20 @@ public class FolderEntryComposite extends ResizeComposite
 		loadPart1Async();
 	}
 
+	/*
+	 * Checks the components as they callback and finishes things
+	 * once everybody is ready.
+	 */
+	private void checkReadyness() {
+		// Is everything ready?
+		if (FOLDER_ENTRY_COMPONENTS == m_readyComponents) {
+			// Yes!  Tell the view and resize as appropriate.
+			m_compositeReady = true;
+			m_viewReady.viewReady();
+			onResizeAsync();
+		}
+	}
+	
 	/*
 	 * Creates the dialog/view caption for the composite.
 	 */
@@ -389,11 +414,11 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously loads the next part of the composite.
 	 */
 	private void loadPart2Now() {
-//!		...this needs to be implemented...
-		m_contentPanel.add(new InlineLabel("...this needs to be implemented..."));
-		
-		m_viewReady.viewReady();
-		onResizeAsync();
+		// Create and add the various components to the composite.
+		m_contentPanel.add(new FolderEntryHeader(  this, m_vfei)                  );
+		m_contentPanel.add(new FolderEntryMenu(    this, m_vfei.getToolbarItems()));
+		m_contentPanel.add(new FolderEntryDocument(this, m_vfei.getHtmlView())    );
+		m_contentPanel.add(new FolderEntryComments(this, m_vfei.getComments())    );
 	}
 
 	/**
@@ -416,8 +441,24 @@ public class FolderEntryComposite extends ResizeComposite
 	 * @param event
 	 */
 	@Override
-	public void onContributorIdsRequest(ContributorIdsRequestEvent event) {
+	public void onContributorIdsRequest(final ContributorIdsRequestEvent event) {
 //!		...this needs to be implemented...
+
+		// Convert the contributor IDs from a String[] to a
+		// List<Long>...
+		final List<Long> contributorIds = new ArrayList<Long>();
+		String[] contributors = m_vfei.getContributors();
+		if ((null != contributors) && (0 < contributors.length)) {
+			for (String contributor:  contributors) {
+				contributorIds.add(new Long(Long.parseLong(contributor)));
+			}
+		}
+		
+		// ...and asynchronously fire the corresponding reply event it.
+		GwtTeaming.fireEventAsync(
+			new ContributorIdsReplyEvent(
+				event.getBinderId(),
+				contributorIds));
 	}
 	
 	/**
@@ -508,6 +549,20 @@ public class FolderEntryComposite extends ResizeComposite
 		// Set the height of the content panel.
 		m_contentPanel.setHeight(contentHeight + "px");
 	}
+
+	/*
+	 * Coordinates things as the components of the composite become ready.
+	 */
+	private void partReady() {
+		if (!m_compositeReady) {
+			m_readyComponents += 1;
+			checkReadyness();
+		}
+		
+		else {
+			GwtClientHelper.debugAlert("FolderEntryComposite.partReady( *Internal Error* ):  Unexpected call to partReady() method.");
+		}
+	}
 	
 	/*
 	 * Registers any global event handlers that need to be registered.
@@ -548,7 +603,15 @@ public class FolderEntryComposite extends ResizeComposite
 	 */
 	@Override
 	public void toolPanelReady(ToolPanelBase toolPanel) {
-//!		...this needs to be implemented...
+		partReady();
+	}
+
+	/**
+	 * Implements the FolderEntryCallback.viewComponentReady() method.
+	 */
+	@Override
+	public void viewComponentReady() {
+		partReady();
 	}
 
 	/*
