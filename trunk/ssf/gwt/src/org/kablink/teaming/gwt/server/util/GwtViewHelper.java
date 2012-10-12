@@ -187,6 +187,7 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -783,98 +784,109 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static ViewFolderEntryInfo buildViewFolderEntryInfo(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long entryId) {
-		// Create the ViewFolderEntryInfo to return...
-		Long				userId = GwtServerHelper.getCurrentUserId();
-		EntityId			eid    = new EntityId(binderId, entryId, EntityId.FOLDER_ENTRY);
-		ViewFolderEntryInfo	reply  = new ViewFolderEntryInfo(eid);
-
-		// ...set its view style... 
-		String viewStyle = GwtServerHelper.getPersonalPreferences(bs, request).getDisplayStyle();
-		if (!(MiscUtil.hasString(viewStyle))) {
-			viewStyle = ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE;
-		}
-		reply.setViewStyle(viewStyle);
-
-		// ...if the user has a position for the dialog saved...
-		UserProperties	userProperties = bs.getProfileModule().getUserProperties(userId);
-		if (null != userProperties) {
-			Map upMap = userProperties.getProperties();
-			if (null != upMap) {
-				String packedPosition = ((String) upMap.get(ObjectKeys.USER_PROPERTY_FOLDER_ENTRY_DLG_POSITION));
-				if (MiscUtil.hasString(packedPosition)) {
-					String[] position = StringUtil.unpack(packedPosition);
-					if ((null != position) && (4 == position.length)) {
-						// ...set it into the reply...
-						reply.setX( Integer.parseInt(position[0]));
-						reply.setY( Integer.parseInt(position[1]));
-						reply.setCX(Integer.parseInt(position[2]));
-						reply.setCY(Integer.parseInt(position[3]));
+		SimpleProfiler.start("GwtViewHelper.buildViewFolderEntryInfo()");
+		try {
+			// Create the ViewFolderEntryInfo to return...
+			Long				userId = GwtServerHelper.getCurrentUserId();
+			EntityId			eid    = new EntityId(binderId, entryId, EntityId.FOLDER_ENTRY);
+			ViewFolderEntryInfo	reply  = new ViewFolderEntryInfo(eid);
+			
+			// ...set the user's selected view style... 
+			String viewStyle = GwtServerHelper.getPersonalPreferences(bs, request).getDisplayStyle();
+			if (!(MiscUtil.hasString(viewStyle))) {
+				viewStyle = ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE;
+			}
+			reply.setViewStyle(viewStyle);
+	
+			// ...if the user has a position for the dialog saved...
+			UserProperties	userProperties = bs.getProfileModule().getUserProperties(userId);
+			if (null != userProperties) {
+				Map upMap = userProperties.getProperties();
+				if (null != upMap) {
+					String packedPosition = ((String) upMap.get(ObjectKeys.USER_PROPERTY_FOLDER_ENTRY_DLG_POSITION));
+					if (MiscUtil.hasString(packedPosition)) {
+						String[] position = StringUtil.unpack(packedPosition);
+						if ((null != position) && (4 == position.length)) {
+							// ...set it into the reply...
+							reply.setX( Integer.parseInt(position[0]));
+							reply.setY( Integer.parseInt(position[1]));
+							reply.setCX(Integer.parseInt(position[2]));
+							reply.setCY(Integer.parseInt(position[3]));
+						}
 					}
 				}
 			}
-		}
-		
-		// ...set the entry's family and path... 
-		FolderEntry fe    = bs.getFolderModule().getEntry(binderId, entryId);
-		FolderEntry feTop = fe.getTopEntry();
-		if (null == feTop) {
-			feTop = fe;
-		}
-		reply.setFamily(GwtServerHelper.getFolderEntityFamily(bs, feTop));
-		reply.setPath(  feTop.getParentBinder().getPathName()           );
-
-		// ...set the entry's creator...
-		HistoryStamp cStamp = fe.getCreation();
-		reply.setCreator(buildViewFolderEntryUser(bs, request, cStamp));
-		
-		// ...set the entry's modifier...
-		HistoryStamp mStamp = fe.getModification();
-		reply.setModifier(buildViewFolderEntryUser(bs, request, mStamp));
-		reply.setModifierIsCreator(cStamp.getPrincipal().getId().equals(mStamp.getPrincipal().getId()));
-		
-		// ...set the entry's locker...
-		HistoryStamp lStamp = fe.getReservation();
-		reply.setLocker(buildViewFolderEntryUser(bs, request, lStamp));
-		reply.setLockedByCurrentUser((null != lStamp) && lStamp.getPrincipal().getId().equals(userId));
-		
-		// ...set the entry's title... 
-		String feTitle = fe.getTitle();
-		if (!(MiscUtil.hasString(feTitle))) {
-			feTitle = ("--" + NLT.get("entry.noTitle") + "--");
-		}
-		reply.setTitle(feTitle);
-		
-		// ...set information about the entry's comments... 
-		CommentsInfo ci = new CommentsInfo(eid, feTitle, fe.getReplies().size());
-		reply.setComments(ci);
-
-		// ...if this a file entry with a filename...
-		FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, feTop);
-		if (null != fa) {
-			// ...store the icons for the file...
-			String fName = fa.getFileItem().getName();
-			reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.SMALL)),  BinderIconSize.SMALL );
-			reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.MEDIUM)), BinderIconSize.MEDIUM);
-			reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.LARGE)),  BinderIconSize.LARGE );
+	
+			// ...set whether the user has seen this entry...
+			FolderEntry fe      = bs.getFolderModule().getEntry(binderId, entryId);
+			SeenMap		seenMap = bs.getProfileModule().getUserSeenMap(userId);
+			reply.setSeen(seenMap.checkIfSeen(fe));
 			
-			// ...set the ViewFileInfo for an HTML view of the file if
-			// ...it supports it...
-			reply.setHtmlView(buildViewFileInfo(request, feTop, fa));
+			// ...set the entry's family and path... 
+			FolderEntry feTop = fe.getTopEntry();
+			if (null == feTop) {
+				feTop = fe;
+			}
+			reply.setFamily(GwtServerHelper.getFolderEntityFamily(bs, feTop));
+			reply.setPath(  feTop.getParentBinder().getPathName()           );
+	
+			// ...set the entry's creator...
+			HistoryStamp cStamp = fe.getCreation();
+			reply.setCreator(buildViewFolderEntryUser(bs, request, cStamp));
+			
+			// ...set the entry's modifier...
+			HistoryStamp mStamp = fe.getModification();
+			reply.setModifier(buildViewFolderEntryUser(bs, request, mStamp));
+			reply.setModifierIsCreator(cStamp.getPrincipal().getId().equals(mStamp.getPrincipal().getId()));
+			
+			// ...set the entry's locker...
+			HistoryStamp lStamp = fe.getReservation();
+			reply.setLocker(buildViewFolderEntryUser(bs, request, lStamp));
+			reply.setLockedByLoggedInUser((null != lStamp) && lStamp.getPrincipal().getId().equals(userId));
+			
+			// ...set the entry's title... 
+			String feTitle = fe.getTitle();
+			if (!(MiscUtil.hasString(feTitle))) {
+				feTitle = ("--" + NLT.get("entry.noTitle") + "--");
+			}
+			reply.setTitle(feTitle);
+			
+			// ...set information about the entry's comments... 
+			CommentsInfo ci = new CommentsInfo(eid, feTitle, fe.getReplies().size());
+			reply.setComments(ci);
+	
+			// ...if this is a file entry with a filename...
+			FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, feTop);
+			if (null != fa) {
+				// ...store the icons for the file...
+				String fName = fa.getFileItem().getName();
+				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.SMALL)),  BinderIconSize.SMALL );
+				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.MEDIUM)), BinderIconSize.MEDIUM);
+				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.LARGE)),  BinderIconSize.LARGE );
+				
+				// ...and set the ViewFileInfo for an HTML view of the
+				// ...file if it supports it...
+				reply.setHtmlView(buildViewFileInfo(request, feTop, fa));
+			}
+	
+			// ...set the entry's description...
+			Description	feDesc     = fe.getDescription();
+			boolean		feDescHtml = (Description.FORMAT_HTML == feDesc.getFormat());
+			reply.setDescIsHtml(feDescHtml              );
+			reply.setDesc(      feDesc.getText()        );
+			reply.setDescTxt(   feDesc.getStrippedText());
+			
+			// ...and finally, set the view's toolbar items.
+			reply.setToolbarItems(GwtMenuHelper.getViewEntryToolbarItems(bs, request, fe));
+			
+			// If we get here, reply refers to the ViewFolderEntryInfo
+			// for the user to view the entry.  Return it.
+			return reply;
 		}
-
-		// ...set the entry's description...
-		Description	feDesc     = fe.getDescription();
-		boolean		feDescHtml = (Description.FORMAT_HTML == feDesc.getFormat());
-		reply.setDescIsHtml(feDescHtml              );
-		reply.setDesc(      feDesc.getText()        );
-		reply.setDescTxt(   feDesc.getStrippedText());
 		
-		// ...and finally, set the view's toolbar items.
-		reply.setToolbarItems(GwtMenuHelper.getViewEntryToolbarItems(bs, request, fe));
-		
-		// If we get here, reply refers to the ViewFolderEntryInfo that
-		// describes the entry.  Return it.
-		return reply;
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.buildViewFolderEntryInfo()");
+		}
 	}
 
 	/*
