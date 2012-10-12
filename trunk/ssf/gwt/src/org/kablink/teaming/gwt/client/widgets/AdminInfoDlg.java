@@ -36,6 +36,8 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.admin.GwtEnterProxyCredentialsTask;
+import org.kablink.teaming.gwt.client.admin.GwtFilrAdminTask;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 
 import com.google.gwt.core.client.GWT;
@@ -43,6 +45,7 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.UListElement;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -184,6 +187,8 @@ public class AdminInfoDlg extends DlgBox
 					UListElement uList;
 					
 					uList = Document.get().createULElement();
+					uList.getStyle().setMarginTop( 0, Unit.PX );
+					uList.getStyle().setMarginBottom( 0, Unit.PX );
 				
 					// Display a message for each upgrade task.
 					for ( GwtUpgradeInfo.UpgradeTask task : upgradeTasks )
@@ -227,6 +232,56 @@ public class AdminInfoDlg extends DlgBox
 				cellFormatter.setColSpan( row, 0, 2 );
 				cellFormatter.setWordWrap( row, 0, false );
 				m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgLoginAsAdmin() );
+				++row;
+			}
+		}
+		
+		// Are we running Filr?
+		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
+		{
+			ArrayList<GwtFilrAdminTask> listOfTasks;
+			
+			// Yes
+			// Are there any tasks the admin needs to do?
+			listOfTasks = upgradeInfo.getFilrAdminTasks();
+			if ( listOfTasks != null && listOfTasks.size() > 0 )
+			{
+				UListElement uList;
+				
+				uList = Document.get().createULElement();
+				uList.getStyle().setMarginTop( 0, Unit.PX );
+				uList.getStyle().setMarginBottom( 0, Unit.PX );
+			
+				// Yes
+				// Add text to let the user know there are upgrade tasks that need to be completed.
+				row += 3;
+				cellFormatter.setColSpan( row, 0, 2 );
+				cellFormatter.setWordWrap( row, 0, false );
+				m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgFilrTasksToBeCompleted() );
+				++row;
+
+				// Display a message for each task.
+				for ( GwtFilrAdminTask nextTask : listOfTasks )
+				{
+					if ( nextTask instanceof GwtEnterProxyCredentialsTask )
+					{
+						GwtEnterProxyCredentialsTask tmpTask;
+						LIElement liElement;
+						String txt;
+						
+						tmpTask = (GwtEnterProxyCredentialsTask) nextTask;
+						txt = GwtTeaming.getMessages().adminInfoDlgEnterProxyCredentials( tmpTask.getServerName() );
+
+						liElement = Document.get().createLIElement();
+						liElement.setInnerText( txt );
+						
+						uList.appendChild( liElement );
+					}
+				}
+
+				cellFormatter.setColSpan( row, 0, 2 );
+				cellFormatter.setWordWrap( row, 0, false );
+				m_table.setHTML( row, 0, uList.getString() );
 				++row;
 			}
 		}

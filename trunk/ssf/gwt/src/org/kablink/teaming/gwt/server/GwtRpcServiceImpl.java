@@ -61,6 +61,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
@@ -90,6 +91,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
+import org.kablink.teaming.gwt.client.admin.GwtEnterProxyCredentialsTask;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
@@ -174,11 +176,14 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.EnterProxyCredentialsTask;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.FavoritesLimitExceededException;
+import org.kablink.teaming.web.util.FilrAdminTasks;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -3915,9 +3920,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		GwtUpgradeInfo upgradeInfo;
 		User user;
+		boolean isAdminUser;
 		
 		user = GwtServerHelper.getCurrentUser();
-
+		isAdminUser = ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() );
+		
 		upgradeInfo = new GwtUpgradeInfo();
 		
 		// Get the Teaming version and build information
@@ -3945,7 +3952,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 			upgradeVersionCurrent = ObjectKeys.PRODUCT_UPGRADE_VERSION;
 
  			// Are we dealing with the "admin" user?
- 	 		if ( ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) )
+ 	 		if ( isAdminUser )
  	 		{
  	 			// Yes, Were there upgrade tasks to be performed?
  		 		if ( upgradeVersionCurrent == null || !upgradeVersionCurrent.equals( ObjectKeys.PRODUCT_UPGRADE_VERSION ) )
@@ -4011,6 +4018,47 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		 			}
 		 		}
 	 		}
+		}
+		
+		// Get any Filr admin tasks that need to be done
+		if ( Utils.checkIfFilr() && isAdminUser )
+		{
+			UserProperties userProperties;
+			String xmlStr;
+			FilrAdminTasks filrAdminTasks;
+			ArrayList<EnterProxyCredentialsTask> listOfTasks;
+			
+			// Get the FilrAdminTasks from the administrator's user properties
+			userProperties = getProfileModule().getUserProperties( user.getId() );
+			xmlStr = (String)userProperties.getProperty( ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS );
+			filrAdminTasks = new FilrAdminTasks( xmlStr );
+
+			// Get the list of "enter proxy credentials" tasks
+			listOfTasks = filrAdminTasks.getAllEnterProxyCredentialsTasks();
+			if ( listOfTasks != null )
+			{
+				for ( EnterProxyCredentialsTask nextTask : listOfTasks )
+				{
+					GwtEnterProxyCredentialsTask gwtTask;
+					ResourceDriverConfig rdConfig;
+					String serverName;
+					
+					// Get the net folder server object with the given id
+					rdConfig = NetFolderHelper.findNetFolderRootById(
+																getAdminModule(),
+																getResourceDriverModule(),
+																nextTask.getNetFolderServerId() );
+					serverName = nextTask.getNetFolderServerId();
+					if ( rdConfig != null )
+						serverName = rdConfig.getName();
+					
+					gwtTask = new GwtEnterProxyCredentialsTask();
+					gwtTask.setServerId( nextTask.getNetFolderServerId() );
+					gwtTask.setServerName( serverName );
+					
+					upgradeInfo.addFilrAdminTask( gwtTask );
+				}
+			}
 		}
 		
 		return upgradeInfo;

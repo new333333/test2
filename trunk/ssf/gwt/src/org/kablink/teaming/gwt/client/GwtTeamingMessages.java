@@ -1113,6 +1113,8 @@ public interface GwtTeamingMessages extends Messages
 	String presenceUnknown();
 
 	// The following strings are used in the Administration Information dialog
+	String adminInfoDlgEnterProxyCredentials( String serverName );
+	String adminInfoDlgFilrTasksToBeCompleted();
 	String adminInfoDlgHeader();
 	String adminInfoDlgLoginAsAdmin();
 	String adminInfoDlgRelease();
