@@ -90,6 +90,6 @@ public class GetFolderEntryDetailsCmd extends VibeRpcCmd {
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.GET_NEXT_PREVIOUS_FOLDER_ENTRY_INFO.ordinal();
+		return VibeRpcCmdType.GET_FOLDER_ENTRY_DETAILS.ordinal();
 	}
 }
