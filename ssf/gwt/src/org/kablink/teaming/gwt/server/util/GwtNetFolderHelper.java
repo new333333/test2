@@ -800,47 +800,24 @@ public class GwtNetFolderHelper
 		AllModulesInjected ami,
 		NetFolderRoot netFolderRoot ) throws GwtTeamingException
 	{
-		Map options;
+		DriverType driverType;
 
-		ami.getAdminModule().checkAccess( AdminOperation.manageResourceDrivers );
-
-		options = new HashMap();
-		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
-		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, netFolderRoot.getProxyName() ); 
-		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, netFolderRoot.getProxyPwd() );
-
-		// Always prevent the top level folder from being deleted
-		// This is forced so that the folder could not accidentally be deleted if the 
-		// external disk was offline
-		options.put( ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE );
-
-		// Is the root type WebDAV?
-		if ( netFolderRoot.getRootType() == NetFolderRootType.WEB_DAV )
-		{
-			// Yes, get the WebDAV specific values
-			options.put(
-					ObjectKeys.RESOURCE_DRIVER_HOST_URL,
-					netFolderRoot.getHostUrl() );
-			options.put(
-					ObjectKeys.RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE,
-					netFolderRoot.getAllowSelfSignedCerts() );
-			options.put(
-					ObjectKeys.RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH,
-					netFolderRoot.getIsSharePointServer() );
-		}
-
-		//Add this resource driver
 		try
 		{
-			DriverType driverType;
-			
 			driverType = getDriverType( netFolderRoot.getRootType() );
-			ami.getResourceDriverModule().modifyResourceDriver(
-														netFolderRoot.getName(),
-														driverType, 
-														netFolderRoot.getRootPath(),
-														netFolderRoot.getListOfPrincipalIds(),
-														options );
+			NetFolderHelper.modifyNetFolderRoot(
+											ami.getAdminModule(),
+											ami.getResourceDriverModule(),
+											ami.getProfileModule(),
+											netFolderRoot.getName(),
+											netFolderRoot.getRootPath(),
+											netFolderRoot.getProxyName(),
+											netFolderRoot.getProxyPwd(),
+											driverType,
+											netFolderRoot.getHostUrl(),
+											netFolderRoot.getAllowSelfSignedCerts(),
+											netFolderRoot.getIsSharePointServer(),
+											netFolderRoot.getListOfPrincipalIds() );
 		}
 		catch ( Exception ex )
 		{

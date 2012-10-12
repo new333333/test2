@@ -812,11 +812,19 @@ public class AdminControl extends TeamingPopupPanel
 					public void execute()
 					{
 						GwtUpgradeInfo upgradeInfo;
+						boolean upgradeTasksExist;
+						boolean filrAdminTasksExist;
 						
 						upgradeInfo = (GwtUpgradeInfo) response.getResponseData();
 						
 						// Are there upgrade tasks that need to be performed?
-						if ( upgradeInfo.doUpgradeTasksExist() )
+						upgradeTasksExist = upgradeInfo.doUpgradeTasksExist();
+						
+						filrAdminTasksExist = false;
+						if ( GwtTeaming.m_requestInfo.isLicenseFilr() && upgradeInfo.doFilrAdminTasksExist() )
+							filrAdminTasksExist = true;
+						
+						if ( upgradeTasksExist || filrAdminTasksExist )
 						{
 							// Yes, invoke the AdminInfoDlg.
 							showAdminInfoDlg( upgradeInfo, 250, 100 );

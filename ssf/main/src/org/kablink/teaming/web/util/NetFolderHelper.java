@@ -41,10 +41,12 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.jobs.ScheduleInfo;
@@ -60,6 +62,7 @@ import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.Utils;
 
 /**
@@ -150,6 +153,35 @@ public class NetFolderHelper
 														null,
 														false,
 														false );
+			
+			// Add a task for the administrator to enter the proxy credentials for this server.
+			{
+				UserProperties userProperties;
+				FilrAdminTasks filrAdminTasks;
+				String xmlStr;
+				User adminUser;
+				String adminUserName;
+				String zoneName;
+
+				// Get the admin user so we can add an administrative task to his user properties.
+				zoneName = RequestContextHolder.getRequestContext().getZoneName();
+				adminUserName = SZoneConfig.getAdminUserName( zoneName );
+				adminUser = profileModule.getUser( adminUserName );
+				
+				// Get the FilrAdminTasks from the administrator's user properties
+				userProperties = profileModule.getUserProperties( adminUser.getId() );
+				xmlStr = (String)userProperties.getProperty( ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS );
+				filrAdminTasks = new FilrAdminTasks( xmlStr );
+				
+				// Add a task for the administrator to enter the proxy credentials for this net folder server.
+				filrAdminTasks.addEnterNetFolderServerProxyCredentialsTask( rdConfig.getId() );
+				
+				// Save the FilrAdminTasks to the administrator's user properties
+				profileModule.setUserProperty(
+											adminUser.getId(),
+											ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS,
+											filrAdminTasks.toString() );
+			}
 		}
 		
 		if ( rdConfig != null )
@@ -383,6 +415,34 @@ public class NetFolderHelper
 	/**
 	 * 
 	 */
+	public static ResourceDriverConfig findNetFolderRootById(
+		AdminModule adminModule,
+		ResourceDriverModule resourceDriverModule,
+		String id )
+	{
+		List<ResourceDriverConfig> drivers;
+
+		if ( id == null )
+			return null;
+		
+		// Get a list of the currently defined Net Folder Roots
+		drivers = resourceDriverModule.getAllResourceDriverConfigs();
+		for ( ResourceDriverConfig driver : drivers )
+		{
+			String driverId;
+			
+			driverId = String.valueOf( driver.getId() );
+			if ( id.equalsIgnoreCase( driverId ) )
+				return driver;
+		}
+		
+		// If we get here we did not find a net folder root with the given id.
+		return null;
+	}
+
+	/**
+	 * 
+	 */
 	public static ResourceDriverConfig findNetFolderRootByUNC(
 		AdminModule adminModule,
 		ResourceDriverModule resourceDriverModule,
@@ -403,5 +463,90 @@ public class NetFolderHelper
 		
 		// If we get here we did not find a net folder root with the given unc.
 		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	public static ResourceDriverConfig modifyNetFolderRoot(
+		AdminModule adminModule,
+		ResourceDriverModule resourceDriverModule,
+		ProfileModule profileModule,
+		String rootName,
+		String rootPath,
+		String proxyName,
+		String proxyPwd,
+		DriverType driverType,
+		String hostUrl,
+		boolean allowSelfSignedCerts,
+		boolean isSharePointServer,
+		Set<Long> listOfPrincipals )
+	{
+		Map options;
+		User adminUser;
+		String adminUserName;
+		String zoneName;
+		String xmlStr;
+		UserProperties userProperties;
+		FilrAdminTasks filrAdminTasks;
+
+		adminModule.checkAccess( AdminOperation.manageResourceDrivers );
+
+		options = new HashMap();
+		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
+		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, proxyName ); 
+		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, proxyPwd );
+
+		// Always prevent the top level folder from being deleted
+		// This is forced so that the folder could not accidentally be deleted if the 
+		// external disk was offline
+		options.put( ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE );
+
+		// Is the root type WebDAV?
+		if ( driverType == DriverType.webdav )
+		{
+			// Yes, get the WebDAV specific values
+			options.put(
+					ObjectKeys.RESOURCE_DRIVER_HOST_URL,
+					hostUrl );
+			options.put(
+					ObjectKeys.RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE,
+					allowSelfSignedCerts );
+			options.put(
+					ObjectKeys.RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH,
+					isSharePointServer );
+		}
+
+		ResourceDriverConfig rdConfig;
+		
+		// Modify the resource driver
+		rdConfig = resourceDriverModule.modifyResourceDriver(
+															rootName,
+															driverType, 
+															rootPath,
+															listOfPrincipals,
+															options );
+
+		// Get the admin user so we can remove an administrative task to his user properties.
+		zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		adminUserName = SZoneConfig.getAdminUserName( zoneName );
+		adminUser = profileModule.getUser( adminUserName );
+		
+		// Get the FilrAdminTasks from the administrator's user properties
+		userProperties = profileModule.getUserProperties( adminUser.getId() );
+		xmlStr = (String)userProperties.getProperty( ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS );
+		filrAdminTasks = new FilrAdminTasks( xmlStr );
+		
+		// Remove the task for the administrator to enter the proxy credentials for this net folder server.
+		filrAdminTasks.deleteEnterNetFolderServerProxyCredentialsTask( rdConfig.getId() );
+
+		// Save the FilrAdminTasks to the administrator's user properties
+		profileModule.setUserProperty(
+									adminUser.getId(),
+									ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS,
+									filrAdminTasks.toString() );
+		
+		return rdConfig;
 	}
 }

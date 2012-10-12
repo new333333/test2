@@ -51,6 +51,7 @@ public class GwtUpgradeInfo
 {
 	private String m_releaseInfo;
 	private ArrayList<UpgradeTask> m_upgradeTasks = null;
+	private ArrayList<GwtFilrAdminTask> m_filrAdminTasks = null;
 	private boolean m_upgradeTasksExist = false;
 	private boolean m_isAdmin = false;
 	
@@ -62,6 +63,17 @@ public class GwtUpgradeInfo
 	{
 	}// end GwtUpgradeInfo()
 	
+
+	/**
+	 * Add a Filr admin task.
+	 */
+	public void addFilrAdminTask( GwtFilrAdminTask task )
+	{
+		if ( m_filrAdminTasks == null )
+			m_filrAdminTasks = new ArrayList<GwtFilrAdminTask>();
+		
+		m_filrAdminTasks.add( task );
+	}
 	
 	/**
 	 * Add an upgrade task to the list of upgrade tasks.
@@ -84,7 +96,17 @@ public class GwtUpgradeInfo
 		m_upgradeTasks.add( upgradeTask );
 	}// end addUpgradeTask()
 	
-	
+
+	/**
+	 * Return true if there are Filr admin tasks that need to be completed.
+	 */
+	public boolean doFilrAdminTasksExist()
+	{
+		if ( m_filrAdminTasks != null && m_filrAdminTasks.size() > 0 )
+			return true;
+		
+		return false;
+	}
 	/**
 	 * Return true if there are upgrade tasks to be performed.
 	 */
@@ -102,6 +124,13 @@ public class GwtUpgradeInfo
 		return m_isAdmin;
 	}// end getIsAdmin()
 	
+	/**
+	 * Return all of the Filr admin tasks that need to be done
+	 */
+	public ArrayList<GwtFilrAdminTask> getFilrAdminTasks()
+	{
+		return m_filrAdminTasks;
+	}
 	
 	/**
 	 * 
@@ -157,5 +186,5 @@ public class GwtUpgradeInfo
 		UPGRADE_SEARCH_INDEX,
 		UPGRADE_TEMPLATES;
 	}// end UpgradeTask
-
+	
 }// end GwtUpgradeInfo
