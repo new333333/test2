@@ -20,10 +20,12 @@ public class JavaJDKPage extends ConfigPageDlgBox
 		FlowPanel fPanel = new FlowPanel();
 		fPanel.addStyleName("configPage");
 
+		//Title
 		HTML titleDescLabel = new HTML(RBUNDLE.jdkPageTitleDesc());
 		titleDescLabel.addStyleName("configPageTitleDescLabel");
 		fPanel.add(titleDescLabel);
 
+		//Page Description
 		HTML descLabel = new HTML(RBUNDLE.jdkPageDesc());
 		descLabel.addStyleName("configPageDescLabel");
 		fPanel.add(descLabel);

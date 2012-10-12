@@ -4,6 +4,7 @@ import org.kabling.teaming.install.shared.ProductInfo;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
@@ -43,7 +44,7 @@ public class InstallConfigMain implements EntryPoint
 			AppUtil.setProductInfo(result);
 
 			//Temporary, for windows, we won't show the login screen
-			if (Navigator.getPlatform().startsWith("Win"))
+			if (Navigator.getPlatform().startsWith("Win") || Navigator.getPlatform().startsWith("Mac"))
 			{
 				MainUILayoutPanel panel = new MainUILayoutPanel();
 				RootLayoutPanel.get().add(panel);

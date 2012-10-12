@@ -110,7 +110,7 @@ public abstract class ConfigPageDlgBox extends DlgBox implements EditSuccessfulH
 			//Configuration got saved
 			//Fire the event so that summary page can update the UI
 			//And we will allow the restart of tomcat
-			AppUtil.getEventBus().fireEvent(new ConfigModifiedEvent(true));
+			AppUtil.getEventBus().fireEvent(new ConfigModifiedEvent(true,true));
 			hide();
 		}
 	}

@@ -38,6 +38,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		// Look for config modifications
 		AppUtil.getEventBus().addHandler(ConfigModifiedEvent.TYPE, this);
 
+		// Get the configuration data
 		AppUtil.getInstallService().getConfiguration(getConfigCallback);
 	}
 
@@ -79,6 +80,10 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		// content.add(buildReverseProxySection());
 	}
 
+	/**
+	 * Show the network information (2 in each row)
+	 * @return
+	 */
 	private FlowPanel buildNetworkSection()
 	{
 		FlowPanel sectionPanel = createSection(RBUNDLE.network());
@@ -98,6 +103,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 0, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
+				// Host Name Value
 				InlineLabel valueLabel = new InlineLabel(network.getHost());
 				table.setWidget(row, 1, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
@@ -107,6 +113,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 2, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
 
+				// Http Port Value
 				valueLabel = new InlineLabel(String.valueOf(network.getPort()));
 				table.setWidget(row, 3, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
@@ -119,6 +126,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 				table.setWidget(row, 0, keyLabel);
 
+				// Secure Http Port Value
 				InlineLabel valueLabel = new InlineLabel(String.valueOf(network.getSecurePort()));
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 				table.setWidget(row, 1, valueLabel);
@@ -128,6 +136,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 2, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
 
+				// Listen Port Value
 				valueLabel = new InlineLabel(String.valueOf(network.getListenPort()));
 				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
 				table.setWidget(row, 3, valueLabel);
@@ -141,6 +150,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 0, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
+				// Secure Listen Port Value
 				InlineLabel valueLabel = new InlineLabel(String.valueOf(network.getSecureListenPort()));
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 				table.setWidget(row, 1, valueLabel);
@@ -150,6 +160,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 2, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
 
+				// Shutdown port value
 				valueLabel = new InlineLabel(String.valueOf(network.getShutdownPort()));
 				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
 				table.setWidget(row, 3, valueLabel);
@@ -162,6 +173,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 0, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
+				// AJP port Value
 				InlineLabel valueLabel = new InlineLabel(String.valueOf(network.getAjpPort()));
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 				table.setWidget(row, 1, valueLabel);
@@ -171,6 +183,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 2, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
 
+				// Session Time out Value
 				valueLabel = new InlineLabel(String.valueOf(network.getSessionTimeoutMinutes()));
 				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
 				table.setWidget(row, 3, valueLabel);
@@ -183,6 +196,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 0, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
+				// KeyStore Value
 				InlineLabel valueLabel = new InlineLabel(network.getKeystoreFile());
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 				table.setWidget(row, 1, valueLabel);
@@ -191,6 +205,11 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		return sectionPanel;
 	}
 
+	/**
+	 * Database section summary
+	 * 
+	 * @return
+	 */
 	private FlowPanel buildDatabaseSection()
 	{
 		FlowPanel sectionPanel = createSection(RBUNDLE.database());
@@ -201,6 +220,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 
 		Database db = config.getDatabase();
 
+		// We only need to display the Installed configuration
 		if (db != null && db.getDatabaseConfig("Installed") != null)
 		{
 			DatabaseConfig dbConfig = db.getDatabaseConfig("Installed");
@@ -211,6 +231,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 0, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
+				// Host Name Value
 				InlineLabel valueLabel = new InlineLabel(dbConfig.getResourceHost());
 				table.setWidget(row, 1, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
@@ -220,17 +241,20 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 2, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
 
+				// User Name Value
 				valueLabel = new InlineLabel(String.valueOf(dbConfig.getResourceUserName()));
 				table.setWidget(row, 3, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
 			}
+
 			row++;
 			{
-				// Type
+				// Database Type
 				InlineLabel keyLabel = new InlineLabel(RBUNDLE.dbTypeColon());
 				table.setWidget(row, 0, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
+				// Database Type Value
 				String dbType = RBUNDLE.mysql();
 				if (dbConfig.getType().equals(DatabaseType.ORACLE))
 					dbType = RBUNDLE.oracle();
@@ -242,6 +266,10 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		return sectionPanel;
 	}
 
+	/**
+	 * WebDAV Authentication 
+	 * @return
+	 */
 	private FlowPanel buildWebDavSection()
 	{
 		FlowPanel sectionPanel = createSection(RBUNDLE.webDavAuthentication());
@@ -261,9 +289,14 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		InlineLabel authValueLabel = new InlineLabel(webDav);
 		authValueLabel.addStyleName("configSummaryValueLabel");
 		content.add(authValueLabel);
+
 		return sectionPanel;
 	}
 
+	/**
+	 * JAVA/JDK Summary information
+	 * @return
+	 */
 	private FlowPanel buildJavaJDKSection()
 	{
 		FlowPanel sectionPanel = createSection(RBUNDLE.javaJDK());
@@ -272,16 +305,23 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		content.addStyleName("configSummaryDivContent");
 		sectionPanel.add(content);
 
+		// JVM Heap Size
 		InlineLabel keyLabel = new InlineLabel(RBUNDLE.jvmHeapSizeColon());
 		keyLabel.addStyleName("configSummaryKeyLabel");
 		content.add(keyLabel);
 
+		// JVM Heap Size Value
 		InlineLabel valueLabel = new InlineLabel(config.getJvmMemory());
 		valueLabel.addStyleName("configSummaryValueLabel");
 		content.add(valueLabel);
 		return sectionPanel;
 	}
 
+	/**
+	 * Request and Connections
+	 * 
+	 * @return
+	 */
 	private FlowPanel buildReqAndConnectionsSection()
 	{
 		FlowPanel sectionPanel = createSection(RBUNDLE.requestsAndConnections());
@@ -330,9 +370,15 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 			}
 		}
+
 		return sectionPanel;
 	}
 
+	/**
+	 * Web Service 
+	 * 
+	 * @return
+	 */
 	private FlowPanel buildWebServiceSection()
 	{
 		FlowPanel sectionPanel = createSection(RBUNDLE.webServices());
@@ -394,6 +440,12 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		return sectionPanel;
 	}
 
+	/**
+	 * Outbound E-Mail Configuration
+	 * 
+	 * @return
+	 * 
+	 */
 	private FlowPanel buildOutboundEmailSection()
 	{
 		FlowPanel sectionPanel = createSection(RBUNDLE.outboundEmail());
@@ -452,6 +504,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 2, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
 
+				// Host Value
 				String host = null;
 				if (smtpTransport)
 					host = emailSettings.getSmtpHost();
@@ -511,6 +564,10 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		return sectionPanel;
 	}
 
+	/**
+	 * Inbound EMail Settings
+	 * @return
+	 */
 	private FlowPanel buildInboundEmailSection()
 	{
 		FlowPanel sectionPanel = createSection(RBUNDLE.outboundEmail());
@@ -668,6 +725,8 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 			if (result != null)
 			{
 				config = result;
+				
+				//Clear existing UI and rebuild the UI
 				content.clear();
 				buildUI();
 			}
@@ -695,6 +754,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 	@Override
 	public void onEvent(ConfigModifiedEvent event)
 	{
+		//If the configuration has been changed, we will rebuild the UI
 		if (event.isModified())
 		{
 			AppUtil.getInstallService().getConfiguration(getConfigCallback);

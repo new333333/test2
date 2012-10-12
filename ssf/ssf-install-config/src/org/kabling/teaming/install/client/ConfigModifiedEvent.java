@@ -13,7 +13,7 @@ public class ConfigModifiedEvent extends Event<ConfigModifiedEvent.ConfigModifie
 
 	public static final Type<ConfigModifiedEventHandler> TYPE = new Type<ConfigModifiedEventHandler>();
 	private boolean modified;
-
+	private boolean requireTomcatRestart;
 	public interface ConfigModifiedEventHandler
 	{
 
@@ -29,9 +29,10 @@ public class ConfigModifiedEvent extends Event<ConfigModifiedEvent.ConfigModifie
 		return modified;
 	}
 
-	public ConfigModifiedEvent(boolean enable)
+	public ConfigModifiedEvent(boolean enable,boolean requireTomcatRestart)
 	{
 		this.modified = enable;
+		this.requireTomcatRestart = requireTomcatRestart;
 	}
 
 	@Override
@@ -44,5 +45,15 @@ public class ConfigModifiedEvent extends Event<ConfigModifiedEvent.ConfigModifie
 	public com.google.web.bindery.event.shared.Event.Type<ConfigModifiedEventHandler> getAssociatedType()
 	{
 		return TYPE;
+	}
+
+	public boolean isRequireTomcatRestart()
+	{
+		return requireTomcatRestart;
+	}
+
+	public void setRequireTomcatRestart(boolean requireTomcatRestart)
+	{
+		this.requireTomcatRestart = requireTomcatRestart;
 	}
 }

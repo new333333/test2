@@ -105,7 +105,7 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 
 		switch (itemType)
 		{
-		case WEBDAV:
+		case WEBDAV_AUTHENTICATION:
 			dlg = new WebDavPage();
 			dlg.createAllDlgContent(AppUtil.getAppResource().webDavAuthentication(), dlg, null, null);
 			break;
@@ -145,7 +145,7 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 			dlg.createAllDlgContent(AppUtil.getAppResource().outboundEmail(), dlg, null, null);
 			break;
 
-		case REVERSE_PROXY:
+		case NOVELL_ACCESS_MANAGER:
 			dlg = new ReverseProxyPage();
 			dlg.createAllDlgContent(AppUtil.getAppResource().reverseProxy(), dlg, null, null);
 			break;
