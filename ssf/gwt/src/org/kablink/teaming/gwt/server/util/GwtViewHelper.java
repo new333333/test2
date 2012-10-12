@@ -134,6 +134,8 @@ import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
+import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
+import org.kablink.teaming.gwt.client.util.FolderEntryDetails.UserInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ShareAccessInfo;
@@ -142,7 +144,6 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
 import org.kablink.teaming.gwt.client.util.ShareMessageInfo;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
-import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo.UserInfo;
 import org.kablink.teaming.gwt.server.util.GwtSharedMeItem;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareRights;
@@ -667,6 +668,47 @@ public class GwtViewHelper {
 	}
 	
 	/*
+	 * Constructs and returns a UserInfo object using a HistoryStamp.
+	 */
+	private static UserInfo buildFolderEntryUser(AllModulesInjected bs, HttpServletRequest request, HistoryStamp hs) {
+		// If we don't have a HistoryStamp...
+		if (null == hs) {
+			// ...there is no user.  Return null.
+			return null;
+		}
+		
+		// Create the UserInfo to return...
+		UserInfo reply = new UserInfo();
+
+		// ...set the Date when the user performed the action...
+		reply.setDate(GwtServerHelper.getDateTimeString(hs.getDate(), DateFormat.MEDIUM, DateFormat.SHORT));
+		
+		// ...set the presence information for the user...
+		Long			creatorId = hs.getPrincipal().getId();
+		ProfileModule	pm        = bs.getProfileModule();
+		User			creator   = pm.getUserDeadOrAlive(creatorId);
+		GwtPresenceInfo presenceInfo;
+		if (GwtServerHelper.isPresenceEnabled())
+		     presenceInfo = GwtServerHelper.getPresenceInfo(creator);
+		else presenceInfo = null;
+		if (null == presenceInfo) {
+			presenceInfo = GwtServerHelper.getPresenceInfoDefault();
+		}
+		if (null != presenceInfo) {
+			reply.setPresence(    presenceInfo                                 );
+			reply.setPresenceDude(GwtServerHelper.getPresenceDude(presenceInfo));
+		}
+		
+		// ...and set the user's title and avatar URLs.
+		reply.setTitle( GwtServerHelper.getUserTitle(pm, Utils.canUserOnlySeeCommonGroupMembers(), String.valueOf(creatorId), Utils.getUserTitle(creator)));
+		reply.setAvatar(GwtServerHelper.getUserAvatarUrl(bs, request, creator));
+
+		// If we get here, reply refers to the UserInfo that describes
+		// the user from the given HistoryStamp.  Return it.
+		return reply;
+	}
+
+	/*
 	 * Returns an entry map that represents a List<GwtSharedMeItem>.
 	 */
 	@SuppressWarnings("unchecked")
@@ -787,9 +829,7 @@ public class GwtViewHelper {
 		SimpleProfiler.start("GwtViewHelper.buildViewFolderEntryInfo()");
 		try {
 			// Create the ViewFolderEntryInfo to return...
-			Long				userId = GwtServerHelper.getCurrentUserId();
-			EntityId			eid    = new EntityId(binderId, entryId, EntityId.FOLDER_ENTRY);
-			ViewFolderEntryInfo	reply  = new ViewFolderEntryInfo(eid);
+			ViewFolderEntryInfo	reply  = new ViewFolderEntryInfo(binderId, entryId);
 			
 			// ...set the user's selected view style... 
 			String viewStyle = GwtServerHelper.getPersonalPreferences(bs, request).getDisplayStyle();
@@ -799,7 +839,7 @@ public class GwtViewHelper {
 			reply.setViewStyle(viewStyle);
 	
 			// ...if the user has a position for the dialog saved...
-			UserProperties	userProperties = bs.getProfileModule().getUserProperties(userId);
+			UserProperties	userProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId());
 			if (null != userProperties) {
 				Map upMap = userProperties.getProperties();
 				if (null != upMap) {
@@ -816,71 +856,21 @@ public class GwtViewHelper {
 					}
 				}
 			}
-	
-			// ...set whether the user has seen this entry...
-			FolderEntry fe      = bs.getFolderModule().getEntry(binderId, entryId);
-			SeenMap		seenMap = bs.getProfileModule().getUserSeenMap(userId);
-			reply.setSeen(seenMap.checkIfSeen(fe));
 			
-			// ...set the entry's family and path... 
+			// ...set the entry's family... 
+			FolderEntry fe    = bs.getFolderModule().getEntry(binderId, entryId);
 			FolderEntry feTop = fe.getTopEntry();
 			if (null == feTop) {
 				feTop = fe;
 			}
 			reply.setFamily(GwtServerHelper.getFolderEntityFamily(bs, feTop));
-			reply.setPath(  feTop.getParentBinder().getPathName()           );
 	
-			// ...set the entry's creator...
-			HistoryStamp cStamp = fe.getCreation();
-			reply.setCreator(buildViewFolderEntryUser(bs, request, cStamp));
-			
-			// ...set the entry's modifier...
-			HistoryStamp mStamp = fe.getModification();
-			reply.setModifier(buildViewFolderEntryUser(bs, request, mStamp));
-			reply.setModifierIsCreator(cStamp.getPrincipal().getId().equals(mStamp.getPrincipal().getId()));
-			
-			// ...set the entry's locker...
-			HistoryStamp lStamp = fe.getReservation();
-			reply.setLocker(buildViewFolderEntryUser(bs, request, lStamp));
-			reply.setLockedByLoggedInUser((null != lStamp) && lStamp.getPrincipal().getId().equals(userId));
-
-			// ...set the contributor's to this entry...
-			reply.setContributors(ListFolderHelper.collectContributorIds(fe));
-			
 			// ...set the entry's title... 
 			String feTitle = fe.getTitle();
 			if (!(MiscUtil.hasString(feTitle))) {
 				feTitle = ("--" + NLT.get("entry.noTitle") + "--");
 			}
 			reply.setTitle(feTitle);
-			
-			// ...set information about the entry's comments... 
-			CommentsInfo ci = new CommentsInfo(eid, feTitle, fe.getReplies().size());
-			reply.setComments(ci);
-	
-			// ...if this is a file entry with a filename...
-			FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, feTop);
-			if (null != fa) {
-				// ...store the icons for the file...
-				String fName = fa.getFileItem().getName();
-				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.SMALL)),  BinderIconSize.SMALL );
-				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.MEDIUM)), BinderIconSize.MEDIUM);
-				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.LARGE)),  BinderIconSize.LARGE );
-				
-				// ...and set the ViewFileInfo for an HTML view of the
-				// ...file if it supports it...
-				reply.setHtmlView(buildViewFileInfo(request, feTop, fa));
-			}
-	
-			// ...set the entry's description...
-			Description	feDesc     = fe.getDescription();
-			boolean		feDescHtml = (Description.FORMAT_HTML == feDesc.getFormat());
-			reply.setDescIsHtml(feDescHtml              );
-			reply.setDesc(      feDesc.getText()        );
-			reply.setDescTxt(   feDesc.getStrippedText());
-			
-			// ...and finally, set the view's toolbar items.
-			reply.setToolbarItems(GwtMenuHelper.getViewEntryToolbarItems(bs, request, fe));
 			
 			// If we get here, reply refers to the ViewFolderEntryInfo
 			// for the user to view the entry.  Return it.
@@ -890,47 +880,6 @@ public class GwtViewHelper {
 		finally {
 			SimpleProfiler.stop("GwtViewHelper.buildViewFolderEntryInfo()");
 		}
-	}
-
-	/*
-	 * Constructs and returns a UserInfo object using a HistoryStamp.
-	 */
-	private static UserInfo buildViewFolderEntryUser(AllModulesInjected bs, HttpServletRequest request, HistoryStamp hs) {
-		// If we don't have a HistoryStamp...
-		if (null == hs) {
-			// ...there is no user.  Return null.
-			return null;
-		}
-		
-		// Create the UserInfo to return...
-		UserInfo reply = new UserInfo();
-
-		// ...set the Date when the user performed the action...
-		reply.setDate(GwtServerHelper.getDateTimeString(hs.getDate(), DateFormat.MEDIUM, DateFormat.SHORT));
-		
-		// ...set the presence information for the user...
-		Long			creatorId = hs.getPrincipal().getId();
-		ProfileModule	pm        = bs.getProfileModule();
-		User			creator   = pm.getUserDeadOrAlive(creatorId);
-		GwtPresenceInfo presenceInfo;
-		if (GwtServerHelper.isPresenceEnabled())
-		     presenceInfo = GwtServerHelper.getPresenceInfo(creator);
-		else presenceInfo = null;
-		if (null == presenceInfo) {
-			presenceInfo = GwtServerHelper.getPresenceInfoDefault();
-		}
-		if (null != presenceInfo) {
-			reply.setPresence(    presenceInfo                                 );
-			reply.setPresenceDude(GwtServerHelper.getPresenceDude(presenceInfo));
-		}
-		
-		// ...and set the user's title and avatar URLs.
-		reply.setTitle( GwtServerHelper.getUserTitle(pm, Utils.canUserOnlySeeCommonGroupMembers(), String.valueOf(creatorId), Utils.getUserTitle(creator)));
-		reply.setAvatar(GwtServerHelper.getUserAvatarUrl(bs, request, creator));
-
-		// If we get here, reply refers to the UserInfo that describes
-		// the user from the given HistoryStamp.  Return it.
-		return reply;
 	}
 
 	/*
@@ -3232,6 +3181,116 @@ public class GwtViewHelper {
 		}
 	}
 	
+	/**
+	 * Constructs and returns a FolderEntryDetails that wraps the given
+	 * entityId.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entityId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static FolderEntryDetails getFolderEntryDetails(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) throws GwtTeamingException {
+		SimpleProfiler.start("GwtViewHelper.getFolderEntryDetails()");
+		try {
+			// Create the ViewFolderEntryInfo to return...
+			Long				userId = GwtServerHelper.getCurrentUserId();
+			FolderEntryDetails	reply  = new FolderEntryDetails(entityId);
+			
+			// ...set whether the user has seen this entry...
+			FolderEntry fe      = bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
+			SeenMap		seenMap = bs.getProfileModule().getUserSeenMap(userId);
+			reply.setSeen(seenMap.checkIfSeen(fe));
+			
+			// ...set the entry's family and path... 
+			FolderEntry feTop = fe.getTopEntry();
+			if (null == feTop) {
+				feTop = fe;
+			}
+			reply.setFamily(GwtServerHelper.getFolderEntityFamily(bs, feTop));
+			reply.setPath(  feTop.getParentBinder().getPathName()           );
+	
+			// ...set the entry's creator...
+			HistoryStamp cStamp = fe.getCreation();
+			reply.setCreator(buildFolderEntryUser(bs, request, cStamp));
+			
+			// ...set the entry's modifier...
+			HistoryStamp mStamp = fe.getModification();
+			reply.setModifier(buildFolderEntryUser(bs, request, mStamp));
+			reply.setModifierIsCreator(cStamp.getPrincipal().getId().equals(mStamp.getPrincipal().getId()));
+			
+			// ...set the entry's locker...
+			HistoryStamp lStamp = fe.getReservation();
+			reply.setLocker(buildFolderEntryUser(bs, request, lStamp));
+			reply.setLockedByLoggedInUser((null != lStamp) && lStamp.getPrincipal().getId().equals(userId));
+
+			// ...set the contributor's to this entry...
+			reply.setContributors(ListFolderHelper.collectContributorIds(fe));
+			
+			// ...set the entry's title... 
+			String feTitle = fe.getTitle();
+			if (!(MiscUtil.hasString(feTitle))) {
+				feTitle = ("--" + NLT.get("entry.noTitle") + "--");
+			}
+			reply.setTitle(feTitle);
+			
+			// ...set information about the entry's comments... 
+			CommentsInfo ci = new CommentsInfo(entityId, feTitle, fe.getReplies().size());
+			reply.setComments(ci);
+	
+			// ...if this is a file entry with a filename...
+			FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, feTop);
+			if (null != fa) {
+				// ...store the icons for the file...
+				String fName = fa.getFileItem().getName();
+				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.SMALL)),  BinderIconSize.SMALL );
+				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.MEDIUM)), BinderIconSize.MEDIUM);
+				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.LARGE)),  BinderIconSize.LARGE );
+				
+				// ...and set the ViewFileInfo for an HTML view of the
+				// ...file if it supports it...
+				reply.setHtmlView(buildViewFileInfo(request, feTop, fa));
+			}
+	
+			// ...set the entry's description...
+			Description	feDesc = fe.getDescription();
+			if (null != feDesc) {
+				boolean		feDescHtml = (Description.FORMAT_HTML == feDesc.getFormat());
+				reply.setDescIsHtml(feDescHtml              );
+				reply.setDesc(      feDesc.getText()        );
+				reply.setDescTxt(   feDesc.getStrippedText());
+			}
+			else {
+				reply.setDescIsHtml(true);
+				reply.setDesc(      ""  );
+				reply.setDescTxt(   ""  );
+			}
+			
+			// ...and finally, set the view's toolbar items.
+			reply.setToolbarItems(GwtMenuHelper.getViewEntryToolbarItems(bs, request, fe));
+			
+			// If we get here, reply refers to the ViewFolderEntryInfo
+			// for the user to view the entry.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getFolderEntryDetails( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+		
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.getFolderEntryDetails()");
+		}
+	}
+
 	/**
 	 * Reads the row data from a folder and returns it as a
 	 * FolderRowsRpcResponseData.

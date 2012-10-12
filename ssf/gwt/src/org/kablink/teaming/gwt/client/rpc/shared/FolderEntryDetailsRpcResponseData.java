@@ -30,58 +30,55 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.binderviews;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
-import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
-import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Class that holds the folder entry viewer header.
+ * This class holds the response data for the RPCs that return a
+ * FolderEntryDetails object.
  * 
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
-public class FolderEntryHeader extends VibeFlowPanel {
-	private FolderEntryCallback				m_fec;			// Callback to the folder entry composite.
-	private FolderEntryDetails				m_fed;			// Details about the entry being viewed.
-	private GwtTeamingDataTableImageBundle	m_images;		// Access to Vibe's images.
-	private GwtTeamingFilrImageBundle		m_filrImages;	// Access to Filr's images.
-	private GwtTeamingMessages				m_messages;		// Access to Vibe's messages.
-	
-	public FolderEntryHeader(FolderEntryCallback fec, FolderEntryDetails fed) {
-		// Initialize the super class...
-		super();
-		
-		// ...store the parameters...
-		m_fec = fec;
-		m_fed = fed;
-		
-		// ...initialize the data members requiring it...
-		m_filrImages = GwtTeaming.getFilrImageBundle();
-		m_images     = GwtTeaming.getDataTableImageBundle();
-		m_messages   = GwtTeaming.getMessages();
-		
-		// ...and construct the header's content.
-		createContent();
-	}
-	
-	/*
-	 * Creates the header's content.
-	 */
-	private void createContent() {
-		// Add the panel's style.
-		addStyleName("vibe-feView-headerPanel");
-		
-//!		...this needs to be implemented...
-		add(new InlineLabel("...this needs to be implemented..."));
+public class FolderEntryDetailsRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private FolderEntryDetails	m_folderEntryDetails;		//
 
-		// Tell the composite that we're ready.
-		m_fec.viewComponentReady();
+	/**
+	 * Constructor method. 
+	 * 
+	 * For GWT serialization, must have a zero parameter constructor.
+	 */
+	public FolderEntryDetailsRpcResponseData() {
+		// Initialize the super class.
+		super();
 	}
+	
+	/**
+	 * Constructor method. 
+	 * 
+	 * @param folderEntryDetails
+	 */
+	public FolderEntryDetailsRpcResponseData(FolderEntryDetails folderEntryDetails) {
+		// Initialize the this object...
+		this();
+		
+		// ...and store the parameter.
+		setFolderEntryDetails(folderEntryDetails);
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public FolderEntryDetails getFolderEntryDetails() {return m_folderEntryDetails;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setFolderEntryDetails(FolderEntryDetails folderEntryDetails) {m_folderEntryDetails = folderEntryDetails;}
 }

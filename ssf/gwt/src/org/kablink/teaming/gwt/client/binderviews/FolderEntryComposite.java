@@ -44,9 +44,12 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderEntryDetailsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderEntryDetailsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNextPreviousFolderEntryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
@@ -86,6 +89,7 @@ public class FolderEntryComposite extends ResizeComposite
 
 	private boolean							m_compositeReady;			// Set true once the composite and all its components are ready.
 	private boolean							m_isDialog;					// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.
+	private FolderEntryDetails				m_fed;						// Details about the folder entry being viewed.
 	private FooterPanel						m_footerPanel;				//
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
@@ -367,13 +371,13 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously loads the next part of the composite.
 	 */
 	private void loadPart1Async() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart1Now();
 			}
 		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
@@ -401,24 +405,60 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously loads the next part of the composite.
 	 */
 	private void loadPart2Async() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart2Now();
 			}
 		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
 	 * Synchronously loads the next part of the composite.
 	 */
 	private void loadPart2Now() {
+		// Can we get the previous/next entry navigate to?
+		GetFolderEntryDetailsCmd cmd = new GetFolderEntryDetailsCmd(m_vfei.getEntityId());
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_GetFolderEntryDetails());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				FolderEntryDetailsRpcResponseData responseData = ((FolderEntryDetailsRpcResponseData) response.getResponseData());
+				m_fed = responseData.getFolderEntryDetails();
+				loadPart3Async();
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously loads the next part of the composite.
+	 */
+	private void loadPart3Async() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart3Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the next part of the composite.
+	 */
+	private void loadPart3Now() {
 		// Create and add the various components to the composite.
-		m_contentPanel.add(new FolderEntryHeader(  this, m_vfei)                  );
-		m_contentPanel.add(new FolderEntryMenu(    this, m_vfei.getToolbarItems()));
-		m_contentPanel.add(new FolderEntryDocument(this, m_vfei.getHtmlView())    );
-		m_contentPanel.add(new FolderEntryComments(this, m_vfei.getComments())    );
+		m_contentPanel.add(new FolderEntryHeader(  this, m_fed)                  );
+		m_contentPanel.add(new FolderEntryMenu(    this, m_fed.getToolbarItems()));
+		m_contentPanel.add(new FolderEntryDocument(this, m_fed.getHtmlView())    );
+		m_contentPanel.add(new FolderEntryComments(this, m_fed.getComments())    );
 	}
 
 	/**
@@ -447,7 +487,7 @@ public class FolderEntryComposite extends ResizeComposite
 		// Convert the contributor IDs from a String[] to a
 		// List<Long>...
 		final List<Long> contributorIds = new ArrayList<Long>();
-		String[] contributors = m_vfei.getContributors();
+		String[] contributors = m_fed.getContributors();
 		if ((null != contributors) && (0 < contributors.length)) {
 			for (String contributor:  contributors) {
 				contributorIds.add(new Long(Long.parseLong(contributor)));

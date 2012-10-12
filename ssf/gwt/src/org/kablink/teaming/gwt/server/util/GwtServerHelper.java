@@ -7927,6 +7927,7 @@ public class GwtServerHelper {
 		case GET_FOLDER_COLUMNS:
 		case GET_FOLDER_DISPLAY_DATA:
 		case GET_FOLDER_ENTRIES:
+		case GET_FOLDER_ENTRY_DETAILS:
 		case GET_FOLDER_ROWS:
 		case GET_FOLDER_SORT_SETTING:
 		case GET_FOLDER_TOOLBAR_ITEMS:
@@ -7949,6 +7950,7 @@ public class GwtServerHelper {
 		case GET_MAIN_PAGE_INFO:
 		case GET_MICRO_BLOG_URL:
 		case GET_MODIFY_BINDER_URL:
+		case GET_MY_FILES_CONTAINER_INFO:
 		case GET_MY_TASKS:
 		case GET_MY_TEAMS:
 		case GET_NET_FOLDER:
