@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
@@ -43,6 +45,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.Image;
 
 
 /**
@@ -105,7 +108,23 @@ public class NetFolderRootNameCell extends AbstractCell<NetFolderRoot>
 			// Wrap everything in a <div>
 			sb.appendHtmlConstant( "<div class=\"netFolderRoot_NamePanel\">" );
 			
-			// Add the group's title
+			// Is the root fully configured?
+			if ( value.isConfigured() == false )
+			{
+				String imgPath;
+				String title;
+				Image img;
+				
+				img = new Image( GwtTeaming.getImageBundle().warningIcon16() );
+				imgPath = img.getUrl();
+				
+				title = GwtTeaming.getMessages().modifyNetFolderServerDlg_NotFullyConfigured();
+				
+				// Add an warning icon to indicate the net folder root is not fully configured.
+				sb.appendHtmlConstant( "<img src=\"" + imgPath + "\" title=\"" + title + "\" />&nbsp;" );
+			}
+			
+			// Add the root's name
 			sb.appendHtmlConstant( "<span class=\"netFolderRoot_Name\">" );
 			safeValue = SafeHtmlUtils.fromString( value.getName() );
 			sb.append( safeValue );
