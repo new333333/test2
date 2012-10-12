@@ -252,7 +252,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 		m_dlgPanel.clear();
 
 		// Create a horizontal panel to hold the name input widgets...
-		HorizontalPanel hp = new VibeHorizontalPanel();
+		HorizontalPanel hp = new VibeHorizontalPanel(null, null);
 		hp.addStyleName("vibe-addNewFolderDlg_NamePanel");
 		m_dlgPanel.add(hp);
 
