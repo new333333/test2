@@ -51,10 +51,12 @@ public class TomcatRestartPanel extends Composite implements ConfigModifiedEvent
 		tomcatRestartPanel.setVisible(true);
 
 		// Enable the restart button if the configuration has changed
-		restartTomcatButton.setEnabled(event.isModified());
+		//If it already requires a restart, we don't have to do anything
+		if (!restartTomcatButton.isEnabled())
+			restartTomcatButton.setEnabled(event.isRequireTomcatRestart());
 
 		// Show the right text based on if the configuration has changed or filr server has been restarted
-		if (event.isModified())
+		if (restartTomcatButton.isEnabled())
 		{
 			tomcatRestartLabel.setText(RBUNDLE.tomcatRestartRequired());
 		}
@@ -87,7 +89,7 @@ public class TomcatRestartPanel extends Composite implements ConfigModifiedEvent
 		public void onSuccess(Void result)
 		{
 			// All configuration is up to date
-			AppUtil.getEventBus().fireEvent(new ConfigModifiedEvent(false));
+			AppUtil.getEventBus().fireEvent(new ConfigModifiedEvent(false,false));
 		}
 	}
 }

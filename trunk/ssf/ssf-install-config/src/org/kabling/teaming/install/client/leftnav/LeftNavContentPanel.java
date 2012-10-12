@@ -15,21 +15,23 @@ public class LeftNavContentPanel extends Composite
 		initWidget(leftNavContent);
 
 		AppResource appResource = AppUtil.getAppResource();
+		//We need to change what is shown on the left navigation based on product type, platform
 		// Product type is filr
 		{
 			leftNavContent.add(getLeftNavItem(appResource.network(), LeftNavItemType.NETWORK));
 			leftNavContent.add(getLeftNavItem(appResource.database(), LeftNavItemType.DATABASE));
 			leftNavContent.add(getLeftNavItem(appResource.clustering(), LeftNavItemType.CLUSTERING));
-			leftNavContent.add(getLeftNavItem(appResource.reverseProxy(), LeftNavItemType.REVERSE_PROXY));
+			leftNavContent.add(getLeftNavItem(appResource.reverseProxy(), LeftNavItemType.NOVELL_ACCESS_MANAGER));
 			leftNavContent.add(getLeftNavItem(appResource.outboundEmail(), LeftNavItemType.OUTBOUND_EMAIL));
 			leftNavContent.add(getLeftNavItem(appResource.inboundEmail(), LeftNavItemType.INBOUND_EMAIL));
 			leftNavContent.add(getLeftNavItem(appResource.requestsAndConnections(),
 					LeftNavItemType.REQUESTS_AND_CONNECTIONS));
 			leftNavContent.add(getLeftNavItem(appResource.webServices(), LeftNavItemType.WEB_SERVICES));
 			leftNavContent.add(getLeftNavItem(appResource.javaJDK(), LeftNavItemType.JAVA_JDK));
-			leftNavContent.add(getLeftNavItem(appResource.webDavAuthentication(), LeftNavItemType.WEBDAV));
+			leftNavContent.add(getLeftNavItem(appResource.webDavAuthentication(), LeftNavItemType.WEBDAV_AUTHENTICATION));
 		}
 
+		//Add Tomcat Restart Panel
 		leftNavContent.add(new TomcatRestartPanel());
 	}
 

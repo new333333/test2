@@ -3,6 +3,7 @@ package org.kabling.teaming.install.client.config;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.widgets.GwTextBox;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
+import org.kabling.teaming.install.shared.EmailSettings;
 
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -16,6 +17,8 @@ public class InboundEmailPage extends ConfigPageDlgBox
 {
 	private GwTextBox smtpBindAddrTextBox;
 	private GwValueSpinner smtpPortSpinner;
+	private CheckBox enableSMTPServerCheckBox;
+	private CheckBox announceTlsCheckBox;
 
 	@Override
 	public Panel createContent(Object propertiesObj)
@@ -31,8 +34,8 @@ public class InboundEmailPage extends ConfigPageDlgBox
 		fPanel.add(contentPanel);
 		contentPanel.addStyleName("inboundPageContent");
 
-		CheckBox checkBox = new CheckBox(RBUNDLE.enableInternalSMTPServer());
-		contentPanel.add(checkBox);
+		enableSMTPServerCheckBox = new CheckBox(RBUNDLE.enableInternalSMTPServer());
+		contentPanel.add(enableSMTPServerCheckBox);
 		
 		FlexTable table = new FlexTable();
 		table.addStyleName("inboundEmailTable");
@@ -66,7 +69,7 @@ public class InboundEmailPage extends ConfigPageDlgBox
 		{
 			row++;
 			//Announce TLS
-			CheckBox announceTlsCheckBox = new CheckBox(RBUNDLE.announceTLS());
+			announceTlsCheckBox = new CheckBox(RBUNDLE.announceTLS());
 			table.setWidget(row, 1, announceTlsCheckBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -77,6 +80,13 @@ public class InboundEmailPage extends ConfigPageDlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
+		EmailSettings emailSettings = config.getEmailSettings();
+		
+		emailSettings.setInternalInboundSMTPEnabled(enableSMTPServerCheckBox.getValue());
+		emailSettings.setInternalInboundSMTPBindAddress(smtpBindAddrTextBox.getText());
+		emailSettings.setInternalInboundSMTPPort(smtpPortSpinner.getValueAsInt());
+		emailSettings.setInternalInboundSMTPTLSEnabld(announceTlsCheckBox.getValue());
+		
 		return config;
 	}
 
@@ -89,7 +99,15 @@ public class InboundEmailPage extends ConfigPageDlgBox
 	@Override
 	public void initUIWithData()
 	{
+		EmailSettings emailSettings = config.getEmailSettings();
 		
+		if (emailSettings != null)
+		{
+			enableSMTPServerCheckBox.setValue(emailSettings.isInternalInboundSMTPEnabled());
+			announceTlsCheckBox.setValue(emailSettings.isInternalInboundSMTPTLSEnabld());
+			smtpBindAddrTextBox.setText(emailSettings.getInternalInboundSMTPBindAddress());
+			smtpPortSpinner.setValue(emailSettings.getInternalInboundSMTPPort());
+		}
 	}
 
 }

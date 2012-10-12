@@ -14,6 +14,10 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 
+/**
+ *  UI for setting up clustering
+ *
+ */
 public class ClusteringPage extends ConfigPageDlgBox
 {
 	private GwTextBox jvmRouteTextBox;
@@ -29,6 +33,7 @@ public class ClusteringPage extends ConfigPageDlgBox
 		FlowPanel fPanel = new FlowPanel();
 		fPanel.addStyleName("configPage");
 
+		// Title
 		HTML titleDescLabel = new HTML(RBUNDLE.clusteringPageTitleDesc());
 		titleDescLabel.addStyleName("configPageTitleDescLabel");
 		fPanel.add(titleDescLabel);
@@ -37,9 +42,11 @@ public class ClusteringPage extends ConfigPageDlgBox
 		fPanel.add(contentPanel);
 		contentPanel.addStyleName("clusteringPageContent");
 
+		// Enable clustering environment
 		enableClusteredCheckBox = new CheckBox(RBUNDLE.enableClusteredEnvironment());
 		contentPanel.add(enableClusteredCheckBox);
-		
+
+		// All the other content goes inside a table
 		FlexTable table = new FlexTable();
 		table.addStyleName("clusteringTable");
 		contentPanel.add(table);
@@ -124,6 +131,21 @@ public class ClusteringPage extends ConfigPageDlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
+		// TODO: Do we need to do any validation for data here?
+		// Save the data from the UI
+		Clustered clustered = config.getClustered();
+
+		clustered.setEnabled(enableClusteredCheckBox.getValue());
+		clustered.setJvmRoute(jvmRouteTextBox.getText());
+		clustered.setCacheService(hostNameTextBox.getText());
+		clustered.setCacheGroupAddress(multicastGroupAddrTextBox.getText());
+		clustered.setCacheGroupPort(multicastGroupPortSpinner.getValueAsInt());
+
+		if (cacheProviderListBox.getSelectedIndex() == 0)
+			clustered.setCachingProvider("ehcache");
+		else
+			clustered.setCachingProvider("memcache");
+		
 		return config;
 	}
 
@@ -137,21 +159,21 @@ public class ClusteringPage extends ConfigPageDlgBox
 	public void initUIWithData()
 	{
 		Clustered clustered = config.getClustered();
-		
+
 		if (clustered != null)
 		{
 			enableClusteredCheckBox.setValue(clustered.isEnabled());
 			hostNameTextBox.setText(clustered.getCacheService());
 			jvmRouteTextBox.setText(clustered.getJvmRoute());
-			
+
 			if (clustered.getCachingProvider().equals("ehcache"))
 				cacheProviderListBox.setSelectedIndex(0);
 			else
 				cacheProviderListBox.setSelectedIndex(1);
-			
+
 			multicastGroupAddrTextBox.setText(clustered.getCacheGroupAddress());
 			multicastGroupPortSpinner.setValue(clustered.getCacheGroupPort());
-			
+
 		}
 	}
 

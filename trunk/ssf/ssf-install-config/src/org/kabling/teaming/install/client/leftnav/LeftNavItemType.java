@@ -3,7 +3,7 @@ package org.kabling.teaming.install.client.leftnav;
 public enum LeftNavItemType
 {
 	LUCENE,
-	WEBDAV,
+	WEBDAV_AUTHENTICATION,
 	JAVA_JDK,
 	DATABASE,
 	NETWORK, 
@@ -11,6 +11,6 @@ public enum LeftNavItemType
 	OUTBOUND_EMAIL,
 	REQUESTS_AND_CONNECTIONS,
 	WEB_SERVICES,
-	REVERSE_PROXY,
+	NOVELL_ACCESS_MANAGER,
 	INBOUND_EMAIL
 }

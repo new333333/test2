@@ -31,17 +31,18 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 		FlowPanel fPanel = new FlowPanel();
 		fPanel.addStyleName("configPage");
 
+		// Title
 		HTML titleDescLabel = new HTML(RBUNDLE.networkInfoPageTitleDesc());
 		titleDescLabel.addStyleName("configPageTitleDescLabel");
 		fPanel.add(titleDescLabel);
 
+		// Page Description
 		HTML descLabel = new HTML(RBUNDLE.networkInfoPageDesc());
 		descLabel.addStyleName("configPageDescLabel");
 		fPanel.add(descLabel);
 
 		FlowPanel contentPanel = new FlowPanel();
 		fPanel.add(contentPanel);
-
 		contentPanel.addStyleName("networkInfoPageContent");
 
 		FlexTable table = new FlexTable();
@@ -162,13 +163,13 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
-		//Validate all the fields
+		// Validate all the fields
 		if (!hostTextBox.isValid())
 		{
 			setErrorMessage(RBUNDLE.requiredField());
 			return null;
 		}
-		
+
 		Network network = config.getNetwork();
 		network.setHost(hostTextBox.getText());
 		network.setPort(httpSpinner.getValueAsInt());
@@ -179,7 +180,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 		network.setAjpPort(ajpPortSpinner.getValueAsInt());
 		network.setSessionTimeoutMinutes(sessionTimeOutSpinner.getValueAsInt());
 		network.setKeystoreFile(keyStoreFileTextBox.getText());
-		
+
 		return config;
 	}
 
