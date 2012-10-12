@@ -261,4 +261,14 @@
 			<column name="HOMEDIR" type="NUMBER(1,0)"/>
         </addColumn>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="28">
+        <addColumn tableName="SS_ZONECONFIG">
+			<column name="LOCALELANGUAGE" type="VARCHAR2(16 CHAR)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="29">
+        <addColumn tableName="SS_ZONECONFIG">
+			<column name="LOCALECOUNTRY" type="VARCHAR2(16 CHAR)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

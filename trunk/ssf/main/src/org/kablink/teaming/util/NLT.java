@@ -90,8 +90,8 @@ public class NLT implements ApplicationContextAware {
 	
 	public static Locale getTeamingLocale() {
 		if (null == teamingLocale) {
-			String language = SPropsUtil.getString("i18n.default.locale.language", "");
-			String country  = SPropsUtil.getString("i18n.default.locale.country",  "");
+			String language = LocaleUtils.getLocaleLanguage();
+			String country  = LocaleUtils.getLocaleCountry();
 			if ((null != language) && (0 < language.length())) {
 				if ((null != country) && (0 < country.length())) teamingLocale = new Locale(language, country);
 				else                                             teamingLocale = new Locale(language);

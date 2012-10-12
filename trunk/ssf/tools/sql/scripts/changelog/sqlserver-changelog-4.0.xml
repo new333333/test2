@@ -258,4 +258,14 @@
 			<column name="homeDir" type="TINYINT"/>
         </addColumn>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="27">
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="localeLanguage" type="VARCHAR(16)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="28">
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="localeCountry" type="VARCHAR(16)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

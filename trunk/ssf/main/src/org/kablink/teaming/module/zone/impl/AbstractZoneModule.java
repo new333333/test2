@@ -96,6 +96,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
+import org.kablink.teaming.util.LocaleUtils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
@@ -931,8 +932,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		user.setZoneId(top.getId());
     		user.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
     		user.setParentBinder(profiles);
-    		String language = SPropsUtil.getString("i18n.default.locale.language", "");
-    		String country = SPropsUtil.getString("i18n.default.locale.country", "");
+    		String language = LocaleUtils.getLocaleLanguage();
+    		String country = LocaleUtils.getLocaleCountry();
     		if (!language.equals("")) {
     			Locale locale = null;
     			if (!country.equals("")) locale = new Locale(language, country);
@@ -1191,8 +1192,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getDefinitionModule().setDefaultEntryDefinition(user);
 		user.setCreation(stamp);
 		user.setModification(stamp);
-		String language = SPropsUtil.getString("i18n.default.locale.language", "");
-		String country = SPropsUtil.getString("i18n.default.locale.country", "");
+		String language = LocaleUtils.getLocaleLanguage();
+		String country = LocaleUtils.getLocaleCountry();
 		if (!language.equals("")) {
 			Locale locale = null;
 			if (!country.equals("")) locale = new Locale(language, country);
