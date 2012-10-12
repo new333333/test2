@@ -1,5 +1,8 @@
 package org.kabling.teaming.install.client.leftnav;
 
+import org.kabling.teaming.install.client.AppUtil;
+import org.kabling.teaming.install.client.i18n.AppResource;
+
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -11,16 +14,23 @@ public class LeftNavContentPanel extends Composite
 		FlowPanel leftNavContent = new FlowPanel();
 		initWidget(leftNavContent);
 
+		AppResource appResource = AppUtil.getAppResource();
 		// Product type is filr
 		{
-			leftNavContent.add(getLeftNavItem("File System", LeftNavItemType.FILE_SYSTEM));
-			leftNavContent.add(getLeftNavItem("Network Configuration", LeftNavItemType.NETWORK));
-			leftNavContent.add(getLeftNavItem("Lucene", LeftNavItemType.LUCENE));
-			leftNavContent.add(getLeftNavItem("Database", LeftNavItemType.DATABASE));
-			leftNavContent.add(getLeftNavItem("Environment", LeftNavItemType.ENVIRONMENT));
-			leftNavContent.add(getLeftNavItem("Clustering", LeftNavItemType.CLUSTERING));
-			leftNavContent.add(getLeftNavItem("Mirrored Folders", LeftNavItemType.MIRROR_FOLDERS));
+			leftNavContent.add(getLeftNavItem(appResource.network(), LeftNavItemType.NETWORK));
+			leftNavContent.add(getLeftNavItem(appResource.database(), LeftNavItemType.DATABASE));
+			leftNavContent.add(getLeftNavItem(appResource.clustering(), LeftNavItemType.CLUSTERING));
+			leftNavContent.add(getLeftNavItem(appResource.reverseProxy(), LeftNavItemType.REVERSE_PROXY));
+			leftNavContent.add(getLeftNavItem(appResource.outboundEmail(), LeftNavItemType.OUTBOUND_EMAIL));
+			leftNavContent.add(getLeftNavItem(appResource.inboundEmail(), LeftNavItemType.INBOUND_EMAIL));
+			leftNavContent.add(getLeftNavItem(appResource.requestsAndConnections(),
+					LeftNavItemType.REQUESTS_AND_CONNECTIONS));
+			leftNavContent.add(getLeftNavItem(appResource.webServices(), LeftNavItemType.WEB_SERVICES));
+			leftNavContent.add(getLeftNavItem(appResource.javaJDK(), LeftNavItemType.JAVA_JDK));
+			leftNavContent.add(getLeftNavItem(appResource.webDavAuthentication(), LeftNavItemType.WEBDAV));
 		}
+
+		leftNavContent.add(new TomcatRestartPanel());
 	}
 
 	private Widget getLeftNavItem(String name, LeftNavItemType type)

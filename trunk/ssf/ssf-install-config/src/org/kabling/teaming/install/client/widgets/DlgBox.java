@@ -78,6 +78,7 @@ public abstract class DlgBox extends PopupPanel
 	private Panel 					m_contentPanel;				//
 	private FlowPanel 				m_footerPanel;				//
 	private int 					m_id;						//
+	private boolean                 m_showHeaderCloseButton = true;
     	
 	protected static int			m_numDlgsVisible = 0;		// Number of dialogs that are currently visible.
 	private   static int			m_uniqueId       = 100;		//
@@ -233,6 +234,11 @@ public abstract class DlgBox extends PopupPanel
 	 */
 	public abstract Panel createContent( Object propertiesObj );
 	
+	public void showHeaderCloseButton(boolean show)
+	{
+		m_showHeaderCloseButton = show;
+	}
+	
 	/**
 	 * Create the header, content and footer for the dialog box.
 	 */
@@ -249,7 +255,11 @@ public abstract class DlgBox extends PopupPanel
 		panel = new FlowPanel();
 		
 		// Create a close image that is positioned in the top-right-hand corner
-		if ( m_dlgBtnMode == DlgButtonMode.Cancel || m_dlgBtnMode == DlgButtonMode.Close ||
+		if (!m_showHeaderCloseButton)
+		{
+			//NO OP
+		}
+		else if ( m_dlgBtnMode == DlgButtonMode.Cancel || m_dlgBtnMode == DlgButtonMode.Close ||
 			 m_dlgBtnMode == DlgButtonMode.OkCancel )
 		{
 			ImageResource imageResource;
@@ -836,5 +846,10 @@ public abstract class DlgBox extends PopupPanel
 	public interface DlgBoxClient {
 		void onSuccess(DlgBox dlg);
 		void onUnavailable();
+	}
+	
+	public Panel getFooterPanel()
+	{
+		return m_footerPanel;
 	}
 }

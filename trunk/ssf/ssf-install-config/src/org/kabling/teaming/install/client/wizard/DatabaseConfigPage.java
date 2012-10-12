@@ -160,7 +160,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 			}
 
 			HTML footerLabel = new HTML(
-					"The MySQL database can be<br> - The integrated database running in the Filr virtual appliance (local)<br>"
+					"The MySQL database can be<br> - The integrated database running in the Filr virtual appliance (localhost)<br>"
 							+ "- The MySQL virtual appliance that is included with Filr, running separately.<br>"
 							+ "- A MySQL database server running in a virtual or physical machine on your network.");
 			footerLabel.addStyleName("configWizFooterLabel");
@@ -177,7 +177,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 		String userName = userTextBox.getText();
 		String password = userPwdTextBox.getText();
 		String hostName = hostTextBox.getText();
-		long port = portSpinner.getValue();
+		long port = portSpinner.getValueAsInt();
 
 		// All fields are required, return if any field is empty
 		if (userName.isEmpty() || password.isEmpty() || hostName.isEmpty() || port == 0)

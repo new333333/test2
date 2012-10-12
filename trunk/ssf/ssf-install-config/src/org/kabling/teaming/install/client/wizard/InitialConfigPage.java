@@ -34,7 +34,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	@Override
 	public String getPageTitle()
 	{
-		return "Filr Configuration";
+		return "Filr Configuration Wizard";
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			fPanel.addStyleName("wizardPage");
 
 			HTML descLabel = new HTML(
-					"Your first task is to configure the Filr virtual appliance to access<br> - A Lucene search server <br> - A MySQL database.<br><br<br> Pick an option below.");
+					"Pick an option");
 			descLabel.addStyleName("wizardPageDesc");
 			fPanel.add(descLabel);
 
@@ -54,26 +54,24 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			radioPanel.addStyleName("configSelectPanel");
 			fPanel.add(radioPanel);
 
-			useDefaultsRB = new RadioButton("config", "Use Defaults");
+			useDefaultsRB = new RadioButton("config", "Defaults");
 			useDefaultsRB.addStyleName("configSelectRB");
 			useDefaultsRB.addClickHandler(this);
 			useDefaultsRB.setValue(true);
 			radioPanel.add(useDefaultsRB);
 
 			HTML defaultConfigDescLabel = new HTML(
-					"Use the default Lucene search server and MySQL database that are providd with the Filr virtual appliance."
-							+ "<br><br>A good choice for evaluation environments and small networks. All components run in the Filr virtual appliance");
+					"Set up an evaluation environment or small network infrastructure.<br> The Lucene search service and MySQL database will on this Filr virtual appliance.");
 			defaultConfigDescLabel.addStyleName("configDescLabel");
 			radioPanel.add(defaultConfigDescLabel);
 
-			customRB = new RadioButton("config", "Custom Configuration");
+			customRB = new RadioButton("config", "Advanced");
 			customRB.addStyleName("configSelectRB");
 			customRB.addClickHandler(this);
 			radioPanel.add(customRB);
 
 			HTML customConfigDescLabel = new HTML(
-					"Specify a Lucene search server and MySQL database for the Filr virtual appliance to use. <br><br>"
-							+ "The recommended choice for most environments because you can set up a robust infrastructure in which the components run separately.");
+					"Set up a scalable infrastructure. <br> The Lucene search server and MySQL database will run separately.");
 			customConfigDescLabel.addStyleName("configDescLabel");
 			radioPanel.add(customConfigDescLabel);
 		}

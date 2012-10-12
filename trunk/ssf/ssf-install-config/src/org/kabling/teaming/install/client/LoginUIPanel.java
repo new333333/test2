@@ -124,6 +124,10 @@ public class LoginUIPanel extends Composite implements ClickHandler, KeyUpHandle
 
 	}
 
+	/**
+	 * Get the bevel label
+	 * @return
+	 */
 	private Label getBevelLabel()
 	{
 		Label label = new Label();
@@ -141,6 +145,10 @@ public class LoginUIPanel extends Composite implements ClickHandler, KeyUpHandle
 		}
 	}
 
+	/**
+	 * Make sure we have user name and password
+	 * @return
+	 */
 	private boolean isValid()
 	{
 		String userName = userNameTextBox.getText();
@@ -161,11 +169,8 @@ public class LoginUIPanel extends Composite implements ClickHandler, KeyUpHandle
 
 		if (!isValid())
 			return;
-		// We need to have both the user name and password to login
-		// They cannot be empty
-		if (userName == null || userName.isEmpty() || password == null || password.isEmpty())
-			return;
 
+		//Login
 		AppUtil.getInstallService().login(userName, password, new LoginInfoCallback());
 	}
 
@@ -175,7 +180,8 @@ public class LoginUIPanel extends Composite implements ClickHandler, KeyUpHandle
 		@Override
 		public void onFailure(Throwable caught)
 		{
-			errorsLabel.setText("The username or password is invalid");
+			//We cannot login, show the error
+			errorsLabel.setText(AppUtil.getAppResource().userNamePasswordInvalid());
 			errorsLabel.setVisible(true);
 		}
 
@@ -197,6 +203,7 @@ public class LoginUIPanel extends Composite implements ClickHandler, KeyUpHandle
 	@Override
 	public void onKeyUp(KeyUpEvent event)
 	{
+		//If the user presses enter and if we have both the user name and password, let's login
 		if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
 		{
 			if (isValid())
