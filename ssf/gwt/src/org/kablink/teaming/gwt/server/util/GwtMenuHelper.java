@@ -2784,7 +2784,7 @@ public class GwtMenuHelper {
 			// Define some variables we'll need to build the toolbar
 			// items.
 			User    			user     = GwtServerHelper.getCurrentUser();
-			boolean				isGuest  = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+			boolean				isGuest  = user.isShared();
 			boolean				isFilr   = Utils.checkIfFilr();
 			Folder				folder   = fe.getParentFolder();
 			String				feId     = String.valueOf(fe.getId());
@@ -2793,7 +2793,7 @@ public class GwtMenuHelper {
 			AdaptedPortletURL	url;
 			ToolbarItem			actionTBI;
 
-			// Does the user have rights to share this entry?
+			// Can the user share this entry?
 			SharingModule sm = bs.getSharingModule();
 			if ((!isGuest) && sm.isSharingEnabled() && sm.testAddShareEntity(fe)) {
 				// Yes!  Add a share toolbar item for it.
@@ -2820,8 +2820,8 @@ public class GwtMenuHelper {
 						     strEditorType = SsfsUtil.attachmentEditTypeForIE();
 						else strEditorType = SsfsUtil.attachmentEditTypeForNonIE();
 						if (MiscUtil.hasString(strEditorType)) {
-							// Yes!  Added an edit-in-place toolbar
-							// item for it.
+							// Yes!  Add an edit-in-place toolbar item
+							// for it.
 							actionTBI = new ToolbarItem(EDIT_IN_PLACE);
 							markTBITitle(   actionTBI, "file.editFile"                   );
 							markTBIEvent(   actionTBI, TeamingEvents.INVOKE_EDIT_IN_PLACE);
@@ -2838,9 +2838,8 @@ public class GwtMenuHelper {
 				}
 			}
 
-			// Does the user have rights to move this entry to the
-			// trash?
-			if (fm.testAccess(fe, FolderOperation.preDeleteEntry)) {
+			// Can the user move this entry to the trash?
+			if (fm.testAccess(fe, FolderOperation.preDeleteEntry) && (!(folder.isMirrored()))) {
 				// Yes!  Add a delete toolbar item for it.
 				actionTBI = new ToolbarItem(DELETE);
 				markTBITitle(   actionTBI, "toolbar.delete"                     );
@@ -2854,7 +2853,7 @@ public class GwtMenuHelper {
 			// More  //
 			// - - - //
 			
-			// Construct the More menu drop down Toolbar menu items.
+			// Construct the More menu drop down Toolbar menu item.
 			ToolbarItem dropdownTBI = new ToolbarItem(MORE);
 			markTBITitle(dropdownTBI, "toolbar.more");
 
@@ -2879,14 +2878,14 @@ public class GwtMenuHelper {
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 			
-			// Does the user have rights to purge this entry?
+			// Can the user purge this entry?
 			if (fm.testAccess(fe, FolderOperation.deleteEntry)) {
 				// Yes!  Add a purge toolbar item for it.
 				actionTBI = new ToolbarItem(PURGE);
 				markTBITitle(   actionTBI, "toolbar.purge"                     );
 				markTBIEvent(   actionTBI, TeamingEvents.PURGE_SELECTED_ENTRIES);
 				markTBIEntryIds(actionTBI, fe                                  );
-				reply.add(actionTBI);
+				dropdownTBI.addNestedItem(actionTBI);
 			}
 			
 			// Can the user lock this entry?
@@ -2904,9 +2903,9 @@ public class GwtMenuHelper {
 				else {
 					// Yes, the entry is currently locked!  If the
 				    // person who has locked the entry and the logged
-					// in user are the same or the person who has
-					// logged in is the binder administrator we allow
-					// an unlock.
+					// in user are the same or the person who is logged
+					// in is the binder administrator we allow an
+					// unlock.
 					boolean	isBinderAdmin = fm.testAccess(fe, FolderOperation.overrideReserveEntry);
 					if (isBinderAdmin || isLockedByLoggedInUser) {
 						actionTBI = new ToolbarItem(UNLOCK);
@@ -2918,7 +2917,7 @@ public class GwtMenuHelper {
 				}
 			}
 
-			// Add an toolbar item for marking the item read or unread.
+			// Add a toolbar item for marking the item read or unread.
 			SeenMap seenMap = bs.getProfileModule().getUserSeenMap(null);
 			boolean entrySeen = seenMap.checkIfSeen(fe);
 			if (entrySeen) {
@@ -2936,11 +2935,11 @@ public class GwtMenuHelper {
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 
-			// Add a separate between the main the above and the entry
-			// management commands.
+			// Add a separator between the action commands above and
+			// the management commands that follow.
 			dropdownTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
 
-			// Does the user have rights to modify this entry?
+			// Can the user modify this entry?
 			if (fm.testAccess(fe, FolderOperation.modifyEntry)) {
 				// Yes!  Add an edit details toolbar item for it.
 				url = createActionUrl(request);
@@ -2953,7 +2952,7 @@ public class GwtMenuHelper {
 				markTBIPopup(actionTBI                        );
 				markTBITitle(actionTBI, "toolbar.edit.details");
 				markTBIUrl(  actionTBI, url                   );
-				reply.add(actionTBI);
+				dropdownTBI.addNestedItem(actionTBI);
 			}
 			
 			// Can the user manage access controls on this entry?
@@ -3006,7 +3005,7 @@ public class GwtMenuHelper {
 					dropdownTBI.addNestedItem(actionTBI);
 				}
 
-				// Can the use export this entry?
+				// Can the user export this entry?
 				if (fe.isTop() && bs.getBinderModule().testAccess(folder, BinderOperation.export)) {
 					// Yes!  Add an export toolbar item for it.
 					url = createActionUrl(request);
@@ -3057,9 +3056,9 @@ public class GwtMenuHelper {
 				markTBIUrl(  actionTBI, servletUrl                );
 				dropdownTBI.addNestedItem(actionTBI);
 
-				// Are we in Filr mode?
+				// If we're not in Filr mode...
 				if (!isFilr) {
-					// No!  Add a workflow history report toolbar item.
+					// ...add a workflow history report toolbar item.
 					url = createActionUrl(request);
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WORKFLOW_HISTORY);
 					url.setParameter(WebKeys.URL_ENTITY_ID, feId);
@@ -3078,10 +3077,11 @@ public class GwtMenuHelper {
 			}
 			
 			// If we get here, reply refers to the List<ToolbarItem>
-			// containing the toolbar items for the entry view.  Return
-			// it.
+			// containing the toolbar items for the entry viewer.
+			// Return it.
 			return reply;
 		}
+		
 		finally {
 			SimpleProfiler.stop("GwtMenuHelper.getViewEntryToolbarItems()");
 		}
