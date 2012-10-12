@@ -33,8 +33,6 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -79,7 +77,6 @@ import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
-import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -744,41 +741,23 @@ public class GwtNetFolderHelper
 	/**
 	 * Modify the net folder from the given data
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static NetFolder modifyNetFolder(
 		AllModulesInjected ami,
 		NetFolder netFolder ) throws GwtTeamingException
 	{
 		try
 		{
-			Set deleteAtts;
-			Map fileMap = null;
-			MapInputData mid;
-			Map formData = null;
+			ScheduleInfo scheduleInfo;
 			
-			deleteAtts = new HashSet();
-			fileMap = new HashMap();
-			formData = new HashMap();
-	   		formData.put( ObjectKeys.FIELD_BINDER_LIBRARY, "true" );
-	   		formData.put( ObjectKeys.FIELD_BINDER_MIRRORED, "true" );
-	   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, netFolder.getNetFolderRootName() );
-	   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, netFolder.getRelativePath() );
-			mid = new MapInputData( formData );
+			scheduleInfo = getScheduleInfoFromGwtSchedule( netFolder.getSyncSchedule() );
 
-			// Modify the binder with the net folder information.
-   			ami.getBinderModule().modifyBinder( netFolder.getId(), mid, fileMap, deleteAtts, null );				
-
-			// Set the net folder's sync schedule
-			{
-				ScheduleInfo scheduleInfo;
-				
-				scheduleInfo = getScheduleInfoFromGwtSchedule( netFolder.getSyncSchedule() );
-				if ( scheduleInfo != null )
-				{
-					scheduleInfo.setFolderId( netFolder.getId() );
-					ami.getFolderModule().setSynchronizationSchedule( scheduleInfo, netFolder.getId() );
-				}
-			}
+			NetFolderHelper.modifyNetFolder(
+										ami.getBinderModule(),
+										ami.getFolderModule(),
+										netFolder.getId(),
+										netFolder.getNetFolderRootName(),
+										netFolder.getRelativePath(),
+										scheduleInfo );
 		}
 		catch ( Exception ex )
 		{
@@ -795,7 +774,6 @@ public class GwtNetFolderHelper
 	/**
 	 * Modify the net folder root from the given data
 	 */
-	@SuppressWarnings({ "unchecked" })
 	public static NetFolderRoot modifyNetFolderRoot(
 		AllModulesInjected ami,
 		NetFolderRoot netFolderRoot ) throws GwtTeamingException
