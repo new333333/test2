@@ -1138,6 +1138,8 @@ public class EntityIndexUtils {
         	doc.add(fileSizeField); 
         	Field fileSizeInBytesField = FieldFactory.createFieldStoredNotAnalyzed(FILE_SIZE_IN_BYTES_FIELD, String.valueOf(fa.getFileItem().getLength()));
         	doc.add(fileSizeInBytesField); 
+        	Field fileVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_VERSION_FIELD, String.valueOf(fa.getHighestVersionNumber()));
+        	doc.add(fileVersionField);
         	Field fileTimeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
         	doc.add(fileTimeField); 
         	Field fileNameFieldStored = FieldFactory.createFieldStoredNotIndexed(FILENAME_FIELD, fa.getFileItem().getName());
@@ -1162,6 +1164,8 @@ public class EntityIndexUtils {
     	doc.add(fileSizeField); 
     	Field fileSizeInBytesField = FieldFactory.createFieldStoredNotAnalyzed(FILE_SIZE_IN_BYTES_FIELD, String.valueOf(fa.getFileItem().getLength()));
     	doc.add(fileSizeInBytesField); 
+        Field fileVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_VERSION_FIELD, String.valueOf(fa.getHighestVersionNumber()));
+       	doc.add(fileVersionField);
     	Field fileTimeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
     	doc.add(fileTimeField);
     	Field fileNameFieldStored = FieldFactory.createFieldStoredNotIndexed(FILENAME_FIELD, fa.getFileItem().getName());
