@@ -119,6 +119,7 @@ import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
@@ -1139,6 +1140,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			gfeCmd = (GetFolderEntriesCmd) cmd;
 			result = getFolderEntries( ri, gfeCmd.getZoneUUID(), gfeCmd.getFolderId(), gfeCmd.getNumEntries(), gfeCmd.getNumReplies(), gfeCmd.getFileAttachmentsValue() );
 			responseData = new GetFolderEntriesRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_FOLDER_ENTRY_DETAILS:
+		{
+			GetFolderEntryDetailsCmd			gfeCmd       = ((GetFolderEntryDetailsCmd) cmd);
+			FolderEntryDetails					fed          = GwtViewHelper.getFolderEntryDetails( this, getRequest( ri ), gfeCmd.getEntityId() );
+			FolderEntryDetailsRpcResponseData	responseData = new FolderEntryDetailsRpcResponseData( fed );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

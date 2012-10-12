@@ -30,58 +30,66 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.binderviews;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
-import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
-import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.ui.InlineLabel;
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 /**
- * Class that holds the folder entry viewer header.
+ * This class holds all of the information necessary to execute the
+ * 'get folder entry details' command.
  * 
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
-public class FolderEntryHeader extends VibeFlowPanel {
-	private FolderEntryCallback				m_fec;			// Callback to the folder entry composite.
-	private FolderEntryDetails				m_fed;			// Details about the entry being viewed.
-	private GwtTeamingDataTableImageBundle	m_images;		// Access to Vibe's images.
-	private GwtTeamingFilrImageBundle		m_filrImages;	// Access to Filr's images.
-	private GwtTeamingMessages				m_messages;		// Access to Vibe's messages.
+public class GetFolderEntryDetailsCmd extends VibeRpcCmd {
+	private EntityId	m_entityId;	//
 	
-	public FolderEntryHeader(FolderEntryCallback fec, FolderEntryDetails fed) {
-		// Initialize the super class...
+	/**
+	 * Constructor method.
+	 * 
+	 * For GWT serialization, must have a zero parameter constructor.
+	 */
+	public GetFolderEntryDetailsCmd() {
+		// Initialize the super class.
 		super();
-		
-		// ...store the parameters...
-		m_fec = fec;
-		m_fed = fed;
-		
-		// ...initialize the data members requiring it...
-		m_filrImages = GwtTeaming.getFilrImageBundle();
-		m_images     = GwtTeaming.getDataTableImageBundle();
-		m_messages   = GwtTeaming.getMessages();
-		
-		// ...and construct the header's content.
-		createContent();
 	}
 	
-	/*
-	 * Creates the header's content.
+	/**
+	 * Constructor method.
+	 * 
+	 * @param entityId
 	 */
-	private void createContent() {
-		// Add the panel's style.
-		addStyleName("vibe-feView-headerPanel");
+	public GetFolderEntryDetailsCmd(EntityId entityId) {
+		// Initialize this object...
+		this();
 		
-//!		...this needs to be implemented...
-		add(new InlineLabel("...this needs to be implemented..."));
+		// ...and store the parameter.
+		setEntityId(entityId);
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public EntityId getEntityId() {return m_entityId;}
 
-		// Tell the composite that we're ready.
-		m_fec.viewComponentReady();
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setEntityId(EntityId entityId) {m_entityId = entityId;}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_NEXT_PREVIOUS_FOLDER_ENTRY_INFO.ordinal();
 	}
 }
