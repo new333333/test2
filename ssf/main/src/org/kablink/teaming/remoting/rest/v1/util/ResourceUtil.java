@@ -153,6 +153,7 @@ public class ResourceUtil {
         fp.setModification(new HistoryStamp(new LongIdLinkPair(fa.getModifierId(), LinkUriUtil.getUserLinkUri(fa.getModifierId())),
                 fa.getModifiedDate()));
         fp.setLength(fa.getSize());
+        fp.setVersionNumber(fa.getVersionNumber());
         LinkUriUtil.populateFileLinks(fp);
         return fp;
     }
