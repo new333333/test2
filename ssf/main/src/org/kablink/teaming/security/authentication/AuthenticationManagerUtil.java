@@ -52,6 +52,13 @@ public class AuthenticationManagerUtil {
 			final boolean ignorePassword, final Map updates,
 			final String authenticatorName)
 			throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException {
+		// Note on 'ignorePassword' argument - If this is true, it indicates that the actual authentication
+		// (i.e., validation of the user identity and credential) already took place successfully prior to
+		// calling this method, and therefore the password value passed here should not be used for the
+		// purpose of determining authentication outcome. 
+		// If the argument is false, however, then the password must be used for authentication purpose,
+		// and whether it matches or not determines the outcome of the overall authentication.
+		
 		return (User) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
 				return getAuthenticationManager().authenticate(identitySource,

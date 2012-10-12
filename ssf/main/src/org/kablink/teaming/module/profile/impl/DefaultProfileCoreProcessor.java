@@ -480,7 +480,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			entryData.put(ObjectKeys.FIELD_PRINCIPAL_THEME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_THEME));
 		}
    		if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) && !entryData.containsKey(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME)) {
-    		entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME));
+    		entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME).toLowerCase());
     	} 
        	if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_NAME) && !entryData.containsKey(ObjectKeys.FIELD_PRINCIPAL_NAME)) {
     		entryData.put(ObjectKeys.FIELD_PRINCIPAL_NAME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_NAME));
@@ -501,7 +501,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        	// Handle the samAccountName attribute
    		if ( inputData.exists( ObjectKeys.FIELD_PRINCIPAL_SAM_ACCOUNT_NAME ) && !entryData.containsKey( ObjectKeys.FIELD_PRINCIPAL_SAM_ACCOUNT_NAME ) )
    		{
-    		entryData.put( ObjectKeys.FIELD_PRINCIPAL_SAM_ACCOUNT_NAME, inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_SAM_ACCOUNT_NAME ) );
+    		entryData.put( ObjectKeys.FIELD_PRINCIPAL_SAM_ACCOUNT_NAME, inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_SAM_ACCOUNT_NAME ).toLowerCase() );
     	} 
 
    		String name = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_NAME);
@@ -513,7 +513,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
           		//setting the name -  force foreign name to be same if not supplied
           		//preserve case on foreign name
                	String foreignName = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME);
-          		if (Validator.isNull(foreignName)) entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, name); 
+          		if (Validator.isNull(foreignName)) entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, name.toLowerCase()); 
           	}
        	}
        	
