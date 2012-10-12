@@ -2861,9 +2861,9 @@ public class GwtMenuHelper {
 			if (fe.isTop() && fm.testAccess(fe, FolderOperation.copyEntry)) {
 				// Yes!  Add a copy toolbar item for it.
 				actionTBI = new ToolbarItem(COPY);
-				markTBITitle(actionTBI, "toolbar.copy"                     );
-				markTBIEvent(actionTBI, TeamingEvents.COPY_SELECTED_ENTRIES);
-				markTBIEntryIds(actionTBI, fe                              );
+				markTBITitle(   actionTBI, "toolbar.copy"                     );
+				markTBIEvent(   actionTBI, TeamingEvents.COPY_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                 );
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 			

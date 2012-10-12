@@ -36,9 +36,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
+import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
@@ -49,6 +51,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderEntryDetailsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNextPreviousFolderEntryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -83,7 +86,8 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class FolderEntryComposite extends ResizeComposite	
 	implements FolderEntryCallback, ToolPanelReady,
 		// Event handlers implemented by this class.
-		ContributorIdsRequestEvent.Handler
+		ContributorIdsRequestEvent.Handler,
+		ShareSelectedEntriesEvent.Handler
 {
 	public static final boolean SHOW_GWT_ENTRY_VIEWER	= false;	// DRF:  Leave false on checkin until it's finished.
 
@@ -119,6 +123,7 @@ public class FolderEntryComposite extends ResizeComposite
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
+		TeamingEvents.SHARE_SELECTED_ENTRIES,
 	};
 	/*
 	 * Constructor method.
@@ -366,6 +371,18 @@ public class FolderEntryComposite extends ResizeComposite
 		else reply = FOOTER_ADJUST_VIEW;
 		return reply;
 	}
+
+	/*
+	 * Returns true if a List<EntityId> contains a single EntityId that
+	 * matches the one loaded in the entry viewer and false otherwise.
+	 */
+	private boolean isCompositeEntry(List<EntityId> eidList) {
+		return (
+			GwtClientHelper.hasItems(eidList) &&
+			(1 == eidList.size()) &&
+			eidList.get(0).equalsEntityId(
+				m_vfei.getEntityId()));
+	}
 	
 	/*
 	 * Asynchronously loads the next part of the composite.
@@ -590,6 +607,29 @@ public class FolderEntryComposite extends ResizeComposite
 		m_contentPanel.setHeight(contentHeight + "px");
 	}
 
+	/**
+	 * Handles ShareSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the ShareSelectedEntriesEvent.Handler.onShareSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShareSelectedEntries(ShareSelectedEntriesEvent event) {
+		// Is the event targeted to this entry?
+		final List<EntityId> sharedEntities = event.getSelectedEntities();
+		if (isCompositeEntry(sharedEntities)) {
+			// Yes!  Run the share dialog on it.
+			Scheduler.ScheduledCommand doShare = new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					BinderViewsHelper.shareEntities(sharedEntities);
+				}
+			};
+			Scheduler.get().scheduleDeferred(doShare);
+		}
+	}
+	
 	/*
 	 * Coordinates things as the components of the composite become ready.
 	 */
