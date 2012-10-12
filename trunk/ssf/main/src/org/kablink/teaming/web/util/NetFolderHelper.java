@@ -61,6 +61,7 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.Utils;
@@ -463,6 +464,43 @@ public class NetFolderHelper
 		
 		// If we get here we did not find a net folder root with the given unc.
 		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	public static void modifyNetFolder(
+		BinderModule binderModule,
+		FolderModule folderModule,
+		Long id,
+		String netFolderRootName,
+		String relativePath,
+		ScheduleInfo scheduleInfo ) throws AccessControlException, WriteFilesException, WriteEntryDataException
+	{
+		Set deleteAtts;
+		Map fileMap = null;
+		MapInputData mid;
+		Map formData = null;
+		
+		deleteAtts = new HashSet();
+		fileMap = new HashMap();
+		formData = new HashMap();
+   		formData.put( ObjectKeys.FIELD_BINDER_LIBRARY, "true" );
+   		formData.put( ObjectKeys.FIELD_BINDER_MIRRORED, "true" );
+   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, netFolderRootName );
+   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, relativePath );
+		mid = new MapInputData( formData );
+
+		// Modify the binder with the net folder information.
+		binderModule.modifyBinder( id, mid, fileMap, deleteAtts, null );				
+
+		// Set the net folder's sync schedule
+		if ( scheduleInfo != null )
+		{
+			scheduleInfo.setFolderId( id );
+			folderModule.setSynchronizationSchedule( scheduleInfo, id );
+		}
 	}
 	
 	/**
