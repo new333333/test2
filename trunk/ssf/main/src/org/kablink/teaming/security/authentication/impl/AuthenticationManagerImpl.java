@@ -245,7 +245,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	 						removeEverythingButEmailAddress(updates); 							
  						}
 	 			 		// Make sure foreign name is identical to name.
-	 					updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, userName);
+	 					updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, userName.toLowerCase());
 	 					// For external users, there's no need for separate step for synchronizing profile info
 	 					// because all the information is already ready and presented to the method that creates the user.
 	 					syncUser = false;
