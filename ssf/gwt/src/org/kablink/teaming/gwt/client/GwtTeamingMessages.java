@@ -487,6 +487,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SetUnseen();
 	String rpcFailure_ShareEntry();
 	String rpcFailure_SyncNetFolders();
+	String rpcFailure_SyncNetFolderServer();
 	String rpcFailure_TestGroupMembershipCriteria();
 	String rpcFailure_ErrorTestingNetFolderServerConnection();
 	String rpcFailure_TrackingBinder();
@@ -1921,7 +1922,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_ServerPathLabel();
 	String modifyNetFolderServerDlg_SelectPrincipalsLabel();
 	String modifyNetFolderServerDlg_SyncAllNetFoldersPrompt();
-	String modifyNetFolderServerDlg_SyncOfAssociatedNetFoldersStarted();
+	String modifyNetFolderServerDlg_SyncOfNetFolderServerStarted();
 	String modifyNetFolderServerDlg_TestConnectionLabel();
 	String modifyNetFolderServerDlg_TypeLabel();
 	String modifyNetFolderServerDlg_TypeCol();

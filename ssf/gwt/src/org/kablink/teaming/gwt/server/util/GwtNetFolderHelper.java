@@ -47,7 +47,6 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -74,7 +73,6 @@ import org.kablink.teaming.jobs.Schedule;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
-import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.security.function.Function;
@@ -85,14 +83,8 @@ import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.web.util.GwtUIHelper;
-import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.search.Constants;
-import org.kablink.util.search.Criteria;
-import org.kablink.util.search.Criterion;
-import org.kablink.util.search.Order;
-import org.kablink.util.search.Restrictions;
 
 
 /**
@@ -834,6 +826,16 @@ public class GwtNetFolderHelper
 		}
 		
 		return netFolders;
+	}
+	
+	/**
+	 * Sync the given net folder server by syncing all the net folders associated with it.
+	 */
+	public static Boolean syncNetFolderServer(
+		AllModulesInjected ami,
+		String netFolderServerName )
+	{
+		return ami.getResourceDriverModule().synchronize( netFolderServerName, null );
 	}
 	
 	/**

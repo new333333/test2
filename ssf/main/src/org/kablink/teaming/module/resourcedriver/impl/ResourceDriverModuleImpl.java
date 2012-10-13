@@ -568,6 +568,26 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	 */
 	@Override
 	public boolean synchronize(
+		String netFolderServerName,
+		StatusTicket statusTicket ) throws FIException, UncheckedIOException, ConfigurationException
+	{
+		ResourceDriverConfig rdConfig;
+
+		rdConfig = getResourceDriverManager().getDriverConfig( netFolderServerName );
+		if ( rdConfig != null )
+		{
+			return synchronize( rdConfig.getId(), statusTicket );
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Synchronize all of the net folders associated with the given net folder server.
+	 * If a net folder has a sync schedule enabled, that net folder will not be synchronized.
+	 */
+	@Override
+	public boolean synchronize(
 		Long netFolderServerId,
 		StatusTicket statusTicket ) throws FIException, UncheckedIOException, ConfigurationException
 	{
