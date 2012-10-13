@@ -114,14 +114,14 @@ public class DefaultNetFolderServerSynchronization extends SSCronTriggerJob
 		
 			try 
 			{
-				serverId = new Long( jobDataMap.getLong( "serverid" ) );
+				serverId = new Long( jobDataMap.getLong( "serverId" ) );
 			} 
 			catch ( Exception ex )
 			{
 				serverId = new Long( -1 );
 			}
 			
-			if ( serverId.equals( -1 ) )
+			if ( serverId.equals( new Long( -1 ) ) )
 			{
 				removeJob( context );
 			}
