@@ -637,7 +637,8 @@ public class NetFolderHelper
 		String hostUrl,
 		boolean allowSelfSignedCerts,
 		boolean isSharePointServer,
-		Set<Long> listOfPrincipals )
+		Set<Long> listOfPrincipals,
+		ScheduleInfo scheduleInfo )
 	{
 		Map options;
 		User adminUser;
@@ -683,6 +684,13 @@ public class NetFolderHelper
 															rootPath,
 															listOfPrincipals,
 															options );
+
+		// Set the net folder server's sync schedule
+		if ( scheduleInfo != null )
+		{
+			scheduleInfo.setFolderId( rdConfig.getId() );
+			resourceDriverModule.setSynchronizationSchedule( scheduleInfo, rdConfig.getId() );
+		}
 
 		// Get the admin user so we can remove an administrative task to his user properties.
 		zoneName = RequestContextHolder.getRequestContext().getZoneName();

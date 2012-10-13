@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtPrincipal;
+import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.GwtPrincipal.PrincipalType;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
@@ -89,6 +90,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
@@ -135,6 +137,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private TextBox m_hostUrlTxtBox;
 	private CheckBox m_allowSelfSignedCertsCkbox;
 	private CheckBox m_isSharePointServerCkbox;
+	private ScheduleWidget m_scheduleWidget;
 	private FlowPanel m_inProgressPanel;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	private FlexCellFormatter m_privilegedPrincipalsCellFormatter;
@@ -487,6 +490,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		int nextRow;
 		HTMLTable.RowFormatter rowFormatter;
 		FlexCellFormatter cellFormatter;
+		CaptionPanel captionPanel;
 		
 		messages = GwtTeaming.getMessages();
 		
@@ -754,10 +758,32 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			}
 		}
 		
+		// Create the controls for defining the sync schedule
+		{
+			FlowPanel captionPanelMainPanel;
+			
+			// Add some space
+			spacerPanel = new FlowPanel();
+			spacerPanel.getElement().getStyle().setMarginTop( 10, Unit.PX );
+			table.setHTML( nextRow, 0, spacerPanel.getElement().getString() );
+			++nextRow;
+			
+			captionPanel = new CaptionPanel( messages.modifyNetFolderServerDlg_SyncScheduleCaption() );
+			captionPanel.addStyleName( "modifyNetFolderServerDlg_SyncScheduleCaptionPanel" );
+			
+			captionPanelMainPanel = new FlowPanel();
+			captionPanel.add( captionPanelMainPanel );
+
+			m_scheduleWidget = new ScheduleWidget( messages.modifyNetFolderDlg_EnableSyncScheduleLabel() );
+			m_scheduleWidget.addStyleName( "modifyNetFolderServerDlg_ScheduleWidget" );
+			captionPanelMainPanel.add( m_scheduleWidget );
+		}
+
 		// Create an image resource for the delete image.
 		m_deleteImgR = GwtTeaming.getImageBundle().delete();
 
 		mainPanel.add( table );
+		mainPanel.add( captionPanel );
 
 		return mainPanel;
 	}
@@ -1091,6 +1117,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			netFolderRoot.setIsSharePointServer( getIsSharePointServer() );
 		}
 
+		netFolderRoot.setSyncSchedule( getSyncSchedule() );
+
 		if ( m_netFolderRoot != null )
 			netFolderRoot.setId( m_netFolderRoot.getId() );
 		
@@ -1165,6 +1193,14 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	}
 
 	/**
+	 * Return the sync schedule
+	 */
+	private GwtSchedule getSyncSchedule()
+	{
+		return m_scheduleWidget.getSchedule( );
+	}
+
+	/**
 	 * This method gets called when the user selects the root type
 	 * Show/hide the appropriate controls based on the selected root type.
 	 */
@@ -1220,6 +1256,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			adjustPrivilegedPrincipalsTablePanelHeight();
 		}
 
+		// Clear out the sync schedule controls
+		m_scheduleWidget.init( null );
+
 		// Are we modifying an existing net folder root?
 		if ( m_netFolderRoot != null )
 		{
@@ -1261,6 +1300,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					}
 				}
 			}
+
+			// Initialize the sync schedule controls
+			m_scheduleWidget.init( m_netFolderRoot.getSyncSchedule() );
 		}
 		else
 		{

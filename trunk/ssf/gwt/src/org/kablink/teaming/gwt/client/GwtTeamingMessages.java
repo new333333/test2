@@ -1900,6 +1900,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_AlreadyAPrivilegedPrincipal( String name );
 	String modifyNetFolderServerDlg_CantSelectExternalUser();
 	String modifyNetFolderServerDlg_EditHeader( String name );
+	String modifyNetFolderServerDlg_EnableSyncScheduleLabel();
 	String modifyNetFolderServerDlg_ErrorCreatingNetFolderServer( String err );
 	String modifyNetFolderServerDlg_ErrorModifyingNetFolderServer( String err );
 	String modifyNetFolderServerDlg_Group();
@@ -1927,6 +1928,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_Type_Famt();
 	String modifyNetFolderServerDlg_Type_FileSystem();
 	String modifyNetFolderServerDlg_Type_WebDav();
+	String modifyNetFolderServerDlg_SyncScheduleCaption();
 	String modifyNetFolderServerDlg_User();
 	
 	// Strings used in the Manage Net Folders dialog
