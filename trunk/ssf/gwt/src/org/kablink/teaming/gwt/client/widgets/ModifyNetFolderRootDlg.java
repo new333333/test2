@@ -34,16 +34,13 @@ package org.kablink.teaming.gwt.client.widgets;
 
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtPrincipal;
 import org.kablink.teaming.gwt.client.GwtSchedule;
-import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.GwtPrincipal.PrincipalType;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
@@ -61,10 +58,8 @@ import org.kablink.teaming.gwt.client.event.NetFolderRootModifiedEvent;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateNetFolderRootCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyNetFolderRootCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFoldersCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFolderServerCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -1417,30 +1412,29 @@ public class ModifyNetFolderRootDlg extends DlgBox
 						{
 							String origProxyName;
 							String origProxyPwd;
+							String newProxyName;
+							String newProxyPwd;
 							
 							// Get the original proxy credentials
 							origProxyName = m_netFolderRoot.getProxyName();
 							origProxyPwd = m_netFolderRoot.getProxyPwd();
+
+							// Get the new proxy credentials
+							newProxyName = newNetFolderRoot.getProxyName();
+							newProxyPwd = newNetFolderRoot.getProxyPwd();
 							
-							// Have the proxy credentials been entered before?
-							if ( origProxyName == null || origProxyName.length() == 0 ||
-								 origProxyPwd == null || origProxyPwd.length() == 0 )
+							// Have the proxy credentials changed?
+							if ( (newProxyName != null && newProxyName.length() > 0 && newProxyName.equalsIgnoreCase( origProxyName ) == false) ||
+								 (newProxyPwd != null && newProxyPwd.length() > 0 && newProxyPwd.equalsIgnoreCase( origProxyPwd ) == false) )
 							{
-								String newProxyName;
-								String newProxyPwd;
-								
-								// No, did the user enter proxy credentials?
-								newProxyName = newNetFolderRoot.getProxyName();
-								newProxyPwd = newNetFolderRoot.getProxyPwd();
-								if ( (newProxyName != null && newProxyName.length() > 0) ||
-									 (newProxyPwd != null && newProxyPwd.length() > 0) )
+								// Yes
+								// Ask the user if they want to sync all the net folders associated with
+								// this net folder root.
+								if ( Window.confirm( GwtTeaming.getMessages().modifyNetFolderServerDlg_SyncAllNetFoldersPrompt() ) )
 								{
-									// Yes, ask the user if they want to sync all the net folders associated with
-									// this net folder root.
-									if ( Window.confirm( GwtTeaming.getMessages().modifyNetFolderServerDlg_SyncAllNetFoldersPrompt() ) )
-									{
-										syncAssociatedNetFolders();
-									}
+									// Sync this net folder server by syncing all the net folders
+									// associated with this net folder server.
+									syncNetFolderServer();
 								}
 							}
 						}
@@ -1680,73 +1674,16 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	}
 	
 	/**
-	 * Issue an rpc request to sync all of the net folders associated with this net folder root
+	 * Issue an rpc request to sync this net folder server by syncing all the list of net folders
+	 * associated with this net folder server.
 	 */
-	private void syncAssociatedNetFolders()
+	private void syncNetFolderServer()
 	{
-		GetNetFoldersCmd cmd;
+		SyncNetFolderServerCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback = null;
-
-		// Create the callback that will be used when we issue an ajax call to get all the net folders.
-		rpcCallback = new AsyncCallback<VibeRpcResponse>()
-		{
-			@Override
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetAllNetFolders() );
-			}
-	
-			@Override
-			public void onSuccess( final VibeRpcResponse response )
-			{
-				Scheduler.ScheduledCommand cmd;
-				
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						GetNetFoldersRpcResponseData responseData;
-						
-						responseData = (GetNetFoldersRpcResponseData) response.getResponseData();
-						
-						// Add the net folders to the ui
-						if ( responseData != null )
-						{
-							List<NetFolder> listOfNetFolders;
-							
-							listOfNetFolders = responseData.getListOfNetFolders();
-							syncNetFolders( listOfNetFolders );
-						}
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}
-		};
-
-		// Issue an ajax request to get a list of all the net folders associated with this net folder root.
-		cmd = new GetNetFoldersCmd();
-		cmd.setIncludeHomeDirNetFolders( true );
-		cmd.setRootName( m_netFolderRoot.getName() );
-		GwtClientHelper.executeCommand( cmd, rpcCallback );
-	}
-	
-	/**
-	 * Issue an rpc request to sync the list of net folders
-	 */
-	private void syncNetFolders( List<NetFolder> listOfNetFolders )
-	{
-		SyncNetFoldersCmd cmd;
-		AsyncCallback<VibeRpcResponse> rpcCallback = null;
-		Set<NetFolder> setOfNetFolders;
-		
-		if ( listOfNetFolders == null || listOfNetFolders.size() == 0 )
-			return;
 		
 		// Create the callback that will be used when we issue an ajax call
-		// to sync the net folders.
+		// to sync the net folder server.
 		rpcCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -1761,7 +1698,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					{
 						GwtClientHelper.handleGwtRPCFailure(
 								t,
-								GwtTeaming.getMessages().rpcFailure_SyncNetFolders() );
+								GwtTeaming.getMessages().rpcFailure_SyncNetFolderServer() );
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -1777,17 +1714,16 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					@Override
 					public void execute()
 					{
-						// Tell the user the synchronization of the net folders has started.
-						Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SyncOfAssociatedNetFoldersStarted() );
+						// Tell the user the synchronization of the net folder server has started.
+						//!!!Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SyncOfNetFolderServerStarted() );
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
 			}
 		};
 
-		// Issue an ajax request to sync the list of net folders.
-		setOfNetFolders = new HashSet<NetFolder>( listOfNetFolders );
-		cmd = new SyncNetFoldersCmd( setOfNetFolders );
+		// Issue an ajax request to sync the net folder server.
+		cmd = new SyncNetFolderServerCmd( m_netFolderRoot.getName() );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 	

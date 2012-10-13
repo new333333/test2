@@ -2545,6 +2545,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SYNC_NET_FOLDER_SERVER:
+		{
+			SyncNetFolderServerCmd snfsCmd;
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			snfsCmd = (SyncNetFolderServerCmd) cmd;
+			result = GwtNetFolderHelper.syncNetFolderServer( this, snfsCmd.getNetFolderServerName() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case TEST_GROUP_MEMBERSHIP_LDAP_QUERY:
 		{
 			TestGroupMembershipCriteriaCmd tgmlqCmd;

@@ -149,6 +149,20 @@ public interface ResourceDriverModule {
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
+	public boolean synchronize( String netFolderServerName, StatusTicket statusTicket )
+		throws AccessControlException, FIException, UncheckedIOException, ConfigurationException;
+
+	/**
+	 * Synchronize all of the net folders associated with the give net folder server. 
+	 * This initiates the work and returns immediately without waiting for
+	 * the work to finish, hence working asynchronously. 
+	 * 
+	 * @param netFolderServerId this should be a ResourceDriverConfig
+	 * @param statusTicket
+	 * @throws AccessControlException
+	 * @throws FIException
+	 * @throws UncheckedIOException
+	 */
 	public boolean synchronize( Long netFolderServerId, StatusTicket statusTicket )
 		throws AccessControlException, FIException, UncheckedIOException, ConfigurationException;
 }
