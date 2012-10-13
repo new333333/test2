@@ -57,6 +57,7 @@ public class NetFolderRoot
 	private String m_rootPath;
 	private String m_proxyName = "";
 	private String m_proxyPwd = "";
+	private GwtSchedule m_syncSchedule;
 	private ArrayList<GwtPrincipal> m_principals;
 	
 	// This information is specific to WebDAV
@@ -98,6 +99,7 @@ public class NetFolderRoot
 		m_proxyName = root.getProxyName();
 		m_proxyPwd = root.getProxyPwd();
 		m_principals = root.getListOfPrincipals();
+		m_syncSchedule = root.getSyncSchedule();
 		
 		// Copy WebDAV info
 		m_allowSelfSignedCerts = root.getAllowSelfSignedCerts();
@@ -205,6 +207,14 @@ public class NetFolderRoot
 	}
 	
 	/**
+	 * 
+	 */
+	public GwtSchedule getSyncSchedule()
+	{
+		return m_syncSchedule;
+	}
+
+	/**
 	 * Is this net folder root fully configured with server path and proxy credentials.
 	 */
 	public boolean isConfigured()
@@ -302,5 +312,13 @@ public class NetFolderRoot
 	public void setRootType( NetFolderRootType type )
 	{
 		m_rootType = type;
+	}
+
+	/**
+	 * 
+	 */
+	public void setSyncSchedule( GwtSchedule schedule )
+	{
+		m_syncSchedule = schedule;
 	}
 }

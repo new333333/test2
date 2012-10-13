@@ -203,8 +203,10 @@ public class GwtNetFolderHelper
 		ResourceDriverConfig rdConfig;
 		DriverType driverType;
 		NetFolderRoot newRoot = null;
+		ScheduleInfo scheduleInfo;
 		
 		driverType = getDriverType( netFolderRoot.getRootType() );
+		scheduleInfo = getScheduleInfoFromGwtSchedule( netFolderRoot.getSyncSchedule() );
 		rdConfig = NetFolderHelper.createNetFolderRoot(
 												ami.getAdminModule(),
 												ami.getResourceDriverModule(),
@@ -217,7 +219,7 @@ public class GwtNetFolderHelper
 												netFolderRoot.getHostUrl(),
 												netFolderRoot.getAllowSelfSignedCerts(),
 												netFolderRoot.getIsSharePointServer(),
-												null );
+												scheduleInfo );
 
 		if ( rdConfig != null )
 		{
@@ -230,6 +232,7 @@ public class GwtNetFolderHelper
 			newRoot.setHostUrl( rdConfig.getHostUrl() );
 			newRoot.setAllowSelfSignedCerts( rdConfig.isAllowSelfSignedCertificate() );
 			newRoot.setIsSharePointServer( rdConfig.isPutRequiresContentLength() );
+			newRoot.setSyncSchedule( netFolderRoot.getSyncSchedule() );
 
 			// Get the list of principals that can use the net folder root
 			getListOfPrincipals( ami, rdConfig, newRoot );
@@ -364,6 +367,7 @@ public class GwtNetFolderHelper
 			{
 				NetFolderRoot nfRoot;
 				DriverType driverType;
+				GwtSchedule gwtSchedule;
 				
 				nfRoot = new NetFolderRoot();
 				nfRoot.setId( driver.getId() );
@@ -388,7 +392,11 @@ public class GwtNetFolderHelper
 				
 				// Get the list of principals that can use the net folder root
 				getListOfPrincipals( ami, driver, nfRoot );
-				
+
+				// Get the net folder's sync schedule.
+				gwtSchedule = getGwtSyncSchedule( ami, driver );
+				nfRoot.setSyncSchedule( gwtSchedule );
+
 				listOfNetFolderRoots.add( nfRoot );
 			}
 		}
@@ -422,6 +430,76 @@ public class GwtNetFolderHelper
 	}
 
 	/**
+	 * For the given ScheduleInfo object return a a GwtSchedule object that represents the data in
+	 * the ScheduleInfo object.
+	 */
+	private static GwtSchedule getGwtSyncSchedule( ScheduleInfo scheduleInfo )
+	{
+		GwtSchedule gwtSchedule;
+
+		if ( scheduleInfo == null )
+			return null;
+		
+		gwtSchedule = new GwtSchedule();
+
+		Schedule schedule;
+
+		gwtSchedule.setEnabled( scheduleInfo.isEnabled() );
+		
+		schedule = scheduleInfo.getSchedule();
+		if ( schedule != null )
+		{
+			if ( schedule.isDaily() )
+			{
+				gwtSchedule.setDayFrequency( DayFrequency.EVERY_DAY );
+			}
+			else
+			{
+				gwtSchedule.setDayFrequency( DayFrequency.ON_SELECTED_DAYS );
+				gwtSchedule.setOnMonday( schedule.isOnMonday() );
+				gwtSchedule.setOnTuesday( schedule.isOnTuesday() );
+				gwtSchedule.setOnWednesday( schedule.isOnWednesday() );
+				gwtSchedule.setOnThursday( schedule.isOnThursday() );
+				gwtSchedule.setOnFriday( schedule.isOnFriday() );
+				gwtSchedule.setOnSaturday( schedule.isOnSaturday() );
+				gwtSchedule.setOnSunday( schedule.isOnSunday() );
+			}
+			
+			if ( schedule.isRepeatMinutes() )
+			{
+				int minutes;
+				
+				gwtSchedule.setTimeFrequency( TimeFrequency.REPEAT_EVERY_MINUTE );
+				minutes = Integer.valueOf( schedule.getMinutesRepeat() );
+				gwtSchedule.setRepeatEveryValue( minutes );
+			}
+			else if ( schedule.isRepeatHours() )
+			{
+				int hours;
+				
+				gwtSchedule.setTimeFrequency( TimeFrequency.REPEAT_EVERY_HOUR );
+				hours = Integer.valueOf( schedule.getHoursRepeat() );
+				gwtSchedule.setRepeatEveryValue( hours );
+			}
+			else
+			{
+				int minutes;
+				int hours;
+				
+				gwtSchedule.setTimeFrequency( TimeFrequency.AT_SPECIFIC_TIME );
+				
+				minutes = Integer.valueOf( schedule.getMinutes() );
+				gwtSchedule.setAtMinutes( minutes );
+				
+				hours = Integer.valueOf( schedule.getHours() );
+				gwtSchedule.setAtHours( hours );
+			}
+		}
+
+		return gwtSchedule;
+	}
+
+	/**
 	 * For the given Binder, return a GwtSchedule object that represents the binder's
 	 * sync schedule.
 	 */
@@ -436,68 +514,35 @@ public class GwtNetFolderHelper
 		if ( binder == null )
 			return null;
 		
-		gwtSchedule = new GwtSchedule();
-		
 		// Get the ScheduleInfo for the given binder.
 		zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		scheduleInfo = ami.getFolderModule().getSynchronizationSchedule( zoneId, binder.getId() );
 		
-		if ( scheduleInfo != null )
-		{
-			Schedule schedule;
+		gwtSchedule = GwtNetFolderHelper.getGwtSyncSchedule( scheduleInfo );
+		
+		return gwtSchedule;
+	}
+	
+	/**
+	 * For the given ResourceDriverConfig, return a GwtSchedule object that represents the net folder server's
+	 * sync schedule.
+	 */
+	private static GwtSchedule getGwtSyncSchedule(
+		AllModulesInjected ami,
+		ResourceDriverConfig rdConfig )
+	{
+		Long zoneId;
+		ScheduleInfo scheduleInfo;
+		GwtSchedule gwtSchedule;
+		
+		if ( rdConfig == null )
+			return null;
+		
+		// Get the ScheduleInfo for the given net folder server.
+		zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		scheduleInfo = ami.getResourceDriverModule().getSynchronizationSchedule( zoneId, rdConfig.getId() );
 
-			gwtSchedule.setEnabled( scheduleInfo.isEnabled() );
-			
-			schedule = scheduleInfo.getSchedule();
-			if ( schedule != null )
-			{
-				if ( schedule.isDaily() )
-				{
-					gwtSchedule.setDayFrequency( DayFrequency.EVERY_DAY );
-				}
-				else
-				{
-					gwtSchedule.setDayFrequency( DayFrequency.ON_SELECTED_DAYS );
-					gwtSchedule.setOnMonday( schedule.isOnMonday() );
-					gwtSchedule.setOnTuesday( schedule.isOnTuesday() );
-					gwtSchedule.setOnWednesday( schedule.isOnWednesday() );
-					gwtSchedule.setOnThursday( schedule.isOnThursday() );
-					gwtSchedule.setOnFriday( schedule.isOnFriday() );
-					gwtSchedule.setOnSaturday( schedule.isOnSaturday() );
-					gwtSchedule.setOnSunday( schedule.isOnSunday() );
-				}
-				
-				if ( schedule.isRepeatMinutes() )
-				{
-					int minutes;
-					
-					gwtSchedule.setTimeFrequency( TimeFrequency.REPEAT_EVERY_MINUTE );
-					minutes = Integer.valueOf( schedule.getMinutesRepeat() );
-					gwtSchedule.setRepeatEveryValue( minutes );
-				}
-				else if ( schedule.isRepeatHours() )
-				{
-					int hours;
-					
-					gwtSchedule.setTimeFrequency( TimeFrequency.REPEAT_EVERY_HOUR );
-					hours = Integer.valueOf( schedule.getHoursRepeat() );
-					gwtSchedule.setRepeatEveryValue( hours );
-				}
-				else
-				{
-					int minutes;
-					int hours;
-					
-					gwtSchedule.setTimeFrequency( TimeFrequency.AT_SPECIFIC_TIME );
-					
-					minutes = Integer.valueOf( schedule.getMinutes() );
-					gwtSchedule.setAtMinutes( minutes );
-					
-					hours = Integer.valueOf( schedule.getHours() );
-					gwtSchedule.setAtHours( hours );
-				}
-			}
-		}
+		gwtSchedule = GwtNetFolderHelper.getGwtSyncSchedule( scheduleInfo );
 		
 		return gwtSchedule;
 	}
@@ -722,6 +767,10 @@ public class GwtNetFolderHelper
 
 		try
 		{
+			ScheduleInfo scheduleInfo;
+			
+			scheduleInfo = getScheduleInfoFromGwtSchedule( netFolderRoot.getSyncSchedule() );
+
 			driverType = getDriverType( netFolderRoot.getRootType() );
 			NetFolderHelper.modifyNetFolderRoot(
 											ami.getAdminModule(),
@@ -735,7 +784,8 @@ public class GwtNetFolderHelper
 											netFolderRoot.getHostUrl(),
 											netFolderRoot.getAllowSelfSignedCerts(),
 											netFolderRoot.getIsSharePointServer(),
-											netFolderRoot.getListOfPrincipalIds() );
+											netFolderRoot.getListOfPrincipalIds(),
+											scheduleInfo );
 		}
 		catch ( Exception ex )
 		{

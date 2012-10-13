@@ -4449,11 +4449,11 @@ td.datePickerMonth {
  * Styles used in the "modify net folder" dialog
  */
 
-.modifyNetFolderDlg_SyncScheduleCaptionPanel
+.modifyNetFolderDlg_SyncScheduleCaptionPanel, .modifyNetFolderServerDlg_SyncScheduleCaptionPanel
 {
 }
 
-.modifyNetFolderDlg_ScheduleWidget
+.modifyNetFolderDlg_ScheduleWidget, .modifyNetFolderServerDlg_ScheduleWidget
 {
 }
 
