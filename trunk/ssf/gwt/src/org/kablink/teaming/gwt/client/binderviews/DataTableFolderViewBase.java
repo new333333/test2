@@ -1693,9 +1693,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// ...invoke the copy on those selected in the data
 				// ...table.
 				selectedEntityIds = getSelectedEntityIds();
-				BinderViewsHelper.copyEntries(
-					getFolderType(),
-					selectedEntityIds);
+				BinderViewsHelper.copyEntries(selectedEntityIds);
 			}
 		}
 	}
@@ -2035,9 +2033,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// ...invoke the move on what's selected in the data
 				// ...table.
 				selectedEntityIds = getSelectedEntityIds();
-				BinderViewsHelper.moveEntries(
-					getFolderType(),
-					selectedEntityIds);
+				BinderViewsHelper.moveEntries(selectedEntityIds);
 			}
 		}
 	}

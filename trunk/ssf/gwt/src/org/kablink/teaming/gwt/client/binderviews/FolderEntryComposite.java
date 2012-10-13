@@ -39,7 +39,9 @@ import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -55,6 +57,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OpStatusCallback;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
@@ -84,9 +87,11 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class FolderEntryComposite extends ResizeComposite	
-	implements FolderEntryCallback, ToolPanelReady,
+	implements FolderEntryCallback, OpStatusCallback, ToolPanelReady,
 		// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler,
+		CopySelectedEntriesEvent.Handler,
+		MoveSelectedEntriesEvent.Handler,
 		ShareSelectedEntriesEvent.Handler
 {
 	public static final boolean SHOW_GWT_ENTRY_VIEWER	= false;	// DRF:  Leave false on checkin until it's finished.
@@ -110,6 +115,8 @@ public class FolderEntryComposite extends ResizeComposite
 	private final static int FOOTER_ADJUST_DLG		=  20;	// Height adjustment required for adequate spacing below the footer when hosted in a dialog.
 	private final static int FOOTER_ADJUST_VIEW		=  30;	// Height adjustment required for adequate spacing below the footer when hosted in a view.
 	
+	private final static int WAIT_FOR_DIALOG_CLOSE	= 250;	// Delay to wait for a dialog to close before continuing.
+	
 	// Number of components to coordinate with during construction:
 	// - Header;
 	// - Menu;
@@ -123,6 +130,8 @@ public class FolderEntryComposite extends ResizeComposite
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
+		TeamingEvents.COPY_SELECTED_ENTRIES,
+		TeamingEvents.MOVE_SELECTED_ENTRIES,
 		TeamingEvents.SHARE_SELECTED_ENTRIES,
 	};
 	/*
@@ -169,6 +178,53 @@ public class FolderEntryComposite extends ResizeComposite
 			m_compositeReady = true;
 			m_viewReady.viewReady();
 			onResizeAsync();
+		}
+	}
+
+	/*
+	 * Asynchronously closes the folder entry viewer.
+	 */ 
+	private void closeFolderEntryViewerAsync(int delay) {
+		if (0 < delay) {
+			Timer doClose = new Timer() {
+				@Override
+				public void run() {
+					closeFolderEntryViewerNow();
+				}
+			};
+			doClose.schedule(delay);
+		}
+		
+		else {
+			ScheduledCommand doClose = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					closeFolderEntryViewerNow();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doClose);
+		}
+	}
+	
+	private void closeFolderEntryViewerAsync() {
+		// Always use the initial form of the method.
+		closeFolderEntryViewerAsync(0);
+	}
+	
+	/*
+	 * Synchronously closes the folder entry viewer.
+	 * 
+	 * To close the view, we simply pop the previous URL and goto that.
+	 * Note that we have to protect against the case where the URL is a
+	 * permalink to an entry as navigating to it again, would simply
+	 * re-launch the entry viewer.  Hence the ignore.
+	 */
+	private void closeFolderEntryViewerNow() {
+		String url = ContentControl.getContentHistoryUrl(-1);
+		url = GwtClientHelper.appendUrlParam(url, "ignoreEntryView", "1");
+		OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(url, Instigator.GOTO_CONTENT_URL);
+		if (GwtClientHelper.validateOSBI(osbInfo)) {
+			GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
 		}
 	}
 	
@@ -227,17 +283,7 @@ public class FolderEntryComposite extends ResizeComposite
 			ClickHandler closeClick = new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					// To close the view, we simply pop the previous
-					// URL and goto that.  Note that we have to protect
-					// against the case where the URL is a permalink to
-					// an entry as navigating to it again, would simply
-					// re-launch the entry viewer.  Hence the ignore.
-					String url = ContentControl.getContentHistoryUrl(-1);
-					url = GwtClientHelper.appendUrlParam(url, "ignoreEntryView", "1");
-					OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(url, Instigator.GOTO_CONTENT_URL);
-					if (GwtClientHelper.validateOSBI(osbInfo)) {
-						GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
-					}
+					closeFolderEntryViewerAsync();
 				}
 			};
 
@@ -519,6 +565,43 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 	
 	/**
+	 * Handles CopySelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the CopySelectedEntriesEvent.Handler.onCopySelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCopySelectedEntries(CopySelectedEntriesEvent event) {
+		// Is the event targeted to this entry?
+		List<EntityId> copiedEntities = event.getSelectedEntities();
+		if (isCompositeEntry(copiedEntities)) {
+			// Yes!  Run the copy on it.
+			onCopySelectedEntriesAsync(copiedEntities);
+		}
+	}
+	
+	/*
+	 * Asynchronously handles moving the folder entry.
+	 */
+	private void onCopySelectedEntriesAsync(final List<EntityId> copiedEntities) {
+		Scheduler.ScheduledCommand doCopy = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				onCopySelectedEntriesNow(copiedEntities);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doCopy);
+	}
+	
+	/*
+	 * Synchronously handles moving the folder entry.
+	 */
+	private void onCopySelectedEntriesNow(List<EntityId> copiedEntities) {
+		BinderViewsHelper.copyEntries(copiedEntities, this);
+	}
+	
+	/**
 	 * Called when the data table is detached.
 	 * 
 	 * Overrides the Widget.onDetach() method.
@@ -529,6 +612,43 @@ public class FolderEntryComposite extends ResizeComposite
 		// handlers.
 		super.onDetach();
 		unregisterEvents();
+	}
+
+	/**
+	 * Handles MoveSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the MoveSelectedEntriesEvent.Handler.onMoveSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMoveSelectedEntries(MoveSelectedEntriesEvent event) {
+		// Is the event targeted to this entry?
+		List<EntityId> movedEntities = event.getSelectedEntities();
+		if (isCompositeEntry(movedEntities)) {
+			// Yes!  Run the move on it.
+			onMoveSelectedEntriesAsync(movedEntities);
+		}
+	}
+	
+	/*
+	 * Asynchronously handles moving the folder entry.
+	 */
+	private void onMoveSelectedEntriesAsync(final List<EntityId> movedEntities) {
+		Scheduler.ScheduledCommand doMove = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				onMoveSelectedEntriesNow(movedEntities);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doMove);
+	}
+	
+	/*
+	 * Synchronously handles moving the folder entry.
+	 */
+	private void onMoveSelectedEntriesNow(List<EntityId> movedEntities) {
+		BinderViewsHelper.moveEntries(movedEntities, this);
 	}
 	
 	/**
@@ -617,17 +737,53 @@ public class FolderEntryComposite extends ResizeComposite
 	@Override
 	public void onShareSelectedEntries(ShareSelectedEntriesEvent event) {
 		// Is the event targeted to this entry?
-		final List<EntityId> sharedEntities = event.getSelectedEntities();
+		List<EntityId> sharedEntities = event.getSelectedEntities();
 		if (isCompositeEntry(sharedEntities)) {
-			// Yes!  Run the share dialog on it.
-			Scheduler.ScheduledCommand doShare = new Scheduler.ScheduledCommand() {
-				@Override
-				public void execute() {
-					BinderViewsHelper.shareEntities(sharedEntities);
-				}
-			};
-			Scheduler.get().scheduleDeferred(doShare);
+			// Yes!  Run the share on it.
+			onShareSelectedEntriesAsync(sharedEntities);
 		}
+	}
+
+	/*
+	 * Asynchronously handles sharing the folder entry.
+	 */
+	private void onShareSelectedEntriesAsync(final List<EntityId> sharedEntities) {
+		Scheduler.ScheduledCommand doShare = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				onShareSelectedEntriesNow(sharedEntities);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShare);
+	}
+	
+	/*
+	 * Synchronously handles sharing the folder entry.
+	 */
+	private void onShareSelectedEntriesNow(List<EntityId> sharedEntities) {
+		BinderViewsHelper.shareEntities(sharedEntities);
+	}
+	
+	/**
+	 * Called when an operation invoked by the composite completes in
+	 * other than a successful manner.
+	 * 
+	 * Implements the OpStatusCallback.opFailed() method.
+	 */
+	@Override
+	public void opFailed() {
+		// Nothing to do.
+	}
+
+	/**
+	 * Called when an operation invoked by the composite successfully
+	 * completes.
+	 * 
+	 * Implements the OpStatusCallback.opSuccess() method.
+	 */
+	@Override
+	public void opSuccess() {
+		closeFolderEntryViewerAsync(WAIT_FOR_DIALOG_CLOSE);
 	}
 	
 	/*

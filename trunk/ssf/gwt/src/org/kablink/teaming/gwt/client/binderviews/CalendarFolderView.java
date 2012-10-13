@@ -1307,9 +1307,7 @@ public class CalendarFolderView extends FolderViewBase
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
 				// No!  Invoke the copy on those selected in the view.
 				selectedEntityIds = getSelectedEntityIds();
-				BinderViewsHelper.copyEntries(
-					getFolderInfo().getFolderType(),
-					selectedEntityIds);
+				BinderViewsHelper.copyEntries(selectedEntityIds);
 			}
 		}
 	}
@@ -1460,9 +1458,7 @@ public class CalendarFolderView extends FolderViewBase
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
 				// No!  Invoke the move on those selected in the view.
 				selectedEntityIds = getSelectedEntityIds();
-				BinderViewsHelper.moveEntries(
-					getFolderInfo().getFolderType(),
-					selectedEntityIds);
+				BinderViewsHelper.moveEntries(selectedEntityIds);
 			}
 		}
 	}
