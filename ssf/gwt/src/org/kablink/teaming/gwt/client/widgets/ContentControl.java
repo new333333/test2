@@ -1189,9 +1189,7 @@ public class ContentControl extends Composite
 			if ( GwtClientHelper.hasItems( selectedEntityIds ) )
 			{
 				// Yes!  Invoke the copy on them.
-				BinderViewsHelper.copyEntries(
-					bi.getFolderType(),
-					selectedEntityIds );
+				BinderViewsHelper.copyEntries(selectedEntityIds );
 			}
 		}
 	}
@@ -1372,9 +1370,7 @@ public class ContentControl extends Composite
 			if ( GwtClientHelper.hasItems(selectedEntityIds ) )
 			{
 				// ...invoke the move on them.
-				BinderViewsHelper.moveEntries(
-					bi.getFolderType(),
-					selectedEntityIds );
+				BinderViewsHelper.moveEntries(selectedEntityIds );
 			}
 		}
 	}

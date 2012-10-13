@@ -54,8 +54,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorI
 import org.kablink.teaming.gwt.client.rpc.shared.MoveEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
-import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OpStatusCallback;
 import org.kablink.teaming.gwt.client.util.ProgressDlg;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
@@ -68,6 +68,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -75,6 +77,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -84,11 +87,12 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class CopyMoveEntriesDlg extends DlgBox
-	implements EditSuccessfulHandler,
+	implements CloseHandler<PopupPanel>, EditSuccessfulHandler,
 	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
 	private boolean						m_doCopy;					// true -> The dialog is doing a copy.  false -> It's doing a move.
+	private boolean						m_opSuccessful;				// true -> Dialog closes with a success.  false -> Dialog close for other than a success.
 	private FindCtrl					m_findControl;				// The search widget.
 	private GwtFolder					m_recentDest;				// Tracks the last destination used.  If a new folder isn't selected, this will be used.
 	private GwtFolder					m_selectedDest;				// The currently selected folder returned by the search widget.
@@ -97,6 +101,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 	private int							m_totalDone;				// Tracks the number of entities that have been copied/moved while the operation is in progress.
 	private List<EntityId>				m_entityIds;				// Current list of entity IDs to be copied/moved.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private OpStatusCallback			m_opStatus;					// Callback interface to tell the caller when we're done.
 	private ProgressBar					m_progressBar;				// Progress bar shown as part of progress handling.
 	private VibeFlowPanel				m_progressPanel;			// Panel containing the progress indicator.
 	private VibeVerticalPanel			m_vp;						// The panel holding the dialog's content.
@@ -142,12 +147,16 @@ public class CopyMoveEntriesDlg extends DlgBox
 		
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
-	
+		
+		// ...add a close handler to coordinate the operation status
+		// ...with an OpStatusCallback....
+		addCloseHandler(this);
+
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			"",							// No caption yet.  It's set appropriately when the dialog runs.
 			this,						// The dialog's EditSuccessfulHandler.
-			getSimpleCanceledHandler(),	// The dialog's EditCancledHandler.
+			getSimpleCanceledHandler(),	// The dialog's EditCanceledHandler.
 			null);						// Create callback data.  Unused. 
 	}
 
@@ -172,7 +181,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 		}
 		return reply;
 	}
-	
+
 	/*
 	 * Asynchronously performs the copy/move of the entries.
 	 */
@@ -339,18 +348,25 @@ public class CopyMoveEntriesDlg extends DlgBox
 					
 					// If we just completed moving anything or doing
 					// doing anything with a binder...
+					m_opSuccessful = (totalErrorCount != totalEntityCount);
 					boolean copyMovedBinders = EntityId.areBindersInEntityIds(sourceEntityIds);
-					if (((!m_doCopy) || copyMovedBinders) && totalErrorCount != totalEntityCount) {
-						// ...force the content to refresh to reflect
-						// ...what was done.  We don't do this for a
-						// ...copy of just entries as there's generally
-						// ...nothing showing that needs to be changed.
+					if (((!m_doCopy) || copyMovedBinders) && m_opSuccessful) {
 						if (copyMovedBinders) {
 							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
 						}
-						FullUIReloadEvent.fireOne();
+						
+						// If the caller isn't handling the
+						// operation completing...
+						if (null == m_opStatus) {
+							// ...force the content to refresh to
+							// ...reflect what was done.  We don't do
+							// ...this for a copy of just entries as
+							// ...there's generally nothing showing
+							// ...that needs to be changed.
+							FullUIReloadEvent.fireOneAsync();
+						}
 					}
-					
+
 					// Finally, save the target folder we just
 					// copied/moved to and close the dialog, we're
 					// done!
@@ -594,6 +610,22 @@ public class CopyMoveEntriesDlg extends DlgBox
 		super.onAttach();
 		registerEvents();
 	}
+
+	/**
+	 * Called when the dialog closes.
+	 * 
+	 * Implements the CloseHandler.onClose() method.
+	 */
+	@Override
+	public void onClose(CloseEvent<PopupPanel> event) {
+		// If the caller wants to know what happened...
+		if (null != m_opStatus) {
+			// ...tell them.
+			if (m_opSuccessful)
+			     m_opStatus.opSuccess();
+			else m_opStatus.opFailed();
+		}
+	}
 	
 	/**
 	 * Called when the dialog is detached.
@@ -753,11 +785,11 @@ public class CopyMoveEntriesDlg extends DlgBox
 	 * Asynchronously runs the given instance of the move entries
 	 * dialog.
 	 */
-	private static void runDlgAsync(final CopyMoveEntriesDlg cmeDlg, final boolean doCopy, final FolderType folderType, final List<EntityId> entityIds) {
+	private static void runDlgAsync(final CopyMoveEntriesDlg cmeDlg, final boolean doCopy, final List<EntityId> entityIds, final OpStatusCallback opStatus) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				cmeDlg.runDlgNow(doCopy, folderType, entityIds);
+				cmeDlg.runDlgNow(doCopy, entityIds, opStatus);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -767,12 +799,14 @@ public class CopyMoveEntriesDlg extends DlgBox
 	 * Synchronously runs the given instance of the move entries
 	 * dialog.
 	 */
-	private void runDlgNow(boolean doCopy, FolderType folderType, List<EntityId> entityIds) {
+	private void runDlgNow(boolean doCopy, List<EntityId> entityIds, final OpStatusCallback opStatus) {
 		// Store the parameters...
 		m_doCopy    = doCopy;
 		m_entityIds = entityIds;
+		m_opStatus  = opStatus;
 		
 		// ...initialize any other data members...
+		m_opSuccessful = false;
 		m_selectedDest = null;
 		initDlgStrings();
 		setCaption(GwtClientHelper.patchMessage(m_strMap.get(StringIds.HEADER), String.valueOf(m_entityIds.size())));
@@ -838,10 +872,10 @@ public class CopyMoveEntriesDlg extends DlgBox
 			final CopyMoveEntriesDlgClient cmeDlgClient,
 			
 			// initAndShow parameters,
-			final CopyMoveEntriesDlg cmeDlg,
-			final boolean            doCopy,
-			final FolderType         folderType,
-			final List<EntityId>     entityIds) {
+			final CopyMoveEntriesDlg	cmeDlg,
+			final boolean				doCopy,
+			final List<EntityId>		entityIds,
+			final OpStatusCallback		opStatus) {
 		GWT.runAsync(CopyMoveEntriesDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -864,7 +898,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(cmeDlg, doCopy, folderType, entityIds);
+					runDlgAsync(cmeDlg, doCopy, entityIds, opStatus);
 				}
 			}
 		});
@@ -885,10 +919,14 @@ public class CopyMoveEntriesDlg extends DlgBox
 	 * 
 	 * @param cmeDlg
 	 * @param doCopy
-	 * @param folderType
 	 * @param entityIds
 	 */
-	public static void initAndShow(CopyMoveEntriesDlg cmeDlg, boolean doCopy, FolderType folderType, List<EntityId> entityIds) {
-		doAsyncOperation(null, cmeDlg, doCopy, folderType, entityIds);
+	public static void initAndShow(CopyMoveEntriesDlg cmeDlg, boolean doCopy, List<EntityId> entityIds, OpStatusCallback opStatus) {
+		doAsyncOperation(null, cmeDlg, doCopy, entityIds, opStatus);
+	}
+	
+	public static void initAndShow(CopyMoveEntriesDlg cmeDlg, boolean doCopy, List<EntityId> entityIds) {
+		// Always use the initial form of the method.
+		initAndShow(cmeDlg, doCopy, entityIds, null);
 	}
 }

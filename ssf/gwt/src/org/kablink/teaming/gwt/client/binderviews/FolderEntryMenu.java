@@ -39,6 +39,8 @@ import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
@@ -205,6 +207,8 @@ public class FolderEntryMenu extends VibeFlowPanel {
 					
 					VibeEventBase<?> event;
 					switch (simpleEvent) {
+					case COPY_SELECTED_ENTRIES:   event = new CopySelectedEntriesEvent( eid.getBinderId(), eid); break;
+					case MOVE_SELECTED_ENTRIES:   event = new MoveSelectedEntriesEvent( eid.getBinderId(), eid); break;
 					case SHARE_SELECTED_ENTRIES:  event = new ShareSelectedEntriesEvent(eid.getBinderId(), eid); break;
 					
 					default:

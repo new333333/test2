@@ -2807,9 +2807,7 @@ public class TaskTable extends Composite
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
 				// No!  Invoke the copy on those selected in the view.
 				selectedEntityIds = getTaskIdsChecked();
-				BinderViewsHelper.copyEntries(
-					FolderType.TASK,
-					selectedEntityIds);
+				BinderViewsHelper.copyEntries(selectedEntityIds);
 			}
 		}
 	}
@@ -2909,9 +2907,7 @@ public class TaskTable extends Composite
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
 				// No!  Invoke the move on those selected in the view.
 				selectedEntityIds = getTaskIdsChecked();
-				BinderViewsHelper.moveEntries(
-					FolderType.TASK,
-					selectedEntityIds);
+				BinderViewsHelper.moveEntries(selectedEntityIds);
 			}
 		}
 	}

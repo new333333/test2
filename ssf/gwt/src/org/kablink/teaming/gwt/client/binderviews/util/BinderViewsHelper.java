@@ -67,6 +67,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OpStatusCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
@@ -182,10 +183,9 @@ public class BinderViewsHelper {
 	 * Invokes the appropriate UI to copy the entries based on a
 	 * List<EntityId> of the entries.
 	 *
-	 * @param folderType
 	 * @param entityIds
 	 */
-	public static void copyEntries(final FolderType folderType, final List<EntityId> entityIds) {
+	public static void copyEntries(final List<EntityId> entityIds, final OpStatusCallback opStatus) {
 		// If we weren't given any entity IDs to be copied...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
@@ -206,7 +206,7 @@ public class BinderViewsHelper {
 				public void onSuccess(CopyMoveEntriesDlg cmeDlg) {
 					// ...and run it to copy.
 					m_cmeDlg = cmeDlg;
-					showCMEDlgAsync(m_cmeDlg, true, folderType, entityIds);
+					showCMEDlgAsync(m_cmeDlg, true, entityIds, opStatus);
 				}
 			});
 		}
@@ -214,8 +214,13 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've created a copy/move entries dialog already!
 			// Run it to copy.
-			showCMEDlgAsync(m_cmeDlg, true, folderType, entityIds);
+			showCMEDlgAsync(m_cmeDlg, true, entityIds, opStatus);
 		}
+	}
+	
+	public static void copyEntries(final List<EntityId> entityIds) {
+		// Always use the initialize form of the method.
+		copyEntries(entityIds, null);
 	}
 
 	/**
@@ -669,10 +674,9 @@ public class BinderViewsHelper {
 	 * Invokes the appropriate UI to move the entries based on a
 	 * List<EntityId> of the entries.
 	 *
-	 * @param folderType
 	 * @param entityIds
 	 */
-	public static void moveEntries(final FolderType folderType, final List<EntityId> entityIds) {
+	public static void moveEntries(final List<EntityId> entityIds, final OpStatusCallback opStatus) {
 		// If we weren't given any entity IDs to be moved...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
@@ -693,7 +697,7 @@ public class BinderViewsHelper {
 				public void onSuccess(CopyMoveEntriesDlg cmeDlg) {
 					// ...and run it to move.
 					m_cmeDlg = cmeDlg;
-					showCMEDlgAsync(m_cmeDlg, false, folderType, entityIds);
+					showCMEDlgAsync(m_cmeDlg, false, entityIds, opStatus);
 				}
 			});
 		}
@@ -701,8 +705,13 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've created a copy/move entries dialog already!
 			// Run it to move.
-			showCMEDlgAsync(m_cmeDlg, false, folderType, entityIds);
+			showCMEDlgAsync(m_cmeDlg, false, entityIds, opStatus);
 		}
+	}
+	
+	public static void moveEntries(final List<EntityId> entityIds) {
+		// Always use the initial form of the method.
+		moveEntries(entityIds, null);
 	}
 	
 	/**
@@ -954,11 +963,11 @@ public class BinderViewsHelper {
 	 * Asynchronously initializes and shows the copy/move entries
 	 * dialog.
 	 */
-	private static void showCMEDlgAsync(final CopyMoveEntriesDlg cmeDlg, final boolean invokeToCopy, final FolderType folderType, final List<EntityId> entityIds) {
+	private static void showCMEDlgAsync(final CopyMoveEntriesDlg cmeDlg, final boolean invokeToCopy, final List<EntityId> entityIds, final OpStatusCallback opStatus) {
 		ScheduledCommand doShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				showCMEDlgNow(cmeDlg, invokeToCopy, folderType, entityIds);
+				showCMEDlgNow(cmeDlg, invokeToCopy, entityIds, opStatus);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doShow);
@@ -968,12 +977,12 @@ public class BinderViewsHelper {
 	 * Synchronously initializes and shows the copy/move entries
 	 * dialog.
 	 */
-	private static void showCMEDlgNow(final CopyMoveEntriesDlg cmeDlg, final boolean invokeToCopy, final FolderType folderType, final List<EntityId> entityIds) {
+	private static void showCMEDlgNow(final CopyMoveEntriesDlg cmeDlg, final boolean invokeToCopy, final List<EntityId> entityIds, final OpStatusCallback opStatus) {
 		CopyMoveEntriesDlg.initAndShow(
 			cmeDlg,			// The dialog to show.
 			invokeToCopy,	// true -> Run it do a copy.  false -> Run it to do a move.
-			folderType,		// The type of folder that we're dealing with.
-			entityIds);		// The List<EntityId> to be copied/moved.
+			entityIds,		// The List<EntityId> to be copied/moved.
+			opStatus);		// Callback, if needed to tell the caller about the status of the copy.
 	}
 	
 	/*
