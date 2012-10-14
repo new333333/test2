@@ -37,13 +37,21 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
+import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.FolderEntryActionCompleteEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -57,7 +65,6 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.OpStatusCallback;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
@@ -87,17 +94,26 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class FolderEntryComposite extends ResizeComposite	
-	implements FolderEntryCallback, OpStatusCallback, ToolPanelReady,
+	implements FolderEntryCallback, ToolPanelReady,
 		// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler,
 		CopySelectedEntriesEvent.Handler,
+		DeleteSelectedEntriesEvent.Handler,
+		FolderEntryActionCompleteEvent.Handler,
+		LockSelectedEntriesEvent.Handler,
+		MarkReadSelectedEntriesEvent.Handler,
+		MarkUnreadSelectedEntriesEvent.Handler,
 		MoveSelectedEntriesEvent.Handler,
-		ShareSelectedEntriesEvent.Handler
+		PurgeSelectedEntriesEvent.Handler,
+		ShareSelectedEntriesEvent.Handler,
+		UnlockSelectedEntriesEvent.Handler
 {
 	public static final boolean SHOW_GWT_ENTRY_VIEWER	= false;	// DRF:  Leave false on checkin until it's finished.
 
 	private boolean							m_compositeReady;			// Set true once the composite and all its components are ready.
 	private boolean							m_isDialog;					// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.
+	private FolderEntryActionCompleteEvent	m_actionClose;				// Event fired when an action we requested completes and we need to close   the viewer.
+	private FolderEntryActionCompleteEvent	m_actionRefresh;			// Event fired when an action we requested completes and we need to refresh the viewer.
 	private FolderEntryDetails				m_fed;						// Details about the folder entry being viewed.
 	private FooterPanel						m_footerPanel;				//
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
@@ -115,7 +131,7 @@ public class FolderEntryComposite extends ResizeComposite
 	private final static int FOOTER_ADJUST_DLG		=  20;	// Height adjustment required for adequate spacing below the footer when hosted in a dialog.
 	private final static int FOOTER_ADJUST_VIEW		=  30;	// Height adjustment required for adequate spacing below the footer when hosted in a view.
 	
-	private final static int WAIT_FOR_DIALOG_CLOSE	= 250;	// Delay to wait for a dialog to close before continuing.
+	private final static int WAIT_FOR_DIALOG_TO_CLOSE	= 750;	// Time to wait for a dialog performing an action to fully close before proceeding.
 	
 	// Number of components to coordinate with during construction:
 	// - Header;
@@ -131,8 +147,15 @@ public class FolderEntryComposite extends ResizeComposite
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.COPY_SELECTED_ENTRIES,
+		TeamingEvents.DELETE_SELECTED_ENTRIES,
+		TeamingEvents.FOLDER_ENTRY_ACTION_COMPLETE,
+		TeamingEvents.LOCK_SELECTED_ENTRIES,
+		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
+		TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES,
 		TeamingEvents.MOVE_SELECTED_ENTRIES,
+		TeamingEvents.PURGE_SELECTED_ENTRIES,
 		TeamingEvents.SHARE_SELECTED_ENTRIES,
+		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 	};
 	/*
 	 * Constructor method.
@@ -153,6 +176,11 @@ public class FolderEntryComposite extends ResizeComposite
 		m_isDialog = (null != dialog);
 		m_images   = GwtTeaming.getDataTableImageBundle();
 		m_messages = GwtTeaming.getMessages();
+
+		// ...create the events that get fired when an action we
+		// ...request completes...
+		m_actionClose   = new FolderEntryActionCompleteEvent(vfei.getEntityId(), true );
+		m_actionRefresh = new FolderEntryActionCompleteEvent(vfei.getEntityId(), false);
 		
 		// ...create the base content panels...
 		m_rootPanel = new VibeFlowPanel();
@@ -182,49 +210,20 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 
 	/*
-	 * Asynchronously closes the folder entry viewer.
+	 * Closes the viewer and reloads the underlying content.
 	 */ 
-	private void closeFolderEntryViewerAsync(int delay) {
-		if (0 < delay) {
-			Timer doClose = new Timer() {
-				@Override
-				public void run() {
-					closeFolderEntryViewerNow();
-				}
-			};
-			doClose.schedule(delay);
-		}
-		
-		else {
-			ScheduledCommand doClose = new ScheduledCommand() {
-				@Override
-				public void execute() {
-					closeFolderEntryViewerNow();
-				}
-			};
-			Scheduler.get().scheduleDeferred(doClose);
-		}
-	}
-	
-	private void closeFolderEntryViewerAsync() {
-		// Always use the initial form of the method.
-		closeFolderEntryViewerAsync(0);
-	}
-	
-	/*
-	 * Synchronously closes the folder entry viewer.
-	 * 
-	 * To close the view, we simply pop the previous URL and goto that.
-	 * Note that we have to protect against the case where the URL is a
-	 * permalink to an entry as navigating to it again, would simply
-	 * re-launch the entry viewer.  Hence the ignore.
-	 */
-	private void closeFolderEntryViewerNow() {
-		String url = ContentControl.getContentHistoryUrl(-1);
+	private void closeFolderEntryViewer() {
+		// To close it, we simply pop the previous URL and goto it.
+		// Note that we have to protect against the case where the URL
+		// is a permalink to the entry as navigating to it again, would
+		// simply re-launch the entry viewer.  Hence the ignore.
+		String url = ContentControl.getContentHistoryUrl(-1);	// Pops the previous URL.
 		url = GwtClientHelper.appendUrlParam(url, "ignoreEntryView", "1");
 		OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(url, Instigator.GOTO_CONTENT_URL);
 		if (GwtClientHelper.validateOSBI(osbInfo)) {
-			GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+			GwtTeaming.fireEventAsync(
+				new ChangeContextEvent(osbInfo),
+				WAIT_FOR_DIALOG_TO_CLOSE);
 		}
 	}
 	
@@ -283,7 +282,7 @@ public class FolderEntryComposite extends ResizeComposite
 			ClickHandler closeClick = new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					closeFolderEntryViewerAsync();
+					closeFolderEntryViewer();
 				}
 			};
 
@@ -400,8 +399,7 @@ public class FolderEntryComposite extends ResizeComposite
 					// Load it.
 					m_vfei = vfei;
 					m_caption.setText(m_vfei.getTitle());
-					m_contentPanel.clear();
-					loadPart1Async();
+					refreshFolderEntryViewer();
 				}
 			}
 		});
@@ -422,12 +420,15 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Returns true if a List<EntityId> contains a single EntityId that
 	 * matches the one loaded in the entry viewer and false otherwise.
 	 */
+	private boolean isCompositeEntry(EntityId eid) {
+		return eid.equalsEntityId(m_vfei.getEntityId());
+	}
+	
 	private boolean isCompositeEntry(List<EntityId> eidList) {
 		return (
 			GwtClientHelper.hasItems(eidList) &&
 			(1 == eidList.size()) &&
-			eidList.get(0).equalsEntityId(
-				m_vfei.getEntityId()));
+			isCompositeEntry(eidList.get(0)));
 	}
 	
 	/*
@@ -582,7 +583,7 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 	
 	/*
-	 * Asynchronously handles moving the folder entry.
+	 * Asynchronously handles copying the folder entry.
 	 */
 	private void onCopySelectedEntriesAsync(final List<EntityId> copiedEntities) {
 		Scheduler.ScheduledCommand doCopy = new Scheduler.ScheduledCommand() {
@@ -595,10 +596,10 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 	
 	/*
-	 * Synchronously handles moving the folder entry.
+	 * Synchronously handles copying the folder entry.
 	 */
 	private void onCopySelectedEntriesNow(List<EntityId> copiedEntities) {
-		BinderViewsHelper.copyEntries(copiedEntities, this);
+		BinderViewsHelper.copyEntries(copiedEntities, m_actionClose);
 	}
 	
 	/**
@@ -614,6 +615,189 @@ public class FolderEntryComposite extends ResizeComposite
 		unregisterEvents();
 	}
 
+	/**
+	 * Handles DeleteSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDeleteSelectedEntries(DeleteSelectedEntriesEvent event) {
+		// Is the event targeted to this entry?
+		List<EntityId> deletedEntities = event.getSelectedEntities();
+		if (isCompositeEntry(deletedEntities)) {
+			// Yes!  Run the delete on it.
+			onDeleteSelectedEntriesAsync(deletedEntities);
+		}
+	}
+	
+	/*
+	 * Asynchronously handles deleting the folder entry.
+	 */
+	private void onDeleteSelectedEntriesAsync(final List<EntityId> deletedEntities) {
+		Scheduler.ScheduledCommand doDelete = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				onDeleteSelectedEntriesNow(deletedEntities);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doDelete);
+	}
+	
+	/*
+	 * Synchronously handles deleting the folder entry.
+	 */
+	private void onDeleteSelectedEntriesNow(List<EntityId> deletedEntities) {
+		BinderViewsHelper.deleteFolderEntries(deletedEntities, new DeletePurgeEntriesCallback() {
+			@Override
+			public void operationCanceled() {
+				// Nothing to do.
+			}
+
+			@Override
+			public void operationComplete() {
+				GwtTeaming.fireEventAsync(m_actionClose);
+			}
+			
+			@Override
+			public void operationFailed() {
+				// Nothing to do.  The purge call will have told the
+				// user about the failure.
+			}
+		});
+	}
+	
+	/**
+	 * Handles FolderEntryActionCompleteEvent's received by this class.
+	 * 
+	 * Implements the FolderEntryActionCompleteEvent.Handler.onFolderEntryActionComplete() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onFolderEntryActionComplete(FolderEntryActionCompleteEvent event) {
+		// Is the event targeted to this entry?
+		if (isCompositeEntry(event.getEntityid())) {
+			// Yes!  Close/refresh the folder entry viewer, as
+			// required.
+			if (event.exitViewer())
+			     closeFolderEntryViewer();
+			else refreshFolderEntryViewer();
+		}
+	}
+	
+	/**
+	 * Handles LockSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the LockSelectedEntriesEvent.Handler.onLockSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onLockSelectedEntries(LockSelectedEntriesEvent event) {
+		// Is the event targeted to this entry?
+		List<EntityId> lockedEntities = event.getSelectedEntities();
+		if (isCompositeEntry(lockedEntities)) {
+			// Yes!  Run the lock on it.
+			onLockSelectedEntriesAsync(lockedEntities);
+		}
+	}
+	
+	/*
+	 * Asynchronously handles locking the folder entry.
+	 */
+	private void onLockSelectedEntriesAsync(final List<EntityId> lockedEntities) {
+		Scheduler.ScheduledCommand doLock = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				onLockSelectedEntriesNow(lockedEntities);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLock);
+	}
+	
+	/*
+	 * Synchronously handles locking the folder entry.
+	 */
+	private void onLockSelectedEntriesNow(List<EntityId> lockedEntities) {
+		BinderViewsHelper.lockEntries(lockedEntities, m_actionRefresh);
+	}
+	
+	/**
+	 * Handles MarkReadSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the MarkReadSelectedEntriesEvent.Handler.onMarkReadSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMarkReadSelectedEntries(MarkReadSelectedEntriesEvent event) {
+		// Is the event targeted to this entry?
+		List<EntityId> markedReadEntities = event.getSelectedEntities();
+		if (isCompositeEntry(markedReadEntities)) {
+			// Yes!  Run the mark read on it.
+			onMarkReadSelectedEntriesAsync(markedReadEntities);
+		}
+	}
+	
+	/*
+	 * Asynchronously handles marking the folder entry as being read
+	 */
+	private void onMarkReadSelectedEntriesAsync(final List<EntityId> markedReadEntities) {
+		Scheduler.ScheduledCommand doMarkRead = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				onMarkReadSelectedEntriesNow(markedReadEntities);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doMarkRead);
+	}
+	
+	/*
+	 * Synchronously handles marking the folder entry as being read.
+	 */
+	private void onMarkReadSelectedEntriesNow(List<EntityId> markedReadEntities) {
+		BinderViewsHelper.markEntriesRead(markedReadEntities, m_actionRefresh);
+	}
+	
+	/**
+	 * Handles MarkUnreadSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the MarkUnreadSelectedEntriesEvent.Handler.onMarkUnreadSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMarkUnreadSelectedEntries(MarkUnreadSelectedEntriesEvent event) {
+		// Is the event targeted to this entry?
+		List<EntityId> markedUnreadEntities = event.getSelectedEntities();
+		if (isCompositeEntry(markedUnreadEntities)) {
+			// Yes!  Run the mark unread on it.
+			onMarkUnreadSelectedEntriesAsync(markedUnreadEntities);
+		}
+	}
+	
+	/*
+	 * Asynchronously handles marking the folder entry as being read
+	 */
+	private void onMarkUnreadSelectedEntriesAsync(final List<EntityId> markedUnreadEntities) {
+		Scheduler.ScheduledCommand doMarkUnread = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				onMarkUnreadSelectedEntriesNow(markedUnreadEntities);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doMarkUnread);
+	}
+	
+	/*
+	 * Synchronously handles marking the folder entry as being read.
+	 */
+	private void onMarkUnreadSelectedEntriesNow(List<EntityId> markedUnreadEntities) {
+		BinderViewsHelper.markEntriesUnread(markedUnreadEntities, m_actionRefresh);
+	}
+	
 	/**
 	 * Handles MoveSelectedEntriesEvent's received by this class.
 	 * 
@@ -648,7 +832,60 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously handles moving the folder entry.
 	 */
 	private void onMoveSelectedEntriesNow(List<EntityId> movedEntities) {
-		BinderViewsHelper.moveEntries(movedEntities, this);
+		BinderViewsHelper.moveEntries(movedEntities, m_actionClose);
+	}
+	
+	/**
+	 * Handles PurgeSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the PurgeSelectedEntriesEvent.Handler.onPurgeSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onPurgeSelectedEntries(PurgeSelectedEntriesEvent event) {
+		// Is the event targeted to this entry?
+		List<EntityId> purgedEntities = event.getSelectedEntities();
+		if (isCompositeEntry(purgedEntities)) {
+			// Yes!  Run the purge on it.
+			onPurgeSelectedEntriesAsync(purgedEntities);
+		}
+	}
+	
+	/*
+	 * Asynchronously handles purging the folder entry.
+	 */
+	private void onPurgeSelectedEntriesAsync(final List<EntityId> purgedEntities) {
+		Scheduler.ScheduledCommand doPurge = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				onPurgeSelectedEntriesNow(purgedEntities);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doPurge);
+	}
+	
+	/*
+	 * Synchronously handles purging the folder entry.
+	 */
+	private void onPurgeSelectedEntriesNow(List<EntityId> purgedEntities) {
+		BinderViewsHelper.purgeFolderEntries(purgedEntities, new DeletePurgeEntriesCallback() {
+			@Override
+			public void operationCanceled() {
+				// Nothing to do.
+			}
+
+			@Override
+			public void operationComplete() {
+				GwtTeaming.fireEventAsync(m_actionClose);
+			}
+			
+			@Override
+			public void operationFailed() {
+				// Nothing to do.  The purge call will have told the
+				// user about the failure.
+			}
+		});
 	}
 	
 	/**
@@ -765,25 +1002,40 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 	
 	/**
-	 * Called when an operation invoked by the composite completes in
-	 * other than a successful manner.
+	 * Handles UnlockSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the OpStatusCallback.opFailed() method.
+	 * Implements the UnlockSelectedEntriesEvent.Handler.onUnlockSelectedEntries() method.
+	 * 
+	 * @param event
 	 */
 	@Override
-	public void opFailed() {
-		// Nothing to do.
+	public void onUnlockSelectedEntries(UnlockSelectedEntriesEvent event) {
+		// Is the event targeted to this entry?
+		List<EntityId> unlockedEntities = event.getSelectedEntities();
+		if (isCompositeEntry(unlockedEntities)) {
+			// Yes!  Run the unlock on it.
+			onUnlockSelectedEntriesAsync(unlockedEntities);
+		}
 	}
-
-	/**
-	 * Called when an operation invoked by the composite successfully
-	 * completes.
-	 * 
-	 * Implements the OpStatusCallback.opSuccess() method.
+	
+	/*
+	 * Asynchronously handles unlocking the folder entry.
 	 */
-	@Override
-	public void opSuccess() {
-		closeFolderEntryViewerAsync(WAIT_FOR_DIALOG_CLOSE);
+	private void onUnlockSelectedEntriesAsync(final List<EntityId> unlockedEntities) {
+		Scheduler.ScheduledCommand doUnlock = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				onUnlockSelectedEntriesNow(unlockedEntities);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doUnlock);
+	}
+	
+	/*
+	 * Synchronously handles unlocking the folder entry.
+	 */
+	private void onUnlockSelectedEntriesNow(List<EntityId> unlockedEntities) {
+		BinderViewsHelper.unlockEntries(unlockedEntities, m_actionRefresh);
 	}
 	
 	/*
@@ -799,7 +1051,23 @@ public class FolderEntryComposite extends ResizeComposite
 			GwtClientHelper.debugAlert("FolderEntryComposite.partReady( *Internal Error* ):  Unexpected call to partReady() method.");
 		}
 	}
-	
+
+	/*
+	 * Refreshes the contents of the folder entry viewer.
+	 */
+	private void refreshFolderEntryViewer() {
+		// Remove the existing content...
+		m_contentPanel.clear();
+		m_rootPanel.remove(m_footerPanel);
+
+		// ...prepare for new content to be created...
+		m_compositeReady  = false;
+		m_readyComponents = 0;
+
+		// ...and start loading the new content. 
+		loadPart1Async();
+	}
+
 	/*
 	 * Registers any global event handlers that need to be registered.
 	 */

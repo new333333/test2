@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.datatable.AddFilesHtml5Popup;
 import org.kablink.teaming.gwt.client.datatable.AddFilesHtml5Popup.AddFilesHtml5PopupClient;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg;
 import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg.EmailNotificationDlgClient;
@@ -67,7 +68,6 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OpStatusCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
@@ -185,7 +185,7 @@ public class BinderViewsHelper {
 	 *
 	 * @param entityIds
 	 */
-	public static void copyEntries(final List<EntityId> entityIds, final OpStatusCallback opStatus) {
+	public static void copyEntries(final List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
 		// If we weren't given any entity IDs to be copied...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
@@ -206,7 +206,7 @@ public class BinderViewsHelper {
 				public void onSuccess(CopyMoveEntriesDlg cmeDlg) {
 					// ...and run it to copy.
 					m_cmeDlg = cmeDlg;
-					showCMEDlgAsync(m_cmeDlg, true, entityIds, opStatus);
+					showCMEDlgAsync(m_cmeDlg, true, entityIds, reloadEvent);
 				}
 			});
 		}
@@ -214,7 +214,7 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've created a copy/move entries dialog already!
 			// Run it to copy.
-			showCMEDlgAsync(m_cmeDlg, true, entityIds, opStatus);
+			showCMEDlgAsync(m_cmeDlg, true, entityIds, reloadEvent);
 		}
 	}
 	
@@ -523,10 +523,10 @@ public class BinderViewsHelper {
 	/**
 	 * Locks the entries based on a List<EntityId> of their entity IDs.
 	 *
-	 * @param folderType
 	 * @param entityIds
+	 * @param reloadEvent
 	 */
-	public static void lockEntries(final FolderType folderType, final List<EntityId> entityIds) {
+	public static void lockEntries(final List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
 		// If we weren't given any entity IDs to be locked...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
@@ -572,10 +572,17 @@ public class BinderViewsHelper {
 					// ...force the content to refresh just in case its
 					// ...got something displayed that depends on
 					// ...locks.
-					FullUIReloadEvent.fireOne();
+					if (null == reloadEvent)
+					     FullUIReloadEvent.fireOneAsync();
+					else GwtTeaming.fireEventAsync(reloadEvent);
 				}
 			}
 		});
+	}
+	
+	public static void lockEntries(final List<EntityId> entityIds) {
+		// Always use the initial form of the method.
+		lockEntries(entityIds, null);
 	}
 
 	/**
@@ -583,8 +590,9 @@ public class BinderViewsHelper {
 	 * IDs.
 	 *
 	 * @param entityIds
+	 * @param reloadEvent
 	 */
-	public static void markEntriesRead(List<EntityId> entityIds) {
+	public static void markEntriesRead(List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
 		// If we weren't given any entity IDs to be marked read...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
@@ -619,9 +627,16 @@ public class BinderViewsHelper {
 				// got something displayed that depends based on an
 				// entry's read/unread state.
 				busy.hide();
-				FullUIReloadEvent.fireOne();
+				if (null == reloadEvent)
+				     FullUIReloadEvent.fireOneAsync();
+				else GwtTeaming.fireEventAsync(reloadEvent);
 			}
 		});
+	}
+	
+	public static void markEntriesRead(List<EntityId> entityIds) {
+		// Always use the initial form of the method.
+		markEntriesRead(entityIds, null);
 	}
 
 	/**
@@ -629,8 +644,9 @@ public class BinderViewsHelper {
 	 * IDs.
 	 *
 	 * @param entityIds
+	 * @param reloadEvent
 	 */
-	public static void markEntriesUnread(List<EntityId> entityIds) {
+	public static void markEntriesUnread(List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
 		// If we weren't given any entity IDs to be marked unread...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
@@ -665,9 +681,16 @@ public class BinderViewsHelper {
 				// got something displayed that depends based on an
 				// entry's read/unread state.
 				busy.hide();
-				FullUIReloadEvent.fireOne();
+				if (null == reloadEvent)
+				     FullUIReloadEvent.fireOneAsync();
+				else GwtTeaming.fireEventAsync(reloadEvent);
 			}
 		});
+	}
+	
+	public static void markEntriesUnread(List<EntityId> entityIds) {
+		// Always use the initial form of the method.
+		markEntriesUnread(entityIds, null);
 	}
 
 	/**
@@ -676,7 +699,7 @@ public class BinderViewsHelper {
 	 *
 	 * @param entityIds
 	 */
-	public static void moveEntries(final List<EntityId> entityIds, final OpStatusCallback opStatus) {
+	public static void moveEntries(final List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
 		// If we weren't given any entity IDs to be moved...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
@@ -697,7 +720,7 @@ public class BinderViewsHelper {
 				public void onSuccess(CopyMoveEntriesDlg cmeDlg) {
 					// ...and run it to move.
 					m_cmeDlg = cmeDlg;
-					showCMEDlgAsync(m_cmeDlg, false, entityIds, opStatus);
+					showCMEDlgAsync(m_cmeDlg, false, entityIds, reloadEvent);
 				}
 			});
 		}
@@ -705,7 +728,7 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've created a copy/move entries dialog already!
 			// Run it to move.
-			showCMEDlgAsync(m_cmeDlg, false, entityIds, opStatus);
+			showCMEDlgAsync(m_cmeDlg, false, entityIds, reloadEvent);
 		}
 	}
 	
@@ -963,11 +986,11 @@ public class BinderViewsHelper {
 	 * Asynchronously initializes and shows the copy/move entries
 	 * dialog.
 	 */
-	private static void showCMEDlgAsync(final CopyMoveEntriesDlg cmeDlg, final boolean invokeToCopy, final List<EntityId> entityIds, final OpStatusCallback opStatus) {
+	private static void showCMEDlgAsync(final CopyMoveEntriesDlg cmeDlg, final boolean invokeToCopy, final List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
 		ScheduledCommand doShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				showCMEDlgNow(cmeDlg, invokeToCopy, entityIds, opStatus);
+				showCMEDlgNow(cmeDlg, invokeToCopy, entityIds, reloadEvent);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doShow);
@@ -977,12 +1000,12 @@ public class BinderViewsHelper {
 	 * Synchronously initializes and shows the copy/move entries
 	 * dialog.
 	 */
-	private static void showCMEDlgNow(final CopyMoveEntriesDlg cmeDlg, final boolean invokeToCopy, final List<EntityId> entityIds, final OpStatusCallback opStatus) {
+	private static void showCMEDlgNow(final CopyMoveEntriesDlg cmeDlg, final boolean invokeToCopy, final List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
 		CopyMoveEntriesDlg.initAndShow(
 			cmeDlg,			// The dialog to show.
 			invokeToCopy,	// true -> Run it do a copy.  false -> Run it to do a move.
 			entityIds,		// The List<EntityId> to be copied/moved.
-			opStatus);		// Callback, if needed to tell the caller about the status of the copy.
+			reloadEvent);	// Event to fire to reload things after a successful operation.
 	}
 	
 	/*
@@ -1097,10 +1120,10 @@ public class BinderViewsHelper {
 	/**
 	 * Unlocks the entries based on a List<EntityId> of the entries.
 	 *
-	 * @param folderType
 	 * @param entityIds
+	 * @param reloadEvent
 	 */
-	public static void unlockEntries(final FolderType folderType, final List<EntityId> entityIds) {
+	public static void unlockEntries(final List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
 		// If we weren't given any entity IDs to be unlocked...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
@@ -1146,10 +1169,17 @@ public class BinderViewsHelper {
 					// ...force the content to refresh just in case its
 					// ...got something displayed that depends on
 					// ...locks.
-					FullUIReloadEvent.fireOne();
+					if (null == reloadEvent)
+					     FullUIReloadEvent.fireOneAsync();
+					else GwtTeaming.fireEventAsync(reloadEvent);
 				}
 			}
 		});
+	}
+	
+	public static void unlockEntries(final List<EntityId> entityIds) {
+		// Always use the initial form of the method.
+		unlockEntries(entityIds, null);
 	}
 
 	/*

@@ -2863,9 +2863,7 @@ public class TaskTable extends Composite
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
 				selectedEntityIds = getTaskIdsChecked();
 			}
-			BinderViewsHelper.lockEntries(
-				FolderType.TASK,
-				selectedEntityIds);
+			BinderViewsHelper.lockEntries(selectedEntityIds);
 		}
 	}
 	
@@ -3094,9 +3092,7 @@ public class TaskTable extends Composite
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
 				selectedEntityIds = getTaskIdsChecked();
 			}
-			BinderViewsHelper.unlockEntries(
-				FolderType.TASK,
-				selectedEntityIds);
+			BinderViewsHelper.unlockEntries(selectedEntityIds);
 		}
 	}
 	

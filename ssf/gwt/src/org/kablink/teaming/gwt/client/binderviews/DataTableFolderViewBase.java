@@ -1967,9 +1967,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
 				selectedEntityIds = getSelectedEntityIds();
 			}
-			BinderViewsHelper.lockEntries(
-				getFolderType(),
-				selectedEntityIds);
+			BinderViewsHelper.lockEntries(selectedEntityIds);
 		}
 	}
 	
@@ -2477,9 +2475,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
 				selectedEntityIds = getSelectedEntityIds();
 			}
-			BinderViewsHelper.unlockEntries(
-				getFolderType(),
-				selectedEntityIds);
+			BinderViewsHelper.unlockEntries(selectedEntityIds);
 		}
 	}
 	
