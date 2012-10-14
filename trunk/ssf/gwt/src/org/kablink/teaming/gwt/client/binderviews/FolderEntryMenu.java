@@ -40,9 +40,15 @@ import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
@@ -207,9 +213,15 @@ public class FolderEntryMenu extends VibeFlowPanel {
 					
 					VibeEventBase<?> event;
 					switch (simpleEvent) {
-					case COPY_SELECTED_ENTRIES:   event = new CopySelectedEntriesEvent( eid.getBinderId(), eid); break;
-					case MOVE_SELECTED_ENTRIES:   event = new MoveSelectedEntriesEvent( eid.getBinderId(), eid); break;
-					case SHARE_SELECTED_ENTRIES:  event = new ShareSelectedEntriesEvent(eid.getBinderId(), eid); break;
+					case COPY_SELECTED_ENTRIES:         event = new CopySelectedEntriesEvent(      eid.getBinderId(), eid); break;
+					case DELETE_SELECTED_ENTRIES:       event = new DeleteSelectedEntriesEvent(    eid.getBinderId(), eid); break;
+					case LOCK_SELECTED_ENTRIES:         event = new LockSelectedEntriesEvent(      eid.getBinderId(), eid); break;
+					case MARK_READ_SELECTED_ENTRIES:    event = new MarkReadSelectedEntriesEvent(  eid.getBinderId(), eid); break;
+					case MARK_UNREAD_SELECTED_ENTRIES:  event = new MarkUnreadSelectedEntriesEvent(eid.getBinderId(), eid); break;
+					case MOVE_SELECTED_ENTRIES:         event = new MoveSelectedEntriesEvent(      eid.getBinderId(), eid); break;
+					case PURGE_SELECTED_ENTRIES:        event = new PurgeSelectedEntriesEvent(     eid.getBinderId(), eid); break;
+					case SHARE_SELECTED_ENTRIES:        event = new ShareSelectedEntriesEvent(     eid.getBinderId(), eid); break;
+					case UNLOCK_SELECTED_ENTRIES:       event = new UnlockSelectedEntriesEvent(    eid.getBinderId(), eid); break;
 					
 					default:
 					case UNDEFINED:

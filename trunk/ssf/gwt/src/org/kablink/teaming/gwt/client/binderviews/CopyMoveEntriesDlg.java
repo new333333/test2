@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -55,7 +56,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.MoveEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OpStatusCallback;
 import org.kablink.teaming.gwt.client.util.ProgressDlg;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
@@ -68,8 +68,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -77,7 +75,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -87,12 +84,11 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class CopyMoveEntriesDlg extends DlgBox
-	implements CloseHandler<PopupPanel>, EditSuccessfulHandler,
+	implements EditSuccessfulHandler,
 	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
 	private boolean						m_doCopy;					// true -> The dialog is doing a copy.  false -> It's doing a move.
-	private boolean						m_opSuccessful;				// true -> Dialog closes with a success.  false -> Dialog close for other than a success.
 	private FindCtrl					m_findControl;				// The search widget.
 	private GwtFolder					m_recentDest;				// Tracks the last destination used.  If a new folder isn't selected, this will be used.
 	private GwtFolder					m_selectedDest;				// The currently selected folder returned by the search widget.
@@ -101,8 +97,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 	private int							m_totalDone;				// Tracks the number of entities that have been copied/moved while the operation is in progress.
 	private List<EntityId>				m_entityIds;				// Current list of entity IDs to be copied/moved.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private OpStatusCallback			m_opStatus;					// Callback interface to tell the caller when we're done.
 	private ProgressBar					m_progressBar;				// Progress bar shown as part of progress handling.
+	private VibeEventBase<?> 			m_reloadEvent;				// Event to fire after a successful copy/move to reload things.
 	private VibeFlowPanel				m_progressPanel;			// Panel containing the progress indicator.
 	private VibeVerticalPanel			m_vp;						// The panel holding the dialog's content.
 
@@ -148,10 +144,6 @@ public class CopyMoveEntriesDlg extends DlgBox
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
 		
-		// ...add a close handler to coordinate the operation status
-		// ...with an OpStatusCallback....
-		addCloseHandler(this);
-
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			"",							// No caption yet.  It's set appropriately when the dialog runs.
@@ -306,73 +298,93 @@ public class CopyMoveEntriesDlg extends DlgBox
 			}
 
 			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Did everything we ask get copied/moved?
-				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
-				List<ErrorInfo> chunkErrors = responseData.getErrorList();
-				int chunkErrorCount = ((null == chunkErrors) ? 0 : chunkErrors.size());
-				if (0 < chunkErrorCount) {
-					// No!  Copy the errors into the List<String> we're
-					// collecting them in.
-					for (ErrorInfo chunkError:  chunkErrors) {
-						collectedErrors.add(chunkError);
-					}
-				}
-
-				// Did we just copy/move a part of what we need to
-				// copy/move?
-				if (moreRemaining) {
-					// Yes!  Clear the entity ID list in the command
-					// and request that the next chunk be send.
-					updateProgress(cmd.getEntityIds().size(), totalEntityCount);
-					copyMoveEntriesAsync(
-						cmd,
-						targetFolder,
-						sourceEntityIds,
-						totalEntityCount,
-						collectedErrors);
-				}
-				
-				else {
-					// No, we didn't just copy/move part of it, but
-					// everything remaining!  Did we collect any errors
-					// in during the copy/move process?
-					updateProgress(cmd.getEntityIds().size(), totalEntityCount);
-					int totalErrorCount = collectedErrors.size();
-					if (0 < totalErrorCount) {
-						// Yes!  Tell the user about the problem(s).
-						GwtClientHelper.displayMultipleErrors(
-							m_strMap.get(StringIds.ERROR_OP_FAILURE),
-							collectedErrors);
-					}
-					
-					// If we just completed moving anything or doing
-					// doing anything with a binder...
-					m_opSuccessful = (totalErrorCount != totalEntityCount);
-					boolean copyMovedBinders = EntityId.areBindersInEntityIds(sourceEntityIds);
-					if (((!m_doCopy) || copyMovedBinders) && m_opSuccessful) {
-						if (copyMovedBinders) {
-							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+			public void onSuccess(final VibeRpcResponse response) {
+				// Handle the response in a scheduled command so that
+				// the AJAX request gets released ASAP.
+				ScheduledCommand doHandleCopyMove = new ScheduledCommand() {
+					@Override
+					public void execute() {
+						// Did everything we ask to get copied/moved?
+						ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
+						List<ErrorInfo> chunkErrors = responseData.getErrorList();
+						int chunkErrorCount = ((null == chunkErrors) ? 0 : chunkErrors.size());
+						if (0 < chunkErrorCount) {
+							// No!  Copy the errors into the
+							// List<String> we're collecting them in.
+							for (ErrorInfo chunkError:  chunkErrors) {
+								collectedErrors.add(chunkError);
+							}
+						}
+		
+						// Did we just copy/move a part of what we need
+						// to copy/move?
+						if (moreRemaining) {
+							// Yes!  Clear the entity ID list in the
+							// command and request that the next chunk
+							// be sent.
+							updateProgress(cmd.getEntityIds().size(), totalEntityCount);
+							copyMoveEntriesAsync(
+								cmd,
+								targetFolder,
+								sourceEntityIds,
+								totalEntityCount,
+								collectedErrors);
 						}
 						
-						// If the caller isn't handling the
-						// operation completing...
-						if (null == m_opStatus) {
-							// ...force the content to refresh to
-							// ...reflect what was done.  We don't do
-							// ...this for a copy of just entries as
-							// ...there's generally nothing showing
-							// ...that needs to be changed.
-							FullUIReloadEvent.fireOneAsync();
+						else {
+							// No, we didn't just copy/move part of it,
+							// but everything remaining!  Did we
+							// collect any errors in during the
+							// copy/move process?
+							updateProgress(cmd.getEntityIds().size(), totalEntityCount);
+							int totalErrorCount = collectedErrors.size();
+							if (0 < totalErrorCount) {
+								// Yes!  Tell the user about the
+								// problem(s).
+								GwtClientHelper.displayMultipleErrors(
+									m_strMap.get(StringIds.ERROR_OP_FAILURE),
+									collectedErrors);
+							}
+							
+							// Did we just complete moving anything or
+							// doing anything with a binder?
+							boolean copyMovedBinders = EntityId.areBindersInEntityIds(sourceEntityIds);
+							if (((!m_doCopy) || copyMovedBinders) && (totalErrorCount != totalEntityCount)) {
+								// Yes!  If we operated on a binder...
+								if (copyMovedBinders) {
+									// ...force the sidebar to refresh.
+									GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+								}
+								
+								// If the caller didn't supply a reload
+								// event...
+								if (null == m_reloadEvent) {
+									// ...force the content to refresh
+									// ...to reflect what was done.  We
+									// ...don't do this for a copy of
+									// ...just entries as there's
+									// ...generally nothing showing
+									// ...that needs to be changed.
+									m_reloadEvent = new FullUIReloadEvent();
+								}
+							}
+		
+							// If the caller did supply a reload
+							// event... 
+							if (null != m_reloadEvent) {
+								// ...fire it.
+								GwtTeaming.fireEventAsync(m_reloadEvent);
+							}
+		
+							// Finally, save the target folder we just
+							// copied/moved to and close the dialog,
+							// we're done!
+							m_recentDest = targetFolder;
+							hide();
 						}
 					}
-
-					// Finally, save the target folder we just
-					// copied/moved to and close the dialog, we're
-					// done!
-					m_recentDest = targetFolder;
-					hide();
-				}
+				};
+				Scheduler.get().scheduleDeferred(doHandleCopyMove);
 			}
 		});
 	}
@@ -612,22 +624,6 @@ public class CopyMoveEntriesDlg extends DlgBox
 	}
 
 	/**
-	 * Called when the dialog closes.
-	 * 
-	 * Implements the CloseHandler.onClose() method.
-	 */
-	@Override
-	public void onClose(CloseEvent<PopupPanel> event) {
-		// If the caller wants to know what happened...
-		if (null != m_opStatus) {
-			// ...tell them.
-			if (m_opSuccessful)
-			     m_opStatus.opSuccess();
-			else m_opStatus.opFailed();
-		}
-	}
-	
-	/**
 	 * Called when the dialog is detached.
 	 * 
 	 * Overrides the Widget.onDetach() method.
@@ -785,11 +781,11 @@ public class CopyMoveEntriesDlg extends DlgBox
 	 * Asynchronously runs the given instance of the move entries
 	 * dialog.
 	 */
-	private static void runDlgAsync(final CopyMoveEntriesDlg cmeDlg, final boolean doCopy, final List<EntityId> entityIds, final OpStatusCallback opStatus) {
+	private static void runDlgAsync(final CopyMoveEntriesDlg cmeDlg, final boolean doCopy, final List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				cmeDlg.runDlgNow(doCopy, entityIds, opStatus);
+				cmeDlg.runDlgNow(doCopy, entityIds, reloadEvent);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -799,14 +795,13 @@ public class CopyMoveEntriesDlg extends DlgBox
 	 * Synchronously runs the given instance of the move entries
 	 * dialog.
 	 */
-	private void runDlgNow(boolean doCopy, List<EntityId> entityIds, final OpStatusCallback opStatus) {
+	private void runDlgNow(boolean doCopy, List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
 		// Store the parameters...
-		m_doCopy    = doCopy;
-		m_entityIds = entityIds;
-		m_opStatus  = opStatus;
+		m_doCopy      = doCopy;
+		m_entityIds   = entityIds;
+		m_reloadEvent = reloadEvent;
 		
 		// ...initialize any other data members...
-		m_opSuccessful = false;
 		m_selectedDest = null;
 		initDlgStrings();
 		setCaption(GwtClientHelper.patchMessage(m_strMap.get(StringIds.HEADER), String.valueOf(m_entityIds.size())));
@@ -875,7 +870,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 			final CopyMoveEntriesDlg	cmeDlg,
 			final boolean				doCopy,
 			final List<EntityId>		entityIds,
-			final OpStatusCallback		opStatus) {
+			final VibeEventBase<?>		reloadEvent) {
 		GWT.runAsync(CopyMoveEntriesDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -898,7 +893,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(cmeDlg, doCopy, entityIds, opStatus);
+					runDlgAsync(cmeDlg, doCopy, entityIds, reloadEvent);
 				}
 			}
 		});
@@ -921,8 +916,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 	 * @param doCopy
 	 * @param entityIds
 	 */
-	public static void initAndShow(CopyMoveEntriesDlg cmeDlg, boolean doCopy, List<EntityId> entityIds, OpStatusCallback opStatus) {
-		doAsyncOperation(null, cmeDlg, doCopy, entityIds, opStatus);
+	public static void initAndShow(CopyMoveEntriesDlg cmeDlg, boolean doCopy, List<EntityId> entityIds, VibeEventBase<?> reloadEvent) {
+		doAsyncOperation(null, cmeDlg, doCopy, entityIds, reloadEvent);
 	}
 	
 	public static void initAndShow(CopyMoveEntriesDlg cmeDlg, boolean doCopy, List<EntityId> entityIds) {

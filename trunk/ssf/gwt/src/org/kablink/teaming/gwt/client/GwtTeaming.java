@@ -49,6 +49,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -381,7 +383,6 @@ public class GwtTeaming implements EntryPoint
 
 
 	/**
-	 * 
 	 */
 	public static native String getContentPanelUrl() /*-{
 		return window.top.m_contentPanelUrl;
@@ -389,7 +390,6 @@ public class GwtTeaming implements EntryPoint
 	
 
 	/**
-	 * 
 	 */
 	public static native String setContentPanelUrl( String url ) /*-{
 		window.top.m_contentPanelUrl = url;
@@ -442,23 +442,56 @@ public class GwtTeaming implements EntryPoint
 		m_eventBus.fireEvent( event );
 	}// end fireEvent()
 	
+	
 	/**
 	 * Asynchronously fires a Vibe event on the event bus.
 	 * 
+	 * The event is fired off a timer, if a delay was requested, or off
+	 * a scheduled command.
+	 * 
 	 * @param event
+	 * @param delay
 	 */
-	public static void fireEventAsync( final VibeEventBase<?> event )
+	public static void fireEventAsync( final VibeEventBase<?> event, int delay )
 	{
-		ScheduledCommand doEvent = new ScheduledCommand()
+		// Are we supposed to delay the event?
+		if ( 0 < delay )
 		{
-			@Override
-			public void execute()
+			// Yes!  Use a Timer to delay firing it as requested.
+			Timer doEvent = new Timer()
 			{
-				fireEvent( event );
-			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred(doEvent);
-	}// end fireEvent()	
+				@Override
+				public void run()
+				{
+					fireEvent( event );
+				}// end run()
+			};
+			doEvent.schedule( delay );
+		}
+		
+		else
+		{
+			// No we aren't supposed to delay the event!  Use a
+			// scheduled command to fire it.
+			ScheduledCommand doEvent = new ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					fireEvent( event );
+				}// end execute()
+			};
+			Scheduler.get().scheduleDeferred( doEvent );
+		}
+	}// end fireEvent()
+	
+	
+	public static void fireEventAsync( VibeEventBase<?> event )
+	{
+		// Always use the initial form of the method.
+		fireEventAsync( event, 0 );	// 0 -> No delay, just use a scheduled command.
+	}// end fireEvent()
+	
 	
 	/*
 	 * Uses JSNI to grab the JavaScript object that holds the
@@ -468,5 +501,4 @@ public class GwtTeaming implements EntryPoint
 		// Return a reference to the JavaScript variable called, m_requestInfo.
 		return $wnd.top.m_requestInfo;
 	}-*/;
-
 }// end GwtTeaming
