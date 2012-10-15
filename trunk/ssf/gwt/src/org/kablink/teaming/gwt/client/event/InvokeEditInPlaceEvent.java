@@ -52,6 +52,7 @@ public class InvokeEditInPlaceEvent extends VibeEventBase<InvokeEditInPlaceEvent
     private String		m_attachmentUrl;	//
     private String		m_editorType;		//
     private String		m_openInEditor;		//
+    private String		m_operatingSystem;	//
 
 	/**
 	 * Handler interface for this event.
@@ -64,21 +65,23 @@ public class InvokeEditInPlaceEvent extends VibeEventBase<InvokeEditInPlaceEvent
 	 * Class constructor.
 	 * 
 	 * @param entityId
+	 * @param operatingSystem
 	 * @param openInEditor
 	 * @param editorType
 	 * @param attachmentId
 	 * @param attachmentUrl
 	 */
-	public InvokeEditInPlaceEvent(EntityId entityId, String openInEditor, String editorType, String attachmentId, String attachmentUrl) {
+	public InvokeEditInPlaceEvent(EntityId entityId, String operatingSystem, String openInEditor, String editorType, String attachmentId, String attachmentUrl) {
 		// Initialize the super class...
 		super();
 		
 		// ...and store the parameters.
-		setEntityId(     entityId     );
-		setOpenInEditor( openInEditor );
-		setEditorType(   editorType   );
-		setAttachmentId( attachmentId );
-		setAttachmentUrl(attachmentUrl);
+		setEntityId(       entityId       );
+		setOperatingSystem(operatingSystem);
+		setOpenInEditor(   openInEditor   );
+		setEditorType(     editorType     );
+		setAttachmentId(   attachmentId   );
+		setAttachmentUrl(  attachmentUrl  );
 	}
 
 	/**
@@ -86,22 +89,24 @@ public class InvokeEditInPlaceEvent extends VibeEventBase<InvokeEditInPlaceEvent
 	 * 
 	 * @return
 	 */
-	public EntityId getEntityid()      {return m_entityId;     }
-	public String   getAttachmentId()  {return m_attachmentId; }
-	public String   getAttachmentUrl() {return m_attachmentUrl;}
-	public String   getEditorType()    {return m_editorType;   }
-	public String   getOpenInEditor()  {return m_openInEditor; }
+	public EntityId getEntityid()        {return m_entityId;       }
+	public String   getAttachmentId()    {return m_attachmentId;   }
+	public String   getAttachmentUrl()   {return m_attachmentUrl;  }
+	public String   getEditorType()      {return m_editorType;     }
+	public String   getOpenInEditor()    {return m_openInEditor;   }
+	public String   getOperatingSystem() {return m_operatingSystem;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param entityId
 	 */
-	public void setEntityId(     EntityId entityId)      {m_entityId      = entityId;     }
-	public void setAttachmentId( String   attachmentId)  {m_attachmentId  = attachmentId; }
-	public void setAttachmentUrl(String   attachmentUrl) {m_attachmentUrl = attachmentUrl;}
-	public void setEditorType(   String   editorType)    {m_editorType    = editorType;   }
-	public void setOpenInEditor( String   openInEditor)  {m_openInEditor  = openInEditor; }
+	public void setEntityId(       EntityId entityId)        {m_entityId        = entityId;       }
+	public void setAttachmentId(   String   attachmentId)    {m_attachmentId    = attachmentId;   }
+	public void setAttachmentUrl(  String   attachmentUrl)   {m_attachmentUrl   = attachmentUrl;  }
+	public void setEditorType(     String   editorType)      {m_editorType      = editorType;     }
+	public void setOpenInEditor(   String   openInEditor)    {m_openInEditor    = openInEditor;   }
+	public void setOperatingSystem(String   operatingSystem) {m_operatingSystem = operatingSystem;}
 	
 	/**
 	 * Dispatches this event when one is triggered.

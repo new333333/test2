@@ -4,6 +4,11 @@
 
 
 /* Start:  GWT folder entry view styles. */
+	/* Start:  Root composite styles. */
+		.vibe-feView-editInPlaceInner {}
+		.vibe-feView-editInPlaceOuter {visibility: visible; display: block; width: 0px; height: 0px;}
+	/* End:  Root composite styles. */
+	
 	/* Start:  Header styles. */
 		.vibe-feView-headerPanel {display: block; position: relative; padding: 0px 380px 10px 10px;}
 	/* End:  Header styles. */

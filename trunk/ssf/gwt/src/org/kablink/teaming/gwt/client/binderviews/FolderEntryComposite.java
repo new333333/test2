@@ -86,6 +86,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.NamedFrame;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
@@ -121,11 +122,11 @@ public class FolderEntryComposite extends ResizeComposite
 	private FolderEntryActionCompleteEvent	m_actionClose;				// Event fired when an action we requested completes and we need to close   the viewer.
 	private FolderEntryActionCompleteEvent	m_actionRefresh;			// Event fired when an action we requested completes and we need to refresh the viewer.
 	private FolderEntryDetails				m_fed;						// Details about the folder entry being viewed.
-	private FooterPanel						m_footerPanel;				//
+	private FooterPanel						m_footerPanel;				// Footer at the bottom of the view with the permalink, ...
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private int								m_readyComponents;			// Components that are ready, incremented as they callback.
-	private Label							m_caption;					// 
+	private Label							m_caption;					// The text on the left of the caption bar. 
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ViewReady						m_viewReady;				// Stores a ViewReady created for the classes that extends it.
 	private VibeFlowPanel 					m_captionImagePanel;		// A panel holding an image in the caption, if one is required.
@@ -146,6 +147,11 @@ public class FolderEntryComposite extends ResizeComposite
 	// - Comments; and
 	// - Footer.
 	private final static int FOLDER_ENTRY_COMPONENTS = 5;	//
+	
+	// The following is the ID/name of the <IFRAME> used to run the
+	// edit-in-place editor via an applet.
+	private final String EDIT_IN_PLACE_DIV_ID	= "ss_div_fileopen_GWT";
+	private final String EDIT_IN_PLACE_FRAME_ID	= "ss_iframe_fileopen_GWT";
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -194,6 +200,7 @@ public class FolderEntryComposite extends ResizeComposite
 		// ...create the base content panels...
 		m_rootPanel = new VibeFlowPanel();
 		m_rootPanel.addStyleName("vibe-folderEntryComposite-rootPanel");
+		createEditInPlaceFrame(m_rootPanel);
 		createCaption(m_rootPanel, ((null == dialog) ? null : dialog.getHeaderPanel()));
 		m_contentPanel = new VibeFlowPanel();
 		m_contentPanel.addStyleName("vibe-folderEntryComposite-contentPanel");
@@ -363,6 +370,35 @@ public class FolderEntryComposite extends ResizeComposite
 		createCaptionClose(rightPanel);
 	}
 
+	/*
+	 * Creates the IFRAME, ... required to run a edit-in-place editor
+	 * on a file using the applet.
+	 */
+	private void createEditInPlaceFrame(Panel container) {
+		// Create the outer <DIV>...
+		VibeFlowPanel outer = new VibeFlowPanel();
+		outer.addStyleName("vibe-feView-editInPlaceOuter");
+		outer.getElement().setId(               EDIT_IN_PLACE_DIV_ID);
+		outer.getElement().setAttribute("name", EDIT_IN_PLACE_DIV_ID);
+		
+		// ...create the inner <DIV>...
+		VibeFlowPanel inner = new VibeFlowPanel();
+		inner.addStyleName("vibe-feView-editInPlaceInner");
+		inner.getElement().setAttribute("align", "right");
+
+		// ...create the <IFRAME>...
+		NamedFrame eipFrame = new NamedFrame(EDIT_IN_PLACE_FRAME_ID);
+		eipFrame.getElement().setId(         EDIT_IN_PLACE_FRAME_ID);
+		eipFrame.setPixelSize(0, 0);
+		eipFrame.setUrl(GwtClientHelper.getRequestInfo().getJSPath() + "forum/null.html");
+		eipFrame.setTitle(GwtClientHelper.isLicenseFilr() ? m_messages.novellFilr() : m_messages.novellTeaming());
+
+		// ...and tie it all together.
+		inner.add(    eipFrame);
+		outer.add(    inner   );
+		container.add(outer   );
+	}
+	
 	/*
 	 * Asynchronously navigates to the previous/next entry.
 	 */
@@ -744,18 +780,18 @@ public class FolderEntryComposite extends ResizeComposite
 		EntityId editThisEntity = event.getEntityid();
 		if (isCompositeEntry(editThisEntity)) {
 			// Yes!  Run the edit on it.
-			onInvokeEditInPlaceAsync(editThisEntity);
+			onInvokeEditInPlaceAsync(event);
 		}
 	}
 	
 	/*
 	 * Asynchronously handles editing the folder entry.
 	 */
-	private void onInvokeEditInPlaceAsync(final EntityId editThisEntity) {
+	private void onInvokeEditInPlaceAsync(final InvokeEditInPlaceEvent event) {
 		Scheduler.ScheduledCommand doEdit = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
-				onInvokeEditInPlaceNow(editThisEntity);
+				onInvokeEditInPlaceNow(event);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doEdit);
@@ -764,11 +800,31 @@ public class FolderEntryComposite extends ResizeComposite
 	/*
 	 * Synchronously handles editing the folder entry.
 	 */
-	private void onInvokeEditInPlaceNow(EntityId editThisEntity) {
-//!		...this needs to be implemented...
-		GwtClientHelper.deferredAlert("FolderEntryComposite.onInvokeEditInPlaceNow():  ...this needs to be implemented...");
+	private void onInvokeEditInPlaceNow(InvokeEditInPlaceEvent event) {
+		// How are we launching the edit-in-place editor?
+		String		et  = event.getEditorType(); if (null == et) et = "";
+		EntityId	eid = event.getEntityid();
+		if ("applet".equals(et)) {
+			// Via an applet!  Launch it.
+			GwtClientHelper.jsEditInPlace_Applet(
+				eid.getBinderId(),
+				eid.getEntityId(),
+				"_GWT",
+				event.getOperatingSystem(),
+				event.getAttachmentId());
+		}
+		
+		else if ("webdav".equals(et)) {
+			// Via a WebDAV URL!  Launch it.
+			GwtClientHelper.jsEditInPlace_WebDAV(event.getAttachmentUrl());
+		}
+		
+		else {
+			// Unknown!  Tell the user about the problem.
+			GwtClientHelper.deferredAlert(m_messages.eventHandling_UnknownEditInPlaceEditorType(et));
+		}
 	}
-	
+
 	/**
 	 * Handles LockSelectedEntriesEvent's received by this class.
 	 * 
