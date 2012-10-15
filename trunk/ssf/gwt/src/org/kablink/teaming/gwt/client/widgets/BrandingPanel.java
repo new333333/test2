@@ -162,94 +162,101 @@ public class BrandingPanel extends Composite
 				brandingType = brandingData.getBrandingType();
 				
 				// Should we do branding using an image?  
-				if ( brandingType != null && brandingType.equalsIgnoreCase( GwtBrandingDataExt.BRANDING_TYPE_IMAGE ) )
+				if ( brandingType != null )
 				{
-					String brandingImgUrl;
-					String brandingImgName;
-					boolean useDefaultTeamingImg = false;
-
-					// Yes
-					brandingImgName = brandingData.getBrandingImageName();
-					brandingImgUrl = brandingData.getBrandingImageUrl();
-					
-					// Do we have the name of a branding image to use?
-					if ( brandingImgName == null || brandingImgName.length() == 0 )
+					if ( brandingType.equalsIgnoreCase( GwtBrandingDataExt.BRANDING_TYPE_IMAGE ) )
 					{
-						// No, use the default teaming image.
-						useDefaultTeamingImg = true;
+						String brandingImgUrl;
+						String brandingImgName;
+						boolean useDefaultTeamingImg = false;
+	
+						// Yes
+						brandingImgName = brandingData.getBrandingImageName();
+						brandingImgUrl = brandingData.getBrandingImageUrl();
+						
+						// Do we have the name of a branding image to use?
+						if ( brandingImgName == null || brandingImgName.length() == 0 )
+						{
+							// No, use the default teaming image.
+							useDefaultTeamingImg = true;
+						}
+						else
+						{
+							// Yes
+							// Is the branding image name "__default teaming image__"?
+							if ( brandingImgName.equalsIgnoreCase( DEFAULT_TEAMING_IMAGE ) )
+							{
+								// Yes
+								useDefaultTeamingImg = true;
+							}
+							// Is the branding image name "__no image__"?
+							else if ( brandingImgName.equalsIgnoreCase( NO_IMAGE ) )
+							{
+								// Yes, nothing to do
+							}
+							// Do we have a url to the specified branding image?
+							else if ( brandingImgUrl != null && brandingImgUrl.length() > 0 )
+							{
+								Image img;
+								
+								// Yes, create the image and add it to the panel.
+								img = new Image( brandingImgUrl );
+								img.addLoadHandler( this );
+								m_panel.add( img );
+							}
+						}
+						
+						// Should we use the default Teaming image?
+						if ( useDefaultTeamingImg )
+						{
+							// Yes
+							m_panel.add( m_teamingImg );
+						}
 					}
 					else
 					{
-						// Yes
-						// Is the branding image name "__default teaming image__"?
-						if ( brandingImgName.equalsIgnoreCase( DEFAULT_TEAMING_IMAGE ) )
+						String html;
+
+						// Default to advanced branding.  This is the branding that is defined in the "branding" field in the ss_forums table.
+						// Get the branding html.
+						html = brandingData.getBranding();
+						
+						// Do we have any branding?
+						if ( html != null && html.length() > 0 )
 						{
-							// Yes
-							useDefaultTeamingImg = true;
-						}
-						// Is the branding image name "__no image__"?
-						else if ( brandingImgName.equalsIgnoreCase( NO_IMAGE ) )
-						{
-							// Yes, nothing to do
-						}
-						// Do we have a url to the specified branding image?
-						else if ( brandingImgUrl != null && brandingImgUrl.length() > 0 )
-						{
-							Image img;
+							Element element;
+							Timer timer;
 							
-							// Yes, create the image and add it to the panel.
-							img = new Image( brandingImgUrl );
-							img.addLoadHandler( this );
-							m_panel.add( img );
+							// Yes
+							// Replace the content of this panel with the branding html.
+							m_panel.clear();
+							element = m_panel.getElement();
+							element.setInnerHTML( html );
+
+							GwtClientHelper.jsExecuteJavaScript( element );
+
+							// The html we just added to the branding may have images in it.
+							// We need to wait until the browser has rendered the new html
+							// we just added before we adjust the height of the branding panel.
+							timer = new Timer()
+							{
+								/**
+								 * 
+								 */
+								@Override
+								public void run()
+								{
+					    			adjustBrandingPanelHeight();
+								}// end run()
+							};
+							
+							timer.schedule( 1500 );
 						}
-					}
-					
-					// Should we use the default Teaming image?
-					if ( useDefaultTeamingImg )
-					{
-						// Yes
-						m_panel.add( m_teamingImg );
 					}
 				}
 				else
 				{
-					String html;
-
-					// Default to advanced branding.  This is the branding that is defined in the "branding" field in the ss_forums table.
-					// Get the branding html.
-					html = brandingData.getBranding();
-					
-					// Do we have any branding?
-					if ( html != null && html.length() > 0 )
-					{
-						Element element;
-						Timer timer;
-						
-						// Yes
-						// Replace the content of this panel with the branding html.
-						m_panel.clear();
-						element = m_panel.getElement();
-						element.setInnerHTML( html );
-
-						GwtClientHelper.jsExecuteJavaScript( element );
-
-						// The html we just added to the branding may have images in it.
-						// We need to wait until the browser has rendered the new html
-						// we just added before we adjust the height of the branding panel.
-						timer = new Timer()
-						{
-							/**
-							 * 
-							 */
-							@Override
-							public void run()
-							{
-				    			adjustBrandingPanelHeight();
-							}// end run()
-						};
-						
-						timer.schedule( 1500 );
-					}
+					m_panel.add( m_teamingImg );
 				}
 			}
 		}// end updatePanel()
