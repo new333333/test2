@@ -83,9 +83,9 @@ public class FolderEntryMenu extends VibeFlowPanel {
 	private GwtTeamingFilrImageBundle		m_filrImages;	// Access to Filr's images.
 	private GwtTeamingMessages				m_messages;		// Access to Vibe's messages.
 	private List<ToolbarItem>				m_toolbarItems;	// Information about the entry being viewed's menus.
-	private VibeMenuBar						m_entryMenu;	//
+	private VibeMenuBar						m_entryMenu;	// The menu bar that contains all the menu items.
 	
-	// Default height and width of a popup window launched from a popup URL;
+	// Default height and width of a popup window launched from a URL.
 	private final static int DEFAULT_POPUP_WIDTH	= 1024;
 	private final static int DEFAULT_POPUP_HEIGHT	=  768;
 	
@@ -137,7 +137,7 @@ public class FolderEntryMenu extends VibeFlowPanel {
 			}
 		}
 
-		// Tell the composite that we're ready.
+		// Finally, tell the composite that we're ready.
 		m_fec.viewComponentReady();
 	}
 	
@@ -208,13 +208,18 @@ public class FolderEntryMenu extends VibeFlowPanel {
 				}
 				
 				else {
+					// No, the menu item is not controlled by a URL but
+					// by an event!  Most of them contain a
+					// binder ID/entry ID for the entry.  If they're
+					// there, construct an EntityId for them.
 					String binderIdS = simpleTBI.getQualifierValue("binderId");
 					String entryIdS  = simpleTBI.getQualifierValue("entryId" );
 					EntityId eid;
 					if (GwtClientHelper.hasString(binderIdS) && GwtClientHelper.hasString(entryIdS))
 					     eid = new EntityId(Long.parseLong(binderIdS), Long.parseLong(entryIdS), EntityId.FOLDER_ENTRY);
 					else eid = null;
-					
+
+					// Generate the specific event for this menu item...
 					VibeEventBase<?> event;
 					switch (simpleEvent) {
 					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(eid.getBinderId(), eid); break;
@@ -233,10 +238,11 @@ public class FolderEntryMenu extends VibeFlowPanel {
 					case INVOKE_EDIT_IN_PLACE:
 						event = new InvokeEditInPlaceEvent(
 							eid,
-							simpleTBI.getQualifierValue("openInEditor" ),
-							simpleTBI.getQualifierValue("editorType"   ),
-							simpleTBI.getQualifierValue("attachmentId" ),
-							simpleTBI.getQualifierValue("attachmentUrl"));
+							simpleTBI.getQualifierValue("operatingSystem"),
+							simpleTBI.getQualifierValue("openInEditor"   ),
+							simpleTBI.getQualifierValue("editorType"     ),
+							simpleTBI.getQualifierValue("attachmentId"   ),
+							simpleTBI.getQualifierValue("attachmentUrl"  ));
 						
 						break;
 					
@@ -246,14 +252,17 @@ public class FolderEntryMenu extends VibeFlowPanel {
 						event = null;
 						break;
 					}
-					
+
+					// ...and if we have one...
 					if (null != event) {
-						GwtTeaming.fireEvent(event);
+						// ...fire it.
+						GwtTeaming.fireEventAsync(event);
 					}
 				}
 			}
 		});
-		
+
+		// Finally, tie it all together.
 		menuItem.addStyleName((menuBar == m_entryMenu) ? "vibe-feView-menuBarItem" : "vibe-feView-menuPopupItem");
 		if (null != menuBar)
 		     menuBar.addItem(      menuItem);

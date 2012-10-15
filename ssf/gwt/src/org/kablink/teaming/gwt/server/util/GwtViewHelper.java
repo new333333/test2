@@ -2423,7 +2423,7 @@ public class GwtViewHelper {
 	private static String[] getCollectionColumnNames(CollectionType ct) {
 		String[] reply;
 		switch (ct) {
-		case MY_FILES:       reply = pruneColumnNames(ct, "title", "family",   "date"                                                                               ); break;
+		case MY_FILES:       reply = pruneColumnNames(ct, "title", "comments", "family",   "date"                                                                   ); break;
 		case NET_FOLDERS:    reply = pruneColumnNames(ct, "title", "date",     "netfolder_access", "descriptionHtml"                                                ); break;
 		case SHARED_BY_ME:   reply = pruneColumnNames(ct, "title", "comments", "share_sharedWith", "share_date", "share_expiration", "share_access", "share_message"); break;
 		case SHARED_WITH_ME: reply = pruneColumnNames(ct, "title", "comments", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message"); break;

@@ -2828,6 +2828,7 @@ public class GwtMenuHelper {
 							markTBIEntryIds(actionTBI, fe                                );
 							markTBIEditInPlace(
 								actionTBI,
+								operatingSystem,
 								strOpenInEditor,
 								strEditorType,
 								fa.getId(),
@@ -3196,11 +3197,12 @@ public class GwtMenuHelper {
 	/*
 	 * Marks a ToolbarItem with qualifiers for edit-in-place editing.
 	 */
-	private static void markTBIEditInPlace(ToolbarItem tbi, String openInEditor, String editorType, String attachmentId, String attachmentUrl) {
-		tbi.addQualifier("openInEditor",  openInEditor );
-		tbi.addQualifier("editorType",    editorType   );
-		tbi.addQualifier("attachmentId",  attachmentId );
-		tbi.addQualifier("attachmentUrl", attachmentUrl);
+	private static void markTBIEditInPlace(ToolbarItem tbi, String operatingSystem, String openInEditor, String editorType, String attachmentId, String attachmentUrl) {
+		tbi.addQualifier("operatingSystem", operatingSystem);
+		tbi.addQualifier("openInEditor",    openInEditor   );
+		tbi.addQualifier("editorType",      editorType     );
+		tbi.addQualifier("attachmentId",    attachmentId   );
+		tbi.addQualifier("attachmentUrl",   attachmentUrl  );
 	}
 	
 	/*

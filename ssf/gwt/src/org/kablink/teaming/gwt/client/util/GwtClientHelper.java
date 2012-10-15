@@ -904,6 +904,37 @@ public class GwtClientHelper {
 	}-*/;
 	
 	/**
+	 * Invokes edit-in-place on a file using the applet.
+	 * 
+	 * @param binderId
+	 * @param entryId
+	 * @param os
+	 * @param attachmentId
+	 */
+	public static native void jsEditInPlace_Applet(String binderId, String entryId, String namespace, String os, String attachmentId) /*-{
+		$wnd.top.ss_openWebDAVFile(
+			binderId,
+			entryId,
+			namespace,
+			os, 
+			attachmentId);
+	}-*/;
+	
+	public static void jsEditInPlace_Applet(Long binderId, Long entryId, String namespace, String os, String attachmentId) {
+		// Always use the initial form of the method.
+		jsEditInPlace_Applet(String.valueOf(binderId), String.valueOf(entryId), namespace, os, attachmentId);
+	}
+	
+	/**
+	 * Invokes edit-in-place on a file using the WebDAV.
+	 * 
+	 *  @param attachmentUrl
+	 */
+	public static void jsEditInPlace_WebDAV(String attachmentUrl) {
+		GwtClientHelper.jsLaunchUrlInWindow(attachmentUrl, "_blank");
+	}
+	
+	/**
 	 * Uses JavaScript native method to URI encode a string.
 	 * 
 	 * @param s
