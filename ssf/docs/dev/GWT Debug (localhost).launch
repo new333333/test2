@@ -27,5 +27,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.google.gwt.dev.DevMode"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-noserver&#10;-bindAddress 0.0.0.0&#10;-startupUrl http://localhost:8080/ssf/a/c/p_name/ss_forum/p_action/1/action/view_permalink/binderId/79/entityType/workspace&#10;org.kablink.teaming.gwt.GwtTeaming_dev"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ssf"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx512M"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xmx1g"/>
 </launchConfiguration>

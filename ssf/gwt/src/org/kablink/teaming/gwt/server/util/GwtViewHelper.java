@@ -1342,7 +1342,7 @@ public class GwtViewHelper {
 			boolean hasTail = MiscUtil.hasString(traceTail);
 			dump = ("GwtViewHelper." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
 			String data = fileBlob.getBlobData();
-			dump += ("\n\nData Uploaded:  " + ((null == data) ? 0 : data.length()) + " base64 encoded bytes."); 
+			dump += ("\n\nData Uploaded:  " + ((null == data) ? 0 : data.length()) + (fileBlob.isBlobBase64Encoded() ? " base64 encoded" : "") + " bytes."); 
 			m_logger.debug(dump);
 		}
 	}
@@ -6388,7 +6388,11 @@ public class GwtViewHelper {
 			try {
 				// Can we write the data from this blob to the file?
 				FileOutputStream fo = new FileOutputStream(tempFile, (!firstBlob));
-				fo.write(Base64.decodeBase64(fileBlob.getBlobData().getBytes()));
+				byte[] blobData = fileBlob.getBlobData().getBytes();
+				if (fileBlob.isBlobBase64Encoded()) {
+					blobData = Base64.decodeBase64(blobData);
+				}
+				fo.write(blobData);
 				fo.close();
 			}
 			

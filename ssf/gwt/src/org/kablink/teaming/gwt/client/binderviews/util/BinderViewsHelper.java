@@ -66,7 +66,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.UnlockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
-import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
@@ -107,10 +106,10 @@ public class BinderViewsHelper {
 	 * Invokes the appropriate UI to change the entry type of the
 	 * entries based on a List<EntityId> of the entries.
 	 *
-	 * @param folderType
 	 * @param entityIds
+	 * @param reloadEvent
 	 */
-	public static void changeEntryTypes(final FolderType folderType, final List<EntityId> entityIds) {
+	public static void changeEntryTypes(final List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
 		// If we weren't given any entity IDs to entry whose types
 		// are to be changed...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
@@ -142,7 +141,7 @@ public class BinderViewsHelper {
 					ScheduledCommand doSubscribe = new ScheduledCommand() {
 						@Override
 						public void execute() {
-							changeEntryTypesAsync(entityIds);
+							changeEntryTypesAsync(entityIds, reloadEvent);
 						}
 					};
 					Scheduler.get().scheduleDeferred(doSubscribe);
@@ -153,19 +152,24 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've instantiated a change entry types dialog
 			// already!  Simply show it.
-			changeEntryTypesAsync(entityIds);
+			changeEntryTypesAsync(entityIds, reloadEvent);
 		}
+	}
+	
+	public static void changeEntryTypes(final List<EntityId> entityIds) {
+		// Always use the initial form of the method.
+		changeEntryTypes(entityIds, null);
 	}
 
 	/*
 	 * Asynchronously invokes the appropriate UI to change the entry
 	 * type of the entries based on a List<EntityId> of the entries.
 	 */
-	private static void changeEntryTypesAsync(final List<EntityId> entityIds) {
+	private static void changeEntryTypesAsync(final List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
 		ScheduledCommand doShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				changeEntryTypesNow(entityIds);
+				changeEntryTypesNow(entityIds, reloadEvent);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doShow);
@@ -175,8 +179,8 @@ public class BinderViewsHelper {
 	 * Synchronously invokes the appropriate UI to change the entry
 	 * type of the entries based on a List<EntityId> of the entries.
 	 */
-	private static void changeEntryTypesNow(final List<EntityId> entityIds) {
-		ChangeEntryTypesDlg.initAndShow(m_cetDlg, entityIds);
+	private static void changeEntryTypesNow(List<EntityId> entityIds, VibeEventBase<?> reloadEvent) {
+		ChangeEntryTypesDlg.initAndShow(m_cetDlg, entityIds, reloadEvent);
 	}
 	
 	/**
@@ -1053,10 +1057,9 @@ public class BinderViewsHelper {
 	 * Invokes the appropriate UI to subscribe to the entries based on
 	 * a List<EntityId> of the entries.
 	 *
-	 * @param folderType
 	 * @param entityIds
 	 */
-	public static void subscribeToEntries(final FolderType folderType, final List<EntityId> entityIds) {
+	public static void subscribeToEntries(final List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to be subscribed to...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.

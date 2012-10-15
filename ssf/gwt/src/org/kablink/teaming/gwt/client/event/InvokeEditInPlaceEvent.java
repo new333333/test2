@@ -74,6 +74,11 @@ public class InvokeEditInPlaceEvent extends VibeEventBase<InvokeEditInPlaceEvent
 		super();
 		
 		// ...and store the parameters.
+		setEntityId(     entityId     );
+		setOpenInEditor( openInEditor );
+		setEditorType(   editorType   );
+		setAttachmentId( attachmentId );
+		setAttachmentUrl(attachmentUrl);
 	}
 
 	/**

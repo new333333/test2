@@ -37,6 +37,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.rpc.shared.ChangeEntryTypesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.EntryType;
@@ -74,6 +75,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	private List<EntityId>		m_entityIds;		// Current list of entity IDs whose entry types are to be changed.
 	private List<EntryType>		m_entryTypes;		// List<EntryType> for the binder's referred to by m_entityIds.
 	private String				m_baseEntryTitle;	// The title of an individual item, if all that was requested.
+	private VibeEventBase<?>	m_reloadEvent;		//	
 	private VibeFlowPanel		m_fp;				// The panel holding the dialog's content.
 
 	/*
@@ -157,6 +159,13 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 					GwtClientHelper.displayMultipleErrors(
 						m_messages.changeEntryTypesDlgErrorChangeFailures(),
 						changeErrors);
+				}
+
+				// If the caller requested notification when we're
+				// done...
+				if (null != m_reloadEvent) {
+					// ...tell them.
+					GwtTeaming.fireEventAsync(m_reloadEvent);
 				}
 				
 				// Simply close the dialog.
@@ -355,11 +364,11 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * Asynchronously runs the given instance of the change entry types
 	 * dialog.
 	 */
-	private static void runDlgAsync(final ChangeEntryTypesDlg cetDlg, final List<EntityId> entityIds) {
+	private static void runDlgAsync(final ChangeEntryTypesDlg cetDlg, final List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				cetDlg.runDlgNow(entityIds);
+				cetDlg.runDlgNow(entityIds, reloadEvent);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -369,9 +378,10 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * Synchronously runs the given instance of the change entry types
 	 * dialog.
 	 */
-	private void runDlgNow(List<EntityId> entityIds) {
+	private void runDlgNow(List<EntityId> entityIds, VibeEventBase<?> reloadEvent) {
 		// Store the parameter...
-		m_entityIds = entityIds;
+		m_entityIds   = entityIds;
+		m_reloadEvent = reloadEvent;
 		
 		// ...initialize any other data members...
 		m_baseEntryType  = null;
@@ -406,8 +416,9 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 			final ChangeEntryTypesDlgClient cetDlgClient,
 			
 			// initAndShow parameters,
-			final ChangeEntryTypesDlg cetDlg,
-			final List<EntityId> entityIds) {
+			final ChangeEntryTypesDlg	cetDlg,
+			final List<EntityId>		entityIds,
+			final VibeEventBase<?>		reloadEvent) {
 		GWT.runAsync(ChangeEntryTypesDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -430,7 +441,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(cetDlg, entityIds);
+					runDlgAsync(cetDlg, entityIds, reloadEvent);
 				}
 			}
 		});
@@ -443,7 +454,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * @param cetDlgClient
 	 */
 	public static void createAsync(ChangeEntryTypesDlgClient cetDlgClient) {
-		doAsyncOperation(cetDlgClient, null, null);
+		doAsyncOperation(cetDlgClient, null, null, null);
 	}
 	
 	/**
@@ -452,7 +463,12 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * @param cetDlg
 	 * @param entityIds
 	 */
+	public static void initAndShow(ChangeEntryTypesDlg cetDlg, List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
+		doAsyncOperation(null, cetDlg, entityIds, reloadEvent);
+	}
+	
 	public static void initAndShow(ChangeEntryTypesDlg cetDlg, List<EntityId> entityIds) {
-		doAsyncOperation(null, cetDlg, entityIds);
+		// Always use the initial form of the method.
+		initAndShow(cetDlg, entityIds, null);
 	}
 }

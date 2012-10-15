@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
@@ -142,8 +143,8 @@ public class PopupMenu extends TeamingPopupPanel
 	 */
 	public void addMenuItem( MenuItem menuItem )
 	{
-		final Command cmd = menuItem.getCommand();
-		menuItem.setCommand( new Command ()
+		final ScheduledCommand cmd = menuItem.getScheduledCommand();
+		menuItem.setScheduledCommand( new Command ()
 		{
 			@Override
 			public void execute()
@@ -202,8 +203,8 @@ public class PopupMenu extends TeamingPopupPanel
 		{
 			for ( MenuItem mi:  miList )
 			{
-				final Command cmd = mi.getCommand();
-				mi.setCommand( new Command ()
+				final ScheduledCommand cmd = mi.getScheduledCommand();
+				mi.setScheduledCommand( new Command ()
 				{
 					@Override
 					public void execute()
