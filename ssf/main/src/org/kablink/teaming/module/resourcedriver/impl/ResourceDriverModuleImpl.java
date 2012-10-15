@@ -508,6 +508,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	@SuppressWarnings("rawtypes")
 	private boolean doSynchronize(
 		ResourceDriverConfig rdConfig,
+		boolean excludeFoldersWithSchedule,
 		StatusTicket statusTicket )
 	{
 		FolderModule folderModule;
@@ -544,7 +545,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 					// Does this net folder have a sync schedule that is enabled?
 					zoneId = RequestContextHolder.getRequestContext().getZoneId();
 					scheduleInfo = folderModule.getSynchronizationSchedule( zoneId, binderId );
-					if ( scheduleInfo == null || scheduleInfo.isEnabled() == false )
+					if ( excludeFoldersWithSchedule == false || scheduleInfo == null || scheduleInfo.isEnabled() == false )
 					{
 						try {
 							// No, sync this net folder
@@ -569,6 +570,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	@Override
 	public boolean synchronize(
 		String netFolderServerName,
+		boolean excludeFoldersWithSchedule, // Should we exclude net folders that have a schedule defined.
 		StatusTicket statusTicket ) throws FIException, UncheckedIOException, ConfigurationException
 	{
 		ResourceDriverConfig rdConfig;
@@ -576,7 +578,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		rdConfig = getResourceDriverManager().getDriverConfig( netFolderServerName );
 		if ( rdConfig != null )
 		{
-			return synchronize( rdConfig.getId(), statusTicket );
+			return synchronize( rdConfig.getId(), excludeFoldersWithSchedule, statusTicket );
 		}
 		
 		return false;
@@ -589,6 +591,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	@Override
 	public boolean synchronize(
 		Long netFolderServerId,
+		boolean excludeFoldersWithSchedule, // Should we exclude net folders that have a schedule defined.
 		StatusTicket statusTicket ) throws FIException, UncheckedIOException, ConfigurationException
 	{
 		try
@@ -620,7 +623,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 				 proxyPwd != null && proxyPwd.length() > 0 )
 			{
 				// Yes
-				return doSynchronize( rdConfig, statusTicket );
+				return doSynchronize( rdConfig, excludeFoldersWithSchedule, statusTicket );
 			}
 			else
 			{

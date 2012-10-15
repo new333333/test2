@@ -149,7 +149,7 @@ public interface ResourceDriverModule {
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public boolean synchronize( String netFolderServerName, StatusTicket statusTicket )
+	public boolean synchronize( String netFolderServerName, boolean excludeFoldersWithSchedule, StatusTicket statusTicket )
 		throws AccessControlException, FIException, UncheckedIOException, ConfigurationException;
 
 	/**
@@ -163,6 +163,6 @@ public interface ResourceDriverModule {
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public boolean synchronize( Long netFolderServerId, StatusTicket statusTicket )
+	public boolean synchronize( Long netFolderServerId, boolean excludeFoldersWithSchedule, StatusTicket statusTicket )
 		throws AccessControlException, FIException, UncheckedIOException, ConfigurationException;
 }
