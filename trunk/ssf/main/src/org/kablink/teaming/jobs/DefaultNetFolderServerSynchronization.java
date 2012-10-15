@@ -35,7 +35,9 @@ package org.kablink.teaming.jobs;
 import java.util.Date;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobExecutionContext;
@@ -114,7 +116,10 @@ public class DefaultNetFolderServerSynchronization extends SSCronTriggerJob
 		
 			try 
 			{
+				ResourceDriverConfig rdConfig;
+				
 				serverId = new Long( jobDataMap.getLong( "serverId" ) );
+				rdConfig = (ResourceDriverConfig) getCoreDao().load( ResourceDriverConfig.class, serverId );
 			} 
 			catch ( Exception ex )
 			{
@@ -127,7 +132,7 @@ public class DefaultNetFolderServerSynchronization extends SSCronTriggerJob
 			}
 			else
 			{
-				resourceDriverModule.synchronize( serverId, null );
+				resourceDriverModule.synchronize( serverId, true, null );
 			}
 		} 
     	catch ( NoBinderByTheIdException nf )
@@ -147,6 +152,14 @@ public class DefaultNetFolderServerSynchronization extends SSCronTriggerJob
 		enable( enable, new SyncJobDescription( zoneId, serverId ) );
  	}
 
+	/**
+	 * 
+	 */
+	private CoreDao getCoreDao()
+	{
+		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
+	}
+	
     /**
      * 
      */

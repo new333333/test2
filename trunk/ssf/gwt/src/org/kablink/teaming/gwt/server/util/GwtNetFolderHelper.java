@@ -835,7 +835,7 @@ public class GwtNetFolderHelper
 		AllModulesInjected ami,
 		String netFolderServerName )
 	{
-		return ami.getResourceDriverModule().synchronize( netFolderServerName, null );
+		return ami.getResourceDriverModule().synchronize( netFolderServerName, false, null );
 	}
 	
 	/**
