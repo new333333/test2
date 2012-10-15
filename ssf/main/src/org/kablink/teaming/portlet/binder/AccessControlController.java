@@ -116,6 +116,10 @@ public class AccessControlController extends AbstractBinderController {
 				getAccessResults(request, functionMemberships);
 				if (workArea instanceof Entry) {
 					Boolean includeFolderAcl = PortletRequestUtils.getBooleanParameter(request, "includeFolderAcl", false);
+					if (!((Entry)workArea).hasEntryAcl() && !formData.containsKey("includeFolderAcl")) {
+						//When transitioning from no ACL to having an ACL, start with including the folder ACL
+						includeFolderAcl = Boolean.TRUE;
+					}
 					getAdminModule().setEntryHasAcl(workArea, Boolean.TRUE, includeFolderAcl);
 				}
 				getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
@@ -147,6 +151,10 @@ public class AccessControlController extends AbstractBinderController {
 				} else if (aclType.equals("entry")) {
 					//Set the entry acl
 					Boolean includeFolderAcl = PortletRequestUtils.getBooleanParameter(request, "includeFolderAcl", false);
+					if (!((FolderEntry)workArea).hasEntryAcl() && !formData.containsKey("includeFolderAcl")) {
+						//When transitioning from no ACL to having an ACL, start with including the folder ACL
+						includeFolderAcl = Boolean.TRUE;
+					}
 					Map functionMemberships = new HashMap();
 					getAccessResults(request, functionMemberships);
 					getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
