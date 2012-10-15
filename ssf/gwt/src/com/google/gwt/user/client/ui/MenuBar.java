@@ -30,7 +30,7 @@
  */
 package com.google.gwt.user.client.ui;
 
-import com.google.gwt.aria.client.IdReference;
+import com.google.gwt.aria.client.Id;
 import com.google.gwt.aria.client.Roles;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -778,7 +778,7 @@ public class MenuBar extends Widget implements PopupListener, HasAnimation,
       }
 
       Roles.getMenubarRole().setAriaActivedescendantProperty(getElement(),
-          IdReference.of(DOM.getElementAttribute(item.getElement(), "id")));
+          Id.of(item.getElement()));
     }
 
     selectedItem = item;
@@ -1277,14 +1277,19 @@ public class MenuBar extends Widget implements PopupListener, HasAnimation,
             popup.setPopupPosition(MenuBar.this.getAbsoluteLeft()
                 + MenuBar.this.getOffsetWidth() - 1, item.getAbsoluteTop());
           } else {
-				// ------------------------Patch Alert --------------------
-				//             This is the code that was patched.
-				// ------------------------Patch Alert --------------------
-				popup.setPopupPosition(
-						Math.min(Window.getClientWidth() - offsetWidth
-								- 5, item.getAbsoluteLeft()),
-						MenuBar.this.getAbsoluteTop()
-								+ MenuBar.this.getOffsetHeight() - 1);
+//            popup.setPopupPosition(item.getAbsoluteLeft(),
+//                MenuBar.this.getAbsoluteTop() + MenuBar.this.getOffsetHeight()
+//                    - 1);
+//            
+			// ------------------------Patch Alert --------------------
+			//             This is the code that was patched.
+			// ------------------------Patch Alert --------------------
+			popup.setPopupPosition(
+					Math.min(Window.getClientWidth() - offsetWidth
+							- 5, item.getAbsoluteLeft()),
+					MenuBar.this.getAbsoluteTop()
+							+ MenuBar.this.getOffsetHeight() - 1);
+
           }
         }
       }
