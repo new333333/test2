@@ -536,7 +536,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				Object value;
 				String homeDrive;
 				String uncPath;
-				String userDir = null;
 				String server = null;
 				String volume = null;
 			    Matcher matcher;
@@ -576,10 +575,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( uncPath.length() == 0 )
 					return null;
 				
-				// The name of the user's directory will be the value of the
-				// sAMAccountName attribute.  Get the sAMAccountName
-				userDir = getSamAccountName( attrs );
-				
 			    matcher = m_pattern_uncPath.matcher( uncPath );
 			    if ( matcher.find() && matcher.groupCount() == 2 )
 			    {
@@ -591,17 +586,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		    		if ( path != null && path.length() > 0 )
 		    		{
 		    			if ( path.charAt( 0 ) == '\\' )
-		    				userDir = path.substring( 1 ) + "\\" + userDir;
-		    			else
-		    				userDir = path + "\\" + userDir;
+		    				path = path.substring( 1 );
 		    		}
 
-					if ( server != null && volume != null && userDir != null )
+					if ( server != null && server.length() > 0 && volume != null && volume.length() > 0 && 
+						 path != null && path.length() > 0 )
 					{
 						homeDirInfo = new HomeDirInfo();
 						homeDirInfo.setServerAddr( server );
 						homeDirInfo.setVolume( volume );
-						homeDirInfo.setPath( userDir );
+						homeDirInfo.setPath( path );
 					}
 				}
 			}
