@@ -1789,6 +1789,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_OWNER_INTERNALID)) {
 			addFilrRoleOwner(zoneConfig.getZoneId());
+		} else {
+			//Make sure this role is properly configured
+			Function filrOwnerFunction = (Function) functionInternalIds.get(ObjectKeys.FUNCTION_FILR_OWNER_INTERNALID);
+			if (!filrOwnerFunction.getOperations().contains(WorkAreaOperation.CREATE_FOLDERS)) {
+				//This function needs to be fixed up
+				filrOwnerFunction.addOperation(WorkAreaOperation.CREATE_FOLDERS);
+				getFunctionManager().updateFunction(filrOwnerFunction);
+			}
 		}
 	}
 	
