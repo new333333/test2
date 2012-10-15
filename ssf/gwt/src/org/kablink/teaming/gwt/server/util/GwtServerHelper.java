@@ -3173,6 +3173,7 @@ public class GwtServerHelper {
 		GwtBrandingData brandingData;
 		
 		brandingData = new GwtBrandingData();
+		brandingData.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_IMAGE );
 		
 		try
 		{
