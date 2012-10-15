@@ -45,7 +45,9 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
@@ -340,13 +342,11 @@ public class FolderResource extends AbstractBinderResource {
                                          @QueryParam("file_name") String fileName,
                                          @QueryParam("data_name") String dataName,
                                          @QueryParam("mod_date") String modDateISO8601,
+                                         @QueryParam("overwrite_existing") @DefaultValue("false") Boolean overwriteExisting,
                                          @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
         Folder folder = _getFolder(id);
-        if (fileName==null) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing file_name query parameter");
-        }
         InputStream is = getInputStreamFromMultipartFormdata(request);
-        return createEntryWithAttachment(id, fileName, dataName, modDateISO8601, folder, is);
+        return createEntryWithAttachment(folder, fileName, modDateISO8601, overwriteExisting, is);
     }
 
     @POST
@@ -357,45 +357,39 @@ public class FolderResource extends AbstractBinderResource {
                                          @QueryParam("file_name") String fileName,
                                          @QueryParam("data_name") String dataName,
                                          @QueryParam("mod_date") String modDateISO8601,
+                                         @QueryParam("overwrite_existing") @DefaultValue("false") Boolean overwriteExisting,
                                          @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
         Folder folder = _getFolder(id);
+        InputStream is = getRawInputStream(request);
+        return createEntryWithAttachment(folder, fileName, modDateISO8601, overwriteExisting, is);
+    }
+
+    private FileProperties createEntryWithAttachment(Folder folder, String fileName, String modDateISO8601, boolean replaceExisting, InputStream is) throws WriteFilesException, WriteEntryDataException {
+        if(!folder.isLibrary()) {
+            throw new NotFoundException(ApiErrorCode.NOT_SUPPORTED, "This folder is not a library folder.");
+        }
         if (fileName==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing file_name query parameter");
         }
-        InputStream is = getRawInputStream(request);
-        return createEntryWithAttachment(id, fileName, dataName, modDateISO8601, folder, is);
-    }
 
-    private FileProperties createEntryWithAttachment(long id, String fileName, String dataName, String modDateISO8601, Folder folder, InputStream is) throws WriteFilesException, WriteEntryDataException {
-        FolderEntry entry = new FolderEntry();
-        entry.setTitle(fileName);
-        Definition def = folder.getDefaultFileEntryDef();
-        String defId = def.getId();
-        SimpleProfiler.start("REST_folder_createFolderEntry");
-        HashMap options = new HashMap();
-        populateTimestamps(options, entry);
-        org.kablink.teaming.domain.FolderEntry result = getFolderModule().addEntry(id, defId, new RestModelInputData(entry), null, options);
-        SimpleProfiler.stop("REST_folder_createFolderEntry");
-        FileProperties fileProperties = null;
-        try
-        {
-            //TODO: make sure a file with that name doesn't exist
-            try {
-                fileProperties = writeNewFileContent(EntityIdentifier.EntityType.folderEntry, result.getId(), fileName, dataName, modDateISO8601, is);
-            }
-            finally {
-                try {
-                    is.close();
-                }
-                catch(IOException ignore) {}
-            }
+        org.kablink.teaming.domain.FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
 
-        } finally {
-            if (fileProperties==null) {
-                getFolderModule().deleteEntry(folder.getId(), result.getId());
+        if(entry != null) {
+            if (!replaceExisting) {
+                throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file with the name already exists.");
             }
+            // An entry containing a file with this name exists.
+            if(logger.isDebugEnabled())
+                logger.debug("createNew: updating existing file '" + fileName + "' + owned by " + entry.getEntityIdentifier().toString() + " in folder " + folder.getId());
+            FolderUtils.modifyLibraryEntry(entry, fileName, is, dateFromISO8601(modDateISO8601), true);
         }
-        return fileProperties;
+        else {
+            // We need to create a new entry
+            if(logger.isDebugEnabled())
+                logger.debug("createNew: creating new file '" + fileName + "' + in folder " + folder.getId());
+            entry = FolderUtils.createLibraryEntry(folder, fileName, is, dateFromISO8601(modDateISO8601), true);
+        }
+        return ResourceUtil.buildFileProperties(entry.getFileAttachment(fileName));
     }
 
     @Override
