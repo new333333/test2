@@ -7,6 +7,7 @@ import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.shared.Clustered;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.DatabaseConfig;
+import org.kabling.teaming.install.shared.SSO;
 import org.kabling.teaming.install.shared.DatabaseConfig.DatabaseType;
 import org.kabling.teaming.install.shared.EmailSettings.EmailProtocol;
 import org.kabling.teaming.install.shared.EmailSettings;
@@ -77,7 +78,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		content.add(buildClusteringSection());
 
 		// Reverse Proxy
-		// content.add(buildReverseProxySection());
+		content.add(buildReverseProxySection());
 	}
 
 	/**
@@ -570,7 +571,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 	 */
 	private FlowPanel buildInboundEmailSection()
 	{
-		FlowPanel sectionPanel = createSection(RBUNDLE.outboundEmail());
+		FlowPanel sectionPanel = createSection(RBUNDLE.inboundEmail());
 
 		FlexTable table = new FlexTable();
 		table.addStyleName("configSummary");
@@ -707,6 +708,66 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 			}
 
 		}
+		return sectionPanel;
+	}
+	
+	private FlowPanel buildReverseProxySection()
+	{
+		FlowPanel sectionPanel = createSection(RBUNDLE.reverseProxy());
+
+		FlexTable table = new FlexTable();
+		table.addStyleName("configSummary");
+		sectionPanel.add(table);
+
+		SSO sso = config.getSso();
+
+		if (sso != null)
+		{
+			int row = 0;
+			{
+				// Enabled
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.enabledColon());
+				table.setWidget(row, 0, keyLabel);
+				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+				boolean value = sso.isiChainEnabled();
+				InlineLabel valueLabel = new InlineLabel(value ? RBUNDLE.trueStr() : RBUNDLE.falseStr());
+				table.setWidget(row, 1, valueLabel);
+				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+
+				// LogOff Url
+				keyLabel = new InlineLabel(RBUNDLE.logOffUrlColon());
+				table.setWidget(row, 2, keyLabel);
+				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
+
+				valueLabel = new InlineLabel(sso.getiChainLogoffUrl());
+				table.setWidget(row, 3, valueLabel);
+				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
+			}
+			
+			row++;
+			{
+				// Use Access Gateway for WebDav Connections
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.useAccessGatewayForWebDav());
+				table.setWidget(row, 0, keyLabel);
+				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+				boolean value = sso.isiChainWebDAVProxyEnabled();
+				InlineLabel valueLabel = new InlineLabel(value ? RBUNDLE.trueStr() : RBUNDLE.falseStr());
+				table.setWidget(row, 1, valueLabel);
+				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+
+				// Web Dav Host
+				keyLabel = new InlineLabel(RBUNDLE.webDavAccessGatewayAddrColon());
+				table.setWidget(row, 2, keyLabel);
+				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
+
+				valueLabel = new InlineLabel(sso.getiChainWebDAVProxyHost());
+				table.setWidget(row, 3, valueLabel);
+				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
+			}
+		}
+		
 		return sectionPanel;
 	}
 

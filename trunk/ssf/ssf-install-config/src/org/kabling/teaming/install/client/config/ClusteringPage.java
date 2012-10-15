@@ -125,6 +125,8 @@ public class ClusteringPage extends ConfigPageDlgBox
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
+		//TODO: Memcached addresses
+		
 		return fPanel;
 	}
 
@@ -174,6 +176,7 @@ public class ClusteringPage extends ConfigPageDlgBox
 			multicastGroupAddrTextBox.setText(clustered.getCacheGroupAddress());
 			multicastGroupPortSpinner.setValue(clustered.getCacheGroupPort());
 
+			//TODO: Memcached addresses
 		}
 	}
 

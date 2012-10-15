@@ -191,4 +191,6 @@ public interface AppResource extends Messages
 	String webDavAccessGatewayAddrColon();
 
 	String unableToSaveConfiguration();
+
+	String logOffUrlColon();
 }

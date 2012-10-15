@@ -54,6 +54,7 @@ import org.kabling.teaming.install.shared.ProductInfo;
 import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 import org.kabling.teaming.install.shared.RSS;
 import org.kabling.teaming.install.shared.RequestsAndConnections;
+import org.kabling.teaming.install.shared.SSO;
 import org.kabling.teaming.install.shared.WebService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -234,6 +235,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		config.setMirroredFolderList(getMirroredFolders(document));
 
 		// SSO
+		config.setSso(getSSOData(document));
 
 		// Cluster
 		config.setClustered(getClusteredData(document));
@@ -1038,6 +1040,71 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		return clustered;
 	}
 
+	private SSO getSSOData(Document document)
+	{
+		SSO sso = new SSO();
+		Element rootNode = getElement(document.getDocumentElement(), "SSO");
+
+		// Nothing to parse if the node is null, return
+		if (rootNode == null)
+			return sso;
+
+		Element iChainElement = getElement(rootNode, "iChain");
+
+		if (iChainElement == null)
+			return sso;
+
+		{
+			sso.setiChainEnabled(getBooleanValue(iChainElement.getAttribute("enable")));
+
+			// Log Off URL
+			Element logOffElement = getElement(iChainElement, "Logoff");
+			if (logOffElement != null)
+			{
+				sso.setiChainLogoffUrl(logOffElement.getAttribute("url"));
+			}
+
+			// Web Dav Proxy
+			Element webDavProxyElement = getElement(iChainElement, "WebDAVProxy");
+			if (webDavProxyElement != null)
+			{
+				sso.setiChainWebDAVProxyEnabled(getBooleanValue(webDavProxyElement.getAttribute("enable")));
+				sso.setiChainWebDAVProxyHost(webDavProxyElement.getAttribute("host"));
+			}
+
+			// Proxy
+			Element proxyElement = getElement(iChainElement, "Proxy");
+			if (proxyElement != null)
+			{
+				sso.setiChainProxyAddr(proxyElement.getAttribute("ipaddr"));
+			}
+		}
+
+		// WinAuth
+		{
+			Element winAuthElement = getElement(rootNode, "WinAuth");
+
+			if (winAuthElement == null)
+				return sso;
+
+			sso.setWinAuthEnabled(getBooleanValue(winAuthElement.getAttribute("enable")));
+
+			// Log Off URL
+			Element logOffElement = getElement(winAuthElement, "Logoff");
+			if (logOffElement != null)
+			{
+				sso.setWinAuthLogoffUrl(logOffElement.getAttribute("url"));
+			}
+
+			Element proxyElement = getElement(winAuthElement, "Proxy");
+			if (proxyElement != null)
+			{
+				sso.setWinAuthProxyAddr(proxyElement.getAttribute("ipaddr"));
+			}
+		}
+		return sso;
+	}
+
 	private Element getElement(Element parentElement, String tagName)
 	{
 		NodeList nodeList = parentElement.getElementsByTagName(tagName);
@@ -1068,6 +1135,14 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			saveNetworkConfiguration(config, document);
 
 			saveWebServiceConfiguration(config, document);
+
+			saveClusteredConfiguration(config, document);
+			
+			saveSSOConfiguration(config, document);
+			
+			saveEmailSettingsConfiguration(config, document);
+			
+			saveReqAndConnectionsConfiguration(config,document);
 		}
 
 		// Save the changes to installer.xml
@@ -1339,6 +1414,106 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		if (sessionElement != null)
 		{
 			sessionElement.setAttribute("sessionTimeoutMinutes", String.valueOf(network.getSessionTimeoutMinutes()));
+		}
+	}
+
+	private void saveClusteredConfiguration(InstallerConfig config, Document document)
+	{
+		Clustered clustered = config.getClustered();
+
+		if (clustered == null)
+			return;
+
+		Element webDavElement = getElement(document.getDocumentElement(), "Clustered");
+
+		if (webDavElement != null)
+		{
+			webDavElement.setAttribute("enable", String.valueOf(clustered.isEnabled()));
+			webDavElement.setAttribute("cachingProvider", clustered.getCachingProvider());
+			webDavElement.setAttribute("cacheService", clustered.getCacheService());
+			webDavElement.setAttribute("cacheGroupAddress", clustered.getCacheGroupAddress());
+			webDavElement.setAttribute("cacheGroupPort", String.valueOf(clustered.getCacheGroupPort()));
+			webDavElement.setAttribute("memcachedAddresses", clustered.getMemCachedAddress());
+			webDavElement.setAttribute("jvmRoute", clustered.getJvmRoute());
+		}
+	}
+
+	private void saveSSOConfiguration(InstallerConfig config, Document document)
+	{
+		SSO sso = config.getSso();
+
+		if (sso == null)
+			return;
+
+		Element ssoElement = getElement(document.getDocumentElement(), "SSO");
+
+		if (ssoElement == null)
+			return;
+
+		{
+			Element iChainElement = getElement(ssoElement, "iChain");
+			if (iChainElement != null)
+			{
+				iChainElement.setAttribute("enable", String.valueOf(sso.isiChainEnabled()));
+			}
+
+			Element logoffUrlElement = getElement(iChainElement, "Logoff");
+			if (logoffUrlElement != null)
+			{
+				logoffUrlElement.setAttribute("url", sso.getiChainLogoffUrl());
+			}
+		}
+		
+		{
+			Element webDavProxyElement = getElement(ssoElement, "iChain");
+			if (webDavProxyElement != null)
+			{
+				webDavProxyElement.setAttribute("enable", String.valueOf(sso.isiChainWebDAVProxyEnabled()));
+				webDavProxyElement.setAttribute("host",sso.getiChainWebDAVProxyHost());
+			}
+		}
+	}
+	
+	private void saveReqAndConnectionsConfiguration(InstallerConfig config, Document document)
+	{
+		RequestsAndConnections clustered = config.getRequestsAndConnections();
+
+		//TODO
+	}
+	
+	private void saveEmailSettingsConfiguration(InstallerConfig config, Document document)
+	{
+		SSO clustered = config.getSso();
+
+		if (clustered == null)
+			return;
+
+		Element ssoElement = getElement(document.getDocumentElement(), "SSO");
+
+		if (ssoElement == null)
+			return;
+
+		{
+			Element iChainElement = getElement(ssoElement, "iChain");
+			if (iChainElement != null)
+			{
+				iChainElement.setAttribute("enable", String.valueOf(clustered.isiChainEnabled()));
+			}
+
+			Element logoffUrlElement = getElement(iChainElement, "Logoff");
+			if (logoffUrlElement != null)
+			{
+				logoffUrlElement.setAttribute("url", clustered.getiChainLogoffUrl());
+			}
+		}
+		
+		{
+			Element webDavProxyElement = getElement(ssoElement, "iChain");
+			if (webDavProxyElement != null)
+			{
+				webDavProxyElement.setAttribute("enable", String.valueOf(clustered.isiChainWebDAVProxyEnabled()));
+				webDavProxyElement.setAttribute("host",clustered.getiChainWebDAVProxyHost());
+			}
 		}
 	}
 
@@ -1731,39 +1906,34 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	@Override
 	public Map<String, String> getTimeZones()
 	{
-		TreeMap<String,String> timeZoneMap = TimeZoneHelper.getTimeZoneIdDisplayStrings();
+		TreeMap<String, String> timeZoneMap = TimeZoneHelper.getTimeZoneIdDisplayStrings();
 		return sortMapByValues(timeZoneMap);
 	}
 
-	public static <K, V extends Comparable< ? super V>> Map<K, V>
-	sortMapByValues(final Map <K, V> mapToSort)
+	public static <K, V extends Comparable<? super V>> Map<K, V> sortMapByValues(final Map<K, V> mapToSort)
 	{
-	    List<Map.Entry<K, V>> entries =
-	        new ArrayList<Map.Entry<K, V>>(mapToSort.size());  
+		List<Map.Entry<K, V>> entries = new ArrayList<Map.Entry<K, V>>(mapToSort.size());
 
-	    entries.addAll(mapToSort.entrySet());
+		entries.addAll(mapToSort.entrySet());
 
-	    Collections.sort(entries,
-	                     new Comparator<Map.Entry<K, V>>()
-	    {
-	        @Override
-	        public int compare(
-	               final Map.Entry<K, V> entry1,
-	               final Map.Entry<K, V> entry2)
-	        {
-	            return entry1.getValue().compareTo(entry2.getValue());
-	        }
-	    });      
+		Collections.sort(entries, new Comparator<Map.Entry<K, V>>()
+		{
+			@Override
+			public int compare(final Map.Entry<K, V> entry1, final Map.Entry<K, V> entry2)
+			{
+				return entry1.getValue().compareTo(entry2.getValue());
+			}
+		});
 
-	    Map<K, V> sortedMap = new LinkedHashMap<K, V>();      
+		Map<K, V> sortedMap = new LinkedHashMap<K, V>();
 
-	    for (Map.Entry<K, V> entry : entries)
-	    {
-	        sortedMap.put(entry.getKey(), entry.getValue());
+		for (Map.Entry<K, V> entry : entries)
+		{
+			sortedMap.put(entry.getKey(), entry.getValue());
 
-	    }      
+		}
 
-	    return sortedMap;
+		return sortedMap;
 
 	}
 }
