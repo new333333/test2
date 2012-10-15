@@ -4,6 +4,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="../tools/gwt/gwt-user.jar"/>
 	<classpathentry kind="lib" path="../tools/gwt/gwt-dev.jar"/>
+	<classpathentry kind="lib" path="../tools/gwt/validation-api-1.0.0.GA.jar"/>
+	<classpathentry kind="lib" path="../tools/gwt/validation-api-1.0.0.GA-sources.jar"/>
 	<classpathentry kind="lib" path="../lib/gwt-servlet.jar"/>
 	<classpathentry kind="lib" path="../lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="../lib/xml-apis.jar"/>
