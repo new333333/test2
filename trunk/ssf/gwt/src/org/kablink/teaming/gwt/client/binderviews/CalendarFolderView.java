@@ -1284,9 +1284,7 @@ public class CalendarFolderView extends FolderViewBase
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
 				selectedEntityIds = getSelectedEntityIds();
 			}
-			BinderViewsHelper.changeEntryTypes(
-				getFolderInfo().getFolderType(),
-				selectedEntityIds);
+			BinderViewsHelper.changeEntryTypes(selectedEntityIds);
 		}
 	}
 	
@@ -1549,9 +1547,7 @@ public class CalendarFolderView extends FolderViewBase
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
 				selectedEntityIds = getSelectedEntityIds();
 			}
-			BinderViewsHelper.subscribeToEntries(
-				getFolderInfo().getFolderType(),
-				selectedEntityIds);
+			BinderViewsHelper.subscribeToEntries(selectedEntityIds);
 		}
 	}
 	

@@ -39,14 +39,18 @@ import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.InvokeEditInPlaceEvent;
+import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
@@ -82,8 +86,8 @@ public class FolderEntryMenu extends VibeFlowPanel {
 	private VibeMenuBar						m_entryMenu;	//
 	
 	// Default height and width of a popup window launched from a popup URL;
-	private final static int DEFAULT_POPUP_WIDTH	= 800;
-	private final static int DEFAULT_POPUP_HEIGHT	= 600;
+	private final static int DEFAULT_POPUP_WIDTH	= 1024;
+	private final static int DEFAULT_POPUP_HEIGHT	=  768;
 	
 	public FolderEntryMenu(FolderEntryCallback fec, List<ToolbarItem> toolbarItems) {
 		// Initialize the super class...
@@ -178,8 +182,8 @@ public class FolderEntryMenu extends VibeFlowPanel {
 			public void execute() {
 				// Does the simple toolbar item contain a URL to
 				// launch?
-				final String simpleUrl = simpleTBI.getUrl();
-				if (GwtClientHelper.hasString(simpleUrl)) {
+				String simpleUrl = simpleTBI.getUrl();
+				if (TeamingEvents.UNDEFINED.equals(simpleEvent) && GwtClientHelper.hasString(simpleUrl)) {
 					// Yes!  Should we launch it in a popup window?
 					String	popupS = simpleTBI.getQualifierValue("popup");
 					boolean	popup  = (GwtClientHelper.hasString(popupS) && Boolean.parseBoolean(popupS));
@@ -213,15 +217,28 @@ public class FolderEntryMenu extends VibeFlowPanel {
 					
 					VibeEventBase<?> event;
 					switch (simpleEvent) {
-					case COPY_SELECTED_ENTRIES:         event = new CopySelectedEntriesEvent(      eid.getBinderId(), eid); break;
-					case DELETE_SELECTED_ENTRIES:       event = new DeleteSelectedEntriesEvent(    eid.getBinderId(), eid); break;
-					case LOCK_SELECTED_ENTRIES:         event = new LockSelectedEntriesEvent(      eid.getBinderId(), eid); break;
-					case MARK_READ_SELECTED_ENTRIES:    event = new MarkReadSelectedEntriesEvent(  eid.getBinderId(), eid); break;
-					case MARK_UNREAD_SELECTED_ENTRIES:  event = new MarkUnreadSelectedEntriesEvent(eid.getBinderId(), eid); break;
-					case MOVE_SELECTED_ENTRIES:         event = new MoveSelectedEntriesEvent(      eid.getBinderId(), eid); break;
-					case PURGE_SELECTED_ENTRIES:        event = new PurgeSelectedEntriesEvent(     eid.getBinderId(), eid); break;
-					case SHARE_SELECTED_ENTRIES:        event = new ShareSelectedEntriesEvent(     eid.getBinderId(), eid); break;
-					case UNLOCK_SELECTED_ENTRIES:       event = new UnlockSelectedEntriesEvent(    eid.getBinderId(), eid); break;
+					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(eid.getBinderId(), eid); break;
+					case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           eid.getBinderId(), eid); break;
+					case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         eid.getBinderId(), eid); break;
+					case INVOKE_SEND_EMAIL_TO_TEAM:           event = new InvokeSendEmailToTeamEvent(         simpleUrl);              break;
+					case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           eid.getBinderId(), eid); break;
+					case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       eid.getBinderId(), eid); break;
+					case MARK_UNREAD_SELECTED_ENTRIES:        event = new MarkUnreadSelectedEntriesEvent(     eid.getBinderId(), eid); break;
+					case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           eid.getBinderId(), eid); break;
+					case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          eid.getBinderId(), eid); break;
+					case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          eid.getBinderId(), eid); break;
+					case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      eid.getBinderId(), eid); break;
+					case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         eid.getBinderId(), eid); break;
+					
+					case INVOKE_EDIT_IN_PLACE:
+						event = new InvokeEditInPlaceEvent(
+							eid,
+							simpleTBI.getQualifierValue("openInEditor" ),
+							simpleTBI.getQualifierValue("editorType"   ),
+							simpleTBI.getQualifierValue("attachmentId" ),
+							simpleTBI.getQualifierValue("attachmentUrl"));
+						
+						break;
 					
 					default:
 					case UNDEFINED:

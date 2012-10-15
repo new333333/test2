@@ -2994,11 +2994,13 @@ public class GwtMenuHelper {
 					// Yes!  Add an email contributors toolbar item for
 					// it.
 					url = createActionUrl(request);
-					url.setParameter(WebKeys.ACTION,        WebKeys.ACTION_SEND_ENTRY_EMAIL);
-					url.setParameter(WebKeys.URL_BINDER_ID, folderId                       );
-					url.setParameter(WebKeys.URL_ENTRY_ID,  feId                           );
+					url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_SEND_ENTRY_EMAIL                      );
+					url.setParameter(WebKeys.URL_BINDER_ID,   folderId                                             );
+					url.setParameter(WebKeys.URL_ENTRY_ID,    feId                                                 );
+					url.setParameter(WebKeys.USER_IDS_TO_ADD, InvokeSendEmailToTeamEvent.CONTRIBUTOR_IDS_PLACEHOLER);
 					
 					actionTBI = new ToolbarItem(SEND_EMAIL                         );
+					markTBIPopup(actionTBI                                         );
 					markTBITitle(actionTBI, "toolbar.menu.sendMail"                );
 					markTBIEvent(actionTBI, TeamingEvents.INVOKE_SEND_EMAIL_TO_TEAM);
 					markTBIUrl(  actionTBI, url                                    );

@@ -42,19 +42,24 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FileBlob implements IsSerializable {
-	// THe following pertain to blobs from the file as they're uploaded.
-	private long	m_blobSize;		//
-	private long	m_blobStart;	//
-	private String	m_blobData;		//
+	// The following pertain to blobs from the file as they're uploaded.
+	private boolean	m_blobBase64Encoded;	//
+	private long	m_blobSize;				//
+	private long	m_blobStart;			//
+	private String	m_blobData;				//
 	
 	// The following pertain to the file itself.
-	private long	m_fileSize;		//
-	private String	m_fileName;		//
-	private String	m_fileUTC;		//
+	private long	m_fileSize;				//
+	private String	m_fileName;				//
+	private String	m_fileUTC;				//
+
+	// The following controls whether file blobs sent to the server
+	// are base64 encoded.
+	private final static boolean BASE64_ENCODE_BLOBS	= true;
 	
 	// The following defines the size a blob read and sent to the
 	// server in any one upload cycle.
-	private static long FILE_BLOB_SIZE	= 16384l;	//
+	private final static long FILE_BLOB_SIZE	= 16384l;	//
 	
 	/**
 	 * Constructor method.
@@ -84,7 +89,8 @@ public class FileBlob implements IsSerializable {
 		setFileSize(fileSize);
 		
 		// ...and initialize everything else.
-		setBlobSize(FILE_BLOB_SIZE);
+		setBlobBase64Encoded(BASE64_ENCODE_BLOBS);
+		setBlobSize(         FILE_BLOB_SIZE     );
 	}
 
 	/**
@@ -92,9 +98,10 @@ public class FileBlob implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public long   getBlobSize()  {return m_blobSize; }
-	public long   getBlobStart() {return m_blobStart;}
-	public String getBlobData()  {return m_blobData; }
+	public boolean isBlobBase64Encoded() {return m_blobBase64Encoded;}
+	public long    getBlobSize()         {return m_blobSize;         }
+	public long    getBlobStart()        {return m_blobStart;        }
+	public String  getBlobData()         {return m_blobData;         }
 	
 	public long   getFileSize()  {return m_fileSize; }
 	public String getFileName()  {return m_fileName; }
@@ -105,13 +112,14 @@ public class FileBlob implements IsSerializable {
 	 * 
 	 * @param
 	 */
-	public void setBlobSize( long   blobSize)  {m_blobSize  = blobSize; }
-	public void setBlobStart(long   blobStart) {m_blobStart = blobStart;}
-	public void setBlobData( String blobData)  {m_blobData  = blobData; }
+	public void setBlobBase64Encoded(boolean blobBase64Encoded) {m_blobBase64Encoded = blobBase64Encoded;}
+	public void setBlobSize(         long    blobSize)          {m_blobSize          = blobSize;         }
+	public void setBlobStart(        long    blobStart)         {m_blobStart         = blobStart;        }
+	public void setBlobData(         String  blobData)          {m_blobData          = blobData;         }
 	
-	public void setFileSize( long   fileSize)  {m_fileSize  = fileSize; }
-	public void setFileName( String fileName)  {m_fileName  = fileName; }
-	public void setFileUTC(  String fileUTC)   {m_fileUTC   = fileUTC;  }
+	public void setFileSize(         long    fileSize)          {m_fileSize          = fileSize;         }
+	public void setFileName(         String  fileName)          {m_fileName          = fileName;         }
+	public void setFileUTC(          String  fileUTC)           {m_fileUTC           = fileUTC;          }
 	
 	/**
 	 * Increments the blobs starting point by the given value.

@@ -108,7 +108,6 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.AttachEvent.Handler;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -371,8 +370,8 @@ public class MainMenuControl extends Composite
 	 */
 	private void addCloseAdministrationToCommon(MenuBar menuPanel) {
 		m_closeAdminBox = new MenuBarBox("ss_mainMenuCloseAdmin", m_messages.close());
-		m_closeAdminBox.setCommand(
-			new Command() {
+		m_closeAdminBox.setScheduledCommand(
+			new ScheduledCommand() {
 				@Override
 				public void execute() {
 					AdministrationExitEvent.fireOne();
@@ -490,8 +489,8 @@ public class MainMenuControl extends Composite
 	 */
 	private void addMyWorkspaceToCommon(MenuBar menuPanel) {
 		m_myWorkspaceBox = new MenuBarBox("ss_mainMenuMyWorkspace", m_images.home16(), m_messages.mainMenuBarMyWorkspace());
-		m_myWorkspaceBox.setCommand(
-			new Command() {
+		m_myWorkspaceBox.setScheduledCommand(
+			new ScheduledCommand() {
 				@Override
 				public void execute() {
 					GotoMyWorkspaceEvent.fireOneAsync();
@@ -562,8 +561,8 @@ public class MainMenuControl extends Composite
 	 */
 	private void addWhatsNewToCommon(MenuBar menuPanel) {
 		m_whatsNewBox = new MenuBarBox("ss_mainMenuWhatsNew", m_images.newMenu(), m_messages.mainMenuBarWhatsNew());
-		m_whatsNewBox.setCommand(
-			new Command() {
+		m_whatsNewBox.setScheduledCommand(
+			new ScheduledCommand() {
 				@Override
 				public void execute() {
 					doWhatsNewAsync(ActivityStreamDataType.OTHER);

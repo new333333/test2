@@ -325,7 +325,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	/*
 	 * If we're in debug UI mode, displays an alert about a file blob.
 	 */
-	private void debugTraceBlob(String methodName, boolean traceQueueSize, String traceHead, String traceTail) {
+	private void debugTraceBlob(String methodName, boolean traceQueueSize, boolean base64Encoded, String traceHead, String traceTail) {
 		if (TRACE_BLOBS && GwtClientHelper.isDebugUI()) {
 			String	dump  = (traceHead + ":  '" + m_fileBlob.getFileName() + "' (fSize:" + m_fileBlob.getFileSize() + ", bStart:" + m_fileBlob.getBlobStart() + ", bSize:" + m_fileBlob.getBlobSize() + ")");
 			if (traceQueueSize) {
@@ -339,14 +339,14 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			boolean hasTail = GwtClientHelper.hasString(traceTail);
 			dump = ("AddFilesHtml5Popup." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
 			String data = m_fileBlob.getBlobData();
-			dump += ("\n\nData Read:  " + ((null == data) ? 0 : data.length()) + " base64 encoded bytes."); 
+			dump += ("\n\nData Read:  " + ((null == data) ? 0 : data.length()) + (base64Encoded ? " base64 encoded" : "") + " bytes."); 
 			Window.alert(dump);
 		}
 	}
 	
-	private void debugTraceBlob(String methodName, boolean traceQueueSize, String traceHead) {
+	private void debugTraceBlob(String methodName, boolean traceQueueSize, boolean base64Encoded, String traceHead) {
 		// Always use the initial form of the method.
-		debugTraceBlob(methodName, traceQueueSize, traceHead, null);
+		debugTraceBlob(methodName, traceQueueSize, base64Encoded, traceHead, null);
 	}
 
 	/*
@@ -734,10 +734,14 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private void processBlobNow() {
 		// Extract the data for the blob we just read...
 		final boolean lastBlob = ((m_fileBlob.getBlobStart() + m_fileBlob.getBlobSize()) >= m_fileBlob.getFileSize());
-		m_fileBlob.setBlobData(FileUtils.base64encode(m_reader.getStringResult()));
+		String blobData = m_reader.getStringResult();
+		if (m_fileBlob.isBlobBase64Encoded()) {
+			blobData = FileUtils.base64encode(blobData);
+		}
+		m_fileBlob.setBlobData(blobData);
 		
 		// ...and trace it, if necessary.
-		debugTraceBlob("processBlobNow", true, "Just read");
+		debugTraceBlob("processBlobNow", true, m_fileBlob.isBlobBase64Encoded(), "Just read");
 		
 		// Upload the blob.
 		final UploadFileBlobCmd cmd = new UploadFileBlobCmd(m_folderInfo, m_fileBlob, lastBlob);
