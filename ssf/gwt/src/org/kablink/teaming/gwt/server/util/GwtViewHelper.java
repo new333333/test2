@@ -683,26 +683,9 @@ public class GwtViewHelper {
 		// ...set the Date when the user performed the action...
 		reply.setDate(GwtServerHelper.getDateTimeString(hs.getDate(), DateFormat.MEDIUM, DateFormat.SHORT));
 		
-		// ...set the presence information for the user...
-		Long			creatorId = hs.getPrincipal().getId();
-		ProfileModule	pm        = bs.getProfileModule();
-		User			creator   = pm.getUserDeadOrAlive(creatorId);
-		GwtPresenceInfo presenceInfo;
-		if (GwtServerHelper.isPresenceEnabled())
-		     presenceInfo = GwtServerHelper.getPresenceInfo(creator);
-		else presenceInfo = null;
-		if (null == presenceInfo) {
-			presenceInfo = GwtServerHelper.getPresenceInfoDefault();
-		}
-		if (null != presenceInfo) {
-			reply.setPresence(    presenceInfo                                 );
-			reply.setPresenceDude(GwtServerHelper.getPresenceDude(presenceInfo));
-		}
+		// ...and set the PrincipalInfo about how performed the action.
+		reply.setPrincipalInfo(getPIFromPId(bs, request, hs.getPrincipal().getId()));
 		
-		// ...and set the user's title and avatar URLs.
-		reply.setTitle( GwtServerHelper.getUserTitle(pm, Utils.canUserOnlySeeCommonGroupMembers(), String.valueOf(creatorId), Utils.getUserTitle(creator)));
-		reply.setAvatar(GwtServerHelper.getUserAvatarUrl(bs, request, creator));
-
 		// If we get here, reply refers to the UserInfo that describes
 		// the user from the given HistoryStamp.  Return it.
 		return reply;
@@ -850,8 +833,8 @@ public class GwtViewHelper {
 							// ...set it into the reply...
 							reply.setX( Integer.parseInt(position[0]));
 							reply.setY( Integer.parseInt(position[1]));
-							reply.setCX(Integer.parseInt(position[2]));
-							reply.setCY(Integer.parseInt(position[3]));
+							reply.setCX(-1);	// Integer.parseInt(position[2]));		// Saved height and width are ignored until we support...
+							reply.setCY(-1);	// Integer.parseInt(position[3]));		// ...the user actually adjusting the size of the dialog.
 						}
 					}
 				}
@@ -3610,7 +3593,7 @@ public class GwtViewHelper {
 								// guest' column in a guest book
 								// folder!  If we can create a
 								// PrincipalInfo for the principal...
-								pi = getPIFromPId(bs, request, folderInfo, p.getId());
+								pi = getPIFromPId(bs, request, p.getId());
 								if (null != pi) {
 									// ...store it directly.
 									fr.setColumnValue(fc, pi);
@@ -4022,7 +4005,7 @@ public class GwtViewHelper {
 	 * equivalent PrincipalInfo object.
 	 */
 	@SuppressWarnings("unchecked")
-	private static PrincipalInfo getPIFromPId(AllModulesInjected bs, HttpServletRequest request, BinderInfo fi, Long pId) {
+	private static PrincipalInfo getPIFromPId(AllModulesInjected bs, HttpServletRequest request, Long pId) {
 		// Can we resolve the ID to an actual Principal object?
 		PrincipalInfo reply = null;
 		List<Long> principalIds = new ArrayList<Long>();

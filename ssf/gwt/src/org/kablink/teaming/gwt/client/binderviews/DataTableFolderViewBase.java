@@ -643,7 +643,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	protected AbstractCellTable<FolderRow> getDataTable()          {return m_dataTable;                                   }
 	private   boolean                      getFolderSortDescend()  {return getFolderDisplayData().getFolderSortDescend(); }
 	private   int                          getFolderPageSize()     {return getFolderDisplayData().getFolderPageSize();    }
-	private   FolderType                   getFolderType()         {return getFolderInfo().getFolderType();               }
 	private   Map<String, String>          getFolderColumnWidths() {return getFolderDisplayData().getFolderColumnWidths();}
 	private   String                       getFolderSortBy()       {return getFolderDisplayData().getFolderSortBy();      }
 	

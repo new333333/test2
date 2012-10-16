@@ -2015,9 +2015,15 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by the GWT based Folder Entry viewer.
 	String folderEntry_Alt_Close();
+	String folderEntry_Alt_Hide();
+	String folderEntry_Alt_LockedBy(String user);
 	String folderEntry_Alt_Next();
 	String folderEntry_Alt_Previous();
 	String folderEntry_Error_NoNext();
 	String folderEntry_Error_NoPrevious();
 	String folderEntry_Close();
+	String folderEntry_Hide();
+	String folderEntry_Locked();
+	String folderEntry_Modified();
+	String folderEntry_ShowDescription();
 }// end GwtTeamingMessages
