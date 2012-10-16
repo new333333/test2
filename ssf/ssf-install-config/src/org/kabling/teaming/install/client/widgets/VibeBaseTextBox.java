@@ -39,11 +39,11 @@ import com.google.gwt.user.client.ui.Widget;
  * @param <T>
  *            the generic type
  */
-public abstract class GwBaseTextBox<T extends Widget> extends TextBox implements FocusHandler, BlurHandler, KeyUpHandler, ClickHandler
+public abstract class VibeBaseTextBox<T extends Widget> extends TextBox implements FocusHandler, BlurHandler, KeyUpHandler, ClickHandler
 {
 
 	/** The validator. */
-	protected GwValidator<T> validator;
+	protected VibeValidator<T> validator;
 
 	/** The dlg. */
 	private ArrowCommentBox dlg;
@@ -57,12 +57,12 @@ public abstract class GwBaseTextBox<T extends Widget> extends TextBox implements
 	 * @param validator
 	 *            the new validator
 	 */
-	protected abstract void setValidator(GwValidator<T> validator);
+	protected abstract void setValidator(VibeValidator<T> validator);
 
 	/**
 	 * Instantiates a new gw base text box.
 	 */
-	public GwBaseTextBox()
+	public VibeBaseTextBox()
 	{
 		this(null);
 	}
@@ -73,7 +73,7 @@ public abstract class GwBaseTextBox<T extends Widget> extends TextBox implements
 	 * @param text
 	 *            the text
 	 */
-	public GwBaseTextBox(String text)
+	public VibeBaseTextBox(String text)
 	{
 		setText(text);
 		addStyleName("gw-TextBox");

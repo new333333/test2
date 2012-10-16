@@ -1,7 +1,8 @@
 package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
-import org.kabling.teaming.install.client.widgets.GwTextBox;
+import org.kabling.teaming.install.client.ValueRequiredBasedOnBoolValidator;
+import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.shared.Clustered;
 
@@ -20,13 +21,15 @@ import com.google.gwt.user.client.ui.Panel;
  */
 public class ClusteringPage extends ConfigPageDlgBox
 {
-	private GwTextBox jvmRouteTextBox;
+	private VibeTextBox jvmRouteTextBox;
 	private ListBox cacheProviderListBox;
-	private GwTextBox hostNameTextBox;
-	private GwTextBox multicastGroupAddrTextBox;
+	private VibeTextBox hostNameTextBox;
+	private VibeTextBox multicastGroupAddrTextBox;
 	private GwValueSpinner multicastGroupPortSpinner;
 	private CheckBox enableClusteredCheckBox;
-
+	private ValueRequiredBasedOnBoolValidator jvmRouteValidator;
+	private ValueRequiredBasedOnBoolValidator multicastHostValidator;
+	
 	@Override
 	public Panel createContent(Object propertiesObj)
 	{
@@ -59,7 +62,9 @@ public class ClusteringPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			jvmRouteTextBox = new GwTextBox();
+			jvmRouteTextBox = new VibeTextBox();
+			jvmRouteValidator = new ValueRequiredBasedOnBoolValidator(true, jvmRouteTextBox);
+			jvmRouteTextBox.setValidator(jvmRouteValidator);
 			table.setWidget(row, 1, jvmRouteTextBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -95,7 +100,7 @@ public class ClusteringPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			hostNameTextBox = new GwTextBox();
+			hostNameTextBox = new VibeTextBox();
 			hostNameTextBox.setWatermark(RBUNDLE.optional());
 			table.setWidget(row, 1, hostNameTextBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
@@ -108,7 +113,9 @@ public class ClusteringPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			multicastGroupAddrTextBox = new GwTextBox();
+			multicastGroupAddrTextBox = new VibeTextBox();
+			multicastHostValidator = new ValueRequiredBasedOnBoolValidator(true, multicastGroupAddrTextBox);
+			multicastGroupAddrTextBox.setValidator(multicastHostValidator);
 			table.setWidget(row, 1, multicastGroupAddrTextBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -133,8 +140,14 @@ public class ClusteringPage extends ConfigPageDlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
-		// TODO: Do we need to do any validation for data here?
-		// Save the data from the UI
+		if (enableClusteredCheckBox.getValue())
+		{
+			if (!(hostNameTextBox.isValid() & multicastGroupAddrTextBox.isValid()))
+			{
+				setErrorMessage(RBUNDLE.allFieldsRequired());
+				return null;
+			}
+		}
 		Clustered clustered = config.getClustered();
 
 		clustered.setEnabled(enableClusteredCheckBox.getValue());

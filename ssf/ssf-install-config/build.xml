@@ -127,12 +127,12 @@
 		 		<include name="mysql-connector-java-5.1.22-bin.jar"/>
 		 	 </fileset>
 		  </copy>
-	    <zip destfile="vaconfig.war" basedir="war"/>
+	    <zip destfile="filrconfig.war" basedir="war"/>
 	  </target>
 
 	  <target name="clean" description="Cleans this project">
 	    <delete dir="war/WEB-INF/classes/org" failonerror="false" />
 	  	<delete dir="war/InstallConfig" failonerror="false" />
-	  	<delete file="vaconfig.war" failonerror="false" />
+	  	<delete file="filrconfig.war" failonerror="false" />
 	  </target>
 </project>

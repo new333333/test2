@@ -20,18 +20,18 @@
  */
 package org.kabling.teaming.install.client.widgets;
 
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TextBoxBase;
 
 /**
  * The Class GwTextBox.
  */
-public class GwTextBox extends GwBaseTextBox<TextBox>
+public class VibePasswordTextBox extends VibeBasePasswordTextBox<TextBoxBase>
 {
 
 	/**
 	 * Instantiates a new gw text box.
 	 */
-	public GwTextBox()
+	public VibePasswordTextBox()
 	{
 		super();
 	}
@@ -42,14 +42,14 @@ public class GwTextBox extends GwBaseTextBox<TextBox>
 	 * @param text
 	 *            the text
 	 */
-	public GwTextBox(String text)
+	public VibePasswordTextBox(String text)
 	{
 		super(text);
 	}
 
 	
 	@Override
-	public void setValidator(GwValidator<TextBox> validator)
+	public void setValidator(VibeValidator<TextBoxBase> validator)
 	{
 		this.validator = validator;
 	}

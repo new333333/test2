@@ -1,5 +1,3 @@
-package org.kabling.teaming.install.client;
-
 /*
  * ========================================================================
  *
@@ -20,43 +18,47 @@ package org.kabling.teaming.install.client;
  *
  * ========================================================================
  */
+package org.kabling.teaming.install.client.widgets;
 
-import org.kabling.teaming.install.client.i18n.AppResource;
-import org.kabling.teaming.install.client.widgets.VibeValidator;
-
-import com.google.gwt.user.client.ui.TextBoxBase;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
- * The Class ValueRequiredValidator.
+ * The Class GwValidator.
+ * 
+ * @param <T>
+ *            the generic type
  */
-public class ValueRequiredValidator extends VibeValidator<TextBoxBase>
+public abstract class VibeValidator<T extends Widget>
 {
 
-	/** The d bundle. */
-	private static AppResource dBundle = AppUtil.getAppResource();
+	/** The widget. */
+	protected T widget;
 
 	/**
-	 * Instantiates a new name validator.
+	 * Instantiates a new gw validator.
 	 * 
 	 * @param txtBox
 	 *            the txt box
 	 */
-	public ValueRequiredValidator(TextBoxBase txtBox)
+	public VibeValidator(T txtBox)
 	{
-		super(txtBox);
+		widget = txtBox;
 	}
 
-	@Override
-	public String validate()
+	/**
+	 * Validate.
+	 * 
+	 * @return the string
+	 */
+	public abstract String validate();
+
+	/**
+	 * Gets the widget.
+	 * 
+	 * @return the widget
+	 */
+	public Widget getWidget()
 	{
-		String name = widget.getText().trim();
-
-		//Make sure there is some data, if no data, return the error message
-		if (name.isEmpty())
-		{
-			return dBundle.requiredField();
-		}
-
-		return null;
+		return widget;
 	}
 }

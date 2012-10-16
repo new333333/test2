@@ -20,45 +20,37 @@
  */
 package org.kabling.teaming.install.client.widgets;
 
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.TextBoxBase;
 
 /**
- * The Class GwValidator.
- * 
- * @param <T>
- *            the generic type
+ * The Class GwTextBox.
  */
-public abstract class GwValidator<T extends Widget>
+public class VibeTextBox extends VibeBaseTextBox<TextBoxBase>
 {
 
-	/** The widget. */
-	protected T widget;
-
 	/**
-	 * Instantiates a new gw validator.
-	 * 
-	 * @param txtBox
-	 *            the txt box
+	 * Instantiates a new gw text box.
 	 */
-	public GwValidator(T txtBox)
+	public VibeTextBox()
 	{
-		widget = txtBox;
+		super();
 	}
 
 	/**
-	 * Validate.
+	 * Instantiates a new gw text box.
 	 * 
-	 * @return the string
+	 * @param text
+	 *            the text
 	 */
-	public abstract String validate();
-
-	/**
-	 * Gets the widget.
-	 * 
-	 * @return the widget
-	 */
-	public Widget getWidget()
+	public VibeTextBox(String text)
 	{
-		return widget;
+		super(text);
+	}
+
+	
+	@Override
+	public void setValidator(VibeValidator<TextBoxBase> validator)
+	{
+		this.validator = validator;
 	}
 }
