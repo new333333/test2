@@ -1,7 +1,7 @@
 package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
-import org.kabling.teaming.install.client.widgets.GwTextBox;
+import org.kabling.teaming.install.client.widgets.VibeTextBox;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -11,7 +11,7 @@ import com.google.gwt.user.client.ui.Panel;
 
 public class JavaJDKPage extends ConfigPageDlgBox
 {
-	private GwTextBox jvmHeapSizeTextBox;
+	private VibeTextBox jvmHeapSizeTextBox;
 	private InlineLabel jdkHomeValueLabel;
 
 	@Override
@@ -50,7 +50,7 @@ public class JavaJDKPage extends ConfigPageDlgBox
 		InlineLabel authLabel = new InlineLabel(RBUNDLE.jvmHeapSizeColon());
 		jvmSizePanel.add(authLabel);
 
-		jvmHeapSizeTextBox = new GwTextBox();
+		jvmHeapSizeTextBox = new VibeTextBox();
 		jvmSizePanel.add(jvmHeapSizeTextBox);
 
 		return fPanel;

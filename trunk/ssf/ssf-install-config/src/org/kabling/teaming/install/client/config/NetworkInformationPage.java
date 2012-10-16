@@ -2,7 +2,7 @@ package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.ValueRequiredValidator;
-import org.kabling.teaming.install.client.widgets.GwTextBox;
+import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.shared.Network;
 
@@ -15,14 +15,14 @@ import com.google.gwt.user.client.ui.Panel;
 
 public class NetworkInformationPage extends ConfigPageDlgBox
 {
-	private GwTextBox hostTextBox;
+	private VibeTextBox hostTextBox;
 	private GwValueSpinner httpSpinner;
 	private GwValueSpinner listenSpinner;
 	private GwValueSpinner secureListenSpinner;
 	private GwValueSpinner shutDownPortSpinner;
 	private GwValueSpinner ajpPortSpinner;
 	private GwValueSpinner sessionTimeOutSpinner;
-	private GwTextBox keyStoreFileTextBox;
+	private VibeTextBox keyStoreFileTextBox;
 	private GwValueSpinner httpSecureSpinner;
 
 	@Override
@@ -56,7 +56,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			hostTextBox = new GwTextBox();
+			hostTextBox = new VibeTextBox();
 			hostTextBox.setValidator(new ValueRequiredValidator(hostTextBox));
 			table.setWidget(row, 1, hostTextBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
@@ -153,7 +153,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			keyStoreFileTextBox = new GwTextBox();
+			keyStoreFileTextBox = new VibeTextBox();
 			table.setWidget(row, 1, keyStoreFileTextBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}

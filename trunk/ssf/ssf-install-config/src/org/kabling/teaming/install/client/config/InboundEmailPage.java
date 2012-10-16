@@ -1,8 +1,9 @@
 package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
-import org.kabling.teaming.install.client.widgets.GwTextBox;
+import org.kabling.teaming.install.client.ValueRequiredValidator;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
+import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.shared.EmailSettings;
 
 import com.google.gwt.user.client.ui.CheckBox;
@@ -15,7 +16,7 @@ import com.google.gwt.user.client.ui.Panel;
 
 public class InboundEmailPage extends ConfigPageDlgBox
 {
-	private GwTextBox smtpBindAddrTextBox;
+	private VibeTextBox smtpBindAddrTextBox;
 	private GwValueSpinner smtpPortSpinner;
 	private CheckBox enableSMTPServerCheckBox;
 	private CheckBox announceTlsCheckBox;
@@ -49,7 +50,8 @@ public class InboundEmailPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			smtpBindAddrTextBox = new GwTextBox();
+			smtpBindAddrTextBox = new VibeTextBox();
+			smtpBindAddrTextBox.setValidator(new ValueRequiredValidator(smtpBindAddrTextBox));
 			table.setWidget(row, 1, smtpBindAddrTextBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -80,6 +82,13 @@ public class InboundEmailPage extends ConfigPageDlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
+		//host cannot be null
+		if (!smtpBindAddrTextBox.isValid())
+		{
+			setErrorMessage(RBUNDLE.allFieldsRequired());
+			return null;
+		}
+		
 		EmailSettings emailSettings = config.getEmailSettings();
 		
 		emailSettings.setInternalInboundSMTPEnabled(enableSMTPServerCheckBox.getValue());

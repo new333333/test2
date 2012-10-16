@@ -29,26 +29,31 @@ import com.google.gwt.user.client.ui.TextBoxBase;
 /**
  * The Class ValueRequiredValidator.
  */
-public class ValueRequiredValidator extends VibeValidator<TextBoxBase>
+public class ValueRequiredBasedOnBoolValidator extends VibeValidator<TextBoxBase>
 {
 
 	/** The d bundle. */
 	private static AppResource dBundle = AppUtil.getAppResource();
-
+	private boolean required;
+	
 	/**
 	 * Instantiates a new name validator.
 	 * 
 	 * @param txtBox
 	 *            the txt box
 	 */
-	public ValueRequiredValidator(TextBoxBase txtBox)
+	public ValueRequiredBasedOnBoolValidator(boolean required,TextBoxBase txtBox)
 	{
 		super(txtBox);
+		this.required = required;
 	}
 
 	@Override
 	public String validate()
 	{
+		if (!isRequired())
+			return null;
+		
 		String name = widget.getText().trim();
 
 		//Make sure there is some data, if no data, return the error message
@@ -58,5 +63,15 @@ public class ValueRequiredValidator extends VibeValidator<TextBoxBase>
 		}
 
 		return null;
+	}
+
+	public boolean isRequired()
+	{
+		return required;
+	}
+
+	public void setRequired(boolean required)
+	{
+		this.required = required;
 	}
 }

@@ -2,7 +2,7 @@ package org.kabling.teaming.install.client.wizard;
 
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.i18n.AppResource;
-import org.kabling.teaming.install.client.widgets.GwTextBox;
+import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.Lucene;
@@ -18,7 +18,7 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 {
 
 	private InstallerConfig config;
-	private GwTextBox luceneAddrTextBox;
+	private VibeTextBox luceneAddrTextBox;
 	private GwValueSpinner rmiPortSpinner;
 	private ConfigWizard wizard;
 	private boolean validatedCredentials;
@@ -58,7 +58,7 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 				hostTable.setWidget(row, 0, keyLabel);
 				hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-				luceneAddrTextBox = new GwTextBox();
+				luceneAddrTextBox = new VibeTextBox();
 				hostTable.setWidget(row, 1, luceneAddrTextBox);
 				hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 			}

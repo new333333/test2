@@ -430,29 +430,10 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		if (rootNode == null)
 			return requestAndConnections;
 
-		// Max Threads
-		Element currentElement = getElement(rootNode, "maxThreads");
-
-		if (currentElement != null)
-		{
-			requestAndConnections.setMaxThreads(getIntegerValue(currentElement.getAttribute("value")));
-		}
-
-		// Max Active
-		currentElement = getElement(rootNode, "maxActive");
-
-		if (currentElement != null)
-		{
-			requestAndConnections.setMaxActive(getIntegerValue(currentElement.getAttribute("value")));
-		}
-
-		// Max Idle
-		currentElement = getElement(rootNode, "maxIdle");
-
-		if (currentElement != null)
-		{
-			requestAndConnections.setMaxIdle(getIntegerValue(currentElement.getAttribute("value")));
-		}
+		// Properties (maxThreads, maxActive and maxIdle)
+		requestAndConnections.setMaxThreads(getIntegerValue(rootNode.getAttribute("maxThreads")));
+		requestAndConnections.setMaxActive(getIntegerValue(rootNode.getAttribute("maxActive")));
+		requestAndConnections.setMaxIdle(getIntegerValue(rootNode.getAttribute("maxIdle")));
 
 		return requestAndConnections;
 	}
@@ -852,11 +833,13 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 		if (currentElement != null)
 		{
+			// TimeZone and AllowSendTo all users
 			emailSettings.setDefaultTZ(currentElement.getAttribute("defaultTZ"));
 			emailSettings.setAllowSendToAllUsers(getBooleanValue(currentElement.getAttribute("allowSendToAllUsers")));
 
 			currentElement = getElement(currentElement, "Resource");
 
+			// Outbound
 			if (currentElement != null)
 			{
 
@@ -1137,12 +1120,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			saveWebServiceConfiguration(config, document);
 
 			saveClusteredConfiguration(config, document);
-			
+
 			saveSSOConfiguration(config, document);
-			
+
 			saveEmailSettingsConfiguration(config, document);
-			
-			saveReqAndConnectionsConfiguration(config,document);
+
+			saveReqAndConnectionsConfiguration(config, document);
 		}
 
 		// Save the changes to installer.xml
@@ -1270,7 +1253,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 						configElement.setAttribute("type", dbType);
 
 						resourceElement.setAttribute("username", config.getResourceUserName());
-						resourceElement.setAttribute("password", config.getResourcePassword());
+
+						if (config.getResourcePassword() != null && !config.getResourcePassword().isEmpty())
+							resourceElement.setAttribute("password", config.getResourcePassword());
 						resourceElement.setAttribute("url", config.getResourceUrl());
 						resourceElement.setAttribute("for", config.getResourceFor());
 						resourceElement.setAttribute("driverClassName", config.getResourceDriverClassName());
@@ -1463,58 +1448,110 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				logoffUrlElement.setAttribute("url", sso.getiChainLogoffUrl());
 			}
 		}
-		
+
 		{
 			Element webDavProxyElement = getElement(ssoElement, "iChain");
 			if (webDavProxyElement != null)
 			{
 				webDavProxyElement.setAttribute("enable", String.valueOf(sso.isiChainWebDAVProxyEnabled()));
-				webDavProxyElement.setAttribute("host",sso.getiChainWebDAVProxyHost());
+				webDavProxyElement.setAttribute("host", sso.getiChainWebDAVProxyHost());
 			}
 		}
 	}
-	
+
 	private void saveReqAndConnectionsConfiguration(InstallerConfig config, Document document)
 	{
-		RequestsAndConnections clustered = config.getRequestsAndConnections();
+		RequestsAndConnections req = config.getRequestsAndConnections();
 
-		//TODO
+		if (req == null)
+			return;
+
+		Element reqElement = getElement(document.getDocumentElement(), "RequestsAndConnections");
+
+		if (reqElement == null)
+			return;
+
+		reqElement.setAttribute("maxThreads", String.valueOf(req.getMaxThreads()));
+		reqElement.setAttribute("maxActive", String.valueOf(req.getMaxActive()));
+		reqElement.setAttribute("maxIdle", String.valueOf(req.getMaxIdle()));
 	}
-	
+
 	private void saveEmailSettingsConfiguration(InstallerConfig config, Document document)
 	{
-		SSO clustered = config.getSso();
+		EmailSettings emailSettings = config.getEmailSettings();
 
-		if (clustered == null)
+		if (emailSettings == null)
 			return;
 
-		Element ssoElement = getElement(document.getDocumentElement(), "SSO");
-
-		if (ssoElement == null)
+		// Email Element
+		Element emailElement = getElement(document.getDocumentElement(), "EmailSettings");
+		if (emailElement == null)
 			return;
 
-		{
-			Element iChainElement = getElement(ssoElement, "iChain");
-			if (iChainElement != null)
-			{
-				iChainElement.setAttribute("enable", String.valueOf(clustered.isiChainEnabled()));
-			}
+		// Outbound Element
+		Element outboundElement = getElement(emailElement, "Outbound");
+		if (outboundElement == null)
+			return;
 
-			Element logoffUrlElement = getElement(iChainElement, "Logoff");
-			if (logoffUrlElement != null)
-			{
-				logoffUrlElement.setAttribute("url", clustered.getiChainLogoffUrl());
-			}
-		}
-		
+		// Save TimeZone
+		outboundElement.setAttribute("defaultTZ", emailSettings.getDefaultTZ());
+
+		// Save allowSendToAllUsers
+		outboundElement.setAttribute("allowSendToAllUsers", String.valueOf(emailSettings.isAllowSendToAllUsers()));
+
+		// Resource Element
+		Element resourceElement = getElement(outboundElement, "Resource");
+		if (resourceElement == null)
+			return;
+
+		EmailProtocol protocol = emailSettings.getTransportProtocol();
+
+		// Protocol
+		String protocolStr = "smtp";
+		if (protocol.equals(EmailProtocol.SMTPS))
+			protocolStr = "smtps";
+		resourceElement.setAttribute("mail.transport.protocol", protocolStr);
+
+		// Outbound settings
+		if (protocol.equals(EmailProtocol.SMTP))
 		{
-			Element webDavProxyElement = getElement(ssoElement, "iChain");
-			if (webDavProxyElement != null)
+			resourceElement.setAttribute("mail.smtp.host", emailSettings.getSmtpHost());
+			resourceElement.setAttribute("mail.smtp.auth", String.valueOf(emailSettings.isSmtpAuthEnabled()));
+			resourceElement.setAttribute("mail.smtp.port", String.valueOf(emailSettings.getSmtpPort()));
+			resourceElement.setAttribute("mail.smtp.sendpartial", String.valueOf(emailSettings.isSmtpSendPartial()));
+			resourceElement.setAttribute("mail.smtp.user", emailSettings.getSmtpUser());
+
+			if (emailSettings.getSmtpPassword() != null && !emailSettings.getSmtpPassword().isEmpty())
 			{
-				webDavProxyElement.setAttribute("enable", String.valueOf(clustered.isiChainWebDAVProxyEnabled()));
-				webDavProxyElement.setAttribute("host",clustered.getiChainWebDAVProxyHost());
+				resourceElement.setAttribute("mail.smtp.password", emailSettings.getSmtpPassword());
 			}
 		}
+		else
+		{
+			resourceElement.setAttribute("mail.smtps.host", emailSettings.getSmtpsHost());
+			resourceElement.setAttribute("mail.smtps.auth", String.valueOf(emailSettings.isSmtpsAuthEnabled()));
+			resourceElement.setAttribute("mail.smtps.port", String.valueOf(emailSettings.getSmtpsPort()));
+			resourceElement.setAttribute("mail.smtps.sendpartial", String.valueOf(emailSettings.isSmtpsSendPartial()));
+			resourceElement.setAttribute("mail.smtps.user", emailSettings.getSmtpsUser());
+
+			if (emailSettings.getSmtpsPassword() != null && !emailSettings.getSmtpsPassword().isEmpty())
+			{
+				resourceElement.setAttribute("mail.smtps.password", emailSettings.getSmtpsPassword());
+			}
+		}
+
+		// Inbound Settings
+		Element inboundElement = getElement(emailElement, "InternalInboundSMTP");
+		if (inboundElement == null)
+			return;
+
+		inboundElement.setAttribute("enable", String.valueOf(emailSettings.isInternalInboundSMTPEnabled()));
+		if (emailSettings.getInternalInboundSMTPBindAddress() != null)
+		{
+			inboundElement.setAttribute("bindAddress", emailSettings.getInternalInboundSMTPBindAddress());
+		}
+		inboundElement.setAttribute("port", String.valueOf(emailSettings.getInternalInboundSMTPPort()));
+		inboundElement.setAttribute("tls", String.valueOf(emailSettings.isInternalInboundSMTPTLSEnabld()));
 	}
 
 	/**

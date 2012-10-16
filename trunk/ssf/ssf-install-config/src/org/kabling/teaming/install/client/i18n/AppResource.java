@@ -193,4 +193,7 @@ public interface AppResource extends Messages
 	String unableToSaveConfiguration();
 
 	String logOffUrlColon();
+
+	String accessGatewayEnabledWithInValidData();
+	String gatewayWebDavEnabledWithInvalidData();
 }
