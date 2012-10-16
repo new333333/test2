@@ -3852,6 +3852,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   	{
 	   		User u = (User)foundEntries.get(i);
 	   		entries.put( u, new MapInputData( StringCheckUtil.check( (Map)users.get( u.getId() ) ) ) );
+	   		
+	   		// Update the user's home directory
+	   		if ( Utils.checkIfFilr() )
+	   		{
+		   		updateHomeDirNetFolder( homeDirInfoMap, u );
+	   		}
 	   	}
 
    		processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
@@ -3863,14 +3869,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		
 	   		changedEntries = processor.syncEntries( entries, null, syncResults );
 	   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
-
-			// Are we running Filr?
-			if ( changedEntries != null && Utils.checkIfFilr() )
-			{
-				// Yes
-				// Update the "home dir" net folder for the users we just updated
-				updateHomeDirNetFolder( changedEntries, homeDirInfoMap );
-			}
 
 	   		//flush from cache
 	   		for (int i=0; i<foundEntries.size(); ++i)
@@ -3900,11 +3898,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
 
 					// Are we running Filr?
-					if ( changedEntries != null && Utils.checkIfFilr() )
+					if ( Utils.checkIfFilr() )
 					{
 						// Yes
 						// Update the "home dir" net folder for the users we just updated
-						updateHomeDirNetFolder( changedEntries, homeDirInfoMap );
+				   		updateHomeDirNetFolder( homeDirInfoMap, user );
 					}
 
 			   		getCoreDao().evict( user );
@@ -3921,55 +3919,35 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Update or create a "home dir" net folder for each of the given users.
 	 */
 	private void updateHomeDirNetFolder(
-		Map userMap,
-    	Map<Long, HomeDirInfo> homeDirInfoMap )
+    	Map<Long, HomeDirInfo> homeDirInfoMap,
+    	User user )
 	{
-		if ( userMap == null || homeDirInfoMap == null || Utils.checkIfFilr() == false )
+		if ( user == null || homeDirInfoMap == null || Utils.checkIfFilr() == false )
 			return;
 		
-		// For each user in the map, create/update a net folder for the
-		// user's home directory
-	    for ( Iterator i = userMap.entrySet().iterator(); i.hasNext(); )
-	    {
-	    	Map.Entry mEntry;
-	    	Entry entry;
+		try 
+		{
+			HomeDirInfo homeDirInfo = null;
+			
+			// Get the HomeDirInfo for this user.
+			if ( homeDirInfoMap != null )
+				homeDirInfo = homeDirInfoMap.get( user.getId() );
+			
+			if ( homeDirInfo != null )
+			{
+				String userName;
+				
+				userName = user.getName();
 
-	    	mEntry = (Map.Entry)i.next();
-	    	entry = (Entry)mEntry.getKey();
-
-	    	if ( entry instanceof Principal )
-	    	{
-	    		Principal principal;
-	    		
-	    		principal = (Principal) entry;
-
-	    		try 
-				{
-					HomeDirInfo homeDirInfo = null;
-					
-					// Get the HomeDirInfo for this user.
-					if ( homeDirInfoMap != null )
-						homeDirInfo = homeDirInfoMap.get( principal.getId() );
-					
-					if ( homeDirInfo != null )
-					{
-						User user;
-						String userName;
-						
-						userName = principal.getName();
-						user = profileModule.getUser( userName );
-
-						// createHomeDirNetFolder() will update an existing "home directory" net folder
-						// if needed.
-						updateHomeDirNetFolder( homeDirInfo, user );
-					}
-				} 
-				catch ( AccessControlException acEx )
-				{
-					logger.error( "Unable to update home dir net folder for user: " + principal.getName() );
-				}
-	    	}
-	    }
+				// createHomeDirNetFolder() will update an existing "home directory" net folder
+				// if needed.
+				updateHomeDirNetFolder( homeDirInfo, user );
+			}
+		} 
+		catch ( AccessControlException acEx )
+		{
+			logger.error( "Unable to update home dir net folder for user: " + user.getName() );
+		}
 	}
 	
 	/**
