@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.util;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
-import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -70,11 +69,8 @@ public class FolderEntryDetails implements IsSerializable {
 	 * entry. 
 	 */
 	public static class UserInfo implements IsSerializable {
-		private GwtPresenceInfo		m_presence;		// Presence information for the user.
-		private String				m_avatar;		// The user's avatar.
-		private String				m_date;			// The date/time stamp of when the user acted upon the entry.
-		private String				m_presenceDude;	// The user's current presence state.
-		private String				m_title;		// The user's title.
+		private PrincipalInfo	m_pi;	//
+		private String			m_date;	// The date/time stamp of when the user acted upon the entry.
 		
 		/**
 		 * Constructor method.
@@ -91,22 +87,16 @@ public class FolderEntryDetails implements IsSerializable {
 		 * 
 		 * @return
 		 */
-		public GwtPresenceInfo getPresence()     {return m_presence;    }
-		public String          getAvatar()       {return m_avatar;      }
-		public String          getDate()         {return m_date;        }
-		public String          getPresenceDude() {return m_presenceDude;}
-		public String          getTitle()        {return m_title;       }
+		public PrincipalInfo getPrincipalInfo() {return m_pi;  }
+		public String        getDate()          {return m_date;}
 
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setPresence(    GwtPresenceInfo presence)     {m_presence     = presence;    }
-		public void setAvatar(      String          avatar)       {m_avatar       = avatar;      }
-		public void setDate(        String          date)         {m_date         = date;        }
-		public void setPresenceDude(String          presenceDude) {m_presenceDude = presenceDude;}
-		public void setTitle(       String          title)        {m_title        = title;       }
+		public void setPrincipalInfo(PrincipalInfo pi)   {m_pi   = pi;  }
+		public void setDate(         String        date) {m_date = date;}
 		
 	}
 	
@@ -205,6 +195,18 @@ public class FolderEntryDetails implements IsSerializable {
 	 */
 	public String getEntryIcon(BinderIconSize entityIconSize) {
 		return m_entryIcons.getBinderIcon(entityIconSize);
+	}
+
+	/**
+	 * Returns true if the folder entry has a description and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean hasDescripion() {
+		String hDesc = (null == m_desc)    ? "" : m_desc.trim();
+		String pDesc = (null == m_descTxt) ? "" : m_descTxt.trim();
+		return ((0 < hDesc.length()) || (0 < pDesc.length()));
 	}
 	
 	/**

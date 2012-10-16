@@ -34,7 +34,6 @@ package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ClientBundle.Source;
 import com.google.gwt.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.resources.client.ImageResource.RepeatStyle;
 
@@ -116,6 +115,10 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	@Source("org/kablink/teaming/gwt/public/images/help3.gif")
 	public ImageResource help();
 
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/lock_20.png")
+	public ImageResource lock();
+	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/move_down.gif")
 	public ImageResource moveDown();

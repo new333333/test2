@@ -70,8 +70,8 @@ public class FolderEntryDlg extends DlgBox {
 	private ViewReady					m_viewReady;				//
 
 	// Default height and width for the dialog.
-	private final static int	DEFAULT_HEIGHT	= 600;
-	private final static int	DEFAULT_WIDTH	= 800;
+	private final static int	DEFAULT_HEIGHT	=  768;
+	private final static int	DEFAULT_WIDTH	= 1024;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
