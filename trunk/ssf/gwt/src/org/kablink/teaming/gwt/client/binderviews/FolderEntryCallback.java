@@ -40,4 +40,5 @@ package org.kablink.teaming.gwt.client.binderviews;
  */
 public interface FolderEntryCallback {
 	public void viewComponentReady();
+	public void resizeView();
 }

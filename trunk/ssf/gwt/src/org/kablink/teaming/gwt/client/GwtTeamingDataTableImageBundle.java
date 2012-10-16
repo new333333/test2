@@ -140,6 +140,10 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource spacer1px();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/unknown_128.png")
+	public ImageResource unknown();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/sunburst.png")
 	public ImageResource unread();
 	

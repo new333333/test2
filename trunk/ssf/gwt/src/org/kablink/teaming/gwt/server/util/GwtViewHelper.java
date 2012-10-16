@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.server.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
@@ -59,6 +60,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.swing.ImageIcon;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
@@ -216,6 +218,7 @@ import org.kablink.util.search.Order;
 import org.kablink.util.search.Junction;
 import org.kablink.util.search.Junction.Conjunction;
 import org.kablink.util.search.Junction.Disjunction;
+import org.springframework.util.FileCopyUtils;
 
 import static org.kablink.util.search.Restrictions.conjunction;
 import static org.kablink.util.search.Restrictions.disjunction;
@@ -691,6 +694,35 @@ public class GwtViewHelper {
 		return reply;
 	}
 
+	/*
+	 * If the file's data can be viewed as an image, returns a URL to
+	 * reference in an <IMG> tag.  Otherwise, returns null.
+	 */
+	private static String buildImageContentUrl(AllModulesInjected bs, HttpServletRequest request, FolderEntry fe, FileAttachment fa) {
+		String reply = null;
+		try {
+			// Can we convert the file's data to an image?
+			InputStream	inputStream = bs.getFileModule().readFile(fe.getParentBinder(), fe, fa);
+			byte[]		inputData   = FileCopyUtils.copyToByteArray(inputStream);
+			ImageIcon	imageIcon   = new ImageIcon(inputData);
+			if ((null != imageIcon) && (0 < imageIcon.getIconHeight()) && (0 < imageIcon.getIconWidth())) {
+				// Yes!  The we assume it can be displayed in an <IMG>
+				// tag.  Return it's download URL.
+				reply = GwtServerHelper.getDownloadFileUrl(request, bs, fe.getParentBinder().getId(), fe.getId()); 
+			}
+		}
+		
+		catch (Exception ex) {
+			// Any exception we handle as though the file can't be
+			// displayed as an image. 
+			reply = null;
+		}
+		
+		// If we get here, reply is null or refers to the URL to use as
+		// the file content's image.  Return it.
+		return reply;
+	}
+	
 	/*
 	 * Returns an entry map that represents a List<GwtSharedMeItem>.
 	 */
@@ -3235,7 +3267,10 @@ public class GwtViewHelper {
 				
 				// ...and set the ViewFileInfo for an HTML view of the
 				// ...file if it supports it...
-				reply.setHtmlView(buildViewFileInfo(request, feTop, fa));
+				ViewFileInfo vfi = buildViewFileInfo(request, feTop, fa);
+				if (null == vfi)
+				     reply.setImageContentUrl(buildImageContentUrl(bs, request, feTop, fa));
+				else reply.setHtmlView(vfi);
 			}
 	
 			// ...set the entry's description...

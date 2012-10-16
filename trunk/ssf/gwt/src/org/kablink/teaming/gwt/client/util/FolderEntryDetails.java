@@ -56,6 +56,7 @@ public class FolderEntryDetails implements IsSerializable {
 	private String				m_desc;					// The entry description.
 	private String				m_descTxt;				// Plain text version of m_desc.
 	private String				m_family;				// The definition family of the folder entry.
+	private String				m_imageContentUrl;		// The URL to the file if it can be displayed as an image.
 	private String				m_path;					// The full path to the entry.
 	private String				m_title;				// The title of the folder entry.
 	private String[]			m_contributors;			// The IDs of the contributors to this entry.
@@ -154,6 +155,7 @@ public class FolderEntryDetails implements IsSerializable {
 	public String            getDesc()                {return m_desc;                }
 	public String            getDescTxt()             {return m_descTxt;             }
 	public String            getFamily()              {return m_family;              }
+	public String            getImageContentUrl()     {return m_imageContentUrl;     }
 	public String            getPath()                {return m_path;                }
 	public String            getTitle()               {return m_title;               }
 	public String[]          getContributors()        {return m_contributors;        }
@@ -177,6 +179,7 @@ public class FolderEntryDetails implements IsSerializable {
 	public void setDesc(                String            desc)                 {m_desc                 = desc;                }
 	public void setDescTxt(             String            descTxt)              {m_descTxt              = descTxt;             }
 	public void setFamily(              String            family)               {m_family               = family;              }
+	public void setImageContentUrl(     String            imageContentUrl)      {m_imageContentUrl      = imageContentUrl;     }
 	public void setPath(                String            path)                 {m_path                 = path;                }
 	public void setTitle(               String            title)                {m_title                = title;               }
 	public void setContributors(        String[]          contributors)         {m_contributors         = contributors;        }
