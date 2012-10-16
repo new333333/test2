@@ -121,7 +121,11 @@ public class FolderEntryComposite extends ResizeComposite
 	private boolean							m_isDialog;					// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.
 	private FolderEntryActionCompleteEvent	m_actionClose;				// Event fired when an action we requested completes and we need to close   the viewer.
 	private FolderEntryActionCompleteEvent	m_actionRefresh;			// Event fired when an action we requested completes and we need to refresh the viewer.
+	private FolderEntryComments				m_commentsArea;				//
 	private FolderEntryDetails				m_fed;						// Details about the folder entry being viewed.
+	private FolderEntryDocument				m_documentArea;				//
+	private FolderEntryHeader				m_headerArea;				//
+	private FolderEntryMenu					m_menuArea;					//
 	private FooterPanel						m_footerPanel;				// Footer at the bottom of the view with the permalink, ...
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
@@ -134,9 +138,10 @@ public class FolderEntryComposite extends ResizeComposite
 	private VibeFlowPanel					m_rootPanel;				// The panel containing everything about the composite.
 	private ViewFolderEntryInfo				m_vfei;						// The view information for the folder entry being viewed.
 
-	private final static int MINIMUM_CONTENT_HEIGHT	= 150;	// The minimum height (in pixels) of the composite's content panel.
-	private final static int FOOTER_ADJUST_DLG		=  20;	// Height adjustment required for adequate spacing below the footer when hosted in a dialog.
-	private final static int FOOTER_ADJUST_VIEW		=  30;	// Height adjustment required for adequate spacing below the footer when hosted in a view.
+	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of the composite's content panel.
+	private final static int MINIMUM_DOCUMENT_HEIGHT	=  50;
+	private final static int FOOTER_ADJUST_DLG			=  20;	// Height adjustment required for adequate spacing below the footer when hosted in a dialog.
+	private final static int FOOTER_ADJUST_VIEW			=  30;	// Height adjustment required for adequate spacing below the footer when hosted in a view.
 	
 	private final static int WAIT_FOR_DIALOG_TO_CLOSE	= 750;	// Time to wait for a dialog performing an action to fully close before proceeding.
 	
@@ -564,10 +569,10 @@ public class FolderEntryComposite extends ResizeComposite
 	 */
 	private void loadPart3Now() {
 		// Create and add the various components to the composite.
-		m_contentPanel.add(new FolderEntryHeader(  this, m_fed)                  );
-		m_contentPanel.add(new FolderEntryMenu(    this, m_fed.getToolbarItems()));
-		m_contentPanel.add(new FolderEntryDocument(this, m_fed.getHtmlView())    );
-		m_contentPanel.add(new FolderEntryComments(this, m_fed.getComments())    );
+		m_headerArea   = new FolderEntryHeader(  this, m_fed                  ); m_contentPanel.add(m_headerArea  );
+		m_menuArea     = new FolderEntryMenu(    this, m_fed.getToolbarItems()); m_contentPanel.add(m_menuArea    );
+		m_documentArea = new FolderEntryDocument(this, m_fed                  ); m_contentPanel.add(m_documentArea);
+		m_commentsArea = new FolderEntryComments(this, m_fed.getComments()    ); m_contentPanel.add(m_commentsArea);
 	}
 
 	/**
@@ -1086,19 +1091,34 @@ public class FolderEntryComposite extends ResizeComposite
 		int		footerHeight = m_footerPanel.getOffsetHeight();				// Height of the composite's footer panel.
 
 		// What's the optimal height for the content panel?
+		boolean addConainerScroll = false;;
 		int contentHeight = (((cHeight - contentTop) - footerHeight) - getFooterAdjust());
 		if (MINIMUM_CONTENT_HEIGHT > contentHeight) {
 			// Too small!  Use the minimum even though this may result
 			// in a vertical scroll bar.
-			contentHeight = MINIMUM_CONTENT_HEIGHT;
-			container.addStyleName("vibe-verticalScroll");
+			contentHeight     = MINIMUM_CONTENT_HEIGHT;
+			addConainerScroll = true;
 		}
-		
-		else {
-			container.removeStyleName("vibe-verticalScroll");
+
+		// Calculate the height we can give to the document area.
+		int headerHeight = m_headerArea.getOffsetHeight();
+		int menuHeight   = m_menuArea.getOffsetHeight();
+		int docAbove     = (headerHeight  + menuHeight + 30);	// Adjust for padding...
+		int docHeight    = (contentHeight - docAbove       );
+		if (MINIMUM_DOCUMENT_HEIGHT > docHeight) {
+			docHeight         = MINIMUM_DOCUMENT_HEIGHT;
+			contentHeight     = (docAbove + docHeight);
+			addConainerScroll = true;
 		}
+
+		// Add/remove the vertical scroll bar from the container as
+		// necessary.
+		if (addConainerScroll)
+		     container.addStyleName(   "vibe-verticalScroll");
+		else container.removeStyleName("vibe-verticalScroll");
 		
 		// Set the height of the content panel.
+		m_documentArea.setHeight(docHeight     + "px");
 		m_contentPanel.setHeight(contentHeight + "px");
 	}
 
@@ -1265,6 +1285,17 @@ public class FolderEntryComposite extends ResizeComposite
 		}
 	}
 
+	/**
+	 * Called by one of the view components to tell the composite that
+	 * things needs to be resized.
+	 * 
+	 * Implements the FolderEntryCallback.resizeView() method.
+	 */
+	@Override
+	public void resizeView() {
+		onResizeAsync(0);
+	}
+	
 	/*
 	 * Updates the caption's image.
 	 */

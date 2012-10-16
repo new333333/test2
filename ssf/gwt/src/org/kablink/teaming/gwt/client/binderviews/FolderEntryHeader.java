@@ -133,6 +133,7 @@ public class FolderEntryHeader extends VibeFlowPanel {
 			public void onClick(ClickEvent event) {
 				m_descPanel.setVisible(    false);
 				m_showDescPanel.setVisible(true );
+				m_fec.resizeView();
 			}
 		});
 		VibeFlowPanel descHtmlPanel = new VibeFlowPanel();
@@ -159,6 +160,7 @@ public class FolderEntryHeader extends VibeFlowPanel {
 			public void onClick(ClickEvent event) {
 				m_descPanel.setVisible(    true );
 				m_showDescPanel.setVisible(false);
+				m_fec.resizeView();
 			}
 		});
 		m_showDescPanel.setVisible(false);
