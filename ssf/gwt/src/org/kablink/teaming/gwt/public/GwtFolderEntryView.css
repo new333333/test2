@@ -82,7 +82,7 @@
 		.vibe-feView-documentFrame        {border: none;}
 		.vibe-feView-documentPanel        {display: block; padding: 10px;}
 		.vibe-feView-documentPanelHtml    {}
-		.vibe-feView-documentPanelImage   {}
+		.vibe-feView-documentPanelImage   {overflow: auto;}
 		.vibe-feView-documentPanelUnknown {vertical-align: middle; text-align: center;}
 		.vibe-feView-documentUnknownImage {}
 	/* End:  Document styles. */

@@ -105,11 +105,10 @@ public class FolderEntryDocument extends VibeFlowPanel {
 		
 		else {
 			// No, we don't have HTML to render for the document!  Do
-			// we have the URL for an image representation of the
-			// file's data?
-			String imgUrl = m_fed.getImageContentUrl();
+			// we have a URL we can use as an <IMG> for the file?
+			String imgUrl = m_fed.getDownloadUrl();
 			String imgStyle;
-			if (GwtClientHelper.hasString(imgUrl)) {
+			if (m_fed.isContentImage() && GwtClientHelper.hasString(imgUrl)) {
 				// Yes!  We'll display that with an appropriate style.
 				imgStyle = "vibe-feView-documentContentImage";
 				

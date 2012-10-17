@@ -695,35 +695,6 @@ public class GwtViewHelper {
 	}
 
 	/*
-	 * If the file's data can be viewed as an image, returns a URL to
-	 * reference in an <IMG> tag.  Otherwise, returns null.
-	 */
-	private static String buildImageContentUrl(AllModulesInjected bs, HttpServletRequest request, FolderEntry fe, FileAttachment fa) {
-		String reply = null;
-		try {
-			// Can we convert the file's data to an image?
-			InputStream	inputStream = bs.getFileModule().readFile(fe.getParentBinder(), fe, fa);
-			byte[]		inputData   = FileCopyUtils.copyToByteArray(inputStream);
-			ImageIcon	imageIcon   = new ImageIcon(inputData);
-			if ((null != imageIcon) && (0 < imageIcon.getIconHeight()) && (0 < imageIcon.getIconWidth())) {
-				// Yes!  The we assume it can be displayed in an <IMG>
-				// tag.  Return it's download URL.
-				reply = GwtServerHelper.getDownloadFileUrl(request, bs, fe.getParentBinder().getId(), fe.getId()); 
-			}
-		}
-		
-		catch (Exception ex) {
-			// Any exception we handle as though the file can't be
-			// displayed as an image. 
-			reply = null;
-		}
-		
-		// If we get here, reply is null or refers to the URL to use as
-		// the file content's image.  Return it.
-		return reply;
-	}
-	
-	/*
 	 * Returns an entry map that represents a List<GwtSharedMeItem>.
 	 */
 	@SuppressWarnings("unchecked")
@@ -1054,6 +1025,35 @@ public class GwtViewHelper {
 		}
 	}
 
+	/*
+	 * If the file's data can be viewed as an image, returns a URL to
+	 * reference in an <IMG> tag.  Otherwise, returns null.
+	 */
+	private static boolean contentIsImage(AllModulesInjected bs, HttpServletRequest request, FolderEntry fe, FileAttachment fa) {
+		boolean reply = false;
+		try {
+			// Can we convert the file's data to an image?
+			InputStream	inputStream = bs.getFileModule().readFile(fe.getParentBinder(), fe, fa);
+			byte[]		inputData   = FileCopyUtils.copyToByteArray(inputStream);
+			ImageIcon	imageIcon   = new ImageIcon(inputData);
+			
+			reply =
+				((null != imageIcon)                 &&
+				 (0     < imageIcon.getIconHeight()) &&
+				 (0     < imageIcon.getIconWidth()));
+		}
+		
+		catch (Exception ex) {
+			// Any exception we handle as though the file can't be
+			// displayed as an image. 
+			reply = false;
+		}
+		
+		// If we get here, reply is true if the content can be viewed
+		// as an image and false otherwise.  Return it.
+		return reply;
+	}
+	
 	/**
 	 * Change the entry types for a collection of entries.
 	 *
@@ -3269,8 +3269,15 @@ public class GwtViewHelper {
 				// ...file if it supports it...
 				ViewFileInfo vfi = buildViewFileInfo(request, feTop, fa);
 				if (null == vfi)
-				     reply.setImageContentUrl(buildImageContentUrl(bs, request, feTop, fa));
+				     reply.setContentIsImage(contentIsImage(bs, request, feTop, fa));
 				else reply.setHtmlView(vfi);
+				
+				reply.setDownloadUrl(
+					GwtServerHelper.getDownloadFileUrl(
+						request,
+						bs,
+						fe.getParentBinder().getId(),
+						fe.getId())); 
 			}
 	
 			// ...set the entry's description...
