@@ -105,6 +105,14 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		return loginInfo;
 	}
 
+
+	@Override
+	public void logout()
+	{
+		//Invalidate the session
+		getThreadLocalRequest().getSession().invalidate();
+	}
+	
 	public InstallerConfig getConfiguration()
 	{
 		InstallerConfig config = null;
@@ -1973,4 +1981,5 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		return sortedMap;
 
 	}
+
 }

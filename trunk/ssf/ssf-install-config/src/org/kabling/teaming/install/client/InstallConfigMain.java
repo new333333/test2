@@ -50,7 +50,7 @@ public class InstallConfigMain implements EntryPoint
 			}
 			else
 			{
-				LoginUIPanel loginUIPanel = new LoginUIPanel(result);
+				LoginUIPanel loginUIPanel = new LoginUIPanel();
 				RootPanel.get("installConfig").add(loginUIPanel);
 			}
 		}

@@ -18,16 +18,24 @@ import org.kabling.teaming.install.shared.InstallerConfig;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHandler, ResizeHandler
@@ -67,11 +75,53 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 		FlowPanel div = new FlowPanel();
 		div.addStyleName("mainheader");
 
+		HorizontalPanel hPanel = new HorizontalPanel();
+		hPanel.setWidth("100%");
+		div.add(hPanel);
+		
 		Image mainHeaderImg = new Image(AppUtil.getAppImageBundle().loginFilrProductInfo());
 		mainHeaderImg.addStyleName("mainHeaderProductImg");
-		div.add(mainHeaderImg);
+		hPanel.add(mainHeaderImg);
 
-		// TODO: Add logout
+		FlowPanel headerActionsPanel = new FlowPanel();
+		headerActionsPanel.addStyleName("masterhead-actions");
+		hPanel.add(headerActionsPanel);
+		hPanel.setCellHorizontalAlignment(headerActionsPanel, HasAlignment.ALIGN_RIGHT);
+		InlineLabel label = new InlineLabel("root");
+		label.addStyleName("username");
+		headerActionsPanel.add(label);
+		
+		Anchor logoutAction = new Anchor("Logout");
+		logoutAction.addStyleName("logout");
+		headerActionsPanel.add(logoutAction);
+		logoutAction.addClickHandler(new ClickHandler()
+		{
+			
+			@Override
+			public void onClick(ClickEvent event)
+			{
+				AppUtil.getInstallService().logout(new AsyncCallback<Void>()
+				{
+
+					@Override
+					public void onFailure(Throwable caught)
+					{
+						
+					}
+
+					@Override
+					public void onSuccess(Void result)
+					{
+						//Goto login Page
+						LoginUIPanel loginUIPanel = new LoginUIPanel();
+						if (RootLayoutPanel.get().getWidget(0) != null)
+							RootLayoutPanel.get().remove(0);
+						RootPanel.get("installConfig").add(loginUIPanel);
+					}
+				});
+			}
+		});
+		
 
 		return div;
 	}

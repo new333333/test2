@@ -34,4 +34,6 @@ public interface InstallServiceAsync
 	void isLuceneServerValid(String host, long port, AsyncCallback<Boolean> callback);
 
 	void getTimeZones(AsyncCallback<Map<String, String>> callback);
+
+	void logout(AsyncCallback<Void> callback);
 }

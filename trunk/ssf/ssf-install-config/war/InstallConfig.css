@@ -32,6 +32,30 @@ body {
 	width: 300px;
 }
 
+
+a.logout {
+    border-left: 1px solid #B8B8B8;
+    color: #B8B8B8;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: normal;
+    padding: 0 4px;
+    text-decoration: none;
+}
+
+.username {
+    padding-right: 6px;
+    text-align: right;
+}
+
+.masterhead-actions {
+    color: #EBF5F5;
+    display: inline-block;
+    font-size: 13px;
+    padding: 15px 10px 10px 5px;
+    vertical-align: middle;
+}
+
 .content {
 	margin: 0 25px 15px;
 }
