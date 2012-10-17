@@ -1170,8 +1170,10 @@ public class EntityIndexUtils {
     	doc.add(fileSizeField); 
     	Field fileSizeInBytesField = FieldFactory.createFieldStoredNotAnalyzed(FILE_SIZE_IN_BYTES_FIELD, String.valueOf(fa.getFileItem().getLength()));
     	doc.add(fileSizeInBytesField); 
-        Field fileMd5Field = FieldFactory.createFieldStoredNotAnalyzed(FILE_MD5_FIELD, fa.getFileItem().getMd5());
-       	doc.add(fileMd5Field);
+        if (fa.getFileItem().getMd5()!=null) {
+	        Field fileMd5Field = FieldFactory.createFieldStoredNotAnalyzed(FILE_MD5_FIELD, fa.getFileItem().getMd5());
+	       	doc.add(fileMd5Field);
+        }
         Field fileVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_VERSION_FIELD, String.valueOf(fa.getHighestVersionNumber()));
        	doc.add(fileVersionField);
     	Field fileTimeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
