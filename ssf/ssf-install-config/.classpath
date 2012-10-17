@@ -13,5 +13,5 @@
 	<classpathentry kind="lib" path="../lib/jna-3.4.0.jar"/>
 	<classpathentry kind="lib" path="../lib/joda-time.jar"/>
 	<classpathentry kind="lib" path="../lib/libpam4j-1.6.jar"/>
-	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+	<classpathentry kind="output" path="www/WEB-INF/classes"/>
 </classpath>

@@ -114,9 +114,9 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 					{
 						//Goto login Page
 						LoginUIPanel loginUIPanel = new LoginUIPanel();
-						if (RootLayoutPanel.get().getWidget(0) != null)
+						if (RootLayoutPanel.get().getWidgetCount() > 0)
 							RootLayoutPanel.get().remove(0);
-						RootPanel.get("installConfig").add(loginUIPanel);
+						RootLayoutPanel.get().add(loginUIPanel);
 					}
 				});
 			}
