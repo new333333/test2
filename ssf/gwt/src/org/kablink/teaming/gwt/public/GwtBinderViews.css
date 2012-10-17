@@ -378,23 +378,23 @@
 	.vibe-addFilesHtml5Popup-progressBar-total-label     {padding-right: 5px;}
 /* Start:  Add files via HTML5 styles. */
 
-/* Start:  Manage comments dialog styles. */
-	.vibe-manageCommentsDlg .popupContent          {background-color: white !important;}
-	.vibe-manageCommentsDlg-addCommentAvatar       {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px; border-radius: 2px;}
-	.vibe-manageCommentsDlg-addCommentHint         {color: #4D6D8B; font-size: 1em;}
-	.vibe-manageCommentsDlg-addCommentHintPanel    {padding-top: 5px; padding-right: 5px;}
-	.vibe-manageCommentsDlg-addCommentPanel        {color: #353838; background-color: #F6F6F6; border-top-color: #cccccc; border-top-style: solid; border-top-width: 1px; padding-top: 15px; padding-bottom: 15px; box-shadow: 0px 2px 3px #e0e0e0 inset;}
-	.vibe-manageCommentsDlg-addCommentPanel-nonIE  {width: 100%; }
-	.vibe-manageCommentsDlg-addCommentTextArea     {background-color: white; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 500px; height: 45px; padding: 5px; border: 1px solid #E0E0E0; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
-	.vibe-manageCommentsDlg-captionImg             {width: 36px; height: 36px;}
-	.vibe-manageCommentsDlg-commentsWidget         {height: 300px; overflow: auto; width: 550px;}
-	.vibe-manageCommentsDlg-label                  {}
-	.vibe-manageCommentsDlg-panel                  {}
-	.vibe-manageCommentsDlg-sendButton-nonIE       {float:right;}
-	.vibe-manageCommentsDlg-sendButton-nonIE:hover {float:right;}
-	.vibe-manageCommentsDlg-sendButton-IE          {margin-left: 20px;}
-	.vibe-manageCommentsDlg-sendButton-IE:hover    {margin-left: 20px;}
-	.vibe-manageCommentsDlg-sendButton             {
+/* Start:  Manage comments composite styles. */
+	.vibe-manageCommentsComposite                        {background-color: white !important;}
+	.vibe-manageCommentsComposite-addCommentAvatar       {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px; border-radius: 2px;}
+	.vibe-manageCommentsComposite-addCommentHint         {color: #4D6D8B; font-size: 1em;}
+	.vibe-manageCommentsComposite-addCommentHintPanel    {padding-top: 5px; padding-right: 5px;}
+	.vibe-manageCommentsComposite-addCommentPanel        {color: #353838; background-color: #F6F6F6; border-top-color: #cccccc; border-top-style: solid; border-top-width: 1px; padding-top: 15px; padding-bottom: 15px; box-shadow: 0px 2px 3px #e0e0e0 inset;}
+	.vibe-manageCommentsComposite-addCommentPanel-nonIE  {width: 100%; }
+	.vibe-manageCommentsComposite-addCommentTextArea     {background-color: white; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 500px; height: 45px; padding: 5px; border: 1px solid #E0E0E0; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
+	.vibe-manageCommentsComposite-captionImg             {width: 36px; height: 36px;}
+	.vibe-manageCommentsComposite-commentsWidget         {height: 300px; overflow: auto; width: 550px;}
+	.vibe-manageCommentsComposite-label                  {}
+	.vibe-manageCommentsComposite-panel                  {}
+	.vibe-manageCommentsComposite-sendButton-nonIE       {float:right;}
+	.vibe-manageCommentsComposite-sendButton-nonIE:hover {float:right;}
+	.vibe-manageCommentsComposite-sendButton-IE          {margin-left: 20px;}
+	.vibe-manageCommentsComposite-sendButton-IE:hover    {margin-left: 20px;}
+	.vibe-manageCommentsComposite-sendButton             {
 		color:#fff;
 	 	font-size: 14px !important;
 	    font-family: Arial, sans-serif !important;
@@ -410,7 +410,7 @@
 		-moz-border-radius: 15px;
 		-webkit-border-radius: 15px;
 	}
-	.vibe-manageCommentsDlg-sendButton:hover {
+	.vibe-manageCommentsComposite-sendButton:hover {
 		color: #135c8f !important;
 		font-size: 14px !important;
 	    white-space: nowrap !important;
@@ -427,6 +427,11 @@
 		-moz-border-radius: 15px;
 		-webkit-border-radius: 15px;
 	}
+/* End:  Manage comments composite styles. */
+
+/* Start:  Manage comments dialog styles. */
+	.vibe-manageCommentsDlg .popupContent {background-color: white !important;}
+	.vibe-manageCommentsDlg-panel         {}
 /* End:  Manage comments dialog styles. */
 
 /* Start:  Size columns dialog styles. */
@@ -500,28 +505,6 @@
 	.vibe-changeEntryTypesNewSelect  {padding-left: 2px;}
 	.vibe-changeEntryTypesRootPanel  {padding: 6px;}
 /* End:  Change entry types dialog styles. */
-
-/* Start:  Folder entry composite styles. */
-	.vibe-folderEntryComposite-closeImg     {}
-	.vibe-folderEntryComposite-closeLabel   {white-space: nowrap; margin-right: 5px; vertical-align: middle; font-weight: normal; font-size: .9em; }
-	.vibe-folderEntryComposite-closePanel   {position: relative; display: inline; white-space: nowrap; cursor: pointer !important;}
-	.vibe-folderEntryComposite-contentPanel {position: relative; padding: 10px; overflow: auto;}
-	.vibe-folderEntryComposite-footerPanel  {padding-bottom: 10px;}
-	.vibe-folderEntryComposite-navNextImg   {cursor: pointer;}
-	.vibe-folderEntryComposite-navPanel     {position: relative; display: inline; white-space: nowrap;}
-	.vibe-folderEntryComposite-navPrevImg   {cursor: pointer; padding-right: 1px;}
-	.vibe-folderEntryComposite-rightPanel   {position: absolute; top: 3px; right: 8px; white-space: nowrap;}
-	.vibe-folderEntryComposite-rootPanel    {}
-/* End:  Folder entry composite styles. */
-
-/* Start:  Folder entry dialog styles. */
-	.vibe-folderEntryDlgBox .popupContent {background-color: white !important;}
-	.vibe-folderEntryDlg-panel            {}
-/* End:  Folder entry dialog styles. */
-
-/* Start:  Folder entry view styles. */
-	.vibe-folderEntryView-panel {}
-/* End:  Folder entry view styles. */
 
 /* Start:  Profile entry dialog styles. */
 	.vibe-profileEntryDlg-attrCaption {font-weight: bold; padding-right: 3px;}

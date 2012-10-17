@@ -91,7 +91,7 @@ public class FolderEntryDlg extends DlgBox {
 		super(false, true, DlgButtonMode.Close);
 
 		// ...and create the dialog's content.
-		addStyleName("vibe-folderEntryDlgBox");
+		addStyleName("vibe-feDlg-box");
 		createAllDlgContent(
 			"",										// Caption displayed by FolderEntryComposite, not the dialog.
 			new EditSuccessfulHandler() {			// The dialog's EditSuccessfulHandler.
@@ -124,7 +124,7 @@ public class FolderEntryDlg extends DlgBox {
 	public Panel createContent(Object callbackData) {
 		// Create a panel to hold the dialog's content...
 		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-folderEntryDlg-panel");
+		m_fp.addStyleName("vibe-feDlg-panel");
 		
 		// ...and return it.
 		return m_fp;
