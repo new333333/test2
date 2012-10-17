@@ -134,7 +134,11 @@ public class AxisMultipartFile implements MultipartFile, FileExtendedSupport {
 		return null;
 	}
 
-	@Override
+    public String getExpectedMd5() {
+        return null;
+    }
+
+    @Override
 	public String getModifierName() {
 		// Not supported
 		return null;

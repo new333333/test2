@@ -135,23 +135,25 @@ public class FileUtils {
     	}
 	}
     
-	public static void modifyFolderEntryWithFile(FolderEntry entry, String dataName, String filename, InputStream is, Date modDate) 
+	public static void modifyFolderEntryWithFile(FolderEntry entry, String dataName, String filename, InputStream is, Date modDate, String expectedMd5)
 			throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException 
 			 {
 		if (Validator.isNull(dataName) && entry.getParentFolder().isLibrary()) {
 			// The file is being created within a library folder and the client hasn't specified a data item name explicitly.
 			// This will attach the file to the most appropriate definition element (data item) of the entry type (which is by default "upload").
-			FolderUtils.modifyLibraryEntry(entry, filename, is, modDate, true);
+			FolderUtils.modifyLibraryEntry(entry, filename, is, modDate, expectedMd5, true);
 		}
 		else {
 			if (Validator.isNull(dataName) || "ss_attachFile".equals(dataName)) 
 				dataName="ss_attachFile1";
 			Map options = null;
 			MultipartFile mf;
-			if(modDate != null) {
-				options = new HashMap();
-				options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
-				mf = new ExtendedMultipartFile(filename, is, modDate);
+			if(modDate != null || expectedMd5 != null) {
+                if (modDate != null) {
+				    options = new HashMap();
+				    options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
+                }
+                mf = new ExtendedMultipartFile(filename, is, modDate, expectedMd5);
 			}
 			else {
 				mf = new SimpleMultipartFile(filename, is); 					
@@ -179,20 +181,23 @@ public class FileUtils {
 	}
 
 	public static void modifyPrincipalWithFile(Principal principal, String dataName,
-			String filename, InputStream is, Date modDate)
+			String filename, InputStream is, Date modDate, String expectedMd5)
 			throws AccessControlException, ReservedByAnotherUserException,
 			WriteFilesException, WriteEntryDataException {
 		if (Validator.isNull(dataName))
 			dataName = "ss_attachFile1";
 		Map options = null;
 		MultipartFile mf;
-		if (modDate != null) {
-			options = new HashMap();
-			options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
-			mf = new ExtendedMultipartFile(filename, is, modDate);
-		} else {
-			mf = new SimpleMultipartFile(filename, is);
-		}
+        if(modDate != null || expectedMd5 != null) {
+             if (modDate != null) {
+                options = new HashMap();
+                options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
+             }
+             mf = new ExtendedMultipartFile(filename, is, modDate, expectedMd5);
+        }
+        else {
+            mf = new SimpleMultipartFile(filename, is);
+        }
 		Map fileItems = new HashMap();
 		fileItems.put(dataName, mf);
 		getProfileModule().modifyEntry(principal.getId(), new EmptyInputData(), fileItems, null, null, options);

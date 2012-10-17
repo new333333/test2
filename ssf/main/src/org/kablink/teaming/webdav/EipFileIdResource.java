@@ -138,10 +138,10 @@ public class EipFileIdResource extends WebdavResource implements PropFindableRes
 		
 		try {
 			if(EntityType.folderEntry == entityType) {
-				FileUtils.modifyFolderEntryWithFile((FolderEntry)entity, dataName, filename, inputStream, null);
+				FileUtils.modifyFolderEntryWithFile((FolderEntry)entity, dataName, filename, inputStream, null, null);
 			}
 			else if(EntityType.user == entityType || EntityType.group == entityType) { // principal	
-				FileUtils.modifyPrincipalWithFile((Principal)entity, dataName, filename, inputStream, null);
+				FileUtils.modifyPrincipalWithFile((Principal)entity, dataName, filename, inputStream, null, null);
 			}
 			else if(EntityType.workspace == entityType || EntityType.folder == entityType || EntityType.profiles == entityType) { // binder	
 				FileUtils.modifyBinderWithFile((Binder)entity, dataName, filename, inputStream);

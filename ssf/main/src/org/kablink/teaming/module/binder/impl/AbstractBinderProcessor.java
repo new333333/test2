@@ -357,8 +357,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
   		FilesErrors nameErrors = new FilesErrors();
    		
    		checkInputFileNames(fileUploadItems, nameErrors);
+
+        FilesErrors checkSumErrors = getFileModule().verifyCheckSums(fileUploadItems);
   		FilesErrors filterErrors = getFileModule().filterFiles(binder, binder, fileUploadItems);
     	filterErrors.getProblems().addAll(nameErrors.getProblems());
+        filterErrors.getProblems().addAll(checkSumErrors.getProblems());
     	return filterErrors;
     }
 
@@ -772,8 +775,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
   		FilesErrors nameErrors = new FilesErrors();
    		
    		checkInputFileNames(fileUploadItems, nameErrors);
+        FilesErrors checkSumErrors = getFileModule().verifyCheckSums(fileUploadItems);
   		FilesErrors filterErrors = getFileModule().filterFiles(binder, binder, fileUploadItems);
     	filterErrors.getProblems().addAll(nameErrors.getProblems());
+    	filterErrors.getProblems().addAll(checkSumErrors.getProblems());
     	return filterErrors;
     }
 

@@ -72,6 +72,7 @@ public enum ApiErrorCode {
 	FILE_DELETE_FAILED, // Deleting file failed
 	FILE_ARCHIVE_FAILED, // Archiving file failed
 	FILE_ENCRYPTION_FAILED, // Encrypting file failed
+	FILE_CHECKSUM_FAILED, // Encrypting file failed
 	FILE_LOCK_CANCELLATION_FAILED, // File lock cancellation failed
 	FILE_EXISTS, // This folder requires that all uploaded files have unique filenames. A file with this name already exists.
 	FILE_NOT_FOUND, // No file found with this name or id

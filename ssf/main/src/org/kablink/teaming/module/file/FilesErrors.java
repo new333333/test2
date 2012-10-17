@@ -90,7 +90,8 @@ public class FilesErrors implements Serializable {
 		public static int PROBLEM_REGULAR_FILE_IN_MIRRORED_FOLDER   = 9;
 		public static int PROBLEM_MIRRORED_FILE_READONLY_DRIVER		= 10;
 		public static int PROBLEM_ENCRYPTION_FAILED					= 11;
-		
+		public static int PROBLEM_CHECKSUM_MISMATCH                 = 12;
+
 		// Message codes corresponding to each regular problem type.
 		public static String[] typeCodes = {
 			"file.error.other",
@@ -104,7 +105,8 @@ public class FilesErrors implements Serializable {
 			"file.error.mirrored.file.multiple",
 			"file.error.regular.file.in.mirrored.folder",
 			"file.error.mirrored.file.readonly.driver",
-			"file.error.encryption.failed"
+			"file.error.encryption.failed",
+			"file.error.checksum.mismatch",
 		};
 		
 		// API error codes corresponding to each regular problem type.
@@ -120,7 +122,8 @@ public class FilesErrors implements Serializable {
 			ApiErrorCode.MIRRORED_MULTIPLE,
 			ApiErrorCode.REGULAR_FILE_IN_MIRRORED_FOLDER,
 			ApiErrorCode.MIRRORED_READONLY_DRIVER,
-			ApiErrorCode.FILE_ENCRYPTION_FAILED
+			ApiErrorCode.FILE_ENCRYPTION_FAILED,
+			ApiErrorCode.FILE_CHECKSUM_FAILED,
 		};
 		
 		// HTTP status codes corresponding to each regular problem type.
@@ -136,7 +139,8 @@ public class FilesErrors implements Serializable {
 			400,
 			400,
 			400,
-			500
+			500,
+			400,
 		};
 
 		private String repositoryName; // required

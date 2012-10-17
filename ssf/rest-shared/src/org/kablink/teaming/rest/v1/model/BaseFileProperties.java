@@ -48,6 +48,7 @@ public abstract class BaseFileProperties extends SearchableObject {
 	private HistoryStamp creation;
 	private HistoryStamp modification;
 	private Long length; // in bytes
+    private String md5;
 	private Integer versionNumber;
 	private Integer majorVersion;
 	private Integer minorVersion;
@@ -89,6 +90,14 @@ public abstract class BaseFileProperties extends SearchableObject {
 	public void setLength(Long length) {
 		this.length = length;
 	}
+
+    public String getMd5() {
+        return md5;
+    }
+
+    public void setMd5(String md5) {
+        this.md5 = md5;
+    }
 
     @XmlElement(name="version_number")
 	public Integer getVersionNumber() {

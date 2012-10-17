@@ -94,7 +94,7 @@ public class RepositoryUtil {
 			// TODO For now we ignore file path relative to the owning entry.
 			// We simply treat that the file path is identical to the file name.
 			InputStream is = fui.getInputStream();
-			long size = fui.makeReentrant();
+			long size = fui.makeReentrant().getSize();
 			try {
 				return session.createVersioned(binder, entry, fui
 					.getOriginalFilename(), is, size);
@@ -136,7 +136,7 @@ public class RepositoryUtil {
 
 		try {
 			InputStream is = fui.getInputStream();
-			long size = fui.makeReentrant();
+			long size = fui.makeReentrant().getSize();
 			
 			try {
 				session.update(binder, entry, fui.getOriginalFilename(), is, size);

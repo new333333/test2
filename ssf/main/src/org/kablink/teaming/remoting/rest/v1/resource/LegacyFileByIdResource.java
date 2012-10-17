@@ -75,7 +75,7 @@ public class LegacyFileByIdResource extends AbstractFileResource {
 		InputStream is = getInputStreamFromMultipartFormdata(request);
 		try {
 			return new LegacyFileProperties(
-                    updateExistingFileContent(entity, fa, dataName, modDateISO8601, forceOverwrite, lastVersionNumber,
+                    updateExistingFileContent(entity, fa, dataName, modDateISO8601, null, forceOverwrite, lastVersionNumber,
                             lastMajorVersionNumber, lastMinorVersionNumber, is));
 		}
 		finally {
@@ -100,7 +100,7 @@ public class LegacyFileByIdResource extends AbstractFileResource {
 		InputStream is = getRawInputStream(request);
 		try {
 			return new LegacyFileProperties(
-                    updateExistingFileContent(entity, fa, dataName, modDateISO8601, forceOverwrite, lastVersionNumber,
+                    updateExistingFileContent(entity, fa, dataName, modDateISO8601, null, forceOverwrite, lastVersionNumber,
                             lastMajorVersionNumber, lastMinorVersionNumber, is));
 		}
 		finally {

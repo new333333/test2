@@ -39,6 +39,7 @@ import java.io.File;
 public class ExtendedMultipartFile extends SimpleMultipartFile implements FileExtendedSupport {
 
 	private Date modDate=null;
+    private String expectedMd5=null;
 	private Long modifierId=null;
 	private String modifierName=null;
 	private Long creatorId=null;
@@ -54,6 +55,12 @@ public class ExtendedMultipartFile extends SimpleMultipartFile implements FileEx
 		this.modDate = modificationDate;
 	}
 	
+	public ExtendedMultipartFile(String fileName, InputStream content, Date modificationDate, String expectedMd5) {
+		super(fileName, content);
+		this.modDate = modificationDate;
+        this.expectedMd5 = expectedMd5;
+	}
+
 	public ExtendedMultipartFile(String fileName, File file, boolean deleteOnClose, Date modificationDate) {
 		super(fileName, file, deleteOnClose);
 		this.modDate = modificationDate;
@@ -72,8 +79,16 @@ public class ExtendedMultipartFile extends SimpleMultipartFile implements FileEx
 	public void setModDate(Date modDate) {
 		this.modDate = modDate;
 	}
-	
-	@Override
+
+    public String getExpectedMd5() {
+        return expectedMd5;
+    }
+
+    public void setExpectedMd5(String expectedMd5) {
+        this.expectedMd5 = expectedMd5;
+    }
+
+    @Override
 	public String getModifierName() {
 		return modifierName;
 	}

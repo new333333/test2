@@ -30,47 +30,35 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.util;
+package org.kablink.teaming.module.file;
 
-import java.util.Date;
+import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.util.VibeRuntimeException;
+import org.kablink.util.api.ApiErrorCode;
 
-public interface FileExtendedSupport {
+/**
+ *
+ * @author David Lewis
+ */
+public class ChecksumMismatchException extends VibeRuntimeException {
 
-	/**
-	 * Return modification date. It may be <code>null</code>.
-	 * 
-	 * @return
-	 */
-	public Date getModDate();
-	
-	/**
-	 * Return modifier user name. It may be <code>null</code>.
-	 * @return
-	 */
-	public String getModifierName();
-	
-	/**
-	 * Return modifier user ID. It may be <code>null</code>.
-	 * @return
-	 */
-	public Long getModifierId();
-	
-	/**
-	 * Return creator user name. It may be <code>null</code>.
-	 * @return
-	 */
-	public String getCreatorName();
-	
-	/**
-	 * Return creator user ID. It may be <code>null</code>.
-	 * @return
-	 */
-	public Long getCreatorId();
+    public ChecksumMismatchException() {
+        super();
+    }
 
-    /**
-     * Returns the expected MD5 sum of the file contents.
-     * @return
-     */
-    public String getExpectedMd5();
+    public ChecksumMismatchException(String message) {
+        super(message);
+    }
 
+    /* (non-Javadoc)
+    * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+    */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.FILE_CHECKSUM_FAILED;
+	}
+
+    public int getHttpStatusCode() {
+        return 400;
+    }
 }

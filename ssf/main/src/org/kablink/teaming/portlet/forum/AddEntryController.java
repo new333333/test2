@@ -349,11 +349,11 @@ public class AddEntryController extends SAbstractController {
 	        	    	//If there is a pre-existing entry - we modify the entry
 	        	    	try {
 	        	    		if (preExistingEntry == null) {
-		        	    		FolderEntry fe = FolderUtils.createLibraryEntry(entryCreationFolder, strDecodedFileName, myFile.getInputStream(), null, true);
+		        	    		FolderEntry fe = FolderUtils.createLibraryEntry(entryCreationFolder, strDecodedFileName, myFile.getInputStream(), null, null, true);
 		        				//Mark this entry as having been seen by the current user
 		        				getProfileModule().setSeen(null, fe);
 		        	    	} else {
-		        	    		FolderUtils.modifyLibraryEntry(preExistingEntry, strDecodedFileName, myFile.getInputStream(), null, true);
+		        	    		FolderUtils.modifyLibraryEntry(preExistingEntry, strDecodedFileName, myFile.getInputStream(), null, null, true);
 		        				//Mark this entry as having been seen by the current user
 		        				getProfileModule().setSeen(null, preExistingEntry);
 		        	    	}

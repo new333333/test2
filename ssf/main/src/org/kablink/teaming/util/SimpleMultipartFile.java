@@ -40,6 +40,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.io.output.NullOutputStream;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,6 +56,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class SimpleMultipartFile implements MultipartFile {
 
 	protected String fileName;
+    protected String md5;
 	
 	// Only one of the following two is set per instance.
 	protected InputStream content;
@@ -89,6 +91,10 @@ public class SimpleMultipartFile implements MultipartFile {
 		return null;
 	}
 
+    public boolean isReentrant() {
+        return file!=null;
+    }
+
 	/**
 	 * Return the size of the file in bytes.
 	 * <p>
@@ -111,6 +117,15 @@ public class SimpleMultipartFile implements MultipartFile {
 			return -1;
 	}
 
+    public String getMd5() throws IOException {
+        if (md5==null && file!=null) {
+            DigestOutputStream os = new DigestOutputStream(new NullOutputStream());
+            FileCopyUtils.copy(new BufferedInputStream(new FileInputStream(file)), os);
+            md5 = os.getDigest();
+        }
+        return md5;
+    }
+
 	public byte[] getBytes() throws IOException {
 		if(file != null)
 			return FileCopyUtils.copyToByteArray(file);
@@ -130,13 +145,16 @@ public class SimpleMultipartFile implements MultipartFile {
 			throw new IOException(
 					"Destination file [" + dest.getAbsolutePath() + "] already exists and could not be deleted");
 		}
-		
+
+        DigestInputStream is;
 		if(file != null) {
-			FileCopyUtils.copy(file, dest);
+            is = new DigestInputStream(new BufferedInputStream(new FileInputStream(file)));
 		}
 		else {
-			FileCopyUtils.copy(content, new BufferedOutputStream(new FileOutputStream(dest)));
+            is = new DigestInputStream(content);
 		}
+        FileCopyUtils.copy(is, new BufferedOutputStream(new FileOutputStream(dest)));
+        md5 = is.getDigest();
 	}
 	
 	/**

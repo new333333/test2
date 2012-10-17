@@ -6445,13 +6445,13 @@ public class GwtViewHelper {
         	    	FolderEntry existingEntry = fm.getLibraryFolderEntryByFileName(folder, fileName);
     	    		if (null != existingEntry) {
     	    			// ...we modify it...
-        	    		FolderUtils.modifyLibraryEntry(existingEntry, fileName, fi, null, true);
+        	    		FolderUtils.modifyLibraryEntry(existingEntry, fileName, fi, null, null, true);
         				pm.setSeen(null, existingEntry);
         	    	}
     	    		
     	    		else {
     	    			// ...otherwise, we create a new one.
-        	    		FolderEntry fe = FolderUtils.createLibraryEntry(folder, fileName, fi, null, true);
+        	    		FolderEntry fe = FolderUtils.createLibraryEntry(folder, fileName, fi, null, null, true);
         				pm.setSeen(null, fe);
         	    	}
     	    	}
