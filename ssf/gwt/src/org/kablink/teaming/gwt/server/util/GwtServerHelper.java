@@ -118,6 +118,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
@@ -4969,6 +4970,28 @@ public class GwtServerHelper {
 		
 		return totalNumberOfMembers;
 	}
+	
+	/**
+	 * Get the information about the given group's membership.  Is the membership dynamic or static.
+	 * Are external users/groups allowed.
+	 */
+	public static GroupMembershipInfo getGroupMembershipInfo(
+		AllModulesInjected ami,
+		Long groupId )
+	{
+		GroupMembershipInfo info;
+		boolean isDynamic;
+		boolean externalAllowed;
+		
+		info = new GroupMembershipInfo();
+		
+		//!!! Set whether external users/groups are allowed
+		externalAllowed =  true;
+		isDynamic = isGroupMembershipDynamic( ami, groupId );
+		info.setMembershipInfo( isDynamic, externalAllowed );
+		
+		return info;
+	}
 
 	/**
 	 * Returns a GwtTeamingException from a generic Exception.
@@ -7935,7 +7958,7 @@ public class GwtServerHelper {
 		case GET_FOOTER_TOOLBAR_ITEMS:
 		case GET_GROUP_ASSIGNEE_MEMBERSHIP:
 		case GET_GROUP_MEMBERSHIP:
-		case GET_GROUP_MEMBERSHIP_TYPE:
+		case GET_GROUP_MEMBERSHIP_INFO:
 		case GET_GROUPS:
 		case GET_HELP_URL:
 		case GET_HORIZONTAL_NODE:

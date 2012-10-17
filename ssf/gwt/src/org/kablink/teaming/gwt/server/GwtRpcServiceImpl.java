@@ -70,6 +70,7 @@ import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
+import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
@@ -329,11 +330,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			if ( group != null )
 			{
 				Description desc;
+				boolean allowExternal;
 				
 				groupInfo.setId( group.getId() );
 				groupInfo.setName( group.getName() );
 				groupInfo.setTitle( group.getTitle() );
-				groupInfo.setIsMembershipDynamic( group.isDynamic() );
+				allowExternal = true;//!!! Get the group the group object
+				groupInfo.setMembershipInfo( group.isDynamic(), allowExternal );
 
 				desc = group.getDescription();
 				if ( desc != null )
@@ -1233,17 +1236,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_GROUP_MEMBERSHIP_TYPE:
+		case GET_GROUP_MEMBERSHIP_INFO:
 		{
-			GetGroupMembershipTypeCmd ggmtCmd;
-			BooleanRpcResponseData responseData;
-			Boolean result;
+			GetGroupMembershipInfoCmd ggmtCmd;
+			GroupMembershipInfo result;
 			
-			ggmtCmd = (GetGroupMembershipTypeCmd) cmd;
-			result = GwtServerHelper.isGroupMembershipDynamic( this, ggmtCmd.getGroupId() );
-			responseData = new BooleanRpcResponseData( result );
-			response = new VibeRpcResponse( responseData );
-			return response;
+			ggmtCmd = (GetGroupMembershipInfoCmd) cmd;
+			result = GwtServerHelper.getGroupMembershipInfo( this, ggmtCmd.getGroupId() );
+			return new VibeRpcResponse( result );
 		}
 		
 		case GET_GROUPS:

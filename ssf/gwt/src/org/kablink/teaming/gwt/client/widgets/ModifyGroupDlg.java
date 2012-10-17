@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
@@ -53,7 +54,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDynamicMembershipCriteriaCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipTypeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetIsDynamicGroupMembershipAllowedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNumberOfMembersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.IntegerRpcResponseData;
@@ -200,7 +201,7 @@ public class ModifyGroupDlg extends DlgBox
 
 			table2 = new FlexTable();
 			cellFormatter2 = table2.getFlexCellFormatter();
-			
+
 			// Add the radio buttons
 			m_staticRb = new RadioButton( "membershipType", messages.modifyGroupDlgStaticLabel() );
 			table2.setWidget( 0, 0, m_staticRb );
@@ -319,7 +320,7 @@ public class ModifyGroupDlg extends DlgBox
 		cmd = new CreateGroupCmd( getGroupName(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_dynamicMembershipCriteria );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
-
+	
 	/**
 	 * This gets called when the user presses ok.  If we are editing an existing group
 	 * we will issue an rpc request to save the group and then call m_editSuccessfulHandler.
@@ -506,14 +507,14 @@ public class ModifyGroupDlg extends DlgBox
 	}
 	
 	/**
-	 * Issue an ajax request to get the membership type (static or dynamic) for the group
+	 * Issue an ajax request to get the membership information for the group
 	 * we are working with.
 	 */
-	private void getMembershipType()
+	private void getMembershipInfo()
 	{
 		if ( m_groupInfo != null )
 		{
-			GetGroupMembershipTypeCmd cmd;
+			GetGroupMembershipInfoCmd cmd;
 			AsyncCallback<VibeRpcResponse> rpcCallback;
 			
 			rpcCallback = new AsyncCallback<VibeRpcResponse>()
@@ -529,10 +530,12 @@ public class ModifyGroupDlg extends DlgBox
 				@Override
 				public void onSuccess( VibeRpcResponse result )
 				{
-					BooleanRpcResponseData responseData;
+					GroupMembershipInfo membershipInfo;
 					
-					responseData = ((BooleanRpcResponseData) result.getResponseData());
-					m_groupInfo.setIsMembershipDynamic( responseData.getBooleanValue() );
+					membershipInfo = ((GroupMembershipInfo) result.getResponseData());
+					m_groupInfo.setMembershipInfo(
+												membershipInfo.getIsMembershipDynamic(),
+												membershipInfo.getIsExternalAllowed() );
 
 					// Is the membership dynamic?
 					if ( m_groupInfo.getIsMembershipDynamic() )
@@ -581,7 +584,7 @@ public class ModifyGroupDlg extends DlgBox
 				}						
 			};
 			
-			cmd = new GetGroupMembershipTypeCmd( m_groupInfo.getId() );
+			cmd = new GetGroupMembershipInfoCmd( m_groupInfo.getId() );
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
 	}
@@ -660,7 +663,7 @@ public class ModifyGroupDlg extends DlgBox
 					@Override
 					public void execute()
 					{
-						getMembershipType();
+						getMembershipInfo();
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -734,7 +737,7 @@ public class ModifyGroupDlg extends DlgBox
 				m_staticMembershipDlg = new ModifyStaticMembershipDlg( false, true, handler, null, x, y );
 			}
 			
-			m_staticMembershipDlg.init( getGroupName(), m_groupMembership );
+			m_staticMembershipDlg.init( getGroupName(), m_groupMembership, m_groupInfo.getIsExternalAllowed() );
 			m_staticMembershipDlg.setPopupPosition( x, y );
 			m_staticMembershipDlg.show();
 		}
