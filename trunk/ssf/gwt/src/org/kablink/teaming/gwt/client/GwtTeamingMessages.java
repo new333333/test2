@@ -567,6 +567,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_LoginDlg();
 	String codeSplitFailure_MainMenuControl();
 	String codeSplitFailure_MainPage();
+	String codeSplitFailure_ManageCommentsComposite();
 	String codeSplitFailure_ManageCommentsDlg();
 	String codeSplitFailure_ManageGroupsDlg();
 	String codeSplitFailure_ManageNetFoldersDlg();
@@ -1794,9 +1795,9 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the "Edit graphic properties" dialog
 	String editGraphicPropertiesDlgSetImageSize();
 
-	// Strings used in the Manage Comments dialog.
-	String manageCommentsDlgSend();
-	String manageCommentsDlgWhoHasAccess();
+	// Strings used in the Manage Comments composite.
+	String manageCommentsCompositeSend();
+	String manageCommentsCompositeWhoHasAccess();
 	
 	// Strings used in the Manage Groups dialog
 	String manageGroupsDlgAddGroupLabel();

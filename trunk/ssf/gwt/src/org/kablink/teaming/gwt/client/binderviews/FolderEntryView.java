@@ -66,7 +66,7 @@ public class FolderEntryView extends ViewBase {
 		
 		// ...create a panel to hold the view's content...
 		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-folderEntryView-panel");
+		m_fp.addStyleName("vibe-feRootView-panel");
 		initWidget(m_fp);
 
 		// ...and load it.

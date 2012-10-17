@@ -204,11 +204,11 @@ public class FolderEntryComposite extends ResizeComposite
 		
 		// ...create the base content panels...
 		m_rootPanel = new VibeFlowPanel();
-		m_rootPanel.addStyleName("vibe-folderEntryComposite-rootPanel");
+		m_rootPanel.addStyleName("vibe-feComposite-rootPanel");
 		createEditInPlaceFrame(m_rootPanel);
 		createCaption(m_rootPanel, ((null == dialog) ? null : dialog.getHeaderPanel()));
 		m_contentPanel = new VibeFlowPanel();
-		m_contentPanel.addStyleName("vibe-folderEntryComposite-contentPanel");
+		m_contentPanel.addStyleName("vibe-feComposite-contentPanel");
 		m_rootPanel.add(m_contentPanel);
 		initWidget(m_rootPanel);
 
@@ -295,7 +295,7 @@ public class FolderEntryComposite extends ResizeComposite
 		if (!m_isDialog) {
 			// No!  Create a panel to hold the close widgets.
 			VibeFlowPanel closePanel = new VibeFlowPanel();
-			closePanel.addStyleName("vibe-folderEntryComposite-closePanel");
+			closePanel.addStyleName("vibe-feComposite-closePanel");
 			closePanel.setTitle(m_messages.folderEntry_Alt_Close());
 			container.add(closePanel);
 
@@ -309,13 +309,13 @@ public class FolderEntryComposite extends ResizeComposite
 
 			// Create a close label...
 			InlineLabel close = new InlineLabel(m_messages.folderEntry_Close());
-			close.addStyleName("vibe-folderEntryComposite-closeLabel");
+			close.addStyleName("vibe-feComposite-closeLabel");
 			close.addClickHandler(closeClick);
 			closePanel.add(close);
 			
 			// ...and an 'X' image to close it.
 			Image closeX = GwtClientHelper.buildImage(m_images.closeX());
-			closeX.addStyleName("vibe-folderEntryComposite-closeImg");
+			closeX.addStyleName("vibe-feComposite-closeImg");
 			closeX.addClickHandler(closeClick);
 			closePanel.add(closeX);
 		}
@@ -328,7 +328,7 @@ public class FolderEntryComposite extends ResizeComposite
 	private void createCaptionNavigation(Panel container) {
 		// Create a panel to hold the navigation buttons.
 		VibeFlowPanel navPanel = new VibeFlowPanel();
-		navPanel.addStyleName("vibe-folderEntryComposite-navPanel");
+		navPanel.addStyleName("vibe-feComposite-navPanel");
 		if (!m_isDialog) {
 			navPanel.addStyleName("padding15R");
 		}
@@ -336,7 +336,7 @@ public class FolderEntryComposite extends ResizeComposite
 
 		// Create the previous button.
 		Image button = GwtClientHelper.buildImage(m_images.previousTeal());
-		button.addStyleName("vibe-folderEntryComposite-navPrevImg");
+		button.addStyleName("vibe-feComposite-navPrevImg");
 		button.setTitle(m_messages.folderEntry_Alt_Previous());
 		button.addClickHandler(new ClickHandler() {
 			@Override
@@ -348,7 +348,7 @@ public class FolderEntryComposite extends ResizeComposite
 		
 		// Create the next button.
 		button = GwtClientHelper.buildImage(m_images.nextTeal());
-		button.addStyleName("vibe-folderEntryComposite-navNextImg");
+		button.addStyleName("vibe-feComposite-navNextImg");
 		button.setTitle(m_messages.folderEntry_Alt_Next());
 		button.addClickHandler(new ClickHandler() {
 			@Override
@@ -365,7 +365,7 @@ public class FolderEntryComposite extends ResizeComposite
 	private void createCaptionRight(Panel container) {
 		// Create the right aligned panel
 		VibeFlowPanel rightPanel = new VibeFlowPanel();
-		rightPanel.addStyleName("vibe-folderEntryComposite-rightPanel");
+		rightPanel.addStyleName("vibe-feComposite-rightPanel");
 		container.add(rightPanel);
 
 		//
@@ -508,7 +508,7 @@ public class FolderEntryComposite extends ResizeComposite
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				m_footerPanel = ((FooterPanel) tpb);
-				m_footerPanel.addStyleName("vibe-folderEntryComposite-footerPanel");
+				m_footerPanel.addStyleName("vibe-feComposite-footerPanel");
 				m_rootPanel.add(m_footerPanel);
 				loadPart2Async();
 			}
