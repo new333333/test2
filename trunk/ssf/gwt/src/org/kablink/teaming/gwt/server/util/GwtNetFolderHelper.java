@@ -768,6 +768,8 @@ public class GwtNetFolderHelper
 											ami.getAdminModule(),
 											ami.getResourceDriverModule(),
 											ami.getProfileModule(),
+											ami.getBinderModule(),
+											ami.getWorkspaceModule(),
 											netFolderRoot.getName(),
 											netFolderRoot.getRootPath(),
 											netFolderRoot.getProxyName(),

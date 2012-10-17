@@ -50,6 +50,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
+import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.jobs.Schedule;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -544,8 +545,6 @@ public class NetFolderHelper
 		criteria.add( criterion );
 		criterion = Restrictions.in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.TRUE} );
 		criteria.add( criterion );
-		criterion = Restrictions.in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE} );
-		criteria.add( criterion );
 		criterion = Restrictions.in(Constants.IS_TOP_FOLDER_FIELD, new String[]{Constants.TRUE} );
 		criteria.add( criterion );
 		
@@ -553,8 +552,6 @@ public class NetFolderHelper
 		if ( rootName != null && rootName.length() > 0 )
 		{
 			// Yes
-			criterion = Restrictions.in( Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE} );
-			criteria.add( criterion );
 			criterion = Restrictions.in( Constants.RESOURCE_DRIVER_NAME_FIELD, new String[]{rootName} );
 			criteria.add( criterion );
 		}
@@ -629,6 +626,8 @@ public class NetFolderHelper
 		AdminModule adminModule,
 		ResourceDriverModule resourceDriverModule,
 		ProfileModule profileModule,
+		BinderModule binderModule,
+		WorkspaceModule workspaceModule,
 		String rootName,
 		String rootPath,
 		String proxyName,
@@ -647,9 +646,33 @@ public class NetFolderHelper
 		String xmlStr;
 		UserProperties userProperties;
 		FilrAdminTasks filrAdminTasks;
+		ResourceDriverConfig rdConfig;
+		boolean isConfigured1;
+		boolean reIndexNeeded = false;
 
 		adminModule.checkAccess( AdminOperation.manageResourceDrivers );
 
+		// Get the current configuration
+		{
+			String path;
+			String name;
+			String pwd;
+			
+			// Is the driver configured
+			isConfigured1 = false;
+			rdConfig = ResourceDriverManagerUtil.getResourceDriverManager().getDriverConfig( rootName );
+			path = rdConfig.getRootPath();
+			name = rdConfig.getAccountName();
+			pwd = rdConfig.getPassword();
+			if ( path != null && path.length() > 0 &&
+				 name != null && name.length() > 0 &&
+				 pwd != null && pwd.length() > 0 )
+			{
+				// Yes
+				isConfigured1 = true;
+			}
+		}
+		
 		options = new HashMap();
 		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
 		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, proxyName ); 
@@ -675,8 +698,6 @@ public class NetFolderHelper
 					isSharePointServer );
 		}
 
-		ResourceDriverConfig rdConfig;
-		
 		// Modify the resource driver
 		rdConfig = resourceDriverModule.modifyResourceDriver(
 															rootName,
@@ -692,24 +713,87 @@ public class NetFolderHelper
 			resourceDriverModule.setSynchronizationSchedule( scheduleInfo, rdConfig.getId() );
 		}
 
-		// Get the admin user so we can remove an administrative task to his user properties.
-		zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		adminUserName = SZoneConfig.getAdminUserName( zoneName );
-		adminUser = profileModule.getUser( adminUserName );
+		// Remove the task for the administrtor to enter the proxy credentials for this net folder server.
+		{
+			// Get the admin user so we can remove an administrative task to his user properties.
+			zoneName = RequestContextHolder.getRequestContext().getZoneName();
+			adminUserName = SZoneConfig.getAdminUserName( zoneName );
+			adminUser = profileModule.getUser( adminUserName );
+			
+			// Get the FilrAdminTasks from the administrator's user properties
+			userProperties = profileModule.getUserProperties( adminUser.getId() );
+			xmlStr = (String)userProperties.getProperty( ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS );
+			filrAdminTasks = new FilrAdminTasks( xmlStr );
+			
+			// Remove the task for the administrator to enter the proxy credentials for this net folder server.
+			filrAdminTasks.deleteEnterNetFolderServerProxyCredentialsTask( rdConfig.getId() );
+	
+			// Save the FilrAdminTasks to the administrator's user properties
+			profileModule.setUserProperty(
+										adminUser.getId(),
+										ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS,
+										filrAdminTasks.toString() );
+		}
 		
-		// Get the FilrAdminTasks from the administrator's user properties
-		userProperties = profileModule.getUserProperties( adminUser.getId() );
-		xmlStr = (String)userProperties.getProperty( ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS );
-		filrAdminTasks = new FilrAdminTasks( xmlStr );
+		// Is the configuration complete?
+		{
+			String path;
+			String name;
+			String pwd;
+			boolean isConfigured2;
+			
+			// Is the driver configured
+			isConfigured2 = false;
+			rdConfig = ResourceDriverManagerUtil.getResourceDriverManager().getDriverConfig( rootName );
+			path = rdConfig.getRootPath();
+			name = rdConfig.getAccountName();
+			pwd = rdConfig.getPassword();
+			if ( path != null && path.length() > 0 &&
+				 name != null && name.length() > 0 &&
+				 pwd != null && pwd.length() > 0 )
+			{
+				// Yes
+				isConfigured2 = true;
+			}
+			
+			if ( isConfigured1 != isConfigured2 )
+				reIndexNeeded = true;
+		}
 		
-		// Remove the task for the administrator to enter the proxy credentials for this net folder server.
-		filrAdminTasks.deleteEnterNetFolderServerProxyCredentialsTask( rdConfig.getId() );
+		// Re-index all of the net folders that reference this net folder server.  We need to do
+		// this so "home directory" net folders will show up in "My files" after the net folder server
+		// has been configured fully.
+		// We only need to re-index if the configuration completeness changed.
+		if ( reIndexNeeded )
+		{
+			List<Map> searchEntries;
 
-		// Save the FilrAdminTasks to the administrator's user properties
-		profileModule.setUserProperty(
-									adminUser.getId(),
-									ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS,
-									filrAdminTasks.toString() );
+			// Find all of the net folders that reference this net folder server.
+			searchEntries = NetFolderHelper.getAllNetFolders(
+														binderModule,
+														workspaceModule,
+														rdConfig.getName(),
+														true );
+
+			if ( searchEntries != null )
+			{
+				for ( Map entryMap:  searchEntries )
+				{
+					Long binderId = null;
+					Object value;
+					
+					value = entryMap.get( Constants.DOCID_FIELD );
+					if ( value != null && value instanceof String )
+						binderId = new Long( (String) value );
+					
+					if ( binderId != null )
+					{
+						// Index this binder.
+						binderModule.indexBinder( binderId, false );
+					}
+				}
+			}
+		}
 		
 		return rdConfig;
 	}

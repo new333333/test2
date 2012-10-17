@@ -69,6 +69,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
@@ -77,6 +78,7 @@ import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
@@ -1268,6 +1270,47 @@ public class EntityIndexUtils {
     public static void addBinderHasResourceDriver(Document doc, Binder binder, boolean fieldsOnly) {
     	if ((binder instanceof Folder) && binder.isMirrored()) {
     		boolean hasResourceDriver = MiscUtil.hasString(binder.getResourceDriverName());
+    		
+    		if ( hasResourceDriver )
+    		{
+    			try
+    			{
+    				ResourceDriver driver;
+    				
+    				hasResourceDriver = false;
+    				
+    				driver = binder.getResourceDriver();
+    				if ( driver != null )
+    				{
+        				ResourceDriverConfig rdConfig;
+        				String rootPath;
+        				String proxyName;
+        				String proxyPwd;
+    					
+        				rdConfig = driver.getConfig();
+
+        				if ( rdConfig != null )
+        				{
+	        				// Is everything configured?
+	        				rootPath = rdConfig.getRootPath();
+	        				proxyName = rdConfig.getAccountName();
+	        				proxyPwd = rdConfig.getPassword();
+	        				if ( rootPath != null && rootPath.length() > 0 &&
+	        					 proxyName != null && proxyName.length() > 0 &&
+	        					 proxyPwd != null && proxyPwd.length() > 0 )
+	        				{
+	        					// Yes
+	        					hasResourceDriver = true;
+	        				}
+        				}
+    				}
+    			}
+    			catch ( Exception ex )
+    			{
+    				hasResourceDriver = false;
+    			}
+    		}
+    		
     		Field path = FieldFactory.createFieldStoredNotAnalyzed(HAS_RESOURCE_DRIVER_FIELD, (hasResourceDriver ? Constants.TRUE : Constants.FALSE));
     		doc.add(path);
     	}

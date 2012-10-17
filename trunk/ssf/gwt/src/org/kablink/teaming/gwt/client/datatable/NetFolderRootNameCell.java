@@ -121,7 +121,7 @@ public class NetFolderRootNameCell extends AbstractCell<NetFolderRoot>
 				title = GwtTeaming.getMessages().modifyNetFolderServerDlg_NotFullyConfigured();
 				
 				// Add an warning icon to indicate the net folder root is not fully configured.
-				sb.appendHtmlConstant( "<img src=\"" + imgPath + "\" title=\"" + title + "\" />&nbsp;" );
+				sb.appendHtmlConstant( "<img align=\"absmiddle\" src=\"" + imgPath + "\" title=\"" + title + "\" />&nbsp;" );
 			}
 			
 			// Add the root's name
