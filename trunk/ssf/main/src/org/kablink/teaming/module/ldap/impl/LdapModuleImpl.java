@@ -3071,7 +3071,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 		    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-		    	List newGroups = processor.syncNewEntries(pf, groupDef, Group.class, Arrays.asList(new MapInputData[] {groupMods}), null, syncResults );
+		    	List newGroups = processor.syncNewEntries(pf, groupDef, Group.class, Arrays.asList(new MapInputData[] {groupMods}), null, syncResults, UserPrincipal.IDENTITY_SOURCE_LDAP );
 		    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
 		    	//flush from cache
 		    	getCoreDao().evict(newGroups);
@@ -4262,7 +4262,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		try 
 		{
 			// Try to create all of the users at once.
-			newUsers = processor.syncNewEntries(pf, userDef, User.class, newUsers, null, syncResults );    
+			newUsers = processor.syncNewEntries(pf, userDef, User.class, newUsers, null, syncResults, UserPrincipal.IDENTITY_SOURCE_LDAP);    
 
 			// Are we running Filr?
 			if ( newUsers != null && Utils.checkIfFilr() )
@@ -4307,7 +4307,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					logger.info( "2nd attempt to create the user: " + userName );
 					nextUser.clear();
 					nextUser.add( new MapInputData(StringCheckUtil.check( attrs ) ) );
-					nextUser = processor.syncNewEntries( pf, userDef, User.class, nextUser, null, syncResults );    
+					nextUser = processor.syncNewEntries( pf, userDef, User.class, nextUser, null, syncResults, UserPrincipal.IDENTITY_SOURCE_LDAP );    
 					
 					if ( nextUser != null && nextUser.size() == 1 )
 					{
@@ -4357,7 +4357,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	    try {
 	    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
             	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-	    	newGroups = processor.syncNewEntries(pf, groupDef, Group.class, newGroups, null, syncResults );
+	    	newGroups = processor.syncNewEntries(pf, groupDef, Group.class, newGroups, null, syncResults, UserPrincipal.IDENTITY_SOURCE_LDAP );
 	    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
 	    	//flush from cache
 	    	getCoreDao().evict(newGroups);

@@ -83,6 +83,7 @@
   	<subclass dynamic-update="true" name="org.kablink.teaming.domain.UserPrincipal">
 	  	<property name="diskQuota" access="field"/>
 	  	<property name="fileSizeLimit" access="field"/>
+	  	<property name="identitySource" access="field"/>
 	    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
 	      <!--<cache usage="read-write"/>-->
 	      <key column="userId"/>
@@ -119,7 +120,6 @@
 		  <property name="timeZone" access="field" length="80"/>
 		  <property name="locale" access="field" length="32"/>
 		  <property name="digestSeed"/>
-	  	  <property name="identitySource" access="field"/>
 	    </subclass>
   	</subclass>
   	<subclass dynamic-update="true" name="org.kablink.teaming.domain.ApplicationPrincipal">
