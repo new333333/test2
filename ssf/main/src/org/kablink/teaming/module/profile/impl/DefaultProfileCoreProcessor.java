@@ -746,13 +746,15 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
      * @param syncResults
      * @return
      */
+    @Override
     public List syncNewEntries(
     	final Binder binder,
     	final Definition definition,
     	final Class clazz,
     	final List inputAccessors,
     	Map options,
-    	PartialLdapSyncResults syncResults ) {
+    	PartialLdapSyncResults syncResults,
+    	int identitySource) {
 	   if (inputAccessors.isEmpty()) return new ArrayList();
 	   SimpleProfiler.start("DefaultProfileCoreProcessor.syncNewEntries");
 	    // The following part requires update database transaction.

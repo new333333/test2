@@ -1298,7 +1298,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
 							logger.info("'" + iter.next() + "'");
 						}
 					}
-					List addedEntries = processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values()), options, null);
+					List addedEntries = processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values()), options, null, UserPrincipal.IDENTITY_SOURCE_LOCAL);
 					//processor commits entries - so update indexnow
 					IndexSynchronizationManager.applyChanges();
 					//flush from cache
@@ -1743,7 +1743,7 @@ public Map getUsers() {
 			List<InputDataAccessor>accessors = new ArrayList();
 			accessors.add(new MapInputData(newUpdates));
 		
-			User user = (User)processor.syncNewEntries(profiles, userDef, User.class, accessors, options, null).get(0);
+			User user = (User)processor.syncNewEntries(profiles, userDef, User.class, accessors, options, null, identitySource).get(0);
 			// flush user before adding workspace
 			IndexSynchronizationManager.applyChanges();
 			
