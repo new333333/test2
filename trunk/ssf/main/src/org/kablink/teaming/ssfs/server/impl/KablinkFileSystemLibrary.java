@@ -606,7 +606,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	
 		try {
 			createLibraryFolderEntry(toParentFolder, fileName, fromContent, 
-				fromFA.getModification().getDate());
+				fromFA.getModification().getDate(), null);
 		}
 		finally {
 			try {
@@ -632,7 +632,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		(fromEntry.getParentFolder(), fromEntry, fromFA);
 	
 		try {
-			modifyLibraryFolderEntry(toEntry, fileName, fromContent, fromFA.getModification().getDate());
+			modifyLibraryFolderEntry(toEntry, fileName, fromContent, fromFA.getModification().getDate(), null);
 		}
 		finally {
 			try {
@@ -800,10 +800,10 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	}
 	
 	private void createLibraryFolderEntry(Folder folder, String fileName, 
-			InputStream content, Date modDate)
+			InputStream content, Date modDate, String expectedMd5)
 	throws NoAccessException {
 		try {
-			FolderUtils.createLibraryEntry(folder, fileName, content, modDate, true);
+			FolderUtils.createLibraryEntry(folder, fileName, content, modDate, expectedMd5, true);
 		}
 		catch(ConfigurationException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
@@ -820,10 +820,10 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	}
 	
 	private void modifyLibraryFolderEntry(FolderEntry entry, String fileName, 
-			InputStream content, Date modDate) 
+			InputStream content, Date modDate, String expectedMd5)
 	throws NoAccessException {
 		try {
-			FolderUtils.modifyLibraryEntry(entry, fileName, content, modDate, true);
+			FolderUtils.modifyLibraryEntry(entry, fileName, content, modDate, expectedMd5, true);
 		}
 		catch(ConfigurationException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());
@@ -882,9 +882,9 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		}
 		
 		if(entry == null)
-			createLibraryFolderEntry((Folder) parentBinder, fileName, content, null);
+			createLibraryFolderEntry((Folder) parentBinder, fileName, content, null, null);
 		else
-			modifyLibraryFolderEntry(entry, fileName, content, null);
+			modifyLibraryFolderEntry(entry, fileName, content, null, null);
 	}
 	
 	/**

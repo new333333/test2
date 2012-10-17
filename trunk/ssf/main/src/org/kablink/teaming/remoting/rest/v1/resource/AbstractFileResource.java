@@ -59,6 +59,7 @@ abstract public class AbstractFileResource extends AbstractResource {
             String filename,
             String dataName,
             String modDateISO8601,
+            String expectedMd5,
             InputStream is) throws WriteFilesException, WriteEntryDataException {
         if (filename==null || filename.length()==0) {
             throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "The file_name query parameter must be specified.");
@@ -69,7 +70,7 @@ abstract public class AbstractFileResource extends AbstractResource {
         if (fa!=null) {
             throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType + ".");
         }
-        modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate);
+        modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate, expectedMd5);
         fa = entity.getFileAttachment(filename);
         return ResourceUtil.buildFileProperties(fa);
     }
@@ -79,6 +80,7 @@ abstract public class AbstractFileResource extends AbstractResource {
             FileAttachment attachment,
             String dataName,
             String modDateISO8601,
+            String expectedMd5,
             boolean forceOverwrite,
             Integer lastVersionNumber,
             Integer lastMajorVersionNumber,
@@ -93,7 +95,7 @@ abstract public class AbstractFileResource extends AbstractResource {
             }
         }
         if (forceOverwrite || FileUtils.matchesTopMostVersion(attachment, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber)) {
-            modifyDefinableEntityWithFile(entity, dataName, attachment.getFileItem().getName(), is, modDate);
+            modifyDefinableEntityWithFile(entity, dataName, attachment.getFileItem().getName(), is, modDate, expectedMd5);
         } else {
             throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file");
         }
@@ -106,6 +108,7 @@ abstract public class AbstractFileResource extends AbstractResource {
             String filename,
             String dataName,
             String modDateISO8601,
+            String expectedMd5,
             Boolean update,
             Integer lastVersionNumber,
             Integer lastMajorVersionNumber,
@@ -120,7 +123,7 @@ abstract public class AbstractFileResource extends AbstractResource {
                 throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType + ".");
             }
             if (FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber)) {
-                modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate);
+                modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate, expectedMd5);
             } else {
                 throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file");
             }
@@ -129,7 +132,7 @@ abstract public class AbstractFileResource extends AbstractResource {
                 throw new NoFileByTheNameException(filename);
             }
             validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-            modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate);
+            modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate, expectedMd5);
             fa = entity.getFileAttachment(filename);
         }
         return ResourceUtil.buildFileProperties(fa);
@@ -262,11 +265,11 @@ abstract public class AbstractFileResource extends AbstractResource {
         return entity;
     }
 
-    protected void modifyDefinableEntityWithFile(DefinableEntity entity, String dataName, String filename, InputStream is, Date modDate) throws WriteFilesException, WriteEntryDataException {
+    protected void modifyDefinableEntityWithFile(DefinableEntity entity, String dataName, String filename, InputStream is, Date modDate, String expectedMd5) throws WriteFilesException, WriteEntryDataException {
         if (entity instanceof FolderEntry) {
-            FileUtils.modifyFolderEntryWithFile((FolderEntry) entity, dataName, filename, is, modDate);
+            FileUtils.modifyFolderEntryWithFile((FolderEntry) entity, dataName, filename, is, modDate, expectedMd5);
         } else if (entity instanceof Principal) {
-            FileUtils.modifyPrincipalWithFile((Principal) entity, dataName, filename, is, modDate);
+            FileUtils.modifyPrincipalWithFile((Principal) entity, dataName, filename, is, modDate, expectedMd5);
         } else if (entity instanceof Binder) {
             FileUtils.modifyBinderWithFile((Binder) entity, dataName, filename, is);
         } else {

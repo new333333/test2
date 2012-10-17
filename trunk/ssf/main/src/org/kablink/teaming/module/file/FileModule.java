@@ -174,6 +174,15 @@ public interface FileModule {
     public FilesErrors writeFilesValidationOnly(Binder binder, DefinableEntity entity, 
     		List<FileUploadItem> fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException;
+
+    /**
+     * Verify check sums of files to make sure the file contents match what the uploader
+     * intended.  The REST API allows the client to include the expected MD5 check sum of
+     * the uploaded file.  This method calculates and validates the uploaded content.
+     * @param fileUploadItems
+     * @return
+     */
+    public FilesErrors verifyCheckSums(List fileUploadItems);
     
     /**
      * Run configured filter on the files in the list. Depending on how the

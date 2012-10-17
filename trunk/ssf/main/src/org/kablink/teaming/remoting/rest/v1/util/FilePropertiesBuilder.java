@@ -80,6 +80,7 @@ public class FilePropertiesBuilder implements SearchResultBuilder<FileProperties
         else
             size = null;
         fp.setLength(size);
+        fp.setMd5((String) doc.get(Constants.FILE_MD5_FIELD));
         String versionStr = (String) doc.get(Constants.FILE_VERSION_FIELD);
         Integer version;
         if(versionStr != null)

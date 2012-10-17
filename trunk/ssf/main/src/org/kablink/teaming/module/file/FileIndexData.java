@@ -67,7 +67,8 @@ public class FileIndexData {
 	private Date createdDate; // created date
 	private Date modifiedDate; // modified date
 	private Long size; // size in bytes - this field is new in Hudson, so may not exist in old index
-    private Integer versionNumber;
+	private String md5; // md5 sum - this field is new in Hudson
+    private Integer versionNumber; // highest version number - this field is new in Hudson
 	
 	public FileIndexData(org.apache.lucene.document.Document doc)  throws IllegalArgumentException {
 		name = doc.get(Constants.FILENAME_FIELD);
@@ -105,6 +106,7 @@ public class FileIndexData {
             versionNumber = Integer.valueOf(versionStr);
         else
             versionNumber = null;
+        md5 = doc.get(Constants.FILE_MD5_FIELD);
 	}
 
 	public String getName() {
@@ -158,6 +160,10 @@ public class FileIndexData {
 	public Long getSize() {
 		return size;
 	}
+
+    public String getMd5() {
+        return md5;
+    }
 
     public Integer getVersionNumber() {
         return versionNumber;

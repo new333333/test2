@@ -236,13 +236,13 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 				// An entry containing a file with this name exists.
 				if(logger.isDebugEnabled())
 					logger.debug("createNew: updating existing file '" + newName + "' + owned by " + entry.getEntityIdentifier().toString() + " in folder " + id);
-				FolderUtils.modifyLibraryEntry(entry, newName, inputStream, modDate, true);
+				FolderUtils.modifyLibraryEntry(entry, newName, inputStream, modDate, null, true);
 			}
 			else {
 				// We need to create a new entry
 				if(logger.isDebugEnabled())
 					logger.debug("createNew: creating new file '" + newName + "' + in folder " + id);
-				entry = FolderUtils.createLibraryEntry(folder, newName, inputStream, modDate, true);
+				entry = FolderUtils.createLibraryEntry(folder, newName, inputStream, modDate, null, true);
 			}
 		}
 		catch (AccessControlException e) {

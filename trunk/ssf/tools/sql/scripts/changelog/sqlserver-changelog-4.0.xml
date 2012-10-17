@@ -268,4 +268,9 @@
 			<column name="localeCountry" type="VARCHAR(16)"/>
         </addColumn>
     </changeSet>
+    <changeSet author="david" context="schema" failOnError="true" id="29">
+        <addColumn tableName="SS_Attachments">
+			<column name="fileMd5" type="CHAR(32)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

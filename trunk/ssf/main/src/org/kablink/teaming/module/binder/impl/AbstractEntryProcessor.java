@@ -343,6 +343,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		else {
    			checkInputFilesForMirroredBinder(binder, fileUploadItems, nameErrors);
    		}
+
+        FilesErrors checkSumErrors = getFileModule().verifyCheckSums(fileUploadItems);
    		
    		if (binder.isLibrary()) {
     		// 	Make sure the file name is unique if requested		
@@ -361,6 +363,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		}
    		FilesErrors filterErrors = getFileModule().filterFiles(binder, entry, fileUploadItems);
     	filterErrors.getProblems().addAll(nameErrors.getProblems());
+    	filterErrors.getProblems().addAll(checkSumErrors.getProblems());
     	return filterErrors;
     }
 
@@ -754,7 +757,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    			}
    		}
    		SimpleProfiler.stop("modifyEntry_filterFiles_validateInput");
-   		
+
+        FilesErrors checkSumErrors = getFileModule().verifyCheckSums(fileUploadItems);
+
    		SimpleProfiler.start("modifyEntry_filterFiles_registerFileName");
     	// 	Make sure the file name is unique if requested		
     	for (int i=0; i<fileUploadItems.size(); ) {
@@ -787,6 +792,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		SimpleProfiler.stop("modifyEntry_filterFiles_filterFiles");
 
    		filterErrors.getProblems().addAll(nameErrors.getProblems());
+       filterErrors.getProblems().addAll(checkSumErrors.getProblems());
     	return filterErrors;
     }
 

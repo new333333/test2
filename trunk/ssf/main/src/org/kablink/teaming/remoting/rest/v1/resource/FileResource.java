@@ -90,6 +90,7 @@ public class FileResource extends AbstractFileResource {
    	public FileProperties writeFileContentById_MultipartFormData(@PathParam("id") String fileId,
    			@QueryParam("data_name") String dataName,
    			@QueryParam("mod_date") String modDateISO8601,
+            @QueryParam("md5") String expectedMd5,
    			@QueryParam("force_overwrite") @DefaultValue("false") boolean forceOverwrite,
    			@QueryParam("last_version") Integer lastVersionNumber,
    			@QueryParam("last_major_version") Integer lastMajorVersionNumber,
@@ -102,7 +103,7 @@ public class FileResource extends AbstractFileResource {
    		DefinableEntity entity = fa.getOwner().getEntity();
    		InputStream is = getInputStreamFromMultipartFormdata(request);
    		try {
-   			return updateExistingFileContent(entity, fa, dataName, modDateISO8601, forceOverwrite,
+   			return updateExistingFileContent(entity, fa, dataName, modDateISO8601, expectedMd5, forceOverwrite,
                        lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber, is);
    		}
    		finally {
@@ -117,6 +118,7 @@ public class FileResource extends AbstractFileResource {
    	public FileProperties writeFileContentById_Raw(@PathParam("id") String fileId,
                @QueryParam("data_name") String dataName,
                @QueryParam("mod_date") String modDateISO8601,
+               @QueryParam("md5") String expectedMd5,
                @QueryParam("force_overwrite") @DefaultValue("false") boolean forceOverwrite,
                @QueryParam("last_version") Integer lastVersionNumber,
                @QueryParam("last_major_version") Integer lastMajorVersionNumber,
@@ -129,7 +131,7 @@ public class FileResource extends AbstractFileResource {
    		DefinableEntity entity = fa.getOwner().getEntity();
    		InputStream is = getRawInputStream(request);
    		try {
-            return updateExistingFileContent(entity, fa, dataName, modDateISO8601, forceOverwrite,
+            return updateExistingFileContent(entity, fa, dataName, modDateISO8601, expectedMd5, forceOverwrite,
                     lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber, is);
    		}
    		finally {

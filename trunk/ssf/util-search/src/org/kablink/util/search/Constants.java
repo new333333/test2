@@ -227,6 +227,7 @@ public class Constants {
 	public static final String FILE_CREATOR_ID_FIELD = "_fileCreatorId";
 	public static final String FILE_SIZE_FIELD = "_fileSize";
 	public static final String FILE_SIZE_IN_BYTES_FIELD = "_fileSizeInBytes";
+	public static final String FILE_MD5_FIELD = "_fileMd5";
 	public static final String FILE_VERSION_FIELD = "_fileVersion";
 	public static final String FILE_TIME_FIELD = "_fileTime";
 	public static final String FILENAME_AND_ID_FIELD = "_fileNameId";

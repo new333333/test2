@@ -342,11 +342,12 @@ public class FolderResource extends AbstractBinderResource {
                                          @QueryParam("file_name") String fileName,
                                          @QueryParam("data_name") String dataName,
                                          @QueryParam("mod_date") String modDateISO8601,
+                                         @QueryParam("md5") String expectedMd5,
                                          @QueryParam("overwrite_existing") @DefaultValue("false") Boolean overwriteExisting,
                                          @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
         Folder folder = _getFolder(id);
         InputStream is = getInputStreamFromMultipartFormdata(request);
-        return createEntryWithAttachment(folder, fileName, modDateISO8601, overwriteExisting, is);
+        return createEntryWithAttachment(folder, fileName, modDateISO8601, expectedMd5, overwriteExisting, is);
     }
 
     @POST
@@ -357,14 +358,15 @@ public class FolderResource extends AbstractBinderResource {
                                          @QueryParam("file_name") String fileName,
                                          @QueryParam("data_name") String dataName,
                                          @QueryParam("mod_date") String modDateISO8601,
+                                         @QueryParam("md5") String expectedMd5,
                                          @QueryParam("overwrite_existing") @DefaultValue("false") Boolean overwriteExisting,
                                          @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
         Folder folder = _getFolder(id);
         InputStream is = getRawInputStream(request);
-        return createEntryWithAttachment(folder, fileName, modDateISO8601, overwriteExisting, is);
+        return createEntryWithAttachment(folder, fileName, modDateISO8601, expectedMd5, overwriteExisting, is);
     }
 
-    private FileProperties createEntryWithAttachment(Folder folder, String fileName, String modDateISO8601, boolean replaceExisting, InputStream is) throws WriteFilesException, WriteEntryDataException {
+    private FileProperties createEntryWithAttachment(Folder folder, String fileName, String modDateISO8601, String expectedMd5, boolean replaceExisting, InputStream is) throws WriteFilesException, WriteEntryDataException {
         if(!folder.isLibrary()) {
             throw new NotFoundException(ApiErrorCode.NOT_SUPPORTED, "This folder is not a library folder.");
         }
@@ -381,13 +383,13 @@ public class FolderResource extends AbstractBinderResource {
             // An entry containing a file with this name exists.
             if(logger.isDebugEnabled())
                 logger.debug("createNew: updating existing file '" + fileName + "' + owned by " + entry.getEntityIdentifier().toString() + " in folder " + folder.getId());
-            FolderUtils.modifyLibraryEntry(entry, fileName, is, dateFromISO8601(modDateISO8601), true);
+            FolderUtils.modifyLibraryEntry(entry, fileName, is, dateFromISO8601(modDateISO8601), expectedMd5, true);
         }
         else {
             // We need to create a new entry
             if(logger.isDebugEnabled())
                 logger.debug("createNew: creating new file '" + fileName + "' + in folder " + folder.getId());
-            entry = FolderUtils.createLibraryEntry(folder, fileName, is, dateFromISO8601(modDateISO8601), true);
+            entry = FolderUtils.createLibraryEntry(folder, fileName, is, dateFromISO8601(modDateISO8601), expectedMd5, true);
         }
         return ResourceUtil.buildFileProperties(entry.getFileAttachment(fileName));
     }

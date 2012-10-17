@@ -41,6 +41,7 @@ import java.util.Date;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.io.output.NullOutputStream;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.module.file.impl.CryptoFileEncryption;
 import org.kablink.teaming.module.mail.impl.DefaultEmailPoster.FileHandler;
@@ -91,6 +92,7 @@ public class FileUploadItem {
 	private boolean synchToRepository = true; // can be false only for mirrored entries/files
 	
 	private String fileName = null;
+    private String md5;
 
 	// path info?
 	
@@ -282,24 +284,56 @@ public class FileUploadItem {
 		if(mf instanceof SimpleMultipartFile)
 			((SimpleMultipartFile) mf).close();
 	}
+
+    public String getMd5() throws IOException {
+        if (md5==null) {
+            if (file!=null) {
+                DigestOutputStream os = new DigestOutputStream(new NullOutputStream());
+                InputStream is = new BufferedInputStream(new FileInputStream(file));
+                FileCopyUtils.copy(is, os);
+                md5 = os.getDigest();
+            } else if (mf instanceof SimpleMultipartFile) {
+                md5 = ((SimpleMultipartFile)mf).getMd5();
+            }
+        }
+        return md5;
+    }
 	
-	public long makeReentrant() throws IOException {
-		if(mf instanceof SimpleMultipartFile) {
-			SimpleMultipartFile smp = (SimpleMultipartFile) mf;
-			if(smp.getFile() == null) {
-				if(file == null) {
-					file = TempFileUtil.createTempFile(TEMP_FILE_PREFIX);
-					mf.transferTo(file);
-					isTempFile = true;										
-				}
-			}
-		}
+	public SizeMd5Pair makeReentrant() throws IOException {
+        if (file==null) {
+            if (!(mf instanceof SimpleMultipartFile) || !((SimpleMultipartFile) mf).isReentrant()) {
+                transferToTempFile();
+            }
+        }
+        String md5 = getMd5();
+
 		// Returns the length of the file
 		if(file != null)
-			return file.length();
+			return new SizeMd5Pair(file.length(), md5);
 		else
-			return mf.getSize();
+			return new SizeMd5Pair(mf.getSize(), md5);
 	}
+
+    public boolean verifyCheckSum() throws IOException {
+        if (mf instanceof FileExtendedSupport) {
+            String expectedMd5 = ((FileExtendedSupport)mf).getExpectedMd5();
+            if (expectedMd5!=null && !expectedMd5.equals(getMd5())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void transferToTempFile() throws IOException {
+        if(file == null) {
+            file = TempFileUtil.createTempFile(TEMP_FILE_PREFIX);
+            mf.transferTo(file);
+            isTempFile = true;
+            if (mf instanceof SimpleMultipartFile) {
+                md5 = ((SimpleMultipartFile) mf).getMd5();
+            }
+        }
+    }
 	
 	/**
 	 * Returns modification date or <code>null</code>.

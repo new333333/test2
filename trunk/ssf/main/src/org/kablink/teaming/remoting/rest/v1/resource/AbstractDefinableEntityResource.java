@@ -162,11 +162,12 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
                                @QueryParam("file_name") String fileName,
                                @QueryParam("data_name") String dataName,
        			               @QueryParam("mod_date") String modDateISO8601,
+       			               @QueryParam("md5") String expectedMd5,
                                @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
         //TODO: make sure a file with that name doesn't exist
         InputStream is = getInputStreamFromMultipartFormdata(request);
         try {
-            return writeNewFileContent(EntityIdentifier.EntityType.folderEntry, id, fileName, dataName, modDateISO8601, is);
+            return writeNewFileContent(EntityIdentifier.EntityType.folderEntry, id, fileName, dataName, modDateISO8601, expectedMd5, is);
         }
         finally {
             try {
@@ -184,11 +185,12 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
                                @QueryParam("file_name") String fileName,
                                @QueryParam("data_name") String dataName,
        			               @QueryParam("mod_date") String modDateISO8601,
+                               @QueryParam("md5") String expectedMd5,
                                @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
         //TODO: make sure a file with that name doesn't exist
         InputStream is = getRawInputStream(request);
         try {
-            return writeNewFileContent(EntityIdentifier.EntityType.folderEntry, id, fileName, dataName, modDateISO8601, is);
+            return writeNewFileContent(EntityIdentifier.EntityType.folderEntry, id, fileName, dataName, modDateISO8601, expectedMd5, is);
         }
         finally {
             try {

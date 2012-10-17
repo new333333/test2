@@ -153,6 +153,7 @@ public class ResourceUtil {
         fp.setModification(new HistoryStamp(new LongIdLinkPair(fa.getModifierId(), LinkUriUtil.getUserLinkUri(fa.getModifierId())),
                 fa.getModifiedDate()));
         fp.setLength(fa.getSize());
+        fp.setMd5(fa.getMd5());
         fp.setVersionNumber(fa.getVersionNumber());
         LinkUriUtil.populateFileLinks(fp);
         return fp;
@@ -175,6 +176,7 @@ public class ResourceUtil {
         fp.setModification(new HistoryStamp(new LongIdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)),
                 fa.getModification().getDate()));
         fp.setLength(fa.getFileItem().getLength());
+        fp.setMd5(fa.getFileItem().getMd5());
         fp.setVersionNumber(fa.getHighestVersionNumber());
         fp.setMajorVersion(fa.getMajorVersion());
         fp.setMinorVersion(fa.getMinorVersion());
@@ -369,6 +371,7 @@ public class ResourceUtil {
         props.setCreation(new HistoryStamp(new LongIdLinkPair(creatorId, LinkUriUtil.getUserLinkUri(creatorId)), va.getCreation().getDate()));
         props.setModification(new HistoryStamp(new LongIdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)), va.getModification().getDate()));
         props.setLength(va.getFileItem().getLength());
+        props.setMd5(va.getFileItem().getMd5());
         props.setVersionNumber(va.getVersionNumber());
         props.setMajorVersion(va.getMajorVersion());
         props.setMinorVersion(va.getMinorVersion());

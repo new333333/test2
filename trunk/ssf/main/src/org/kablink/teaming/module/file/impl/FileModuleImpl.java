@@ -101,6 +101,7 @@ import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.file.ChecksumMismatchException;
 import org.kablink.teaming.module.file.ContentFilter;
 import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.file.DeleteVersionException;
@@ -125,12 +126,10 @@ import org.kablink.teaming.repository.RepositorySessionFactory;
 import org.kablink.teaming.repository.RepositorySessionFactoryUtil;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.repository.archive.ArchiveStore;
-import org.kablink.teaming.repository.fi.FIRepositorySessionFactoryAdapter;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ExtendedMultipartFile;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FilePathUtil;
@@ -140,6 +139,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.SizeMd5Pair;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.KeyValuePair;
@@ -593,11 +593,59 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}	
 	}
 
+    public FilesErrors verifyCheckSums(List fileUploadItems) {
+        FilesErrors errors = null;
+        // Note that we do not have to use String comparison in the expression
+        // below. Just reference comparison is enough.
+        if(getFailedFilterTransaction() == FAILED_FILTER_TRANSACTION_CONTINUE) {
+            errors = new FilesErrors();
+        }
+
+        for(int i = 0; i < fileUploadItems.size();) {
+            FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
+            try {
+                SimpleProfiler.start("verifyCheckSums_makeReentrant");
+                fui.makeReentrant();
+                SimpleProfiler.stop("verifyCheckSums_makeReentrant");
+
+                if (!fui.verifyCheckSum()) {
+                    // Remove the failed file from the list first.
+                    fileUploadItems.remove(i);
+                    try {
+                        fui.delete();
+                    } catch (IOException e1) {
+                        logger.error("Failed to delete bad file " + fui.getOriginalFilename(), e1);
+                    }
+                    if(errors != null) {
+                        // Since we are not throwing an exception immediately in
+                        // this case, log the error right here.
+                        logger.error("Error verifying the file " + fui.getOriginalFilename() + " check sum for user " +  RequestContextHolder.getRequestContext().toString());
+                        errors.addProblem(new FilesErrors.Problem
+                            (fui.getRepositoryName(),  fui.getOriginalFilename(),
+                                    FilesErrors.Problem.PROBLEM_CHECKSUM_MISMATCH));
+                    } else {
+                        throw new ChecksumMismatchException(fui.getName());
+                    }
+                } else {
+                    ++i;
+                }
+            }
+            catch(IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+
+        if(errors == null)
+            errors = new FilesErrors();
+
+        return errors;
+    }
+
 	public FilesErrors filterFiles(Binder binder, DefinableEntity entity, List fileUploadItems) 
 		throws FilterException {
 		if(contentFilters == null)
 			return new FilesErrors(); // Nothing to filter with. Return empty error.
-		
+
 		FilesErrors errors = null;
 		// Note that we do not have to use String comparison in the expression
 		// below. Just reference comparison is enough. 
@@ -611,7 +659,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			SimpleProfiler.start("filterFiles_makeReentrant");
         		fui.makeReentrant();
     			SimpleProfiler.stop("filterFiles_makeReentrant");
-        		
+
     			SimpleProfiler.start("filterFiles_executeContentFilters");
         		executeContentFilters(binder, entity, fui.getOriginalFilename(), fui);
     			SimpleProfiler.stop("filterFiles_executeContentFilters");
@@ -647,7 +695,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			if(errors != null) {
         			if (fui.isRegistered()) getCoreDao().unRegisterFileName(binder, fui.getOriginalFilename());
     				errors.addProblem(new FilesErrors.Problem
-    					(fui.getRepositoryName(),  fui.getOriginalFilename(), 
+    					(fui.getRepositoryName(),  fui.getOriginalFilename(),
     							FilesErrors.Problem.PROBLEM_FILTERING, e));
     			}
     			else {
@@ -2059,6 +2107,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		versionName = createVersionedFile(session, binder, entry, fui);
     		long fsize = session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName);
 			fAtt.getFileItem().setLength(fsize);
+            fAtt.getFileItem().setMd5(fui.getMd5());
 			fAtt.setEncrypted(fui.getIsEncrypted());
 			fAtt.setEncryptionKey(fui.getEncryptionKey());
 			createVersionAttachment(fAtt, versionName);	    		
@@ -2112,7 +2161,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			//if we are adding a new version of an existing attachment to 
 			//a uniqueName item, set flag - (will already be set if originally added
 			//through a unique element.  In other works, once unique always unique
-			updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate(), fui.getModifierName(),
+			updateFileAttachment(fAtt, user, versionName, fileSize, fui.getMd5(), fui.getModDate(), fui.getModifierName(),
 					fui.getDescription());
 		}
 		
@@ -2120,7 +2169,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
 
     private void updateFileAttachment(FileAttachment fAtt, 
-			UserPrincipal user, String versionName, Long contentLength,
+			UserPrincipal user, String versionName, Long contentLength, String md5,
 			Date modDate, String modName, Description description) {
     	HistoryStamp now = new HistoryStamp(user);
     	HistoryStamp mod;
@@ -2139,6 +2188,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if(contentLength != null)
 			fItem.setLength(contentLength);
 		
+		if(md5 != null)
+			fItem.setMd5(md5);
+
 		if(description != null)
 			fItem.setDescription(description);
 		
@@ -2171,6 +2223,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private class UpdateInfo {
     	private String versionName = null;
     	private Long fileLength = null;
+        private String fileMd5 = null;
     }
     
     private UpdateInfo updateVersionedFile(RepositorySession session, Binder binder, 
@@ -2184,9 +2237,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		session.checkout(binder, entity, relativeFilePath);
     		// Update the file content
     		InputStream in = fui.getInputStream();
-    		long size = fui.makeReentrant();
+    		SizeMd5Pair sizeMd5Pair = fui.makeReentrant();
     		try {
-    			updateWithInputData(session, binder, entity, relativeFilePath, in, size);
+    			updateWithInputData(session, binder, entity, relativeFilePath, in, sizeMd5Pair.getSize(), sizeMd5Pair.getMd5());
     		}
     		finally {
     			try {
@@ -2201,15 +2254,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			// sort of like auto-commit = true
     			updateInfo.versionName = session.checkin(binder, entity, relativeFilePath);
     			updateInfo.fileLength = Long.valueOf(session.getContentLengthVersioned(binder, entity, relativeFilePath, updateInfo.versionName));
+                updateInfo.fileMd5 = sizeMd5Pair.getMd5();
     		}
     		else {
     			// auto-commit = false
-    			updateInfo.fileLength = Long.valueOf(fui.makeReentrant());
+    			updateInfo.fileLength = sizeMd5Pair.getSize();
+                updateInfo.fileMd5 = sizeMd5Pair.getMd5();
     		}
 		}
 		else { // This condition can occur only for mirrored folder when synching inbound from the source 
+            SizeMd5Pair sizeMd5Pair = fui.makeReentrant();
 			updateInfo.versionName = RepositoryUtil.generateRandomVersionName();
-			updateInfo.fileLength = Long.valueOf(fui.makeReentrant());
+			updateInfo.fileLength = sizeMd5Pair.getSize();
+            updateInfo.fileMd5 = sizeMd5Pair.getMd5();
 		}
 
 		return updateInfo;
@@ -2222,7 +2279,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
 		if(fui.isSynchToRepository()) {
 			InputStream in = fui.getInputStream();
-			long size = fui.makeReentrant();
+			long size = fui.makeReentrant().getSize();
 			try {
 				versionName = createVersionedWithInputData(session, binder, entity,
 						fui.getOriginalFilename(), fui.isSynchToRepository(), in, size);
@@ -2261,7 +2318,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		FileAttachment fAtt = createFileAttachment(entry, fui);
 			
 		if(ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName()) // Bug #688072  
-				|| fui.makeReentrant() > 0) {
+				|| fui.makeReentrant().getSize() > 0) {
 			// For mirrored file entry, allow creation of empty file (to deal with bug #688072).
 			// For regular file entry, creation of an empty file version is not allowed (for
 			// bug #632279 explained below). This compromise is reasonable because mirrored
@@ -2272,6 +2329,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			long fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
 					
 			fAtt.getFileItem().setLength(fileSize);
+            fAtt.getFileItem().setMd5(fui.getMd5());
 	
 			createVersionAttachment(fAtt, versionName);	
 		}
@@ -2291,7 +2349,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private void checkDataQuota(Binder binder, FileUploadItem fui) throws IOException {
 		if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName())) { 
-			Long fileSize = fui.makeReentrant();
+			Long fileSize = fui.makeReentrant().getSize();
 			
 			//Check that the user is not over the user quota
 			checkQuota(RequestContextHolder.getRequestContext().getUser(),
@@ -2421,7 +2479,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void updateWithInputData(RepositorySession session,
-			Binder binder, DefinableEntity entry, String relativeFilePath, Object inputData, long size)
+			Binder binder, DefinableEntity entry, String relativeFilePath, Object inputData, long size, String md5)
 		throws RepositoryServiceException {
 		/*if(inputData instanceof MultipartFile) {
 			service.update(session, binder, entry, 
@@ -2745,6 +2803,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 							fa.setModification(vAtt.getModification());
 							fa.setFileStatus(vAtt.getFileStatus());
 							fa.getFileItem().setLength(vAtt.getFileItem().getLength());
+							fa.getFileItem().setMd5(vAtt.getFileItem().getMd5());
 							fa.getFileItem().setDescription(vAtt.getFileItem().getDescription());
 							metadataDirty = true;
 						}
@@ -2752,7 +2811,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 					else {
 						Long contentLength = Long.valueOf(session.getContentLengthVersioned(binder, entity, 
 								relativeFilePath, versionName));
-						updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, null, null, null);
+						updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, fa.getFileItem().getMd5(), null, null, null);
 						metadataDirty = true;
 		            	// add the size of the file to the users disk usage
 		            	incrementDiskSpaceUsed(fa);		
