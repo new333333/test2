@@ -191,9 +191,8 @@ public class LoginUIPanel extends Composite implements ClickHandler, KeyUpHandle
 		public void onSuccess(LoginInfo result)
 		{
 			// Remove login screen
-			RootPanel rootPanel = RootPanel.get("installConfig");
-			if (rootPanel.getWidgetCount() > 0)
-				rootPanel.remove(0);
+			if (RootLayoutPanel.get().getWidgetCount() > 0)
+				RootLayoutPanel.get().remove(0);
 
 			// Add Main UI Screen
 			MainUILayoutPanel panel = new MainUILayoutPanel();

@@ -9,7 +9,7 @@
 	<!-- Define what we're building for GwtTeaming. -->
 	<target name="init-gwt-build" depends="init-gwt-builds, init-gwt-production, init-gwt-development">
 		<property name="gwt.module" value="org.kabling.teaming.install.InstallConfig" />
-		<property name="gwt.war"    value="-war war"                            />
+		<property name="gwt.war"    value="-war www"                            />
 	</target>
 	<target name="init-gwt-builds">
 		<condition property="development.build">
@@ -82,14 +82,14 @@
 	</path>
 
 	<target name="javac" depends="init-gwt-build" description="Compile java source to bytecode">
-		    <mkdir dir="war/WEB-INF/classes"/>
+		    <mkdir dir="www/WEB-INF/classes"/>
 		    <javac srcdir="src" includes="**" encoding="utf-8"
-		        destdir="war/WEB-INF/classes"
+		        destdir="www/WEB-INF/classes"
 		        source="1.5" target="1.5" nowarn="true"
 		    	classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}:${gwt.dir}/validation-api-1.0.0.GA.jar:${gwt.dir}/validation-api-1.0.0.GA-sources.jar:${lib.dir}/log4j.jar:${lib.dir}/xml-apis.jar:${lib.dir}/jna-3.4.0.jar:${lib.dir}/libpam4j-1.6.jar:${lib.dir}/joda-time.jar"
 		        debug="true" debuglevel="lines,vars,source">
 		    </javac>
-		    <copy todir="war/WEB-INF/classes">
+		    <copy todir="www/WEB-INF/classes">
 		      <fileset dir="src" excludes="**/*.java"/>
 		    </copy>
 		  </target>
@@ -115,7 +115,7 @@
 	</target>
 
 	<target name="war" depends="compile-gwt" description="Create a war file">
-		 <copy todir="war/WEB-INF/lib">
+		 <copy todir="www/WEB-INF/lib">
 		 	<fileset dir="${lib.dir}">
 		 		 <include name="gwt-servlet.jar"/>
 		 		<include name="xml-apis.jar"/>
@@ -127,12 +127,28 @@
 		 		<include name="mysql-connector-java-5.1.22-bin.jar"/>
 		 	 </fileset>
 		  </copy>
-	    <zip destfile="filrconfig.war" basedir="war"/>
+		 <copy todir="www/3rdparty">
+			<fileset dir="war/3rdparty"/>
+		</copy>
+		 <copy todir="www/WEB-INF">
+				<fileset dir="war/WEB-INF"/>
+		 </copy>
+		<copy todir="www/WEB-INF/classes">
+			<resources>
+				<file file="war/WEB-INF/log4j.properties"/>
+			</resources>
+		</copy>
+		<copy todir="www" flatten="true">
+			<resources>
+				<file file="war/index.html"/>
+				<file file="war/InstallConfig.css"/>
+			</resources>
+		</copy>
+	    <zip destfile="filrconfig.war" basedir="www"/>
 	  </target>
 
 	  <target name="clean" description="Cleans this project">
-	    <delete dir="war/WEB-INF/classes/org" failonerror="false" />
-	  	<delete dir="war/InstallConfig" failonerror="false" />
+	   	<delete dir="www" failonerror="false" />
 	  	<delete file="filrconfig.war" failonerror="false" />
 	  </target>
 </project>

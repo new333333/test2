@@ -4,6 +4,7 @@ import org.kabling.teaming.install.shared.ProductInfo;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
@@ -42,16 +43,22 @@ public class InstallConfigMain implements EntryPoint
 			//based on the product 
 			AppUtil.setProductInfo(result);
 
-			//Temporary, for windows, we won't show the login screen
-			if (Navigator.getPlatform().startsWith("Win") || Navigator.getPlatform().startsWith("Mac"))
+			//Temporary, when running the browser from windows, we won't show the login screen
+//			if (Navigator.getPlatform().startsWith("Win") || Navigator.getPlatform().startsWith("Mac"))
+//			{
+//				if (RootLayoutPanel.get().getWidgetCount() > 0)
+//					RootLayoutPanel.get().remove(0);
+//				
+//				MainUILayoutPanel panel = new MainUILayoutPanel();
+//				RootLayoutPanel.get().add(panel);
+//			}
+//			else
 			{
-				MainUILayoutPanel panel = new MainUILayoutPanel();
-				RootLayoutPanel.get().add(panel);
-			}
-			else
-			{
+				if (RootLayoutPanel.get().getWidgetCount() > 0)
+					RootLayoutPanel.get().remove(0);
+				
 				LoginUIPanel loginUIPanel = new LoginUIPanel();
-				RootPanel.get("installConfig").add(loginUIPanel);
+				RootLayoutPanel.get().add(loginUIPanel);
 			}
 		}
 
