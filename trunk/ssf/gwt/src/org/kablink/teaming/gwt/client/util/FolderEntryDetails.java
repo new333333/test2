@@ -46,6 +46,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class FolderEntryDetails implements IsSerializable {
 	private BinderIcons			m_entryIcons;			// The icons related to the entry in various sizes.
+	private boolean				m_contentIsImage;		// true -> The content of the file can be viewed as an image.  false -> It can't.
 	private boolean				m_descIsHtml;			// true -> The entry's description is in HTML.  false -> It's in plain text.
 	private boolean				m_lockedByLoggedInUser;	// true -> The entry is locked by the logged in user.  false -> It's not locked, or locked by somebody else.
 	private boolean				m_modifierIsCreator;	// true -> The creator and modifier are the same user.  false -> They're not.
@@ -56,7 +57,7 @@ public class FolderEntryDetails implements IsSerializable {
 	private String				m_desc;					// The entry description.
 	private String				m_descTxt;				// Plain text version of m_desc.
 	private String				m_family;				// The definition family of the folder entry.
-	private String				m_imageContentUrl;		// The URL to the file if it can be displayed as an image.
+	private String				m_downloadUrl;			// The URL for downloading the file.
 	private String				m_path;					// The full path to the entry.
 	private String				m_title;				// The title of the folder entry.
 	private String[]			m_contributors;			// The IDs of the contributors to this entry.
@@ -143,6 +144,7 @@ public class FolderEntryDetails implements IsSerializable {
 	 * 
 	 * @return
 	 */
+	public boolean           isContentImage()         {return m_contentIsImage;      }
 	public boolean           isDescHtml()             {return m_descIsHtml;          }
 	public boolean           isLocked()               {return (null != m_locker);    }
 	public boolean           isLockedByLoggedInUser() {return m_lockedByLoggedInUser;}
@@ -155,7 +157,7 @@ public class FolderEntryDetails implements IsSerializable {
 	public String            getDesc()                {return m_desc;                }
 	public String            getDescTxt()             {return m_descTxt;             }
 	public String            getFamily()              {return m_family;              }
-	public String            getImageContentUrl()     {return m_imageContentUrl;     }
+	public String            getDownloadUrl()         {return m_downloadUrl;         }
 	public String            getPath()                {return m_path;                }
 	public String            getTitle()               {return m_title;               }
 	public String[]          getContributors()        {return m_contributors;        }
@@ -169,6 +171,7 @@ public class FolderEntryDetails implements IsSerializable {
 	 * 
 	 * @param
 	 */
+	public void setContentIsImage(      boolean           contentIsImage)       {m_contentIsImage       = contentIsImage;      }
 	public void setDescIsHtml(          boolean           descIsHtml)           {m_descIsHtml           = descIsHtml;          }
 	public void setLockedByLoggedInUser(boolean           lockedByLoggedInUser) {m_lockedByLoggedInUser = lockedByLoggedInUser;}
 	public void setModifierIsCreator(   boolean           modifierIsCreator)    {m_modifierIsCreator    = modifierIsCreator;   }
@@ -179,7 +182,7 @@ public class FolderEntryDetails implements IsSerializable {
 	public void setDesc(                String            desc)                 {m_desc                 = desc;                }
 	public void setDescTxt(             String            descTxt)              {m_descTxt              = descTxt;             }
 	public void setFamily(              String            family)               {m_family               = family;              }
-	public void setImageContentUrl(     String            imageContentUrl)      {m_imageContentUrl      = imageContentUrl;     }
+	public void setDownloadUrl(         String            downloadUrl)          {m_downloadUrl          = downloadUrl;         }
 	public void setPath(                String            path)                 {m_path                 = path;                }
 	public void setTitle(               String            title)                {m_title                = title;               }
 	public void setContributors(        String[]          contributors)         {m_contributors         = contributors;        }
