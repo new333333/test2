@@ -55,6 +55,8 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -82,8 +84,11 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 	private GwtTeamingDataTableImageBundle	m_images;			// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;			// Access to Vibe's messages.
 	private ManageCommentsCallback			m_manageCallback;	// Callback interface used to tell the callee about some management event within the composite.
+	private String							m_baseStyle;		// Base name used to construct the various styles used throughout the composite.
 	private TextArea						m_addCommentTA;		// The TextArea containing the comments being added.
 	private VibeFlowPanel					m_fp;				// The panel that holds the composite's contents.
+	
+	private static final int COMMENT_WIDGET_SCROLL_DELAY	= 750;	// Time, in milliseconds to delay scrolling the comment widget after an operation on it.
 
 	/*
 	 * Class constructor.
@@ -92,7 +97,7 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ManageCommentsComposite(ManageCommentsCallback manageCallback) {
+	private ManageCommentsComposite(ManageCommentsCallback manageCallback, String baseStyle) {
 		// Initialize the superclass...
 		super();
 		
@@ -103,10 +108,13 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 		m_isIE     = GwtClientHelper.jsIsIE();
 		m_images   = GwtTeaming.getDataTableImageBundle();
 		m_messages = GwtTeaming.getMessages();
+		if (GwtClientHelper.hasString(baseStyle))
+		     m_baseStyle = baseStyle;
+		else m_baseStyle = "vibe-manageCommentsComposite";
 	
 		// Create a panel to hold the composite's content...
 		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-manageCommentsComposite-panel");
+		m_fp.addStyleName(m_baseStyle + "-panel");
 
 		// ...use it to initialize the composite...
 		initWidget(m_fp);
@@ -158,9 +166,12 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 						
 						// ...and if the caller wanted a
 						// ...notification...
-						if (null != m_manageCallback) {
+						if (null != m_addedCallback) {
 							// ...tell them a comment was added.
 							m_addedCallback.commentAdded(m_commentsInfo);
+							if (m_commentsWidget.isVisible()) {
+								scrollCommentsToBottomAsync();
+							}
 						}
 					}
 				};
@@ -174,43 +185,43 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 	 */
 	private void createContent() {
 		// Add the style to the composite...
-		addStyleName("vibe-manageCommentsComposite");
+		addStyleName(m_baseStyle);
 		
 		// ...create the widget to display the comments...
 		m_commentsWidget = new CommentsWidget(false);
-		m_commentsWidget.addStyleName("vibe-manageCommentsComposite-commentsWidget");
+		m_commentsWidget.addStyleName(m_baseStyle + "-commentsWidget");
 		m_fp.add(m_commentsWidget);
 		
 		// ...create the widgets to add comments...
 		FlexTable addCommentPanel = new FlexTable();
 		addCommentPanel.setCellPadding(0);
 		addCommentPanel.setCellSpacing(0);
-		addCommentPanel.addStyleName("vibe-manageCommentsComposite-addCommentPanel");
+		addCommentPanel.addStyleName(m_baseStyle + "-addCommentPanel");
 		if (!m_isIE) {
-			addCommentPanel.addStyleName("vibe-manageCommentsComposite-addCommentPanel-nonIE");
+			addCommentPanel.addStyleName(m_baseStyle + "-addCommentPanel-nonIE");
 		}
 		String avatarUrl = GwtClientHelper.getRequestInfo().getUserAvatarUrl();
 		if (!(GwtClientHelper.hasString(avatarUrl))) {
 			avatarUrl = m_images.userPhoto().getSafeUri().asString();
 		}
 		Image avatarImg = GwtClientHelper.buildImage(avatarUrl);
-		avatarImg.addStyleName("vibe-manageCommentsComposite-addCommentAvatar");
+		avatarImg.addStyleName(m_baseStyle + "-addCommentAvatar");
 		addCommentPanel.setWidget(0, 0, avatarImg);
 		m_addCommentTA = new TextArea();
-		m_addCommentTA.addStyleName("vibe-manageCommentsComposite-addCommentTextArea");
+		m_addCommentTA.addStyleName(m_baseStyle + "-addCommentTextArea");
 		m_addCommentTA.addKeyDownHandler(this);
 		addCommentPanel.setWidget(0, 1, m_addCommentTA);
 		addCommentPanel.getRowFormatter().setVerticalAlign(0, HasVerticalAlignment.ALIGN_TOP);
 		VibeFlowPanel hintPanel = new VibeFlowPanel();
-		hintPanel.addStyleName("vibe-manageCommentsComposite-addCommentHintPanel");
+		hintPanel.addStyleName(m_baseStyle + "-addCommentHintPanel");
 		InlineLabel hint = new InlineLabel(m_messages.manageCommentsCompositeWhoHasAccess());
-		hint.addStyleName("vibe-manageCommentsComposite-addCommentHint");
+		hint.addStyleName(m_baseStyle + "-addCommentHint");
 		hintPanel.add(hint);
 		Button sendButton = new Button(m_messages.manageCommentsCompositeSend());
-		String sendStyle = "vibe-manageCommentsComposite-sendButton";
+		String sendStyle = (m_baseStyle + "-sendButton ");
 		if (m_isIE)
-		     sendStyle += " vibe-manageCommentsComposite-sendButton-IE";
-		else sendStyle += " vibe-manageCommentsComposite-sendButton-nonIE";
+		     sendStyle += (m_baseStyle + "-sendButton-IE");
+		else sendStyle += (m_baseStyle + "-sendButton-nonIE");
 		sendButton.addStyleName(sendStyle);
 		sendButton.addClickHandler(new ClickHandler() {
 			@Override
@@ -324,11 +335,61 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 		
 		// ...tell the container that we're ready...
 		m_manageCallback.compositeReady();
+		scrollCommentsToBottomAsync();
 		
 		// ...and force the focus into the TextArea.
 		GwtClientHelper.setFocusDelayed(m_addCommentTA);
 	}
 
+	/*
+	 * Asynchronously scrolls the comments widget to the bottom of its
+	 * vertical scroll bar.
+	 */
+	private void scrollCommentsToBottomAsync(int delay) {
+		if (0 < delay) {
+			Timer doScroll = new Timer() {
+				@Override
+				public void run() {
+					scrollCommentsToBottomNow();
+				}
+			};
+			doScroll.schedule(delay);
+		}
+		
+		else {
+			ScheduledCommand doScroll = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					scrollCommentsToBottomNow();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doScroll);
+		}
+	}
+	
+	private void scrollCommentsToBottomAsync() {
+		// Always use the initial form of the method.
+		scrollCommentsToBottomAsync(COMMENT_WIDGET_SCROLL_DELAY);
+	}
+	
+	/*
+	 * Synchronously scrolls the comments widget to the bottom of its
+	 * vertical scroll bar.
+	 */
+	private void scrollCommentsToBottomNow() {
+		Element cwE = m_commentsWidget.getElement();
+		cwE.setScrollTop(cwE.getScrollHeight());
+	}
+	
+	/*
+	 * Shows/hides the comments widget.
+	 */
+	private void setCommentsVisible(boolean show) {
+		m_commentsWidget.setVisible(show);
+		if (show) {
+			scrollCommentsToBottomAsync(0);
+		}
+	}
 
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
@@ -353,11 +414,16 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 			// Parameters used to create the composite.
 			final ManageCommentsCompositeClient mccClient,
 			final ManageCommentsCallback		manageCallback,
+			final String						baseStyle,
 
 			// Parameters used to initialize an instance of the composite.
-			final ManageCommentsComposite		mcc,
+			final ManageCommentsComposite		mccInit,
 			final CommentsInfo					commentsInfo,
-			final CommentAddedCallback			addedCallback) {
+			final CommentAddedCallback			addedCallback,
+			
+			// Parameters used to set the visibility state of the comments widget in an instance of the composite.
+			final ManageCommentsComposite		mccShow,
+			final boolean						show) {
 		GWT.runAsync(ManageCommentsComposite.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -372,15 +438,23 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 				// Is this a request to create a composite?
 				if (null != mccClient) {
 					// Yes!  Create it and return it via the callback.
-					ManageCommentsComposite mcc = new ManageCommentsComposite(manageCallback);
+					ManageCommentsComposite mcc = new ManageCommentsComposite(manageCallback, baseStyle);
 					mccClient.onSuccess(mcc);
 				}
 				
-				else {
-					// No, it's not a request to create a composite!
-					// It must be a request to initialize an existing
-					// one.  Initialize it.
-					initCompositeAsync(mcc, commentsInfo, addedCallback);
+				// No, it's not a request to create a composite!
+				// Is it a request to initialize an existing one?
+				else if (null != mccInit) {
+					// Yes!  Initialize it.
+					initCompositeAsync(mccInit, commentsInfo, addedCallback);
+				}
+				
+				// No, it's not a request to initialize an existing one
+				// either!  Is it a request to show/hide the comments
+				// widget in an existing one?
+				else if (null != mccShow) {
+					// Yes!
+					mccShow.setCommentsVisible(show);
 				}
 			}
 		});
@@ -392,10 +466,14 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 	 * 
 	 * @param mccClient
 	 * @param manageCallback
-	 * @param addedCallback
+	 * @param baseStyle
 	 */
+	public static void createAsync(ManageCommentsCompositeClient mccClient, ManageCommentsCallback manageCallback, String baseStyle) {
+		doAsyncOperation(mccClient, manageCallback, baseStyle, null, null, null, null, false);
+	}
+	
 	public static void createAsync(ManageCommentsCompositeClient mccClient, ManageCommentsCallback manageCallback) {
-		doAsyncOperation(mccClient, manageCallback, null, null, null);
+		createAsync(mccClient, manageCallback, null);
 	}
 
 	/**
@@ -407,6 +485,18 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 	 * @param addedCallback
 	 */
 	public static void initAsync(ManageCommentsComposite mcc, CommentsInfo commentsInfo, CommentAddedCallback addedCallback) {
-		doAsyncOperation(null, null, mcc, commentsInfo, addedCallback);
+		doAsyncOperation(null, null, null, mcc, commentsInfo, addedCallback, null, false);
+	}
+	
+	/**
+	 * Shows/hides the comments widget within an instance of the
+	 * ManageCommentsComposite via an asynchronous call through its
+	 * split point.
+	 * 
+	 * @param mcc
+	 * @param show
+	 */
+	public static void setCommentsVisibleAsync(ManageCommentsComposite mcc, boolean show) {
+		doAsyncOperation(null, null, null, null, null, null, mcc, show);
 	}
 }

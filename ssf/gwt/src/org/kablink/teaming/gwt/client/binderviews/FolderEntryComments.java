@@ -32,10 +32,14 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import org.kablink.teaming.gwt.client.datatable.ManageCommentsCallback;
+import org.kablink.teaming.gwt.client.datatable.ManageCommentsComposite;
+import org.kablink.teaming.gwt.client.datatable.ManageCommentsComposite.ManageCommentsCompositeClient;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -45,20 +49,23 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
  * @author drfoster@novell.com
  */
 @SuppressWarnings("unused")
-public class FolderEntryComments extends VibeFlowPanel {
-	private CommentsInfo					m_comments;		// Information about the entry being viewed's comments.
-	private FolderEntryCallback				m_fec;			// Callback to the folder entry composite.
-	private GwtTeamingDataTableImageBundle	m_images;		// Access to Vibe's images.
-	private GwtTeamingFilrImageBundle		m_filrImages;	// Access to Filr's images.
-	private GwtTeamingMessages				m_messages;		// Access to Vibe's messages.
+public class FolderEntryComments extends VibeFlowPanel implements ManageCommentsCallback {
+	private CommentAddedCallback			m_addedCallback;			// Interface to tell our container when a new comment gets added.
+	private CommentsInfo					m_comments;					// Information about the entry being viewed's comments.
+	private FolderEntryCallback				m_fec;						// Callback to the folder entry composite.
+	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
+	private GwtTeamingFilrImageBundle		m_filrImages;				// Access to Filr's images.
+	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
+	private ManageCommentsComposite			m_manageCommentsComposite;	// The composite containing the main content of the comment manager. 
 	
-	public FolderEntryComments(FolderEntryCallback fec, CommentsInfo comments) {
+	public FolderEntryComments(FolderEntryCallback fec, CommentsInfo comments, CommentAddedCallback addedCallback) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
-		m_fec      = fec;
-		m_comments = comments;
+		m_fec           = fec;
+		m_comments      = comments;
+		m_addedCallback = addedCallback;
 		
 		// ...initialize the data members requiring it...
 		m_filrImages = GwtTeaming.getFilrImageBundle();
@@ -69,16 +76,68 @@ public class FolderEntryComments extends VibeFlowPanel {
 		createContent();
 	}
 	
+	/**
+	 * Called when the composite has completed its initializations and
+	 * is ready to run.
+	 * 
+	 * Implements the ManageCommentsCallback.compositeReady() method.
+	 */
+	@Override
+	public void compositeReady() {
+		// Tell the composite that we're ready.
+		m_fec.viewComponentReady();
+	}
+
 	/*
 	 * Creates the header's content.
 	 */
 	private void createContent() {
-		// Add the panel's style.
+		// Add the panel's style...
 		addStyleName("vibe-feView-commentsPanel");
 		
-//!		...this needs to be implemented...
+		// ...asynchronously create the manage comments composite...
+		ManageCommentsComposite.createAsync(new ManageCommentsCompositeClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ManageCommentsComposite mcc) {
+				// Store the composite and add it to the panel...
+				m_manageCommentsComposite = mcc;
+				add(m_manageCommentsComposite);
 
-		// Tell the composite that we're ready.
-		m_fec.viewComponentReady();
+				// ...and tell it to complete its initializations.
+				ManageCommentsComposite.initAsync(
+					m_manageCommentsComposite,
+					m_comments,
+					m_addedCallback);
+			}},
+			this,
+			"vibe-feView_commentsComposite");
+	}
+	
+	/**
+	 * Called when the user presses the escape key in the manage
+	 * comments composite.
+	 * 
+	 * Implements the ManageCommentsCallback.escape() method.
+	 */
+	@Override
+	public void escape() {
+		// Nothing do do.
+	}
+	
+	/**
+	 * Shows/hides the comments widget in the ManageCommentsComposite.
+	 * 
+	 * @param show
+	 */
+	public void setCommentsVisible(boolean show) {
+		ManageCommentsComposite.setCommentsVisibleAsync(
+			m_manageCommentsComposite,
+			show);
 	}
 }

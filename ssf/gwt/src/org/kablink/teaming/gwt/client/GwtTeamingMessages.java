@@ -2024,6 +2024,7 @@ public interface GwtTeamingMessages extends Messages
 	String folderEntry_Error_NoNext();
 	String folderEntry_Error_NoPrevious();
 	String folderEntry_Close();
+	String folderEntry_Comments(int count);
 	String folderEntry_Hide();
 	String folderEntry_Locked();
 	String folderEntry_Modified();

@@ -64,6 +64,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderEntryDetailsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNextPreviousFolderEntryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -80,9 +81,11 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -98,7 +101,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class FolderEntryComposite extends ResizeComposite	
-	implements FolderEntryCallback, ToolPanelReady,
+	implements CommentAddedCallback, FolderEntryCallback, ToolPanelReady,
 		// Event handlers implemented by this class.
 		ChangeEntryTypeSelectedEntriesEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
@@ -117,6 +120,7 @@ public class FolderEntryComposite extends ResizeComposite
 {
 	public static final boolean SHOW_GWT_ENTRY_VIEWER	= false;	//! DRF:  Leave false on checkin until it's finished.
 
+	private boolean							m_commentsVisible;			//
 	private boolean							m_compositeReady;			// Set true once the composite and all its components are ready.
 	private boolean							m_isDialog;					// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.
 	private FolderEntryActionCompleteEvent	m_actionClose;				// Event fired when an action we requested completes and we need to close   the viewer.
@@ -129,6 +133,8 @@ public class FolderEntryComposite extends ResizeComposite
 	private FooterPanel						m_footerPanel;				// Footer at the bottom of the view with the permalink, ...
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
+	private Image							m_commentsSliderImg;		//
+	private InlineLabel 					m_commentsHeader;			//
 	private int								m_readyComponents;			// Components that are ready, incremented as they callback.
 	private Label							m_caption;					// The text on the left of the caption bar. 
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
@@ -143,7 +149,7 @@ public class FolderEntryComposite extends ResizeComposite
 	private final static int FOOTER_ADJUST_DLG			=  20;	// Height adjustment required for adequate spacing below the footer when hosted in a dialog.
 	private final static int FOOTER_ADJUST_VIEW			=  30;	// Height adjustment required for adequate spacing below the footer when hosted in a view.
 	
-	private final static int WAIT_FOR_DIALOG_TO_CLOSE	= 750;	// Time to wait for a dialog performing an action to fully close before proceeding.
+	private final static int WAIT_FOR_DIALOG_TO_CLOSE	= 750;	// Time to wait in milliseconds for a dialog performing an action to fully close before proceeding.
 	
 	// Number of components to coordinate with during construction:
 	// - Header;
@@ -280,12 +286,32 @@ public class FolderEntryComposite extends ResizeComposite
 		container.add(m_caption);
 
 		// Create the widgets that appear at the right end of the caption.
-		createCaptionRight(container);
+		createCaptionComments(container);
+		createCaptionRight(   container);
 
 		// Finally, add the caption panel to the root panel.
 		rootPanel.add(container);
 	}
 
+	/**
+	 * Called when a comment is added to the entry.
+	 * 
+	 * Implements the CommentAddedCallback.commentAdded() method.
+	 */
+	@Override
+	public void commentAdded(Object callbackData) {
+		// Update the count in the header.
+		int commentsCount = (m_fed.getComments().getCommentsCount() + 1);
+		m_fed.getComments().setCommentsCount(commentsCount);
+		setCommentsCount(commentsCount);
+
+		// If the comments widget is not currently visible...
+		if (!m_commentsVisible) {
+			// ...show it.
+			toggleCommentsVisibility();
+		}
+	}
+	
 	/*
 	 * Creates a close button in the caption for non-dialog hosts.
 	 */
@@ -321,6 +347,50 @@ public class FolderEntryComposite extends ResizeComposite
 		}
 	}
 	
+	/*
+	 * Creates a panel that contains the comments portion of the caption.
+	 */
+	private void createCaptionComments(Panel container) {
+		// We start out with comments being visible.
+		m_commentsVisible = true;
+
+		// Create the outer panel for the comment caption...
+		VibeFlowPanel outerPanel = new VibeFlowPanel();
+		outerPanel.addStyleName("vibe-feComposite-commentsHeadOuter");
+		container.add(outerPanel);
+
+		// ...add an anchor to it so that we can make it clickable...
+		Anchor commentsAnchor = new Anchor();
+		commentsAnchor.addStyleName("cursorPointer");
+		commentsAnchor.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				toggleCommentsVisibility();
+			}
+		});
+		outerPanel.add(commentsAnchor);
+
+		// ...add the inner panel to the anchor...
+		VibeFlowPanel innerPanel = new VibeFlowPanel();
+		innerPanel.addStyleName("vibe-feComposite-commentsHeadInner blend2-c");
+		commentsAnchor.getElement().appendChild(innerPanel.getElement());
+
+		// ...add the title panel to the inner panel...
+		VibeFlowPanel titlePanel = new VibeFlowPanel();
+		titlePanel.addStyleName("vibe-feComposite-commentsHeadTitle");
+		innerPanel.add(titlePanel);
+
+		// ...add the slider image to the title panel...
+		m_commentsSliderImg = GwtClientHelper.buildImage(m_images.slideUp().getSafeUri().asString());
+		m_commentsSliderImg.addStyleName("vibe-feComposite-commentsHeadSlider");
+		titlePanel.add(m_commentsSliderImg);
+
+		// ...and finally, add the label to the title panel.  Note that
+		// ...its content will be set once we're fully initialized.
+		m_commentsHeader = new InlineLabel();
+		titlePanel.add(m_commentsHeader);
+	}
+
 	/*
 	 * Creates the widgets used to navigate between entries being
 	 * viewed. 
@@ -568,11 +638,15 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously loads the next part of the composite.
 	 */
 	private void loadPart3Now() {
-		// Create and add the various components to the composite.
-		m_headerArea   = new FolderEntryHeader(  this, m_fed                  ); m_contentPanel.add(m_headerArea  );
-		m_menuArea     = new FolderEntryMenu(    this, m_fed.getToolbarItems()); m_contentPanel.add(m_menuArea    );
-		m_documentArea = new FolderEntryDocument(this, m_fed                  ); m_contentPanel.add(m_documentArea);
-		m_commentsArea = new FolderEntryComments(this, m_fed.getComments()    ); m_contentPanel.add(m_commentsArea);
+		// Store the current comment count in the comments header...
+		setCommentsCount(m_fed.getComments().getCommentsCount());
+		
+		// ...and create and add the various components to the
+		// ...composite.
+		m_headerArea   = new FolderEntryHeader(  this, m_fed                    ); m_contentPanel.add(m_headerArea  );
+		m_menuArea     = new FolderEntryMenu(    this, m_fed.getToolbarItems()  ); m_contentPanel.add(m_menuArea    );
+		m_documentArea = new FolderEntryDocument(this, m_fed                    ); m_contentPanel.add(m_documentArea);
+		m_commentsArea = new FolderEntryComments(this, m_fed.getComments(), this); m_contentPanel.add(m_commentsArea);
 	}
 
 	/**
@@ -1306,6 +1380,26 @@ public class FolderEntryComposite extends ResizeComposite
 			m_captionImagePanel.add(captionImg);
 			m_captionImagePanel.addStyleName("padding5R");
 		}
+	}
+
+	/*
+	 * Updates the comments count in the header.
+	 */
+	private void setCommentsCount(int commentCount) {
+		m_commentsHeader.setText(m_messages.folderEntry_Comments(commentCount));
+	}
+
+	/*
+	/* Toggle the state of the comment widgets visibility.
+	 */
+	private void toggleCommentsVisibility() {
+		m_commentsVisible = (!m_commentsVisible);
+		m_commentsArea.setCommentsVisible(m_commentsVisible);
+		ImageResource sliderRes;
+		if (m_commentsVisible)
+		     sliderRes = m_images.slideUp();
+		else sliderRes = m_images.slideDown();
+		m_commentsSliderImg.setUrl(sliderRes.getSafeUri().asString());
 	}
 	
 	/**

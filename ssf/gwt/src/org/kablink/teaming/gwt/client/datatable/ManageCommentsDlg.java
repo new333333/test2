@@ -127,7 +127,8 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 				m_manageCommentsComposite = mcc;
 				m_fp.add(m_manageCommentsComposite);
 			}},
-			this);
+			this,
+			"vibe-manageCommentsComposite");
 		
 		// ...and return the dialog's main content panel.
 		return m_fp;

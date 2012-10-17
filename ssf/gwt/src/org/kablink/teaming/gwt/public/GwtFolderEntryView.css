@@ -88,20 +88,87 @@
 	/* End:  Document styles. */
 	
 	/* Start:  Comments styles. */
-		.vibe-feView-commentsPanel {display: block;}
+		.vibe-feView_commentsComposite                        {background-color: white !important;}
+		.vibe-feView_commentsComposite-addCommentAvatar       {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px; border-radius: 2px;}
+		.vibe-feView_commentsComposite-addCommentHint         {color: #4D6D8B; font-size: 1em;}
+		.vibe-feView_commentsComposite-addCommentHintPanel    {padding-top: 5px; padding-right: 5px;}
+		.vibe-feView_commentsComposite-addCommentPanel        {color: #353838; background-color: #F6F6F6; border-top-color: #cccccc; border-top-style: solid; border-top-width: 1px; padding-top: 15px; padding-bottom: 15px; box-shadow: 0px 2px 3px #e0e0e0 inset;}
+		.vibe-feView_commentsComposite-addCommentPanel-nonIE  {width: 100%; }
+		.vibe-feView_commentsComposite-addCommentTextArea     {background-color: white; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 280px; height: 45px; padding: 5px; border: 1px solid #E0E0E0; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
+		.vibe-feView_commentsComposite-captionImg             {width: 36px; height: 36px;}
+		.vibe-feView_commentsComposite-commentsWidget         {height: 300px; overflow: auto; width: 330px;}
+		.vibe-feView_commentsComposite-label                  {}
+		.vibe-feView_commentsComposite-panel                  {}
+		.vibe-feView_commentsComposite-sendButton-nonIE       {float:right;}
+		.vibe-feView_commentsComposite-sendButton-nonIE:hover {float:right;}
+		.vibe-feView_commentsComposite-sendButton-IE          {margin-left: 20px;}
+		.vibe-feView_commentsComposite-sendButton-IE:hover    {margin-left: 20px;}
+		.vibe-feView_commentsComposite-sendButton             {
+			color:#fff;
+		 	font-size: 14px !important;
+		    font-family: Arial, sans-serif !important;
+		    text-align: center !important;
+		  	white-space: nowrap !important;
+			border: 0px;
+		  	background: #949494 none repeat scroll 0 0;
+			margin-right:3px;
+			padding: 2px 10px;
+			text-decoration:none;
+		  	cursor: pointer;
+			border-radius: 15px;
+			-moz-border-radius: 15px;
+			-webkit-border-radius: 15px;
+		}
+		.vibe-feView_commentsComposite-sendButton:hover {
+			color: #135c8f !important;
+			font-size: 14px !important;
+		    white-space: nowrap !important;
+		    text-decoration: none !important;
+			border: 0px;
+			background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+			background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+			background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+			background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+			background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+			background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+			background: -webkit-gradient(linear, left bottom, left top, color-stop(0.47, #A8D4DD), color-stop(0.53, #D5EDF1), color-stop(1, #C8E4E9));
+			border-radius: 15px;
+			-moz-border-radius: 15px;
+			-webkit-border-radius: 15px;
+		}
+		
+		.vibe-feView-commentsPanel {
+			display: block;
+			position: absolute;
+			top: 0px;
+			right: 30px;
+			width: 350px;
+			background: white;
+			box-shadow: #E0E0E0 0px 2px 3px;
+			border-left:   1px solid #CCC;
+			border-right:  1px solid #CCC;
+			border-bottom: 1px solid #CCC;
+			border-bottom-left-radius:         5px; border-bottom-right-radius:         5px;
+			-moz-border-radius-bottomleft:     5px; -moz-border-radius-bottomright:     5px;
+			-webkit-border-bottom-left-radius: 5px; -webkit-border-bottom-right-radius: 5px;
+		}
 	/* End:  Comments styles. */
 	
 	/* Start:  Folder entry composite styles. */
-		.vibe-feComposite-closeImg     {}
-		.vibe-feComposite-closeLabel   {white-space: nowrap; margin-right: 5px; vertical-align: middle; font-weight: normal; font-size: .9em; }
-		.vibe-feComposite-closePanel   {position: relative; display: inline; white-space: nowrap; cursor: pointer !important;}
-		.vibe-feComposite-contentPanel {position: relative; padding: 10px; overflow: auto;}
-		.vibe-feComposite-footerPanel  {padding-bottom: 10px;}
-		.vibe-feComposite-navNextImg   {cursor: pointer;}
-		.vibe-feComposite-navPanel     {position: relative; display: inline; white-space: nowrap;}
-		.vibe-feComposite-navPrevImg   {cursor: pointer; padding-right: 1px;}
-		.vibe-feComposite-rightPanel   {position: absolute; top: 3px; right: 8px; white-space: nowrap;}
-		.vibe-feComposite-rootPanel    {}
+		.vibe-feComposite-closeImg           {}
+		.vibe-feComposite-closeLabel         {white-space: nowrap; margin-right: 5px; vertical-align: middle; font-weight: normal; font-size: .9em; }
+		.vibe-feComposite-closePanel         {position: relative; display: inline; white-space: nowrap; cursor: pointer !important;}
+		.vibe-feComposite-commentsHeadOuter  {position: absolute; color: white; top: -5px; right: 177px; width: 200px; display: block; font-weight: bold; padding: 5px;}
+		.vibe-feComposite-commentsHeadInner  {border-bottom: 1px solit #CCC; display: block;}
+		.vibe-feComposite-commentsHeadTitle  {position: relative; font-size: 13px; height: 16px; padding: 6px 5px 4px 50px; display: block; color: white; font-weight: bold; padding: 5px;}
+		.vibe-feComposite-commentsHeadSlider {margin-right: 8px;}
+		.vibe-feComposite-contentPanel       {position: relative; padding: 10px; overflow: auto;}
+		.vibe-feComposite-footerPanel        {padding-bottom: 10px; border-top: 1px solid #CCC;}
+		.vibe-feComposite-navNextImg         {cursor: pointer;}
+		.vibe-feComposite-navPanel           {position: relative; display: inline; white-space: nowrap;}
+		.vibe-feComposite-navPrevImg         {cursor: pointer; padding-right: 1px;}
+		.vibe-feComposite-rightPanel         {position: absolute; top: 3px; right: 8px; white-space: nowrap;}
+		.vibe-feComposite-rootPanel          {}
 	/* End:  Folder entry composite styles. */
 	
 	/* Start:  Folder entry dialog styles. */

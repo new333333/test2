@@ -33,6 +33,13 @@
 
 .white { color: white !important; }
 
+.blend2-a {
+		background-image: -webkit-linear-gradient(top, #ebf5f5, #abced1) !important; 
+		background-image:    -moz-linear-gradient(top, #ebf5f5, #abced1) !important; 
+		background-image:     -ms-linear-gradient(top, #ebf5f5, #abced1) !important; 
+		background-image:      -o-linear-gradient(top, #ebf5f5, #abced1) !important; 
+		background-image:         linear-gradient(top, #ebf5f5, #abced1) !important; /* standard, but currently unimplemented */
+}
 .blend2-b
 {
 	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
@@ -40,6 +47,13 @@
 	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
 	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
 	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
+}
+.blend2-c {
+		background-image: -webkit-linear-gradient(top, #abced1, #59828f) !important; 
+		background-image:    -moz-linear-gradient(top, #abced1, #59828f) !important; 
+		background-image:     -ms-linear-gradient(top, #abced1, #59828f) !important; 
+		background-image:      -o-linear-gradient(top, #abced1, #59828f) !important; 
+		background-image:         linear-gradient(top, #abced1, #59828f) !important; /* standard, but currently unimplemented */
 }
 
 /* Styles used with the activity stream control */
