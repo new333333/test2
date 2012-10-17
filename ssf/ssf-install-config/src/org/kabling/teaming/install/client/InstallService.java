@@ -96,4 +96,6 @@ public interface InstallService extends RemoteService
 	 * @return - list of timezone description and id
 	 */
 	Map<String, String> getTimeZones();
+	
+	void logout();
 }

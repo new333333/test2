@@ -29,12 +29,14 @@ public class LoginUIPanel extends Composite implements ClickHandler, KeyUpHandle
 	private PasswordTextBox passwordTextBox;
 	private Label errorsLabel;
 
-	public LoginUIPanel(ProductInfo productInfo)
+	public LoginUIPanel()
 	{
 		FlowPanel content = new FlowPanel();
 		content.setStyleName("loginUIPanel");
 		DOM.setElementProperty(content.getElement(), "align", "center");
 
+		ProductInfo productInfo = AppUtil.getProductInfo();
+		
 		initWidget(content);
 
 		FlowPanel loginContainer = new FlowPanel();
