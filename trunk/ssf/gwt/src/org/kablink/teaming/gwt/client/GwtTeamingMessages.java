@@ -1830,6 +1830,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the Modify static membership dialog
 	String modifyStaticMembershipDlgDeleteLabel();
+	String modifyStaticMembershipDlgExternalAllowedLabel();
 	String modifyStaticMembershipDlgGroupLabel();
 	String modifyStaticMembershipDlgGroupTab();
 	String modifyStaticMembershipDlgHeader( String groupTitle );

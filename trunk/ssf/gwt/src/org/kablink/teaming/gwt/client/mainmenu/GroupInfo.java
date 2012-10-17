@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -52,8 +53,9 @@ public class GroupInfo
 	private String m_title;			// The group's title.
 	private String m_name;		// The group's name
 	private String m_desc;		// The group's description
-	private boolean m_isMembershipDynamic;	// Is the group's membership dynamic
+	private GroupMembershipInfo m_membershipInfo;
 	
+
 	/**
 	 * Constructor method.
 	 * 
@@ -61,7 +63,8 @@ public class GroupInfo
 	 */
 	public GroupInfo() {
 		// Nothing to do.
-		m_isMembershipDynamic = false;
+		m_membershipInfo = new GroupMembershipInfo();
+		m_membershipInfo.setMembershipInfo( false, true );
 	}
 
 	/**
@@ -134,18 +137,26 @@ public class GroupInfo
 
 	
 	/**
+	 * Are external users/groups allowed?
+	 */
+	public boolean getIsExternalAllowed()
+	{
+		return m_membershipInfo.getIsExternalAllowed();
+	}
+	
+	/**
 	 * Return the flag that tells us whether the group membership is dynamic 
 	 */
 	public boolean getIsMembershipDynamic()
 	{
-		return m_isMembershipDynamic;
+		return m_membershipInfo.getIsMembershipDynamic();
 	}
 	
 	/**
 	 * 
 	 */
-	public void setIsMembershipDynamic( boolean dynamic )
+	public void setMembershipInfo( boolean dynamic, boolean externalAllowed )
 	{
-		m_isMembershipDynamic = dynamic;
+		m_membershipInfo.setMembershipInfo( dynamic, externalAllowed );
 	}
 }

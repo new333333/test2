@@ -69,6 +69,7 @@ import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -158,6 +159,7 @@ public class ModifyStaticMembershipDlg extends DlgBox
 	}
 
 	private TabPanel m_tabPanel;
+	private CheckBox m_externalAllowedCb;	// This may be null if we are not running Filr
 	private CellTable<GwtUser> m_userTable;
 	private CellTable<GwtGroup> m_groupTable;
 	private ListDataProvider<GwtUser> m_userDataProvider;
@@ -261,6 +263,51 @@ public class ModifyStaticMembershipDlg extends DlgBox
 
 		m_tabPanel = new TabPanel();
 		m_tabPanel.addStyleName( "vibe-tabPanel" );
+
+		// If we are running Filr, add an "Allow external users and groups" checkbox
+		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
+		{
+			ClickHandler clickHandler;
+			FlowPanel tmpPanel;
+			
+			clickHandler = new ClickHandler()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						@Override
+						public void execute()
+						{
+							// Since the user changed "Allow external users and groups" checkbox
+							// validate the membership to make sure it abides by the
+							// "allow external users and groups" setting
+							validateGroupMembership();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+				
+			};
+
+			tmpPanel = new FlowPanel();
+			tmpPanel.addStyleName( "modifyStaticMembershipDlg_externalAllowedCb" );
+			m_externalAllowedCb = new CheckBox( messages.modifyStaticMembershipDlgExternalAllowedLabel() );
+			m_externalAllowedCb.addClickHandler( clickHandler );
+			tmpPanel.add( m_externalAllowedCb );
+			mainPanel.add( tmpPanel );
+		}
+		else
+			m_externalAllowedCb = null;
 
 		// Add the "User" tab
 		{
@@ -743,11 +790,14 @@ public class ModifyStaticMembershipDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void init( String groupName, List<GwtTeamingItem> membership ) 
+	public void init( String groupName, List<GwtTeamingItem> membership, boolean externalAllowed ) 
 	{
 		// Update the dialog header.
 		setCaption( GwtTeaming.getMessages().modifyStaticMembershipDlgHeader( groupName ) );
 
+		if ( m_externalAllowedCb != null )
+			m_externalAllowedCb.setValue( externalAllowed );
+		
 		if ( m_findUserCtrl != null )
 			m_findUserCtrl.setInitialSearchString( "" );
 		
@@ -947,6 +997,22 @@ public class ModifyStaticMembershipDlg extends DlgBox
 
 			// Give the find control the focus.
 			m_findGroupCtrl.getFocusWidget().setFocus( true );
+		}
+	}
+	
+	/**
+	 * Go through the group membership and make sure it abides by the
+	 * "allow external users/groups" setting.
+	 */
+	private void validateGroupMembership()
+	{
+		if ( m_externalAllowedCb != null )
+		{
+			// Is "allow external users/groups" setting turned on?
+			if ( m_externalAllowedCb.getValue() == false )
+			{
+				// No
+			}
 		}
 	}
 }
