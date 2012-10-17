@@ -50,6 +50,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 
 /**
@@ -268,12 +270,25 @@ public class AdminInfoDlg extends DlgBox
 						GwtEnterProxyCredentialsTask tmpTask;
 						LIElement liElement;
 						String txt;
+						FlowPanel panel;
+						InlineLabel label;
+						Image img;
+						
+						panel = new FlowPanel();
+						
+						img = new Image( GwtTeaming.getImageBundle().warningIcon16() );
+						img.getElement().setAttribute( "align", "absmiddle" );
+						panel.add( img );
 						
 						tmpTask = (GwtEnterProxyCredentialsTask) nextTask;
 						txt = GwtTeaming.getMessages().adminInfoDlgEnterProxyCredentials( tmpTask.getServerName() );
+						label = new InlineLabel( " " + txt );
+						panel.add( label );
 
 						liElement = Document.get().createLIElement();
-						liElement.setInnerText( txt );
+						liElement.getStyle().setMarginBottom( 8, Unit.PX );
+						liElement.setInnerHTML( panel.getElement().getInnerHTML() );
+						
 						
 						uList.appendChild( liElement );
 					}
