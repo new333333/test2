@@ -754,7 +754,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	final List inputAccessors,
     	Map options,
     	PartialLdapSyncResults syncResults,
-    	int identitySource) {
+    	final int identitySource) {
 	   if (inputAccessors.isEmpty()) return new ArrayList();
 	   SimpleProfiler.start("DefaultProfileCoreProcessor.syncNewEntries");
 	    // The following part requires update database transaction.
@@ -777,6 +777,9 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	                
 	        			syncNewEntry_preSave(binder, entry, inputData, entryData, ctx);    
 
+	        			if(entry instanceof UserPrincipal) 
+	        				((UserPrincipal)entry).setIdentitySource(identitySource);
+	        			
 	        			syncNewEntry_save(binder, entry, inputData, entryData, ctx);      
 	       	    		inList.append(entry.getId().toString() + ",");
 	       	    	 	                
