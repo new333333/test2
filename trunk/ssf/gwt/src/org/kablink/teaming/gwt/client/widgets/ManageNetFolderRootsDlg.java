@@ -389,6 +389,9 @@ public class ManageNetFolderRootsDlg extends DlgBox
 			msg = GwtTeaming.getMessages().manageNetFolderServersDlg_ConfirmDelete( rootNames );
 			if ( Window.confirm( msg ) )
 			{
+				// Unselect the selected net folder servers.
+				m_selectionModel.clear();
+				
 				deleteNetFolderRootsFromServer( selectedRoots );
 			}
 		}
