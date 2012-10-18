@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.binderviews.FolderEntryCookies.Cookie;
 import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg.ProfileEntryDlgClient;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
@@ -116,6 +117,9 @@ public class FolderEntryHeader extends VibeFlowPanel {
 	 * Creates the header's main content.
 	 */
 	private void createEntryDescription(VibeFlowPanel contentPanel) {
+		// What's the visibility state for the description on this entry?
+		boolean descVisible = FolderEntryCookies.getBooleanCookieValue(Cookie.DESCRIPTION_VISIBLE, m_fed.getEntityId(), true);
+		
 		// Add the description and hide description panels...
 		m_descPanel = new VibeFlowPanel();
 		m_descPanel.addStyleName("vibe-feView-headerDescription");
@@ -131,9 +135,7 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		descHideAnchor.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				m_descPanel.setVisible(    false);
-				m_showDescPanel.setVisible(true );
-				m_fec.resizeView();
+				setDescVisible(false);
 			}
 		});
 		VibeFlowPanel descHtmlPanel = new VibeFlowPanel();
@@ -142,7 +144,7 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		     descHtmlPanel.getElement().setInnerHTML(m_fed.getDesc()   );
 		else descHtmlPanel.getElement().setInnerText(m_fed.getDescTxt());
 		m_descPanel.add(descHtmlPanel);
-		m_descPanel.setVisible(true);
+		m_descPanel.setVisible(descVisible);
 
 		// ...and add the show description panel.
 		m_showDescPanel = new VibeFlowPanel();
@@ -158,12 +160,10 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		showDescAnchor.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				m_descPanel.setVisible(    true );
-				m_showDescPanel.setVisible(false);
-				m_fec.resizeView();
+				setDescVisible(true);
 			}
 		});
-		m_showDescPanel.setVisible(false);
+		m_showDescPanel.setVisible(!descVisible);
 	}
 	
 	/*
@@ -346,6 +346,21 @@ public class FolderEntryHeader extends VibeFlowPanel {
 			// Simply show it.
 			showProfileEntryDlgAsync(pi);
 		}
+	}
+
+	/*
+	 * Shows/hides the description.
+	 */
+	private void setDescVisible(boolean show) {
+		// Set the visibility state...
+		m_descPanel.setVisible(     show);
+		m_showDescPanel.setVisible(!show);
+		m_fec.resizeView();
+		
+		// ...and store the current state in a cookie.
+		if (show)
+		     FolderEntryCookies.removeCookieValue(    Cookie.DESCRIPTION_VISIBLE, m_fed.getEntityId()       );
+		else FolderEntryCookies.setBooleanCookieValue(Cookie.DESCRIPTION_VISIBLE, m_fed.getEntityId(), false);
 	}
 	
 	/*
