@@ -3568,6 +3568,11 @@ public class GwtServerHelper {
 		}
 		return reply;
 	}
+	
+	public static BinderInfo getBinderInfo(AllModulesInjected bs, HttpServletRequest request, Long binderId) {
+		// Always use the initial form of the method.
+		return getBinderInfo(bs, request, String.valueOf(binderId));
+	}
 
 	/**
 	 * Returns a BinderInfo describing a binder.

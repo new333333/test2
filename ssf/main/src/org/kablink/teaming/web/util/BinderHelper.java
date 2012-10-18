@@ -163,7 +163,12 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 
-@SuppressWarnings("unchecked")
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings({"unchecked", "unused"})
 public class BinderHelper {
 	// The following control aspects of code in Vibe OnPrem that has
 	// been added to assist in debugging.
@@ -1460,7 +1465,6 @@ public class BinderHelper {
 	static public void setRepliesAccessControl(AllModulesInjected bs, Map model, FolderEntry entry) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map accessControlMap = (Map) model.get(WebKeys.ACCESS_CONTROL_MAP);
-		@SuppressWarnings("unused")
 		HashMap entryAccessMap = new HashMap();
 		if (accessControlMap.containsKey(entry.getId())) {
 			entryAccessMap = (HashMap) accessControlMap.get(entry.getId());
@@ -4536,7 +4540,6 @@ public class BinderHelper {
 	public static void saveFolderColumnSettings(AllModulesInjected bs, ActionRequest request, 
 			ActionResponse response, Long binderId) {
 		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
-		@SuppressWarnings("unused")
 		Binder binder = bs.getBinderModule().getBinder(binderId);
 		Map formData = request.getParameterMap();
 		Map columns = new LinkedHashMap();
@@ -4693,11 +4696,13 @@ public class BinderHelper {
 		return applications;
 	}
 	
-	public static Long getNextPrevEntry(AllModulesInjected bs, Folder folder, Long entryId, boolean next) {
+	public static Long getNextPrevEntry(AllModulesInjected bs, Folder folder, Long entryId, boolean next, Map options) {
 		if (folder == null) {
 			return null; 
-		} 
-		Map options = new HashMap();		
+		}
+		if (null == options) {
+			options = new HashMap();
+		}
       	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES));
       	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(0));
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -4726,14 +4731,25 @@ public class BinderHelper {
 		}
 		return null;
 	}
+	
+	public static Long getNextPrevEntry(AllModulesInjected bs, Folder folder, Long entryId, boolean next) {
+		return getNextPrevEntry(bs, folder, entryId, next, null);
+	}
 
 	public static void initSortOrder(AllModulesInjected bs, 
 			UserProperties userFolderProperties, Map options, String viewType) {
 		//Start - Determine the Sort Order
 		//since one one tab/folder, no use in saving info in tabs
-		//Trying to get Sort Information from the User Folder Properties
-		String	searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
-		String	searchSortDescend = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_DESCEND);
+		//Trying to get Sort Information first from the options and
+		//then from the User Folder Properties
+		String searchSortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);
+		if (!(MiscUtil.hasString(searchSortBy))) {
+			searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
+		}
+		String searchSortDescend = (String) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
+		if (!(MiscUtil.hasString(searchSortDescend))) {
+			searchSortDescend = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_DESCEND);
+		}
 		
 		//Setting the Sort properties if it is available in the Tab or User Folder Properties Level. 
 		//If not, go with the Default Sort Properties 
