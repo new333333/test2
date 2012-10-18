@@ -60,7 +60,7 @@ import com.google.gwt.user.client.ui.TextBox;
  */
 public class ActivityStreamReply extends Composite
 {
-	private TextBox m_titleTextBox;
+	private TextBox m_titleTextBox = null;
 	private TextArea m_descTextArea;
 	private EditSuccessfulHandler m_onSuccessHandler;
 	private FlowPanel m_addACommentPanel;
@@ -82,23 +82,28 @@ public class ActivityStreamReply extends Composite
 		mainPanel.addStyleName( "roundcornerSM" );
 		
 		// Add a textbox for the title
-		inputPanel = new FlowPanel();
-		inputPanel.addStyleName( "activityStreamReplyTitlePanel" );
-		m_titleTextBox = new TextBox();
-		m_titleTextBox.addStyleName( "activityStreamReplyTitleTextBox" );
-		inputPanel.add( m_titleTextBox );
-		mainPanel.add( inputPanel );
+		if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
+		{
+			inputPanel = new FlowPanel();
+			inputPanel.addStyleName( "activityStreamReplyTitlePanel" );
+			m_titleTextBox = new TextBox();
+			m_titleTextBox.addStyleName( "activityStreamReplyTitleTextBox" );
+			inputPanel.add( m_titleTextBox );
+			mainPanel.add( inputPanel );
+		}
 		
+		inputPanel = new FlowPanel();
+		inputPanel.addStyleName( "activityStreamReply_RelativePos" );
+
 		// Add a panel that will hold "Add a comment" hint
 		{
 			m_addACommentPanel = new FlowPanel();
 			m_addACommentPanel.addStyleName( "activityStreamReplyAddACommentPanel" );
 			m_addACommentPanel.getElement().setInnerText( GwtTeaming.getMessages().addAComment() );
-			mainPanel.add( m_addACommentPanel );
+			inputPanel.add( m_addACommentPanel );
 		}
 		
 		// Create a textbox
-		inputPanel = new FlowPanel();
 		m_descTextArea = new TextArea();
 		m_descTextArea.addStyleName( "activityStreamReplyTextArea" );
 		m_descTextArea.addKeyPressHandler( new KeyPressHandler()
@@ -225,7 +230,9 @@ public class ActivityStreamReply extends Composite
 				replyText = builder.toSafeHtml().asString();
 			}
 
-			title = m_titleTextBox.getText();
+			title = "";
+			if ( m_titleTextBox != null )
+				title = m_titleTextBox.getText();
 			
 			results = new HashMap<String, String>();
 			results.put( "title", title );
@@ -241,7 +248,9 @@ public class ActivityStreamReply extends Composite
 	 */
 	private void init( String title )
 	{
-		m_titleTextBox.setText( title );
+		if ( m_titleTextBox != null )
+			m_titleTextBox.setText( title );
+		
 		m_descTextArea.setText( "" );
 	}
 
