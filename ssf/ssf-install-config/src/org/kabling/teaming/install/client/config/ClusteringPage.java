@@ -6,6 +6,8 @@ import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.shared.Clustered;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -19,7 +21,7 @@ import com.google.gwt.user.client.ui.Panel;
  *  UI for setting up clustering
  *
  */
-public class ClusteringPage extends ConfigPageDlgBox
+public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler
 {
 	private VibeTextBox jvmRouteTextBox;
 	private ListBox cacheProviderListBox;
@@ -47,6 +49,7 @@ public class ClusteringPage extends ConfigPageDlgBox
 
 		// Enable clustering environment
 		enableClusteredCheckBox = new CheckBox(RBUNDLE.enableClusteredEnvironment());
+		enableClusteredCheckBox.addClickHandler(this);
 		contentPanel.add(enableClusteredCheckBox);
 
 		// All the other content goes inside a table
@@ -178,6 +181,11 @@ public class ClusteringPage extends ConfigPageDlgBox
 		if (clustered != null)
 		{
 			enableClusteredCheckBox.setValue(clustered.isEnabled());
+			
+			//Set the validator state based on if clustering is enabled
+			jvmRouteValidator.setRequired(enableClusteredCheckBox.getValue());
+			multicastHostValidator.setRequired(enableClusteredCheckBox.getValue());
+			
 			hostNameTextBox.setText(clustered.getCacheService());
 			jvmRouteTextBox.setText(clustered.getJvmRoute());
 
@@ -192,5 +200,18 @@ public class ClusteringPage extends ConfigPageDlgBox
 			//TODO: Memcached addresses
 		}
 	}
+
+	@Override
+	public void onClick(ClickEvent event)
+	{
+		super.onClick(event);
+		
+		if (event.getSource() == enableClusteredCheckBox)
+		{
+			jvmRouteValidator.setRequired(enableClusteredCheckBox.getValue());
+			multicastHostValidator.setRequired(enableClusteredCheckBox.getValue());
+		}
+	}
+	
 
 }

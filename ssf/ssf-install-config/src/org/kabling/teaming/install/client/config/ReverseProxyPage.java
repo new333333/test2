@@ -162,7 +162,13 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 		if (sso != null)
 		{
 			enableAccessGatewayCheckBox.setValue(sso.isiChainEnabled());
+			
+			accessGatewayAddrValidator.setRequired(enableAccessGatewayCheckBox.getValue());
+			accessGatewayLogOffValidator.setRequired(enableAccessGatewayCheckBox.getValue());
+			
 			accessGatewayAddrTextBox.setText(sso.getiChainProxyAddr());
+			webDavValidator.setRequired(useAccessGatewayWebDavCheckBox.getValue());
+			
 			logoutUrlTextBox.setText(sso.getWinAuthLogoffUrl());
 
 			useAccessGatewayWebDavCheckBox.setValue(sso.isiChainWebDAVProxyEnabled());

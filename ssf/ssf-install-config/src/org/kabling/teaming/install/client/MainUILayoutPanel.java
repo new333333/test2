@@ -35,7 +35,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHandler, ResizeHandler
@@ -241,6 +240,7 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 			//Show the configuration wizard
 			final ConfigWizard wizard = new ConfigWizard(result);
 			wizard.setGlassEnabled(true);
+			wizard.center();
 		}
 
 	}

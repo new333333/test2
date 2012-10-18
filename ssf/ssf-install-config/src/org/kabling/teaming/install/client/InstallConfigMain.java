@@ -4,11 +4,8 @@ import org.kabling.teaming.install.shared.ProductInfo;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 
 public class InstallConfigMain implements EntryPoint
 {
