@@ -68,7 +68,7 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ManageCommentsDlg() {
+	private ManageCommentsDlg(ManageCommentsDlgClient mcDlgClient) {
 		// Initialize the superclass...
 		super(
 			false,					// false -> Not auto hide.
@@ -79,10 +79,10 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 		// ...and create the dialog's content.
 		addStyleName("vibe-manageCommentsDlg");
 		createAllDlgContent(
-			"",		// The dialog's caption will be set each time it is run.
+			"",				// The dialog's caption will be set each time it is run.
 			DlgBox.getSimpleSuccessfulHandler(),
 			DlgBox.getSimpleCanceledHandler(),
-			null);	// Create callback data.  Unused. 
+			mcDlgClient);	// The callbackData object passed into createContent(). 
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 	 * 
 	 * Implements the DlgBox.createContent() abstract method.
 	 * 
-	 * @param callbackData (unused)
+	 * @param callbackData
 	 * 
 	 * @return
 	 */
@@ -113,11 +113,12 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 		m_fp.addStyleName("vibe-manageCommentsDlg-panel");
 
 		// ...asynchronously create the manage comments composite...
+		final ManageCommentsDlg			mcDlg       = this;
+		final ManageCommentsDlgClient	mcDlgClient = ((ManageCommentsDlgClient) callbackData);
 		ManageCommentsComposite.createAsync(new ManageCommentsCompositeClient() {
 			@Override
 			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
+				mcDlgClient.onUnavailable();
 			}
 			
 			@Override
@@ -126,6 +127,7 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 				// content panel.
 				m_manageCommentsComposite = mcc;
 				m_fp.add(m_manageCommentsComposite);
+				mcDlgClient.onSuccess(mcDlg);
 			}},
 			this,
 			"vibe-manageCommentsComposite");
@@ -275,9 +277,10 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 			public void onSuccess() {
 				// Is this a request to create a dialog?
 				if (null != mcDlgClient) {
-					// Yes!  Create it and return it via the callback.
-					ManageCommentsDlg mcDlg = new ManageCommentsDlg();
-					mcDlgClient.onSuccess(mcDlg);
+					// Yes!  Create the dialog.  Note that its
+					// construction flow will call the appropriate
+					// method off the ManageCommentDlgClient object.
+					new ManageCommentsDlg(mcDlgClient);
 				}
 				
 				else {

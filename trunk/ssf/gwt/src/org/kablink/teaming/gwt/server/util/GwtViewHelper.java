@@ -786,7 +786,14 @@ public class GwtViewHelper {
 		if (null != fa) {
 			// Yes!  Do we support viewing that type of file as HTML?
 			String fName = fa.getFileItem().getName();
-    		if (SsfsUtil.supportsViewAsHtml(fName)) {
+			boolean supportsViewAsHtml = SsfsUtil.supportsViewAsHtml(fName);
+			if (!supportsViewAsHtml) {
+				int pPos = fName.lastIndexOf('.');
+				if (0 < pPos) {
+					supportsViewAsHtml = fName.substring(pPos).toLowerCase().equals(".pdf");
+				}
+			}
+    		if (supportsViewAsHtml) {
 				try {
 	        		// Yes!  Generate a ViewFileInfo for it.
 					reply = new ViewFileInfo();
