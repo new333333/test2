@@ -132,6 +132,7 @@
 	<classpathentry kind="lib" path="tools/gwt/gwt-user.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/gwt-servlet-deps.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-cal.jar"/>
+	<classpathentry kind="lib" path="lib/gwt-crypto.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/gwt-dnd.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/gwt-log.jar"/>
 	<classpathentry kind="lib" path="lib/lib-gwt-file.jar"/>

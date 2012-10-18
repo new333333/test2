@@ -1360,7 +1360,7 @@ public class GwtViewHelper {
 	 */
 	private static void debugTraceBlob(FileBlob fileBlob, String methodName, String traceHead, String traceTail, boolean lastBlob) {
 		if (m_logger.isDebugEnabled()) {
-			String	dump  = (traceHead + ":  '" + fileBlob.getFileName() + "' (fSize:" + fileBlob.getFileSize() + ", bStart:" + fileBlob.getBlobStart() + ", bSize:" + fileBlob.getBlobSize() + ", last:" + lastBlob + ")");
+			String	dump  = (traceHead + ":  '" + fileBlob.getFileName() + "' (fSize:" + fileBlob.getFileSize() + ", bStart:" + fileBlob.getBlobStart() + ", bSize:" + fileBlob.getBlobSize() + ", last:" + lastBlob + ", md5Hash:" + fileBlob.getBlobMD5Hash() + ")");
 			boolean hasTail = MiscUtil.hasString(traceTail);
 			dump = ("GwtViewHelper." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
 			String data = fileBlob.getBlobData();
@@ -6416,24 +6416,39 @@ public class GwtViewHelper {
 				}
 			}
 
-			StringRpcResponseData reply = null;
-			try {
-				// Can we write the data from this blob to the file?
-				FileOutputStream fo = new FileOutputStream(tempFile, (!firstBlob));
-				byte[] blobData = fileBlob.getBlobData().getBytes();
-				if (fileBlob.isBlobBase64Encoded()) {
-					blobData = Base64.decodeBase64(blobData);
-				}
-				fo.write(blobData);
-				fo.close();
-			}
-			
-			catch (Exception e) {
-				// No!  Return the error to the user.
+			// Does the MD5 hash calculated on the blob we just
+			// received match the MD5 hash that came with it? 
+			StringRpcResponseData	reply   = null;
+			String					md5Hash = MiscUtil.getMD5Hash(fileBlob.getBlobData());
+			if (!(md5Hash.equals(fileBlob.getBlobMD5Hash()))) {
+				// No!  Then the data is corrupt.  Return the error to
+				// the user.
 				reply = new StringRpcResponseData();
-				reply.setStringValue(NLT.get("binder.add.files.html5.upload.error", new String[]{e.getLocalizedMessage()}));
+				reply.setStringValue(NLT.get("binder.add.files.html5.upload.corrupt"));
 				try {tempFile.delete();}
 				catch (Throwable t) {/* Ignored. */}
+			}
+			
+			else {
+				try {
+					// Yes!  The MD5 hashes match!  Can we write the
+					// data from this blob to the file?
+					FileOutputStream fo = new FileOutputStream(tempFile, (!firstBlob));
+					byte[] blobData = fileBlob.getBlobData().getBytes();
+					if (fileBlob.isBlobBase64Encoded()) {
+						blobData = Base64.decodeBase64(blobData);
+					}
+					fo.write(blobData);
+					fo.close();
+				}
+				
+				catch (Exception e) {
+					// No!  Return the error to the user.
+					reply = new StringRpcResponseData();
+					reply.setStringValue(NLT.get("binder.add.files.html5.upload.error", new String[]{e.getLocalizedMessage()}));
+					try {tempFile.delete();}
+					catch (Throwable t) {/* Ignored. */}
+				}
 			}
 
 			// Did we just successfully write the last blob of the file

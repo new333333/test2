@@ -47,6 +47,7 @@ public class FileBlob implements IsSerializable {
 	private long	m_blobSize;				//
 	private long	m_blobStart;			//
 	private String	m_blobData;				//
+	private String	m_blobMD5Hash;			//
 	
 	// The following pertain to the file itself.
 	private long	m_fileSize;				//
@@ -102,6 +103,7 @@ public class FileBlob implements IsSerializable {
 	public long    getBlobSize()         {return m_blobSize;         }
 	public long    getBlobStart()        {return m_blobStart;        }
 	public String  getBlobData()         {return m_blobData;         }
+	public String  getBlobMD5Hash()      {return m_blobMD5Hash;      }
 	
 	public long   getFileSize()  {return m_fileSize; }
 	public String getFileName()  {return m_fileName; }
@@ -116,6 +118,7 @@ public class FileBlob implements IsSerializable {
 	public void setBlobSize(         long    blobSize)          {m_blobSize          = blobSize;         }
 	public void setBlobStart(        long    blobStart)         {m_blobStart         = blobStart;        }
 	public void setBlobData(         String  blobData)          {m_blobData          = blobData;         }
+	public void setBlobMD5Hash(      String  blobMD5Hash)       {m_blobMD5Hash       = blobMD5Hash;      }
 	
 	public void setFileSize(         long    fileSize)          {m_fileSize          = fileSize;         }
 	public void setFileName(         String  fileName)          {m_fileName          = fileName;         }

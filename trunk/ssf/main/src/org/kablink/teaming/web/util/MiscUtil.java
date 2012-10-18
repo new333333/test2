@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.security.MessageDigest;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1075,4 +1078,58 @@ public final class MiscUtil
 	{
 		return ( ( null == lList ) ? new ArrayList<Locale>() : lList );
 	}// end validateIAL()
+	
+	/*
+	 * Converts a byte[] to a string of hex characters.
+	 */
+	private static String baToHS( final byte[] b )
+	{
+		final StringBuffer sb = new StringBuffer( b.length * 2 );
+		final int baLen = b.length;
+		for ( int i = 0; i < baLen; i += 1 )
+		{
+			int v = ( b[i] & 0xff );
+			if ( v < 16 )
+			{
+				sb.append( '0' );
+			}
+			sb.append( Integer.toHexString( v ) );
+		}
+		return sb.toString();
+	}// end baToHS()
+	
+	/**
+	 * Returns the MD5 hash from a byte[].
+	 * 
+	 * @param dataBytes
+	 * 
+	 * @return
+	 * 
+	 * @throws Exception
+	 */
+	public static String getMD5Hash( byte[] dataBytes ) throws Exception
+	{
+		// Read the data through the MD5 digest...
+	    InputStream		input     =  new ByteArrayInputStream( dataBytes );
+	    byte[]			buffer    = new byte[1024];
+	    MessageDigest	md5Digest = MessageDigest.getInstance( "MD5" );
+	    int				read;
+	    do {
+	        read = input.read( buffer );
+	        if ( read > 0 )
+	        {
+	            md5Digest.update( buffer, 0, read );
+	        }
+	    } while ( read != (-1) );
+	    input.close();
+
+	    // ...and return the hash as a string.
+	    return baToHS( md5Digest.digest() );
+	}// end getMD5Hash()
+	
+	public static String getMD5Hash( String data ) throws Exception
+	{
+		// Always use the initial form of the method.
+		return getMD5Hash( data.getBytes() );
+	}// end getMD5Hash()
 }// end MiscUtil
