@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.binderviews.FolderEntryCookies.Cookie;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
@@ -351,8 +352,8 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Creates a panel that contains the comments portion of the caption.
 	 */
 	private void createCaptionComments(Panel container) {
-		// We start out with comments being visible.
-		m_commentsVisible = true;
+		// What's the visibility state for comments on this entry?
+		m_commentsVisible = FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), true);
 
 		// Create the outer panel for the comment caption...
 		VibeFlowPanel outerPanel = new VibeFlowPanel();
@@ -381,7 +382,8 @@ public class FolderEntryComposite extends ResizeComposite
 		innerPanel.add(titlePanel);
 
 		// ...add the slider image to the title panel...
-		m_commentsSliderImg = GwtClientHelper.buildImage(m_images.slideUp().getSafeUri().asString());
+		ImageResource sliderImg = (m_commentsVisible ? m_images.slideUp() : m_images.slideDown());
+		m_commentsSliderImg = GwtClientHelper.buildImage(sliderImg.getSafeUri().asString());
 		m_commentsSliderImg.addStyleName("vibe-feComposite-commentsHeadSlider");
 		titlePanel.add(m_commentsSliderImg);
 
@@ -519,6 +521,9 @@ public class FolderEntryComposite extends ResizeComposite
 					// Load it.
 					m_vfei = vfei;
 					m_caption.setText(m_vfei.getTitle());
+					if (m_commentsVisible != FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), true)) {
+						toggleCommentsVisibility();
+					}
 					refreshFolderEntryViewer();
 				}
 			}
@@ -647,6 +652,9 @@ public class FolderEntryComposite extends ResizeComposite
 		m_menuArea     = new FolderEntryMenu(    this, m_fed.getToolbarItems()  ); m_contentPanel.add(m_menuArea    );
 		m_documentArea = new FolderEntryDocument(this, m_fed                    ); m_contentPanel.add(m_documentArea);
 		m_commentsArea = new FolderEntryComments(this, m_fed.getComments(), this); m_contentPanel.add(m_commentsArea);
+		if (!m_commentsVisible) {
+			m_commentsArea.setCommentsVisible(false);
+		}
 	}
 
 	/**
@@ -1393,13 +1401,19 @@ public class FolderEntryComposite extends ResizeComposite
 	/* Toggle the state of the comment widgets visibility.
 	 */
 	private void toggleCommentsVisibility() {
+		// Toggle the state...
 		m_commentsVisible = (!m_commentsVisible);
-		m_commentsArea.setCommentsVisible(m_commentsVisible);
 		ImageResource sliderRes;
 		if (m_commentsVisible)
 		     sliderRes = m_images.slideUp();
 		else sliderRes = m_images.slideDown();
 		m_commentsSliderImg.setUrl(sliderRes.getSafeUri().asString());
+		m_commentsArea.setCommentsVisible(m_commentsVisible);
+		
+		// ...and store the current state in a cookie.
+		if (m_commentsVisible)
+		     FolderEntryCookies.removeCookieValue(    Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId()       );
+		else FolderEntryCookies.setBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), false);
 	}
 	
 	/**

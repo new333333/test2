@@ -93,7 +93,7 @@ public class FolderEntryDocument extends VibeFlowPanel {
 			m_htmlFrame.addStyleName("vibe-feView-documentFrame");
 			Element dfE = m_htmlFrame.getElement(); 
 			dfE.setId(VIEW_DOCUMENT_FRAME_ID);
-			dfE.setAttribute("frameborder",  "0");
+			dfE.setAttribute("frameBorder",  "0");
 			dfE.setAttribute("scrolling", "auto");
 			m_htmlFrame.setUrl(  htmlUrl    );
 			m_htmlFrame.setTitle(m_fed.getTitle());
