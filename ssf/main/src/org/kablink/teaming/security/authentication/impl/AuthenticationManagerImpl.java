@@ -472,7 +472,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 						+ zoneName + "," + username + "]", e);
     	}
 
-		if(user.isExternalUser())
+		if(!user.isInternal())
 			throw new UserDoesNotExistException("Unauthorized user [" 
 				+ zoneName + "," + username + "]");
 
@@ -541,7 +541,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			throw new UserAccountNotActiveException("User account disabled or deleted [" 
 						+ zoneName + "," + username + "]", e);
     	}
-		if(!user.isExternalUser())
+		if(user.isInternal())
 			throw new UserDoesNotExistException("Unauthorized user [" 
 						+ zoneName + "," + username + "]");
 		return user;

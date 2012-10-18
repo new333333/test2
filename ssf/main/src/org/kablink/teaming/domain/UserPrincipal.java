@@ -33,17 +33,23 @@
 package org.kablink.teaming.domain;
 
 public abstract class UserPrincipal extends Principal {
-	// Internal identity sources (that is, within corporate firewall)
-	// Vibe local database
+	/**
+	 * Vibe database is the source of the identity.
+	 */
 	public static final int IDENTITY_SOURCE_LOCAL = 1;
-	// LDAP is external to Vibe, but internal to corporate firewall.
+	/**
+	 * LDAP is the source of the identity.
+	 */
 	public static final int IDENTITY_SOURCE_LDAP = 2;
-	// External identity sources (that is, outside of corporate firewall)
+	/**
+	 * External component/provider is the source of the identity.
+	 */
 	public static final int IDENTITY_SOURCE_EXTERNAL = 11;
 
 	protected Long diskQuota;
 	protected Long fileSizeLimit;
     protected Integer identitySource; // could be null
+    protected Boolean internal; // could be null
 	
 	/**
      * @hibernate.property
@@ -90,4 +96,20 @@ public abstract class UserPrincipal extends Principal {
 		this.identitySource = identitySource;
 	}
 	
+	public boolean isInternal() {
+		if(internal == null) {
+			// Dealing with existing users and groups that existed before adding this explicigt flag.
+			if(getIdentitySource() == IDENTITY_SOURCE_LOCAL || getIdentitySource() == IDENTITY_SOURCE_LDAP)
+				return true;
+			else
+				return false;
+		}
+		else {
+			return internal.booleanValue();
+		}
+	}
+	
+	public void setInternal(boolean internal) {
+		this.internal = internal;
+	}
 }

@@ -1331,7 +1331,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
   					!ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(entry.getInternalId()) &&
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
   				List templates;
-  				if (entry.isExternalUser()) {
+  				if (!entry.isInternal()) {
   					templates = getCoreDao().loadTemplates(entry.getZoneId(), Definition.EXTERNAL_USER_WORKSPACE_VIEW);
   				} else {
   					templates = getCoreDao().loadTemplates(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
@@ -1348,7 +1348,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
   				//just load a workspace without all the stuff underneath
   				//processor handles transaction
   				Definition userDef;
-  				if (entry.isExternalUser()) {
+  				if (!entry.isInternal()) {
   					userDef = getDefinitionModule().addDefaultDefinition(Definition.EXTERNAL_USER_WORKSPACE_VIEW);
   				} else {
   					userDef = getDefinitionModule().addDefaultDefinition(Definition.USER_WORKSPACE_VIEW);

@@ -272,8 +272,13 @@
         </addColumn>
     </changeSet>
     <changeSet author="david" context="schema" failOnError="true" id="30">
-        <addColumn tableName="SS_Attachments">
-			<column name="fileMd5" type="CHAR(32)"/>
+        <addColumn tableName="SS_ATTACHMENTS">
+			<column name="FILEMD5" type="CHAR(32)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="31">
+        <addColumn tableName="SS_PRINCIPALS">
+			<column name="INTERNAL" type="NUMBER(1,0)"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>
