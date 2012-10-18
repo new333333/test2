@@ -495,13 +495,30 @@
 	width: 450px;
 }
 
+.vibe-feView-commentsPanel .activityStreamReply
+{
+	background-color: #F6F6F6;
+	border: 1px solid #C4C4C4;
+	left: 50px;
+	margin-bottom: 10px;
+	margin-top: .5em;
+	padding: 5px;
+	position: relative;
+	width: 225px;
+}
+
+.activityStreamReply_RelativePos
+{
+	position: relative;
+}
+
 .activityStreamReplyAddACommentPanel
 {
 	color: #CCCCCC;
 	font-size: 0.9em;
 	left: 20px;
 	position: absolute;
-	top: 34px;
+	top: 4px;
 }
 
 .activityStreamReplyTitlePanel, .shareThisDlg_TitlePanel
@@ -533,12 +550,33 @@
 	width: 440px;
 }
 
+.vibe-feView-commentsPanel .activityStreamReplyTextArea
+{
+	background-color: transparent;
+	border: 0 none;
+	color: #353838;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 14px;
+	height: 100px;
+	padding: 5px;
+	resize: none;
+	width: 225px;
+}
+
 .activityStreamReplyFooter
 {
 	margin-bottom: 5px;
 	margin-top: .5em;
 	text-align: right;
 	width: 450px;
+}
+
+.vibe-feView-commentsPanel .activityStreamReplyFooter
+{
+	margin-bottom: 5px;
+	margin-top: .5em;
+	text-align: right;
+	width: 225px;
 }
 
 .activityStreamReplyBtn
