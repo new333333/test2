@@ -785,7 +785,7 @@ public class GwtSearchHelper
 					reply.setIdentitySource( IdentitySource.LOCAL );
 				else if ( identitySource == User.IDENTITY_SOURCE_LDAP )
 					reply.setIdentitySource( IdentitySource.LDAP );
-				else if ( identitySource == User.IDENTITY_SOURCE_EXTERNAL )
+				else if ( identitySource == User.IDENTITY_SOURCE_OPENID )
 					reply.setIdentitySource( IdentitySource.EXTERNAL );
 				else
 					reply.setIdentitySource( IdentitySource.UNKNOWN );

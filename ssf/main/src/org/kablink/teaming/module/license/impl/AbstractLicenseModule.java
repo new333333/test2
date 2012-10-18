@@ -163,7 +163,7 @@ implements LicenseModule, ZoneSchedule {
 		filterControls.add(Restrictions.eq("type", "user"));
 		filterControls.add(Restrictions.eq("disabled", Boolean.FALSE));
 		filterControls.add(Restrictions.eq("deleted", Boolean.FALSE));
-	 	filterControls.add( Restrictions.eq("identitySource", Integer.valueOf(User.IDENTITY_SOURCE_EXTERNAL)) );
+	 	filterControls.add( Restrictions.eq("identitySource", Integer.valueOf(User.IDENTITY_SOURCE_OPENID)) );
 		
 		return getCoreDao().countObjects(Principal.class, filterControls, zoneId);
 	}

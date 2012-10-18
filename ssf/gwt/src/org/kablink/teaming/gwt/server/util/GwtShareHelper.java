@@ -578,7 +578,7 @@ public class GwtShareHelper
 							name = user.getTitle();
 							gwtShareItem.setRecipientName( name );
 							
-							if ( user.getIdentitySource() == User.IDENTITY_SOURCE_EXTERNAL )
+							if ( user.getIdentitySource() == User.IDENTITY_SOURCE_OPENID )
 								gwtShareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 							else
 								gwtShareItem.setRecipientType( GwtRecipientType.USER );
@@ -716,7 +716,7 @@ public class GwtShareHelper
 							updates.put( ObjectKeys.FIELD_USER_EMAIL, recipientName );
 							updates.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, recipientName );
 			 				user = profileModule.addUserFromPortal(
-			 													User.IDENTITY_SOURCE_EXTERNAL,
+			 													User.IDENTITY_SOURCE_OPENID,
 			 													recipientName,
 			 													null,
 			 													updates,
