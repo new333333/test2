@@ -45,7 +45,7 @@ public abstract class UserPrincipal extends Principal {
 	 */
 	public static final int IDENTITY_SOURCE_LDAP = 2;
 	/**
-	 * External component/provider is the source of the identity.
+	 * OpenID is the source of the identity.
 	 */
 	public static final int IDENTITY_SOURCE_OPENID = 11;
 
