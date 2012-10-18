@@ -28,8 +28,8 @@
 .padding15R {padding-right: 15px;           }
 
 .vibe-fullScroll       {overflow:   auto;}
-.vibe-horizontalScroll {overflow-x: auto;}
-.vibe-verticalScroll   {overflow-y: auto;}
+.vibe-horizontalScroll {overflow-x: auto; overflow-y: hidden;}
+.vibe-verticalScroll   {overflow-y: auto; overflow-x: hidden;}
 
 .white { color: white !important; }
 

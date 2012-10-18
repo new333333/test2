@@ -4012,16 +4012,25 @@ public class GwtViewHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
+	@SuppressWarnings("unchecked")
 	public static ViewFolderEntryInfoRpcResponseData getNextPreviousFolderInfo(AllModulesInjected bs, HttpServletRequest request, EntityId entityId, boolean previous) throws GwtTeamingException {
 		try {
 			// Allocate a ViewFolderEntryInfoRpcResponseData we can
 			// return.
 			ViewFolderEntryInfoRpcResponseData reply = new ViewFolderEntryInfoRpcResponseData();
 
+			// Setup an options Map with the sorting information
+			// current in effect for the folder.
+			Long								folderId   = entityId.getBinderId();
+			BinderInfo							folderInfo = GwtServerHelper.getBinderInfo(bs, request, folderId  );
+			FolderDisplayDataRpcResponseData	fdd        = getFolderDisplayData(         bs, request, folderInfo);
+			Map options = new HashMap();
+			options.put(ObjectKeys.SEARCH_SORT_BY,                     fdd.getFolderSortBy()      );
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, String.valueOf(fdd.getFolderSortDescend()));
+			
 			// Can we get the ID of the previous/next folder entry?
-			Long	folderId      = entityId.getBinderId();
 			Folder	folder        = bs.getFolderModule().getFolder(folderId);
-			Long	targetEntryId = BinderHelper.getNextPrevEntry(bs, folder, entityId.getEntityId(), (!previous));
+			Long	targetEntryId = BinderHelper.getNextPrevEntry(bs, folder, entityId.getEntityId(), (!previous), options);
 			if (null != targetEntryId) {
 				// Yes!  Create a ViewFolderEntryInfo for it and store
 				// it in the reply.
