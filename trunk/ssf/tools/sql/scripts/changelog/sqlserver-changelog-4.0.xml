@@ -273,4 +273,9 @@
 			<column name="fileMd5" type="CHAR(32)"/>
         </addColumn>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="30">
+        <addColumn tableName="SS_Principals">
+			<column name="internal" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -4662,8 +4662,8 @@ public class BinderHelper {
 	   		//See if this includes All Users
 	        Long allUsersId = Utils.getAllUsersGroupId();
 	        Long allExtUsersId = Utils.getAllExtUsersGroupId();
-	        if ((allUsersId != null && responders.contains(allUsersId) && !user.isExternalUser()) ||
-	        		(allExtUsersId != null && responders.contains(allExtUsersId) && user.isExternalUser())) {
+	        if ((allUsersId != null && responders.contains(allUsersId) && user.isInternal()) ||
+	        		(allExtUsersId != null && responders.contains(allExtUsersId) && !user.isInternal())) {
 	        	//All Users can respond (leave the answer = true)
 	        } else if (!responders.contains(user.getId())) {
  				//This user is not on the responder list. Just ignore the request

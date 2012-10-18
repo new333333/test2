@@ -1536,7 +1536,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		    	if(((IndividualPrincipal)p).isAllIndividualMember()) {
 		        	GroupPrincipal gp;
 		        	if(p instanceof User) {
-		        		if (((User) p).isExternalUser()) {
+		        		if (!((User) p).isInternal()) {
 		        			gp = getReservedGroup(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, p.getZoneId());
 		        		} else {
 		        			gp = getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, p.getZoneId());

@@ -494,7 +494,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     		SortedSet names = new TreeSet();
     		addGroupNames(this, names);
     		if (!isShared()) {
-    			if(isExternalUser())
+    			if(!isInternal())
     				names.add("allExtUsers");
     			else
     				names.add("allUsers");
@@ -502,10 +502,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     		groupNames = names;
     	}
     	return groupNames;
-    }
-    
-    public boolean isExternalUser() {
-    	return (identitySource != null && identitySource.intValue() == IDENTITY_SOURCE_EXTERNAL);
     }
     
     private void addGroupNames(UserPrincipal principal, SortedSet names) {
