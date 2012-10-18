@@ -281,12 +281,21 @@
 {
 	color: #135c8f;
 }
-	
+
 .activityStreamEntryDate
 {
 	font-size: 10px;
 	color: #666666;
 	display: inline;
+	padding-right: 70px;
+	vertical-align: top;
+}
+
+.vibe-feView-commentsPanel .activityStreamEntryDate
+{
+	font-size: 10px;
+	color: #666666;
+	display: block;
 	padding-right: 70px;
 	vertical-align: top;
 }
