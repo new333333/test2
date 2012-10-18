@@ -30,6 +30,9 @@
 	<!-- Inherit the GWT W3C file APIs support libraries. -->	
 	<inherits name="org.vectomatic.libgwtfile"/>
 	
+	<!-- Inherit the GWT 'Crypto' API support libraries. -->	
+	<inherits name="com.googlecode.gwt.crypto.Crypto"/>
+	
  	<!-- Other 'generic' module inherits go here. -->
 
 	<!-- Specify the application entry point class. -->

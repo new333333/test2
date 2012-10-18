@@ -70,6 +70,8 @@ import org.vectomatic.file.events.ErrorHandler;
 import org.vectomatic.file.events.LoadEndEvent;
 import org.vectomatic.file.events.LoadEndHandler;
 
+import com.googlecode.gwt.crypto.bouncycastle.digests.MD5Digest;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsDate;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -325,9 +327,9 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	/*
 	 * If we're in debug UI mode, displays an alert about a file blob.
 	 */
-	private void debugTraceBlob(String methodName, boolean traceQueueSize, boolean base64Encoded, String traceHead, String traceTail) {
+	private void debugTraceBlob(String methodName, boolean traceQueueSize, String traceHead, String traceTail) {
 		if (TRACE_BLOBS && GwtClientHelper.isDebugUI()) {
-			String	dump  = (traceHead + ":  '" + m_fileBlob.getFileName() + "' (fSize:" + m_fileBlob.getFileSize() + ", bStart:" + m_fileBlob.getBlobStart() + ", bSize:" + m_fileBlob.getBlobSize() + ")");
+			String	dump  = (traceHead + ":  '" + m_fileBlob.getFileName() + "' (fSize:" + m_fileBlob.getFileSize() + ", bStart:" + m_fileBlob.getBlobStart() + ", bSize:" + m_fileBlob.getBlobSize() + ", md5Hash:" + m_fileBlob.getBlobMD5Hash() + ")");
 			if (traceQueueSize) {
 				int		files = (m_readQueue.size() - 1);
 				switch (files) {
@@ -339,14 +341,14 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			boolean hasTail = GwtClientHelper.hasString(traceTail);
 			dump = ("AddFilesHtml5Popup." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
 			String data = m_fileBlob.getBlobData();
-			dump += ("\n\nData Read:  " + ((null == data) ? 0 : data.length()) + (base64Encoded ? " base64 encoded" : "") + " bytes."); 
+			dump += ("\n\nData Read:  " + ((null == data) ? 0 : data.length()) + (m_fileBlob.isBlobBase64Encoded() ? " base64 encoded" : "") + " bytes."); 
 			Window.alert(dump);
 		}
 	}
 	
-	private void debugTraceBlob(String methodName, boolean traceQueueSize, boolean base64Encoded, String traceHead) {
+	private void debugTraceBlob(String methodName, boolean traceQueueSize, String traceHead) {
 		// Always use the initial form of the method.
-		debugTraceBlob(methodName, traceQueueSize, base64Encoded, traceHead, null);
+		debugTraceBlob(methodName, traceQueueSize, traceHead, null);
 	}
 
 	/*
@@ -368,6 +370,34 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		return ((null == fileDate) ? null : fileDate.toUTCString());
 	}
 
+	/*
+	 * Returns the MD5 hash key for the given string.
+	 */
+	private String getMD5Hash(String text) {
+		byte[]		bs = text.getBytes();
+		MD5Digest	sd = new MD5Digest();
+		sd.update(bs, 0, bs.length);
+		byte[] result = new byte[sd.getDigestSize()];
+		sd.doFinal(result, 0);
+		return byteArrayToHexString(result);
+	}
+
+	/*
+	 * Converts a byte[] to a string of hex characters.
+	 */
+	private String byteArrayToHexString(final byte[] b) {
+		final StringBuffer sb = new StringBuffer(b.length * 2);
+		final int baLen = b.length;
+		for (int i = 0; i < baLen; i += 1) {
+			int v = (b[i] & 0xff);
+			if (v < 16) {
+				sb.append('0');
+			}
+			sb.append(Integer.toHexString(v));
+		}
+		return sb.toString();
+	}
+	
 	/*
 	 * Returns the total size of the files pending upload.
 	 */
@@ -738,10 +768,11 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		if (m_fileBlob.isBlobBase64Encoded()) {
 			blobData = FileUtils.base64encode(blobData);
 		}
-		m_fileBlob.setBlobData(blobData);
+		m_fileBlob.setBlobData(              blobData );
+		m_fileBlob.setBlobMD5Hash(getMD5Hash(blobData));
 		
 		// ...and trace it, if necessary.
-		debugTraceBlob("processBlobNow", true, m_fileBlob.isBlobBase64Encoded(), "Just read");
+		debugTraceBlob("processBlobNow", true, "Just read");
 		
 		// Upload the blob.
 		final UploadFileBlobCmd cmd = new UploadFileBlobCmd(m_folderInfo, m_fileBlob, lastBlob);
