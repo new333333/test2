@@ -81,6 +81,10 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		IWizardPage<InstallerConfig> lucenePage = new LuceneConfigPage(this, config);
 		pages.add(lucenePage);
 
+		// Storage Page
+		IWizardPage<InstallerConfig> storagePage = new StoragePage(this, config);
+		pages.add(storagePage);
+
 		// Listen for events (enable/disable finish button, enable/disable next button)
 		AppUtil.getEventBus().addHandler(ConfigFinishEnableEvent.TYPE, this);
 		AppUtil.getEventBus().addHandler(ConfigNextButtonEnableEvent.TYPE, this);

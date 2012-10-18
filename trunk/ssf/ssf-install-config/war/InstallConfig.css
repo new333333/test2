@@ -768,7 +768,7 @@ td.table-value {
 }
 
 .textError {
-	border: 2px inset red;
+	border: 1px inset red;
 	background: #FCECD3;
 }
 
@@ -816,3 +816,40 @@ td.table-value {
 	margin-top:20px;
 	display: block;
 }
+
+.storageDetailsPanel {
+	margin-top : 15px;
+	margin-left: 10px;
+}
+
+.deviceStorageHeaderPanel {
+	margin-left: 10px;
+}
+
+.partitionInfoPanel {
+	background : #ededed;
+	border-radius : 5px;
+	margin: 10px 40px;
+	padding: 15px;
+}
+
+.partitionSelectLabel {
+	padding-left: 10px;
+}
+
+.storageDetailsDescLabel {
+	border-bottom: 1px solid #CCCCCC;
+    color: #949494;
+    font-style: italic;
+    margin-bottom: 10px;
+    padding: 10px 0 3px;
+}
+
+.storageDetailsTable td.table-key {
+	color: #949494;
+	font-size: 11px;
+	text-align: right;
+}
+
+
+

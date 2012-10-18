@@ -2,8 +2,8 @@ package org.kabling.teaming.install.client.wizard;
 
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.i18n.AppResource;
-import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
+import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.Lucene;
 
@@ -96,7 +96,7 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 	@Override
 	public boolean canFinish()
 	{
-		return true;
+		return false;
 	}
 
 	@Override
@@ -111,6 +111,11 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 			return false;
 		}
 
+//		if (Navigator.getPlatform().startsWith("Win") || Navigator.getPlatform().startsWith("Mac"))
+//		{
+//			return true;
+//		}
+		
 		if (!validatedCredentials)
 		{
 			wizard.showStatusIndicator(RBUNDLE.validatingLuceneServer());

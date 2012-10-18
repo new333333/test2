@@ -185,6 +185,12 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 			wizard.setErrorMessage(RBUNDLE.allFieldsRequired());
 			return false;
 		}
+		
+//		if (Navigator.getPlatform().startsWith("Win") || Navigator.getPlatform().startsWith("Mac"))
+//		{
+//			return true;
+//		}
+		
 		if (!validatedCredentials)
 		{
 			wizard.showStatusIndicator(RBUNDLE.validatingCredentials());
