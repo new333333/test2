@@ -502,7 +502,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	    		} catch(UserAccountNotActiveException e) {
 	    			exc = new UserIdNotActiveException(e.getMessage());
 	    		} catch(UserDoesNotExistException e) {
-	    			if(identitySource == User.IDENTITY_SOURCE_EXTERNAL)
+	    			if(identitySource == User.IDENTITY_SOURCE_OPENID)
 	    				exc = new UserAccountNotProvisionedException(e.getMessage());
 	    		}
 	    		catch ( IncorrectResultSizeDataAccessException irsdaEx )
@@ -563,7 +563,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		}
 		else if(authentication instanceof OpenIDAuthenticationToken) {
 			// When authentication is done by OpenID provider, the identity source is always external.
-			return User.IDENTITY_SOURCE_EXTERNAL;
+			return User.IDENTITY_SOURCE_OPENID;
 		}
 		else {
 			// The authentication was not done against Vibe database or OpenID provider. 

@@ -35,16 +35,19 @@ package org.kablink.teaming.domain;
 public abstract class UserPrincipal extends Principal {
 	/**
 	 * Vibe database is the source of the identity.
+	 * (e.g. local users, and external users that register with and store their
+	 * credential in Filr instead of using external identity provider such as OpenID)
 	 */
 	public static final int IDENTITY_SOURCE_LOCAL = 1;
 	/**
 	 * LDAP is the source of the identity.
+	 * (e.g. users provisioned from eDir and AD)
 	 */
 	public static final int IDENTITY_SOURCE_LDAP = 2;
 	/**
 	 * External component/provider is the source of the identity.
 	 */
-	public static final int IDENTITY_SOURCE_EXTERNAL = 11;
+	public static final int IDENTITY_SOURCE_OPENID = 11;
 
 	protected Long diskQuota;
 	protected Long fileSizeLimit;

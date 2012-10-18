@@ -284,7 +284,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		// Do we need to sync attributes from the ldap directory into Teaming for this user?
 		if ( syncUser && user != null )
 		{
-			if(identitySource != null && identitySource.intValue() == User.IDENTITY_SOURCE_EXTERNAL) {
+			if(identitySource != null && identitySource.intValue() == User.IDENTITY_SOURCE_OPENID) {
 		 		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 		            	user.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
 		 		// Make sure foreign name is identical to name.
@@ -316,7 +316,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 
  	private boolean isExternalUser(Integer identitySource) {
  		if(identitySource != null) {
- 			if(identitySource.intValue() == User.IDENTITY_SOURCE_EXTERNAL)
+ 			if(identitySource.intValue() == User.IDENTITY_SOURCE_OPENID)
  				return true;
  			else
  				return false;
