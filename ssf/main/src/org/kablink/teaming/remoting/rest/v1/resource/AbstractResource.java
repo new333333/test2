@@ -49,10 +49,10 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
-import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.FilePropertiesBuilder;
@@ -60,6 +60,9 @@ import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.*;
+import org.kablink.teaming.rest.v1.model.DefinableEntity;
+import org.kablink.teaming.rest.v1.model.Folder;
+import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
@@ -98,6 +101,29 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if(!(entry instanceof org.kablink.teaming.domain.User))
             throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
         return (org.kablink.teaming.domain.User)entry;
+    }
+
+    protected org.kablink.teaming.domain.Folder _getHiddenFilesFolder() {
+        Long folderId = SearchUtils.getMyFilesFolderId(this, getLoggedInUser().getWorkspaceId(), true);
+        if (folderId!=null) {
+            return _getFolder(folderId);
+        }
+        throw new NotFoundException(ApiErrorCode.FOLDER_NOT_FOUND, "NOT FOUND");
+    }
+
+    protected org.kablink.teaming.domain.Folder _getFolder(long id) {
+        try{
+            org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(id);
+            if (binder instanceof org.kablink.teaming.domain.Folder) {
+                org.kablink.teaming.domain.Folder folder = (org.kablink.teaming.domain.Folder) binder;
+                if (!folder.isPreDeleted()) {
+                    return folder;
+                }
+            }
+        } catch (NoBinderByTheIdException e) {
+            // Throw exception below.
+        }
+        throw new NotFoundException(ApiErrorCode.FOLDER_NOT_FOUND, "NOT FOUND");
     }
 
     protected org.kablink.teaming.domain.User _getUser(long userId) {
