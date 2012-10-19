@@ -838,7 +838,8 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			        	StringBuffer query = new StringBuffer();
 	                  	query.append(" select count(*) from x in class " + clazz.getName());
 	                  	myFilter.appendFilter("x", query);
-	                  	query.append(sbuf.toString());
+	                  	if(sbuf != null)
+	                  		query.append(sbuf.toString());
 	                  	Query q = session.createQuery(query.toString());
 	            		List filterValues = myFilter.getFilterValues();
 	            		for (int i=0; i<filterValues.size(); ++i) {

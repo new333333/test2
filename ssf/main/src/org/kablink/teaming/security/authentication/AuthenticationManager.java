@@ -39,7 +39,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
 public interface AuthenticationManager {
 
-	public User authenticate(Integer identitySource, AuthenticationServiceProvider authenticationServiceProvider, String zoneName, String username, String password,
+	public User authenticate(boolean userIsInternal, AuthenticationServiceProvider authenticationServiceProvider, String zoneName, String username, String password,
 			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
 			Map updates, String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException;

@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.ldap.LdapSyncResults.PartialLdapSyncResults;
@@ -46,5 +47,5 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 public interface ProfileCoreProcessor extends EntryProcessor {
 	public void syncEntry(Principal entry, InputDataAccessor inputData, Map options);
 	public Map syncEntries(Map entries, Map options, PartialLdapSyncResults syncResults );
-	public List syncNewEntries(Binder binder, Definition definition, Class clazz, List inputAccessors, Map options, PartialLdapSyncResults syncResults, int identitySource); 
+	public List syncNewEntries(Binder binder, Definition definition, Class clazz, List inputAccessors, Map options, PartialLdapSyncResults syncResults, IdentityInfo identityInfo); 
 }

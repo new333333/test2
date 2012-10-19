@@ -58,6 +58,15 @@ public class Group extends UserPrincipal implements GroupPrincipal {
     private Boolean dynamic = Boolean.FALSE; //initialized by hibernate access=field
     private String ldapQuery;
     
+    // For use by Hibernate only
+	protected Group() {
+    }
+	
+	// For use by application
+	public Group(IdentityInfo identityInfo) {
+		setIdentityInfo(identityInfo);
+	}
+
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.group;
 	}

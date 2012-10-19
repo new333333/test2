@@ -83,6 +83,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStampBrief;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.IndividualPrincipal;
 import org.kablink.teaming.domain.NoApplicationByTheNameException;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
@@ -1130,7 +1131,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
 	   Definition defaultUserDef = binder.getDefaultEntryDef();		
 	   if (defaultUserDef == null) {
 		   // This user object is only used temporarily, so it doesn't really matter which identity source we set it to.
-		   User temp = new User(User.IDENTITY_SOURCE_LOCAL);
+		   User temp = new User(new IdentityInfo());
 		   getDefinitionModule().setDefaultEntryDefinition(temp);
 		   defaultUserDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
 	   }
@@ -1212,7 +1213,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
     	   }
        }
 
-	   Group temp = new Group();
+	   Group temp = new Group(new IdentityInfo());
 	   getDefinitionModule().setDefaultEntryDefinition(temp);
 	   Definition defaultGroupDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
    	   addEntries(groupList, Group.class, binder, defaultGroupDef, options);  	   
@@ -1298,7 +1299,8 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
 							logger.info("'" + iter.next() + "'");
 						}
 					}
-					List addedEntries = processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values()), options, null, UserPrincipal.IDENTITY_SOURCE_LOCAL);
+					// In this call context, we're simply assuming that we're creating internal local principals (is it safe?) 
+					List addedEntries = processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values()), options, null, new IdentityInfo());
 					//processor commits entries - so update indexnow
 					IndexSynchronizationManager.applyChanges();
 					//flush from cache
@@ -1331,7 +1333,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
   					!ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(entry.getInternalId()) &&
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
   				List templates;
-  				if (!entry.isInternal()) {
+  				if (!entry.getIdentityInfo().isInternal()) {
   					templates = getCoreDao().loadTemplates(entry.getZoneId(), Definition.EXTERNAL_USER_WORKSPACE_VIEW);
   				} else {
   					templates = getCoreDao().loadTemplates(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
@@ -1348,7 +1350,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
   				//just load a workspace without all the stuff underneath
   				//processor handles transaction
   				Definition userDef;
-  				if (!entry.isInternal()) {
+  				if (!entry.getIdentityInfo().isInternal()) {
   					userDef = getDefinitionModule().addDefaultDefinition(Definition.EXTERNAL_USER_WORKSPACE_VIEW);
   				} else {
   					userDef = getDefinitionModule().addDefaultDefinition(Definition.USER_WORKSPACE_VIEW);
@@ -1714,7 +1716,7 @@ public Map getUsers() {
 	
     //NO transaction
 	@Override
-	public User addUserFromPortal(int identitySource, String userName, String password, Map updates, Map options) {
+	public User addUserFromPortal(IdentityInfo identityInfo, String userName, String password, Map updates, Map options) {
 		if(updates == null)
 			updates = new HashMap();
 		
@@ -1735,7 +1737,6 @@ public Map getUsers() {
 					.getProcessor(profiles, profiles.getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
 			Map newUpdates = new HashMap(updates);
 			newUpdates.put(ObjectKeys.FIELD_PRINCIPAL_NAME, userName);
-			newUpdates.put(ObjectKeys.FIELD_USER_IDENTITY_SOURCE, Integer.valueOf(identitySource));
 			if (Validator.isNotNull(password)) newUpdates.put(ObjectKeys.FIELD_USER_PASSWORD, password);
 			//get default definition to use
 			Definition userDef = profiles.getDefaultEntryDef();		
@@ -1743,7 +1744,7 @@ public Map getUsers() {
 			List<InputDataAccessor>accessors = new ArrayList();
 			accessors.add(new MapInputData(newUpdates));
 		
-			User user = (User)processor.syncNewEntries(profiles, userDef, User.class, accessors, options, null, identitySource).get(0);
+			User user = (User)processor.syncNewEntries(profiles, userDef, User.class, accessors, options, null, identityInfo).get(0);
 			// flush user before adding workspace
 			IndexSynchronizationManager.applyChanges();
 			

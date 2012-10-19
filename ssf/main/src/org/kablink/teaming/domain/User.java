@@ -86,8 +86,8 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     }
 	
 	// For use by application
-	public User(int identitySource) {
-		setIdentitySource(identitySource);
+	public User(IdentityInfo identityInfo) {
+		setIdentityInfo(identityInfo);
 	}
 	
 	public EntityIdentifier.EntityType getEntityType() {
@@ -494,7 +494,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     		SortedSet names = new TreeSet();
     		addGroupNames(this, names);
     		if (!isShared()) {
-    			if(!isInternal())
+    			if(!getIdentityInfo().isInternal())
     				names.add("allExtUsers");
     			else
     				names.add("allUsers");

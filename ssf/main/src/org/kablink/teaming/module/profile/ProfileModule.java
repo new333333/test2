@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.IndividualPrincipal;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
@@ -151,7 +152,7 @@ public interface ProfileModule {
 	 * @param options - additional processing options or null
 	 * @return created user object
 	 */
-	public User addUserFromPortal(int identitySource, String userName, String password, Map updates, Map options);
+	public User addUserFromPortal(IdentityInfo identityInfo, String userName, String password, Map updates, Map options);
 	/**
 	 * Check access to a binder, throwing an exception if access is denied
 	 * @param user

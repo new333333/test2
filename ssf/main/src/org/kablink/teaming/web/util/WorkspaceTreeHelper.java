@@ -1003,13 +1003,15 @@ public class WorkspaceTreeHelper {
 			}
 		
 			if ((owner.isActive() || 
-					(((owner instanceof User) && ((User)owner).getIdentitySource()==User.IDENTITY_SOURCE_LOCAL) 
+					(((owner instanceof User) && 
+							((User)owner).getIdentityInfo().isInternal() && ((User)owner).getIdentityInfo().isFromLocal()) 
 							&& owner.isDisabled())) && 
 					bs.getProfileModule().testAccess(owner, ProfileOperation.deleteEntry)) {
 				//Don't let a user delete his or her own account
 				if (!owner.getId().equals(user.getId())) {
 					showDeleteProfileMenu = true;
-					if ((owner instanceof User) && ((User)owner).getIdentitySource()==User.IDENTITY_SOURCE_LOCAL) {
+					if ((owner instanceof User) && 
+							((User)owner).getIdentityInfo().isInternal() && ((User)owner).getIdentityInfo().isFromLocal()) { 
 						//showDisableProfileMenu = true;
 					}
 				}

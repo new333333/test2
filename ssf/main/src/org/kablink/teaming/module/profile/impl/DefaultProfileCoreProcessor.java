@@ -67,6 +67,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
@@ -415,11 +416,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     		if (inputData.exists(ObjectKeys.FIELD_USER_TWITTERID) && !entryData.containsKey(ObjectKeys.FIELD_USER_TWITTERID)) {
     			entryData.put(ObjectKeys.FIELD_USER_TWITTERID, inputData.getSingleValue(ObjectKeys.FIELD_USER_TWITTERID));
     		}
-    		if (inputData.exists(ObjectKeys.FIELD_USER_IDENTITY_SOURCE) && !entryData.containsKey(ObjectKeys.FIELD_USER_IDENTITY_SOURCE)) {
-    			Object o = inputData.getSingleObject(ObjectKeys.FIELD_USER_IDENTITY_SOURCE);
-    			if(o != null)
-    				entryData.put(ObjectKeys.FIELD_USER_IDENTITY_SOURCE, o);
-    		}
     	} else if(entry instanceof Application) {
         	if (inputData.exists(ObjectKeys.FIELD_APPLICATION_POST_URL) && !entryData.containsKey(ObjectKeys.FIELD_APPLICATION_POST_URL)) {
     			entryData.put(ObjectKeys.FIELD_APPLICATION_POST_URL, inputData.getSingleValue(ObjectKeys.FIELD_APPLICATION_POST_URL));
@@ -474,7 +470,16 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         	{
         		entryData.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, inputData.getSingleValue( ObjectKeys.FIELD_GROUP_LDAP_QUERY ) );
         	}
-    	} 
+    	}
+    	
+    	if(entry instanceof UserPrincipal) {
+    		if(((UserPrincipal) entry).getIdentityInfo() == null) {
+    			IdentityInfo identityInfo = (IdentityInfo)inputData.getSingleObject(ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO);
+    			if(identityInfo == null)
+    				identityInfo = new IdentityInfo(); // Create one with default settings
+    			((UserPrincipal) entry).setIdentityInfo(identityInfo);
+    		}
+    	}
     	
    		if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_THEME) && !entryData.containsKey(ObjectKeys.FIELD_PRINCIPAL_THEME)) {
 			entryData.put(ObjectKeys.FIELD_PRINCIPAL_THEME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_THEME));
@@ -583,7 +588,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			ProfileIndexUtils.addName(indexDoc, user, false);
 			ProfileIndexUtils.addWorkspaceId(indexDoc, user);
 			ProfileIndexUtils.addPersonFlag(indexDoc, user);
-			ProfileIndexUtils.addIdentitySource(indexDoc, user);
+			ProfileIndexUtils.addIdentityInfo(indexDoc, user);
 			ProfileIndexUtils.addEmail(indexDoc, user);
 		} else if(entry instanceof Group) {
 	        ProfileIndexUtils.addName(indexDoc, (Group)entry, false);	
@@ -754,7 +759,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	final List inputAccessors,
     	Map options,
     	PartialLdapSyncResults syncResults,
-    	final int identitySource) {
+    	final IdentityInfo identityInfo) {
 	   if (inputAccessors.isEmpty()) return new ArrayList();
 	   SimpleProfiler.start("DefaultProfileCoreProcessor.syncNewEntries");
 	    // The following part requires update database transaction.
@@ -778,7 +783,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        			syncNewEntry_preSave(binder, entry, inputData, entryData, ctx);    
 
 	        			if(entry instanceof UserPrincipal) 
-	        				((UserPrincipal)entry).setIdentitySource(identitySource);
+	        				((UserPrincipal)entry).setIdentityInfo(identityInfo);
 	        			
 	        			syncNewEntry_save(binder, entry, inputData, entryData, ctx);      
 	       	    		inList.append(entry.getId().toString() + ",");

@@ -56,6 +56,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
@@ -924,7 +925,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		profiles.setFunctionMembershipInherited(false);
 
     		//build user
-    		User user = new User(User.IDENTITY_SOURCE_LOCAL);
+    		User user = new User(new IdentityInfo());
     		user.setName(zoneAdminName);
     		user.setPassword(zoneAdminName);
     		user.setLastName(zoneAdminName);
@@ -1135,7 +1136,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 
     private Group addAllUserGroup(Binder parent, HistoryStamp stamp) {
 		//build allUsers group
-		Group group = new Group();
+		Group group = new Group(new IdentityInfo());
 		group.setName("allUsers");
 		group.setForeignName(group.getName());
 		group.setTitle(NLT.get("administration.initial.group.alluser.title", group.getName()));
@@ -1150,7 +1151,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
     private Group addAllExtUserGroup(Binder parent, HistoryStamp stamp) {
 		//build allExtUsers group
-		Group group = new Group();
+		Group group = new Group(new IdentityInfo());
 		group.setName("allExtUsers");
 		group.setForeignName(group.getName());
 		group.setTitle(NLT.get("administration.initial.group.allextuser.title", group.getName()));
@@ -1180,7 +1181,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
 	private User addReservedUser(Binder parent, HistoryStamp stamp, String name, String password, String title, String id) {
 		
-		User user = new User(User.IDENTITY_SOURCE_LOCAL);
+		User user = new User(new IdentityInfo());
 		user.setName(name);
 		if(password != null) // optional field
 			user.setPassword(password);

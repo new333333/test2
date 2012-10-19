@@ -72,7 +72,7 @@ import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
-import org.kablink.teaming.module.authentication.IdentitySourceObtainable;
+import org.kablink.teaming.module.authentication.IdentityInfoObtainable;
 import org.kablink.teaming.module.authentication.LocalAuthentication;
 import org.kablink.teaming.module.authentication.UserAccountNotProvisionedException;
 import org.kablink.teaming.module.authentication.UserIdNotActiveException;
@@ -431,7 +431,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
         	// Are we dealing with one of Teaming's system accounts such as "admin" or "guest"?
         	if ( !MiscUtil.isSystemUserAccount( authentication.getName() ) )
         	{
-        		int identitySource = -1;
+        		boolean userIsInternal;
+        		AuthenticationServiceProvider authenticationServiceProvider = AuthenticationServiceProvider.UNKNOWN;
         		
         		// No, try to do an ldap authentication.
         		// This will also try local authentication as fallback, if configured to do so.
@@ -443,9 +444,9 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	     			
 	     			String loginName = getLoginName(result);
 	     			
-	     			identitySource = getIdentitySource(result);
+	     			userIsInternal = isAuthenticatedUserInternal(result);
 	     			
-	     			AuthenticationServiceProvider authenticationServiceProvider = getAuthenticationSource(result);
+	     			authenticationServiceProvider = getAuthenticationServiceProvider(result);
 	     			
 	     			if(SPropsUtil.getBoolean("authenticator.synch." + getAuthenticator(), false)) {
 		     			// Get default settings
@@ -467,7 +468,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		     			}
 		     			// This is not used for authentication but for profile synchronization.
 		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate1" );
-		    			AuthenticationManagerUtil.authenticate(identitySource, 
+		    			AuthenticationManagerUtil.authenticate(userIsInternal, 
 		    					authenticationServiceProvider,
 		    					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
 		    					loginName, 
@@ -482,7 +483,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	     			else {
 	        			// This is not used for authentication or profile synchronization but merely to log the authenticator.
 		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate2" );
-	        			AuthenticationManagerUtil.authenticate(identitySource,
+	        			AuthenticationManagerUtil.authenticate(userIsInternal,
 	        					authenticationServiceProvider,
 	        					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
 	        					loginName, 
@@ -502,7 +503,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	    		} catch(UserAccountNotActiveException e) {
 	    			exc = new UserIdNotActiveException(e.getMessage());
 	    		} catch(UserDoesNotExistException e) {
-	    			if(identitySource == User.IDENTITY_SOURCE_OPENID)
+	    			if(authenticationServiceProvider == AuthenticationServiceProvider.OPENID)
 	    				exc = new UserAccountNotProvisionedException(e.getMessage());
 	    		}
 	    		catch ( IncorrectResultSizeDataAccessException irsdaEx )
@@ -525,7 +526,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 
     			// This is not used for authentication or profile synchronization but merely to log the authenticator.
      			SimpleProfiler.start( "4a-system account: AuthenticationManagerUtil.authenticate()" );
-    			AuthenticationManagerUtil.authenticate(User.IDENTITY_SOURCE_LOCAL,
+    			AuthenticationManagerUtil.authenticate(true,
     					AuthenticationServiceProvider.LOCAL,
     					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
     					(String) result.getName(), 
@@ -553,30 +554,31 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		return authenticator;
 	}
 	
-	private int getIdentitySource(Authentication authentication) {
-		if(authentication instanceof IdentitySourceObtainable) {
+	private boolean isAuthenticatedUserInternal(Authentication authentication) {
+		if(authentication instanceof IdentityInfoObtainable) {
 			// With local authentication, authentication is made against Vibe database, and therefore
-			// identity source is always obtainable.
-			// With LDAP authentication, identity source is obtainable only if the authentication
+			// identity source is always obtainable (it could be either internal or external user).
+			// With LDAP authentication, identity source is directly obtainable only if the authentication
 			// was made against Vibe database which can happen when the LDAP server is down.
-			return ((IdentitySourceObtainable)authentication).getIdentitySource();
-		}
-		else if(authentication instanceof OpenIDAuthenticationToken) {
-			// When authentication is done by OpenID provider, the identity source is always external.
-			return User.IDENTITY_SOURCE_OPENID;
+			return ((IdentityInfoObtainable)authentication).isInternal();
 		}
 		else {
-			// The authentication was not done against Vibe database or OpenID provider. 
-			// This should mean that the identy source is LDAP.
-			return User.IDENTITY_SOURCE_LDAP;
+			// If here, it implies that the authentication service was provided by anything but local.
+			
+			if (getAuthenticationServiceProvider(authentication) == AuthenticationServiceProvider.OPENID)
+				return false;
+			else
+				return true;
 		}
 	}
 	
-	private AuthenticationServiceProvider getAuthenticationSource(Authentication authentication) {
+	private AuthenticationServiceProvider getAuthenticationServiceProvider(Authentication authentication) {
 		if(authentication instanceof LocalAuthentication)
 			return AuthenticationServiceProvider.LOCAL; // identity source is either local or LDAP
 		else if(authentication instanceof OpenIDAuthenticationToken)
-			return AuthenticationServiceProvider.OPENID; // identity source id external
+			return AuthenticationServiceProvider.OPENID; // identity source id OpenID
+		else if(authentication instanceof PreAuthenticatedAuthenticationToken) // identity source is most likely LDAP
+			return AuthenticationServiceProvider.PRE;
 		else
 			return AuthenticationServiceProvider.LDAP; // identity source is LDAP
 	}

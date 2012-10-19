@@ -33,27 +33,11 @@
 package org.kablink.teaming.domain;
 
 public abstract class UserPrincipal extends Principal {
-	/**
-	 * Vibe database is the source of the identity.
-	 * (e.g. local users, and external users that register with and store their
-	 * credential in Filr instead of using external identity provider such as OpenID)
-	 */
-	public static final int IDENTITY_SOURCE_LOCAL = 1;
-	/**
-	 * LDAP is the source of the identity.
-	 * (e.g. users provisioned from eDir and AD)
-	 */
-	public static final int IDENTITY_SOURCE_LDAP = 2;
-	/**
-	 * OpenID is the source of the identity.
-	 */
-	public static final int IDENTITY_SOURCE_OPENID = 11;
 
 	protected Long diskQuota;
 	protected Long fileSizeLimit;
-    protected Integer identitySource; // could be null
-    protected Boolean internal; // could be null
-	
+	protected IdentityInfo identityInfo;
+    
 	/**
      * @hibernate.property
      */
@@ -80,39 +64,13 @@ public abstract class UserPrincipal extends Principal {
 	public void setFileSizeLimit(Long fileSizeLimit) {
 		this.fileSizeLimit = fileSizeLimit;
 	}
-	
-	public int getIdentitySource() {
-		if(identitySource == null) {
-			// This means that this object was created by Hibernate for a user principal
-			// record in the database representing either local or LDAP identity.
-			if (isLocal())
-				return IDENTITY_SOURCE_LOCAL;
-			else
-				return IDENTITY_SOURCE_LDAP;
-		}
-		else {
-			return identitySource;
-		}
+		
+	public IdentityInfo getIdentityInfo() {
+		return identityInfo;
 	}
 	
-	public void setIdentitySource(int identitySource) {
-		this.identitySource = identitySource;
-	}
-	
-	public boolean isInternal() {
-		if(internal == null) {
-			// Dealing with existing users and groups that existed before adding this explicigt flag.
-			if(getIdentitySource() == IDENTITY_SOURCE_LOCAL || getIdentitySource() == IDENTITY_SOURCE_LDAP)
-				return true;
-			else
-				return false;
-		}
-		else {
-			return internal.booleanValue();
-		}
-	}
-	
-	public void setInternal(boolean internal) {
-		this.internal = internal;
+	public void setIdentityInfo(IdentityInfo identityInfo) throws IllegalArgumentException {
+		identityInfo.validate();
+		this.identityInfo = identityInfo;
 	}
 }

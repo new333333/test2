@@ -74,6 +74,7 @@ import org.kablink.teaming.domain.EmailAddress;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.IndividualPrincipal;
 import org.kablink.teaming.domain.Membership;
 import org.kablink.teaming.domain.NoApplicationByTheIdException;
@@ -1536,7 +1537,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		    	if(((IndividualPrincipal)p).isAllIndividualMember()) {
 		        	GroupPrincipal gp;
 		        	if(p instanceof User) {
-		        		if (!((User) p).isInternal()) {
+		        		if (!((User) p).getIdentityInfo().isInternal()) {
 		        			gp = getReservedGroup(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, p.getZoneId());
 		        		} else {
 		        			gp = getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, p.getZoneId());
@@ -2267,7 +2268,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 	
 	private Principal makeItFake(Principal p) {
-		User u = new User(User.IDENTITY_SOURCE_LOCAL);
+		User u = new User((p instanceof UserPrincipal)? ((UserPrincipal)p).getIdentityInfo() : new IdentityInfo());
 		u.setId(p.getId());
 		u.setZoneId(p.getZoneId());
 		u.setParentBinder(p.getParentBinder());
