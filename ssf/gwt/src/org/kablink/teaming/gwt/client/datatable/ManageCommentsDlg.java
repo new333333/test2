@@ -46,6 +46,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
 
@@ -57,6 +58,7 @@ import com.google.gwt.user.client.ui.UIObject;
 public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback {
 	private CommentAddedCallback	m_addedCallback;			// Interface used to tell who is running the dialog that a a comment was added.
 	private CommentsInfo			m_commentsInfo;				// The CommentsInfo the ManageCommentsDlg is running against.
+	private Label					m_commentsCountLabel;		//
 	private ManageCommentsComposite	m_manageCommentsComposite;	// The composite containing the main content of the dialog. 
 	private UIObject				m_showRelativeTo;			// The UIObject to show the dialog relative to.
 	private VibeFlowPanel			m_fp;						// The panel that holds the dialog's contents.
@@ -201,7 +203,13 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 		ManageCommentsComposite.initAsync(
 			m_manageCommentsComposite,
 			m_commentsInfo,
-			m_addedCallback);
+			new CommentAddedCallback() {
+				@Override
+				public void commentAdded(Object callbackData) {
+					m_addedCallback.commentAdded(callbackData);
+					setCaptionCommentsCount(((CommentsInfo) callbackData).getCommentsCount());
+				}
+			});
 	}
 	
 	/*
@@ -226,6 +234,7 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 		// Set the dialog's caption and caption image...
 		setCaption(             commentsInfo.getEntityTitle()    );
 		setCaptionImage((Image) commentsInfo.getClientItemImage());
+		setCaptionCommentsCount(commentsInfo.getCommentsCount()  );
 		
 		// ...store the parameters...
 		m_commentsInfo   = commentsInfo;
@@ -234,6 +243,22 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 		
 		// ...and start populating the dialog.
 		populateDlgAsync();
+	}
+
+	/*
+	 * Sets a comment count label into the header.
+	 */
+	private void setCaptionCommentsCount(int cCount) {
+		// If we haven't added the Label to the dialog's header yet...
+		if (null == m_commentsCountLabel) {
+			// ...create it and add it now...
+			m_commentsCountLabel = new Label();
+			m_commentsCountLabel.addStyleName("vibe-manageCommentsDlg-captionCount");
+			getHeaderPanel().add(m_commentsCountLabel);
+		}
+		
+		// ...and store the appropriate text into it.
+		m_commentsCountLabel.setText(GwtTeaming.getMessages().manageCommentsDlgComments(cCount));
 	}
 	
 

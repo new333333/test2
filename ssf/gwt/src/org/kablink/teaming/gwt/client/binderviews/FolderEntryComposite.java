@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.EventsHandledBySourceMarker;
 import org.kablink.teaming.gwt.client.event.FolderEntryActionCompleteEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditInPlaceEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
@@ -102,7 +103,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class FolderEntryComposite extends ResizeComposite	
-	implements CommentAddedCallback, FolderEntryCallback, ToolPanelReady,
+	implements CommentAddedCallback, EventsHandledBySourceMarker, FolderEntryCallback, ToolPanelReady,
 		// Event handlers implemented by this class.
 		ChangeEntryTypeSelectedEntriesEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
@@ -149,8 +150,6 @@ public class FolderEntryComposite extends ResizeComposite
 	private final static int MINIMUM_DOCUMENT_HEIGHT	=  50;
 	private final static int FOOTER_ADJUST_DLG			=  20;	// Height adjustment required for adequate spacing below the footer when hosted in a dialog.
 	private final static int FOOTER_ADJUST_VIEW			=  30;	// Height adjustment required for adequate spacing below the footer when hosted in a view.
-	
-	private final static int WAIT_FOR_DIALOG_TO_CLOSE	= 750;	// Time to wait in milliseconds for a dialog performing an action to fully close before proceeding.
 	
 	// Number of components to coordinate with during construction:
 	// - Header;
@@ -250,8 +249,7 @@ public class FolderEntryComposite extends ResizeComposite
 		OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(url, Instigator.GOTO_CONTENT_URL);
 		if (GwtClientHelper.validateOSBI(osbInfo)) {
 			GwtTeaming.fireEventAsync(
-				new ChangeContextEvent(osbInfo),
-				WAIT_FOR_DIALOG_TO_CLOSE);
+				new ChangeContextEvent(osbInfo));
 		}
 	}
 	

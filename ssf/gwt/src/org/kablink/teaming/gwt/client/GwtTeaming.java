@@ -49,8 +49,6 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -436,61 +434,52 @@ public class GwtTeaming implements EntryPoint
 	 * Synchronously fires a Vibe event on the event bus.
 	 * 
 	 * @param event
+	 * @param source
+	 */
+	public static void fireEvent( VibeEventBase<?> event, Object source )
+	{
+		if (null == source)
+		     m_eventBus.fireEvent(           event         );
+		else m_eventBus.fireEventFromSource( event, source );
+	}// end fireEvent()
+	
+	
+	/**
+	 * Synchronously fires a Vibe event on the event bus.
+	 * 
+	 * @param event
 	 */
 	public static void fireEvent( VibeEventBase<?> event )
 	{
-		m_eventBus.fireEvent( event );
+		fireEvent( event, null );
 	}// end fireEvent()
 	
 	
 	/**
 	 * Asynchronously fires a Vibe event on the event bus.
 	 * 
-	 * The event is fired off a timer, if a delay was requested, or off
-	 * a scheduled command.
-	 * 
 	 * @param event
-	 * @param delay
+	 * @param source
 	 */
-	public static void fireEventAsync( final VibeEventBase<?> event, int delay )
+	public static void fireEventAsync( final VibeEventBase<?> event, final Object source)
 	{
-		// Are we supposed to delay the event?
-		if ( 0 < delay )
+		// Use a scheduled command to fire the event.
+		ScheduledCommand doEvent = new ScheduledCommand()
 		{
-			// Yes!  Use a Timer to delay firing it as requested.
-			Timer doEvent = new Timer()
+			@Override
+			public void execute()
 			{
-				@Override
-				public void run()
-				{
-					fireEvent( event );
-				}// end run()
-			};
-			doEvent.schedule( delay );
-		}
-		
-		else
-		{
-			// No we aren't supposed to delay the event!  Use a
-			// scheduled command to fire it.
-			ScheduledCommand doEvent = new ScheduledCommand()
-			{
-				@Override
-				public void execute()
-				{
-					fireEvent( event );
-				}// end execute()
-			};
-			Scheduler.get().scheduleDeferred( doEvent );
-		}
+				fireEvent( event, source );
+			}// end execute()
+		};
+		Scheduler.get().scheduleDeferred( doEvent );
 	}// end fireEvent()
-	
 	
 	public static void fireEventAsync( VibeEventBase<?> event )
 	{
 		// Always use the initial form of the method.
-		fireEventAsync( event, 0 );	// 0 -> No delay, just use a scheduled command.
-	}// end fireEvent()
+		fireEventAsync( event, null );	// null -> No source.
+	}
 	
 	
 	/*
