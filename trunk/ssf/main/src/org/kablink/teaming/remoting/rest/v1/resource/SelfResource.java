@@ -35,6 +35,12 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.*;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
@@ -49,17 +55,24 @@ import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Junction;
 import org.kablink.util.search.Restrictions;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +86,7 @@ import java.util.Map;
 @Path("/self")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class SelfResource extends AbstractResource {
+public class SelfResource extends AbstractFileResource {
 
     /**
      * Gets the User object representing the authenticated user.
@@ -204,6 +217,22 @@ public class SelfResource extends AbstractResource {
         return lookUpBinders(crit, textDescriptions, offset, maxCount, "/self/my_files/library_folders", nextParams);
     }
 
+    @POST
+   	@Path("/my_files/library_folders")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+   	public org.kablink.teaming.rest.v1.model.Folder createLibraryFolder(
+                                      org.kablink.teaming.rest.v1.model.BinderBrief newBinder,
+                                      @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
+            throws WriteFilesException, WriteEntryDataException {
+        org.kablink.teaming.domain.Binder parent = getBinderModule().getBinder(getLoggedInUser().getWorkspaceId());
+        if (newBinder.getTitle()==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No folder title was supplied in the POST data.");
+        }
+        org.kablink.teaming.domain.Binder binder = FolderUtils.createLibraryFolder(parent, newBinder.getTitle());
+        return (org.kablink.teaming.rest.v1.model.Folder) ResourceUtil.buildBinder(binder, true, textDescriptions);
+   	}
+
     @GET
     @Path("/my_files/library_tree")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -328,6 +357,34 @@ public class SelfResource extends AbstractResource {
             populateParentBinderPaths(resultList);
         }
         return resultList;
+    }
+
+    @POST
+    @Path("/my_files/library_files")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public FileProperties addLibraryFileFromMultipart(@QueryParam("file_name") String fileName,
+                                         @QueryParam("mod_date") String modDateISO8601,
+                                         @QueryParam("md5") String expectedMd5,
+                                         @QueryParam("overwrite_existing") @DefaultValue("false") Boolean overwriteExisting,
+                                         @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
+        Folder folder = _getHiddenFilesFolder();
+        InputStream is = getInputStreamFromMultipartFormdata(request);
+        return createEntryWithAttachment(folder, fileName, modDateISO8601, expectedMd5, overwriteExisting, is);
+    }
+
+    @POST
+    @Path("/my_files/library_files")
+    @Consumes("*/*")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public FileProperties addLibraryFile(@QueryParam("file_name") String fileName,
+                                         @QueryParam("mod_date") String modDateISO8601,
+                                         @QueryParam("md5") String expectedMd5,
+                                         @QueryParam("overwrite_existing") @DefaultValue("false") Boolean overwriteExisting,
+                                         @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
+        Folder folder = _getHiddenFilesFolder();
+        InputStream is = getRawInputStream(request);
+        return createEntryWithAttachment(folder, fileName, modDateISO8601, expectedMd5, overwriteExisting, is);
     }
 
     @GET

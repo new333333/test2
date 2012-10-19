@@ -340,7 +340,6 @@ public class FolderResource extends AbstractBinderResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileProperties addLibraryFileFromMultipart(@PathParam("id") long id,
                                          @QueryParam("file_name") String fileName,
-                                         @QueryParam("data_name") String dataName,
                                          @QueryParam("mod_date") String modDateISO8601,
                                          @QueryParam("md5") String expectedMd5,
                                          @QueryParam("overwrite_existing") @DefaultValue("false") Boolean overwriteExisting,
@@ -356,7 +355,6 @@ public class FolderResource extends AbstractBinderResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileProperties addLibraryFile(@PathParam("id") long id,
                                          @QueryParam("file_name") String fileName,
-                                         @QueryParam("data_name") String dataName,
                                          @QueryParam("mod_date") String modDateISO8601,
                                          @QueryParam("md5") String expectedMd5,
                                          @QueryParam("overwrite_existing") @DefaultValue("false") Boolean overwriteExisting,
@@ -366,52 +364,9 @@ public class FolderResource extends AbstractBinderResource {
         return createEntryWithAttachment(folder, fileName, modDateISO8601, expectedMd5, overwriteExisting, is);
     }
 
-    private FileProperties createEntryWithAttachment(Folder folder, String fileName, String modDateISO8601, String expectedMd5, boolean replaceExisting, InputStream is) throws WriteFilesException, WriteEntryDataException {
-        if(!folder.isLibrary()) {
-            throw new NotFoundException(ApiErrorCode.NOT_SUPPORTED, "This folder is not a library folder.");
-        }
-        if (fileName==null) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing file_name query parameter");
-        }
-
-        org.kablink.teaming.domain.FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
-
-        if(entry != null) {
-            if (!replaceExisting) {
-                throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file with the name already exists.");
-            }
-            // An entry containing a file with this name exists.
-            if(logger.isDebugEnabled())
-                logger.debug("createNew: updating existing file '" + fileName + "' + owned by " + entry.getEntityIdentifier().toString() + " in folder " + folder.getId());
-            FolderUtils.modifyLibraryEntry(entry, fileName, is, dateFromISO8601(modDateISO8601), expectedMd5, true);
-        }
-        else {
-            // We need to create a new entry
-            if(logger.isDebugEnabled())
-                logger.debug("createNew: creating new file '" + fileName + "' + in folder " + folder.getId());
-            entry = FolderUtils.createLibraryEntry(folder, fileName, is, dateFromISO8601(modDateISO8601), expectedMd5, true);
-        }
-        return ResourceUtil.buildFileProperties(entry.getFileAttachment(fileName));
-    }
-
     @Override
     protected Binder _getBinder(long id) {
         return _getFolder(id);
-    }
-
-    private org.kablink.teaming.domain.Folder _getFolder(long id) {
-        try{
-            org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(id);
-            if (binder instanceof org.kablink.teaming.domain.Folder) {
-                Folder folder = (Folder) binder;
-                if (!folder.isPreDeleted()) {
-                    return folder;
-                }
-            }
-        } catch (NoBinderByTheIdException e) {
-            // Throw exception below.
-        }
-        throw new NotFoundException(ApiErrorCode.FOLDER_NOT_FOUND, "NOT FOUND");
     }
 
     @Override

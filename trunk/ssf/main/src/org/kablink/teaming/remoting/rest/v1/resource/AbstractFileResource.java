@@ -6,6 +6,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoFileByTheIdException;
@@ -51,6 +52,34 @@ abstract public class AbstractFileResource extends AbstractResource {
         } else {
             return null;
         }
+    }
+
+    protected FileProperties createEntryWithAttachment(Folder folder, String fileName, String modDateISO8601, String expectedMd5, boolean replaceExisting, InputStream is) throws WriteFilesException, WriteEntryDataException {
+        if(!folder.isLibrary()) {
+            throw new NotFoundException(ApiErrorCode.NOT_SUPPORTED, "This folder is not a library folder.");
+        }
+        if (fileName==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing file_name query parameter");
+        }
+
+        org.kablink.teaming.domain.FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
+
+        if(entry != null) {
+            if (!replaceExisting) {
+                throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file with the name already exists.");
+            }
+            // An entry containing a file with this name exists.
+            if(logger.isDebugEnabled())
+                logger.debug("createNew: updating existing file '" + fileName + "' + owned by " + entry.getEntityIdentifier().toString() + " in folder " + folder.getId());
+            FolderUtils.modifyLibraryEntry(entry, fileName, is, dateFromISO8601(modDateISO8601), expectedMd5, true);
+        }
+        else {
+            // We need to create a new entry
+            if(logger.isDebugEnabled())
+                logger.debug("createNew: creating new file '" + fileName + "' + in folder " + folder.getId());
+            entry = FolderUtils.createLibraryEntry(folder, fileName, is, dateFromISO8601(modDateISO8601), expectedMd5, true);
+        }
+        return ResourceUtil.buildFileProperties(entry.getFileAttachment(fileName));
     }
 
     protected FileProperties writeNewFileContent(
