@@ -35,12 +35,24 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.*;
+import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
+import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.BinderTree;
+import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
+import org.kablink.teaming.search.SearchUtils;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Junction;
+import org.kablink.util.search.Restrictions;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -48,7 +60,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * User: david
@@ -78,9 +93,14 @@ public class SelfResource extends AbstractResource {
             user.addAdditionalLink("my_file_folders", user.getWorkspace().getLink() + "/library_folders");
         }
         user.addAdditionalLink("file_folders", "/self/file_folders");
+        user.addAdditionalLink("my_files", "/self/my_files");
         user.addAdditionalLink("net_folders", "/self/net_folders");
         user.addAdditionalLink("shared_with_me", "/self/shared_with_me");
         user.addAdditionalLink("shared_by_me", "/self/shared_by_me");
+        Long myFilesFolderId = SearchUtils.getMyFilesFolderId(this, entry.getWorkspaceId(), true);
+        if (myFilesFolderId!=null) {
+            user.setHiddenFilesFolder(new LongIdLinkPair(myFilesFolderId, LinkUriUtil.getFolderLinkUri(myFilesFolderId)));
+        }
         return user;
     }
 
@@ -164,6 +184,187 @@ public class SelfResource extends AbstractResource {
         return getFakeSharedByMe();
     }
 
+    @GET
+    @Path("/my_files")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public BinderBrief getMyFiles() {
+        return getFakeMyFileFolders();
+    }
+
+    @GET
+    @Path("/my_files/library_folders")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<BinderBrief> getMyFileLibraryFolders(
+            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+            @QueryParam("first") @DefaultValue("0") Integer offset,
+            @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("text_descriptions", textDescriptions);
+        Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, true, false, false, false);
+        return lookUpBinders(crit, textDescriptions, offset, maxCount, "/self/my_files/library_folders", nextParams);
+    }
+
+    @GET
+    @Path("/my_files/library_tree")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public BinderTree getMyFileLibraryTree(
+            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+        BinderTree results = new BinderTree();
+        SearchResultList<BinderBrief> folders = getMyFileLibraryFolders(false, 0, -1);
+        if (folders.getCount()>0) {
+            Criteria crit = new Criteria();
+            crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
+            List<String> idList = new ArrayList<String>(folders.getCount());
+            for (BinderBrief folder : folders.getResults()) {
+                idList.add(folder.getId().toString());
+            }
+            crit.add(Restrictions.in(Constants.ENTRY_ANCESTRY, idList));
+            Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
+            SearchResultBuilderUtil.buildSearchResultsTree(results, folders.getResults().toArray(new BinderBrief[folders.getCount()]),
+                    new BinderBriefBuilder(textDescriptions), resultMap);
+            results.setItem(null);
+        }
+        return results;
+    }
+
+    @GET
+    @Path("/my_files/library_entities")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<SearchableObject> getMyFileLibraryEntities(
+              @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+              @QueryParam("binders") @DefaultValue("true") boolean includeBinders,
+              @QueryParam("folder_entries") @DefaultValue("true") boolean includeFolderEntries,
+              @QueryParam("files") @DefaultValue("true") boolean includeFiles,
+              @QueryParam("replies") @DefaultValue("true") boolean includeReplies,
+              @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
+              @QueryParam("keyword") String keyword,
+              @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+              @QueryParam("first") @DefaultValue("0") Integer offset,
+              @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
+        Criteria subContextSearch = null;
+        if (recursive) {
+            SearchResultList<BinderBrief> folders = getMyFileLibraryFolders(false, 0, -1);
+            if (folders.getCount()>0) {
+                subContextSearch = new Criteria();
+                Junction searchContext = Restrictions.disjunction();
+                for (BinderBrief binder : folders.getResults()) {
+                    Junction shareCrit = Restrictions.conjunction();
+                    shareCrit.add(buildSearchBinderCriterion(binder.getId(), true));
+                    searchContext.add(shareCrit);
+                }
+                subContextSearch.add(searchContext);
+            }
+        }
+        Criteria crit = new Criteria();
+        if (keyword!=null) {
+            crit.add(buildKeywordCriterion(keyword));
+        }
+        crit.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
+        crit.add(buildLibraryCriterion(true));
+        Criteria myFilesCrit = SearchUtils.getMyFilesSearchCriteria(this, includeBinders, includeFolderEntries, includeReplies, includeFiles);
+        if (subContextSearch!=null) {
+            crit.add(Restrictions.disjunction()
+                    .add(myFilesCrit.asJunction())
+                    .add(subContextSearch.asJunction())
+            );
+        } else {
+            crit.add(myFilesCrit.asJunction());
+        }
+
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("recursive", Boolean.toString(recursive));
+        nextParams.put("binders", Boolean.toString(includeBinders));
+        nextParams.put("folder_entries", Boolean.toString(includeFolderEntries));
+        nextParams.put("files", Boolean.toString(includeFiles));
+        nextParams.put("replies", Boolean.toString(includeReplies));
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        if (keyword!=null) {
+            nextParams.put("keyword", keyword);
+        }
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
+                "/self/my_files/library_entities", nextParams, offset);
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
+        return results;
+    }
+
+    @GET
+    @Path("/my_files/library_files")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<FileProperties> getMyFileLibraryFiles(
+            @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
+            @QueryParam("first") Integer offset,
+            @QueryParam("count") Integer maxCount) {
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("recursive", Boolean.toString(recursive));
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        Criteria crit = new Criteria();
+        crit.add(buildAttachmentsCriterion());
+        crit.add(buildLibraryCriterion(true));
+        Junction searchContexts = null;
+        if (recursive) {
+            SearchResultList<BinderBrief> folders = getMyFileLibraryFolders(false, 0, -1);
+            if (folders.getCount()>0) {
+                searchContexts = Restrictions.disjunction();
+                for (BinderBrief folder : folders.getResults()) {
+                    searchContexts.add(buildAncentryCriterion(folder.getId()));
+                }
+            }
+        }
+        Criteria myFiles = SearchUtils.getMyFilesSearchCriteria(this, false, false, false, true);
+        if (searchContexts!=null) {
+            searchContexts.add(myFiles.asJunction());
+            crit.add(searchContexts);
+        } else {
+            crit.add(myFiles.asJunction());
+        }
+        SearchResultList<FileProperties> resultList = lookUpAttachments(crit, offset, maxCount, "/self/my_files/library_files", nextParams);
+        if (includeParentPaths) {
+            populateParentBinderPaths(resultList);
+        }
+        return resultList;
+    }
+
+    @GET
+    @Path("/my_files/recent_activity")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<SearchableObject> getMyFileRecentActivity(
+            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
+            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+            @QueryParam("first") @DefaultValue("0") Integer offset,
+            @QueryParam("count") @DefaultValue("20") Integer maxCount) {
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+
+        List<String> binders = null;
+        List<String> entries = null;
+        SearchResultList<BinderBrief> folders = getMyFileLibraryFolders(true, 0, -1);
+        if (folders.getCount()>0) {
+            binders = new ArrayList<String>();
+            for (BinderBrief binder : folders.getResults()) {
+                binders.add(binder.getId().toString());
+            }
+        }
+        SearchResultList<FileProperties> files = getMyFileLibraryFiles(false, false, 0, -1);
+        if (files.getCount()>0) {
+            entries = new ArrayList<String>();
+            for (FileProperties file : files.getResults()) {
+                entries.add(file.getOwningEntity().getId().toString());
+            }
+        }
+        if (entries==null && binders==null) {
+            return new SearchResultList<SearchableObject>();
+        }
+        Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binders, entries, null, true, Constants.LASTACTIVITY_FIELD);
+        return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, "/net_folders/recent_activity", nextParams);
+    }
+
     private BinderBrief getFakeMyWorkspace() {
         org.kablink.teaming.domain.User loggedInUser = RequestContextHolder.getRequestContext().getUser();
         Binder myWorkspace = getBinderModule().getBinder(loggedInUser.getWorkspaceId());
@@ -191,14 +392,31 @@ public class SelfResource extends AbstractResource {
         return binder;
     }
 
+    private BinderBrief getFakeFileFolders() {
+        org.kablink.teaming.domain.User user = getLoggedInUser();
+        BinderBrief binder = new BinderBrief();
+        //TODO: localize
+        binder.setTitle("File Folders");
+        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
+        String baseUri = "/workspaces/" + user.getWorkspaceId();
+        binder.addAdditionalLink("child_binders", baseUri + "/library_folders");
+        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
+        binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
+        binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
+        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
+        return binder;
+    }
+
     private BinderBrief getFakeMyFileFolders() {
         org.kablink.teaming.domain.User user = getLoggedInUser();
         BinderBrief binder = new BinderBrief();
         //TODO: localize
         binder.setTitle("My Files");
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
-        String baseUri = "/workspaces/" + user.getWorkspaceId();
+        String baseUri = "/self/my_files";
         binder.addAdditionalLink("child_binders", baseUri + "/library_folders");
+        binder.addAdditionalLink("child_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");

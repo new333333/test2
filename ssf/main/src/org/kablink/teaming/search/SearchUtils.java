@@ -42,10 +42,17 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.TemplateBinder;
+import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.security.runwith.RunWithCallback;
+import org.kablink.teaming.security.runwith.RunWithTemplate;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -549,6 +556,11 @@ public class SearchUtils {
 	}
 	
 	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs) {
+        // By default, just return binders and entries
+        return getMyFilesSearchCriteria(bs, true, true, false, false);
+    }
+
+	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs, boolean binders, boolean entries, boolean replies, boolean attachments) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String userWSId = String.valueOf(user.getWorkspaceId());
 		
@@ -558,26 +570,76 @@ public class SearchUtils {
 		if (Utils.checkIfFilr())
 		     fileFamilies = new String[]{Definition.FAMILY_FILE};
 		else fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
-		
-		Criteria crit = new Criteria();
-		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{userWSId}));
-		crit.add(in(Constants.FAMILY_FIELD,            fileFamilies));
-		crit.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
 
-		// ...that are non-mirrored...
-		Disjunction disj = disjunction();
-		crit.add(disj);
-		Conjunction conj = conjunction();
-		conj.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
-		disj.add(conj);
+        Long mfContainerId = getMyFilesFolderId(bs, user.getWorkspaceId(), false);	// false -> Don't create it if it doesn't exist.
 
-		// ...or configured mirrored File Folders.
-		conj = conjunction();
-		conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
-		conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
-		conj.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
-		disj.add(conj);
+        Disjunction	root     = disjunction();
+        Criteria crit = new Criteria();
+        crit.add(root);
+        if (binders) {
+            Conjunction	rootConj = conjunction();
+            root.add(rootConj);
+            rootConj.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+            rootConj.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{userWSId}));
+            rootConj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
+            rootConj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
+
+            // ...that are non-mirrored...
+            Disjunction disj = disjunction();
+            rootConj.add(disj);
+            Conjunction conj = conjunction();
+            conj.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
+            disj.add(conj);
+
+            // ...or configured mirrored File Folders.
+            conj = conjunction();
+            conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+            conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+            conj.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
+            disj.add(conj);
+
+            if (mfContainerId!=null) {
+                // ...exclude it from the binder list.
+                Junction noMF = not();
+                rootConj.add(noMF);
+                String mfContStr = mfContainerId.toString();
+                noMF.add(in(Constants.DOCID_FIELD, new String[]{mfContStr}));
+
+                // Also include any folders in there as well.
+                conj = conjunction();
+                conj.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+                conj.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{mfContStr}));
+                conj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
+                conj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
+                root.add(conj);
+            }
+        }
+        if ((entries || attachments || replies) && mfContainerId!=null) {
+            if (entries) {
+                // Search for any file entries...
+                Conjunction conj = conjunction();
+                conj.add(in(Constants.DOC_TYPE_FIELD,  new String[]{Constants.DOC_TYPE_ENTRY}));
+                conj.add(in(Constants.ENTRY_TYPE_FIELD,  new String[]{Constants.ENTRY_TYPE_ENTRY}));
+                conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerId.toString()}));
+                conj.add(in(Constants.FAMILY_FIELD,    fileFamilies));
+                root.add(conj);
+            }
+            if (replies) {
+                // Search for any file entries...
+                Conjunction conj = conjunction();
+                conj.add(in(Constants.DOC_TYPE_FIELD,  new String[]{Constants.DOC_TYPE_ENTRY}));
+                conj.add(in(Constants.ENTRY_TYPE_FIELD,  new String[]{Constants.ENTRY_TYPE_REPLY}));
+                conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerId.toString()}));
+                root.add(conj);
+            }
+            if (attachments) {
+                Conjunction conj = conjunction();
+                conj.add(in(Constants.DOC_TYPE_FIELD,  new String[]{Constants.DOC_TYPE_ATTACHMENT}));
+                conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerId.toString()}));
+                conj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
+                root.add(conj);
+            }
+        }
 		return crit;
 	}
 	
@@ -608,6 +670,130 @@ public class SearchUtils {
 				entriesOnly,	// true -> Entries only (no replies.)
 				Constants.LASTACTIVITY_FIELD);
 		return crit;
+	}
+
+    /**
+   	 * If the user has a folder that's recognized as their My Files
+   	 * folder, it's ID is returned.  Otherwise, null is returned.
+   	 *
+   	 * @param bs
+   	 *
+   	 * @return
+   	 */
+   	public static Long getMyFilesFolderId(AllModulesInjected bs, Long userWorkspaceId, boolean createIfNeccessary) {
+   		Long reply;
+   		List<Long> mfFolderIds = getMyFilesFolderIds(bs, userWorkspaceId);
+   		if ((null != mfFolderIds) && (!(mfFolderIds.isEmpty()))) {
+   			reply = mfFolderIds.get(0);
+   		}
+   		else if (createIfNeccessary) {
+   			reply = createMyFilesFolder(bs, userWorkspaceId);
+   		}
+   		else {
+   			reply = null;
+   		}
+   		return reply;
+   	}
+
+    private static List<Long> getMyFilesFolderIds(AllModulesInjected bs, Long userWorkspaceId) {
+   		// Build a search for the user's binders...
+   		Criteria crit = new Criteria();
+   		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+   		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(userWorkspaceId)}));
+
+   		// ...that are marked as their My Files folder...
+   		crit.add(in(Constants.FAMILY_FIELD,         new String[]{Definition.FAMILY_FILE}));
+   		crit.add(in(Constants.IS_LIBRARY_FIELD,	    new String[]{Constants.TRUE}));
+   		crit.add(in(Constants.IS_MYFILES_DIR_FIELD, new String[]{Constants.TRUE}));
+
+   		// ...that are not mirrored File Folders.
+   		crit.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
+
+   		// Can we find any?
+   		Map			searchResults = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, Integer.MAX_VALUE);
+   		List<Map>	searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+   		List<Long>	reply         = new ArrayList<Long>();
+   		if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
+   			// Yes!  Scan them...
+   			for (Map entryMap:  searchEntries) {
+   				// ...extracting their IDs from from the search
+   				// ...results.
+   				String   docIdS   = (String) entryMap.get(Constants.DOCID_FIELD);
+   				Long     docId    = Long.parseLong(docIdS);
+   				reply.add(docId);
+   			}
+   		}
+
+   		// If we get here, reply refers to a List<Long> of the folders
+   		// in a user's workspace that are recognized as their My Files
+   		// folder.  Return it.
+   		return reply;
+   	}
+
+	/*
+	 * Creates a user's My Files container and returns its ID.
+	 */
+	private static Long createMyFilesFolder(AllModulesInjected bs, Long userWorkspaceId) {
+		// Can we determine the template to use for the My Files
+		// folder?
+		TemplateBinder mfFolderTemplate   = bs.getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY);
+		Long			mfFolderTemplateId = ((null == mfFolderTemplate) ? null : mfFolderTemplate.getId());
+		if (null == mfFolderTemplateId) {
+			// No!  Then we can't create it.
+			return null;
+		}
+
+		// Generate a unique name for the folder.
+		Long				reply       = null;
+		final String		mfTitleBase = NLT.get("collection.myFiles.folder");
+		final BinderModule bm          = bs.getBinderModule();
+		for (int tries = 0; true; tries += 1) {
+			try {
+				// For tries beyond the first, we simply bump a counter
+				// until we find a name to use.
+				String mfTitle = mfTitleBase;
+				if (0 < tries) {
+					mfTitle += ("-" + tries);
+				}
+
+				// Can we create a folder with this name?
+				final Long		mfFolderId = bs.getTemplateModule().addBinder(mfFolderTemplateId, userWorkspaceId, mfTitle, null).getId();
+				final Binder	mfFolder   = bm.getBinder(mfFolderId);
+				if (null != mfFolder) {
+					// Yes!  Mark it as being the My Files folder...
+					bm.setProperty(mfFolderId, ObjectKeys.BINDER_PROPERTY_MYFILES_DIR, Boolean.TRUE);
+					bm.indexBinder(mfFolderId                                                      );
+
+					// ...and to inherit its team membership.
+					RunWithTemplate.runWith(new RunWithCallback() {
+                        @Override
+                        public Object runWith() {
+                            bm.setTeamMembershipInherited(mfFolderId, true);
+                            return null;
+                        }
+                    },
+                            new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION},
+                            null);
+
+					// Return the ID of the folder we created.
+					reply = mfFolderId;
+					break;
+				}
+			}
+
+			catch (Exception e) {
+				// If the create fails because of a naming conflict...
+				if (e instanceof TitleException) {
+					// ...simply try again with a new name.
+					continue;
+				}
+				break;
+			}
+		}
+
+		// If we get here, reply is null or refers to the ID of the
+		// newly created folder.  Return it.
+		return reply;
 	}
 
 }
