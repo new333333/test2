@@ -256,7 +256,7 @@ public class FolderEntryMenu extends VibeFlowPanel {
 					// ...and if we have one...
 					if (null != event) {
 						// ...fire it.
-						GwtTeaming.fireEventAsync(event);
+						GwtTeaming.fireEventAsync(event, m_fec);
 					}
 				}
 			}

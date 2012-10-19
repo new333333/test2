@@ -282,20 +282,22 @@ public class GwtActivityStreamHelper {
 		private Long              m_authorId;				// The ID of the entry's author.
 		private Long              m_binderId;				// The ID of the Binder containing this entry.
 		private Long              m_entryId;				// The ID on the entry itself
+		private Long              m_topEntryId;				// The ID of the top entry, if the entry itself is not the top.
 		private Map               m_entryMap;				// The entry's search results Map.
 		private String            m_authorTitle;			// The title of this entry's author.  (Does NOT account for visibility restrictions.)
 		
 		/*
 		 * Constructor method.
 		 */
-		private ASEntryData(Map entryMap, Long binderId, Long entryId) {
+		private ASEntryData(Map entryMap, Long binderId, Long entryId, Long topEntryId) {
 			// Initialize the super class...
 			super();
 			
 			// ...store the parameters...
-			m_entryMap = entryMap;
-			m_binderId = binderId;
-			m_entryId  = entryId;
+			m_entryMap   = entryMap;
+			m_binderId   = binderId;
+			m_entryId    = entryId;
+			m_topEntryId = topEntryId;
 
 			// ...and initialize everything else.
 			m_commentEntryDataList = new ArrayList<ASEntryData>();			
@@ -303,9 +305,15 @@ public class GwtActivityStreamHelper {
 			m_authorTitle          =                GwtServerHelper.getStringFromEntryMap(m_entryMap, Constants.CREATOR_TITLE_FIELD);
 		}
 		
+		private ASEntryData(Map entryMap, Long binderId, Long entryId) {
+			// Always use the initial form of the constructor.
+			this(entryMap, binderId, entryId, null);
+		}
+		
 		/*
 		 * Class Get'er/Set'er methods.
 		 */
+		private boolean           isTopEntry()             {return (null == m_topEntryId);}
 		private ASAuthorInfo      getAuthorInfo()          {return m_authorInfo;          }
 		private ASBinderInfo      getBinderInfo()          {return m_binderInfo;          }
 		private int               getCommentCount()        {return m_commentCount;        }
@@ -313,6 +321,7 @@ public class GwtActivityStreamHelper {
 		private Long              getAuthorId()            {return m_authorId;            }
 		private Long              getBinderId()            {return m_binderId;            }
 		private Long              getEntryId()             {return m_entryId;             }
+		private Long              getTopEntryId()          {return m_topEntryId;          }
 		private Map               getEntryMap()            {return m_entryMap;            }
 		private String            getAuthorTitle()         {return m_authorTitle;         }
 		
@@ -343,9 +352,16 @@ public class GwtActivityStreamHelper {
 					continue;
 				}
 
+				// Does the map contain a top entry ID for this entry?
+				String entryTopIdS = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTRY_TOP_ENTRY_ID_FIELD);
+				Long   entryTopId;
+				if (MiscUtil.hasString(entryTopIdS))
+				     entryTopId = Long.parseLong(entryTopIdS);
+				else entryTopId = null;
+
 				// Add a stubbed out ASEntryData to the
 				// List<ASEntryData> that we're going to return.
-				ASEntryData ased = new ASEntryData(entryMap, Long.parseLong(binderId), Long.parseLong(entryId));
+				ASEntryData ased = new ASEntryData(entryMap, Long.parseLong(binderId), Long.parseLong(entryId), entryTopId);
 				if (!returnComments) {
 					String totalReplyCount = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.TOTALREPLYCOUNT_FIELD);
 					if (MiscUtil.hasString(totalReplyCount)) {
@@ -461,15 +477,16 @@ public class GwtActivityStreamHelper {
 		 */
 		private static void completeCommentEntryDataLists(AllModulesInjected bs, ActivityStreamDataType asdt, ActivityStreamParams asp, SeenMap sm, List<ASEntryData> entryDataList) {
 			// Scan the List<ASEntryData>...
-			int c = entryDataList.size();
-			String[] entryIds = new String[c];
-			for (int i = 0; i < c; i += 1) {
+			String[] topEntryIds = new String[entryDataList.size()];
+			int i = 0;
+			for (ASEntryData entryData:  entryDataList) {
 				// ...tracking each ASEntryData's entry ID.
-				entryIds[i] = String.valueOf(entryDataList.get(i).getEntryId());
+				Long topEntryId = (entryData.isTopEntry() ? entryData.getEntryId() : entryData.getTopEntryId());
+				topEntryIds[i++] = String.valueOf(topEntryId);
 			}
 
 			// Are there any comments posted to any of these entries?
-			Criteria searchCriteria = SearchUtils.entryReplies(entryIds, true);	// true -> All replies, at any level.
+			Criteria searchCriteria = SearchUtils.entryReplies(topEntryIds, true);	// true -> All replies, at any level.
 			Map       searchResults = bs.getBinderModule().executeSearchQuery(searchCriteria, Constants.SEARCH_MODE_NORMAL, 0, (Integer.MAX_VALUE - 1));
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 			int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
@@ -484,14 +501,19 @@ public class GwtActivityStreamHelper {
 			for (Map commentEntryMap:  searchEntries) {
 				// Can we find the ASEntryData for the top level entry
 				// for this comment?
-				String topEntryIdS = GwtServerHelper.getStringFromEntryMap(commentEntryMap, Constants.ENTRY_TOP_ENTRY_ID_FIELD);
-				Long entryId = Long.parseLong(topEntryIdS);
-				ASEntryData topEntryData = ASEntryData.findEntryData(entryDataList, entryId);
-				if (null == topEntryData) {
+				String entryIdS = GwtServerHelper.getStringFromEntryMap(commentEntryMap, Constants.ENTRY_TOP_ENTRY_ID_FIELD);
+				Long entryId = Long.parseLong(entryIdS);
+				ASEntryData entryData = ASEntryData.findEntryData(entryDataList, entryId);
+				if (null == entryData) {
+					entryIdS = GwtServerHelper.getStringFromEntryMap(commentEntryMap, Constants.ENTRY_PARENT_ID_FIELD);
+					entryId = Long.parseLong(entryIdS);
+					entryData = ASEntryData.findEntryData(entryDataList, entryId);
+				}
+				if (null == entryData) {
 					// No!  Skip it.
 					continue;
 				}
-
+				
 				// Does this comment Map contain both a binder and
 				// entry ID? 
 				String commentBinderId = GwtServerHelper.getStringFromEntryMap(commentEntryMap, Constants.BINDER_ID_FIELD);
@@ -503,11 +525,11 @@ public class GwtActivityStreamHelper {
 							
 				// Keep track of the number of comments we found for
 				// this top level entry.
-				topEntryData.incrCommentCount();
+				entryData.incrCommentCount();
 				
 				// Have we resolved all the comments we need to display
 				// for this top level entry?
-				List<ASEntryData> commentEntryDataList = topEntryData.getCommentEntryDataList();
+				List<ASEntryData> commentEntryDataList = entryData.getCommentEntryDataList();
 				
 				// We only want the last n comments.  If we have already added n comments to the
 				// top level entry, remove the first one.
@@ -541,10 +563,9 @@ public class GwtActivityStreamHelper {
 		 */
 		private static ASEntryData findEntryData(List<ASEntryData> entryDataList, Long entryId) {
 			// Scan the List<ASEntryData>.
-			long eid = entryId.longValue();
 			for (ASEntryData entryData:  entryDataList) {
 				// Is this the ASEntryData in question?
-				if (entryData.getEntryId().longValue() == eid) {
+				if (entryData.getEntryId().equals(entryId)) {
 					// Yes!  Return it.
 					return entryData;
 				}
@@ -1447,9 +1468,9 @@ public class GwtActivityStreamHelper {
 	
 	private static Criteria buildSearchCriteria(AllModulesInjected bs, Long entryId) {
 		Criteria reply = new Criteria();
-		reply.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[] {Constants.ENTRY_TYPE_ENTRY}))
-		     .add(Restrictions.in(Constants.DOC_TYPE_FIELD,   new String[] {Constants.DOC_TYPE_ENTRY  }))
-		     .add(Restrictions.in(Constants.DOCID_FIELD,      new String[] {String.valueOf(entryId)   }));
+		reply.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[] {Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY}))
+		     .add(Restrictions.in(Constants.DOC_TYPE_FIELD,   new String[] {Constants.DOC_TYPE_ENTRY                              }))
+		     .add(Restrictions.in(Constants.DOCID_FIELD,      new String[] {String.valueOf(entryId)                               }));
 		return reply;
 	}
 	

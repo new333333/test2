@@ -1799,6 +1799,9 @@ public interface GwtTeamingMessages extends Messages
 	String manageCommentsCompositeSend();
 	String manageCommentsCompositeWhoHasAccess();
 	
+	// Strings used in the Manage Comments dialog.
+	String manageCommentsDlgComments(int cCount);
+	
 	// Strings used in the Manage Groups dialog
 	String manageGroupsDlgAddGroupLabel();
 	String manageGroupsDlgConfirmDelete( String groupNames );

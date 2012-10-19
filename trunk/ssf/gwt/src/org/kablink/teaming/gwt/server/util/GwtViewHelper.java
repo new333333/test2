@@ -3229,7 +3229,8 @@ public class GwtViewHelper {
 			
 			// ...set the entry's family and path... 
 			FolderEntry feTop = fe.getTopEntry();
-			if (null == feTop) {
+			boolean		isTop = (null == feTop);
+			if (isTop) {
 				feTop = fe;
 			}
 			reply.setFamily(GwtServerHelper.getFolderEntityFamily(bs, feTop));
@@ -3260,23 +3261,26 @@ public class GwtViewHelper {
 			reply.setTitle(feTitle);
 			
 			// ...set information about the entry's comments... 
-			CommentsInfo ci = new CommentsInfo(entityId, feTitle, fe.getReplies().size());
+			CommentsInfo ci = new CommentsInfo(
+				entityId,
+				feTitle,
+				(isTop                      ?
+					fe.getTotalReplyCount() :	// For top level entries, we show all the replies.
+					fe.getReplyCount()));		// For replies themselves, we only show their direct replies.
 			reply.setComments(ci);
 	
 			// ...if this is a file entry with a filename...
-			FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, feTop);
+			FileAttachment faForEntryIcon;
+			FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
 			if (null != fa) {
-				// ...store the icons for the file...
-				String fName = fa.getFileItem().getName();
-				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.SMALL)),  BinderIconSize.SMALL );
-				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.MEDIUM)), BinderIconSize.MEDIUM);
-				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.LARGE)),  BinderIconSize.LARGE );
+				// ...store it for using for the entry icon...
+				faForEntryIcon = fa;
 				
 				// ...and set the ViewFileInfo for an HTML view of the
 				// ...file if it supports it...
-				ViewFileInfo vfi = buildViewFileInfo(request, feTop, fa);
+				ViewFileInfo vfi = buildViewFileInfo(request, fe, fa);
 				if (null == vfi)
-				     reply.setContentIsImage(contentIsImage(bs, request, feTop, fa));
+				     reply.setContentIsImage(contentIsImage(bs, request, fe, fa));
 				else reply.setHtmlView(vfi);
 				
 				reply.setDownloadUrl(
@@ -3285,6 +3289,22 @@ public class GwtViewHelper {
 						bs,
 						fe.getParentBinder().getId(),
 						fe.getId())); 
+			}
+			
+			else {
+				// ...if the entry itself didn't have a file for an
+				// ...entry icon, try its top most parent...
+				faForEntryIcon = GwtServerHelper.getFileEntrysFileAttachment(bs, feTop);
+			}
+
+			// ...if we have a FileAttachment with a file to use for
+			// ...the entry icon...
+			if (null != faForEntryIcon) {
+				// ...store the icons for that file...
+				String fName = faForEntryIcon.getFileItem().getName();
+				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.SMALL)),  BinderIconSize.SMALL );
+				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.MEDIUM)), BinderIconSize.MEDIUM);
+				reply.setEntryIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.LARGE)),  BinderIconSize.LARGE );
 			}
 	
 			// ...set the entry's description...

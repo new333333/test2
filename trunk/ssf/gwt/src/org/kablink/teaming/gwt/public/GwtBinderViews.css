@@ -431,6 +431,7 @@
 
 /* Start:  Manage comments dialog styles. */
 	.vibe-manageCommentsDlg .popupContent {background-color: white !important;}
+	.vibe-manageCommentsDlg-captionCount  {position: absolute; top: 8px; right: 20px; font-size: 13px;}
 	.vibe-manageCommentsDlg-panel         {}
 /* End:  Manage comments dialog styles. */
 
