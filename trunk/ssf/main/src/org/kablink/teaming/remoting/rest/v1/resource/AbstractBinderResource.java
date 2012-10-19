@@ -452,22 +452,13 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     protected SearchResultList<BinderBrief> getSubBinders(long id, Criterion filter, Integer offset, Integer maxCount,
                                                           String nextUrl, Map<String, Object> nextParams, boolean textDescriptions) {
         _getBinder(id);
-        if (offset==null) {
-            offset = 0;
-        }
-        if (maxCount==null) {
-            maxCount = -1;
-        }
         Criteria crit = new Criteria();
         if (filter!=null) {
             crit.add(filter);
         }
         crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
         crit.add(Restrictions.eq(Constants.BINDERS_PARENT_ID_FIELD, ((Long) id).toString()));
-        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
-        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultMap, nextUrl, nextParams, offset);
-        return results;
+        return lookUpBinders(crit, textDescriptions, offset, maxCount, nextUrl, nextParams);
     }
 
     protected BinderTree getSubBinderTree(long id, Criterion filter, boolean textDescriptions) {

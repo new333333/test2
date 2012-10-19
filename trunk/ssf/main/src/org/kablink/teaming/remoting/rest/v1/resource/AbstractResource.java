@@ -54,6 +54,9 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
+import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.FilePropertiesBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.*;
@@ -482,6 +485,48 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             fillPathMap(binderPaths, searchForBinders(idCriterion));
         }
         return binderPaths;
+    }
+
+    protected SearchResultList<BinderBrief> lookUpBinders(Criteria crit, boolean textDescriptions, Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams) {
+        if (offset==null) {
+            offset = 0;
+        }
+        if (maxCount==null) {
+            maxCount = -1;
+        }
+        crit.add(buildBindersCriterion());
+        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultMap, nextUrl, nextParams, offset);
+        return results;
+    }
+
+    protected SearchResultList<FolderEntryBrief> lookUpEntries(Criteria crit, Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams) {
+        if (offset==null) {
+            offset = 0;
+        }
+        if (maxCount==null) {
+            maxCount = -1;
+        }
+        crit.add(buildEntriesCriterion());
+        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), resultMap, nextUrl, nextParams, offset);
+        return results;
+    }
+
+    protected SearchResultList<FileProperties> lookUpAttachments(Criteria crit, Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams) {
+        if (offset==null) {
+            offset = 0;
+        }
+        if (maxCount==null) {
+            maxCount = -1;
+        }
+        //crit.add(buildAttachmentsCriterion());
+        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<FileProperties> results = new SearchResultList<FileProperties>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new FilePropertiesBuilder(), resultMap, nextUrl, nextParams, offset);
+        return results;
     }
 
     protected Map searchForBinders(Criterion criterion) {

@@ -50,6 +50,7 @@ public class User extends Principal {
    	private Long diskQuota;
    	private Long fileSizeLimit;
    	private Long diskSpaceUsed;
+    private LongIdLinkPair hiddenFilesFolder;
    	private LongIdLinkPair workspace;
 
     @XmlElement(name="disk_quota")
@@ -166,6 +167,15 @@ public class User extends Principal {
 
     public void setTwitterId(String twitterId) {
         this.twitterId = twitterId;
+    }
+
+    @XmlElement(name="hidden_files_folder")
+    public LongIdLinkPair getHiddenFilesFolder() {
+        return hiddenFilesFolder;
+    }
+
+    public void setHiddenFilesFolder(LongIdLinkPair hiddenFilesFolder) {
+        this.hiddenFilesFolder = hiddenFilesFolder;
     }
 
     @XmlElement(name="workspace")
