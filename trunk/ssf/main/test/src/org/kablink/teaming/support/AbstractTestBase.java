@@ -38,6 +38,7 @@ import org.springframework.test.AbstractTransactionalDataSourceSpringContextTest
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
@@ -118,14 +119,14 @@ public abstract class AbstractTestBase extends AbstractTransactionalDataSourceSp
 			cdi.save(team);
 			cdi.updateFileName(top, team, null, team.getTitle());
 			
-			Group group = new Group();
+			Group group = new Group(new IdentityInfo());
 			group.setName(adminGroup);
 			group.setForeignName(adminGroup);
 			group.setZoneId(top.getId());
 			group.setParentBinder(profiles);
 			cdi.save(group);
 			
-			User user = new User(User.IDENTITY_SOURCE_LOCAL);
+			User user = new User(new IdentityInfo());
 			user.setName(adminUser);
 			user.setForeignName(adminUser);
 			user.setZoneId(top.getId());

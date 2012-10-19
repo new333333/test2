@@ -307,4 +307,25 @@
 			<column name="internal" type="BIT"/>
         </addColumn>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="36">
+        <addColumn tableName="SS_Principals">
+			<column name="fromLdap" type="BIT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="37">
+        <addColumn tableName="SS_Principals">
+			<column name="fromLocal" type="BIT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="38">
+        <addColumn tableName="SS_Principals">
+			<column name="fromOpenid" type="BIT"/>
+        </addColumn>
+    </changeSet>
+    
+    <!--
+    <changeSet author="jong" context="schema" failOnError="true" id="39">
+	    <addNotNullConstraint tableName="SS_Principals" columnName="internal" columnDataType="BIT"/>
+    </changeSet>
+    -->
 </databaseChangeLog>

@@ -50,7 +50,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
-import org.kablink.teaming.gwt.client.GwtUser.IdentitySource;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderRootCreatedEvent;
@@ -1526,7 +1525,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					user = (GwtUser) selectedObj;
 					
 					// Is this an external user?
-					if ( user.getIdentitySource() == IdentitySource.EXTERNAL )
+					if ( !user.isInternal() )
 					{
 						// Yes, tell the user they can't do this.
 						Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_CantSelectExternalUser() );

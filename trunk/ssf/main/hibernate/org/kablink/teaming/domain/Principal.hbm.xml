@@ -83,8 +83,12 @@
   	<subclass dynamic-update="true" name="org.kablink.teaming.domain.UserPrincipal">
 	  	<property name="diskQuota" access="field"/>
 	  	<property name="fileSizeLimit" access="field"/>
-	  	<property name="identitySource" access="field"/>
-	  	<property name="internal" access="field"/>
+	  	<component name="identityInfo" class="org.kablink.teaming.domain.IdentityInfo">
+	  	  <property name="internal" not-null="true"/>
+	  	  <property name="fromLdap" not-null="true"/>
+	  	  <property name="fromLocal" not-null="true"/>
+	  	  <property name="fromOpenid" not-null="true"/>
+	  	</component>
 	    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
 	      <!--<cache usage="read-write"/>-->
 	      <key column="userId"/>

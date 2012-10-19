@@ -51,24 +51,10 @@ package org.kablink.teaming.module.authentication;
  */
 public enum AuthenticationServiceProvider {
 
-	NONE(0),
-	LOCAL(1),
-	LDAP(2),
-	OPENID(3);
-	
-	int dbValue;
-	AuthenticationServiceProvider(int dbValue) {
-		this.dbValue = dbValue;
-	}
-	public int getValue() {
-		return dbValue;
-	}
-	public static AuthenticationServiceProvider valueOf(int type) {
-		switch(type) {
-		case 0: return LOCAL;
-		case 1: return LDAP;
-		case 2: return OPENID;
-		default: return NONE;
-		}
-	}
+	UNKNOWN,
+	LOCAL,
+	LDAP,
+	OPENID,
+	PRE;
+
 }

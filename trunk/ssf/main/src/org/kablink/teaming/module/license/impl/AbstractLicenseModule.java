@@ -120,6 +120,11 @@ implements LicenseModule, ZoneSchedule {
 		return getCoreDao().getLoginCount(cal.getTime());
 	}
 	
+	/**
+	 * Count the number of internal local users. This excludes all users that have been sync'ed from an ldap source.
+	 * @param zoneId
+	 * @return
+	 */
 	protected long countInternalUsers(Long zoneId)
 	{
 		FilterControls	filterControls;
@@ -130,8 +135,9 @@ implements LicenseModule, ZoneSchedule {
 		filterControls.add(Restrictions.eq("type", "user"));
 		filterControls.add(Restrictions.eq("disabled", Boolean.FALSE));
 		filterControls.add(Restrictions.eq("deleted", Boolean.FALSE));
-	 	StringBuffer buf = new StringBuffer(" and ((x.identitySource is null and x.name = x.foreignName) or (x.identitySource = 1))");		
-		return getCoreDao().countObjects(Principal.class, filterControls, zoneId, buf);
+		filterControls.add(Restrictions.eq("internal", Boolean.TRUE));
+		filterControls.add(Restrictions.eq("fromLocal", Boolean.TRUE));
+		return getCoreDao().countObjects(Principal.class, filterControls, zoneId, null);
 	}
 	
 	
@@ -148,9 +154,10 @@ implements LicenseModule, ZoneSchedule {
 	 	filterControls.add( Restrictions.eq( "type", "user" ) );
 	 	filterControls.add( Restrictions.eq( "disabled", Boolean.FALSE ) );
 	 	filterControls.add( Restrictions.eq( "deleted", Boolean.FALSE ) );
-	 	StringBuffer buf = new StringBuffer(" and ((x.identitySource is null and x.name <> x.foreignName) or (x.identitySource = 2))");
+		filterControls.add(Restrictions.eq("internal", Boolean.TRUE));
+		filterControls.add(Restrictions.eq("fromLdap", Boolean.TRUE));
 
-	 	return getCoreDao().countObjects( Principal.class, filterControls, zoneId, buf );
+	 	return getCoreDao().countObjects( Principal.class, filterControls, zoneId, null );
 	}// end countUsersSyncdFromLdapSource()
 	
 	protected long countExternalUsers(Long zoneId)

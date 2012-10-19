@@ -45,6 +45,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
@@ -161,7 +162,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  	}
  	
  	@Override
-	public User authenticate(Integer identitySource, AuthenticationServiceProvider authenticationServiceProvider, 
+	public User authenticate(boolean userIsInternal, AuthenticationServiceProvider authenticationServiceProvider, 
 			String zoneName, String userName, String password,
 			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
 			Map updates, String authenticatorName) 
@@ -185,7 +186,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			if (!hadSession)
 				SessionUtil.sessionStartup();	
 			
-			if(isExternalUser(identitySource)) { // OpenID
+			if(!userIsInternal) { // external user
 				user = doAuthenticateExternalUser(zoneName, userName);
 				// If you're still here, it means that the corresponding user object was found in the database.
 				if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
@@ -205,7 +206,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 					throw new InternalException("Encountered auth service provider " + authenticationServiceProvider.name() + " when expecting OPENID");
 				}
 			}
-			else { // LOCAL and LDAP
+			else { // internal user
 				user = doAuthenticateInternalUser(zoneName, userName, password, passwordAutoSynch, ignorePassword);
 			}
 			//Make sure this user account hasn't been disabled
@@ -214,11 +215,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				throw new UserAccountNotActiveException(NLT.get("error.accountNotActive"));
 			}
 			if (updates != null && !updates.isEmpty()) { // There are some update data
-				if(identitySource != null) {
-					if(identitySource.intValue() != User.IDENTITY_SOURCE_LOCAL)
-						syncUser = true;
-				}
-				else { // This means either LDAP or LOCAL. We have to fall back to the old mechanism for making determination.
+				if(authenticationServiceProvider != AuthenticationServiceProvider.LOCAL) {
 	   				// We don't want to sync ldap attributes if the user is one of the 5
 	   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
 	   				// Is the user a system user account?
@@ -227,6 +224,14 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	   					// No
 	   					syncUser = true;
 	   				}					
+				}
+				else {
+					// This means one of the three.
+					// 1. internal local user
+					// 2. LDAP user authenticated against cached local data due to unreachable LDAP server
+					// 3. external user registered with Filr
+					// In all three cases, there's nothing to sync.
+					syncUser = false;
 				}
 			}
 			if (user.getWorkspaceId() == null)
@@ -237,7 +242,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		} 
 		catch (UserDoesNotExistException nu) {
  			if (createUser) {
- 				if(isExternalUser(identitySource)) { // e.g. OpenID
+ 				if(!userIsInternal) { // external user
  					if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
  						int syncMode = getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().getProfileSynchronizationMode();
  						if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_NEVER) {
@@ -249,24 +254,32 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	 					// For external users, there's no need for separate step for synchronizing profile info
 	 					// because all the information is already ready and presented to the method that creates the user.
 	 					syncUser = false;
+	 	 				user=getProfileModule().addUserFromPortal(
+	 	 						new IdentityInfo(false, false, false, true),
+	 	 						userName, password, updates, null);
  					}
  					else {
  						throw new InternalException("Encountered auth service provider " + authenticationServiceProvider.name() + " when expecting OPENID");	
  					}
  				}
- 				else { // LDAP
- 					syncUser = true;
+ 				else { // internal user
+					// It is NOT possible for system to authenticate a local user against Vibe database 
+					// unless the user record already exists in the database. So, if the authentication
+					// has already succeeded without the corresponding user record being found in the database,
+					// it means that the identity source is anything but local and the authentication provider
+ 					// is also anything but local.
+ 					if(AuthenticationServiceProvider.LDAP == authenticationServiceProvider ||
+ 							AuthenticationServiceProvider.PRE == authenticationServiceProvider) {
+	 					syncUser = true;
+	 	 				user=getProfileModule().addUserFromPortal(
+	 	 						new IdentityInfo(true, true, false, false),
+	 	 						userName, password, updates, null);
+ 					}
+ 					else {
+ 						throw new InternalException("Encountered auth service provider " + authenticationServiceProvider.name() + " when expecting LDAP or PRE");	 						
+ 					}
  				}
  				
- 				user=getProfileModule().addUserFromPortal(
- 						// It is NOT possible for system to authenticate a local user against Vibe database 
- 						// unless the user record already exists in the database. So, if the authentication
- 						// has already succeeded without the corresponding user record being found in the database,
- 						// it means that the identity source is anything but local. So, if identitySource is
- 						// unspecified (i.e., null), then we can safely conclude that the identity source
- 						// must be LDAP.
- 						(identitySource != null)? identitySource.intValue():User.IDENTITY_SOURCE_LDAP,
- 						userName, password, updates, null);
  				if(user == null)
  					throw nu;
  				
@@ -284,11 +297,11 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		// Do we need to sync attributes from the ldap directory into Teaming for this user?
 		if ( syncUser && user != null )
 		{
-			if(identitySource != null && identitySource.intValue() == User.IDENTITY_SOURCE_OPENID) {
+			if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
 		 		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 		            	user.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
 		 		// Make sure foreign name is identical to name.
-				updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, user.getName());
+				updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, user.getName().toLowerCase());
 		 		processor.syncEntry(user, new MapInputData(StringCheckUtil.check(updates)), null);
 			}
 			else {
@@ -314,18 +327,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		return user;
 	}
 
- 	private boolean isExternalUser(Integer identitySource) {
- 		if(identitySource != null) {
- 			if(identitySource.intValue() == User.IDENTITY_SOURCE_OPENID)
- 				return true;
- 			else
- 				return false;
- 		}
- 		else { // This means either LDAP or LOCAL
- 			return false;
- 		}
- 	}
- 		
 	private void removeEverythingButEmailAddress(Map<String,String> updates) {
 		if(updates == null) return;
 		String emailAddress = updates.get("emailAddress");
@@ -472,7 +473,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 						+ zoneName + "," + username + "]", e);
     	}
 
-		if(!user.isInternal())
+		if(!user.getIdentityInfo().isInternal())
 			throw new UserDoesNotExistException("Unauthorized user [" 
 				+ zoneName + "," + username + "]");
 
@@ -541,9 +542,12 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			throw new UserAccountNotActiveException("User account disabled or deleted [" 
 						+ zoneName + "," + username + "]", e);
     	}
-		if(user.isInternal())
+		if(user.getIdentityInfo().isInternal()) {
+			// This shouldn't happen
+			logger.warn("External user with username '" + username + "' matched an internal user account with id=" + user.getId());
 			throw new UserDoesNotExistException("Unauthorized user [" 
 						+ zoneName + "," + username + "]");
+		}
 		return user;
 	}
 

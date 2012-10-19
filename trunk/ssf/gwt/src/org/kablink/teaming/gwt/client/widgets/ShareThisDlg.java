@@ -47,7 +47,6 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
-import org.kablink.teaming.gwt.client.GwtUser.IdentitySource;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
@@ -657,7 +656,7 @@ public class ShareThisDlg extends DlgBox
 				}
 				
 				// Is this an external user?
-				if ( user.getIdentitySource() == IdentitySource.EXTERNAL )
+				if ( !user.isInternal() )
 				{
 					// Yes, is sharing this entity with an external user allowed?
 					if ( m_sharingInfo.getCanShareWithExternalUsers() == false )
@@ -670,7 +669,7 @@ public class ShareThisDlg extends DlgBox
 				
 				shareItem = new GwtShareItem();
 				shareItem.setRecipientName( user.getName() );
-				if ( user.getIdentitySource() == GwtUser.IdentitySource.EXTERNAL )
+				if ( !user.isInternal() )
 					shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 				else
 					shareItem.setRecipientType( GwtRecipientType.USER );

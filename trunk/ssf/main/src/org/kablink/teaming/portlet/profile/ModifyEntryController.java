@@ -257,7 +257,7 @@ public class ModifyEntryController extends SAbstractController {
 			}
 			
 			// Was this Principal sync'd from an ldap source?
-			if((entry instanceof User) && !(((User)entry).getIdentitySource() == User.IDENTITY_SOURCE_LOCAL))
+			if((entry instanceof User) && !(((User)entry).getIdentityInfo().isFromLocal()))
 			{
 				// Yes, don't let the user change the password.
 				readOnly.put( "password", Boolean.TRUE );

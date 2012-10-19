@@ -52,14 +52,7 @@ public class GwtUser extends GwtPrincipal
 	private String m_viewUrl;
 	private String m_wsId;
 	private String m_wsTitle;
-	private IdentitySource m_identitySource;
-	
-	public enum IdentitySource implements IsSerializable {
-		EXTERNAL,
-		LDAP,
-		LOCAL,
-		UNKNOWN
-	}
+	private boolean m_internal;
 	
 	/**
 	 * Constructor method. 
@@ -69,14 +62,7 @@ public class GwtUser extends GwtPrincipal
 	public GwtUser() {
 		// Nothing to do.
 	}	
-	
-	/**
-	 * 
-	 */
-	public IdentitySource getIdentitySource() {
-		return m_identitySource;
-	}
-	
+		
 	/**
 	 * 
 	 */
@@ -166,13 +152,6 @@ public class GwtUser extends GwtPrincipal
 	}
 	
 	/**
-	 * 
-	 */
-	public void setIdentitySource( IdentitySource identitySource ) {
-		m_identitySource = identitySource;
-	}
-	
-	/**
 	 * Stores the user's name.
 	 * 
 	 * @param name
@@ -242,5 +221,13 @@ public class GwtUser extends GwtPrincipal
 	 */
 	public void setWorkspaceTitle(String wsTitle) {
 		m_wsTitle = wsTitle;
+	}
+	
+	public boolean isInternal() {
+		return m_internal;
+	}
+	
+	public void setInternal(boolean internal) {
+		this.m_internal = internal;
 	}
 }

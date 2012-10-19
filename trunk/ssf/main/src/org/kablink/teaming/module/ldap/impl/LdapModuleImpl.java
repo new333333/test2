@@ -79,6 +79,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.Membership;
@@ -3056,7 +3057,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	    	MapInputData groupMods = new MapInputData(StringCheckUtil.check(groupData));
 			ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 			//get default definition to use
-			Group temp = new Group();
+			Group temp = new Group(new IdentityInfo());
 			getDefinitionModule().setDefaultEntryDefinition(temp);
 			Definition groupDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
 			try {
@@ -3071,7 +3072,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 		    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-		    	List newGroups = processor.syncNewEntries(pf, groupDef, Group.class, Arrays.asList(new MapInputData[] {groupMods}), null, syncResults, UserPrincipal.IDENTITY_SOURCE_LDAP );
+		    	List newGroups = processor.syncNewEntries(pf, groupDef, Group.class, Arrays.asList(new MapInputData[] {groupMods}), null, syncResults, new IdentityInfo(true, true, false, false) );
 		    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
 		    	//flush from cache
 		    	getCoreDao().evict(newGroups);
@@ -4251,7 +4252,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		//get default definition to use
 		Definition userDef = pf.getDefaultEntryDef();		
 		if (userDef == null) {
-			User temp = new User( User.IDENTITY_SOURCE_LDAP );
+			User temp = new User(new IdentityInfo());
 			getDefinitionModule().setDefaultEntryDefinition(temp);
 			userDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
 		}
@@ -4262,7 +4263,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		try 
 		{
 			// Try to create all of the users at once.
-			newUsers = processor.syncNewEntries(pf, userDef, User.class, newUsers, null, syncResults, UserPrincipal.IDENTITY_SOURCE_LDAP);    
+			newUsers = processor.syncNewEntries(pf, userDef, User.class, newUsers, null, syncResults, new IdentityInfo(true, true, false, false));    
 
 			// Are we running Filr?
 			if ( newUsers != null && Utils.checkIfFilr() )
@@ -4307,7 +4308,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					logger.info( "2nd attempt to create the user: " + userName );
 					nextUser.clear();
 					nextUser.add( new MapInputData(StringCheckUtil.check( attrs ) ) );
-					nextUser = processor.syncNewEntries( pf, userDef, User.class, nextUser, null, syncResults, UserPrincipal.IDENTITY_SOURCE_LDAP );    
+					nextUser = processor.syncNewEntries( pf, userDef, User.class, nextUser, null, syncResults, new IdentityInfo(true, true, false, false) );    
 					
 					if ( nextUser != null && nextUser.size() == 1 )
 					{
@@ -4350,14 +4351,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			newGroups.add(new MapInputData(StringCheckUtil.check((Map)i.next())));
 		}
 		//get default definition to use
-		Group temp = new Group();
+		Group temp = new Group(new IdentityInfo());
 		getDefinitionModule().setDefaultEntryDefinition(temp);
 		Definition groupDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
 
 	    try {
 	    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
             	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-	    	newGroups = processor.syncNewEntries(pf, groupDef, Group.class, newGroups, null, syncResults, UserPrincipal.IDENTITY_SOURCE_LDAP );
+	    	newGroups = processor.syncNewEntries(pf, groupDef, Group.class, newGroups, null, syncResults, new IdentityInfo(true, true, false, false) );
 	    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
 	    	//flush from cache
 	    	getCoreDao().evict(newGroups);

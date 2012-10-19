@@ -37,6 +37,7 @@ import org.kablink.teaming.security.authentication.impl.AuthenticationManagerImp
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
@@ -62,7 +63,7 @@ public class AuthenticationManagerImplTests extends AbstractTransactionalDataSou
 		// Set up mock object and control
 		profileDaoControl = MockControl.createControl(ProfileDao.class);
 		profileDaoMock = (ProfileDao) profileDaoControl.getMock();
-		user = new User(User.IDENTITY_SOURCE_LOCAL);
+		user = new User(new IdentityInfo());
 //		user.setZoneName("testZone");
 		user.setName("testUser");
 		user.setForeignName("testUser");

@@ -37,7 +37,7 @@ package org.kablink.teaming.module.authentication;
  * @author jong
  *
  */
-public interface IdentitySourceObtainable {
+public interface IdentityInfoObtainable {
 
-	public int getIdentitySource();
+	public boolean isInternal();
 }

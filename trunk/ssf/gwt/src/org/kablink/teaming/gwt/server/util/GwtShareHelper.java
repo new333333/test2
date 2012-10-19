@@ -58,6 +58,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
@@ -578,7 +579,7 @@ public class GwtShareHelper
 							name = user.getTitle();
 							gwtShareItem.setRecipientName( name );
 							
-							if ( user.getIdentitySource() == User.IDENTITY_SOURCE_OPENID )
+							if ( !user.getIdentityInfo().isInternal() )
 								gwtShareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 							else
 								gwtShareItem.setRecipientType( GwtRecipientType.USER );
@@ -716,7 +717,7 @@ public class GwtShareHelper
 							updates.put( ObjectKeys.FIELD_USER_EMAIL, recipientName );
 							updates.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, recipientName );
 			 				user = profileModule.addUserFromPortal(
-			 													User.IDENTITY_SOURCE_OPENID,
+			 													new IdentityInfo(false, false, false, true),
 			 													recipientName,
 			 													null,
 			 													updates,

@@ -36,9 +36,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
-import org.kablink.teaming.module.authentication.IdentitySourceObtainable;
+import org.kablink.teaming.module.authentication.IdentityInfoObtainable;
 import org.kablink.teaming.module.authentication.LocalAuthentication;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
@@ -72,7 +73,7 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 
 	protected Authentication doAuthenticate(Authentication authentication) throws AuthenticationException {
 		try {
-			User user = AuthenticationManagerUtil.authenticate(User.IDENTITY_SOURCE_LOCAL,
+			User user = AuthenticationManagerUtil.authenticate(true,
 					AuthenticationServiceProvider.LOCAL,
 					zoneName,
 					(String) authentication.getName(), 
@@ -105,7 +106,7 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 		return new SynchNotifiableAuthenticationImpl(principal, credentials, authorities, user);
 	}
 	
-	public static class SynchNotifiableAuthenticationImpl extends UsernamePasswordAuthenticationToken implements LocalAuthentication, IdentitySourceObtainable, SynchNotifiableAuthentication {
+	public static class SynchNotifiableAuthenticationImpl extends UsernamePasswordAuthenticationToken implements LocalAuthentication, IdentityInfoObtainable, SynchNotifiableAuthentication {
 		User user;
 	    public SynchNotifiableAuthenticationImpl(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, User user) {
 	    	super(principal, credentials, authorities);
@@ -113,12 +114,9 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 	    }
 		public void synchDone() {}
 		
-		/* (non-Javadoc)
-		 * @see org.kablink.teaming.spring.security.IdentitySourceObtainable#getIdentitySource()
-		 */
 		@Override
-		public int getIdentitySource() {
-			return user.getIdentitySource();
+		public boolean isInternal() {
+			return user.getIdentityInfo().isInternal();
 		}
 	}
 }

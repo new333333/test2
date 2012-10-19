@@ -100,9 +100,15 @@ public class ProfileIndexUtils {
         doc.add(docNumField);
     }
     
-    public static void addIdentitySource(Document doc, User user) {
-        Field docNumField = FieldFactory.createFieldStoredNotAnalyzed(IDENTITY_SOURCE_FIELD, String.valueOf(user.getIdentitySource()));
-        doc.add(docNumField);    	
+    public static void addIdentityInfo(Document doc, User user) {
+        Field field = FieldFactory.createFieldStoredNotAnalyzed(IDENTITY_INTERNAL_FIELD, String.valueOf(user.getIdentityInfo().isInternal()));
+        doc.add(field);    	
+        field = FieldFactory.createFieldStoredNotAnalyzed(IDENTITY_FROM_LDAP_FIELD, String.valueOf(user.getIdentityInfo().isFromLdap()));
+        doc.add(field);    	
+        field = FieldFactory.createFieldStoredNotAnalyzed(IDENTITY_FROM_LOCAL_FIELD, String.valueOf(user.getIdentityInfo().isFromLocal()));
+        doc.add(field);    	
+        field = FieldFactory.createFieldStoredNotAnalyzed(IDENTITY_FROM_OPENID_FIELD, String.valueOf(user.getIdentityInfo().isFromOpenid()));
+        doc.add(field);    	
     }
     
     public static void addDynamic(Document doc, Group group, boolean fieldsOnly) {
