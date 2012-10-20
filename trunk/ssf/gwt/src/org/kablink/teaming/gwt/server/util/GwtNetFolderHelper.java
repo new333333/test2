@@ -66,6 +66,7 @@ import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.NetFolder.NetFolderStatus;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderServersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse.GwtConnectionTestStatusCode;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.NetFolderRootType;
@@ -238,7 +239,7 @@ public class GwtNetFolderHelper
 	 */
 	public static Boolean deleteNetFolders(
 		AllModulesInjected ami,
-		Set<NetFolder> netFolders ) throws GwtTeamingException
+		Set<NetFolder> netFolders )
 	{
 		Boolean result;
 		
@@ -257,12 +258,7 @@ public class GwtNetFolderHelper
 			}
 			catch ( Exception e )
 			{
-				GwtTeamingException gwtEx;
-				
 				m_logger.error( "Error deleting next net folder: " + nextNetFolder.getName() + ", " + e.toString() );
-				
-				gwtEx = GwtServerHelper.getGwtTeamingException( e );
-				throw gwtEx;
 			}
 		}
 		
@@ -272,27 +268,44 @@ public class GwtNetFolderHelper
 	/**
 	 * Delete the given list of net folder roots
 	 */
-	public static Boolean deleteNetFolderRoots(
+	public static DeleteNetFolderServersRpcResponseData deleteNetFolderRoots(
 		AllModulesInjected ami,
 		Set<NetFolderRoot> netFolderRoots )
 	{
-		Boolean result;
+		DeleteNetFolderServersRpcResponseData result;
 		ResourceDriverModule rdModule;
 		
 		ami.getAdminModule().checkAccess( AdminOperation.manageResourceDrivers );
 
-		result = Boolean.TRUE;
+		result = new DeleteNetFolderServersRpcResponseData();
 		rdModule = ami.getResourceDriverModule();
 		
 		for ( NetFolderRoot nextRoot : netFolderRoots )
 		{
 			try
 			{
-				rdModule.deleteResourceDriver( nextRoot.getName() );
+				List<NetFolder> listOfNetFolders;
+				
+				// Get a list of net folders that are referencing this net folder server.
+				listOfNetFolders = getAllNetFolders( ami, true, nextRoot.getName() );
+				
+				// Is this net folder server being referenced by a net folder?
+				if ( listOfNetFolders == null || listOfNetFolders.size() == 0 )
+				{
+					// No, go ahead and delete it.
+					rdModule.deleteResourceDriver( nextRoot.getName() );
+					result.addDeletedNetFolderServer( nextRoot );
+				}
+				else
+				{
+					// Yes, add it to the list of net folder servers that can't be deleted.
+					result.addCouldNotBeDeletedNetFolderServer( nextRoot );
+				}
 			}
-			catch ( RDException rde )
+			catch ( Exception ex )
 			{
-				m_logger.error( "Error deleting next folder root: " + nextRoot.getName() + ", " + rde.toString() );
+				m_logger.error( "Error deleting next folder root: " + nextRoot.getName() + ", " + ex.toString() );
+				result.addCouldNotBeDeletedNetFolderServer( nextRoot );
 			}
 		}
 		
