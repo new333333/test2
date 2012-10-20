@@ -386,12 +386,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case DELETE_NET_FOLDER_ROOTS:
 		{
-			Boolean result;
+			DeleteNetFolderServersRpcResponseData result;
 			DeleteNetFolderRootsCmd dnfrCmd;
 			
 			dnfrCmd = (DeleteNetFolderRootsCmd) cmd;
 			result = GwtNetFolderHelper.deleteNetFolderRoots( this, dnfrCmd.getListOfNetFolderRootsToDelete() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		

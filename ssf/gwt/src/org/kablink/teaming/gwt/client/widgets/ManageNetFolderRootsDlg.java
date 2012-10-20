@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -46,6 +47,7 @@ import org.kablink.teaming.gwt.client.event.NetFolderRootCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderRootModifiedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderRootsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderServersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -404,7 +406,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void deleteNetFolderRootsFromServer( final Set<NetFolderRoot> listOfNetFolderRootsToDelete )
+	private void deleteNetFolderRootsFromServer( Set<NetFolderRoot> listOfNetFolderRootsToDelete )
 	{
 		if ( listOfNetFolderRootsToDelete != null && listOfNetFolderRootsToDelete.size() > 0 )
 		{
@@ -446,15 +448,57 @@ public class ManageNetFolderRootsDlg extends DlgBox
 						@Override
 						public void execute()
 						{
-							// Spin through the list of net folder roots we just deleted and remove
-							// them from the table.
-							for (NetFolderRoot nextRoot : listOfNetFolderRootsToDelete)
+							DeleteNetFolderServersRpcResponseData responseData;
+							
+							responseData = (DeleteNetFolderServersRpcResponseData) response.getResponseData();
+							
+							if ( responseData != null )
 							{
-								NetFolderRoot fsRoot;
+								List<NetFolderRoot> list;
 								
-								fsRoot = findNetFolderRootById( nextRoot.getId() );
-								if ( fsRoot != null )
-									m_listOfNetFolderRoots.remove( fsRoot );
+								// Get the list of net folder servers that were deleted
+								list = responseData.getListOfDeletedNetFolderRoots();
+								if ( list != null && list.size() > 0 )
+								{
+									// Spin through the list of net folder roots we just deleted and remove
+									// them from the table.
+									for (NetFolderRoot nextRoot : list)
+									{
+										NetFolderRoot fsRoot;
+										
+										fsRoot = findNetFolderRootById( nextRoot.getId() );
+										if ( fsRoot != null )
+											m_listOfNetFolderRoots.remove( fsRoot );
+									}
+								}
+								
+								// Get the list of net folder servers that could not be deleted.
+								list = responseData.getListOfCouldNotDeleteNetFolderServers();
+								if ( list != null && list.size() > 0 )
+								{
+									String rootNames;
+									
+									rootNames = "";
+									
+									// Spin through the list of net folder roots that could not be
+									// deleted and show the user the list.
+									for (NetFolderRoot nextRoot : list)
+									{
+										NetFolderRoot fsRoot;
+										
+										fsRoot = findNetFolderRootById( nextRoot.getId() );
+										if ( fsRoot != null )
+										{
+											String text;
+											
+											text = nextRoot.getName();
+											rootNames += "\t" + text + "\n";
+										}
+									}
+									
+									// Show the user the list of net folders servers that could not be deleted.
+									Window.alert( GwtTeaming.getMessages().manageNetFolderServersDlg_CouldNotDeletePrompt( rootNames ) );
+								}
 							}
 							
 							// Update the table to reflect the fact that we deleted a net folder root.

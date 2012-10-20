@@ -1894,6 +1894,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the manage Net Folder Servers dialog
 	String manageNetFolderServersDlg_AddNetFolderServerLabel();
 	String manageNetFolderServersDlg_ConfirmDelete( String netFolderServerNames );
+	String manageNetFolderServersDlg_CouldNotDeletePrompt( String netFolderServerNames );
 	String manageNetFolderServersDlg_DeleteNetFolderServerLabel();
 	String manageNetFolderServersDlg_Header();
 	String manageNetFolderServersDlg_NameCol();
