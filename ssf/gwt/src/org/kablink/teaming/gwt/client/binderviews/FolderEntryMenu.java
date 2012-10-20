@@ -221,19 +221,20 @@ public class FolderEntryMenu extends VibeFlowPanel {
 
 					// Generate the specific event for this menu item...
 					VibeEventBase<?> event;
+					boolean fireWithSource = true;
 					switch (simpleEvent) {
-					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(eid.getBinderId(), eid); break;
-					case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           eid.getBinderId(), eid); break;
-					case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         eid.getBinderId(), eid); break;
-					case INVOKE_SEND_EMAIL_TO_TEAM:           event = new InvokeSendEmailToTeamEvent(         simpleUrl);              break;
-					case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           eid.getBinderId(), eid); break;
-					case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       eid.getBinderId(), eid); break;
-					case MARK_UNREAD_SELECTED_ENTRIES:        event = new MarkUnreadSelectedEntriesEvent(     eid.getBinderId(), eid); break;
-					case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           eid.getBinderId(), eid); break;
-					case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          eid.getBinderId(), eid); break;
-					case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          eid.getBinderId(), eid); break;
-					case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      eid.getBinderId(), eid); break;
-					case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         eid.getBinderId(), eid); break;
+					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(eid.getBinderId(), eid);            break;
+					case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           eid.getBinderId(), eid);            break;
+					case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         eid.getBinderId(), eid);            break;
+					case INVOKE_SEND_EMAIL_TO_TEAM:           event = new InvokeSendEmailToTeamEvent(         simpleUrl); fireWithSource = false; break;
+					case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           eid.getBinderId(), eid);            break;
+					case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       eid.getBinderId(), eid);            break;
+					case MARK_UNREAD_SELECTED_ENTRIES:        event = new MarkUnreadSelectedEntriesEvent(     eid.getBinderId(), eid);            break;
+					case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           eid.getBinderId(), eid);            break;
+					case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          eid.getBinderId(), eid);            break;
+					case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          eid.getBinderId(), eid);            break;
+					case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      eid.getBinderId(), eid);            break;
+					case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         eid.getBinderId(), eid);            break;
 					
 					case INVOKE_EDIT_IN_PLACE:
 						event = new InvokeEditInPlaceEvent(
@@ -256,7 +257,11 @@ public class FolderEntryMenu extends VibeFlowPanel {
 					// ...and if we have one...
 					if (null != event) {
 						// ...fire it.
-						GwtTeaming.fireEventAsync(event, m_fec);
+						GwtTeaming.fireEventAsync(
+							event,
+								(fireWithSource ?
+									m_fec       :	// Source for event.
+									null));			// null -> No source for event.
 					}
 				}
 			}

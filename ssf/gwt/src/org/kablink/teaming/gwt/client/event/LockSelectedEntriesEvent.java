@@ -133,7 +133,9 @@ public class LockSelectedEntriesEvent extends SelectedEntriesEventBase<LockSelec
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onLockSelectedEntries(this);
+    	if (dispatchToThisHandler(handler)) {
+    		handler.onLockSelectedEntries(this);
+    	}
     }    
 	
 	/**

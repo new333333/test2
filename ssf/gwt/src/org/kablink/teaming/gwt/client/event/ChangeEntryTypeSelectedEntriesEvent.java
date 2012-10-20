@@ -133,7 +133,9 @@ public class ChangeEntryTypeSelectedEntriesEvent extends SelectedEntriesEventBas
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onChangeEntryTypeSelectedEntries(this);
+    	if (dispatchToThisHandler(handler)) {
+    		handler.onChangeEntryTypeSelectedEntries(this);
+    	}
     }    
 	
 	/**

@@ -133,7 +133,9 @@ public class DeleteSelectedEntriesEvent extends SelectedEntriesEventBase<DeleteS
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onDeleteSelectedEntries(this);
+    	if (dispatchToThisHandler(handler)) {
+    		handler.onDeleteSelectedEntries(this);
+    	}
     }
 	
 	/**

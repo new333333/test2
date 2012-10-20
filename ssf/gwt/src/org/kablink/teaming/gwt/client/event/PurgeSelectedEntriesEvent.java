@@ -133,7 +133,9 @@ public class PurgeSelectedEntriesEvent extends SelectedEntriesEventBase<PurgeSel
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onPurgeSelectedEntries(this);
+    	if (dispatchToThisHandler(handler)) {
+    		handler.onPurgeSelectedEntries(this);
+    	}
     }    
 	
 	/**

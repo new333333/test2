@@ -133,7 +133,9 @@ public class MoveSelectedEntriesEvent extends SelectedEntriesEventBase<MoveSelec
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onMoveSelectedEntries(this);
+    	if (dispatchToThisHandler(handler)) {
+    		handler.onMoveSelectedEntries(this);
+    	}
     }    
 	
 	/**

@@ -97,7 +97,9 @@ public class FolderEntryActionCompleteEvent extends VibeEventBase<FolderEntryAct
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onFolderEntryActionComplete(this);
+    	if (dispatchToThisHandler(handler)) {
+    		handler.onFolderEntryActionComplete(this);
+    	}
     }
 	
 	/**

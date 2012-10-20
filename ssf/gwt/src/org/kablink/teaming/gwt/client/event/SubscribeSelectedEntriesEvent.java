@@ -133,7 +133,9 @@ public class SubscribeSelectedEntriesEvent extends SelectedEntriesEventBase<Subs
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onSubscribeSelectedEntries(this);
+    	if (dispatchToThisHandler(handler)) {
+    		handler.onSubscribeSelectedEntries(this);
+    	}
     }    
 	
 	/**

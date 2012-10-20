@@ -133,7 +133,9 @@ public class ShareSelectedEntriesEvent extends SelectedEntriesEventBase<ShareSel
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onShareSelectedEntries(this);
+    	if (dispatchToThisHandler(handler)) {
+    		handler.onShareSelectedEntries(this);
+    	}
     }    
 	
 	/**

@@ -117,7 +117,9 @@ public class InvokeEditInPlaceEvent extends VibeEventBase<InvokeEditInPlaceEvent
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onInvokeEditInPlace(this);
+    	if (dispatchToThisHandler(handler)) {
+    		handler.onInvokeEditInPlace(this);
+    	}
     }
 	
 	/**
