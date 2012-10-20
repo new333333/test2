@@ -133,7 +133,9 @@ public class MarkUnreadSelectedEntriesEvent extends SelectedEntriesEventBase<Mar
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onMarkUnreadSelectedEntries(this);
+    	if (dispatchToThisHandler(handler)) {
+    		handler.onMarkUnreadSelectedEntries(this);
+    	}
     }    
 	
 	/**

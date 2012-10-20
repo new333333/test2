@@ -133,7 +133,9 @@ public class UnlockSelectedEntriesEvent extends SelectedEntriesEventBase<UnlockS
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onUnlockSelectedEntries(this);
+    	if (dispatchToThisHandler(handler)) {
+    		handler.onUnlockSelectedEntries(this);
+    	}
     }    
 	
 	/**

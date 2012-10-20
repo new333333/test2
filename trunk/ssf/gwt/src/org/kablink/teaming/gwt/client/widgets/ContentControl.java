@@ -466,25 +466,6 @@ public class ContentControl extends Composite
 	}
 
 	/*
-	 * Return true if the given event be ignored because its being
-	 * handled by somebody else and false otherwise.
-	 * 
-	 * Logic:  If the event has a source AND that source is handling
-	 * its own events AND that source is NOT an instance of this
-	 * ContentControl, it should be ignored.  Otherwise, it's not
-	 * ignored.
-	 */
-	private boolean ignoreEvent( VibeEventBase<?> event )
-	{
-		boolean reply;
-		Object	source = event.getSource();
-		if (( null != source ) && ( source instanceof EventsHandledBySourceMarker ) && ( ! ( source instanceof ContentControl )))
-		     reply = true;
-		else reply = false;
-		return reply;
-	}
-	
-	/*
 	 * Initializes the JavaScript for tracking content history.
 	 */
 	private static native void initContentHistoryJS( int contentHistoryDepth )
@@ -1097,13 +1078,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onChangeContext( final ChangeContextEvent event )
 	{		
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Is the event data is valid?
 		OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
 		if ( GwtClientHelper.validateOSBI( osbInfo, false ))
@@ -1126,13 +1100,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onContributorIdsRequest( ContributorIdsRequestEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Is the content being handled by a GWT widget?
 		if ( ! ( m_viewMode.equals( ViewMode.JSP_CONTENT_VIEW ) ) )
 		{
@@ -1207,13 +1174,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onCopySelectedEntries( CopySelectedEntriesEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Do have information about a binder currently in the view?  
 		BinderInfo bi = getCurrentBinderInfo();
 		if ( null == bi )
@@ -1247,13 +1207,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onDeleteSelectedEntries( DeleteSelectedEntriesEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Do have information about a binder currently in the view?  
 		BinderInfo bi = getCurrentBinderInfo();
 		if ( null == bi )
@@ -1375,13 +1328,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onGetCurrentViewInfo( GetCurrentViewInfoEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		event.getViewInfoCallback().viewInfo( m_currentView );
 	}
 
@@ -1394,13 +1340,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onGotoUrl( GotoUrlEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		ContextChangingEvent.fireOne();						
 		setViewAsync( null, event.getUrl(), Instigator.GOTO_CONTENT_URL );
 	}
@@ -1416,13 +1355,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onMoveSelectedEntries( MoveSelectedEntriesEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Do have information about a binder currently in the view?  
 		BinderInfo bi = getCurrentBinderInfo();
 		if ( null == bi )
@@ -1456,13 +1388,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onPurgeSelectedEntries( PurgeSelectedEntriesEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Do have information about a binder currently in the view?  
 		BinderInfo bi = getCurrentBinderInfo();
 		if ( null == bi )
@@ -1589,13 +1514,6 @@ public class ContentControl extends Composite
 	{
 		ViewClient vClient;
 		
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Display a Blog folder for the given binder id.
 		vClient = new ViewClient()
 		{
@@ -1627,13 +1545,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowCalendarFolder( final ShowCalendarFolderEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Create a CalendarFolderView widget for the selected binder.
 		CalendarFolderView.createAsync(
 				event.getFolderInfo(),
@@ -1665,13 +1576,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowCollectionView( final ShowCollectionViewEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Create a CollectionView widget for the selected BinderInfo.
 		CollectionView.createAsync(
 				event.getBinderInfo(),
@@ -1703,13 +1607,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowDiscussionFolder( final ShowDiscussionFolderEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Create a DiscussionFolderView widget for the selected binder.
 		DiscussionFolderView.createAsync(
 				event.getBinderInfo(),
@@ -1742,13 +1639,6 @@ public class ContentControl extends Composite
 		// Display a Discussion Workspace for the given binder id.
 		ViewClient vClient;
 		
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		vClient = new ViewClient()
 		{
 			@Override
@@ -1779,13 +1669,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowFileFolder( final ShowFileFolderEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Create a FileFolderView widget for the selected binder.
 		FileFolderView.createAsync(
 				event.getBinderInfo(),
@@ -1817,13 +1700,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowFolderEntry( ShowFolderEntryEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Are we running the folder entry viewer as content view or a
 		// dialog?
 		final ViewFolderEntryInfo	vfei      = event.getEntryViewInfo();
@@ -1896,13 +1772,6 @@ public class ContentControl extends Composite
 	{
 		ViewClient vClient;
 		
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Display a Generic Workspace for the given binder id.
 		vClient = new ViewClient()
 		{
@@ -1933,13 +1802,6 @@ public class ContentControl extends Composite
 	public void onShowGlobalWS( ShowGlobalWSEvent event )
 	{
 		ViewClient vClient;
-		
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
 		
 		// Display a Generic Workspace for the given binder id.
 		vClient = new ViewClient()
@@ -1972,13 +1834,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowGuestbookFolder( final ShowGuestbookFolderEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Create a GuestbookFolderView widget for the selected binder.
 		GuestbookFolderView.createAsync(
 				event.getFolderInfo(),
@@ -2009,13 +1864,6 @@ public class ContentControl extends Composite
 	public void onShowHomeWS( ShowHomeWSEvent event )
 	{
 		ViewClient vClient;
-		
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
 		
 		// Display a Generic Workspace for the given binder id.
 		vClient = new ViewClient()
@@ -2049,13 +1897,6 @@ public class ContentControl extends Composite
 		// Display a landing page for the given binder id.
 		ViewClient vClient;
 		
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		vClient = new ViewClient()
 		{
 			@Override
@@ -2086,13 +1927,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowMicroBlogFolder( final ShowMicroBlogFolderEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Create a MicroBlogFolderView widget for the selected binder.
 		MicroBlogFolderView.createAsync(
 				event.getBinderInfo(),
@@ -2124,13 +1958,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowMilestoneFolder( final ShowMilestoneFolderEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Create a MilestoneFolderView widget for the selected binder.
 		MilestoneFolderView.createAsync(
 				event.getFolderInfo(),
@@ -2162,13 +1989,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowMirroredFileFolder( final ShowMirroredFileFolderEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Create a MirroredFileFolderView widget for the selected
 		// binder.
 		MirroredFileFolderView.createAsync(
@@ -2201,13 +2021,6 @@ public class ContentControl extends Composite
 	{
 		ViewClient vClient;
 		
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Display a NetFolders Workspace for the given binder id.
 		vClient = new ViewClient()
 		{
@@ -2237,13 +2050,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowPersonalWorkspaces( ShowPersonalWorkspacesEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Create a PersonalWorkspacesView widget for the selected
 		// binder.
 		PersonalWorkspacesView.createAsync(
@@ -2276,13 +2082,6 @@ public class ContentControl extends Composite
 	{
 		ViewClient vClient;
 		
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Display a Project Management Workspace for the given binder id.
 		vClient = new ViewClient()
 		{
@@ -2314,13 +2113,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowSurveyFolder( final ShowSurveyFolderEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Create a SurveyFolderView widget for the selected binder.
 		SurveyFolderView.createAsync(
 				event.getFolderInfo(),
@@ -2352,13 +2144,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowTaskFolder( final ShowTaskFolderEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Create a TaskFolderView widget for the selected binder.
 		TaskFolderView.createAsync(
 				event.getBinderInfo(),
@@ -2389,13 +2174,6 @@ public class ContentControl extends Composite
 	public void onShowTeamRootWS( ShowTeamRootWSEvent event )
 	{
 		ViewClient vClient;
-		
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
 		
 		// Display a Generic Workspace for the given binder id.
 		vClient = new ViewClient()
@@ -2428,13 +2206,6 @@ public class ContentControl extends Composite
 	{
 		ViewClient vClient;
 		
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Display a Team Workspace for the given binder id.
 		vClient = new ViewClient()
 		{
@@ -2466,13 +2237,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowTrash( final ShowTrashEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		// Create a TrashView widget for the selected binder.
 		TrashView.createAsync(
 				event.getBinderInfo(),
@@ -2584,13 +2348,6 @@ public class ContentControl extends Composite
 	@Override
 	public void onViewForumEntry( ViewForumEntryEvent event )
 	{
-		// If we should ignore this event...
-		if ( ignoreEvent( event ) )
-		{
-			// ...bail.
-			return;
-		}
-		
 		setViewFromUrl( event.getViewForumEntryUrl(), Instigator.VIEW_FOLDER_ENTRY );
 	}
 	

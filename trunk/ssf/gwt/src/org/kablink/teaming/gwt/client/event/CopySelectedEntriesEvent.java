@@ -133,7 +133,9 @@ public class CopySelectedEntriesEvent extends SelectedEntriesEventBase<CopySelec
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onCopySelectedEntries(this);
+    	if (dispatchToThisHandler(handler)) {
+    		handler.onCopySelectedEntries(this);
+    	}
     }    
 	
 	/**

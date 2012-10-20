@@ -133,7 +133,9 @@ public class MarkReadSelectedEntriesEvent extends SelectedEntriesEventBase<MarkR
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onMarkReadSelectedEntries(this);
+    	if (dispatchToThisHandler(handler)) {
+    		handler.onMarkReadSelectedEntries(this);
+    	}
     }    
 	
 	/**
