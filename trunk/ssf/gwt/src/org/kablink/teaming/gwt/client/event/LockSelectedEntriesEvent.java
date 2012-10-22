@@ -127,15 +127,13 @@ public class LockSelectedEntriesEvent extends SelectedEntriesEventBase<LockSelec
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 
-	 * Implements GwtEvent.dispatch()
+	 * Implements the VibeEventBase.doDispatch() method.
 	 * 
 	 * @param handler
 	 */
     @Override
-    protected void dispatch(Handler handler) {
-    	if (dispatchToThisHandler(handler)) {
-    		handler.onLockSelectedEntries(this);
-    	}
+    protected void doDispatch(Handler handler) {
+   		handler.onLockSelectedEntries(this);
     }    
 	
 	/**

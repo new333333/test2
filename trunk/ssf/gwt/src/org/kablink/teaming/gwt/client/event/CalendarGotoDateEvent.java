@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.event;
 
 import java.util.Date;
@@ -89,7 +88,7 @@ public class CalendarGotoDateEvent extends VibeEventBase<CalendarGotoDateEvent.H
 	 * @param handler
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
+	protected void doDispatch(Handler handler) {
 		handler.onCalendarGotoDate(this);
 	}
 	

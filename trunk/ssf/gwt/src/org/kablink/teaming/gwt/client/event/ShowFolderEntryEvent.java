@@ -90,12 +90,12 @@ public class ShowFolderEntryEvent extends VibeEventBase<ShowFolderEntryEvent.Han
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 
-	 * Implements GwtEvent.dispatch()
+	 * Implements the VibeEventBase.doDispatch() method.
 	 * 
 	 * @param handler
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
+	protected void doDispatch(Handler handler) {
 		handler.onShowFolderEntry(this);
 	}
 	
