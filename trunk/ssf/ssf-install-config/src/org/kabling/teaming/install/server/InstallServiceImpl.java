@@ -1787,9 +1787,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	}
 
 	@Override
-	public void reconfigure(InstallerConfig config) throws ConfigurationSaveException
+	public void reconfigure(boolean restartServer) throws ConfigurationSaveException
 	{
-		// We need to save it locally
+		//Stop the server
+		stopFilrServer();
+		
+		// Do the reconfigure which takes the changes from installer.xml and reconfigures
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
 
@@ -1800,6 +1803,44 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			{
 				logger.debug("Error reconfiguring installer in silent mode,Error code " + result);
 				throw new ConfigurationSaveException();
+			}
+		}
+		
+		if (restartServer)
+			startFilrServer();
+	}
+
+	public void stopFilrServer()
+	{
+		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
+		{
+			executeCommand("/sbin/rcfilr stop");
+
+			int tries = 30;
+
+			while (tries > 0)
+			{
+				try
+				{
+					Thread.sleep(1000);
+					if (!isFilrServerRunning())
+						return;
+				}
+				catch (MalformedURLException e)
+				{
+					logger.debug("Url is not valid for the filr server");
+					return;
+				}
+				catch (IOException e)
+				{
+					logger.debug("Filr server is busy");
+					return;
+				}
+				catch (InterruptedException e)
+				{
+					logger.debug("Waiting for filr servr to stop");
+				}
+				tries--;
 			}
 		}
 	}
@@ -1853,9 +1894,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		}
 		catch (MalformedURLException e)
 		{
+			return false;
 		}
 		catch (IOException e)
 		{
+			return false;
 		}
 		logger.debug("Filr server is running");
 		return true;

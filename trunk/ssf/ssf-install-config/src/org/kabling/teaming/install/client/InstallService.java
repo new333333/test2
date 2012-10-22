@@ -46,12 +46,7 @@ public interface InstallService extends RemoteService
 	 */
 	void updateDatabase(Database database) throws ConfigurationSaveException;
 
-	/**
-	 * Call the tcl configure script which takes the installer.xml and reconfigures the server
-	 * @param config
-	 * @throws ConfigurationSaveException
-	 */
-	void reconfigure(InstallerConfig config) throws ConfigurationSaveException;
+	void reconfigure( boolean restartServer);
 
 	/**
 	 * Start the filr server

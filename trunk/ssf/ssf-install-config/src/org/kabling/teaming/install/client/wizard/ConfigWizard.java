@@ -333,7 +333,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		public void onSuccess(Void coid)
 		{
 			loadingWidget.setText(AppUtil.getAppResource().reconfiguringServer());
-			AppUtil.getInstallService().reconfigure(config, new ReconfigureCallback());
+			AppUtil.getInstallService().reconfigure(false, new ReconfigureCallback());
 		}
 	}
 

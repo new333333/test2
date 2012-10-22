@@ -27,7 +27,7 @@ public class TomcatRestartPanel extends Composite implements ConfigModifiedEvent
 		tomcatRestartPanel.addStyleName("tomcatRestartPanel");
 
 		// Button for restarting tomcat
-		restartTomcatButton = new Button(RBUNDLE.restartFilrServer());
+		restartTomcatButton = new Button(RBUNDLE.reconfigureServer());
 		restartTomcatButton.addClickHandler(this);
 		restartTomcatButton.addStyleName("tomcatRestartButton");
 		tomcatRestartPanel.add(restartTomcatButton);
@@ -73,7 +73,7 @@ public class TomcatRestartPanel extends Composite implements ConfigModifiedEvent
 		restartTomcatButton.setEnabled(false);
 
 		// Restrat Filr server
-		AppUtil.getInstallService().startFilrServer(callback);
+		AppUtil.getInstallService().reconfigure(true,callback);
 	}
 
 	class RestartFilrServerCallback implements AsyncCallback<Void>
