@@ -127,15 +127,13 @@ public class MarkUnreadSelectedEntriesEvent extends SelectedEntriesEventBase<Mar
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 
-	 * Implements GwtEvent.dispatch()
+	 * Implements the VibeEventBase.doDispatch() method.
 	 * 
 	 * @param handler
 	 */
     @Override
-    protected void dispatch(Handler handler) {
-    	if (dispatchToThisHandler(handler)) {
-    		handler.onMarkUnreadSelectedEntries(this);
-    	}
+    protected void doDispatch(Handler handler) {
+   		handler.onMarkUnreadSelectedEntries(this);
     }    
 	
 	/**

@@ -51,16 +51,40 @@ public abstract class VibeEventBase<H extends EventHandler> extends GwtEvent<H> 
 	public abstract TeamingEvents getEventEnum();
 
 	/**
+	 * Called to actually perform the event dispatch after checking
+	 * that that handler should indeed have the event dispatched to it.
+	 * 
+	 * @param handler
+	 */
+    protected abstract void doDispatch(H handler);
+    
+	/**
+	 * Dispatches this event when one is triggered.
+	 * 
+	 * Implements the GwtEvent.dispatch() method.
+	 * 
+	 * @param handler
+	 */
+    @Override
+    final protected void dispatch(H handler) {
+		// If the event should be dispatched to the handler...
+		if (dispatchToThisHandler(handler)) {
+			// ...dispatch it.
+			doDispatch(handler);
+		}
+    }
+    
+	/*
 	 * Returns true if the event should be dispatched to the given
 	 * handler or false otherwise.
 	 *
 	 * We check whether an even should be dispatched to a handler by
-	 * whether the event has a source that's an instance of
-	 * EventsHandledBySourceMarker.  If it has a source that's an
-	 * instance of that class, the handler and the source must be the
-	 * same for the event to be dispatched.  If the event has no source
-	 * or the source isn't an instance of EventsHandledBySourceMarker,
-	 * it's always dispatched.
+	 * checking whether the event has a source that implements
+	 * EventsHandledBySourceMarker.  If it has a source that implements
+	 * that interface, the handler and the source must be the same for
+	 * the event to be dispatched.  If the event has no source or the
+	 * source doesn't implement EventsHandledBySourceMarker, it's
+	 * always dispatched.
 	 * 
 	 * Note:  We currently check for the source to be the EXACT same
 	 * object as the handler.  If, instead, we'd rather check that
@@ -70,12 +94,8 @@ public abstract class VibeEventBase<H extends EventHandler> extends GwtEvent<H> 
 	 *    if (!(evSource.getClass().equals(handler.getClass()))) {
 	 *       ...
 	 *    }
-	 *    
-	 * @param handler
-	 * 
-	 * @return
 	 */
-	final public boolean dispatchToThisHandler(EventHandler handler) {
+	private boolean dispatchToThisHandler(H handler) {
 		// If the event has a source...
 		Object evSource = getSource();
 		if (null != evSource) {

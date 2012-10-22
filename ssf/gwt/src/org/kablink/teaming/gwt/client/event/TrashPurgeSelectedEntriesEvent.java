@@ -88,12 +88,12 @@ public class TrashPurgeSelectedEntriesEvent extends VibeEventBase<TrashPurgeSele
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 
-	 * Implements GwtEvent.dispatch()
+	 * Implements the VibeEventBase.doDispatch() method.
 	 * 
 	 * @param handler
 	 */
     @Override
-    protected void dispatch(Handler handler) {
+    protected void doDispatch(Handler handler) {
         handler.onTrashPurgeSelectedEntries(this);
     }
 	

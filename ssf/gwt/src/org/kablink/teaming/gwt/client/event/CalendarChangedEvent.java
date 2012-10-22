@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.event;
 
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
@@ -83,12 +82,12 @@ public class CalendarChangedEvent extends VibeEventBase<CalendarChangedEvent.Han
 	/**
 	 * Dispatches this event when one is triggered.
 	 *
-	 * Implements GwtEvent.dispatch()
+	 * Implements the VibeEventBase.doDispatch() method.
 	 * 
 	 * @param handler
 	 */
 	@Override
-	protected void dispatch(Handler handler) {
+	protected void doDispatch(Handler handler) {
 		handler.onCalendarChanged(this);
 	}
 	
