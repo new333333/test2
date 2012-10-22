@@ -4112,7 +4112,7 @@ div.ss_searchFormFooter {
 #ss_searchForm table, #ss_surveyForm_main {
 	background-color: transparent;
 }
-#ss_searchForm input { 
+#ss_searchForm input[type="text"] { 
 	width: 400px;
 	font-size: ${ss_style_font_largerprint};
 	}

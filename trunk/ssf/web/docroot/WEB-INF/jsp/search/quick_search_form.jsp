@@ -110,6 +110,20 @@
 								</a>
 							  </td>
 							 </tr>
+							 <tr>
+						      <td width="20" valign="top">&nbsp;</td>
+							  <td align="left" nowrap>
+							    <c:if test="${ss_searchIncludeNestedBinders}">
+							      <input type="checkbox" 
+							        name="includeNestedBinders" 
+							        checked />
+							    </c:if>
+							    <c:if test="${!ss_searchIncludeNestedBinders}">
+							      <input type="checkbox" name="includeNestedBinders" /> 
+							    </c:if>
+							    <span>&nbsp;<ssf:nlt tag="search.scope.includeSubBinders"/></span>
+							  </td>
+							 </tr>
 							</c:if>
 						  </table>
 						</td>
