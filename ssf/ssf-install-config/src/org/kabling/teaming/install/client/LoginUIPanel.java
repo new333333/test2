@@ -123,6 +123,7 @@ public class LoginUIPanel extends Composite implements ClickHandler, KeyUpHandle
 			content.add(errorsLabel);
 		}
 
+		GwtClientHelper.setFocusDelayed( userNameTextBox );
 	}
 
 	/**

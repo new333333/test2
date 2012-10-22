@@ -4,6 +4,7 @@ import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigModifiedEvent;
 import org.kabling.teaming.install.client.ConfigModifiedEvent.ConfigModifiedEventHandler;
 import org.kabling.teaming.install.client.i18n.AppResource;
+import org.kabling.teaming.install.client.widgets.StatusIndicator;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -20,6 +21,7 @@ public class TomcatRestartPanel extends Composite implements ConfigModifiedEvent
 	private Button restartTomcatButton;
 	private InlineLabel tomcatRestartLabel;
 	private AppResource RBUNDLE = AppUtil.getAppResource();
+	private StatusIndicator statusIndicator;
 
 	public TomcatRestartPanel()
 	{
@@ -72,6 +74,13 @@ public class TomcatRestartPanel extends Composite implements ConfigModifiedEvent
 		// Disable the button, we don't wnat the user to click again
 		restartTomcatButton.setEnabled(false);
 
+		if (statusIndicator == null)
+		{
+			statusIndicator = new StatusIndicator(RBUNDLE.reconfiguringServer());
+			statusIndicator.setGlassEnabled(true);
+		}
+		statusIndicator.center();
+		
 		// Restrat Filr server
 		AppUtil.getInstallService().reconfigure(true,callback);
 	}
@@ -82,12 +91,13 @@ public class TomcatRestartPanel extends Composite implements ConfigModifiedEvent
 		@Override
 		public void onFailure(Throwable caught)
 		{
-			// TODO:
+			statusIndicator.hide();
 		}
 
 		@Override
 		public void onSuccess(Void result)
 		{
+			statusIndicator.hide();
 			// All configuration is up to date
 			AppUtil.getEventBus().fireEvent(new ConfigModifiedEvent(false,false));
 		}

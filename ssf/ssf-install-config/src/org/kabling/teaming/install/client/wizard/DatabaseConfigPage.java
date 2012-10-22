@@ -119,8 +119,6 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 				table.setWidget(row, 1, portSpinner);
 			}
 
-			// We will use the default database name for filr
-			if (!AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 			{
 				row++;
 				// Database Name
@@ -137,7 +135,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 			{
 				row++;
 				// Database User
-				InlineLabel keyLabel = new InlineLabel(RBUNDLE.dbNameColon());
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.userNameColon());
 				table.setWidget(row, 0, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
@@ -177,10 +175,11 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 		String userName = userTextBox.getText();
 		String password = userPwdTextBox.getText();
 		String hostName = hostTextBox.getText();
+		String dbName = dbNameTextBox.getText();
 		long port = portSpinner.getValueAsInt();
 
 		// All fields are required, return if any field is empty
-		if (userName.isEmpty() || password.isEmpty() || hostName.isEmpty() || port == 0)
+		if (userName.isEmpty() || password.isEmpty() || hostName.isEmpty() || dbName.isEmpty() || port == 0)
 		{
 			wizard.setErrorMessage(RBUNDLE.allFieldsRequired());
 			return false;
@@ -272,7 +271,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 			config.setResourceDriverClassName("com.mysql.jdbc.Driver");
 			config.setResourceHost(hostTextBox.getText());
 			config.setResourceUrl("jdbc:mysql://" + hostTextBox.getText() + ":" + portSpinner.getValue()
-					+ "/sitescape?useUnicode=true&amp;characterEncoding=UTF-8");
+					+ "/"+dbNameTextBox.getText() +"?useUnicode=true&amp;characterEncoding=UTF-8");
 		}
 		else
 		{
@@ -289,7 +288,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 						config.setResourceUserName(userTextBox.getText());
 						config.setResourceHost(hostTextBox.getText());
 						config.setResourceUrl("jdbc:mysql://" + hostTextBox.getText() + ":" + portSpinner.getValue()
-								+ "/sitescape?useUnicode=true&amp;characterEncoding=UTF-8");
+								+ "/"+dbNameTextBox.getText() + "?useUnicode=true&amp;characterEncoding=UTF-8");
 						break;
 					}
 				}
