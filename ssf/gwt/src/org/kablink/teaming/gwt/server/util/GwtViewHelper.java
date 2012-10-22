@@ -3223,8 +3223,9 @@ public class GwtViewHelper {
 			FolderEntryDetails	reply  = new FolderEntryDetails(entityId);
 			
 			// ...set whether the user has seen this entry...
-			FolderEntry fe      = bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
-			SeenMap		seenMap = bs.getProfileModule().getUserSeenMap(userId);
+			Long		folderId = entityId.getBinderId();
+			FolderEntry fe       = bs.getFolderModule().getEntry(folderId, entityId.getEntityId());
+			SeenMap		seenMap  = bs.getProfileModule().getUserSeenMap(userId);
 			reply.setSeen(seenMap.checkIfSeen(fe));
 			
 			// ...set the entry's family and path... 
@@ -3233,6 +3234,7 @@ public class GwtViewHelper {
 			if (isTop) {
 				feTop = fe;
 			}
+			reply.setTop(   isTop                                           );
 			reply.setFamily(GwtServerHelper.getFolderEntityFamily(bs, feTop));
 			reply.setPath(  feTop.getParentBinder().getPathName()           );
 	
@@ -3268,6 +3270,19 @@ public class GwtViewHelper {
 					fe.getTotalReplyCount() :	// For top level entries, we show all the replies.
 					fe.getReplyCount()));		// For replies themselves, we only show their direct replies.
 			reply.setComments(ci);
+
+			// ...if this is a comment...
+			if (!isTop) {
+				// ...store a List<ViewFolderEntryInfo> for the bread
+				// ...crumb links leading up to it...
+				List<ViewFolderEntryInfo> peBCList = new ArrayList<ViewFolderEntryInfo>();
+				FolderEntry pe = fe.getParentEntry();
+				while (null != pe) {
+					peBCList.add(0, buildViewFolderEntryInfo(bs, request, folderId, pe.getId()));
+					pe = pe.getParentEntry();
+				}
+				reply.setCommentBreadCrumbs(peBCList);
+			}
 	
 			// ...if this is a file entry with a filename...
 			FileAttachment faForEntryIcon;
