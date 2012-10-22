@@ -65,7 +65,7 @@
 						    <tr>
 						      <td width="20">
 								<input type="radio" name="scope" value="all"
-								<c:if test="${ss_searchContext == 'all'}"> checked="checked" </c:if>
+								<c:if test="${ss_searchScope == 'all'}"> checked="checked" </c:if>
 								style="width:20px;">
 							  </td>
 							  <td nowrap>
@@ -75,7 +75,7 @@
 						    <tr>
 						      <td width="20">
 								<input type="radio" name="scope" value="myFiles"
-								  <c:if test="${ss_searchContext == 'myFiles'}"> checked="checked" </c:if>
+								  <c:if test="${ss_searchScope == 'myFiles'}"> checked="checked" </c:if>
 								  style="width:20px;">
 							  </td>
 							  <td nowrap>
@@ -85,18 +85,18 @@
 						    <tr>
 						      <td width="20">
 								<input type="radio" name="scope" value="netFolders" 
-								<c:if test="${ss_searchContext == 'netFolders'}"> checked="checked" </c:if>
+								<c:if test="${ss_searchScope == 'netFolders'}"> checked="checked" </c:if>
 								style="width:20px;">
 							  </td>
 							  <td>
 								<ssf:nlt tag="search.scope.netFolders"/>
 							  </td>
 							</tr>
-						    <c:if test="${ss_searchContext == 'binder'}">
+						    <c:if test="${ss_searchContext == 'binder' || scope == 'current'}">
 						     <tr>
 						      <td width="20" valign="top">
 								<input type="radio" name="scope" value="current" 
-								  checked="checked" 
+								  <c:if test="${ss_searchScope == 'current'}"> checked="checked" </c:if>
 								  style="width:20px;"
 								>
 							  </td>
