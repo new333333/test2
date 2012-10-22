@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
+
 /**
  * Interface used to communicate between the folder entry composite and
  * its constituent components.
@@ -41,4 +43,5 @@ package org.kablink.teaming.gwt.client.binderviews;
 public interface FolderEntryCallback {
 	public void viewComponentReady();
 	public void resizeView();
+	public void doNavigate(ViewFolderEntryInfo vfei);
 }

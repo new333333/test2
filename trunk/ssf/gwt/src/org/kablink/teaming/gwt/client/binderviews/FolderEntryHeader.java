@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
@@ -45,12 +47,14 @@ import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails.UserInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -87,6 +91,30 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		
 		// ...and construct the header's content.
 		createContent();
+	}
+
+	/*
+	 * Creates an Anchor for navigating to a bread crumb link.
+	 */
+	private Anchor createBCAnchor(final ViewFolderEntryInfo bcItem) {
+		Anchor bcAnchor = new Anchor();
+		bcAnchor.addStyleName("vibe-feView-headerContentBCAnchor");
+		Element bcAE = bcAnchor.getElement();
+		bcAE.appendChild(new InlineLabel(bcItem.getTitle()).getElement());
+		bcAE.appendChild(GwtClientHelper.buildImage(m_images.breadSpace()).getElement());
+		bcAnchor.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				ScheduledCommand doNavigate = new ScheduledCommand() {
+					@Override
+					public void execute() {
+						m_fec.doNavigate(bcItem);
+					}
+				};
+				Scheduler.get().scheduleDeferred(doNavigate);
+			}
+		});
+		return bcAnchor;
 	}
 	
 	/*
@@ -197,6 +225,16 @@ public class FolderEntryHeader extends VibeFlowPanel {
 	 * Creates the header's title information.
 	 */
 	private void createEntryTitle(VibeFlowPanel contentPanel) {
+		if (!(m_fed.isTop())) {
+			VibeFlowPanel bcPanel = new VibeFlowPanel();
+			bcPanel.addStyleName("vibe-feView-headerContentBCPanel");
+			List<ViewFolderEntryInfo> bcItems = m_fed.getCommentBreadCrumbs();
+			for (ViewFolderEntryInfo bcItem:  bcItems) {
+				bcPanel.add(createBCAnchor(bcItem));
+			}
+			contentPanel.add(bcPanel);
+		}
+		
 		// Add the entry's title...
 		Label title = new Label(m_fed.getTitle());
 		title.addStyleName("vibe-feView-headerContentTitle");

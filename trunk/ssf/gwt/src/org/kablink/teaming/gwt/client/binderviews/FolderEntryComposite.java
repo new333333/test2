@@ -474,6 +474,21 @@ public class FolderEntryComposite extends ResizeComposite
 		container.add(outer   );
 	}
 	
+	/**
+	 * Navigate the entry viewer to the given ViewFolderEntryInfo.
+	 * 
+	 * Implements the FolderEntryCallback.doNavigate() method.
+	 */
+	@Override
+	public void doNavigate(ViewFolderEntryInfo vfei) {
+		m_vfei = vfei;
+		m_caption.setText(m_vfei.getTitle());
+		if (m_commentsVisible != FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), true)) {
+			toggleCommentsVisibility();
+		}
+		refreshFolderEntryViewer();
+	}
+	
 	/*
 	 * Asynchronously navigates to the previous/next entry.
 	 */
@@ -517,12 +532,7 @@ public class FolderEntryComposite extends ResizeComposite
 				else {
 					// Yes!  We've got the previous/next entry.
 					// Load it.
-					m_vfei = vfei;
-					m_caption.setText(m_vfei.getTitle());
-					if (m_commentsVisible != FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), true)) {
-						toggleCommentsVisibility();
-					}
-					refreshFolderEntryViewer();
+					doNavigate(vfei);
 				}
 			}
 		});

@@ -10,6 +10,9 @@
 	/* End:  Root composite styles. */
 	
 	/* Start:  Header styles. */
+		.vibe-feView-headerContentBCAnchor            {cursor: pointer; font-size: 10px; color: gray !important; white-space: nowrap; text-decoration: none;}
+		.vibe-feView-headerContentBCAnchor:hover      {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-feView-headerContentBCPanel             {display: inline; padding-bottom: 2px; white-space: nowrap;}
 		.vibe-feView-headerContentPersonPanel         {color: #353838; font-size: 0.85em; font-weight: bold; margin-top: 10px; display: block;}
 		.vibe-feView-headerContentPersonAnchor        {cursor: pointer; text-decoration: none;}
 		.vibe-feView-headerContentPersonAvatar        {margin-right: 5px; width: 20px; height: 20px; -moz-border-radius: 2px; border-radius: 2px; -webkit-border-radius: 2px; vertical-align: middle; display: inline-block;}
