@@ -36,6 +36,10 @@
 		name="binderId" value="${ssBinder.id}"/><ssf:param 
 		name="tabTitle" value=""/><ssf:param 
 		name="newTab" value="1"/></ssf:url>" method="post" id="advSearchForm">
+	<input type="hidden" name="context" value="${ss_searchContext}"/>
+	<input type="hidden" name="contextCollection" value="${ss_searchContextCollection}"/>
+	<input type="hidden" name="contextBinderId" value="${ss_searchContextBinderId}"/>
+	<input type="hidden" name="contextEntryId" value="${ss_searchContextEntryId}"/>
 	<div id="ss_searchForm_container">
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
@@ -57,11 +61,11 @@
 					<tr>
 						<td></td>
 						<td colspan="2">
-						  <table cellspacing="0" cellpadding="0" style="padding-bottom:16px;">
+						  <table cellspacing="0" cellpadding="0" style="padding-bottom:16px;" width="100%">
 						    <tr>
 						      <td width="20">
 								<input type="radio" name="scope" value="all"
-								<c:if test="${ss_searchScope == 'all'}"> checked="checked" </c:if>
+								<c:if test="${ss_searchContext == 'all'}"> checked="checked" </c:if>
 								style="width:20px;">
 							  </td>
 							  <td nowrap>
@@ -71,7 +75,7 @@
 						    <tr>
 						      <td width="20">
 								<input type="radio" name="scope" value="myFiles"
-								  <c:if test="${ss_searchScope == 'myFiles'}"> checked="checked" </c:if>
+								  <c:if test="${ss_searchContext == 'myFiles'}"> checked="checked" </c:if>
 								  style="width:20px;">
 							  </td>
 							  <td nowrap>
@@ -81,23 +85,32 @@
 						    <tr>
 						      <td width="20">
 								<input type="radio" name="scope" value="netFolders" 
-								<c:if test="${ss_searchScope == 'netFolders'}"> checked="checked" </c:if>
+								<c:if test="${ss_searchContext == 'netFolders'}"> checked="checked" </c:if>
 								style="width:20px;">
 							  </td>
 							  <td>
 								<ssf:nlt tag="search.scope.netFolders"/>
 							  </td>
 							</tr>
-						    <tr>
-						      <td width="20">
+						    <c:if test="${ss_searchContext == 'binder'}">
+						     <tr>
+						      <td width="20" valign="top">
 								<input type="radio" name="scope" value="current" 
-								<c:if test="${ss_searchScope == 'current'}"> checked="checked" </c:if>
-								style="width:20px;">
+								  checked="checked" 
+								  style="width:20px;"
+								>
 							  </td>
 							  <td>
-								<ssf:nlt tag="search.scope.current"/>
+								<ssf:nlt tag="search.scope.current"/>&nbsp;
+								<a href="<ssf:url action="view_folder_listing" 
+									binderId="${ss_searchContextBinderId}" />"
+									title="${ss_searchContextBinder.pathName}"
+								>
+								  <span>${ss_searchContextBinder.title}</span>
+								</a>
 							  </td>
-							</tr>
+							 </tr>
+							</c:if>
 						  </table>
 						</td>
 					</tr>

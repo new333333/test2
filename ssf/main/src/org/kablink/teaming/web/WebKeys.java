@@ -1290,6 +1290,11 @@ public class WebKeys {
     public static final String SEARCH_SEARCH_SORT_BY_SECONDARY="sortBySecondary";
     public static final String SEARCH_TEXT="ss_searchText";
     public static final String SEARCH_TOTAL_HITS="ss_searchTotalHits";
+    public static final String SEARCH_CONTEXT="ss_searchContext";
+    public static final String SEARCH_CONTEXT_BINDER="ss_searchContextBinder";
+    public static final String SEARCH_CONTEXT_BINDER_ID="ss_searchContextBinderId";
+    public static final String SEARCH_CONTEXT_ENTRY_ID="ss_searchContextEntryId";
+    public static final String SEARCH_CONTEXT_COLLECTION="ss_searchContextCollection";
     public static final String SEEN_MAP="ssSeenMap";
     public static final String SEEN_ENTRIES="ssSeenEntries";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";

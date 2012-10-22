@@ -133,6 +133,18 @@ public class AdvancedSearchController extends AbstractBinderController {
         Tabs tabs = Tabs.getTabs(request);
 		model.put(WebKeys.TABS, tabs);
 		
+		//Pass the context info to the jsp
+		String searchContext = PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_CONTEXT, "");
+		String searchContextBinderId = PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_CONTEXT_BINDER_ID, "");
+		model.put(WebKeys.SEARCH_CONTEXT, searchContext);
+		model.put(WebKeys.SEARCH_CONTEXT_COLLECTION, PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_CONTEXT_COLLECTION, ""));
+		model.put(WebKeys.SEARCH_CONTEXT_BINDER_ID, searchContextBinderId);
+		model.put(WebKeys.SEARCH_CONTEXT_ENTRY_ID, PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_CONTEXT_ENTRY_ID, ""));
+		if (searchContextBinderId != null && !searchContextBinderId.equals("")) {
+			Binder searchContextBinder = getBinderModule().getBinder(Long.valueOf(searchContextBinderId));
+			model.put(WebKeys.SEARCH_CONTEXT_BINDER, searchContextBinder);
+		}
+		
 		/** Vertical mode has been removed
 		if (ObjectKeys.USER_DISPLAY_STYLE_VERTICAL.equals(RequestContextHolder.getRequestContext().getUser().getDisplayStyle())) {
 			model.put(WebKeys.FOLDER_ACTION_VERTICAL_OVERRIDE, "yes");
