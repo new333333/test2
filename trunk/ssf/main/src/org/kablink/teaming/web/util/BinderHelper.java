@@ -3571,6 +3571,13 @@ public class BinderHelper {
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		} else if (ObjectKeys.SEARCH_SCOPE_CURRENT.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
 			//Search the current folder (if known)
+			String searchContextBinderId = PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_CONTEXT_BINDER_ID, "");
+			List binderIds = new ArrayList();
+			if (!searchContextBinderId.equals("")) {
+				binderIds.add(searchContextBinderId);
+			}
+			Criteria crit = SearchUtils.getBinderEntriesSearchCriteria(bs, binderIds, false);
+			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		}
 		
 		Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, Constants.SEARCH_MODE_NORMAL, options);

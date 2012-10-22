@@ -391,6 +391,14 @@ public interface ObjectKeys {
     public static final String RELEVANCE_PAGE_VISITORS = "visitors";
     
     public static final String SEARCH_CASE_SENSITIVE = "case_sensitive";
+    public static final String SEARCH_CONTEXT = "context";
+    public static final String SEARCH_CONTEXT_TYPE_COLLECTION = "collection";
+    public static final String SEARCH_CONTEXT_TYPE_BINDER = "binder";
+    public static final String SEARCH_CONTEXT_TYPE_ENTRY = "entry";
+    public static final String SEARCH_CONTEXT_TYPE_THER = "other";
+    public static final String SEARCH_CONTEXT_COLLECTION = "contextCollection";
+    public static final String SEARCH_CONTEXT_BINDER_ID = "contextBinderId";
+    public static final String SEARCH_CONTEXT_ENTRY_ID = "contextEntryId";
     public static final String SEARCH_OFFSET = "offset";
     public static final String SEARCH_MAX_HITS = "maxHits";
     public static final String SEARCH_USER_MAX_HITS = "userMaxHits";
