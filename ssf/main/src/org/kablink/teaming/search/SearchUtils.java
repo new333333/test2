@@ -182,6 +182,14 @@ public class SearchUtils {
 	public static Criteria entriesForTrackedPlacesEntriesAndPeople(AllModulesInjected bs, List userWorkspaces, 
 			List<String> trackedEntryIds, List<String> trackedPeopleIds, boolean entriesOnly, String searchDateField)
 	{
+		return entriesForTrackedPlacesEntriesAndPeople(bs, userWorkspaces, 
+				trackedEntryIds, trackedPeopleIds, entriesOnly, searchDateField, Boolean.TRUE);
+	}
+
+	public static Criteria entriesForTrackedPlacesEntriesAndPeople(AllModulesInjected bs, List userWorkspaces, 
+			List<String> trackedEntryIds, List<String> trackedPeopleIds, boolean entriesOnly, String searchDateField, 
+			boolean searchSubFolders)
+	{
 		String[] entryTypes;
 		if (entriesOnly)
 			 entryTypes = new String[] {Constants.ENTRY_TYPE_ENTRY                            };
@@ -194,7 +202,11 @@ public class SearchUtils {
 		
 		Disjunction disjunction = disjunction();
 		if ((null != userWorkspaces) && (!(userWorkspaces.isEmpty()))) {
-			disjunction.add(in(ENTRY_ANCESTRY, userWorkspaces));
+			if (searchSubFolders) {
+				disjunction.add(in(ENTRY_ANCESTRY, userWorkspaces));
+			} else {
+				disjunction.add(in(BINDER_ID_FIELD, userWorkspaces));
+			}
 		}
 		
 		if ((null != trackedEntryIds) && (!(trackedEntryIds.isEmpty()))) {
@@ -661,6 +673,10 @@ public class SearchUtils {
 	}
 	
 	public static Criteria getBinderEntriesSearchCriteria(AllModulesInjected bs, List binderIds, boolean entriesOnly) {
+		return getBinderEntriesSearchCriteria(bs, binderIds, entriesOnly, Boolean.TRUE);
+	}
+	
+	public static Criteria getBinderEntriesSearchCriteria(AllModulesInjected bs, List binderIds, boolean entriesOnly, boolean searchSubFolders) {
 		Criteria crit =
 			SearchUtils.entriesForTrackedPlacesEntriesAndPeople(
 				bs,
@@ -668,7 +684,8 @@ public class SearchUtils {
 				null,
 				null,
 				entriesOnly,	// true -> Entries only (no replies.)
-				Constants.LASTACTIVITY_FIELD);
+				Constants.LASTACTIVITY_FIELD,
+				searchSubFolders);
 		return crit;
 	}
 

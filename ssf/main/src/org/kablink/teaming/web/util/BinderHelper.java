@@ -3576,7 +3576,11 @@ public class BinderHelper {
 			if (!searchContextBinderId.equals("")) {
 				binderIds.add(searchContextBinderId);
 			}
-			Criteria crit = SearchUtils.getBinderEntriesSearchCriteria(bs, binderIds, false);
+			Boolean includeSubFolders = Boolean.TRUE;
+			if (options.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS)) {
+				includeSubFolders = (Boolean)options.get(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS);
+			}
+			Criteria crit = SearchUtils.getBinderEntriesSearchCriteria(bs, binderIds, false, includeSubFolders);
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		}
 		
@@ -3611,7 +3615,7 @@ public class BinderHelper {
 		model.put(WebKeys.SEARCH_SEARCH_SORT_BY, options.get( ObjectKeys.SEARCH_SORT_BY ) );
 		model.put(WebKeys.SEARCH_SEARCH_SORT_BY_SECONDARY, options.get( ObjectKeys.SEARCH_SORT_BY_SECONDARY ) );
 		model.put(WebKeys.SEARCH_SCOPE, options.get(ObjectKeys.SEARCH_SCOPE));
-		model.put(WebKeys.SEARCH_INCLUDE_NESTED_BINDERS, ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS);
+		model.put(WebKeys.SEARCH_INCLUDE_NESTED_BINDERS, options.get(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS));
 
 		model.put("quickSearch", options.get(WebKeys.SEARCH_FORM_QUICKSEARCH));
 		
@@ -3657,7 +3661,7 @@ public class BinderHelper {
 		//Get the scope
 		String searchScope = PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_SCOPE, ObjectKeys.SEARCH_SCOPE_ALL);
 		options.put(ObjectKeys.SEARCH_SCOPE, searchScope);
-		Boolean includeSubfolders = PortletRequestUtils.getBooleanParameter(request, ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
+		Boolean includeSubfolders = PortletRequestUtils.getBooleanParameter(request, ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.FALSE);
 		options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, includeSubfolders);
 		
 		//If the entries per page is not present in the user properties, then it means the
