@@ -15,6 +15,7 @@ import org.kabling.teaming.install.client.leftnav.LeftNavSelectionEvent;
 import org.kabling.teaming.install.client.leftnav.LeftNavSelectionEvent.LeftNavSelectEventHandler;
 import org.kabling.teaming.install.client.wizard.ConfigWizard;
 import org.kabling.teaming.install.shared.InstallerConfig;
+import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -77,7 +78,7 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 		HorizontalPanel hPanel = new HorizontalPanel();
 		hPanel.setWidth("100%");
 		div.add(hPanel);
-		
+
 		Image mainHeaderImg = new Image(AppUtil.getAppImageBundle().loginFilrProductInfo());
 		mainHeaderImg.addStyleName("mainHeaderProductImg");
 		hPanel.add(mainHeaderImg);
@@ -89,38 +90,46 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 		InlineLabel label = new InlineLabel("root");
 		label.addStyleName("username");
 		headerActionsPanel.add(label);
-		
+
 		Anchor logoutAction = new Anchor("Logout");
 		logoutAction.addStyleName("logout");
-		headerActionsPanel.add(logoutAction);
-		logoutAction.addClickHandler(new ClickHandler()
+		//For filr, redirect to /logout
+		if (AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
-			
-			@Override
-			public void onClick(ClickEvent event)
+			logoutAction.setHref("/logout");
+		}
+		else
+		{
+			logoutAction.addClickHandler(new ClickHandler()
 			{
-				AppUtil.getInstallService().logout(new AsyncCallback<Void>()
+
+				@Override
+				public void onClick(ClickEvent event)
 				{
-
-					@Override
-					public void onFailure(Throwable caught)
+					AppUtil.getInstallService().logout(new AsyncCallback<Void>()
 					{
-						
-					}
 
-					@Override
-					public void onSuccess(Void result)
-					{
-						//Goto login Page
-						LoginUIPanel loginUIPanel = new LoginUIPanel();
-						if (RootLayoutPanel.get().getWidgetCount() > 0)
-							RootLayoutPanel.get().remove(0);
-						RootLayoutPanel.get().add(loginUIPanel);
-					}
-				});
-			}
-		});
-		
+						@Override
+						public void onFailure(Throwable caught)
+						{
+
+						}
+
+						@Override
+						public void onSuccess(Void result)
+						{
+							// Goto login Page
+							LoginUIPanel loginUIPanel = new LoginUIPanel();
+							if (RootLayoutPanel.get().getWidgetCount() > 0)
+								RootLayoutPanel.get().remove(0);
+							RootLayoutPanel.get().add(loginUIPanel);
+						}
+					});
+				}
+			});
+		}
+
+		headerActionsPanel.add(logoutAction);
 
 		return div;
 	}
@@ -205,8 +214,8 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 
 		// Set up the initial pop up position
 		dlg.setPopupPosition(mainPanel.getAbsoluteLeft(), mainPanel.getAbsoluteTop());
-		
-		//Show the footer buttons on the left side
+
+		// Show the footer buttons on the left side
 		Panel footerPanel = dlg.getFooterPanel();
 		if (footerPanel != null)
 			footerPanel.addStyleName("leftAlignFooter");
@@ -216,7 +225,7 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 		int height = mainPanel.getOffsetHeight() - 15;
 		dlg.setSize(width + "px", height + "px");
 
-		//Show the dialog
+		// Show the dialog
 		dlg.show();
 	}
 
@@ -237,7 +246,7 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 		@Override
 		public void onSuccess(InstallerConfig result)
 		{
-			//Show the configuration wizard
+			// Show the configuration wizard
 			final ConfigWizard wizard = new ConfigWizard(result);
 			wizard.setGlassEnabled(true);
 			wizard.center();
@@ -248,9 +257,9 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 	@Override
 	public void onResize(ResizeEvent event)
 	{
-		//If we ae showing the config page, it fills up the right content
-		//If user's resizes the page, we want to resize the dialog so that,
-		//it stays locked up on hte right side
+		// If we ae showing the config page, it fills up the right content
+		// If user's resizes the page, we want to resize the dialog so that,
+		// it stays locked up on hte right side
 		if (dlg != null)
 		{
 			int width = mainPanel.getOffsetWidth() - 15;
