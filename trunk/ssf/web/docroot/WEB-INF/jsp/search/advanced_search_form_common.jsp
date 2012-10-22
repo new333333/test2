@@ -83,6 +83,80 @@
 						    </c:if>/>
 						</td>
 					</tr>
+					
+					<tr>
+						<td></td>
+						<td colspan="2">
+						  <input type="hidden" name="context" value="${ss_searchContext}" />
+						  <table cellspacing="0" cellpadding="0" style="padding-bottom:16px;" width="100%">
+						    <tr>
+						      <td width="20">
+								<input type="radio" name="scope" value="all"
+								<c:if test="${ss_searchScope == 'all'}"> checked="checked" </c:if>
+								style="width:20px;">
+							  </td>
+							  <td nowrap>
+								<ssf:nlt tag="search.scope.all"/>
+							  </td>
+							</tr>
+						    <tr>
+						      <td width="20">
+								<input type="radio" name="scope" value="myFiles"
+								  <c:if test="${ss_searchScope == 'myFiles'}"> checked="checked" </c:if>
+								  style="width:20px;">
+							  </td>
+							  <td nowrap>
+								<ssf:nlt tag="search.scope.myFiles"/>
+							  </td>
+							</tr>
+						    <tr>
+						      <td width="20">
+								<input type="radio" name="scope" value="netFolders" 
+								<c:if test="${ss_searchScope == 'netFolders'}"> checked="checked" </c:if>
+								style="width:20px;">
+							  </td>
+							  <td>
+								<ssf:nlt tag="search.scope.netFolders"/>
+							  </td>
+							</tr>
+						    <c:if test="${ss_searchContext == 'binder' || scope == 'current'}">
+						     <tr>
+						      <td width="20" valign="top">
+								<input type="radio" name="scope" value="current" 
+								  <c:if test="${ss_searchScope == 'current'}"> checked="checked" </c:if>
+								  style="width:20px;"
+								>
+								<input type="hidden" name="contextBinderId" value="${ss_searchContextBinderId}" />
+							  </td>
+							  <td>
+								<ssf:nlt tag="search.scope.current"/>&nbsp;
+								<a href="<ssf:url action="view_folder_listing" 
+									binderId="${ss_searchContextBinderId}" />"
+									title="${ss_searchContextBinder.pathName}"
+								>
+								  <span>${ss_searchContextBinder.title}</span>
+								</a>
+							  </td>
+							 </tr>
+							 <tr>
+						      <td width="20" valign="top">&nbsp;</td>
+							  <td align="left" nowrap>
+							    <c:if test="${ss_searchIncludeNestedBinders}">
+							      <input type="checkbox" 
+							        name="includeNestedBinders" 
+							        checked />
+							    </c:if>
+							    <c:if test="${!ss_searchIncludeNestedBinders}">
+							      <input type="checkbox" name="includeNestedBinders" /> 
+							    </c:if>
+							    <span>&nbsp;<ssf:nlt tag="search.scope.includeSubBinders"/></span>
+							  </td>
+							 </tr>
+							</c:if>
+						  </table>
+						</td>
+					</tr>
+
 					<tr>
 						<td class="ss_nowrap" style="vertical-align: top; padding-top: 5px; text-align: right;" >
 							<c:if test="${!filterDefinition}"><ssf:nlt tag="searchForm.searchFolders"/>:</c:if>

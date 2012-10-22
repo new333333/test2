@@ -154,7 +154,12 @@
 								name="newTab" value="1"/><ssf:param 
 								name="searchText" value="${ss_filterMap.searchText}"/><ssf:param 
 								name="operation" value="ss_searchResults"/><ssf:param 
-								name="showAdvancedSearchForm" value="true"/></ssf:url>" >
+								name="showAdvancedSearchForm" value="true"/><ssf:param 
+								name="context" value="${ss_searchContext}"/><ssf:param 
+								name="contextCollection" value="${ss_searchContextCollection}"/><ssf:param 
+								name="contextBinderId" value="${ss_searchContextBinderId}"/><ssf:param 
+								name="contextEntryId" value="${ss_searchContextEntryId}"/><ssf:param 
+								name="includeNestedBinders" value="${ss_searchIncludeNestedBinders}"/></ssf:url>" >
 								<ssf:nlt tag="searchForm.advanced.Title"/>
 							</a>
 						  </ssf:ifNotFilr>
