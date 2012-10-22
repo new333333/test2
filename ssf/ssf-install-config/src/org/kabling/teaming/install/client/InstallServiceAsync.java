@@ -25,7 +25,7 @@ public interface InstallServiceAsync
 
 	void updateDatabase(Database database, AsyncCallback<Void> callback);
 
-	void reconfigure(InstallerConfig config, AsyncCallback<Void> callback);
+	void reconfigure(boolean restartServer,AsyncCallback<Void> callback);
 
 	void startFilrServer(AsyncCallback<Void> callback);
 
