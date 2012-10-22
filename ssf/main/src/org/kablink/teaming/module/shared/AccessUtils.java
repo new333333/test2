@@ -269,16 +269,33 @@ public class AccessUtils  {
 	    boolean personal = Utils.isWorkareaInProfilesTree((WorkArea)entity);
 		
 	    //Find the workArea that actually defines the ACL
+	    
+	    boolean externallyControlledRight = false;
+	    if((entity instanceof Binder) && ((Binder)entity).getExternallyControlledRights().contains(operation))
+	    	externallyControlledRight = true;
+	  
 	    WorkArea workArea = (WorkArea) entity;
-		while (workArea.isFunctionMembershipInherited()) {
-			workArea = workArea.getParentWorkArea();
-	    	if (workArea == null) {
-	    		//Not found, just use the original (which will return an empty ACL)
-	    		workArea = (WorkArea) entity;
-	    		break;
-	    	}
-		}
-		
+	    if(externallyControlledRight) {
+			while (workArea.isExtFunctionMembershipInherited()) {
+				workArea = workArea.getParentWorkArea();
+		    	if (workArea == null) {
+		    		//Not found, just use the original (which will return an empty ACL)
+		    		workArea = (WorkArea) entity;
+		    		break;
+		    	}
+			}
+	    }
+	    else {
+			while (workArea.isFunctionMembershipInherited()) {
+				workArea = workArea.getParentWorkArea();
+		    	if (workArea == null) {
+		    		//Not found, just use the original (which will return an empty ACL)
+		    		workArea = (WorkArea) entity;
+		    		break;
+		    	}
+			}
+	    }
+			
 		//Start with a list of the functions (aka Roles) that are used in this workArea
 		List<WorkAreaFunctionMembership> wfms = getInstance().getWorkAreaFunctionMembershipManager()
         	.findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, operation);
