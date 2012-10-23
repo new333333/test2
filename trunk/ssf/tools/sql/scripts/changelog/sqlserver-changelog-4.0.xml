@@ -278,4 +278,12 @@
 			<column name="internal" type="TINYINT"/>
         </addColumn>
     </changeSet>
+    <changeSet author="jay" context="schema" failOnError="true" id="31">
+        <comment>Enable adhoc file folders in users personal workspace</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="adHocFoldersEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

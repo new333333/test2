@@ -328,4 +328,14 @@
 	    <addNotNullConstraint tableName="SS_Principals" columnName="internal" columnDataType="BIT"/>
     </changeSet>
     -->
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="40">
+        <comment>Enable adhoc file folders in users personal workspace</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="adHocFoldersEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

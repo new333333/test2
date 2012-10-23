@@ -36,6 +36,7 @@ import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeConfigureAdhocFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
@@ -63,6 +64,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.ConfigureAdhocFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUserAccessDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
@@ -103,6 +105,7 @@ import com.google.gwt.user.client.ui.UIObject;
 public class AdminControl extends TeamingPopupPanel
 	implements 
 	// Event handlers implemented by this class.
+		InvokeConfigureAdhocFoldersDlgEvent.Handler,
 		InvokeConfigureFileSyncAppDlgEvent.Handler,
 		InvokeConfigureUserAccessDlgEvent.Handler,
 		InvokeManageNetFoldersDlgEvent.Handler,
@@ -125,12 +128,14 @@ public class AdminControl extends TeamingPopupPanel
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
 	private ConfigureUserAccessDlg m_configureUserAccessDlg = null;
+	private ConfigureAdhocFoldersDlg m_configureAdhocFoldersDlg = null;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
+		TeamingEvents.INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
@@ -687,6 +692,14 @@ public class AdminControl extends TeamingPopupPanel
 			esbEvent = new EditSiteBrandingEvent( x, y );
 			GwtTeaming.fireEvent( esbEvent );
 		}
+		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_ADHOC_FOLDERS )
+		{
+			hideContentPanel();
+			
+			// Fire the event to invoke the "Configure Adhoc folders" dialog
+			InvokeConfigureAdhocFoldersDlgEvent.fireOne();
+			
+		}
 		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_FILE_SYNC_APP )
 		{
 			hideContentPanel();
@@ -1075,7 +1088,78 @@ public class AdminControl extends TeamingPopupPanel
 			m_adminActionsTreeControl.setVisible( true );
 		}
 	}// end showTreeControl()
+
+	
+	/**
+	 * Handles InvokeConfigureAdhocFoldersDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeConfigureAdhocFoldersDlgEvent.Handler.onInvokeConfigureAdhocFoldersDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeConfigureAdhocFoldersDlg( InvokeConfigureAdhocFoldersDlgEvent event )
+	{
+		int x;
+		int y;
 		
+		// Get the position of the content control.
+		x = m_contentControlX;
+		y = m_contentControlY;
+		
+		// Have we already created a "Configure Adhoc Folders" dialog?
+		if ( m_configureAdhocFoldersDlg == null )
+		{
+			int width;
+			int height;
+			
+			// No, create one.
+			height = m_dlgHeight;
+			width = m_dlgWidth;
+			ConfigureAdhocFoldersDlg.createAsync(
+											false, 
+											true,
+											x, 
+											y,
+											width,
+											height,
+											new ConfigureAdhocFoldersDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ConfigureAdhocFoldersDlg cafDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_configureAdhocFoldersDlg = cafDlg;
+							
+							m_configureAdhocFoldersDlg.init( null );
+							m_configureAdhocFoldersDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_configureAdhocFoldersDlg.init( null );
+			m_configureAdhocFoldersDlg.setPopupPosition( x, y );
+			m_configureAdhocFoldersDlg.show();
+		}
+	}
+	
+
 	/**
 	 * Handles InvokeConfigureFileSyncAppDlgEvent received by this class.
 	 * 

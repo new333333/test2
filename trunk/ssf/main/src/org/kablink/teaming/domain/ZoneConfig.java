@@ -68,6 +68,8 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Boolean externalUserEnabled;
 	private String localeLanguage;
 	private String localeCountry;
+	private Boolean adHocFoldersEnabled;
+	
 
 	public ZoneConfig()
 	{
@@ -337,5 +339,24 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	}
 	public void setLocaleCountry(String localeCountry) {
 		this.localeCountry = localeCountry;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean isAdHocFoldersEnabled()
+	{
+		if ( adHocFoldersEnabled == null )
+			return SPropsUtil.getBoolean( "adHoc.folders.enabled.default", false );
+		
+		return adHocFoldersEnabled.booleanValue();
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAdHocFoldersEnabled( boolean enabled )
+	{
+		adHocFoldersEnabled = Boolean.valueOf( enabled );
 	}
 }

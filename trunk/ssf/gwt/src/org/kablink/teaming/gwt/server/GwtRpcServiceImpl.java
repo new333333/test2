@@ -624,6 +624,28 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_ADHOC_FOLDER_SETTING:
+		{
+			GetAdhocFolderSettingCmd gafsCmd;
+			Boolean result;
+			BooleanRpcResponseData responseData;
+			Long userId;
+			
+			gafsCmd = (GetAdhocFolderSettingCmd) cmd;
+			userId = gafsCmd.getUserId();
+			if ( userId != null )
+				result = GwtServerHelper.getAdhocFolderSettingFromUser( this, userId );
+			else
+				result = GwtServerHelper.getAdhocFolderSettingFromZone( this );
+			
+			if ( result == null )
+				result = Boolean.FALSE;
+			
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_ADMIN_ACTIONS:
 		{
 			ArrayList<GwtAdminCategory> adminActions;
@@ -2214,6 +2236,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				sasCmd.getBinderId(),
 				sasCmd.getShowAccessoryPanel() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( responseData ) );
+			return response;
+		}
+		
+		case SAVE_ADHOC_FOLDER_SETTING:
+		{
+			SaveAdhocFolderSettingCmd safsCmd;
+			Boolean result;
+			BooleanRpcResponseData responseData;
+			
+			safsCmd = (SaveAdhocFolderSettingCmd) cmd;
+			result = GwtServerHelper.saveAdhocFolderSetting( this, safsCmd.getUserId(), safsCmd.getAllowAdhocFolders() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		

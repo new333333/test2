@@ -492,6 +492,30 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   		zoneConfig.setFileVersionsMaxAge(fileVersionsMaxAge);
   	}
 
+  	/**
+  	 * 
+  	 */
+  	@Override
+	public boolean isAdHocFoldersEnabled()
+  	{
+  		ZoneConfig zoneConfig;
+
+  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+  		return zoneConfig.isAdHocFoldersEnabled(); 		
+  	}
+  	
+  	/**
+  	 * 
+  	 */
+  	@Override
+	public void setAdHocFoldersEnabled( boolean enabled ) 
+  	{
+  		ZoneConfig zoneConfig;
+
+  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+  		zoneConfig.setAdHocFoldersEnabled( enabled );
+  	}
+
   	@Override
 	public boolean isMobileAccessEnabled() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());

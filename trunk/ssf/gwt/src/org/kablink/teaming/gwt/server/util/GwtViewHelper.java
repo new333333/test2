@@ -2483,7 +2483,7 @@ public class GwtViewHelper {
 			// Are we supposed to use this user's home folder as the
 			// root of their My Files area?
 			Long	mfRootId;
-			boolean	usingHomeAsMF = GwtServerHelper.useHomeAsMyFiles();
+			boolean	usingHomeAsMF = GwtServerHelper.useHomeAsMyFiles( bs );
 			if (usingHomeAsMF) {
 				// Yes!  Can we find their home folder?
 				mfRootId      = GwtServerHelper.getHomeFolderId(bs);

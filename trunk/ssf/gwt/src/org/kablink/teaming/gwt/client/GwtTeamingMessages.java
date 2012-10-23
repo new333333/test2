@@ -323,6 +323,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetActivityStreamParams();
 	String rpcFailure_GetActivityStreamsTree();
 	String rpcFailure_GetAddMeetingUrl();
+	String rpcFailure_GetAdhocFolderSetting();
 	String rpcFailure_GetAdminActions();
 	String rpcFailure_GetAllNetFolders();
 	String rpcFailure_GetAllNetFolderServers();
@@ -452,6 +453,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_RemoveSavedSearch();
 	String rpcFailure_ReplyToEntry();
 	String rpcFailure_SaveAccessoryStatus();
+	String rpcFailure_SaveAdhocFolderSetting();
 	String rpcFailure_SaveBinderRegionState();
 	String rpcFailure_SaveCalendarDayView();
 	String rpcFailure_SaveCalendarHours();
@@ -533,6 +535,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ChildBindersWidget();
 	String codeSplitFailure_ClipboardDlg();
 	String codeSplitFailure_CollectionView();
+	String codeSplitFailure_ConfigureAdhocFoldersDlg();
 	String codeSplitFailure_ConfigureUserAccessDlg();
 	String codeSplitFailure_ConfirmDlg();
 	String codeSplitFailure_ContentControl();
@@ -2033,4 +2036,9 @@ public interface GwtTeamingMessages extends Messages
 	String folderEntry_Locked();
 	String folderEntry_Modified();
 	String folderEntry_ShowDescription();
+	
+	// String used in the Configure Adhoc Folders dialog
+	String configureAdhocFoldersDlg_AllowAdhocFoldersLabel();
+	String configureAdhocFoldersDlg_Header();
+	
 }// end GwtTeamingMessages
