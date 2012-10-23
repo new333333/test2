@@ -177,6 +177,9 @@ public interface AdminModule {
     public MailConfig getMailConfig();
     public List<ChangeLog> getEntryHistoryChanges(EntityIdentifier entityIdentifier);
     public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation);
+    public boolean isAdHocFoldersEnabled();
+    public void setAdHocFoldersEnabled( boolean enabled );
+
     /**
      * Get system functions
      * @return

@@ -2364,7 +2364,7 @@ public class GwtMenuHelper {
 				}
 				if (isCollectionMyFiles) {
 					Long homeFolderTargetId;
-					if (GwtServerHelper.useHomeAsMyFiles())
+					if (GwtServerHelper.useHomeAsMyFiles( bs ))
 					     homeFolderTargetId = GwtServerHelper.getHomeFolderId(bs);
 					else homeFolderTargetId = null;
 					constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws, homeFolderTargetId         );

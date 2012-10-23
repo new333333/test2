@@ -294,9 +294,6 @@ import static org.kablink.util.search.Restrictions.in;
 public class GwtServerHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtServerHelper.class);
 
-	// Used to control various upcoming features of My Files.
-	private static final boolean TEST_USING_HOME_AS_MYFILES	= false;	// Force all user's to use their Home Net Folder as their My Files root.
-	
 	// The following are used to classify various binders based on
 	// their default view definition.  See getFolderType() and
 	// getWorkspaceType().
@@ -2283,6 +2280,67 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return the "adhoc folder" setting from the given user's properties.
+	 */
+	public static Boolean getAdhocFolderSettingFromUser(
+		AllModulesInjected ami,
+		Long userId )
+	{
+		if ( userId != null )
+		{
+			UserProperties userProperties;
+			Object value;
+
+			// Read the "allow adhoc folder" setting from the user's properties.
+			userProperties = ami.getProfileModule().getUserProperties( userId );
+			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS );
+			if ( value != null && value instanceof String )
+			{
+				return new Boolean( (String) value );
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Return the "adhoc folder" setting from the zone. 
+	 */
+	public static Boolean getAdhocFolderSettingFromZone(
+		AllModulesInjected ami )
+	{
+		// Read the global setting.
+		return  new Boolean( ami.getAdminModule().isAdHocFoldersEnabled() );
+	}
+	
+	/**
+	 * Return the effective "adhoc folder" setting from the given user.  We will look in the
+	 * user's properties first for a value.  If one is not found we will get the setting from
+	 * the zone.
+	 */
+	public static Boolean getEffectiveAdhocFolderSetting(
+		AllModulesInjected ami,
+		User user )
+	{
+		Boolean result;
+
+		result = null;
+		
+		if ( user != null )
+			result = getAdhocFolderSettingFromUser( ami, user.getId() );
+	
+		// Did we find a setting in the user's properties?
+		if ( result == null )
+		{
+			// No
+			// Read the global setting.
+			result = getAdhocFolderSettingFromZone( ami );
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * Return a list of administration actions the user has rights to perform. 
 	 */
 	public static ArrayList<GwtAdminCategory> getAdminActions( HttpServletRequest request, Binder binder, AbstractAllModulesInjected allModules )
@@ -2523,6 +2581,19 @@ public class GwtServerHelper {
 				}
 			}
 			catch(AccessControlException e) {}
+
+			// Does the user have rights to "manage adhoc folder?"?
+			if ( isFilr && adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_adhocFolders" );
+
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, "", AdminAction.CONFIGURE_ADHOC_FOLDERS );
+				
+				// Add this action to the "management" category
+				managementCategory.addAdminOption( adminAction );
+			}
 
 			// Does the user have rights to "Manage workspace and folder templates"?
 			if ( isFilr == false && adminModule.testAccess( AdminOperation.manageTemplate ) )
@@ -5639,7 +5710,7 @@ public class GwtServerHelper {
 	 */
 	public static Long getMyFilesContainerId(AllModulesInjected bs) {
 		Long reply;
-		if (useHomeAsMyFiles())
+		if (useHomeAsMyFiles( bs ))
 		     reply = getHomeFolderId(bs);
 		else reply = null;
 		if (null == reply) {
@@ -7912,6 +7983,7 @@ public class GwtServerHelper {
 		case GET_ACTIVITY_STREAM_DATA:
 		case GET_ACTIVITY_STREAM_PARAMS:
 		case GET_ADD_MEETING_URL:
+		case GET_ADHOC_FOLDER_SETTING:
 		case GET_ADMIN_ACTIONS:
 		case GET_ALL_NET_FOLDERS:
 		case GET_ALL_NET_FOLDER_ROOTS:
@@ -8020,6 +8092,7 @@ public class GwtServerHelper {
 		case GET_TOOLBAR_ITEMS:
 		case GET_TOP_RANKED:
 		case GET_UPGRADE_INFO:
+		case GET_USER_ACCESS_CONFIG:
 		case GET_USER_PERMALINK:
 		case GET_USER_STATUS:
 		case GET_USER_WORKSPACE_INFO:
@@ -8053,6 +8126,7 @@ public class GwtServerHelper {
 		case REMOVE_TASK_LINKAGE:
 		case REMOVE_SAVED_SEARCH:
 		case SAVE_ACCESSORY_STATUS:
+		case SAVE_ADHOC_FOLDER_SETTING:
 		case SAVE_BINDER_REGION_STATE:
 		case SAVE_CALENDAR_DAY_VIEW:
 		case SAVE_CALENDAR_HOURS:
@@ -8311,6 +8385,36 @@ public class GwtServerHelper {
 		
 		// ...and clearing the remove list.
 		removeList.clear();
+	}
+	
+	/**
+	 * Save the "adhoc folder" setting.  If userId is not null save the value in the user's properties.
+	 * Otherwise, save the setting in the zone.
+	 */
+	public static Boolean saveAdhocFolderSetting(
+		AllModulesInjected ami,
+		Long userId,
+		Boolean allow )
+	{
+		Boolean result;
+
+		if ( allow == null )
+			return Boolean.FALSE;
+		
+		result = Boolean.TRUE;
+		
+		// Are we dealing with a user?
+		if ( userId != null )
+		{
+			ami.getProfileModule().setUserProperty( userId, ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS, allow.toString() );
+		}
+		else
+		{
+			// No, save as a zone setting.
+			ami.getAdminModule().setAdHocFoldersEnabled( allow );
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -9120,9 +9224,14 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static boolean useHomeAsMyFiles() {
-//!		...this needs to be implemented...
-		return TEST_USING_HOME_AS_MYFILES;
+	public static boolean useHomeAsMyFiles( AllModulesInjected ami ) {
+		Boolean result;
+		
+		result = getEffectiveAdhocFolderSetting( ami, getCurrentUser() );
+		if ( result != null && result == false )
+			return true;
+		
+		return false;
 	}
 	
 	/**

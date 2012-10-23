@@ -89,13 +89,13 @@
     </changeSet>
     <changeSet author="jong" context="schema" failOnError="true" id="9">
         <comment>Enable external users</comment>
-        <addColumn tableName="SS_ZOUNECONFIG">
+        <addColumn tableName="SS_ZONECONFIG">
             <column name="EXTERNALUSERENABLED" type="NUMBER(1,0)">
                 <constraints nullable="true" />
             </column>
         </addColumn>
         <comment>Enable OpenID authentication</comment>
-        <addColumn tableName="SS_ZOUNECONFIG">
+        <addColumn tableName="SS_ZONECONFIG">
             <column name="OPENIDAUTHENTICATIONENABLED" type="NUMBER(1,0)">
                 <constraints nullable="true" />
             </column>
@@ -279,6 +279,14 @@
     <changeSet author="jong" context="schema" failOnError="true" id="31">
         <addColumn tableName="SS_PRINCIPALS">
 			<column name="INTERNAL" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jay" context="schema" failOnError="true" id="32">
+        <comment>Enable adhoc file folders in users personal workspace</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="ADHOCFOLDERSENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
         </addColumn>
     </changeSet>
 </databaseChangeLog>

@@ -87,6 +87,7 @@ public class EventHelper {
 		case HIDE_MANAGE_MENU:                 	    reply = new HideManageMenuEvent();                break;
 		case INVOKE_ABOUT:							reply = new InvokeAboutEvent();                   break;
 		case INVOKE_CLIPBOARD:						reply = new InvokeClipboardEvent();               break;
+		case INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG:	reply = new InvokeConfigureAdhocFoldersDlgEvent();break;
 		case INVOKE_CONFIGURE_COLUMNS:				reply = new InvokeConfigureColumnsEvent();        break;
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	reply = new InvokeConfigureFileSyncAppDlgEvent(); break;
 		case INVOKE_CONFIGURE_USER_ACCESS_DLG:		reply = new InvokeConfigureUserAccessDlgEvent();  break;
@@ -834,6 +835,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG:
+				// An InvokeConfigureAdhocFoldersDlgEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeConfigureAdhocFoldersDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeConfigureAdhocFoldersDlgEvent.registerEvent( eventBus, ((InvokeConfigureAdhocFoldersDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case INVOKE_CONFIGURE_COLUMNS:
 				// An InvokeConfigureColumnsEvent!  Can the event
 				// handler we were given handle that?
@@ -2117,6 +2127,7 @@ public class EventHelper {
 			case INVOKE_ADD_NEW_FOLDER:					hasHandler = (eventHandler instanceof InvokeAddNewFolderEvent.Handler);            break;
 			case INVOKE_CLIPBOARD:						hasHandler = (eventHandler instanceof InvokeClipboardEvent.Handler);               break;
 			case INVOKE_COLUMN_RESIZER:				    hasHandler = (eventHandler instanceof InvokeColumnResizerEvent.Handler);           break;
+			case INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG:	hasHandler = (eventHandler instanceof InvokeConfigureAdhocFoldersDlgEvent.Handler);break;
 			case INVOKE_CONFIGURE_COLUMNS:				hasHandler = (eventHandler instanceof InvokeConfigureColumnsEvent.Handler);        break;
 			case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	hasHandler = (eventHandler instanceof InvokeConfigureFileSyncAppDlgEvent.Handler); break;
 			case INVOKE_CONFIGURE_USER_ACCESS_DLG:		hasHandler = (eventHandler instanceof InvokeConfigureUserAccessDlgEvent.Handler);  break;
