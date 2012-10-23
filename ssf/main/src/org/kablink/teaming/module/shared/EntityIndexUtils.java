@@ -1286,27 +1286,36 @@ public class EntityIndexUtils {
     				driver = binder.getResourceDriver();
     				if ( driver != null )
     				{
-        				ResourceDriverConfig rdConfig;
-        				String rootPath;
-        				String proxyName;
-        				String proxyPwd;
+    					String dc = driver.getClass().getName();
+    					if ( MiscUtil.hasString( dc ) && dc.equals( "com.novell.teaming.fi.connection.file.FileResourceDriver" ))
+    					{
+    						hasResourceDriver = MiscUtil.hasString( driver.getRootPath() );
+    					}
     					
-        				rdConfig = driver.getConfig();
-
-        				if ( rdConfig != null )
-        				{
-	        				// Is everything configured?
-	        				rootPath = rdConfig.getRootPath();
-	        				proxyName = rdConfig.getAccountName();
-	        				proxyPwd = rdConfig.getPassword();
-	        				if ( rootPath != null && rootPath.length() > 0 &&
-	        					 proxyName != null && proxyName.length() > 0 &&
-	        					 proxyPwd != null && proxyPwd.length() > 0 )
+    					else
+    					{
+	        				ResourceDriverConfig rdConfig;
+	        				String rootPath;
+	        				String proxyName;
+	        				String proxyPwd;
+	    					
+	        				rdConfig = driver.getConfig();
+	
+	        				if ( rdConfig != null )
 	        				{
-	        					// Yes
-	        					hasResourceDriver = true;
+		        				// Is everything configured?
+		        				rootPath = rdConfig.getRootPath();
+		        				proxyName = rdConfig.getAccountName();
+		        				proxyPwd = rdConfig.getPassword();
+		        				if ( rootPath != null && rootPath.length() > 0 &&
+		        					 proxyName != null && proxyName.length() > 0 &&
+		        					 proxyPwd != null && proxyPwd.length() > 0 )
+		        				{
+		        					// Yes
+		        					hasResourceDriver = true;
+		        				}
 	        				}
-        				}
+    					}
     				}
     			}
     			catch ( Exception ex )
