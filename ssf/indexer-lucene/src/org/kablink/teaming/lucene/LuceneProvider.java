@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -531,8 +532,53 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		return this.search(contextUserId, aclQueryStr, mode, query, sort, 0, -1);
 	}
 
+	public org.kablink.teaming.lucene.Hits searchNetFolderOneLevelOnly(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
+			Long parentBinderId, String parentBinderPath) throws LuceneException {
+		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
+
+		Filter implicitlyAccessibleSubFoldersFilter = null;
+		
+		try {
+			if(aclQueryStr != null && aclQueryStr.length() > 0) {
+				// This search is bound by ACL. We need to tweak the search in order to handle the anomaly associated with Net Folders (i.e., "implicit" permissions).
+				BooleanQuery implicitlyAccessibleSubFoldersQuery = new BooleanQuery();
+				implicitlyAccessibleSubFoldersQuery.add(new TermQuery(new Term(Constants.ENTRY_ANCESTRY, parentBinderId.toString())), BooleanClause.Occur.MUST);
+				implicitlyAccessibleSubFoldersQuery.add(new TermQuery(new Term(Constants.IS_MIRRORED_FIELD, Constants.TRUE)), BooleanClause.Occur.MUST);
+				implicitlyAccessibleSubFoldersQuery.add(parseAclQueryStr(aclQueryStr), BooleanClause.Occur.MUST);
+
+				Set<String> subFolderPaths = obtainImplicitlyAccessibleSubFolderPaths(indexSearcherHandle.getIndexSearcher(), contextUserId, parentBinderPath, implicitlyAccessibleSubFoldersQuery); 
+				
+				if(subFolderPaths.size() > 0) {
+					BooleanQuery bq = new BooleanQuery();
+					for(String subFolderPath:subFolderPaths)
+						bq.add(new TermQuery(new Term(Constants.SORT_ENTITY_PATH, subFolderPath)), BooleanClause.Occur.SHOULD);
+					implicitlyAccessibleSubFoldersFilter = new QueryWrapperFilter(bq);
+				}
+			}
+			else {
+				// The user has access to everything any way, so no need to worry about visibility and no need to augment the original acl clauses.
+			}
+		} catch (IOException e) {
+			throw newLuceneException("Error searching index", e);
+		} catch (OutOfMemoryError e) {
+			getIndexingResource().closeOOM(e);
+			throw e;
+		} catch (ParseException e) {
+			throw newLuceneException("Error parsing query", e);
+		} finally {
+			releaseIndexSearcherHandle(indexSearcherHandle);
+		}
+		
+		return searchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, implicitlyAccessibleSubFoldersFilter);
+	}
+
 	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size) throws LuceneException {
+		return searchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, null);
+	}
+
+	private org.kablink.teaming.lucene.Hits searchInternal(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
+			int offset, int size, Filter alternateAclFilter) throws LuceneException {
 		long startTime = System.nanoTime();
 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
@@ -559,17 +605,26 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					
 					AclInheritingAccessibleEntriesFilter aclInheritingAccessibleEntriesFilter = new AclInheritingAccessibleEntriesFilter(aclInheritingEntriesFilter, accessibleFolderIds);
 					
-					aclFilter = new ChainedFilter(new Filter[] {aclQueryFilter, aclInheritingAccessibleEntriesFilter}, ChainedFilter.OR);		
+					if(alternateAclFilter != null)
+						aclFilter = new ChainedFilter(new Filter[] {aclQueryFilter, aclInheritingAccessibleEntriesFilter, alternateAclFilter}, ChainedFilter.OR);		
+					else
+						aclFilter = new ChainedFilter(new Filter[] {aclQueryFilter, aclInheritingAccessibleEntriesFilter}, ChainedFilter.OR);		
 				}
 				else if(mode == Constants.SEARCH_MODE_SELF_CONTAINED_ONLY) {
-					aclFilter = new QueryWrapperFilter(parseAclQueryStr(aclQueryStr));
+					if(alternateAclFilter != null)
+						aclFilter = new ChainedFilter(new Filter[] {new QueryWrapperFilter(parseAclQueryStr(aclQueryStr)), alternateAclFilter}, ChainedFilter.OR);
+					else
+						aclFilter = new QueryWrapperFilter(parseAclQueryStr(aclQueryStr));
 				}
 				else if(mode == Constants.SEARCH_MODE_PREAPPROVED_PARENTS) {
 					Query aclInheritingEntriesPermissibleAclQuery = makeAclInheritingEntriesPermissibleAclQuery(parseAclQueryStr(aclQueryStr));
 					
 					QueryWrapperFilter aclInheritingEntriesPermissibleAclFilter = new QueryWrapperFilter(aclInheritingEntriesPermissibleAclQuery);
 
-					aclFilter = aclInheritingEntriesPermissibleAclFilter;
+					if(alternateAclFilter != null)
+						aclFilter = new ChainedFilter(new Filter[] {aclInheritingEntriesPermissibleAclFilter, alternateAclFilter}, ChainedFilter.OR);
+					else
+						aclFilter = aclInheritingEntriesPermissibleAclFilter;
 				}
 				else {
 					throw newLuceneException("Invalid search mode: " + mode);
@@ -593,7 +648,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
 					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size);
 
-			end(startTime, "search", contextUserId, aclQueryStr, mode, query, sort, offset, size, tempHits.length());
+			end(startTime, "searchInternal", contextUserId, aclQueryStr, mode, query, sort, offset, size, tempHits.length());
 			
 			return tempHits;
 		} catch (IOException e) {
@@ -1280,6 +1335,20 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 
 	private Query parseAclQueryStr(String aclQueryStr) throws ParseException {
 		return getQueryParserWithWSA().parse(aclQueryStr);
+	}
+	
+	private Set<String> obtainImplicitlyAccessibleSubFolderPaths(IndexSearcher searcher, Long contextUserId, String parentBinderPath, Query implicitlyAccessibleSubFoldersQuery) throws IOException {
+		long startTime = System.nanoTime();
+		
+		ImplicitlyAccessibleSubFoldersCollector collector = new ImplicitlyAccessibleSubFoldersCollector(parentBinderPath);
+		
+		searcher.search(implicitlyAccessibleSubFoldersQuery, collector);
+		
+		Set<String> result = collector.getImplicitlyAccessibleSubFolderPaths();
+		
+		end(startTime, "obtainImplicitlyAccessibleSubFolderPaths", contextUserId, result.size());
+		
+		return result;
 	}
 	
 	private TLongHashSet obtainAccessibleFolderIds(IndexSearcher searcher, Long contextUserId, Query accessibleFoldersAclQuery) throws IOException {

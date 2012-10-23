@@ -378,6 +378,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public Binder getBinder(Long binderId) throws NoBinderByTheIdException,
 			AccessControlException {
 		Binder binder = loadBinder(binderId);
+		// If Net Folder or a sub-folder within one, then do not assume that the user necessarily has
+		// READ access to the folder to account for "inferred" LIST permission.
+		if(binder.isAclExternallyControlled())
+			return binder;
 		// Check if the user has "read" access to the binder.
 		if (!(binder instanceof TemplateBinder)) {
 			try {
@@ -1568,8 +1572,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	protected Map executeSearchQuery(SearchObject so, int searchMode, int offset, int maxResults) {
-		List entries = new ArrayList();
 		Hits hits = executeLuceneQuery(so, searchMode, offset, maxResults);
+		return returnSearchQuery(hits);
+	}
+
+	protected Map returnSearchQuery(Hits hits) {
+		List entries = new ArrayList();
 		entries = SearchUtils.getSearchEntries(hits);
 		SearchUtils.extendPrincipalsInfo(entries, getProfileDao(),
 				Constants.CREATORID_FIELD);
@@ -1603,6 +1611,32 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
 					so.getAclQueryStr(), searchMode, soQuery, so.getSortBy(), offset,
 					maxResults);
+		} catch (Exception e) {
+			logger.info("Exception:" + e);
+		} finally {
+			luceneSession.close();
+		}
+		return hits;
+
+	}
+
+	private Hits executeNetFolderLuceneQuery(SearchObject so, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath) {
+		Hits hits = new Hits(0);
+
+		Query soQuery = so.getLuceneQuery(); // Get the query into a variable to avoid
+		// doing this very slow operation twice
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("Query is in executeNetFolderLuceneQuery: "
+					+ soQuery.toString());
+		}
+
+		LuceneReadSession luceneSession = getLuceneSessionFactory()
+				.openReadSession();
+		try {
+			hits = luceneSession.searchNetFolderOneLevelOnly(RequestContextHolder.getRequestContext().getUserId(),
+					so.getAclQueryStr(), searchMode, soQuery, so.getSortBy(), offset,
+					maxResults, parentBinderId, parentBinderPath);
 		} catch (Exception e) {
 			logger.info("Exception:" + e);
 		} finally {
@@ -3136,4 +3170,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}, RequestContextHolder.getRequestContext().getZoneName());
 		}
 	}
+	
+    public Map searchNetFolderOneLevelOnly(Criteria crit, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath) {
+    	boolean preDeleted = false;
+    	boolean ignoreAcls = false;
+    	
+		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted);
+		SearchObject so = qb.buildQuery(crit.toQuery());
+
+		Hits hits = executeNetFolderLuceneQuery(so, searchMode, offset, maxResults, parentBinderId, parentBinderPath);
+		
+		return returnSearchQuery(hits);
+    }
 }

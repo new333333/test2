@@ -78,4 +78,12 @@ public class NilLuceneReadSession implements LuceneReadSession {
 	public void close() throws LuceneException {
 	}
 
+	@Override
+	public Hits searchNetFolderOneLevelOnly(Long contextUserId,
+			String aclQueryStr, int mode, Query query, Sort sort, int offset,
+			int size, Long parentBinderId, String parentBinderPath)
+			throws LuceneException {
+		return new Hits(0);
+	}
+
 }

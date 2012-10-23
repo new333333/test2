@@ -109,6 +109,27 @@ public interface LuceneReadSession extends LuceneSession {
 			throws LuceneException;
 	
 	/**
+	 * This custom search method is written specifically for finding net folders or within a net folder
+	 * sharing the same parent with the search depth of exactly one. This method differs from other
+	 * general purpose search method in that this implementation takes into account the implicit LIST 
+	 * permission given by the file system when filtering by access control. 
+	 * 
+	 * @param contextUserId
+	 * @param aclQueryStr
+	 * @param mode
+	 * @param query
+	 * @param sort
+	 * @param offset
+	 * @param size
+	 * @param parentBinderId
+	 * @param parentBinderPath
+	 * @return
+	 * @throws LuceneException
+	 */
+	public Hits searchNetFolderOneLevelOnly(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
+			Long parentBinderId, String parentBinderPath) throws LuceneException;
+
+	/**
 	 * Get all the unique tags that this user can see, based on the wordroot passed in.
 	 * 
 	 * @param aclQueryStr
