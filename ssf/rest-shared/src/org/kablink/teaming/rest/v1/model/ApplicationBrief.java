@@ -41,4 +41,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement (name="application_brief")
 public class ApplicationBrief extends PrincipalBrief {
+    public ApplicationBrief() {
+        super();
+    }
+
+    public ApplicationBrief(ApplicationBrief orig) {
+        super(orig);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new ApplicationBrief(this);
+    }
 }

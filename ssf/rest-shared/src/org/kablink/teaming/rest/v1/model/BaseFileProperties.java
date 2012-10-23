@@ -58,8 +58,22 @@ public abstract class BaseFileProperties extends SearchableObject {
 	protected BaseFileProperties() {
         setDocType("file");
     }
-	
-	public String getId() {
+
+    protected BaseFileProperties(BaseFileProperties orig) {
+        super(orig);
+        this.id = orig.id;
+        this.creation = orig.creation;
+        this.modification = orig.modification;
+        this.length = orig.length;
+        this.md5 = orig.md5;
+        this.versionNumber = orig.versionNumber;
+        this.majorVersion = orig.majorVersion;
+        this.minorVersion = orig.minorVersion;
+        this.note = orig.note;
+        this.status = orig.status;
+    }
+
+    public String getId() {
 		return id;
 	}
 

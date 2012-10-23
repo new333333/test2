@@ -51,6 +51,10 @@ public class BinderBrief extends DefinableEntityBrief {
         setDocType("binder");
     }
 
+    protected BinderBrief(BinderBrief orig) {
+        super(orig);
+    }
+
     public Boolean getLibrary() {
         return library;
     }
@@ -91,5 +95,10 @@ public class BinderBrief extends DefinableEntityBrief {
     @XmlTransient
     public boolean isWorkspace() {
         return "workspace".equals(getEntityType());
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new BinderBrief(this);
     }
 }

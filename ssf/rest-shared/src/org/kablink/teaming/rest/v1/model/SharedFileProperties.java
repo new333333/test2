@@ -30,12 +30,26 @@ import java.util.List;
 public class SharedFileProperties extends FileProperties {
     private List<Share> shares;
 
-    public List<Share> getShares() {
-        return shares;
+    public SharedFileProperties() {
+        super();
+    }
+
+    protected SharedFileProperties(SharedFileProperties orig) {
+        super(orig);
+        this.shares = orig.shares;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new SharedFileProperties(this);
     }
 
     @XmlElementWrapper(name="shares")
     @XmlElement(name="share")
+    public List<Share> getShares() {
+        return shares;
+    }
+
     public void setShares(List<Share> shares) {
         this.shares = shares;
     }

@@ -39,7 +39,16 @@ public class TemplateBrief extends DefinableEntityBrief {
 
 	public TemplateBrief() {}
 
-	public String getInternalId() {
+    protected TemplateBrief(TemplateBrief orig) {
+        super(orig);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new TemplateBrief(this);
+    }
+
+    public String getInternalId() {
 		return internalId;
 	}
 	public void setInternalId(String internalId) {

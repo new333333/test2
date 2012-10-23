@@ -33,11 +33,13 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.ParentBinder;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.search.SearchUtils;
@@ -84,6 +86,9 @@ public class NetFoldersResource extends AbstractResource {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), map, "/net_folders", nextParams, offset);
+        for (BinderBrief binder : results.getResults()) {
+            binder.setParentBinder(new ParentBinder(ObjectKeys.NET_FOLDERS_ID, "/self/net_folders"));
+        }
         return results;
     }
 

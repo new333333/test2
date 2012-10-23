@@ -45,11 +45,21 @@ public class Binder extends DefinableEntity {
         setDocType("binder");
     }
 
+    protected Binder(Binder orig) {
+        super(orig);
+        this.path = orig.path;
+    }
+
     public String getPath() {
         return path;
     }
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new Binder(this);
     }
 }

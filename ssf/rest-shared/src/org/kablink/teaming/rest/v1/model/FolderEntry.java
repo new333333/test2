@@ -40,11 +40,24 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class FolderEntry extends BaseFolderEntry {
     private HistoryStamp reservation;
 
+    public FolderEntry() {
+    }
+
+    protected FolderEntry(FolderEntry orig) {
+        super(orig);
+        this.reservation = orig.reservation;
+    }
+
     public HistoryStamp getReservation() {
         return reservation;
     }
 
     public void setReservation(HistoryStamp reservation) {
         this.reservation = reservation;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new FolderEntry(this);
     }
 }

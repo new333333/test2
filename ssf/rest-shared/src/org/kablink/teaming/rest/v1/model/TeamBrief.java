@@ -41,4 +41,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement (name = "team_brief")
 public class TeamBrief extends BinderBrief {
+    public TeamBrief() {
+        super();
+    }
+
+    protected TeamBrief(TeamBrief orig) {
+        super(orig);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new TeamBrief(this);
+    }
 }

@@ -41,4 +41,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "group")
 public class Group extends Principal {
+    public Group() {
+        super();
+    }
+
+    protected Group(Group orig) {
+        super(orig);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new Group(this);
+    }
 }

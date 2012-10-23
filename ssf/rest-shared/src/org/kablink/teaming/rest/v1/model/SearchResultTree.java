@@ -33,6 +33,7 @@
 package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 
 /**
  * User: david
@@ -41,4 +42,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "tree")
 public class SearchResultTree<T> extends SearchResultTreeNode<T> {
+    public void cloneItems() {
+        copyItems(this);
+    }
 }

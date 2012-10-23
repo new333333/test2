@@ -41,6 +41,21 @@ public class ReplyBrief extends BaseFolderEntryBrief {
     private LongIdLinkPair parentEntry;
     private LongIdLinkPair topEntry;
 
+    public ReplyBrief() {
+        super();
+    }
+
+    protected ReplyBrief(ReplyBrief orig) {
+        super(orig);
+        this.parentEntry = orig.parentEntry;
+        this.topEntry = orig.topEntry;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new ReplyBrief(this);
+    }
+
     @XmlElement(name = "parent_entry")
     public LongIdLinkPair getParentEntry() {
         return parentEntry;

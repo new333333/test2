@@ -48,6 +48,14 @@ public abstract class BaseFolderEntry extends Entry {
     protected BaseFolderEntry() {
     }
 
+    protected BaseFolderEntry(BaseFolderEntry orig) {
+        super(orig);
+        this.docNumber = orig.docNumber;
+        this.docLevel = orig.docLevel;
+        this.replyCount = orig.replyCount;
+        this.totalReplyCount = orig.totalReplyCount;
+    }
+
     @XmlElement(name = "doc_level")
     public Integer getDocLevel() {
         return docLevel;

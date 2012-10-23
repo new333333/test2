@@ -27,6 +27,21 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         super(link);
     }
 
+    protected DefinableEntityBrief(DefinableEntityBrief orig) {
+        super(orig);
+        this.id = orig.id;
+        this.parentBinder = orig.parentBinder;
+        this.title = orig.title;
+        this.description = orig.description;
+        this.definition = orig.definition;
+        this.entityType = orig.entityType;
+        this.family = orig.family;
+        this.icon = orig.icon;
+        this.permaLink = orig.permaLink;
+        this.creation = orig.creation;
+        this.modification = orig.modification;
+    }
+
     public HistoryStamp getCreation() {
         return creation;
     }

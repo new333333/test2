@@ -41,4 +41,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement (name="application_group_brief")
 public class ApplicationGroupBrief extends PrincipalBrief {
+    public ApplicationGroupBrief(ApplicationGroupBrief orig) {
+        super(orig);
+    }
+
+    public ApplicationGroupBrief() {
+        super();
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new ApplicationGroupBrief(this);
+    }
 }

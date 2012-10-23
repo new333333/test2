@@ -30,12 +30,26 @@ import java.util.List;
 public class SharedFolderEntryBrief extends FolderEntryBrief {
     private List<Share> shares;
 
-    public List<Share> getShares() {
-        return shares;
+    public SharedFolderEntryBrief() {
+        super();
+    }
+
+    protected SharedFolderEntryBrief(SharedFolderEntryBrief orig) {
+        super(orig);
+        this.shares = orig.shares;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new SharedFolderEntryBrief(this);
     }
 
     @XmlElementWrapper(name="shares")
     @XmlElement(name="share")
+    public List<Share> getShares() {
+        return shares;
+    }
+
     public void setShares(List<Share> shares) {
         this.shares = shares;
     }

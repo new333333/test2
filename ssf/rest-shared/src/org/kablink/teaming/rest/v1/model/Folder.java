@@ -39,6 +39,16 @@ public class Folder extends Binder {
     private Boolean library;
    	private Boolean mirrored;
 
+    public Folder() {
+        super();
+    }
+
+    protected Folder(Folder orig) {
+        super(orig);
+        this.library = orig.library;
+        this.mirrored = orig.mirrored;
+    }
+
     public Boolean getLibrary() {
         return library;
     }
@@ -53,5 +63,10 @@ public class Folder extends Binder {
 
     public void setMirrored(Boolean mirrored) {
         this.mirrored = mirrored;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new Folder(this);
     }
 }

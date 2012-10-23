@@ -45,7 +45,23 @@ public class UserBrief extends PrincipalBrief {
 	private String firstName;
 	private String lastName;
 	private String middleName;
-	
+
+    public UserBrief() {
+        super();
+    }
+
+    public UserBrief(UserBrief orig) {
+        super(orig);
+        this.firstName = orig.firstName;
+        this.lastName = orig.lastName;
+        this.middleName = orig.middleName;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new UserBrief(this);
+    }
+
     @XmlElement(name = "first_name")
 	public String getFirstName() {
 		return firstName;

@@ -45,6 +45,14 @@ public abstract class Principal extends Entry {
    	private Boolean reserved;
    	private String name;
 
+    protected Principal() {
+        super();
+    }
+
+    protected Principal(Principal orig) {
+        super(orig);
+    }
+
     @XmlElement(name="disabled")
     public Boolean isDisabled() {
         return disabled;

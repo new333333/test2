@@ -53,6 +53,12 @@ public class PrincipalBrief extends EntryBrief {
         super.setId(id);
     }
 
+    public PrincipalBrief(PrincipalBrief orig) {
+        super(orig);
+        this.name = orig.name;
+        this.emailAddress = orig.emailAddress;
+    }
+
     public String getName() {
         return name;
     }
@@ -68,5 +74,10 @@ public class PrincipalBrief extends EntryBrief {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new PrincipalBrief(this);
     }
 }

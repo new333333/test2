@@ -46,17 +46,40 @@ public abstract class DefinableEntity extends SearchableObject {
    	private ParentBinder parentBinder;
    	private String title;
     private StringIdLinkPair definition;
+    private Description description;
     private String entityType;
     private String family;
     private String icon;
     private String permaLink;
     private HistoryStamp creation;
     private HistoryStamp modification;
-   	private Description description;
    	private AverageRating averageRating;
    	private Boolean eventAsIcalString;
     private BaseFileProperties [] attachments;
     private CustomField [] customFields;
+
+    public DefinableEntity() {
+        super();
+    }
+
+    protected DefinableEntity(DefinableEntity orig) {
+        super(orig);
+        this.id = orig.id;
+        this.parentBinder = orig.parentBinder;
+        this.title = orig.title;
+        this.definition = orig.definition;
+        this.description = orig.description;
+        this.entityType = orig.entityType;
+        this.family = orig.family;
+        this.icon = orig.icon;
+        this.permaLink = orig.permaLink;
+        this.creation = orig.creation;
+        this.modification = orig.modification;
+        this.averageRating = orig.averageRating;
+        this.eventAsIcalString = orig.eventAsIcalString;
+        this.attachments = orig.attachments;
+        this.customFields = orig.customFields;
+    }
 
     @XmlElement(name="average_rating")
     public AverageRating getAverageRating() {

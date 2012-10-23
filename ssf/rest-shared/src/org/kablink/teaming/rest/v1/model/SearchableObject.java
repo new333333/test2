@@ -50,6 +50,11 @@ public abstract class SearchableObject extends BaseRestObject {
         super(link);
     }
 
+    protected SearchableObject(SearchableObject orig) {
+        super(orig);
+        this.docType = orig.docType;
+    }
+
     @XmlElement(name="doc_type")
     public String getDocType() {
         return docType;
@@ -58,4 +63,7 @@ public abstract class SearchableObject extends BaseRestObject {
     public void setDocType(String docType) {
         this.docType = docType;
     }
+
+    @Override
+    abstract public Object clone() throws CloneNotSupportedException;
 }

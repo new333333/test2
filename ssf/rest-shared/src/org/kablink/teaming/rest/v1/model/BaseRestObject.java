@@ -55,6 +55,11 @@ public abstract class BaseRestObject {
         this.link = link;
     }
 
+    protected BaseRestObject(BaseRestObject orig) {
+        this.link = orig.link;
+        this.additionalLinks = orig.additionalLinks;
+    }
+
     public String getLink() {
         return link;
     }

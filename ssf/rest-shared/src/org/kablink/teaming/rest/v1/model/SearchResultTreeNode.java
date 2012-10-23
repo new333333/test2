@@ -55,6 +55,10 @@ public class SearchResultTreeNode<T> {
         this.item = item;
     }
 
+    protected SearchResultTreeNode(SearchResultTreeNode<T> node) {
+        copyItems(node);
+    }
+
     @XmlElementWrapper(name = "children")
     @XmlElement(name = "node")
     public List<SearchResultTreeNode<T>> getChildren() {
@@ -84,5 +88,23 @@ public class SearchResultTreeNode<T> {
 
     public void setItem(T item) {
         this.item = item;
+    }
+
+    protected void copyItems(SearchResultTreeNode<T> orig) {
+        if (orig.item instanceof SearchableObject) {
+            try {
+                this.item = (T) ((SearchableObject)orig.item).clone();
+            } catch (CloneNotSupportedException e) {
+                //Ignore
+            }
+        }
+        List<SearchResultTreeNode<T>> copiedChildren = null;
+        if (orig.children!=null) {
+            copiedChildren = new ArrayList<SearchResultTreeNode<T>>(orig.children.size());
+            for (SearchResultTreeNode<T> child : orig.children) {
+                copiedChildren.add(new SearchResultTreeNode<T>(child));
+            }
+        }
+        this.children = copiedChildren;
     }
 }
