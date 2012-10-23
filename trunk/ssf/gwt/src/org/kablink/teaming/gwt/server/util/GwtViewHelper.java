@@ -3310,7 +3310,7 @@ public class GwtViewHelper {
 	
 			// ...if this is a file entry with a filename...
 			FileAttachment faForEntryIcon;
-			FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
+			FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, isTop);
 			if (null != fa) {
 				// ...store it for using for the entry icon...
 				faForEntryIcon = fa;
