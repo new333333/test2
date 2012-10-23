@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.LuceneProvider;
 import org.kablink.teaming.search.LuceneReadSession;
@@ -146,5 +147,19 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 
 	public void close() {
 		// luceneProvider is stateless, and there is no resource to release here.
+	}
+
+	@Override
+	public Hits searchNetFolderOneLevelOnly(Long contextUserId,
+			String aclQueryStr, int mode, Query query, Sort sort, int offset,
+			int size, Long parentBinderId, String parentBinderPath)
+			throws LuceneException {
+		SimpleProfiler.start("LocalLuceneReadSession.searchNetFolderOneLevelOnly()");
+		try {
+			return luceneProvider.searchNetFolderOneLevelOnly(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinderId, parentBinderPath);
+		}
+		finally {
+			SimpleProfiler.stop("LocalLuceneReadSession.searchNetFolderOneLevelOnly()");
+		}
 	}
 }

@@ -1443,8 +1443,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
         try {
-	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-	        		so.getAclQueryStr(), searchMode.intValue(), soQuery, so.getSortBy(), searchOffset, maxResults);
+        	if(binder.isAclExternallyControlled()) {
+        		// The binder is a Net Folder or a sub-folder of one.
+		        hits = luceneSession.searchNetFolderOneLevelOnly(RequestContextHolder.getRequestContext().getUserId(),
+		        		so.getAclQueryStr(), searchMode.intValue(), soQuery, so.getSortBy(), searchOffset, maxResults, binder.getId(), binder.getPathName());
+        	}
+        	else {
+		        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
+		        		so.getAclQueryStr(), searchMode.intValue(), soQuery, so.getSortBy(), searchOffset, maxResults);
+        	}
         }
         finally {
             luceneSession.close();
@@ -1493,12 +1500,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			searchFilter.addEntryTypes(entryTypes);
 		}
     }
-    
-    protected void getBinderEntries_getSearchDocument(Binder binder, String [] entryTypes, SearchFilter searchFilter) {
-    	// Always use the initial form of the method.
-    	getBinderEntries_getSearchDocument(binder, entryTypes, false, searchFilter);	// false -> Don't include nested binders in the search.
-    }
-    
+
     @Override
 	public IndexErrors indexEntry(Entry entry) {
     	return indexEntry(entry.getParentBinder(), entry, null, null, false, null);

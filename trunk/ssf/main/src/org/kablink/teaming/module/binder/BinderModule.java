@@ -793,4 +793,18 @@ public interface BinderModule {
 	
 	public void updateModificationTime(Binder binder);
 
+	/**
+	 * This search method is written specifically for finding net folders or within a net folder
+	 * sharing the same parent with the search depth of exactly one.
+	 * 
+	 * @param crit
+	 * @param searchMode
+	 * @param offset
+	 * @param maxResults
+	 * @param parentBinderId
+	 * @param parentBinderPath
+	 * @return
+	 */
+    public Map searchNetFolderOneLevelOnly(Criteria crit, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath);
+
 }

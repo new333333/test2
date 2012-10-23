@@ -73,6 +73,7 @@ import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -191,6 +192,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -222,6 +224,7 @@ import org.springframework.util.FileCopyUtils;
 
 import static org.kablink.util.search.Restrictions.conjunction;
 import static org.kablink.util.search.Restrictions.disjunction;
+import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.in;
 import static org.kablink.util.search.Restrictions.like;
 import static org.kablink.util.search.Restrictions.not;
@@ -2567,21 +2570,42 @@ public class GwtViewHelper {
 				return buildEmptyEntryMap();
 			}
 
+			Binder netFoldersBinder = getCoreDao().loadReservedBinder(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
+					RequestContextHolder.getRequestContext().getZoneId());
+			
 			// Add the criteria for top level mirrored file folders
 			// that have been configured...
-			crit.add(in(Constants.DOC_TYPE_FIELD,            new String[]{Constants.DOC_TYPE_BINDER}));
-			crit.add(in(Constants.ENTRY_ANCESTRY,            new String[]{topWSId}));
-			crit.add(in(Constants.FAMILY_FIELD,              new String[]{Definition.FAMILY_FILE}));
-			crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
-			crit.add(in(Constants.IS_TOP_FOLDER_FIELD,       new String[]{Constants.TRUE}));
-    		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
-
-    		// ...that are not Home folders.
-			Junction noHome = not();
-			crit.add(noHome);
-			noHome.add(in(Constants.IS_HOME_DIR_FIELD, new String[]{Constants.TRUE}));
+			crit.add(eq(Constants.DOC_TYPE_FIELD,            Constants.DOC_TYPE_BINDER));
+			crit.add(eq(Constants.IS_TOP_FOLDER_FIELD,       Constants.TRUE));
+    		crit.add(eq(Constants.HAS_RESOURCE_DRIVER_FIELD, Constants.TRUE));
+			crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD,   netFoldersBinder.getId().toString()));    		
 			
-			break;
+			// Do we have a quick filter?
+			if (null != quickFilter) {
+				quickFilter = quickFilter.trim();
+				if (0 < quickFilter.length()) {
+					// Yes!  Add it to the search criteria.
+					if (!(quickFilter.endsWith("*"))) {
+						quickFilter += "*";
+					}
+					crit.add(like(Constants.TITLE_FIELD, quickFilter));
+				}
+			}
+
+			// Add in the sort information...
+			boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
+			String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
+			crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
+			crit.addOrder(new Order(sortBy,                 sortAscend));
+			
+			// ...and issue the query and return the entries.
+			return
+				bs.getBinderModule().searchNetFolderOneLevelOnly(
+					crit,
+					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+					netFoldersBinder.getId(), netFoldersBinder.getPathName());
 			
 		case SHARED_BY_ME:
 		case SHARED_WITH_ME:
@@ -6699,5 +6723,9 @@ public class GwtViewHelper {
 		if (MiscUtil.hasString(value))
 		     return value.contains(quickFilter);
 		else return false;
+	}
+	
+	private static CoreDao getCoreDao() {
+		return (CoreDao) SpringContextUtil.getBean("coreDao");
 	}
 }

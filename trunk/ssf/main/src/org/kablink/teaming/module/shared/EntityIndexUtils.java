@@ -1241,8 +1241,10 @@ public class EntityIndexUtils {
     }
 
     public static void addBinderPath(Document doc, Binder binder, boolean fieldsOnly) {
-		Field path = FieldFactory.createFieldStoredNotAnalyzed(ENTITY_PATH, binder.getPathName());
+		Field path = FieldFactory.createFieldStoredNotIndexed(ENTITY_PATH, binder.getPathName());
 		doc.add(path);
+		Field sortPath = FieldFactory.createFieldNotStoredNotAnalyzed(SORT_ENTITY_PATH, binder.getPathName().toLowerCase());
+		doc.add(sortPath);
     }
 
     public static void addBinderIsLibrary(Document doc, Binder binder, boolean fieldsOnly) {
