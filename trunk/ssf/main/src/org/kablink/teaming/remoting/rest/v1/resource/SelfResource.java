@@ -33,9 +33,11 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -50,7 +52,9 @@ import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderTree;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
+import org.kablink.teaming.rest.v1.model.ParentBinder;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
@@ -67,7 +71,6 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -214,7 +217,11 @@ public class SelfResource extends AbstractFileResource {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", textDescriptions);
         Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, true, false, false, false);
-        return lookUpBinders(crit, textDescriptions, offset, maxCount, "/self/my_files/library_folders", nextParams);
+        SearchResultList<BinderBrief> results = lookUpBinders(crit, textDescriptions, offset, maxCount, "/self/my_files/library_folders", nextParams);
+        for (BinderBrief binder : results.getResults()) {
+            binder.setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+        }
+        return results;
     }
 
     @POST
@@ -230,7 +237,9 @@ public class SelfResource extends AbstractFileResource {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No folder title was supplied in the POST data.");
         }
         org.kablink.teaming.domain.Binder binder = FolderUtils.createLibraryFolder(parent, newBinder.getTitle());
-        return (org.kablink.teaming.rest.v1.model.Folder) ResourceUtil.buildBinder(binder, true, textDescriptions);
+        org.kablink.teaming.rest.v1.model.Folder folder = (org.kablink.teaming.rest.v1.model.Folder) ResourceUtil.buildBinder(binder, true, textDescriptions);
+        folder.setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+        return folder;
    	}
 
     @GET
@@ -251,6 +260,9 @@ public class SelfResource extends AbstractFileResource {
             Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
             SearchResultBuilderUtil.buildSearchResultsTree(results, folders.getResults().toArray(new BinderBrief[folders.getCount()]),
                     new BinderBriefBuilder(textDescriptions), resultMap);
+            for (SearchResultTreeNode<BinderBrief> node : results.getChildren()) {
+                node.getItem().setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+            }
             results.setItem(null);
         }
         return results;
@@ -353,6 +365,14 @@ public class SelfResource extends AbstractFileResource {
             crit.add(myFiles.asJunction());
         }
         SearchResultList<FileProperties> resultList = lookUpAttachments(crit, offset, maxCount, "/self/my_files/library_files", nextParams);
+        Long hiddenFolderId = SearchUtils.getMyFilesFolderId(this, getLoggedInUser().getWorkspaceId(), true);
+        if (hiddenFolderId!=null) {
+            for (FileProperties file : resultList.getResults()) {
+                if (file.getBinder().getId().equals(hiddenFolderId)) {
+                    file.setBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+                }
+            }
+        }
         if (includeParentPaths) {
             populateParentBinderPaths(resultList);
         }
@@ -370,7 +390,9 @@ public class SelfResource extends AbstractFileResource {
                                          @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
         Folder folder = _getHiddenFilesFolder();
         InputStream is = getInputStreamFromMultipartFormdata(request);
-        return createEntryWithAttachment(folder, fileName, modDateISO8601, expectedMd5, overwriteExisting, is);
+        FileProperties file = createEntryWithAttachment(folder, fileName, modDateISO8601, expectedMd5, overwriteExisting, is);
+        file.setBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+        return file;
     }
 
     @POST
@@ -384,7 +406,9 @@ public class SelfResource extends AbstractFileResource {
                                          @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
         Folder folder = _getHiddenFilesFolder();
         InputStream is = getRawInputStream(request);
-        return createEntryWithAttachment(folder, fileName, modDateISO8601, expectedMd5, overwriteExisting, is);
+        FileProperties file = createEntryWithAttachment(folder, fileName, modDateISO8601, expectedMd5, overwriteExisting, is);
+        file.setBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+        return file;
     }
 
     @GET
@@ -469,6 +493,7 @@ public class SelfResource extends AbstractFileResource {
         org.kablink.teaming.domain.User user = getLoggedInUser();
         BinderBrief binder = new BinderBrief();
         //TODO: localize
+        binder.setId(ObjectKeys.MY_FILES_ID);
         binder.setTitle("My Files");
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
         String baseUri = "/self/my_files";
@@ -485,6 +510,7 @@ public class SelfResource extends AbstractFileResource {
     private BinderBrief getFakeSharedWithMe() {
         BinderBrief binder = new BinderBrief();
         //TODO: localize
+        binder.setId(ObjectKeys.SHARED_WITH_ME_ID);
         binder.setTitle("Shared with Me");
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
         Long userId = getLoggedInUserId();
@@ -504,6 +530,7 @@ public class SelfResource extends AbstractFileResource {
     private BinderBrief getFakeSharedByMe() {
         BinderBrief binder = new BinderBrief();
         //TODO: localize
+        binder.setId(ObjectKeys.SHARED_BY_ME_ID);
         binder.setTitle("Shared by Me");
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
         Long userId = getLoggedInUserId();
@@ -523,6 +550,7 @@ public class SelfResource extends AbstractFileResource {
     private BinderBrief getFakeNetFolders() {
         BinderBrief binder = new BinderBrief();
         //TODO: localize
+        binder.setId(ObjectKeys.NET_FOLDERS_ID);
         binder.setTitle("Net Folders");
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
         Long userId = getLoggedInUserId();

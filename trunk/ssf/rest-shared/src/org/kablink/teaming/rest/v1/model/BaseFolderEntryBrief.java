@@ -21,6 +21,14 @@ public abstract class BaseFolderEntryBrief extends EntryBrief {
         super(link);
     }
 
+    protected BaseFolderEntryBrief(BaseFolderEntryBrief orig) {
+        super(orig);
+        this.docNumber = orig.docNumber;
+        this.docLevel = orig.docLevel;
+        this.fileNames = orig.fileNames;
+        this.totalReplyCount = orig.totalReplyCount;
+    }
+
     @XmlElement(name = "doc_level")
     public Integer getDocLevel() {
         return docLevel;

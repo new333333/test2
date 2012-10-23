@@ -604,6 +604,10 @@ public class ResourceUtil {
         if(binder.getModification() != null) {
             model.setModification(buildHistoryStamp(binder.getModification()));
         }
+        if (binder.getParentBinder()!=null) {
+            Long parentId = binder.getParentBinder().getId();
+            model.setParentBinder(new ParentBinder(parentId, LinkUriUtil.getBinderLinkUri(parentId)));
+        }
     }
 
     private static AverageRating buildAverageRating(org.kablink.teaming.domain.AverageRating rating){

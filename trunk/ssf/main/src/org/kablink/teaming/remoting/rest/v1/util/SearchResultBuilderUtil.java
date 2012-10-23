@@ -71,6 +71,7 @@ public class SearchResultBuilderUtil {
                 }
             }
         }
+        tree.cloneItems();
     }
 
     public static <T> void buildSearchResults(SearchResultList<T> results, SearchResultBuilder<T> builder, Map resultMap) {

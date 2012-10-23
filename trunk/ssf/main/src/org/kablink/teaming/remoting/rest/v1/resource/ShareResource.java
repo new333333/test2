@@ -16,6 +16,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Binder;
@@ -89,7 +90,7 @@ public class ShareResource extends AbstractResource {
     @Path("/by_user/{id}/binders")
     public SearchResultList<SharedBinderBrief> getBindersSharedByUser(@PathParam("id") Long userId) {
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
-        results.appendAll(getSharedByBinders(userId, false));
+        results.appendAll(getSharedByBinders(userId, false, true));
         return results;
     }
 
@@ -97,15 +98,15 @@ public class ShareResource extends AbstractResource {
     @Path("/by_user/{id}/binder_tree")
     public BinderTree getSharedByUserBinderTree(@PathParam("id") Long userId,
                                                 @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
-        SharedBinderBrief [] sharedBinders = getSharedByBinders(userId, false);
-        return getSubBinderTree(sharedBinders, null, textDescriptions);
+        SharedBinderBrief [] sharedBinders = getSharedByBinders(userId, false, false);
+        return getSubBinderTree(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", sharedBinders, null, textDescriptions);
     }
 
     @GET
     @Path("/by_user/{id}/library_folders")
     public SearchResultList<SharedBinderBrief> getLibraryFoldersSharedByUser(@PathParam("id") Long userId) {
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
-        results.appendAll(getSharedByBinders(userId, true));
+        results.appendAll(getSharedByBinders(userId, true, true));
         return results;
     }
 
@@ -115,7 +116,7 @@ public class ShareResource extends AbstractResource {
                                                                            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedBySpec(userId);
-        return _getSharedEntries(spec, null, includeParentPaths);
+        return _getSharedEntries(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", spec, null, includeParentPaths);
     }
 
     @GET
@@ -126,7 +127,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.appendAll(getSharedByFiles(userId, false));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedByBinders(userId, false), false));
+            results.appendAll(getSubFiles(getSharedByBinders(userId, false, false), false));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -172,7 +173,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.appendAll(getSharedByFiles(userId, true));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedByBinders(userId, true), true));
+            results.appendAll(getSubFiles(getSharedByBinders(userId, true, false), true));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -214,7 +215,7 @@ public class ShareResource extends AbstractResource {
     @Path("/with_user/{id}/binders")
     public SearchResultList<SharedBinderBrief> getBindersSharedWithUser(@PathParam("id") Long userId) {
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
-        results.appendAll(getSharedWithBinders(userId, false));
+        results.appendAll(getSharedWithBinders(userId, false, true));
         return results;
     }
 
@@ -222,15 +223,15 @@ public class ShareResource extends AbstractResource {
     @Path("/with_user/{id}/binder_tree")
     public BinderTree getSharedWithUserBinderTree(@PathParam("id") Long userId,
                                                   @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
-        SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, false);
-        return getSubBinderTree(sharedBinders, null, textDescriptions);
+        SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, false, false);
+        return getSubBinderTree(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", sharedBinders, null, textDescriptions);
     }
 
     @GET
     @Path("/with_user/{id}/library_folders")
     public SearchResultList<SharedBinderBrief> getLibraryFoldersSharedWithUser(@PathParam("id") Long userId) {
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
-        results.appendAll(getSharedWithBinders(userId, true));
+        results.appendAll(getSharedWithBinders(userId, true, true));
         return results;
     }
 
@@ -270,7 +271,7 @@ public class ShareResource extends AbstractResource {
                                                                              @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
-        return _getSharedEntries(spec, userId, includeParentPaths);
+        return _getSharedEntries(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", spec, userId, includeParentPaths);
     }
 
     @GET
@@ -281,7 +282,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.appendAll(getSharedWithFiles(userId, false));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedWithBinders(userId, false), false));
+            results.appendAll(getSubFiles(getSharedWithBinders(userId, false, false), false));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -297,7 +298,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.appendAll(getSharedWithFiles(userId, true));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedWithBinders(userId, true), true));
+            results.appendAll(getSubFiles(getSharedWithBinders(userId, true, false), true));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -309,8 +310,8 @@ public class ShareResource extends AbstractResource {
     @Path("/with_user/{id}/library_tree")
     public BinderTree getSharedWithUserLibraryTree(@PathParam("id") Long userId,
                                                    @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
-        SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, true);
-        return getSubBinderTree(sharedBinders, buildLibraryTreeCriterion(), textDescriptions);
+        SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, true, false);
+        return getSubBinderTree(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", sharedBinders, buildLibraryTreeCriterion(), textDescriptions);
     }
 
     @GET
@@ -349,31 +350,37 @@ public class ShareResource extends AbstractResource {
         return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, nextUrl, nextParams);
     }
 
-    protected SharedBinderBrief [] getSharedByBinders(Long userId, boolean onlyLibrary)  {
+    protected SharedBinderBrief [] getSharedByBinders(Long userId, boolean onlyLibrary, boolean replaceParent)  {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedBySpec(userId);
-        return _getSharedBinders(spec, null, onlyLibrary);
+        if (replaceParent) {
+            return _getSharedBinders(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", spec, null, onlyLibrary);
+        }
+        return _getSharedBinders(null, null, spec, null, onlyLibrary);
     }
 
     protected SharedFileProperties [] getSharedByFiles(Long userId, boolean onlyLibrary)  {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedBySpec(userId);
-        return _getSharedFiles(spec, null, onlyLibrary);
+        return _getSharedFiles(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", spec, null, onlyLibrary);
     }
 
-    protected SharedBinderBrief [] getSharedWithBinders(Long userId, boolean onlyLibrary)  {
+    protected SharedBinderBrief [] getSharedWithBinders(Long userId, boolean onlyLibrary, boolean replaceParent)  {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
-        return _getSharedBinders(spec, userId, onlyLibrary);
+        if (replaceParent) {
+            return _getSharedBinders(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", spec, userId, onlyLibrary);
+        }
+        return _getSharedBinders(null, null, spec, userId, onlyLibrary);
     }
 
     protected SharedFileProperties [] getSharedWithFiles(Long userId, boolean onlyLibrary)  {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
-        return _getSharedFiles(spec, userId, onlyLibrary);
+        return _getSharedFiles(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", spec, userId, onlyLibrary);
     }
 
-    private SearchResultList<SharedFolderEntryBrief> _getSharedEntries(ShareItemSelectSpec spec, Long excludedSharerId, boolean includeParentPaths) {
+    private SearchResultList<SharedFolderEntryBrief> _getSharedEntries(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean includeParentPaths) {
         Map<Long, SharedFolderEntryBrief> resultMap = new LinkedHashMap<Long, SharedFolderEntryBrief>();
         List<ShareItem> shareItems = getShareItems(spec, excludedSharerId);
         for (ShareItem shareItem : shareItems) {
@@ -385,6 +392,7 @@ public class ShareResource extends AbstractResource {
                         binderBrief.addShare(ResourceUtil.buildShare(shareItem));
                     } else {
                         binderBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, entry);
+                        binderBrief.setParentBinder(new ParentBinder(topId, topHref));
                         resultMap.put(entry.getId(), binderBrief);
                     }
                 } catch (AccessControlException e) {
@@ -400,7 +408,7 @@ public class ShareResource extends AbstractResource {
         return results;
     }
 
-    protected SharedBinderBrief [] _getSharedBinders(ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary)  {
+    protected SharedBinderBrief [] _getSharedBinders(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary)  {
         Map<Long, SharedBinderBrief> resultMap = new LinkedHashMap<Long, SharedBinderBrief>();
         List<ShareItem> shareItems = getShareItems(spec, excludedSharerId);
         for (ShareItem shareItem : shareItems) {
@@ -413,6 +421,9 @@ public class ShareResource extends AbstractResource {
                             binderBrief.addShare(ResourceUtil.buildShare(shareItem));
                         } else {
                             binderBrief = ResourceUtil.buildSharedBinderBrief(shareItem, binder);
+                            if (topId!=null) {
+                                binderBrief.setParentBinder(new ParentBinder(topId, topHref));
+                            }
                             resultMap.put(binder.getId(), binderBrief);
                         }
                     }
@@ -426,7 +437,7 @@ public class ShareResource extends AbstractResource {
         return results.toArray(new SharedBinderBrief[results.size()]);
     }
 
-    protected SharedFileProperties [] _getSharedFiles(ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary)  {
+    protected SharedFileProperties [] _getSharedFiles(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary)  {
         Map<String, SharedFileProperties> resultMap = new LinkedHashMap<String, SharedFileProperties>();
         List<ShareItem> shareItems = getShareItems(spec, excludedSharerId);
         for (ShareItem shareItem : shareItems) {
@@ -441,6 +452,7 @@ public class ShareResource extends AbstractResource {
                                 fileProps.addShare(ResourceUtil.buildShare(shareItem));
                             } else {
                                 fileProps = ResourceUtil.buildSharedFileProperties(shareItem, (FileAttachment) attachment);
+                                fileProps.setBinder(new ParentBinder(topId, topHref));
                                 resultMap.put(attachment.getId(), fileProps);
                             }
                         }
@@ -455,9 +467,10 @@ public class ShareResource extends AbstractResource {
         return results.toArray(new SharedFileProperties[results.size()]);
     }
 
-    protected BinderTree getSubBinderTree(SharedBinderBrief [] sharedBinders, Criterion filter, boolean textDescriptions) {
+    protected BinderTree getSubBinderTree(Long topId, String topHref, SharedBinderBrief [] sharedBinders, Criterion filter, boolean textDescriptions) {
         BinderTree results = new BinderTree();
         if (sharedBinders.length>0) {
+            ParentBinder topParent = new ParentBinder(topId, topHref);
             Criteria crit = new Criteria();
             if (filter!=null) {
                 crit.add(filter);
@@ -467,6 +480,9 @@ public class ShareResource extends AbstractResource {
             Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
             SearchResultBuilderUtil.buildSearchResultsTree(results, sharedBinders, new BinderBriefBuilder(textDescriptions), resultMap);
             results.setItem(null);
+            for (SearchResultTreeNode<BinderBrief> child : results.getChildren()) {
+                child.getItem().setParentBinder(topParent);
+            }
         }
         return results;
     }

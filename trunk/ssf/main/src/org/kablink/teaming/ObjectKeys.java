@@ -178,6 +178,14 @@ public interface ObjectKeys {
 	//reserved id put in acls/membership to indicate team members have access
 	//search engine stores the actual members of the team in place of this
 	public static final Long TEAM_MEMBER_ID = Long.valueOf(-2);
+    // Reserved id used by the REST API for the "My Files" virtual binder
+	public static final Long MY_FILES_ID = Long.valueOf(-100);
+    // Reserved id used by the REST API for the "Shared With Me" virtual binder
+	public static final Long SHARED_WITH_ME_ID = Long.valueOf(-101);
+    // Reserved id used by the REST API for the "Shared By Me" virtual binder
+	public static final Long SHARED_BY_ME_ID = Long.valueOf(-102);
+    // Reserved id used by the REST API for the "Net Folders" virtual binder
+	public static final Long NET_FOLDERS_ID = Long.valueOf(-103);
 	//Use -1 to reserve binderId field.  Shouldn't be generated as real binderId. Used for global definitions cause mysql won't enforce the namekey unique
 	//constraint if field is null.  Also used for global userProperties, cause null cannot be used in key field.
 	public static final Long RESERVED_BINDER_ID=Long.valueOf(-1);

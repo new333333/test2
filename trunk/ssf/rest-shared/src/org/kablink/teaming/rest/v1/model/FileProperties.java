@@ -52,7 +52,17 @@ public class FileProperties extends BaseFileProperties {
 	public FileProperties() {
 		super();
 	}
-	
+
+    protected FileProperties(FileProperties orig) {
+        super(orig);
+        this.owningEntity = orig.owningEntity;
+        this.binder = orig.binder;
+        this.name = orig.name;
+        this.lockedBy = orig.lockedBy;
+        this.lockExpiration = orig.lockExpiration;
+        this.permaLink = orig.permaLink;
+    }
+
     @XmlElement(name="owning_entity")
     public EntityId getOwningEntity() {
         return owningEntity;
@@ -104,5 +114,10 @@ public class FileProperties extends BaseFileProperties {
 
     public void setPermaLink(String permaLink) {
         this.permaLink = permaLink;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new FileProperties(this);
     }
 }

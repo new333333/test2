@@ -53,6 +53,19 @@ public class User extends Principal {
     private LongIdLinkPair hiddenFilesFolder;
    	private LongIdLinkPair workspace;
 
+    public User() {
+        super();
+    }
+
+    protected User(User orig) {
+        super(orig);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new User(this);
+    }
+
     @XmlElement(name="disk_quota")
     public Long getDiskQuota() {
         return diskQuota;

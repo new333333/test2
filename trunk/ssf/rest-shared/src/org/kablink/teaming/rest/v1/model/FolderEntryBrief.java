@@ -11,4 +11,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class FolderEntryBrief extends BaseFolderEntryBrief {
+    public FolderEntryBrief() {
+        super();
+    }
+
+    protected FolderEntryBrief(FolderEntryBrief orig) {
+        super(orig);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new FolderEntryBrief(this);
+    }
 }

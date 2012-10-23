@@ -19,6 +19,11 @@ public abstract class EntryBrief extends DefinableEntityBrief {
         setDocType("entry");
     }
 
+    protected EntryBrief(EntryBrief orig) {
+        super(orig);
+        this.entryType = orig.entryType;
+    }
+
     @XmlElement(name = "entry_type")
     public String getEntryType() {
         return entryType;

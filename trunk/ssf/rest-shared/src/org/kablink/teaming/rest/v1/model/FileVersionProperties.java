@@ -40,4 +40,13 @@ public class FileVersionProperties extends BaseFileProperties {
 	public FileVersionProperties() {
 		super();
 	}
+
+    protected FileVersionProperties(FileVersionProperties orig) {
+        super(orig);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new FileVersionProperties(this);
+    }
 }

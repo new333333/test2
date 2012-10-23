@@ -46,6 +46,11 @@ public abstract class Entry extends DefinableEntity {
         setDocType("entry");
     }
 
+    protected Entry(Entry orig) {
+        super(orig);
+        this.entryType = orig.entryType;
+    }
+
     @XmlElement(name = "entry_type")
     public String getEntryType() {
         return entryType;

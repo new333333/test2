@@ -36,5 +36,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement (name = "workspace")
 public final class Workspace extends Binder {
+    public Workspace() {
+        super();
+    }
 
+    protected Workspace(Workspace orig) {
+        super(orig);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new Workspace(this);
+    }
 }
