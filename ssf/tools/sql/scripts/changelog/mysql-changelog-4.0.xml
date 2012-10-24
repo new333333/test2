@@ -338,7 +338,7 @@ update SS_Principals set internal=0,fromLdap=0,fromLocal=0,fromOpenid=1 where id
 update SS_Principals set internal=1,fromLdap=0,fromLocal=1,fromOpenid=0 where identitySource=1;
 update SS_Principals set internal=1,fromLdap=1,fromLocal=0,fromOpenid=0 where identitySource=2;
 update SS_Principals set internal=1,fromLdap=0,fromLocal=1,fromOpenid=0 where identitySource is null and name = foreignName;
-update SS_Principals set internal=1,fromLdap=1,fromLocal=0,fromOpenid=0 where identitySource is null and name <> foreignName;            
+update SS_Principals set internal=1,fromLdap=1,fromLocal=0,fromOpenid=0 where identitySource is null and name != foreignName;            
         </sql>
     </changeSet>
 
