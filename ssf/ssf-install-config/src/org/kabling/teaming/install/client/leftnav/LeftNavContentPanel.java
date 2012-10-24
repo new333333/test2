@@ -29,6 +29,7 @@ public class LeftNavContentPanel extends Composite
 			leftNavContent.add(getLeftNavItem(appResource.webServices(), LeftNavItemType.WEB_SERVICES));
 			leftNavContent.add(getLeftNavItem(appResource.javaJDK(), LeftNavItemType.JAVA_JDK));
 			leftNavContent.add(getLeftNavItem(appResource.webDavAuthentication(), LeftNavItemType.WEBDAV_AUTHENTICATION));
+			leftNavContent.add(getLeftNavItem(appResource.exportConfiguration(), LeftNavItemType.IMPORT_EXPORT));
 		}
 
 		//Add Tomcat Restart Panel

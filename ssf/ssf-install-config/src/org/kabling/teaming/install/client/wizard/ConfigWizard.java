@@ -5,9 +5,11 @@ import java.util.List;
 
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigFinishEnableEvent;
+import org.kabling.teaming.install.client.ConfigModifiedEvent;
 import org.kabling.teaming.install.client.ConfigFinishEnableEvent.ConfigFinishEnableEventHandler;
 import org.kabling.teaming.install.client.ConfigNextButtonEnableEvent;
 import org.kabling.teaming.install.client.ConfigNextButtonEnableEvent.ConfigNextEnableEventHandler;
+import org.kabling.teaming.install.client.ConfigWizardSucessEvent;
 import org.kabling.teaming.install.client.GwtClientHelper;
 import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.client.widgets.StatusIndicator;
@@ -369,6 +371,11 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		public void onSuccess(Void coid)
 		{
 			hideStatusIndicator();
+			//Set the flag that we have configured
+			AppUtil.getProductInfo().setConfigured(true);
+			
+			AppUtil.getEventBus().fireEvent(new ConfigWizardSucessEvent(true));
+			
 			ConfigWizard.this.hide(true);
 		}
 	}

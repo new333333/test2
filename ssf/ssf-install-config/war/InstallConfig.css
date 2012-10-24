@@ -701,7 +701,7 @@ td.table-value {
 	display: block;
 }
 
-.tomcatRestartButton {
+.tomcatRestartButton,.exportButton {
 	margin-bottom: 10px;
 	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff),
 		to(#E0E0E0) );
@@ -751,6 +751,10 @@ td.table-value {
  	cursor: default;
  }
 
+.exportButton {
+	margin : 20px 10px;
+}
+
 .section {
 	margin-top: 25px;
 	color: #505354;
@@ -791,7 +795,7 @@ td.table-value {
 
 .configSummaryTitle {
 	font-size: 18px;
-	margin-bottom: 10px;
+	margin-bottom: 5px;
 	color: #505354;
 }
 
@@ -849,6 +853,19 @@ td.table-value {
 	color: #949494;
 	font-size: 11px;
 	text-align: right;
+}
+
+.importPageContent {
+	margin: 10px 10px 50px 10px;
+}
+
+.configFinishedLabel {
+	font-size: 14px;
+	margin: 10px 0px;
+	color : #505354;
+	background: #ededed;
+	border-radius : 4px;
+	padding: 10px;
 }
 
 

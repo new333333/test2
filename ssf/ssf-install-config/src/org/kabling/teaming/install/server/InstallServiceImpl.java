@@ -1,16 +1,22 @@
 package org.kabling.teaming.install.server;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -105,14 +111,13 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		return loginInfo;
 	}
 
-
 	@Override
 	public void logout()
 	{
-		//Invalidate the session
+		// Invalidate the session
 		getThreadLocalRequest().getSession().invalidate();
 	}
-	
+
 	public InstallerConfig getConfiguration()
 	{
 		InstallerConfig config = null;
@@ -168,6 +173,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		{
 			logger.debug("SAXException - while reading the file in getDocument(");
 		}
+		
 		return null;
 
 	}
@@ -372,7 +378,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 			if (currentElement != null)
 			{
-				env.setJdkHome(currentElement.getAttribute("JDK_HOME"));
+				env.setJdkHome(currentElement.getAttribute("JAVA_HOME"));
 				env.setJdkType(currentElement.getAttribute("type"));
 			}
 
@@ -1624,7 +1630,65 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		File file = new File("/filrinstall/configured");
 		productInfo.setConfigured(file.exists());
 
+		String ipAddr = getLocalIpAddr();
+		if (ipAddr != null)
+			productInfo.setLocalIpAddress(ipAddr);
+		else
+		{
+			InetAddress ip;
+			try
+			{
+				ip = InetAddress.getLocalHost();
+				productInfo.setLocalIpAddress(ip.getHostAddress());
+
+			}
+			catch (UnknownHostException e)
+			{
+				logger.warn("Unable to get local ip address");
+			}
+		}
+
 		return productInfo;
+	}
+
+	private String getLocalIpAddr()
+	{
+		String ipAddr = null;
+		try
+		{
+			BufferedReader reader = new BufferedReader(new FileReader("/proc/net/route"));
+			String line;
+			while ((line = reader.readLine()) != null)
+			{
+				line = line.trim();
+				String[] tokens = line.split("\\t");
+				if (tokens.length > 1 && tokens[1].equals("00000000"))
+				{
+					String iface = tokens[0];
+					NetworkInterface nif = NetworkInterface.getByName(iface);
+					Enumeration addrs = nif.getInetAddresses();
+					while (addrs.hasMoreElements())
+					{
+						Object obj = addrs.nextElement();
+						if (obj instanceof Inet4Address)
+						{
+							ipAddr = obj.toString();
+							if (ipAddr.startsWith("/"))
+								ipAddr = ipAddr.substring(1);
+							return ipAddr;
+						}
+					}
+					return null;
+				}
+			}
+			reader.close();
+		}
+		catch (IOException e)
+		{
+			System.err.println(e);
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static boolean isUnix()
@@ -1721,6 +1785,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 					dbConfig.getResourcePassword()))
 				return;
 
+			logger.info("Database does not exist, updating mysql-liquibase.properties");
 			// Create database
 			if (dbConfig != null)
 			{
@@ -1789,9 +1854,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	@Override
 	public void reconfigure(boolean restartServer) throws ConfigurationSaveException
 	{
-		//Stop the server
+		// Stop the server
 		stopFilrServer();
-		
+
 		// Do the reconfigure which takes the changes from installer.xml and reconfigures
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
@@ -1805,7 +1870,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				throw new ConfigurationSaveException();
 			}
 		}
-		
+
 		if (restartServer)
 			startFilrServer();
 	}

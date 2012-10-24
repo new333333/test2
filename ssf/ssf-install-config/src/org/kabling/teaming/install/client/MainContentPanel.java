@@ -1,20 +1,41 @@
 package org.kabling.teaming.install.client;
 
+import org.kabling.teaming.install.client.ConfigWizardSucessEvent.ConfigWizardSuccessEventHandler;
 import org.kabling.teaming.install.client.config.ConfigSummaryPage;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
-public class MainContentPanel extends Composite
+public class MainContentPanel extends Composite implements ConfigWizardSuccessEventHandler
 {
+	private FlowPanel div;
+
 	public MainContentPanel()
 	{
-		FlowPanel div = new FlowPanel();
+		div = new FlowPanel();
 		div.addStyleName("rightContent");
 
-		// TODO: We probably need to show a different page after the initial configuration wizard
-
-		div.add(new ConfigSummaryPage());
+		if (AppUtil.getProductInfo().isConfigured())
+		{
+			div.add(new ConfigSummaryPage());
+		}
 		initWidget(div);
+		
+		// Look for config modifications
+		AppUtil.getEventBus().addHandler(ConfigWizardSucessEvent.TYPE, this);
+	}
+
+	@Override
+	public void onEvent(ConfigWizardSucessEvent event)
+	{
+		div.clear();
+		if (event.isSucess())
+		{
+			div.add(new ConfigSummaryPage(true));
+		}
+		else
+		{
+			div.add(new ConfigSummaryPage(false));
+		}
 	}
 }
