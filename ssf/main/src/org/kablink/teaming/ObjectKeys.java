@@ -166,11 +166,11 @@ public interface ObjectKeys {
 	//reserved id for Filr file owner role
 	public static final String FUNCTION_FILR_FILE_OWNER_INTERNALID="402883b90d0de1f3010d0df5582b0027";
 	//reserved id for Filr folder read role
-	public static final String FUNCTION_FILR_READ_INTERNALID="402883b90d0de1f3010d0df5582b0028";
+	public static final String FUNCTION_FILR_VIEWER_INTERNALID="402883b90d0de1f3010d0df5582b0028";
 	//reserved id for Filr folder write role
-	public static final String FUNCTION_FILR_WRITE_INTERNALID="402883b90d0de1f3010d0df5582b0029";
+	public static final String FUNCTION_FILR_EDITOR_INTERNALID="402883b90d0de1f3010d0df5582b0029";
 	//reserved id for Filr folder owner role
-	public static final String FUNCTION_FILR_OWNER_INTERNALID="402883b90d0de1f3010d0df5582b0030";
+	public static final String FUNCTION_FILR_CONTRIBUTOR_INTERNALID="402883b90d0de1f3010d0df5582b0030";
 
 	//reserved id put in acls/membership to indicate owner of object has access
 	//search engine stores the ownerId of the entity in place of this
@@ -251,9 +251,9 @@ public interface ObjectKeys {
     public static final String ROLE_TITLE_WORKSPACE_CREATOR="__role.workspaceCreator";
     public static final String ROLE_TITLE_SITE_ADMIN="__role.siteAdmin"; //Depreciated
     public static final String ROLE_TITLE_ALLOW_SHARING="__role.allowSharing"; 
-    public static final String ROLE_TITLE_FILR_READ="__role.FilrRead"; 
-    public static final String ROLE_TITLE_FILR_WRITE="__role.FilrWrite"; 
-    public static final String ROLE_TITLE_FILR_OWNER="__role.FilrOwner"; 
+    public static final String ROLE_TITLE_FILR_VIEWER="__role.FilrViewer"; 
+    public static final String ROLE_TITLE_FILR_EDITOR="__role.FilrEditor"; 
+    public static final String ROLE_TITLE_FILR_CONTRIBUTOR="__role.FilrContributor"; 
     
     //reserved pseudo roles. Only have 1 right each and cannot be edited by user.
     //Used to simulate a group of users without actually using the group facility.
