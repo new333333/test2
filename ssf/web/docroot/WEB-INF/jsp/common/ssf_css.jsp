@@ -2480,6 +2480,14 @@ div.ss_search_results_pane {
 	padding:0px 15px;
 	background:inherit;
 }
+.ss_search_results_entry_date {
+	font-size: 10px;
+	color: #666666;
+	display: inline;
+	padding-left: 10px;
+	vertical-align: middle;
+}
+
 .ss_search_results_selection_active {
 	background:url(<html:imagesPath/>pics/background_search_results_active.gif) repeat-x !important;
 	text-decoration:none;
@@ -4253,10 +4261,10 @@ div.ss_thumbnail {
 	text-align:center;
 	}
 div.ss_thumbnail img {width:24px;height:24px;padding:0px; margin:0px;}
-div.ss_entry {
+div.ss_entry, div.ss_reply {
 	float: left;
 }
-div.ss_entry p {
+div.ss_entry p, , div.ss_reply p {
 	margin-top:    2px;
 	margin-bottom: 2px;
 
@@ -4288,7 +4296,8 @@ div.ss_more {
     font-size: 10px;
 }
 div.ss_entryDetails {padding:0px 0px 5px 30px;}
-div.ss_entryDetails p {
+div.ss_entryDetails2 {padding:0px 0px 0px 0px;}
+div.ss_entryDetails p, div.ss_entryDetails2 p {
 	margin: 0px 3px 1px 0px;
 	font-size: ${ss_style_font_smallprint};
 	color: #666;
