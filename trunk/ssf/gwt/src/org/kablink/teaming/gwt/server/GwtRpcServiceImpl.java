@@ -634,9 +634,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			gafsCmd = (GetAdhocFolderSettingCmd) cmd;
 			userId = gafsCmd.getUserId();
 			if ( userId != null )
-				result = GwtServerHelper.getAdhocFolderSettingFromUser( this, userId );
+				result = GwtUIHelper.getAdhocFolderSettingFromUser( this, userId );
 			else
-				result = GwtServerHelper.getAdhocFolderSettingFromZone( this );
+				result = GwtUIHelper.getAdhocFolderSettingFromZone( this );
 			
 			if ( result == null )
 				result = Boolean.FALSE;

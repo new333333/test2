@@ -54,6 +54,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -587,6 +588,67 @@ public class GwtUIHelper {
 		hSession.setAttribute(CACHED_TOP_RANKED_PLACES_KEY, new GwtUISessionData(model.get(WebKeys.FOLDER_ENTRYPLACES)));
 	}
 
+	/**
+	 * Return the "adhoc folder" setting from the given user's properties.
+	 */
+	public static Boolean getAdhocFolderSettingFromUser(
+		AllModulesInjected ami,
+		Long userId )
+	{
+		if ( userId != null )
+		{
+			UserProperties userProperties;
+			Object value;
+
+			// Read the "allow adhoc folder" setting from the user's properties.
+			userProperties = ami.getProfileModule().getUserProperties( userId );
+			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS );
+			if ( value != null && value instanceof String )
+			{
+				return new Boolean( (String) value );
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Return the "adhoc folder" setting from the zone. 
+	 */
+	public static Boolean getAdhocFolderSettingFromZone(
+		AllModulesInjected ami )
+	{
+		// Read the global setting.
+		return  new Boolean( ami.getAdminModule().isAdHocFoldersEnabled() );
+	}
+	
+	/**
+	 * Return the effective "adhoc folder" setting from the given user.  We will look in the
+	 * user's properties first for a value.  If one is not found we will get the setting from
+	 * the zone.
+	 */
+	public static Boolean getEffectiveAdhocFolderSetting(
+		AllModulesInjected ami,
+		User user )
+	{
+		Boolean result;
+
+		result = null;
+		
+		if ( user != null )
+			result = getAdhocFolderSettingFromUser( ami, user.getId() );
+	
+		// Did we find a setting in the user's properties?
+		if ( result == null )
+		{
+			// No
+			// Read the global setting.
+			result = getAdhocFolderSettingFromZone( ami );
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * Returns a Binder from it's ID guarding against any exceptions.
 	 * If an exception is caught, null is returned. 

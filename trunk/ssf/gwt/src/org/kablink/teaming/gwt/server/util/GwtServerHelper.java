@@ -2280,67 +2280,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Return the "adhoc folder" setting from the given user's properties.
-	 */
-	public static Boolean getAdhocFolderSettingFromUser(
-		AllModulesInjected ami,
-		Long userId )
-	{
-		if ( userId != null )
-		{
-			UserProperties userProperties;
-			Object value;
-
-			// Read the "allow adhoc folder" setting from the user's properties.
-			userProperties = ami.getProfileModule().getUserProperties( userId );
-			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS );
-			if ( value != null && value instanceof String )
-			{
-				return new Boolean( (String) value );
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * Return the "adhoc folder" setting from the zone. 
-	 */
-	public static Boolean getAdhocFolderSettingFromZone(
-		AllModulesInjected ami )
-	{
-		// Read the global setting.
-		return  new Boolean( ami.getAdminModule().isAdHocFoldersEnabled() );
-	}
-	
-	/**
-	 * Return the effective "adhoc folder" setting from the given user.  We will look in the
-	 * user's properties first for a value.  If one is not found we will get the setting from
-	 * the zone.
-	 */
-	public static Boolean getEffectiveAdhocFolderSetting(
-		AllModulesInjected ami,
-		User user )
-	{
-		Boolean result;
-
-		result = null;
-		
-		if ( user != null )
-			result = getAdhocFolderSettingFromUser( ami, user.getId() );
-	
-		// Did we find a setting in the user's properties?
-		if ( result == null )
-		{
-			// No
-			// Read the global setting.
-			result = getAdhocFolderSettingFromZone( ami );
-		}
-		
-		return result;
-	}
-	
-	/**
 	 * Return a list of administration actions the user has rights to perform. 
 	 */
 	public static ArrayList<GwtAdminCategory> getAdminActions( HttpServletRequest request, Binder binder, AbstractAllModulesInjected allModules )
@@ -9232,7 +9171,7 @@ public class GwtServerHelper {
 	public static boolean useHomeAsMyFiles( AllModulesInjected ami ) {
 		Boolean result;
 		
-		result = getEffectiveAdhocFolderSetting( ami, getCurrentUser() );
+		result = GwtUIHelper.getEffectiveAdhocFolderSetting( ami, getCurrentUser() );
 		if ( result != null && result == false )
 			return true;
 		
