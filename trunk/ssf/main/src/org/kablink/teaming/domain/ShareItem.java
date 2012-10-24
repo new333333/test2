@@ -291,16 +291,16 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		EDITOR("share.role.title.editor",
 				new WorkAreaOperation[] {
 				WorkAreaOperation.READ_ENTRIES, 
-				WorkAreaOperation.MODIFY_ENTRIES, 
-				WorkAreaOperation.ADD_REPLIES
+				WorkAreaOperation.ADD_REPLIES,
+				WorkAreaOperation.MODIFY_ENTRIES 
 				}),
 		CONTRIBUTOR("share.role.title.contributor",
 				new WorkAreaOperation[] {
 				WorkAreaOperation.READ_ENTRIES, 
-				WorkAreaOperation.CREATE_ENTRIES, 
-				WorkAreaOperation.MODIFY_ENTRIES, 
-				WorkAreaOperation.DELETE_ENTRIES,
 				WorkAreaOperation.ADD_REPLIES, 
+				WorkAreaOperation.MODIFY_ENTRIES, 
+				WorkAreaOperation.CREATE_ENTRIES, 
+				WorkAreaOperation.DELETE_ENTRIES,
 				WorkAreaOperation.BINDER_ADMINISTRATION, 
 				WorkAreaOperation.CREATE_ENTRY_ACLS, 
 				WorkAreaOperation.CHANGE_ACCESS_CONTROL

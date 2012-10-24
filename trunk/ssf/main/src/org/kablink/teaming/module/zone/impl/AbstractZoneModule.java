@@ -636,6 +636,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			//No longer used
 		}
 		
+		if(version.intValue() <= 11) {
+			correctFilrRoles(zoneConfig);
+		}
+		
 		//Remove unused eEnableExternalSharing and AllowExternalSharing roles
 		WorkAreaOperation enableExternalSharing = WorkAreaOperation.getInstance("enableExternalSharing");
 		WorkAreaOperation allowExternalSharing = WorkAreaOperation.getInstance("allowExternalSharing");
@@ -652,6 +656,45 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		WorkAreaOperation.deleteInstance(allowExternalSharing.getName());
 		
   	}
+ 	
+ 	private void correctFilrRoles(ZoneConfig zoneConfig) {
+		Function function;
+		List<Function> functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
+		Map<String,Function> functionInternalIds = new HashMap<String,Function>();
+		for (int i = 0; i < functions.size(); i++) {
+			function = (Function)functions.get(i);
+			if (function.getInternalId() != null) 
+				functionInternalIds.put(function.getInternalId(), function);
+		}
+		
+		Function filrViewerRole = functionInternalIds.get(ObjectKeys.FUNCTION_FILR_VIEWER_INTERNALID);
+		if(filrViewerRole != null) {
+			filrViewerRole.setName(ObjectKeys.ROLE_TITLE_FILR_VIEWER);
+			filrViewerRole.getOperations().clear();
+			fillFilrRoleViewer(filrViewerRole);
+			getFunctionManager().updateFunction(filrViewerRole);
+			
+		}
+		
+		Function filrEditorRole = functionInternalIds.get(ObjectKeys.FUNCTION_FILR_EDITOR_INTERNALID);
+		if(filrEditorRole != null) {
+			filrEditorRole.setName(ObjectKeys.ROLE_TITLE_FILR_EDITOR);
+			filrEditorRole.getOperations().clear();
+			fillFilrRoleEditor(filrEditorRole);
+			getFunctionManager().updateFunction(filrEditorRole);
+			
+		}
+		
+		Function filrContributorRole = functionInternalIds.get(ObjectKeys.FUNCTION_FILR_CONTRIBUTOR_INTERNALID);
+		if(filrContributorRole != null) {
+			filrContributorRole.setName(ObjectKeys.ROLE_TITLE_FILR_CONTRIBUTOR);
+			filrContributorRole.getOperations().clear();
+			fillFilrRoleContributor(filrContributorRole);
+			getFunctionManager().updateFunction(filrContributorRole);
+			
+		}
+ 	}
+ 	
  	/**
  	 * Fix up duplicate definitions.  1.0 allowed definitions with the same name
  	 * we need to find any definitions with the same name and rename those that are duplicates.
@@ -1536,50 +1579,69 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
-	private Function addFilrRoleRead(Long zoneId) {
+	
+	private Function addFilrRoleViewer(Long zoneId) {
+		// VIEWER: read only (read, open, file scan)
 		Function function = new Function();
 		function.setZoneId(zoneId);
-		function.setName(ObjectKeys.ROLE_TITLE_FILR_READ);
+		function.setName(ObjectKeys.ROLE_TITLE_FILR_VIEWER);
 		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
-		function.setInternalId(ObjectKeys.FUNCTION_FILR_READ_INTERNALID);
-		function.addOperation(WorkAreaOperation.READ_ENTRIES);
-		function.addOperation(WorkAreaOperation.ADD_REPLIES);
+		function.setInternalId(ObjectKeys.FUNCTION_FILR_VIEWER_INTERNALID);
+		fillFilrRoleViewer(function);
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
-	private Function addFilrRoleWrite(Long zoneId) {
+	private void fillFilrRoleViewer(Function function) {
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		function.addOperation(WorkAreaOperation.ADD_REPLIES);
+	}
+	
+	private Function addFilrRoleEditor(Long zoneId) {
+		// EDITOR: read and write (read, open, file scan, write)
 		Function function = new Function();
 		function.setZoneId(zoneId);
-		function.setName(ObjectKeys.ROLE_TITLE_FILR_WRITE); 
+		function.setName(ObjectKeys.ROLE_TITLE_FILR_EDITOR); 
 		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
-		function.setInternalId(ObjectKeys.FUNCTION_FILR_WRITE_INTERNALID);
+		function.setInternalId(ObjectKeys.FUNCTION_FILR_EDITOR_INTERNALID);
+		fillFilrRoleEditor(function);
+		getFunctionManager().addFunction(function);		
+		return function;
+	}
+	private void fillFilrRoleEditor(Function function) {
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		function.addOperation(WorkAreaOperation.ADD_REPLIES);
+		// This is tricky. On the file system, the right to modify content of a file is separate from the right
+		// to rename a file. However, traditionally on the Filr side, these two rights were combined into a single
+		// right called MODIFY_ENTRIES. So we address this problem by differentiating those two modes in the 
+		// application layer (as opposed to simply invoking low-level access checking manager), and if it is
+		// detected that the nature of the modification is for renaming, then the right to check against is
+		// escalated from MODIFY_ENTRIES to a pair of CREATE_ENTRIES and DELETE_ENTRIES, which effectively
+		// requires the principal to have the CONTRIBUTOR role on that file.
+		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);		
+	}
+	
+	private Function addFilrRoleContributor(Long zoneId) {
+		// CONTRIBUTOR: all rights (read, open, file scan, write, create, erase/delete, modify/rename)
+		Function function = new Function();
+		function.setZoneId(zoneId);
+		function.setName(ObjectKeys.ROLE_TITLE_FILR_CONTRIBUTOR);
+		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
+		function.setInternalId(ObjectKeys.FUNCTION_FILR_CONTRIBUTOR_INTERNALID);
+		fillFilrRoleContributor(function);
+		getFunctionManager().addFunction(function);		
+		return function;
+	}
+	private void fillFilrRoleContributor(Function function) {
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
-		function.addOperation(WorkAreaOperation.ADD_REPLIES);
-		getFunctionManager().addFunction(function);		
-		return function;
-	}
-	private Function addFilrRoleOwner(Long zoneId) {
-		Function function = new Function();
-		function.setZoneId(zoneId);
-		function.setName(ObjectKeys.ROLE_TITLE_FILR_OWNER);
-		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
-		function.setInternalId(ObjectKeys.FUNCTION_FILR_OWNER_INTERNALID);
-		function.addOperation(WorkAreaOperation.READ_ENTRIES);
-		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		function.addOperation(WorkAreaOperation.CREATE_FOLDERS);		
 		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
-		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
-		function.addOperation(WorkAreaOperation.ADD_REPLIES);
-		function.addOperation(WorkAreaOperation.ALLOW_SHARING);
 		function.addOperation(WorkAreaOperation.BINDER_ADMINISTRATION);
 		function.addOperation(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
-		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
-		function.addOperation(WorkAreaOperation.CREATE_FOLDERS);
-		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
-		function.addOperation(WorkAreaOperation.VIEW_BINDER_TITLE);
-		getFunctionManager().addFunction(function);		
-		return function;
+		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
+		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);		
 	}
 	
 	private User getSynchronizationAgent(Long zoneId) {
@@ -1782,17 +1844,17 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			if (function.getInternalId() != null) functionInternalIds.put(function.getInternalId(), function);
 		}
 		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_READ_INTERNALID)) {
-			addFilrRoleRead(zoneConfig.getZoneId());
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_VIEWER_INTERNALID)) {
+			addFilrRoleViewer(zoneConfig.getZoneId());
 		}
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_WRITE_INTERNALID)) {
-			addFilrRoleWrite(zoneConfig.getZoneId());
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_EDITOR_INTERNALID)) {
+			addFilrRoleEditor(zoneConfig.getZoneId());
 		}
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_OWNER_INTERNALID)) {
-			addFilrRoleOwner(zoneConfig.getZoneId());
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_CONTRIBUTOR_INTERNALID)) {
+			addFilrRoleContributor(zoneConfig.getZoneId());
 		} else {
 			//Make sure this role is properly configured
-			Function filrOwnerFunction = (Function) functionInternalIds.get(ObjectKeys.FUNCTION_FILR_OWNER_INTERNALID);
+			Function filrOwnerFunction = (Function) functionInternalIds.get(ObjectKeys.FUNCTION_FILR_CONTRIBUTOR_INTERNALID);
 			if (!filrOwnerFunction.getOperations().contains(WorkAreaOperation.CREATE_FOLDERS)) {
 				//This function needs to be fixed up
 				filrOwnerFunction.addOperation(WorkAreaOperation.CREATE_FOLDERS);
