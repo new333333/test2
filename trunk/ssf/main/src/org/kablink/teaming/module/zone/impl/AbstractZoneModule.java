@@ -852,9 +852,20 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			
 			// now see if we find the reserved Guest User
 			guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
+			boolean guestChanged = false;
 			// Make sure guest has password.
 			if(guest.getPassword() == null) {
 				guest.setPassword(guest.getName());
+				guestChanged = true;
+			}
+			// Make sure guest is categorized as external
+			IdentityInfo ii = guest.getIdentityInfo();
+			if(ii.isInternal()) {
+				ii.setInternal(false);
+				guest.setIdentityInfo(ii);
+				guestChanged = true;
+			}
+			if(guestChanged) {
 				getCoreDao().merge(guest);
 			}
 		} catch (NoUserByTheNameException nu) {
@@ -885,7 +896,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 		//make sure allExtUsers exists
 		try {
-			getProfileDao().getReservedGroup(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, zone.getId());
+			Group allExtUsers = getProfileDao().getReservedGroup(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, zone.getId());
+			// make this this group is categorized as external
+			IdentityInfo ii = allExtUsers.getIdentityInfo();
+			if(ii.isInternal()) {
+				ii.setInternal(false);
+				allExtUsers.setIdentityInfo(ii);
+				getCoreDao().merge(allExtUsers);
+			}
 		} catch (NoGroupByTheNameException nu) {
 			//need to add it
 			Group g = addAllExtUserGroup(superU.getParentBinder(), new HistoryStamp(superU));
@@ -1194,7 +1212,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
     private Group addAllExtUserGroup(Binder parent, HistoryStamp stamp) {
 		//build allExtUsers group
-		Group group = new Group(new IdentityInfo());
+		Group group = new Group(new IdentityInfo(false, false, true, false));
 		group.setName("allExtUsers");
 		group.setForeignName(group.getName());
 		group.setTitle(NLT.get("administration.initial.group.allextuser.title", group.getName()));
@@ -1222,9 +1240,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		group.setModification(stamp);
 		return group;
 	}
-	private User addReservedUser(Binder parent, HistoryStamp stamp, String name, String password, String title, String id) {
+	private User addReservedUser(Binder parent, HistoryStamp stamp, String name, String password, String title, String id, IdentityInfo identityInfo) {
 		
-		User user = new User(new IdentityInfo());
+		if(identityInfo == null)
+			identityInfo = new IdentityInfo();
+		User user = new User(identityInfo);
 		user.setName(name);
 		if(password != null) // optional field
 			user.setPassword(password);
@@ -1248,20 +1268,20 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return user;
 	}
 	private User addPosting(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "_postingAgent", null, NLT.get("administration.initial.postingAgent.title"), ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID);
+		return addReservedUser(parent, stamp, "_postingAgent", null, NLT.get("administration.initial.postingAgent.title"), ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, null);
 	}
 	private User addJobProcessor(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "_jobProcessingAgent", null, NLT.get("administration.initial.jobProcessor.title"), ObjectKeys.JOB_PROCESSOR_INTERNALID);
+		return addReservedUser(parent, stamp, "_jobProcessingAgent", null, NLT.get("administration.initial.jobProcessor.title"), ObjectKeys.JOB_PROCESSOR_INTERNALID, null);
 	}
 	private User addSynchronizationAgent(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "_synchronizationAgent", null, NLT.get("administration.initial.synchronizationAgent.title"), ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID);
+		return addReservedUser(parent, stamp, "_synchronizationAgent", null, NLT.get("administration.initial.synchronizationAgent.title"), ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, null);
 	}
 	private User addFileSyncAgent(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "_fileSyncAgent", null, NLT.get("administration.initial.fileSyncAgent.title"), ObjectKeys.FILE_SYNC_AGENT_INTERNALID);
+		return addReservedUser(parent, stamp, "_fileSyncAgent", null, NLT.get("administration.initial.fileSyncAgent.title"), ObjectKeys.FILE_SYNC_AGENT_INTERNALID, null);
 	}
 	private User addGuest(Binder parent, HistoryStamp stamp) {
 		String guestName= SZoneConfig.getString(parent.getRoot().getName(), "property[@name='guestUser']", ObjectKeys.GUEST);
-		return addReservedUser(parent, stamp, guestName, guestName, NLT.get("administration.initial.guestTitle"), ObjectKeys.GUEST_USER_INTERNALID);
+		return addReservedUser(parent, stamp, guestName, guestName, NLT.get("administration.initial.guestTitle"), ObjectKeys.GUEST_USER_INTERNALID, new IdentityInfo(false, false, true, false));
 		
 	}
 	private Workspace addTeamRoot(Workspace top, HistoryStamp stamp) {
