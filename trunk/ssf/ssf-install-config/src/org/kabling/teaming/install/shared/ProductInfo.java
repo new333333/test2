@@ -13,6 +13,7 @@ public class ProductInfo implements Serializable {
 	private String productVersion;
 	private String copyRight;
 	private boolean configured;
+	private String localIpAddress;
 	
 	public ProductInfo() {
 		
@@ -56,6 +57,16 @@ public class ProductInfo implements Serializable {
 	public void setConfigured(boolean configured)
 	{
 		this.configured = configured;
+	}
+
+	public String getLocalIpAddress()
+	{
+		return localIpAddress;
+	}
+
+	public void setLocalIpAddress(String localIpAddress)
+	{
+		this.localIpAddress = localIpAddress;
 	}
 
 	

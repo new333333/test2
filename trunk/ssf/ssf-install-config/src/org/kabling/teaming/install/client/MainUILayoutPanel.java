@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.client;
 
 import org.kabling.teaming.install.client.config.ClusteringPage;
+import org.kabling.teaming.install.client.config.ExportConfigurationPage;
 import org.kabling.teaming.install.client.config.InboundEmailPage;
 import org.kabling.teaming.install.client.config.JavaJDKPage;
 import org.kabling.teaming.install.client.config.NetworkInformationPage;
@@ -206,6 +207,11 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 		case NOVELL_ACCESS_MANAGER:
 			dlg = new ReverseProxyPage();
 			dlg.createAllDlgContent(AppUtil.getAppResource().reverseProxy(), dlg, null, null);
+			break;
+			
+		case IMPORT_EXPORT:
+			dlg = new ExportConfigurationPage();
+			dlg.createAllDlgContent(AppUtil.getAppResource().exportConfiguration(), dlg, null, null);
 			break;
 
 		default:

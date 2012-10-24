@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
@@ -43,7 +44,6 @@ import java.util.TreeMap;
 
 import org.joda.time.DateTimeZone;
 
-import com.google.gwt.i18n.rebind.AbstractResource.MissingResourceException;
 
 /**
  * Fixes wrong time zone definitions: converts all deprecated 3-characters time
@@ -293,5 +293,14 @@ public class TimeZoneHelper
 		return key;
 	}
 	
+	
+	public static boolean isUnix()
+	{
+
+		String os = System.getProperty("os.name").toLowerCase();
+		// linux or unix
+		return (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0);
+
+	}
 	
 }

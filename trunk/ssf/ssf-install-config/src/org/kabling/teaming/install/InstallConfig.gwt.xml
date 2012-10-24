@@ -22,4 +22,5 @@
   <source path='shared'/>
 
 	<servlet path="/install" class="org.kabling.teaming.install.server.InstallServiceImpl"/>
+	 <servlet path="/fileUpload" class="org.kabling.teaming.install.server.ConfigImportExportServlet"/>
 </module>

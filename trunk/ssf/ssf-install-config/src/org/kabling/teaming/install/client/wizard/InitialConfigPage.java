@@ -19,6 +19,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	private RadioButton customRB;
 	private FlowPanel fPanel;
 	private InstallerConfig config;
+	private RadioButton upgradeRB;
 
 	public InitialConfigPage(InstallerConfig config)
 	{
@@ -54,7 +55,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			radioPanel.addStyleName("configSelectPanel");
 			fPanel.add(radioPanel);
 
-			useDefaultsRB = new RadioButton("config", "Defaults");
+			useDefaultsRB = new RadioButton("config", "Small Deployment");
 			useDefaultsRB.addStyleName("configSelectRB");
 			useDefaultsRB.addClickHandler(this);
 			useDefaultsRB.setValue(true);
@@ -65,7 +66,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			defaultConfigDescLabel.addStyleName("configDescLabel");
 			radioPanel.add(defaultConfigDescLabel);
 
-			customRB = new RadioButton("config", "Advanced");
+			customRB = new RadioButton("config", "Large Deployment");
 			customRB.addStyleName("configSelectRB");
 			customRB.addClickHandler(this);
 			radioPanel.add(customRB);
@@ -74,6 +75,16 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 					"Set up a scalable infrastructure. <br> The Lucene search server and MySQL database will run separately.");
 			customConfigDescLabel.addStyleName("configDescLabel");
 			radioPanel.add(customConfigDescLabel);
+			
+			upgradeRB = new RadioButton("config", "Upgrade");
+			upgradeRB.addStyleName("configSelectRB");
+			upgradeRB.addClickHandler(this);
+			radioPanel.add(upgradeRB);
+
+			HTML upgradeConfigDescLabel = new HTML(
+					"Upgrade from an older Filr appliance. <br> Select this option if you have already exported the configuration details from the appliance and would like to use those settings.");
+			upgradeConfigDescLabel.addStyleName("configDescLabel");
+			radioPanel.add(upgradeConfigDescLabel);
 		}
 		AppUtil.getEventBus().fireEvent(new ConfigNextButtonEnableEvent(!useDefaultsRB.getValue()));
 

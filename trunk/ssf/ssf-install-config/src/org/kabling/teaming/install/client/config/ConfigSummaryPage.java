@@ -21,6 +21,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
@@ -30,9 +31,11 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 	private FlowPanel content;
 	private AppResource RBUNDLE = AppUtil.getAppResource();
 	private InstallerConfig config;
+	private boolean showGeneralPanelWithSuccessMessage;
 
-	public ConfigSummaryPage()
+	public ConfigSummaryPage(boolean showGeneralPanelWithSuccessMessage)
 	{
+		this.showGeneralPanelWithSuccessMessage = showGeneralPanelWithSuccessMessage;
 		content = new FlowPanel();
 		initWidget(content);
 
@@ -42,14 +45,32 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		// Get the configuration data
 		AppUtil.getInstallService().getConfiguration(getConfigCallback);
 	}
+	
+	public ConfigSummaryPage()
+	{
+		this(false);
+	}
 
 	private void buildUI()
 	{
 
+		//General sucess information
+		HTML configFinishedLabel = null;
+		
+		String ipAddr ="https://" + AppUtil.getProductInfo().getLocalIpAddress() + ":8443";
+		
+		if (showGeneralPanelWithSuccessMessage)
+			configFinishedLabel = new HTML(RBUNDLE.configFinishedMsg(ipAddr));
+		else
+			configFinishedLabel = new HTML(RBUNDLE.filrServerInfo(ipAddr));
+		
+		configFinishedLabel.addStyleName("configFinishedLabel");
+		content.add(configFinishedLabel);
+		
 		Label titleLabel = new Label(RBUNDLE.configurationSummary());
 		titleLabel.addStyleName("configSummaryTitle");
 		content.add(titleLabel);
-
+		
 		// Network Section
 		content.add(buildNetworkSection());
 

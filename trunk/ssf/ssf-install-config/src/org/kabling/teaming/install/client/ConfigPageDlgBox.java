@@ -36,6 +36,16 @@ public abstract class ConfigPageDlgBox extends DlgBox implements EditSuccessfulH
 		AppUtil.getInstallService().getConfiguration(getConfigCallback);
 	}
 
+	public ConfigPageDlgBox(DlgButtonMode mode )
+	{
+		super(false, true, mode, true);
+
+		// Don't show the header close button
+		showHeaderCloseButton(false);
+
+		AppUtil.getInstallService().getConfiguration(getConfigCallback);
+	}
+	
 	/**
 	 * After loading the installer.xml, we will call the dialog which extends this to update their UI
 	 */
