@@ -25,6 +25,8 @@ if ""%2"" == ""updateDatabase"" goto updateDatabase
 if ""%2"" == ""generateSqlToUpdateDatabase"" goto generateSqlToUpdateDatabase
 if ""%2"" == ""markDatabaseAsUpdated"" goto markDatabaseAsUpdated
 if ""%2"" == ""generateSqlToMarkDatabaseAsUpdated"" goto generateSqlToMarkDatabaseAsUpdated
+if ""%2"" == ""mark33DatabaseAsUpdated"" goto mark33DatabaseAsUpdated
+if ""%2"" == ""generateSqlToMark33DatabaseAsUpdated"" goto generateSqlToMark33DatabaseAsUpdated
 if ""%2"" == ""exportSchema"" goto exportSchema
 if ""%2"" == ""exportData"" goto exportData
 if ""%2"" == ""diffDatabases"" goto diffDatabases
@@ -67,6 +69,13 @@ echo                    the first database to that of the second (reference) dat
 echo                    There are limitations with this function.
 echo    validate        Checks the change log for errors. Useful after making manual
 echo                    edits to the change log file (which is not recommended).
+echo    markDatabaseAsUpdated
+echo                    Mark the database schema as current with the most up-to-date
+echo                    schema definition. Can be useful when rebuilding Liquibase 
+echo                    meta data after manual update or fix-up of the schema.
+echo    generateSqlToMarkDatabaseAsUpdated
+echo                    Generate SQL in a file which can later be executed to mark
+echo                    the database schema as current.
 echo.
 echo Note: Additional parameters are read in from [db type]-liquibase.properties file.
 goto end
@@ -79,12 +88,20 @@ goto end
 java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-master.xml" --contexts="%CONTEXTS%" updateSQL > ".\%1-update.sql"
 goto end
 
+:markDatabaseAsUpdated
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-master.xml" --contexts="%CONTEXTS%" changeLogSync
+goto end
+
+:generateSqlToMarkDatabaseAsUpdated
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-master.xml" --contexts="%CONTEXTS%" changeLogSyncSQL > ".\%1-markasupdated.sql"
+goto end
+
 :mark33DatabaseAsUpdated
 java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-3.3.xml" --contexts="%CONTEXTS%" changeLogSync
 goto end
 
 :generateSqlToMark33DatabaseAsUpdated
-java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-3.3.xml" --contexts="%CONTEXTS%" changeLogSyncSQL > ".\%1-markasupdated.sql"
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-3.3.xml" --contexts="%CONTEXTS%" changeLogSyncSQL > ".\%1-markasupdated-3.3.sql"
 goto end
 
 :exportSchema
