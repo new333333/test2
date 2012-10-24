@@ -712,6 +712,7 @@ public class ModifyGroupDlg extends DlgBox
 		{
 			int x;
 			int y;
+			boolean externalAllowed;
 			
 			// No
 			// Get the position of this dialog.
@@ -737,7 +738,11 @@ public class ModifyGroupDlg extends DlgBox
 				m_staticMembershipDlg = new ModifyStaticMembershipDlg( false, true, handler, null, x, y );
 			}
 			
-			m_staticMembershipDlg.init( getGroupName(), m_groupMembership, m_groupInfo.getIsExternalAllowed() );
+			externalAllowed = false;
+			if ( m_groupInfo != null )
+				externalAllowed = m_groupInfo.getIsExternalAllowed();
+			
+			m_staticMembershipDlg.init( getGroupName(), m_groupMembership, externalAllowed );
 			m_staticMembershipDlg.setPopupPosition( x, y );
 			m_staticMembershipDlg.show();
 		}
