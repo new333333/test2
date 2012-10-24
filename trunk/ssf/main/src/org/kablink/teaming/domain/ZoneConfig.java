@@ -61,6 +61,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Long fileVersionsMaxAge;
 	private MailConfig mailConfig;
 	private Boolean fsaEnabled;
+	private Boolean fsaDeployEnabled;
 	private Integer fsaSynchInterval;
 	private String fsaAutoUpdateUrl;
 	private Long fsaMaxFileSize;
@@ -309,6 +310,25 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public void setFsaMaxFileSize(long fsaMaxFileSize) {
 		// In this version of Vibe, this field is NOT persisted to database. So, this method shouldn't be used.
 		this.fsaMaxFileSize = fsaMaxFileSize;
+	}
+
+	/**
+	 * 
+	 */
+	public boolean getFsaDeployEnabled()
+	{
+		if ( fsaDeployEnabled == null )
+			return SPropsUtil.getBoolean( "fsa.deploy.enabled.default", false );
+		else
+			return fsaDeployEnabled.booleanValue();
+	}
+	
+	/**
+	 * 
+	 */
+	public void setFsaDeployEnabled( boolean enabled )
+	{
+		fsaDeployEnabled = Boolean.valueOf( enabled );
 	}
 
 	public boolean isExternalUserEnabled() {
