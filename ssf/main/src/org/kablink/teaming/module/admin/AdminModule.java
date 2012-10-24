@@ -363,7 +363,7 @@ public interface AdminModule {
 	
 	public void disableSimpleProfiler();
 	
-	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl);
+	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled );
 	
 	public void addOpenIDProvider(OpenIDProvider openIDProvider);
 	

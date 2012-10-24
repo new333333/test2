@@ -4376,6 +4376,9 @@ public class GwtServerHelper {
 		// Get the auto-update url.
 		fileSyncAppConfiguration.setAutoUpdateUrl( zoneConfig.getFsaAutoUpdateUrl() );
 		
+		// Get whether deployment of the file sync app is enabled.
+		fileSyncAppConfiguration.setIsDeploymentEnabled( zoneConfig.getFsaDeployEnabled() );
+		
 		return fileSyncAppConfiguration;
 	}
 	
@@ -8459,12 +8462,14 @@ public class GwtServerHelper {
 	{
 		AdminModule adminModule;
 		Boolean enabled;
+		Boolean deployEnabled;
 		Integer interval;
 		
 		adminModule = allModules.getAdminModule();
 		enabled = new Boolean( fsaConfiguration.getIsFileSyncAppEnabled() );
 		interval = new Integer( fsaConfiguration.getSyncInterval() );
-		adminModule.setFileSynchAppSettings( enabled, interval, fsaConfiguration.getAutoUpdateUrl() );
+		deployEnabled = new Boolean( fsaConfiguration.getIsDeploymentEnabled() );
+		adminModule.setFileSynchAppSettings( enabled, interval, fsaConfiguration.getAutoUpdateUrl(), deployEnabled );
 
 		return Boolean.TRUE;
 	}

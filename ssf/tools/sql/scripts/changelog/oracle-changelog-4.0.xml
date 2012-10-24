@@ -289,4 +289,12 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="jay" context="schema" failOnError="true" id="33">
+        <comment>Is deployment of the Desktop application enabled</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="FSADEPLOYENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -20,6 +20,7 @@
 	<property name="fsaEnabled" access="field"/>
 	<property name="fsaSynchInterval" access="field"/>
 	<property name="fsaAutoUpdateUrl" access="field" length="255"/>
+	<property name="fsaDeployEnabled" access="field"/>
 	<property name="externalUserEnabled" access="field"/>
 	<property name="localeLanguage" access="field" length="16"/>
 	<property name="localeCountry" access="field" length="16"/>

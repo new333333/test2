@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -63,6 +64,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 {
 	private RadioButton m_enableFileSyncRB;
 	private RadioButton m_disableFileSyncRB;
+	private CheckBox m_enableDeployCB;
 	private TextBox m_syncIntervalTextBox;
 	private TextBox m_autoUpdateUrlTextBox;
 	
@@ -79,7 +81,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		int yPos )
 	{
 		super( autoHide, modal, xPos, yPos );
-		
+
 		// Create the header, content and footer of this dialog box.
 		createAllDlgContent( GwtTeaming.getMessages().fileSyncAppDlgHeader(), editSuccessfulHandler, editCanceledHandler, null ); 
 	}
@@ -88,6 +90,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
+	@Override
 	public Panel createContent( Object props )
 	{
 		GwtTeamingMessages messages;
@@ -132,6 +135,11 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		spacer = new Label( " " );
 		spacer.addStyleName( "marginTop10px" );
 		table.setWidget( nextRow, 0, spacer );
+		++nextRow;
+		
+		// Create the "Allow deployment of Desktop application" checkbox
+		m_enableDeployCB = new CheckBox( messages.fileSyncAppEnableDeployLabel() );
+		table.setWidget( nextRow, 0, m_enableDeployCB );
 		++nextRow;
 		
 		// Create the controls for File Sync interval
@@ -192,6 +200,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	/**
 	 * Get the data from the controls in the dialog box and store the data in a GwtFileSyncAppConfiguration object.
 	 */
+	@Override
 	public Object getDataFromDlg()
 	{
 		GwtFileSyncAppConfiguration fileSyncAppConfig;
@@ -207,6 +216,9 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		// Get the auto-update url from the dialog.
 		fileSyncAppConfig.setAutoUpdateUrl( getAutoUpdateUrl() );
 		
+		// Get whether the file sync app can be deployed
+		fileSyncAppConfig.setIsDeploymentEnabled( getIsFileSyncAppDeployEnabled() );
+		
 		return fileSyncAppConfig;
 	}
 	
@@ -214,6 +226,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
+	@Override
 	public FocusWidget getFocusWidget()
 	{
 		return m_syncIntervalTextBox;
@@ -245,6 +258,17 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		return false;
 	}
 	
+	/**
+	 * Return whether deployment of the file sync app is enabled.
+	 */
+	private boolean getIsFileSyncAppDeployEnabled()
+	{
+		if ( m_enableDeployCB.getValue() == Boolean.TRUE )
+			return true;
+		
+		return false;
+	}
+	
 	
 	/**
 	 * Initialize the controls in the dialog with the values from the given values.
@@ -265,6 +289,9 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			m_disableFileSyncRB.setValue( true );
 		}
 		
+		// Initialize the deployment enabled checkbox
+		m_enableDeployCB.setValue( fileSyncAppConfiguration.getIsDeploymentEnabled() );
+		
 		// Initialize the interval textbox
 		interval = fileSyncAppConfiguration.getSyncInterval();
 		m_syncIntervalTextBox.setText( String.valueOf( interval ) );
@@ -278,6 +305,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	 * This method gets called when the user types in the "number of entries to show" text box.
 	 * We only allow the user to enter numbers.
 	 */
+	@Override
 	public void onKeyPress( KeyPressEvent event )
 	{
         int keyCode;

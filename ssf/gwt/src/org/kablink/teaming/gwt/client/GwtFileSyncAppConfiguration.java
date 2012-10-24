@@ -47,6 +47,7 @@ public class GwtFileSyncAppConfiguration
 	implements IsSerializable, VibeRpcResponseData
 {
 	private boolean m_isFileSyncAppEnabled = false;
+	private boolean m_deploymentEnabled = false;
 	private int m_syncInterval = 15;
 	private String m_autoUpdateUrl = null;
 	
@@ -64,6 +65,14 @@ public class GwtFileSyncAppConfiguration
 	public String getAutoUpdateUrl()
 	{
 		return m_autoUpdateUrl;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getIsDeploymentEnabled()
+	{
+		return m_deploymentEnabled;
 	}
 	
 	/**
@@ -90,6 +99,14 @@ public class GwtFileSyncAppConfiguration
 	{
 		m_autoUpdateUrl = url;
 	}
+
+	/**
+	 * 
+	 */
+	public void setIsDeploymentEnabled( boolean enabled )
+	{
+		m_deploymentEnabled = enabled;
+	}
 	
 	/**
 	 * 
@@ -107,5 +124,4 @@ public class GwtFileSyncAppConfiguration
 	{
 		m_syncInterval = intervalInMinutes;
 	}
-	
 }
