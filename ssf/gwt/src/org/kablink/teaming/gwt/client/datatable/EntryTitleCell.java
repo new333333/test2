@@ -37,7 +37,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetDownloadFileUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -61,8 +60,10 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Data table cell that represents an entry's title.
@@ -123,29 +124,6 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	private void hoverStyleRemove(EntryTitleInfo eti, Element e) {
 		e.removeClassName("vibe-dataTableLink-hover"      );
 		e.removeClassName("vibe-dataTableLink-hoverNoLPad");
-	}
-	
-	/*
-	 * Invokes a file download on an entry's file.
-	 */
-	private void invokeFileDownload(final EntryTitleInfo eti, Element pElement) {
-		final Long entryId = eti.getEntityId().getEntityId();
-		GetDownloadFileUrlCmd cmd = new GetDownloadFileUrlCmd(eti.getEntityId().getBinderId(), entryId);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetDownloadFileUrl(),
-					String.valueOf(entryId));
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				String downloadFileUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
-				GwtClientHelper.jsLaunchUrlInWindow(downloadFileUrl, "_blank");
-			}
-		});
 	}
 	
 	/*
@@ -297,9 +275,9 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     		if (isLabel) {
     			// Yes!  Strip off any over style.
     			hoverStyleRemove(eti, eventTarget);
-    			if (eti.isFile())
-        		     invokeFileDownload(eti, eventTarget);
-    			else invokeViewEntry(   eti, eventTarget);
+    			if (!(eti.isFile())) {
+    				invokeViewEntry(eti, eventTarget);
+    			}
     		}
     		
     		else if (isUnseenImg) {
@@ -359,9 +337,9 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     @Override
     protected void onEnterKeyDown(Context context, Element parent, EntryTitleInfo eti, NativeEvent event, ValueUpdater<EntryTitleInfo> valueUpdater) {
     	Element eventTarget = Element.as(event.getEventTarget());
-    	if (eti.isFile())
-             invokeFileDownload(eti, eventTarget);
-    	else invokeViewEntry(   eti, eventTarget);
+    	if (!(eti.isFile())) {
+    		invokeViewEntry(eti, eventTarget);
+    	}
     }
     
 	/**
@@ -392,16 +370,18 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		boolean			hasBinderImg = (null != binderImg);
 		boolean			isTrash      = eti.isTrash();
 		boolean			isEntry      = entityType.equals("folderEntry");
+		boolean			titleIsLink  = ((!isTrash) || ((null != entityType) && entityType.equals("folderEntry")));
 		VibeFlowPanel	html         = new VibeFlowPanel();
-		VibeFlowPanel	fp           = new VibeFlowPanel();
+		
+		VibeFlowPanel	etContainerWidget = new VibeFlowPanel();
 		
 		// In Filr...
-		html.add(fp);
-		fp.addStyleName("vibe-dataTableEntry-panel");
+		html.add(etContainerWidget );
+		etContainerWidget.addStyleName("vibe-dataTableEntry-panel");
 		if (m_isFilr) {
 			// ...we don't word wrap the title of files or folders.
 			if (eti.isFile() || eti.getEntityId().isBinder()) {
-				fp.addStyleName("gwtUI_nowrap");
+				etContainerWidget.addStyleName("gwtUI_nowrap");
 			}
 		}
 		
@@ -438,7 +418,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			Element iE = i.getElement();
 			iE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_ENTRY_UNSEEN_IMAGE);
 			iE.setId(VibeDataTableConstants.CELL_WIDGET_ENTRY_UNSEEN_IMAGE + "_" + entryIdS);
-			fp.add(i);
+			etContainerWidget.add(i);
 		}
 		
 		// Do we have a client image for this item?
@@ -449,31 +429,41 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		}
 		
 		// ...add the title link...
-		VibeFlowPanel titlePanel;
+		Widget  titleWidget;
+		Element titleElement;
 		if (null != titleImg) {
-			titlePanel = new VibeFlowPanel();
-			titlePanel.setStyleName("vibe-dataTableEntry-titleLinkPanel");
-			titlePanel.add(titleImg);
+			if (titleIsLink && eti.isFile()) {
+				Anchor a = new Anchor();
+				a.setHref(eti.getFileDownloadUrl());
+				a.setTarget("_blank");
+				titleWidget = a;
+			}
+			else {
+				titleWidget = new VibeFlowPanel();
+			}
+			titleWidget.setStyleName("vibe-dataTableEntry-titleLinkPanel");
+			titleElement = titleWidget.getElement();
+			titleElement.appendChild(titleImg.getElement());
 		}
 		else {
-			titlePanel = null;
+			titleWidget   = null;
+			titleElement = null;
 		}
-		boolean titleIsLink = ((!isTrash) || ((null != entityType) && entityType.equals("folderEntry")));
 		InlineLabel titleLabel = new InlineLabel(eti.getTitle());
 		titleLabel.addStyleName(titleIsLink ? "vibe-dataTableEntry-title" : "vibe-dataTableEntry-titleNoLink");
 		if ((!isTrash) && entryUnseen) {
 			titleLabel.addStyleName("bold");
 		}
-		Element elE = ((null == titlePanel) ? titleLabel.getElement() : titlePanel.getElement()); 
+		Element elE = ((null == titleElement) ? titleLabel.getElement() : titleElement); 
 		String widgetAttr = (titleIsLink ? VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL : VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL_NOLINK);
 		elE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, widgetAttr);
 		elE.setId(VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL + "_" + entryIdS);
-		if (null == titlePanel) {
-			fp.add(titleLabel);
+		if (null == titleElement) {
+			etContainerWidget.add(titleLabel);
 		}
 		else {
-			titlePanel.add(titleLabel);
-			fp.add(titlePanel);
+			titleElement.appendChild(titleLabel.getElement());
+			etContainerWidget.add(titleWidget);
 		}
 		
 		// ...and render that into the cell.

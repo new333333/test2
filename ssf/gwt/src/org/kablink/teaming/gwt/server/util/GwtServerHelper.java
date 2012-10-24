@@ -8330,36 +8330,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Save the "adhoc folder" setting.  If userId is not null save the value in the user's properties.
-	 * Otherwise, save the setting in the zone.
-	 */
-	public static Boolean saveAdhocFolderSetting(
-		AllModulesInjected ami,
-		Long userId,
-		Boolean allow )
-	{
-		Boolean result;
-
-		if ( allow == null )
-			return Boolean.FALSE;
-		
-		result = Boolean.TRUE;
-		
-		// Are we dealing with a user?
-		if ( userId != null )
-		{
-			ami.getProfileModule().setUserProperty( userId, ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS, allow.toString() );
-		}
-		else
-		{
-			// No, save as a zone setting.
-			ami.getAdminModule().setAdHocFoldersEnabled( allow );
-		}
-		
-		return result;
-	}
-	
-	/**
 	 * Save the users from a List<ClipboardUser> as the user's
 	 * clipboard contents. 
 	 * 
@@ -9166,15 +9136,21 @@ public class GwtServerHelper {
 	 * Returns true if the current user should have their My Files area
 	 * mapped to their home directory and false otherwise.
 	 * 
+	 * @param ami
 	 * @return
 	 */
-	public static boolean useHomeAsMyFiles( AllModulesInjected ami ) {
-		Boolean result;
-		
-		result = GwtUIHelper.getEffectiveAdhocFolderSetting( ami, getCurrentUser() );
-		if ( result != null && result == false )
-			return true;
-		
+	public static boolean useHomeAsMyFiles(AllModulesInjected ami) {
+		// If we're running Filr...
+		if (Utils.checkIfFilr()) {
+			// ...check the user's and/or zone setting.
+			Boolean result = GwtUIHelper.getEffectiveAdhocFolderSetting(ami, getCurrentUser());
+			if ((null != result) && (!(result))) {
+				return true;
+			}
+		}
+
+		// If we get here, we're not mapping 'Home' to 'My Files.  Return
+		// false.
 		return false;
 	}
 	

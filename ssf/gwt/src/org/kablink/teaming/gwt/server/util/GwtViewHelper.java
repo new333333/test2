@@ -3789,6 +3789,12 @@ public class GwtViewHelper {
 										String fName = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
 										if (MiscUtil.hasString(fName)) {
 											eti.setFile(true);
+											eti.setFileDownloadUrl(
+												GwtServerHelper.getDownloadFileUrl(
+													request,
+													bs,
+													entityId.getBinderId(),
+													entityId.getEntityId()));
 											eti.setFileIcon(
 												FileIconsHelper.getFileIconFromFileName(
 													fName,

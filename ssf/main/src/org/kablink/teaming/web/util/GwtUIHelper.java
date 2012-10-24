@@ -589,63 +589,87 @@ public class GwtUIHelper {
 	}
 
 	/**
-	 * Return the "adhoc folder" setting from the given user's properties.
+	 * Return the 'AdHoc folder' setting from the given user's
+	 * properties.
+	 * 
+	 * @param ami
+	 * @param userId
+	 * 
+	 * @return
 	 */
-	public static Boolean getAdhocFolderSettingFromUser(
-		AllModulesInjected ami,
-		Long userId )
-	{
-		if ( userId != null )
-		{
-			UserProperties userProperties;
-			Object value;
+	public static Boolean getAdhocFolderSettingFromUser(AllModulesInjected ami, Long userId) {
+		// If we're running Filr...
+		if (Utils.checkIfFilr()) {
+			if (null != userId) {
+				// ...read the 'allow AdHoc folder' setting from the
+				// ...user's properties...
+				UserProperties userProperties = ami.getProfileModule().getUserProperties(userId);
+				Object value = userProperties.getProperty(ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS);
+				if ((null != value) && (value instanceof String)) {
+					return new Boolean((String) value);
+				}
+			}
+			return null;
+		}
+		
+		else {
+			// If we're not running Filr, AdHoc folders are always
+			// allowed.
+			return Boolean.TRUE;
+		}
+	}
 
-			// Read the "allow adhoc folder" setting from the user's properties.
-			userProperties = ami.getProfileModule().getUserProperties( userId );
-			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS );
-			if ( value != null && value instanceof String )
-			{
-				return new Boolean( (String) value );
+	/**
+	 * Return the 'AdHoc folder' setting from the zone.
+	 * 
+	 * @param ami,
+	 * 
+	 * @return
+	 */
+	public static Boolean getAdhocFolderSettingFromZone(AllModulesInjected ami) {
+		// If we're running Filr, we check the zone setting.
+		// Otherwise, we simply return true.
+		Boolean reply;
+		if (Utils.checkIfFilr())
+		     reply = new Boolean(ami.getAdminModule().isAdHocFoldersEnabled());
+		else reply = Boolean.TRUE;
+		return reply;
+	}
+	
+	/**
+	 * Return the effective 'AdHoc folder' setting from the given user.
+	 * We will look in the user's properties first for a value.  If one
+	 * is not found we will get the setting from the zone.
+	 * 
+	 * @param ami
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static Boolean getEffectiveAdhocFolderSetting(AllModulesInjected ami, User user) {
+		// Are we running Filr?
+		Boolean result;
+		if (Utils.checkIfFilr()) {
+			// Yes! Check the user's properties.  
+			if (null !=  user)
+			     result = getAdhocFolderSettingFromUser(ami, user.getId());
+			else result = null;
+		
+			// Did we find a setting in the user's properties?
+			if (null == result) {
+				// No!  Read the global setting.
+				result = getAdhocFolderSettingFromZone(ami);
 			}
 		}
-
-		return null;
-	}
-
-	/**
-	 * Return the "adhoc folder" setting from the zone. 
-	 */
-	public static Boolean getAdhocFolderSettingFromZone(
-		AllModulesInjected ami )
-	{
-		// Read the global setting.
-		return  new Boolean( ami.getAdminModule().isAdHocFoldersEnabled() );
-	}
-	
-	/**
-	 * Return the effective "adhoc folder" setting from the given user.  We will look in the
-	 * user's properties first for a value.  If one is not found we will get the setting from
-	 * the zone.
-	 */
-	public static Boolean getEffectiveAdhocFolderSetting(
-		AllModulesInjected ami,
-		User user )
-	{
-		Boolean result;
-
-		result = null;
 		
-		if ( user != null )
-			result = getAdhocFolderSettingFromUser( ami, user.getId() );
-	
-		// Did we find a setting in the user's properties?
-		if ( result == null )
-		{
-			// No
-			// Read the global setting.
-			result = getAdhocFolderSettingFromZone( ami );
+		else {
+			// No, we're not running Filr!  AdHoc folders are always
+			// supported.
+			result = Boolean.TRUE;
 		}
-		
+
+		// If we get here, reply contains true if AdHoc folders are
+		// supported and false otherwise.  Return it.
 		return result;
 	}
 	
@@ -1334,6 +1358,36 @@ public class GwtUIHelper {
 		// If we get here, reply refers to the Vibe product that we're
 		// running as.  Return it.
 		return reply;
+	}
+	
+	/**
+	 * Save the 'AdHoc folder' setting.  If userId is not null saves
+	 * the value in the user's properties.  Otherwise, saves the
+	 * setting in the zone.
+	 * 
+	 * @param ami
+	 * @param userId
+	 * @param allow
+	 * 
+	 * @return
+	 */
+	public static Boolean saveAdhocFolderSetting(AllModulesInjected ami, Long userId, Boolean allow) {
+		if (null == allow) {
+			return Boolean.FALSE;
+		}
+		
+		// Are we dealing with a user?
+		if (null != userId) {
+			// Yes!  Save the setting to their properties.
+			ami.getProfileModule().setUserProperty(userId, ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS, allow.toString());
+		}
+		else {
+			// No, we aren't running with a user!  Save as a zone
+			// setting.
+			ami.getAdminModule().setAdHocFoldersEnabled(allow);
+		}
+		
+		return Boolean.TRUE;
 	}
 	
 	/**
