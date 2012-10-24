@@ -34,6 +34,14 @@ echo "                   the first database to that of the second (reference) da
 echo "                   There are limitations with this function."
 echo "   validate        Checks the change log for errors. Useful after making manual"
 echo "                   edits to the change log file (which is not recommended)."
+echo "   markDatabaseAsUpdated"
+echo "                   Mark the database schema as current with the most up-to-date"
+echo "                   schema definition. Can be useful when rebuilding Liquibase"
+echo "                   meta data after manual update or fix-up of the schema."
+echo "                   Used for one-time transition from 3.3 schema to later version."
+echo "   generateSqlToMarkDatabaseAsUpdated"
+echo "                   Generate SQL in a file which can later be executed to mark"
+echo "                   the database schema as current."
 echo ""
 echo "Note: Additional parameters are read in from [db type]-liquibase.properties file."
 }
@@ -63,10 +71,14 @@ if [ "$2" = "updateDatabase" ]; then
   java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" update
 elif [ "$2" = "generateSqlToUpdateDatabase" ]; then
   java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" updateSQL > "./$1-update.sql"
+elif [ "$2" = "markDatabaseAsUpdated" ]; then
+  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" changeLogSync
+elif [ "$2" = "generateSqlToMarkDatabaseAsUpdated" ]; then
+  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" changeLogSyncSQL > "./$1-markasupdated.sql"
 elif [ "$2" = "mark33DatabaseAsUpdated" ]; then
   java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-3.3.xml" --contexts="$CONTEXTS" changeLogSync
 elif [ "$2" = "generateSqlToMark33DatabaseAsUpdated" ]; then
-  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-3.3.xml" --contexts="$CONTEXTS" changeLogSyncSQL > "./$1-markasupdated.sql"
+  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-3.3.xml" --contexts="$CONTEXTS" changeLogSyncSQL > "./$1-markasupdated-3.3.sql"
 elif [ "$2" = "exportSchema" ]; then
   java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" generateChangeLog > "./$1-schema-changelog.xml"
 elif [ "$2" = "exportData" ]; then
