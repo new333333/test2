@@ -179,8 +179,9 @@
 		.vibe-dataTableEMA-titleNoLink            {color: #353838 !important; padding: 2px;}
 		.vibe-dataTableEntity-Marker              {display: inline; cursor: pointer;}
 		.vibe-dataTableEntry-download             {border: 0px solid #666666; padding-left: 0px; padding-right: 0px; line-height: 11px;}
+		.vibe-dataTableEntry-panel                {}
 		.vibe-dataTableEntry-title                {cursor: pointer; color: #135c8f !important; padding: 2px;}
-		.vibe-dataTableEntry-titleLinkPanel       {display: inline;}
+		.vibe-dataTableEntry-titleLinkPanel       {display: inline; text-decoration: none;}
 		.vibe-dataTableEntry-titleNoLink          {color: #353838 !important; padding: 2px;}
 		.vibe-dataTableEntry-titlePanel           {}
 		.vibe-dataTableEntry-unseenMarker         {display: inline; cursor: pointer;}

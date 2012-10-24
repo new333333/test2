@@ -2246,7 +2246,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			BooleanRpcResponseData responseData;
 			
 			safsCmd = (SaveAdhocFolderSettingCmd) cmd;
-			result = GwtServerHelper.saveAdhocFolderSetting( this, safsCmd.getUserId(), safsCmd.getAllowAdhocFolders() );
+			result = GwtUIHelper.saveAdhocFolderSetting( this, safsCmd.getUserId(), safsCmd.getAllowAdhocFolders() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
