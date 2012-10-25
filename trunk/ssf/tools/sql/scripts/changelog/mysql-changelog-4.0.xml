@@ -323,6 +323,8 @@
         </addColumn>
     </changeSet>
     
+    <!-- Note: ID 39 is left as a hole -->
+    
     <changeSet author="jay" context="schema" failOnError="true" id="40">
         <comment>Enable adhoc file folders in users personal workspace</comment>
         <addColumn tableName="SS_ZoneConfig">
@@ -331,6 +333,7 @@
             </column>
         </addColumn>
     </changeSet>
+    
     <changeSet author="jong" context="data" failOnError="true" id="41">
         <sql>
 update SS_Principals set internal=0,fromLdap=0,fromLocal=0,fromOpenid=1 where identitySource=11;
@@ -356,6 +359,7 @@ update SS_Principals set internal=1,fromLdap=1,fromLocal=0,fromOpenid=0 where id
     <changeSet author="jong" context="schema" failOnError="true" id="45">
 	    <addNotNullConstraint tableName="SS_Principals" columnName="fromOpenid" columnDataType="BIT"/>
     </changeSet>
+    
     <changeSet author="jay" context="schema" failOnError="true" id="46">
         <comment>Is deployment of the Desktop application enabled</comment>
         <addColumn tableName="SS_ZoneConfig">

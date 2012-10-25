@@ -281,7 +281,25 @@
 			<column name="INTERNAL" type="NUMBER(1,0)"/>
         </addColumn>
     </changeSet>
-    <changeSet author="jay" context="schema" failOnError="true" id="32">
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="32">
+        <addColumn tableName="SS_PRINCIPALS">
+			<column name="FROMLDAP" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="33">
+        <addColumn tableName="SS_PRINCIPALS">
+			<column name="FROMLOCAL" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="34">
+        <addColumn tableName="SS_PRINCIPALS">
+			<column name="FROMOPENID" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="35">
         <comment>Enable adhoc file folders in users personal workspace</comment>
         <addColumn tableName="SS_ZONECONFIG">
             <column name="ADHOCFOLDERSENABLED" type="NUMBER(1,0)">
@@ -289,7 +307,34 @@
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="jay" context="schema" failOnError="true" id="33">
+    
+    <changeSet author="jong" context="data" failOnError="true" id="36">
+        <sql>
+update SS_PRINCIPALS set INTERNAL=0,FROMLDAP=0,FROMLOCAL=0,FROMOPENID=1 where IDENTITYSOURCE=11;
+update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=0,FROMLOCAL=1,FROMOPENID=0 where IDENTITYSOURCE=1;
+update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=1,FROMLOCAL=0,FROMOPENID=0 where IDENTITYSOURCE=2;
+update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=0,FROMLOCAL=1,FROMOPENID=0 where IDENTITYSOURCE is null and NAME = FOREIGNNAME;
+update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=1,FROMLOCAL=0,FROMOPENID=0 where IDENTITYSOURCE is null and NAME != FOREIGNNAME;            
+        </sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="37">
+	    <addNotNullConstraint tableName="SS_PRINCIPALS" columnName="INTERNAL" columnDataType="NUMBER(1,0)"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="38">
+	    <addNotNullConstraint tableName="SS_PRINCIPALS" columnName="FROMLDAP" columnDataType="NUMBER(1,0)"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="39">
+	    <addNotNullConstraint tableName="SS_PRINCIPALS" columnName="FROMLOCAL" columnDataType="NUMBER(1,0)"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="40">
+	    <addNotNullConstraint tableName="SS_PRINCIPALS" columnName="FROMOPENID" columnDataType="NUMBER(1,0)"/>
+    </changeSet>    
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="41">
         <comment>Is deployment of the Desktop application enabled</comment>
         <addColumn tableName="SS_ZONECONFIG">
             <column name="FSADEPLOYENABLED" type="NUMBER(1,0)">

@@ -273,12 +273,29 @@
 			<column name="fileMd5" type="CHAR(32)"/>
         </addColumn>
     </changeSet>
+    
     <changeSet author="jong" context="schema" failOnError="true" id="30">
         <addColumn tableName="SS_Principals">
 			<column name="internal" type="TINYINT"/>
         </addColumn>
     </changeSet>
-    <changeSet author="jay" context="schema" failOnError="true" id="31">
+    <changeSet author="jong" context="schema" failOnError="true" id="31">
+        <addColumn tableName="SS_Principals">
+			<column name="fromLdap" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="32">
+        <addColumn tableName="SS_Principals">
+			<column name="fromLocal" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="33">
+        <addColumn tableName="SS_Principals">
+			<column name="fromOpenid" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="34">
         <comment>Enable adhoc file folders in users personal workspace</comment>
         <addColumn tableName="SS_ZoneConfig">
             <column name="adHocFoldersEnabled" type="TINYINT">
@@ -286,7 +303,34 @@
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="jay" context="schema" failOnError="true" id="32">
+    
+    <changeSet author="jong" context="data" failOnError="true" id="35">
+        <sql>
+update SS_Principals set internal=0,fromLdap=0,fromLocal=0,fromOpenid=1 where identitySource=11;
+update SS_Principals set internal=1,fromLdap=0,fromLocal=1,fromOpenid=0 where identitySource=1;
+update SS_Principals set internal=1,fromLdap=1,fromLocal=0,fromOpenid=0 where identitySource=2;
+update SS_Principals set internal=1,fromLdap=0,fromLocal=1,fromOpenid=0 where identitySource is null and name = foreignName;
+update SS_Principals set internal=1,fromLdap=1,fromLocal=0,fromOpenid=0 where identitySource is null and name != foreignName;            
+        </sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="36">
+	    <addNotNullConstraint tableName="SS_Principals" columnName="internal" columnDataType="TINYINT"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="37">
+	    <addNotNullConstraint tableName="SS_Principals" columnName="fromLdap" columnDataType="TINYINT"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="38">
+	    <addNotNullConstraint tableName="SS_Principals" columnName="fromLocal" columnDataType="TINYINT"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="39">
+	    <addNotNullConstraint tableName="SS_Principals" columnName="fromOpenid" columnDataType="TINYINT"/>
+    </changeSet>    
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="40">
         <comment>Is deployment of the Desktop application enabled</comment>
         <addColumn tableName="SS_ZoneConfig">
             <column name="fsaDeployEnabled" type="TINYINT">
