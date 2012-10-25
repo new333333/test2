@@ -87,7 +87,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	
 	// For use by application
 	public User(IdentityInfo identityInfo) {
-		setIdentityInfo(identityInfo);
+		super(identityInfo);
 	}
 	
 	public EntityIdentifier.EntityType getEntityType() {

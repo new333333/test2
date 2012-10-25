@@ -46,6 +46,12 @@ public class ApplicationGroup extends ApplicationPrincipal implements GroupPrinc
 
     private List members;  //initialized by hibernate access=field  
     
+    public ApplicationGroup() {
+    	// The identity info is not applicable to application group. However, because the database
+    	// requires non-null value in these, we have to set it to some default values. 
+    	setIdentityInfo(new IdentityInfo());
+    }
+    
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.applicationGroup;
 	}

@@ -64,7 +64,7 @@ public class Group extends UserPrincipal implements GroupPrincipal {
 	
 	// For use by application
 	public Group(IdentityInfo identityInfo) {
-		setIdentityInfo(identityInfo);
+		super(identityInfo);
 	}
 
 	public EntityIdentifier.EntityType getEntityType() {
