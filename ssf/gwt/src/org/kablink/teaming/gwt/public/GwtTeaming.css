@@ -4172,7 +4172,7 @@ td.datePickerMonth {
 	border-color: none;
 	border-style: none;
 	border-width: 3px 2px 2px;
-	overflow: hidden;
+	overflow: visible !important;
 	padding: 6px;
 	background-color: #EDEDED;
 	border-radius: 0px 3px 3px 3px;
