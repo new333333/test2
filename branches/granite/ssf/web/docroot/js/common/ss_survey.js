@@ -93,6 +93,7 @@ if (!window.ssSurvey) {
 			if (!ss_questionsArray[ss_questionsCounter] || ss_questionsArray[ss_questionsCounter] == 'undefined') {
 				ss_questionsArray[ss_questionsCounter] = new Array();
 				ss_orderArray[ss_questionsCounter] = ss_questionsCounter;
+				questionIndex = "" + (ss_questionsCounter+1);
 			}
 			ss_questionsArray[ss_questionsCounter].type=type;
 		
