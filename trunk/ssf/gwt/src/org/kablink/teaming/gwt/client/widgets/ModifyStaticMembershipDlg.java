@@ -421,6 +421,7 @@ public class ModifyStaticMembershipDlg extends DlgBox
 							{
 								m_findGroupCtrl = findCtrl;
 								m_findGroupCtrl.setSearchType( SearchType.GROUP );
+								m_findGroupCtrl.setSearchForInternalPrincipalsOnly( !externalMembersAllowed() );
 								table.setWidget( 0, 1, m_findGroupCtrl );
 						}
 					} );
@@ -576,6 +577,7 @@ public class ModifyStaticMembershipDlg extends DlgBox
 							{
 								m_findUserCtrl = findCtrl;
 								m_findUserCtrl.setSearchType( SearchType.USER );
+								m_findUserCtrl.setSearchForInternalPrincipalsOnly( !externalMembersAllowed() );
 								table.setWidget( 0, 1, m_findUserCtrl );
 							}
 						} );
@@ -848,7 +850,7 @@ public class ModifyStaticMembershipDlg extends DlgBox
 	public void init(
 		String groupName,
 		List<GwtTeamingItem> membership,
-		boolean externalAllowed,
+		boolean externalMembersAllowed,
 		boolean groupExistsInDb ) 
 	{
 		// Update the dialog header.
@@ -856,7 +858,7 @@ public class ModifyStaticMembershipDlg extends DlgBox
 
 		if ( m_externalAllowedCb != null )
 		{
-			m_externalAllowedCb.setValue( externalAllowed );
+			m_externalAllowedCb.setValue( externalMembersAllowed );
 			
 			// If this group already exists in the db, we don't let them change if external members
 			// are allowed.
@@ -864,10 +866,21 @@ public class ModifyStaticMembershipDlg extends DlgBox
 		}
 		
 		if ( m_findUserCtrl != null )
+		{
+			// Tell the FindCtrl whether or not to search for just internal
+			// users or both internal and external users
+			m_findUserCtrl.setSearchForInternalPrincipalsOnly( !externalMembersAllowed );
 			m_findUserCtrl.setInitialSearchString( "" );
+		}
 		
 		if ( m_findGroupCtrl != null )
+		{
+			// Tell the FindCtrl whether or not to search for just internal
+			// groups or both internal and external groups
+			m_findGroupCtrl.setSearchForInternalPrincipalsOnly( !externalMembersAllowed );
 			m_findGroupCtrl.setInitialSearchString( "" );
+		}
+		
 
 		if ( m_listOfUsers == null )
 			m_listOfUsers = new ArrayList<GwtUser>();
@@ -1102,9 +1115,71 @@ public class ModifyStaticMembershipDlg extends DlgBox
 	 */
 	private void validateGroupMembership()
 	{
-		//!!! Finish
+		// Are external members allowed?
 		if ( externalMembersAllowed() == false )
 		{
+			// No, remove any external users/groups from the list
+			if ( m_listOfUsers != null ) 
+			{
+				ArrayList<GwtUser> usersToBeRemoved;
+
+				usersToBeRemoved = new ArrayList<GwtUser>();
+				
+				for (GwtUser nextUser : m_listOfUsers) 
+				{
+					if ( nextUser.isInternal() == false )
+					{
+						// Add this user as one to be removed from the list of users.
+						usersToBeRemoved.add( nextUser );
+					}
+				}
+				
+				// Remove all the external users.
+				if ( usersToBeRemoved.size() > 0 )
+				{
+					for (GwtUser nextUser : usersToBeRemoved)
+					{
+						m_listOfUsers.remove( nextUser );
+					}
+
+					// Update the table to reflect the fact that we removed a user.
+					m_userDataProvider.refresh();
+
+					// Tell the table how many users we have.
+					m_userTable.setRowCount( m_listOfUsers.size(), true );
+				}
+			}
+
+			if ( m_listOfGroups != null ) 
+			{
+				ArrayList<GwtGroup> groupsToBeRemoved;
+				
+				groupsToBeRemoved = new ArrayList<GwtGroup>();
+				
+				for (GwtGroup nextGroup : m_listOfGroups) 
+				{
+					if ( nextGroup.isInternal() == false )
+					{
+						// Add this group as one to be removed from the list of groups.
+						groupsToBeRemoved.add( nextGroup );
+					}
+				}
+				
+				// Remove all the external groups.
+				if ( groupsToBeRemoved.size() > 0 )
+				{
+					for (GwtGroup nextGroup : groupsToBeRemoved)
+					{
+						m_listOfGroups.remove( nextGroup );
+					}
+
+					// Update the table to reflect the fact that we removed a group.
+					m_groupDataProvider.refresh();
+
+					// Tell the table how many groups we have.
+					m_groupTable.setRowCount( m_listOfGroups.size(), true );
+				}
+			}
 		}
 	}
 }

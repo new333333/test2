@@ -9173,8 +9173,14 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static boolean useHomeAsMyFiles(AllModulesInjected ami) {
-		// If we're running Filr...
-		if (Utils.checkIfFilr()) {
+		User user;
+		IdentityInfo idInfo;
+		
+		user = getCurrentUser();
+		idInfo = user.getIdentityInfo();
+		
+		// If we're running Filr and the user has been provisioned from ldap
+		if ( Utils.checkIfFilr() && idInfo.isFromLdap() ) {
 			// ...check the user's and/or zone setting.
 			Boolean result = GwtUIHelper.getEffectiveAdhocFolderSetting(ami, getCurrentUser());
 			if ((null != result) && (!(result))) {

@@ -287,7 +287,7 @@ public class SearchFilter {
 	}
 
 	/**
-	 * 
+	 * Add a filter for the "internal" field
 	 */
 	public void addInternalFilter( boolean internalOnly )
 	{
@@ -295,6 +295,17 @@ public class SearchFilter {
 					Constants.IDENTITY_INTERNAL_FIELD,
 					SearchFilterKeys.FilterTypeEntryDefinition,
 					String.valueOf( internalOnly ) );
+	}
+	
+	/**
+	 * Add a filter for the "internal" field
+	 */
+	public void addAndInternalFilter( boolean internalOnly )
+	{
+		newCurrentFilterTermsBlock();
+		currentFilterTerms.addAttribute( SearchFilterKeys.FilterAnd, "true" );
+		
+		addInternalFilter( internalOnly );
 	}
 	
 	public void addTitleFilter(String searchTerm, boolean wildcardOnly) {

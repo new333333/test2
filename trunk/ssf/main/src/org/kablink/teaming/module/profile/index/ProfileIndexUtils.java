@@ -40,6 +40,7 @@ import org.kablink.teaming.domain.EmailAddress;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.FieldFactory;
@@ -100,7 +101,7 @@ public class ProfileIndexUtils {
         doc.add(docNumField);
     }
     
-    public static void addIdentityInfo(Document doc, User user) {
+    public static void addIdentityInfo(Document doc, UserPrincipal user) {
         Field field = FieldFactory.createFieldStoredNotAnalyzed(IDENTITY_INTERNAL_FIELD, String.valueOf(user.getIdentityInfo().isInternal()));
         doc.add(field);    	
         field = FieldFactory.createFieldStoredNotAnalyzed(IDENTITY_FROM_LDAP_FIELD, String.valueOf(user.getIdentityInfo().isFromLdap()));

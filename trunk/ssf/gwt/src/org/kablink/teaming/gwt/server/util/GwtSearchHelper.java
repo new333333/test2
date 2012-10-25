@@ -275,19 +275,22 @@ public class GwtSearchHelper
 		case PERSON:
 		case USER:
 		case PRINCIPAL:
-			if ( searchCriteria.getSearchForInternalPrincipalsOnly() )
-				searchTermFilter.addInternalFilter( searchCriteria.getSearchForInternalPrincipalsOnly() );
-			
 			searchTermFilter.addTitleFilter( searchText );
 			searchTermFilter.addLoginNameFilter( searchText );
 			if ( GwtSearchCriteria.SearchType.PERSON == searchType ) {
 				searchTermFilter.addAndPersonFlagFilter( String.valueOf( Boolean.TRUE ) );
 			}
+
+			if ( searchCriteria.getSearchForInternalPrincipalsOnly() )
+				searchTermFilter.addAndInternalFilter( searchCriteria.getSearchForInternalPrincipalsOnly() );
 			break;
 
 		case GROUP:
+			searchTermFilter.addTitleFilter( searchText );
+			searchTermFilter.addLoginNameFilter( searchText );
+
 			if ( searchCriteria.getSearchForInternalPrincipalsOnly() )
-				searchTermFilter.addInternalFilter( searchCriteria.getSearchForInternalPrincipalsOnly() );
+				searchTermFilter.addAndInternalFilter( searchCriteria.getSearchForInternalPrincipalsOnly() );
 			break;
 			
 		default:
