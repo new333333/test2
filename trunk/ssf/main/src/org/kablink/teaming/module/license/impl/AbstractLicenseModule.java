@@ -135,8 +135,8 @@ implements LicenseModule, ZoneSchedule {
 		filterControls.add(Restrictions.eq("type", "user"));
 		filterControls.add(Restrictions.eq("disabled", Boolean.FALSE));
 		filterControls.add(Restrictions.eq("deleted", Boolean.FALSE));
-		filterControls.add(Restrictions.eq("internal", Boolean.TRUE));
-		filterControls.add(Restrictions.eq("fromLocal", Boolean.TRUE));
+		filterControls.add(Restrictions.eq("identityInfo.internal", Boolean.TRUE));
+		filterControls.add(Restrictions.eq("identityInfo.fromLocal", Boolean.TRUE));
 		return getCoreDao().countObjects(Principal.class, filterControls, zoneId, null);
 	}
 	
