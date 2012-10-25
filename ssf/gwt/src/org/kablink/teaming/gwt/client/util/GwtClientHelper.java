@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -138,6 +138,7 @@ public class GwtClientHelper {
 	public static void deferredAlert(final String msg) {
 		if (hasString(msg)) {
 			ScheduledCommand cmd = new ScheduledCommand() {
+				@Override
 				public void execute() {
 					Window.alert(msg);
 				}
@@ -188,22 +189,25 @@ public class GwtClientHelper {
 	 *    GregorianCalendar equivalent.  This is the only way to
 	 *    manipulate a date and time.
      * 
+	 * @param date
+	 * 
      * @return
      */
 	@SuppressWarnings("deprecation")
-	public static int getTimeZoneOffset() {
-		final Date now = new Date();
-		final int tzo = now.getTimezoneOffset();
+	public static int getTimeZoneOffset(Date date) {
+		final int tzo = date.getTimezoneOffset();
 		return tzo;
 	}
 	
 	/**
 	 * Returns the client's timezone offset in milliseconds.
+	 *
+	 * @param date
 	 * 
 	 * @return
 	 */
-	public static long getTimeZoneOffsetMillis() {
-		return (((long) getTimeZoneOffset()) * 60L * 1000L);
+	public static long getTimeZoneOffsetMillis(Date date) {
+		return (((long) getTimeZoneOffset(date)) * 60L * 1000L);
 	}
 	
     /**
@@ -216,7 +220,7 @@ public class GwtClientHelper {
      */
     public static final Date gmtToLocal(Date date) {       
         // Add the timezone offset.
-        return new Date(date.getTime() + getTimeZoneOffsetMillis());
+        return new Date(date.getTime() + getTimeZoneOffsetMillis(date));
     }
 
     /**
@@ -229,7 +233,7 @@ public class GwtClientHelper {
      */
     public static final Date localToGmt(Date date) {
         // Remove the timezone offset.        
-        return new Date(date.getTime() - getTimeZoneOffsetMillis());
+        return new Date(date.getTime() - getTimeZoneOffsetMillis(date));
     }
    
 	/*
@@ -861,6 +865,7 @@ public class GwtClientHelper {
 
 			// ...and when the popup closes...
 			popup.addCloseHandler(new CloseHandler<PopupPanel>() {
+				@Override
 				public void onClose(CloseEvent<PopupPanel> event) {
 					// ...remove it.
 					bodyElement.removeClassName(scrollClass);
