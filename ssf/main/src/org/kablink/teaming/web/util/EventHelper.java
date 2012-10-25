@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.portlet.PortletRequest;
@@ -464,24 +465,28 @@ public class EventHelper {
 	 * based on the current user's locale and time zone.
 	 * 
 	 * @param date
-	 * @param dateOnly
+	 * @param allDayEventDate
 	 * 
 	 * @return
 	 */
-	public static String getDateTimeString(Date date, boolean dateOnly) {
+	public static String getDateTimeString(Date date, boolean allDayEventDate) {
 		String reply;
 		if (null == date) {
 			reply = "";
 		}
 		else {
-			User user = RequestContextHolder.getRequestContext().getUser();
+			User   user       = RequestContextHolder.getRequestContext().getUser();
+			Locale userLocale = user.getLocale();
 			
 			DateFormat df;
-			if (dateOnly)
-			     df = DateFormat.getDateInstance(    DateFormat.SHORT,                   user.getLocale());
-			else df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale());
-			df.setTimeZone(user.getTimeZone());
-			
+			if (allDayEventDate) {
+				df = DateFormat.getDateInstance(DateFormat.SHORT, userLocale);
+				df.setTimeZone(TimeZone.getTimeZone("GMT"));
+			}
+			else {
+				df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, userLocale);
+				df.setTimeZone(user.getTimeZone());
+			}
 			reply = df.format(date);
 		}
 		return reply;

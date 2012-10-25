@@ -489,9 +489,8 @@ public class GwtClientHelper {
      * @return
      */
 	@SuppressWarnings("deprecation")
-	public static int getTimeZoneOffset() {
-		final Date now = new Date();
-		final int tzo = now.getTimezoneOffset();
+	public static int getTimeZoneOffset(Date date) {
+		final int tzo = date.getTimezoneOffset();
 		return tzo;
 	}
 	
@@ -500,8 +499,8 @@ public class GwtClientHelper {
 	 * 
 	 * @return
 	 */
-	public static long getTimeZoneOffsetMillis() {
-		return (((long) getTimeZoneOffset()) * 60L * 1000L);
+	public static long getTimeZoneOffsetMillis(Date date) {
+		return (((long) getTimeZoneOffset(date)) * 60L * 1000L);
 	}
 
 	/**
@@ -525,7 +524,7 @@ public class GwtClientHelper {
      */
     public static final Date gmtToLocal(Date date) {       
         // Add the timezone offset.
-        return new Date(date.getTime() + getTimeZoneOffsetMillis());
+        return new Date(date.getTime() + getTimeZoneOffsetMillis(date));
     }
 
     /**
@@ -538,7 +537,7 @@ public class GwtClientHelper {
      */
     public static final Date localToGmt(Date date) {
         // Remove the timezone offset.        
-        return new Date(date.getTime() - getTimeZoneOffsetMillis());
+        return new Date(date.getTime() - getTimeZoneOffsetMillis(date));
     }
    
 	/**

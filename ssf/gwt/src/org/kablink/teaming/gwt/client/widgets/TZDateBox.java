@@ -78,7 +78,7 @@ public class TZDateBox extends Composite implements HasValue<Long>, HasValueChan
 	 * Constructor method.
 	 */
     public TZDateBox() {
-        init(new DateBox());
+        init(new DateBox(), new Date());
     }
 
     /**
@@ -89,14 +89,14 @@ public class TZDateBox extends Composite implements HasValue<Long>, HasValueChan
      * @param format
      */
     public TZDateBox(DatePicker picker, long date, DateBox.Format format) {
-        init(new DateBox(picker, tz2date(date), format));
+        init(new DateBox(picker, tz2date(date), format), new Date(date));
     }
 
     /*
      * Initializes the TZDateBox.
      */
-    private void init(DateBox datebox) {
-    	m_timezoneOffsetMillis = GwtClientHelper.getTimeZoneOffsetMillis();
+    private void init(DateBox datebox, Date date) {
+    	m_timezoneOffsetMillis = GwtClientHelper.getTimeZoneOffsetMillis(date);
     	
         m_datebox = datebox;       
         m_datebox.addValueChangeHandler(new ValueChangeHandler<Date>() {
@@ -126,7 +126,8 @@ public class TZDateBox extends Composite implements HasValue<Long>, HasValueChan
      * 
      * @return
      */
-    public Long getValue() {
+    @Override
+	public Long getValue() {
         return date2tz(m_datebox.getValue());
     }
 
@@ -145,7 +146,8 @@ public class TZDateBox extends Composite implements HasValue<Long>, HasValueChan
      * 
      * @param value
      */
-    public void setValue(Long value) {
+    @Override
+	public void setValue(Long value) {
         setValue(value, false);
     }
    
@@ -156,7 +158,8 @@ public class TZDateBox extends Composite implements HasValue<Long>, HasValueChan
      * @param value
      * @param fireEvents
      */
-    public void setValue(Long value, boolean fireEvents) {
+    @Override
+	public void setValue(Long value, boolean fireEvents) {
         m_datebox.setValue(((null == value) ? null : tz2date(value)), fireEvents);
     }
 
