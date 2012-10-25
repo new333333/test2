@@ -66,6 +66,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
@@ -975,6 +976,10 @@ public class GwtProfileHelper {
 					
 					// Yes!  Construct a GwtUser object for it.
 					user = new GwtUser();
+
+					if ( principal instanceof UserPrincipal )
+						user.setInternal( ((UserPrincipal)principal).getIdentityInfo().isInternal() );
+
 					user.setUserId( principal.getId() );
 					user.setName( principal.getName() );
 					user.setTitle( Utils.getUserTitle(principal) );

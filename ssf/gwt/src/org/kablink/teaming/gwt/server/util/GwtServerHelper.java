@@ -98,6 +98,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
@@ -1553,6 +1554,7 @@ public class GwtServerHelper {
 								String title,
 								String desc,
 								boolean isMembershipDynamic,
+								boolean externalMembersAllowed,
 								List<GwtTeamingItem> membership,
 								GwtDynamicGroupMembershipCriteria membershipCriteria ) throws GwtTeamingException
 	{
@@ -1575,6 +1577,16 @@ public class GwtServerHelper {
 		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
 		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
 		inputMap.put( ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic );
+		
+		// Add identity information
+		{
+			IdentityInfo identityInfo;
+			
+			identityInfo = new IdentityInfo();
+			identityInfo.setFromLocal( true );
+			identityInfo.setInternal( !externalMembersAllowed );
+			inputMap.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
+		}
 	
 		// Is group membership dynamic?
 		if ( isMembershipDynamic == false )
@@ -4956,6 +4968,7 @@ public class GwtServerHelper {
 							nextGroup = (Group) member;
 							
 							gwtGroup = new GwtGroup();
+							gwtGroup.setInternal( nextGroup.getIdentityInfo().isInternal() );
 							gwtGroup.setId( nextGroup.getId().toString() );
 							gwtGroup.setName( nextGroup.getName() );
 							gwtGroup.setTitle( nextGroup.getTitle() );
@@ -4973,6 +4986,7 @@ public class GwtServerHelper {
 							user = (User) member;
 		
 							gwtUser = new GwtUser();
+							gwtUser.setInternal( user.getIdentityInfo().isInternal() );
 							gwtUser.setUserId( user.getId() );
 							gwtUser.setName( user.getName() );
 							gwtUser.setTitle( Utils.getUserTitle( user ) );
@@ -5006,8 +5020,7 @@ public class GwtServerHelper {
 		
 		info = new GroupMembershipInfo();
 		
-		//!!! Set whether external users/groups are allowed
-		externalAllowed =  true;
+		externalAllowed = isExternalMembersAllowed( ami, groupId );
 		isDynamic = isGroupMembershipDynamic( ami, groupId );
 		info.setMembershipInfo( isDynamic, externalAllowed );
 		
@@ -7295,6 +7308,25 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return true if the given group can have external users/groups as members of the group
+	 */
+	public static Boolean isExternalMembersAllowed( AllModulesInjected ami, Long groupId )
+	{
+		Principal principal;
+		
+		principal = ami.getProfileModule().getEntry( groupId );
+		if ( principal != null && principal instanceof Group )
+		{
+			Group group;
+			
+			group = (Group) principal;
+			return !group.getIdentityInfo().isInternal();
+		}
+
+		return Boolean.FALSE;
+	}
+
+	/**
 	 * Returns true if a family string represents a 'file' entity or
 	 * false otherwise.
 	 * 
@@ -9003,6 +9035,7 @@ public class GwtServerHelper {
 					
 					// Add this user to the results.
 					gwtUser = new GwtUser();
+					gwtUser.setInternal( user.getIdentityInfo().isInternal() );
 					gwtUser.setUserId( user.getId() );
 					gwtUser.setName( user.getName() );
 					gwtUser.setTitle( Utils.getUserTitle( user ) );

@@ -42,6 +42,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public abstract class GwtPrincipal extends GwtTeamingItem
 	implements IsSerializable
 {
+	private boolean m_internal;
+
 	/**
 	 * 
 	 */
@@ -72,6 +74,14 @@ public abstract class GwtPrincipal extends GwtTeamingItem
 	 * 
 	 */
 	public abstract Long getIdLong();
+
+	/**
+	 * 
+	 */
+	public boolean isInternal()
+	{
+		return m_internal;
+	}
 	
 	/**
 	 * 
@@ -93,6 +103,14 @@ public abstract class GwtPrincipal extends GwtTeamingItem
 			return GwtTeaming.getMessages().modifyNetFolderServerDlg_Group();
 		
 		return "Unknown principal type";
+	}
+
+	/**
+	 * 
+	 */
+	public void setInternal( boolean internal )
+	{
+		this.m_internal = internal;
 	}
 }
 	

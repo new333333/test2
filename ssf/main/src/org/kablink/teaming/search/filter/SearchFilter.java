@@ -285,6 +285,17 @@ public class SearchFilter {
 		// Always use the initial form of the method.
 		addFieldFilter(field, type, searchTerm, false);
 	}
+
+	/**
+	 * 
+	 */
+	public void addInternalFilter( boolean internalOnly )
+	{
+		addFieldFilter(
+					Constants.IDENTITY_INTERNAL_FIELD,
+					SearchFilterKeys.FilterTypeEntryDefinition,
+					String.valueOf( internalOnly ) );
+	}
 	
 	public void addTitleFilter(String searchTerm, boolean wildcardOnly) {
 		addFieldFilter(Constants.TITLE_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm.toLowerCase(), wildcardOnly);

@@ -50,6 +50,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtGroup;
@@ -274,11 +275,19 @@ public class GwtSearchHelper
 		case PERSON:
 		case USER:
 		case PRINCIPAL:
+			if ( searchCriteria.getSearchForInternalPrincipalsOnly() )
+				searchTermFilter.addInternalFilter( searchCriteria.getSearchForInternalPrincipalsOnly() );
+			
 			searchTermFilter.addTitleFilter( searchText );
 			searchTermFilter.addLoginNameFilter( searchText );
 			if ( GwtSearchCriteria.SearchType.PERSON == searchType ) {
 				searchTermFilter.addAndPersonFlagFilter( String.valueOf( Boolean.TRUE ) );
 			}
+			break;
+
+		case GROUP:
+			if ( searchCriteria.getSearchForInternalPrincipalsOnly() )
+				searchTermFilter.addInternalFilter( searchCriteria.getSearchForInternalPrincipalsOnly() );
 			break;
 			
 		default:
@@ -433,6 +442,10 @@ public class GwtSearchHelper
 								
 								// Create a GwtGroup item for this group.
 								gwtGroup = new GwtGroup();
+								
+								if ( group instanceof UserPrincipal )
+									gwtGroup.setInternal( ((UserPrincipal)group).getIdentityInfo().isInternal() );
+								
 								gwtGroup.setId( id );
 								gwtGroup.setName( group.getName() );
 								gwtGroup.setTitle( group.getTitle() );
@@ -664,6 +677,10 @@ public class GwtSearchHelper
 
 								// Create a GwtGroup item for this group.
 								gwtGroup = new GwtGroup();
+								
+								if ( principal instanceof UserPrincipal )
+									gwtGroup.setInternal( ((UserPrincipal)principal).getIdentityInfo().isInternal() );
+								
 								gwtGroup.setId( principalId );
 								gwtGroup.setName( principal.getName() );
 								gwtGroup.setTitle( principal.getTitle() );
