@@ -600,6 +600,7 @@ public class GwtNetFolderHelper
 				GwtUser gwtUser;
 				
 				gwtUser = new GwtUser();
+				gwtUser.setInternal( ((User)p).getIdentityInfo().isInternal() );
 				gwtUser.setUserId( p.getId() );
 				gwtUser.setName( p.getName() );
 				gwtUser.setTitle( Utils.getUserTitle( p ) );
@@ -612,6 +613,7 @@ public class GwtNetFolderHelper
 				GwtGroup gwtGroup;
 				
 				gwtGroup = new GwtGroup();
+				gwtGroup.setInternal( ((Group)p).getIdentityInfo().isInternal() );
 				gwtGroup.setId( p.getId().toString() );
 				gwtGroup.setName( p.getName() );
 				gwtGroup.setTitle( p.getTitle() );

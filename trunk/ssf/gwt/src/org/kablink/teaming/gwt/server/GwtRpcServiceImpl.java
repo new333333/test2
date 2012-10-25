@@ -325,7 +325,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Group group;
 			
 			cgCmd = (CreateGroupCmd) cmd;
-			group = GwtServerHelper.createGroup( this, cgCmd.getName(), cgCmd.getTitle(), cgCmd.getDesc(), cgCmd.getIsMembershipDynamic(), cgCmd.getMembership(), cgCmd.getMembershipCriteria() );
+			group = GwtServerHelper.createGroup(
+											this,
+											cgCmd.getName(),
+											cgCmd.getTitle(),
+											cgCmd.getDesc(),
+											cgCmd.getIsMembershipDynamic(),
+											cgCmd.getExternalMembersAllowed(),
+											cgCmd.getMembership(),
+											cgCmd.getMembershipCriteria() );
 			groupInfo = new GroupInfo();
 			if ( group != null )
 			{

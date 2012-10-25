@@ -62,6 +62,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.ModifyStaticMembershipDlg.StaticMembershipInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -104,6 +105,7 @@ public class ModifyGroupDlg extends DlgBox
 	private GwtDynamicGroupMembershipCriteria m_dynamicMembershipCriteria;
 	private Integer m_numDynamicMembers;
 	private boolean m_dynamicMembershipAllowed;
+	private boolean m_externalMembersAllowed = false;
 
 	/**
 	 * Callback interface to interact with the "modify group" dialog
@@ -317,7 +319,14 @@ public class ModifyGroupDlg extends DlgBox
 		}
 		
 		// Issue an rpc request to create the group.
-		cmd = new CreateGroupCmd( getGroupName(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_dynamicMembershipCriteria );
+		cmd = new CreateGroupCmd(
+							getGroupName(),
+							getGroupTitle(),
+							getGroupDesc(),
+							getIsMembershipDynamic(),
+							m_externalMembersAllowed,
+							m_groupMembership,
+							m_dynamicMembershipCriteria );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 	
@@ -638,6 +647,7 @@ public class ModifyGroupDlg extends DlgBox
 		m_groupMembership = new ArrayList<GwtTeamingItem>();
 		m_dynamicMembershipCriteria = new GwtDynamicGroupMembershipCriteria();
 		m_dynamicMembershipAllowed = true;
+		m_externalMembersAllowed = false;
 		
 		// Issue an rpc request to see if dynamic group membership is allowed.
 		isDynamicGroupMembershipAllowed();
@@ -713,6 +723,7 @@ public class ModifyGroupDlg extends DlgBox
 			int x;
 			int y;
 			boolean externalAllowed;
+			boolean groupExistsInDb;
 			
 			// No
 			// Get the position of this dialog.
@@ -727,22 +738,35 @@ public class ModifyGroupDlg extends DlgBox
 				// ModifyStaticMembershipDlg.
 				handler = new EditSuccessfulHandler()
 				{
-					@SuppressWarnings("unchecked")
 					@Override
 					public boolean editSuccessful( Object obj )
 					{
-						m_groupMembership = (List<GwtTeamingItem>) obj;
+						if ( obj instanceof StaticMembershipInfo )
+						{
+							StaticMembershipInfo membershipInfo;
+							
+							membershipInfo = (StaticMembershipInfo) obj;
+							m_groupMembership = membershipInfo.getMembershipList();
+							
+							m_externalMembersAllowed = membershipInfo.getIsExternalMembersAllowed();
+						}
+						
 						return true;
 					}
 				};
 				m_staticMembershipDlg = new ModifyStaticMembershipDlg( false, true, handler, null, x, y );
 			}
 			
-			externalAllowed = false;
+			groupExistsInDb = false;
 			if ( m_groupInfo != null )
+			{
+				groupExistsInDb = true;
 				externalAllowed = m_groupInfo.getIsExternalAllowed();
+			}
+			else
+				externalAllowed = m_externalMembersAllowed;
 			
-			m_staticMembershipDlg.init( getGroupName(), m_groupMembership, externalAllowed );
+			m_staticMembershipDlg.init( getGroupName(), m_groupMembership, externalAllowed, groupExistsInDb );
 			m_staticMembershipDlg.setPopupPosition( x, y );
 			m_staticMembershipDlg.show();
 		}

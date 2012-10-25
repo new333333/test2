@@ -95,6 +95,42 @@ public class ModifyStaticMembershipDlg extends DlgBox
 	implements SearchFindResultsEvent.Handler
 {
 	/**
+	 * 
+	 */
+	public class StaticMembershipInfo
+	{
+		private boolean m_externalMembersAllowed;
+		private ArrayList<GwtTeamingItem> m_membershipList;
+		
+		/**
+		 * 
+		 */
+		public StaticMembershipInfo(
+			boolean externalMembersAllowed,
+			ArrayList<GwtTeamingItem> membershipList )
+		{
+			m_externalMembersAllowed = externalMembersAllowed;
+			m_membershipList = membershipList;
+		}
+		
+		/**
+		 * 
+		 */
+		public boolean getIsExternalMembersAllowed()
+		{
+			return m_externalMembersAllowed;
+		}
+		
+		/**
+		 * 
+		 */
+		public ArrayList<GwtTeamingItem> getMembershipList()
+		{
+			return m_membershipList;
+		}
+	}
+	
+	/**
 	 * Inner class used to compare two groups
 	 */
 	public static class GroupComparator implements Comparator<GwtGroup> 
@@ -288,6 +324,11 @@ public class ModifyStaticMembershipDlg extends DlgBox
 						@Override
 						public void execute()
 						{
+							// Tell the FindCtrl whether or not to search for just internal
+							// users/groups or both internal and external users/groups
+							m_findGroupCtrl.setSearchForInternalPrincipalsOnly( !externalMembersAllowed() );
+							m_findUserCtrl.setSearchForInternalPrincipalsOnly( !externalMembersAllowed() );
+							
 							// Since the user changed "Allow external users and groups" checkbox
 							// validate the membership to make sure it abides by the
 							// "allow external users and groups" setting
@@ -717,6 +758,17 @@ public class ModifyStaticMembershipDlg extends DlgBox
 			Window.alert( GwtTeaming.getMessages().modifyStaticMembershipDlgSelectUserToRemove() );
 		}
 	}
+	
+	/**
+	 * Are external members allowed?
+	 */
+	private boolean externalMembersAllowed()
+	{
+		if ( m_externalAllowedCb != null )
+			return m_externalAllowedCb.getValue();
+		
+		return false;
+	}
 
 	/**
 	 * Create a list of all the users and groups.
@@ -724,6 +776,7 @@ public class ModifyStaticMembershipDlg extends DlgBox
 	@Override
 	public Object getDataFromDlg() 
 	{
+		StaticMembershipInfo membershipInfo;
 		ArrayList<GwtTeamingItem> membershipList;
 
 		membershipList = new ArrayList<GwtTeamingItem>();
@@ -744,7 +797,9 @@ public class ModifyStaticMembershipDlg extends DlgBox
 			}
 		}
 
-		return membershipList;
+		membershipInfo = new StaticMembershipInfo( externalMembersAllowed(), membershipList );
+		
+		return membershipInfo;
 	}
 
 	/**
@@ -790,13 +845,23 @@ public class ModifyStaticMembershipDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void init( String groupName, List<GwtTeamingItem> membership, boolean externalAllowed ) 
+	public void init(
+		String groupName,
+		List<GwtTeamingItem> membership,
+		boolean externalAllowed,
+		boolean groupExistsInDb ) 
 	{
 		// Update the dialog header.
 		setCaption( GwtTeaming.getMessages().modifyStaticMembershipDlgHeader( groupName ) );
 
 		if ( m_externalAllowedCb != null )
+		{
 			m_externalAllowedCb.setValue( externalAllowed );
+			
+			// If this group already exists in the db, we don't let them change if external members
+			// are allowed.
+			m_externalAllowedCb.setEnabled( !groupExistsInDb );
+		}
 		
 		if ( m_findUserCtrl != null )
 			m_findUserCtrl.setInitialSearchString( "" );
@@ -961,8 +1026,24 @@ public class ModifyStaticMembershipDlg extends DlgBox
 			// Is this user already in our list?
 			if ( isUserInGroup( user ) == false )
 			{
-				// No, add the user to the list of users.
-				addUser( user );
+				boolean doAdd = true;;
+				
+				// No
+				// Is this an external user
+				if ( user.isInternal() == false )
+				{
+					// Yes
+					// Are external users allowed?
+					if ( externalMembersAllowed() == false )
+					{
+						// No, don't add this user
+						doAdd = false;
+					}
+				}
+				
+				// Add the user to the list of users.
+				if ( doAdd )
+					addUser( user );
 			}
 
 			// Hide the search-results widget.
@@ -985,8 +1066,23 @@ public class ModifyStaticMembershipDlg extends DlgBox
 			// Is this group already in our list?
 			if ( isGroupInGroup( group ) == false ) 
 			{
+				boolean doAdd = true;;
+				
+				// No
+				// Does this group hold external users?
+				if ( group.isInternal() == false )
+				{
+					// Yes
+					// Are external users allowed?
+					if ( externalMembersAllowed() == false )
+					{
+						// No, don't add this group
+						doAdd = false;
+					}
+				}
 				// No, add the group to the list of groups.
-				addGroup( group );
+				if ( doAdd )
+					addGroup( group );
 			}
 
 			// Hide the search-results widget.
@@ -1006,13 +1102,9 @@ public class ModifyStaticMembershipDlg extends DlgBox
 	 */
 	private void validateGroupMembership()
 	{
-		if ( m_externalAllowedCb != null )
+		//!!! Finish
+		if ( externalMembersAllowed() == false )
 		{
-			// Is "allow external users/groups" setting turned on?
-			if ( m_externalAllowedCb.getValue() == false )
-			{
-				// No
-			}
 		}
 	}
 }

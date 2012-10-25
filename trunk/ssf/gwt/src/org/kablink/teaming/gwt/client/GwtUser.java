@@ -52,7 +52,6 @@ public class GwtUser extends GwtPrincipal
 	private String m_viewUrl;
 	private String m_wsId;
 	private String m_wsTitle;
-	private boolean m_internal;
 	
 	/**
 	 * Constructor method. 
@@ -221,13 +220,5 @@ public class GwtUser extends GwtPrincipal
 	 */
 	public void setWorkspaceTitle(String wsTitle) {
 		m_wsTitle = wsTitle;
-	}
-	
-	public boolean isInternal() {
-		return m_internal;
-	}
-	
-	public void setInternal(boolean internal) {
-		this.m_internal = internal;
 	}
 }
