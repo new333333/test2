@@ -85,8 +85,9 @@ public abstract class Principal extends Entry implements IPrincipal {
     protected Map<String,EmailAddress> emailAddresses;//initialized by hibernate access=field
     // these collections are loaded for quicker indexing, hibernate will not persist them
     protected Map iEmailAddresses;
+	protected IdentityInfo identityInfo;
 
-     public EntityIdentifier.EntityType getEntityType() {
+    public EntityIdentifier.EntityType getEntityType() {
     	return EntityIdentifier.EntityType.valueOf(getType());
     }
     /**
@@ -424,5 +425,13 @@ public abstract class Principal extends Entry implements IPrincipal {
     	this.iEmailAddresses = iEmailAddresses;
     }
 
+	public IdentityInfo getIdentityInfo() {
+		return identityInfo;
+	}
+	
+	public void setIdentityInfo(IdentityInfo identityInfo) throws IllegalArgumentException {
+		identityInfo.validate();
+		this.identityInfo = identityInfo;
+	}
  }
 

@@ -36,8 +36,16 @@ public abstract class UserPrincipal extends Principal {
 
 	protected Long diskQuota;
 	protected Long fileSizeLimit;
-	protected IdentityInfo identityInfo;
     
+	// For use by Hibernate only
+	protected UserPrincipal() {
+	}
+	
+	// For user by application
+	protected UserPrincipal(IdentityInfo identityInfo) {
+		setIdentityInfo(identityInfo);
+	}
+	
 	/**
      * @hibernate.property
      */
@@ -65,12 +73,4 @@ public abstract class UserPrincipal extends Principal {
 		this.fileSizeLimit = fileSizeLimit;
 	}
 		
-	public IdentityInfo getIdentityInfo() {
-		return identityInfo;
-	}
-	
-	public void setIdentityInfo(IdentityInfo identityInfo) throws IllegalArgumentException {
-		identityInfo.validate();
-		this.identityInfo = identityInfo;
-	}
 }
