@@ -76,14 +76,13 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
 
-
 /**
  * Implements a dialog for editing a task's due date.
  *  
  * Note:
  *    We use deprecated APIs here since GWT's client side has no
- *    GregorianCalendar equivalent.  This is the only way to manipulate
- *    a date and time.
+ *    Calendar equivalent.  This is the only way to manipulate a date
+ *    and time.
  *    
  * @author drfoster@novell.com
  */
@@ -228,9 +227,9 @@ public class TaskDueDateDlg extends DlgBox
 				// Yes!  Construct an appropriate TaskEvent to and
 				// apply it.
 				TaskEvent event = new TaskEvent(true);	// true -> Initialize with null dates.
-				event.setAllDayEvent( true                                         );				
-				event.setActualStart( new TaskDate(getAllDayActualStart(startDate)));
-				event.setActualEnd(   new TaskDate(getAllDayActualEnd(  endDate  )));
+				event.setAllDayEvent( true                                               );				
+				event.setActualStart( new TaskDate(getAllDayDateOnSave(startDate, true )));	// true  -> Start date.
+				event.setActualEnd(   new TaskDate(getAllDayDateOnSave(  endDate, false)));	// false -> End   date.
 				applyNewTaskDueDateImpl(event);
 			}
 		}
@@ -523,28 +522,55 @@ public class TaskDueDateDlg extends DlgBox
 	}
 
 	/*
-	 * Returns the Date to use as the actual end date of an all day
-	 * event.
+	 * Returns the Date to use as the start or end date of an all day
+	 * event when saving the dialog's results.
 	 */
 	@SuppressWarnings("deprecation")
-	private Date getAllDayActualEnd(TZDateBox db) {
-		Date date = new Date(db.getRawValue());
+	private Date getAllDayDateOnSave(Date dIn, boolean isStart) {
+		long t = dIn.getTime();
+		Date d;
+		if (isStart) {
+			d = new Date(t - GwtClientHelper.getTimeZoneOffsetMillis(dIn));
+		}
 		
-		int tzoM = GwtClientHelper.getTimeZoneOffset();	// Time zone offset, in minutes.
-		int hFix = ((0 < tzoM) ? 24 : 0);				// Hour adjustment so we don't change days.
-		date.setHours(   hFix);							// An all day end...
-		date.setMinutes(-tzoM);							// ...is always at...
-		date.setSeconds(-1   );							// ...1 second before midnight GMT.
-		
-		return date;
+		else {
+			d = new Date(t);
+			d.setHours(24);										//
+			int tzoM = GwtClientHelper.getTimeZoneOffset(d);	// Time zone offset, in minutes.
+			d.setMinutes(-tzoM);								//
+			d.setSeconds(-1   );								// An all day end is always at 1 second before midnight GMT.
+		}
+		return d;
+	}
+	
+	private Date getAllDayDateOnSave(TZDateBox db, boolean isStart) {
+		// Always use the initial form of the method.
+		return getAllDayDateOnSave(new Date(db.getValue()), isStart);
 	}
 	
 	/*
-	 * Returns the Date to use as the actual start date of an all day
-	 * event.
+	 * Returns the Date to use as the start or end date of an event to
+	 * initialize the date picker when entering the dialog.
 	 */
-	private Date getAllDayActualStart(TZDateBox db) {
-		return new Date(db.getValue());
+	private Date getPickerDateOnEntry(TaskDate taskDate) {
+		boolean hasDate = (null != taskDate);
+		Date    reply   = (hasDate ? new Date(taskDate.getDate().getTime()) : null);
+		if (hasDate && isAllDayEvent()) {
+			Long t = reply.getTime();
+			reply.setTime(t + GwtClientHelper.getTimeZoneOffsetMillis(reply));
+		}
+		return reply;
+	}
+	
+	private Date getPickerDateOnEntry(boolean isStart) {
+		// Extract the appropriate TaskDate from the event...
+		TaskDate taskDate;
+		if (hasEvent())
+		     taskDate = (isStart ? m_selectedTaskEvent.getActualStart() : m_selectedTaskEvent.getActualEnd());
+		else taskDate = null;
+		
+		// ...and always use the initial form of the method.
+		return getPickerDateOnEntry(taskDate);
 	}
 	
 	/**
@@ -582,13 +608,6 @@ public class TaskDueDateDlg extends DlgBox
 					tp.setVisible(!allDay);
 				}
 
-				// ...set the correct timezone offset in the date box
-				// ...widgets...
-				for (String dpKey:  m_dateBoxMap.keySet()) {
-					TZDateBox db = m_dateBoxMap.get(dpKey);
-					db.setTZOffset(allDay ? GwtClientHelper.getTimeZoneOffsetMillis() : 0);
-				}
-				
 				// ...and hide/show the duration days row.
 				m_taskDueDateTable.getRowFormatter().setVisible(m_durationDaysRow, (!allDay));
 			}
@@ -632,11 +651,7 @@ public class TaskDueDateDlg extends DlgBox
 	 */
 	private void renderDateRow(boolean isStart, String label) {
 		// Determine the date to initialize the pickers with...
-		TaskDate taskDate;
-		if (!hasEvent())
-		     taskDate = null;
-		else taskDate = (isStart ? m_selectedTaskEvent.getActualStart() : m_selectedTaskEvent.getActualEnd());
-		Date pickerDate = ((null == taskDate) ? null : taskDate.getDate());
+		Date pickerDate = getPickerDateOnEntry(isStart);
 
 		// ...create the DateBox...
 		int row	= m_taskDueDateTable.getRowCount();
@@ -645,7 +660,7 @@ public class TaskDueDateDlg extends DlgBox
 		hp.addStyleName("taskDispositionDlg_DateTimeTable");
 		DateTimeFormat dateFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
 		TZDateBox dateBox = new TZDateBox(new DatePicker(), (-1), new DateBox.DefaultFormat(dateFormat));
-		dateBox.setTZOffset(isAllDayEvent() ? GwtClientHelper.getTimeZoneOffsetMillis() : 0);
+		dateBox.setTZOffset(0);
 		if (null != pickerDate) {
 			dateBox.setValue(pickerDate.getTime());
 		}
@@ -742,16 +757,11 @@ public class TaskDueDateDlg extends DlgBox
 	 */
 	private void setDueDate(boolean isStart) {
 		// Extract the date for the picker...
-		TaskDate taskDate;
-		if (!hasEvent())
-		     taskDate = null;
-		else taskDate = (isStart ? m_selectedTaskEvent.getActualStart() : m_selectedTaskEvent.getActualEnd());
-		Date pickerDate = ((null == taskDate) ? null : taskDate.getDate());
+		Date pickerDate = getPickerDateOnEntry(isStart);
 
 		// ...use it to set the date box...
 		String baseId = (isStart ? IDSTART : IDEND);
 		TZDateBox db = m_dateBoxMap.get(baseId);
-		db.setTZOffset(isAllDayEvent() ? GwtClientHelper.getTimeZoneOffsetMillis() : 0);
 		db.setValue((null == pickerDate) ? (-1) : pickerDate.getTime());
 
 		// ...and time picker.

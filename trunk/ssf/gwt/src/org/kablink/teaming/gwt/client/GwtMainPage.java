@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg;
@@ -378,7 +379,7 @@ public class GwtMainPage extends ResizeComposite
 		
 		// Set the time zone information
 		{
-			cmd.setTimeZoneOffset( GwtClientHelper.getTimeZoneOffsetMillis() * -1 );
+			cmd.setTimeZoneOffset( GwtClientHelper.getTimeZoneOffsetMillis(new Date()) * -1 );
 		}
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
