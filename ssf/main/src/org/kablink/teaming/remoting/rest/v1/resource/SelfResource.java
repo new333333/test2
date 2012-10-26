@@ -337,11 +337,15 @@ public class SelfResource extends AbstractFileResource {
     @Path("/my_files/library_files")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<FileProperties> getMyFileLibraryFiles(
+            @QueryParam("file_name") String fileName,
             @QueryParam("recursive") @DefaultValue("false") boolean recursive,
             @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
             @QueryParam("first") Integer offset,
             @QueryParam("count") Integer maxCount) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
+        if (fileName!=null) {
+            nextParams.put("recursive", fileName);
+        }
         nextParams.put("recursive", Boolean.toString(recursive));
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         Criteria crit = new Criteria();
@@ -363,6 +367,9 @@ public class SelfResource extends AbstractFileResource {
             crit.add(searchContexts);
         } else {
             crit.add(myFiles.asJunction());
+        }
+        if (fileName!=null) {
+            crit.add(buildFileNameCriterion(fileName));
         }
         SearchResultList<FileProperties> resultList = lookUpAttachments(crit, offset, maxCount, "/self/my_files/library_files", nextParams);
         Long hiddenFolderId = SearchUtils.getMyFilesFolderId(this, getLoggedInUser().getWorkspaceId(), true);
@@ -415,11 +422,15 @@ public class SelfResource extends AbstractFileResource {
     @Path("/my_files/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<SearchableObject> getMyFileRecentActivity(
+            @QueryParam("file_name") String fileName,
             @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("20") Integer maxCount) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
+        if (fileName!=null) {
+            nextParams.put("recursive", fileName);
+        }
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
 
@@ -432,7 +443,7 @@ public class SelfResource extends AbstractFileResource {
                 binders.add(binder.getId().toString());
             }
         }
-        SearchResultList<FileProperties> files = getMyFileLibraryFiles(false, false, 0, -1);
+        SearchResultList<FileProperties> files = getMyFileLibraryFiles(fileName, false, false, 0, -1);
         if (files.getCount()>0) {
             entries = new ArrayList<String>();
             for (FileProperties file : files.getResults()) {
