@@ -358,6 +358,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return Restrictions.eq(Constants.IS_LIBRARY_FIELD, ((Boolean) onlyLibrary).toString());
     }
 
+    protected Criterion buildFileNameCriterion(String fileName) {
+        return Restrictions.like(Constants.FILENAME_FIELD, fileName);
+    }
+
     protected Criterion buildKeywordCriterion(String keyword) {
         return Restrictions.disjunction()
                 .add(Restrictions.like(Constants.TITLE_FIELD, keyword))

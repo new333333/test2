@@ -122,12 +122,13 @@ public class ShareResource extends AbstractResource {
     @GET
     @Path("/by_user/{id}/files")
     public SearchResultList<FileProperties> getFilesSharedByUser(@PathParam("id") Long userId,
+                                                                 @QueryParam("file_name") String fileName,
                                                                  @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                                  @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.appendAll(getSharedByFiles(userId, false));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedByBinders(userId, false, false), false));
+            results.appendAll(getSubFiles(getSharedByBinders(userId, false, false), fileName, false));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -168,12 +169,13 @@ public class ShareResource extends AbstractResource {
     @GET
     @Path("/by_user/{id}/library_files")
     public SearchResultList<FileProperties> getLibraryFilesSharedByUser(@PathParam("id") Long userId,
+                                                                        @QueryParam("file_name") String fileName,
                                                                         @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                                         @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.appendAll(getSharedByFiles(userId, true));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedByBinders(userId, true, false), true));
+            results.appendAll(getSubFiles(getSharedByBinders(userId, true, false), fileName, true));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -277,12 +279,13 @@ public class ShareResource extends AbstractResource {
     @GET
     @Path("/with_user/{id}/files")
     public SearchResultList<FileProperties> getFilesSharedWithUser(@PathParam("id") Long userId,
+                                                                   @QueryParam("file_name") String fileName,
                                                                    @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                                    @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.appendAll(getSharedWithFiles(userId, false));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedWithBinders(userId, false, false), false));
+            results.appendAll(getSubFiles(getSharedWithBinders(userId, false, false), fileName, false));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -293,12 +296,13 @@ public class ShareResource extends AbstractResource {
     @GET
     @Path("/with_user/{id}/library_files")
     public SearchResultList<FileProperties> getLibraryFilesSharedWithUser(@PathParam("id") Long userId,
+                                                                          @QueryParam("file_name") String fileName,
                                                                           @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                                           @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.appendAll(getSharedWithFiles(userId, true));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedWithBinders(userId, true, false), true));
+            results.appendAll(getSubFiles(getSharedWithBinders(userId, true, false), fileName, true));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -487,7 +491,7 @@ public class ShareResource extends AbstractResource {
         return results;
     }
 
-    protected List<FileProperties> getSubFiles(SharedBinderBrief [] sharedBinders, boolean onlyLibraryFiles) {
+    protected List<FileProperties> getSubFiles(SharedBinderBrief [] sharedBinders, String fileName, boolean onlyLibraryFiles) {
         List<FileProperties> results = new ArrayList<FileProperties>();
         if (sharedBinders.length>0) {
             Junction criterion = Restrictions.conjunction()
@@ -496,6 +500,9 @@ public class ShareResource extends AbstractResource {
             criterion.add(entryAncentryCriterion(sharedBinders));
             if (onlyLibraryFiles) {
                 criterion.add(Restrictions.eq(Constants.IS_LIBRARY_FIELD, ((Boolean) onlyLibraryFiles).toString()));
+            }
+            if (fileName!=null) {
+                criterion.add(buildFileNameCriterion(fileName));
             }
             List<FileIndexData> files = getFileModule().getFileDataFromIndex(new Criteria().add(criterion));
             for (FileIndexData file : files) {
