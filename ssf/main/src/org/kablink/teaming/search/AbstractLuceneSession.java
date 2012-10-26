@@ -43,32 +43,57 @@ public class AbstractLuceneSession {
 	private long writeFloor = 0; // in milliseconds
 	
 	// Used for read
-	protected void endRead(Log logger, long begin, String methodName, Query query, int length) {
+	protected void endRead(Log logger, long begin, String methodName, Query query, String result) {
 		init();
 		if(logger.isTraceEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0;
 			if(diff >= (double) readFloor)
-				logger.trace(diff + " ms, " + methodName + ", result=" + length + ", query=[" + query.toString() + "]");			
+				logger.trace(diff + " ms, " + methodName + ", result=" + result + ", query=[" + query.toString() + "]");			
 		}
 		else if(logger.isDebugEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0;
 			if(diff >= (double) readFloor)
-				logger.debug(diff + " ms, " + methodName + ", result=" + length);
+				logger.debug(diff + " ms, " + methodName + ", result=" + result);
+		}
+	}
+
+	// Used for read
+	protected void endRead(Log logger, long begin, String methodName, Query query, int length) {
+		endRead(logger, begin, methodName, query, String.valueOf(length));
+	}
+
+	// Used for read
+	protected void endRead(Log logger, long begin, String methodName, String aclQueryStr, String result) {
+		init();
+		if(logger.isTraceEnabled()) {
+			double diff = (System.nanoTime() - begin)/1000000.0;
+			if(diff >= (double) readFloor)
+				logger.trace(diff + " ms, " + methodName + ", result=" + result + ", aclQuery=[" + aclQueryStr + "]");			
+		}
+		else if(logger.isDebugEnabled()) {
+			double diff = (System.nanoTime() - begin)/1000000.0;
+			if(diff >= (double) readFloor)
+				logger.debug(diff + " ms, " + methodName + ", result=" + result);
 		}
 	}
 
 	// Used for read
 	protected void endRead(Log logger, long begin, String methodName, String aclQueryStr, int length) {
+		endRead(logger, begin, methodName, aclQueryStr, String.valueOf(length));
+	}
+
+	// Used for read
+	protected void endRead(Log logger, long begin, String methodName, String aclQueryStr, String binderPath, boolean result) {
 		init();
 		if(logger.isTraceEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0;
 			if(diff >= (double) readFloor)
-				logger.trace(diff + " ms, " + methodName + ", result=" + length + ", aclQuery=[" + aclQueryStr + "]");			
+				logger.trace(diff + " ms, " + methodName + ", result=" + result + ", binderPath=[" + binderPath + "], aclQuery=[" + aclQueryStr + "]");			
 		}
 		else if(logger.isDebugEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0;
 			if(diff >= (double) readFloor)
-				logger.debug(diff + " ms, " + methodName + ", result=" + length);
+				logger.debug(diff + " ms, " + methodName + ", result=" + result);
 		}
 	}
 

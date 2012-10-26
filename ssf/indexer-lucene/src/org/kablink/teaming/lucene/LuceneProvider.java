@@ -66,6 +66,7 @@ import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.NumericRangeFilter;
 import org.apache.lucene.search.NumericRangeQuery;
+import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.Scorer;
@@ -532,7 +533,44 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		return this.search(contextUserId, aclQueryStr, mode, query, sort, 0, -1);
 	}
 
-	public org.kablink.teaming.lucene.Hits searchNetFolderOneLevelOnly(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
+	
+	public boolean testInferredAccessToBinder(Long contextUserId,  String aclQueryStr, String binderPath) throws LuceneException {
+		long startTime = System.nanoTime();
+
+		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
+
+		try {
+			if(aclQueryStr != null && aclQueryStr.length() > 0) {
+				BooleanQuery enhancedAclQuery = new BooleanQuery();
+				enhancedAclQuery.add(parseAclQueryStr(aclQueryStr), BooleanClause.Occur.MUST);
+				enhancedAclQuery.add(new PrefixQuery(new Term(Constants.SORT_ENTITY_PATH, binderPath.toLowerCase()+"/")), BooleanClause.Occur.MUST);
+				
+				TopDocs topDocs = indexSearcherHandle.getIndexSearcher().search(enhancedAclQuery, 1);
+				
+				boolean result = (topDocs.totalHits > 0);
+
+				end(startTime, "testInferredAccessToBinder", contextUserId, result, aclQueryStr, binderPath);
+				
+				return result;
+			}
+			else {
+				// The user has access to everything.
+				return true;
+			}
+		} catch (IOException e) {
+			throw newLuceneException("Error searching index", e);
+		} catch (OutOfMemoryError e) {
+			getIndexingResource().closeOOM(e);
+			throw e;
+		} catch (ParseException e) {
+			throw newLuceneException("Error parsing query", e);
+		} finally {
+			releaseIndexSearcherHandle(indexSearcherHandle);
+		}
+		
+	}
+	
+	public org.kablink.teaming.lucene.Hits searchFolderOneLevelWithInferredAccess(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
 			Long parentBinderId, String parentBinderPath) throws LuceneException {
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
@@ -986,6 +1024,32 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}
 	}
 	
+	private void end(long begin, String methodName, Long contextUserId, boolean result, String aclQueryStr, String binderPath) {
+		endStat(begin, methodName);
+		if(logger.isTraceEnabled()) {
+			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + String.valueOf(result) +
+					", contextUserId=" + contextUserId +
+					", binderPath=[" + binderPath +
+					"], aclQuery=[" + ((aclQueryStr==null)? "" : aclQueryStr) + "]");			
+		}
+		else if(logger.isDebugEnabled()) {
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + String.valueOf(result));
+		}
+	}
+	
+	private void end(long begin, String methodName, Long contextUserId, int length, String parentBinderPath, Query implicitlyAccessibleSubFoldersQuery) {
+		endStat(begin, methodName);
+		if(logger.isTraceEnabled()) {
+			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length +
+					", contextUserId=" + contextUserId +
+					", parentBinderPath=[" + parentBinderPath +
+					"], implicitlyAccessibleSubFoldersQuery=[" + ((implicitlyAccessibleSubFoldersQuery==null)? null : implicitlyAccessibleSubFoldersQuery.toString()) + "]");
+		}
+		else if(logger.isDebugEnabled()) {
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length);
+		}
+	}
+	
 	private void end(long begin, String methodName, Query query, int length) {
 		endStat(begin, methodName);
 		if(logger.isTraceEnabled()) {
@@ -1346,7 +1410,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		
 		Set<String> result = collector.getImplicitlyAccessibleSubFolderPaths();
 		
-		end(startTime, "obtainImplicitlyAccessibleSubFolderPaths", contextUserId, result.size());
+		end(startTime, "obtainImplicitlyAccessibleSubFolderPaths", contextUserId, result.size(), parentBinderPath, implicitlyAccessibleSubFoldersQuery);
 		
 		return result;
 	}

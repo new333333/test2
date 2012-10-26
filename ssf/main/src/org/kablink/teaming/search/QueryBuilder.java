@@ -681,6 +681,10 @@ public class QueryBuilder {
 		return new TermRangeQuery(fieldName, startText, finishText, inclusive, inclusive);
 	}
 
+	public String buildAclClause() {
+		return getAclClause();
+	}
+	
 	private String getAclClause()
 	{
 		//KEEP THIS AND getAclClauseForIds IN SYNC WITH ACCESSUTILS.CHECKACCESS 

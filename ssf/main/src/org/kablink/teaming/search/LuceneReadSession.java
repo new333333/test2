@@ -109,10 +109,12 @@ public interface LuceneReadSession extends LuceneSession {
 			throws LuceneException;
 	
 	/**
-	 * This custom search method is written specifically for finding net folders or within a net folder
-	 * sharing the same parent with the search depth of exactly one. This method differs from other
-	 * general purpose search method in that this implementation takes into account the implicit LIST 
-	 * permission given by the file system when filtering by access control. 
+	 * Return immediate children entities (entries and binders) of the specified 
+	 * parent binder where those entities are accessible/visible because the user
+	 * has either direct/explicit access or inferred/implicit access to those.
+	 *
+	 * This method differs from other general purpose search method in that this implementation takes
+	 * into account implicit/inferred accesses. 
 	 * 
 	 * @param contextUserId
 	 * @param aclQueryStr
@@ -126,8 +128,25 @@ public interface LuceneReadSession extends LuceneSession {
 	 * @return
 	 * @throws LuceneException
 	 */
-	public Hits searchNetFolderOneLevelOnly(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
+	public Hits searchFolderOneLevelWithInferredAccess(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
 			Long parentBinderId, String parentBinderPath) throws LuceneException;
+
+	/**
+     * Return whether or not the calling user can gain inferred access to the specified
+     * binder because the user has explicit access to at least one descendant binder of
+     * the specified binder. 
+     * 
+     * Note: This method does not take into account whether or not the user has explicit
+     * access to the specified binder. That is something that the caller hast to check
+     * separately before invoking this method. 
+     * 
+	 * @param contextUserId
+	 * @param aclQueryStr
+	 * @param binderPath
+	 * @return
+	 * @throws LuceneException
+	 */
+	public boolean testInferredAccessToBinder(Long contextUserId,  String aclQueryStr, String binderPath) throws LuceneException;
 
 	/**
 	 * Get all the unique tags that this user can see, based on the wordroot passed in.

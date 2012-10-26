@@ -2612,7 +2612,7 @@ public class GwtViewHelper {
 			
 			// ...and issue the query and return the entries.
 			return
-				bs.getBinderModule().searchNetFolderOneLevelOnly(
+				bs.getBinderModule().searchFolderOneLevelWithInferredAccess(
 					crit,
 					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
 					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),

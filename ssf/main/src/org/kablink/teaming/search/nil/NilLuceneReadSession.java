@@ -79,11 +79,17 @@ public class NilLuceneReadSession implements LuceneReadSession {
 	}
 
 	@Override
-	public Hits searchNetFolderOneLevelOnly(Long contextUserId,
+	public Hits searchFolderOneLevelWithInferredAccess(Long contextUserId,
 			String aclQueryStr, int mode, Query query, Sort sort, int offset,
 			int size, Long parentBinderId, String parentBinderPath)
 			throws LuceneException {
 		return new Hits(0);
+	}
+
+	@Override
+	public boolean testInferredAccessToBinder(Long contextUserId,
+			String aclQueryStr, String binderPath) throws LuceneException {
+		return false;
 	}
 
 }
