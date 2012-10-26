@@ -979,6 +979,10 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			m_browseButton.setText( m_messages.addFilesHtml5PopupBrowse()   );
 			m_browseButton.setTitle(m_messages.addFilesHtml5PopupBrowseAlt());
 			m_hintLabel.setText(    m_messages.addFilesHtml5PopupHint()     );
+			
+			// ...clear out any value in the upload widget so the the
+			// ...same file can be reselected, if desired...
+			m_uploadButton.getElement().setPropertyString("value", "");
 
 			// ...and hide any necessary widgets.
 			m_busyImage.setVisible(false);
