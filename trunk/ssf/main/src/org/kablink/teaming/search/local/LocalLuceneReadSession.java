@@ -150,16 +150,28 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 	}
 
 	@Override
-	public Hits searchNetFolderOneLevelOnly(Long contextUserId,
+	public Hits searchFolderOneLevelWithInferredAccess(Long contextUserId,
 			String aclQueryStr, int mode, Query query, Sort sort, int offset,
 			int size, Long parentBinderId, String parentBinderPath)
 			throws LuceneException {
-		SimpleProfiler.start("LocalLuceneReadSession.searchNetFolderOneLevelOnly()");
+		SimpleProfiler.start("LocalLuceneReadSession.searchFolderOneLevelWithInferredAccess()");
 		try {
-			return luceneProvider.searchNetFolderOneLevelOnly(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinderId, parentBinderPath);
+			return luceneProvider.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinderId, parentBinderPath);
 		}
 		finally {
-			SimpleProfiler.stop("LocalLuceneReadSession.searchNetFolderOneLevelOnly()");
+			SimpleProfiler.stop("LocalLuceneReadSession.searchFolderOneLevelWithInferredAccess()");
+		}
+	}
+
+	@Override
+	public boolean testInferredAccessToBinder(Long contextUserId,
+			String aclQueryStr, String binderPath) throws LuceneException {
+		SimpleProfiler.start("LocalLuceneReadSession.testInferredAccessToBinder()");
+		try {
+			return luceneProvider.testInferredAccessToBinder(contextUserId, aclQueryStr, binderPath);
+		}
+		finally {
+			SimpleProfiler.stop("LocalLuceneReadSession.testInferredAccessToBinder()");
 		}
 	}
 }

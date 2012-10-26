@@ -357,15 +357,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				} catch(AccessControlException e) {
 					if (!thisLevelOnly) {
 						//This check failed, so try to see if there is a sub-folder down the line the you can access
-						Map options = new HashMap();
-						options.put( ObjectKeys.SEARCH_SORT_BY, org.kablink.util.search.Constants.SORT_TITLE_FIELD );
-						options.put( ObjectKeys.SEARCH_SORT_DESCEND, new Boolean( false ) );
-						options.put( ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS );
-						Map searchResults = getBinderModule().getBinders( binder, options );
-						List children = (List)searchResults.get( ObjectKeys.SEARCH_ENTRIES );
-						if (children.isEmpty()) {
+						if(!getBinderModule().testInferredAccessToBinder(binder)) {
 							//There are no sub-binders to see, so return no access
-								throw e;
+							throw e;
 						}
 					} else {
 						//We aren't looking for any potential sub-binders. So, just throw the access control error
@@ -1680,7 +1674,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		LuceneReadSession luceneSession = getLuceneSessionFactory()
 				.openReadSession();
 		try {
-			hits = luceneSession.searchNetFolderOneLevelOnly(RequestContextHolder.getRequestContext().getUserId(),
+			hits = luceneSession.searchFolderOneLevelWithInferredAccess(RequestContextHolder.getRequestContext().getUserId(),
 					so.getAclQueryStr(), searchMode, soQuery, so.getSortBy(), offset,
 					maxResults, parentBinderId, parentBinderPath);
 		} catch (Exception e) {
@@ -2387,7 +2381,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 				// We have to figure out the size of the pool before building
 				// the buckets
-				Hits testHits = luceneSession.searchNetFolderOneLevelOnly(RequestContextHolder.getRequestContext().getUserId(), 
+				Hits testHits = luceneSession.searchFolderOneLevelWithInferredAccess(RequestContextHolder.getRequestContext().getUserId(), 
 						searchObject.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, query, searchObject
 						.getSortBy(), 0, maxBucketSize, top.getId(), top.getPathName());
 				totalHits = testHits.getTotalHits();
@@ -2429,7 +2423,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					logger.debug("Query is in executeSearchQuery: "
 							+ query.toString());
 				}
-				hits = luceneSession.searchNetFolderOneLevelOnly(RequestContextHolder.getRequestContext().getUserId(), searchObject.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, query, searchObject.getSortBy(), 0,
+				hits = luceneSession.searchFolderOneLevelWithInferredAccess(RequestContextHolder.getRequestContext().getUserId(), searchObject.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, query, searchObject.getSortBy(), 0,
 						-1, top.getId(), top.getPathName());
 			}
 		} finally {
@@ -3163,7 +3157,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 	
-    public Map searchNetFolderOneLevelOnly(Criteria crit, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath) {
+    public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath) {
     	boolean preDeleted = false;
     	boolean ignoreAcls = false;
     	
@@ -3174,4 +3168,20 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		
 		return returnSearchQuery(hits);
     }
+
+	@Override
+	public boolean testInferredAccessToBinder(Binder binder) {
+       	//Create the Lucene query
+    	QueryBuilder qb = new QueryBuilder(true, false);
+    	String aclQueryStr = qb.buildAclClause();
+
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
+        
+        try {
+        	return luceneSession.testInferredAccessToBinder(RequestContextHolder.getRequestContext().getUserId(), aclQueryStr, binder.getPathName());
+        }
+        finally {
+            luceneSession.close();
+        }
+	}
 }

@@ -1444,7 +1444,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         
         try {
 	        //Make sure to get inaccessible sub-folders that have visible folders further down the tree
-        	hits = luceneSession.searchNetFolderOneLevelOnly(RequestContextHolder.getRequestContext().getUserId(),
+        	hits = luceneSession.searchFolderOneLevelWithInferredAccess(RequestContextHolder.getRequestContext().getUserId(),
 	        		so.getAclQueryStr(), searchMode.intValue(), soQuery, so.getSortBy(), searchOffset, 
 	        		maxResults, binder.getId(), binder.getPathName());
         }
