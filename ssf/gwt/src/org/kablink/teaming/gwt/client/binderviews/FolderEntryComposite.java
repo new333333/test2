@@ -120,8 +120,6 @@ public class FolderEntryComposite extends ResizeComposite
 		SubscribeSelectedEntriesEvent.Handler,
 		UnlockSelectedEntriesEvent.Handler
 {
-	public static final boolean SHOW_GWT_ENTRY_VIEWER	= false;	//! DRF:  Leave false on checkin until it's finished.
-
 	private boolean							m_commentsVisible;			//
 	private boolean							m_compositeReady;			// Set true once the composite and all its components are ready.
 	private boolean							m_isDialog;					// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.

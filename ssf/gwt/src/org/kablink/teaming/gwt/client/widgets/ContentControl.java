@@ -978,7 +978,7 @@ public class ContentControl extends Composite
 				
 				case FOLDER_ENTRY:
 					// Are we in Filr mode?
-					if ( GwtClientHelper.isLicenseFilr() && FolderEntryComposite.SHOW_GWT_ENTRY_VIEWER )
+					if ( GwtClientHelper.isLicenseFilr() )
 					{
 						// Yes!  Fire the event that will display the
 						// folder entry viewer.
