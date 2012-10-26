@@ -722,7 +722,8 @@ public class WorkspaceTreeHelper {
 			}
 		}
 		if (!binderIdList.isEmpty()) {
-			SortedSet<Binder> subBinders = bs.getBinderModule().getBinders(binderIdList);
+			//Get sub-binder list including intermediate binders that may be inaccessible
+			SortedSet<Binder> subBinders = bs.getBinderModule().getBinders(binderIdList, Boolean.FALSE);
 			model.put(WebKeys.BINDER_SUB_BINDERS, subBinders);
 		}
 

@@ -996,7 +996,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
       		Map entryMap = (Map) iter.next();
       		binderIdList.add(new Long((String)entryMap.get("_docId")));
       	}
-      	SortedSet binderList = bs.getBinderModule().getBinders(binderIdList);
+      	//Get the sub-folder list including itermediate folders that may be inaccessible
+      	SortedSet binderList = bs.getBinderModule().getBinders(binderIdList, Boolean.FALSE);
         for (Iterator iter=binderList.iterator(); iter.hasNext();) {
      		Binder b = (Binder)iter.next();
       		if (b.isDeleted()) continue;
@@ -1298,7 +1299,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	      		Map entryMap = (Map) iter.next();
 	      		binderIdList.add(new Long((String)entryMap.get("_docId")));
 	      	}
-	      	SortedSet binderList = getBinderModule().getBinders(binderIdList);
+	      	//Get sub-binder list including intermediate binders that may be inaccessible
+	      	SortedSet binderList = getBinderModule().getBinders(binderIdList, Boolean.FALSE);
 	        for (Iterator iter=binderList.iterator(); iter.hasNext();) {
 	     		Binder b = (Binder)iter.next();
 	      		if (b.isDeleted()) continue;

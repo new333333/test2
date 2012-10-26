@@ -121,6 +121,15 @@ public interface BinderModule {
 	 */
 	public void checkAccess(Binder binder, BinderOperation operation)
 		throws AccessControlException;
+	/**
+	 * Check access to a binder, throwing an exception if access is denied.
+	 * @param binder
+	 * @param operation
+	 * @param thisLevelOnly  //Don't look for sub-binders down the tree (performance improvement)
+	 * @throws AccessControlException
+	 */
+	public void checkAccess(Binder binder, BinderOperation operation, boolean thisLevelOnly)
+		throws AccessControlException;
 	
     /**
      * Check binder access by a user
@@ -353,8 +362,11 @@ public interface BinderModule {
      * @throws AccessControlException
      */
     public Binder getBinder(Long binderId)
-		throws NoBinderByTheIdException, AccessControlException;
-    
+			throws NoBinderByTheIdException, AccessControlException;
+
+    public Binder getBinder(Long binderId, boolean thisLevelOnly)
+			throws NoBinderByTheIdException, AccessControlException;
+
     public Binder getBinderWithoutAccessCheck(Long binderId) throws NoBinderByTheIdException;
     
     /**
@@ -363,6 +375,7 @@ public interface BinderModule {
      * @return Binders sorted by title
      */
     public SortedSet<Binder> getBinders(Collection<Long> binderIds);
+    public SortedSet<Binder> getBinders(Collection<Long> binderIds, boolean doAccessCheck);
     /**
      * Search for child binders - 1 level
      * @param binder
@@ -716,6 +729,14 @@ public interface BinderModule {
 	 * @return
 	 */
 	public boolean testAccess(Binder binder, BinderOperation operation);
+	/**
+	 * Test access to a binder. 
+	 * @param binder
+	 * @param operation 
+	 * @param thisLevelOnly  //Don't look down the sub-binder tree (performance improvement)
+	 * @return
+	 */
+	public boolean testAccess(Binder binder, BinderOperation operation, boolean thisLevelOnly);
 
 	/**
 	 * Returns <code>SimpleName</code> object matching the name.

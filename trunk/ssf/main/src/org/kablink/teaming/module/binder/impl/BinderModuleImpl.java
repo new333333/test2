@@ -198,6 +198,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
 	}
 
+	protected BinderModule getBinderModule() {
+		// Can't use IoC due to circular dependency
+		return (BinderModule) SpringContextUtil.getBean("binderModule");
+	}
+
 	protected ProfileModule getProfileModule() {
 		// Can't use IoC due to circular dependency
 		return (ProfileModule) SpringContextUtil.getBean("profileModule");
@@ -216,8 +221,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	 * .teaming.domain.Binder, java.lang.String)
 	 */
 	public boolean testAccess(Binder binder, BinderOperation operation) {
+		return testAccess(binder, operation, Boolean.FALSE);
+	}
+	public boolean testAccess(Binder binder, BinderOperation operation, boolean thisLevelOnly) {
 		try {
-			checkAccess(binder, operation);
+			checkAccess(binder, operation, thisLevelOnly);
 			return true;
 		} catch (AccessControlException ac) {
 			return false;
@@ -234,6 +242,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	 * @throws AccessControlException
 	 */
 	public void checkAccess(Binder binder, BinderOperation operation)
+			throws AccessControlException {
+		checkAccess(binder, operation, Boolean.FALSE);
+	}
+	public void checkAccess(Binder binder, BinderOperation operation, boolean thisLevelOnly)
 			throws AccessControlException {
 		if (binder instanceof TemplateBinder) {
 			getAccessControlManager().checkOperation(
@@ -330,12 +342,35 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						WorkAreaOperation.READ_ENTRIES);
 				break;
 			case viewBinderTitle:
-				if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
-					getAccessControlManager().checkOperation(binder,
-						WorkAreaOperation.VIEW_BINDER_TITLE);
-				} else {
-					getAccessControlManager().checkOperation(binder,
-							WorkAreaOperation.READ_ENTRIES);
+				try {
+					if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
+						try {
+							getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+						} catch(AccessControlException e) {
+							//If VIEW_BINDER_TITLE is not explicitly set, try READ_ENTRIES.
+							//  The READ_ENTRIES right also gives the user the right to view the binder title
+							getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+						}
+					} else {
+						getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+					}
+				} catch(AccessControlException e) {
+					if (!thisLevelOnly) {
+						//This check failed, so try to see if there is a sub-folder down the line the you can access
+						Map options = new HashMap();
+						options.put( ObjectKeys.SEARCH_SORT_BY, org.kablink.util.search.Constants.SORT_TITLE_FIELD );
+						options.put( ObjectKeys.SEARCH_SORT_DESCEND, new Boolean( false ) );
+						options.put( ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS );
+						Map searchResults = getBinderModule().getBinders( binder, options );
+						List children = (List)searchResults.get( ObjectKeys.SEARCH_ENTRIES );
+						if (children.isEmpty()) {
+							//There are no sub-binders to see, so return no access
+								throw e;
+						}
+					} else {
+						//We aren't looking for any potential sub-binders. So, just throw the access control error
+						throw e;
+					}
 				}
 				break;
 			case allowSharing:
@@ -377,6 +412,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	public Binder getBinder(Long binderId) throws NoBinderByTheIdException,
 			AccessControlException {
+		return getBinder(binderId, Boolean.FALSE);
+	}
+	public Binder getBinder(Long binderId, boolean thisLevelOnly) throws NoBinderByTheIdException,
+			AccessControlException {
 		Binder binder = loadBinder(binderId);
 		// If Net Folder or a sub-folder within one, then do not assume that the user necessarily has
 		// READ access to the folder to account for "inferred" LIST permission.
@@ -385,10 +424,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// Check if the user has "read" access to the binder.
 		if (!(binder instanceof TemplateBinder)) {
 			try {
-				getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+				checkAccess(binder, BinderOperation.readEntries, thisLevelOnly);
 			} catch(AccessControlException ace) {
 				try {
-					getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+					checkAccess(binder, BinderOperation.viewBinderTitle, thisLevelOnly);
 				} catch(AccessControlException ace2) {
 					throw ace;
 				}
@@ -422,6 +461,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	public SortedSet<Binder> getBinders(Collection<Long> binderIds) {
+		return getBinders(binderIds, Boolean.TRUE);
+	}
+	public SortedSet<Binder> getBinders(Collection<Long> binderIds, boolean doAccessCheck) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Comparator c = new BinderComparator(user.getLocale(),
 				BinderComparator.SortByField.title);
@@ -429,7 +471,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		for (Long id : binderIds) {
 			try {// access check done by getBinder
 				// assume most binders are cached
-				result.add(getBinder(id));
+				if (doAccessCheck) {
+					result.add(getBinder(id));
+				} else {
+					result.add(getBinderWithoutAccessCheck(id));
+				}
 			} catch (NoObjectByTheIdException ex) {
 			} catch (AccessControlException ax) {
 			}
@@ -2078,42 +2124,23 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		--levels;
 		TreeSet ws = new TreeSet(c);
 		List searchBinders = null;
-		if (levels >= 0
-				&& (!domTreeHelper.getPage().equals("") || top.getBinderCount() > maxBucketSize)) { // what
-			// is
-			// the
-			// best
-			// number
-			// to
-			// avoid
-			// search??
-			// do search
-			if (domTreeHelper.getPage().equals("")) {
-				Map options = new HashMap();
-				options.put(ObjectKeys.SEARCH_MAX_HITS, Integer
-						.valueOf(SPropsUtil.getInt("wsTree.maxBucketSize")));
-				Map searchResults = getBinders(top, options);
-				searchBinders = (List) searchResults
-						.get(ObjectKeys.SEARCH_ENTRIES);
-				int results = (Integer) searchResults
-						.get(ObjectKeys.TOTAL_SEARCH_COUNT);
-				if (results > SPropsUtil.getInt("wsTree.maxBucketSize")) { // just
-					// to
-					// get
-					// started
-					searchResults = buildBinderVirtualTree(current, top,
-							domTreeHelper, results, maxBucketSize);
-					// If no results are returned, the work was completed in
-					// buildBinderVirtualTree and we can exit now
-					if (searchResults == null)
-						return;
-					searchBinders = (List) searchResults
-							.get(ObjectKeys.SEARCH_ENTRIES);
-				}
-			} else {
-				// We are looking for a virtual page
-				Map searchResults = buildBinderVirtualTree(current, top,
-						domTreeHelper, 0, maxBucketSize);
+		//Always find the binders by searching.
+		//  This will get any intermediate binders that may be inaccessible
+		if (domTreeHelper.getPage().equals("")) {
+			Map options = new HashMap();
+			options.put(ObjectKeys.SEARCH_MAX_HITS, Integer
+					.valueOf(SPropsUtil.getInt("wsTree.maxBucketSize")));
+			Map searchResults = getBinders(top, options);
+			searchBinders = (List) searchResults
+					.get(ObjectKeys.SEARCH_ENTRIES);
+			int results = (Integer) searchResults
+					.get(ObjectKeys.TOTAL_SEARCH_COUNT);
+			if (results > SPropsUtil.getInt("wsTree.maxBucketSize")) { // just
+				// to
+				// get
+				// started
+				searchResults = buildBinderVirtualTree(current, top,
+						domTreeHelper, results, maxBucketSize);
 				// If no results are returned, the work was completed in
 				// buildBinderVirtualTree and we can exit now
 				if (searchResults == null)
@@ -2121,45 +2148,28 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				searchBinders = (List) searchResults
 						.get(ObjectKeys.SEARCH_ENTRIES);
 			}
-			if (domTreeHelper.supportsType(DomTreeBuilder.TYPE_FOLDER, null)) {
-				// get folders
-				for (int i = 0; i < searchBinders.size(); ++i) {
-					Map search = (Map) searchBinders.get(i);
-					String entityType = (String) search
-							.get(Constants.ENTITY_FIELD);
-					if (EntityType.folder.name().equals(entityType)) {
-						String sId = (String) search.get(Constants.DOCID_FIELD);
-						try {
-							Long id = Long.valueOf(sId);
-							Object obj = getCoreDao().load(Folder.class, id);
-							if (obj != null)
-								ws.add(obj);
-						} catch (Exception ex) {
-							continue;
-						}
-					}
-				}
-				for (Iterator iter = ws.iterator(); iter.hasNext();) {
-					Folder f = (Folder) iter.next();
-					if (f.isDeleted() || f.isPreDeleted())
-						continue;
-					// Check if the user has "read" access to the folder.
-					next = current.addElement(DomTreeBuilder.NODE_CHILD);
-					if (domTreeHelper.setupDomElement(
-							DomTreeBuilder.TYPE_FOLDER, f, next) == null)
-						current.remove(next);
-				}
-			}
-			ws.clear();
-			// get workspaces
+		} else {
+			// We are looking for a virtual page
+			Map searchResults = buildBinderVirtualTree(current, top,
+					domTreeHelper, 0, maxBucketSize);
+			// If no results are returned, the work was completed in
+			// buildBinderVirtualTree and we can exit now
+			if (searchResults == null)
+				return;
+			searchBinders = (List) searchResults
+					.get(ObjectKeys.SEARCH_ENTRIES);
+		}
+		if (domTreeHelper.supportsType(DomTreeBuilder.TYPE_FOLDER, null)) {
+			// get folders
 			for (int i = 0; i < searchBinders.size(); ++i) {
 				Map search = (Map) searchBinders.get(i);
-				String entityType = (String) search.get(Constants.ENTITY_FIELD);
-				if (EntityType.workspace.name().equals(entityType)) {
+				String entityType = (String) search
+						.get(Constants.ENTITY_FIELD);
+				if (EntityType.folder.name().equals(entityType)) {
 					String sId = (String) search.get(Constants.DOCID_FIELD);
 					try {
 						Long id = Long.valueOf(sId);
-						Object obj = getCoreDao().load(Workspace.class, id);
+						Object obj = getCoreDao().load(Folder.class, id);
 						if (obj != null)
 							ws.add(obj);
 					} catch (Exception ex) {
@@ -2167,61 +2177,42 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					}
 				}
 			}
-
 			for (Iterator iter = ws.iterator(); iter.hasNext();) {
-				Workspace w = (Workspace) iter.next();
-				if (w.isDeleted() || w.isPreDeleted())
+				Folder f = (Folder) iter.next();
+				if (f.isDeleted() || f.isPreDeleted())
 					continue;
+				// Check if the user has "read" access to the folder.
 				next = current.addElement(DomTreeBuilder.NODE_CHILD);
-				buildBinderDomTree(next, w, c, domTreeHelper, levels);
+				if (domTreeHelper.setupDomElement(
+						DomTreeBuilder.TYPE_FOLDER, f, next) == null)
+					current.remove(next);
 			}
-		} else {
-			if (domTreeHelper.supportsType(DomTreeBuilder.TYPE_FOLDER, null)) {
-				// get folders sorted
-				if (EntityIdentifier.EntityType.workspace.equals(top
-						.getEntityType())
-						|| EntityIdentifier.EntityType.profiles.equals(top
-								.getEntityType())) {
-					ws.addAll(((Workspace) top).getFolders());
-				} else if (EntityIdentifier.EntityType.folder.equals(top
-						.getEntityType())) {
-					ws.addAll(((Folder) top).getFolders());
-				}
-				for (Iterator iter = ws.iterator(); iter.hasNext();) {
-					Folder f = (Folder) iter.next();
-					if (f.isDeleted() || f.isPreDeleted())
-						continue;
-					// Check if the user has "read" access to the folder.
-					if (!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES) && 
-							!getAccessControlManager().testOperation(f, WorkAreaOperation.VIEW_BINDER_TITLE))
-						continue;
-					next = current.addElement(DomTreeBuilder.NODE_CHILD);
-					if (domTreeHelper.setupDomElement(
-							DomTreeBuilder.TYPE_FOLDER, f, next) == null)
-						current.remove(next);
-				}
-			}
-			ws.clear();
-			// handle sorted workspaces
-			if (EntityIdentifier.EntityType.workspace.equals(top
-					.getEntityType())
-					|| EntityIdentifier.EntityType.profiles.equals(top
-							.getEntityType())) {
-				ws.addAll(((Workspace) top).getWorkspaces());
-				for (Iterator iter = ws.iterator(); iter.hasNext();) {
-					Workspace w = (Workspace) iter.next();
-					if (w.isDeleted() || w.isPreDeleted())
-						continue;
-					// Check if the user has "read" access to the workspace.
-					if (!getAccessControlManager().testOperation(w, WorkAreaOperation.READ_ENTRIES) && 
-							!getAccessControlManager().testOperation(w, WorkAreaOperation.VIEW_BINDER_TITLE))
-						continue;
-					next = current.addElement(DomTreeBuilder.NODE_CHILD);
-					buildBinderDomTree(next, w, c, domTreeHelper, levels);
+		}
+		ws.clear();
+		// get workspaces
+		for (int i = 0; i < searchBinders.size(); ++i) {
+			Map search = (Map) searchBinders.get(i);
+			String entityType = (String) search.get(Constants.ENTITY_FIELD);
+			if (EntityType.workspace.name().equals(entityType)) {
+				String sId = (String) search.get(Constants.DOCID_FIELD);
+				try {
+					Long id = Long.valueOf(sId);
+					Object obj = getCoreDao().load(Workspace.class, id);
+					if (obj != null)
+						ws.add(obj);
+				} catch (Exception ex) {
+					continue;
 				}
 			}
 		}
 
+		for (Iterator iter = ws.iterator(); iter.hasNext();) {
+			Workspace w = (Workspace) iter.next();
+			if (w.isDeleted() || w.isPreDeleted())
+				continue;
+			next = current.addElement(DomTreeBuilder.NODE_CHILD);
+			buildBinderDomTree(next, w, c, domTreeHelper, levels);
+		}
 	}
 
 	// Build a list of buckets (or get the final page)
@@ -2396,8 +2387,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 				// We have to figure out the size of the pool before building
 				// the buckets
-				Hits testHits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(), searchObject.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, query, searchObject
-						.getSortBy(), 0, maxBucketSize);
+				Hits testHits = luceneSession.searchNetFolderOneLevelOnly(RequestContextHolder.getRequestContext().getUserId(), 
+						searchObject.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, query, searchObject
+						.getSortBy(), 0, maxBucketSize, top.getId(), top.getPathName());
 				totalHits = testHits.getTotalHits();
 				if (totalHits > maxBucketSize) {
 					skipLength = testHits.getTotalHits() / maxBucketSize;
@@ -2437,8 +2429,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					logger.debug("Query is in executeSearchQuery: "
 							+ query.toString());
 				}
-				hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(), searchObject.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, query, searchObject.getSortBy(), 0,
-						-1);
+				hits = luceneSession.searchNetFolderOneLevelOnly(RequestContextHolder.getRequestContext().getUserId(), searchObject.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, query, searchObject.getSortBy(), 0,
+						-1, top.getId(), top.getPathName());
 			}
 		} finally {
 			luceneSession.close();

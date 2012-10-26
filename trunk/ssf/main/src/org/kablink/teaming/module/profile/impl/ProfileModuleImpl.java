@@ -491,7 +491,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	//Limit this list to binders under the Profiles binder
     	@SuppressWarnings("unused")
 		Long profileBinderId = getProfileBinderId();
-    	Set<Binder> binders = getBinderModule().getBinders(binderIds);
+    	//Get sub-binder list including intermediate binders that may be inaccessible
+    	Set<Binder> binders = getBinderModule().getBinders(binderIds, Boolean.FALSE);
     	for (Binder b : binders) {
     		if (!Utils.isWorkareaInProfilesTree(b)) binderIds.remove(b.getId());  //Remove any binder not under the profiles binder
     	}

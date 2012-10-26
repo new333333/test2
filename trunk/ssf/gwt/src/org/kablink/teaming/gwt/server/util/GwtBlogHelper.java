@@ -397,8 +397,8 @@ public class GwtBlogHelper
 	          		Map entryMap = (Map) iter.next();
 	          		binderIdList.add( new Long((String)entryMap.get("_docId")) );
 	          	}
-	          	
-	          	binderList = ami.getBinderModule().getBinders( binderIdList );
+	            //Get sub-binder list including intermediate binders that may be inaccessible
+	          	binderList = ami.getBinderModule().getBinders( binderIdList, Boolean.FALSE );
 	            for (Iterator iter=binderList.iterator(); iter.hasNext();)
 	            {
 	         		Binder nextBinder;

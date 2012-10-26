@@ -1134,7 +1134,7 @@ public class GwtServerHelper {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.buildChildTIs( READ )");
 		try {
 			try {
-				binders = bs.getBinderModule().getBinders(childBinderList);
+				binders = bs.getBinderModule().getBinders(childBinderList, Boolean.FALSE);
 			} catch(AccessControlException ace) {
 			} catch(NoBinderByTheIdException nbe) {}
 		}
@@ -4620,7 +4620,7 @@ public class GwtServerHelper {
 		else if (entity instanceof Folder) {
 			// Yes!  Can we get its definition?
 			Folder folder = ((Folder) entity);
-			entityDef = BinderHelper.getFolderDefinitionFromView(bs, folder.getId());
+			entityDef = BinderHelper.getFolderDefinitionFromView(bs, folder);
 			if (null == entityDef) {
 				// No!  Use the default from the folder.
 				entityDef = folder.getDefaultViewDef();
@@ -4855,7 +4855,7 @@ public class GwtServerHelper {
 	private static FolderType getFolderTypeFromViewDef(AllModulesInjected bs, Folder folder) {
 		// Does the user have a view definition selected for this
 		// folder?
-		Definition def = BinderHelper.getFolderDefinitionFromView(bs, folder.getId());
+		Definition def = BinderHelper.getFolderDefinitionFromView(bs, folder);
 		if (null == def) {
 			// No!  Just use it's default view.
 			def = folder.getDefaultViewDef();

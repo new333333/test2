@@ -250,7 +250,8 @@ public class ExportHelper {
 			Boolean noSubBinders, Set defListAlreadyAdded, StatusTicket statusTicket, Map reportMap) throws Exception {
 		Map<Long,Boolean> binderIdsToExport = new HashMap<Long,Boolean>();
 		binderIdsToExport.put(start.getId(), false);
-		SortedSet<Binder> binders = binderModule.getBinders(binderIds);
+		//Get sub-binder list including intermediate binders that may be inaccessible
+		SortedSet<Binder> binders = binderModule.getBinders(binderIds, Boolean.FALSE);
 		for (Binder binder : binders) {
 			//Mark this binder as having everything exported
 			binderIdsToExport.put(binder.getId(), true);

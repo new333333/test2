@@ -1443,15 +1443,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
         try {
-        	if(binder.isAclExternallyControlled()) {
-        		// The binder is a Net Folder or a sub-folder of one.
-		        hits = luceneSession.searchNetFolderOneLevelOnly(RequestContextHolder.getRequestContext().getUserId(),
-		        		so.getAclQueryStr(), searchMode.intValue(), soQuery, so.getSortBy(), searchOffset, maxResults, binder.getId(), binder.getPathName());
-        	}
-        	else {
-		        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-		        		so.getAclQueryStr(), searchMode.intValue(), soQuery, so.getSortBy(), searchOffset, maxResults);
-        	}
+	        //Make sure to get inaccessible sub-folders that have visible folders further down the tree
+        	hits = luceneSession.searchNetFolderOneLevelOnly(RequestContextHolder.getRequestContext().getUserId(),
+	        		so.getAclQueryStr(), searchMode.intValue(), soQuery, so.getSortBy(), searchOffset, 
+	        		maxResults, binder.getId(), binder.getPathName());
         }
         finally {
             luceneSession.close();
