@@ -121,7 +121,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	<ssf:showHelp guideName="adv_user" pageId="access_mngusers" />
 <% } %>
 <% else { %>
-	<ssf:showHelp guideName="admin" pageId="access_usersandgroups" />
+	<ssf:showHelp guideName="admin" pageId="access_mngusers" sectionId="access_usersgroups" />
 <% } %>
 <br/>
 <br/>
