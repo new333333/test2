@@ -76,7 +76,6 @@ import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.IdentityInfo;
@@ -170,7 +169,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private static final String AD_HOME_DIR_ATTRIBUTE = "homeDirectory";
 	private static int ADDR_TYPE_TCP = 9;
 
-	private static Pattern m_pattern_uncPath = Pattern.compile( "^\\\\\\\\([a-z0-9_.$]+)\\\\([a-z0-9_.$]+)", Pattern.CASE_INSENSITIVE );
+	private static Pattern m_pattern_uncPath = Pattern.compile( "^\\\\\\\\(.*?)\\\\(.*?)\\\\", Pattern.CASE_INSENSITIVE );
 
 	protected String [] principalAttrs = new String[]{
 												ObjectKeys.FIELD_PRINCIPAL_NAME,
@@ -526,6 +525,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			String[] attributeNames;
 			Attributes attrs;
 			Attribute attrib;
+
+			logger.debug( "\t\tin readHomeDirInfo() for user: " + userDn );
 			
 			attributeNames = new String[3];
 			attributeNames[0] = HOME_DRIVE_ATTRIBUTE;
@@ -576,6 +577,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( uncPath.length() == 0 )
 					return null;
 				
+				logger.debug( "\t\t\tfound home directory info for the user, uncPath: " + uncPath );
+				
 			    matcher = m_pattern_uncPath.matcher( uncPath );
 			    if ( matcher.find() && matcher.groupCount() == 2 )
 			    {
@@ -590,6 +593,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		    				path = path.substring( 1 );
 		    		}
 
+		    		logger.debug( "\t\t\tserver: '" + server + "' volume: '" + volume + "' path: '" + path + "'" );
+		    		
 					if ( server != null && server.length() > 0 && volume != null && volume.length() > 0 && 
 						 path != null && path.length() > 0 )
 					{
@@ -599,6 +604,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						homeDirInfo.setPath( path );
 					}
 				}
+			    else
+			    {
+			    	logger.error( "\t\t\tCould not parse the home directory unc" );
+			    }
 			}
 			catch ( Exception ex )
 			{
