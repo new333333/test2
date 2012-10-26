@@ -155,6 +155,8 @@ public class ResourceUtil {
         fp.setLength(fa.getSize());
         fp.setMd5(fa.getMd5());
         fp.setVersionNumber(fa.getVersionNumber());
+        fp.setMajorVersion(fa.getMajorVersionNumber());
+        fp.setMinorVersion(fa.getMinorVersionNumber());
         LinkUriUtil.populateFileLinks(fp);
         return fp;
     }

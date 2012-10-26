@@ -69,7 +69,9 @@ public class FileIndexData {
 	private Long size; // size in bytes - this field is new in Hudson, so may not exist in old index
 	private String md5; // md5 sum - this field is new in Hudson
     private Integer versionNumber; // highest version number - this field is new in Hudson
-	
+    private Integer majorVersionNumber; // Major version number - this field is new in Hudson
+    private Integer minorVersionNumber; // Minor version number - this field is new in Hudson
+
 	public FileIndexData(org.apache.lucene.document.Document doc)  throws IllegalArgumentException {
 		name = doc.get(Constants.FILENAME_FIELD);
 		id = doc.get(Constants.FILE_ID_FIELD);
@@ -106,6 +108,16 @@ public class FileIndexData {
             versionNumber = Integer.valueOf(versionStr);
         else
             versionNumber = null;
+        versionStr = (String) doc.get(Constants.FILE_MAJOR_VERSION_FIELD);
+        if(versionStr != null)
+            majorVersionNumber = Integer.valueOf(versionStr);
+        else
+            majorVersionNumber = null;
+        versionStr = (String) doc.get(Constants.FILE_MINOR_VERSION_FIELD);
+        if(versionStr != null)
+            minorVersionNumber = Integer.valueOf(versionStr);
+        else
+            minorVersionNumber = null;
         md5 = doc.get(Constants.FILE_MD5_FIELD);
 	}
 
@@ -167,6 +179,14 @@ public class FileIndexData {
 
     public Integer getVersionNumber() {
         return versionNumber;
+    }
+
+    public Integer getMajorVersionNumber() {
+        return majorVersionNumber;
+    }
+
+    public Integer getMinorVersionNumber() {
+        return minorVersionNumber;
     }
 
     private EntityType entityTypeFromString(String entityTypeStr) throws IllegalArgumentException {

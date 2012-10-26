@@ -81,15 +81,21 @@ public class FilePropertiesBuilder implements SearchResultBuilder<FileProperties
             size = null;
         fp.setLength(size);
         fp.setMd5((String) doc.get(Constants.FILE_MD5_FIELD));
-        String versionStr = (String) doc.get(Constants.FILE_VERSION_FIELD);
+        fp.setVersionNumber(getInteger(doc, Constants.FILE_VERSION_FIELD));
+        fp.setMajorVersion(getInteger(doc, Constants.FILE_MAJOR_VERSION_FIELD));
+        fp.setMinorVersion(getInteger(doc, Constants.FILE_MINOR_VERSION_FIELD));
+        LinkUriUtil.populateFileLinks(fp);
+        return fp;
+    }
+
+    private Integer getInteger(Map doc, String fieldName) {
+        String versionStr = (String) doc.get(fieldName);
         Integer version;
         if(versionStr != null)
             version = Integer.valueOf(versionStr);
         else
             version = null;
-        fp.setVersionNumber(version);
-        LinkUriUtil.populateFileLinks(fp);
-        return fp;
+        return version;
     }
 
     public Object getId(FileProperties obj) {
