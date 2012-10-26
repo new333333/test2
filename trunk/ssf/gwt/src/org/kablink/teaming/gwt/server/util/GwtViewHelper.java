@@ -3785,7 +3785,7 @@ public class GwtViewHelper {
 											eti.setDescriptionIsHtml(false      );
 										}
 									}
-									if (GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD))) {
+									else if (GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD))) {
 										String fName = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
 										if (MiscUtil.hasString(fName)) {
 											eti.setFile(true);

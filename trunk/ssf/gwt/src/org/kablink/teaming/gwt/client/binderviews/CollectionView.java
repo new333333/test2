@@ -85,17 +85,24 @@ public class CollectionView extends DataTableFolderViewBase {
 			break;
 			
 		case NET_FOLDERS:
-			columnWidths.put(FolderColumn.COLUMN_TITLE,            new ColumnWidth(30));	// = 30
-			columnWidths.put(FolderColumn.COLUMN_DATE,             new ColumnWidth(10));	// = 40
-			columnWidths.put(FolderColumn.COLUMN_NETFOLDER_ACCESS, new ColumnWidth(10));	// = 50
-			columnWidths.put(FolderColumn.COLUMN_DESCRIPTION_HTML, new ColumnWidth(50));	// = 100%
+			if (GwtClientHelper.isLicenseFilr()) {
+				columnWidths.put(FolderColumn.COLUMN_DATE,             new ColumnWidth(10));	// = 10
+				columnWidths.put(FolderColumn.COLUMN_NETFOLDER_ACCESS, new ColumnWidth(10));	// = 20
+				columnWidths.put(FolderColumn.COLUMN_DESCRIPTION_HTML, new ColumnWidth(80));	// = 100%
+			}
+			
+			else {
+				columnWidths.put(FolderColumn.COLUMN_TITLE,            new ColumnWidth(30));	// = 30
+				columnWidths.put(FolderColumn.COLUMN_DATE,             new ColumnWidth(10));	// = 40
+				columnWidths.put(FolderColumn.COLUMN_NETFOLDER_ACCESS, new ColumnWidth(10));	// = 50
+				columnWidths.put(FolderColumn.COLUMN_DESCRIPTION_HTML, new ColumnWidth(50));	// = 100%
+			}
 			
 			break;
 			
 		case SHARED_BY_ME:
 		case SHARED_WITH_ME:
 			if (GwtClientHelper.isLicenseFilr()) {
-				columnWidths.put(FolderColumn.COLUMN_TITLE,             new ColumnWidth(240, Unit.PX));
 				columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_BY,   new ColumnWidth(180, Unit.PX));
 				columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_WITH, new ColumnWidth(180, Unit.PX));
 				columnWidths.put(FolderColumn.COLUMN_SHARE_DATE,        new ColumnWidth(170, Unit.PX));
