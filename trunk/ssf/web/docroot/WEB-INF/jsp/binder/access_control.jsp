@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.Utils" %>
 
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
@@ -115,7 +116,13 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 <td valign="top">
-<span class="ss_bold ss_largerprint"><ssf:nlt tag="access.configure"/></span> <ssf:showHelp guideName="adv_user" pageId="access_mngusers" />
+<span class="ss_bold ss_largerprint"><ssf:nlt tag="access.configure"/></span>
+<% if ( Utils.checkIfFilr() == false ) { %>
+	<ssf:showHelp guideName="adv_user" pageId="access_mngusers" />
+<% } %>
+<% else { %>
+	<ssf:showHelp guideName="admin" pageId="access_usersandgroups" />
+<% } %>
 <br/>
 <br/>
 <c:choose>
