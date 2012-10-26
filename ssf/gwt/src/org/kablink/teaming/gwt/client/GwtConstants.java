@@ -47,6 +47,7 @@ public class GwtConstants {
 	public static final int		WORKSPACE_TREE_WIDTH		= 250;		// Must match the definition of the workspaceTreeWidth style. 
 	public static final int		SIDEBAR_TREE_WIDTH_ADJUST	=  16;		// Based on empirical evidence (left, right spacing, ...)
 	public static final double	SIDEBAR_TREE_WIDTH			= (WORKSPACE_TREE_WIDTH + SIDEBAR_TREE_WIDTH_ADJUST);	// Default width of the sidebar tree panel.
+	public static final double	DESKTOP_APP_DOWNLOAD_HEIGHT	= 50;		// Height of the desktop application download control.
 	
 	/*
 	 * Constructor method. 

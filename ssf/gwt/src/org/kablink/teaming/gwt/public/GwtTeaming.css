@@ -4764,5 +4764,8 @@ td.datePickerMonth {
 	z-index: 1000;
 }
 
+/* Start:  Desktop application download control styles. */
+	.vibe-desktopAppDownloadControl {position: relative; background-color: EBECA5; border-color: #BABDB6; border-style: solid; border-width: 1px; font-size: 12px; margin: 5px; 10px; padding: 5px 10px; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+/* End:  Desktop application download control styles. */
 
-/* End */ 
+/* End */
