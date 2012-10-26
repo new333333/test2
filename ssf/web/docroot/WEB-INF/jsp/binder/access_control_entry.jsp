@@ -33,6 +33,8 @@
  */
 %>
 
+<%@ page import="org.kablink.teaming.util.Utils" %>
+
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("access.configure") %>' scope="request"/>
@@ -85,7 +87,14 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <c:set var="roleId" value="<%= roleId %>" />
 <div class="ss_portlet diag_modal2">
 	<ssf:form titleTag="access.configure">
+
+<% if ( Utils.checkIfFilr() == false ) { %>
 	<ssf:showHelp guideName="adv_user" pageId="access_mngusers" sectionId="access_mngusers_entry" />
+<% } %>
+<% else { %>
+	<ssf:showHelp guideName="admin" pageId="access_usersandgroups" sectionId="access_usersandgroups-access_mngusers_entry" />
+<% } %>
+
 	<div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
 		<div>
 			<table cellpadding="0" cellspacing="0" width="100%">

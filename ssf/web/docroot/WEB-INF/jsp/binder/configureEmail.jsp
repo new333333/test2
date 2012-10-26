@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.Utils" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("toolbar.menu.configure_folder_email") %>' scope="request"/>
@@ -66,7 +67,12 @@
 				<tr>
 					<td align="left">
 						<span class="ss_bold"><ssf:nlt tag="notify.header"/></span>
-						<ssf:showHelp guideName="adv_user" pageId="mngfolder_sendnotification" />
+						<% if ( Utils.checkIfFilr() == false ) { %>
+							<ssf:showHelp guideName="adv_user" pageId="mngfolder_sendnotification" />
+						<% } %>
+						<% else { %>
+							<ssf:showHelp guideName="user" pageId="folderadmin_configurenotifications" />
+						<% } %>
 					</td>
 				</tr>
 				<tr>
