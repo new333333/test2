@@ -5644,10 +5644,26 @@ public class GwtServerHelper {
 			
 			// ...get the URL to the current user's avatar...
 			String userAvatarUrl = getUserAvatarUrl(bs, request, getCurrentUser());
+
+			// ...get what we know about desktop application
+			// ...deployment...
+			GwtFileSyncAppConfiguration fsaConfig = GwtServerHelper.getFileSyncAppConfiguration(bs);
+			boolean desktopAppEnabled = fsaConfig.getIsDeploymentEnabled();
+			boolean showDesktopAppDownloader;
+			if (desktopAppEnabled) {
+				UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
+				String s = ((String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_SHOW_DESKTOP_APP_DOWNLOAD));
+				if (MiscUtil.hasString(s))
+				     showDesktopAppDownloader = Boolean.parseBoolean(s);
+				else showDesktopAppDownloader = true;
+			}
+			else {
+				showDesktopAppDownloader = false;
+			}
 			
-			// ...and use them to construct a
+			// ...and use this all to construct a
 			// ...MainPageInfoRpcResponseData to return.
-			return new MainPageInfoRpcResponseData(bi, userAvatarUrl);
+			return new MainPageInfoRpcResponseData(bi, userAvatarUrl, desktopAppEnabled, showDesktopAppDownloader);
 		}
 		
 		catch (Exception ex) {

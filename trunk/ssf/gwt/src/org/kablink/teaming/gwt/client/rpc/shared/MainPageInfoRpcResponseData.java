@@ -43,8 +43,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private BinderInfo	m_binderInfo;		//
-	private String		m_userAvatarUrl;	//
+	private boolean		m_desktopAppEnabled;		//
+	private boolean		m_showDesktopAppDownloader;	//
+	private BinderInfo	m_binderInfo;				//
+	private String		m_userAvatarUrl;			//
 	
 	/**
 	 * Constructor method. 
@@ -58,16 +60,21 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	
 	/**
 	 * Constructor method.
-	 * 
+	 *
+	 * @param binderInfo
 	 * @param userAvatarUrl
+	 * @param desktopAppEnabled
+	 * @param showDesktopAppDownloader
 	 */
-	public MainPageInfoRpcResponseData(BinderInfo binderInfo, String userAvatarUrl) {
+	public MainPageInfoRpcResponseData(BinderInfo binderInfo, String userAvatarUrl, boolean desktopAppEnabled, boolean showDesktopAppDownloader) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
-		setBinderInfo(   binderInfo   );
-		setUserAvatarUrl(userAvatarUrl);
+		setBinderInfo(              binderInfo              );
+		setUserAvatarUrl(           userAvatarUrl           );
+		setDesktopAppEnabled(       desktopAppEnabled       );
+		setShowDesktopAppDownloader(showDesktopAppDownloader);
 	}
 	
 	/**
@@ -75,14 +82,18 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 * 
 	 * @return
 	 */
-	public BinderInfo getBinderInfo()    {return m_binderInfo;   }
-	public String     getUserAvatarUrl() {return m_userAvatarUrl;}
+	public boolean    isDesktopAppEnabled()        {return m_desktopAppEnabled;       }
+	public boolean    isShowDesktopAppDownloader() {return m_showDesktopAppDownloader;}
+	public BinderInfo getBinderInfo()              {return m_binderInfo;              }
+	public String     getUserAvatarUrl()           {return m_userAvatarUrl;           }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBinderInfo(   BinderInfo binderInfo)    {m_binderInfo    = binderInfo;   }
-	public void setUserAvatarUrl(String     userAvatarUrl) {m_userAvatarUrl = userAvatarUrl;}
+	public void setDesktopAppEnabled(       boolean    desktopAppEnabled)        {m_desktopAppEnabled        = desktopAppEnabled;       }
+	public void setShowDesktopAppDownloader(boolean    showDesktopAppDownloader) {m_showDesktopAppDownloader = showDesktopAppDownloader;}
+	public void setBinderInfo(              BinderInfo binderInfo)               {m_binderInfo               = binderInfo;              }
+	public void setUserAvatarUrl(           String     userAvatarUrl)            {m_userAvatarUrl            = userAvatarUrl;           }
 }

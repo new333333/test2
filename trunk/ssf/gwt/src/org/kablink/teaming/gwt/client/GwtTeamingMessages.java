@@ -543,6 +543,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_CreateBlogPageDlg();
 	String codeSplitFailure_CopyMoveEntriesDlg();
 	String codeSplitFailure_DescriptionPanel();
+	String codeSplitFailure_DesktopAppDownloadControl();
 	String codeSplitFailure_DiscussionFolderView();
 	String codeSplitFailure_DiscussionWSView();
 	String codeSplitFailure_EditBrandingDlg();

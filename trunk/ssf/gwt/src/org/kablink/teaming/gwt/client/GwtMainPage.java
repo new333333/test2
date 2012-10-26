@@ -141,6 +141,8 @@ import org.kablink.teaming.gwt.client.widgets.AdminControl;
 import org.kablink.teaming.gwt.client.widgets.AdminControl.AdminControlClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
+import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadControl;
+import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadControl.DesktopAppDownloadControlClient;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
 import org.kablink.teaming.gwt.client.widgets.LoginDlg;
@@ -229,15 +231,20 @@ public class GwtMainPage extends ResizeComposite
 		ViewResourceLibraryEvent.Handler,
 		ViewTeamingFeedEvent.Handler
 {
+	private final static boolean SHOW_DESKTOP_APP_DOWNLOADER	= false;	//! DRF:  Leave false on checkin until get this all working.
+	
 	public static boolean m_novellTeaming = true;
 	public static RequestInfo m_requestInfo = jsGetRequestInfo();;
 	public static ContentControl m_contentCtrl;
 
+	private boolean	m_desktopAppEnabled;
+	private boolean	m_showDesktopAppDownloader;
 	private boolean m_controlKeyDown;
 	private AddNewFolderDlg m_addNewFolderDlg = null;
 	private VibeDockLayoutPanel m_mainPanel = null;
 	private DockLayoutPanel m_splitLayoutPanel = null;
 	private MainContentLayoutPanel m_contentLayoutPanel = null;
+	private DesktopAppDownloadControl m_dadCtrl = null;
 	private FlowPanel m_headerPanel = null;
 	private boolean m_inSearch = false;
 	private String m_searchTabId = "";
@@ -398,9 +405,17 @@ public class GwtMainPage extends ResizeComposite
 				MainPageInfoRpcResponseData responseData = ((MainPageInfoRpcResponseData) response.getResponseData());
 				m_selectedBinderInfo = responseData.getBinderInfo();
 
-				// ...and the user's avatar URL from the response...
+				// ...the user's avatar URL from the response...
 				String userAvatarUrl = responseData.getUserAvatarUrl();
 				m_requestInfo.setUserAvatarUrl( ( null == userAvatarUrl ) ? "" : userAvatarUrl );
+				
+				if ( SHOW_DESKTOP_APP_DOWNLOADER )
+				{
+					// ...and what we know about desktop application
+					// ...deployment from the response...
+					m_desktopAppEnabled        = responseData.isDesktopAppEnabled();
+					m_showDesktopAppDownloader = responseData.isShowDesktopAppDownloader();
+				}
 				
 				// ...and continue the load process.
 				ScheduledCommand loadNextControl = new ScheduledCommand() {
@@ -544,7 +559,42 @@ public class GwtMainPage extends ResizeComposite
 			public void onSuccess( ActivityStreamCtrl asCtrl )
 			{
 				m_activityStreamCtrl = asCtrl;
-				ScheduledCommand loadNextControl = new ScheduledCommand() {
+				ScheduledCommand loadNextControl = new ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						if ( m_showDesktopAppDownloader )
+						     loadDesktopAppDownloadCtrl();
+						else constructMainPage_Finish();
+					}// end execute()
+				};
+				Scheduler.get().scheduleDeferred( loadNextControl );
+			}// end onSuccess()
+		} );
+	}// end ActivityStreamCtrl()
+
+	/*
+	 * Loads the split point for the ActivityStreamCtrl and
+	 * instantiates an object from it.
+	 */
+	private void loadDesktopAppDownloadCtrl()
+	{
+		DesktopAppDownloadControl.createAsync( this, new DesktopAppDownloadControlClient()
+		{			
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( DesktopAppDownloadControl dadCtrl )
+			{
+				m_dadCtrl = dadCtrl;
+				ScheduledCommand loadNextControl = new ScheduledCommand()
+				{
 					@Override
 					public void execute()
 					{
@@ -554,7 +604,7 @@ public class GwtMainPage extends ResizeComposite
 				Scheduler.get().scheduleDeferred( loadNextControl );
 			}// end onSuccess()
 		} );
-	}// end ActivityStreamCtrl()
+	}// end loadDesktopAppDownloadCtrl()
 
 	/*
 	 * Adds a native preview handler that we can use to watch for
@@ -674,6 +724,12 @@ public class GwtMainPage extends ResizeComposite
 		
 		m_splitLayoutPanel = new DockLayoutPanel( Style.Unit.PX );
 		m_mainPanel.add( m_splitLayoutPanel );
+		
+		// If we constructed a desktop application download control...
+		if ( null != m_dadCtrl ) {
+			// ...add it as the north panel of the split layout.
+			m_splitLayoutPanel.addNorth( m_dadCtrl, GwtConstants.DESKTOP_APP_DOWNLOAD_HEIGHT );
+		}
 		
 		// Create the WorkspaceTree control.
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
