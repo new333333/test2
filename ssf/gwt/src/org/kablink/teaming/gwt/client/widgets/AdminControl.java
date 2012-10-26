@@ -65,6 +65,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.ConfigureAdhocFoldersDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUserAccessDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
@@ -1194,7 +1195,7 @@ public class AdminControl extends TeamingPopupPanel
 			{
 				int x;
 				int y;
-				GwtFileSyncAppConfiguration fileSyncAppConfiguration;
+				final GwtFileSyncAppConfiguration fileSyncAppConfiguration;
 				EditSuccessfulHandler editSuccessfullHandler;
 
 
@@ -1210,9 +1211,9 @@ public class AdminControl extends TeamingPopupPanel
 					public boolean editSuccessful( Object obj )
 					{
 						AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
-						GwtFileSyncAppConfiguration fileSyncAppConfiguration;
+						GwtFileSyncAppConfiguration fileSyncAppConfig;
 
-						fileSyncAppConfiguration = (GwtFileSyncAppConfiguration) obj;
+						fileSyncAppConfig = (GwtFileSyncAppConfiguration) obj;
 						
 						// Create the callback that will be used when we issue an ajax request to save the file sync app configuration.
 						rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
@@ -1245,7 +1246,7 @@ public class AdminControl extends TeamingPopupPanel
 							
 							// Issue an ajax request to save the File Sync App configuration to the db.  rpcSaveCallback will
 							// be called when we get the response back.
-							cmd = new SaveFileSyncAppConfigurationCmd( fileSyncAppConfiguration );
+							cmd = new SaveFileSyncAppConfigurationCmd( fileSyncAppConfig );
 							GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
 						}
 						
@@ -1260,14 +1261,55 @@ public class AdminControl extends TeamingPopupPanel
 				// Have we already created a "Configure File Sync App" dialog?
 				if ( m_configureFileSyncAppDlg == null )
 				{
+					int width;
+					int height;
+					
 					// No, create one.
-					m_configureFileSyncAppDlg = new ConfigureFileSyncAppDlg( editSuccessfullHandler, null, false, true, x, y );
+					height = m_dlgHeight;
+					width = m_dlgWidth;
+					ConfigureFileSyncAppDlg.createAsync(
+							editSuccessfullHandler,
+							null,
+							false, 
+							true,
+							x, 
+							y,
+							width,
+							height,
+							new ConfigureFileSyncAppDlgClient()
+					{			
+						@Override
+						public void onUnavailable()
+						{
+							// Nothing to do.  Error handled in asynchronous provider.
+						}
+						
+						@Override
+						public void onSuccess( final ConfigureFileSyncAppDlg cfsaDlg )
+						{
+							ScheduledCommand cmd;
+							
+							cmd = new ScheduledCommand()
+							{
+								@Override
+								public void execute() 
+								{
+									m_configureFileSyncAppDlg = cfsaDlg;
+									
+									m_configureFileSyncAppDlg.init( fileSyncAppConfiguration );
+									m_configureFileSyncAppDlg.show();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					} );
 				}
-				
-				m_configureFileSyncAppDlg.init( fileSyncAppConfiguration );
-				m_configureFileSyncAppDlg.setPopupPosition( x, y );
-				m_configureFileSyncAppDlg.show();
-				
+				else
+				{
+					m_configureFileSyncAppDlg.init( fileSyncAppConfiguration );
+					m_configureFileSyncAppDlg.setPopupPosition( x, y );
+					m_configureFileSyncAppDlg.show();
+				}
 			}
 		};
 
@@ -1377,8 +1419,8 @@ public class AdminControl extends TeamingPopupPanel
 			int height;
 			
 			// No, create one.
-			height = (m_contentControlHeight * 7) / 10;
-			width = (m_contentControlWidth * 8) / 10;
+			height = m_dlgHeight;
+			width = m_dlgWidth;
 			ManageNetFoldersDlg.createAsync(
 											false, 
 											true,
@@ -1446,8 +1488,8 @@ public class AdminControl extends TeamingPopupPanel
 			int height;
 			
 			// No, create one.
-			height = (m_contentControlHeight * 7) / 10;
-			width = (m_contentControlWidth * 8) / 10;
+			height = m_dlgHeight;
+			width = m_dlgWidth;
 			ManageNetFolderRootsDlg.createAsync(
 											false, 
 											true,
@@ -1515,8 +1557,8 @@ public class AdminControl extends TeamingPopupPanel
 			int height;
 			
 			// No, create one.
-			height = (m_contentControlHeight * 7) / 10;
-			width = (m_contentControlWidth * 8) / 10;
+			height = m_dlgHeight;
+			width = m_dlgWidth;
 			ManageGroupsDlg.createAsync(
 									false, 
 									true,

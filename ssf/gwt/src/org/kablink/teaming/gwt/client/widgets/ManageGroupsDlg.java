@@ -107,7 +107,6 @@ public class ManageGroupsDlg extends DlgBox
 	private List<GroupInfoPlus> m_listOfGroups;
 	private ModifyGroupDlg m_modifyGroupDlg;
     private int m_width;
-    private int m_height;
 	
 	
 	// The following defines the TeamingEvents that are handled by
@@ -198,7 +197,7 @@ public class ManageGroupsDlg extends DlgBox
 		int width,
 		int height )
 	{
-		super( autoHide, modal, xPos, yPos, DlgButtonMode.Close );
+		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.Close );
 		
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(
@@ -208,7 +207,6 @@ public class ManageGroupsDlg extends DlgBox
 
 		// Create the header, content and footer of this dialog box.
 		m_width = width;
-		m_height = height;
 		createAllDlgContent( GwtTeaming.getMessages().manageGroupsDlgHeader(), null, null, null ); 
 	}
 
@@ -324,8 +322,8 @@ public class ManageGroupsDlg extends DlgBox
 		
 		// Create the CellTable that will display the list of groups.
 		cellTableResources = GWT.create( VibeCellTable.VibeCellTableResources.class );
-		m_groupsTable = new CellTable<GroupInfoPlus>( 15, cellTableResources );
-		m_groupsTable.setWidth( String.valueOf( m_width ) + "px" );
+		m_groupsTable = new CellTable<GroupInfoPlus>( 20, cellTableResources );
+		m_groupsTable.setWidth( String.valueOf( m_width - 20 ) + "px" );
 		
 		// Set the widget that will be displayed when there are no groups
 		{
@@ -425,6 +423,7 @@ public class ManageGroupsDlg extends DlgBox
 		mainPanel.add( m_groupsTable );
 		mainPanel.setHorizontalAlignment( HasHorizontalAlignment.ALIGN_CENTER );
 		mainPanel.add( m_pager );
+		mainPanel.setCellHeight( m_pager, "100%" );
 
 		return mainPanel;
 	}

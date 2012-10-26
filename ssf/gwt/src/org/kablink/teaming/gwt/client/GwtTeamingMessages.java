@@ -536,6 +536,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ClipboardDlg();
 	String codeSplitFailure_CollectionView();
 	String codeSplitFailure_ConfigureAdhocFoldersDlg();
+	String codeSplitFailure_ConfigureFileSyncAppDlg();
 	String codeSplitFailure_ConfigureUserAccessDlg();
 	String codeSplitFailure_ConfirmDlg();
 	String codeSplitFailure_ContentControl();
