@@ -230,6 +230,8 @@ public class Constants {
 	public static final String FILE_SIZE_IN_BYTES_FIELD = "_fileSizeInBytes";
 	public static final String FILE_MD5_FIELD = "_fileMd5";
 	public static final String FILE_VERSION_FIELD = "_fileVersion";
+	public static final String FILE_MAJOR_VERSION_FIELD = "_fileMajorVersion";
+	public static final String FILE_MINOR_VERSION_FIELD = "_fileMinorVersion";
 	public static final String FILE_TIME_FIELD = "_fileTime";
 	public static final String FILENAME_AND_ID_FIELD = "_fileNameId";
 	public static final String FILE_SIZE_AND_ID_FIELD = "_fileSizeId";

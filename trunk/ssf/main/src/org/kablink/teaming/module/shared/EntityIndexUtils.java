@@ -1146,6 +1146,10 @@ public class EntityIndexUtils {
             }
         	Field fileVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_VERSION_FIELD, String.valueOf(fa.getHighestVersionNumber()));
         	doc.add(fileVersionField);
+        	Field fileMajorVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_MAJOR_VERSION_FIELD, String.valueOf(fa.getMajorVersion()));
+        	doc.add(fileMajorVersionField);
+        	Field fileMinorVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_MINOR_VERSION_FIELD, String.valueOf(fa.getMinorVersion()));
+        	doc.add(fileMinorVersionField);
         	Field fileTimeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
         	doc.add(fileTimeField); 
         	Field fileNameFieldStored = FieldFactory.createFieldStoredNotIndexed(FILENAME_FIELD, fa.getFileItem().getName());
@@ -1176,7 +1180,11 @@ public class EntityIndexUtils {
         }
         Field fileVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_VERSION_FIELD, String.valueOf(fa.getHighestVersionNumber()));
        	doc.add(fileVersionField);
-    	Field fileTimeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
+        Field fileMajorVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_MAJOR_VERSION_FIELD, String.valueOf(fa.getMajorVersion()));
+        doc.add(fileMajorVersionField);
+        Field fileMinorVersionField = FieldFactory.createFieldStoredNotAnalyzed(FILE_MINOR_VERSION_FIELD, String.valueOf(fa.getMinorVersion()));
+        doc.add(fileMinorVersionField);
+        Field fileTimeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
     	doc.add(fileTimeField);
     	Field fileNameFieldStored = FieldFactory.createFieldStoredNotIndexed(FILENAME_FIELD, fa.getFileItem().getName());
     	doc.add(fileNameFieldStored);
