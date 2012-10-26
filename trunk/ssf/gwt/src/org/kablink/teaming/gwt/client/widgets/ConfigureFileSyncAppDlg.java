@@ -39,9 +39,12 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -68,19 +71,32 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	private TextBox m_syncIntervalTextBox;
 	private TextBox m_autoUpdateUrlTextBox;
 	
+	/**
+	 * Callback interface to interact with the "configure file sync app" dialog
+	 * asynchronously after it loads. 
+	 */
+	public interface ConfigureFileSyncAppDlgClient
+	{
+		void onSuccess( ConfigureFileSyncAppDlg cfsaDlg );
+		void onUnavailable();
+	}
+
+	
 
 	/**
 	 * 
 	 */
-	public ConfigureFileSyncAppDlg(
+	private ConfigureFileSyncAppDlg(
 		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
 		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		boolean autoHide,
 		boolean modal,
 		int xPos,
-		int yPos )
+		int yPos,
+		int width,
+		int height )
 	{
-		super( autoHide, modal, xPos, yPos );
+		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.OkCancel );
 
 		// Create the header, content and footer of this dialog box.
 		createAllDlgContent( GwtTeaming.getMessages().fileSyncAppDlgHeader(), editSuccessfulHandler, editCanceledHandler, null ); 
@@ -330,5 +346,52 @@ public class ConfigureFileSyncAppDlg extends DlgBox
         		txtBox.cancelKey();
         	}
         }
+	}
+
+	/**
+	 * Loads the ConfigureFileSyncAppDlg split point and returns an instance
+	 * of it via the callback.
+	 * 
+	 */
+	public static void createAsync(
+							final EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
+							final EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
+							final boolean autoHide,
+							final boolean modal,
+							final int left,
+							final int top,
+							final int width,
+							final int height,
+							final ConfigureFileSyncAppDlgClient cfsaDlgClient )
+	{
+		GWT.runAsync( ConfigureFileSyncAppDlg.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ConfigureFileSyncAppDlg() );
+				if ( cfsaDlgClient != null )
+				{
+					cfsaDlgClient.onUnavailable();
+				}
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				ConfigureFileSyncAppDlg cfsaDlg;
+				
+				cfsaDlg = new ConfigureFileSyncAppDlg(
+												editSuccessfulHandler,
+												editCanceledHandler,
+												autoHide,
+												modal,
+												left,
+												top,
+												width,
+												height );
+				cfsaDlgClient.onSuccess( cfsaDlg );
+			}
+		});
 	}
 }

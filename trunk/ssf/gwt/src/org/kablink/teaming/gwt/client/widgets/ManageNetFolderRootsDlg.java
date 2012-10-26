@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -100,7 +99,6 @@ public class ManageNetFolderRootsDlg extends DlgBox
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
 	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
     private int m_width;
-    private int m_height;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -134,7 +132,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 		int width,
 		int height )
 	{
-		super( autoHide, modal, xPos, yPos, DlgButtonMode.Close );
+		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.Close );
 		
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(
@@ -144,7 +142,6 @@ public class ManageNetFolderRootsDlg extends DlgBox
 		
 		// Create the header, content and footer of this dialog box.
 		m_width = width;
-		m_height = height;
 		createAllDlgContent( GwtTeaming.getMessages().manageNetFolderServersDlg_Header(), null, null, null );
 	}
 
@@ -251,8 +248,8 @@ public class ManageNetFolderRootsDlg extends DlgBox
 		
 		// Create the CellTable that will display the list of Net Folder Roots.
 		cellTableResources = GWT.create( VibeCellTable.VibeCellTableResources.class );
-		m_netFolderRootsTable = new CellTable<NetFolderRoot>( 15, cellTableResources );
-		m_netFolderRootsTable.setWidth( String.valueOf( m_width ) + "px" );
+		m_netFolderRootsTable = new CellTable<NetFolderRoot>( 20, cellTableResources );
+		m_netFolderRootsTable.setWidth( String.valueOf( m_width-20 ) + "px" );
 		
 		// Set the widget that will be displayed when there are no Net Folder Roots
 		{
@@ -346,6 +343,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 		mainPanel.add( m_netFolderRootsTable );
 		mainPanel.setHorizontalAlignment( HasHorizontalAlignment.ALIGN_CENTER );
 		mainPanel.add( m_pager );
+		mainPanel.setCellHeight( m_pager, "100%" );
 
 		return mainPanel;
 	}

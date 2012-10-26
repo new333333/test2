@@ -139,7 +139,7 @@ public class ManageNetFoldersDlg extends DlgBox
 		int width,
 		int height )
 	{
-		super( autoHide, modal, xPos, yPos, DlgButtonMode.Close );
+		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.Close );
 		
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(
@@ -352,8 +352,8 @@ public class ManageNetFoldersDlg extends DlgBox
 		
 		// Create the CellTable that will display the list of Net Folders.
 		cellTableResources = GWT.create( VibeCellTable.VibeCellTableResources.class );
-		m_netFoldersTable = new CellTable<NetFolder>( 15, cellTableResources );
-		m_netFoldersTable.setWidth( String.valueOf( m_width ) + "px" );
+		m_netFoldersTable = new CellTable<NetFolder>( 20, cellTableResources );
+		m_netFoldersTable.setWidth( String.valueOf( m_width-20 ) + "px" );
 		
 		// Set the widget that will be displayed when there are no Net Folders
 		{
@@ -464,6 +464,7 @@ public class ManageNetFoldersDlg extends DlgBox
 		mainPanel.add( m_netFoldersTable );
 		mainPanel.setHorizontalAlignment( HasHorizontalAlignment.ALIGN_CENTER );
 		mainPanel.add( m_pager );
+		mainPanel.setCellHeight( m_pager, "100%" );
 
 		return mainPanel;
 	}
