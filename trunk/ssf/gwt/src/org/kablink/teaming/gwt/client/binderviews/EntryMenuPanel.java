@@ -108,7 +108,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
-
 /**
  * Class used for the content of the entry menus in the binder views.  
  * 
@@ -159,7 +158,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private EntryMenuPanel(RequiresResize containerResizer, BinderInfo binderInfo, boolean viewingPinnedEntries, boolean viewingSharedFiles, boolean includeColumnResizer, ToolPanelReady toolPanelReady) {
+	private EntryMenuPanel(RequiresResize containerResizer, BinderInfo binderInfo, boolean viewingPinnedEntries, boolean viewingSharedFiles, boolean includeColumnResizer, ToolPanelReady toolPanelReady, ToolPanelClient tpClient) {
 		// Initialize the super class...
 		super(containerResizer, binderInfo, toolPanelReady);
 		
@@ -182,7 +181,7 @@ public class EntryMenuPanel extends ToolPanelBase
 		initWidget(m_grid);
 		
 		// ...and load the menu.
-		loadPart1Async();
+		loadPart1Async(tpClient);
 	}
 
 	/*
@@ -249,11 +248,11 @@ public class EntryMenuPanel extends ToolPanelBase
 	/*
 	 * Asynchronously construct's the contents of the entry menu panel.
 	 */
-	private void loadPart1Async() {
+	private void loadPart1Async(final ToolPanelClient tpClient) {
 		ScheduledCommand doLoad = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				loadPart1Now();
+				loadPart1Now(tpClient);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doLoad);
@@ -262,13 +261,18 @@ public class EntryMenuPanel extends ToolPanelBase
 	/*
 	 * Synchronously construct's the contents of the entry menu panel.
 	 */
-	private void loadPart1Now() {
+	private void loadPart1Now(final ToolPanelClient tpClient) {
 		final Long folderId = m_binderInfo.getBinderIdAsLong();
 		GwtClientHelper.executeCommand(
 				new GetFolderToolbarItemsCmd(m_binderInfo),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
+				// Notify the client about the entry menu's load
+				// status...
+				notifiyClientAsync(tpClient, false);	// false -> Loading failed.
+				
+				// ...and tell the user about the problem.
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_GetFolderToolbarItems(),
@@ -277,7 +281,11 @@ public class EntryMenuPanel extends ToolPanelBase
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// Store the toolbar items and continue loading.
+				// Notify the client about the entry menu's load
+				// status...
+				notifiyClientAsync(tpClient, true);	// true -> Loading was successful.
+				
+				// ...store the toolbar items and continue loading.
 				GetFolderToolbarItemsRpcResponseData responseData = ((GetFolderToolbarItemsRpcResponseData) response.getResponseData());
 				m_toolbarItems = responseData.getToolbarItems();
 				
@@ -405,6 +413,44 @@ public class EntryMenuPanel extends ToolPanelBase
 		}
 	}
 
+	/*
+	 * Asynchronously notifies the client about the load status of the
+	 * entry menu panel.
+	 */
+	private void notifiyClientAsync(final ToolPanelClient tpClient, final boolean onSuccess) {
+		// If we don't have a client to notify...
+		if (null == tpClient) {
+			// ...simply bail...
+			return;
+		}
+		
+		ScheduledCommand doNotify = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				// ...otherwise, notify them.
+				notifiyClientNow(tpClient, onSuccess);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doNotify);
+	}
+	
+	/*
+	 * Synchronously notifies the client about the load status of the
+	 * entry menu panel.
+	 */
+	private void notifiyClientNow(final ToolPanelClient tpClient, final boolean onSuccess) {
+		// If we don't have a client to notify...
+		if (null == tpClient) {
+			// ...simply bail...
+			return;
+		}
+		
+		// ...otherwise, notify them.
+		if (onSuccess)
+		     tpClient.onSuccess(this);
+		else tpClient.onUnavailable();
+	}
+	
 	/**
 	 * Called when the accessories panel is attached to the document.
 	 * 
@@ -980,7 +1026,7 @@ public class EntryMenuPanel extends ToolPanelBase
 		constructMenuPanels();
 
 		// ...and reload the menu.
-		loadPart1Async();
+		loadPart1Async(null);
 	}
 
 	/*
@@ -1173,9 +1219,17 @@ public class EntryMenuPanel extends ToolPanelBase
 			public void onSuccess() {
 				// Is this a request to create an entry menu panel?
 				if (null != tpClient) {
-					// Yes!  Create it and return it via the callback.
-					EntryMenuPanel emp = new EntryMenuPanel(containerResizer, binderInfo, viewingPinnedEntries, viewingSharedFiles, includeColumnResizer, toolPanelReady);
-					tpClient.onSuccess(emp);
+					// Yes!  Create it.  Note that its construction
+					// flow will call the appropriate method off the
+					// ToolPanelClient object.
+					new EntryMenuPanel(
+						containerResizer,
+						binderInfo,
+						viewingPinnedEntries,
+						viewingSharedFiles,
+						includeColumnResizer,
+						toolPanelReady,
+						tpClient);
 				}
 				
 				else {

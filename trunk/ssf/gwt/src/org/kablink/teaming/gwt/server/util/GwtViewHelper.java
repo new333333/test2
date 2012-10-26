@@ -2498,10 +2498,26 @@ public class GwtViewHelper {
 			String myFilesRootIdS = String.valueOf(mfRootId);
 
 			// Do we have a folder to use as a My Files container?
+			String[] mfContainerIdStrings = null;
 			Long mfContainerId;
-			if (usingHomeAsMF)
-			     mfContainerId = mfRootId;
-			else mfContainerId = GwtServerHelper.getMyFilesFolderId(bs, false);	// false -> Don't create it if it doesn't exist.
+			if (usingHomeAsMF) {
+				mfContainerId = mfRootId;
+			}
+			else {
+				List<Long> mfContainerIds = GwtServerHelper.getMyFilesFolderIds(bs);
+				if ((null != mfContainerIds) && (!(mfContainerIds.isEmpty()))) {
+					mfContainerId = mfContainerIds.get(0);
+					
+					int c = mfContainerIds.size();
+					mfContainerIdStrings = new String[c];
+					for (int i = 0; i < c; i += 1) {
+						mfContainerIdStrings[i] = String.valueOf(mfContainerIds.get(i));
+					}
+				}
+				else {
+					mfContainerId = null;
+				}
+			}
 			boolean	hasMFContainerId = (null != mfContainerId);
 			String	mfContainerIdS   = (hasMFContainerId ? String.valueOf(mfContainerId) : null);
 			
@@ -2513,12 +2529,12 @@ public class GwtViewHelper {
 			rootConj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
 			rootConj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
 
-			// ...if we have a non-Home My Files container...
+			// ...if we have a non-Home My Files containers...
 			if (hasMFContainerId && (!usingHomeAsMF)) {
-				// ...exclude it from the binder list.
+				// ...exclude them from the binder list.
 				Junction noMF = not();
 				rootConj.add(noMF);
-				noMF.add(in(Constants.DOCID_FIELD, new String[]{mfContainerIdS}));
+				noMF.add(in(Constants.DOCID_FIELD, mfContainerIdStrings));
 			}
 
 			if (!usingHomeAsMF) {
@@ -3778,7 +3794,7 @@ public class GwtViewHelper {
 											eti.setDescriptionIsHtml(false      );
 										}
 									}
-									else if (GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD))) {
+									if (isEntityFolderEntry && GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD))) {
 										String fName = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
 										if (MiscUtil.hasString(fName)) {
 											eti.setFile(true);

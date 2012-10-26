@@ -5691,10 +5691,12 @@ public class GwtServerHelper {
 		return reply;
 	}
 		
-	/*
+	/**
 	 * Returns a List<Long> of the current user's My Files folder IDs.
+	 * 
+	 * @param bs
 	 */
-	private static List<Long> getMyFilesFolderIds(AllModulesInjected bs) {
+	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs) {
 		// Build a search for the user's binders...
 		Criteria crit = new Criteria();
 		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
@@ -9170,21 +9172,21 @@ public class GwtServerHelper {
 	 * mapped to their home directory and false otherwise.
 	 * 
 	 * @param ami
+	 * 
 	 * @return
 	 */
 	public static boolean useHomeAsMyFiles(AllModulesInjected ami) {
-		User user;
-		IdentityInfo idInfo;
-		
-		user = getCurrentUser();
-		idInfo = user.getIdentityInfo();
-		
-		// If we're running Filr and the user has been provisioned from ldap
-		if ( Utils.checkIfFilr() && idInfo.isFromLdap() ) {
-			// ...check the user's and/or zone setting.
-			Boolean result = GwtUIHelper.getEffectiveAdhocFolderSetting(ami, getCurrentUser());
-			if ((null != result) && (!(result))) {
-				return true;
+		// If we're running Filr...
+		if (Utils.checkIfFilr()) {
+			// ...and the user has been provisioned from ldap...
+			User			user   = getCurrentUser();
+			IdentityInfo	idInfo = user.getIdentityInfo();
+			if (idInfo.isFromLdap()) {
+				// ...check the user's and/or zone setting.
+				Boolean result = GwtUIHelper.getEffectiveAdhocFolderSetting(ami, user);
+				if ((null != result) && (!(result))) {
+					return true;
+				}
 			}
 		}
 
@@ -9194,31 +9196,24 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Validate the given email address
+	 * Validate the given email address.
+	 * 
+	 * @param emailAddress
+	 * @param addressField
+	 * 
+	 * @return
 	 */
-	public static Boolean validateEmailAddress(
-		String emailAddress,
-		ValidateEmailAddressCmd.AddressField addressField )
-	{
+	public static Boolean validateEmailAddress(String emailAddress, ValidateEmailAddressCmd.AddressField addressField) {
 		String usedAs;
 		
-		switch ( addressField )
-		{
-		case MAIL_BC:
-			usedAs = MailModule.BCC;
-			break;
-		
-		case MAIL_CC:
-			usedAs = MailModule.CC;
-			break;
-		
-		case MAIL_TO:
+		switch (addressField) {
 		default:
-			usedAs = MailModule.TO;
-			break;
+		case MAIL_TO:  usedAs = MailModule.TO;  break;
+		case MAIL_BC:  usedAs = MailModule.BCC; break;
+		case MAIL_CC:  usedAs = MailModule.CC;  break;
 		}
 		
-		return MiscUtil.isEmailAddressValid( usedAs, emailAddress );
+		return MiscUtil.isEmailAddressValid(usedAs, emailAddress);
 	}
 	
 	/**
