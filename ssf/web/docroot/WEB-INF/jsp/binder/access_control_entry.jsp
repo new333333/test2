@@ -92,7 +92,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	<ssf:showHelp guideName="adv_user" pageId="access_mngusers" sectionId="access_mngusers_entry" />
 <% } %>
 <% else { %>
-	<ssf:showHelp guideName="admin" pageId="access_usersandgroups" sectionId="access_usersandgroups-access_mngusers_entry" />
+	<ssf:showHelp guideName="admin" pageId="access_mngusers" sectionId="access_usersgroups-access_mngusers_entry" />
 <% } %>
 
 	<div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
