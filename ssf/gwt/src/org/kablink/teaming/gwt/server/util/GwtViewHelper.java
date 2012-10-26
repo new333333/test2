@@ -2108,9 +2108,9 @@ public class GwtViewHelper {
 				}
 			}
 
-			// Read the Binder's for the rows...
+			// Read the Binder's for the rows (including those intermediate sub-binders that might be inaccessible)...
 			BinderModule bm = bs.getBinderModule();
-			SortedSet<Binder> binders = bm.getBinders(binderIds);
+			SortedSet<Binder> binders = bm.getBinders(binderIds, Boolean.FALSE);
 
 			// ...mapping each Binder to its ID.
 			Map<Long, Binder> binderMap = new HashMap<Long, Binder>();
@@ -2262,7 +2262,7 @@ public class GwtViewHelper {
 	@SuppressWarnings("unchecked")
 	public static BinderFiltersRpcResponseData getBinderFilters(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
 		try {
-			Binder				binder = bs.getBinderModule().getBinder(binderId);
+			Binder				binder = bs.getBinderModule().getBinderWithoutAccessCheck(binderId);  //Not giving any secrets away, so do it fast
 			List<BinderFilter>	ffList = new ArrayList<BinderFilter>();
 			User				user   = GwtServerHelper.getCurrentUser();
 
@@ -2386,7 +2386,7 @@ public class GwtViewHelper {
 	public static AvatarInfoRpcResponseData getBinderOwnerAvatarInfo(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
 		try {
 			// Construct a GuestInfo from the binder's owner...
-			Binder binder = bs.getBinderModule().getBinder(Long.valueOf(binderId));
+			Binder binder = bs.getBinderModule().getBinder(Long.valueOf(binderId), Boolean.TRUE);
 			Principal p = binder.getCreation().getPrincipal(); //creator is user
 			GuestInfo gi = getGuestInfoFromPrincipal(bs, request, Utils.fixProxy(p));
 			

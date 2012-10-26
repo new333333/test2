@@ -313,7 +313,8 @@ public class BinderHelper {
 			for (int i = 0; i < preferredBinderIds.length; i++) {
 				binderIds.add(new Long(preferredBinderIds[i]));
 			}
-			model.put(WebKeys.FOLDER_LIST, bs.getBinderModule().getBinders(binderIds));
+			//Get sub-binder list including intermediate binders that may be inaccessible
+			model.put(WebKeys.FOLDER_LIST, bs.getBinderModule().getBinders(binderIds, Boolean.FALSE));
 			try {
 				response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
 			} catch(Exception e) {
@@ -492,9 +493,9 @@ public class BinderHelper {
 					if (binder instanceof Folder) {
 						model.put(WebKeys.IS_BINDER_MIRRORED_FOLDER, ((Folder)binder).isMirrored());
 					}
-					model.put(WebKeys.BINDER_READ_ENTRIES, bs.getBinderModule().testAccess(binder, BinderOperation.readEntries));
+					model.put(WebKeys.BINDER_READ_ENTRIES, bs.getBinderModule().testAccess(binder, BinderOperation.readEntries, Boolean.TRUE));
 					if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
-						model.put(WebKeys.BINDER_VIEW_BINDER_TITLE, bs.getBinderModule().testAccess(binder, BinderOperation.viewBinderTitle));
+						model.put(WebKeys.BINDER_VIEW_BINDER_TITLE, bs.getBinderModule().testAccess(binder, BinderOperation.viewBinderTitle, Boolean.TRUE));
 					}
 				} catch(Exception e) {
 					logger.debug("BinderHelper.setupStandardBeans(Exception:  '" + MiscUtil.exToString(e) + "')");
@@ -1596,7 +1597,7 @@ public class BinderHelper {
 		if (isCalendar) {
 			// Yes!  Does the user have a view definition selected for
 			// it?
-			Definition def = getFolderDefinitionFromView(bs, binder.getId());
+			Definition def = getFolderDefinitionFromView(bs, binder);
 			if (null == def) {
 				// No!  Just use it's default view.
 				def = binder.getDefaultViewDef();
@@ -1642,7 +1643,7 @@ public class BinderHelper {
 		if (isTask) {
 			// Yes!  Does the user have a view definition selected for
 			// it?
-			Definition def = getFolderDefinitionFromView(bs, binder.getId());
+			Definition def = getFolderDefinitionFromView(bs, binder);
 			if (null == def) {
 				// No!  Just use it's default view.
 				def = binder.getDefaultViewDef();
@@ -4957,15 +4958,19 @@ public class BinderHelper {
 	 * @param folderId
 	 */
 	public static Definition getFolderDefinitionFromView(AllModulesInjected bs, Long folderId) {
+		//Since there is nothing important being revealed, get the binder without doing an access check for better performance
+		Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(folderId);
+		return getFolderDefinitionFromView(bs, binder);
+	}
+	public static Definition getFolderDefinitionFromView(AllModulesInjected bs, Binder binder) {
 		// Does the user have a default definition selected for this
 		// binder?
-		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUser().getId(), folderId);
+		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUser().getId(), binder.getId());
 		String userSelectedDefinition = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
 
 		// If we can find the default definition for this binder,
 		// return it.
 		HashMap model = new HashMap();
-		Binder binder = bs.getBinderModule().getBinder(folderId);
 		DefinitionHelper.getDefinitions(binder, model, userSelectedDefinition);		
 		return ((Definition) model.get(WebKeys.DEFAULT_FOLDER_DEFINITION));
 	}

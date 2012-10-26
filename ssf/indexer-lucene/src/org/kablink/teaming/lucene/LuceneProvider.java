@@ -543,7 +543,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				// This search is bound by ACL. We need to tweak the search in order to handle the anomaly associated with Net Folders (i.e., "implicit" permissions).
 				BooleanQuery implicitlyAccessibleSubFoldersQuery = new BooleanQuery();
 				implicitlyAccessibleSubFoldersQuery.add(new TermQuery(new Term(Constants.ENTRY_ANCESTRY, parentBinderId.toString())), BooleanClause.Occur.MUST);
-				implicitlyAccessibleSubFoldersQuery.add(new TermQuery(new Term(Constants.IS_MIRRORED_FIELD, Constants.TRUE)), BooleanClause.Occur.MUST);
+				//implicitlyAccessibleSubFoldersQuery.add(new TermQuery(new Term(Constants.IS_MIRRORED_FIELD, Constants.TRUE)), BooleanClause.Occur.MUST);
 				implicitlyAccessibleSubFoldersQuery.add(parseAclQueryStr(aclQueryStr), BooleanClause.Occur.MUST);
 
 				Set<String> subFolderPaths = obtainImplicitlyAccessibleSubFolderPaths(indexSearcherHandle.getIndexSearcher(), contextUserId, parentBinderPath, implicitlyAccessibleSubFoldersQuery); 
