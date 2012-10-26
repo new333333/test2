@@ -69,6 +69,9 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import org.kablink.teaming.BinderQuotaException;
+import org.kablink.teaming.DataQuotaException;
+import org.kablink.teaming.FileSizeLimitException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
@@ -96,6 +99,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
@@ -6561,9 +6565,16 @@ public class GwtViewHelper {
         	    	}
     	    	}
     	    	
-    	    	catch(AccessControlException ace) {
+    	    	catch (Exception ex) {
+    	    		String errMsg;
+	    	    	if      (ex instanceof AccessControlException) errMsg = NLT.get("entry.duplicateFileInLibrary2"           );
+	    	    	else if (ex instanceof BinderQuotaException)   errMsg = NLT.get("entry.uploadError.binderQuotaException"  );
+	    	    	else if (ex instanceof DataQuotaException)     errMsg = NLT.get("entry.uploadError.dataQuotaException"    );
+	    	    	else if (ex instanceof FileSizeLimitException) errMsg = NLT.get("entry.uploadError.fileSizeLimitException");
+					else if (ex instanceof WriteFilesException)    errMsg = NLT.get("entry.uploadError.writeFilesException", new String[]{ex.getLocalizedMessage()});
+	    	    	else                                           errMsg = NLT.get("entry.uploadError.unknownError",        new String[]{ex.getLocalizedMessage()});
     				reply = new StringRpcResponseData();
-    	    		reply.setStringValue(NLT.get("entry.duplicateFileInLibrary2"));
+    				reply.setStringValue(errMsg);
     	    	}
     	    	
     	    	finally {
@@ -6621,7 +6632,6 @@ public class GwtViewHelper {
 				AdminModule		am                = bs.getAdminModule();
 				BinderModule	bm                = bs.getBinderModule();
 				FolderModule	fm                = bs.getFolderModule();
-				ProfileModule	pm                = bs.getProfileModule();
 				Folder			folder            = fm.getFolder(folderInfo.getBinderIdAsLong());
 				Long			userFileSizeLimit = am.getUserFileSizeLimit();
 				
@@ -6664,9 +6674,17 @@ public class GwtViewHelper {
 
 					// Do we need to check the total upload size against
 					// this user's quota?
-					long userQuota         = pm.getDiskQuota();
+					User user = GwtServerHelper.getCurrentUser();
+					long userQuota = user.getDiskQuota();
+					if (0 == userQuota) {
+						userQuota = user.getMaxGroupsQuota();
+						if (0 == userQuota) {
+							ZoneConfig zc = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+							userQuota = zc.getDiskQuotaUserDefault();
+						}
+					}
 					long userQuotaMB       = (userQuota * MEGABYTES);
-					Long userDiskSpaceUsed = GwtServerHelper.getCurrentUser().getDiskSpaceUsed();
+					Long userDiskSpaceUsed = user.getDiskSpaceUsed();
 					if ((0l < userQuota) && (null != userDiskSpaceUsed)) {
 						// Yes!  Does it exceed the user's quota?
 						if ((totalSize + userDiskSpaceUsed) > userQuotaMB) {
