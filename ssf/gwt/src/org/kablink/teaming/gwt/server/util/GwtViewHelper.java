@@ -2462,10 +2462,6 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Map getCollectionEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, CollectionType ct, List<GwtSharedMeItem> shareItems) {
-		// Several of the collections require the ID of the top
-		// workspace.
-		String topWSId = GwtUIHelper.getTopWSIdSafely(bs, false);
-		
 		// Based on the installed license, what definition families do
 		// we consider as 'file'?
 		String[] fileFamilies;
@@ -2483,14 +2479,14 @@ public class GwtViewHelper {
 			// Are we supposed to use this user's home folder as the
 			// root of their My Files area?
 			Long	mfRootId;
-			boolean	usingHomeAsMF = GwtServerHelper.useHomeAsMyFiles( bs );
+			boolean	usingHomeAsMF = GwtServerHelper.useHomeAsMyFiles(bs);
 			if (usingHomeAsMF) {
 				// Yes!  Can we find their home folder?
 				mfRootId      = GwtServerHelper.getHomeFolderId(bs);
 				usingHomeAsMF = (null != mfRootId);
 				if (!usingHomeAsMF) {
 					// No!  Just use the binder we were given.
-					binder.getId();
+					mfRootId = binder.getId();
 				}
 			}
 			else {
@@ -2564,21 +2560,17 @@ public class GwtViewHelper {
 			break;
 
 		case NET_FOLDERS:
-			// Can we access the ID of the top workspace?
-			if (!(MiscUtil.hasString(topWSId))) {
-				// No!  Then we can't search for file spaces.  Bail.
-				return buildEmptyEntryMap();
-			}
-
-			Binder netFoldersBinder = getCoreDao().loadReservedBinder(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
-					RequestContextHolder.getRequestContext().getZoneId());
-			
 			// Add the criteria for top level mirrored file folders
 			// that have been configured...
+			Binder nfBinder = getCoreDao().loadReservedBinder(
+				ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
+				RequestContextHolder.getRequestContext().getZoneId());
+			Long nfBinderId = nfBinder.getId();
+			
 			crit.add(eq(Constants.DOC_TYPE_FIELD,            Constants.DOC_TYPE_BINDER));
 			crit.add(eq(Constants.IS_TOP_FOLDER_FIELD,       Constants.TRUE));
     		crit.add(eq(Constants.HAS_RESOURCE_DRIVER_FIELD, Constants.TRUE));
-			crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD,   netFoldersBinder.getId().toString()));    		
+			crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD,   nfBinderId.toString()));    		
 			
 			// Do we have a quick filter?
 			if (null != quickFilter) {
@@ -2605,7 +2597,8 @@ public class GwtViewHelper {
 					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
 					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
 					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
-					netFoldersBinder.getId(), netFoldersBinder.getPathName());
+					nfBinderId,
+					nfBinder.getPathName());
 			
 		case SHARED_BY_ME:
 		case SHARED_WITH_ME:
