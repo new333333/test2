@@ -121,6 +121,8 @@ public interface BinderModule {
 	 */
 	public void checkAccess(Binder binder, BinderOperation operation)
 		throws AccessControlException;
+	public void checkAccess(User user, Binder binder, BinderOperation operation)
+		throws AccessControlException;
 	/**
 	 * Check access to a binder, throwing an exception if access is denied.
 	 * @param binder
@@ -128,7 +130,7 @@ public interface BinderModule {
 	 * @param thisLevelOnly  //Don't look for sub-binders down the tree (performance improvement)
 	 * @throws AccessControlException
 	 */
-	public void checkAccess(Binder binder, BinderOperation operation, boolean thisLevelOnly)
+	public void checkAccess(User user, Binder binder, BinderOperation operation, boolean thisLevelOnly)
 		throws AccessControlException;
 	
     /**
@@ -736,7 +738,7 @@ public interface BinderModule {
 	 * @param thisLevelOnly  //Don't look down the sub-binder tree (performance improvement)
 	 * @return
 	 */
-	public boolean testAccess(Binder binder, BinderOperation operation, boolean thisLevelOnly);
+	public boolean testAccess(User user, Binder binder, BinderOperation operation, boolean thisLevelOnly);
 
 	/**
 	 * Returns <code>SimpleName</code> object matching the name.
@@ -842,5 +844,6 @@ public interface BinderModule {
      * @return
      */
     public boolean testInferredAccessToBinder(Binder binder);
+    public boolean testInferredAccessToBinder(User user, Binder binder);
 
 }

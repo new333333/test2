@@ -222,11 +222,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	 * .teaming.domain.Binder, java.lang.String)
 	 */
 	public boolean testAccess(Binder binder, BinderOperation operation) {
-		return testAccess(binder, operation, Boolean.FALSE);
+		return testAccess(null, binder, operation, Boolean.FALSE);
 	}
-	public boolean testAccess(Binder binder, BinderOperation operation, boolean thisLevelOnly) {
+	public boolean testAccess(User user, Binder binder, BinderOperation operation, boolean thisLevelOnly) {
 		try {
-			checkAccess(binder, operation, thisLevelOnly);
+			checkAccess(user, binder, operation, thisLevelOnly);
 			return true;
 		} catch (AccessControlException ac) {
 			return false;
@@ -244,12 +244,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	 */
 	public void checkAccess(Binder binder, BinderOperation operation)
 			throws AccessControlException {
-		checkAccess(binder, operation, Boolean.FALSE);
+		checkAccess(null, binder, operation, Boolean.FALSE);
 	}
-	public void checkAccess(Binder binder, BinderOperation operation, boolean thisLevelOnly)
+	public void checkAccess(User user, Binder binder, BinderOperation operation)
 			throws AccessControlException {
+		checkAccess(null, binder, operation, Boolean.FALSE);
+	}
+	public void checkAccess(User user, Binder binder, BinderOperation operation, boolean thisLevelOnly)
+			throws AccessControlException {
+		if (user == null) {
+			user = RequestContextHolder.getRequestContext().getUser();
+		}
 		if (binder instanceof TemplateBinder) {
-			getAccessControlManager().checkOperation(
+			getAccessControlManager().checkOperation(user, 
 					getCoreDao().loadZoneConfig(
 							RequestContextHolder.getRequestContext()
 									.getZoneId()),
@@ -257,15 +264,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		} else {
 			switch (operation) {
 			case addFolder:
-				getAccessControlManager().checkOperation(binder,
+				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.CREATE_FOLDERS);
 				break;
 			case addWorkspace:
-				getAccessControlManager().checkOperation(binder,
+				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.CREATE_WORKSPACES);
 				break;
 			case deleteEntries:
-				getAccessControlManager().checkOperation(binder,
+				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.DELETE_ENTRIES);
 				break;
 			case restoreBinder:
@@ -279,86 +286,86 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			case manageSimpleName:
 			case changeEntryTimestamps:
 			case updateModificationTime:
-				getAccessControlManager().checkOperation(binder,
+				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.BINDER_ADMINISTRATION);
 				break;
 			case changeACL:
-				getAccessControlManager().checkOperation(binder,
+				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.CHANGE_ACCESS_CONTROL);
 				break;
 			case moveBinder:
 				if(binder.isAclExternallyControlled()) { // Net Folder or its sub-folder
-					getAccessControlManager().checkOperation(binder.getParentBinder(), WorkAreaOperation.DELETE_ENTRIES);
+					getAccessControlManager().checkOperation(user, binder.getParentBinder(), WorkAreaOperation.DELETE_ENTRIES);
 				}
 				else { // Legacy Vibe folder
-					getAccessControlManager().checkOperation(binder,
+					getAccessControlManager().checkOperation(user, binder,
 							WorkAreaOperation.BINDER_ADMINISTRATION);
 				}
 				break;
 			case deleteBinder:
 				if(binder.isAclExternallyControlled()) { // Net Folder or its sub-folder
-					getAccessControlManager().checkOperation(binder.getParentBinder(), WorkAreaOperation.DELETE_ENTRIES);
+					getAccessControlManager().checkOperation(user, binder.getParentBinder(), WorkAreaOperation.DELETE_ENTRIES);
 				}
 				else { // Legacy Vibe folder
-					getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+					getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.BINDER_ADMINISTRATION);
 				}
 				break;				
 			case copyBinder:
 				if(binder.isAclExternallyControlled()) { // Net Folder or its sub-folder
-					getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+					getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
 				}
 				else { // Legacy Vibe folder
-					getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+					getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.BINDER_ADMINISTRATION);
 				}
 				break;
 			case manageTeamMembers:
-				getAccessControlManager().checkOperation(binder,
+				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.CHANGE_ACCESS_CONTROL);
 				break;
 			case manageTag:
-				getAccessControlManager().checkOperation(binder,
+				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.ADD_COMMUNITY_TAGS);
 				break;
 			case report:
-				getAccessControlManager().checkOperation(binder,
+				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.GENERATE_REPORTS);
 				break;
 			case export:
 				Boolean exportAllowedByBinderOwner = SPropsUtil.getBoolean("export.availableToBinderOwners", false);
 				if (exportAllowedByBinderOwner) {
 					try {
-						getAccessControlManager().checkOperation(binder,
+						getAccessControlManager().checkOperation(user, binder,
 								WorkAreaOperation.BINDER_ADMINISTRATION);
 						break;
 					} catch(AccessControlException e) {}
 				}
-				getAccessControlManager().checkOperation(
+				getAccessControlManager().checkOperation(user, 
 						getCoreDao().loadZoneConfig(
 								RequestContextHolder.getRequestContext()
 										.getZoneId()),
 						WorkAreaOperation.ZONE_ADMINISTRATION);
 				break;
 			case readEntries:
-				getAccessControlManager().checkOperation(binder,
+				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.READ_ENTRIES);
 				break;
 			case viewBinderTitle:
 				try {
 					if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 						try {
-							getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+							getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.VIEW_BINDER_TITLE);
 						} catch(AccessControlException e) {
 							//If VIEW_BINDER_TITLE is not explicitly set, try READ_ENTRIES.
 							//  The READ_ENTRIES right also gives the user the right to view the binder title
-							getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+							getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
 						}
 					} else {
-						getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+						getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
 					}
 				} catch(AccessControlException e) {
 					if (!thisLevelOnly) {
 						//This check failed, so try to see if there is a sub-folder down the line the you can access
-						if(!getBinderModule().testInferredAccessToBinder(binder)) {
+						if(!getBinderModule().testInferredAccessToBinder(user, binder)) {
 							//There are no sub-binders to see, so return no access
 							throw e;
 						}
@@ -369,7 +376,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				}
 				break;
 			case allowSharing:
-				getAccessControlManager().checkOperation(binder,
+				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.ALLOW_SHARING);
 				break;
 			default:
@@ -419,10 +426,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// Check if the user has "read" access to the binder.
 		if (!(binder instanceof TemplateBinder)) {
 			try {
-				checkAccess(binder, BinderOperation.readEntries, thisLevelOnly);
+				checkAccess(null, binder, BinderOperation.readEntries, thisLevelOnly);
 			} catch(AccessControlException ace) {
 				try {
-					checkAccess(binder, BinderOperation.viewBinderTitle, thisLevelOnly);
+					checkAccess(null, binder, BinderOperation.viewBinderTitle, thisLevelOnly);
 				} catch(AccessControlException ace2) {
 					throw ace;
 				}
@@ -3182,6 +3189,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	@Override
 	public boolean testInferredAccessToBinder(Binder binder) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		return testInferredAccessToBinder(user, binder);
+	}
+	public boolean testInferredAccessToBinder(User user, Binder binder) {
        	//Create the Lucene query
     	QueryBuilder qb = new QueryBuilder(true, false);
     	String aclQueryStr = qb.buildAclClause();
@@ -3189,7 +3200,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
         try {
-        	return luceneSession.testInferredAccessToBinder(RequestContextHolder.getRequestContext().getUserId(), aclQueryStr, binder.getPathName());
+        	return luceneSession.testInferredAccessToBinder(user.getId(), aclQueryStr, binder.getPathName());
         }
         finally {
             luceneSession.close();
