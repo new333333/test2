@@ -1661,7 +1661,9 @@ public class DefinitionHelper {
 	}
 
 	public static Set<String> getTextualInputDataKeys(String definitionId, InputDataAccessor inputData) {
-    	Definition definition = getDefinition(definitionId);
+		Definition definition = null;
+		if(definitionId != null)
+			definition = getDefinition(definitionId);
     	Document definitionTree = null;
     	if(definition != null)
     		definitionTree = definition.getDefinition();
