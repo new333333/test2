@@ -64,6 +64,7 @@ import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeAddNewFolderEvent;
+import org.kablink.teaming.gwt.client.event.InvokeDownloadDesktopAppEvent;
 import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
@@ -79,6 +80,7 @@ import org.kablink.teaming.gwt.client.event.SearchRecentPlaceEvent;
 import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
 import org.kablink.teaming.gwt.client.event.SearchSimpleEvent;
 import org.kablink.teaming.gwt.client.event.SearchTagEvent;
+import org.kablink.teaming.gwt.client.event.SetDesktopDownloadAppControlVisibilityEvent;
 import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -143,12 +145,14 @@ import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadControl;
 import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadControl.DesktopAppDownloadControlClient;
+import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadControlCookies.Cookie;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
 import org.kablink.teaming.gwt.client.widgets.LoginDlg;
 import org.kablink.teaming.gwt.client.widgets.LoginDlg.LoginDlgClient;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl.MainMenuControlClient;
+import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadControlCookies;
 import org.kablink.teaming.gwt.client.widgets.MastHead;
 import org.kablink.teaming.gwt.client.widgets.PersonalPreferencesDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
@@ -205,6 +209,7 @@ public class GwtMainPage extends ResizeComposite
 		GotoMyWorkspaceEvent.Handler,
 		GotoPermalinkUrlEvent.Handler,
 		InvokeAddNewFolderEvent.Handler,
+		InvokeDownloadDesktopAppEvent.Handler,
 		InvokeHelpEvent.Handler,
 		InvokeSimpleProfileEvent.Handler,
 		InvokeShareBinderEvent.Handler,
@@ -219,6 +224,7 @@ public class GwtMainPage extends ResizeComposite
 		SearchSavedEvent.Handler,
 		SearchSimpleEvent.Handler,
 		SearchTagEvent.Handler,
+		SetDesktopDownloadAppControlVisibilityEvent.Handler,
 		ShowCollectionEvent.Handler,
 		ShowContentControlEvent.Handler,
 		SidebarHideEvent.Handler,
@@ -231,14 +237,10 @@ public class GwtMainPage extends ResizeComposite
 		ViewResourceLibraryEvent.Handler,
 		ViewTeamingFeedEvent.Handler
 {
-	private final static boolean SHOW_DESKTOP_APP_DOWNLOADER	= false;	//! DRF:  Leave false on checkin until get this all working.
-	
 	public static boolean m_novellTeaming = true;
 	public static RequestInfo m_requestInfo = jsGetRequestInfo();;
 	public static ContentControl m_contentCtrl;
 
-	private boolean	m_desktopAppEnabled;
-	private boolean	m_showDesktopAppDownloader;
 	private boolean m_controlKeyDown;
 	private AddNewFolderDlg m_addNewFolderDlg = null;
 	private VibeDockLayoutPanel m_mainPanel = null;
@@ -260,11 +262,11 @@ public class GwtMainPage extends ResizeComposite
 	private MastHead m_mastHead;
 	private AdminControl m_adminControl = null;
 	private BreadcrumbTreePopup m_breadCrumbBrowser;
-	private BinderInfo m_selectedBinderInfo;
 	private WorkspaceTreeControl m_wsTreeCtrl;
 	private UIStateManager m_uiStateManager;
 	private ActivityStreamCtrl m_activityStreamCtrl = null;
 	private CollectionPointData m_collectionPointData = null;
+	private MainPageInfoRpcResponseData m_mainPageInfo;
 
 	private com.google.gwt.dom.client.Element m_tagPanelElement;
 
@@ -305,6 +307,7 @@ public class GwtMainPage extends ResizeComposite
 
 		// Invoke events.
 		TeamingEvents.INVOKE_ADD_NEW_FOLDER,
+		TeamingEvents.INVOKE_DOWNLOAD_DESKTOP_APP,
 		TeamingEvents.INVOKE_HELP,
 		TeamingEvents.INVOKE_SIMPLE_PROFILE,
 		
@@ -347,6 +350,9 @@ public class GwtMainPage extends ResizeComposite
 		TeamingEvents.VIEW_CURRENT_BINDER_TEAM_MEMBERS,
 		TeamingEvents.VIEW_RESOURCE_LIBRARY,
 		TeamingEvents.VIEW_TEAMING_FEED,
+		
+		// Set events.
+		TeamingEvents.SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY,
 	};
 	
 	/*
@@ -402,19 +408,28 @@ public class GwtMainPage extends ResizeComposite
 			public void onSuccess( VibeRpcResponse response )
 			{
 				// Store the BinderInfo...
-				MainPageInfoRpcResponseData responseData = ((MainPageInfoRpcResponseData) response.getResponseData());
-				m_selectedBinderInfo = responseData.getBinderInfo();
+				m_mainPageInfo = ((MainPageInfoRpcResponseData) response.getResponseData());
 
 				// ...the user's avatar URL from the response...
-				String userAvatarUrl = responseData.getUserAvatarUrl();
+				String userAvatarUrl = m_mainPageInfo.getUserAvatarUrl();
 				m_requestInfo.setUserAvatarUrl( ( null == userAvatarUrl ) ? "" : userAvatarUrl );
 				
-				if ( SHOW_DESKTOP_APP_DOWNLOADER )
+				if ( ! ( DesktopAppDownloadControl.SHOW_DESKTOP_APP_DOWNLOADER ) )
 				{
 					// ...and what we know about desktop application
 					// ...deployment from the response...
-					m_desktopAppEnabled        = responseData.isDesktopAppEnabled();
-					m_showDesktopAppDownloader = responseData.isShowDesktopAppDownloader();
+					m_mainPageInfo.setDesktopAppEnabled(       false);
+					m_mainPageInfo.setShowDesktopAppDownloader(false);
+				}
+				else
+				{
+					if ( m_mainPageInfo.isShowDesktopAppDownloader() )
+					{
+						m_mainPageInfo.setShowDesktopAppDownloader(
+							DesktopAppDownloadControlCookies.getBooleanCookieValue(
+								Cookie.HINT_VISIBLE,
+								true));
+					}
 				}
 				
 				// ...and continue the load process.
@@ -470,7 +485,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void loadWorkspaceTreeControl()
 	{
-		WorkspaceTreeControl.createAsync( this, m_selectedBinderInfo, false, TreeMode.VERTICAL, new WorkspaceTreeControlClient()
+		WorkspaceTreeControl.createAsync( this, m_mainPageInfo.getBinderInfo(), false, TreeMode.VERTICAL, new WorkspaceTreeControlClient()
 		{			
 			@Override
 			public void onUnavailable()
@@ -564,7 +579,7 @@ public class GwtMainPage extends ResizeComposite
 					@Override
 					public void execute()
 					{
-						if ( m_showDesktopAppDownloader )
+						if ( m_mainPageInfo.isShowDesktopAppDownloader() )
 						     loadDesktopAppDownloadCtrl();
 						else constructMainPage_Finish();
 					}// end execute()
@@ -580,7 +595,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void loadDesktopAppDownloadCtrl()
 	{
-		DesktopAppDownloadControl.createAsync( this, new DesktopAppDownloadControlClient()
+		DesktopAppDownloadControl.createAsync( new DesktopAppDownloadControlClient()
 		{			
 			@Override
 			public void onUnavailable()
@@ -882,6 +897,17 @@ public class GwtMainPage extends ResizeComposite
 	{
 		return m_mainMenuCtrl;
 	}//end getMainMenu()
+
+	/**
+	 * Returns the main page information object associated with this
+	 * GwtMainPage instance.
+	 * 
+	 * @return
+	 */
+	public MainPageInfoRpcResponseData getMainPageInfo()
+	{
+		return m_mainPageInfo;
+	}// end getMainPageInfo()
 
 	/**
 	 * Returns any current search tab ID.
@@ -1236,7 +1262,7 @@ public class GwtMainPage extends ResizeComposite
 			// No, we weren't given the ID of the context loaded!
 			// Treat it as though the current context was reloaded.
 			contextLoaded(
-				m_selectedBinderInfo,
+				m_mainPageInfo.getBinderInfo(),
 				instigator,
 				inSearch,
 				searchTabId );
@@ -1352,7 +1378,7 @@ public class GwtMainPage extends ResizeComposite
 		{
 			// Yes, start with empty branding data.
 			brandingDataIn = new GwtBrandingData();
-			brandingDataIn.setBinderId( m_selectedBinderInfo.getBinderId() );
+			brandingDataIn.setBinderId( m_mainPageInfo.getBinderInfo().getBinderId() );
 		}
 		
 		final GwtBrandingData brandingData = brandingDataIn;
@@ -2126,7 +2152,7 @@ public class GwtMainPage extends ResizeComposite
 		
 		WorkspaceTreeControl.createAsync(
 				this,
-				m_selectedBinderInfo,
+				m_mainPageInfo.getBinderInfo(),
 				false,
 				TreeMode.HORIZONTAL_POPUP,
 				new WorkspaceTreeControlClient() {				
@@ -2227,7 +2253,7 @@ public class GwtMainPage extends ResizeComposite
 		if (GwtClientHelper.validateOSBI( osbInfo ))
 		{
 			// ...put it into effect.
-			m_selectedBinderInfo = osbInfo.getBinderInfo();			
+			m_mainPageInfo.setBinderInfo(osbInfo.getBinderInfo());			
 		}
 	}// end onContextChanged()
 	
@@ -2541,6 +2567,20 @@ public class GwtMainPage extends ResizeComposite
 	}// end onInvokeAddNewFolder()
 	
 	/**
+	 * Handles InvokeDownloadDesktopAppEvent's received by this class.
+	 * 
+	 * Implements the InvokeDownloadDesktopAppEvent.Handler.onInvokeDownloadDesktopApp() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeDownloadDesktopApp( InvokeDownloadDesktopAppEvent event )
+	{
+//!		...this needs to be implemented...
+		GwtClientHelper.deferredAlert( "GwtMainPage.onInvokeDownloadDesktopApp():  ...this needs to be implemented..." );
+	}// end onInvokeDownloadDesktopApp()
+	
+	/**
 	 * Handles InvokeHelpEvent's received by this class.
 	 * 
 	 * Implements the InvokeHelpEvent.Handler.onInvokeHelp() method.
@@ -2851,7 +2891,7 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onSearchAdvanced( SearchAdvancedEvent event )
 	{
-		String searchUrl = ( m_requestInfo.getAdvancedSearchUrl() + "&binderId=" + m_selectedBinderInfo.getBinderId() );
+		String searchUrl = ( m_requestInfo.getAdvancedSearchUrl() + "&binderId=" + m_mainPageInfo.getBinderInfo().getBinderId() );
 		gotoUrlAsync( searchUrl );
 	}// end onSearchAdvanced()
 	
@@ -2981,6 +3021,37 @@ public class GwtMainPage extends ResizeComposite
 		String searchUrl = GwtClientHelper.jsBuildTagSearchUrl( tagName );
 		gotoUrlAsync( searchUrl );
 	}// end onSearchTag()
+	
+	
+	/**
+	 * Handles SetDesktopDownloadAppControlVisibilityEvent's received by this class.
+	 * 
+	 * Implements the SetDesktopDownloadAppControlVisibilityEvent.Handler.onSetDesktopDownloadAppControlVisibility() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSetDesktopDownloadAppControlVisibility( SetDesktopDownloadAppControlVisibilityEvent event )
+	{
+		// Is the desktop application downloading enabled?
+		if ( m_mainPageInfo.isDesktopAppEnabled() )
+		{
+			// Yes!  Set the state of the control in the main page
+			// information block...
+			boolean visible = event.isVisible();
+			m_mainPageInfo.setShowDesktopAppDownloader( visible );
+			
+			// ...and if we have a desktop application download
+			// ...control...
+			if ( null != m_dadCtrl ) {
+				// ...set its visibility and re-layout the page.
+				m_splitLayoutPanel.setWidgetHidden( m_dadCtrl, (!visible) );
+				m_splitLayoutPanel.forceLayout();
+				
+				onResize();
+			}
+		}
+	}// end onSetDesktopDownloadAppControlVisibility()
 	
 	
 	/**
@@ -3115,7 +3186,7 @@ public class GwtMainPage extends ResizeComposite
 		
 		forceUIReload = event.getForceUIReload();
 		
-		cmd = new TrackBinderCmd( m_selectedBinderInfo.getBinderId() );
+		cmd = new TrackBinderCmd( m_mainPageInfo.getBinderInfo().getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -3124,7 +3195,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_TrackingBinder(),
-					m_selectedBinderInfo.getBinderId() );
+					m_mainPageInfo.getBinderInfo().getBinderId() );
 			}//end onFailure()
 			
 			@Override
@@ -3166,7 +3237,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		UntrackBinderCmd cmd;
 		
-		cmd = new UntrackBinderCmd( m_selectedBinderInfo.getBinderId() );
+		cmd = new UntrackBinderCmd( m_mainPageInfo.getBinderInfo().getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -3175,7 +3246,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_UntrackingBinder(),
-					m_selectedBinderInfo.getBinderId() );
+					m_mainPageInfo.getBinderInfo().getBinderId() );
 			}//end onFailure()
 			
 			@Override
@@ -3202,7 +3273,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		GetBinderPermalinkCmd cmd;
 		
-		cmd = new GetBinderPermalinkCmd( m_selectedBinderInfo.getBinderId() );
+		cmd = new GetBinderPermalinkCmd( m_mainPageInfo.getBinderInfo().getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -3210,7 +3281,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
-					m_selectedBinderInfo.getBinderId() );
+					m_mainPageInfo.getBinderInfo().getBinderId() );
 			}//end onFailure()
 			
 			@Override
@@ -3223,7 +3294,7 @@ public class GwtMainPage extends ResizeComposite
 				binderUrl = responseData.getStringValue();
 				
 				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-					m_selectedBinderInfo,
+					m_mainPageInfo.getBinderInfo(),
 					binderUrl,
 					Instigator.VIEW_TEAM_MEMBERS );
 				if ( GwtClientHelper.validateOSBI( osbInfo ) )
@@ -3275,7 +3346,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		UntrackPersonCmd cmd;
 		
-		cmd = new UntrackPersonCmd( m_selectedBinderInfo.getBinderId() );
+		cmd = new UntrackPersonCmd( m_mainPageInfo.getBinderInfo().getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -3284,7 +3355,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_TrackingPerson(),
-					m_selectedBinderInfo.getBinderId() );
+					m_mainPageInfo.getBinderInfo().getBinderId() );
 			}//end onFailure()
 			
 			@Override

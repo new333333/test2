@@ -8144,6 +8144,7 @@ public class GwtServerHelper {
 		case SAVE_SEARCH:
 		case SAVE_TAG_SORT_ORDER:
 		case SAVE_WHATS_NEW_SETTINGS:
+		case SET_DESKTOP_APP_DOWNLOAD_VISIBILITY:
 		case SET_ENTRIES_PIN_STATE:
 		case SET_SEEN:
 		case SET_UNSEEN:
@@ -8695,6 +8696,21 @@ public class GwtServerHelper {
 		setting = new Integer( showSetting.ordinal() );
 		profileModule.setUserProperty( null, ObjectKeys.USER_PROPERTY_WHATS_NEW_SHOW_SETTING , setting );
 		
+		return Boolean.TRUE;
+	}
+
+	/**
+	 * Sets the visibility state of the desktop application download
+	 * control for the current user.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param visible
+	 * 
+	 * @return
+	 */
+	public static Boolean setDesktopAppDownloadVisibility(AllModulesInjected bs, HttpServletRequest request, boolean visible) {
+		bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_SHOW_DESKTOP_APP_DOWNLOAD, String.valueOf(visible));
 		return Boolean.TRUE;
 	}
 	

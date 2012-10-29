@@ -483,6 +483,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveUserAccessConfig();
 	String rpcFailure_SaveWhatsNewShowSetting();
 	String rpcFailure_Search();
+	String rpcFailure_SetDesktopAppDownloadVisibility();
 	String rpcFailure_SetEntriesPinState();
 	String rpcFailure_SetSeen();
 	String rpcFailure_SetStatus();
@@ -629,6 +630,8 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used with the MastHead
 	String adminMenuItem();
 	String administrationHint();
+	String downloadFilrDesktopApp();
+	String downloadVibeDesktopApp();
 	String guest();
 	String helpMenuItem();
 	String helpHint();
@@ -2043,5 +2046,11 @@ public interface GwtTeamingMessages extends Messages
 	// String used in the Configure Adhoc Folders dialog
 	String configureAdhocFoldersDlg_AllowAdhocFoldersLabel();
 	String configureAdhocFoldersDlg_Header();
+	
+	// String used in the desktop application download control.
+	String desktopAppDownload_Alt_HideForSession();
+	String desktopAppDownload_DontShowAgain();
+	String desktopAppDownload_Hint_Filr();
+	String desktopAppDownload_Hint_Vibe();
 	
 }// end GwtTeamingMessages
