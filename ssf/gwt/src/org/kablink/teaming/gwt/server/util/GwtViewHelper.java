@@ -161,6 +161,7 @@ import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -3461,10 +3462,19 @@ public class GwtViewHelper {
 			options.put(ObjectKeys.SEARCH_OFFSET,   start );
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 
-			// For the profiles root binder in Filr...
-			if (isProfilesRootWS && Utils.checkIfFilr()) {
-				// ...we eliminate the non-person users.
-				options.put(ObjectKeys.SEARCH_IS_PERSON, Boolean.TRUE);
+			// Are we populating the profiles root binder?
+			if (isProfilesRootWS) {
+				// Yes!  Are we in Filr mode?
+				if (Utils.checkIfFilr()) {
+					// Yes!  Eliminate the non-person users.
+					options.put(ObjectKeys.SEARCH_IS_PERSON, Boolean.TRUE);
+				}
+
+				// Is the current user a site administrator?
+				if (!(bs.getAdminModule().testAccess(AdminOperation.manageFunction))) {
+					// No!  Eliminate external users.
+					options.put(ObjectKeys.SEARCH_IS_INTERNAL, Boolean.TRUE);
+				}
 			}
 
 			// Factor in the user's sorting selection.

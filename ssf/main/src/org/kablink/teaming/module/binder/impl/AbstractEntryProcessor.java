@@ -1404,6 +1404,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
 
+           	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_IS_INTERNAL) && 
+           			(Boolean)options.get(ObjectKeys.SEARCH_IS_INTERNAL)) {
+           		SearchFilter searchTermFilter = new SearchFilter();
+           		searchTermFilter.addAndInternalFilter( Boolean.TRUE );
+               	searchFilter.appendFilter(searchTermFilter.getFilter());
+           	}
+
         	if ((options != null) && options.containsKey(ObjectKeys.FOLDER_MODE_TYPE)) {
         		ListFolderHelper.ModeType mode = ((ListFolderHelper.ModeType) options.get(ObjectKeys.FOLDER_MODE_TYPE));
         		if ((null != mode) && (ListFolderHelper.ModeType.VIRTUAL == mode)) {
