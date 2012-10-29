@@ -85,6 +85,7 @@ import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NotificationDef;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
@@ -2183,7 +2184,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 		}
 		ws.clear();
-		// get workspaces
+		// get workspaces and profiles binder
 		for (int i = 0; i < searchBinders.size(); ++i) {
 			Map search = (Map) searchBinders.get(i);
 			String entityType = (String) search.get(Constants.ENTITY_FIELD);
@@ -2192,6 +2193,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				try {
 					Long id = Long.valueOf(sId);
 					Object obj = getCoreDao().load(Workspace.class, id);
+					if (obj != null)
+						ws.add(obj);
+				} catch (Exception ex) {
+					continue;
+				}
+			} else if (EntityType.profiles.name().equals(entityType)) {
+				String sId = (String) search.get(Constants.DOCID_FIELD);
+				try {
+					Long id = Long.valueOf(sId);
+					Object obj = getCoreDao().load(ProfileBinder.class, id);
 					if (obj != null)
 						ws.add(obj);
 				} catch (Exception ex) {
