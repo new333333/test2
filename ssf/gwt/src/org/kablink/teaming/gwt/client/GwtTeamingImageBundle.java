@@ -657,6 +657,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource userActionsPanel_Admin();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/icon_download_Vibe_header_b.png")
+	public ImageResource userActionsPanel_DownloadDesktopApp();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Masthead/help_2.png")
 	public ImageResource userActionsPanel_Help();
 

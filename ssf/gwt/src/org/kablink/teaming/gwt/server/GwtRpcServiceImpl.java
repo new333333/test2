@@ -2541,6 +2541,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case SET_DESKTOP_APP_DOWNLOAD_VISIBILITY:
+		{
+			SetDesktopAppDownloadVisibilityCmd sdadvCmd = ((SetDesktopAppDownloadVisibilityCmd) cmd);
+			Boolean result = GwtServerHelper.setDesktopAppDownloadVisibility( this, getRequest( ri ), sdadvCmd.isVisible() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case SET_ENTRIES_PIN_STATE:
 		{
 			SetEntriesPinStateCmd sepsCmd = ((SetEntriesPinStateCmd) cmd);

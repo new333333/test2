@@ -32,12 +32,23 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.SetDesktopDownloadAppControlVisibilityEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.SetDesktopAppDownloadVisibilityCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadControlCookies.Cookie;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 
 /**
@@ -46,8 +57,11 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * @author drfoster@novell.com
  */
 public class DesktopAppDownloadControl extends ResizeComposite {
-	private GwtMainPage		m_mainPage;		//
-	private VibeFlowPanel	m_mainPanel;	//
+	public final static boolean SHOW_DESKTOP_APP_DOWNLOADER	= false;	//! DRF:  Leave false on checkin until I get this all working.
+	
+	private GwtTeamingImageBundle	m_images;		// Access to Vibe's images.
+	private GwtTeamingMessages		m_messages;		// Access to the GWT localized string resource.
+	private VibeFlowPanel			m_mainPanel;	// Panel containing the main content of the control.
 	
 	/*
 	 * Constructor method.
@@ -56,21 +70,91 @@ public class DesktopAppDownloadControl extends ResizeComposite {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private DesktopAppDownloadControl(GwtMainPage mainPage) {
+	private DesktopAppDownloadControl() {
 		// Initialize the super class...
 		super();
-
-		// ...store the parameter...
-		m_mainPage = mainPage;
+		
+		// ...initialize the data members that require it...
+		m_images   = GwtTeaming.getImageBundle();
+		m_messages = GwtTeaming.getMessages();
 
 		// ...create the panel to hold the control's content...
 		m_mainPanel = new VibeFlowPanel();
-		m_mainPanel.addStyleName("vibe-desktopAppDownloadControl");
-		
-//!		...this needs to be implemented...
+		m_mainPanel.addStyleName("vibe-desktopAppDownload-control");
+
+		// ...create the content itself...
+		createContent();
 
 		// Finally, tell the composite that we're good to go.
 		initWidget(m_mainPanel);
+	}
+
+	/*
+	 * Creates the content for the desktop application download
+	 * control.
+	 */
+	private void createContent() {
+		// Add the main hint panel...
+		VibeFlowPanel fp = new VibeFlowPanel();
+		fp.addStyleName("vibe-desktopAppDownload-hintPanel");
+		m_mainPanel.add(fp);
+		InlineLabel il = new InlineLabel(GwtClientHelper.isLicenseFilr() ? m_messages.desktopAppDownload_Hint_Filr() : m_messages.desktopAppDownload_Hint_Vibe());
+		il.addStyleName("vibe-desktopAppDownload-hintLabel");
+		fp.add(il);
+
+		// ...add the 'Don't Show Again' panel...
+		fp = new VibeFlowPanel();
+		fp.addStyleName("vibe-desktopAppDownload-dontShowPanel");
+		m_mainPanel.add(fp);
+		il = new InlineLabel(m_messages.desktopAppDownload_DontShowAgain());
+		il.addStyleName("vibe-desktopAppDownload-dontShowLabel");
+		fp.add(il);
+		il.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				// Store the visibility setting in the user's
+				// properties...
+				SetDesktopAppDownloadVisibilityCmd cmd = new SetDesktopAppDownloadVisibilityCmd(false);
+				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						GwtClientHelper.handleGwtRPCFailure(
+							caught,
+							m_messages.rpcFailure_SetDesktopAppDownloadVisibility());
+					}
+
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						// ...and hide the control.
+						GwtTeaming.fireEventAsync(
+							new SetDesktopDownloadAppControlVisibilityEvent(
+								false));
+					}
+				});
+			}
+		});
+		
+		// ...and add the 'Hide for Session' panel...
+		fp = new VibeFlowPanel();
+		fp.addStyleName("vibe-desktopAppDownload-closePanel");
+		m_mainPanel.add(fp);
+		Image i = GwtClientHelper.buildImage(m_images.closeBorder().getSafeUri().asString(), m_messages.desktopAppDownload_Alt_HideForSession());
+		i.addStyleName("vibe-desktopAppDownload-closeImg");
+		fp.add(i);
+		i.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				// Store the visibility setting as a cookie...
+				DesktopAppDownloadControlCookies.setBooleanCookieValue(
+					Cookie.HINT_VISIBLE,
+					false);
+				
+				// ...and hide the control.
+				GwtTeaming.fireEventAsync(
+					new SetDesktopDownloadAppControlVisibilityEvent(
+						false));
+			}
+		});
 	}
 	
 	
@@ -93,7 +177,7 @@ public class DesktopAppDownloadControl extends ResizeComposite {
 	 * Asynchronously creates a DesktopAppDownloadControl via its split
 	 * point.
 	 */
-	public static void createAsync(final GwtMainPage mainPage, final DesktopAppDownloadControlClient dadControlClient) {
+	public static void createAsync(final DesktopAppDownloadControlClient dadControlClient) {
 		GWT.runAsync(DesktopAppDownloadControl.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -106,7 +190,7 @@ public class DesktopAppDownloadControl extends ResizeComposite {
 			@Override
 			public void onSuccess() {
 				// Create the control and return it via the callback.
-				DesktopAppDownloadControl dadControl = new DesktopAppDownloadControl(mainPage);
+				DesktopAppDownloadControl dadControl = new DesktopAppDownloadControl();
 				dadControlClient.onSuccess(dadControl);
 			}
 		});

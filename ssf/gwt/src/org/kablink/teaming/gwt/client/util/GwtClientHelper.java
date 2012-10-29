@@ -504,6 +504,20 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Returns 12:00 AM tomorrow morning.
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("deprecation")
+	public static Date getTomorrow() {
+		Date reply = new Date();
+		reply.setHours(  24);
+		reply.setMinutes( 0);
+		reply.setSeconds( 0);
+		return reply;
+	}
+	
+	/**
 	 * Converts an Element to a UIObject.
 	 * 
 	 * @param e

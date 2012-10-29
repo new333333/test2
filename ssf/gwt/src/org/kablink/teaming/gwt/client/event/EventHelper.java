@@ -91,6 +91,7 @@ public class EventHelper {
 		case INVOKE_CONFIGURE_COLUMNS:				reply = new InvokeConfigureColumnsEvent();        break;
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	reply = new InvokeConfigureFileSyncAppDlgEvent(); break;
 		case INVOKE_CONFIGURE_USER_ACCESS_DLG:		reply = new InvokeConfigureUserAccessDlgEvent();  break;
+		case INVOKE_DOWNLOAD_DESKTOP_APP:           reply = new InvokeDownloadDesktopAppEvent();      break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
 		case INVOKE_MANAGE_NET_FOLDERS_DLG:			reply = new InvokeManageNetFoldersDlgEvent();	  break;
@@ -871,6 +872,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case INVOKE_DOWNLOAD_DESKTOP_APP:
+				// An InvokeDownloadDesktopAppEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof InvokeDownloadDesktopAppEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeDownloadDesktopAppEvent.registerEvent(eventBus, ((InvokeDownloadDesktopAppEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case INVOKE_DROPBOX:
 				// An InvokeDropBoxEvent!  Can the event handler we
 				// were given handle that?
@@ -1331,6 +1341,15 @@ public class EventHelper {
 				if (eventHandler instanceof SearchTagEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = SearchTagEvent.registerEvent(eventBus, ((SearchTagEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY:
+				// A SetDesktopDownloadAppControlVisibilityEvent!  Can
+				// the event handler we were given handle that?
+				if (eventHandler instanceof SetDesktopDownloadAppControlVisibilityEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SetDesktopDownloadAppControlVisibilityEvent.registerEvent(eventBus, ((SetDesktopDownloadAppControlVisibilityEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -2058,224 +2077,226 @@ public class EventHelper {
 			boolean needsHandler = isTEInA(te, eventsToCheck);
 			boolean hasHandler   = false;
 			switch (te) {
-			case ACTIVITY_STREAM:                   	hasHandler = (eventHandler instanceof ActivityStreamEvent.Handler);                break;
-			case ACTIVITY_STREAM_ENTER:             	hasHandler = (eventHandler instanceof ActivityStreamEnterEvent.Handler);           break;
-			case ACTIVITY_STREAM_EXIT:              	hasHandler = (eventHandler instanceof ActivityStreamExitEvent.Handler);            break;
+			case ACTIVITY_STREAM:                   	       hasHandler = (eventHandler instanceof ActivityStreamEvent.Handler);                         break;
+			case ACTIVITY_STREAM_ENTER:             	       hasHandler = (eventHandler instanceof ActivityStreamEnterEvent.Handler);                    break;
+			case ACTIVITY_STREAM_EXIT:              	       hasHandler = (eventHandler instanceof ActivityStreamExitEvent.Handler);                     break;
 			
-			case ADMINISTRATION:                    	hasHandler = (eventHandler instanceof AdministrationEvent.Handler);                break;
-			case ADMINISTRATION_EXIT:               	hasHandler = (eventHandler instanceof AdministrationExitEvent.Handler);            break;
-			case ADMINISTRATION_UPGRADE_CHECK:      	hasHandler = (eventHandler instanceof AdministrationUpgradeCheckEvent.Handler);    break;
+			case ADMINISTRATION:                    	       hasHandler = (eventHandler instanceof AdministrationEvent.Handler);                         break;
+			case ADMINISTRATION_EXIT:               	       hasHandler = (eventHandler instanceof AdministrationExitEvent.Handler);                     break;
+			case ADMINISTRATION_UPGRADE_CHECK:      	       hasHandler = (eventHandler instanceof AdministrationUpgradeCheckEvent.Handler);             break;
 
-			case BLOG_ARCHIVE_FOLDER_SELECTED:          hasHandler = (eventHandler instanceof BlogArchiveFolderSelectedEvent.Handler);     break;
-			case BLOG_ARCHIVE_MONTH_SELECTED:           hasHandler = (eventHandler instanceof BlogArchiveMonthSelectedEvent.Handler);      break;
-			case BLOG_GLOBAL_TAG_SELECTED:           	hasHandler = (eventHandler instanceof BlogGlobalTagSelectedEvent.Handler);         break;
-			case BLOG_PAGE_CREATED:           			hasHandler = (eventHandler instanceof BlogPageCreatedEvent.Handler);         	   break;
-			case BLOG_PAGE_SELECTED:           			hasHandler = (eventHandler instanceof BlogPageSelectedEvent.Handler);         	   break;
+			case BLOG_ARCHIVE_FOLDER_SELECTED:                 hasHandler = (eventHandler instanceof BlogArchiveFolderSelectedEvent.Handler);              break;
+			case BLOG_ARCHIVE_MONTH_SELECTED:                  hasHandler = (eventHandler instanceof BlogArchiveMonthSelectedEvent.Handler);               break;
+			case BLOG_GLOBAL_TAG_SELECTED:           	       hasHandler = (eventHandler instanceof BlogGlobalTagSelectedEvent.Handler);                  break;
+			case BLOG_PAGE_CREATED:           			       hasHandler = (eventHandler instanceof BlogPageCreatedEvent.Handler);         	           break;
+			case BLOG_PAGE_SELECTED:           			       hasHandler = (eventHandler instanceof BlogPageSelectedEvent.Handler);         	           break;
 
-			case BROWSE_HIERARCHY:                  	hasHandler = (eventHandler instanceof BrowseHierarchyEvent.Handler);               break;
-			case BROWSE_HIERARCHY_EXIT:             	hasHandler = (eventHandler instanceof BrowseHierarchyExitEvent.Handler);           break;
+			case BROWSE_HIERARCHY:                  	       hasHandler = (eventHandler instanceof BrowseHierarchyEvent.Handler);                        break;
+			case BROWSE_HIERARCHY_EXIT:             	       hasHandler = (eventHandler instanceof BrowseHierarchyExitEvent.Handler);                    break;
 			
-			case CALENDAR_CHANGED:                      hasHandler = (eventHandler instanceof CalendarChangedEvent.Handler);               break;
-			case CALENDAR_GOTO_DATE:                    hasHandler = (eventHandler instanceof CalendarGotoDateEvent.Handler);              break;
-			case CALENDAR_HOURS:                        hasHandler = (eventHandler instanceof CalendarHoursEvent.Handler);                 break;
-			case CALENDAR_NEXT_PERIOD:                  hasHandler = (eventHandler instanceof CalendarNextPeriodEvent.Handler);            break;
-			case CALENDAR_PREVIOUS_PERIOD:              hasHandler = (eventHandler instanceof CalendarPreviousPeriodEvent.Handler);        break;
-			case CALENDAR_SETTINGS:                     hasHandler = (eventHandler instanceof CalendarSettingsEvent.Handler);              break;
-			case CALENDAR_SHOW:                         hasHandler = (eventHandler instanceof CalendarShowEvent.Handler);                  break;
-			case CALENDAR_VIEW_DAYS:                    hasHandler = (eventHandler instanceof CalendarViewDaysEvent.Handler);              break;
+			case CALENDAR_CHANGED:                             hasHandler = (eventHandler instanceof CalendarChangedEvent.Handler);                        break;
+			case CALENDAR_GOTO_DATE:                           hasHandler = (eventHandler instanceof CalendarGotoDateEvent.Handler);                       break;
+			case CALENDAR_HOURS:                               hasHandler = (eventHandler instanceof CalendarHoursEvent.Handler);                          break;
+			case CALENDAR_NEXT_PERIOD:                         hasHandler = (eventHandler instanceof CalendarNextPeriodEvent.Handler);                     break;
+			case CALENDAR_PREVIOUS_PERIOD:                     hasHandler = (eventHandler instanceof CalendarPreviousPeriodEvent.Handler);                 break;
+			case CALENDAR_SETTINGS:                            hasHandler = (eventHandler instanceof CalendarSettingsEvent.Handler);                       break;
+			case CALENDAR_SHOW:                                hasHandler = (eventHandler instanceof CalendarShowEvent.Handler);                           break;
+			case CALENDAR_VIEW_DAYS:                           hasHandler = (eventHandler instanceof CalendarViewDaysEvent.Handler);                       break;
 			
-			case CHANGE_CONTEXT:                    	hasHandler = (eventHandler instanceof ChangeContextEvent.Handler);                 break;
-			case CONTENT_CHANGED:                   	hasHandler = (eventHandler instanceof ContentChangedEvent.Handler);                break;
-			case CONTEXT_CHANGED:                   	hasHandler = (eventHandler instanceof ContextChangedEvent.Handler);                break;
-			case CONTEXT_CHANGING:                  	hasHandler = (eventHandler instanceof ContextChangingEvent.Handler);               break;
+			case CHANGE_CONTEXT:                    	       hasHandler = (eventHandler instanceof ChangeContextEvent.Handler);                          break;
+			case CONTENT_CHANGED:                   	       hasHandler = (eventHandler instanceof ContentChangedEvent.Handler);                         break;
+			case CONTEXT_CHANGED:                   	       hasHandler = (eventHandler instanceof ContextChangedEvent.Handler);                         break;
+			case CONTEXT_CHANGING:                  	       hasHandler = (eventHandler instanceof ContextChangingEvent.Handler);                        break;
 			
-			case CONTRIBUTOR_IDS_REPLY:                 hasHandler = (eventHandler instanceof ContributorIdsReplyEvent.Handler);           break;
-			case CONTRIBUTOR_IDS_REQUEST:               hasHandler = (eventHandler instanceof ContributorIdsRequestEvent.Handler);         break;
+			case CONTRIBUTOR_IDS_REPLY:                        hasHandler = (eventHandler instanceof ContributorIdsReplyEvent.Handler);                    break;
+			case CONTRIBUTOR_IDS_REQUEST:                      hasHandler = (eventHandler instanceof ContributorIdsRequestEvent.Handler);                  break;
 			
-			case DELETE_ENTRY:                   		hasHandler = (eventHandler instanceof DeleteEntryEvent.Handler);                   break;
+			case DELETE_ENTRY:                   		       hasHandler = (eventHandler instanceof DeleteEntryEvent.Handler);                            break;
 
-			case EDIT_CURRENT_BINDER_BRANDING:      	hasHandler = (eventHandler instanceof EditCurrentBinderBrandingEvent.Handler);     break;
-			case EDIT_PERSONAL_PREFERENCES:         	hasHandler = (eventHandler instanceof EditPersonalPreferencesEvent.Handler);       break;
-			case EDIT_SITE_BRANDING:                	hasHandler = (eventHandler instanceof EditSiteBrandingEvent.Handler);              break;
+			case EDIT_CURRENT_BINDER_BRANDING:      	       hasHandler = (eventHandler instanceof EditCurrentBinderBrandingEvent.Handler);              break;
+			case EDIT_PERSONAL_PREFERENCES:         	       hasHandler = (eventHandler instanceof EditPersonalPreferencesEvent.Handler);                break;
+			case EDIT_SITE_BRANDING:                	       hasHandler = (eventHandler instanceof EditSiteBrandingEvent.Handler);                       break;
 			
-			case EDIT_LANDING_PAGE_PROPERTIES:      	hasHandler = (eventHandler instanceof EditLandingPagePropertiesEvent.Handler);     break;
+			case EDIT_LANDING_PAGE_PROPERTIES:      	       hasHandler = (eventHandler instanceof EditLandingPagePropertiesEvent.Handler);              break;
 			
-			case MASTHEAD_HIDE:                     	hasHandler = (eventHandler instanceof MastheadHideEvent.Handler);                  break;
-			case MASTHEAD_SHOW:                     	hasHandler = (eventHandler instanceof MastheadShowEvent.Handler);                  break;
+			case MASTHEAD_HIDE:                     	       hasHandler = (eventHandler instanceof MastheadHideEvent.Handler);                           break;
+			case MASTHEAD_SHOW:                     	       hasHandler = (eventHandler instanceof MastheadShowEvent.Handler);                           break;
 			
-			case GET_MANAGE_MENU_POPUP:                 hasHandler = (eventHandler instanceof GetManageMenuPopupEvent.Handler);            break;
-			case HIDE_MANAGE_MENU:						hasHandler = (eventHandler instanceof HideManageMenuEvent.Handler);		           break;
-			case MENU_HIDE:                     		hasHandler = (eventHandler instanceof MenuHideEvent.Handler);                 	   break;
-			case MENU_SHOW:                     		hasHandler = (eventHandler instanceof MenuShowEvent.Handler);                      break;
+			case GET_MANAGE_MENU_POPUP:                        hasHandler = (eventHandler instanceof GetManageMenuPopupEvent.Handler);                     break;
+			case HIDE_MANAGE_MENU:						       hasHandler = (eventHandler instanceof HideManageMenuEvent.Handler);		                   break;
+			case MENU_HIDE:                     		       hasHandler = (eventHandler instanceof MenuHideEvent.Handler);                 	           break;
+			case MENU_SHOW:                     		       hasHandler = (eventHandler instanceof MenuShowEvent.Handler);                               break;
 
-			case FILES_DROPPED:                    	    hasHandler = (eventHandler instanceof FilesDroppedEvent.Handler);                  break;
-			case FULL_UI_RELOAD:                    	hasHandler = (eventHandler instanceof FullUIReloadEvent.Handler);                  break;
+			case FILES_DROPPED:                    	           hasHandler = (eventHandler instanceof FilesDroppedEvent.Handler);                           break;
+			case FULL_UI_RELOAD:                    	       hasHandler = (eventHandler instanceof FullUIReloadEvent.Handler);                           break;
 			
-			case GOTO_CONTENT_URL:                  	hasHandler = (eventHandler instanceof GotoContentUrlEvent.Handler);                break;
-			case GOTO_MY_WORKSPACE:                 	hasHandler = (eventHandler instanceof GotoMyWorkspaceEvent.Handler);               break;
-			case GOTO_PERMALINK_URL:                	hasHandler = (eventHandler instanceof GotoPermalinkUrlEvent.Handler);              break;
-			case GOTO_URL:                  			hasHandler = (eventHandler instanceof GotoUrlEvent.Handler);                	   break;
+			case GOTO_CONTENT_URL:                  	       hasHandler = (eventHandler instanceof GotoContentUrlEvent.Handler);                         break;
+			case GOTO_MY_WORKSPACE:                 	       hasHandler = (eventHandler instanceof GotoMyWorkspaceEvent.Handler);                        break;
+			case GOTO_PERMALINK_URL:                	       hasHandler = (eventHandler instanceof GotoPermalinkUrlEvent.Handler);                       break;
+			case GOTO_URL:                  			       hasHandler = (eventHandler instanceof GotoUrlEvent.Handler);                	               break;
 						
-			case GROUP_CREATED:                			hasHandler = (eventHandler instanceof GroupCreatedEvent.Handler);             	   break;
-			case GROUP_CREATION_FAILED:       			hasHandler = (eventHandler instanceof GroupCreationFailedEvent.Handler);     	   break;
-			case GROUP_CREATION_STARTED:       			hasHandler = (eventHandler instanceof GroupCreationStartedEvent.Handler);     	   break;
-			case GROUP_MODIFICATION_FAILED:       		hasHandler = (eventHandler instanceof GroupModificationFailedEvent.Handler);       break;
-			case GROUP_MODIFICATION_STARTED:       		hasHandler = (eventHandler instanceof GroupModificationStartedEvent.Handler);      break;
-			case GROUP_MODIFIED:                		hasHandler = (eventHandler instanceof GroupModifiedEvent.Handler);             	   break;
+			case GROUP_CREATED:                			       hasHandler = (eventHandler instanceof GroupCreatedEvent.Handler);             	           break;
+			case GROUP_CREATION_FAILED:       			       hasHandler = (eventHandler instanceof GroupCreationFailedEvent.Handler);     	           break;
+			case GROUP_CREATION_STARTED:       			       hasHandler = (eventHandler instanceof GroupCreationStartedEvent.Handler);     	           break;
+			case GROUP_MODIFICATION_FAILED:       		       hasHandler = (eventHandler instanceof GroupModificationFailedEvent.Handler);                break;
+			case GROUP_MODIFICATION_STARTED:       		       hasHandler = (eventHandler instanceof GroupModificationStartedEvent.Handler);               break;
+			case GROUP_MODIFIED:                		       hasHandler = (eventHandler instanceof GroupModifiedEvent.Handler);             	           break;
 
-			case INVOKE_ABOUT:							hasHandler = (eventHandler instanceof InvokeAboutEvent.Handler);                   break;
-			case INVOKE_ADD_NEW_FOLDER:					hasHandler = (eventHandler instanceof InvokeAddNewFolderEvent.Handler);            break;
-			case INVOKE_CLIPBOARD:						hasHandler = (eventHandler instanceof InvokeClipboardEvent.Handler);               break;
-			case INVOKE_COLUMN_RESIZER:				    hasHandler = (eventHandler instanceof InvokeColumnResizerEvent.Handler);           break;
-			case INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG:	hasHandler = (eventHandler instanceof InvokeConfigureAdhocFoldersDlgEvent.Handler);break;
-			case INVOKE_CONFIGURE_COLUMNS:				hasHandler = (eventHandler instanceof InvokeConfigureColumnsEvent.Handler);        break;
-			case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	hasHandler = (eventHandler instanceof InvokeConfigureFileSyncAppDlgEvent.Handler); break;
-			case INVOKE_CONFIGURE_USER_ACCESS_DLG:		hasHandler = (eventHandler instanceof InvokeConfigureUserAccessDlgEvent.Handler);  break;
-			case INVOKE_DROPBOX:						hasHandler = (eventHandler instanceof InvokeDropBoxEvent.Handler);                 break;
-			case INVOKE_EDIT_IN_PLACE:					hasHandler = (eventHandler instanceof InvokeEditInPlaceEvent.Handler);             break;
-			case INVOKE_EMAIL_NOTIFICATION:         	hasHandler = (eventHandler instanceof InvokeEmailNotificationEvent.Handler);       break;
-			case INVOKE_HELP:                       	hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                    break;
-			case INVOKE_IMPORT_ICAL_FILE:           	hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);          break;
-			case INVOKE_IMPORT_ICAL_URL:            	hasHandler = (eventHandler instanceof InvokeImportIcalUrlEvent.Handler);           break;
-			case INVOKE_MANAGE_NET_FOLDERS_DLG:			hasHandler = (eventHandler instanceof InvokeManageNetFoldersDlgEvent.Handler); 	   break;
-			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	hasHandler = (eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler); break;
-			case INVOKE_MANAGE_GROUPS_DLG:				hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		   break;
-			case INVOKE_REPLY:                      	hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                   break;
-			case INVOKE_SEND_EMAIL_TO_TEAM:             hasHandler = (eventHandler instanceof InvokeSendEmailToTeamEvent.Handler);         break;
-			case INVOKE_SEND_TO_FRIEND:					hasHandler = (eventHandler instanceof InvokeSendToFriendEvent.Handler);			   break;
-			case INVOKE_SHARE:                      	hasHandler = (eventHandler instanceof InvokeShareEvent.Handler);                   break;
-			case INVOKE_SHARE_BINDER:					hasHandler = (eventHandler instanceof InvokeShareBinderEvent.Handler);			   break;
-			case INVOKE_SIGN_GUESTBOOK:					hasHandler = (eventHandler instanceof InvokeSignGuestbookEvent.Handler);           break;
-			case INVOKE_SIMPLE_PROFILE:             	hasHandler = (eventHandler instanceof InvokeSimpleProfileEvent.Handler);           break;
-			case INVOKE_SUBSCRIBE:                  	hasHandler = (eventHandler instanceof InvokeSubscribeEvent.Handler);               break;
-			case INVOKE_TAG:                        	hasHandler = (eventHandler instanceof InvokeTagEvent.Handler);                     break;
+			case INVOKE_ABOUT:							       hasHandler = (eventHandler instanceof InvokeAboutEvent.Handler);                            break;
+			case INVOKE_ADD_NEW_FOLDER:					       hasHandler = (eventHandler instanceof InvokeAddNewFolderEvent.Handler);                     break;
+			case INVOKE_CLIPBOARD:						       hasHandler = (eventHandler instanceof InvokeClipboardEvent.Handler);                        break;
+			case INVOKE_COLUMN_RESIZER:				           hasHandler = (eventHandler instanceof InvokeColumnResizerEvent.Handler);                    break;
+			case INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG:	       hasHandler = (eventHandler instanceof InvokeConfigureAdhocFoldersDlgEvent.Handler);         break;
+			case INVOKE_CONFIGURE_COLUMNS:				       hasHandler = (eventHandler instanceof InvokeConfigureColumnsEvent.Handler);                 break;
+			case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	       hasHandler = (eventHandler instanceof InvokeConfigureFileSyncAppDlgEvent.Handler);          break;
+			case INVOKE_CONFIGURE_USER_ACCESS_DLG:		       hasHandler = (eventHandler instanceof InvokeConfigureUserAccessDlgEvent.Handler);           break;
+			case INVOKE_DOWNLOAD_DESKTOP_APP:                  hasHandler = (eventHandler instanceof InvokeDownloadDesktopAppEvent.Handler);               break;
+			case INVOKE_DROPBOX:						       hasHandler = (eventHandler instanceof InvokeDropBoxEvent.Handler);                          break;
+			case INVOKE_EDIT_IN_PLACE:					       hasHandler = (eventHandler instanceof InvokeEditInPlaceEvent.Handler);                      break;
+			case INVOKE_EMAIL_NOTIFICATION:         	       hasHandler = (eventHandler instanceof InvokeEmailNotificationEvent.Handler);                break;
+			case INVOKE_HELP:                       	       hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                             break;
+			case INVOKE_IMPORT_ICAL_FILE:           	       hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);                   break;
+			case INVOKE_IMPORT_ICAL_URL:            	       hasHandler = (eventHandler instanceof InvokeImportIcalUrlEvent.Handler);                    break;
+			case INVOKE_MANAGE_NET_FOLDERS_DLG:			       hasHandler = (eventHandler instanceof InvokeManageNetFoldersDlgEvent.Handler); 	           break;
+			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	       hasHandler = (eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler);          break;
+			case INVOKE_MANAGE_GROUPS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		           break;
+			case INVOKE_REPLY:                      	       hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                            break;
+			case INVOKE_SEND_EMAIL_TO_TEAM:                    hasHandler = (eventHandler instanceof InvokeSendEmailToTeamEvent.Handler);                  break;
+			case INVOKE_SEND_TO_FRIEND:					       hasHandler = (eventHandler instanceof InvokeSendToFriendEvent.Handler);			           break;
+			case INVOKE_SHARE:                      	       hasHandler = (eventHandler instanceof InvokeShareEvent.Handler);                            break;
+			case INVOKE_SHARE_BINDER:					       hasHandler = (eventHandler instanceof InvokeShareBinderEvent.Handler);			           break;
+			case INVOKE_SIGN_GUESTBOOK:					       hasHandler = (eventHandler instanceof InvokeSignGuestbookEvent.Handler);                    break;
+			case INVOKE_SIMPLE_PROFILE:             	       hasHandler = (eventHandler instanceof InvokeSimpleProfileEvent.Handler);                    break;
+			case INVOKE_SUBSCRIBE:                  	       hasHandler = (eventHandler instanceof InvokeSubscribeEvent.Handler);                        break;
+			case INVOKE_TAG:                        	       hasHandler = (eventHandler instanceof InvokeTagEvent.Handler);                              break;
 			
-			case JSP_LAYOUT_CHANGED:                   	hasHandler = (eventHandler instanceof JspLayoutChangedEvent.Handler);              break;
+			case JSP_LAYOUT_CHANGED:                   	       hasHandler = (eventHandler instanceof JspLayoutChangedEvent.Handler);                       break;
 			
-			case LOGIN:                             	hasHandler = (eventHandler instanceof LoginEvent.Handler);                         break;
-			case LOGOUT:                            	hasHandler = (eventHandler instanceof LogoutEvent.Handler);                        break;
-			case PRE_LOGOUT:                        	hasHandler = (eventHandler instanceof PreLogoutEvent.Handler);                     break;
+			case LOGIN:                             	       hasHandler = (eventHandler instanceof LoginEvent.Handler);                                  break;
+			case LOGOUT:                            	       hasHandler = (eventHandler instanceof LogoutEvent.Handler);                                 break;
+			case PRE_LOGOUT:                        	       hasHandler = (eventHandler instanceof PreLogoutEvent.Handler);                              break;
 
-			case PREVIEW_LANDING_PAGE:      			hasHandler = (eventHandler instanceof PreviewLandingPageEvent.Handler);     	   break;
+			case PREVIEW_LANDING_PAGE:      			       hasHandler = (eventHandler instanceof PreviewLandingPageEvent.Handler);     	               break;
 
-			case MARK_ENTRY_READ:                   	hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);                 break;
-			case MARK_ENTRY_UNREAD:                 	hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);               break;
+			case MARK_ENTRY_READ:                   	       hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);                          break;
+			case MARK_ENTRY_UNREAD:                 	       hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);                        break;
 			
-			case NET_FOLDER_CREATED:        			hasHandler = (eventHandler instanceof NetFolderCreatedEvent.Handler);          	   break;
-			case NET_FOLDER_MODIFIED:        			hasHandler = (eventHandler instanceof NetFolderModifiedEvent.Handler);         	   break;
-			case NET_FOLDER_ROOT_CREATED:        		hasHandler = (eventHandler instanceof NetFolderRootCreatedEvent.Handler);          break;
-			case NET_FOLDER_ROOT_MODIFIED:        		hasHandler = (eventHandler instanceof NetFolderRootModifiedEvent.Handler);         break;
+			case NET_FOLDER_CREATED:        			       hasHandler = (eventHandler instanceof NetFolderCreatedEvent.Handler);          	           break;
+			case NET_FOLDER_MODIFIED:        			       hasHandler = (eventHandler instanceof NetFolderModifiedEvent.Handler);         	           break;
+			case NET_FOLDER_ROOT_CREATED:        		       hasHandler = (eventHandler instanceof NetFolderRootCreatedEvent.Handler);                   break;
+			case NET_FOLDER_ROOT_MODIFIED:        		       hasHandler = (eventHandler instanceof NetFolderRootModifiedEvent.Handler);                  break;
 
-			case QUICK_FILTER:                 	        hasHandler = (eventHandler instanceof QuickFilterEvent.Handler);                   break;
+			case QUICK_FILTER:                 	               hasHandler = (eventHandler instanceof QuickFilterEvent.Handler);                            break;
 			
-			case RESET_ENTRY_MENU:                   	hasHandler = (eventHandler instanceof ResetEntryMenuEvent.Handler);                break;
+			case RESET_ENTRY_MENU:                   	       hasHandler = (eventHandler instanceof ResetEntryMenuEvent.Handler);                         break;
 			
-			case SEARCH_ADVANCED:						hasHandler = (eventHandler instanceof SearchAdvancedEvent.Handler);                break;
-			case SEARCH_FIND_RESULTS:               	hasHandler = (eventHandler instanceof SearchFindResultsEvent.Handler);             break;
-			case SEARCH_RECENT_PLACE:               	hasHandler = (eventHandler instanceof SearchRecentPlaceEvent.Handler);             break;
-			case SEARCH_SAVED:                      	hasHandler = (eventHandler instanceof SearchSavedEvent.Handler);                   break;
-			case SEARCH_SIMPLE:                     	hasHandler = (eventHandler instanceof SearchSimpleEvent.Handler);                  break;
-			case SEARCH_TAG:                        	hasHandler = (eventHandler instanceof SearchTagEvent.Handler);                     break;
+			case SEARCH_ADVANCED:						       hasHandler = (eventHandler instanceof SearchAdvancedEvent.Handler);                         break;
+			case SEARCH_FIND_RESULTS:               	       hasHandler = (eventHandler instanceof SearchFindResultsEvent.Handler);                      break;
+			case SEARCH_RECENT_PLACE:               	       hasHandler = (eventHandler instanceof SearchRecentPlaceEvent.Handler);                      break;
+			case SEARCH_SAVED:                      	       hasHandler = (eventHandler instanceof SearchSavedEvent.Handler);                            break;
+			case SEARCH_SIMPLE:                     	       hasHandler = (eventHandler instanceof SearchSimpleEvent.Handler);                           break;
+			case SEARCH_TAG:                        	       hasHandler = (eventHandler instanceof SearchTagEvent.Handler);                              break;
 
-			case SET_SHARE_RIGHTS:						hasHandler = (eventHandler instanceof SetShareRightsEvent.Handler);                break;
+			case SET_SHARE_RIGHTS:						       hasHandler = (eventHandler instanceof SetShareRightsEvent.Handler);                         break;
 
-			case SHOW_BLOG_FOLDER:						hasHandler = (eventHandler instanceof ShowBlogFolderEvent.Handler);		   		   break;
-			case SHOW_CALENDAR_FOLDER:					hasHandler = (eventHandler instanceof ShowCalendarFolderEvent.Handler);		       break;
-			case SHOW_COLLECTION:						hasHandler = (eventHandler instanceof ShowCollectionEvent.Handler);				   break;
-			case SHOW_COLLECTION_VIEW:				    hasHandler = (eventHandler instanceof ShowCollectionViewEvent.Handler);		       break;
-			case SHOW_CONTENT_CONTROL:                  hasHandler = (eventHandler instanceof ShowContentControlEvent.Handler);            break;
-			case SHOW_DISCUSSION_FOLDER:				hasHandler = (eventHandler instanceof ShowDiscussionFolderEvent.Handler);		   break;
-			case SHOW_DISCUSSION_WORKSPACE:				hasHandler = (eventHandler instanceof ShowDiscussionWSEvent.Handler);			   break;
-			case SHOW_FILE_FOLDER:						hasHandler = (eventHandler instanceof ShowFileFolderEvent.Handler);		           break;
-			case SHOW_FOLDER_ENTRY:						hasHandler = (eventHandler instanceof ShowFolderEntryEvent.Handler);		       break;
-			case SHOW_GENERIC_WORKSPACE:				hasHandler = (eventHandler instanceof ShowGenericWSEvent.Handler);			   	   break;
-			case SHOW_GLOBAL_WORKSPACE:					hasHandler = (eventHandler instanceof ShowGlobalWSEvent.Handler);			   	   break;
-			case SHOW_GUESTBOOK_FOLDER:				    hasHandler = (eventHandler instanceof ShowGuestbookFolderEvent.Handler);		   break;
-			case SHOW_HOME_WORKSPACE:					hasHandler = (eventHandler instanceof ShowHomeWSEvent.Handler);			   	   	   break;
-			case SHOW_LANDING_PAGE:						hasHandler = (eventHandler instanceof ShowLandingPageEvent.Handler);			   break;
-			case SHOW_MICRO_BLOG_FOLDER:				hasHandler = (eventHandler instanceof ShowMicroBlogFolderEvent.Handler);		   break;
-			case SHOW_MILESTONE_FOLDER:				    hasHandler = (eventHandler instanceof ShowMilestoneFolderEvent.Handler);		   break;
-			case SHOW_MIRRORED_FILE_FOLDER:				hasHandler = (eventHandler instanceof ShowMirroredFileFolderEvent.Handler);		   break;
-			case SHOW_NET_FOLDERS_WORKSPACE:			hasHandler = (eventHandler instanceof ShowNetFoldersWSEvent.Handler);			   break;
-			case SHOW_PERSONAL_WORKSPACES:				hasHandler = (eventHandler instanceof ShowPersonalWorkspacesEvent.Handler);		   break;
-			case SHOW_PROJECT_MANAGEMENT_WORKSPACE:		hasHandler = (eventHandler instanceof ShowProjectManagementWSEvent.Handler);	   break;
-			case SHOW_SURVEY_FOLDER:				    hasHandler = (eventHandler instanceof ShowSurveyFolderEvent.Handler);		       break;
-			case SHOW_TASK_FOLDER:						hasHandler = (eventHandler instanceof ShowTaskFolderEvent.Handler);		           break;
-			case SHOW_TEAM_ROOT_WORKSPACE:				hasHandler = (eventHandler instanceof ShowTeamRootWSEvent.Handler);			   	   break;
-			case SHOW_TEAM_WORKSPACE:					hasHandler = (eventHandler instanceof ShowTeamWSEvent.Handler);			   		   break;
-			case SHOW_TRASH:						    hasHandler = (eventHandler instanceof ShowTrashEvent.Handler);		               break;
+			case SHOW_BLOG_FOLDER:						       hasHandler = (eventHandler instanceof ShowBlogFolderEvent.Handler);		   		           break;
+			case SHOW_CALENDAR_FOLDER:					       hasHandler = (eventHandler instanceof ShowCalendarFolderEvent.Handler);		               break;
+			case SHOW_COLLECTION:						       hasHandler = (eventHandler instanceof ShowCollectionEvent.Handler);				           break;
+			case SHOW_COLLECTION_VIEW:				           hasHandler = (eventHandler instanceof ShowCollectionViewEvent.Handler);		               break;
+			case SHOW_CONTENT_CONTROL:                         hasHandler = (eventHandler instanceof ShowContentControlEvent.Handler);                     break;
+			case SHOW_DISCUSSION_FOLDER:				       hasHandler = (eventHandler instanceof ShowDiscussionFolderEvent.Handler);		           break;
+			case SHOW_DISCUSSION_WORKSPACE:				       hasHandler = (eventHandler instanceof ShowDiscussionWSEvent.Handler);			           break;
+			case SHOW_FILE_FOLDER:						       hasHandler = (eventHandler instanceof ShowFileFolderEvent.Handler);		                   break;
+			case SHOW_FOLDER_ENTRY:						       hasHandler = (eventHandler instanceof ShowFolderEntryEvent.Handler);		                   break;
+			case SHOW_GENERIC_WORKSPACE:				       hasHandler = (eventHandler instanceof ShowGenericWSEvent.Handler);			   	           break;
+			case SHOW_GLOBAL_WORKSPACE:					       hasHandler = (eventHandler instanceof ShowGlobalWSEvent.Handler);			   	           break;
+			case SHOW_GUESTBOOK_FOLDER:				           hasHandler = (eventHandler instanceof ShowGuestbookFolderEvent.Handler);		               break;
+			case SHOW_HOME_WORKSPACE:					       hasHandler = (eventHandler instanceof ShowHomeWSEvent.Handler);			   	   	           break;
+			case SHOW_LANDING_PAGE:						       hasHandler = (eventHandler instanceof ShowLandingPageEvent.Handler);			               break;
+			case SHOW_MICRO_BLOG_FOLDER:				       hasHandler = (eventHandler instanceof ShowMicroBlogFolderEvent.Handler);		               break;
+			case SHOW_MILESTONE_FOLDER:				           hasHandler = (eventHandler instanceof ShowMilestoneFolderEvent.Handler);		               break;
+			case SHOW_MIRRORED_FILE_FOLDER:				       hasHandler = (eventHandler instanceof ShowMirroredFileFolderEvent.Handler);		           break;
+			case SHOW_NET_FOLDERS_WORKSPACE:			       hasHandler = (eventHandler instanceof ShowNetFoldersWSEvent.Handler);			           break;
+			case SHOW_PERSONAL_WORKSPACES:				       hasHandler = (eventHandler instanceof ShowPersonalWorkspacesEvent.Handler);		           break;
+			case SHOW_PROJECT_MANAGEMENT_WORKSPACE:		       hasHandler = (eventHandler instanceof ShowProjectManagementWSEvent.Handler);	               break;
+			case SHOW_SURVEY_FOLDER:				           hasHandler = (eventHandler instanceof ShowSurveyFolderEvent.Handler);		               break;
+			case SHOW_TASK_FOLDER:						       hasHandler = (eventHandler instanceof ShowTaskFolderEvent.Handler);		                   break;
+			case SHOW_TEAM_ROOT_WORKSPACE:				       hasHandler = (eventHandler instanceof ShowTeamRootWSEvent.Handler);			   	           break;
+			case SHOW_TEAM_WORKSPACE:					       hasHandler = (eventHandler instanceof ShowTeamWSEvent.Handler);			   		           break;
+			case SHOW_TRASH:						           hasHandler = (eventHandler instanceof ShowTrashEvent.Handler);		                       break;
 			
-			case HIDE_ACCESSORIES:						hasHandler = (eventHandler instanceof HideAccessoriesEvent.Handler);		   	   break;
-			case SHOW_ACCESSORIES:						hasHandler = (eventHandler instanceof ShowAccessoriesEvent.Handler);		   	   break;
+			case HIDE_ACCESSORIES:						       hasHandler = (eventHandler instanceof HideAccessoriesEvent.Handler);		   	               break;
+			case SHOW_ACCESSORIES:						       hasHandler = (eventHandler instanceof ShowAccessoriesEvent.Handler);		   	               break;
 			
-			case GET_CURRENT_VIEW_INFO:                 hasHandler = (eventHandler instanceof GetCurrentViewInfoEvent.Handler);            break;
-			case GET_SIDEBAR_COLLECTION:                hasHandler = (eventHandler instanceof GetSidebarCollectionEvent.Handler);          break;
-			case REFRESH_SIDEBAR_TREE:                 	hasHandler = (eventHandler instanceof RefreshSidebarTreeEvent.Handler);            break;
-			case REROOT_SIDEBAR_TREE:                 	hasHandler = (eventHandler instanceof RerootSidebarTreeEvent.Handler);             break;
-			case SIDEBAR_HIDE:                      	hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                   break;
-			case SIDEBAR_SHOW:                      	hasHandler = (eventHandler instanceof SidebarShowEvent.Handler);                   break;
+			case GET_CURRENT_VIEW_INFO:                        hasHandler = (eventHandler instanceof GetCurrentViewInfoEvent.Handler);                     break;
+			case GET_SIDEBAR_COLLECTION:                       hasHandler = (eventHandler instanceof GetSidebarCollectionEvent.Handler);                   break;
+			case REFRESH_SIDEBAR_TREE:                 	       hasHandler = (eventHandler instanceof RefreshSidebarTreeEvent.Handler);                     break;
+			case REROOT_SIDEBAR_TREE:                 	       hasHandler = (eventHandler instanceof RerootSidebarTreeEvent.Handler);                      break;
+			case SIDEBAR_HIDE:                      	       hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                            break;
+			case SIDEBAR_SHOW:                      	       hasHandler = (eventHandler instanceof SidebarShowEvent.Handler);                            break;
 			
-			case SIZE_CHANGED:                      	hasHandler = (eventHandler instanceof SizeChangedEvent.Handler);                   break;
+			case SIZE_CHANGED:                      	       hasHandler = (eventHandler instanceof SizeChangedEvent.Handler);                            break;
 			
-			case TASK_DELETE:                       	hasHandler = (eventHandler instanceof TaskDeleteEvent.Handler);                    break;
-			case TASK_HIERARCHY_DISABLED:           	hasHandler = (eventHandler instanceof TaskHierarchyDisabledEvent.Handler);         break;
-			case TASK_LIST_READY:                       hasHandler = (eventHandler instanceof TaskListReadyEvent.Handler);                 break;
-			case TASK_MOVE_DOWN:                    	hasHandler = (eventHandler instanceof TaskMoveDownEvent.Handler);                  break;
-			case TASK_MOVE_LEFT:                    	hasHandler = (eventHandler instanceof TaskMoveLeftEvent.Handler);                  break;
-			case TASK_MOVE_RIGHT:                   	hasHandler = (eventHandler instanceof TaskMoveRightEvent.Handler);                 break;
-			case TASK_MOVE_UP:                      	hasHandler = (eventHandler instanceof TaskMoveUpEvent.Handler);                    break;
-			case TASK_NEW_TASK:                     	hasHandler = (eventHandler instanceof TaskNewTaskEvent.Handler);                   break;
-			case TASK_PICK_DATE:                    	hasHandler = (eventHandler instanceof TaskPickDateEvent.Handler);                  break;
-			case TASK_PURGE:                        	hasHandler = (eventHandler instanceof TaskPurgeEvent.Handler);                     break;
-			case TASK_SET_PERCENT_DONE:             	hasHandler = (eventHandler instanceof TaskSetPercentDoneEvent.Handler);            break;
-			case TASK_SET_PRIORITY:                 	hasHandler = (eventHandler instanceof TaskSetPriorityEvent.Handler);               break;
-			case TASK_SET_STATUS:                   	hasHandler = (eventHandler instanceof TaskSetStatusEvent.Handler);                 break;
-			case TASK_VIEW:                         	hasHandler = (eventHandler instanceof TaskViewEvent.Handler);                      break;
+			case TASK_DELETE:                       	       hasHandler = (eventHandler instanceof TaskDeleteEvent.Handler);                             break;
+			case TASK_HIERARCHY_DISABLED:           	       hasHandler = (eventHandler instanceof TaskHierarchyDisabledEvent.Handler);                  break;
+			case TASK_LIST_READY:                              hasHandler = (eventHandler instanceof TaskListReadyEvent.Handler);                          break;
+			case TASK_MOVE_DOWN:                    	       hasHandler = (eventHandler instanceof TaskMoveDownEvent.Handler);                           break;
+			case TASK_MOVE_LEFT:                    	       hasHandler = (eventHandler instanceof TaskMoveLeftEvent.Handler);                           break;
+			case TASK_MOVE_RIGHT:                   	       hasHandler = (eventHandler instanceof TaskMoveRightEvent.Handler);                          break;
+			case TASK_MOVE_UP:                      	       hasHandler = (eventHandler instanceof TaskMoveUpEvent.Handler);                             break;
+			case TASK_NEW_TASK:                     	       hasHandler = (eventHandler instanceof TaskNewTaskEvent.Handler);                            break;
+			case TASK_PICK_DATE:                    	       hasHandler = (eventHandler instanceof TaskPickDateEvent.Handler);                           break;
+			case TASK_PURGE:                        	       hasHandler = (eventHandler instanceof TaskPurgeEvent.Handler);                              break;
+			case TASK_SET_PERCENT_DONE:             	       hasHandler = (eventHandler instanceof TaskSetPercentDoneEvent.Handler);                     break;
+			case TASK_SET_PRIORITY:                 	       hasHandler = (eventHandler instanceof TaskSetPriorityEvent.Handler);                        break;
+			case TASK_SET_STATUS:                   	       hasHandler = (eventHandler instanceof TaskSetStatusEvent.Handler);                          break;
+			case TASK_VIEW:                         	       hasHandler = (eventHandler instanceof TaskViewEvent.Handler);                               break;
 			
-			case TRASH_PURGE_ALL:                       hasHandler = (eventHandler instanceof TrashPurgeAllEvent.Handler);                 break;
-			case TRASH_PURGE_SELECTED_ENTRIES:          hasHandler = (eventHandler instanceof TrashPurgeSelectedEntriesEvent.Handler);     break;
-			case TRASH_RESTORE_ALL:                     hasHandler = (eventHandler instanceof TrashRestoreAllEvent.Handler);               break;
-			case TRASH_RESTORE_SELECTED_ENTRIES:        hasHandler = (eventHandler instanceof TrashRestoreSelectedEntriesEvent.Handler);   break;
+			case TRASH_PURGE_ALL:                              hasHandler = (eventHandler instanceof TrashPurgeAllEvent.Handler);                          break;
+			case TRASH_PURGE_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof TrashPurgeSelectedEntriesEvent.Handler);              break;
+			case TRASH_RESTORE_ALL:                            hasHandler = (eventHandler instanceof TrashRestoreAllEvent.Handler);                        break;
+			case TRASH_RESTORE_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof TrashRestoreSelectedEntriesEvent.Handler);            break;
 			
-			case TREE_NODE_COLLAPSED:                   hasHandler = (eventHandler instanceof TreeNodeCollapsedEvent.Handler);             break;
-			case TREE_NODE_EXPANDED:                    hasHandler = (eventHandler instanceof TreeNodeExpandedEvent.Handler);              break;
+			case TREE_NODE_COLLAPSED:                          hasHandler = (eventHandler instanceof TreeNodeCollapsedEvent.Handler);                      break;
+			case TREE_NODE_EXPANDED:                           hasHandler = (eventHandler instanceof TreeNodeExpandedEvent.Handler);                       break;
 			
-			case TRACK_CURRENT_BINDER:              	hasHandler = (eventHandler instanceof TrackCurrentBinderEvent.Handler);            break;
-			case UNTRACK_CURRENT_BINDER:            	hasHandler = (eventHandler instanceof UntrackCurrentBinderEvent.Handler);          break;
-			case UNTRACK_CURRENT_PERSON:            	hasHandler = (eventHandler instanceof UntrackCurrentPersonEvent.Handler);          break;
+			case TRACK_CURRENT_BINDER:              	       hasHandler = (eventHandler instanceof TrackCurrentBinderEvent.Handler);                     break;
+			case UNTRACK_CURRENT_BINDER:            	       hasHandler = (eventHandler instanceof UntrackCurrentBinderEvent.Handler);                   break;
+			case UNTRACK_CURRENT_PERSON:            	       hasHandler = (eventHandler instanceof UntrackCurrentPersonEvent.Handler);                   break;
 			
-			case VIEW_ALL_ENTRIES:                  	hasHandler = (eventHandler instanceof ViewAllEntriesEvent.Handler);                break;
-			case VIEW_CURRENT_BINDER_TEAM_MEMBERS:  	hasHandler = (eventHandler instanceof ViewCurrentBinderTeamMembersEvent.Handler);  break;
-			case VIEW_FORUM_ENTRY:                  	hasHandler = (eventHandler instanceof ViewForumEntryEvent.Handler);                break;
-			case VIEW_PINNED_ENTRIES:                  	hasHandler = (eventHandler instanceof ViewPinnedEntriesEvent.Handler);             break;
-			case VIEW_RESOURCE_LIBRARY:             	hasHandler = (eventHandler instanceof ViewResourceLibraryEvent.Handler);           break;
-			case VIEW_SELECTED_ENTRY:                  	hasHandler = (eventHandler instanceof ViewSelectedEntryEvent.Handler);             break;
-			case VIEW_TEAMING_FEED:                 	hasHandler = (eventHandler instanceof ViewTeamingFeedEvent.Handler);               break;
-			case VIEW_UNREAD_ENTRIES:               	hasHandler = (eventHandler instanceof ViewUnreadEntriesEvent.Handler);             break;
-			case VIEW_WHATS_NEW_IN_BINDER:				hasHandler = (eventHandler instanceof ViewWhatsNewInBinderEvent.Handler);          break;
-			case VIEW_WHATS_UNSEEN_IN_BINDER:			hasHandler = (eventHandler instanceof ViewWhatsUnseenInBinderEvent.Handler);       break;
-			case VIEW_WHO_HAS_ACCESS:                  	hasHandler = (eventHandler instanceof ViewWhoHasAccessEvent.Handler);              break;
+			case VIEW_ALL_ENTRIES:                  	       hasHandler = (eventHandler instanceof ViewAllEntriesEvent.Handler);                         break;
+			case VIEW_CURRENT_BINDER_TEAM_MEMBERS:  	       hasHandler = (eventHandler instanceof ViewCurrentBinderTeamMembersEvent.Handler);           break;
+			case VIEW_FORUM_ENTRY:                  	       hasHandler = (eventHandler instanceof ViewForumEntryEvent.Handler);                         break;
+			case VIEW_PINNED_ENTRIES:                  	       hasHandler = (eventHandler instanceof ViewPinnedEntriesEvent.Handler);                      break;
+			case VIEW_RESOURCE_LIBRARY:             	       hasHandler = (eventHandler instanceof ViewResourceLibraryEvent.Handler);                    break;
+			case VIEW_SELECTED_ENTRY:                  	       hasHandler = (eventHandler instanceof ViewSelectedEntryEvent.Handler);                      break;
+			case VIEW_TEAMING_FEED:                 	       hasHandler = (eventHandler instanceof ViewTeamingFeedEvent.Handler);                        break;
+			case VIEW_UNREAD_ENTRIES:               	       hasHandler = (eventHandler instanceof ViewUnreadEntriesEvent.Handler);                      break;
+			case VIEW_WHATS_NEW_IN_BINDER:				       hasHandler = (eventHandler instanceof ViewWhatsNewInBinderEvent.Handler);                   break;
+			case VIEW_WHATS_UNSEEN_IN_BINDER:			       hasHandler = (eventHandler instanceof ViewWhatsUnseenInBinderEvent.Handler);                break;
+			case VIEW_WHO_HAS_ACCESS:                  	       hasHandler = (eventHandler instanceof ViewWhoHasAccessEvent.Handler);                       break;
 			
-			case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:    hasHandler = (eventHandler instanceof ChangeEntryTypeSelectedEntriesEvent.Handler);break;
-			case CHANGE_FAVORITE_STATE:                 hasHandler = (eventHandler instanceof ChangeFavoriteStateEvent.Handler);           break;
-			case COPY_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof CopySelectedEntriesEvent.Handler);           break;
-			case DELETE_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof DeleteSelectedEntriesEvent.Handler);         break;
-			case DELETE_SELECTED_USER_WORKSPACES:       hasHandler = (eventHandler instanceof DeleteSelectedUserWorkspacesEvent.Handler);  break;
-			case DISABLE_SELECTED_USERS:                hasHandler = (eventHandler instanceof DisableSelectedUsersEvent.Handler);          break;
-			case ENABLE_SELECTED_USERS:                 hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);           break;
-			case FOLDER_ENTRY_ACTION_COMPLETE:          hasHandler = (eventHandler instanceof FolderEntryActionCompleteEvent.Handler);     break;
-			case LOCK_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof LockSelectedEntriesEvent.Handler);           break;
-			case MARK_READ_SELECTED_ENTRIES:            hasHandler = (eventHandler instanceof MarkReadSelectedEntriesEvent.Handler);       break;
-			case MARK_UNREAD_SELECTED_ENTRIES:          hasHandler = (eventHandler instanceof MarkUnreadSelectedEntriesEvent.Handler);     break;
-			case MOVE_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof MoveSelectedEntriesEvent.Handler);           break;
-			case PURGE_SELECTED_ENTRIES:                hasHandler = (eventHandler instanceof PurgeSelectedEntriesEvent.Handler);          break;
-			case PURGE_SELECTED_USER_WORKSPACES:        hasHandler = (eventHandler instanceof PurgeSelectedUserWorkspacesEvent.Handler);   break;
-			case PURGE_SELECTED_USERS:                  hasHandler = (eventHandler instanceof PurgeSelectedUsersEvent.Handler);            break;
-			case SET_FOLDER_SORT:                       hasHandler = (eventHandler instanceof SetFolderSortEvent.Handler);                 break;
-			case SHARE_SELECTED_ENTRIES:                hasHandler = (eventHandler instanceof ShareSelectedEntriesEvent.Handler);          break;
-			case SUBSCRIBE_SELECTED_ENTRIES:            hasHandler = (eventHandler instanceof SubscribeSelectedEntriesEvent.Handler);      break;
-			case TOGGLE_SHARED_VIEW:                  	hasHandler = (eventHandler instanceof ToggleSharedViewEvent.Handler);              break;
-			case UNLOCK_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof UnlockSelectedEntriesEvent.Handler);         break;
+			case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:           hasHandler = (eventHandler instanceof ChangeEntryTypeSelectedEntriesEvent.Handler);         break;
+			case CHANGE_FAVORITE_STATE:                        hasHandler = (eventHandler instanceof ChangeFavoriteStateEvent.Handler);                    break;
+			case COPY_SELECTED_ENTRIES:                        hasHandler = (eventHandler instanceof CopySelectedEntriesEvent.Handler);                    break;
+			case DELETE_SELECTED_ENTRIES:                      hasHandler = (eventHandler instanceof DeleteSelectedEntriesEvent.Handler);                  break;
+			case DELETE_SELECTED_USER_WORKSPACES:              hasHandler = (eventHandler instanceof DeleteSelectedUserWorkspacesEvent.Handler);           break;
+			case DISABLE_SELECTED_USERS:                       hasHandler = (eventHandler instanceof DisableSelectedUsersEvent.Handler);                   break;
+			case ENABLE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);                    break;
+			case FOLDER_ENTRY_ACTION_COMPLETE:                 hasHandler = (eventHandler instanceof FolderEntryActionCompleteEvent.Handler);              break;
+			case LOCK_SELECTED_ENTRIES:                        hasHandler = (eventHandler instanceof LockSelectedEntriesEvent.Handler);                    break;
+			case MARK_READ_SELECTED_ENTRIES:                   hasHandler = (eventHandler instanceof MarkReadSelectedEntriesEvent.Handler);                break;
+			case MARK_UNREAD_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof MarkUnreadSelectedEntriesEvent.Handler);              break;
+			case MOVE_SELECTED_ENTRIES:                        hasHandler = (eventHandler instanceof MoveSelectedEntriesEvent.Handler);                    break;
+			case PURGE_SELECTED_ENTRIES:                       hasHandler = (eventHandler instanceof PurgeSelectedEntriesEvent.Handler);                   break;
+			case PURGE_SELECTED_USER_WORKSPACES:               hasHandler = (eventHandler instanceof PurgeSelectedUserWorkspacesEvent.Handler);            break;
+			case PURGE_SELECTED_USERS:                         hasHandler = (eventHandler instanceof PurgeSelectedUsersEvent.Handler);                     break;
+			case SET_FOLDER_SORT:                              hasHandler = (eventHandler instanceof SetFolderSortEvent.Handler);                          break;
+			case SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY:  hasHandler = (eventHandler instanceof SetDesktopDownloadAppControlVisibilityEvent.Handler); break;
+			case SHARE_SELECTED_ENTRIES:                       hasHandler = (eventHandler instanceof ShareSelectedEntriesEvent.Handler);                   break;
+			case SUBSCRIBE_SELECTED_ENTRIES:                   hasHandler = (eventHandler instanceof SubscribeSelectedEntriesEvent.Handler);               break;
+			case TOGGLE_SHARED_VIEW:                  	       hasHandler = (eventHandler instanceof ToggleSharedViewEvent.Handler);                       break;
+			case UNLOCK_SELECTED_ENTRIES:                      hasHandler = (eventHandler instanceof UnlockSelectedEntriesEvent.Handler);                  break;
 			
 			case UNDEFINED:
 				// Ignore.
