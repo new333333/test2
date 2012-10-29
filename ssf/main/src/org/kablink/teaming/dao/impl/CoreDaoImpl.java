@@ -2783,4 +2783,43 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	
 
 	}
+	
+	public int purgeAuditTrail(final Long zoneId, final Date purgeBeforeDate) {
+		long begin = System.nanoTime();
+		try {
+		   	return getHibernateTemplate().execute(
+		    	new HibernateCallback() {
+		    		public Object doInHibernate(Session session) throws HibernateException {
+		     	   		return session.createQuery("Delete org.kablink.teaming.domain.AuditTrail where zoneId=:zoneId and startDate<:purgeBeforeDate")
+			   				.setLong("zoneId", zoneId)
+			   				.setDate("purgeBeforeDate", purgeBeforeDate)
+		     	   			.executeUpdate();
+		    		}
+		    	}
+		   	);
+		}
+		finally {
+    		end(begin, "purgeAuditTrail()");
+		}
+	}
+	
+	public int purgeChangeLogs(final Long zoneId, final Date purgeBeforeDate) {
+		long begin = System.nanoTime();
+		try {
+		   	return getHibernateTemplate().execute(
+		    	new HibernateCallback() {
+		    		public Object doInHibernate(Session session) throws HibernateException {
+		     	   		return session.createQuery("Delete org.kablink.teaming.domain.ChangeLog where zoneId=:zoneId and operationDate<:purgeBeforeDate")
+			   				.setLong("zoneId", zoneId)
+			   				.setDate("purgeBeforeDate", purgeBeforeDate)
+		     	   			.executeUpdate();
+		    		}
+		    	}
+		   	);
+		}
+		finally {
+    		end(begin, "purgeChangeLogs()");
+		}
+	}
+
  }

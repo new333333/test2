@@ -25,6 +25,8 @@
 	<property name="localeLanguage" access="field" length="16"/>
 	<property name="localeCountry" access="field" length="16"/>
 	<property name="adHocFoldersEnabled" access="field"/>
+	<property name="auditTrailKeepDays" access="field"/>
+	<property name="changeLogsKeepDays" access="field"/>
     <component name="mailConfig" class="org.kablink.teaming.domain.MailConfig">
 		<property name="postingEnabled"/>
 		<property name="simpleUrlPostingEnabled"/>

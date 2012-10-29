@@ -70,7 +70,8 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private String localeLanguage;
 	private String localeCountry;
 	private Boolean adHocFoldersEnabled;
-	
+	private Integer auditTrailKeepDays;
+	private Integer changeLogsKeepDays;
 
 	public ZoneConfig()
 	{
@@ -378,5 +379,23 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public void setAdHocFoldersEnabled( boolean enabled )
 	{
 		adHocFoldersEnabled = Boolean.valueOf( enabled );
+	}
+	
+	public int getAuditTrailKeepDays() {
+		if(auditTrailKeepDays == null)
+			return SPropsUtil.getInt("default.table.purge.keep.days.audittrail", 183);
+		return auditTrailKeepDays;
+	}
+	public void setAuditTrailKeepDays(int auditTrailKeepDays) {
+		this.auditTrailKeepDays = auditTrailKeepDays;
+	}
+	
+	public int getChangeLogsKeepDays() {
+		if(changeLogsKeepDays == null)
+			return SPropsUtil.getInt("default.table.purge.keep.days.changelogs", 183);
+		return changeLogsKeepDays;
+	}
+	public void setChangeLogsKeepDays(int changeLogsKeepDays) {
+		this.changeLogsKeepDays = changeLogsKeepDays;
 	}
 }
