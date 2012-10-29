@@ -1189,13 +1189,15 @@ public class GwtMainPage extends ResizeComposite
 	}// end jspLayoutChanged()
 	
 	/*
-	 * This method will close the administration content panel.
+	 * This method gets called by administration pages that are implemented in jsp when the user
+	 * presses, ok, cancel or close.  We used to close the administration content page.  Now we
+	 * show the administration home page.
 	 */
 	private void closeAdministrationContentPanel()
 	{
 		if ( m_adminControl != null )
 		{
-			m_adminControl.hideContentPanel();
+			m_adminControl.showHomePage();
 		}
 	}// end closeAdministrationContentPanel()
 	

@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
@@ -55,7 +56,6 @@ import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.AdminActionsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
@@ -124,6 +124,7 @@ public class AdminControl extends TeamingPopupPanel
 	private int m_contentControlHeight;
 	private int m_dlgWidth;
 	private int m_dlgHeight;
+	private String m_homePageUrl = null;
 	private ConfigureFileSyncAppDlg m_configureFileSyncAppDlg = null;
 	private ManageGroupsDlg m_manageGroupsDlg = null;
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
@@ -517,15 +518,18 @@ public class AdminControl extends TeamingPopupPanel
 				public void onSuccess( VibeRpcResponse response )
 				{
 					ArrayList<GwtAdminCategory> adminCategories;
-					AdminActionsRpcResponseData responseData;
+					AdminConsoleInfo adminConsoleInfo;
 					
-					responseData = (AdminActionsRpcResponseData) response.getResponseData();
-					adminCategories = responseData.getAdminActions();
+					adminConsoleInfo = (AdminConsoleInfo) response.getResponseData();
+					adminCategories = adminConsoleInfo.getCategories();
 					for ( GwtAdminCategory category : adminCategories )
 					{
 						// Add this administration category to the page.
 						addCategory( category );
 					}
+					
+					m_homePageUrl = adminConsoleInfo.getHomePageUrl();
+					showHomePage();
 				}
 			};
 
@@ -674,8 +678,6 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	private void adminActionSelected( GwtAdminAction adminAction )
 	{
-		m_contentControl.empty();
-
 		// Are we dealing with the "Site Branding" action?
 		if ( adminAction.getActionType() == AdminAction.SITE_BRANDING )
 		{
@@ -683,8 +685,6 @@ public class AdminControl extends TeamingPopupPanel
 			int x;
 			int y;
 
-			hideContentPanel();
-			
 			// Position the Edit Branding dialog at the top, left corner of the content control.
 			x = m_contentControlX;
 			y = m_contentControlY;
@@ -695,45 +695,33 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_ADHOC_FOLDERS )
 		{
-			hideContentPanel();
-			
 			// Fire the event to invoke the "Configure Adhoc folders" dialog
 			InvokeConfigureAdhocFoldersDlgEvent.fireOne();
 			
 		}
 		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_FILE_SYNC_APP )
 		{
-			hideContentPanel();
-
 			// Fire the event to invoke the "Configure File Sync" dialog.
 			InvokeConfigureFileSyncAppDlgEvent.fireOne();
 		}
 		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_USER_ACCESS )
 		{
-			hideContentPanel();
-			
 			// Fire the event to invoke the "Configure User Access" dialog
 			InvokeConfigureUserAccessDlgEvent.fireOne();
 			
 		}
 		else if ( adminAction.getActionType() == AdminAction.MANAGE_GROUPS )
 		{
-			hideContentPanel();
-
 			// Fire the event to invoke the "Manage Groups" dialog.
 			InvokeManageGroupsDlgEvent.fireOne();
 		}
 		else if ( adminAction.getActionType() == AdminAction.MANAGE_RESOURCE_DRIVERS )
 		{
-			hideContentPanel();
-			
 			// Fire the event to invoke the "Manage net folder roots" dialog.
 			InvokeManageNetFolderRootsDlgEvent.fireOne();
 		}
 		else if ( adminAction.getActionType() == AdminAction.MANAGE_NET_FOLDERS )
 		{
-			hideContentPanel();
-			
 			// Fire the event to invoke the "Manage net folders" dialog.
 			InvokeManageNetFoldersDlgEvent.fireOne();
 		}
@@ -1055,6 +1043,7 @@ public class AdminControl extends TeamingPopupPanel
 						public void execute()
 						{
 							showRelativeTo( target );
+							showHomePage();
 							showTreeControl();
 							relayoutPage();
 						}
@@ -1078,6 +1067,24 @@ public class AdminControl extends TeamingPopupPanel
 			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}// end showControl()
+	
+	/**
+	 * Show the page that gives the user some information about the administration console.
+	 */
+	public void showHomePage()
+	{
+		if ( m_homePageUrl != null )
+		{
+			// Clear the iframe's content 
+			m_contentControl.clear();
+			
+			// Set the iframe's content to the instructions page.
+			m_contentControl.setUrl( m_homePageUrl, Instigator.ADMINISTRATION_CONSOLE );
+			
+			showContentPanel();
+			relayoutPage();
+		}
+	}
 	
 	/**
 	 * 
