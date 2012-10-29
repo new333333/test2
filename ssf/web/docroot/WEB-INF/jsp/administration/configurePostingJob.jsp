@@ -33,6 +33,8 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.Utils" %>
+
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_mail") %>' scope="request"/>
@@ -149,11 +151,14 @@ function ss_checkIfNumberValid(s) {
 </fieldset>
 
 <c:if test="${ssSMTPEnabled}">
+<% if ( Utils.checkIfFilr() == false ) %>
+<% { %>
 <br/>
 <br/>
 <input type="checkbox" class="ss_style" id="simplepostenabled" name="simplepostenabled" <c:if test="${ssMailConfig.simpleUrlPostingEnabled}">checked</c:if>/>
 <span class="ss_labelRight"><ssf:nlt tag="incoming.enable.simple"/></span>
 <br/>
+<% } %>
 </c:if>
 <c:if test="${!empty ssScheduleInfopost}">
 <br/>
