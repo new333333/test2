@@ -59,8 +59,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class DesktopAppDownloadDlg extends DlgBox {
-	public final static boolean SHOW_DESKTOP_APP_DOWNLOADER	= false;	//! DRF:  Leave false on checkin until I get this all working.
-	
 	private GwtTeamingMessages			m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private VibeFlowPanel				m_fp;						// The panel holding the dialog's content.
