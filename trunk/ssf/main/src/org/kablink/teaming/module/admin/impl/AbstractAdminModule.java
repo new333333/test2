@@ -358,6 +358,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			case manageFunctionCondition:
 			case manageMail:
 			case manageFileVersionAging:
+			case manageLogTablePurge:
 			case manageFileSizeLimit:
 			case manageTemplate:
 			case manageErrorLogs:
@@ -2122,6 +2123,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
   	}
   	@Override
 	public void setLogTableKeepDays(int auditTrailKeepDays, int changeLogsKeepDays) {
+  	   	checkAccess(AdminOperation.manageLogTablePurge);
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setAuditTrailKeepDays(auditTrailKeepDays);
   		zoneConfig.setChangeLogsKeepDays(changeLogsKeepDays);
@@ -2132,7 +2134,8 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     }
     
     public void setLogTablePurgeSchedule(ScheduleInfo info) {
-    	LogTablePurge obj = getLogTablePurgeObject();
+  	   	checkAccess(AdminOperation.manageLogTablePurge);
+  	   	LogTablePurge obj = getLogTablePurgeObject();
     	obj.setScheduleInfo(info);
     	obj.enable(true, RequestContextHolder.getRequestContext().getZoneId());
     }

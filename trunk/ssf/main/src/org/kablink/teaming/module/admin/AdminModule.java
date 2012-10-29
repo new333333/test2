@@ -77,6 +77,7 @@ public interface AdminModule {
 		manageFunction,
 		manageMail,
 		manageFileVersionAging,
+		manageLogTablePurge,
 		manageFileSizeLimit,
 		manageTemplate,
 		report,
