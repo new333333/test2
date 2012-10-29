@@ -57,8 +57,6 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * @author drfoster@novell.com
  */
 public class DesktopAppDownloadControl extends ResizeComposite {
-	public final static boolean SHOW_DESKTOP_APP_DOWNLOADER	= false;	//! DRF:  Leave false on checkin until I get this all working.
-	
 	private GwtTeamingImageBundle	m_images;		// Access to Vibe's images.
 	private GwtTeamingMessages		m_messages;		// Access to the GWT localized string resource.
 	private VibeFlowPanel			m_mainPanel;	// Panel containing the main content of the control.
@@ -80,7 +78,7 @@ public class DesktopAppDownloadControl extends ResizeComposite {
 
 		// ...create the panel to hold the control's content...
 		m_mainPanel = new VibeFlowPanel();
-		m_mainPanel.addStyleName("vibe-desktopAppDownload-control");
+		m_mainPanel.addStyleName("vibe-desktopAppCtrl-control");
 
 		// ...create the content itself...
 		createContent();
@@ -96,18 +94,18 @@ public class DesktopAppDownloadControl extends ResizeComposite {
 	private void createContent() {
 		// Add the main hint panel...
 		VibeFlowPanel fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-desktopAppDownload-hintPanel");
+		fp.addStyleName("vibe-desktopAppCtrl-hintPanel");
 		m_mainPanel.add(fp);
-		InlineLabel il = new InlineLabel(GwtClientHelper.isLicenseFilr() ? m_messages.desktopAppDownload_Hint_Filr() : m_messages.desktopAppDownload_Hint_Vibe());
-		il.addStyleName("vibe-desktopAppDownload-hintLabel");
+		InlineLabel il = new InlineLabel(GwtClientHelper.isLicenseFilr() ? m_messages.desktopAppCtrl_Hint_Filr() : m_messages.desktopAppCtrl_Hint_Vibe());
+		il.addStyleName("vibe-desktopAppCtrl-hintLabel");
 		fp.add(il);
 
 		// ...add the 'Don't Show Again' panel...
 		fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-desktopAppDownload-dontShowPanel");
+		fp.addStyleName("vibe-desktopAppCtrl-dontShowPanel");
 		m_mainPanel.add(fp);
-		il = new InlineLabel(m_messages.desktopAppDownload_DontShowAgain());
-		il.addStyleName("vibe-desktopAppDownload-dontShowLabel");
+		il = new InlineLabel(m_messages.desktopAppCtrl_DontShowAgain());
+		il.addStyleName("vibe-desktopAppCtrl-dontShowLabel");
 		fp.add(il);
 		il.addClickHandler(new ClickHandler() {
 			@Override
@@ -136,10 +134,10 @@ public class DesktopAppDownloadControl extends ResizeComposite {
 		
 		// ...and add the 'Hide for Session' panel...
 		fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-desktopAppDownload-closePanel");
+		fp.addStyleName("vibe-desktopAppCtrl-closePanel");
 		m_mainPanel.add(fp);
-		Image i = GwtClientHelper.buildImage(m_images.closeBorder().getSafeUri().asString(), m_messages.desktopAppDownload_Alt_HideForSession());
-		i.addStyleName("vibe-desktopAppDownload-closeImg");
+		Image i = GwtClientHelper.buildImage(m_images.closeBorder().getSafeUri().asString(), m_messages.desktopAppCtrl_Alt_HideForSession());
+		i.addStyleName("vibe-desktopAppCtrl-closeImg");
 		fp.add(i);
 		i.addClickHandler(new ClickHandler() {
 			@Override

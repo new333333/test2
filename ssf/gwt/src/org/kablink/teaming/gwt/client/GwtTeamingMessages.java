@@ -545,6 +545,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_CopyMoveEntriesDlg();
 	String codeSplitFailure_DescriptionPanel();
 	String codeSplitFailure_DesktopAppDownloadControl();
+	String codeSplitFailure_DesktopAppDownloadDlg();
 	String codeSplitFailure_DiscussionFolderView();
 	String codeSplitFailure_DiscussionWSView();
 	String codeSplitFailure_EditBrandingDlg();
@@ -2048,9 +2049,13 @@ public interface GwtTeamingMessages extends Messages
 	String configureAdhocFoldersDlg_Header();
 	
 	// String used in the desktop application download control.
-	String desktopAppDownload_Alt_HideForSession();
-	String desktopAppDownload_DontShowAgain();
-	String desktopAppDownload_Hint_Filr();
-	String desktopAppDownload_Hint_Vibe();
+	String desktopAppCtrl_Alt_HideForSession();
+	String desktopAppCtrl_DontShowAgain();
+	String desktopAppCtrl_Hint_Filr();
+	String desktopAppCtrl_Hint_Vibe();
+	
+	// String used in the desktop application download dialog.
+	String downloadAppDlgHeader_Filr();
+	String downloadAppDlgHeader_Vibe();
 	
 }// end GwtTeamingMessages
