@@ -30,44 +30,64 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.rpc.shared;
+package org.kablink.teaming.gwt.client;
+
 
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+
 /**
- * This class holds the response data for the "Get Admin Actions" rpc command
+ * This class is used to hold admin console information.
  * @author jwootton
  *
  */
-public class AdminActionsRpcResponseData
+public class AdminConsoleInfo
 	implements IsSerializable, VibeRpcResponseData
 {
-	private ArrayList<GwtAdminCategory> m_adminActions;
+	private String m_homePageUrl;
+	private ArrayList<GwtAdminCategory> m_adminCategories;
 	
 	/**
 	 * 
 	 */
-	public AdminActionsRpcResponseData()
+	public AdminConsoleInfo()
 	{
 	}
 	
 	/**
 	 * 
 	 */
-	public AdminActionsRpcResponseData( ArrayList<GwtAdminCategory> adminActions )
+	public ArrayList<GwtAdminCategory> getCategories()
 	{
-		m_adminActions = adminActions;
+		return m_adminCategories;
 	}
 	
 	/**
 	 * 
 	 */
-	public ArrayList<GwtAdminCategory> getAdminActions()
+	public String getHomePageUrl()
 	{
-		return m_adminActions;
+		return m_homePageUrl;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCategories( ArrayList<GwtAdminCategory> categories )
+	{
+		m_adminCategories = categories;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHomePageUrl( String url )
+	{
+		m_homePageUrl = url;
 	}
 }

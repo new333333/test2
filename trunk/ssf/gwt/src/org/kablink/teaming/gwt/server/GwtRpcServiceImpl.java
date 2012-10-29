@@ -68,6 +68,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
@@ -658,13 +659,24 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			ArrayList<GwtAdminCategory> adminActions;
 			String binderId;
-			AdminActionsRpcResponseData responseData;
+			AdminConsoleInfo adminConsoleInfo;
+			
+			adminConsoleInfo = new AdminConsoleInfo();
 			
 			binderId = ((GetAdminActionsCmd)cmd).getBinderId();
 			adminActions = getAdminActions( ri, binderId );
+			adminConsoleInfo.setCategories( adminActions );
 			
-			responseData = new AdminActionsRpcResponseData( adminActions );
-			response = new VibeRpcResponse( responseData );
+			// Get the url for the administration console "home page"
+			{
+				AdaptedPortletURL adaptedUrl;
+				
+				adaptedUrl = new AdaptedPortletURL( getRequest( ri ), "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_ADMIN_CONSOLE_HOME_PAGE );
+				adminConsoleInfo.setHomePageUrl( adaptedUrl.toString() );
+			}
+			
+			response = new VibeRpcResponse( adminConsoleInfo );
 			return response;
 		}
 		

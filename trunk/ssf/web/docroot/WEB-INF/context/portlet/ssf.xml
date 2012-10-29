@@ -95,6 +95,7 @@
 	<bean id="adminConfigureSearchIndexController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchIndexController" />
 	<bean id="adminConfigureSearchNodesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchNodesController" />
 	<bean id="adminConfigureScheduleController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureScheduleController" />
+	<bean id="adminConsoleHomePageController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.AdminConsoleHomePageController" />
 	<bean id="adminLogFileController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LogFileController" />
 	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageGroupsController" />
 	<bean id="adminManageQuotasController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageQuotasController" />
@@ -228,6 +229,7 @@
 						<entry key="manage_definitions"><ref bean="manageDefinitionsController"/></entry>
 						<entry key="manage_extensions"><ref bean="extensionsController"/></entry>
 						<entry key="manage_runtime_statistics"><ref bean="manageRuntimeStatisticsController"/></entry>
+						<entry key="view_admin_console_home_page"><ref bean="adminConsoleHomePageController"/></entry>
 
 					</map>
 				</entry>

@@ -419,6 +419,7 @@ public class WebKeys {
 	public static final String ACTION_STOP_WORKFLOW="stop_workflow";
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
 	public static final String ACTION_ADD_MEETING="add_meeting";
+	public static final String ACTION_VIEW_ADMIN_CONSOLE_HOME_PAGE = "view_admin_console_home_page";
 	public static final String ACTION_VIEW_BINDER_ACCESS="view_binder_access";
 	public static final String ACTION_VIEW_BINDER_IN_PARENT="view_binder_in_parent";
 	public static final String ACTION_VIEW_CREDITS="view_credits";
@@ -1580,6 +1581,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_EXPORT_IMPORT="administration/exportImport";
     public static final String VIEW_ADMIN_UPDATE_EXPORT_IMPORT="administration/updateExportImport";
     
+    public static final String VIEW_ADMIN_CONSOLE_HOME_PAGE = "administration/view_admin_console_home_page";
     public static final String VIEW_ADMIN_MOVE_DEFINITION="administration/moveDefinition";
     public static final String VIEW_ADMIN_MANAGE_APPLICATIONS="administration/manage_applications";
     public static final String VIEW_ADMIN_MANAGE_APPLICATION_GROUPS="administration/manage_application_groups";
