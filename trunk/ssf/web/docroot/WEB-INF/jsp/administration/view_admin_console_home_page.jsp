@@ -65,7 +65,7 @@
 		String mainText;
 	
 		// Get the url for the admin guide
-		url = MiscUtil.getHelpUrl( "admin", "", "" );
+		url = MiscUtil.getHelpUrl( "admin", null, null );
 		
 		if ( Utils.checkIfFilr() == true )
 		{
