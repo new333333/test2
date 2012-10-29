@@ -146,6 +146,8 @@ import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClien
 import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadControl;
 import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadControl.DesktopAppDownloadControlClient;
 import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadControlCookies.Cookie;
+import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadDlg;
+import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadDlg.DesktopAppDownloadDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
 import org.kablink.teaming.gwt.client.widgets.LoginDlg;
@@ -414,22 +416,23 @@ public class GwtMainPage extends ResizeComposite
 				String userAvatarUrl = m_mainPageInfo.getUserAvatarUrl();
 				m_requestInfo.setUserAvatarUrl( ( null == userAvatarUrl ) ? "" : userAvatarUrl );
 				
-				if ( ! ( DesktopAppDownloadControl.SHOW_DESKTOP_APP_DOWNLOADER ) )
+//!				...this needs to be implemented...
+				if ( ! ( DesktopAppDownloadDlg.SHOW_DESKTOP_APP_DOWNLOADER ) )
 				{
-					// ...and what we know about desktop application
-					// ...deployment from the response...
 					m_mainPageInfo.setDesktopAppEnabled(       false);
 					m_mainPageInfo.setShowDesktopAppDownloader(false);
 				}
-				else
+				
+				// ...if the user hasn't hidden the control
+				// ...permanently...
+				if ( m_mainPageInfo.isShowDesktopAppDownloader() )
 				{
-					if ( m_mainPageInfo.isShowDesktopAppDownloader() )
-					{
-						m_mainPageInfo.setShowDesktopAppDownloader(
-							DesktopAppDownloadControlCookies.getBooleanCookieValue(
-								Cookie.HINT_VISIBLE,
-								true));
-					}
+					// ...check if they've hidden it for the current
+					// ...session only...
+					m_mainPageInfo.setShowDesktopAppDownloader(
+						DesktopAppDownloadControlCookies.getBooleanCookieValue(
+							Cookie.HINT_VISIBLE,
+							true));
 				}
 				
 				// ...and continue the load process.
@@ -2576,9 +2579,58 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onInvokeDownloadDesktopApp( InvokeDownloadDesktopAppEvent event )
 	{
-//!		...this needs to be implemented...
-		GwtClientHelper.deferredAlert( "GwtMainPage.onInvokeDownloadDesktopApp():  ...this needs to be implemented..." );
+		// Simply run the desktop application download dialog.
+		runDesktopAppDownloadDlgAsync();
 	}// end onInvokeDownloadDesktopApp()
+	
+	/*
+	 * Asynchronously runs the desktop application download dialog
+	 * using the supplied information.
+	 */
+	private void runDesktopAppDownloadDlgAsync()
+	{
+		ScheduledCommand doDesktopAppDownload = new ScheduledCommand() {
+			@Override
+			public void execute()
+			{
+				runDesktopAppDownloadDlgNow();
+			}// end execute()
+		};
+		Scheduler.get().scheduleDeferred( doDesktopAppDownload );
+	}
+	
+	/*
+	 * Synchronously runs the desktop application download dialog using
+	 * the supplied information.
+	 */
+	private void runDesktopAppDownloadDlgNow()
+	{
+		// Instantiate a desktop application download dialog...
+		DesktopAppDownloadDlg.createAsync( new DesktopAppDownloadDlgClient()
+		{			
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( final DesktopAppDownloadDlg dadDlg )
+			{
+				// ...and show it.
+				ScheduledCommand doShow = new ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						DesktopAppDownloadDlg.initAndShow( dadDlg );
+					}// end execute()
+				};
+				Scheduler.get().scheduleDeferred( doShow );
+			}
+		});
+	}
 	
 	/**
 	 * Handles InvokeHelpEvent's received by this class.

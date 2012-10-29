@@ -4765,14 +4765,18 @@ td.datePickerMonth {
 }
 
 /* Start:  Desktop application download control styles. */
-	.vibe-desktopAppDownload-closeImg            {}
-	.vibe-desktopAppDownload-closePanel          {display: block; position: absolute; top: 1px; right: 6px; cursor: pointer;}
-	.vibe-desktopAppDownload-control             {display: block; position: relative; background-color: #EBECA5; border-color: #BABDB6; border-style: solid; border-width: 1px; font-size: 12px; margin: 5px 10px; padding: 5px 10px; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
-	.vibe-desktopAppDownload-dontShowLabel       {color: #135C8F;}
-	.vibe-desktopAppDownload-dontShowLabel:hover {background: url(images/blends/teal_slice.png) repeat-x; background-position: center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
-	.vibe-desktopAppDownload-dontShowPanel       {display: block; position: absolute; top: 10px; right: 40px; text-decoration: none; cursor: pointer;}
-	.vibe-desktopAppDownload-hintLabel           {}
-	.vibe-desktopAppDownload-hintPanel           {display: block; margin: 0px; margin-top: 3px !important; padding: 0px; padding-top: 5px !important;}
+	.vibe-desktopAppCtrl-closeImg            {}
+	.vibe-desktopAppCtrl-closePanel          {display: block; position: absolute; top: 1px; right: 6px; cursor: pointer;}
+	.vibe-desktopAppCtrl-control             {display: block; position: relative; background-color: #EBECA5; border-color: #BABDB6; border-style: solid; border-width: 1px; font-size: 12px; margin: 5px 10px; padding: 5px 10px; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-desktopAppCtrl-dontShowLabel       {color: #135C8F;}
+	.vibe-desktopAppCtrl-dontShowLabel:hover {background: url(images/blends/teal_slice.png) repeat-x; background-position: center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-desktopAppCtrl-dontShowPanel       {display: block; position: absolute; top: 10px; right: 40px; text-decoration: none; cursor: pointer;}
+	.vibe-desktopAppCtrl-hintLabel           {}
+	.vibe-desktopAppCtrl-hintPanel           {display: block; margin: 0px; margin-top: 3px !important; padding: 0px; padding-top: 5px !important;}
 /* End:  Desktop application download control styles. */
+
+/* Start:  Desktop application download dialog styles. */
+	.vibe-desktopAppDlg-rootPanel {padding: 10px;}
+/* End:  Desktop application download dialog styles. */
 
 /* End */
