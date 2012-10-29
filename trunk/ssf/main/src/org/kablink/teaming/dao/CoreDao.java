@@ -257,4 +257,9 @@ public interface CoreDao {
 	public OpenIDProvider loadOpenIDProvider(Long zoneId, String openIDProviderId);
 	
 	public List<OpenIDProvider> findOpenIDProviders(Long zoneId);
+	
+	public int purgeAuditTrail(Long zoneId, Date purgeBeforeDate);
+	
+	public int purgeChangeLogs(Long zoneId, Date purgeBeforeDate);
+
 }

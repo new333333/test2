@@ -179,6 +179,10 @@ public interface AdminModule {
     public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation);
     public boolean isAdHocFoldersEnabled();
     public void setAdHocFoldersEnabled( boolean enabled );
+    public int getAuditTrailKeepDays();
+    public int getChangeLogsKeepDays();
+    public void setLogTableKeepDays(int auditTrailKeepDays, int changeLogsKeepDays);
+    
 
     /**
      * Get system functions
@@ -382,4 +386,9 @@ public interface AdminModule {
 	public OpenIDConfig getOpenIDConfig();
 	
 	public void setOpenIDConfig(OpenIDConfig openIDConfig);
+	
+    public ScheduleInfo getLogTablePurgeSchedule();
+    
+    public void setLogTablePurgeSchedule(ScheduleInfo info);
+
  }

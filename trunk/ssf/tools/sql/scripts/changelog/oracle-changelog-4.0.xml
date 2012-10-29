@@ -342,4 +342,22 @@ update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=1,FROMLOCAL=0,FROMOPENID=0 where ID
             </column>
         </addColumn>
     </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="42">
+        <comment>How many days worth of data to keep in SS_AuditTrail table</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="AUDITTRAILKEEPDAYS" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="43">
+        <comment>How many days worth of data to keep in SS_ChangeLogs table</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="CHANGELOGSKEEPDAYS" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

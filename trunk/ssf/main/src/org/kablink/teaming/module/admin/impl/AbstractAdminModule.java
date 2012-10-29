@@ -92,6 +92,7 @@ import org.kablink.teaming.jobs.EmailNotification;
 import org.kablink.teaming.jobs.EmailPosting;
 import org.kablink.teaming.jobs.FileVersionAging;
 import org.kablink.teaming.jobs.IndexOptimization;
+import org.kablink.teaming.jobs.LogTablePurge;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.IndexOptimizationSchedule;
@@ -160,6 +161,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	
 	protected static String INDEX_OPTIMIZATION_JOB = "index.optimization.job"; // properties in xml file need a unique name
 	protected static String FILE_VERSION_AGING_JOB = "file.version.aging.job"; // properties in xml file need a unique name
+	protected static String LOG_TABLE_PURGE_JOB = "log.table.purge.job"; // properties in xml file need a unique name
 	
 	protected MailModule mailModule;
 	/**
@@ -2107,4 +2109,51 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	private boolean dealingWithExternalAcl(boolean justThisScope, String scope) {
 		return (justThisScope && ObjectKeys.ROLE_TYPE_FILR.equals(scope));
 	}
+	
+  	@Override
+	public int getAuditTrailKeepDays() {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		return zoneConfig.getAuditTrailKeepDays(); 		
+  	}
+  	@Override
+	public int getChangeLogsKeepDays() {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		return zoneConfig.getChangeLogsKeepDays(); 		
+  	}
+  	@Override
+	public void setLogTableKeepDays(int auditTrailKeepDays, int changeLogsKeepDays) {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setAuditTrailKeepDays(auditTrailKeepDays);
+  		zoneConfig.setChangeLogsKeepDays(changeLogsKeepDays);
+  	}
+
+    public ScheduleInfo getLogTablePurgeSchedule() {
+    	return getLogTablePurgeObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
+    }
+    
+    public void setLogTablePurgeSchedule(ScheduleInfo info) {
+    	LogTablePurge obj = getLogTablePurgeObject();
+    	obj.setScheduleInfo(info);
+    	obj.enable(true, RequestContextHolder.getRequestContext().getZoneId());
+    }
+
+    private LogTablePurge getLogTablePurgeObject() {
+    	String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		String jobClass = getLogTablePurgeProperty(zoneName, LOG_TABLE_PURGE_JOB);
+    	if (Validator.isNotNull(jobClass)) {
+		   try {
+			   return  (LogTablePurge)ReflectHelper.getInstance(jobClass);
+		   } catch (Exception ex) {
+			   logger.error("Cannot instantiate LogTablePurge custom class", ex);
+		   }
+   		}
+   		return (LogTablePurge)ReflectHelper.getInstance(
+   				org.kablink.teaming.jobs.DefaultLogTablePurge.class);
+    }
+    
+	//See if there is a custom scheduling job being specified
+    protected String getLogTablePurgeProperty(String zoneName, String name) {
+		return SZoneConfig.getString(zoneName, "logTablePurgeConfiguration/property[@name='" + name + "']");
+	}
+
 }
