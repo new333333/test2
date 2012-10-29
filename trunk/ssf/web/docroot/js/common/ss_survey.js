@@ -35,7 +35,7 @@ dojo.require("dojox.validate.web");
 dojo.require("dojo.cookie");
 
 if (!window.ssSurvey) {
-	function ssSurvey(hiddenInputValueId, surveyContainerId, prefix) {
+	function ssSurvey(hiddenInputValueId, surveyContainerId, prefix, votesExist) {
 		
 		var inputId = hiddenInputValueId;
 		
@@ -51,6 +51,8 @@ if (!window.ssSurvey) {
 		var that = this;
 		
 		var currentSurvey;
+		
+		var usersHaveAlreadyVoted = votesExist;
 		
 		this.locale = {
 			moreAnswers: "Add more answers",
@@ -112,32 +114,35 @@ if (!window.ssSurvey) {
 		function ss_addQuestionHeader (questionContainer) {
 			var questionHeader = document.createElement('h4');
 			questionHeader.id = prefix + "questionHeader"+ss_questionsCounter;
-			var removerLink = document.createElement('a');
-			removerLink.href = "javascript: //;";
-			dojo.connect(removerLink, "onclick", ss_callRemoveQuestion(that, ss_questionsCounter));
-			var removerImg = document.createElement('img');
-			removerImg.setAttribute("src", ss_imagesPath + "pics/delete.png");
-			removerImg.setAttribute("align", "absmiddle");
-			removerLink.appendChild(removerImg);
-			questionHeader.appendChild(removerLink);
-			
-			var upLink = document.createElement('a');
-			upLink.href = "javascript: //;";
-			dojo.connect(upLink, "onclick", ss_callMoveQuestion(that, ss_questionsCounter, true));
-			var upImg = document.createElement('img');
-			upImg.setAttribute("src", ss_imagesPath + "pics/sym_s_up.gif");
-			upImg.setAttribute("align", "absmiddle");
-			upLink.appendChild(upImg);
-			questionHeader.appendChild(upLink);
-
-			var downLink = document.createElement('a');
-			downLink.href = "javascript: //;";
-			dojo.connect(downLink, "onclick", ss_callMoveQuestion(that, ss_questionsCounter, false));
-			var downImg = document.createElement('img');
-			downImg.setAttribute("src", ss_imagesPath + "pics/sym_s_down.gif");
-			downImg.setAttribute("align", "absmiddle");
-			downLink.appendChild(downImg);
-			questionHeader.appendChild(downLink);
+			if (1 == 1 || !usersHaveAlreadyVoted) {
+				//Show the links. But they will give an error message saying that you cannot move questions after anyone has voted
+				var removerLink = document.createElement('a');
+				removerLink.href = "javascript: //;";
+				dojo.connect(removerLink, "onclick", ss_callRemoveQuestion(that, ss_questionsCounter));
+				var removerImg = document.createElement('img');
+				removerImg.setAttribute("src", ss_imagesPath + "pics/delete.png");
+				removerImg.setAttribute("align", "absmiddle");
+				removerLink.appendChild(removerImg);
+				questionHeader.appendChild(removerLink);
+				
+				var upLink = document.createElement('a');
+				upLink.href = "javascript: //;";
+				dojo.connect(upLink, "onclick", ss_callMoveQuestion(that, ss_questionsCounter, true));
+				var upImg = document.createElement('img');
+				upImg.setAttribute("src", ss_imagesPath + "pics/sym_s_up.gif");
+				upImg.setAttribute("align", "absmiddle");
+				upLink.appendChild(upImg);
+				questionHeader.appendChild(upLink);
+	
+				var downLink = document.createElement('a');
+				downLink.href = "javascript: //;";
+				dojo.connect(downLink, "onclick", ss_callMoveQuestion(that, ss_questionsCounter, false));
+				var downImg = document.createElement('img');
+				downImg.setAttribute("src", ss_imagesPath + "pics/sym_s_down.gif");
+				downImg.setAttribute("align", "absmiddle");
+				downLink.appendChild(downImg);
+				questionHeader.appendChild(downLink);
+			}
 
 			var label = document.createElement('span');
 			label.id = prefix + "questionHeaderLabel"+ss_questionsCounter;
@@ -151,6 +156,10 @@ if (!window.ssSurvey) {
 		}
 		
 		this.ss_removeQuestion = function(index) {
+			if (usersHaveAlreadyVoted) {
+				alert(ss_survey_cannotMoveAfterVoting);
+				return;
+			}
 			if (confirm(this.locale.confirmRemove)) {
 				ss_questionsArray[index]='undefined';
 				var questionContainer = dojo.byId(prefix + "question" + index);
@@ -164,6 +173,10 @@ if (!window.ssSurvey) {
 		}
 
 		this.ss_moveQuestion = function(index, directionUp) {
+			if (usersHaveAlreadyVoted) {
+				alert(ss_survey_cannotMoveAfterVoting);
+				return;
+			}
 			var orderIndex = -1;
 			//Find where this question is in the order
 			for (i=0; i<ss_orderArray.length; i++) {
