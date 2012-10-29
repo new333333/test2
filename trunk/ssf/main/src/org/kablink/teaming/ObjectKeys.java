@@ -457,6 +457,7 @@ public interface ObjectKeys {
     public static final String SEARCH_CREATION_DATE_START = "creationDateStart";
     public static final String SEARCH_CREATION_DATE_END = "creationDateEnd";
     public static final String SEARCH_IS_PERSON = "searchIsPerson";
+    public static final String SEARCH_IS_INTERNAL = "searchIsInternal";
     
     //Search Result Identifier
     public static final String SEARCH_RESULTS_DISPLAY="ss_searchResultListing";
