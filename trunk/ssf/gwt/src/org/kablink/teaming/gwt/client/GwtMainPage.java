@@ -416,15 +416,8 @@ public class GwtMainPage extends ResizeComposite
 				String userAvatarUrl = m_mainPageInfo.getUserAvatarUrl();
 				m_requestInfo.setUserAvatarUrl( ( null == userAvatarUrl ) ? "" : userAvatarUrl );
 				
-//!				...this needs to be implemented...
-				if ( ! ( DesktopAppDownloadDlg.SHOW_DESKTOP_APP_DOWNLOADER ) )
-				{
-					m_mainPageInfo.setDesktopAppEnabled(       false);
-					m_mainPageInfo.setShowDesktopAppDownloader(false);
-				}
-				
-				// ...if the user hasn't hidden the control
-				// ...permanently...
+				// ...if the user hasn't hidden the desktop application
+				// ...download control permanently...
 				if ( m_mainPageInfo.isShowDesktopAppDownloader() )
 				{
 					// ...check if they've hidden it for the current
