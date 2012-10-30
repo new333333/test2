@@ -56,6 +56,14 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource entry_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/Filr_bg.png")
+	public ImageResource filrBackground();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/Filr_bg_repeat.png")
+	public ImageResource filrBackgroundRepeat();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder.png")
 	public ImageResource folder();
 	
@@ -90,6 +98,22 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder_shared_48.png")
 	public ImageResource folderShared_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/android_logo_100.png")
+	public ImageResource logoAndroid();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/iOS_logo_100.png")
+	public ImageResource logoIOS();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/Mac_mini_apple.png")
+	public ImageResource logoMac();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/MSWin-logo.png")
+	public ImageResource logoWindows();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/myfiles.png")

@@ -2053,8 +2053,28 @@ public interface GwtTeamingMessages extends Messages
 	String desktopAppCtrl_Hint_Vibe();
 	
 	// String used in the desktop application download dialog.
-	String downloadAppDlgHeader_Filr();
-	String downloadAppDlgHeader_Vibe();
+	String downloadAppDlg_Filr();
+	String downloadAppDlg_Novell();
+	String downloadAppDlg_Vibe();
+	String downloadAppDlgAlt_AndroidDownloads();
+	String downloadAppDlgAlt_IOSDownloads();
+	String downloadAppDlgAlt_MacDownloads();
+	String downloadAppDlgAlt_WindowsDownloads();
+	String downloadAppDlgBody_Downloads();
+	String downloadAppDlgBody_Instructions();
+	String downloadAppDlgBody_Product();
+	String downloadAppDlgBody_Type();
+	String downloadAppDlgDownloadAndroid1(String company, String product);
+	String downloadAppDlgDownloadAndroid2(String type);
+	String downloadAppDlgDownloadAndroid3();
+	String downloadAppDlgDownloadAndroid4(String company, String product, String type);
+	String downloadAppDlgDownloadAndroid5(String company, String product);
+	String downloadAppDlgHeader(String product);
+	String downloadAppDlgProductAndroid(String product);
+	String downloadAppDlgProductIOS(String product);
+	String downloadAppDlgProductMac(String product);
+	String downloadAppDlgProductWindows(String product);
+	String downloadAppDlgSubhead(String product);
 
 	// Strings used in the "Select Principals" widget
 	String selectPrincipalsWidget_CantSelectExternalUserPrompt();
