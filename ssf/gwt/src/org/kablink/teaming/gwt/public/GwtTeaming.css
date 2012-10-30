@@ -227,7 +227,7 @@
 }
  
 
-.activityStreamHover, .shareThisDlg_NameHover, .groupMembershipNameHover, .modifyNetFolderRootDlg_NameHover
+.activityStreamHover, .shareThisDlg_NameHover, .groupMembershipNameHover, .selectPrincipalsWidget_NameHover
 {
 	cursor: pointer;
 	background: url(images/blends/teal_slice.png) repeat-x;
@@ -4467,47 +4467,17 @@ td.datePickerMonth {
  * Styles used in the "Modify Net Folder Root" dialog
  */
 
-.modifyNetFolderRootDlg_SelectPrivelegedUsersHint
+.modifyNetFolderRootDlg_SelectPrivelegedUsersHint, .modifyNetFolderDlg_SelectPrincipalsHint
 {
 	color: #4D6D8B;
 	font-size: 1em;
 	margin-bottom: 0.5em;
 }
 
-.modifyNetFolderRootDlg_PrivilegedPrincipalsTablePanelHeight
-{
-	height: 200px;
-	overflow: auto;
-}
-
-.modifyNetFolderRootDlg_PrivilegedPrincipalsTable_highlightRow
-{
-	background: none repeat scroll 0 0 #CCE9EE;
-}
-
-.modifyNetFolderRootDlg_PrivilegedPrincipalsTablePanel
-{
-	width: 570px;
-}
-
 .modifyNetFolderRootDlg_PrivilegedPrincipalsTable
 {
 	width: 550px;
 	table-layout: fixed;
-}
-
-.modifyNetFolderRootDlg_RemovePrincipalPanel
-{
-	margin-left: 4px;
-}
-
-.modifyNetFolderRootDlg_PrivilegedPrincipalsTable_Cell
-{
-	overflow: hidden;
-}
-
-.modifyNetFolderRootDlg_PrincipalNameLabel
-{
 }
 
 /**
@@ -4521,6 +4491,41 @@ td.datePickerMonth {
 .modifyNetFolderDlg_ScheduleWidget, .modifyNetFolderServerDlg_ScheduleWidget
 {
 }
+
+
+/**
+ * Styles used in the SelectPrincipalsWidget
+ */
+.selectPrincipalsWidget_PrincipalNameLabel
+{
+}
+
+.selectPrincipalsWidget_RemovePrincipalPanel
+{
+	margin-left: 4px;
+}
+
+.selectPrincipalsWidget_PrincipalsTablePanelHeight
+{
+	height: 200px;
+	overflow: auto;
+}
+
+.selectPrincipalsWidget_PrincipalsTablePanel
+{
+	width: 570px;
+}
+
+.selectPrincipals_PrincipalsTable_Cell
+{
+	overflow: hidden;
+}
+
+.selectPrincipals_PrincipalsTable_highlightRow
+{
+	background: none repeat scroll 0 0 #CCE9EE;
+}
+
 
 
 /**

@@ -59,12 +59,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.ModifyNetFolderRootDlgClient;
+import org.kablink.teaming.gwt.client.widgets.SelectPrincipalsWidget.SelectPrincipalsWidgetClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -80,7 +80,9 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
@@ -94,12 +96,14 @@ public class ModifyNetFolderDlg extends DlgBox
 		EditSuccessfulHandler,
 		NetFolderRootCreatedEvent.Handler
 {
+	private TabPanel m_tabPanel;
 	private NetFolder m_netFolder;	// If we are modifying a net folder this is the net folder.
 	private TextBox m_nameTxtBox;
 	private TextBox m_relativePathTxtBox;
 	private ListBox m_netFolderRootsListbox;
 	private InlineLabel m_noNetFolderRootsLabel;
 	private ScheduleWidget m_scheduleWidget;
+	private SelectPrincipalsWidget m_selectPrincipalsWidget;
 	private FlowPanel m_inProgressPanel;
 	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
@@ -167,15 +171,59 @@ public class ModifyNetFolderDlg extends DlgBox
 	{
 		GwtTeamingMessages messages;
 		FlowPanel mainPanel;
-		final FlexTable table;
-		Label label;
-		int nextRow;
-		CaptionPanel captionPanel;
 		
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
+		
+		m_tabPanel = new TabPanel();
+		m_tabPanel.addStyleName( "vibe-tabPanel" );
+
+		mainPanel.add( m_tabPanel );
+		
+		// Create the panel that will hold the controls for the net folder configuration
+		{
+			Panel configPanel;
+			
+			configPanel = createConfigPanel();
+			
+			m_tabPanel.add( configPanel, messages.modifyNetFolderDlg_ConfigTab() );
+		}
+		
+		// Create the panel that will hold the controls for access rights
+		{
+			Panel rightsPanel;
+			
+			rightsPanel = createRightsPanel();
+			m_tabPanel.add( rightsPanel, messages.modifyNetFolderDlg_RightsTab() );
+		}
+		
+		// create the panel that will hold the controls for the schedule
+		{
+			Panel schedPanel;
+			
+			schedPanel = createSchedulePanel();
+			m_tabPanel.add( schedPanel, messages.modifyNetFolderDlg_ScheduleTab() );
+		}
+
+		return mainPanel;
+	}
+
+	/**
+	 * Create a panel that holds all the controls for configuring the net folder.
+	 */
+	private Panel createConfigPanel()
+	{
+		GwtTeamingMessages messages;
+		FlowPanel mainPanel;
+		final FlexTable table;
+		Label label;
+		int nextRow;
+		
+		messages = GwtTeaming.getMessages();
+		
+		mainPanel = new FlowPanel();
 		
 		// Create a table to hold the controls.
 		table = new FlexTable();
@@ -318,31 +366,88 @@ public class ModifyNetFolderDlg extends DlgBox
 			++nextRow;
 		}
 		
-		// Create the controls for defining the sync schedule
-		{
-			FlowPanel spacerPanel;
-			FlowPanel captionPanelMainPanel;
-			
-			// Add some space
-			spacerPanel = new FlowPanel();
-			spacerPanel.getElement().getStyle().setMarginTop( 10, Unit.PX );
-			table.setHTML( nextRow, 0, spacerPanel.getElement().getString() );
-			++nextRow;
-			
-			captionPanel = new CaptionPanel( messages.modifyNetFolderDlg_SyncScheduleCaption() );
-			captionPanel.addStyleName( "modifyNetFolderDlg_SyncScheduleCaptionPanel" );
-			
-			captionPanelMainPanel = new FlowPanel();
-			captionPanel.add( captionPanelMainPanel );
-
-			m_scheduleWidget = new ScheduleWidget( messages.modifyNetFolderDlg_EnableSyncScheduleLabel());
-			m_scheduleWidget.addStyleName( "modifyNetFolderDlg_ScheduleWidget" );
-			captionPanelMainPanel.add( m_scheduleWidget );
-		}
-		
 		mainPanel.add( table );
-		mainPanel.add( captionPanel );
 
+		return mainPanel;
+		
+	}
+	
+	/**
+	 * Create the panel that holds all of the controls for defining access rights.
+	 */
+	private Panel createRightsPanel()
+	{
+		FlowPanel mainPanel;
+		final FlexTable table;
+		FlexCellFormatter cellFormatter;
+		Label label;
+		int nextRow = 0;
+		final int selectPrincipalsWidgetRow;
+		
+		mainPanel = new FlowPanel();
+		
+		table = new FlexTable();
+		cellFormatter = table.getFlexCellFormatter();
+		mainPanel.add( table );
+		
+		// Add a hint
+		cellFormatter.setColSpan( nextRow, 0, 2 );
+		cellFormatter.setWordWrap( nextRow, 0, false );
+		cellFormatter.addStyleName( nextRow, 0, "modifyNetFolderDlg_SelectPrincipalsHint" );
+		label = new InlineLabel( GwtTeaming.getMessages().modifyNetFolderDlg_SelectPrincipalsHint() );
+		table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
+		++nextRow;
+		
+		cellFormatter.setColSpan( nextRow, 0, 2 );
+		selectPrincipalsWidgetRow = nextRow;
+		++nextRow;
+		
+		// Create a widget that lets the user select users and groups.
+		SelectPrincipalsWidget.createAsync( new SelectPrincipalsWidgetClient() 
+		{
+			@Override
+			public void onUnavailable() 
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess( SelectPrincipalsWidget widget )
+			{
+				m_selectPrincipalsWidget = widget;
+				table.setWidget( selectPrincipalsWidgetRow, 0, m_selectPrincipalsWidget );
+			}
+		} );
+	
+		return mainPanel;
+	}
+	
+	/**
+	 * Create the panel that holds all of the controls for defining the sync schedule
+	 */
+	private Panel createSchedulePanel()
+	{
+		GwtTeamingMessages messages;
+		FlowPanel mainPanel;
+		FlowPanel captionPanelMainPanel;
+		CaptionPanel captionPanel;
+		
+		messages = GwtTeaming.getMessages();
+		
+		mainPanel = new FlowPanel();
+		
+		captionPanel = new CaptionPanel( messages.modifyNetFolderDlg_SyncScheduleCaption() );
+		captionPanel.addStyleName( "modifyNetFolderDlg_SyncScheduleCaptionPanel" );
+		
+		captionPanelMainPanel = new FlowPanel();
+		captionPanel.add( captionPanelMainPanel );
+
+		m_scheduleWidget = new ScheduleWidget( messages.modifyNetFolderDlg_EnableSyncScheduleLabel());
+		m_scheduleWidget.addStyleName( "modifyNetFolderDlg_ScheduleWidget" );
+		captionPanelMainPanel.add( m_scheduleWidget );
+
+		mainPanel.add( captionPanel );
+		
 		return mainPanel;
 	}
 	
@@ -673,6 +778,9 @@ public class ModifyNetFolderDlg extends DlgBox
 		m_netFolderRootsListbox.setVisible( false );
 		m_noNetFolderRootsLabel.setVisible( false );
 		
+		// Clear out the access rights controls
+		m_selectPrincipalsWidget.init();
+		
 		// Clear out the sync schedule controls
 		m_scheduleWidget.init( null );
 
@@ -691,6 +799,9 @@ public class ModifyNetFolderDlg extends DlgBox
 			
 			// Initialize the sync schedule controls
 			m_scheduleWidget.init( m_netFolder.getSyncSchedule() );
+			
+			// Initialize the access rights
+			//!!! m_selectPrincipalsWidget.init( m_netFolder.getMembers() );
 		}
 		else
 		{
@@ -702,6 +813,9 @@ public class ModifyNetFolderDlg extends DlgBox
 			m_nameTxtBox.setEnabled( true );
 		}
 		
+		// Select the "Configuration" tab
+		m_tabPanel.selectTab( 0 );
+
 		// Issue an ajax request to get the list of net folder roots this user has
 		// permission to use.
 		getListOfNetFolderRoots();

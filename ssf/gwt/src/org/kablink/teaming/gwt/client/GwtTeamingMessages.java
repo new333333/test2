@@ -599,6 +599,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ProjectManagementWSView();
 	String codeSplitFailure_QuickViewDlg();
 	String codeSplitFailure_SearchOptionsComposite();
+	String codeSplitFailure_SelectPrincipalsWidget();
 	String codeSplitFailure_SurveyFolderView();
 	String codeSplitFailure_ShareExpirationDlg();
 	String codeSplitFailure_ShareThisDlg();
@@ -1915,8 +1916,6 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the modify Net Folder Server dialog
 	String modifyNetFolderServerDlg_AddHeader();
 	String modifyNetFolderServerDlg_AllowSelfSignedCertsLabel();
-	String modifyNetFolderServerDlg_AlreadyAPrivilegedPrincipal( String name );
-	String modifyNetFolderServerDlg_CantSelectExternalUser();
 	String modifyNetFolderServerDlg_EditHeader( String name );
 	String modifyNetFolderServerDlg_EnableSyncScheduleLabel();
 	String modifyNetFolderServerDlg_ErrorCreatingNetFolderServer( String err );
@@ -1926,23 +1925,18 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_HostUrlRequired();
 	String modifyNetFolderServerDlg_InsufficientRights();
 	String modifyNetFolderServerDlg_IsSharePointServerLabel();
-	String modifyNetFolderServerDlg_NameCol();
 	String modifyNetFolderServerDlg_NameLabel();
 	String modifyNetFolderServerDlg_NameRequired();
-	String modifyNetFolderServerDlg_NoPrivilegedPrincipalsHint();
 	String modifyNetFolderServerDlg_NotFullyConfigured();
 	String modifyNetFolderServerDlg_PrivilegedPrincipalsHint();
 	String modifyNetFolderServerDlg_ProxyNameLabel();
 	String modifyNetFolderServerDlg_ProxyPwdLabel();
-	String modifyNetFolderServerDlg_RemovePrincipalHint();
 	String modifyNetFolderServerDlg_ServerAlreadyExists();
 	String modifyNetFolderServerDlg_ServerPathLabel();
-	String modifyNetFolderServerDlg_SelectPrincipalsLabel();
 	String modifyNetFolderServerDlg_SyncAllNetFoldersPrompt();
 	String modifyNetFolderServerDlg_SyncOfNetFolderServerStarted();
 	String modifyNetFolderServerDlg_TestConnectionLabel();
 	String modifyNetFolderServerDlg_TypeLabel();
-	String modifyNetFolderServerDlg_TypeCol();
 	String modifyNetFolderServerDlg_Type_Famt();
 	String modifyNetFolderServerDlg_Type_FileSystem();
 	String modifyNetFolderServerDlg_Type_WebDav();
@@ -1952,12 +1946,12 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the Manage Net Folders dialog
 	String manageNetFoldersDlg_AddNetFolderLabel();
 	String manageNetFoldersDlg_ConfirmDelete( String netFolderName );
-	String modifyNetFolderDlg_CreateNetFolderServerLabel();
 	String manageNetFoldersDlg_DeleteNetFolderLabel();
 	String manageNetFoldersDlg_Header();
 	String manageNetFoldersDlg_NameCol();
 	String manageNetFoldersDlg_NoNetFoldersLabel();
 	String manageNetFoldersDlg_PromptForSync();
+	String manageNetFoldersDlg_RelativePathCol();
 	String manageNetFoldersDlg_ServerCol();
 	String manageNetFoldersDlg_SelectFoldersToDelete();
 	String manageNetFoldersDlg_SelectFoldersToSync();
@@ -1967,6 +1961,8 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the Modify Net Folder dialog
 	String modifyNetFolderDlg_AddHeader();
+	String modifyNetFolderDlg_ConfigTab();
+	String modifyNetFolderDlg_CreateNetFolderServerLabel();
 	String modifyNetFolderDlg_EditHeader( String name );
 	String modifyNetFolderDlg_EnableSyncScheduleLabel();
 	String modifyNetFolderDlg_ErrorCreatingNetFolder( String err );
@@ -1980,8 +1976,10 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_NoNetFolderServersPrompt();
 	String modifyNetFolderDlg_ParentBinderRequired();
 	String modifyNetFolderDlg_ParentFolderLabel();
-	String manageNetFoldersDlg_RelativePathCol();
 	String modifyNetFolderDlg_RelativePathLabel();
+	String modifyNetFolderDlg_RightsTab();
+	String modifyNetFolderDlg_SelectPrincipalsHint();
+	String modifyNetFolderDlg_ScheduleTab();
 	String modifyNetFolderDlg_SyncScheduleCaption();
 	
 	// Strings used in the Schedule widget
@@ -2057,5 +2055,14 @@ public interface GwtTeamingMessages extends Messages
 	// String used in the desktop application download dialog.
 	String downloadAppDlgHeader_Filr();
 	String downloadAppDlgHeader_Vibe();
-	
+
+	// Strings used in the "Select Principals" widget
+	String selectPrincipalsWidget_CantSelectExternalUserPrompt();
+	String selectPrincipalsWidget_NameCol();
+	String selectPrincipalsWidget_NoPrincipalsHint();
+	String selectPrincipalsWidget_PrincipalAlreadyInListPrompt( String name );
+	String selectPrincipalsWidget_RemovePrincipalHint();
+	String selectPrincipalsWidget_SelectPrincipalsLabel();
+	String selectPrincipalsWidget_TypeCol();
+
 }// end GwtTeamingMessages
