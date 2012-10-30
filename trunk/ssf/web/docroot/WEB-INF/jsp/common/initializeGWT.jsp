@@ -37,9 +37,10 @@
 
 <meta name="gwt:property" content="locale=<%= NLT.get( "Teaming.Lang" ) %>">
 
-<link href="<html:rootPath/>js/gwt/gwtteaming/GwtTeaming.css"         rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>js/gwt/gwtteaming/GwtProfile.css"         rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>js/gwt/gwtteaming/GwtLandingPage.css"     rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>js/gwt/gwtteaming/GwtBinderViews.css"     rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>js/gwt/gwtteaming/GwtMenus.css"           rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>js/gwt/gwtteaming/GwtFolderEntryView.css" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>js/gwt/gwtteaming/GwtTeaming.css"                rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>js/gwt/gwtteaming/GwtProfile.css"                rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>js/gwt/gwtteaming/GwtLandingPage.css"            rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>js/gwt/gwtteaming/GwtBinderViews.css"            rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>js/gwt/gwtteaming/GwtMenus.css"                  rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>js/gwt/gwtteaming/GwtFolderEntryView.css"        rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>js/gwt/gwtteaming/GwtDesktopAppDownloadPage.css" rel="stylesheet" type="text/css" />

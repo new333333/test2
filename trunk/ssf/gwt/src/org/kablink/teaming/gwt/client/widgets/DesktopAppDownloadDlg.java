@@ -36,9 +36,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFooterToolbarItemsCmd;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -47,10 +50,15 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -58,11 +66,23 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  *  
  * @author drfoster@novell.com
  */
+@SuppressWarnings("unused")
 public class DesktopAppDownloadDlg extends DlgBox {
+	private boolean						m_isFilr;					// true -> We're in Filr mode.  false -> We're in Vibe mode.
+	private GwtTeamingFilrImageBundle	m_filrImages;				// Access to Filr's images.
+	private GwtTeamingImageBundle		m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages			m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private String						m_company;					//
+	private String						m_product;					//
 	private VibeFlowPanel				m_fp;						// The panel holding the dialog's content.
 
+	// Indexes of the various cells.
+	private final static int PRODUCT_COL		= 0;
+	private final static int LOGO_COL			= 1;
+	private final static int DOWNLOADS_COL		= 2;
+	private final static int INSTRUCTIONS_COL	= 3;
+	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
@@ -81,16 +101,19 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		super(false, true, DlgButtonMode.Close);
 
 		// ...initialize everything else...
-		m_messages = GwtTeaming.getMessages();
+		m_isFilr     = GwtClientHelper.isLicenseFilr();
+		m_filrImages = GwtTeaming.getFilrImageBundle();
+		m_images     = GwtTeaming.getImageBundle();
+		m_messages   = GwtTeaming.getMessages();
+		m_company    = m_messages.downloadAppDlg_Novell();
+		m_product    = (m_isFilr ? m_messages.downloadAppDlg_Filr() : m_messages.downloadAppDlg_Vibe());
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
-			(GwtClientHelper.isLicenseFilr() ?
-				m_messages.downloadAppDlgHeader_Filr() :	// The dialog's header for Filr.
-				m_messages.downloadAppDlgHeader_Vibe()),	// The dialog's header for Vibe.
-			getSimpleSuccessfulHandler(),					// The dialog's EditSuccessfulHandler.
-			getSimpleCanceledHandler(),						// The dialog's EditCanceledHandler.
-			null);											// Create callback data.  Unused.
+			m_messages.downloadAppDlgHeader(m_product),	// The dialog's header.
+			getSimpleSuccessfulHandler(),				// The dialog's EditSuccessfulHandler.
+			getSimpleCanceledHandler(),					// The dialog's EditCanceledHandler.
+			null);										// Create callback data.  Unused.
 	}
 
 	/**
@@ -106,10 +129,220 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	public Panel createContent(Object callbackData) {
 		// Create and return a panel to hold the dialog's content.
 		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-desktopAppDlg-rootPanel");
+		m_fp.addStyleName("vibe-desktopAppPage-body");
 		return m_fp;
 	}
 
+	/*
+	 * Creates the masthead content of the page.
+	 */
+	private void createContentMasthead() {
+		// Create the masthead panel...
+		VibeFlowPanel mhPanel = new VibeFlowPanel();
+		mhPanel.addStyleName("vibe-desktopAppPage-masthead");
+		m_fp.add(mhPanel);
+
+		// ...and image.
+		Image i = GwtClientHelper.buildImage(m_filrImages.filrBackground().getSafeUri().asString());
+		i.addStyleName("head_bg");
+		mhPanel.add(i);
+	}
+	
+	/*
+	 * Creates the sub-head of the page.
+	 */
+	private void createContentSubhead() {
+		// Create the sub-head panel...
+		VibeFlowPanel shPanel = new VibeFlowPanel();
+		shPanel.addStyleName("vibe-desktopAppPage-subhead");
+		m_fp.add(shPanel);
+
+		// ...and content.
+		StringBuffer sb = new StringBuffer(m_company);
+		sb.append(createRegHTML());
+		sb.append(" ");
+		sb.append(m_messages.downloadAppDlgSubhead(m_product));
+		shPanel.getElement().setInnerHTML(sb.toString());
+	}
+	
+	/*
+	 * Creates the body content of the page.
+	 */
+	private void createContentBody() {
+		// Create the body panel...
+		VibeFlowPanel bodyPanel = new VibeFlowPanel();
+		bodyPanel.addStyleName("vibe-desktopAppPage-content");
+		m_fp.add(bodyPanel);
+
+		// ...create the <TABLE> containing the body's content...
+		VibeFlexTable ft = new VibeFlexTable();
+		ft.addStyleName("vibe-desktopAppPage-contentTable");
+		ft.setCellPadding(0);
+		ft.setCellSpacing(0);
+		bodyPanel.add(ft);
+		FlexCellFormatter fcf = ft.getFlexCellFormatter();
+
+		// ...create the table's header row...
+		ft.setText(      0,  PRODUCT_COL,      m_messages.downloadAppDlgBody_Product());
+		fcf.addStyleName(0,  PRODUCT_COL,      "vibe-desktopAppPage-columnhead vibe-desktopAppPage-columnhead2");
+		ft.setText(      0,  LOGO_COL,         m_messages.downloadAppDlgBody_Type());
+		fcf.addStyleName(0,  LOGO_COL,         "vibe-desktopAppPage-logo");
+		ft.setText(      0,  DOWNLOADS_COL,    m_messages.downloadAppDlgBody_Downloads());
+		fcf.addStyleName(0,  DOWNLOADS_COL,    "vibe-desktopAppPage-linkhead");
+		ft.setText(      0,  INSTRUCTIONS_COL, m_messages.downloadAppDlgBody_Instructions());
+		fcf.addStyleName(0,  INSTRUCTIONS_COL, "vibe-desktopAppPage-instructionhead");
+
+		// ...create the Windows client content...
+		createProductTitleCell(        ft, fcf, 1, m_messages.downloadAppDlgProductWindows(m_product));
+		createLogoCell(                ft, fcf, 1, m_filrImages.logoWindows(), m_messages.downloadAppDlgAlt_WindowsDownloads());
+		createDownloadsCell_Windows(   ft, fcf, 1);
+		createInstructionsCell_Windows(ft, fcf, 1);
+		
+		// ...create the MacOS client content...
+		createProductTitleCell(    ft, fcf, 2, m_messages.downloadAppDlgProductMac(m_product));
+		createLogoCell(            ft, fcf, 2, m_filrImages.logoMac(), m_messages.downloadAppDlgAlt_MacDownloads());
+		createDownloadsCell_Mac(   ft, fcf, 2);
+		createInstructionsCell_Mac(ft, fcf, 2);
+		
+		// ...create the Android client content...
+		createProductTitleCell(        ft, fcf, 3, m_messages.downloadAppDlgProductAndroid(m_product));
+		createLogoCell(                ft, fcf, 3, m_filrImages.logoAndroid(), m_messages.downloadAppDlgAlt_AndroidDownloads());
+		createDownloadsCell_Android(   ft, fcf, 3);
+		createInstructionsCell_Android(ft, fcf, 3);
+		
+		// ...and create the iOS client content
+		createProductTitleCell(    ft, fcf, 4, m_messages.downloadAppDlgProductIOS(m_product));
+		createLogoCell(            ft, fcf, 4, m_filrImages.logoIOS(), m_messages.downloadAppDlgAlt_IOSDownloads());
+		createDownloadsCell_IOS(   ft, fcf, 4);
+		createInstructionsCell_IOS(ft, fcf, 4);
+	}
+
+	/*
+	 * Creates the downloads cell content for Android.
+	 */
+	private void createDownloadsCell_Android(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
+		// Construct the strings to display in the first block...
+		String s1 = m_messages.downloadAppDlgDownloadAndroid1(m_company, m_product);
+		InlineLabel s3 = new InlineLabel(m_messages.downloadAppDlgDownloadAndroid3());
+		s3.addStyleName("vibe-desktopAppPage-bold");
+		String s2 = m_messages.downloadAppDlgDownloadAndroid2(GwtClientHelper.getWidgetHTML(s3));
+		StringBuffer sb = new StringBuffer(m_company);
+		sb.append(createRegHTML());
+		sb.append(" ");
+		sb.append(m_product);
+		InlineLabel il = new InlineLabel();
+		il.getElement().setInnerHTML(sb.toString());
+		il.addStyleName("vibe-desktopAppPage-bold");
+		String s4 = m_messages.downloadAppDlgDownloadAndroid4(m_company, m_product, GwtClientHelper.getWidgetHTML(il));
+		sb = new StringBuffer(s1);
+		sb.append("  "); sb.append(s2);
+		sb.append("  "); sb.append(s4);
+		Label l = new Label();
+		l.getElement().setInnerHTML(sb.toString());
+
+		// ...add them to the cell...
+		ft.setText(row, DOWNLOADS_COL, "");
+		Element rE = fcf.getElement(row, DOWNLOADS_COL);
+		rE.appendChild(l.getElement());
+
+		// ...and append the second string block to the cell.
+		l = new Label(m_messages.downloadAppDlgDownloadAndroid5(m_company, m_product));
+		l.addStyleName("marginTop10px");
+		rE.appendChild(l.getElement());
+	}
+	
+	/*
+	 * Creates the downloads cell content for iOS.
+	 */
+	private void createDownloadsCell_IOS(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
+//!		"...this needs to be implemented..."
+		ft.setText(      row, DOWNLOADS_COL, "...this needs to be implemented...");
+		fcf.addStyleName(row, DOWNLOADS_COL, "gwtUI_nowrap");
+	}
+	
+	/*
+	 * Creates the downloads cell content for MacOS.
+	 */
+	private void createDownloadsCell_Mac(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
+//!		"...this needs to be implemented..."
+		ft.setText(      row, DOWNLOADS_COL, "...this needs to be implemented...");
+		fcf.addStyleName(row, DOWNLOADS_COL, "gwtUI_nowrap");
+	}
+	
+	/*
+	 * Creates the downloads cell content for Windows.
+	 */
+	private void createDownloadsCell_Windows(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
+//!		"...this needs to be implemented..."
+		ft.setText(      row, DOWNLOADS_COL, "...this needs to be implemented...");
+		fcf.addStyleName(row, DOWNLOADS_COL, "gwtUI_nowrap");
+	}
+	
+	/*
+	 * Creates the instructions cell content for Android.
+	 */
+	private void createInstructionsCell_Android(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
+//!		"...this needs to be implemented..."
+		ft.setText(      row, INSTRUCTIONS_COL, "...this needs to be implemented...");
+		fcf.addStyleName(row, INSTRUCTIONS_COL, "gwtUI_nowrap");
+	}
+	
+	/*
+	 * Creates the instructions cell content for iOS.
+	 */
+	private void createInstructionsCell_IOS(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
+//!		"...this needs to be implemented..."
+		ft.setText(      row, INSTRUCTIONS_COL, "...this needs to be implemented...");
+		fcf.addStyleName(row, INSTRUCTIONS_COL, "gwtUI_nowrap");
+	}
+	
+	/*
+	 * Creates the instructions cell content for MacOS.
+	 */
+	private void createInstructionsCell_Mac(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
+//!		"...this needs to be implemented..."
+		ft.setText(      row, INSTRUCTIONS_COL, "...this needs to be implemented...");
+		fcf.addStyleName(row, INSTRUCTIONS_COL, "gwtUI_nowrap");
+	}
+	
+	/*
+	 * Creates the instructions cell content for Windows.
+	 */
+	private void createInstructionsCell_Windows(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
+//!		"...this needs to be implemented..."
+		ft.setText(      row, INSTRUCTIONS_COL, "...this needs to be implemented...");
+		fcf.addStyleName(row, INSTRUCTIONS_COL, "gwtUI_nowrap");
+	}
+	
+	/*
+	 * Creates a logo cell.
+	 */
+	private void createLogoCell(VibeFlexTable ft, FlexCellFormatter fcf, int row, ImageResource ir, String altText) {
+		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString());
+		i.addStyleName("vibe-desktopAppPage-logoImg");
+		i.setTitle(altText);
+		ft.setWidget(    row, LOGO_COL, i);
+		fcf.addStyleName(row, LOGO_COL, "vibe-desktopAppPage-logo bottom");
+	}
+	
+	/*
+	 * Creates a product title cell.
+	 */
+	private void createProductTitleCell(VibeFlexTable ft, FlexCellFormatter fcf, int row, String productName) {
+		ft.setText(      row, PRODUCT_COL, productName);
+		fcf.addStyleName(row, PRODUCT_COL, "vibe-desktopAppPage-product-title bottom");
+	}
+
+	/*
+	 * Creates the HTML containing a registered by symbol.
+	 */
+	private static String createRegHTML() {
+		InlineLabel il = new InlineLabel();
+		il.addStyleName("vibe-desktopAppPage-reg");
+		il.getElement().setInnerHTML("&reg;");
+		return GwtClientHelper.getWidgetHTML(il);
+	}
+	
 	/**
 	 * Unused.
 	 * 
@@ -177,13 +410,18 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void populateDlgNow() {
+		// Add our specific footer style to the dialog.
+		getFooterPanel().addStyleName("vibe-desktopAppPage-footer");
+		
 		// Clear anything already in the dialog (from a previous
 		// usage, ...)
 		m_fp.clear();
-		
-//!		...this needs to be implemented...
-		m_fp.add(new InlineLabel("...this needs to be implemented..."));
 
+		// ..create new content...
+		createContentMasthead();
+		createContentSubhead();
+		createContentBody();
+		
 		// ...and show the dialog.
 		show(true);
 	}

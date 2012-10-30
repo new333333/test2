@@ -549,6 +549,17 @@ public abstract class DlgBox extends PopupPanel
 		return m_headerPanel;
 	}
 	
+	
+	/**
+	 * Returns the dialog's footer panel.
+	 * 
+	 * @return
+	 */
+	public Panel getFooterPanel()
+	{
+		return m_footerPanel;
+	}
+	
 	/**
 	 * If a dialog wants to have a help link in the header then override this method
 	 * and return a HelpData object.

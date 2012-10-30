@@ -72,6 +72,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Image;
@@ -526,6 +527,19 @@ public class GwtClientHelper {
 	 */
 	public static UIObject getUIObjectFromElement(Element e) {
 		return new ElementWrapper(e);
+	}
+
+	/**
+	 * Returns the HTML representation of a widget.
+	 * 
+	 * @param w
+	 * 
+	 * @return
+	 */
+	public static String getWidgetHTML(Widget w) {
+		FlowPanel html = new FlowPanel();
+		html.add(w);
+		return html.getElement().getInnerHTML();
 	}
 	
     /**
