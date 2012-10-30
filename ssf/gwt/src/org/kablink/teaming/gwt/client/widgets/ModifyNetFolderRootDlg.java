@@ -815,7 +815,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_isSharePointServerCkbox.setValue( false );
 
 		if ( m_showPrivilegedUsersUI && m_selectPrincipalsWidget != null )
-			m_selectPrincipalsWidget.init();
+			;
+//!			DRF (20121030):  Commented out.  Compilation error.
+//!			m_selectPrincipalsWidget.init();
 
 		// Clear out the sync schedule controls
 		m_scheduleWidget.init( null );
