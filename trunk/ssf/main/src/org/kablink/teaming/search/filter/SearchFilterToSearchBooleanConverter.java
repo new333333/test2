@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -63,16 +63,16 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.util.search.Constants;
 
-
-/*********************************************************************
+/**
  * Object to hold a named search filter
- * @author Peter Hurley
  *
+ * @author Peter Hurley
  */
+@SuppressWarnings("unchecked")
 public class SearchFilterToSearchBooleanConverter {  
 	
 	//Routine to convert a search filter into the form that Lucene wants 
-   	public static Document convertSearchFilterToSearchBoolean(Document searchFilter, String currentBinderId) {
+	public static Document convertSearchFilterToSearchBoolean(Document searchFilter, String currentBinderId) {
 		//Build the search query
 		Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(Constants.QUERY_ELEMENT);
@@ -826,12 +826,20 @@ public class SearchFilterToSearchBooleanConverter {
     					if (value.trim().equals("")) value = "2*";
     				}
     				
-    				String exactPhrase = "true";
+    				boolean exactPhrase = true;
     				if((valueType == null || value.contains("*")) ||
     						"text".equals(valueType) ||
     						Constants.TITLE_FIELD.equals(elementName))
-    					exactPhrase = "false";
-    				field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, exactPhrase);
+    					exactPhrase = false;
+    				
+    				// When searching for a boolean value...
+    				if ((!exactPhrase) && (value.equals(Constants.TRUE) || value.equals(Constants.FALSE))) {
+    					// ...we must set exactPhrase to true to avoid
+    					// ...issues with stemming.
+   						exactPhrase = true;
+    				}
+    				
+    				field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, (exactPhrase ? Constants.TRUE : Constants.FALSE));
     				
     				if(valueType != null)
     					field.addAttribute(Constants.VALUE_TYPE_ATTRIBUTE, valueType);
@@ -1023,6 +1031,5 @@ public class SearchFilterToSearchBooleanConverter {
 		
 		searchText = "(Teaming OR title:Novell NOT Status:bad) AND birthDate:[20090505* TO 20100830*]";
 		System.out.println(lowerCaseSearchText(searchText, Locale.ENGLISH));
-	}
-	
+	}	
 }

@@ -340,6 +340,17 @@ public class SearchFilter {
 		addFieldFilter(Constants.PERSONFLAG_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
+	public void addAndDisabledUserFilter(boolean disabled) {
+		newCurrentFilterTermsBlock();
+		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
+
+		addDisabledUserFilter(String.valueOf(disabled));
+	}
+	
+	public void addDisabledUserFilter(String searchTerm) {
+		addFieldFilter(Constants.DISABLED_USER_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
+	}
+	
 	public void addAssignmentFilter(String searchTerm) {
 		addFieldFilter(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
@@ -1117,7 +1128,7 @@ public class SearchFilter {
 	}
 
 	/**
-	 * It's a currentplace in query call time.
+	 * It's a current place in query call time.
 	 * 
 	 */
 	public void addRelativePlace(boolean searchSubfolders) {

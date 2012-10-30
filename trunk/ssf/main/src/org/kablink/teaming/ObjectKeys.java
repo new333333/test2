@@ -458,6 +458,9 @@ public interface ObjectKeys {
     public static final String SEARCH_CREATION_DATE_END = "creationDateEnd";
     public static final String SEARCH_IS_PERSON = "searchIsPerson";
     public static final String SEARCH_IS_INTERNAL = "searchIsInternal";
+    public static final String SEARCH_IS_EXTERNAL = "searchIsExternal";
+    public static final String SEARCH_INCLUDE_DISABLED_USERS = "searchIncludeDisabledUsers";
+    public static final String SEARCH_EXCLUDE_DISABLED_USERS = "searchExcludeDisabledUsers";
     
     //Search Result Identifier
     public static final String SEARCH_RESULTS_DISPLAY="ss_searchResultListing";

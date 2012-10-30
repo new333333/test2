@@ -65,6 +65,7 @@ import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowResponse;
 import org.kablink.teaming.domain.WorkflowState;
@@ -901,7 +902,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     			return null;
     		}});
     	SimpleProfiler.stop("deleteEntry_transactionExecute");
- 	   if (disable) {
+ 	   if (disable && (!(entry instanceof UserPrincipal))) {
 		   //Remove the entry from the index
  	    	final Map ctx = new HashMap();
  	    	deleteEntry_indexDel(entry.getParentBinder(), entry, ctx);
@@ -1399,16 +1400,55 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
            	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_IS_PERSON) && 
            			(Boolean)options.get(ObjectKeys.SEARCH_IS_PERSON)) {
+           		// This term will only include users consider to be a
+           		// person (i.e., no E-mail posting agent, ...)
            		SearchFilter searchTermFilter = new SearchFilter();
-           		searchTermFilter.addAndPersonFlagFilter( String.valueOf( Boolean.TRUE ) );
+           		searchTermFilter.addAndPersonFlagFilter(String.valueOf(Boolean.TRUE));
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
 
            	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_IS_INTERNAL) && 
            			(Boolean)options.get(ObjectKeys.SEARCH_IS_INTERNAL)) {
+           		// This term will only include internal users.
            		SearchFilter searchTermFilter = new SearchFilter();
-           		searchTermFilter.addAndInternalFilter( Boolean.TRUE );
+           		searchTermFilter.addAndInternalFilter(Boolean.TRUE);
                	searchFilter.appendFilter(searchTermFilter.getFilter());
+           	}
+
+           	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_IS_EXTERNAL) && 
+           			(Boolean)options.get(ObjectKeys.SEARCH_IS_EXTERNAL)) {
+           		// This term will only include non-internal (i.e.,
+           		// external) users.
+           		SearchFilter searchTermFilter = new SearchFilter();
+           		searchTermFilter.addAndInternalFilter(Boolean.FALSE);
+               	searchFilter.appendFilter(searchTermFilter.getFilter());
+           	}
+           	
+           	boolean includeDisabledUsers = ((options != null) && options.containsKey(ObjectKeys.SEARCH_INCLUDE_DISABLED_USERS) && ((Boolean) options.get(ObjectKeys.SEARCH_INCLUDE_DISABLED_USERS)));
+           	boolean excludeDisabledUsers = ((options != null) && options.containsKey(ObjectKeys.SEARCH_EXCLUDE_DISABLED_USERS) && ((Boolean) options.get(ObjectKeys.SEARCH_EXCLUDE_DISABLED_USERS)));
+           	if (includeDisabledUsers && excludeDisabledUsers) {
+   				logger.warn("AbstractEntryProcessor.getBinderEntries_doSearch( INVALID OPTIONS ):  Request to both include and exclude disabled users.");
+   				excludeDisabledUsers = false;
+           	}
+           	
+           	if (includeDisabledUsers) {
+           		// No additional term to include disabled users.
+           	}
+           	
+           	else {
+           		// This term will exclude disabled users.
+//!				DRF (20121030):  ...this needs to be implemented...
+//!				Need to  figure out how to filter for a false flag
+//!				...or no setting.  The false is easy (see the
+//!        		...excludeDisabledUsers check below.)  The no setting,
+//!				...is not.
+           	}
+           	
+           	if (excludeDisabledUsers) {
+           		// No additional term to include disabled users.
+           		SearchFilter searchTermFilter = new SearchFilter();
+           		searchTermFilter.addAndDisabledUserFilter(false);
+           		searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
 
         	if ((options != null) && options.containsKey(ObjectKeys.FOLDER_MODE_TYPE)) {

@@ -1176,7 +1176,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	public SFQuery queryUsers(FilterControls filter, Long zoneId) throws DataAccessException { 
 		long begin = System.nanoTime();
 		try {
-			return queryPrincipals(filter, zoneId, User.class);
+			return queryPrincipals(filter, zoneId, User.class, false);
     	}
     	finally {
     		end(begin, "queryUsers(FilterControls,Long)");
@@ -1186,28 +1186,35 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	public SFQuery queryGroups(FilterControls filter, Long zoneId) throws DataAccessException { 
 		long begin = System.nanoTime();
 		try {
-			return queryPrincipals(filter, zoneId, Group.class);
+			return queryPrincipals(filter, zoneId, Group.class, false);
     	}
     	finally {
     		end(begin, "queryGroups(FilterControls,Long)");
     	}	        
     }  
     @Override
-	public SFQuery queryAllPrincipals(FilterControls filter, Long zoneId) throws DataAccessException { 
+	public SFQuery queryAllPrincipals(FilterControls filter, Long zoneId, boolean includeDisabled) throws DataAccessException { 
 		long begin = System.nanoTime();
 		try {
-			return queryPrincipals(filter, zoneId, Principal.class);
+			return queryPrincipals(filter, zoneId, Principal.class, includeDisabled);
     	}
     	finally {
     		end(begin, "queryAllPrincipals(FilterControls,Long)");
     	}	        
     }
     
-    private SFQuery queryPrincipals(FilterControls filter, Long zoneId, final Class clazz) throws DataAccessException { 
+    @Override
+	public SFQuery queryAllPrincipals(FilterControls filter, Long zoneId) throws DataAccessException {
+    	return queryAllPrincipals(filter, zoneId, false);	// false -> Don't include disabled.
+    }
+    
+    private SFQuery queryPrincipals(FilterControls filter, Long zoneId, final Class clazz, boolean includeDisabled) throws DataAccessException {
 		final FilterControls myFilter = filter==null?new FilterControls():filter;
 		if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
 		myFilter.add(ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE);
-		myFilter.add(ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.FALSE);
+		if (!includeDisabled) {
+			myFilter.add(ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.FALSE);
+		}
         Query query = (Query)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     @Override
@@ -1224,7 +1231,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
                 }
             );  
        return new SFQuery(query);
-    }    
+    }
+    
  	@Override
 	public void bulkLoadCollections(final Collection<Principal> entries) {
 		long begin = System.nanoTime();
@@ -2721,5 +2729,4 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	              	
 
  	}
-
 }
