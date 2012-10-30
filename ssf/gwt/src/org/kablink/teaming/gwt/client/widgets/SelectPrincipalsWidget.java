@@ -679,7 +679,7 @@ public class SelectPrincipalsWidget extends Composite
 	/**
 	 * 
 	 */
-	public void init()
+	private void init()
 	{
 		if ( m_findCtrl != null )
 			m_findCtrl.setInitialSearchString( "" );
@@ -702,6 +702,8 @@ public class SelectPrincipalsWidget extends Composite
 	 */
 	public void init( ArrayList<GwtPrincipal> listOfPrincipals )
 	{
+		init();
+		
 		if ( listOfPrincipals != null )
 		{
 			// Add the list of principals
