@@ -778,11 +778,11 @@ public class ModifyNetFolderDlg extends DlgBox
 		m_netFolderRootsListbox.setVisible( false );
 		m_noNetFolderRootsLabel.setVisible( false );
 		
-		// Clear out the access rights controls
-		m_selectPrincipalsWidget.init();
+		// Initialize the sync schedule controls
+		initSyncSchedule();
 		
-		// Clear out the sync schedule controls
-		m_scheduleWidget.init( null );
+		// Initialize the access rights
+		initAccessRights();
 
 		// Are we modifying an existing net folder?
 		if ( m_netFolder != null )
@@ -796,12 +796,6 @@ public class ModifyNetFolderDlg extends DlgBox
 			m_nameTxtBox.setEnabled( false );
 			
 			m_relativePathTxtBox.setValue( netFolder.getRelativePath() );
-			
-			// Initialize the sync schedule controls
-			m_scheduleWidget.init( m_netFolder.getSyncSchedule() );
-			
-			// Initialize the access rights
-			//!!! m_selectPrincipalsWidget.init( m_netFolder.getMembers() );
 		}
 		else
 		{
@@ -819,6 +813,61 @@ public class ModifyNetFolderDlg extends DlgBox
 		// Issue an ajax request to get the list of net folder roots this user has
 		// permission to use.
 		getListOfNetFolderRoots();
+	}
+
+	/**
+	 * 
+	 */
+	private void initAccessRights()
+	{
+		if ( m_selectPrincipalsWidget != null )
+		{
+			if ( m_netFolder != null )
+				m_selectPrincipalsWidget.init( null );	// Finish
+			else
+				m_selectPrincipalsWidget.init( null );
+		}
+		else
+		{
+			ScheduledCommand cmd;
+			
+			cmd = new ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					initAccessRights();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	/**
+	 * 
+	 */
+	private void initSyncSchedule()
+	{
+		if ( m_scheduleWidget != null )
+		{
+			if ( m_netFolder != null )
+				m_scheduleWidget.init( m_netFolder.getSyncSchedule() );
+			else
+				m_scheduleWidget.init( null );
+		}
+		else
+		{
+			ScheduledCommand cmd;
+			
+			cmd = new ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					initSyncSchedule();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
 	}
 	
 	/**
