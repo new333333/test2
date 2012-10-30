@@ -179,6 +179,7 @@ public interface ProfileDao {
 	public void markEntriesDeleted(ProfileBinder binder, Collection<Principal> entries);
 
     public SFQuery queryAllPrincipals(FilterControls filter, Long zoneId) throws DataAccessException;
+    public SFQuery queryAllPrincipals(FilterControls filter, Long zoneId, boolean includeDisabled) throws DataAccessException;
     public SFQuery queryGroups(FilterControls filter, Long zoneId) throws DataAccessException; 
     public SFQuery queryUsers(FilterControls filter, Long zoneId) throws DataAccessException;    
      
@@ -326,5 +327,4 @@ public interface ProfileDao {
  	 * @return
  	 */
  	public List<ShareItem> findExpiredAndNotYetHandledShareItems();
- 	
- }
+}

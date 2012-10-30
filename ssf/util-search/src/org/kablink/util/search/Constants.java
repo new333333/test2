@@ -32,8 +32,12 @@
  */
 package org.kablink.util.search;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 public class Constants {
-
 	/**
 	 * The query may match any type of items (binders, entries, and attachments), and the system 
 	 * should apply normal ACL checking as long as ACL clauses are supplied. 
@@ -263,6 +267,7 @@ public class Constants {
 	public static final String APPLICATION_NAME_FIELD = "_applicationName";
 	public static final String APPLICATION_GROUPNAME_FIELD = "_applicationGroupName";
 	public static final String EMAIL_FIELD = "emailAddress";
+	public static final String DISABLED_USER_FIELD = "disabledUser";
 	public static final String RESERVEDID_FIELD = "_reservedId";
 	public static final String WORKSPACE_ID_FIELD = "_workspaceId";
 	public static final String UNIQUE_PREFIX = "X_Z_YY_Z";
@@ -285,9 +290,10 @@ public class Constants {
 	public static final String IS_MYFILES_DIR_FIELD = "_isMyFilesDir";
 	public static final String RESOURCE_DRIVER_NAME_FIELD = "_resourceDriverName";
 
-
+	/**
+	 * Constructor method.
+	 */
 	public Constants() {
 		super();
 	}
-
 }

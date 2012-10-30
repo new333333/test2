@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,7 +45,6 @@ import java.util.TimeZone;
 import java.util.Locale;
 
 import org.dom4j.Element;
-import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
@@ -62,7 +61,6 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
@@ -98,13 +96,16 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 /**
- *
+ * ?
+ * 
  * @author Jong Kim
  */
+@SuppressWarnings("unchecked")
 public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	implements ProfileCoreProcessor {
 	DateFormat dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, NLT.getTeamingLocale() );
 	//inside write transaction    
+	@Override
 	public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
 		if(logger.isDebugEnabled())
 			logger.debug("Deleting binder [" + binder.getPathName() + "]");
@@ -117,6 +118,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			Boolean done=Boolean.FALSE;
 			while (!done) {
 				done = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
+					@Override
 					public Object doInTransaction(TransactionStatus status) {
 						SFQuery query = getProfileDao().queryAllPrincipals(new FilterControls(), pBinder.getZoneId()); 
 						try {
@@ -171,6 +173,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	}
 	    
 	//inside write transaction    
+	@Override
 	public void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
 		//don't remove from parent, cause needs zone pointer for request context setup on zone delete
 		//mark for delete now and continue later
@@ -178,6 +181,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	} 
 	    
 	//inside write transaction    
+	@Override
 	protected void deleteBinder_processFiles(Binder binder, Map ctx) {
 		getFileModule().deleteFiles(binder, binder, false, null);
 	}
@@ -185,6 +189,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
  
        //*******************************************************************/
   	//not supported
+	@Override
 	public void moveBinder(Binder source, Binder destination, Map options) {
 		throw new NotSupportedException("errorcode.notsupported.moveBinder");
 	
@@ -195,15 +200,18 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		throw new NotSupportedException("errorcode.notsupported.copyBinder");
 	
 	}
+	@Override
 	public boolean checkMoveBinderQuota(Binder source, Binder destination) {
 		return false;
 	}
+	@Override
 	public boolean checkMoveEntryQuota(Binder source, Binder destination, FolderEntry entry) {
 		return false;
 	}
     //*******************************************************************/
     //inside write transaction    
-    protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
+    @Override
+	protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	super.addBinder_fillIn(parent,binder, inputData, entryData, ctx);
     	Integer type = binder.getDefinitionType();
     	if ((type != null) && ((type.intValue() == Definition.USER_WORKSPACE_VIEW) ||
@@ -219,7 +227,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
    	
     }
     //inside write transaction    
-    protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
+    @Override
+	protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	Integer type = binder.getDefinitionType();
     	if ((type != null) && ((type.intValue() == Definition.USER_WORKSPACE_VIEW) ||
     			type.intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
@@ -238,13 +247,15 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************
             
     //inside write transaction
-   protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
+   @Override
+protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
         ((Principal)entry).setZoneId(binder.getZoneId());
         doProfileEntryFillin(entry, inputData, entryData);
         super.addEntry_fillIn(binder, entry, inputData, entryData, ctx);
      }
     //inside write transaction
-    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    @Override
+	protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//make user the user is owner so create_modify access works
     	if (entry instanceof User) {
     		entry.getCreation().setPrincipal((User)entry);
@@ -254,7 +265,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     }
        
     //***********************************************************************************************************	
-    protected void modifyEntry_setCtx(Entry entry, Map ctx) {
+    @Override
+	protected void modifyEntry_setCtx(Entry entry, Map ctx) {
     	super.modifyEntry_setCtx(entry, ctx);
     	if (entry instanceof GroupPrincipal) {
     		ctx.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, new HashSet(((GroupPrincipal)entry).getMembers()));
@@ -266,13 +278,15 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	}
     }
     //inside write transaction
-   protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
+   @Override
+protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
     	//see if we have updates to fields not covered by definition build
     	doProfileEntryFillin(entry, inputData, entryData);
     	super.modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
     }
    //inside write transaction
-   protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, 
+   @Override
+protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, 
    		Map entryData, Map<FileAttachment,String> fileRenamesTo, Map ctx) {
 	   super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
 	   if (entry instanceof User) {
@@ -281,7 +295,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	   }
 		   
    }
-   protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
+   @Override
+protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
    		InputDataAccessor inputData, List fileUploadItems, 
    		Collection<FileAttachment> filesToIndex, Map ctx) {
 	   //index self
@@ -525,19 +540,23 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     }
     //***********************************************************************************************************
     
-   	protected SFQuery indexEntries_getQuery(Binder binder) {
-   		return getProfileDao().queryAllPrincipals(new FilterControls(), binder.getZoneId());
+   	@Override
+	protected SFQuery indexEntries_getQuery(Binder binder) {
+   		return getProfileDao().queryAllPrincipals(new FilterControls(), binder.getZoneId(), true);	// true -> Include disabled.
    	}
-   	protected boolean indexEntries_validate(Binder binder, Entry entry) {
+   	@Override
+	protected boolean indexEntries_validate(Binder binder, Entry entry) {
    		Principal p = (Principal)entry;
    		//don't index job processor
    		if (p.isReserved() && ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(p.getInternalId())) return false;
    		return true;
    	}
-   	protected void indexEntries_load(Binder binder, List entries)  {
+   	@Override
+	protected void indexEntries_load(Binder binder, List entries)  {
    		// bulkd load any collections that neeed to be indexed
    		getProfileDao().bulkLoadCollections((List<Principal>)entries);
    	}
+	@Override
 	protected Map indexEntries_loadTags(Binder binder, List<Entry> entries) {
 		List<EntityIdentifier> uIds = new ArrayList();
 		List<EntityIdentifier> gIds = new ArrayList();
@@ -556,7 +575,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	}
 
     //***********************************************************************************************************
-    protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
+    @Override
+	protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
     	
        	if (entry instanceof User) {
        		User p = (User)entry;
@@ -580,7 +600,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 
     //***********************************************************************************************************    
  
-    public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
+    @Override
+	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
     	
 		if (entry instanceof User) {
@@ -590,6 +611,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			ProfileIndexUtils.addPersonFlag(indexDoc, user);
 			ProfileIndexUtils.addIdentityInfo(indexDoc, user);
 			ProfileIndexUtils.addEmail(indexDoc, user);
+			ProfileIndexUtils.addDisabled(indexDoc, user);
 		} else if(entry instanceof Group) {
 	        ProfileIndexUtils.addName(indexDoc, (Group)entry, false);	
 	        ProfileIndexUtils.addDynamic(indexDoc, (Group)entry, false);	
@@ -609,6 +631,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
      * reindex all users unnecessarily
      * Files are not handled here
      */
+	@Override
 	public void syncEntry(final Principal entry, final InputDataAccessor inputData, Map options) {
 		final Map ctx = new HashMap();
 		if (options != null) ctx.putAll(options);
@@ -618,7 +641,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        
         // The following part requires update database transaction.
         Boolean changed = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
+        	@Override
+			public Object doInTransaction(TransactionStatus status) {
         		boolean result1 = syncEntry_fillIn(entry, inputData, entryData, ctx);
 	                
         		boolean result2 = syncEntry_postFillIn(entry, inputData, entryData, ctx);
@@ -670,6 +694,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	 * is an InputDataAccessor of updates.  Only index entries that change.
 	 * Store the list of entries that were sync'd in syncResults.
 	 */
+	@Override
 	public Map syncEntries(
 		final Map entries,
 		final Map options,
@@ -678,7 +703,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	    
         // The following part requires update database transaction.
         Map changedEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
+        	@Override
+			public Object doInTransaction(TransactionStatus status) {
         		Map changes = new HashMap();
                  for (Iterator i=entries.entrySet().iterator(); i.hasNext();) {
                 	 Map.Entry mEntry = (Map.Entry)i.next();
@@ -767,7 +793,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
    		final Map ctx = new HashMap();
    		if (options != null) ctx.putAll(options);
 		Map<Principal, InputDataAccessor> newEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
-	        	public Object doInTransaction(TransactionStatus status) {
+	        	@Override
+				public Object doInTransaction(TransactionStatus status) {
 	        		Map newEntries = new HashMap();
 	           		StringBuffer inList = new StringBuffer();
           			for (int i=0; i<inputAccessors.size(); ++i) {
@@ -829,9 +856,11 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		
 	}
 
-    protected String getEntryPrincipalField() {
+    @Override
+	protected String getEntryPrincipalField() {
     	return Constants.DOCID_FIELD;
     }
+	@Override
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
 		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
 		ChangeLog changes = new ChangeLog(entry, operation);
