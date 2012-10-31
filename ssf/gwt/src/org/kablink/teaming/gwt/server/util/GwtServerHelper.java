@@ -5645,19 +5645,30 @@ public class GwtServerHelper {
 			// ...get the URL to the current user's avatar...
 			String userAvatarUrl = getUserAvatarUrl(bs, request, getCurrentUser());
 
-			// ...get what we know about desktop application
-			// ...deployment...
-			GwtFileSyncAppConfiguration fsaConfig = GwtServerHelper.getFileSyncAppConfiguration(bs);
-			boolean desktopAppEnabled = fsaConfig.getIsDeploymentEnabled();
+			// If we're in Filr mode...
+			boolean desktopAppEnabled;
 			boolean showDesktopAppDownloader;
-			if (desktopAppEnabled) {
-				UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
-				String s = ((String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_SHOW_DESKTOP_APP_DOWNLOAD));
-				if (MiscUtil.hasString(s))
-				     showDesktopAppDownloader = Boolean.parseBoolean(s);
-				else showDesktopAppDownloader = true;
+			if (Utils.checkIfFilr()) {
+				// ...get what we know about desktop application
+				// ...deployment...
+				GwtFileSyncAppConfiguration fsaConfig = GwtServerHelper.getFileSyncAppConfiguration(bs);
+				desktopAppEnabled = fsaConfig.getIsDeploymentEnabled();
+				if (desktopAppEnabled) {
+					UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
+					String s = ((String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_SHOW_DESKTOP_APP_DOWNLOAD));
+					if (MiscUtil.hasString(s))
+					     showDesktopAppDownloader = Boolean.parseBoolean(s);
+					else showDesktopAppDownloader = true;
+				}
+				else {
+					showDesktopAppDownloader = false;
+				}
 			}
+			
 			else {
+				// ...otherwise, we don't show the desktop download
+				// ...stuff...
+				desktopAppEnabled        =
 				showDesktopAppDownloader = false;
 			}
 			

@@ -2069,6 +2069,10 @@ public interface GwtTeamingMessages extends Messages
 	String downloadAppDlgDownloadAndroid3();
 	String downloadAppDlgDownloadAndroid4(String company, String product, String type);
 	String downloadAppDlgDownloadAndroid5(String company, String product);
+	String downloadAppDlgDownloadIOS1(String company, String product, String iPhone, String iPad, String type);
+	String downloadAppDlgDownloadIOS2();
+	String downloadAppDlgDownloadIOS3();
+	String downloadAppDlgDownloadIOS4(String company, String product);
 	String downloadAppDlgHeader(String product);
 	String downloadAppDlgProductAndroid(String product);
 	String downloadAppDlgProductIOS(String product);
