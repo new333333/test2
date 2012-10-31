@@ -1403,7 +1403,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
            		// This term will only include users consider to be a
            		// person (i.e., no E-mail posting agent, ...)
            		SearchFilter searchTermFilter = new SearchFilter();
-           		searchTermFilter.addAndPersonFlagFilter(String.valueOf(Boolean.TRUE));
+           		searchTermFilter.addAndPersonFlagFilter(true);
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
 
@@ -1411,7 +1411,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
            			(Boolean)options.get(ObjectKeys.SEARCH_IS_INTERNAL)) {
            		// This term will only include internal users.
            		SearchFilter searchTermFilter = new SearchFilter();
-           		searchTermFilter.addAndInternalFilter(Boolean.TRUE);
+           		searchTermFilter.addAndInternalFilter(true);
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
 
@@ -1420,7 +1420,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
            		// This term will only include non-internal (i.e.,
            		// external) users.
            		SearchFilter searchTermFilter = new SearchFilter();
-           		searchTermFilter.addAndInternalFilter(Boolean.FALSE);
+           		searchTermFilter.addAndInternalFilter(false);
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
            	

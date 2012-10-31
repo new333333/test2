@@ -259,16 +259,20 @@ public class SearchFilter {
 		this.joinAnd = joinAsAnd;
 	}
 	
-	private void addFieldFilter(String field, String type, String searchTerm, boolean wildcardOnly) {
+	private void addFieldFilter(String field, String type, String searchTerm, boolean wildcardOnly, String valueType) {
 		checkCurrent();
 
-		boolean hasWildcard = searchTerm.contains("*");
+		boolean hasValueType = ((null != valueType) && (0 < valueType.length()));
+		boolean hasWildcard  = searchTerm.contains("*");
 		if ((!hasWildcard) || (!wildcardOnly)) {
 			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 			filterTerm.addAttribute(SearchFilterKeys.FilterType, type);
 			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, field);
 			Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 			filterTermValueEle.setText(searchTerm.replaceFirst("\\*", "").trim());
+			if (hasValueType) {
+				filterTermValueEle.addAttribute(SearchFilterKeys.FilterElementValueType, valueType);
+			}
 		}
 		
 		if (hasWildcard) {
@@ -277,13 +281,21 @@ public class SearchFilter {
 			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, field);
 			Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 			filterTermValueEle.setText(searchTerm.trim());
+			if (hasValueType) {
+				filterTermValueEle.addAttribute(SearchFilterKeys.FilterElementValueType, valueType);
+			}
 		}
 		
 	}
 	
+	private void addFieldFilter(String field, String type, String searchTerm, String valueType) {
+		// Always use the initial form of the method.
+		addFieldFilter(field, type, searchTerm, false, valueType);
+	}
+	
 	private void addFieldFilter(String field, String type, String searchTerm) {
 		// Always use the initial form of the method.
-		addFieldFilter(field, type, searchTerm, false);
+		addFieldFilter(field, type, searchTerm, false, null);
 	}
 
 	/**
@@ -294,7 +306,8 @@ public class SearchFilter {
 		addFieldFilter(
 					Constants.IDENTITY_INTERNAL_FIELD,
 					SearchFilterKeys.FilterTypeEntryDefinition,
-					String.valueOf( internalOnly ) );
+					String.valueOf( internalOnly ),
+					SearchFilterKeys.FilterValueTypeBoolean );
 	}
 	
 	/**
@@ -309,7 +322,7 @@ public class SearchFilter {
 	}
 	
 	public void addTitleFilter(String searchTerm, boolean wildcardOnly) {
-		addFieldFilter(Constants.TITLE_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm.toLowerCase(), wildcardOnly);
+		addFieldFilter(Constants.TITLE_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm.toLowerCase(), wildcardOnly, null);
 	}
 	
 	public void addTitleFilter(String searchTerm) {
@@ -329,26 +342,34 @@ public class SearchFilter {
 		addFieldFilter(Constants.GROUPNAME_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
-	public void addAndPersonFlagFilter(String searchTerm) {
+	public void addAndPersonFlagFilter(boolean person) {
 		newCurrentFilterTermsBlock();
 		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
 		
-		addPersonFlagFilter(searchTerm);
+		addPersonFlagFilter(person);
 	}
 	
-	public void addPersonFlagFilter(String searchTerm) {
-		addFieldFilter(Constants.PERSONFLAG_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
+	public void addPersonFlagFilter(boolean person) {
+		addFieldFilter(
+			Constants.PERSONFLAG_FIELD,
+			SearchFilterKeys.FilterTypeEntryDefinition,
+			String.valueOf(person),
+			SearchFilterKeys.FilterValueTypeBoolean);
 	}
 	
 	public void addAndDisabledUserFilter(boolean disabled) {
 		newCurrentFilterTermsBlock();
 		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
 
-		addDisabledUserFilter(String.valueOf(disabled));
+		addDisabledUserFilter(disabled);
 	}
 	
-	public void addDisabledUserFilter(String searchTerm) {
-		addFieldFilter(Constants.DISABLED_USER_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
+	public void addDisabledUserFilter(boolean disabled) {
+		addFieldFilter(
+			Constants.DISABLED_USER_FIELD,
+			SearchFilterKeys.FilterTypeEntryDefinition,
+			String.valueOf(disabled),
+			SearchFilterKeys.FilterValueTypeBoolean);
 	}
 	
 	public void addAssignmentFilter(String searchTerm) {

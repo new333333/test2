@@ -278,7 +278,7 @@ public class GwtSearchHelper
 			searchTermFilter.addTitleFilter( searchText );
 			searchTermFilter.addLoginNameFilter( searchText );
 			if ( GwtSearchCriteria.SearchType.PERSON == searchType ) {
-				searchTermFilter.addAndPersonFlagFilter( String.valueOf( Boolean.TRUE ) );
+				searchTermFilter.addAndPersonFlagFilter( true );
 			}
 
 			if ( searchCriteria.getSearchForInternalPrincipalsOnly() )
