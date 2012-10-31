@@ -184,7 +184,7 @@
 		.vibe-dataTableEntry-titleLinkPanel       {display: inline; text-decoration: none;}
 		.vibe-dataTableEntry-titleNoLink          {color: #353838 !important; padding: 2px;}
 		.vibe-dataTableEntry-titlePanel           {}
-		.vibe-dataTableEntry-unseenMarker         {display: inline; cursor: pointer;}
+		.vibe-dataTableEntry-unseenMarker         {position: relative; left: 3px; margin-left: -12px; display: inline; cursor: pointer;}
 		.vibe-dataTableEntry-viewAnchor           {text-decoration: none;}
 		.vibe-dataTableEntry-viewLabel            {}
 		.vibe-dataTableGuest-avatar               {border-width: 1px; border-style: solid; border-color: #ccc; width: 50px; height: 50px;}
