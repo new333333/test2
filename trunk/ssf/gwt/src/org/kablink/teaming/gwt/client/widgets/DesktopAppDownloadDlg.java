@@ -37,11 +37,12 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
-import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.rpc.shared.GetFooterToolbarItemsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDesktopAppDownloadInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -53,6 +54,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -62,28 +64,30 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
- * Implements Vibe's desktop application download dialog.
+ * Implements the desktop application download dialog.
  *  
  * @author drfoster@novell.com
  */
 @SuppressWarnings("unused")
 public class DesktopAppDownloadDlg extends DlgBox {
-	private boolean						m_isFilr;					// true -> We're in Filr mode.  false -> We're in Vibe mode.
-	private GwtTeamingFilrImageBundle	m_filrImages;				// Access to Filr's images.
-	private GwtTeamingImageBundle		m_images;					// Access to Vibe's images.
-	private GwtTeamingMessages			m_messages;					// Access to Vibe's messages.
-	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private String						m_company;					//
-	private String						m_product;					//
-	private VibeFlowPanel				m_fp;						// The panel holding the dialog's content.
+	private boolean									m_isFilr;					// true -> We're in Filr mode.  false -> We're in Vibe mode.
+	private DesktopAppDownloadInfoRpcResponseData	m_desktopAppDownloadInfo;	// Information about downloading the desktop application.  Read via a GWT RPC call when the dialog runs.
+	private GwtTeamingFilrImageBundle				m_filrImages;				// Access to Filr's images.
+	private GwtTeamingMessages						m_messages;					// Access to Vibe's messages.
+	private List<HandlerRegistration>				m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private String									m_company;					// Initialized with the company name (i.e., Novell.)
+	private String									m_product;					// Initialized with the current product name (i.e., Filr or Vibe.)
+	private VibeFlowPanel							m_rootPanel;				// The main panel holding the dialog's content.
 
-	// Indexes of the various cells.
+	// Indexes of the various table cells containing the dialog's
+	// content.
 	private final static int PRODUCT_COL		= 0;
 	private final static int LOGO_COL			= 1;
 	private final static int DOWNLOADS_COL		= 2;
 	private final static int INSTRUCTIONS_COL	= 3;
 	
-	// Indexes of the various rows.
+	// Indexes of the various table rows containing the dialog's
+	// content.
 	private final static int HEADER_ROW		= 0;
 	private final static int WINDOWS_ROW	= 1;
 	private final static int MAC_ROW		= 2;
@@ -110,7 +114,6 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		// ...initialize everything else...
 		m_isFilr     = GwtClientHelper.isLicenseFilr();
 		m_filrImages = GwtTeaming.getFilrImageBundle();
-		m_images     = GwtTeaming.getImageBundle();
 		m_messages   = GwtTeaming.getMessages();
 		m_company    = m_messages.downloadAppDlg_Novell();
 		m_product    = (m_isFilr ? m_messages.downloadAppDlg_Filr() : m_messages.downloadAppDlg_Vibe());
@@ -153,9 +156,9 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	@Override
 	public Panel createContent(Object callbackData) {
 		// Create and return a panel to hold the dialog's content.
-		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-desktopAppPage-body");
-		return m_fp;
+		m_rootPanel = new VibeFlowPanel();
+		m_rootPanel.addStyleName("vibe-desktopAppPage-body");
+		return m_rootPanel;
 	}
 
 	/*
@@ -165,7 +168,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		// Create the masthead panel...
 		VibeFlowPanel mhPanel = new VibeFlowPanel();
 		mhPanel.addStyleName("vibe-desktopAppPage-masthead");
-		m_fp.add(mhPanel);
+		m_rootPanel.add(mhPanel);
 
 		// ...and image.
 		Image i = GwtClientHelper.buildImage(m_filrImages.filrBackground().getSafeUri().asString());
@@ -180,7 +183,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		// Create the sub-head panel...
 		VibeFlowPanel shPanel = new VibeFlowPanel();
 		shPanel.addStyleName("vibe-desktopAppPage-subhead");
-		m_fp.add(shPanel);
+		m_rootPanel.add(shPanel);
 
 		// ...and content.
 		shPanel.getElement().setInnerHTML(m_messages.downloadAppDlgSubhead(createNovellProductHTML()));
@@ -193,7 +196,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		// Create the body panel...
 		VibeFlowPanel bodyPanel = new VibeFlowPanel();
 		bodyPanel.addStyleName("vibe-desktopAppPage-content");
-		m_fp.add(bodyPanel);
+		m_rootPanel.add(bodyPanel);
 
 		// ...create the <TABLE> containing the body's content...
 		VibeFlexTable ft = new VibeFlexTable();
@@ -405,6 +408,43 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		return null;
 	}
 
+	/*
+	 * Asynchronously loads the next part of the dialog.
+	 */
+	private void loadPart1Async() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart1Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the next part of the dialog.
+	 */
+	private void loadPart1Now() {
+		// Can we get the information about downloading the desktop application?
+		GetDesktopAppDownloadInfoCmd cmd = new GetDesktopAppDownloadInfoCmd();
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// No!  Tell the user about the error.
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_GetDesktopAppDownloadInfo());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Yes!  Use it to populate the dialog.
+				m_desktopAppDownloadInfo = ((DesktopAppDownloadInfoRpcResponseData) response.getResponseData());
+				populateDlgAsync();
+			}
+		});
+	}
+
 	/**
 	 * Called when the data table is attached.
 	 * 
@@ -452,7 +492,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		
 		// Clear anything already in the dialog (from a previous
 		// usage, ...)
-		m_fp.clear();
+		m_rootPanel.clear();
 
 		// ..create new content...
 		createContentMasthead();
@@ -505,7 +545,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	 */
 	private void runDlgNow() {
 		// Populate the dialog.
-		populateDlgAsync();
+		loadPart1Async();
 	}
 
 	/*

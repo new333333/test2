@@ -155,6 +155,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
 import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
@@ -4106,6 +4107,37 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Returns a DesktopAppDownloadInfoRpcResponseData object
+	 * containing the information for downloading the desktop
+	 * applications.
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static DesktopAppDownloadInfoRpcResponseData getDesktopAppDownloadInformation(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
+		try {
+			// Construct the DesktopAppDownloadInfoRpcResponseData
+			// object we'll fill in and return.
+			DesktopAppDownloadInfoRpcResponseData reply = new DesktopAppDownloadInfoRpcResponseData();
+			
+//!			...this needs to be implemented..
+
+			// If we get here, reply refers to the
+			// DesktopAppDownloadInfoRpcResponseData objecting
+			// containing the information about downloading the desktop
+			// application.  Return it.
+			return reply;
+		}
+		catch (Exception ex) {
+			throw getGwtTeamingException(ex);
+		}		
+	}
+	
+	/**
 	 * Return a download file URL that can be used to download an
 	 * entry's file.
 	 * 
@@ -8019,6 +8051,7 @@ public class GwtServerHelper {
 		case GET_COLUMN_WIDTHS:
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		case GET_DEFAULT_FOLDER_DEFINITION_ID:
+		case GET_DESKTOP_APP_DOWNLOAD_INFO:
 		case GET_DOCUMENT_BASE_URL:
 		case GET_DOWNLOAD_FILE_URL:
 		case GET_DISK_USAGE_INFO:

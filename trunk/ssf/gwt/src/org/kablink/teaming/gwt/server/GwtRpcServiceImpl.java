@@ -960,6 +960,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_DESKTOP_APP_DOWNLOAD_INFO:
+		{
+			DesktopAppDownloadInfoRpcResponseData result = GwtServerHelper.getDesktopAppDownloadInformation( this, getRequest( ri ) );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_DISK_USAGE_INFO:
 		{
 			GetDiskUsageInfoCmd gduiCmd;

@@ -341,6 +341,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetClipboardUsers();
 	String rpcFailure_GetClipboardUsersFromList();
 	String rpcFailure_GetCollectionPointUrl();
+	String rpcFailure_GetDesktopAppDownloadInfo();
 	String rpcFailure_GetDownloadFileUrl();
 	String rpcFailure_GetEmailNotificationInfo();
 	String rpcFailure_GetEntityActionToolbarItems();
