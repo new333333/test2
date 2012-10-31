@@ -832,13 +832,6 @@ public class SearchFilterToSearchBooleanConverter {
     						Constants.TITLE_FIELD.equals(elementName))
     					exactPhrase = false;
     				
-    				// When searching for a boolean value...
-    				if ((!exactPhrase) && (value.equals(Constants.TRUE) || value.equals(Constants.FALSE))) {
-    					// ...we must set exactPhrase to true to avoid
-    					// ...issues with stemming.
-   						exactPhrase = true;
-    				}
-    				
     				field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, (exactPhrase ? Constants.TRUE : Constants.FALSE));
     				
     				if(valueType != null)
