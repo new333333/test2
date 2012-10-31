@@ -96,7 +96,9 @@ public interface BinderModule {
 		export,
 		deleteEntries,
 		updateModificationTime,
-		allowSharing
+		allowSharing,
+		allowSharingExternal,
+		allowSharingPublic
 	}
     /**
      * Add a new <code>Folder</code> or <code>Workspace</code>.  Use definition type to determine which

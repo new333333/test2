@@ -356,4 +356,10 @@ update SS_Principals set internal=1,fromLdap=1,fromLocal=0,fromOpenid=0 where id
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="43">
+        <addColumn tableName="SS_ShareItem">
+			<column name="allowSharingExternal" type="TINYINT"/>
+			<column name="allowSharingPublic" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
