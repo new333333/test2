@@ -83,6 +83,13 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	private final static int DOWNLOADS_COL		= 2;
 	private final static int INSTRUCTIONS_COL	= 3;
 	
+	// Indexes of the various rows.
+	private final static int HEADER_ROW		= 0;
+	private final static int WINDOWS_ROW	= 1;
+	private final static int MAC_ROW		= 2;
+	private final static int ANDROID_ROW	= 3;
+	private final static int IOS_ROW		= 4;
+	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
@@ -116,6 +123,24 @@ public class DesktopAppDownloadDlg extends DlgBox {
 			null);										// Create callback data.  Unused.
 	}
 
+	/*
+	 * Creates the HTML for a bold label.
+	 */
+	private String createBoldLabelHTML(String label, boolean labelIsHTML) {
+		InlineLabel w = new InlineLabel();
+		Element wE = w.getElement();
+		if (labelIsHTML)
+		     wE.setInnerHTML(label);
+		else wE.setInnerText(label);
+		w.addStyleName("vibe-desktopAppPage-bold");
+		return GwtClientHelper.getWidgetHTML(w);
+	}
+	
+	private String createBoldLabelHTML(String label) {
+		// Always use the initial form of the method.
+		return createBoldLabelHTML(label, false);
+	}
+	
 	/**
 	 * Creates all the widgets that make up the dialog.
 	 * 
@@ -158,11 +183,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		m_fp.add(shPanel);
 
 		// ...and content.
-		StringBuffer sb = new StringBuffer(m_company);
-		sb.append(createRegHTML());
-		sb.append(" ");
-		sb.append(m_messages.downloadAppDlgSubhead(m_product));
-		shPanel.getElement().setInnerHTML(sb.toString());
+		shPanel.getElement().setInnerHTML(m_messages.downloadAppDlgSubhead(createNovellProductHTML()));
 	}
 	
 	/*
@@ -183,66 +204,53 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		FlexCellFormatter fcf = ft.getFlexCellFormatter();
 
 		// ...create the table's header row...
-		ft.setText(      0,  PRODUCT_COL,      m_messages.downloadAppDlgBody_Product());
-		fcf.addStyleName(0,  PRODUCT_COL,      "vibe-desktopAppPage-columnhead vibe-desktopAppPage-columnhead2");
-		ft.setText(      0,  LOGO_COL,         m_messages.downloadAppDlgBody_Type());
-		fcf.addStyleName(0,  LOGO_COL,         "vibe-desktopAppPage-logo");
-		ft.setText(      0,  DOWNLOADS_COL,    m_messages.downloadAppDlgBody_Downloads());
-		fcf.addStyleName(0,  DOWNLOADS_COL,    "vibe-desktopAppPage-linkhead");
-		ft.setText(      0,  INSTRUCTIONS_COL, m_messages.downloadAppDlgBody_Instructions());
-		fcf.addStyleName(0,  INSTRUCTIONS_COL, "vibe-desktopAppPage-instructionhead");
+		createHeaderCell(ft, fcf, PRODUCT_COL,      m_messages.downloadAppDlgBody_Product(),      "vibe-desktopAppPage-columnhead vibe-desktopAppPage-columnhead2");
+		createHeaderCell(ft, fcf, LOGO_COL,         m_messages.downloadAppDlgBody_Type(),         "vibe-desktopAppPage-logo");
+		createHeaderCell(ft, fcf, DOWNLOADS_COL,    m_messages.downloadAppDlgBody_Downloads(),    "vibe-desktopAppPage-linkhead");
+		createHeaderCell(ft, fcf, INSTRUCTIONS_COL, m_messages.downloadAppDlgBody_Instructions(), "vibe-desktopAppPage-instructionhead");
 
 		// ...create the Windows client content...
-		createProductTitleCell(        ft, fcf, 1, m_messages.downloadAppDlgProductWindows(m_product));
-		createLogoCell(                ft, fcf, 1, m_filrImages.logoWindows(), m_messages.downloadAppDlgAlt_WindowsDownloads());
-		createDownloadsCell_Windows(   ft, fcf, 1);
-		createInstructionsCell_Windows(ft, fcf, 1);
+		createProductTitleCell(        ft, fcf, WINDOWS_ROW, m_messages.downloadAppDlgProductWindows(m_product));
+		createLogoCell(                ft, fcf, WINDOWS_ROW, m_filrImages.logoWindows(), m_messages.downloadAppDlgAlt_WindowsDownloads());
+		createDownloadsCell_Windows(   ft, fcf);
+		createInstructionsCell_Windows(ft, fcf);
 		
 		// ...create the MacOS client content...
-		createProductTitleCell(    ft, fcf, 2, m_messages.downloadAppDlgProductMac(m_product));
-		createLogoCell(            ft, fcf, 2, m_filrImages.logoMac(), m_messages.downloadAppDlgAlt_MacDownloads());
-		createDownloadsCell_Mac(   ft, fcf, 2);
-		createInstructionsCell_Mac(ft, fcf, 2);
+		createProductTitleCell(    ft, fcf, MAC_ROW, m_messages.downloadAppDlgProductMac(m_product));
+		createLogoCell(            ft, fcf, MAC_ROW, m_filrImages.logoMac(), m_messages.downloadAppDlgAlt_MacDownloads());
+		createDownloadsCell_Mac(   ft, fcf);
+		createInstructionsCell_Mac(ft, fcf);
 		
 		// ...create the Android client content...
-		createProductTitleCell(        ft, fcf, 3, m_messages.downloadAppDlgProductAndroid(m_product));
-		createLogoCell(                ft, fcf, 3, m_filrImages.logoAndroid(), m_messages.downloadAppDlgAlt_AndroidDownloads());
-		createDownloadsCell_Android(   ft, fcf, 3);
-		createInstructionsCell_Android(ft, fcf, 3);
+		createProductTitleCell(        ft, fcf, ANDROID_ROW, m_messages.downloadAppDlgProductAndroid(m_product));
+		createLogoCell(                ft, fcf, ANDROID_ROW, m_filrImages.logoAndroid(), m_messages.downloadAppDlgAlt_AndroidDownloads());
+		createDownloadsCell_Android(   ft, fcf);
+		createInstructionsCell_Android(ft, fcf);
 		
 		// ...and create the iOS client content
-		createProductTitleCell(    ft, fcf, 4, m_messages.downloadAppDlgProductIOS(m_product));
-		createLogoCell(            ft, fcf, 4, m_filrImages.logoIOS(), m_messages.downloadAppDlgAlt_IOSDownloads());
-		createDownloadsCell_IOS(   ft, fcf, 4);
-		createInstructionsCell_IOS(ft, fcf, 4);
+		createProductTitleCell(    ft, fcf, IOS_ROW, m_messages.downloadAppDlgProductIOS(m_product));
+		createLogoCell(            ft, fcf, IOS_ROW, m_filrImages.logoIOS(), m_messages.downloadAppDlgAlt_IOSDownloads());
+		createDownloadsCell_IOS(   ft, fcf);
+		createInstructionsCell_IOS(ft, fcf);
 	}
 
 	/*
 	 * Creates the downloads cell content for Android.
 	 */
-	private void createDownloadsCell_Android(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
+	private void createDownloadsCell_Android(VibeFlexTable ft, FlexCellFormatter fcf) {
 		// Construct the strings to display in the first block...
 		String s1 = m_messages.downloadAppDlgDownloadAndroid1(m_company, m_product);
-		InlineLabel s3 = new InlineLabel(m_messages.downloadAppDlgDownloadAndroid3());
-		s3.addStyleName("vibe-desktopAppPage-bold");
-		String s2 = m_messages.downloadAppDlgDownloadAndroid2(GwtClientHelper.getWidgetHTML(s3));
-		StringBuffer sb = new StringBuffer(m_company);
-		sb.append(createRegHTML());
-		sb.append(" ");
-		sb.append(m_product);
-		InlineLabel il = new InlineLabel();
-		il.getElement().setInnerHTML(sb.toString());
-		il.addStyleName("vibe-desktopAppPage-bold");
-		String s4 = m_messages.downloadAppDlgDownloadAndroid4(m_company, m_product, GwtClientHelper.getWidgetHTML(il));
-		sb = new StringBuffer(s1);
+		String s2 = m_messages.downloadAppDlgDownloadAndroid2(createBoldLabelHTML(m_messages.downloadAppDlgDownloadAndroid3()));
+		String s4 = m_messages.downloadAppDlgDownloadAndroid4(m_company, m_product, createBoldLabelHTML(createNovellProductHTML(), true));
+		StringBuffer sb = new StringBuffer(s1);
 		sb.append("  "); sb.append(s2);
 		sb.append("  "); sb.append(s4);
 		Label l = new Label();
 		l.getElement().setInnerHTML(sb.toString());
 
 		// ...add them to the cell...
-		ft.setText(row, DOWNLOADS_COL, "");
-		Element rE = fcf.getElement(row, DOWNLOADS_COL);
+		ft.setText(ANDROID_ROW, DOWNLOADS_COL, "");
+		Element rE = fcf.getElement(ANDROID_ROW, DOWNLOADS_COL);
 		rE.appendChild(l.getElement());
 
 		// ...and append the second string block to the cell.
@@ -254,95 +262,124 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	/*
 	 * Creates the downloads cell content for iOS.
 	 */
-	private void createDownloadsCell_IOS(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
-//!		"...this needs to be implemented..."
-		ft.setText(      row, DOWNLOADS_COL, "...this needs to be implemented...");
-		fcf.addStyleName(row, DOWNLOADS_COL, "gwtUI_nowrap");
+	private void createDownloadsCell_IOS(VibeFlexTable ft, FlexCellFormatter fcf) {
+		// Construct the string to display in the first block...
+		String s1 = m_messages.downloadAppDlgDownloadIOS1(
+			m_company,
+			m_product,
+			createBoldLabelHTML(m_messages.downloadAppDlgDownloadIOS2()),
+			createBoldLabelHTML(m_messages.downloadAppDlgDownloadIOS3()),
+			createBoldLabelHTML(createNovellProductHTML(), true));
+		Label l = new Label();
+		l.getElement().setInnerHTML(s1);
+		
+		// ...add them to the cell...
+		ft.setText(IOS_ROW, DOWNLOADS_COL, "");
+		Element rE = fcf.getElement(IOS_ROW, DOWNLOADS_COL);
+		rE.appendChild(l.getElement());
+
+		// ...and append the second string block to the cell.
+		l = new Label(m_messages.downloadAppDlgDownloadIOS4(m_company, m_product));
+		l.addStyleName("marginTop10px");
+		rE.appendChild(l.getElement());
 	}
 	
 	/*
 	 * Creates the downloads cell content for MacOS.
 	 */
-	private void createDownloadsCell_Mac(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
-//!		"...this needs to be implemented..."
-		ft.setText(      row, DOWNLOADS_COL, "...this needs to be implemented...");
-		fcf.addStyleName(row, DOWNLOADS_COL, "gwtUI_nowrap");
+	private static void createDownloadsCell_Mac(VibeFlexTable ft, FlexCellFormatter fcf) {
+//!		...this needs to be implemented...
+		ft.setText(      MAC_ROW, DOWNLOADS_COL, "MacOS:  ...this needs to be implemented...");
+		fcf.addStyleName(MAC_ROW, DOWNLOADS_COL, "gwtUI_nowrap");
 	}
 	
 	/*
 	 * Creates the downloads cell content for Windows.
 	 */
-	private void createDownloadsCell_Windows(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
-//!		"...this needs to be implemented..."
-		ft.setText(      row, DOWNLOADS_COL, "...this needs to be implemented...");
-		fcf.addStyleName(row, DOWNLOADS_COL, "gwtUI_nowrap");
+	private static void createDownloadsCell_Windows(VibeFlexTable ft, FlexCellFormatter fcf) {
+//!		...this needs to be implemented...
+		ft.setText(      WINDOWS_ROW, DOWNLOADS_COL, "Windows:  ...this needs to be implemented...");
+		fcf.addStyleName(WINDOWS_ROW, DOWNLOADS_COL, "gwtUI_nowrap");
+	}
+
+	/*
+	 * Creates a header cell.
+	 */
+	private static void createHeaderCell(VibeFlexTable ft, FlexCellFormatter fcf, int col, String label, String style) {
+		ft.setText(      HEADER_ROW, col, label);
+		fcf.addStyleName(HEADER_ROW, col, style);
 	}
 	
 	/*
 	 * Creates the instructions cell content for Android.
 	 */
-	private void createInstructionsCell_Android(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
-//!		"...this needs to be implemented..."
-		ft.setText(      row, INSTRUCTIONS_COL, "...this needs to be implemented...");
-		fcf.addStyleName(row, INSTRUCTIONS_COL, "gwtUI_nowrap");
+	private static void createInstructionsCell_Android(VibeFlexTable ft, FlexCellFormatter fcf) {
+//!		...this needs to be implemented...
+		ft.setText(      ANDROID_ROW, INSTRUCTIONS_COL, "Android:  ...this needs to be implemented...");
+		fcf.addStyleName(ANDROID_ROW, INSTRUCTIONS_COL, "gwtUI_nowrap");
 	}
 	
 	/*
 	 * Creates the instructions cell content for iOS.
 	 */
-	private void createInstructionsCell_IOS(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
-//!		"...this needs to be implemented..."
-		ft.setText(      row, INSTRUCTIONS_COL, "...this needs to be implemented...");
-		fcf.addStyleName(row, INSTRUCTIONS_COL, "gwtUI_nowrap");
+	private static void createInstructionsCell_IOS(VibeFlexTable ft, FlexCellFormatter fcf) {
+//!		...this needs to be implemented...
+		ft.setText(      IOS_ROW, INSTRUCTIONS_COL, "iOS:  ...this needs to be implemented...");
+		fcf.addStyleName(IOS_ROW, INSTRUCTIONS_COL, "gwtUI_nowrap");
 	}
 	
 	/*
 	 * Creates the instructions cell content for MacOS.
 	 */
-	private void createInstructionsCell_Mac(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
-//!		"...this needs to be implemented..."
-		ft.setText(      row, INSTRUCTIONS_COL, "...this needs to be implemented...");
-		fcf.addStyleName(row, INSTRUCTIONS_COL, "gwtUI_nowrap");
+	private static void createInstructionsCell_Mac(VibeFlexTable ft, FlexCellFormatter fcf) {
+//!		...this needs to be implemented...
+		ft.setText(      MAC_ROW, INSTRUCTIONS_COL, "MacOS:  ...this needs to be implemented...");
+		fcf.addStyleName(MAC_ROW, INSTRUCTIONS_COL, "gwtUI_nowrap");
 	}
 	
 	/*
 	 * Creates the instructions cell content for Windows.
 	 */
-	private void createInstructionsCell_Windows(VibeFlexTable ft, FlexCellFormatter fcf, int row) {
-//!		"...this needs to be implemented..."
-		ft.setText(      row, INSTRUCTIONS_COL, "...this needs to be implemented...");
-		fcf.addStyleName(row, INSTRUCTIONS_COL, "gwtUI_nowrap");
+	private static void createInstructionsCell_Windows(VibeFlexTable ft, FlexCellFormatter fcf) {
+//!		...this needs to be implemented...
+		ft.setText(      WINDOWS_ROW, INSTRUCTIONS_COL, "Windows:  ...this needs to be implemented...");
+		fcf.addStyleName(WINDOWS_ROW, INSTRUCTIONS_COL, "gwtUI_nowrap");
 	}
 	
 	/*
 	 * Creates a logo cell.
 	 */
-	private void createLogoCell(VibeFlexTable ft, FlexCellFormatter fcf, int row, ImageResource ir, String altText) {
+	private static void createLogoCell(VibeFlexTable ft, FlexCellFormatter fcf, int row, ImageResource ir, String altText) {
 		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString());
 		i.addStyleName("vibe-desktopAppPage-logoImg");
 		i.setTitle(altText);
 		ft.setWidget(    row, LOGO_COL, i);
 		fcf.addStyleName(row, LOGO_COL, "vibe-desktopAppPage-logo bottom");
 	}
+
+	/*
+	 * Creates the HTML for the Novell Filr/Vibe with registered
+	 * trademark HTML.
+	 */
+	private String createNovellProductHTML() {
+		StringBuffer reply = new StringBuffer(m_company);
+		InlineLabel il = new InlineLabel();
+		il.addStyleName("vibe-desktopAppPage-reg");
+		il.getElement().setInnerHTML("&reg;");
+		reply.append(GwtClientHelper.getWidgetHTML(il));
+		reply.append(" ");
+		reply.append(m_product);
+		return reply.toString();
+	}
 	
 	/*
 	 * Creates a product title cell.
 	 */
-	private void createProductTitleCell(VibeFlexTable ft, FlexCellFormatter fcf, int row, String productName) {
+	private static void createProductTitleCell(VibeFlexTable ft, FlexCellFormatter fcf, int row, String productName) {
 		ft.setText(      row, PRODUCT_COL, productName);
 		fcf.addStyleName(row, PRODUCT_COL, "vibe-desktopAppPage-product-title bottom");
 	}
 
-	/*
-	 * Creates the HTML containing a registered by symbol.
-	 */
-	private static String createRegHTML() {
-		InlineLabel il = new InlineLabel();
-		il.addStyleName("vibe-desktopAppPage-reg");
-		il.getElement().setInnerHTML("&reg;");
-		return GwtClientHelper.getWidgetHTML(il);
-	}
-	
 	/**
 	 * Unused.
 	 * 
