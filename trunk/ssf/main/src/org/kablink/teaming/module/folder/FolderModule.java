@@ -104,6 +104,8 @@ public interface FolderModule {
 	   changeACL(true, true),
 	   updateModificationStamp(false, true),
 	   allowSharing(false, true),
+	   allowSharingExternal(false, true),
+	   allowSharingPublic(false, true),
 	   
 	   // Derived operations - The following three operations are derived from core operations for the purpose of added convenience
 	   addFile(true, false),

@@ -377,7 +377,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				break;
 			case allowSharing:
 				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.ALLOW_SHARING);
+						WorkAreaOperation.ALLOW_SHARING_INTERNAL);
+				break;
+			case allowSharingExternal:
+				getAccessControlManager().checkOperation(user, binder,
+						WorkAreaOperation.ALLOW_SHARING_EXTERNAL);
+				break;
+			case allowSharingPublic:
+				getAccessControlManager().checkOperation(user, binder,
+						WorkAreaOperation.ALLOW_SHARING_PUBLIC);
 				break;
 			default:
 				throw new NotSupportedException(operation.toString(),

@@ -44,6 +44,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FolderEntry;
@@ -108,24 +109,66 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		if (accessControlManager == null) {
 			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
 		}
+		Principal recipient = null;
+		if (shareItem.getRecipientType().equals(RecipientType.group) ||
+				shareItem.getRecipientType().equals(RecipientType.user)) {
+			recipient = getProfileModule().getEntry(shareItem.getRecipientId());
+		}
     	
 		switch (operation) {
 		case addShareItem:
 			//Make sure sharing is enabled at the zone level for this type of user
-			accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING);
+			if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
+				//Distinguish between internal and external groups
+				if (recipient.getIdentityInfo().isInternal()) {
+					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL);
+				} else {
+					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL);
+				}
+			} else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
+				//Users can be guest (i.e., shared), internal, or external
+				if (((User)recipient).isShared()) {
+					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC);
+				} else if (recipient.getIdentityInfo().isInternal()) {
+					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL);
+				} else {
+					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL);
+				}
+			} else if (shareItem.getRecipientType().equals(RecipientType.team)) {
+				//Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
+				throw new AccessControlException();
+			}
 
-			//Check that the user is either the entity owner, or has the right to share entities
+			//Check that the user has the right to share this entity
 			if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
 				FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
-				if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
-					return;
-				}
-				//User didn't have AllowSharing, so now check if user is owner of the entity
-				if (user.getId().equals(fe.getCreation().getPrincipal().getId())) {
-					//This is the owner of the entry. Allow the sharing if the user has right to change acl.
-					if (folderModule.testAccess(fe, FolderOperation.changeACL)) {
-						return;
+				if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
+					if (recipient.getIdentityInfo().isInternal()) {
+						if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
+							return;
+						}
+					} else {
+						if (folderModule.testAccess(fe, FolderOperation.allowSharingExternal)) {
+							return;
+						}
 					}
+				} else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
+					if (((User)recipient).isShared()) {
+						if (folderModule.testAccess(fe, FolderOperation.allowSharingPublic)) {
+							return;
+						}
+					} else if (recipient.getIdentityInfo().isInternal()) {
+						if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
+							return;
+						}
+					} else {
+						if (folderModule.testAccess(fe, FolderOperation.allowSharingExternal)) {
+							return;
+						}
+					}
+				} else if (shareItem.getRecipientType().equals(RecipientType.team)) {
+					//Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
+					throw new AccessControlException();
 				}
 			} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
 					entityIdentifier.getEntityType().equals(EntityType.workspace)) {
@@ -135,15 +178,33 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 						!SPropsUtil.getBoolean("sharing.netFolders.allowed", false)) {
 					throw new AccessControlException("errorcode.sharing.netfolders.notAllowed", new Object[] {});
 				}
-				if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
-					return;
-				}
-				//User didn't have AllowSharing, so now check if user is owner of the entity
-				if (user.getId().equals(binder.getCreation().getPrincipal().getId())) {
-					//This is the owner of the binder. Allow the sharing if the user has right to change acl.
-					if (binderModule.testAccess(binder, BinderOperation.changeACL)) {
-						return;
+				if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
+					if (recipient.getIdentityInfo().isInternal()) {
+						if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
+							return;
+						}
+					} else {
+						if (binderModule.testAccess(binder, BinderOperation.allowSharingExternal)) {
+							return;
+						}
 					}
+				} else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
+					if (((User)recipient).isShared()) {
+						if (binderModule.testAccess(binder, BinderOperation.allowSharingPublic)) {
+							return;
+						}
+					} else if (recipient.getIdentityInfo().isInternal()) {
+						if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
+							return;
+						}
+					} else {
+						if (binderModule.testAccess(binder, BinderOperation.allowSharingExternal)) {
+							return;
+						}
+					}
+				} else if (shareItem.getRecipientType().equals(RecipientType.team)) {
+					//Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
+					throw new AccessControlException();
 				}
 			}
 			break;
@@ -153,36 +214,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				//The user is not the creator of the share. Only the share item creator is allowed to modify it
 				throw new AccessControlException();
 			}
-			//Check if this is the owner of the entity
-			if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
-				FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
-				if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
-					return;
-				}
-				//User didn't have AllowSharing, so now check if user is owner of the entity
-				if (user.getId().equals(fe.getCreation().getPrincipal().getId())) {
-					//This is the owner of the entry. Allow the modification.
-					if (folderModule.testAccess(fe, FolderOperation.changeACL)) {
-						return;
-					}
-				}
-			} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
-					entityIdentifier.getEntityType().equals(EntityType.workspace)) {
-				Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
-				//If this is a Filr Net Folder, check if sharing is allowed at the folder level
-				if (binder.isAclExternallyControlled() && 
-						!SPropsUtil.getBoolean("sharing.netFolders.allowed", false)) {
-					throw new AccessControlException("errorcode.sharing.netfolders.notAllowed", new Object[] {});
-				}
-				if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
-					return;
-				}
-				if (user.getId().equals(binder.getCreation().getPrincipal().getId())) {
-					//This is the owner of the binder. Allow the modification.
-					if (binderModule.testAccess(binder, BinderOperation.changeACL)) {
-						return;
-					}
-				}
+			//Now check if this user is still allowed to add a share of this entity
+			if (testAccess(shareItem, SharingOperation.addShareItem)) {
+				return;
 			}
 			break;
 		case deleteShareItem:
@@ -254,7 +288,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			if (null == accessControlManager) {
 				accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
 			}
-			accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING);
+			accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL);
 
 			// Is the entity a folder entry?
 	    	User user = RequestContextHolder.getRequestContext().getUser();
@@ -320,7 +354,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		if (accessControlManager == null) {
 			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
 		}
-		return accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING);
+		return accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL);
 	}
 
     //NO transaction

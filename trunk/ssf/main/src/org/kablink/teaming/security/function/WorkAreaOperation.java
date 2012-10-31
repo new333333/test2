@@ -82,7 +82,9 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation CREATOR_CREATE_ENTRY_ACLS = new WorkAreaOperation("ownerCreateEntryAcls");
     public final static WorkAreaOperation ADD_COMMUNITY_TAGS = new WorkAreaOperation("addTags");
     public final static WorkAreaOperation VIEW_BINDER_TITLE = new WorkAreaOperation("viewBinderTitle");
-    public final static WorkAreaOperation ALLOW_SHARING = new WorkAreaOperation("allowSharing");
+    public final static WorkAreaOperation ALLOW_SHARING_INTERNAL = new WorkAreaOperation("allowSharing");
+    public final static WorkAreaOperation ALLOW_SHARING_EXTERNAL = new WorkAreaOperation("allowSharingExternal");
+    public final static WorkAreaOperation ALLOW_SHARING_PUBLIC = new WorkAreaOperation("allowSharingPublic");
 
     // The following rights should not be used in access management of workareas.
     // Used to give access to zone-wide functions to a group of users
@@ -93,7 +95,9 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation OVERRIDE_ONLY_SEE_GROUP_MEMBERS = new WorkAreaOperation("overrideOnlySeeGroupMembers", true);
     public final static WorkAreaOperation MANAGE_RESOURCE_DRIVERS = new WorkAreaOperation("manageResourceDrivers", true);
     public final static WorkAreaOperation CREATE_FILESPACE = new WorkAreaOperation("createFilespace", true);
-    public final static WorkAreaOperation ENABLE_SHARING = new WorkAreaOperation("enableSharing", true);
+    public final static WorkAreaOperation ENABLE_SHARING_INTERNAL = new WorkAreaOperation("enableSharing", true);
+    public final static WorkAreaOperation ENABLE_SHARING_EXTERNAL = new WorkAreaOperation("enableSharingExternal", true);
+    public final static WorkAreaOperation ENABLE_SHARING_PUBLIC = new WorkAreaOperation("enableSharingPublic", true);
 
     // Default set of rights controlled by external ACLs.
 	public static final WorkAreaOperation[] EXTERNALLY_CONTROLLED_RIGHTS_DEFAULT = new WorkAreaOperation[] {
@@ -198,6 +202,8 @@ public class WorkAreaOperation {
 		protected Boolean addTags = Boolean.FALSE;
 		protected Boolean viewBinderTitle = Boolean.FALSE;
 		protected Boolean allowSharing = Boolean.FALSE;
+		protected Boolean allowSharingExternal = Boolean.FALSE;
+		protected Boolean allowSharingPublic = Boolean.FALSE;
 		
 		public RightSet() {}
 		
@@ -241,6 +247,8 @@ public class WorkAreaOperation {
 			result = 29 * result + (Boolean.TRUE.equals(addTags) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(viewBinderTitle) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(allowSharing) ? 1231 : 1237);
+			result = 29 * result + (Boolean.TRUE.equals(allowSharingExternal) ? 1231 : 1237);
+			result = 29 * result + (Boolean.TRUE.equals(allowSharingPublic) ? 1231 : 1237);
 			return result;
 		}
 
@@ -271,6 +279,8 @@ public class WorkAreaOperation {
 			if(!equalRights(this.addTags, that.addTags)) return false;
 			if(!equalRights(this.viewBinderTitle, that.viewBinderTitle)) return false;
 			if(!equalRights(this.allowSharing, that.allowSharing)) return false;
+			if(!equalRights(this.allowSharingExternal, that.allowSharingExternal)) return false;
+			if(!equalRights(this.allowSharingPublic, that.allowSharingPublic)) return false;
 			return true;
 		}
 
@@ -296,7 +306,9 @@ public class WorkAreaOperation {
 			if(this.ownerCreateEntryAcls) rights.add(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
 			if(this.addTags) rights.add(WorkAreaOperation.ADD_COMMUNITY_TAGS);
 			if(this.viewBinderTitle) rights.add(WorkAreaOperation.VIEW_BINDER_TITLE);
-			if(this.allowSharing) rights.add(WorkAreaOperation.ALLOW_SHARING);
+			if(this.allowSharing) rights.add(WorkAreaOperation.ALLOW_SHARING_INTERNAL);
+			if(this.allowSharingExternal) rights.add(WorkAreaOperation.ALLOW_SHARING_EXTERNAL);
+			if(this.allowSharingPublic) rights.add(WorkAreaOperation.ALLOW_SHARING_PUBLIC);
 			return rights;
 		}
 
@@ -524,6 +536,24 @@ public class WorkAreaOperation {
 
 		public void setAllowSharing(boolean allowSharing) {
 			this.allowSharing = allowSharing;
+		}
+		
+		public boolean isAllowSharingExternal() {
+			if(allowSharingExternal == null) return false;
+			return allowSharingExternal;
+		}
+
+		public void setAllowSharingExternal(boolean allowSharingExternal) {
+			this.allowSharingExternal = allowSharingExternal;
+		}
+		
+		public boolean isAllowSharingPublic() {
+			if(allowSharingPublic == null) return false;
+			return allowSharingPublic;
+		}
+
+		public void setAllowSharingPublic(boolean allowSharingPublic) {
+			this.allowSharingPublic = allowSharingPublic;
 		}
 		
 		private boolean equalRights(Boolean right1, Boolean right2) {
