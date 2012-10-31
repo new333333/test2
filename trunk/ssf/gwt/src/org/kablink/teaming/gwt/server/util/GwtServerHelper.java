@@ -32,7 +32,11 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.text.Collator;
 import java.text.DateFormat;
@@ -312,6 +316,13 @@ public class GwtServerHelper {
 	// formatted permalink URL.
 	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
 
+	// The following are used as URL components when constructing the
+	// URLs for accessing the desktop download application information.
+	private static final String JSON_TAIL  = "version.json";
+	private static final String MACOS_TAIL = "novellfilr/osx/x64/";
+	private static final String WIN32_TAIL = "novellfilr/windows/x86/";
+	private static final String WIN64_TAIL = "novellfilr/windows/x64/";
+	
 	/**
 	 * Inner class used to compare two AssignmentInfo's.
 	 */
@@ -1090,6 +1101,21 @@ public class GwtServerHelper {
 		return urlString;
 	}
 
+	/*
+	 * Constructs a desktop application URL.
+	 */
+	private static String buildDesktopAppUrl(String baseUrl, String platformTail) {
+		String reply = null;
+		String jsonData = doHTTPGet(baseUrl + platformTail + JSON_TAIL);
+		if (MiscUtil.hasString(jsonData)) {
+			String fName    = getSFromJSO(JSONObject.fromObject(jsonData), "filename");
+			if (MiscUtil.hasString(fName)) {
+				reply = (baseUrl + platformTail + fName);
+			}
+		}
+		return reply;
+	}
+	
 	/*
 	 * Constructs a TagInfo from a Tag.
 	 */
@@ -1875,6 +1901,54 @@ public class GwtServerHelper {
 		}
 		
 		return Boolean.TRUE;
+	}
+
+	/*
+	 * Does an HTTP get on the given URL and returns what's read.
+	 */
+	private static String doHTTPGet(String httpUrl) {
+		BufferedReader		reader        = null;
+		HttpURLConnection	urlConnection = null;
+		String				reply         = null;
+		
+		try {
+			// Open the HTTP connection...
+			urlConnection = ((HttpURLConnection) new URL(httpUrl).openConnection());
+			urlConnection.setRequestMethod("GET");
+
+			// ...and read the content from it.
+			String			line;
+			StringBuffer	result = new StringBuffer();
+			reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+			while (null != (line = reader.readLine())) {
+			    result.append(line);
+			}
+			reply = result.toString();
+		}
+		
+		catch (Exception ex) {
+			m_logger.error("GwtServerHelper.doHTTPGet( '" + httpUrl + "' )", ex);
+			reply = null;
+		}
+		
+		finally {
+			// If we have a reader...
+			if (null != reader) {
+				// ...make sure it gets closed...
+				try {reader.close();}
+				catch (Exception e) {}
+			}
+
+			// ...and if we have an HTTP connection...
+			if (null != urlConnection) {
+				// ...make sure it gets disconnected.
+				urlConnection.disconnect();
+			}
+		}
+
+		// If we get here, reply is null or refers to the content of
+		// the HTTP GET.  Return it.
+		return reply;
 	}
 	
 	/**
@@ -4123,9 +4197,19 @@ public class GwtServerHelper {
 			// Construct the DesktopAppDownloadInfoRpcResponseData
 			// object we'll fill in and return.
 			DesktopAppDownloadInfoRpcResponseData reply = new DesktopAppDownloadInfoRpcResponseData();
-			
-//!			...this needs to be implemented..
 
+			// Extract the base desktop application update URL...
+			ZoneConfig	zc      = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+			String		baseUrl = zc.getFsaAutoUpdateUrl().trim();
+			if ('/' != baseUrl.charAt(baseUrl.length() - 1)) {
+				baseUrl += "/";
+			}
+
+			// ...and construct and store the desktop application URLs.
+			reply.setMacUrl(  buildDesktopAppUrl(baseUrl, MACOS_TAIL));
+			reply.setWin32Url(buildDesktopAppUrl(baseUrl, WIN32_TAIL));
+			reply.setWin64Url(buildDesktopAppUrl(baseUrl, WIN64_TAIL));
+			
 			// If we get here, reply refers to the
 			// DesktopAppDownloadInfoRpcResponseData objecting
 			// containing the information about downloading the desktop
@@ -4136,7 +4220,7 @@ public class GwtServerHelper {
 			throw getGwtTeamingException(ex);
 		}		
 	}
-	
+
 	/**
 	 * Return a download file URL that can be used to download an
 	 * entry's file.
@@ -5684,30 +5768,29 @@ public class GwtServerHelper {
 			String userAvatarUrl = getUserAvatarUrl(bs, request, getCurrentUser());
 
 			// If we're in Filr mode...
-			boolean desktopAppEnabled;
-			boolean showDesktopAppDownloader;
+			boolean desktopAppEnabled        = false;
+			boolean showDesktopAppDownloader = false;
 			if (Utils.checkIfFilr()) {
-				// ...get what we know about desktop application
-				// ...deployment...
-				GwtFileSyncAppConfiguration fsaConfig = GwtServerHelper.getFileSyncAppConfiguration(bs);
-				desktopAppEnabled = fsaConfig.getIsDeploymentEnabled();
-				if (desktopAppEnabled) {
-					UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
-					String s = ((String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_SHOW_DESKTOP_APP_DOWNLOAD));
-					if (MiscUtil.hasString(s))
-					     showDesktopAppDownloader = Boolean.parseBoolean(s);
-					else showDesktopAppDownloader = true;
+				// ...and the zone configuration has an auto update...
+				// ...URL...
+				ZoneConfig zc = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+				if (MiscUtil.hasString(zc.getFsaAutoUpdateUrl().trim())) {
+					// ...get what we know about desktop application
+					// ...deployment...
+					GwtFileSyncAppConfiguration fsaConfig = GwtServerHelper.getFileSyncAppConfiguration(bs);
+					desktopAppEnabled = fsaConfig.getIsDeploymentEnabled();
+					if (desktopAppEnabled) {
+						UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
+						String s = ((String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_SHOW_DESKTOP_APP_DOWNLOAD));
+						if (MiscUtil.hasString(s))
+						     showDesktopAppDownloader = Boolean.parseBoolean(s);
+						else showDesktopAppDownloader = true;
+					}
 				}
+				
 				else {
-					showDesktopAppDownloader = false;
+					m_logger.error("GwtServerHelper.getMainPageInfo():  The file synchronization application auto update URL is not available.");
 				}
-			}
-			
-			else {
-				// ...otherwise, we don't show the desktop download
-				// ...stuff...
-				desktopAppEnabled        =
-				showDesktopAppDownloader = false;
 			}
 			
 			// ...and use this all to construct a
