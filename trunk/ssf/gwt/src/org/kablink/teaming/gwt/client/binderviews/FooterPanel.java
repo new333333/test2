@@ -94,6 +94,7 @@ public class FooterPanel extends ToolPanelBase {
 	private enum StringIds{
 		CAPTION_ATOM,
 		CAPTION_EMAIL_ADDRESSES,
+		CAPTION_FILE_DOWNLOAD,
 		CAPTION_ICAL,
 		CAPTION_PERMALINK,
 		CAPTION_RSS,
@@ -101,6 +102,7 @@ public class FooterPanel extends ToolPanelBase {
 
 		KEY_ATOM,
 		KEY_EMAIL_ADDRESSES,
+		KEY_FILE_DOWNLOAD,
 		KEY_HEADER,
 		KEY_FOOTER,
 		KEY_ICAL,
@@ -150,6 +152,7 @@ public class FooterPanel extends ToolPanelBase {
 			// ...load the Filr specific strings...
 			m_strMap.put(StringIds.CAPTION_ATOM,            m_messages.vibeBinderFooter_Filr_AtomUrl());
 			m_strMap.put(StringIds.CAPTION_EMAIL_ADDRESSES, m_messages.vibeBinderFooter_Filr_EmailAddresses());
+			m_strMap.put(StringIds.CAPTION_FILE_DOWNLOAD,   m_messages.vibeBinderFooter_Filr_FileDownload());
 			m_strMap.put(StringIds.CAPTION_ICAL,            m_messages.vibeBinderFooter_Filr_iCalUrl());
 			m_strMap.put(StringIds.CAPTION_PERMALINK,       m_messages.vibeBinderFooter_Filr_Permalink());
 			m_strMap.put(StringIds.CAPTION_RSS,             m_messages.vibeBinderFooter_Filr_RSSUrl());
@@ -157,6 +160,7 @@ public class FooterPanel extends ToolPanelBase {
 
 			m_strMap.put(StringIds.KEY_ATOM,                m_messages.vibeBinderFooter_Filr_AtomUrl());
 			m_strMap.put(StringIds.KEY_EMAIL_ADDRESSES,     m_messages.vibeBinderFooter_Filr_EmailAddressesHint());
+			m_strMap.put(StringIds.KEY_FILE_DOWNLOAD,       m_messages.vibeBinderFooter_Filr_FileDownloadHint());
 			m_strMap.put(StringIds.KEY_HEADER,              m_messages.vibeBinderFooter_Filr_KeyHeader());
 			m_strMap.put(StringIds.KEY_FOOTER,              m_messages.vibeBinderFooter_Filr_KeyFooter());
 			m_strMap.put(StringIds.KEY_ICAL,                m_messages.vibeBinderFooter_Filr_iCalUrlHint());
@@ -170,6 +174,7 @@ public class FooterPanel extends ToolPanelBase {
 			// ...otherwise, load the Vibe specific strings...
 			m_strMap.put(StringIds.CAPTION_ATOM,            m_messages.vibeBinderFooter_Vibe_AtomUrl());
 			m_strMap.put(StringIds.CAPTION_EMAIL_ADDRESSES, m_messages.vibeBinderFooter_Vibe_EmailAddresses());
+			m_strMap.put(StringIds.CAPTION_FILE_DOWNLOAD,   m_messages.vibeBinderFooter_Vibe_FileDownload());
 			m_strMap.put(StringIds.CAPTION_ICAL,            m_messages.vibeBinderFooter_Vibe_iCalUrl());
 			m_strMap.put(StringIds.CAPTION_PERMALINK,       m_messages.vibeBinderFooter_Vibe_Permalink());
 			m_strMap.put(StringIds.CAPTION_RSS,             m_messages.vibeBinderFooter_Vibe_RSSUrl());
@@ -177,6 +182,7 @@ public class FooterPanel extends ToolPanelBase {
 
 			m_strMap.put(StringIds.KEY_ATOM,                m_messages.vibeBinderFooter_Vibe_AtomUrl());
 			m_strMap.put(StringIds.KEY_EMAIL_ADDRESSES,     m_messages.vibeBinderFooter_Vibe_EmailAddressesHint());
+			m_strMap.put(StringIds.KEY_FILE_DOWNLOAD,       m_messages.vibeBinderFooter_Vibe_FileDownloadHint());
 			m_strMap.put(StringIds.KEY_HEADER,              m_messages.vibeBinderFooter_Vibe_KeyHeader());
 			m_strMap.put(StringIds.KEY_FOOTER,              m_messages.vibeBinderFooter_Vibe_KeyFooter());
 			m_strMap.put(StringIds.KEY_ICAL,                m_messages.vibeBinderFooter_Vibe_iCalUrlHint());
@@ -432,6 +438,15 @@ public class FooterPanel extends ToolPanelBase {
 			}
 		}
 
+		// ...if there's a file download URL defined...
+		ToolbarItem fileDownloadTBI    = m_footerTBI.getNestedToolbarItem("fileDownload");
+		boolean		hasFileDownloadUrl = (null != fileDownloadTBI);
+		if (hasFileDownloadUrl) {
+			// ...add a link for it...
+			rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_FILE_DOWNLOAD));
+			renderRowLink(rowDataPanel, fileDownloadTBI.getUrl());
+		}
+
 		// ...if we not in Filr mode...
 		if (!m_isFilr) {
 			// ...if there's an RSS URL defined...
@@ -493,15 +508,18 @@ public class FooterPanel extends ToolPanelBase {
 				showWebDAV = (!(m_entityId.isEntry()));
 			}
 		}
-		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_PERMALINK), m_strMap.get(StringIds.KEY_PERMALINK)      );
-		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),      m_strMap.get(StringIds.KEY_EMAIL_ADDRESSES));
+		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_PERMALINK),     m_strMap.get(StringIds.KEY_PERMALINK)      );
+		if (hasFileDownloadUrl) {
+			renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_FILE_DOWNLOAD), m_strMap.get(StringIds.KEY_FILE_DOWNLOAD)  );
+		}
+		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),          m_strMap.get(StringIds.KEY_EMAIL_ADDRESSES));
 		if (showWebDAV) {
 			StringIds webDavId = ((null != m_binderInfo) ? StringIds.KEY_WEBDAV_FOLDER : StringIds.KEY_WEBDAV_ENTRY);
-			renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_WEBDAV),    m_strMap.get(webDavId)                     );
+			renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_WEBDAV),        m_strMap.get(webDavId)                     );
 		}
-		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),      m_strMap.get(StringIds.KEY_ICAL)           );
+		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),          m_strMap.get(StringIds.KEY_ICAL)           );
 		if (!m_isFilr) {
-			renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_RSS),       m_strMap.get(StringIds.KEY_RSS)            );
+			renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_RSS),           m_strMap.get(StringIds.KEY_RSS)            );
 		}
 
 		// ...and add a footer with further explanations if necessary.
