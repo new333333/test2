@@ -220,9 +220,14 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	public Object getDataFromDlg()
 	{
 		GwtFileSyncAppConfiguration fileSyncAppConfig;
+		String autoUpdateUrl;
+		boolean deployEnabled;
 		
 		fileSyncAppConfig = new GwtFileSyncAppConfiguration();
-		
+
+		autoUpdateUrl = getAutoUpdateUrl();
+		deployEnabled = getIsFileSyncAppDeployEnabled();
+
 		// Get whether the File Sync App is enabled.
 		fileSyncAppConfig.setIsFileSyncAppEnabled( getIsFileSyncAppEnabled() );
 		
@@ -230,10 +235,18 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		fileSyncAppConfig.setSyncInterval( getIntervalInt() );
 		
 		// Get the auto-update url from the dialog.
-		fileSyncAppConfig.setAutoUpdateUrl( getAutoUpdateUrl() );
+		fileSyncAppConfig.setAutoUpdateUrl( autoUpdateUrl );
 		
 		// Get whether the file sync app can be deployed
-		fileSyncAppConfig.setIsDeploymentEnabled( getIsFileSyncAppDeployEnabled() );
+		fileSyncAppConfig.setIsDeploymentEnabled( deployEnabled );
+
+		// If the "allow deployment..." checkbox is checked the user must have an auto-update url
+		if ( deployEnabled && (autoUpdateUrl == null || autoUpdateUrl.length() == 0) )
+		{
+			Window.alert( GwtTeaming.getMessages().fileSyncAppAutoUpdateUrlRequiredPrompt() );
+			m_autoUpdateUrlTextBox.setFocus( true );
+			return null;
+		}
 		
 		return fileSyncAppConfig;
 	}
