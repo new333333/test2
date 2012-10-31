@@ -1461,6 +1461,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the Novell Desktop App dialog (File Sync)
 	String fileSyncAppAutoUpdateUrlLabel();
+	String fileSyncAppAutoUpdateUrlRequiredPrompt();
 	String fileSyncAppDlgHeader();
 	String fileSyncAppEnableDeployLabel();
 	String fileSyncAppIntervalLabel();
