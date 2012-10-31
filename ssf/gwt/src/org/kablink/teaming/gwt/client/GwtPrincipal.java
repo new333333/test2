@@ -43,6 +43,7 @@ public abstract class GwtPrincipal extends GwtTeamingItem
 	implements IsSerializable
 {
 	private boolean m_internal;
+	transient private Object m_additionalData;
 
 	/**
 	 * 
@@ -68,6 +69,14 @@ public abstract class GwtPrincipal extends GwtTeamingItem
 			return true;
 		
 		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	public Object getAdditionalData()
+	{
+		return m_additionalData;
 	}
 	
 	/**
@@ -105,6 +114,14 @@ public abstract class GwtPrincipal extends GwtTeamingItem
 		return "Unknown principal type";
 	}
 
+	/**
+	 * 
+	 */
+	public void setAdditionalData( Object data )
+	{
+		m_additionalData = data;
+	}
+	
 	/**
 	 * 
 	 */

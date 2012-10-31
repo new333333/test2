@@ -105,7 +105,7 @@ public class SelectPrincipalsWidget extends Composite
 	 * This widget is used to display a principal's name.  If the principal is a group
 	 * then the user can click on the name and see the members of the group.
 	 */
-	private class PrincipalNameWidget extends Composite
+	public class PrincipalNameWidget extends Composite
 		implements ClickHandler, MouseOverHandler, MouseOutHandler
 	{
 		private GwtPrincipal m_principal;
@@ -256,7 +256,7 @@ public class SelectPrincipalsWidget extends Composite
 	/**
 	 * 
 	 */
-	private SelectPrincipalsWidget()
+	public SelectPrincipalsWidget()
 	{
 		FlowPanel mainPanel;
 		final FlexTable table;
@@ -811,6 +811,9 @@ public class SelectPrincipalsWidget extends Composite
 					if ( findPrincipal( principal ) == -1 )
 					{
 						// No
+						// Notify that a principal was added
+						principalAdded( principal );
+
 						// Add the principal to our list of principals
 						addPrincipal( principal, true );
 					}
@@ -823,6 +826,15 @@ public class SelectPrincipalsWidget extends Composite
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+	/**
+	 * This method gets called when a principal is added to the list.  You can override this method if
+	 * you want to be notified when a user is added.
+	 */
+	protected void principalAdded( GwtPrincipal principal )
+	{
+		// Nothing to do.
 	}
 	
 	/*
