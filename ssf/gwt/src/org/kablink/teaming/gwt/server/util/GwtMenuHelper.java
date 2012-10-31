@@ -147,6 +147,7 @@ public class GwtMenuHelper {
 	private final static String DISPLAY_STYLES			= "display_styles";
 	private final static String EDIT_IN_PLACE			= "editInPlace";
 	private final static String EMAIL					= "email";
+	private final static String	FILE_DOWNLOAD			= "fileDownload";
 	private final static String FOLDER_VIEWS			= "folderViews";
 	private final static String ICALENDAR				= "iCalendar";
 	private final static String IMPORT_EXPORT			= "importExport";
@@ -1734,11 +1735,12 @@ public class GwtMenuHelper {
 		if (!(fe.isPreDeleted())) {
 			// No!  Generate the toolbar item for the permalink to the
 			// entry.
-			FileAttachment	fa           = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
-			String			webDavUrl    = ((null == fa) ? null : SsfsUtil.getInternalAttachmentUrl(request, fe.getParentBinder(), fe, fa));
-			boolean			hasWebDavUrl = MiscUtil.hasString(webDavUrl     );
-			boolean			hasEvents    = MiscUtil.hasItems( fe.getEvents());
-			
+			FileAttachment	fa                 = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
+			Binder			feBinder           = fe.getParentBinder();
+			String			webDavUrl          = ((null == fa) ? null : SsfsUtil.getInternalAttachmentUrl(request, feBinder, fe, fa));
+			boolean			hasWebDavUrl       = MiscUtil.hasString(webDavUrl     );
+			boolean			hasEvents          = MiscUtil.hasItems( fe.getEvents());
+
 			String key;
 			if      (hasEvents && hasWebDavUrl) key = "toolbar.menu.folderEntryPermalink.iCal.webdav";
 			else if (hasEvents)                 key = "toolbar.menu.folderEntryPermalink.iCal";
@@ -1749,7 +1751,26 @@ public class GwtMenuHelper {
 			markTBITitle(permalinkTBI, key          );
 			markTBIUrl(  permalinkTBI, permaLink    );
 			footerToolbar.addNestedItem(permalinkTBI);
-
+			
+			// If the entry has an attachment...
+			if (null != fa) {
+				// ...and it's a file entry...
+				String family = GwtServerHelper.getFolderEntityFamily(bs, fe);
+				if (GwtServerHelper.isFamilyFile(family)) {
+					// ...and we can get it's download permalink...
+					String downloadPermalink;
+					try                  {downloadPermalink = GwtServerHelper.getDownloadFileUrl(request, bs, feBinder.getId(), fe.getId(), true);}	// true -> Return a permalink URL.
+					catch (Exception ex) {downloadPermalink = null;}
+					if (MiscUtil.hasString(downloadPermalink)) {
+						//...add a toolbar item for that.
+						ToolbarItem downloadFileTBI = new ToolbarItem(FILE_DOWNLOAD);
+						markTBITitle(downloadFileTBI, "toolbar.menu.fileDownloadPermalink");
+						markTBIUrl(  downloadFileTBI, downloadPermalink);
+						footerToolbar.addNestedItem(downloadFileTBI);
+					}
+				}
+			}
+			
 			// Does the entry have any events defined on it?
 			if (hasEvents) {
 				// Yes!  Generate an iCal URL toolbar item.

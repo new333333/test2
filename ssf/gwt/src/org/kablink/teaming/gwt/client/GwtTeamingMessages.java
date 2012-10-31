@@ -1474,6 +1474,8 @@ public interface GwtTeamingMessages extends Messages
 	String vibeBinderFooter_Filr_AtomUrl();
 	String vibeBinderFooter_Filr_EmailAddresses();
 	String vibeBinderFooter_Filr_EmailAddressesHint();
+	String vibeBinderFooter_Filr_FileDownload();
+	String vibeBinderFooter_Filr_FileDownloadHint();
 	String vibeBinderFooter_Filr_iCalUrl();
 	String vibeBinderFooter_Filr_iCalUrlHint();
 	String vibeBinderFooter_Filr_KeyHeader();
@@ -1488,6 +1490,8 @@ public interface GwtTeamingMessages extends Messages
 	String vibeBinderFooter_Vibe_AtomUrl();
 	String vibeBinderFooter_Vibe_EmailAddresses();
 	String vibeBinderFooter_Vibe_EmailAddressesHint();
+	String vibeBinderFooter_Vibe_FileDownload();
+	String vibeBinderFooter_Vibe_FileDownloadHint();
 	String vibeBinderFooter_Vibe_iCalUrl();
 	String vibeBinderFooter_Vibe_iCalUrlHint();
 	String vibeBinderFooter_Vibe_KeyHeader();
