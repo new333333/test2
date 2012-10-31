@@ -188,6 +188,19 @@ public class GwtMenuHelper {
 	}
 
 	/*
+	 * Adds a separator to a ToolbarItem's nested toolbar, if needed.
+	 */
+	private static boolean addNestedSeparatorIfNeeded(ToolbarItem tbi, boolean needSeparator) {
+		// Do w need to add a separator?
+		if (needSeparator) {
+			// Add a separator between the action commands above and
+			// the management commands that follow.
+			tbi.addNestedItem(ToolbarItem.constructSeparatorTBI());
+		}
+		return false;
+	}
+	
+	/*
 	 * Adds the ToolBarItem's for a folder to the
 	 * List<ToolBarItem> of them.
 	 * 
@@ -2824,6 +2837,23 @@ public class GwtMenuHelper {
 				markTBIEntryIds(actionTBI, fe                                  );
 				reply.add(actionTBI);
 			}
+			
+			// Can the user modify this entry?
+			if (fm.testAccess(fe, FolderOperation.modifyEntry)) {
+				// Yes!  Add an edit details toolbar item for it.
+				url = createActionUrl(request);
+				url.setParameter(WebKeys.ACTION,         WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
+				url.setParameter(WebKeys.URL_ENTRY_TYPE, fe.getEntityTypedId()             );
+				url.setParameter(WebKeys.URL_BINDER_ID,  folderId                          );
+				url.setParameter(WebKeys.URL_ENTRY_ID,   feId                              );
+				
+				actionTBI = new ToolbarItem(MODIFY);
+				markTBIPopup(actionTBI                        );
+				markTBITitle(actionTBI, "toolbar.edit.details");
+				markTBIUrl(  actionTBI, url                   );
+				reply.add(actionTBI);
+			}
+			
 
 			// Can the user run the edit-in-place editor on this item's
 			// file?
@@ -2957,29 +2987,14 @@ public class GwtMenuHelper {
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 
-			// Add a separator between the action commands above and
-			// the management commands that follow.
-			dropdownTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+			boolean needSeparator = dropdownTBI.hasNestedToolbarItems();
 
-			// Can the user modify this entry?
-			if (fm.testAccess(fe, FolderOperation.modifyEntry)) {
-				// Yes!  Add an edit details toolbar item for it.
-				url = createActionUrl(request);
-				url.setParameter(WebKeys.ACTION,         WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
-				url.setParameter(WebKeys.URL_ENTRY_TYPE, fe.getEntityTypedId()             );
-				url.setParameter(WebKeys.URL_BINDER_ID,  folderId                          );
-				url.setParameter(WebKeys.URL_ENTRY_ID,   feId                              );
-				
-				actionTBI = new ToolbarItem(MODIFY);
-				markTBIPopup(actionTBI                        );
-				markTBITitle(actionTBI, "toolbar.edit.details");
-				markTBIUrl(  actionTBI, url                   );
-				dropdownTBI.addNestedItem(actionTBI);
-			}
-			
 			// Can the user manage access controls on this entry?
 			if (fm.testAccess(fe, FolderOperation.readEntry) && fe.isTop()) {
-				// Yes!  Add an access control toolbar item for it.
+				// Yes!  Add a separator if necessary...
+				needSeparator = addNestedSeparatorIfNeeded(dropdownTBI, needSeparator);
+				
+				// ...and add an access control toolbar item for it.
 				url = createActionUrl(request);
 				url.setParameter(WebKeys.ACTION,            WebKeys.ACTION_ACCESS_CONTROL);
 				url.setParameter(WebKeys.URL_WORKAREA_ID,   feId                         );
@@ -2994,7 +3009,10 @@ public class GwtMenuHelper {
 
 			// Can the user change entry types of this entry?
 			if ((!isFilr) && fm.testAccess(fe, FolderOperation.changeEntryType)) {
-				// Yes!  Add a change entry type toolbar item for it.
+				// Yes!  Add a separator if necessary...
+				needSeparator = addNestedSeparatorIfNeeded(dropdownTBI, needSeparator);
+				
+				// ...and add a change entry type toolbar item for it.
 				actionTBI = new ToolbarItem(CHANGE_ENTRY_TYPE);
 				markTBITitle(   actionTBI, "toolbar.changeEntryType"                       );
 				markTBIEvent(   actionTBI, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
@@ -3002,9 +3020,12 @@ public class GwtMenuHelper {
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 
-			// If this isn't the guest user...
+			// Is this the guest user?
 			if (!isGuest) {
-				// ...add a subscribe toolbar item.
+				// No!  Add a separator if necessary...
+				needSeparator = addNestedSeparatorIfNeeded(dropdownTBI, needSeparator);
+				
+				// ...and add a subscribe toolbar item.
 				actionTBI = new ToolbarItem(SUBSCRIBE);
 				markTBITitle(   actionTBI, "toolbar.menu.subscribeToEntrySelected" );
 				markTBIEvent(   actionTBI, TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES);
