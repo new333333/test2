@@ -162,7 +162,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  	}
  	
  	@Override
-	public User authenticate(boolean userIsInternal, AuthenticationServiceProvider authenticationServiceProvider, 
+	public User authenticate(AuthenticationServiceProvider authenticationServiceProvider, 
 			String zoneName, String userName, String password,
 			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
 			Map updates, String authenticatorName) 
@@ -186,29 +186,25 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			if (!hadSession)
 				SessionUtil.sessionStartup();	
 			
-			if(!userIsInternal) { // external user
-				user = doAuthenticateExternalUser(zoneName, userName);
-				// If you're still here, it means that the corresponding user object was found in the database.
-				if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
-					int syncMode = getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().getProfileSynchronizationMode();
-					if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_ON_FIRST_LOGIN_ONLY) {
-						if(user.getFirstLoginDate() != null)
-							updates.clear(); // This is not the first time logging in. Should not sync. Clear all attributes.
-					}
-					else if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_ON_EVERY_LOGIN) {
-						// Should sync.
-					}
-					else {
-						updates.clear(); // Should not sync.
-					}
+			if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
+				user = doAuthenticateOpenidUser(zoneName, userName);
+				
+				int syncMode = getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().getProfileSynchronizationMode();
+				if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_ON_FIRST_LOGIN_ONLY) {
+					if(user.getFirstLoginDate() != null)
+						updates.clear(); // This is not the first time logging in. Should not sync. Clear all attributes.
+				}
+				else if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_ON_EVERY_LOGIN) {
+					// Should sync.
 				}
 				else {
-					throw new InternalException("Encountered auth service provider " + authenticationServiceProvider.name() + " when expecting OPENID");
+					updates.clear(); // Should not sync.
 				}
 			}
-			else { // internal user
-				user = doAuthenticateInternalUser(zoneName, userName, password, passwordAutoSynch, ignorePassword);
+			else {
+				user = doAuthenticateUser(zoneName, userName, password, passwordAutoSynch, ignorePassword);
 			}
+			
 			//Make sure this user account hasn't been disabled
 			if (!user.isActive() && !MiscUtil.isSystemUserAccount( userName )) {
 				//This account is not active
@@ -242,51 +238,41 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		} 
 		catch (UserDoesNotExistException nu) {
  			if (createUser) {
- 				if(!userIsInternal) { // external user
- 					if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
- 						int syncMode = getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().getProfileSynchronizationMode();
- 						if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_NEVER) {
-	 						// Don't allow profile sync as we create new user account. We will only store email address.
-	 						removeEverythingButEmailAddress(updates); 							
- 						}
-	 			 		// Make sure foreign name is identical to name.
-	 					updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, userName.toLowerCase());
-	 					// For external users, there's no need for separate step for synchronizing profile info
-	 					// because all the information is already ready and presented to the method that creates the user.
-	 					syncUser = false;
-	 	 				user=getProfileModule().addUserFromPortal(
-	 	 						new IdentityInfo(false, false, false, true),
-	 	 						userName, password, updates, null);
- 					}
- 					else {
- 						throw new InternalException("Encountered auth service provider " + authenticationServiceProvider.name() + " when expecting OPENID");	
- 					}
- 				}
- 				else { // internal user
-					// It is NOT possible for system to authenticate a local user against Vibe database 
-					// unless the user record already exists in the database. So, if the authentication
-					// has already succeeded without the corresponding user record being found in the database,
-					// it means that the identity source is anything but local and the authentication provider
- 					// is also anything but local.
- 					if(AuthenticationServiceProvider.LDAP == authenticationServiceProvider ||
- 							AuthenticationServiceProvider.PRE == authenticationServiceProvider) {
-	 					syncUser = true;
-	 	 				user=getProfileModule().addUserFromPortal(
-	 	 						new IdentityInfo(true, true, false, false),
-	 	 						userName, password, updates, null);
- 					}
- 					else {
- 						throw new InternalException("Encountered auth service provider " + authenticationServiceProvider.name() + " when expecting LDAP or PRE");	 						
- 					}
- 				}
- 				
+				if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
+					int syncMode = getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().getProfileSynchronizationMode();
+					if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_NEVER) {
+ 						// Don't allow profile sync as we create new user account. We will only store email address.
+ 						removeEverythingButEmailAddress(updates); 							
+					}
+ 			 		// Make sure foreign name is identical to name.
+ 					updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, userName.toLowerCase());
+ 					// For external users, there's no need for separate step for synchronizing profile info
+ 					// because all the information is already ready and presented to the method that creates the user.
+ 					syncUser = false;
+ 	 				user=getProfileModule().addUserFromPortal(
+ 	 						new IdentityInfo(false, false, false, true),
+ 	 						userName, password, updates, null);
+				}
+				else if(AuthenticationServiceProvider.LDAP == authenticationServiceProvider ||
+							AuthenticationServiceProvider.PRE == authenticationServiceProvider) {
+ 					syncUser = true;
+ 	 				user=getProfileModule().addUserFromPortal(
+ 	 						new IdentityInfo(true, true, false, false),
+ 	 						userName, password, updates, null);
+					}
+				else {
+					throw new InternalException("Cannot create a new user account when auth service provider is " + authenticationServiceProvider.name());	
+				}
+				
  				if(user == null)
  					throw nu;
  				
  				if(authenticatorName != null)
  					getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
- 			} 
- 			else throw nu;
+ 			}
+ 			else {
+ 				throw nu;
+ 			}
 		} 
 		catch (UserAccountNotActiveException nu) {
  			throw new UserAccountNotActiveException(NLT.get("error.accountNotActive"));
@@ -343,7 +329,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		boolean hadSession = SessionUtil.sessionActive();
 		try {
 			if (!hadSession) SessionUtil.sessionStartup();	
-			user = doAuthenticateInternalUser(zoneName, username, password, passwordAutoSynch, ignorePassword);
+			user = doAuthenticateUser(zoneName, username, password, passwordAutoSynch, ignorePassword);
 			if(authenticatorName != null)
 				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
 		} finally {
@@ -352,19 +338,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		return user;
 	}
 	
-	/**
-	 * 
-	 * @param zoneName
-	 * @param username
-	 * @param password
-	 * @param passwordAutoSynch
-	 * @param ignorePassword
-	 * @return
-	 * @throws PasswordDoesNotMatchException
-	 * @throws UserDoesNotExistException
-	 * @throws UserAccountNotActiveException
+	/*
+	 * Handle authentication for all requests that didn't use OpenID. 
 	 */
-	protected User doAuthenticateInternalUser(String zoneName, String username, String password,
+	protected User doAuthenticateUser(String zoneName, String username, String password,
 				boolean passwordAutoSynch, boolean ignorePassword)
 			throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException {
 		User user = null;
@@ -473,10 +450,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 						+ zoneName + "," + username + "]", e);
     	}
 
-		if(!user.getIdentityInfo().isInternal())
-			throw new UserDoesNotExistException("Unauthorized user [" 
-				+ zoneName + "," + username + "]");
-
     	if(password != null) {
     		if(!EncryptUtil.checkPassword(password, user)) {
 	   			// Password does not match.
@@ -518,7 +491,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		return user;
 	}
 
-	protected User doAuthenticateExternalUser(String zoneName, String username) {
+	/*
+	 * Handle authentication for all requests that used OpenID. 
+	 */
+	protected User doAuthenticateOpenidUser(String zoneName, String username) {
 		User user = null;
 		try {
 			user = getProfileDao().findUserByName(username, zoneName);
@@ -542,6 +518,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			throw new UserAccountNotActiveException("User account disabled or deleted [" 
 						+ zoneName + "," + username + "]", e);
     	}
+    	// Only external users can use OpenID.
 		if(user.getIdentityInfo().isInternal()) {
 			// This shouldn't happen
 			logger.warn("External user with username '" + username + "' matched an internal user account with id=" + user.getId());

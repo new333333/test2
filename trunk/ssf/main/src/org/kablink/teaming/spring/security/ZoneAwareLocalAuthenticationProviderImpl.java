@@ -73,8 +73,7 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 
 	protected Authentication doAuthenticate(Authentication authentication) throws AuthenticationException {
 		try {
-			User user = AuthenticationManagerUtil.authenticate(true,
-					AuthenticationServiceProvider.LOCAL,
+			User user = AuthenticationManagerUtil.authenticate(AuthenticationServiceProvider.LOCAL,
 					zoneName,
 					(String) authentication.getName(), 
 					(String) authentication.getCredentials(),

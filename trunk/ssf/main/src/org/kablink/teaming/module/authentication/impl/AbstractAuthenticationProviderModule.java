@@ -468,8 +468,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		     			}
 		     			// This is not used for authentication but for profile synchronization.
 		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate1" );
-		    			AuthenticationManagerUtil.authenticate(userIsInternal, 
-		    					authenticationServiceProvider,
+		    			AuthenticationManagerUtil.authenticate(authenticationServiceProvider,
 		    					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
 		    					loginName, 
 		    					(String) credentials,
@@ -483,8 +482,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	     			else {
 	        			// This is not used for authentication or profile synchronization but merely to log the authenticator.
 		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate2" );
-	        			AuthenticationManagerUtil.authenticate(userIsInternal,
-	        					authenticationServiceProvider,
+	        			AuthenticationManagerUtil.authenticate(authenticationServiceProvider,
 	        					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
 	        					loginName, 
 	        					(String) credentials,
@@ -526,8 +524,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 
     			// This is not used for authentication or profile synchronization but merely to log the authenticator.
      			SimpleProfiler.start( "4a-system account: AuthenticationManagerUtil.authenticate()" );
-    			AuthenticationManagerUtil.authenticate(true,
-    					AuthenticationServiceProvider.LOCAL,
+    			AuthenticationManagerUtil.authenticate(AuthenticationServiceProvider.LOCAL,
     					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
     					(String) result.getName(), 
     					(String) credentials,
@@ -557,8 +554,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	private boolean isAuthenticatedUserInternal(Authentication authentication) {
 		if(authentication instanceof IdentityInfoObtainable) {
 			// With local authentication, authentication is made against Vibe database, and therefore
-			// identity source is always obtainable (it could be either internal or external user).
-			// With LDAP authentication, identity source is directly obtainable only if the authentication
+			// identity info is always obtainable (which could represent either internal or external user).
+			// With LDAP authentication, identity info is directly obtainable only if the authentication
 			// was made against Vibe database which can happen when the LDAP server is down.
 			return ((IdentityInfoObtainable)authentication).isInternal();
 		}
