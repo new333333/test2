@@ -4113,12 +4113,13 @@ public class GwtServerHelper {
 	 * @param bs
 	 * @param binderId
 	 * @param entryId
+	 * @param asPermalink
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static String getDownloadFileUrl(HttpServletRequest request, AllModulesInjected bs, Long binderId, Long entryId) throws GwtTeamingException {
+	public static String getDownloadFileUrl(HttpServletRequest request, AllModulesInjected bs, Long binderId, Long entryId, boolean asPermalink) throws GwtTeamingException {
 		try {
 			FolderEntry entry = bs.getFolderModule().getEntry(null, entryId);
 			Set<FileAttachment> atts = entry.getFileAttachments(); 
@@ -4131,6 +4132,11 @@ public class GwtServerHelper {
 		catch (Exception ex) {
 			throw getGwtTeamingException(ex);
 		}		
+	}
+	
+	public static String getDownloadFileUrl(HttpServletRequest request, AllModulesInjected bs, Long binderId, Long entryId) throws GwtTeamingException {
+		// Always use the initial form of the method.
+		return getDownloadFileUrl(request, bs, binderId, entryId, false);
 	}
 	
 	/**
