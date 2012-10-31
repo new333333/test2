@@ -59,7 +59,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.ModifyNetFolderRootDlgClient;
-import org.kablink.teaming.gwt.client.widgets.SelectPrincipalsWidget.SelectPrincipalsWidgetClient;
+import org.kablink.teaming.gwt.client.widgets.NetFolderSelectPrincipalsWidget.NetFolderSelectPrincipalsWidgetClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -103,7 +103,7 @@ public class ModifyNetFolderDlg extends DlgBox
 	private ListBox m_netFolderRootsListbox;
 	private InlineLabel m_noNetFolderRootsLabel;
 	private ScheduleWidget m_scheduleWidget;
-	private SelectPrincipalsWidget m_selectPrincipalsWidget;
+	private NetFolderSelectPrincipalsWidget m_selectPrincipalsWidget;
 	private FlowPanel m_inProgressPanel;
 	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
@@ -128,7 +128,6 @@ public class ModifyNetFolderDlg extends DlgBox
 		void onSuccess( ModifyNetFolderDlg mnfDlg );
 		void onUnavailable();
 	}
-
 
 	/**
 	 * 
@@ -403,7 +402,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		++nextRow;
 		
 		// Create a widget that lets the user select users and groups.
-		SelectPrincipalsWidget.createAsync( new SelectPrincipalsWidgetClient() 
+		NetFolderSelectPrincipalsWidget.createAsync( new NetFolderSelectPrincipalsWidgetClient() 
 		{
 			@Override
 			public void onUnavailable() 
@@ -412,7 +411,7 @@ public class ModifyNetFolderDlg extends DlgBox
 			}
 			
 			@Override
-			public void onSuccess( SelectPrincipalsWidget widget )
+			public void onSuccess( NetFolderSelectPrincipalsWidget widget )
 			{
 				m_selectPrincipalsWidget = widget;
 				table.setWidget( selectPrincipalsWidgetRow, 0, m_selectPrincipalsWidget );
@@ -782,7 +781,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		initSyncSchedule();
 		
 		// Initialize the access rights
-		initAccessRights();
+		initShareRights();
 
 		// Are we modifying an existing net folder?
 		if ( m_netFolder != null )
@@ -818,12 +817,12 @@ public class ModifyNetFolderDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void initAccessRights()
+	private void initShareRights()
 	{
 		if ( m_selectPrincipalsWidget != null )
 		{
 			if ( m_netFolder != null )
-				m_selectPrincipalsWidget.init( null );	// Finish
+				m_selectPrincipalsWidget.init( null );	//!!! Finish
 			else
 				m_selectPrincipalsWidget.init( null );
 		}
@@ -836,7 +835,7 @@ public class ModifyNetFolderDlg extends DlgBox
 				@Override
 				public void execute()
 				{
-					initAccessRights();
+					initShareRights();
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );

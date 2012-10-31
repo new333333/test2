@@ -226,11 +226,15 @@ public interface GwtTeamingMessages extends Messages
 	String find();
 	String login();
 	String missingRequestInfo();
+	String none();
 	String ok();
 	String oneMomentPlease();
 	String overflowLabel();
 	String percent();
 	String send();
+	String shareExternal();
+	String shareInternal();
+	String sharePublic();
 	String showBorder();
 	String showTitle();
 	String signOut();
@@ -589,6 +593,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ModifyNetFolderDlg();
 	String codeSplitFailure_ModifyNetFolderServerDlg();
 	String codeSplitFailure_MultiErrorAlertDlg();
+	String codeSplitFailure_NetFolderSelectPrincipalsWidget();
 	String codeSplitFailure_NetFoldersWSView();
 	String codeSplitFailure_PersonalWorkspacesView();
 	String codeSplitFailure_ProfileAttributeWidget();
@@ -2091,6 +2096,7 @@ public interface GwtTeamingMessages extends Messages
 	String selectPrincipalsWidget_NoPrincipalsHint();
 	String selectPrincipalsWidget_PrincipalAlreadyInListPrompt( String name );
 	String selectPrincipalsWidget_RemovePrincipalHint();
+	String selectPrincipalsWidget_RightsCol();
 	String selectPrincipalsWidget_SelectPrincipalsLabel();
 	String selectPrincipalsWidget_TypeCol();
 
