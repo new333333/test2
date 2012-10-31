@@ -41,6 +41,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private String	m_macUrl;	//
+	private String	m_win32Url;	//
+	private String	m_win64Url;	//
+	
 	/**
 	 * Constructor method. 
 	 * 
@@ -56,10 +60,16 @@ public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, Vi
 	 * 
 	 * @return
 	 */
+	public String getMacUrl()   {return m_macUrl;  }
+	public String getWin32Url() {return m_win32Url;}
+	public String getWin64Url() {return m_win64Url;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
+	public void setMacUrl(  String macUrl)   {m_macUrl   = macUrl;  }
+	public void setWin32Url(String win32Url) {m_win32Url = win32Url;}
+	public void setWin64Url(String win64Url) {m_win64Url = win64Url;}
 }
