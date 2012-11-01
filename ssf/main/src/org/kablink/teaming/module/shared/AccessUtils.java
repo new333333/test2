@@ -509,7 +509,7 @@ public class AccessUtils  {
     private static void operationCheck(User user, Binder binder, Entry entry, WorkAreaOperation operation) {
         if (user.isSuper()) return;
     	boolean widen = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false);
-    	OperationAccessControlException ace = null;
+    	AccessControlException ace = null;
     	OperationAccessControlExceptionNoName ace2 = null;
        	//First, check the entry ACL
        	try {
@@ -575,6 +575,8 @@ public class AccessUtils  {
 	       		ace = ex3;
        		} catch (OperationAccessControlExceptionNoName ex4) {
        			ace2 = ex4;
+       		} catch (AccessControlException ex5) {
+       			ace = ex5;
        		}
 	       	
 	      //Next, see if binder allows other operations such as CREATOR_MODIFY
