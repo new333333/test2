@@ -168,6 +168,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
@@ -4211,7 +4212,7 @@ public class GwtServerHelper {
 			reply.setWin64Url(buildDesktopAppUrl(baseUrl, WIN64_TAIL));
 			
 			// If we get here, reply refers to the
-			// DesktopAppDownloadInfoRpcResponseData objecting
+			// DesktopAppDownloadInfoRpcResponseData object
 			// containing the information about downloading the desktop
 			// application.  Return it.
 			return reply;
@@ -5803,6 +5804,37 @@ public class GwtServerHelper {
 		}
 	}
 	
+	/**
+	 * Returns a ManageUsersInfoRpcResponseData object
+	 * containing the information for downloading the desktop
+	 * applications.
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ManageUsersInfoRpcResponseData getManageUsersInformation(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
+		try {
+			// Construct the ManageUsersInfoRpcResponseData
+			// object we'll fill in and return.
+			ManageUsersInfoRpcResponseData reply = new ManageUsersInfoRpcResponseData(bs.getProfileModule().getProfileBinderId());
+
+//!			...this needs to be implemented...
+			
+			// If we get here, reply refers to the
+			// ManageUsersInfoRpcResponseData object
+			// containing the information about downloading the desktop
+			// application.  Return it.
+			return reply;
+		}
+		catch (Exception ex) {
+			throw getGwtTeamingException(ex);
+		}		
+	}
+
 	/**
 	 * Returns the ID of the folder that a user will use as their My
 	 * Files container.
@@ -8177,6 +8209,7 @@ public class GwtServerHelper {
 		case GET_LOGGED_IN_USER_PERMALINK:
 		case GET_LOGIN_INFO:
 		case GET_MAIN_PAGE_INFO:
+		case GET_MANAGE_USERS_INFO:
 		case GET_MICRO_BLOG_URL:
 		case GET_MODIFY_BINDER_URL:
 		case GET_MY_FILES_CONTAINER_INFO:

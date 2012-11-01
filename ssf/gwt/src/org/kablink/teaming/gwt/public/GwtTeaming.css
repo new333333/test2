@@ -4781,4 +4781,9 @@ td.datePickerMonth {
 	.vibe-desktopAppCtrl-hintPanel           {display: block; margin: 0px; margin-top: 3px !important; padding: 0px; padding-top: 5px !important;}
 /* End:  Desktop application download control styles. */
 
+/* Start:  Manage users dialog styles. */
+	.vibe-manageUsersDlg           {}
+	.vibe-manageUsersDlg-rootPanel {}
+/* End:  Manage users dialog styles. */
+
 /* End */
