@@ -363,8 +363,8 @@ update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=1,FROMLOCAL=0,FROMOPENID=0 where ID
 
     <changeSet author="peter" context="schema" failOnError="true" id="44">
         <addColumn tableName="SS_SHAREITEM">
-			<column name="allowSharingExternal" type="NUMBER(1,0)"/>
-			<column name="allowSharingPublic" type="NUMBER(1,0)"/>
+			<column name="right_allowSharingExternal" type="NUMBER(1,0)"/>
+			<column name="right_allowSharingPublic" type="NUMBER(1,0)"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>
