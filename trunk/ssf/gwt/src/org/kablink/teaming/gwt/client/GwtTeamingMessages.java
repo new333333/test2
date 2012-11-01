@@ -2084,12 +2084,19 @@ public interface GwtTeamingMessages extends Messages
 	String downloadAppDlgDownloadIOS2();
 	String downloadAppDlgDownloadIOS3();
 	String downloadAppDlgDownloadIOS4(String company, String product);
+	String downloadAppDlgError_NoMacUrl();
+	String downloadAppDlgError_NoUrls();
+	String downloadAppDlgError_NoWin32Url();
+	String downloadAppDlgError_NoWin64Url();
 	String downloadAppDlgHeader(String product);
 	String downloadAppDlgProductAndroid(String product);
 	String downloadAppDlgProductIOS(String product);
 	String downloadAppDlgProductMac(String product);
 	String downloadAppDlgProductWindows(String product);
 	String downloadAppDlgSubhead(String product);
+	String downloadAppDlgUrlMac();
+	String downloadAppDlgUrlWin32();
+	String downloadAppDlgUrlWin64();
 
 	// Strings used in the "Select Principals" widget
 	String selectPrincipalsWidget_CantSelectExternalUserPrompt();
