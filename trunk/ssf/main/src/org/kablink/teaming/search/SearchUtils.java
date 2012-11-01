@@ -40,6 +40,7 @@ import java.util.Map;
 import org.apache.lucene.document.DateTools;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -53,6 +54,7 @@ import org.kablink.teaming.security.runwith.RunWithTemplate;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -65,6 +67,11 @@ import static org.kablink.util.search.Restrictions.*;
 
 @SuppressWarnings("unchecked")
 public class SearchUtils {
+	
+	protected static CoreDao getCoreDao() {
+		return (CoreDao)SpringContextUtil.getBean("coreDao");
+	};
+
 	public static Criteria tasksForUser(Long userId, String[] groupIds, String[] teamIds, Date from, Date to)
 	{
 		Criteria crit = new Criteria();
@@ -572,6 +579,7 @@ public class SearchUtils {
         return getMyFilesSearchCriteria(bs, true, true, false, false);
     }
 
+	//This routine returns a Criteria that will search all folders associated with the My Files collection
 	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs, boolean binders, boolean entries, boolean replies, boolean attachments) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String userWSId = String.valueOf(user.getWorkspaceId());
@@ -579,13 +587,15 @@ public class SearchUtils {
 		// Based on the installed license, what definition families do
 		// we consider as 'file'?
 		String[] fileFamilies;
-		if (Utils.checkIfFilr())
-		     fileFamilies = new String[]{Definition.FAMILY_FILE};
-		else fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
+		if (Utils.checkIfFilr()) {
+			fileFamilies = new String[]{Definition.FAMILY_FILE};
+		} else {
+			fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
+		}
 
         Long mfContainerId = getMyFilesFolderId(bs, user.getWorkspaceId(), false);	// false -> Don't create it if it doesn't exist.
 
-        Disjunction	root     = disjunction();
+        Disjunction	root = disjunction();
         Criteria crit = new Criteria();
         crit.add(root);
         if (binders) {
@@ -610,7 +620,7 @@ public class SearchUtils {
             conj.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
             disj.add(conj);
 
-            if (mfContainerId!=null) {
+            if (mfContainerId != null) {
                 // ...exclude it from the binder list.
                 Junction noMF = not();
                 rootConj.add(noMF);
@@ -626,29 +636,29 @@ public class SearchUtils {
                 root.add(conj);
             }
         }
-        if ((entries || attachments || replies) && mfContainerId!=null) {
+        if ((entries || attachments || replies) && mfContainerId != null) {
             if (entries) {
                 // Search for any file entries...
                 Conjunction conj = conjunction();
-                conj.add(in(Constants.DOC_TYPE_FIELD,  new String[]{Constants.DOC_TYPE_ENTRY}));
+                conj.add(in(Constants.DOC_TYPE_FIELD,    new String[]{Constants.DOC_TYPE_ENTRY}));
                 conj.add(in(Constants.ENTRY_TYPE_FIELD,  new String[]{Constants.ENTRY_TYPE_ENTRY}));
-                conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerId.toString()}));
-                conj.add(in(Constants.FAMILY_FIELD,    fileFamilies));
+                conj.add(in(Constants.BINDER_ID_FIELD,   new String[]{mfContainerId.toString()}));
+                conj.add(in(Constants.FAMILY_FIELD,      fileFamilies));
                 root.add(conj);
             }
             if (replies) {
                 // Search for any file entries...
                 Conjunction conj = conjunction();
-                conj.add(in(Constants.DOC_TYPE_FIELD,  new String[]{Constants.DOC_TYPE_ENTRY}));
+                conj.add(in(Constants.DOC_TYPE_FIELD,    new String[]{Constants.DOC_TYPE_ENTRY}));
                 conj.add(in(Constants.ENTRY_TYPE_FIELD,  new String[]{Constants.ENTRY_TYPE_REPLY}));
-                conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerId.toString()}));
+                conj.add(in(Constants.BINDER_ID_FIELD,   new String[]{mfContainerId.toString()}));
                 root.add(conj);
             }
             if (attachments) {
                 Conjunction conj = conjunction();
-                conj.add(in(Constants.DOC_TYPE_FIELD,  new String[]{Constants.DOC_TYPE_ATTACHMENT}));
-                conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerId.toString()}));
-                conj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
+                conj.add(in(Constants.DOC_TYPE_FIELD,    new String[]{Constants.DOC_TYPE_ATTACHMENT}));
+                conj.add(in(Constants.BINDER_ID_FIELD,   new String[]{mfContainerId.toString()}));
+                conj.add(in(Constants.IS_LIBRARY_FIELD,  new String[]{Constants.TRUE}));
                 root.add(conj);
             }
         }
@@ -656,18 +666,22 @@ public class SearchUtils {
 	}
 	
 	public static Criteria getNetFoldersSearchCriteria(AllModulesInjected bs) {
-		// Can we access the ID of the top workspace?
-		Long topWSId = bs.getWorkspaceModule().getTopWorkspaceId();
+		Long nfBinderId = bs.getWorkspaceModule().getTopWorkspaceId();
+		Binder nfBinder = getCoreDao().loadReservedBinder(
+				ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
+				RequestContextHolder.getRequestContext().getZoneId());
+		if (nfBinder != null) {
+			//The default is to look in the Net Folders binder. If that doesn't exist, use the top workspace
+			nfBinderId = nfBinder.getId();
+		}
 
 		// Add the criteria for top level mirrored file folders
 		// that have been configured.
 		Criteria crit = new Criteria();
-		crit.add(in(Constants.DOC_TYPE_FIELD,            new String[]{Constants.DOC_TYPE_BINDER}));
-		crit.add(in(Constants.ENTRY_ANCESTRY,            new String[]{String.valueOf(topWSId)}));
-		crit.add(in(Constants.FAMILY_FIELD,              new String[]{Definition.FAMILY_FILE}));
-		crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
-		crit.add(in(Constants.IS_TOP_FOLDER_FIELD,       new String[]{Constants.TRUE}));
-		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+		crit.add(eq(Constants.DOC_TYPE_FIELD,            Constants.DOC_TYPE_BINDER));
+		crit.add(eq(Constants.IS_TOP_FOLDER_FIELD,       Constants.TRUE));
+		crit.add(eq(Constants.HAS_RESOURCE_DRIVER_FIELD, Constants.TRUE));
+		crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD,   nfBinderId.toString()));    		
 
 		return crit;
 	}
