@@ -38,7 +38,7 @@
 
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<c:set var="ss_windowTitle" value='<%= NLT.get( "administration.view.adminConsoleInfo" ) %>' scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get( "administration.adminConsoleHomePage.title" ) %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <style type="text/css">
