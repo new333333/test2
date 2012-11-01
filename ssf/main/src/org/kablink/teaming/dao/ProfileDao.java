@@ -140,10 +140,12 @@ public interface ProfileDao {
 
  	public Principal findPrincipalByName(String name, Long zoneId) 
  		throws NoPrincipalByTheNameException;
+ 	public Set<Long> getApplicationLevelGroupMembership(Long principalId, Long zoneId);
  	public Set<Long> getAllGroupMembership(Long principalId, Long zoneId);
  	public List<Long> getMembership(Long groupId, Long zoneId);
  	public List<Long> getOwnedBinders(final Set<Principal> users);
-	public Set<Long> getPrincipalIds(Principal principal);
+	public Set<Long> getApplicationLevelPrincipalIds(Principal principal);
+	public Set<Long> getAllPrincipalIds(Principal principal);
 	public ProfileBinder getProfileBinder(Long zoneId);
 	public Group getReservedGroup(String internalId, Long zoneId) throws NoGroupByTheNameException;	   
 	public Long getReservedGroupId(String internalId, Long zoneId) throws NoGroupByTheNameException;	   
@@ -327,4 +329,24 @@ public interface ProfileDao {
  	 * @return
  	 */
  	public List<ShareItem> findExpiredAndNotYetHandledShareItems();
+ 	
+ 	/**
+ 	 * Get a list of LDAP users and groups that are members of the specified LDAP container group.
+ 	 * The result contains all descendants recursively, not just immediate children. 
+ 	 * 
+ 	 * @param containerGroup
+ 	 * @return
+ 	 */
+ 	public List<Principal> getLdapContainerGroupMembers(Group containerGroup);
+
+ 	/**
+ 	 * 
+ 	 * Get a list of IDs of the LDAP container groups that the specified principal is a member
+ 	 * of either directly (i.e., immediate child) or indirectly via recursion (i.e., descendant).
+ 	 * 
+ 	 * @param principalId
+ 	 * @param zoneId
+ 	 * @return
+ 	 */
+ 	public List<Long> getMemberOfLdapContainerGroupIds(Long principalId, Long zoneId);
 }

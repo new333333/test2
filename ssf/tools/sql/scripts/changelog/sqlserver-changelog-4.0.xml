@@ -356,10 +356,21 @@ update SS_Principals set internal=1,fromLdap=1,fromLocal=0,fromOpenid=0 where id
             </column>
         </addColumn>
     </changeSet>
+
     <changeSet author="peter" context="schema" failOnError="true" id="43">
         <addColumn tableName="SS_ShareItem">
 			<column name="right_allowSharingExternal" type="TINYINT"/>
 			<column name="right_allowSharingPublic" type="TINYINT"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="44">
+        <comment>Is the group a system group</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="containerGroup" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

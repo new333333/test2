@@ -249,7 +249,7 @@ public class SearchFilterToSearchBooleanConverter {
 					}
 				}
 				if (userId != null) {
-					usersGroups.addAll(profileDao.getAllGroupMembership(userId, zoneId));
+					usersGroups.addAll(profileDao.getApplicationLevelGroupMembership(userId, zoneId));
 				
 					Iterator teamMembershipsIt = binderModule.getTeamMemberships(userId).iterator();
 					while (teamMembershipsIt.hasNext()) {

@@ -58,6 +58,8 @@ public class Group extends UserPrincipal implements GroupPrincipal {
     private Boolean dynamic = Boolean.FALSE; //initialized by hibernate access=field
     private String ldapQuery;
     
+    private Boolean containerGroup; // false by default
+    
     // For use by Hibernate only
 	protected Group() {
     }
@@ -77,41 +79,61 @@ public class Group extends UserPrincipal implements GroupPrincipal {
     }
    
     public List getMembers() {
-    	if (members == null) members = new ArrayList();
-    	return members;
+    	if(isContainerGroup()) { // eDir container group
+    		throw new UnsupportedOperationException("getMembers() is not supported on the container group '" + getName() + "'");
+    	}
+    	else { // application group
+	    	if (members == null) members = new ArrayList();
+	    	return members;
+    	}
     }
     /**
      * Set the group membership.  Each members memberOf set will by updated
      * @param members
      */
     public void setMembers(Collection newMembers) { 		
-   		if (newMembers == null) newMembers = new ArrayList();
-		if (members == null) members = new ArrayList();
-		Set newM = CollectionUtil.differences(newMembers, members);
-		Set remM = CollectionUtil.differences(members, newMembers);
-		this.members.addAll(newM);
-		this.members.removeAll(remM);
-		for (Iterator iter=newM.iterator(); iter.hasNext();) {
-			UserPrincipal p = (UserPrincipal)iter.next();
-			p.getMemberOf().add(this);
-		}
-		for (Iterator iter=remM.iterator(); iter.hasNext();) {
-			UserPrincipal p = (UserPrincipal)iter.next();
-			p.getMemberOf().remove(this);
-		}
+    	if(isContainerGroup()) {
+    		throw new UnsupportedOperationException("setMembers() is not supported on the container group '" + getName() + "'");
+    	}
+    	else {
+	   		if (newMembers == null) newMembers = new ArrayList();
+			if (members == null) members = new ArrayList();
+			Set newM = CollectionUtil.differences(newMembers, members);
+			Set remM = CollectionUtil.differences(members, newMembers);
+			this.members.addAll(newM);
+			this.members.removeAll(remM);
+			for (Iterator iter=newM.iterator(); iter.hasNext();) {
+				UserPrincipal p = (UserPrincipal)iter.next();
+				p.getMemberOf().add(this);
+			}
+			for (Iterator iter=remM.iterator(); iter.hasNext();) {
+				UserPrincipal p = (UserPrincipal)iter.next();
+				p.getMemberOf().remove(this);
+			}
+    	}
   	} 	
     
     public void addMember(IPrincipal member) {
-    	if (!(member instanceof UserPrincipal)) throw new NotSupportedException("Must be a User or Group");
-		if (members == null) members = new ArrayList();
-    	if (members.contains(member)) return;
-    	members.add(member);
-    	member.getMemberOf().add(this);
+    	if(isContainerGroup()) {
+    		throw new UnsupportedOperationException("addMember() is not supported on the container group '" + getName() + "'");
+    	}
+    	else {
+	    	if (!(member instanceof UserPrincipal)) throw new NotSupportedException("Must be a User or Group");
+			if (members == null) members = new ArrayList();
+	    	if (members.contains(member)) return;
+	    	members.add(member);
+	    	member.getMemberOf().add(this);
+    	}
     }
     public void removeMember(IPrincipal member) {
-		if (members == null) members = new ArrayList();
-    	members.remove(member);
-    	member.getMemberOf().remove(this);
+    	if(isContainerGroup()) {
+    		throw new UnsupportedOperationException("removeMember() is not supported on the container group '" + getName() + "'");
+    	}
+    	else {
+			if (members == null) members = new ArrayList();
+	    	members.remove(member);
+	    	member.getMemberOf().remove(this);
+    	}
     }
     
 	public boolean isDynamic() {
@@ -130,5 +152,15 @@ public class Group extends UserPrincipal implements GroupPrincipal {
 	public void setLdapQuery(String ldapQuery) {
 		this.ldapQuery = ldapQuery;
 	}
- 
+
+	public boolean isContainerGroup() {
+		if(containerGroup == null)
+			return false;
+		return containerGroup.booleanValue();
+	}
+
+	public void setContainerGroup(boolean containerGroup) {
+		this.containerGroup = containerGroup;
+	}
+
 }

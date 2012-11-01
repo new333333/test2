@@ -260,7 +260,7 @@ public class ShareItemSelectSpec {
 		User user = getProfileDao().loadUser(userId,  RequestContextHolder.getRequestContext().getZoneId());
 		Set<Long> userIds = new HashSet();
 		userIds.add(userId);
-	    Set<Long> groupIds = getProfileDao().getPrincipalIds(user);
+	    Set<Long> groupIds = getProfileDao().getApplicationLevelPrincipalIds(user);
 	    groupIds.remove(userId);
 		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
 		Set<Long> teamIds = new HashSet();

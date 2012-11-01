@@ -479,7 +479,7 @@ public class AccessUtils  {
         throw new AclAccessControlException(user.getName(), type.toString());
     }
     private static boolean testAccess(User user, Set allowedIds) {
-     	Set principalIds = getInstance().getProfileDao().getPrincipalIds(user);
+     	Set principalIds = getInstance().getProfileDao().getAllPrincipalIds(user);
         return !Collections.disjoint(principalIds, allowedIds);
     }
     

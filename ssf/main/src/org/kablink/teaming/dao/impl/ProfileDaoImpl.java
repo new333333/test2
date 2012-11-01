@@ -106,6 +106,7 @@ import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -1537,8 +1538,12 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
    }
     
+    /*
+     * This method walks down the principal membership object graph to compute the IDs
+     * which could result in lazy loading of associated entities and/or collections.
+     */
     @Override
-	public Set<Long> getPrincipalIds(Principal p) {
+	public Set<Long> getApplicationLevelPrincipalIds(Principal p) {
 		long begin = System.nanoTime();
 		try {
 	    	if (p instanceof IndividualPrincipal) {
@@ -1566,9 +1571,17 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	    	}
     	}
     	finally {
-    		end(begin, "getPrincipalIds(Principal)");
+    		end(begin, "getApplicationLevelPrincipalIds(Principal)");
     	}	        
     }
+    
+    @Override
+	public Set<Long> getAllPrincipalIds(Principal principal) {
+    	Set<Long> result = getApplicationLevelPrincipalIds(principal);
+    	result.addAll(getMemberOfLdapContainerGroupIds(principal.getId(), principal.getZoneId()));
+    	return result;
+	}
+    
 	/**
 	 * Given a set of principal ids, return all userIds that represent userIds in 
 	 * the original list, or members of groups and their nested groups.
@@ -1710,7 +1723,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	 * @return Set of groupIds
 	 */
 	@Override
-	public Set<Long> getAllGroupMembership(final Long principalId, Long zoneId) {
+	public Set<Long> getApplicationLevelGroupMembership(final Long principalId, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 			if (principalId == null)  return new TreeSet();
@@ -1742,10 +1755,17 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	        );
     	}
     	finally {
-    		end(begin, "getAllGroupMembership(Long,Long)");
+    		end(begin, "getApplicationLevelGroupMembership(Long,Long)");
     	}	        
 	}
 
+	@Override
+	public Set<Long> getAllGroupMembership(final Long principalId, Long zoneId) {
+		Set<Long> result = getApplicationLevelGroupMembership(principalId, zoneId);
+		result.addAll(getMemberOfLdapContainerGroupIds(principalId, zoneId));
+		return result;
+	}
+	
 	@Override
 	public SeenMap loadSeenMap(Long userId) {
 		long begin = System.nanoTime();
@@ -2243,7 +2263,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			}
 			
 			//This user does not have the right to see all users, so filter out those not allowed
-			Set groupIds = getAllGroupMembership(user.getId(), RequestContextHolder.getRequestContext().getZoneId());
+			Set groupIds = getApplicationLevelGroupMembership(user.getId(), RequestContextHolder.getRequestContext().getZoneId());
 			List result = new ArrayList();
 			for (int i = 0; i < principals.size(); i++) {
 				Principal principal = (Principal)principals.get(i);
@@ -2252,7 +2272,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 						//Always allow a user to see his/her own profile
 						if (!result.contains(principal)) result.add(principal);
 					} else {
-						Set<Long> userGroupIds = getAllGroupMembership(principal.getId(), zoneId);
+						Set<Long> userGroupIds = getApplicationLevelGroupMembership(principal.getId(), zoneId);
 						for (Long id : userGroupIds) {
 							if (groupIds.contains(id)) {
 								result.add(principal);
@@ -2729,4 +2749,62 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	              	
 
  	}
+ 	
+ 	@Override
+ 	public List<Principal> getLdapContainerGroupMembers(final Group containerGroup) {
+		long begin = System.nanoTime();
+		try {
+	      	List<Principal> result = (List<Principal>)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
+	                    	Criteria crit = session.createCriteria(UserPrincipal.class)
+	                    			.add(Restrictions.eq("zoneId", containerGroup.getZoneId()))
+	                    			.add(Restrictions.eq("fromLdap", Boolean.TRUE))
+	                    			.add(Restrictions.ne("containerGroup", Boolean.TRUE))
+	                    			.add(Restrictions.like("foreignName", "," + containerGroup.getForeignName(), MatchMode.END))
+	                    			.add(Restrictions.ne("deleted", Boolean.TRUE))
+	                    			.add(Restrictions.ne("disabled", Boolean.TRUE));
+	                    	return crit.list();
+	                    }
+	                }
+	            );
+	      	return result;
+    	}
+    	finally {
+    		end(begin, "loadLDAPContainerGroupMembers()");
+    	}	              	
+ 	}
+ 	
+ 	@Override
+ 	public List<Long> getMemberOfLdapContainerGroupIds(final Long principalId, final Long zoneId) {
+		long begin = System.nanoTime();
+		try {
+	      	List<Long> result = (List<Long>)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
+		                    Principal principal = (Principal)session.get(Principal.class, principalId);
+		            		final String[] foreignNames = principal.getLdapContainerForeignNames();
+		            		if(foreignNames.length == 0)
+		            			return new ArrayList<Long>();
+	                    	Criteria crit = session.createCriteria(UserPrincipal.class)
+	                    			.setProjection(Projections.property("id"))
+	                    			.add(Restrictions.eq("zoneId", zoneId))
+	                    			.add(Restrictions.eq("containerGroup", Boolean.TRUE))
+	                    			.add(Restrictions.in("foreignName", foreignNames))
+	                    			.add(Restrictions.ne("deleted", Boolean.TRUE))
+	                    			.add(Restrictions.ne("disabled", Boolean.TRUE))
+	                    			.setCacheable(isPrincipalQueryCacheable());
+	                    	return crit.list();
+	                    }
+	                }
+	            );
+	      	return result;
+    	}
+    	finally {
+    		end(begin, "loadLDAPContainerGroups()");
+    	}	              	
+ 	}
+
 }

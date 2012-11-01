@@ -1072,7 +1072,7 @@ public class GwtTaskHelper {
 		teams = new ArrayList();
 		
 		profileDao = (ProfileDao)SpringContextUtil.getBean( "profileDao" );
-		groups.addAll( profileDao.getAllGroupMembership( user.getId(), user.getZoneId() ) );
+		groups.addAll( profileDao.getApplicationLevelGroupMembership( user.getId(), user.getZoneId() ) );
 		
 		itG = groups.iterator();
 		while ( itG.hasNext() )

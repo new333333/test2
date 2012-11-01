@@ -1031,7 +1031,7 @@ public class DefinitionHelper {
 	        				List teams = new ArrayList();
 	        				
 	        				ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
-	        				groups.addAll(profileDao.getAllGroupMembership(user.getId(), user.getZoneId()));
+	        				groups.addAll(profileDao.getApplicationLevelGroupMembership(user.getId(), user.getZoneId()));
 	        				Iterator itG = groups.iterator();
 	        				while (itG.hasNext()) {
 	        					groupsS.add(itG.next().toString());

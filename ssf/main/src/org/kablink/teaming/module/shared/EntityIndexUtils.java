@@ -627,7 +627,7 @@ public class EntityIndexUtils {
     		//Add in the groups of the owner of the binder
     		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
          	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
-         	Set<Long> userGroupIds = profileDao.getAllGroupMembership(binder.getOwner().getId(), zoneId);
+         	Set<Long> userGroupIds = profileDao.getApplicationLevelGroupMembership(binder.getOwner().getId(), zoneId);
     		teamList.addAll(userGroupIds);
     	}
     	String ids = LongIdUtil.getIdsAsString(teamList);
@@ -905,7 +905,7 @@ public class EntityIndexUtils {
      	//Add groups this user is in
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
      	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
-     	Set<Long> userGroupIds = profileDao.getAllGroupMembership(entry.getId(), zoneId);
+     	Set<Long> userGroupIds = profileDao.getApplicationLevelGroupMembership(entry.getId(), zoneId);
      	ids.addAll(userGroupIds);
      	StringBuffer pIds = new StringBuffer(LongIdUtil.getIdsAsString(ids));
     	//add allUsers

@@ -485,6 +485,11 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
         	{
         		entryData.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, inputData.getSingleValue( ObjectKeys.FIELD_GROUP_LDAP_QUERY ) );
         	}
+        	
+        	if ( inputData.exists( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER ) && !entryData.containsKey( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER ) )
+        	{
+        		entryData.put( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER, inputData.getSingleObject( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER ) );
+        	}
     	}
     	
     	if(entry instanceof UserPrincipal) {

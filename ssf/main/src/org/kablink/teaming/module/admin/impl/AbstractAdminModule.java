@@ -1850,7 +1850,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	   User user = RequestContextHolder.getRequestContext().getUser();
 	   if (user.isSuper()) return changeLogs;
 	   // get the current users acl set
-	   Set<Long> userAclSet = getProfileDao().getPrincipalIds(user);
+	   Set<Long> userAclSet = getProfileDao().getApplicationLevelPrincipalIds(user);
 	   Set userStringIds = new HashSet();
 	   for (Long id:userAclSet) {
 		   userStringIds.add(id.toString());

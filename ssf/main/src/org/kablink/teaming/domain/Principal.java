@@ -50,6 +50,7 @@ import java.util.HashMap;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.util.CollectionUtil;
+import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 
 
@@ -433,5 +434,26 @@ public abstract class Principal extends Entry implements IPrincipal {
 		identityInfo.validate();
 		this.identityInfo = identityInfo;
 	}
+	
+	public String[] getLdapContainerForeignNames() {
+		if(getIdentityInfo().isFromLdap()) {
+			String[] elements = StringUtil.split(this.getForeignName());
+			if(elements.length < 2)
+				return new String[0];
+			String[] foreignNames = new String[elements.length-1];
+			StringBuilder sb = new StringBuilder();
+			for(int i = 0; i < foreignNames.length; i++) {
+				if(i > 0)
+					sb.insert(0, ",");
+				sb.insert(0, elements[elements.length-1-i]);
+				foreignNames[i] = sb.toString();
+			}
+			return foreignNames;
+		}
+		else {
+			return new String[0];
+		}
+	}
+
  }
 
