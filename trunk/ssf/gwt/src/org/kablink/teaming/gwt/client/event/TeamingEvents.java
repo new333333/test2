@@ -118,6 +118,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_IMPORT_ICAL_FILE,						// Invokes the dialog to import an iCal by uploading  a file.
 	INVOKE_IMPORT_ICAL_URL,							// Invokes the dialog to import an iCal by specifying a URL.
 	INVOKE_MANAGE_GROUPS_DLG,						// Invoke the "Manage groups" dialog.
+	INVOKE_MANAGE_USERS_DLG,						// Invoke the "Manage users" dialog.
 	INVOKE_REPLY,									// Invokes the 'reply to entry' UI.
 	INVOKE_SEND_TO_FRIEND,							// Invokes the "Send to friend" dialog.
 	INVOKE_SEND_EMAIL_TO_TEAM,						// Invokes the Send Email To Team dialog.

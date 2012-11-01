@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -71,6 +72,7 @@ import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClien
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFolderRootsDlg.ManageNetFolderRootsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFoldersDlg.ManageNetFoldersDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg.ManageUsersDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -112,6 +114,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeManageNetFoldersDlgEvent.Handler,
 		InvokeManageNetFolderRootsDlgEvent.Handler,
 		InvokeManageGroupsDlgEvent.Handler,
+		InvokeManageUsersDlgEvent.Handler,
 		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
@@ -129,6 +132,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ManageGroupsDlg m_manageGroupsDlg = null;
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
+	private ManageUsersDlg m_manageUsersDlg = null;
 	private ConfigureUserAccessDlg m_configureUserAccessDlg = null;
 	private ConfigureAdhocFoldersDlg m_configureAdhocFoldersDlg = null;
 
@@ -143,6 +147,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
+		TeamingEvents.INVOKE_MANAGE_USERS_DLG,
 		
 		// Login/out events.
 		TeamingEvents.PRE_LOGOUT,
@@ -725,6 +730,13 @@ public class AdminControl extends TeamingPopupPanel
 			// Fire the event to invoke the "Manage net folders" dialog.
 			InvokeManageNetFoldersDlgEvent.fireOne();
 		}
+		
+		else if ( adminAction.getActionType() == AdminAction.ADD_USER && ManageUsersDlg.SHOW_GWT_MANAGE_USERS )
+		{
+			// Fire the event to invoke the "Manage users" dialog.
+			InvokeManageUsersDlgEvent.fireOne();
+		}
+		
 		else
 		{
 			String url;
@@ -1606,6 +1618,66 @@ public class AdminControl extends TeamingPopupPanel
 			m_manageGroupsDlg.init();
 			m_manageGroupsDlg.setPopupPosition( x, y );
 			m_manageGroupsDlg.show();
+		}
+	}
+	
+	/**
+	 * Handles InvokeManageUsersDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeManageUsersDlgEvent.Handler.onInvokeManageUsersDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeManageUsersDlg( InvokeManageUsersDlgEvent event )
+	{
+		// Get the position of the content control.
+		final int x = m_contentControlX;
+		final int y = m_contentControlY;
+		
+		// Have we already created a "Manage Users" dialog?
+		if ( m_manageUsersDlg == null )
+		{
+			int width;
+			int height;
+			
+			// No, create one.
+			height = m_dlgHeight;
+			width = m_dlgWidth;
+			ManageUsersDlg.createAsync(
+									new ManageUsersDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ManageUsersDlg muDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_manageUsersDlg = muDlg;
+							ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			},
+			x, 
+			y,
+			width,
+			height );
+		}
+		else
+		{
+			ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y );
 		}
 	}
 	

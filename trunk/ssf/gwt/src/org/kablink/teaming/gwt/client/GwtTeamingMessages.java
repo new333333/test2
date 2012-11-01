@@ -389,6 +389,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetListOfChildBinders();
 	String rpcFailure_GetLocale();
 	String rpcFailure_GetMainPageInfo();
+	String rpcFailure_GetManageUsersInfo();
 	String rpcFailure_GetMyFilesContainerInfo();
 	String rpcFailure_GetMyTeams();
 	String rpcFailure_NumberOfMembers();
@@ -586,6 +587,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ManageNetFolderServersDlg();
 	String codeSplitFailure_ManageMenuPopup();
 	String codeSplitFailure_ManageSavedSearchesDlg();
+	String codeSplitFailure_ManageUsersDlg();
 	String codeSplitFailure_MicroBlogFolderView();
 	String codeSplitFailure_MilestoneFolderView();
 	String codeSplitFailure_MirroredFileFolderView();
@@ -2108,4 +2110,7 @@ public interface GwtTeamingMessages extends Messages
 	String selectPrincipalsWidget_SelectPrincipalsLabel();
 	String selectPrincipalsWidget_TypeCol();
 
+	// Strings used by the 'Manage Users' dialog.
+	String manageUserDlgCaption();
+	
 }// end GwtTeamingMessages
