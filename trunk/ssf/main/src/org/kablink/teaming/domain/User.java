@@ -488,11 +488,11 @@ public class User extends UserPrincipal implements IndividualPrincipal {
      * 
      * @return
      */
-    public SortedSet computeGroupNames() {
+    public SortedSet computeApplicationLevelGroupNames() {
         if (!isActive()) return new TreeSet();
         if(groupNames == null) {
     		SortedSet names = new TreeSet();
-    		addGroupNames(this, names);
+    		addApplicationLevelGroupNames(this, names);
     		if (!isShared()) {
     			if(!getIdentityInfo().isInternal())
     				names.add("allExtUsers");
@@ -504,13 +504,13 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     	return groupNames;
     }
     
-    private void addGroupNames(UserPrincipal principal, SortedSet names) {
+    private void addApplicationLevelGroupNames(UserPrincipal principal, SortedSet names) {
         List memberOf = principal.getMemberOf();
     	for(Iterator i = memberOf.iterator(); i.hasNext();) {
     		Group group = (Group) i.next();
             if (!group.isActive()) continue;
     		if(names.add(group.getName())) {
-    			addGroupNames(group, names);
+    			addApplicationLevelGroupNames(group, names);
     		}
     	}
     }

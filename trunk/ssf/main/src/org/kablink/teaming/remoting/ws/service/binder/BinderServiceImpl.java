@@ -463,7 +463,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	
 	private Set<Long> getUserEffectiveIds() {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Set<Long> principalIds = getProfileDao().getPrincipalIds(user);
+		Set<Long> principalIds = getProfileDao().getApplicationLevelPrincipalIds(user);
 
 		Long allUsersGroupId = Utils.getAllUsersGroupId();
 		Long allExtUsersGroupId = Utils.getAllExtUsersGroupId();

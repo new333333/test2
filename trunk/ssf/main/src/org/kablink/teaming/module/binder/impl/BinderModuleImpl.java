@@ -1959,7 +1959,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				return Collections.EMPTY_LIST;
 			}
 		}
-		Set<Long> ids = getProfileDao().getPrincipalIds(prin);
+		Set<Long> ids = getProfileDao().getApplicationLevelPrincipalIds(prin);
 		if (ids.isEmpty())
 			return Collections.EMPTY_LIST;
 		crit.add(in(Constants.TEAM_MEMBERS_FIELD, LongIdUtil

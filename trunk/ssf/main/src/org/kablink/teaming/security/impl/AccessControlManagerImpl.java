@@ -268,7 +268,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		} else {
 			Set<Long> applicationMembersToLookup = null;
 			if(application != null && !application.isTrusted()) {
-				applicationMembersToLookup = getProfileDao().getPrincipalIds(application);
+				applicationMembersToLookup = getProfileDao().getApplicationLevelPrincipalIds(application);
 				// First, test against the zone-wide maximum set by the admin
 				if(!checkWorkAreaFunctionMembership(user.getZoneId(),
 								getCoreDao().loadZoneConfig(user.getZoneId()),
@@ -284,11 +284,11 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 					return false;
 				}
 			}
-			Set<Long> userMembersToLookup = getProfileDao().getPrincipalIds(user);
+			Set<Long> userApplicationLevelMembersToLookup = getProfileDao().getApplicationLevelPrincipalIds(user);
 			Long allUsersId = Utils.getAllUsersGroupId();
 			Long allExtUsersId = Utils.getAllExtUsersGroupId();
 			if (allUsersId != null && !workArea.getWorkAreaType().equals(ZoneConfig.WORKAREA_TYPE) 
-					&& userMembersToLookup.contains(allUsersId) && 
+					&& userApplicationLevelMembersToLookup.contains(allUsersId) && 
 					Utils.canUserOnlySeeCommonGroupMembers(user)) {
 				if (Utils.isWorkareaInProfilesTree(workArea)) {
 					//If this user does not share a group with the binder owner, remove the "All Users" group.
@@ -299,16 +299,16 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 						for (Group g : groups) {
 							//See if this group is not the allExtUsers group and is shared with the user
 							//Being in the allExtUsers group does not count as a "common" group
-							if (!g.getId().equals(allExtUsersId) && userMembersToLookup.contains(g.getId())) {
+							if (!g.getId().equals(allExtUsersId) && userApplicationLevelMembersToLookup.contains(g.getId())) {
 								remove = false;
 								break;
 							}
 						}
 						if (remove) {
 							//There wasn't a direct match of groups, go look in the exploded list
-							Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(workArea.getOwner().getId(), zoneId);
+							Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(workArea.getOwner().getId(), zoneId);
 							for (Long gId : userGroupIds) {
-								if (!gId.equals(allExtUsersId) && userMembersToLookup.contains(gId)) {
+								if (!gId.equals(allExtUsersId) && userApplicationLevelMembersToLookup.contains(gId)) {
 									remove = false;
 									break;
 								}
@@ -316,27 +316,40 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 						}
 					}
 					if (remove) {
-						userMembersToLookup.remove(allUsersId);
+						userApplicationLevelMembersToLookup.remove(allUsersId);
 					}
 				}
 			}
 			//if current user is the workArea owner, add special Id to is membership
-			if (user.getId().equals(workAreaStart.getOwnerId())) userMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
+			if (user.getId().equals(workAreaStart.getOwnerId())) userApplicationLevelMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
 			Set<Long> teamMembers = null;
 			if (workAreaStart instanceof FolderEntry) {
 				teamMembers = ((FolderEntry)workAreaStart).getParentBinder().getTeamMemberIds();
 			} else {
 				teamMembers = workAreaStart.getTeamMemberIds();
 			}
-			if (teamMembers != null && !Collections.disjoint(teamMembers, userMembersToLookup)) {
-				userMembersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
+			if (teamMembers != null && !Collections.disjoint(teamMembers, userApplicationLevelMembersToLookup)) {
+				userApplicationLevelMembersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
 			}
+			// Take container groups into consideration
+			List<Long> containerGroupsToLookup = getProfileDao().getMemberOfLdapContainerGroupIds(user.getId(), zoneId);
+			Set<Long> userAllMembersToLookup = null;
+			if(containerGroupsToLookup.isEmpty()) {
+				userAllMembersToLookup = userApplicationLevelMembersToLookup;
+			}
+			else {	
+				userAllMembersToLookup = new HashSet<Long>(userApplicationLevelMembersToLookup);
+				userAllMembersToLookup.addAll(containerGroupsToLookup);
+			}
+			// Regular ACL checking must take container groups into consideration. 
+			// However, sharing-granted ACL checking must not because sharing can never take
+			// place against a container group.
 			if(checkWorkAreaFunctionMembership(user.getZoneId(),
-							workArea, workAreaOperation, userMembersToLookup)) {
+							workArea, workAreaOperation, userAllMembersToLookup)) {
 				return true;
 			}
 			else {
-				return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userMembersToLookup);
+				return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
 			}
 		}
 	}
@@ -505,7 +518,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     	
     	// Check if at least one entity in the ACL inheritance parentage chain grants the specified access to the user through group membership.
     	if(userMembers == null)
-    		userMembers = getProfileDao().getPrincipalIds(user);
+    		userMembers = getProfileDao().getApplicationLevelPrincipalIds(user);
     	if(!Collections.disjoint(shareMembers.get(ShareItem.RecipientType.group), userMembers))
     		return true;
     	

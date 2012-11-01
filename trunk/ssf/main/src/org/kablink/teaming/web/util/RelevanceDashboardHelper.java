@@ -298,7 +298,7 @@ public class RelevanceDashboardHelper {
 		List groupsS = new ArrayList();
 		List teams = new ArrayList();
 		
-		groups.addAll(profileDao.getAllGroupMembership(binder.getOwnerId(), binder.getZoneId()));
+		groups.addAll(profileDao.getApplicationLevelGroupMembership(binder.getOwnerId(), binder.getZoneId()));
 		Iterator itG = groups.iterator();
 		while (itG.hasNext()) {
 			groupsS.add(itG.next().toString());

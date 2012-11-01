@@ -736,7 +736,7 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 				
 				//If the new value is less than or equal to what the user had, we must recalculate the quota
 				if (currentUserMaxGroupDiskQuota <= newDiskQuota) {
-					Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(user.getId(), zoneId);
+					Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(user.getId(), zoneId);
 					List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
 					Long maxGroupQuota = 0L;
 					for (Group g : groups) {
@@ -781,7 +781,7 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 							//  then we have to calculate the new maximum
 							} else if (currentUserMaxGroupQuota <= originalGroupQuota &&
 									newQuotaMegabytes < originalGroupQuota) {
-								Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(user.getId(), zoneId);
+								Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(user.getId(), zoneId);
 								List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
 								Long maxGroupQuota = 0L;
 								for (Group g : groups) {
@@ -849,7 +849,7 @@ public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) 
 				//  then we must recalculate the limit
 				if (newFileSizeLimit != null && currentUserMaxGroupFileSizeLimit != null && 
 						newFileSizeLimit >= currentUserMaxGroupFileSizeLimit) {
-					Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(user.getId(), zoneId);
+					Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(user.getId(), zoneId);
 					List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
 					Long maxGroupFileSizeLimit = 0L;
 					for (Group g : groups) {
@@ -902,7 +902,7 @@ public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) 
 						} else if (originalFileSizeLimit != null && 
 								currentUserMaxGroupFileSizeLimit <= originalFileSizeLimit &&
 								(newFileSizeLimit == null || newFileSizeLimit < originalFileSizeLimit)) {
-							Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(user.getId(), zoneId);
+							Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(user.getId(), zoneId);
 							List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
 							Long maxGroupFileSizeLimit = 0L;
 							for (Group g : groups) {
@@ -2158,7 +2158,7 @@ public Map getUsers() {
 	public List<SharedEntity> getShares(Long userId, Date after) {
 	    User user = getUser(userId, false);
 	    //get list of all groups user is a member of.
-	    Set<Long> accessIds = getProfileDao().getPrincipalIds(user);
+	    Set<Long> accessIds = getProfileDao().getApplicationLevelPrincipalIds(user);
 		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
 		Set<Long>binderIds = new HashSet();
 		for(Map binder : myTeams) {
@@ -2295,7 +2295,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 		//does read access check
 		@SuppressWarnings("unused")
 		ProfileBinder binder = getProfileBinder();
-		Set<Long> groupIds = getProfileDao().getAllGroupMembership(userId, RequestContextHolder.getRequestContext().getZoneId());
+		Set<Long> groupIds = getProfileDao().getApplicationLevelGroupMembership(userId, RequestContextHolder.getRequestContext().getZoneId());
 		return getProfileDao().loadGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
 	}
 

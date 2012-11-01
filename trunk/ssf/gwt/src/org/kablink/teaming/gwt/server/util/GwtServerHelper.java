@@ -6340,7 +6340,7 @@ public class GwtServerHelper {
 		List users = ResolveIds.getPrincipals(userIds, true);
 		if (!users.isEmpty()) {
 			Principal p = (Principal)users.get(0);
-		    Set<Long> groupIds = profileDao.getPrincipalIds(p);
+		    Set<Long> groupIds = profileDao.getApplicationLevelPrincipalIds(p);
 		    groupIds.remove(userId);
 			List<Group> groups = profileDao.loadGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
 			for (Group myGroup : groups) {

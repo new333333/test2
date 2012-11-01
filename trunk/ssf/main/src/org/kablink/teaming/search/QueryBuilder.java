@@ -123,9 +123,9 @@ public class QueryBuilder {
 			this.application = RequestContextHolder.getRequestContext().getApplication();			
 		}
 		if(useAcls) {
-			this.userPrincipals = getProfileDao().getPrincipalIds(user);
+			this.userPrincipals = getProfileDao().getAllPrincipalIds(user);
 			if(application != null && !application.isTrusted()) {
-				this.applicationPrincipals = getProfileDao().getPrincipalIds(application);
+				this.applicationPrincipals = getProfileDao().getAllPrincipalIds(application);
 			} else {
 				this.applicationPrincipals = null;
 			}
