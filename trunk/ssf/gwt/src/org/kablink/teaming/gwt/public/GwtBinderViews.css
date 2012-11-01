@@ -23,7 +23,7 @@
 	/* ...End:  Accessory styles. */
 	
 	/* ...Start:  Bread crumb panel styles. */
-		.vibe-breadCrumbCollection-image   {vertical-align: middle; margin-right: 5px;}
+		.vibe-breadCrumbCollection-image   {vertical-align: middle; margin-right: 5px; margin-bottom: 3px;}
 		.vibe-breadCrumbCollection-label   {font-size: 1.5em; color: #5691A6; padding: 0px 10px 2px 0px; white-space: nowrap;}
 		.vibe-breadCrumbCollection-panel   {display: inline; white-space: nowrap;}
 		.vibe-breadCrumbPanel              {width: 1%;}
@@ -67,7 +67,7 @@
 	/* ...End:  Calendar navigation panel styles. */
 
 	/* ...Start:  Description panel styles. */
-		.vibe-descriptionContent        {}
+		.vibe-descriptionContent        {color: #505354; font-size: 15px;}
 		.vibe-descriptionContentClipped {height: 225px; overflow: auto !important;}
 		.vibe-descriptionExpanderAnchor {text-decoration: none; cursor: pointer;}
 		.vibe-descriptionExpanderImg    {position: absolute; right: 0px; top: -8px; border: 0px none;}
@@ -82,7 +82,7 @@
 		.vibe-entryMenu-filterOptions-panel {vertical-align: top;}
 		.vibe-entryMenu-filtersPanel        {vertical-align: top; padding-right: 8px; margin-top: 6px;}
 		.vibe-entryMenu-grid                {padding: 0px !important; background-color: #ededed; display: table; table-layout: fixed;}
-		.vibe-entryMenu-quickFilters-filter {}
+		.vibe-entryMenu-quickFilters-filter {padding-top: 1px;}
 		.vibe-entryMenu-quickFilters-panel  {vertical-align: top; padding: 0 0 0 5px; margin-top: 1px; border-left: none; height: 19px; white-space: nowrap; background-color: #fff; border: 1px solid #b8b8b8; -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px;}
 		.vibe-entryMenu-rightPanel          {padding-right: 5px; margin-right: 3px;}
 /* ...End:  Entry menu panel styles. */
