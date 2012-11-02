@@ -95,7 +95,8 @@ public class GwtSearchCriteria
 	private SearchType m_searchType = SearchType.ENTRIES;
 	private boolean m_sendingEmail = false;	// Is the search part of a "sending email" ui?
 	private SearchScope m_searchScope = SearchScope.SEARCH_ENTIRE_SITE;
-	private boolean m_searchForInternalPrincipalsOnly = false;	// When searching for users/groups should we search for internal users/groups only?
+	private boolean m_searchForInternalPrincipals = false;	// When searching for users/groups should we search for internal users/groups?
+	private boolean m_searchForExternalPrincipals = false;	// When searching for users/groups should we search for external users/groups?
 
 	/**
 	 * 
@@ -173,9 +174,17 @@ public class GwtSearchCriteria
 	/**
 	 * 
 	 */
-	public boolean getSearchForInternalPrincipalsOnly()
+	public boolean getSearchForExternalPrincipals()
 	{
-		return m_searchForInternalPrincipalsOnly;
+		return m_searchForExternalPrincipals;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getSearchForInternalPrincipals()
+	{
+		return m_searchForInternalPrincipals;
 	}
 	
 	/**
@@ -280,9 +289,17 @@ public class GwtSearchCriteria
 	/**
 	 * 
 	 */
-	public void setSearchForInternalPrincipalsOnly( boolean internalOnly )
+	public void setSearchForExternalPrincipals( boolean external )
 	{
-		m_searchForInternalPrincipalsOnly = internalOnly;
+		m_searchForExternalPrincipals = external;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setSearchForInternalPrincipals( boolean internal )
+	{
+		m_searchForInternalPrincipals = internal;
 	}
 	
 	/**

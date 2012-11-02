@@ -324,10 +324,15 @@ public class ModifyStaticMembershipDlg extends DlgBox
 						@Override
 						public void execute()
 						{
+							boolean externalMembersAllowed;
+							
 							// Tell the FindCtrl whether or not to search for just internal
 							// users/groups or both internal and external users/groups
-							m_findGroupCtrl.setSearchForInternalPrincipalsOnly( !externalMembersAllowed() );
-							m_findUserCtrl.setSearchForInternalPrincipalsOnly( !externalMembersAllowed() );
+							externalMembersAllowed = externalMembersAllowed();
+							m_findGroupCtrl.setSearchForInternalPrincipals( true );
+							m_findGroupCtrl.setSearchForExternalPrincipals( externalMembersAllowed );
+							m_findUserCtrl.setSearchForInternalPrincipals( true );
+							m_findUserCtrl.setSearchForExternalPrincipals( externalMembersAllowed );
 							
 							// Since the user changed "Allow external users and groups" checkbox
 							// validate the membership to make sure it abides by the
@@ -421,7 +426,8 @@ public class ModifyStaticMembershipDlg extends DlgBox
 							{
 								m_findGroupCtrl = findCtrl;
 								m_findGroupCtrl.setSearchType( SearchType.GROUP );
-								m_findGroupCtrl.setSearchForInternalPrincipalsOnly( !externalMembersAllowed() );
+								m_findGroupCtrl.setSearchForInternalPrincipals( true );
+								m_findGroupCtrl.setSearchForExternalPrincipals( externalMembersAllowed() );
 								table.setWidget( 0, 1, m_findGroupCtrl );
 						}
 					} );
@@ -577,7 +583,8 @@ public class ModifyStaticMembershipDlg extends DlgBox
 							{
 								m_findUserCtrl = findCtrl;
 								m_findUserCtrl.setSearchType( SearchType.USER );
-								m_findUserCtrl.setSearchForInternalPrincipalsOnly( !externalMembersAllowed() );
+								m_findUserCtrl.setSearchForInternalPrincipals( true );
+								m_findUserCtrl.setSearchForExternalPrincipals( externalMembersAllowed() );
 								table.setWidget( 0, 1, m_findUserCtrl );
 							}
 						} );
@@ -869,7 +876,8 @@ public class ModifyStaticMembershipDlg extends DlgBox
 		{
 			// Tell the FindCtrl whether or not to search for just internal
 			// users or both internal and external users
-			m_findUserCtrl.setSearchForInternalPrincipalsOnly( !externalMembersAllowed );
+			m_findUserCtrl.setSearchForInternalPrincipals( true );
+			m_findUserCtrl.setSearchForExternalPrincipals( externalMembersAllowed );
 			m_findUserCtrl.setInitialSearchString( "" );
 		}
 		
@@ -877,7 +885,8 @@ public class ModifyStaticMembershipDlg extends DlgBox
 		{
 			// Tell the FindCtrl whether or not to search for just internal
 			// groups or both internal and external groups
-			m_findGroupCtrl.setSearchForInternalPrincipalsOnly( !externalMembersAllowed );
+			m_findGroupCtrl.setSearchForInternalPrincipals( true );
+			m_findGroupCtrl.setSearchForExternalPrincipals( externalMembersAllowed );
 			m_findGroupCtrl.setInitialSearchString( "" );
 		}
 		

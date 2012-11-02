@@ -949,11 +949,19 @@ public class FindCtrl extends Composite
 	}// end setSearchForFoldersOnly()
 
 	/**
-	 * Set when searching for principals, should we search for internal principals only.
+	 * Set when searching for principals, should we search for external principals.
 	 */
-	public void setSearchForInternalPrincipalsOnly( boolean internalOnly )
+	public void setSearchForExternalPrincipals( boolean external )
 	{
-		m_searchCriteria.setSearchForInternalPrincipalsOnly( internalOnly );
+		m_searchCriteria.setSearchForExternalPrincipals( external );
+	}
+	
+	/**
+	 * Set when searching for principals, should we search for internal principals.
+	 */
+	public void setSearchForInternalPrincipals( boolean internal )
+	{
+		m_searchCriteria.setSearchForInternalPrincipals( internal );
 	}
 	
 	/**

@@ -964,7 +964,7 @@ public class ShareThisDlg extends DlgBox
 						        // Did the user press Enter?
 						        if ( keyCode == KeyCodes.KEY_ENTER )
 						        {
-									// Yes, try to add a new tag.
+									// Yes, try to add an external user.
 									handleClickOnAddExternalUser();
 						        }
 							}
@@ -2007,13 +2007,18 @@ public class ShareThisDlg extends DlgBox
 			{
 				// No
 				m_addExternalUserImg.setVisible( false );
+				m_findCtrl.setSearchForExternalPrincipals( false );
 			}
 			else
 			{
 				// Yes
 				m_addExternalUserImg.setVisible( true );
+				m_findCtrl.setSearchForExternalPrincipals( true );
 			}
-			
+
+			// Is sharing with an internal user available?
+			m_findCtrl.setSearchForInternalPrincipals( sharingInfo.getCanShareWithInternalUsers() );
+
 			listOfShareItems = sharingInfo.getListOfShareItems();
 			if ( listOfShareItems != null )
 			{
