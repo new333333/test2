@@ -1,11 +1,7 @@
 package org.kabling.teaming.install.client.wizard;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigFinishEnableEvent;
-import org.kabling.teaming.install.client.ConfigModifiedEvent;
 import org.kabling.teaming.install.client.ConfigFinishEnableEvent.ConfigFinishEnableEventHandler;
 import org.kabling.teaming.install.client.ConfigNextButtonEnableEvent;
 import org.kabling.teaming.install.client.ConfigNextButtonEnableEvent.ConfigNextEnableEventHandler;
@@ -28,8 +24,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, ConfigFinishEnableEventHandler,
 		ConfigNextEnableEventHandler
 {
-	private int currentPage;
-	private List<IWizardPage<InstallerConfig>> pages = new ArrayList<IWizardPage<InstallerConfig>>();
+	private IWizardPage<InstallerConfig> currentPage;
 	private FlowPanel wizardContentPanel;
 	private FlowPanel wizard;
 	private FlowPanel m_captionImagePanel;
@@ -44,7 +39,12 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 	private StatusIndicator loadingWidget;
 
 	private AppResource RBUNDLE = AppUtil.getAppResource();
-
+	InitialConfigPage configPage;
+	DatabaseConfigPage dbPage;
+	LuceneConfigPage lucenePage;
+	//StoragePage storagePage;
+	ImportConfigPage importPage;
+	
 	public ConfigWizard(InstallerConfig config)
 	{
 		super(false, true);
@@ -72,107 +72,88 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 
 		// Add pages (3 page wizard)
 		// Initial Page
-		IWizardPage<InstallerConfig> configPage = new InitialConfigPage(config);
-		pages.add(configPage);
+		configPage = new InitialConfigPage(this,config);
 
 		// Database Page
-		IWizardPage<InstallerConfig> dbPage = new DatabaseConfigPage(this, config);
-		pages.add(dbPage);
+		dbPage = new DatabaseConfigPage(this, config);
 
 		// Lucene Page
-		IWizardPage<InstallerConfig> lucenePage = new LuceneConfigPage(this, config);
-		pages.add(lucenePage);
+		lucenePage = new LuceneConfigPage(this, config);
 
-		// Storage Page
-		IWizardPage<InstallerConfig> storagePage = new StoragePage(this, config);
-		pages.add(storagePage);
-
+		//Import Page
+		importPage = new ImportConfigPage(this);
+		
 		// Listen for events (enable/disable finish button, enable/disable next button)
 		AppUtil.getEventBus().addHandler(ConfigFinishEnableEvent.TYPE, this);
 		AppUtil.getEventBus().addHandler(ConfigNextButtonEnableEvent.TYPE, this);
 
 		// Show first page
-		currentPage = 0;
+		currentPage = configPage;
 		showPage(currentPage);
 	}
 
-	private void showPage(int pageToShow)
+	private void showPage(IWizardPage<InstallerConfig> pageToShow)
 	{
-		if (wizardContentPanel.getWidgetCount() > 0)
-			wizardContentPanel.remove(0);
-
+		currentPage = pageToShow;
+		
 		updateButtons();
 
 		// Clear any errors as we are moving to a new page
 		setErrorMessage(null);
 
-		IWizardPage<InstallerConfig> newPageToShow = pages.get(pageToShow);
-		wizardContentPanel.add(newPageToShow.getWizardUI());
+		wizardContentPanel.clear();
+		wizardContentPanel.add(currentPage.getWizardUI());
 
-		IWizardPage<InstallerConfig> currentWizardPage = pages.get(currentPage);
-		m_caption.setText(currentWizardPage.getPageTitle());
+		m_caption.setText(currentPage.getPageTitle());
 	}
 
 	@Override
 	public void previousPage()
 	{
-		if (currentPage > 0)
-			currentPage = currentPage - 1;
-
-		showPage(currentPage);
-
+		IWizardPage<InstallerConfig> previousPage = currentPage.getPreviousPage();
+		
+		if (previousPage != null)
+		{
+			currentPage = previousPage;
+			showPage(currentPage);
+		}
 	}
 
 	@Override
 	public void nextPage()
 	{
-		IWizardPage<InstallerConfig> page = pages.get(currentPage);
-
-		if (!page.isValid())
+		if (!currentPage.isValid())
 			return;
+		
+		currentPage.save();
+		
+		IWizardPage<InstallerConfig> nextPage = currentPage.getNextPage();
 
-		if (currentPage < pages.size())
-			currentPage = currentPage + 1;
-
-		showPage(currentPage);
+		if (nextPage != null)
+		{
+			currentPage = nextPage;
+			showPage(currentPage);
+		}
 	}
 
 	@Override
 	public void finish()
 	{
-		// We only need to go through pages for advanced configuration
-		// For default configuration, we will go with the defaults in installer.xml
-		if (config.isAdvancedConfiguration())
-		{
-			// Call save
-			for (int page = 0; page < pages.size(); page++)
-			{
-				IWizardPage<InstallerConfig> wizardPage = pages.get(page);
-
-				if (!wizardPage.isValid())
-				{
-					// Show error message in error panel
-					showPage(page);
-					return;
-				}
-				else
-				{
-					wizardPage.save();
-				}
-			}
-		}
+		if (!currentPage.isValid())
+			return;
+		
 		showStatusIndicator(AppUtil.getAppResource().pleaseWait());
 		AppUtil.getInstallService().saveConfiguration(config, new SaveConfigCallback());
 	}
 
 	private void updateButtons()
 	{
-		if (currentPage == 0)
+		if (currentPage.getPreviousPage() == null)
 		{
 			previousButton.setEnabled(false);
 			nextButton.setEnabled(true);
 		}
-		else if (currentPage == pages.size() - 1)
+		else if (currentPage.getNextPage() == null)
 		{
 			previousButton.setEnabled(true);
 			nextButton.setEnabled(false);
@@ -183,7 +164,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 			nextButton.setEnabled(true);
 		}
 
-		finishButton.setEnabled(pages.get(currentPage).canFinish());
+		finishButton.setEnabled(currentPage.canFinish());
 
 	}
 
@@ -310,7 +291,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		public void onFailure(Throwable caught)
 		{
 			hideStatusIndicator();
-			setErrorMessage("Configuration failed on the server.");
+			setErrorMessage("Creating the database failed.");
 		}
 
 		@Override
@@ -328,7 +309,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		public void onFailure(Throwable caught)
 		{
 			hideStatusIndicator();
-			setErrorMessage("Configuration failed on the server.");
+			setErrorMessage("Updating the database failed.");
 		}
 
 		@Override
@@ -346,7 +327,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		public void onFailure(Throwable caught)
 		{
 			hideStatusIndicator();
-			setErrorMessage("Configuration failed on the server.");
+			setErrorMessage("Reconfiguring the Filr Server failed.");
 		}
 
 		@Override
@@ -364,7 +345,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		public void onFailure(Throwable caught)
 		{
 			hideStatusIndicator();
-			setErrorMessage("Configuration failed on the server.");
+			setErrorMessage("Starting the Filr Server failed.");
 		}
 
 		@Override

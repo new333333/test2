@@ -359,4 +359,14 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 			wizard.nextPage();
 		}
 	}
+
+	@Override
+	public IWizardPage<InstallerConfig> getPreviousPage() {
+		return wizard.configPage;
+	}
+
+	@Override
+	public IWizardPage<InstallerConfig> getNextPage() {
+		return wizard.lucenePage;
+	}
 }

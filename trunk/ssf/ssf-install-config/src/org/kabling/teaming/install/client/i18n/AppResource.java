@@ -210,4 +210,28 @@ public interface AppResource extends Messages
 
 	String configFinishedMsg(String ipAddr);
 	String filrServerInfo(String ipAddr);
+
+	String newPartition();
+
+	String maxBooleansColon();
+
+	String default10000();
+
+	String default10();
+
+	String configurationTypeColon();
+
+	String local();
+
+	String server();
+
+	String highAvailablity();
+	
+	String newEllipsis();
+
+	String remove();
+
+	String nameColon();
+
+	String descriptionColon();
 }

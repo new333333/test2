@@ -20,10 +20,12 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	private FlowPanel fPanel;
 	private InstallerConfig config;
 	private RadioButton upgradeRB;
-
-	public InitialConfigPage(InstallerConfig config)
+	private ConfigWizard wizard;
+	
+	public InitialConfigPage(ConfigWizard wizard,InstallerConfig config)
 	{
 		this.config = config;
+		this.wizard = wizard;
 	}
 	
 	@Override
@@ -116,5 +118,20 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	public void save()
 	{
 
+	}
+
+	@Override
+	public IWizardPage<InstallerConfig> getPreviousPage() {
+		return null;
+	}
+
+	@Override
+	public IWizardPage<InstallerConfig> getNextPage() {
+		if (useDefaultsRB.getValue())
+			return null;
+		else if (customRB.getValue())
+			return wizard.dbPage;
+		
+		return wizard.importPage;
 	}
 }

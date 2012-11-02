@@ -136,8 +136,11 @@
 		 </copy>
 		<copy todir="www/WEB-INF/classes">
 			<resources>
-				<file file="war/WEB-INF/log4j.properties"/>
+				<file file="war/WEB-INF/classes/log4j.properties"/>
 			</resources>
+		</copy>
+		 <copy todir="www/images">
+			<fileset dir="war/images"/>
 		</copy>
 		<copy todir="www" flatten="true">
 			<resources>

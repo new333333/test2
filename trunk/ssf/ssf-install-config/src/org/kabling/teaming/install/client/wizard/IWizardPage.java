@@ -13,4 +13,8 @@ public interface IWizardPage<T>
 	boolean canFinish();
 
 	void save();
+	
+	IWizardPage<T> getPreviousPage();
+	
+	IWizardPage<T> getNextPage();
 }

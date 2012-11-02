@@ -171,4 +171,14 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 		}
 	}
 
+	@Override
+	public IWizardPage<InstallerConfig> getPreviousPage() {
+		return wizard.dbPage;
+	}
+
+	@Override
+	public IWizardPage<InstallerConfig> getNextPage() {
+		return null;
+	}
+
 }

@@ -74,4 +74,12 @@ public final class AppUtil
 	{
 		productInfo = info;
 	}
+	
+	public static String getFormattedSize(long dataSize)
+	{
+		if (dataSize < 1024)
+			return dataSize + "m";
+		
+		return dataSize/1024 + "g";
+	}
 }
