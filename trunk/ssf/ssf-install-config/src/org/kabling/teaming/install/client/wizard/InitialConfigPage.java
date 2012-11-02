@@ -1,8 +1,5 @@
 package org.kabling.teaming.install.client.wizard;
 
-import org.kabling.teaming.install.client.AppUtil;
-import org.kabling.teaming.install.client.ConfigFinishEnableEvent;
-import org.kabling.teaming.install.client.ConfigNextButtonEnableEvent;
 import org.kabling.teaming.install.shared.InstallerConfig;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -88,7 +85,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			upgradeConfigDescLabel.addStyleName("configDescLabel");
 			radioPanel.add(upgradeConfigDescLabel);
 		}
-		AppUtil.getEventBus().fireEvent(new ConfigNextButtonEnableEvent(!useDefaultsRB.getValue()));
+		wizard.getNextButton().setEnabled(!useDefaultsRB.getValue());
 
 		return fPanel;
 	}
@@ -105,12 +102,17 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	@Override
 	public void onClick(ClickEvent event)
 	{
-		if (event.getSource() == useDefaultsRB || event.getSource() == customRB)
+		if (event.getSource() == useDefaultsRB) 
 		{
-			config.setAdvancedConfiguration(customRB.getValue());
-			
-			AppUtil.getEventBus().fireEvent(new ConfigFinishEnableEvent(useDefaultsRB.getValue()));
-			AppUtil.getEventBus().fireEvent(new ConfigNextButtonEnableEvent(!useDefaultsRB.getValue()));
+			config.setAdvancedConfiguration(false);
+			wizard.getFinishButton().setEnabled(true);
+			wizard.getNextButton().setEnabled(false);
+		}
+		else if (event.getSource() == customRB || event.getSource() == upgradeRB) 
+		{
+			config.setAdvancedConfiguration(true);
+			wizard.getFinishButton().setEnabled(false);
+			wizard.getNextButton().setEnabled(true);
 		}
 	}
 

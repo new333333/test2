@@ -1,10 +1,6 @@
 package org.kabling.teaming.install.client.wizard;
 
 import org.kabling.teaming.install.client.AppUtil;
-import org.kabling.teaming.install.client.ConfigFinishEnableEvent;
-import org.kabling.teaming.install.client.ConfigFinishEnableEvent.ConfigFinishEnableEventHandler;
-import org.kabling.teaming.install.client.ConfigNextButtonEnableEvent;
-import org.kabling.teaming.install.client.ConfigNextButtonEnableEvent.ConfigNextEnableEventHandler;
 import org.kabling.teaming.install.client.ConfigWizardSucessEvent;
 import org.kabling.teaming.install.client.GwtClientHelper;
 import org.kabling.teaming.install.client.i18n.AppResource;
@@ -16,22 +12,23 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HasAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
 
-public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, ConfigFinishEnableEventHandler,
-		ConfigNextEnableEventHandler
+public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
+		
 {
 	private IWizardPage<InstallerConfig> currentPage;
 	private FlowPanel wizardContentPanel;
 	private FlowPanel wizard;
 	private FlowPanel m_captionImagePanel;
 	private Label m_caption;
-	private FlowPanel m_footerPanel;
+	private HorizontalPanel m_footerPanel;
 	private Button previousButton;
-	private FocusWidget nextButton;
+	private Button nextButton;
 	private Button finishButton;
 	private InstallerConfig config;
 	private Label errorLabel;
@@ -83,10 +80,6 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		//Import Page
 		importPage = new ImportConfigPage(this);
 		
-		// Listen for events (enable/disable finish button, enable/disable next button)
-		AppUtil.getEventBus().addHandler(ConfigFinishEnableEvent.TYPE, this);
-		AppUtil.getEventBus().addHandler(ConfigNextButtonEnableEvent.TYPE, this);
-
 		// Show first page
 		currentPage = configPage;
 		showPage(currentPage);
@@ -204,13 +197,15 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 
 	private Panel createFooter()
 	{
-		m_footerPanel = new FlowPanel();
-
+		m_footerPanel = new HorizontalPanel();
+		m_footerPanel.setWidth("100%");
+		
 		// Associate this panel with its stylesheet.
 		m_footerPanel.setStyleName("teamingDlgBoxFooter");
 
 		previousButton = new Button(RBUNDLE.previous());
-
+		//We want the next/previous button to go all the way right
+		previousButton.setWidth("100%");
 		previousButton.addClickHandler(this);
 		previousButton.addStyleName("teamingButton");
 		m_footerPanel.add(previousButton);
@@ -219,12 +214,13 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		nextButton.addClickHandler(this);
 		nextButton.addStyleName("teamingButton");
 		m_footerPanel.add(nextButton);
+		m_footerPanel.setCellHorizontalAlignment(nextButton, HasAlignment.ALIGN_RIGHT);
 
 		finishButton = new Button(RBUNDLE.finish());
 
 		finishButton.addClickHandler(this);
 		finishButton.addStyleName("teamingButton");
-		finishButton.addStyleName("finishButton");
+		m_footerPanel.setCellHorizontalAlignment(finishButton, HasAlignment.ALIGN_RIGHT);
 		m_footerPanel.add(finishButton);
 
 		return m_footerPanel;
@@ -239,18 +235,6 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 			previousPage();
 		else if (event.getSource() == finishButton)
 			finish();
-	}
-
-	@Override
-	public void onEvent(ConfigFinishEnableEvent event)
-	{
-		finishButton.setEnabled(event.isEnabled());
-	}
-
-	@Override
-	public void onEvent(ConfigNextButtonEnableEvent event)
-	{
-		nextButton.setEnabled(event.isEnabled());
 	}
 
 	public void setErrorMessage(String errorMessage)
@@ -386,5 +370,15 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 	{
 		if (loadingWidget != null)
 			loadingWidget.hide();
+	}
+	
+	public Button getFinishButton()
+	{
+		return finishButton;
+	}
+	
+	public Button getNextButton()
+	{
+		return nextButton;
 	}
 }
