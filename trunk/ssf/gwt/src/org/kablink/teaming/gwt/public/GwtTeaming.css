@@ -4783,7 +4783,7 @@ td.datePickerMonth {
 
 /* Start:  Manage users dialog styles. */
 	.vibe-manageUsersDlg           {}
-	.vibe-manageUsersDlg-rootPanel {}
+	.vibe-manageUsersDlg-rootPanel {background-color: white;}
 /* End:  Manage users dialog styles. */
 
 /* End */

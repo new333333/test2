@@ -574,6 +574,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			// tag this menu item.  Is this one of the ones we don't?
 			switch (m_currentBinder.getWorkspaceType()) {
 			case PROFILE_ROOT:
+			case PROFILE_ROOT_MANAGEMENT:
 			case NOT_A_WORKSPACE:
 				// Yes!  Bail.
 				return;

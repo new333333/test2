@@ -137,13 +137,27 @@ public class PersonalWorkspacesView extends DataTableFolderViewBase {
 	@Override
 	protected boolean includePanel(FolderPanels folderPanel) {
 		// In the personal workspaces view, we don't show the filter
-		// panels beyond the default.
+		// panel beyond the default.
 		boolean reply;
 		switch (folderPanel) {
 		case BINDER_OWNER_AVATAR:
-		case FILTER:  reply = false;                            break;
-		default:      reply = super.includePanel(folderPanel);  break;
+		case FILTER:  reply = false;                           break;
+		default:      reply = super.includePanel(folderPanel); break;
 		}
+
+		// If we're showing this panel when in the administration
+		// console... 
+		if (reply && getFolderInfo().getWorkspaceType().isProfileRootManagement()) {
+			// ...we never show the bread crumb or footer there either.
+			switch (folderPanel) {
+			case BREADCRUMB:
+			case FOOTER: reply = false; break;
+			default:                    break;
+			}
+		}
+
+		// If we get here, reply is true if the panel should be shown
+		// and false otherwise.
 		return reply;
 	}
 

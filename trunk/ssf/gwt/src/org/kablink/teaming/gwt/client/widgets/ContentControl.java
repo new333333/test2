@@ -933,6 +933,7 @@ public class ContentControl extends Composite
 						}
 							
 						case PROFILE_ROOT:
+						case PROFILE_ROOT_MANAGEMENT:
 						{
 							// Fire the event that will display the profile root workspace.
 							GwtTeaming.fireEvent( new ShowPersonalWorkspacesEvent( bi, viewReady ) );

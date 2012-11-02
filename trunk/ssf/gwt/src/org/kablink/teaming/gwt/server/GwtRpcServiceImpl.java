@@ -1442,7 +1442,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_MANAGE_USERS_INFO:
 		{
-			ManageUsersInfoRpcResponseData result = GwtServerHelper.getManageUsersInformation( this, getRequest( ri ) );
+			ManageUsersInfoRpcResponseData result = GwtServerHelper.getManageUsersInfo( this, getRequest( ri ) );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

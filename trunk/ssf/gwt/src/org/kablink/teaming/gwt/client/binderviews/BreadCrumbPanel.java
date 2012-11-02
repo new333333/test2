@@ -52,7 +52,6 @@ import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
-import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
@@ -324,7 +323,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 		// No, we we aren't displaying a bread crumb panel for a
 		// collection!  Are we displaying it for the profile root
 		// workspace?
-		else if (m_binderInfo.isBinderWorkspace() && WorkspaceType.PROFILE_ROOT.equals(m_binderInfo.getWorkspaceType())) {
+		else if (m_binderInfo.isBinderWorkspace() && m_binderInfo.getWorkspaceType().isProfileRoot()) {
 			// Yes!  We don't need a tree, just the image and title.
 			// Create the panel for it...
 			VibeFlowPanel fp = new VibeFlowPanel();

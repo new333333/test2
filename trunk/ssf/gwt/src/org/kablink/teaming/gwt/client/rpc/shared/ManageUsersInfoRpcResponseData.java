@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import org.kablink.teaming.gwt.client.util.BinderInfo;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -41,7 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class ManageUsersInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private Long	m_profilesRootWSId;	//
+	private BinderInfo	m_profilesRootWSInfo;	//
 	
 	/**
 	 * Constructor method. 
@@ -56,14 +58,14 @@ public class ManageUsersInfoRpcResponseData implements IsSerializable, VibeRpcRe
 	/**
 	 * Constructor method. 
 	 * 
-	 * @param profilesRootWSId
+	 * @param profilesRootWSInfo
 	 */
-	public ManageUsersInfoRpcResponseData(Long profilesRootWSId) {
+	public ManageUsersInfoRpcResponseData(BinderInfo profilesRootWSInfo) {
 		// Initialize the super class...
 		super();
 		
 		// ...and store the parameter.
-		setProfilesRootWSId(profilesRootWSId);
+		setProfilesRootWSInfo(profilesRootWSInfo);
 	}
 	
 	/**
@@ -71,12 +73,12 @@ public class ManageUsersInfoRpcResponseData implements IsSerializable, VibeRpcRe
 	 * 
 	 * @return
 	 */
-	public Long getProfilesRootWSId() {return m_profilesRootWSId;}
+	public BinderInfo getProfilesRootWSInfo() {return m_profilesRootWSInfo;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setProfilesRootWSId(Long profilesRootWSId) {m_profilesRootWSId = profilesRootWSId;}
+	public void setProfilesRootWSInfo(BinderInfo profilesRootWSInfo) {m_profilesRootWSInfo = profilesRootWSInfo;}
 }
