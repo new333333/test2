@@ -521,6 +521,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
   	@Override
 	public boolean isMobileAccessEnabled() {
+  		if (Utils.checkIfFilr()) {
+  			//Filr does not support the old jsp based mobile UI
+  			return false;
+  		}
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.isMobileAccessEnabled(); 		
   	}
