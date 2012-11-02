@@ -1014,7 +1014,13 @@ public Map getGroups() {
 	   options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
 	   return getGroups(options);
    }
- 
+
+   //RO transaction
+   @Override
+   public List<Group> getLdapContainerGroups() {
+	   return getProfileDao().loadLdapContainerGroups(RequestContextHolder.getRequestContext().getZoneId());
+   }
+
 	//RO transaction
    @Override
 public Map getGroups(Map options) {
