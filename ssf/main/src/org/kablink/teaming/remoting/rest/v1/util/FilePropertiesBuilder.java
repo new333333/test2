@@ -62,7 +62,7 @@ public class FilePropertiesBuilder implements SearchResultBuilder<FileProperties
         Long owningEntityId = Long.valueOf((String) doc.get(Constants.DOCID_FIELD));
 
         fp.setOwningEntity(ResourceUtil.buildEntityId(owningEntityType, owningEntityId));
-        fp.setPermaLink(PermaLinkUtil.getPermalink(owningEntityId, owningEntityType, true));
+        fp.setPermaLink(PermaLinkUtil.getPermalink(owningEntityId, owningEntityType, null));
 
         Long creatorId = Long.valueOf((String) doc.get(Constants.CREATORID_FIELD));
         Date createdDate = (Date) doc.get(Constants.CREATION_DATE_FIELD);
