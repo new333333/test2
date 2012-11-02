@@ -24,7 +24,12 @@ public class ImportConfigPage implements IWizardPage<InstallerConfig>, ClickHand
 	private FileUpload upload;
 	private AppResource RBUNDLE = AppUtil.getAppResource();
 	private Button importButton;
+	private ConfigWizard wizard;
 
+	public ImportConfigPage(ConfigWizard wizard)
+	{
+		this.wizard = wizard;
+	}
 	@Override
 	public boolean isValid()
 	{
@@ -117,5 +122,12 @@ public class ImportConfigPage implements IWizardPage<InstallerConfig>, ClickHand
 			
 		}
 	}
-
+	@Override
+	public IWizardPage<InstallerConfig> getPreviousPage() {
+		return wizard.configPage;
+	}
+	@Override
+	public IWizardPage<InstallerConfig> getNextPage() {
+		return null;
+	}
 }

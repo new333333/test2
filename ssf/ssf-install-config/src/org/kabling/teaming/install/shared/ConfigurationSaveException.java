@@ -12,6 +12,11 @@ public class ConfigurationSaveException extends RuntimeException implements Seri
 	{
 	}
 	
+	public ConfigurationSaveException(String details)
+	{
+		this.details = details;
+	}
+	
 	public ConfigurationSaveException(int errorCode, String details)
 	{
 		this.errorCode = errorCode;

@@ -61,6 +61,7 @@ import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 import org.kabling.teaming.install.shared.RSS;
 import org.kabling.teaming.install.shared.RequestsAndConnections;
 import org.kabling.teaming.install.shared.SSO;
+import org.kabling.teaming.install.shared.ShellCommandInfo;
 import org.kabling.teaming.install.shared.WebService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -121,22 +122,27 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	public InstallerConfig getConfiguration()
 	{
 		InstallerConfig config = null;
-		// TODO Get the authentication information
-		// TODO How are we going to get the database connection information?
-		// TODO Get the installer.xml data from the database
-
-		Document document = getDocument();
+		Document document = null;
+		try
+		{
+			document = getDocument();
+		}
+		catch (IOException e)
+		{
+		}
 
 		if (document != null)
 			config = getInstallerConfig(document);
 
-		// TODO Get the data from Lucene server and other servers and make sure we
+		// TODO Get the data from Lucene server and other servers and make sure
+		// we
 		// update it again with those data
 		return config;
 	}
 
-	private Document getDocument()
+	private Document getDocument() throws IOException
 	{
+		InputStream is = null;
 		try
 		{
 			ProductType productType = getProductInfo().getType();
@@ -144,7 +150,6 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			DOMParser parser = new DOMParser();
 
 			File file = null;
-			InputStream is = null;
 
 			if (isUnix() && productType.equals(ProductType.NOVELL_FILR))
 			{
@@ -163,6 +168,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 			// parse the document
 			parser.parse(new InputSource(is));
+			is.close();
 			return parser.getDocument();
 		}
 		catch (IOException e)
@@ -173,7 +179,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		{
 			logger.debug("SAXException - while reading the file in getDocument(");
 		}
-		
+		finally
+		{
+			is.close();
+		}
+
 		return null;
 
 	}
@@ -254,22 +264,15 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		// Cluster
 		config.setClustered(getClusteredData(document));
 
-		logger.info("Config " + config.toString());
 		return config;
 	}
 
 	/**
 	 * Parse through the installer.xml "Network" section and return a java object
 	 * 
-	 * <Network> 
-	 * 		<Host name="localhost" port="8080" listenPort="8080" securePort="8443" secureListenPort="8443" shutdownPort="8005"
-	 * ajpPort="8009" keystoreFile="" /> 
-	 * 		<WebServices enable="true" /> 
-	 * 		<WebServicesBasic enable="true" />
-	 * 		<WebServicesToken enable="true" />
-	 * 		<WebServicesAnonymous enable="false" />
-	 * 		 <Session sessionTimeoutMinutes="240" /> 
-	 * </Network>
+	 * <Network> <Host name="localhost" port="8080" listenPort="8080" securePort="8443" secureListenPort="8443" shutdownPort="8005"
+	 * ajpPort="8009" keystoreFile="" /> <WebServices enable="true" /> <WebServicesBasic enable="true" /> <WebServicesToken enable="true" />
+	 * <WebServicesAnonymous enable="false" /> <Session sessionTimeoutMinutes="240" /> </Network>
 	 * 
 	 * @param document
 	 *            - DOM document
@@ -353,8 +356,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	 * <!-- What userid to run as (Linux-only) --> <!-- Also what userId and groupId to use --> <!-- as owner of the data directories. -->
 	 * <Ids userId="" groupId="" />
 	 * 
-	 * <!-- Where does the Kablink software reside? -->
-	 * <SoftwareLocation path="" />
+	 * <!-- Where does the Kablink software reside? --> <SoftwareLocation path="" />
 	 * 
 	 * <!-- The default locale to be used by Teaming. Defaults --> <!-- to the i18n.default.locale.* settings in --> <!-- ssf.properties.
 	 * --> <DefaultLocale language="en" country="US" />
@@ -422,11 +424,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	/**
 	 * Parse through the installer.xml "RequestsAndConnections" section and return a java object
 	 * 
-	 * <RequestsAndConnections> 
-	 * 		<maxThreads value="200" /> 
-	 * 		<maxActive value="50" /> 
-	 * 		<maxIdle value="20" /> 
-	 * </RequestsAndConnections>
+	 * <RequestsAndConnections> <maxThreads value="200" /> <maxActive value="50" /> <maxIdle value="20" /> </RequestsAndConnections>
 	 * 
 	 * @param document
 	 *            - DOM document
@@ -455,11 +453,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	/**
 	 * Parse through the installer.xml "RequestsAndConnections" section and return a java object
 	 * 
-	 * <RequestsAndConnections> 
-	 * 		<maxThreads value="200" /> 
-	 * 		<maxActive value="50" /> 
-	 * 		<maxIdle value="20" /> 
-	 * </RequestsAndConnections>
+	 * <RequestsAndConnections> <maxThreads value="200" /> <maxActive value="50" /> <maxIdle value="20" /> </RequestsAndConnections>
 	 * 
 	 * @param document
 	 *            - DOM document
@@ -571,43 +565,18 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	}
 
 	/**
-	 * <Database configName="MySQL_Default">
-	 *   <!--                                                       -->
-	 *   <!--                  MySQL_Default                        -->
-	 *   <!--                                                       -->
-	 *   <Config id="MySQL_Default" type="MySql">
-	 *       <Resource for="icecore"
-	 *           driverClassName="com.mysql.jdbc.Driver"
-	 *           url="jdbc:mysql://localhost:3306/sitescape?useUnicode=true&amp;characterEncoding=UTF-8"
-	 *           username="root"
-	 *           password=""
-	 *       />
-	 *   </Config>
-	 *
-	 *   <!--                                                       -->
-	 *    <!--                 SQLServer_Default                     -->
-	 *    <!--                                                       -->
-	 *    <Config id="SQLServer_Default" type="SQLServer">
-	 *       <Resource for="icecore"
-	 *           driverClassName="net.sourceforge.jtds.jdbc.Driver"
-	 *           url="jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor"
-	 *           username="sa"
-	 *           password=""
-	 *        />
-	 *   </Config>
-	 *
-	 *  <!--                                                       -->
-	 *  <!--                 Oracle_Default                        -->
-	 *   <!--                                                       -->
-	 *   <Config id="Oracle_Default" type="Oracle">
-	 *       <Resource for="icecore"
-	 *           driverClassName="oracle.jdbc.driver.OracleDriver"
-	 *           url="jdbc:oracle:thin:@//localhost:1521/orcl"
-	 *           username=""
-	 *           password=""
-	 *        />
-	 *   </Config>
-	 *</Database>  
+	 * <Database configName="MySQL_Default"> <!-- --> <!-- MySQL_Default --> <!-- --> <Config id="MySQL_Default" type="MySql"> <Resource
+	 * for="icecore" driverClassName="com.mysql.jdbc.Driver" url=
+	 * "jdbc:mysql://localhost:3306/sitescape?useUnicode=true&amp;characterEncoding=UTF-8" username="root" password="" /> </Config>
+	 * 
+	 * <!-- --> <!-- SQLServer_Default --> <!-- --> <Config id="SQLServer_Default" type="SQLServer"> <Resource for="icecore"
+	 * driverClassName="net.sourceforge.jtds.jdbc.Driver" url="jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor" username="sa"
+	 * password="" /> </Config>
+	 * 
+	 * <!-- --> <!-- Oracle_Default --> <!-- --> <Config id="Oracle_Default" type="Oracle"> <Resource for="icecore"
+	 * driverClassName="oracle.jdbc.driver.OracleDriver" url="jdbc:oracle:thin:@//localhost:1521/orcl" username="" password="" /> </Config>
+	 * </Database>
+	 * 
 	 * @param document
 	 * @return
 	 */
@@ -680,28 +649,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	}
 
 	/**
-	 *   <Lucene luceneLocation="local">
-	 *   <Resource 
-	 *       lucene.index.hostname="localhost"
-	 *		lucene.max.booleans="10000"
-	 *	    lucene.max.ha.search.nodes="100"
-	 *		lucene.merge.factor="10"
-	 *		lucene.rmi.port="1199"
-	 *  >
-	 *   	<HASearchNode
-	 *  		ha.service.name="node1"
-	 *  		ha.service.title="This is node1"
-	 *  		ha.service.hostname="xxx.xxx.xxx.xxx"
-	 *  		ha.service.rmi.port="1199"
-	 * 	/>
-	 *  	<HASearchNode
-	 * 		ha.service.name="node2"
-	 * 		ha.service.title="This is node2"
-	 * 		ha.service.hostname="yyy.yyy.yyy.yyy"
-	 * 		ha.service.rmi.port="1199"
-	 *	/>
-	 *  </Resource>
-	 *</Lucene>
+	 * <Lucene luceneLocation="local"> <Resource lucene.index.hostname="localhost" lucene.max.booleans="10000"
+	 * lucene.max.ha.search.nodes="100" lucene.merge.factor="10" lucene.rmi.port="1199" > <HASearchNode ha.service.name="node1"
+	 * ha.service.title="This is node1" ha.service.hostname="xxx.xxx.xxx.xxx" ha.service.rmi.port="1199" /> <HASearchNode
+	 * ha.service.name="node2" ha.service.title="This is node2" ha.service.hostname="yyy.yyy.yyy.yyy" ha.service.rmi.port="1199" />
+	 * </Resource> </Lucene>
+	 * 
 	 * @param document
 	 * @return
 	 */
@@ -726,8 +679,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		lucene.setIndexHostName(resourceElement.getAttribute("lucene.index.hostname"));
 		lucene.setRmiPort(getIntegerValue(resourceElement.getAttribute("lucene.rmi.port")));
 		lucene.setMaxBooleans(getIntegerValue(resourceElement.getAttribute("lucene.max.booleans")));
-		lucene.setHighAvailabilitySearchNodes(getIntegerValue(resourceElement
-				.getAttribute("lucene.max.ha.search.nodes")));
+		lucene.setHighAvailabilitySearchNodes(getIntegerValue(resourceElement.getAttribute("lucene.max.ha.search.nodes")));
 		lucene.setMergeFactor(getIntegerValue(resourceElement.getAttribute("lucene.merge.factor")));
 
 		// Get the HASearchNodes
@@ -759,10 +711,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	}
 
 	/**
-	 * <RSS enable="true">
-	 * 		<Feed max.elapseddays="31" max.inactivedays="7" />
-	 * </RSS>
-
+	 * <RSS enable="true"> <Feed max.elapseddays="31" max.inactivedays="7" /> </RSS>
+	 * 
 	 * @param document
 	 * @return
 	 */
@@ -791,34 +741,18 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	}
 
 	/**
-	 *  <EmailSettings>
-	 *   	<InternalInboundSMTP enable="false" bindAddress="" port="2525" tls="true" />
-	 *
-	 *   	<Outbound
-	 *                           defaultTZ="America/New_York"
-	 *                           allowSendToAllUsers="false"
-	 *          >
-	 *   <Resource
-	 *          mail.transport.protocol="smtp"
-	 *
-	 *         mail.smtp.host="mailhost.yourcompany.com"
-	 *         mail.smtp.user="vibe@yourcompany.com"
-	 *         mail.smtp.password=""
-	 *         mail.smtp.auth="false"
-	 *         mail.smtp.port="25"
-	 *          mail.smtp.sendpartial="true"
-	 *
-	 *         mail.smtps.host="mailhost.yourcompany.com"
-	 *         mail.smtps.user="vibe@yourcompany.com"
-	 *          mail.smtps.password=""
-	 *         mail.smtps.auth="false"
-	 *         mail.smtps.port="465"
-	 *         mail.smtps.sendpartial="true"
-	 *
-	 *     />
-	 *  </Outbound>
-	 *  </EmailSettings>
-	 *
+	 * <EmailSettings> <InternalInboundSMTP enable="false" bindAddress="" port="2525" tls="true" />
+	 * 
+	 * <Outbound defaultTZ="America/New_York" allowSendToAllUsers="false" > <Resource mail.transport.protocol="smtp"
+	 * 
+	 * mail.smtp.host="mailhost.yourcompany.com" mail.smtp.user="vibe@yourcompany.com" mail.smtp.password="" mail.smtp.auth="false"
+	 * mail.smtp.port="25" mail.smtp.sendpartial="true"
+	 * 
+	 * mail.smtps.host="mailhost.yourcompany.com" mail.smtps.user="vibe@yourcompany.com" mail.smtps.password="" mail.smtps.auth="false"
+	 * mail.smtps.port="465" mail.smtps.sendpartial="true"
+	 * 
+	 * /> </Outbound> </EmailSettings>
+	 * 
 	 * @param document
 	 * @return
 	 */
@@ -877,8 +811,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				emailSettings.setSmtpsAuthEnabled(getBooleanValue(currentElement.getAttribute("mail.smtps.auth")));
 				emailSettings.setSmtpsPort(getIntegerValue(currentElement.getAttribute("mail.smtps.port")));
 				emailSettings.setSmtpsPassword(currentElement.getAttribute("mail.smtps.password"));
-				emailSettings
-						.setSmtpsSendPartial(getBooleanValue(currentElement.getAttribute("mail.smtps.sendpartial")));
+				emailSettings.setSmtpsSendPartial(getBooleanValue(currentElement.getAttribute("mail.smtps.sendpartial")));
 
 			}
 
@@ -888,15 +821,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	}
 
 	/**
-	  ** <Presence>
-	  *  	<Resource 
-	  *      	 presence.service.enable="false"
-	  *     	 presence.service.server.address=""
-	  *     	 presence.service.server.port="8300"
-	  *     	 presence.service.server.cert=""
-	  *     	 presence.service.user.dn=""
-	  *    		 presence.service.user.password=""/>
-	  * </Presence>
+	 ** <Presence> <Resource presence.service.enable="false" presence.service.server.address="" presence.service.server.port="8300"
+	 * presence.service.server.cert="" presence.service.user.dn="" presence.service.user.password=""/> </Presence>
+	 * 
 	 * @param document
 	 * @return
 	 */
@@ -927,29 +854,15 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	}
 
 	/**
-	 * <MirroredFolders>
-	 *	<MirroredFolder enabled="false" type="file" 
-	 *	                id="rd1" title="Shared Files 1"
-	 *	                rootPath="k:/somedir" readonly="true" zoneId="">
-	 *		<AllowedUsers idList="admin;u1;u2;u3" />
-	 *		<AllowedGroups idList="g1;g2;g3" />
-	 *	</MirroredFolder>
-	 *
-	 *	<MirroredFolder enabled="false" type="file" 
-	 *	                id="rd2" title="Shared Files 2"
-	 *	                rootPath="/sharedFiles/someDirectory" readonly="true" zoneId="">
-	 *		<AllowedUsers idList="admin;u1;u2;u3" />
-	 *		<AllowedGroups idList="g1;g2;g3" />
-	 *	</MirroredFolder>
-	 *
-	 *	<MirroredFolder enabled="false" type="webdav"
-	 *	                id="rd3" title="WebDAV 1" 
-	 *	                rootPath="/Shared Documents/cool-dir" readonly="true" zoneId="">
-	 *	    <WebDAVContext hostUrl="http://hostname" user="accessId" password="" />
-	 *		<AllowedUsers idList="admin;u1;u2;u3" />
-	 *	 	<AllowedGroups idList="g1;g2;g3" />
-	 *	</MirroredFolder>
-	 * </MirroredFolders>
+	 * <MirroredFolders> <MirroredFolder enabled="false" type="file" id="rd1" title="Shared Files 1" rootPath="k:/somedir" readonly="true"
+	 * zoneId=""> <AllowedUsers idList="admin;u1;u2;u3" /> <AllowedGroups idList="g1;g2;g3" /> </MirroredFolder>
+	 * 
+	 * <MirroredFolder enabled="false" type="file" id="rd2" title="Shared Files 2" rootPath="/sharedFiles/someDirectory" readonly="true"
+	 * zoneId=""> <AllowedUsers idList="admin;u1;u2;u3" /> <AllowedGroups idList="g1;g2;g3" /> </MirroredFolder>
+	 * 
+	 * <MirroredFolder enabled="false" type="webdav" id="rd3" title="WebDAV 1" rootPath="/Shared Documents/cool-dir" readonly="true"
+	 * zoneId=""> <WebDAVContext hostUrl="http://hostname" user="accessId" password="" /> <AllowedUsers idList="admin;u1;u2;u3" />
+	 * <AllowedGroups idList="g1;g2;g3" /> </MirroredFolder> </MirroredFolders>
 	 * 
 	 * @param document
 	 * @return
@@ -1102,6 +1015,15 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		return sso;
 	}
 
+	/**
+	 * Helper method to get the element
+	 * 
+	 * @param parentElement
+	 *            - parent element
+	 * @param tagName
+	 *            - tag name
+	 * @return - first element inside the parent element matching the tag name
+	 */
 	private Element getElement(Element parentElement, String tagName)
 	{
 		NodeList nodeList = parentElement.getElementsByTagName(tagName);
@@ -1115,14 +1037,23 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	@Override
 	public void saveConfiguration(InstallerConfig config) throws ConfigurationSaveException
 	{
-		Document document = getDocument();
+		Document document = null;
+		try
+		{
+			document = getDocument();
+		}
+		catch (IOException e)
+		{
+			throw new ConfigurationSaveException("Unable to get installer.xml");
+		}
 		ProductInfo productInfo = getProductInfo();
 
 		// Save each sections
 		{
 			saveDatabaseConfiguration(config, document);
 
-			// TODO: For lucene configuration, we need to update the changes to the lucene server
+			// TODO: For lucene configuration, we need to update the changes to
+			// the lucene server
 			saveLuceneConfiguration(config, document);
 
 			saveMemoryConfiguration(config, document);
@@ -1182,6 +1113,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			catch (ClassNotFoundException e)
 			{
 				logger.debug("Error saving installer.xml, Class Not Found Exception");
+				throw new ConfigurationSaveException();
 			}
 			catch (InstantiationException e)
 			{
@@ -1308,8 +1240,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 		if (lucene.getHighAvailabilitySearchNodes() > 0)
 		{
-			resourceElement.setAttribute("lucene.max.ha.search.nodes",
-					String.valueOf(lucene.getHighAvailabilitySearchNodes()));
+			resourceElement.setAttribute("lucene.max.ha.search.nodes", String.valueOf(lucene.getHighAvailabilitySearchNodes()));
 		}
 
 		if (!lucene.getIndexHostName().isEmpty())
@@ -1630,7 +1561,18 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		File file = new File("/filrinstall/configured");
 		productInfo.setConfigured(file.exists());
 
-		String ipAddr = getLocalIpAddr();
+		String ipAddr = null;
+		if (isUnix())
+		{
+			try
+			{
+				ipAddr = getLocalIpAddr();
+			}
+			catch (IOException e)
+			{
+				// Ignore..
+			}
+		}
 		if (ipAddr != null)
 			productInfo.setLocalIpAddress(ipAddr);
 		else
@@ -1651,12 +1593,13 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		return productInfo;
 	}
 
-	private String getLocalIpAddr()
+	private String getLocalIpAddr() throws IOException
 	{
 		String ipAddr = null;
+		BufferedReader reader = null;
 		try
 		{
-			BufferedReader reader = new BufferedReader(new FileReader("/proc/net/route"));
+			reader = new BufferedReader(new FileReader("/proc/net/route"));
 			String line;
 			while ((line = reader.readLine()) != null)
 			{
@@ -1666,7 +1609,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				{
 					String iface = tokens[0];
 					NetworkInterface nif = NetworkInterface.getByName(iface);
-					Enumeration addrs = nif.getInetAddresses();
+					Enumeration<?> addrs = nif.getInetAddresses();
 					while (addrs.hasMoreElements())
 					{
 						Object obj = addrs.nextElement();
@@ -1678,15 +1621,17 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 							return ipAddr;
 						}
 					}
-					return null;
 				}
 			}
-			reader.close();
 		}
 		catch (IOException e)
 		{
 			System.err.println(e);
 			e.printStackTrace();
+		}
+		finally
+		{
+			reader.close();
 		}
 		return null;
 	}
@@ -1700,8 +1645,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 	}
 
-	public int executeCommand(String command)
+	public ShellCommandInfo executeCommand(String command)
 	{
+		ShellCommandInfo commandInfo = new ShellCommandInfo();
 		int tryCount = 0;
 		int exitValue = -1;
 		boolean waitingForLock = true;
@@ -1734,10 +1680,13 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				String output = null;
 				if (exitValue == 0)
 				{
+					List<String> cmdOutput = new ArrayList<String>();
 					while ((output = cmd.stdout.readLine()) != null)
 					{
+						cmdOutput.add(output);
 						logger.info(output); // log stdout
 					}
+					commandInfo.setOutput(cmdOutput);
 				}
 				else
 				{
@@ -1746,10 +1695,13 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 						logger.info(output); // log stderr
 						if (!waitingForLock)
 						{
-							// waitingForLock is cleared for each try and is only
-							// reset if the command fails and the stderr contains
+							// waitingForLock is cleared for each try and is
+							// only
+							// reset if the command fails and the stderr
+							// contains
 							// "cannot get exclusive lock". Once it is set we
-							// stop checking for this message, as there will normally
+							// stop checking for this message, as there will
+							// normally
 							// be additional lines of text such as:
 							waitingForLock = (output.indexOf("cannot get exclusive lock") != -1);
 						}
@@ -1768,7 +1720,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		{
 			logger.info("timed out waiting for lock");
 		}
-		return exitValue;
+		commandInfo.setExitValue(exitValue);
+		return commandInfo;
 	}
 
 	@Override
@@ -1781,8 +1734,16 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			DatabaseConfig dbConfig = database.getDatabaseConfig("Installed");
 
 			// Check to see if database exists
-			if (checkDBExists("sitescape", dbConfig.getResourceUrl(), dbConfig.getResourceUserName(),
-					dbConfig.getResourcePassword()))
+			String resourceName = "root";
+			String resourcePassword = "root";
+			
+			if (dbConfig.getResourceUserName() != null)
+				resourceName = dbConfig.getResourceUserName();
+			
+			if (dbConfig.getResourcePassword() != null)
+				resourcePassword = dbConfig.getResourcePassword();
+			
+			if (checkDBExists("sitescape", dbConfig.getResourceUrl(), resourceName, resourcePassword))
 				return;
 
 			logger.info("Database does not exist, updating mysql-liquibase.properties");
@@ -1800,14 +1761,15 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 						prop.load(new FileInputStream(file));
 
 						prop.setProperty("url", dbConfig.getResourceUrl());
-						prop.setProperty("password", dbConfig.getResourcePassword());
-						prop.setProperty("username", dbConfig.getResourceUserName());
+						prop.setProperty("password", resourcePassword);
+						prop.setProperty("username", resourceName);
 
 						prop.setProperty("referenceUrl", dbConfig.getResourceUrl());
-						prop.setProperty("referencePassword", dbConfig.getResourcePassword());
-						prop.setProperty("referenceUsername", dbConfig.getResourceUserName());
+						prop.setProperty("referencePassword", resourcePassword);
+						prop.setProperty("referenceUsername", resourceName);
 
-						// Java Properties store escapes colon. We need to store this natively.
+						// Java Properties store escapes colon. We need to store
+						// this natively.
 						store(prop, file);
 					}
 					catch (IOException e)
@@ -1818,9 +1780,10 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				}
 
 				// Create the database if needed
-				int result = executeCommand("mysql -h " + dbConfig.getResourceHost() + " -u"
-						+ dbConfig.getResourceUserName() + " -p" + dbConfig.getResourcePassword()
-						+ " < /filrinstall/db/scripts/sql/mysql-create-empty-database.sql");
+				int result = executeCommand(
+						"mysql -h " + dbConfig.getResourceHost() + " -u" + resourceName + " -p"
+								+ resourcePassword + " < /filrinstall/db/scripts/sql/mysql-create-empty-database.sql")
+						.getExitValue();
 
 				// We got an error ( 0 for success, 1 for database exists)
 				if (!(result == 0 || result == 1))
@@ -1839,7 +1802,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
 			// Update the database
-			int result = executeCommand("cd /filrinstall/db; pwd; sh manage-database.sh mysql updateDatabase");
+			int result = executeCommand("cd /filrinstall/db; pwd; sh manage-database.sh mysql updateDatabase").getExitValue();
 
 			// We got an error ( 0 for success, 107 for database exists)
 			if (result != 0)
@@ -1857,12 +1820,13 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		// Stop the server
 		stopFilrServer();
 
-		// Do the reconfigure which takes the changes from installer.xml and reconfigures
+		// Do the reconfigure which takes the changes from installer.xml and
+		// reconfigures
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
 
 			// Run the reconfigure
-			int result = executeCommand("cd /filrinstall; pwd; ./installer-filr.linux --silent --reconfigure");
+			int result = executeCommand("cd /filrinstall; pwd; ./installer-filr.linux --silent --reconfigure").getExitValue();
 
 			if (result != 0)
 			{
@@ -2089,5 +2053,4 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		return sortedMap;
 
 	}
-
 }

@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.shared;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -99,6 +100,10 @@ public class Lucene implements Serializable
 
 	public List<HASearchNode> getSearchNodesList()
 	{
+		if (searchNodesList == null)
+		{
+			searchNodesList = new ArrayList<HASearchNode>();
+		}
 		return searchNodesList;
 	}
 
