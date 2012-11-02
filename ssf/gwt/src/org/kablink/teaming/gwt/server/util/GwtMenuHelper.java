@@ -539,7 +539,7 @@ public class GwtMenuHelper {
 						
 						ToolbarItem entriesTBI = new ToolbarItem("entries");
 						markTBITitleRes(entriesTBI, title);
-						markTBIPopup(   entriesTBI       );
+						// markTBIPopup(entriesTBI       );
 						markTBIUrl(     entriesTBI, url  );
 						if (i == defaultEntryDefIndex) {
 							markTBIDefault(entriesTBI);
@@ -565,8 +565,8 @@ public class GwtMenuHelper {
 						
 						ToolbarItem addTBI = new ToolbarItem("1_add_folder"       );
 						markTBITitle(addTBI, "toolbar.menu.add_photo_album_folder");
-						markTBIPopup(addTBI                                       );
-						markTBIUrl(  addTBI, url                                  );
+						// markTBIPopup(addTBI                                    );
+						markTBIUrl(     addTBI, url                               );
 						entryToolbar.addNestedItem(addTBI);
 					}
 				}
@@ -582,9 +582,9 @@ public class GwtMenuHelper {
 						url.setParameter(WebKeys.URL_TEMPLATE_NAME, ObjectKeys.DEFAULT_TEMPLATE_NAME_WIKI);
 						
 						ToolbarItem addTBI = new ToolbarItem("1_add_folder");
-						markTBITitle(addTBI, "toolbar.menu.add_wiki_folder");
-						markTBIPopup(addTBI                                );
-						markTBIUrl(  addTBI, url                           );
+						markTBITitle(   addTBI, "toolbar.menu.add_wiki_folder");
+						// markTBIPopup(addTBI                                );
+						markTBIUrl(     addTBI, url                           );
 						entryToolbar.addNestedItem(addTBI);
 					}
 				}
@@ -878,6 +878,7 @@ public class GwtMenuHelper {
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
 				url.setParameter(WebKeys.URL_BINDER_ID, ws.getId().toString());
 				url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+				url.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
 				ToolbarItem addUserTBI = new ToolbarItem("1_add");
 				markTBITitle(    addUserTBI, "toolbar.new");
 				markTBIPopup(    addUserTBI               );

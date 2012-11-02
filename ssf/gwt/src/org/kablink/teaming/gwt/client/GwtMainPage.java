@@ -2453,7 +2453,10 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onFullUIReload( FullUIReloadEvent event )
 	{
-		reloadContentPanel();
+		if ( ! isAdminActive() )
+		{
+			reloadContentPanel();
+		}
 	}// end onFullUIReload()
 	
 	/**
@@ -3660,8 +3663,15 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void fireGotoContentUrl( String url )
 	{
-		fireContextChanging();
-		GwtTeaming.fireEvent(new GotoContentUrlEvent(url));
+		if ( isAdminActive() )
+		{
+			FullUIReloadEvent.fireOne();
+		}
+		else
+		{
+			fireContextChanging();
+			GwtTeaming.fireEvent(new GotoContentUrlEvent(url));
+		}
 	}// end fireGotoContentUrl()
 		
 	/*

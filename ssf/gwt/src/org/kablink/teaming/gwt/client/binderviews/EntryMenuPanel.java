@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
@@ -860,13 +861,26 @@ public class EntryMenuPanel extends ToolPanelBase
 				// launch?
 				final String simpleUrl = simpleTBI.getUrl();
 				if (GwtClientHelper.hasString(simpleUrl)) {
-					// Yes!  Launch it in the content frame.
-					OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-						simpleUrl,
-						Instigator.GOTO_CONTENT_URL);
+					// Yes!  Should we launch it in a popup window?
+					String	popupS = simpleTBI.getQualifierValue("popup");
+					boolean	popup  = (GwtClientHelper.hasString(popupS) && Boolean.parseBoolean(popupS));
+					if (popup) {
+						// Yes!  Launch it there.
+						int width  = GwtClientHelper.iFromS(simpleTBI.getQualifierValue("popupWidth" ), GwtConstants.DEFAULT_POPUP_WIDTH );
+						int	height = GwtClientHelper.iFromS(simpleTBI.getQualifierValue("popupHeight"), GwtConstants.DEFAULT_POPUP_HEIGHT);
+						GwtClientHelper.jsLaunchUrlInWindow(simpleUrl, "_blank", height, width);
+					}
 					
-					if (GwtClientHelper.validateOSBI(osbInfo)) {
-						GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+					else {
+						// No, it doesn't go in a popup window!  Launch
+						// it in the content frame.
+						OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+							simpleUrl,
+							Instigator.GOTO_CONTENT_URL);
+						
+						if (GwtClientHelper.validateOSBI(osbInfo)) {
+							GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+						}
 					}
 				}
 				
