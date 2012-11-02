@@ -83,6 +83,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 {
 	Logger logger = Logger.getLogger("org.kabling.teaming.install.server.InstallServiceImpl");
 	private final int MAX_TRIES = 2;
+	private final String FILR_SERVER_URL = "http://localhost:8080";
 
 	@Override
 	public LoginInfo login(String userName, String password) throws LoginException
@@ -1125,21 +1126,6 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				logger.debug("Error saving installer.xml, Illegal  Exception");
 				throw new ConfigurationSaveException();
 			}
-
-			// Wizard configuration is done, put a temp file there
-			File file = new File("/filrinstall/configured");
-			// If it exists, ignore
-			if (!System.getProperty("os.name").startsWith("Win") && !file.exists())
-			{
-				try
-				{
-					file.createNewFile();
-				}
-				catch (Exception e)
-				{
-					logger.debug("Error creating /filrinstall/configured file");
-				}
-			}
 		}
 	}
 
@@ -1736,6 +1722,10 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			// Check to see if database exists
 			String resourceName = "root";
 			String resourcePassword = "root";
+			String resourceHost = "localhost";
+			
+			if (dbConfig.getResourceHost() != null)
+				resourceHost = dbConfig.getResourceHost();
 			
 			if (dbConfig.getResourceUserName() != null)
 				resourceName = dbConfig.getResourceUserName();
@@ -1781,7 +1771,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 				// Create the database if needed
 				int result = executeCommand(
-						"mysql -h " + dbConfig.getResourceHost() + " -u" + resourceName + " -p"
+						"mysql -h " + resourceHost + " -u" + resourceName + " -p"
 								+ resourcePassword + " < /filrinstall/db/scripts/sql/mysql-create-empty-database.sql")
 						.getExitValue();
 
@@ -1832,6 +1822,22 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			{
 				logger.debug("Error reconfiguring installer in silent mode,Error code " + result);
 				throw new ConfigurationSaveException();
+			}
+			
+
+			// Wizard configuration is done, put a temp file there
+			File file = new File("/filrinstall/configured");
+			// If it exists, ignore
+			if (!System.getProperty("os.name").startsWith("Win") && !file.exists())
+			{
+				try
+				{
+					file.createNewFile();
+				}
+				catch (Exception e)
+				{
+					logger.debug("Error creating /filrinstall/configured file");
+				}
 			}
 		}
 
@@ -1917,7 +1923,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		logger.debug("Check to see if Filr server is running");
 		try
 		{
-			URL myURL = new URL("http://localhost:8080/");
+			URL myURL = new URL(FILR_SERVER_URL);
 			URLConnection myURLConnection = myURL.openConnection();
 			myURLConnection.connect();
 		}
