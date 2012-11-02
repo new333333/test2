@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
@@ -84,10 +85,6 @@ public class FolderEntryMenu extends VibeFlowPanel {
 	private GwtTeamingMessages				m_messages;		// Access to Vibe's messages.
 	private List<ToolbarItem>				m_toolbarItems;	// Information about the entry being viewed's menus.
 	private VibeMenuBar						m_entryMenu;	// The menu bar that contains all the menu items.
-	
-	// Default height and width of a popup window launched from a URL.
-	private final static int DEFAULT_POPUP_WIDTH	= 1024;
-	private final static int DEFAULT_POPUP_HEIGHT	=  768;
 	
 	public FolderEntryMenu(FolderEntryCallback fec, List<ToolbarItem> toolbarItems) {
 		// Initialize the super class...
@@ -189,8 +186,8 @@ public class FolderEntryMenu extends VibeFlowPanel {
 					boolean	popup  = (GwtClientHelper.hasString(popupS) && Boolean.parseBoolean(popupS));
 					if (popup) {
 						// Yes!  Launch it there.
-						int width  = GwtClientHelper.iFromS(simpleTBI.getQualifierValue("popupWidth" ), DEFAULT_POPUP_WIDTH );
-						int	height = GwtClientHelper.iFromS(simpleTBI.getQualifierValue("popupHeight"), DEFAULT_POPUP_HEIGHT);
+						int width  = GwtClientHelper.iFromS(simpleTBI.getQualifierValue("popupWidth" ), GwtConstants.DEFAULT_POPUP_WIDTH );
+						int	height = GwtClientHelper.iFromS(simpleTBI.getQualifierValue("popupHeight"), GwtConstants.DEFAULT_POPUP_HEIGHT);
 						GwtClientHelper.jsLaunchUrlInWindow(simpleUrl, "_blank", height, width);
 					}
 					

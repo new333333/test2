@@ -49,6 +49,10 @@ public class GwtConstants {
 	public static final double	SIDEBAR_TREE_WIDTH			= (WORKSPACE_TREE_WIDTH + SIDEBAR_TREE_WIDTH_ADJUST);	// Default width of the sidebar tree panel.
 	public static final double	DESKTOP_APP_DOWNLOAD_HEIGHT	= 50;		// Height of the desktop application download control.
 	
+	// Default height and width of popup windows launched from URLs.
+	public final static int DEFAULT_POPUP_WIDTH		= 1024;
+	public final static int DEFAULT_POPUP_HEIGHT	=  768;
+	
 	/*
 	 * Constructor method. 
 	 */

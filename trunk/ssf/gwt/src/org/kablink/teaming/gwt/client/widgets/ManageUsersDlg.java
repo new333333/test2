@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspacesView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -65,7 +66,11 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  *  
  * @author drfoster@novell.com
  */
-public class ManageUsersDlg extends DlgBox implements ViewReady {
+public class ManageUsersDlg extends DlgBox
+	implements ViewReady,
+		// Event handlers implemented by this class.
+		FullUIReloadEvent.Handler
+{
 	public final static boolean SHOW_GWT_MANAGE_USERS	= false;	//! DRF:  Leave false on checkin until I get this working.
 	
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
@@ -76,6 +81,7 @@ public class ManageUsersDlg extends DlgBox implements ViewReady {
 	private int								m_showCY;					// ...height of the dialog.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ManageUsersInfoRpcResponseData	m_manageUsersInfo;			// Information necessary to run the manage users dialog.
+	private PersonalWorkspacesView			m_pwsView;					// The personal workspace view.
 	private VibeFlowPanel					m_rootPanel;				// The panel that holds the dialog's contents.
 
 	// Constant adjustments to the size of the personal workspaces view
@@ -86,7 +92,8 @@ public class ManageUsersDlg extends DlgBox implements ViewReady {
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+		TeamingEvents.FULL_UI_RELOAD,
 	};
 	
 	/*
@@ -107,7 +114,7 @@ public class ManageUsersDlg extends DlgBox implements ViewReady {
 		// ...store the parameters...
 		m_showX  = x;
 		m_showY  = y;
-		m_showCY = cx;
+		m_showCX = cx;
 		m_showCY = cy;
 		
 		// ...initialize everything else...
@@ -219,6 +226,22 @@ public class ManageUsersDlg extends DlgBox implements ViewReady {
 	}
 
 	/**
+	 * Handles FullUIReloadEvent's received by this class.
+	 * 
+	 * Implements the FullUIReloadEvent.Handler.onFullUIReload() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onFullUIReload(FullUIReloadEvent event) {
+		// If we have a personal workspace view...
+		if (null != m_pwsView) {
+			// ...tell it to reset itself.
+			m_pwsView.resetView();
+		}
+	}
+	
+	/**
 	 * Called when the personal workspaces view reaches the ready
 	 * state.
 	 * 
@@ -248,6 +271,7 @@ public class ManageUsersDlg extends DlgBox implements ViewReady {
 	private void populateDlgNow() {
 		// Clear anything already in the dialog (from a previous
 		// usage, ...)
+		m_pwsView = null;
 		m_rootPanel.clear();
 		
 		// Create a PersonalWorkspacesView widget for the selected
@@ -263,6 +287,7 @@ public class ManageUsersDlg extends DlgBox implements ViewReady {
 			public void onSuccess(ViewBase pwsView) {
 				// If we don't have the height adjustment for the
 				// dialog yet...
+				m_pwsView = ((PersonalWorkspacesView) pwsView);
 				if ((-1) == m_dlgHeightAdjust) {
 					// ...calculate it now...
 					m_dlgHeightAdjust =
@@ -272,12 +297,12 @@ public class ManageUsersDlg extends DlgBox implements ViewReady {
 				}
 
 				// ...set the size of the personal workspaces view...
-				pwsView.setPixelSize(
+				m_pwsView.setPixelSize(
 					(m_showCX - DIALOG_WIDTH_ADJUST),
 					(m_showCY - m_dlgHeightAdjust));
 				
 				// ...and add it to the dialog.
-				m_rootPanel.add(pwsView);
+				m_rootPanel.add(m_pwsView);
 			}
 		});
 
@@ -302,7 +327,7 @@ public class ManageUsersDlg extends DlgBox implements ViewReady {
 			// ...register the events.
 			EventHelper.registerEventHandlers(
 				GwtTeaming.getEventBus(),
-				m_registeredEvents,
+				REGISTERED_EVENTS,
 				this,
 				m_registeredEventHandlers);
 		}
