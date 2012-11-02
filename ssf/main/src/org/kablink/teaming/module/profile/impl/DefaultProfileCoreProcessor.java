@@ -299,6 +299,8 @@ protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAcces
 protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
    		InputDataAccessor inputData, List fileUploadItems, 
    		Collection<FileAttachment> filesToIndex, Map ctx) {
+	   if((entry instanceof Group) && ((Group)entry).isContainerGroup())
+		   return; // Do NOT index container group
 	   //index self
 	   super.modifyEntry_indexAdd(binder, entry, 
 		   		inputData, fileUploadItems, filesToIndex, ctx);
@@ -915,4 +917,11 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 		getCoreDao().save(changes);
 		return changes;
 	}    
+	
+    protected void addEntry_indexAdd(Binder binder, Entry entry, 
+    		InputDataAccessor inputData, List fileUploadItems, Map ctx){
+    	if((entry instanceof Group) && ((Group)entry).isContainerGroup())
+    		return; // Do NOT index container group
+    	super.addEntry_indexAdd(binder, entry, inputData, fileUploadItems, ctx);
+    }
 }
