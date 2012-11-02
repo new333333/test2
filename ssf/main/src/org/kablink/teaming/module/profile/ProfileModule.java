@@ -261,6 +261,14 @@ public interface ProfileModule {
 	 */
     public Map getGroups() 
     	throws AccessControlException;
+    
+	/**
+	 * Return a list of LDAP container groups.
+	 * @return
+	 * @throws AccessControlException
+	 */
+    public List<Group> getLdapContainerGroups();
+    
     /**
      * Same as {@link getGroups(Long) getGroups} except additional search options may be supplied
      * @param searchOptions
