@@ -466,18 +466,19 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 				case WORKSPACE:
 					switch (m_binderInfo.getWorkspaceType()) {
 					default:
-					case OTHER:               m_binderHoverImage = messages.hoverWorkspace();                  break;
-					case DISCUSSIONS:         m_binderHoverImage = messages.hoverWorkspaceDiscussions();       break;
-					case GLOBAL_ROOT:         m_binderHoverImage = messages.hoverWorkspaceGlobalRoot();        break;
-					case LANDING_PAGE:        m_binderHoverImage = messages.hoverWorkspaceLandingPage();       break;
-					case PROFILE_ROOT:        m_binderHoverImage = messages.hoverWorkspaceProfileRoot();       break;
-					case PROJECT_MANAGEMENT:  m_binderHoverImage = messages.hoverWorkspaceProjectManagement(); break;
-					case TEAM:                m_binderHoverImage = messages.hoverWorkspaceTeam();              break;
-					case TEAM_ROOT:           m_binderHoverImage = messages.hoverWorkspaceTeamRoot();          break;
-					case TOP:                 m_binderHoverImage = messages.hoverWorkspaceTop();               break;
-					case TRASH:               m_binderHoverImage = messages.hoverWorkspaceTrash();             break;
-					case USER:                m_binderHoverImage = messages.hoverWorkspacePersonal();          break;
-					case WORKSPACE:           m_binderHoverImage = messages.hoverWorkspace();                  break;
+					case OTHER:                    m_binderHoverImage = messages.hoverWorkspace();                  break;
+					case DISCUSSIONS:              m_binderHoverImage = messages.hoverWorkspaceDiscussions();       break;
+					case GLOBAL_ROOT:              m_binderHoverImage = messages.hoverWorkspaceGlobalRoot();        break;
+					case LANDING_PAGE:             m_binderHoverImage = messages.hoverWorkspaceLandingPage();       break;
+					case PROFILE_ROOT:             m_binderHoverImage = messages.hoverWorkspaceProfileRoot();       break;
+					case PROFILE_ROOT_MANAGEMENT:  m_binderHoverImage = messages.hoverWorkspaceProfileRoot();       break;
+					case PROJECT_MANAGEMENT:       m_binderHoverImage = messages.hoverWorkspaceProjectManagement(); break;
+					case TEAM:                     m_binderHoverImage = messages.hoverWorkspaceTeam();              break;
+					case TEAM_ROOT:                m_binderHoverImage = messages.hoverWorkspaceTeamRoot();          break;
+					case TOP:                      m_binderHoverImage = messages.hoverWorkspaceTop();               break;
+					case TRASH:                    m_binderHoverImage = messages.hoverWorkspaceTrash();             break;
+					case USER:                     m_binderHoverImage = messages.hoverWorkspacePersonal();          break;
+					case WORKSPACE:                m_binderHoverImage = messages.hoverWorkspace();                  break;
 					}
 					
 					break;
@@ -613,17 +614,18 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 				
 			case WORKSPACE:
 				switch (m_binderInfo.getWorkspaceType()) {
-				case DISCUSSIONS:         reply = wsTreeImages.workspace_discussions();        break;
-				case GLOBAL_ROOT:         reply = wsTreeImages.workspace_global_root();        break;
-				case LANDING_PAGE:        reply = wsTreeImages.workspace_landing_page();       break;
-				case PROFILE_ROOT:        reply = wsTreeImages.workspace_profile_root();       break;
-				case PROJECT_MANAGEMENT:  reply = wsTreeImages.workspace_project_management(); break;
-				case TEAM:                reply = wsTreeImages.workspace_team();               break;
-				case TEAM_ROOT:           reply = wsTreeImages.workspace_team_root();          break;
-				case TOP:                 reply = wsTreeImages.workspace_top();                break;
-				case TRASH:               reply = wsTreeImages.workspace_trash();              break;
-				case USER:                reply = wsTreeImages.workspace_personal();           break;
-				case OTHER:                                                                    break;
+				case DISCUSSIONS:              reply = wsTreeImages.workspace_discussions();        break;
+				case GLOBAL_ROOT:              reply = wsTreeImages.workspace_global_root();        break;
+				case LANDING_PAGE:             reply = wsTreeImages.workspace_landing_page();       break;
+				case PROFILE_ROOT:             reply = wsTreeImages.workspace_profile_root();       break;
+				case PROFILE_ROOT_MANAGEMENT:  reply = wsTreeImages.workspace_profile_root();       break;
+				case PROJECT_MANAGEMENT:       reply = wsTreeImages.workspace_project_management(); break;
+				case TEAM:                     reply = wsTreeImages.workspace_team();               break;
+				case TEAM_ROOT:                reply = wsTreeImages.workspace_team_root();          break;
+				case TOP:                      reply = wsTreeImages.workspace_top();                break;
+				case TRASH:                    reply = wsTreeImages.workspace_trash();              break;
+				case USER:                     reply = wsTreeImages.workspace_personal();           break;
+				case OTHER:                                                                         break;
 				}
 				
 				if (null == reply) {
@@ -697,17 +699,18 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 				
 			case WORKSPACE:
 				switch (m_binderInfo.getWorkspaceType()) {
-				case DISCUSSIONS:         reply = wsTreeImages.workspace_discussions_medium();        break;
-				case GLOBAL_ROOT:         reply = wsTreeImages.workspace_global_root_medium();        break;
-				case LANDING_PAGE:        reply = wsTreeImages.workspace_landing_page_medium();       break;
-				case PROFILE_ROOT:        reply = wsTreeImages.workspace_profile_root_medium();       break;
-				case PROJECT_MANAGEMENT:  reply = wsTreeImages.workspace_project_management_medium(); break;
-				case TEAM:                reply = wsTreeImages.workspace_team_medium();               break;
-				case TEAM_ROOT:           reply = wsTreeImages.workspace_team_root_medium();          break;
-				case TOP:                 reply = wsTreeImages.workspace_top_medium();                break;
-				case TRASH:               reply = wsTreeImages.workspace_trash_medium();              break;
-				case USER:                reply = wsTreeImages.workspace_personal_medium();           break;
-				case OTHER:                                                                           break;
+				case DISCUSSIONS:              reply = wsTreeImages.workspace_discussions_medium();        break;
+				case GLOBAL_ROOT:              reply = wsTreeImages.workspace_global_root_medium();        break;
+				case LANDING_PAGE:             reply = wsTreeImages.workspace_landing_page_medium();       break;
+				case PROFILE_ROOT:             reply = wsTreeImages.workspace_profile_root_medium();       break;
+				case PROFILE_ROOT_MANAGEMENT:  reply = wsTreeImages.workspace_profile_root_medium();       break;
+				case PROJECT_MANAGEMENT:       reply = wsTreeImages.workspace_project_management_medium(); break;
+				case TEAM:                     reply = wsTreeImages.workspace_team_medium();               break;
+				case TEAM_ROOT:                reply = wsTreeImages.workspace_team_root_medium();          break;
+				case TOP:                      reply = wsTreeImages.workspace_top_medium();                break;
+				case TRASH:                    reply = wsTreeImages.workspace_trash_medium();              break;
+				case USER:                     reply = wsTreeImages.workspace_personal_medium();           break;
+				case OTHER:                                                                                break;
 				}
 				
 				if (null == reply) {
@@ -781,17 +784,18 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 				
 			case WORKSPACE:
 				switch (m_binderInfo.getWorkspaceType()) {
-				case DISCUSSIONS:         reply = wsTreeImages.workspace_discussions_large();        break;
-				case GLOBAL_ROOT:         reply = wsTreeImages.workspace_global_root_large();        break;
-				case LANDING_PAGE:        reply = wsTreeImages.workspace_landing_page_large();       break;
-				case PROFILE_ROOT:        reply = wsTreeImages.workspace_profile_root_large();       break;
-				case PROJECT_MANAGEMENT:  reply = wsTreeImages.workspace_project_management_large(); break;
-				case TEAM:                reply = wsTreeImages.workspace_team_large();               break;
-				case TEAM_ROOT:           reply = wsTreeImages.workspace_team_root_large();          break;
-				case TOP:                 reply = wsTreeImages.workspace_top_large();                break;
-				case TRASH:               reply = wsTreeImages.workspace_trash_large();              break;
-				case USER:                reply = wsTreeImages.workspace_personal_large();           break;
-				case OTHER:                                                                          break;
+				case DISCUSSIONS:              reply = wsTreeImages.workspace_discussions_large();        break;
+				case GLOBAL_ROOT:              reply = wsTreeImages.workspace_global_root_large();        break;
+				case LANDING_PAGE:             reply = wsTreeImages.workspace_landing_page_large();       break;
+				case PROFILE_ROOT:             reply = wsTreeImages.workspace_profile_root_large();       break;
+				case PROFILE_ROOT_MANAGEMENT:  reply = wsTreeImages.workspace_profile_root_large();       break;
+				case PROJECT_MANAGEMENT:       reply = wsTreeImages.workspace_project_management_large(); break;
+				case TEAM:                     reply = wsTreeImages.workspace_team_large();               break;
+				case TEAM_ROOT:                reply = wsTreeImages.workspace_team_root_large();          break;
+				case TOP:                      reply = wsTreeImages.workspace_top_large();                break;
+				case TRASH:                    reply = wsTreeImages.workspace_trash_large();              break;
+				case USER:                     reply = wsTreeImages.workspace_personal_large();           break;
+				case OTHER:                                                                               break;
 				}
 				
 				if (null == reply) {

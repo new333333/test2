@@ -32,8 +32,17 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspacesView;
+import org.kablink.teaming.gwt.client.binderviews.ViewBase;
+import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
+import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetManageUsersInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -49,22 +58,37 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Implements the 'Manage Users' dialog.
  *  
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
-public class ManageUsersDlg extends DlgBox {
+public class ManageUsersDlg extends DlgBox implements ViewReady {
 	public final static boolean SHOW_GWT_MANAGE_USERS	= false;	//! DRF:  Leave false on checkin until I get this working.
 	
-	private GwtTeamingMessages				m_messages;			// Access to Vibe's messages.
-	private int								m_showX;			// The x and...
-	private int								m_showY;			// ...y position to show the dialog.
-	private ManageUsersInfoRpcResponseData	m_manageUsersInfo;	// Information necessary to run the manage users dialog.
-	private VibeFlowPanel					m_rootPanel;		// The panel that holds the dialog's contents.
+	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
+	private int								m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
+	private int								m_showX;					// The x and...
+	private int								m_showY;					// ...y position and...
+	private int								m_showCX;					// ...width and...
+	private int								m_showCY;					// ...height of the dialog.
+	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private ManageUsersInfoRpcResponseData	m_manageUsersInfo;			// Information necessary to run the manage users dialog.
+	private VibeFlowPanel					m_rootPanel;				// The panel that holds the dialog's contents.
 
+	// Constant adjustments to the size of the personal workspaces view
+	// so that it properly fits the dialog's content area.
+	private final static int DIALOG_HEIGHT_ADJUST	= 35;
+	private final static int DIALOG_WIDTH_ADJUST	= 20;
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+	};
+	
 	/*
 	 * Class constructor.
 	 * 
@@ -72,14 +96,20 @@ public class ManageUsersDlg extends DlgBox {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ManageUsersDlg(ManageUsersDlgClient muDlgClient, int x, int y, int cx, int cy) {
+	private ManageUsersDlg(ManageUsersDlgClient muDlgClient, boolean autoHide, boolean modal, int x, int y, int cx, int cy) {
 		// Initialize the superclass...
 		super(
-			false,					// false -> Not auto hide.
-			true,					// true  -> Modal.
-			x, y, cx, cy,			// Position and size of dialog.
-			DlgButtonMode.Close);	// Forces the 'X' close button in the upper right corner.
+			autoHide,
+			modal,
+			x, y, cx, cy,
+			DlgButtonMode.Close);
 
+		// ...store the parameters...
+		m_showX  = x;
+		m_showY  = y;
+		m_showCY = cx;
+		m_showCY = cy;
+		
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
 		
@@ -159,10 +189,46 @@ public class ManageUsersDlg extends DlgBox {
 	 */
 	@Override
 	public FocusWidget getFocusWidget() {
-//!		...this needs to be implemented...
+		// Nothing focusable in the dialog.
 		return null;
 	}
 
+	/**
+	 * Called when the data table is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the data table is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+
+	/**
+	 * Called when the personal workspaces view reaches the ready
+	 * state.
+	 * 
+	 * Implements the ViewReady.viewReady() method.
+	 */
+	@Override
+	public void viewReady() {
+		// Nothing to do.
+	}
+	
 	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
@@ -183,15 +249,65 @@ public class ManageUsersDlg extends DlgBox {
 		// Clear anything already in the dialog (from a previous
 		// usage, ...)
 		m_rootPanel.clear();
+		
+		// Create a PersonalWorkspacesView widget for the selected
+		// binder.
+		PersonalWorkspacesView.createAsync(m_manageUsersInfo.getProfilesRootWSInfo(), this, new ViewClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ViewBase pwsView) {
+				// If we don't have the height adjustment for the
+				// dialog yet...
+				if ((-1) == m_dlgHeightAdjust) {
+					// ...calculate it now...
+					m_dlgHeightAdjust =
+						(DIALOG_HEIGHT_ADJUST              +
+						getHeaderPanel().getOffsetHeight() +
+						getFooterPanel().getOffsetHeight());
+				}
 
-		// ..create new content...
-//!		...this needs to be implemented...
+				// ...set the size of the personal workspaces view...
+				pwsView.setPixelSize(
+					(m_showCX - DIALOG_WIDTH_ADJUST),
+					(m_showCY - m_dlgHeightAdjust));
+				
+				// ...and add it to the dialog.
+				m_rootPanel.add(pwsView);
+			}
+		});
 
-		// ...and position and show it.
+		// Position and show the dialog.
 		setPopupPosition(m_showX, m_showY);
 		show();
 	}
 	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+		
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_registeredEvents,
+				this,
+				m_registeredEventHandlers);
+		}
+	}
+
 	/*
 	 * Asynchronously runs the given instance of the manage users
 	 * dialog.
@@ -219,6 +335,18 @@ public class ManageUsersDlg extends DlgBox {
 		populateDlgAsync();
 	}
 
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if (GwtClientHelper.hasItems(m_registeredEventHandlers)) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
+	}
+	
 
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
@@ -240,7 +368,9 @@ public class ManageUsersDlg extends DlgBox {
 	 */
 	private static void doAsyncOperation(
 			// Parameters used to create the dialog.
-			final ManageUsersDlgClient muDlgClient,
+			final ManageUsersDlgClient	muDlgClient,
+			final boolean				autoHide,
+			final boolean				modal,
 			final int					createX,
 			final int					createY,
 			final int					createCX,
@@ -266,7 +396,7 @@ public class ManageUsersDlg extends DlgBox {
 					// Yes!  Create the dialog.  Note that its
 					// construction flow will call the appropriate
 					// method off the ManageUsersDlgClient object.
-					new ManageUsersDlg(muDlgClient, createX, createY, createCX, createCY);
+					new ManageUsersDlg(muDlgClient, autoHide, modal, createX, createY, createCX, createCY);
 				}
 				
 				else {
@@ -284,13 +414,15 @@ public class ManageUsersDlg extends DlgBox {
 	 * via the callback.
 	 * 
 	 * @param muDlgClient
+	 * @param autoHide
+	 * @param modal
 	 * @param x
 	 * @param y
 	 * @param cx
 	 * @param cy
 	 */
-	public static void createAsync(ManageUsersDlgClient muDlgClient, int x, int y, int cx, int cy) {
-		doAsyncOperation(muDlgClient, x, y, cx, cy, null, (-1), (-1));
+	public static void createAsync(ManageUsersDlgClient muDlgClient, boolean autoHide, boolean modal, int x, int y, int cx, int cy) {
+		doAsyncOperation(muDlgClient, autoHide, modal, x, y, cx, cy, null, (-1), (-1));
 	}
 	
 	/**
@@ -301,6 +433,6 @@ public class ManageUsersDlg extends DlgBox {
 	 * @param y
 	 */
 	public static void initAndShow(ManageUsersDlg muDlg, int x, int y) {
-		doAsyncOperation(null, (-1), (-1), (-1), (-1), muDlg, x, y);
+		doAsyncOperation(null, false, false, (-1), (-1), (-1), (-1), muDlg, x, y);
 	}
 }

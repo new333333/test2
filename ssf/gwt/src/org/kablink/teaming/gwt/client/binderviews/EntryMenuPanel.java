@@ -1160,6 +1160,7 @@ public class EntryMenuPanel extends ToolPanelBase
 		case WORKSPACE:
 			switch (m_binderInfo.getWorkspaceType()) {
 			case PROFILE_ROOT:
+			case PROFILE_ROOT_MANAGEMENT:
 				reply = true;
 			}
 			break;

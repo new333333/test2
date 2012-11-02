@@ -5816,11 +5816,16 @@ public class GwtServerHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ManageUsersInfoRpcResponseData getManageUsersInformation(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
+	public static ManageUsersInfoRpcResponseData getManageUsersInfo(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
 		try {
 			// Construct the ManageUsersInfoRpcResponseData
 			// object we'll fill in and return.
-			ManageUsersInfoRpcResponseData reply = new ManageUsersInfoRpcResponseData(bs.getProfileModule().getProfileBinderId());
+			BinderInfo bi = getBinderInfo(bs, request, bs.getProfileModule().getProfileBinderId());
+			if (!(bi.getWorkspaceType().isProfileRoot())) {
+				m_logger.error("GwtServerHelper.getManageUsersInformation():  The workspace type of the profile root binder was incorrect.  Found:  " + bi.getWorkspaceType().name() + ", Expected:  " + WorkspaceType.PROFILE_ROOT.name());
+			}
+			bi.setWorkspaceType(WorkspaceType.PROFILE_ROOT_MANAGEMENT);
+			ManageUsersInfoRpcResponseData reply = new ManageUsersInfoRpcResponseData(bi);
 
 //!			...this needs to be implemented...
 			

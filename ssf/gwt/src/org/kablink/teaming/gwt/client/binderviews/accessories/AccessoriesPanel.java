@@ -140,7 +140,7 @@ public class AccessoriesPanel extends ToolPanelBase
 		// What kind of binder are the accessories being shown on?
 		boolean isFolder      = m_binderInfo.isBinderFolder();
 		boolean isWorkspace   = ((!isFolder) && m_binderInfo.isBinderWorkspace());
-		boolean isProfileRoot = (isWorkspace && WorkspaceType.PROFILE_ROOT.equals(m_binderInfo.getWorkspaceType()));
+		boolean isProfileRoot = (isWorkspace && m_binderInfo.getWorkspaceType().isProfileRoot());
 		
 		// For non-folder, non-profile root binders...
 		if ((!isFolder) && (!isProfileRoot)) {

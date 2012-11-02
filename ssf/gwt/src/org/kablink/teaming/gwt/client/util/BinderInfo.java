@@ -151,7 +151,7 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	 * @return
 	 */
 	public boolean isBinderProfilesRootWS() {
-		return (isBinderWorkspace() && (WorkspaceType.PROFILE_ROOT == m_wsType));
+		return (isBinderWorkspace() && m_wsType.isProfileRoot());
 	}
 	
 	/**

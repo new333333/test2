@@ -45,7 +45,8 @@ public enum WorkspaceType implements IsSerializable {
 	GLOBAL_ROOT,
 	LANDING_PAGE,
 	NET_FOLDERS_ROOT,
-	PROFILE_ROOT,
+	PROFILE_ROOT,				// When used anywhere except the administration console.
+	PROFILE_ROOT_MANAGEMENT,	// When used within          the administration console.
 	PROJECT_MANAGEMENT,
 	TEAM,
 	TEAM_ROOT,
@@ -56,6 +57,26 @@ public enum WorkspaceType implements IsSerializable {
 	
 	OTHER,
 	NOT_A_WORKSPACE;
+	
+	/**
+	 * Returns true if this WorkspaceType value represents a profile
+	 * root and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isProfileRoot() {
+		return (this.equals(PROFILE_ROOT) || this.equals(PROFILE_ROOT_MANAGEMENT));
+	}
+	
+	/**
+	 * Returns true if this WorkspaceType value represents a profile
+	 * root as used by the administration console and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isProfileRootManagement() {
+		return this.equals(PROFILE_ROOT_MANAGEMENT);
+	}
 	
 	/**
 	 * Returns true if this WorkspaceType value represents a workspace

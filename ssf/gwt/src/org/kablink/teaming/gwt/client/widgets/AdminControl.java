@@ -1638,14 +1638,8 @@ public class AdminControl extends TeamingPopupPanel
 		// Have we already created a "Manage Users" dialog?
 		if ( m_manageUsersDlg == null )
 		{
-			int width;
-			int height;
-			
 			// No, create one.
-			height = m_dlgHeight;
-			width = m_dlgWidth;
-			ManageUsersDlg.createAsync(
-									new ManageUsersDlgClient()
+			ManageUsersDlg.createAsync( new ManageUsersDlgClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -1670,13 +1664,18 @@ public class AdminControl extends TeamingPopupPanel
 					Scheduler.get().scheduleDeferred( cmd );
 				}
 			},
+			false,	// false -> Not auto hide.
+			true,	// true  -> Modal.
 			x, 
 			y,
-			width,
-			height );
+			m_dlgWidth,
+			m_dlgHeight );
 		}
+		
 		else
 		{
+			// Yes, we've already created a "Manage Users" dialog!
+			// Simply initialize and show it.
 			ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y );
 		}
 	}
