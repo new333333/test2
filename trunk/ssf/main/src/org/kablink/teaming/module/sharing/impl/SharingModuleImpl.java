@@ -280,6 +280,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     @Override
 	public boolean testAddShareEntity(DefinableEntity de) {
 		boolean reply = false;
+
 		try {
 			// Is sharing enabled at the zone level for this type of user.
 	    	Long					zoneId               = RequestContextHolder.getRequestContext().getZoneId();
@@ -293,27 +294,24 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			// Is the entity a folder entry?
 	    	User user = RequestContextHolder.getRequestContext().getUser();
 			if (de.getEntityType().equals(EntityType.folderEntry)) {
-				// Yes!  Does the user have AllowSharing rights on it?
+				// Yes!  Does the user have "share internal" rights on it?
 				FolderEntry fe = ((FolderEntry) de);
 				if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
 					// Yes!
 					reply = true;
 				}
-				
-				// Is the user the owner of the folder entry?
-				else if (user.getId().equals(fe.getCreation().getPrincipal().getId())) {
-					// Yes, but also check if the owner has the Change Acl right!
-					if (folderModule.testAccess(fe, FolderOperation.changeACL)) {
-						reply = true;
-					}
+				// Does the user have "share external" rights?
+				else if ( folderModule.testAccess( fe, FolderOperation.allowSharingExternal ) )
+				{
+					// Yes
+					reply = true;
 				}
-				
 			}
 
 			// No, the entity isn't a folder entry!  Is it a folder or
 			// workspace (i.e., a binder)?
 			else if (de.getEntityType().equals(EntityType.folder) || de.getEntityType().equals(EntityType.workspace)) {
-				// Yes!  Does the user have AllowSharing rights on it?
+				// Yes!  Does the user have "share internal" rights on it?
 				Binder binder = ((Binder) de);
 				//If this is a Filr Net Folder, check if sharing is allowed at the folder level
 				//Also check that the folder isn't a Net Folder. Sharing Net Folders is not allowed
@@ -323,13 +321,11 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 						// Yes!
 						reply = true;
 					}
-					
-					// Is the user the owner of the binder?
-					else if (user.getId().equals(binder.getCreation().getPrincipal().getId())) {
-						// Yes, but also check if the owner has the Change Acl right.
-						if (binderModule.testAccess(binder, BinderOperation.changeACL)) {
-							reply = true;
-						}
+					// Does the user have "share external" rights?
+					else if ( binderModule.testAccess( binder, BinderOperation.allowSharingExternal ) )
+					{
+						// Yes
+						reply = true;
 					}
 				}
 			}
