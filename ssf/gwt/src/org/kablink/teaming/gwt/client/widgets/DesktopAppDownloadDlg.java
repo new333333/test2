@@ -246,50 +246,32 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	 * Creates the downloads cell content for Android.
 	 */
 	private void createDownloadsCell_Android(VibeFlexTable ft, FlexCellFormatter fcf) {
-		// Construct the strings to display in the first block...
-		String s1 = m_messages.downloadAppDlgDownloadAndroid1(m_company, m_product);
-		String s2 = m_messages.downloadAppDlgDownloadAndroid2(createBoldLabelHTML(m_messages.downloadAppDlgDownloadAndroid3()));
-		String s4 = m_messages.downloadAppDlgDownloadAndroid4(m_company, m_product, createBoldLabelHTML(createNovellProductHTML(), true));
-		StringBuffer sb = new StringBuffer(s1);
-		sb.append("  "); sb.append(s2);
-		sb.append("  "); sb.append(s4);
-		Label l = new Label();
-		l.getElement().setInnerHTML(sb.toString());
-
-		// ...add them to the cell...
-		ft.setText(ANDROID_ROW, DOWNLOADS_COL, "");
-		Element rE = fcf.getElement(ANDROID_ROW, DOWNLOADS_COL);
-		rE.appendChild(l.getElement());
-
-		// ...and append the second string block to the cell.
-		l = new Label(m_messages.downloadAppDlgDownloadAndroid5(m_company, m_product));
-		l.addStyleName("marginTop10px");
-		rE.appendChild(l.getElement());
+		// Create a panel with a label...
+		VibeFlowPanel fp = new VibeFlowPanel();
+		fp.addStyleName("displayBlock gwtUI_wrapnormal");
+		InlineLabel il = new InlineLabel(m_messages.downloadAppDlgDownloadAndroid(m_company, m_product));
+		il.addStyleName("vibe-desktopAppPage-linkError");
+		fp.add(il);
+		
+		// ...and add that to the table.
+		ft.setWidget(    ANDROID_ROW, DOWNLOADS_COL, fp);
+		fcf.addStyleName(ANDROID_ROW, DOWNLOADS_COL, "vibe-desktopAppPage-links bottom");
 	}
 	
 	/*
 	 * Creates the downloads cell content for iOS.
 	 */
 	private void createDownloadsCell_IOS(VibeFlexTable ft, FlexCellFormatter fcf) {
-		// Construct the string to display in the first block...
-		String s1 = m_messages.downloadAppDlgDownloadIOS1(
-			m_company,
-			m_product,
-			createBoldLabelHTML(m_messages.downloadAppDlgDownloadIOS2()),
-			createBoldLabelHTML(m_messages.downloadAppDlgDownloadIOS3()),
-			createBoldLabelHTML(createNovellProductHTML(), true));
-		Label l = new Label();
-		l.getElement().setInnerHTML(s1);
+		// Create a panel with a label...
+		VibeFlowPanel fp = new VibeFlowPanel();
+		fp.addStyleName("displayBlock gwtUI_wrapnormal");
+		InlineLabel il = new InlineLabel(m_messages.downloadAppDlgDownloadIOS(m_company, m_product));
+		il.addStyleName("vibe-desktopAppPage-linkError");
+		fp.add(il);
 		
-		// ...add them to the cell...
-		ft.setText(IOS_ROW, DOWNLOADS_COL, "");
-		Element rE = fcf.getElement(IOS_ROW, DOWNLOADS_COL);
-		rE.appendChild(l.getElement());
-
-		// ...and append the second string block to the cell.
-		l = new Label(m_messages.downloadAppDlgDownloadIOS4(m_company, m_product));
-		l.addStyleName("marginTop10px");
-		rE.appendChild(l.getElement());
+		// ...and add that to the table.
+		ft.setWidget(    IOS_ROW, DOWNLOADS_COL, fp);
+		fcf.addStyleName(IOS_ROW, DOWNLOADS_COL, "vibe-desktopAppPage-links bottom");
 	}
 	
 	/*
@@ -378,15 +360,49 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	/*
 	 * Creates the instructions cell content for Android.
 	 */
-	private static void createInstructionsCell_Android(VibeFlexTable ft, FlexCellFormatter fcf) {
-		// No instructions to display. 
+	private void createInstructionsCell_Android(VibeFlexTable ft, FlexCellFormatter fcf) {
+		// Construct the strings to display in the first block...
+		String s1 = m_messages.downloadAppDlgInstructAndroid1(createBoldLabelHTML(m_messages.downloadAppDlgInstructAndroid2()));
+		String s3 = m_messages.downloadAppDlgInstructAndroid3(m_company, m_product, createBoldLabelHTML(createNovellProductHTML(), true));
+		StringBuffer sb = new StringBuffer(s1);
+		sb.append("  "); sb.append(s3);
+		Label l = new Label();
+		l.getElement().setInnerHTML(sb.toString());
+
+		// ...add them to the cell...
+		ft.setText(ANDROID_ROW, INSTRUCTIONS_COL, "");
+		Element rE = fcf.getElement(ANDROID_ROW, INSTRUCTIONS_COL);
+		rE.appendChild(l.getElement());
+
+		// ...and append the second string block to the cell.
+		l = new Label(m_messages.downloadAppDlgInstructAndroid4(m_company, m_product));
+		l.addStyleName("marginTop10px");
+		rE.appendChild(l.getElement());
 	}
 	
 	/*
 	 * Creates the instructions cell content for iOS.
 	 */
-	private static void createInstructionsCell_IOS(VibeFlexTable ft, FlexCellFormatter fcf) {
-		// No instructions to display. 
+	private void createInstructionsCell_IOS(VibeFlexTable ft, FlexCellFormatter fcf) {
+		// Construct the string to display in the first block...
+		String s1 = m_messages.downloadAppDlgInstructIOS1(
+			m_company,
+			m_product,
+			createBoldLabelHTML(m_messages.downloadAppDlgInstructIOS2()),
+			createBoldLabelHTML(m_messages.downloadAppDlgInstructIOS3()),
+			createBoldLabelHTML(createNovellProductHTML(), true));
+		Label l = new Label();
+		l.getElement().setInnerHTML(s1);
+		
+		// ...add them to the cell...
+		ft.setText(IOS_ROW, INSTRUCTIONS_COL, "");
+		Element rE = fcf.getElement(IOS_ROW, INSTRUCTIONS_COL);
+		rE.appendChild(l.getElement());
+
+		// ...and append the second string block to the cell.
+		l = new Label(m_messages.downloadAppDlgInstructIOS4(m_company, m_product));
+		l.addStyleName("marginTop10px");
+		rE.appendChild(l.getElement());
 	}
 	
 	/*

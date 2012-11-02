@@ -3168,6 +3168,10 @@ top:100px;
 {
 	white-space: nowrap;	
 }
+.gwtUI_wrapnormal
+{
+	white-space: normal;	
+}
 .gwtUI_vmiddle
 {
 	vertical-align: middle;
