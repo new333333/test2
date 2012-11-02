@@ -420,14 +420,13 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		if (m_hasMac) {
 			// ...construct an Anchor for the quick start link...
 			Anchor a = new Anchor();
-			a.addStyleName("vibe-desktopAppPage-linkAnchor");
+			a.addStyleName("vibe-desktopAppPage-instructionAnchor");
 			a.setTarget("_blank");
 			a.setHref(MAC_QUICKSTART_URL);
-			a.getElement().setInnerText(m_messages.downloadAppDlgDownloadMac2());
+			a.getElement().setInnerText(m_messages.downloadAppDlgDownloadMac2(m_company, m_product));
 	
 			// ...and add the instructions.
 			String msg = m_messages.downloadAppDlgDownloadMac1(
-				m_company,
 				m_product,
 				m_messages.downloadAppDlgUrlMac(),
 				GwtClientHelper.getWidgetHTML(a));
@@ -447,14 +446,13 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		if (m_hasWin32 || m_hasWin64) {
 			// ...construct an Anchor for the quick start link...
 			Anchor a = new Anchor();
-			a.addStyleName("vibe-desktopAppPage-linkAnchor");
+			a.addStyleName("vibe-desktopAppPage-instructionAnchor");
 			a.setTarget("_blank");
 			a.setHref(WINDOWS_QUICKSTART_URL);
-			a.getElement().setInnerText(m_messages.downloadAppDlgDownloadWindows2());
+			a.getElement().setInnerText(m_messages.downloadAppDlgDownloadWindows2(m_company, m_product));
 
 			// ...and add the instructions.
 			String msg = m_messages.downloadAppDlgDownloadWindows1(
-				m_company,
 				m_product,
 				m_messages.downloadAppDlgUrlWin32(),
 				m_messages.downloadAppDlgUrlWin64(),
