@@ -52,10 +52,12 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.IdentityInfo;
@@ -72,6 +74,8 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationT
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -106,17 +110,96 @@ public class GwtShareHelper
 	}
 	
 	/**
+	 * See if the user can share the given entities for the given operation
+	 */
+	public static boolean canShareWith(
+		AllModulesInjected ami,
+		List<EntityId> listOfEntityIds,
+		FolderOperation shareOperation )
+	{
+		BinderModule binderModule;
+		FolderModule folderModule;
+		User currentUser;
+		BinderOperation binderOperation;
+		
+		binderModule = ami.getBinderModule();
+		folderModule = ami.getFolderModule();
+		currentUser = GwtServerHelper.getCurrentUser();
+		
+		// Get the appropriate binder operation
+		if ( shareOperation == FolderOperation.allowSharing )
+			binderOperation = BinderOperation.allowSharing;
+		else if ( shareOperation == FolderOperation.allowSharingExternal )
+			binderOperation = BinderOperation.allowSharingExternal;
+		else if ( shareOperation == FolderOperation.allowSharingPublic )
+			binderOperation = BinderOperation.allowSharingPublic;
+		else
+		{
+			m_logger.info( "In GwtShareHelper.canShareWith(), unknown folder operation: " + shareOperation.toString() );
+			return false;
+		}
+		
+		// Go through the list of entities and see if the user has the right to the given share operation
+		if ( listOfEntityIds != null )
+		{
+			try
+			{
+				for ( EntityId entityId : listOfEntityIds )
+				{
+					if ( entityId.isBinder() )
+					{
+						Binder binder;
+						
+						binder = binderModule.getBinder( entityId.getEntityId() );
+						binderModule.checkAccess( currentUser, binder, binderOperation );
+					}
+					else
+					{
+						FolderEntry folderEntry;
+						
+						folderEntry = folderModule.getEntry( entityId.getBinderId(), entityId.getEntityId() );
+						folderModule.checkAccess( folderEntry, shareOperation );
+					}
+				}
+			}
+			catch ( AccessControlException acEx )
+			{
+				return false;
+			}
+		}
+		
+		// If we get here the user has rights to the given share operation
+		return true;
+	}
+			
+	/**
 	 * See if the user can share the given entities with external users.
 	 */
 	public static boolean canShareWithExternalUsers (
 		AllModulesInjected ami,
 		List<EntityId> listOfEntityIds )
 	{
-		ZoneConfig zoneConfig;
-		
-		// Is sharing with external users turned on at the zone level?
-		zoneConfig = ami.getZoneModule().getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-		return zoneConfig.isExternalUserEnabled();
+		return canShareWith( ami, listOfEntityIds, FolderOperation.allowSharingExternal );
+	}
+
+	/**
+	 * See if the user can share the given entities with internal users.
+	 */
+	public static boolean canShareWithInternalUsers (
+		AllModulesInjected ami,
+		List<EntityId> listOfEntityIds )
+	{
+		return canShareWith( ami, listOfEntityIds, FolderOperation.allowSharing );
+	}
+
+	/**
+	 * See if the user can share the given entities with the public.
+	 */
+	public static boolean canShareWithPublic (
+		AllModulesInjected ami,
+		List<EntityId> listOfEntityIds )
+	{
+		return canShareWith( ami, listOfEntityIds, FolderOperation.allowSharingPublic );
 	}
 
 	/**
@@ -840,6 +923,12 @@ public class GwtShareHelper
 		
 		// See if the user has rights to share the given entities with an external user.
 		sharingInfo.setCanShareWithExternalUsers( canShareWithExternalUsers( ami, listOfEntityIds ) );
+		
+		// See if the user has rights to share the given entities with an internal user.
+		sharingInfo.setCanShareWithInternalUsers( canShareWithInternalUsers( ami, listOfEntityIds ) );
+		
+		// See if the user has rights to share the given entities with the public.
+		sharingInfo.setCanShareWithPublic( canShareWithPublic( ami, listOfEntityIds ) );
 
 		currentUser = GwtServerHelper.getCurrentUser();
 

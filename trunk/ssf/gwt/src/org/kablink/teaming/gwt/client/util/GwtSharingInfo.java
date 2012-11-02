@@ -56,6 +56,8 @@ public class GwtSharingInfo
 	private SendToValue m_sendToValue;
 	private boolean m_notifyRecipients;
 	private boolean m_canShareWithExternalUsers;
+	private boolean m_canShareWithInternalUsers;
+	private boolean m_canShareWithPublic;
 	
 	/**
 	 * 
@@ -68,6 +70,8 @@ public class GwtSharingInfo
 		m_entityAccessRightsMap = null;
 		m_notifyRecipients = true;
 		m_canShareWithExternalUsers = false;
+		m_canShareWithInternalUsers = false;
+		m_canShareWithPublic = false;
 		m_sendToValue = SendToValue.ALL_RECIPIENTS;
 	}
 	
@@ -100,14 +104,6 @@ public class GwtSharingInfo
 	}
 	
 	/**
-	 * 
-	 */
-	public boolean getCanShareWithExternalUsers()
-	{
-		return m_canShareWithExternalUsers;
-	}
-	
-	/**
 	 * Return the "highest" access right the logged-in user has to the given entity
 	 */
 	public AccessRights getAccessRights( EntityId entityId )
@@ -133,6 +129,30 @@ public class GwtSharingInfo
 		
 		// If we get here we did not find the entityId
 		return AccessRights.UNKNOWN;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getCanShareWithExternalUsers()
+	{
+		return m_canShareWithExternalUsers;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getCanShareWithInternalUsers()
+	{
+		return m_canShareWithInternalUsers;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getCanShareWithPublic()
+	{
+		return m_canShareWithPublic;
 	}
 	
 	/**
@@ -234,6 +254,22 @@ public class GwtSharingInfo
 	public void setCanShareWithExternalUsers( boolean canShareWithExternalUsers )
 	{
 		m_canShareWithExternalUsers = canShareWithExternalUsers;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCanShareWithInternalUsers( boolean canShareWithInternalUsers )
+	{
+		m_canShareWithInternalUsers = canShareWithInternalUsers;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCanShareWithPublic( boolean canShareWithPublic )
+	{
+		m_canShareWithPublic = canShareWithPublic;
 	}
 	
 	/**

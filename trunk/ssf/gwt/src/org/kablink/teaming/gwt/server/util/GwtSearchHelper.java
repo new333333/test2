@@ -281,16 +281,37 @@ public class GwtSearchHelper
 				searchTermFilter.addAndPersonFlagFilter( true );
 			}
 
-			if ( searchCriteria.getSearchForInternalPrincipalsOnly() )
-				searchTermFilter.addAndInternalFilter( searchCriteria.getSearchForInternalPrincipalsOnly() );
+			// Are we searching for internal principals only?
+			if ( searchCriteria.getSearchForInternalPrincipals() == true && searchCriteria.getSearchForExternalPrincipals() == false )
+			{
+				// Yes
+				searchTermFilter.addAndInternalFilter( true );
+			}
+			// Are we searching for external principals only?
+			else if ( searchCriteria.getSearchForInternalPrincipals() == false && searchCriteria.getSearchForExternalPrincipals() == true )
+			{
+				// Yes
+				searchTermFilter.addAndInternalFilter( false );
+			}
+				
 			break;
 
 		case GROUP:
 			searchTermFilter.addTitleFilter( searchText );
 			searchTermFilter.addLoginNameFilter( searchText );
 
-			if ( searchCriteria.getSearchForInternalPrincipalsOnly() )
-				searchTermFilter.addAndInternalFilter( searchCriteria.getSearchForInternalPrincipalsOnly() );
+			// Are we searching for internal groups only?
+			if ( searchCriteria.getSearchForInternalPrincipals() == true && searchCriteria.getSearchForExternalPrincipals() == false )
+			{
+				// Yes
+				searchTermFilter.addAndInternalFilter( true );
+			}
+			// Are we searching for external groups only?
+			else if ( searchCriteria.getSearchForInternalPrincipals() == false && searchCriteria.getSearchForExternalPrincipals() == true )
+			{
+				// Yes
+				searchTermFilter.addAndInternalFilter( false );
+			}
 			break;
 			
 		default:
