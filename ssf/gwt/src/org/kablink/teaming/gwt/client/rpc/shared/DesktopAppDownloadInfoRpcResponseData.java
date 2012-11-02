@@ -41,9 +41,58 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private String	m_macUrl;	//
-	private String	m_win32Url;	//
-	private String	m_win64Url;	//
+	private FilenameUrlPair	m_mac;		//
+	private FilenameUrlPair	m_win32;	//
+	private FilenameUrlPair	m_win64;	//
+	
+	/**
+	 * Inner class used to track filename/URL pairs.
+	 */
+	public static class FilenameUrlPair implements IsSerializable {
+		private String m_filename;	// The filename for this filename/URL pair.
+		private String m_url;		// The URL      for this filename/URL pair.
+
+		/**
+		 * Constructor method.
+		 * 
+		 * Zero parameter constructor required for GWT serialization.
+		 */
+		public FilenameUrlPair() {
+			// Initialize the super class.
+			super();
+		}
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param filename
+		 * @param url
+		 */
+		public FilenameUrlPair(String filename, String url) {
+			// Initialize this object...
+			this();
+			
+			// ...and store the parameters.
+			setFilename(filename);
+			setUrl(     url     );
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public String getFilename(){return m_filename; }
+		public String getUrl()     {return m_url;      }
+
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setFilename(String s) {m_filename = s;}
+		public void setUrl(     String s) {m_url      = s;}
+	}
 	
 	/**
 	 * Constructor method. 
@@ -60,16 +109,16 @@ public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, Vi
 	 * 
 	 * @return
 	 */
-	public String getMacUrl()   {return m_macUrl;  }
-	public String getWin32Url() {return m_win32Url;}
-	public String getWin64Url() {return m_win64Url;}
+	public FilenameUrlPair getMac() {return m_mac;  }
+	public FilenameUrlPair getWin32() {return m_win32;}
+	public FilenameUrlPair getWin64() {return m_win64;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setMacUrl(  String macUrl)   {m_macUrl   = macUrl;  }
-	public void setWin32Url(String win32Url) {m_win32Url = win32Url;}
-	public void setWin64Url(String win64Url) {m_win64Url = win64Url;}
+	public void setMac(  FilenameUrlPair mac)   {m_mac   = mac;  }
+	public void setWin32(FilenameUrlPair win32) {m_win32 = win32;}
+	public void setWin64(FilenameUrlPair win64) {m_win64 = win64;}
 }

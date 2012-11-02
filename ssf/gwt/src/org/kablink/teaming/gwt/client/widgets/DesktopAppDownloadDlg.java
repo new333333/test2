@@ -72,9 +72,9 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 @SuppressWarnings("unused")
 public class DesktopAppDownloadDlg extends DlgBox {
-	private boolean									m_hasMacUrl;				//
-	private boolean									m_hasWin32Url;				//
-	private boolean									m_hasWin64Url;				//
+	private boolean									m_hasMac;					//
+	private boolean									m_hasWin32;					//
+	private boolean									m_hasWin64;					//
 	private boolean									m_isFilr;					// true -> We're in Filr mode.  false -> We're in Vibe mode.
 	private DesktopAppDownloadInfoRpcResponseData	m_desktopAppDownloadInfo;	// Information about downloading the desktop application.  Read via a GWT RPC call when the dialog runs.
 	private GwtTeamingFilrImageBundle				m_filrImages;				// Access to Filr's images.
@@ -82,8 +82,11 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	private List<HandlerRegistration>				m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private String									m_company;					// Initialized with the company name (i.e., Novell.)
 	private String									m_product;					// Initialized with the current product name (i.e., Filr or Vibe.)
+	private VibeFlexTable 							m_bodyTable;				// Table containing the body of the page.
 	private VibeFlowPanel							m_rootPanel;				// The main panel holding the dialog's content.
 
+	private final static boolean SHOW_MAC_CLIENT	= false;	// Initially, we're not going to show the Mac client.
+	
 	// Indexes of the various table cells containing the dialog's
 	// content.
 	private final static int PRODUCT_COL		= 0;
@@ -98,6 +101,10 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	private final static int MAC_ROW		= 2;
 	private final static int ANDROID_ROW	= 3;
 	private final static int IOS_ROW		= 4;
+
+	// The URLs to the quick start help for the desktop applications.
+	private final static String	MAC_QUICKSTART_URL		= "http://www.novell.com/documentation/novell-filr1/filr1_qs_desktopmac/data/filr1_qs_desktop.html";
+	private final static String	WINDOWS_QUICKSTART_URL	= "http://www.novell.com/documentation/novell-filr1/filr1_qs_desktop/data/filr1_qs_desktop.html";
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -204,42 +211,42 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		m_rootPanel.add(bodyPanel);
 
 		// ...create the <TABLE> containing the body's content...
-		VibeFlexTable ft = new VibeFlexTable();
-		ft.addStyleName("vibe-desktopAppPage-contentTable");
-		ft.setCellPadding(0);
-		ft.setCellSpacing(0);
-		bodyPanel.add(ft);
-		FlexCellFormatter fcf = ft.getFlexCellFormatter();
+		m_bodyTable = new VibeFlexTable();
+		m_bodyTable.addStyleName("vibe-desktopAppPage-contentTable");
+		m_bodyTable.setCellPadding(0);
+		m_bodyTable.setCellSpacing(0);
+		bodyPanel.add(m_bodyTable);
+		FlexCellFormatter fcf = m_bodyTable.getFlexCellFormatter();
 
 		// ...create the table's header row...
-		createHeaderCell(ft, fcf, PRODUCT_COL,      m_messages.downloadAppDlgBody_Product(),      "vibe-desktopAppPage-columnhead vibe-desktopAppPage-columnhead2");
-		createHeaderCell(ft, fcf, LOGO_COL,         m_messages.downloadAppDlgBody_Type(),         "vibe-desktopAppPage-logo");
-		createHeaderCell(ft, fcf, DOWNLOADS_COL,    m_messages.downloadAppDlgBody_Downloads(),    "vibe-desktopAppPage-linkhead");
-		createHeaderCell(ft, fcf, INSTRUCTIONS_COL, m_messages.downloadAppDlgBody_Instructions(), "vibe-desktopAppPage-instructionhead");
+		createHeaderCell(m_bodyTable, fcf, PRODUCT_COL,      m_messages.downloadAppDlgBody_Product(),      "vibe-desktopAppPage-columnhead vibe-desktopAppPage-columnhead2");
+		createHeaderCell(m_bodyTable, fcf, LOGO_COL,         m_messages.downloadAppDlgBody_Type(),         "vibe-desktopAppPage-logo");
+		createHeaderCell(m_bodyTable, fcf, DOWNLOADS_COL,    m_messages.downloadAppDlgBody_Downloads(),    "vibe-desktopAppPage-linkhead");
+		createHeaderCell(m_bodyTable, fcf, INSTRUCTIONS_COL, m_messages.downloadAppDlgBody_Instructions(), "vibe-desktopAppPage-instructionhead");
 
 		// ...create the Windows client content...
-		createProductTitleCell(        ft, fcf, WINDOWS_ROW, m_messages.downloadAppDlgProductWindows(m_product));
-		createLogoCell(                ft, fcf, WINDOWS_ROW, m_filrImages.logoWindows(), m_messages.downloadAppDlgAlt_WindowsDownloads());
-		createDownloadsCell_Windows(   ft, fcf);
-		createInstructionsCell_Windows(ft, fcf);
+		createProductTitleCell(        m_bodyTable, fcf, WINDOWS_ROW, m_messages.downloadAppDlgProductWindows(m_product));
+		createLogoCell(                m_bodyTable, fcf, WINDOWS_ROW, m_filrImages.logoWindows(), m_messages.downloadAppDlgAlt_WindowsDownloads());
+		createDownloadsCell_Windows(   m_bodyTable, fcf);
+		createInstructionsCell_Windows(m_bodyTable, fcf);
 		
 		// ...create the MacOS client content...
-		createProductTitleCell(    ft, fcf, MAC_ROW, m_messages.downloadAppDlgProductMac(m_product));
-		createLogoCell(            ft, fcf, MAC_ROW, m_filrImages.logoMac(), m_messages.downloadAppDlgAlt_MacDownloads());
-		createDownloadsCell_Mac(   ft, fcf);
-		createInstructionsCell_Mac(ft, fcf);
+		createProductTitleCell(    m_bodyTable, fcf, MAC_ROW, m_messages.downloadAppDlgProductMac(m_product));
+		createLogoCell(            m_bodyTable, fcf, MAC_ROW, m_filrImages.logoMac(), m_messages.downloadAppDlgAlt_MacDownloads());
+		createDownloadsCell_Mac(   m_bodyTable, fcf);
+		createInstructionsCell_Mac(m_bodyTable, fcf);
 		
 		// ...create the Android client content...
-		createProductTitleCell(        ft, fcf, ANDROID_ROW, m_messages.downloadAppDlgProductAndroid(m_product));
-		createLogoCell(                ft, fcf, ANDROID_ROW, m_filrImages.logoAndroid(), m_messages.downloadAppDlgAlt_AndroidDownloads());
-		createDownloadsCell_Android(   ft, fcf);
-		createInstructionsCell_Android(ft, fcf);
+		createProductTitleCell(        m_bodyTable, fcf, ANDROID_ROW, m_messages.downloadAppDlgProductAndroid(m_product));
+		createLogoCell(                m_bodyTable, fcf, ANDROID_ROW, m_filrImages.logoAndroid(), m_messages.downloadAppDlgAlt_AndroidDownloads());
+		createDownloadsCell_Android(   m_bodyTable, fcf);
+		createInstructionsCell_Android(m_bodyTable, fcf);
 		
 		// ...and create the iOS client content
-		createProductTitleCell(    ft, fcf, IOS_ROW, m_messages.downloadAppDlgProductIOS(m_product));
-		createLogoCell(            ft, fcf, IOS_ROW, m_filrImages.logoIOS(), m_messages.downloadAppDlgAlt_IOSDownloads());
-		createDownloadsCell_IOS(   ft, fcf);
-		createInstructionsCell_IOS(ft, fcf);
+		createProductTitleCell(    m_bodyTable, fcf, IOS_ROW, m_messages.downloadAppDlgProductIOS(m_product));
+		createLogoCell(            m_bodyTable, fcf, IOS_ROW, m_filrImages.logoIOS(), m_messages.downloadAppDlgAlt_IOSDownloads());
+		createDownloadsCell_IOS(   m_bodyTable, fcf);
+		createInstructionsCell_IOS(m_bodyTable, fcf);
 	}
 
 	/*
@@ -281,12 +288,12 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		// If we have a URL...
 		VibeFlowPanel fp = new VibeFlowPanel();
 		fp.addStyleName("displayBlock");
-		if (m_hasMacUrl) {
+		if (m_hasMac) {
 			// ...add an <A> for it...
 			Anchor a = new Anchor();
 			a.addStyleName("vibe-desktopAppPage-linkAnchor");
 			a.setTarget("_blank");
-			a.setHref(m_desktopAppDownloadInfo.getMacUrl());
+			a.setHref(m_desktopAppDownloadInfo.getMac().getUrl());
 			a.getElement().setInnerText(m_messages.downloadAppDlgUrlMac());
 			fp.add(a);
 		}
@@ -310,11 +317,11 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		// Add the Win32 link...
 		VibeFlowPanel fp = new VibeFlowPanel();
 		fp.addStyleName("displayBlock");
-		if (m_hasWin32Url) {
+		if (m_hasWin32) {
 			Anchor a = new Anchor();
 			a.addStyleName("vibe-desktopAppPage-linkAnchor");
 			a.setTarget("_blank");
-			a.setHref(m_desktopAppDownloadInfo.getWin32Url());
+			a.setHref(m_desktopAppDownloadInfo.getWin32().getUrl());
 			a.getElement().setInnerText(m_messages.downloadAppDlgUrlWin32());
 			fp.add(a);
 		}
@@ -330,11 +337,11 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		// ...add the Win64 link...
 		fp = new VibeFlowPanel();
 		fp.addStyleName("displayBlock");
-		if (m_hasWin64Url) {
+		if (m_hasWin64) {
 			Anchor a = new Anchor();
 			a.addStyleName("vibe-desktopAppPage-linkAnchor");
 			a.setTarget("_blank");
-			a.setHref(m_desktopAppDownloadInfo.getWin64Url());
+			a.setHref(m_desktopAppDownloadInfo.getWin64().getUrl());
 			a.getElement().setInnerText(m_messages.downloadAppDlgUrlWin64());
 			fp.add(a);
 		}
@@ -408,19 +415,56 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	/*
 	 * Creates the instructions cell content for MacOS.
 	 */
-	private static void createInstructionsCell_Mac(VibeFlexTable ft, FlexCellFormatter fcf) {
-//!		...this needs to be implemented...
-		ft.setWidget(    MAC_ROW, INSTRUCTIONS_COL, new Label("MacOS:  ...this needs to be implemented..."));
-		fcf.addStyleName(MAC_ROW, INSTRUCTIONS_COL, "vibe-desktopAppPage-instructions bottom gwtUI_nowrap");
+	private void createInstructionsCell_Mac(VibeFlexTable ft, FlexCellFormatter fcf) {
+		// If we have a Mac client to download...
+		if (m_hasMac) {
+			// ...construct an Anchor for the quick start link...
+			Anchor a = new Anchor();
+			a.addStyleName("vibe-desktopAppPage-linkAnchor");
+			a.setTarget("_blank");
+			a.setHref(MAC_QUICKSTART_URL);
+			a.getElement().setInnerText(m_messages.downloadAppDlgDownloadMac2());
+	
+			// ...and add the instructions.
+			String msg = m_messages.downloadAppDlgDownloadMac1(
+				m_company,
+				m_product,
+				m_messages.downloadAppDlgUrlMac(),
+				GwtClientHelper.getWidgetHTML(a));
+			Label l = new Label();
+			l.getElement().setInnerHTML(msg);
+			
+			ft.setWidget(    MAC_ROW, INSTRUCTIONS_COL, l);
+			fcf.addStyleName(MAC_ROW, INSTRUCTIONS_COL, "vibe-desktopAppPage-instructions bottom");
+		}
 	}
 	
 	/*
 	 * Creates the instructions cell content for Windows.
 	 */
-	private static void createInstructionsCell_Windows(VibeFlexTable ft, FlexCellFormatter fcf) {
-//!		...this needs to be implemented...
-		ft.setWidget(    WINDOWS_ROW, INSTRUCTIONS_COL, new Label("Windows:  ...this needs to be implemented..."));
-		fcf.addStyleName(WINDOWS_ROW, INSTRUCTIONS_COL, "vibe-desktopAppPage-instructions bottom gwtUI_nowrap");
+	private void createInstructionsCell_Windows(VibeFlexTable ft, FlexCellFormatter fcf) {
+		// If we have a Win32 or Win64 client to download...
+		if (m_hasWin32 || m_hasWin64) {
+			// ...construct an Anchor for the quick start link...
+			Anchor a = new Anchor();
+			a.addStyleName("vibe-desktopAppPage-linkAnchor");
+			a.setTarget("_blank");
+			a.setHref(WINDOWS_QUICKSTART_URL);
+			a.getElement().setInnerText(m_messages.downloadAppDlgDownloadWindows2());
+
+			// ...and add the instructions.
+			String msg = m_messages.downloadAppDlgDownloadWindows1(
+				m_company,
+				m_product,
+				m_messages.downloadAppDlgUrlWin32(),
+				m_messages.downloadAppDlgUrlWin64(),
+				GwtClientHelper.getWidgetHTML(a));
+			Label l = new Label();
+			l.getElement().setInnerHTML(msg);
+			
+			ft.setWidget(    WINDOWS_ROW, INSTRUCTIONS_COL, l);
+			fcf.addStyleName(WINDOWS_ROW, INSTRUCTIONS_COL, "vibe-desktopAppPage-instructions bottom");
+		}
 	}
 	
 	/*
@@ -515,11 +559,11 @@ public class DesktopAppDownloadDlg extends DlgBox {
 				// Yes!  Use it to populate the dialog.
 				m_desktopAppDownloadInfo = ((DesktopAppDownloadInfoRpcResponseData) response.getResponseData());
 				
-				// Did we get any URLs?
-				m_hasMacUrl   = GwtClientHelper.hasString(m_desktopAppDownloadInfo.getMacUrl());
-				m_hasWin32Url = GwtClientHelper.hasString(m_desktopAppDownloadInfo.getWin32Url());
-				m_hasWin64Url = GwtClientHelper.hasString(m_desktopAppDownloadInfo.getWin64Url());
-				if ((!m_hasMacUrl) && (!m_hasWin32Url) && (!m_hasWin64Url)) {
+				// Did we get any download information?
+				m_hasMac   = (null != m_desktopAppDownloadInfo.getMac());
+				m_hasWin32 = (null != m_desktopAppDownloadInfo.getWin32());
+				m_hasWin64 = (null != m_desktopAppDownloadInfo.getWin64());
+				if ((!m_hasMac) && (!m_hasWin32) && (!m_hasWin64)) {
 					// No!  Then there's not much point running the
 					// dialog.  Hide it and tell the user about the
 					// problem.
@@ -587,6 +631,12 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		createContentMasthead();
 		createContentSubhead();
 		createContentBody();
+
+		// ...if we're not showing the Mac client yet...
+		if (!SHOW_MAC_CLIENT) {
+			// ...remove its row...
+			m_bodyTable.removeRow(MAC_ROW);
+		}
 		
 		// ...and show the dialog.
 		show(true);
