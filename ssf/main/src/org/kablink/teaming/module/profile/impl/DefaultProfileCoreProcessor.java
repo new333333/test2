@@ -299,7 +299,7 @@ protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAcces
 protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
    		InputDataAccessor inputData, List fileUploadItems, 
    		Collection<FileAttachment> filesToIndex, Map ctx) {
-	   if((entry instanceof Group) && ((Group)entry).isContainerGroup())
+	   if((entry instanceof Group) && ((Group)entry).isLdapContainer())
 		   return; // Do NOT index container group
 	   //index self
 	   super.modifyEntry_indexAdd(binder, entry, 
@@ -920,7 +920,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	
     protected void addEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, Map ctx){
-    	if((entry instanceof Group) && ((Group)entry).isContainerGroup())
+    	if((entry instanceof Group) && ((Group)entry).isLdapContainer())
     		return; // Do NOT index container group
     	super.addEntry_indexAdd(binder, entry, inputData, fileUploadItems, ctx);
     }

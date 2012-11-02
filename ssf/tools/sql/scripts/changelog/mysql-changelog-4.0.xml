@@ -397,7 +397,7 @@ update SS_Principals set internal=1,fromLdap=1,fromLocal=0,fromOpenid=0 where id
     <changeSet author="jong" context="schema" failOnError="true" id="50">
         <comment>Is the group a system group</comment>
         <addColumn tableName="SS_Principals">
-            <column name="containerGroup" type="BIT">
+            <column name="ldapContainer" type="BIT">
                 <constraints nullable="true" />
             </column>
         </addColumn>

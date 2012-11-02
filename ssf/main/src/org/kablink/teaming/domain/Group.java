@@ -58,7 +58,7 @@ public class Group extends UserPrincipal implements GroupPrincipal {
     private Boolean dynamic = Boolean.FALSE; //initialized by hibernate access=field
     private String ldapQuery;
     
-    private Boolean containerGroup; // false by default
+    private Boolean ldapContainer; // false by default
     
     // For use by Hibernate only
 	protected Group() {
@@ -79,20 +79,15 @@ public class Group extends UserPrincipal implements GroupPrincipal {
     }
    
     public List getMembers() {
-    	if(isContainerGroup()) { // eDir container group
-    		throw new UnsupportedOperationException("getMembers() is not supported on the container group '" + getName() + "'");
-    	}
-    	else { // application group
-	    	if (members == null) members = new ArrayList();
-	    	return members;
-    	}
+    	if (members == null) members = new ArrayList();
+    	return members;
     }
     /**
      * Set the group membership.  Each members memberOf set will by updated
      * @param members
      */
     public void setMembers(Collection newMembers) { 		
-    	if(isContainerGroup()) {
+    	if(isLdapContainer()) {
     		throw new UnsupportedOperationException("setMembers() is not supported on the container group '" + getName() + "'");
     	}
     	else {
@@ -114,7 +109,7 @@ public class Group extends UserPrincipal implements GroupPrincipal {
   	} 	
     
     public void addMember(IPrincipal member) {
-    	if(isContainerGroup()) {
+    	if(isLdapContainer()) {
     		throw new UnsupportedOperationException("addMember() is not supported on the container group '" + getName() + "'");
     	}
     	else {
@@ -126,7 +121,7 @@ public class Group extends UserPrincipal implements GroupPrincipal {
     	}
     }
     public void removeMember(IPrincipal member) {
-    	if(isContainerGroup()) {
+    	if(isLdapContainer()) {
     		throw new UnsupportedOperationException("removeMember() is not supported on the container group '" + getName() + "'");
     	}
     	else {
@@ -153,14 +148,14 @@ public class Group extends UserPrincipal implements GroupPrincipal {
 		this.ldapQuery = ldapQuery;
 	}
 
-	public boolean isContainerGroup() {
-		if(containerGroup == null)
+	public boolean isLdapContainer() {
+		if(ldapContainer == null)
 			return false;
-		return containerGroup.booleanValue();
+		return ldapContainer.booleanValue();
 	}
 
-	public void setContainerGroup(boolean containerGroup) {
-		this.containerGroup = containerGroup;
+	public void setLdapContainer(boolean ldapContainer) {
+		this.ldapContainer = ldapContainer;
 	}
 
 }

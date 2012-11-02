@@ -2761,7 +2761,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    	Criteria crit = session.createCriteria(UserPrincipal.class)
 	                    			.add(Restrictions.eq("zoneId", containerGroup.getZoneId()))
 	                    			.add(Restrictions.eq("fromLdap", Boolean.TRUE))
-	                    			.add(Restrictions.ne("containerGroup", Boolean.TRUE))
+	                    			.add(Restrictions.ne("ldapContainer", Boolean.TRUE))
 	                    			.add(Restrictions.like("foreignName", "," + containerGroup.getForeignName(), MatchMode.END))
 	                    			.add(Restrictions.ne("deleted", Boolean.TRUE))
 	                    			.add(Restrictions.ne("disabled", Boolean.TRUE));
@@ -2791,7 +2791,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    	Criteria crit = session.createCriteria(UserPrincipal.class)
 	                    			.setProjection(Projections.property("id"))
 	                    			.add(Restrictions.eq("zoneId", zoneId))
-	                    			.add(Restrictions.eq("containerGroup", Boolean.TRUE))
+	                    			.add(Restrictions.eq("ldapContainer", Boolean.TRUE))
 	                    			.add(Restrictions.in("foreignName", foreignNames))
 	                    			.add(Restrictions.ne("deleted", Boolean.TRUE))
 	                    			.add(Restrictions.ne("disabled", Boolean.TRUE))

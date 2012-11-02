@@ -371,7 +371,7 @@ update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=1,FROMLOCAL=0,FROMOPENID=0 where ID
     <changeSet author="jong" context="schema" failOnError="true" id="45">
         <comment>Is the group a system group</comment>
         <addColumn tableName="SS_PRINCIPALS">
-            <column name="CONTAINERGROUP" type="NUMBER(1,0)">
+            <column name="LDAPCONTAINER" type="NUMBER(1,0)">
                 <constraints nullable="true" />
             </column>
         </addColumn>
