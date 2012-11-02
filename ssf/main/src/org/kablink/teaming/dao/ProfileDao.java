@@ -340,7 +340,6 @@ public interface ProfileDao {
  	public List<Principal> getLdapContainerGroupMembers(Group containerGroup);
 
  	/**
- 	 * 
  	 * Get a list of IDs of the LDAP container groups that the specified principal is a member
  	 * of either directly (i.e., immediate child) or indirectly via recursion (i.e., descendant).
  	 * 
@@ -349,4 +348,15 @@ public interface ProfileDao {
  	 * @return
  	 */
  	public List<Long> getMemberOfLdapContainerGroupIds(Long principalId, Long zoneId);
+ 	
+ 	/**
+ 	 * Load LDAP container groups.
+ 	 * 
+ 	 * @param filter
+ 	 * @param zoneId
+ 	 * @return
+ 	 * @throws DataAccessException
+ 	 */
+    public List<Group> loadLdapContainerGroups(Long zoneId); 
+
 }

@@ -2807,4 +2807,13 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	              	
  	}
 
+    public List<Group> loadLdapContainerGroups(Long zoneId) {
+		long begin = System.nanoTime();
+		try {
+			return loadPrincipals(new FilterControls("ldapContainer", true), zoneId, Group.class);
+    	}
+    	finally {
+    		end(begin, "loadLdapContainerGroups(Long)");
+    	}	        
+    }
 }
