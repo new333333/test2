@@ -2078,7 +2078,12 @@ public interface GwtTeamingMessages extends Messages
 	String downloadAppDlgBody_Product();
 	String downloadAppDlgBody_Type();
 	String downloadAppDlgDownloadAndroid(String company, String product);
+	String downloadAppDlgDownloadFilenameUnknown();
 	String downloadAppDlgDownloadIOS(String company, String product);
+	String downloadAppDlgDownloadMac1(String company, String product, String filename, String quickStart);
+	String downloadAppDlgDownloadMac2();
+	String downloadAppDlgDownloadWindows1(String company, String product, String filename32, String filename64, String quickStart);
+	String downloadAppDlgDownloadWindows2();
 	String downloadAppDlgError_NoMacUrl();
 	String downloadAppDlgError_NoUrls();
 	String downloadAppDlgError_NoWin32Url();

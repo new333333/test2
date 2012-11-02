@@ -160,6 +160,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.C
 import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData.FilenameUrlPair;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
@@ -1105,15 +1106,21 @@ public class GwtServerHelper {
 	/*
 	 * Constructs a desktop application URL.
 	 */
-	private static String buildDesktopAppUrl(String baseUrl, String platformTail) {
-		String reply = null;
+	private static FilenameUrlPair buildDesktopAppUrl(String baseUrl, String platformTail) {
+		String fName    = null;
+		String url      = null;
 		String jsonData = doHTTPGet(baseUrl + platformTail + JSON_TAIL);
 		if (MiscUtil.hasString(jsonData)) {
-			String fName    = getSFromJSO(JSONObject.fromObject(jsonData), "filename");
+			fName = getSFromJSO(JSONObject.fromObject(jsonData), "filename");
 			if (MiscUtil.hasString(fName)) {
-				reply = (baseUrl + platformTail + fName);
+				url = (baseUrl + platformTail + fName);
 			}
 		}
+		
+		FilenameUrlPair reply;
+		if (MiscUtil.hasString(url))
+		     reply = new FilenameUrlPair(fName, url);
+		else reply = null;
 		return reply;
 	}
 	
@@ -4206,10 +4213,10 @@ public class GwtServerHelper {
 				baseUrl += "/";
 			}
 
-			// ...and construct and store the desktop application URLs.
-			reply.setMacUrl(  buildDesktopAppUrl(baseUrl, MACOS_TAIL));
-			reply.setWin32Url(buildDesktopAppUrl(baseUrl, WIN32_TAIL));
-			reply.setWin64Url(buildDesktopAppUrl(baseUrl, WIN64_TAIL));
+			// ...and construct and store the desktop application information.
+			reply.setMac(  buildDesktopAppUrl(baseUrl, MACOS_TAIL));
+			reply.setWin32(buildDesktopAppUrl(baseUrl, WIN32_TAIL));
+			reply.setWin64(buildDesktopAppUrl(baseUrl, WIN64_TAIL));
 			
 			// If we get here, reply refers to the
 			// DesktopAppDownloadInfoRpcResponseData object
