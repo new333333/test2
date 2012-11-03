@@ -1787,9 +1787,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					homeDirInfo = readHomeDirInfoFromLdap( ctx, dirType, dn );
 
 					m_containerCoordinator.clear();
+					// Read the list of all containers from the db.
+					m_containerCoordinator.getListOfAllContainers();
 					m_containerCoordinator.setLdapDirType( dirType );
 					m_containerCoordinator.record( dn );
-					m_containerCoordinator.wrapUp();
+					m_containerCoordinator.wrapUp( false );
 				}
 
 				updateUser( zone, teamingUserName, mods, homeDirInfo );
@@ -1888,6 +1890,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				return;
 			
 			m_containerCoordinator.clear();
+			
+			// Read the list of all containers from the db.
+			m_containerCoordinator.getListOfAllContainers();
 			
 			LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
 	    	UserCoordinator userCoordinator = new UserCoordinator(zone,info.isUserSync(),info.isUserRegister(),
@@ -2013,7 +2018,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		}
 	   		
 	   		// Finish creating / deleting containers.
-	   		m_containerCoordinator.wrapUp();
+	   		m_containerCoordinator.wrapUp( true );
 	   		
 		}// end try
 		finally
@@ -2265,13 +2270,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// m_referenced tells us whether this container is still being used.
 		private boolean m_referenced;
 		private String m_dn;
+		private Long m_id;
 		
 		/**
 		 * 
 		 */
-		public ContainerInfo( String dn )
+		public ContainerInfo( Long id, String dn )
 		{
 			m_referenced = false;
+			m_id = id;
 			m_dn = dn;
 		}
 		
@@ -2281,6 +2288,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		public String getDn()
 		{
 			return m_dn;
+		}
+		
+		/**
+		 * 
+		 */
+		public Long getId()
+		{
+			return m_id;
 		}
 		
 		/**
@@ -2342,20 +2357,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					// Yes, mark the container as being referenced.
 					containerInfo.setReferenced( true );
-					
-					return;
 				}
-				
-				// Does this container already exist in the list of containers to be created?
-				if ( m_containersToBeCreated.get( dn ) != null )
+				else
 				{
-					// Yes, nothing to do.
-					return;
+					// No
+					// Does this container already exist in the list of containers to be created?
+					if ( m_containersToBeCreated.get( dn ) == null )
+					{
+						// No
+						// Add the given dn to the list of containers to be created.
+						logger.info( "\t\tAdding: " + dn + " to the list of containers to be created" );
+						m_containersToBeCreated.put( dn, dn );
+					}
 				}
-				
-				// Add the given dn to the list of containers to be created.
-				m_containersToBeCreated.put( dn, dn );
-				logger.info( "\t\tAdding: " + dn + " to the list of containers to be created" );
 				
 				// Does this container have a parent?
 				parentContainerDn = getParentContainerDn( dn );
@@ -2370,11 +2384,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		/**
 		 * Add the given dn to our list of existing containers. 
 		 */
-		public void addExistingContainer( String dn )
+		private void addExistingContainer( Long id, String dn )
 		{
 			ContainerInfo containerInfo;
 			
-			containerInfo = new ContainerInfo( dn );
+			containerInfo = new ContainerInfo( id, dn );
 			m_existingContainers.put( dn, containerInfo );
 		}
 		
@@ -2408,6 +2422,78 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		
 		/**
+		 * Create a new "container group" with the given dn.
+		 */
+		@SuppressWarnings("unchecked")
+		private Group createContainerGroup( String dn )
+		{
+			Map inputMap;
+	    	MapInputData groupMods;
+			IdentityInfo identityInfo;
+			Workspace zone;
+			Long zoneId;
+			Group temp;
+			Definition groupDef;
+
+			// Yes
+			profileModule = getProfileModule();
+			
+			zone = RequestContextHolder.getRequestContext().getZone();
+			zoneId = zone.getId();
+
+			logger.info( "\tAbout to create container: " + dn );
+
+			inputMap = new HashMap();
+			
+			identityInfo = new IdentityInfo( true, true, false, false );
+			
+			inputMap.put( ObjectKeys.FIELD_PRINCIPAL_NAME, dn );
+			inputMap.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn );
+			inputMap.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
+		    inputMap.put( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER, true );
+			inputMap.put( ObjectKeys.FIELD_ZONE, zoneId );
+
+	    	groupMods = new MapInputData( StringCheckUtil.check( inputMap ) );
+			
+	    	// Get default definition to use
+			temp = new Group( identityInfo );
+			getDefinitionModule().setDefaultEntryDefinition( temp );
+			groupDef = getDefinitionModule().getDefinition( temp.getEntryDefId() );
+			try 
+			{
+		    	ProfileCoreProcessor processor;
+				ProfileBinder profileBinder;
+		    	List newGroups;
+
+				profileBinder = getProfileDao().getProfileBinder( zoneId );
+		    	processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
+		    																	profileBinder,
+		    																	ProfileCoreProcessor.PROCESSOR_KEY );
+		    	newGroups = processor.syncNewEntries(
+		    									profileBinder,
+		    									groupDef,
+		    									Group.class,
+		    									Arrays.asList( new MapInputData[] {groupMods} ),
+		    									null,
+		    									null,
+		    									identityInfo );
+		    	
+		    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
+		    	
+		    	// flush from cache
+		    	getCoreDao().evict( newGroups );
+		    	
+		    	return (Group) newGroups.get( 0 );		    	
+			}
+			catch ( Exception ex )
+			{
+				logger.error( "\tError creating container: " + dn );
+			}
+
+			return null;
+		}
+		
+		/**
 		 * Create all containers found in m_containersToBeCreated
 		 */
 		private void createNewContainers()
@@ -2417,8 +2503,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				// Go through the list of containers that need to be created and create them.
 				for ( Map.Entry<String, String> mapEntry : m_containersToBeCreated.entrySet() )
 				{
-					logger.info( "\tAbout to create container: " + mapEntry.getKey() );
-					//!!! Finish
+					String dn;
+
+					dn = mapEntry.getKey();
+					createContainerGroup( dn );
 				}
 			}
 		}
@@ -2426,10 +2514,18 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		/**
 		 * Delete containers that are no longer being referenced.
 		 */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		private void deleteObsoleteContainers()
 		{
 			if ( Utils.checkIfFilr() )
 			{
+				Map options;
+				int count;
+				
+				count = 0;
+				options = new HashMap();
+				options.put( ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, Boolean.FALSE );
+
 				// Go through the list of existing containers and delete those that are no longer
 				// being referenced.
 				for ( Map.Entry<String, ContainerInfo> mapEntry : m_existingContainers.entrySet() )
@@ -2441,8 +2537,47 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					if ( containerInfo != null && containerInfo.isReferenced() == false )
 					{
 						logger.info( "\tAbout to delete container: " + mapEntry.getKey() );
-						//!!! Finish
+						
+						try
+						{
+							getProfileModule().deleteEntry( containerInfo.getId(), options, true );
+							
+							// clear cache to prevent thrashing resulted from prolonged use of a single session
+							getCoreDao().clear();
+							
+							++count;
+						}
+						catch ( Exception ex )
+						{
+							logger.error( "\tError deleting container group: " + containerInfo.getDn() );
+						}
 					}
+				}
+
+				// Did we delete any containers?
+				if ( count > 0 )
+				{
+					// Yes
+					getProfileModule().deleteEntryFinish();
+				}
+				
+				IndexSynchronizationManager.applyChanges();
+			}
+		}
+		
+		/**
+		 * Read all of the "container" objects from the db.
+		 */
+		public void getListOfAllContainers()
+		{
+			List<Group> listOfContainers;
+			
+			listOfContainers = getProfileModule().getLdapContainerGroups();
+			if ( listOfContainers != null )
+			{
+				for ( Group nextContainer : listOfContainers )
+				{
+					addExistingContainer( nextContainer.getId(), nextContainer.getForeignName() );
 				}
 			}
 		}
@@ -2483,7 +2618,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			// We only provision containers for eDirectory
 			if ( Utils.checkIfFilr() == true && m_dirType == LdapDirType.EDIR )
+			{
+				principalDn = principalDn.toLowerCase();
 				addContainersForPrincipal( principalDn );
+			}
 		}
 		
 		/**
@@ -2497,14 +2635,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		/**
 		 * Create any new containers and delete any obsolete container.
 		 */
-		public void wrapUp()
+		public void wrapUp( boolean deleteObsoleteContainers )
 		{
 			if ( Utils.checkIfFilr() )
 			{
 				logger.info( "In ContainerCoordinator.wrapUp()" );
 				
 				// Delete obsolete containers.
-				deleteObsoleteContainers();
+				if ( deleteObsoleteContainers )
+					deleteObsoleteContainers();
 				
 				// Create new containers.
 				createNewContainers();
