@@ -234,11 +234,29 @@ public class FolderEntryHeader extends VibeFlowPanel {
 			}
 			contentPanel.add(bcPanel);
 		}
+
+		// Create the title label...
+		Label titleL = new Label(m_fed.getTitle());
+		titleL.addStyleName("vibe-feView-headerContentTitleAsLabel");
 		
-		// Add the entry's title...
-		Label title = new Label(m_fed.getTitle());
-		title.addStyleName("vibe-feView-headerContentTitle");
-		contentPanel.add(title);
+		// ...iIf the entry has a file download URL...
+		String dlUrl = m_fed.getDownloadUrl();
+		if (GwtClientHelper.hasString(dlUrl)) {
+			// ...add the title in an <A> that can download it...
+			Anchor titleA = new Anchor();
+			titleA.addStyleName("vibe-feView-headerContentTitleAsAnchor");
+			titleA.setHref(dlUrl);
+			titleA.setTarget("_blank");
+			titleA.getElement().appendChild(titleL.getElement());
+			titleL.addStyleName("displayInline");
+			contentPanel.add(titleA);
+		}
+		
+		else {
+			// ...otherwise, just add the title Label directly...
+			titleL.addStyleName("displayBlock");
+			contentPanel.add(titleL);
+		}
 		
 		// ...and add the entry's path.
 		Label path = new Label(m_fed.getPath());
