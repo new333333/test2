@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
@@ -57,8 +58,11 @@ public interface SharingModule {
 	
 	public void checkAccess(ShareItem shareItem, SharingOperation operation)
     	throws AccessControlException;
-
+	public void checkAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, SharingOperation operation)
+		throws AccessControlException;
+	
 	public boolean testAccess(ShareItem shareItem, SharingOperation operation);
+	public boolean testAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, SharingOperation operation);
 	
 	public boolean testAddShareEntity(DefinableEntity de);
 	

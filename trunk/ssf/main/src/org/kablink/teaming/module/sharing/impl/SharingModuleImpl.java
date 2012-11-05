@@ -101,10 +101,16 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     @Override
 	public void checkAccess(ShareItem shareItem, SharingOperation operation)
 	    	throws AccessControlException {
+		EntityIdentifier entityIdentifier = shareItem.getSharedEntityIdentifier();
+    	checkAccess(shareItem, entityIdentifier, operation);
+    }
+    
+    @Override
+	public void checkAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, SharingOperation operation)
+	    	throws AccessControlException {
     	User user = RequestContextHolder.getRequestContext().getUser();
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
-		EntityIdentifier entityIdentifier = shareItem.getSharedEntityIdentifier();
 		AccessControlManager accessControlManager = getAccessControlManager();
 		if (accessControlManager == null) {
 			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
@@ -142,6 +148,25 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			//Check that the user has the right to share this entity
 			if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
 				FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
+				//First, see if this is an entry in a Net Folder. If so, we must test the root level permissions.
+				if (fe.isAclExternallyControlled()) {
+					//This is in a net folder. we must check if the admin allows the requested operation at the root level.
+					Binder topFolder = fe.getParentBinder();
+					while (topFolder != null) {
+						if (topFolder.getParentBinder() != null &&
+								!topFolder.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
+							//We have found the top folder (i.e., the net folder root)
+							break;
+						}
+						topFolder = topFolder.getParentBinder();
+					}
+					//Now check if the root folder allows the requested operation
+					if (topFolder == null || !testAccess(shareItem, topFolder.getEntityIdentifier(), operation)) {
+						//The root folder does not allow this operation
+						throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+					}
+				}
+				//Now check that the entry itself allows the requested operation
 				if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
 					if (recipient.getIdentityInfo().isInternal()) {
 						if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
@@ -257,11 +282,16 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		//No access was found
 		throw new AccessControlException();
 	}
-    
+
     @Override
 	public boolean testAccess(ShareItem shareItem, SharingOperation operation) {
+		EntityIdentifier entityIdentifier = shareItem.getSharedEntityIdentifier();
+    	return testAccess(shareItem, entityIdentifier, operation);
+    }
+    @Override
+	public boolean testAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, SharingOperation operation) {
     	try {
-    		checkAccess(shareItem, operation);
+    		checkAccess(shareItem, entityIdentifier, operation);
     		return true;
     	}
     	catch (AccessControlException ac) {
@@ -295,17 +325,41 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			if (de.getEntityType().equals(EntityType.folderEntry)) {
 				// Yes!  Does the user have "share internal" rights on it and is the user enabled for doing this?
 				FolderEntry fe = ((FolderEntry) de);
+				Binder parentBinderToTest = null;
+				if (fe.isAclExternallyControlled()) {
+					//This is in a net folder. we must check if the admin allows the requested operation at the root level.
+					parentBinderToTest = fe.getParentBinder();
+					//Find the root net folder
+					while (parentBinderToTest != null) {
+						if (parentBinderToTest.getParentBinder() != null &&
+								!parentBinderToTest.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
+							//We have found the top folder (i.e., the net folder root)
+							break;
+						}
+						parentBinderToTest = parentBinderToTest.getParentBinder();
+					}
+				}
 				if (accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL) && 
 						folderModule.testAccess(fe, FolderOperation.allowSharing)) {
 					// Yes!
-					reply = true;
+					//In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
+					if (parentBinderToTest != null) {
+						reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharing);
+					} else {
+						reply = true;
+					}
 				}
 				// Does the user have "share external" rights and is the user enabled to do this?
 				else if (accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL) &&
 						folderModule.testAccess( fe, FolderOperation.allowSharingExternal ) )
 				{
 					// Yes
-					reply = true;
+					//In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
+					if (parentBinderToTest != null) {
+						reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharingExternal);
+					} else {
+						reply = true;
+					}
 				}
 			}
 
@@ -371,9 +425,28 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			if (de.getEntityType().equals(EntityType.folderEntry)) {
 				// Yes!  Does the user have "share public" rights on it and is the user enabled for doing this?
 				FolderEntry fe = ((FolderEntry) de);
+				Binder parentBinderToTest = null;
+				if (fe.isAclExternallyControlled()) {
+					//This is in a net folder. we must check if the admin allows the requested operation at the root level.
+					parentBinderToTest = fe.getParentBinder();
+					//Find the root net folder
+					while (parentBinderToTest != null) {
+						if (parentBinderToTest.getParentBinder() != null &&
+								!parentBinderToTest.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
+							//We have found the top folder (i.e., the net folder root)
+							break;
+						}
+						parentBinderToTest = parentBinderToTest.getParentBinder();
+					}
+				}
 				if (folderModule.testAccess(fe, FolderOperation.allowSharingPublic)) {
 					// Yes!
-					reply = true;
+					//In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
+					if (parentBinderToTest != null) {
+						reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharingPublic);
+					} else {
+						reply = true;
+					}
 				}
 			}
 
