@@ -1827,11 +1827,18 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
 			function.setInternalId(ObjectKeys.FUNCTION_ENABLE_PUBLIC_SHARING_INTERNALID);
 			function.addOperation(WorkAreaOperation.ENABLE_SHARING_PUBLIC);
+			function.setZoneWide(true);
 			//generate functionId
 			getFunctionManager().addFunction(function);
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		} else {
+			//Due to earlier bug, test that this function is correctly marked as zoneWide
+			function = (Function) functionInternalIds.get(ObjectKeys.FUNCTION_ENABLE_PUBLIC_SHARING_INTERNALID);
+			if (!function.isZoneWide()) {
+				function.setZoneWide(true);
+				getFunctionManager().updateFunction(function);
+			}
 		}
-		
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID)) {
 			function = getFunctionManager().findFunctionByName(zoneConfig.getZoneId(), ObjectKeys.ROLE_ALLOW_SHARING_INTERNAL);
 			if (function != null) {
