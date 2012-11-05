@@ -34,6 +34,9 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
@@ -43,9 +46,11 @@ import org.kablink.teaming.rest.v1.model.ParentBinder;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Junction;
+import org.kablink.util.search.Order;
 import org.kablink.util.search.Restrictions;
 
 import javax.ws.rs.DefaultValue;
@@ -59,7 +64,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.in;
+import static org.kablink.util.search.Restrictions.like;
 
 /**
  * User: david
@@ -75,21 +82,9 @@ public class NetFoldersResource extends AbstractResource {
     public SearchResultList<BinderBrief> getNetFolders(@QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                            @QueryParam("first") @DefaultValue("0") Integer offset,
                                                            @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Criteria crit = new Criteria();
-        crit.add(in(Constants.DOC_TYPE_FIELD,            new String[]{Constants.DOC_TYPE_BINDER}));
-        crit.add(in(Constants.FAMILY_FIELD,              new String[]{Definition.FAMILY_FILE}));
-        crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
-        crit.add(in(Constants.IS_TOP_FOLDER_FIELD,       new String[]{Constants.TRUE}));
-        crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
-        Map map = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
-        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), map, "/net_folders", nextParams, offset);
-        for (BinderBrief binder : results.getResults()) {
-            binder.setParentBinder(new ParentBinder(ObjectKeys.NET_FOLDERS_ID, "/self/net_folders"));
-        }
-        return results;
+        return _getNetFolders(textDescriptions, offset, maxCount, "/net_folders", nextParams);
     }
 
     @GET
@@ -172,4 +167,35 @@ public class NetFoldersResource extends AbstractResource {
         return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, "/net_folders/recent_activity", nextParams);
     }
 
+    protected SearchResultList<BinderBrief> _getNetFolders(boolean textDescriptions, int offset, int maxCount, String nextUrl, Map<String, Object> nextParams) {
+        Binder nfBinder = getCoreDao().loadReservedBinder(
+     				ObjectKeys.NET_FOLDERS_ROOT_INTERNALID,
+     				RequestContextHolder.getRequestContext().getZoneId());
+     	Long nfBinderId = nfBinder.getId();
+        Criteria crit = new Criteria();
+     	crit.add(eq(Constants.DOC_TYPE_FIELD,            Constants.DOC_TYPE_BINDER));
+     	crit.add(eq(Constants.IS_TOP_FOLDER_FIELD,       Constants.TRUE));
+        crit.add(eq(Constants.HAS_RESOURCE_DRIVER_FIELD, Constants.TRUE));
+     	crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD,   nfBinderId.toString()));
+
+        // ...and issue the query and return the entries.
+        Map map = getBinderModule().searchFolderOneLevelWithInferredAccess(
+                crit,
+                Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
+                offset,
+                maxCount,
+                nfBinderId,
+                nfBinder.getPathName());
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), map, nextUrl, nextParams, offset);
+        for (BinderBrief binder : results.getResults()) {
+            binder.setParentBinder(new ParentBinder(ObjectKeys.NET_FOLDERS_ID, "/self/net_folders"));
+        }
+        return results;
+
+    }
+
+    private static CoreDao getCoreDao() {
+   		return (CoreDao) SpringContextUtil.getBean("coreDao");
+   	}
 }
