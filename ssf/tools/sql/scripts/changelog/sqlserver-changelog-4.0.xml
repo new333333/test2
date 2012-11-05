@@ -305,6 +305,7 @@
     </changeSet>
     
     <changeSet author="jong" context="data" failOnError="true" id="35">
+        <comment>Populate 4 new columns with correct values in preparation for retiring identitySource column</comment>
         <sql>
 update SS_Principals set internal=0,fromLdap=0,fromLocal=0,fromOpenid=1 where identitySource=11;
 update SS_Principals set internal=1,fromLdap=0,fromLocal=1,fromOpenid=0 where identitySource=1;
@@ -379,4 +380,18 @@ update SS_Principals set internal=1,fromLdap=1,fromLocal=0,fromOpenid=0 where id
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="data" failOnError="true" id="46">
+        <comment>Store all login names in lower case</comment>
+        <sql>           
+update SS_Principals set name=LOWER(name);
+        </sql>
+    </changeSet>
+    
+    <changeSet author="jong" context="data" failOnError="true" id="47">
+        <comment>Store all email addresses in lower case</comment>
+        <sql>           
+update SS_EmailAddresses set address=LOWER(address);
+        </sql>
+    </changeSet>
+    
 </databaseChangeLog>

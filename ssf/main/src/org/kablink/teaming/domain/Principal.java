@@ -236,6 +236,7 @@ public abstract class Principal extends Entry implements IPrincipal {
      */
     public void setName(String name) {
     	if (Validator.isNull(name)) throw new IllegalArgumentException("null name");
+    	name = name.toLowerCase();
         this.name = name;
     }
  
