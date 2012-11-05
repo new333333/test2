@@ -1,5 +1,6 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
@@ -26,6 +27,7 @@ import org.kablink.teaming.rest.v1.model.BinderTree;
 import org.kablink.teaming.rest.v1.model.EntityId;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.Folder;
+import org.kablink.teaming.rest.v1.model.ParentBinder;
 import org.kablink.teaming.rest.v1.model.PrincipalBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
@@ -126,10 +128,20 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         if (newBinderId ==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'folder_id' form parameter");
         }
+        Long finalParentId = null;
+        if (newBinderId.equals(ObjectKeys.MY_FILES_ID)) {
+            finalParentId = newBinderId;
+            newBinderId = getLoggedInUser().getWorkspaceId();
+        }
+
         org.kablink.teaming.domain.Binder parentBinder = getBinderModule().getBinder(newBinderId);
         getBinderModule().moveBinder(binder.getId(), parentBinder.getId(), null);
 
-        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
+        Binder modifiedBinder = ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
+        if (finalParentId!=null) {
+            modifiedBinder.setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+        }
+        return modifiedBinder;
     }
 
     /**

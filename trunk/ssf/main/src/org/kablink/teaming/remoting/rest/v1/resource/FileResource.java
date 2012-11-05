@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
@@ -53,7 +54,9 @@ import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
+import org.kablink.teaming.rest.v1.model.ParentBinder;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.util.api.ApiErrorCode;
 
 import javax.servlet.http.HttpServletRequest;
@@ -207,6 +210,11 @@ public class FileResource extends AbstractFileResource {
         if (newFolderId ==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'folder_id' form parameter");
         }
+        Long finalParentId = null;
+        if (newFolderId.equals(ObjectKeys.MY_FILES_ID)) {
+            finalParentId = newFolderId;
+            newFolderId = SearchUtils.getMyFilesFolderId(this, this.getLoggedInUser().getWorkspaceId(), true);
+        }
         Binder binder = getBinderModule().getBinder(newFolderId);
         if (!(binder instanceof Folder)) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The binder with the specified id is not a valid folder: " + newFolderId);
@@ -217,7 +225,11 @@ public class FileResource extends AbstractFileResource {
         }
         getFolderModule().moveEntry(null, entity.getId(), newFolderId, null, null);
 
-        return ResourceUtil.buildFileProperties(fa);
+        FileProperties fileProperties = ResourceUtil.buildFileProperties(fa);
+        if (finalParentId!=null) {
+            fileProperties.setBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+        }
+        return fileProperties;
     }
 
     @GET
