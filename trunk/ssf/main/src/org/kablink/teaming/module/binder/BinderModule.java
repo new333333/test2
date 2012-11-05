@@ -98,7 +98,8 @@ public interface BinderModule {
 		updateModificationTime,
 		allowSharing,
 		allowSharingExternal,
-		allowSharingPublic
+		allowSharingPublic,
+		allowSharingForward
 	}
     /**
      * Add a new <code>Folder</code> or <code>Workspace</code>.  Use definition type to determine which

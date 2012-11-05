@@ -1017,7 +1017,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		Function teamMemberRole = addTeamMemberRole(top);
     		Function binderRole = addBinderRole(top);
     		Function teamWsRole = addTeamWorkspaceRole(top);
-    		Function allowSharingRole = addAllowSharingRole(top);
 
     		//make sure allusers group and roles are defined, may be referenced by templates
     		getAdminModule().updateDefaultDefinitions(top.getId(), false);
@@ -1570,17 +1569,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);
 		return function;
 	}
-	private Function addAllowSharingRole(Workspace top) {
-		Function function = new Function();
-		function.setZoneId(top.getId());
-		function.setName(ObjectKeys.ROLE_TITLE_ALLOW_SHARING);
-		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
-		function.addOperation(WorkAreaOperation.ALLOW_SHARING_INTERNAL);
-		//generate functionId
-		getFunctionManager().addFunction(function);		
-		return function;
-	}
-	
+
 	private Function addFilrRoleViewer(Long zoneId) {
 		// VIEWER: read only (read, open, file scan)
 		Function function = new Function();
@@ -1839,6 +1828,20 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				getFunctionManager().updateFunction(function);
 			}
 		}
+
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_FORWARD_SHARING_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_ENABLE_SHARING_FORWARD);
+			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
+			function.setInternalId(ObjectKeys.FUNCTION_ENABLE_FORWARD_SHARING_INTERNALID);
+			function.addOperation(WorkAreaOperation.ENABLE_SHARING_FORWARD);
+			function.setZoneWide(true);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		}
+		
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID)) {
 			function = getFunctionManager().findFunctionByName(zoneConfig.getZoneId(), ObjectKeys.ROLE_ALLOW_SHARING_INTERNAL);
 			if (function != null) {
@@ -1876,6 +1879,18 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
 			function.setInternalId(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID);
 			function.addOperation(WorkAreaOperation.ALLOW_SHARING_PUBLIC);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		}
+		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_ALLOW_SHARING_FORWARD);
+			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
+			function.setInternalId(ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID);
+			function.addOperation(WorkAreaOperation.ALLOW_SHARING_FORWARD);
 			//generate functionId
 			getFunctionManager().addFunction(function);
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());

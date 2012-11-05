@@ -377,4 +377,10 @@ update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=1,FROMLOCAL=0,FROMOPENID=0 where ID
         </addColumn>
     </changeSet>
     
+    <changeSet author="peter" context="schema" failOnError="true" id="46">
+        <addColumn tableName="SS_SHAREITEM">
+			<column name="right_allowSharingForward" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

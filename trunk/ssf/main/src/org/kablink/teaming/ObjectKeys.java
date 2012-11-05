@@ -157,12 +157,16 @@ public interface ObjectKeys {
 	public static final String FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID="402883b90d0de1f3010d0df5582b0025";
 	//reserved id for _enablePublicSharing pseudo role
 	public static final String FUNCTION_ENABLE_PUBLIC_SHARING_INTERNALID="402883b90d0de1f3010d0df5582b0034";
+	//reserved id for _enableForwardSharing pseudo role
+	public static final String FUNCTION_ENABLE_FORWARD_SHARING_INTERNALID="402883b90d0de1f3010d0df5582b0038";
 	//reserved id for _allowSharingInternal pseudo role  
 	public static final String FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID="402883b90d0de1f3010d0df5582b0035";
 	//reserved id for _allowSharingExternal pseudo role 
 	public static final String FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID="402883b90d0de1f3010d0df5582b0036";
 	//reserved id for _allowSharingPublic pseudo role
 	public static final String FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID="402883b90d0de1f3010d0df5582b0037";
+	//reserved id for _allowSharingForward pseudo role
+	public static final String FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID="402883b90d0de1f3010d0df5582b0039";
 
 	//reserved id for View Binder Title role
 	public static final String FUNCTION_VIEW_BINDER_TITLE_INTERNALID="402883b90d0de1f3010d0df5582b0033";
@@ -258,7 +262,6 @@ public interface ObjectKeys {
     public static final String ROLE_TITLE_BINDER_ADMIN="__role.binderAdmin";
     public static final String ROLE_TITLE_WORKSPACE_CREATOR="__role.workspaceCreator";
     public static final String ROLE_TITLE_SITE_ADMIN="__role.siteAdmin"; //Depreciated
-    public static final String ROLE_TITLE_ALLOW_SHARING="__role.allowSharing"; 
     public static final String ROLE_TITLE_FILR_VIEWER="__role.FilrViewer"; 
     public static final String ROLE_TITLE_FILR_EDITOR="__role.FilrEditor"; 
     public static final String ROLE_TITLE_FILR_CONTRIBUTOR="__role.FilrContributor"; 
@@ -276,9 +279,11 @@ public interface ObjectKeys {
     public static final String ROLE_ENABLE_SHARING_INTERNAL="__role.enableSharing";
     public static final String ROLE_ENABLE_SHARING_EXTERNAL="__role.enableSharingExternal";
     public static final String ROLE_ENABLE_SHARING_PUBLIC="__role.enableSharingPublic";
+    public static final String ROLE_ENABLE_SHARING_FORWARD="__role.enableSharingForward";
     public static final String ROLE_ALLOW_SHARING_INTERNAL="__role.allowSharing";
     public static final String ROLE_ALLOW_SHARING_EXTERNAL="__role.allowSharingExternal";
     public static final String ROLE_ALLOW_SHARING_PUBLIC="__role.allowSharingPublic";
+    public static final String ROLE_ALLOW_SHARING_FORWARD="__role.allowSharingForward";
     //map keys from admin/sendMail
     public static final String SENDMAIL_ERRORS="errors";
     public static final String SENDMAIL_DISTRIBUTION="distributionList";

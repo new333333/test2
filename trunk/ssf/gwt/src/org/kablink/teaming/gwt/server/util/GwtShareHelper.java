@@ -133,6 +133,8 @@ public class GwtShareHelper
 			binderOperation = BinderOperation.allowSharingExternal;
 		else if ( shareOperation == FolderOperation.allowSharingPublic )
 			binderOperation = BinderOperation.allowSharingPublic;
+		else if ( shareOperation == FolderOperation.allowSharingForward )
+			binderOperation = BinderOperation.allowSharingForward;
 		else
 		{
 			m_logger.info( "In GwtShareHelper.canShareWith(), unknown folder operation: " + shareOperation.toString() );
@@ -200,6 +202,16 @@ public class GwtShareHelper
 		List<EntityId> listOfEntityIds )
 	{
 		return canShareWith( ami, listOfEntityIds, FolderOperation.allowSharingPublic );
+	}
+
+	/**
+	 * See if the user can share the given entities with the public.
+	 */
+	public static boolean canShareForward (
+		AllModulesInjected ami,
+		List<EntityId> listOfEntityIds )
+	{
+		return canShareWith( ami, listOfEntityIds, FolderOperation.allowSharingForward );
 	}
 
 	/**
