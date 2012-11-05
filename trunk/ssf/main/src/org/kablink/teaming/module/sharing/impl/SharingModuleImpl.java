@@ -293,7 +293,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			// Is the entity a folder entry?
 	    	User user = RequestContextHolder.getRequestContext().getUser();
 			if (de.getEntityType().equals(EntityType.folderEntry)) {
-				// Yes!  Does the user have "share internal" rights on it and it the user enabled for doing this?
+				// Yes!  Does the user have "share internal" rights on it and is the user enabled for doing this?
 				FolderEntry fe = ((FolderEntry) de);
 				if (accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL) && 
 						folderModule.testAccess(fe, FolderOperation.allowSharing)) {
@@ -328,6 +328,66 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 							binderModule.testAccess( binder, BinderOperation.allowSharingExternal ) )
 					{
 						// Yes
+						reply = true;
+					}
+				}
+			}
+		}
+		
+		catch (AccessControlException ace) {
+			// AccessControlException implies sharing isn't allowed.
+			reply = false;
+		}
+
+		// If we get here, reply contains true if the user can add a
+		// share to the given entity and false otherwise.  Return it.
+		return reply;
+	}
+	
+    /**
+     * Returns true if the current user can share the given
+     * DefinableEntity with the public and false otherwise.
+     * 
+     * @param de
+     * 
+     * @return
+     */
+	public boolean testAddShareEntityPublic(DefinableEntity de) {
+		boolean reply = false;
+
+		try {
+			// Is sharing enabled at the zone level for this type of user.
+	    	Long					zoneId               = RequestContextHolder.getRequestContext().getZoneId();
+	    	ZoneConfig				zoneConfig           = getCoreDao().loadZoneConfig(zoneId);
+			AccessControlManager	accessControlManager = getAccessControlManager();
+			if (null == accessControlManager) {
+				accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
+			}
+			//Test if enabled at the zone level for sharing with the public. This throws an error if not.
+			accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC);
+
+			// Is the entity a folder entry?
+	    	User user = RequestContextHolder.getRequestContext().getUser();
+			if (de.getEntityType().equals(EntityType.folderEntry)) {
+				// Yes!  Does the user have "share public" rights on it and is the user enabled for doing this?
+				FolderEntry fe = ((FolderEntry) de);
+				if (folderModule.testAccess(fe, FolderOperation.allowSharingPublic)) {
+					// Yes!
+					reply = true;
+				}
+			}
+
+			// No, the entity isn't a folder entry!  Is it a folder or
+			// workspace (i.e., a binder)?
+			else if (de.getEntityType().equals(EntityType.folder) || de.getEntityType().equals(EntityType.workspace)) {
+				// Yes!  Does the user have "share internal" rights on it?
+				Binder binder = ((Binder) de);
+				//If this is a Filr Net Folder, check if sharing is allowed at the folder level
+				//Also check that the folder isn't a Net Folder. Sharing Net Folders is not allowed
+				if (!binder.isAclExternallyControlled() || 
+						SPropsUtil.getBoolean("sharing.netFolders.allowed", false)) {
+					if (binderModule.testAccess(binder, BinderOperation.allowSharingPublic)) {
+						// Yes!
 						reply = true;
 					}
 				}
