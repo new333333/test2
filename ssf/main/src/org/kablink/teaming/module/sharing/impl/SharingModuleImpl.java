@@ -289,19 +289,20 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			if (null == accessControlManager) {
 				accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
 			}
-			accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL);
 
 			// Is the entity a folder entry?
 	    	User user = RequestContextHolder.getRequestContext().getUser();
 			if (de.getEntityType().equals(EntityType.folderEntry)) {
-				// Yes!  Does the user have "share internal" rights on it?
+				// Yes!  Does the user have "share internal" rights on it and it the user enabled for doing this?
 				FolderEntry fe = ((FolderEntry) de);
-				if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
+				if (accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL) && 
+						folderModule.testAccess(fe, FolderOperation.allowSharing)) {
 					// Yes!
 					reply = true;
 				}
-				// Does the user have "share external" rights?
-				else if ( folderModule.testAccess( fe, FolderOperation.allowSharingExternal ) )
+				// Does the user have "share external" rights and is the user enabled to do this?
+				else if (accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL) &&
+						folderModule.testAccess( fe, FolderOperation.allowSharingExternal ) )
 				{
 					// Yes
 					reply = true;
@@ -317,12 +318,14 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				//Also check that the folder isn't a Net Folder. Sharing Net Folders is not allowed
 				if (!binder.isAclExternallyControlled() || 
 						SPropsUtil.getBoolean("sharing.netFolders.allowed", false)) {
-					if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
+					if (accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL) && 
+							binderModule.testAccess(binder, BinderOperation.allowSharing)) {
 						// Yes!
 						reply = true;
 					}
 					// Does the user have "share external" rights?
-					else if ( binderModule.testAccess( binder, BinderOperation.allowSharingExternal ) )
+					else if (accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL) &&
+							binderModule.testAccess( binder, BinderOperation.allowSharingExternal ) )
 					{
 						// Yes
 						reply = true;
