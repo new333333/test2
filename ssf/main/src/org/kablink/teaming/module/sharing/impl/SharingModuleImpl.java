@@ -144,6 +144,13 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				//Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
 				throw new AccessControlException();
 			}
+			
+			//Check the setting of the Share Forward right
+			boolean tryingToAllowShareForward = shareItem.getRightSet().getRight(WorkAreaOperation.ALLOW_SHARING_FORWARD);
+			if (tryingToAllowShareForward) {
+				//The share item is trying to give out the share forward right. See if the user is allowed to do this
+				accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_FORWARD);
+			}
 
 			//Check that the user has the right to share this entity
 			if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
@@ -164,6 +171,19 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 					if (topFolder == null || !testAccess(shareItem, topFolder.getEntityIdentifier(), operation)) {
 						//The root folder does not allow this operation
 						throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+					}
+					if (tryingToAllowShareForward) {
+						//Test if root allows sharing forward
+						if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingForward)) {
+							throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+						}
+					}
+				}
+				//Check if the entry allows share forward
+				if (tryingToAllowShareForward) {
+					//Test if entry allows sharing forward
+					if (!folderModule.testAccess(fe, FolderOperation.allowSharingForward)) {
+						throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
 					}
 				}
 				//Now check that the entry itself allows the requested operation
@@ -202,6 +222,13 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				if (binder.isAclExternallyControlled() && 
 						!SPropsUtil.getBoolean("sharing.netFolders.allowed", false)) {
 					throw new AccessControlException("errorcode.sharing.netfolders.notAllowed", new Object[] {});
+				}
+				//Check if the binder allows share forward
+				if (tryingToAllowShareForward) {
+					//Test if entry allows sharing forward
+					if (!binderModule.testAccess(binder, BinderOperation.allowSharingForward)) {
+						throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
+					}
 				}
 				if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
 					if (recipient.getIdentityInfo().isInternal()) {
@@ -460,6 +487,87 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				if (!binder.isAclExternallyControlled() || 
 						SPropsUtil.getBoolean("sharing.netFolders.allowed", false)) {
 					if (binderModule.testAccess(binder, BinderOperation.allowSharingPublic)) {
+						// Yes!
+						reply = true;
+					}
+				}
+			}
+		}
+		
+		catch (AccessControlException ace) {
+			// AccessControlException implies sharing isn't allowed.
+			reply = false;
+		}
+
+		// If we get here, reply contains true if the user can add a
+		// share to the given entity and false otherwise.  Return it.
+		return reply;
+	}
+	
+    
+    /**
+     * Returns true if the current user can share forward the given
+     * DefinableEntity and false otherwise.
+     * 
+     * @param de
+     * 
+     * @return
+     */
+	public boolean testShareEntityForward(DefinableEntity de) {
+		boolean reply = false;
+
+		try {
+			// Is sharing enabled at the zone level for this type of user.
+	    	Long					zoneId               = RequestContextHolder.getRequestContext().getZoneId();
+	    	ZoneConfig				zoneConfig           = getCoreDao().loadZoneConfig(zoneId);
+			AccessControlManager	accessControlManager = getAccessControlManager();
+			if (null == accessControlManager) {
+				accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
+			}
+			//Test if enabled at the zone level for sharing forward. This throws an error if not.
+			accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_FORWARD);
+
+			// Is the entity a folder entry?
+	    	User user = RequestContextHolder.getRequestContext().getUser();
+			if (de.getEntityType().equals(EntityType.folderEntry)) {
+				// Yes!  Does the user have "share forward" rights on it?
+				FolderEntry fe = ((FolderEntry) de);
+				Binder parentBinderToTest = null;
+				if (fe.isAclExternallyControlled()) {
+					//This is in a net folder. we must check if the admin allows the requested operation at the root level.
+					parentBinderToTest = fe.getParentBinder();
+					//Find the root net folder
+					while (parentBinderToTest != null) {
+						if (parentBinderToTest.getParentBinder() != null &&
+								!parentBinderToTest.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
+							//We have found the top folder (i.e., the net folder root)
+							break;
+						}
+						parentBinderToTest = parentBinderToTest.getParentBinder();
+					}
+				}
+				//Test if the user is allowed to share forward for this entry
+				if (folderModule.testAccess(fe, FolderOperation.allowSharingForward)) {
+					// Yes!
+					//In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
+					if (parentBinderToTest != null) {
+						reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharingForward);
+					} else {
+						reply = true;
+					}
+				}
+			}
+
+			// No, the entity isn't a folder entry!  Is it a folder or
+			// workspace (i.e., a binder)?
+			else if (de.getEntityType().equals(EntityType.folder) || de.getEntityType().equals(EntityType.workspace)) {
+				// Yes!  Does the user have "share internal" rights on it?
+				Binder binder = ((Binder) de);
+				//If this is a Filr Net Folder, check if sharing is allowed at the folder level
+				//Also check that the folder isn't a Net Folder. Sharing Net Folders is not allowed
+				if (!binder.isAclExternallyControlled() || 
+						SPropsUtil.getBoolean("sharing.netFolders.allowed", false)) {
+					if (binderModule.testAccess(binder, BinderOperation.allowSharingForward)) {
 						// Yes!
 						reply = true;
 					}
