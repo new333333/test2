@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextArea;
 
@@ -26,17 +27,30 @@ public class NewLuceneHANodeDialog extends DlgBox
 	private GwValueSpinner rmiPortSpinner;
 	private Lucene lucene;
 	private TextArea descriptionTextArea;
+	private Label errorLabel;
 
 	public NewLuceneHANodeDialog(Lucene lucene)
 	{
 		super(false, true, DlgButtonMode.OkCancel);
 		this.lucene = lucene;
+		
+		
+
 	}
 
 	public boolean isValid()
 	{
+		if (errorLabel == null)
+		{
+			errorLabel = new Label();
+			errorLabel.setStyleName("errorLabel");
+			getErrorPanel().add(errorLabel);
+		}
+		
 		if (!(nameTextBox.isValid() & hostTextBox.isValid()))
 		{
+			errorLabel.setText("Required fields. It cannot be empty");
+			getErrorPanel().setVisible(true);
 			return false;
 		}
 
@@ -47,9 +61,12 @@ public class NewLuceneHANodeDialog extends DlgBox
 		{
 			if (node.getName().equals(nameTextBox.getText()))
 			{
+				errorLabel.setText("Search node name has to be unique.");
+				getErrorPanel().setVisible(true);
 				return false;
 			}
 		}
+		getErrorPanel().setVisible(false);
 		return true;
 	}
 
@@ -125,9 +142,8 @@ public class NewLuceneHANodeDialog extends DlgBox
 		node.setHostName(hostTextBox.getText());
 		node.setTitle(descriptionTextArea.getText());
 		node.setRmiPort(rmiPortSpinner.getValueAsInt());
-		lucene.getSearchNodesList().add(node);
 
-		return lucene;
+		return node;
 	}
 
 	@Override
