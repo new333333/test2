@@ -76,8 +76,6 @@ public class ManageUsersDlg extends DlgBox
 		InvokeImportProfilesDlgEvent.Handler,
 		GetManageUsersTitleEvent.Handler
 {
-	public final static boolean SHOW_GWT_MANAGE_USERS	= false;	//! DRF:  Leave false on checkin until I get this working.
-	
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private ImportProfilesDlg				m_importProfilesDlg;		// An ImportProfilesDlg, once one is created.
 	private int								m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
