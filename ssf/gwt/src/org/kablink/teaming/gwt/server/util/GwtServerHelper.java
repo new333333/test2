@@ -5832,10 +5832,11 @@ public class GwtServerHelper {
 				m_logger.error("GwtServerHelper.getManageUsersInformation():  The workspace type of the profile root binder was incorrect.  Found:  " + bi.getWorkspaceType().name() + ", Expected:  " + WorkspaceType.PROFILE_ROOT.name());
 			}
 			bi.setWorkspaceType(WorkspaceType.PROFILE_ROOT_MANAGEMENT);
-			ManageUsersInfoRpcResponseData reply = new ManageUsersInfoRpcResponseData(bi);
+			ManageUsersInfoRpcResponseData reply =
+				new ManageUsersInfoRpcResponseData(
+					bi,
+					NLT.get("administration.manage.userAccounts"));
 
-//!			...this needs to be implemented...
-			
 			// If we get here, reply refers to the
 			// ManageUsersInfoRpcResponseData object
 			// containing the information about downloading the desktop

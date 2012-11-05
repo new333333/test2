@@ -675,6 +675,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case GET_MANAGE_USERS_TITLE:
+				// An GetManageUsersTitleEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof GetManageUsersTitleEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = GetManageUsersTitleEvent.registerEvent(eventBus, ((GetManageUsersTitleEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case GET_SIDEBAR_COLLECTION:
 				// An GetSidebarCollectionEvent!  Can the event handler
 				// we were given handle that?
@@ -2306,6 +2315,7 @@ public class EventHelper {
 			case DISABLE_SELECTED_USERS:                       hasHandler = (eventHandler instanceof DisableSelectedUsersEvent.Handler);                   break;
 			case ENABLE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);                    break;
 			case FOLDER_ENTRY_ACTION_COMPLETE:                 hasHandler = (eventHandler instanceof FolderEntryActionCompleteEvent.Handler);              break;
+			case GET_MANAGE_USERS_TITLE:                       hasHandler = (eventHandler instanceof GetManageUsersTitleEvent.Handler);                    break;
 			case LOCK_SELECTED_ENTRIES:                        hasHandler = (eventHandler instanceof LockSelectedEntriesEvent.Handler);                    break;
 			case MARK_READ_SELECTED_ENTRIES:                   hasHandler = (eventHandler instanceof MarkReadSelectedEntriesEvent.Handler);                break;
 			case MARK_UNREAD_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof MarkUnreadSelectedEntriesEvent.Handler);              break;

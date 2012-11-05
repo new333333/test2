@@ -91,7 +91,6 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.ShareItem;
@@ -162,7 +161,6 @@ import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.module.admin.AdminModule;
-import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -3415,11 +3413,10 @@ public class GwtViewHelper {
 	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter) throws GwtTeamingException {
 		try {
 			// Access the binder/folder.
-			Long		folderId = folderInfo.getBinderIdAsLong();
-			Binder		binder   = bs.getBinderModule().getBinder(folderId);
-			Folder		folder   = ((binder instanceof Folder)    ? ((Folder)    binder) : null);
-			Workspace	ws       = ((binder instanceof Workspace) ? ((Workspace) binder) : null);
-			boolean		isFolder = (null != folder);
+			Long	folderId = folderInfo.getBinderIdAsLong();
+			Binder	binder   = bs.getBinderModule().getBinder(folderId);
+			Folder	folder   = ((binder instanceof Folder) ? ((Folder) binder) : null);
+			boolean	isFolder = (null != folder);
 			
 			// If we're reading from a mirrored file folder...
 			if (FolderType.MIRROREDFILE == folderInfo.getFolderType()) {
@@ -3466,23 +3463,21 @@ public class GwtViewHelper {
 
 			// Are we populating the profiles root binder?
 			if (isProfilesRootWS) {
-				// Yes!  Are we in Filr mode?
-				if (Utils.checkIfFilr()) {
-					// Yes!  Eliminate the non-person users.
-					options.put(ObjectKeys.SEARCH_IS_PERSON, Boolean.TRUE);
+				// Yes!  Is it for the manage users feature of the
+				// administration console?
+				boolean isManageUsers = folderInfo.getWorkspaceType().isProfileRootManagement();
+				if (isManageUsers) {
+					// Yes!  Then we include disabled users.
+					options.put(ObjectKeys.SEARCH_INCLUDE_DISABLED_USERS, Boolean.TRUE);
 				}
-
-				// Is the current user a site administrator?
-				if (!(bs.getAdminModule().testAccess(AdminOperation.manageFunction))) {
-					// No!  Eliminate external users.
-					options.put(ObjectKeys.SEARCH_IS_INTERNAL, Boolean.TRUE);
+				
+				else {
+					// No, it isn't for the manage users feature of the administration console!
+					// Eliminate the non-person, external and disabled.
+					options.put(ObjectKeys.SEARCH_IS_PERSON,              Boolean.TRUE);
+					options.put(ObjectKeys.SEARCH_IS_INTERNAL,            Boolean.TRUE);
+					options.put(ObjectKeys.SEARCH_EXCLUDE_DISABLED_USERS, Boolean.TRUE);
 				}
-
-				// If the current user can manage profiles, we include
-				// disabled users, otherwise, we exclude them.
-				if (bs.getProfileModule().testAccess(((ProfileBinder) ws), ProfileOperation.manageEntries))
-				     options.put(ObjectKeys.SEARCH_INCLUDE_DISABLED_USERS, Boolean.TRUE);
-				else options.put(ObjectKeys.SEARCH_EXCLUDE_DISABLED_USERS, Boolean.TRUE);
 			}
 
 			// Factor in the user's sorting selection.

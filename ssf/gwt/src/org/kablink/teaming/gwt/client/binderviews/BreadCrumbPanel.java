@@ -39,6 +39,8 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
+import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
+import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent.ManageUsersTitleCallback;
 import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
@@ -167,9 +169,9 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * Adds access to the binder configuration menu.
 	 */
 	private void addProfileRootConfig(VibeFlowPanel fp) {
-		// For a trash view...
-		if (m_binderInfo.isBinderTrash()) {
-			// ...we don't show the binder configuration menu.
+		// If the binder doesn't need the configuration menu...
+		if (!(needsBinderConfig())) {
+			// ...bail.
 			return;
 		}
 		
@@ -350,9 +352,17 @@ public class BreadCrumbPanel extends ToolPanelBase
 			fp.add(i);
 
 			// ...create the title label...
-			InlineLabel il = new InlineLabel(m_messages.vibeDataTable_People());
+			final InlineLabel il = new InlineLabel(m_messages.vibeDataTable_People());
 			il.addStyleName("vibe-breadCrumbProfiles-label");
 			fp.add(il);
+			if (m_binderInfo.isBinderProfilesRootWS() && m_binderInfo.getWorkspaceType().isProfileRootManagement()) {
+				GwtTeaming.fireEvent(new GetManageUsersTitleEvent(new ManageUsersTitleCallback() {
+					@Override
+					public void manageUsersTitle(String title) {
+						il.setText(title);
+					}
+				}));
+			}
 			
 			addProfileRootConfig(fp);
 
@@ -392,11 +402,31 @@ public class BreadCrumbPanel extends ToolPanelBase
 	}
 
 	/*
+	 * Return true if the binder being viewed requires a binder
+	 * configuration menu and false otherwise.
+	 */
+	private boolean needsBinderConfig() {
+		boolean reply = (!(m_binderInfo.isBinderTrash()));
+		if (reply) {
+			reply = (
+				(!(m_binderInfo.isBinderProfilesRootWS())) ||
+				(!(m_binderInfo.getWorkspaceType().isProfileRootManagement())));
+		}
+		return reply;
+	}
+	
+	/*
 	 * Return true if the binder being viewed requires a What's New
 	 * link and false otherwise.
 	 */
 	private boolean needsWhatsNewLink() {
-		return (!(m_binderInfo.isBinderTrash()));
+		boolean reply = (!(m_binderInfo.isBinderTrash()));
+		if (reply) {
+			reply = (
+				(!(m_binderInfo.isBinderProfilesRootWS())) ||
+				(!(m_binderInfo.getWorkspaceType().isProfileRootManagement())));
+		}
+		return reply;
 	}
 	
 	/**
