@@ -216,6 +216,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the Vibe's ssf path.
+	 * 
+	 * @return
+	 */
+	public final native String getSSFPath()
+	/*-{
+		return this.ssfPath;
+	}-*/;
+
+	/**
 	 * Return the user's language.
 	 * 
 	 * @return

@@ -117,6 +117,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_HELP,									// Invokes the Vibe online help.
 	INVOKE_IMPORT_ICAL_FILE,						// Invokes the dialog to import an iCal by uploading  a file.
 	INVOKE_IMPORT_ICAL_URL,							// Invokes the dialog to import an iCal by specifying a URL.
+	INVOKE_IMPORT_PROFILES_DLG,						// Invoke the "Import Profiles" dialog.
 	INVOKE_MANAGE_GROUPS_DLG,						// Invoke the "Manage groups" dialog.
 	INVOKE_MANAGE_USERS_DLG,						// Invoke the "Manage users" dialog.
 	INVOKE_REPLY,									// Invokes the 'reply to entry' UI.
