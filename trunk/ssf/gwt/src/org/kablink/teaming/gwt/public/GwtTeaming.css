@@ -4790,4 +4790,12 @@ td.datePickerMonth {
 	.vibe-manageUsersDlg-rootPanel {background-color: white;}
 /* End:  Manage users dialog styles. */
 
+/* Start:  Import profiles dialog styles. */
+	.vibe-importProfilesDlg-content    {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
+	.vibe-importProfilesDlg-hint       {color: #135c8f; text-decoration: none; margin: 8px 0px 8px 0px; font-size: 11px !important; cursor: pointer; margin: 3px 10px; font-size: 1em !important;}
+	.vibe-importProfilesDlg-hint:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-importProfilesDlg-input      {width: 250px;}
+	.vibe-importProfilesDlg-panel      {}
+/* End:  Import profiles dialog styles. */
+
 /* End */

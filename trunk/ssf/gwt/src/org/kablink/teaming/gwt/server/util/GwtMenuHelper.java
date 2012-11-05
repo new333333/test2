@@ -864,7 +864,7 @@ public class GwtMenuHelper {
 	 * ProfilesBinderHelper.buildViewEntryToolbar().
 	 */
 	@SuppressWarnings("unchecked")
-	private static void constructEntryProfilesRootWSItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws) {
+	private static void constructEntryProfilesRootWSItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws, boolean manageUsers) {
 		// If the user can add entries...
 		ProfileModule pm = bs.getProfileModule();
 		if (pm.testAccess(((ProfileBinder) ws), ProfileOperation.addEntry)) {
@@ -885,6 +885,16 @@ public class GwtMenuHelper {
 				markTBIHighlight(addUserTBI               );
 				markTBIUrl(      addUserTBI, url          );
 				entryToolbar.addNestedItem(addUserTBI);
+			}
+
+			// If we're in the manage users version of the profiles
+			// root WS viewer...
+			if (manageUsers) {
+				// ...we include the ability to import profiles too.
+				ToolbarItem importProfilesTBI = new ToolbarItem("1_importProfiles");
+				markTBITitle(importProfilesTBI, "toolbar.importProfiles");
+				markTBIEvent(importProfilesTBI, TeamingEvents.INVOKE_IMPORT_PROFILES_DLG);
+				entryToolbar.addNestedItem(importProfilesTBI);
 			}
 		}
 		
@@ -2384,7 +2394,7 @@ public class GwtMenuHelper {
 			else if (folderInfo.isBinderProfilesRootWS()) {
 				// Yes!  Construct the items for viewing the root
 				// profiles binder.
-				constructEntryProfilesRootWSItems(entryToolbar, bs, request, ws);
+				constructEntryProfilesRootWSItems(entryToolbar, bs, request, ws, folderInfo.getWorkspaceType().isProfileRootManagement());
 			}
 			
 			// No, we aren't returning the toolbar items for the root

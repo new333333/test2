@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.event.InvokeImportProfilesDlgEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -49,6 +50,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.ImportProfilesDlg.ImportProfilesDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -69,11 +71,13 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class ManageUsersDlg extends DlgBox
 	implements ViewReady,
 		// Event handlers implemented by this class.
-		FullUIReloadEvent.Handler
+		FullUIReloadEvent.Handler,
+		InvokeImportProfilesDlgEvent.Handler
 {
 	public final static boolean SHOW_GWT_MANAGE_USERS	= false;	//! DRF:  Leave false on checkin until I get this working.
 	
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
+	private ImportProfilesDlg				m_importProfilesDlg;		// An ImportProfilesDlg, once one is created.
 	private int								m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
 	private int								m_showX;					// The x and...
 	private int								m_showY;					// ...y position and...
@@ -94,6 +98,7 @@ public class ManageUsersDlg extends DlgBox
 	// this array is used.
 	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
 		TeamingEvents.FULL_UI_RELOAD,
+		TeamingEvents.INVOKE_IMPORT_PROFILES_DLG,
 	};
 	
 	/*
@@ -241,6 +246,64 @@ public class ManageUsersDlg extends DlgBox
 		}
 	}
 	
+	/**
+	 * Handles InvokeImportProfilesDlgEvent's received by this class.
+	 * 
+	 * Implements the InvokeImportProfilesDlgEvent.Handler.onInvokeImportProfilesDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeImportProfilesDlg(InvokeImportProfilesDlgEvent event) {
+		// Do we have a personal workspace view?
+		if (null != m_pwsView) {
+			// Yes!  Have we create an import profiles dialog yet?
+			if (null == m_importProfilesDlg) {
+				// No!  Can we create one now?
+				ImportProfilesDlg.createAsync(new ImportProfilesDlgClient() {
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in 
+						// asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess(ImportProfilesDlg ipDlg) {
+						// Yes, we created the import profiles dialog!
+						// Show it.
+						m_importProfilesDlg = ipDlg;
+						showImportProfilesDlgAsync();
+					}
+				});
+			}
+			
+			else {
+				// Yes, we have an import profiles dialog!  Show it.
+				showImportProfilesDlgAsync();
+			}
+		}
+	}
+	
+	/*
+	 * Asynchronously shows the import profiles dialog.
+	 */
+	private void showImportProfilesDlgAsync() {
+		ScheduledCommand doShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showImportProfilesDlgNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShow);
+	}
+
+	/*
+	 * Synchronously shows the import profiles dialog.
+	 */
+	private void showImportProfilesDlgNow() {
+		ImportProfilesDlg.initAndShow(m_importProfilesDlg, m_manageUsersInfo.getProfilesRootWSInfo());
+	}
+
 	/**
 	 * Called when the personal workspaces view reaches the ready
 	 * state.

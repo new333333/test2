@@ -574,6 +574,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_HomeWSView();
 	String codeSplitFailure_ImportIcalByFileDlg();
 	String codeSplitFailure_ImportIcalByUrlDlg();
+	String codeSplitFailure_ImportProfilesDlg();
 	String codeSplitFailure_LandingPage();
 	String codeSplitFailure_LandingPageEditor();
 	String codeSplitFailure_LandingPageWidget();
@@ -2119,4 +2120,13 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used by the 'Manage Users' dialog.
 	String manageUserDlgCaption();
 	
+	// Strings used by the 'Import Profiles' dialog.
+	String importProfilesDlgErrorBogusJSONData(String msg);
+	String importProfilesDlgErrorFailed(String msg);
+	String importProfilesDlgErrorNoFile();
+	String importProfilesDlgErrorParse(String msg);
+	String importProfilesDlgHeader();
+	String importProfilesDlgSuccess();
+	String importProfilesDlgViewSample();
+
 }// end GwtTeamingMessages
