@@ -81,6 +81,7 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 	private CommentAddedCallback			m_addedCallback;	// Callback interface used to tell the callee a new comment was added.
 	private CommentsInfo					m_commentsInfo;		// The CommentsInfo the ManageCommentsComposite is running against.
 	private CommentsWidget					m_commentsWidget;	// Widget that displays the current comments.
+	private FlexTable						m_addCommentPanel;	//
 	private GwtTeamingDataTableImageBundle	m_images;			// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;			// Access to Vibe's messages.
 	private ManageCommentsCallback			m_manageCallback;	// Callback interface used to tell the callee about some management event within the composite.
@@ -191,14 +192,14 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 		m_commentsWidget = new CommentsWidget(false);
 		m_commentsWidget.addStyleName(m_baseStyle + "-commentsWidget");
 		m_fp.add(m_commentsWidget);
-		
-		// ...create the widgets to add comments...
-		FlexTable addCommentPanel = new FlexTable();
-		addCommentPanel.setCellPadding(0);
-		addCommentPanel.setCellSpacing(0);
-		addCommentPanel.addStyleName(m_baseStyle + "-addCommentPanel");
+
+		// ...and create the widgets to add comments.
+		m_addCommentPanel = new FlexTable();
+		m_addCommentPanel.setCellPadding(0);
+		m_addCommentPanel.setCellSpacing(0);
+		m_addCommentPanel.addStyleName(m_baseStyle + "-addCommentPanel");
 		if (!m_isIE) {
-			addCommentPanel.addStyleName(m_baseStyle + "-addCommentPanel-nonIE");
+			m_addCommentPanel.addStyleName(m_baseStyle + "-addCommentPanel-nonIE");
 		}
 		String avatarUrl = GwtClientHelper.getRequestInfo().getUserAvatarUrl();
 		if (!(GwtClientHelper.hasString(avatarUrl))) {
@@ -206,12 +207,12 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 		}
 		Image avatarImg = GwtClientHelper.buildImage(avatarUrl);
 		avatarImg.addStyleName(m_baseStyle + "-addCommentAvatar");
-		addCommentPanel.setWidget(0, 0, avatarImg);
+		m_addCommentPanel.setWidget(0, 0, avatarImg);
 		m_addCommentTA = new TextArea();
 		m_addCommentTA.addStyleName(m_baseStyle + "-addCommentTextArea");
 		m_addCommentTA.addKeyDownHandler(this);
-		addCommentPanel.setWidget(0, 1, m_addCommentTA);
-		addCommentPanel.getRowFormatter().setVerticalAlign(0, HasVerticalAlignment.ALIGN_TOP);
+		m_addCommentPanel.setWidget(0, 1, m_addCommentTA);
+		m_addCommentPanel.getRowFormatter().setVerticalAlign(0, HasVerticalAlignment.ALIGN_TOP);
 		VibeFlowPanel hintPanel = new VibeFlowPanel();
 		hintPanel.addStyleName(m_baseStyle + "-addCommentHintPanel");
 		InlineLabel hint = new InlineLabel(m_messages.manageCommentsCompositeWhoHasAccess());
@@ -234,8 +235,8 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 		});
 		sendButton.addKeyDownHandler(this);
 		hintPanel.add(sendButton);
-		addCommentPanel.setWidget(1, 1, hintPanel);
-		m_fp.add(addCommentPanel);
+		m_addCommentPanel.setWidget(1, 1, hintPanel);
+		m_fp.add(m_addCommentPanel);
 	}
 
 	/**
@@ -244,7 +245,7 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 	 * @return
 	 */
 	public FocusWidget getFocusWidget() {
-		return m_addCommentTA;
+		return (((null != m_addCommentPanel) && m_addCommentPanel.isVisible()) ? m_addCommentTA : null);
 	}
 
 	/*
@@ -332,6 +333,7 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 		
 		// ...initialize the comment entry widget...
 		m_addCommentTA.setText("");
+		m_addCommentPanel.setVisible(m_commentsInfo.canAddReplies());
 		
 		// ...tell the container that we're ready...
 		m_manageCallback.compositeReady();
