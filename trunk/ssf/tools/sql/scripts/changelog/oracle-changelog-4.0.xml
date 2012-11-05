@@ -309,6 +309,7 @@
     </changeSet>
     
     <changeSet author="jong" context="data" failOnError="true" id="36">
+        <comment>Populate 4 new columns with correct values in preparation for retiring identitySource column</comment>
         <sql>
 update SS_PRINCIPALS set INTERNAL=0,FROMLDAP=0,FROMLOCAL=0,FROMOPENID=1 where IDENTITYSOURCE=11;
 update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=0,FROMLOCAL=1,FROMOPENID=0 where IDENTITYSOURCE=1;
@@ -381,6 +382,20 @@ update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=1,FROMLOCAL=0,FROMOPENID=0 where ID
         <addColumn tableName="SS_SHAREITEM">
 			<column name="right_allowSharingForward" type="NUMBER(1,0)"/>
         </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="data" failOnError="true" id="47">
+        <comment>Store all login names in lower case</comment>
+        <sql>
+update SS_Principals set name=LOWER(name);        
+        </sql>
+    </changeSet>
+    
+    <changeSet author="jong" context="data" failOnError="true" id="48">
+        <comment>Store all email addresses in lower case</comment>
+        <sql>
+update SS_EmailAddresses set address=LOWER(address);        
+        </sql>
     </changeSet>
     
 </databaseChangeLog>

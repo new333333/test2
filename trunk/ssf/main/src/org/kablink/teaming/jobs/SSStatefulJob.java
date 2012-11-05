@@ -144,7 +144,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 			context.setResult("Failed");
     		throw new JobExecutionException(e);
     	} finally {
-    		SessionUtil.sessionStop();
+    		teardownSession();
     		RequestContextHolder.clear();
     	}
 
@@ -156,6 +156,9 @@ public abstract class SSStatefulJob implements StatefulJob {
 	}
 	protected void setupSession() {
 		SessionUtil.sessionStartup();		
+	}
+	protected void teardownSession() {
+		SessionUtil.sessionStop();
 	}
 	protected Scheduler getScheduler() {		
 		return (Scheduler)SpringContextUtil.getBean("scheduler");		
