@@ -2094,6 +2094,7 @@ public class GwtViewHelper {
 			}
 
 			// Scan the List<FolderRow> again.
+			FolderColumn commentsCol = new FolderColumn("comments");
 			for (FolderRow fr:  frList) {
 				// Skipping any binders.
 				if (fr.isBinder()) {
@@ -2109,6 +2110,17 @@ public class GwtViewHelper {
 					fr.setCanPurge( fm.testAccess(entry, FolderOperation.deleteEntry   ));
 					fr.setCanTrash( fm.testAccess(entry, FolderOperation.preDeleteEntry));
 					fr.setCanShare( GwtShareHelper.isEntitySharable(bs, entry          ));
+					
+					// If the user can't add replies to this entry...
+					if (!(fm.testAccess(entry, FolderOperation.addReply))) {
+						// ...and we have a CommentsInfo for it...
+						CommentsInfo ci = fr.getColumnValueAsComments(commentsCol);
+						if (null != ci) {
+							// ...update its can add replies field
+							// ...accordingly.
+							ci.setCanAddReplies(false);
+						}
+					}
 				}
 			}
 
@@ -3260,9 +3272,10 @@ public class GwtViewHelper {
 			FolderEntryDetails	reply  = new FolderEntryDetails(entityId);
 			
 			// ...set whether the user has seen this entry...
-			Long		folderId = entityId.getBinderId();
-			FolderEntry fe       = bs.getFolderModule().getEntry(folderId, entityId.getEntityId());
-			SeenMap		seenMap  = bs.getProfileModule().getUserSeenMap(userId);
+			Long			folderId = entityId.getBinderId();
+			FolderModule	fm       = bs.getFolderModule();
+			FolderEntry 	fe       = fm.getEntry(folderId, entityId.getEntityId());
+			SeenMap			seenMap  = bs.getProfileModule().getUserSeenMap(userId);
 			reply.setSeen(seenMap.checkIfSeen(fe));
 			
 			// ...set the entry's family and path... 
@@ -3299,13 +3312,14 @@ public class GwtViewHelper {
 			}
 			reply.setTitle(feTitle);
 			
-			// ...set information about the entry's comments... 
+			// ...set information about the entry's comments...
 			CommentsInfo ci = new CommentsInfo(
 				entityId,
 				feTitle,
 				(isTop                      ?
 					fe.getTotalReplyCount() :	// For top level entries, we show all the replies.
-					fe.getReplyCount()));		// For replies themselves, we only show their direct replies.
+					fe.getReplyCount()),		// For replies themselves, we only show their direct replies.
+				fm.testAccess(fe, FolderOperation.addReply));
 			reply.setComments(ci);
 
 			// ...if this is a comment...

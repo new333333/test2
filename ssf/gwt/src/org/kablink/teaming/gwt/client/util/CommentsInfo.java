@@ -41,6 +41,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class CommentsInfo implements IsSerializable {
+	private boolean		m_canAddReplies;	//
 	private EntityId	m_entityId;			//
 	private int			m_commentsCount;	//
 	private String		m_entityTitle;		//
@@ -65,8 +66,9 @@ public class CommentsInfo implements IsSerializable {
 	 * @param entityId
 	 * @param entityTitle
 	 * @param commentsCount
+	 * @param canAddReplies
 	 */
-	public CommentsInfo(EntityId entityId, String entityTitle, int commentsCount) {
+	public CommentsInfo(EntityId entityId, String entityTitle, int commentsCount, boolean canAddReplies) {
 		// Initialize this object...
 		this();
 		
@@ -74,6 +76,12 @@ public class CommentsInfo implements IsSerializable {
 		setEntityId(     entityId     );
 		setEntityTitle(  entityTitle  );
 		setCommentsCount(commentsCount);
+		setCanAddReplies(canAddReplies);
+	}
+	
+	public CommentsInfo(EntityId entityId, String entityTitle, int commentsCount) {
+		// Initialize this object.
+		this(entityId, entityTitle, commentsCount, true);
 	}
 	
 	/**
@@ -81,6 +89,7 @@ public class CommentsInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
+	public boolean  canAddReplies()      {return m_canAddReplies;  }
 	public EntityId getEntityId()        {return m_entityId;       }
 	public int      getCommentsCount()   {return m_commentsCount;  }
 	public String   getEntityTitle()     {return m_entityTitle;    }
@@ -91,6 +100,7 @@ public class CommentsInfo implements IsSerializable {
 	 * 
 	 * @param
 	 */
+	public void setCanAddReplies(  boolean  canAddReplies)   {m_canAddReplies   = canAddReplies;  }
 	public void setEntityId(       EntityId entityId)        {m_entityId        = entityId;       }
 	public void setCommentsCount(  int      commentsCount)   {m_commentsCount   = commentsCount;  }
 	public void setEntityTitle(    String   entityTitle)     {m_entityTitle     = entityTitle;    }
