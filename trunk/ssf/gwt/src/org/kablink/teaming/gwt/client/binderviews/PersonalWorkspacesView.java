@@ -150,7 +150,6 @@ public class PersonalWorkspacesView extends DataTableFolderViewBase {
 		if (reply && getFolderInfo().getWorkspaceType().isProfileRootManagement()) {
 			// ...we never show the bread crumb or footer there either.
 			switch (folderPanel) {
-			case BREADCRUMB:
 			case FOOTER: reply = false; break;
 			default:                    break;
 			}

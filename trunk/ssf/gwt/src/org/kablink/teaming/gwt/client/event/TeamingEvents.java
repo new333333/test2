@@ -251,6 +251,7 @@ public enum TeamingEvents implements IsSerializable {
 	DISABLE_SELECTED_USERS,							// Disables the Selected Users.
 	ENABLE_SELECTED_USERS,							// Enables the Selected Users.
 	FOLDER_ENTRY_ACTION_COMPLETE,					// An action on a folder entry has completed.
+	GET_MANAGE_USERS_TITLE,							// Event to request the manage users title.
 	LOCK_SELECTED_ENTRIES,							// Locks the Selected Entries.
 	MARK_READ_SELECTED_ENTRIES,						// Marks the Selected Entries as     Having Been Read.
 	MARK_UNREAD_SELECTED_ENTRIES,					// Marks the Selected Entries as Not Having Been Read.

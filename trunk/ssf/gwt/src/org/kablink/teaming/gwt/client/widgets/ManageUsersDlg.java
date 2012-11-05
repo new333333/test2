@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportProfilesDlgEvent;
+import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -72,7 +73,8 @@ public class ManageUsersDlg extends DlgBox
 	implements ViewReady,
 		// Event handlers implemented by this class.
 		FullUIReloadEvent.Handler,
-		InvokeImportProfilesDlgEvent.Handler
+		InvokeImportProfilesDlgEvent.Handler,
+		GetManageUsersTitleEvent.Handler
 {
 	public final static boolean SHOW_GWT_MANAGE_USERS	= false;	//! DRF:  Leave false on checkin until I get this working.
 	
@@ -99,6 +101,7 @@ public class ManageUsersDlg extends DlgBox
 	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
 		TeamingEvents.FULL_UI_RELOAD,
 		TeamingEvents.INVOKE_IMPORT_PROFILES_DLG,
+		TeamingEvents.GET_MANAGE_USERS_TITLE,
 	};
 	
 	/*
@@ -282,6 +285,18 @@ public class ManageUsersDlg extends DlgBox
 				showImportProfilesDlgAsync();
 			}
 		}
+	}
+	
+	/**
+	 * Handles GetManageUsersTitleEvent's received by this class.
+	 * 
+	 * Implements the GetManageUsersTitleEvent.Handler.onGetManageUsersTitle() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onGetManageUsersTitle(GetManageUsersTitleEvent event) {
+		event.getManageUsersTitleCallback().manageUsersTitle(m_manageUsersInfo.getAdminActionTitle());
 	}
 	
 	/*

@@ -44,6 +44,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class ManageUsersInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
 	private BinderInfo	m_profilesRootWSInfo;	//
+	private String		m_adminActionTitle;		//
 	
 	/**
 	 * Constructor method. 
@@ -59,13 +60,15 @@ public class ManageUsersInfoRpcResponseData implements IsSerializable, VibeRpcRe
 	 * Constructor method. 
 	 * 
 	 * @param profilesRootWSInfo
+	 * @param adminActionTitle
 	 */
-	public ManageUsersInfoRpcResponseData(BinderInfo profilesRootWSInfo) {
+	public ManageUsersInfoRpcResponseData(BinderInfo profilesRootWSInfo, String adminActionTitle) {
 		// Initialize the super class...
 		super();
 		
 		// ...and store the parameter.
 		setProfilesRootWSInfo(profilesRootWSInfo);
+		setAdminActionTitle(  adminActionTitle  );
 	}
 	
 	/**
@@ -74,6 +77,7 @@ public class ManageUsersInfoRpcResponseData implements IsSerializable, VibeRpcRe
 	 * @return
 	 */
 	public BinderInfo getProfilesRootWSInfo() {return m_profilesRootWSInfo;}
+	public String     getAdminActionTitle()  {return m_adminActionTitle;  }
 	
 	/**
 	 * Set'er methods.
@@ -81,4 +85,5 @@ public class ManageUsersInfoRpcResponseData implements IsSerializable, VibeRpcRe
 	 * @param
 	 */
 	public void setProfilesRootWSInfo(BinderInfo profilesRootWSInfo) {m_profilesRootWSInfo = profilesRootWSInfo;}
+	public void setAdminActionTitle(  String     adminActionTitle)   {m_adminActionTitle   = adminActionTitle;  }
 }

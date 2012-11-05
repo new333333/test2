@@ -865,6 +865,13 @@ public class GwtMenuHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static void constructEntryProfilesRootWSItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws, boolean manageUsers) {
+		// If we're not in the manage users version of the profiles
+		// root WS viewer...
+		if (!manageUsers) {
+			// ...there are no menu items.  Bail.
+			return;
+		}
+		
 		// If the user can add entries...
 		ProfileModule pm = bs.getProfileModule();
 		if (pm.testAccess(((ProfileBinder) ws), ProfileOperation.addEntry)) {
@@ -887,15 +894,11 @@ public class GwtMenuHelper {
 				entryToolbar.addNestedItem(addUserTBI);
 			}
 
-			// If we're in the manage users version of the profiles
-			// root WS viewer...
-			if (manageUsers) {
-				// ...we include the ability to import profiles too.
-				ToolbarItem importProfilesTBI = new ToolbarItem("1_importProfiles");
-				markTBITitle(importProfilesTBI, "toolbar.importProfiles");
-				markTBIEvent(importProfilesTBI, TeamingEvents.INVOKE_IMPORT_PROFILES_DLG);
-				entryToolbar.addNestedItem(importProfilesTBI);
-			}
+			// Add the ability to import profiles.
+			ToolbarItem importProfilesTBI = new ToolbarItem("1_importProfiles");
+			markTBITitle(importProfilesTBI, "toolbar.importProfiles");
+			markTBIEvent(importProfilesTBI, TeamingEvents.INVOKE_IMPORT_PROFILES_DLG);
+			entryToolbar.addNestedItem(importProfilesTBI);
 		}
 		
 		// Create a 'more' item for the disable/enable and purge/delete
