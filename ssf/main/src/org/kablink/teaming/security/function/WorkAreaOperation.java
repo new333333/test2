@@ -85,6 +85,7 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation ALLOW_SHARING_INTERNAL = new WorkAreaOperation("allowSharing");
     public final static WorkAreaOperation ALLOW_SHARING_EXTERNAL = new WorkAreaOperation("allowSharingExternal");
     public final static WorkAreaOperation ALLOW_SHARING_PUBLIC = new WorkAreaOperation("allowSharingPublic");
+    public final static WorkAreaOperation ALLOW_SHARING_FORWARD = new WorkAreaOperation("allowSharingForward");
 
     // The following rights should not be used in access management of workareas.
     // Used to give access to zone-wide functions to a group of users
@@ -98,6 +99,7 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation ENABLE_SHARING_INTERNAL = new WorkAreaOperation("enableSharing", true);
     public final static WorkAreaOperation ENABLE_SHARING_EXTERNAL = new WorkAreaOperation("enableSharingExternal", true);
     public final static WorkAreaOperation ENABLE_SHARING_PUBLIC = new WorkAreaOperation("enableSharingPublic", true);
+    public final static WorkAreaOperation ENABLE_SHARING_FORWARD = new WorkAreaOperation("enableSharingForward", true);
 
     // Default set of rights controlled by external ACLs.
 	public static final WorkAreaOperation[] EXTERNALLY_CONTROLLED_RIGHTS_DEFAULT = new WorkAreaOperation[] {
@@ -204,6 +206,7 @@ public class WorkAreaOperation {
 		protected Boolean allowSharing = Boolean.FALSE;
 		protected Boolean allowSharingExternal = Boolean.FALSE;
 		protected Boolean allowSharingPublic = Boolean.FALSE;
+		protected Boolean allowSharingForward = Boolean.FALSE;
 		
 		public RightSet() {}
 		
@@ -249,6 +252,7 @@ public class WorkAreaOperation {
 			result = 29 * result + (Boolean.TRUE.equals(allowSharing) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(allowSharingExternal) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(allowSharingPublic) ? 1231 : 1237);
+			result = 29 * result + (Boolean.TRUE.equals(allowSharingForward) ? 1231 : 1237);
 			return result;
 		}
 
@@ -281,6 +285,7 @@ public class WorkAreaOperation {
 			if(!equalRights(this.allowSharing, that.allowSharing)) return false;
 			if(!equalRights(this.allowSharingExternal, that.allowSharingExternal)) return false;
 			if(!equalRights(this.allowSharingPublic, that.allowSharingPublic)) return false;
+			if(!equalRights(this.allowSharingForward, that.allowSharingForward)) return false;
 			return true;
 		}
 
@@ -309,6 +314,7 @@ public class WorkAreaOperation {
 			if(this.allowSharing) rights.add(WorkAreaOperation.ALLOW_SHARING_INTERNAL);
 			if(this.allowSharingExternal) rights.add(WorkAreaOperation.ALLOW_SHARING_EXTERNAL);
 			if(this.allowSharingPublic) rights.add(WorkAreaOperation.ALLOW_SHARING_PUBLIC);
+			if(this.allowSharingForward) rights.add(WorkAreaOperation.ALLOW_SHARING_FORWARD);
 			return rights;
 		}
 
@@ -554,6 +560,15 @@ public class WorkAreaOperation {
 
 		public void setAllowSharingPublic(boolean allowSharingPublic) {
 			this.allowSharingPublic = allowSharingPublic;
+		}
+		
+		public boolean isAllowSharingForward() {
+			if(allowSharingForward == null) return false;
+			return allowSharingForward;
+		}
+
+		public void setAllowSharingForward(boolean allowSharingForward) {
+			this.allowSharingForward = allowSharingForward;
 		}
 		
 		private boolean equalRights(Boolean right1, Boolean right2) {

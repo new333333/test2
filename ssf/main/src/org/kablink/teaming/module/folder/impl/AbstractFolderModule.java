@@ -412,6 +412,11 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 				AccessUtils.operationCheck(entry, WorkAreaOperation.ALLOW_SHARING_PUBLIC);   
 				break;
 			}
+			case allowSharingForward:
+			{
+				AccessUtils.operationCheck(entry, WorkAreaOperation.ALLOW_SHARING_FORWARD);   
+				break;
+			}
 			case changeACL:
 			{
 				AccessUtils.operationCheck(entry, WorkAreaOperation.CHANGE_ACCESS_CONTROL);   

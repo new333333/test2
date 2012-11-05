@@ -49,6 +49,7 @@
     	<property name="allowSharing" column="right_allowSharing" access="field"/>
     	<property name="allowSharingExternal" column="right_allowSharingExternal" access="field"/>
     	<property name="allowSharingPublic" column="right_allowSharingPublic" access="field"/>
+    	<property name="allowSharingForward" column="right_allowSharingForward" access="field"/>
     </component> 
   </class>
 </hibernate-mapping>
