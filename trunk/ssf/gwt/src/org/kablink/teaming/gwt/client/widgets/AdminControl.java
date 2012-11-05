@@ -731,7 +731,7 @@ public class AdminControl extends TeamingPopupPanel
 			InvokeManageNetFoldersDlgEvent.fireOne();
 		}
 		
-		else if ( adminAction.getActionType() == AdminAction.ADD_USER && ManageUsersDlg.SHOW_GWT_MANAGE_USERS )
+		else if ( adminAction.getActionType() == AdminAction.ADD_USER )
 		{
 			// Fire the event to invoke the "Manage users" dialog.
 			InvokeManageUsersDlgEvent.fireOne();
