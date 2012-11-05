@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.kabling.teaming.install.client.AppUtil;
+import org.kabling.teaming.install.client.EditSuccessfulHandler;
 import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.client.images.CellTableResource;
 import org.kabling.teaming.install.client.widgets.AnchorCell;
@@ -27,7 +28,7 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 
-public class LuceneHighAvailabilityPanel extends Composite implements Handler,ClickHandler
+public class LuceneHighAvailabilityPanel extends Composite implements Handler,ClickHandler,EditSuccessfulHandler
 {
 	private MultiSelectionModel<HASearchNode> selectionModel;
 	private CellTable<HASearchNode> table;
@@ -132,14 +133,18 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 				//Ignore the dummy elements
 				if (contact.getHostName().startsWith("xxx.") || contact.getHostName().startsWith("yyy."))
 				{
-					//continue;
+					continue;
 				}
 				list.add(contact);
+			}
+			if (list.size() == 0)
+			{
+				table.setEmptyTableWidget(new Label("No high availability nodes found"));
 			}
 		}
 		else
 		{
-			table.setEmptyTableWidget(new Label("No Availability Nodes found"));
+			table.setEmptyTableWidget(new Label("No high availability nodes found"));
 		}
 
 		selectionModel = new MultiSelectionModel<HASearchNode>();
@@ -185,8 +190,18 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 		else if (event.getSource() == newButton)
 		{
 			NewLuceneHANodeDialog dlg = new NewLuceneHANodeDialog(config.getLucene());
-			dlg.createAllDlgContent("New Search Node", null, null, null);
+			dlg.createAllDlgContent("New Search Node", this, null, null);
 			dlg.show(true);
 		}
+	}
+
+	@Override
+	public boolean editSuccessful(Object obj) {
+		dataProvider.getList().add((HASearchNode)obj);
+		return true;
+	}
+
+	public List<HASearchNode> getAvailableNodes() {
+		return dataProvider.getList();
 	}
 }

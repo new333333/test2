@@ -205,10 +205,10 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 
 		previousButton = new Button(RBUNDLE.previous());
 		//We want the next/previous button to go all the way right
-		previousButton.setWidth("100%");
 		previousButton.addClickHandler(this);
 		previousButton.addStyleName("teamingButton");
 		m_footerPanel.add(previousButton);
+		m_footerPanel.setCellWidth(previousButton, "100%");
 
 		nextButton = new Button(RBUNDLE.next());
 		nextButton.addClickHandler(this);

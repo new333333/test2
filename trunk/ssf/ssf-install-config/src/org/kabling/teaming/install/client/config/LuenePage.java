@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
+import org.kabling.teaming.install.client.ValueRequiredValidator;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.shared.Lucene;
@@ -97,6 +98,7 @@ public class LuenePage extends ConfigPageDlgBox implements ClickHandler, ChangeH
 			hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 			luceneAddrTextBox = new VibeTextBox();
+			luceneAddrTextBox.setValidator(new ValueRequiredValidator(luceneAddrTextBox));
 			hostTable.setWidget(row, 1, luceneAddrTextBox);
 			hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -126,10 +128,53 @@ public class LuenePage extends ConfigPageDlgBox implements ClickHandler, ChangeH
 		return fPanel;
 	}
 
+	private boolean isValid()
+	{
+		if (!luceneAddrTextBox.isValid())
+		{
+			setErrorMessage("Required field.");
+			return false;
+		}
+		
+		if (configTypeListBox.getSelectedIndex() == 2)
+		{
+			if (haPanel.getAvailableNodes() == null || haPanel.getAvailableNodes().size() == 0)
+			{
+				setErrorMessage("No high availability nodes exists.");
+				return false;
+			}
+		}
+		return true;
+		
+	}
 	@Override
 	public Object getDataFromDlg()
 	{
-		return config;
+		
+		if (!isValid())
+			return null;
+		
+		Lucene lucene = config.getLucene();
+		lucene.setMaxBooleans(maxBoolsSpinner.getValueAsInt());
+		lucene.setMergeFactor(mergeFactorSpinner.getValueAsInt());
+		
+		//Configuration type (local, server or ha)
+		if (configTypeListBox.getSelectedIndex() == 0)
+			lucene.setLocation("local");
+		else if (configTypeListBox.getSelectedIndex() == 1)
+			lucene.setLocation("server");
+		else
+			lucene.setLocation("ha");
+		
+		lucene.setIndexHostName(luceneAddrTextBox.getText());
+		lucene.setRmiPort(rmiPortSpinner.getValueAsInt());
+		
+		if (configTypeListBox.getSelectedIndex() == 2)
+		{
+			//Save high availability information
+			lucene.setSearchNodesList(haPanel.getAvailableNodes());
+		}
+		return null;
 	}
 
 	@Override
