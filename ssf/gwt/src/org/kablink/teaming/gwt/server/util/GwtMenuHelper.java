@@ -860,7 +860,7 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for the root profiles workspace view.
 	 * 
-	 * The logic for this was copied from
+	 * The initial logic for this was copied from
 	 * ProfilesBinderHelper.buildViewEntryToolbar().
 	 */
 	@SuppressWarnings("unchecked")
@@ -908,7 +908,9 @@ public class GwtMenuHelper {
 		markTBITitle(moreTBI, "toolbar.more");
 		
 		// If the user can manage entries in the workspace...
-		if (pm.testAccess(((ProfileBinder) ws), ProfileOperation.manageEntries)) {
+		boolean needSeparator     = false;
+		boolean canManageProfiles = pm.testAccess(((ProfileBinder) ws), ProfileOperation.manageEntries);
+		if (canManageProfiles) {
 			// ...add the disable item...
 			tbi = new ToolbarItem("1_disableSelected");
 			markTBITitle(tbi, "toolbar.disable");
@@ -920,32 +922,31 @@ public class GwtMenuHelper {
 			markTBITitle(tbi, "toolbar.enable");
 			markTBIEvent(tbi, TeamingEvents.ENABLE_SELECTED_USERS);
 			moreTBI.addNestedItem(tbi);
+			
+			needSeparator = true;
 		}
 		
 		// If the user can delete binders from the workspace...
-		BinderModule bm = bs.getBinderModule();
-		boolean canTrash = bm.testAccess(ws, BinderOperation.preDeleteBinder);
+		BinderModule	bm       = bs.getBinderModule();
+		boolean			canTrash = bm.testAccess(ws, BinderOperation.preDeleteBinder);
+		boolean			needSep2 = false;
 		if (canTrash) {
-			// ...if needed...
-			if (!(moreTBI.getNestedItemsList().isEmpty())) {
-				// ...add a separator item...
-				moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
-			}
+			// ...if needed add a separator item...
+			needSeparator = addNestedSeparatorIfNeeded(moreTBI, needSeparator);
 			
 			// ...and add the delete workspaces item.
 			tbi = new ToolbarItem("1_deletedSelectedWS");
 			markTBITitle(tbi, "toolbar.delete.workspaces");
 			markTBIEvent(tbi, TeamingEvents.DELETE_SELECTED_USER_WORKSPACES);
 			moreTBI.addNestedItem(tbi);
+			
+			needSep2 = true;
 		}
 			
 		// If the user can purge binders from the workspace...
 		if (bm.testAccess(ws, BinderOperation.deleteBinder)) {
-			// ...if needed...
-			if ((!canTrash) && (!(moreTBI.getNestedItemsList().isEmpty()))) {
-				// ...add a separator item...
-				moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
-			}
+			// ...if needed add a separator item...
+			needSeparator = addNestedSeparatorIfNeeded(moreTBI, needSeparator);
 			
 			// ...add the purge workspaces item...
 			tbi = new ToolbarItem("1_purgeSelectedWS");
@@ -953,13 +954,28 @@ public class GwtMenuHelper {
 			markTBIEvent(tbi, TeamingEvents.PURGE_SELECTED_USER_WORKSPACES);
 			moreTBI.addNestedItem(tbi);
 			
-			// ...and add the purge users item.
+			// ...add the purge users item...
 			tbi = new ToolbarItem("1_purgeSelectedUsers");
 			markTBITitle(tbi, "toolbar.purge.users");
 			markTBIEvent(tbi, TeamingEvents.PURGE_SELECTED_USERS);
 			moreTBI.addNestedItem(tbi);
-		}
 			
+			needSep2 = true;
+		}
+
+		// ...if the user can manage profiles and if system wide
+		// ...sharing is enabled...
+		if (canManageProfiles && bs.getSharingModule().isSharingEnabled()) {
+			// ...if needed add a separator item...
+			addNestedSeparatorIfNeeded(moreTBI, (needSep2 || needSeparator));
+			
+			// ...and add the set selected user share rights.
+			tbi = new ToolbarItem("1_setShareRights");
+			markTBITitle(tbi, "toolbar.setUserWSShareRights");
+			markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_SHARE_RIGHTS);
+			moreTBI.addNestedItem(tbi);
+		}
+				
 		// Finally, if we added anything to the more toolbar...
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {
 			// ...and the more toolbar to the entry toolbar.

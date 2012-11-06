@@ -262,6 +262,7 @@ public enum TeamingEvents implements IsSerializable {
 	RESET_ENTRY_MENU,								// Resets the Entry Menu on the Given Folder.
 	SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY,	// Sets the visibility of the desktop application download control. 
 	SET_FOLDER_SORT,								// Sets a folder sort options.
+	SET_SELECTED_USER_SHARE_RIGHTS,					// Sets the share rights for the selected users.
 	SHARE_SELECTED_ENTRIES,							// Shares the Selected Entries.
 	SUBSCRIBE_SELECTED_ENTRIES,						// Subscribes the Current User to the Selected Entries.
 	TOGGLE_SHARED_VIEW,								// Toggles the 'Shared by/with Me' Views Between Files and All Entries.

@@ -61,6 +61,7 @@ import org.kablink.teaming.gwt.client.event.PurgeSelectedUserWorkspacesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.ResetEntryMenuEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
+import org.kablink.teaming.gwt.client.event.SetSelectedUserShareRightsEvent;
 import org.kablink.teaming.gwt.client.event.ShowAccessoriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
@@ -910,6 +911,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          folderId   ); break;
 					case PURGE_SELECTED_USER_WORKSPACES:      event = new PurgeSelectedUserWorkspacesEvent(   folderId   ); break;
 					case PURGE_SELECTED_USERS:                event = new PurgeSelectedUsersEvent(            folderId   ); break;
+					case SET_SELECTED_USER_SHARE_RIGHTS:      event = new SetSelectedUserShareRightsEvent(    folderId   ); break;
 					case SHOW_ACCESSORIES:                    event = new ShowAccessoriesEvent(               folderId   ); break;
 					case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          folderId   ); break;
 					case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      folderId   ); break;
