@@ -2026,7 +2026,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case IS_ALL_USERS_GROUP:
 		{
 			String groupId = ((IsAllUsersGroupCmd) cmd).getGroupId();
-			Boolean result = isAllUsersGroup( ri, groupId );	//Note, this checks for either allUsers or allExtUsers
+			Boolean result = GwtServerHelper.isAllUsersGroup( this, Long.parseLong( groupId ));	//Note, this checks for either allUsers or allExtUsers
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -5214,38 +5214,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return reply;
 	}//end untrackPerson()
 
-	/*
-	 * Return whether the given group is the "all users" group.
-	 */
-	private Boolean isAllUsersGroup( HttpRequestInfo ri, String groupId ) throws GwtTeamingException
-	{
-		try
-		{
-			Long groupIdL;
-			Principal group;
-
-			// Get the group object.
-			groupIdL = Long.valueOf(groupId);
-			group = getProfileModule().getEntry(groupIdL);
-			if ( group != null && group instanceof Group )
-			{
-				String internalId;
-				
-				internalId = group.getInternalId();
-				if ( internalId != null && (internalId.equalsIgnoreCase( ObjectKeys.ALL_USERS_GROUP_INTERNALID ) ||
-						internalId.equalsIgnoreCase( ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID )))
-					return Boolean.TRUE;
-			}
-		}
-		catch (Exception ex)
-		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
-		}
-		
-		// If we get here the group is not the "all users" group.
-		return Boolean.FALSE;
-	}
-	
 	/**
 	 * Called to check if the current user is tracking the
 	 * person whose workspace is the specified binder.
