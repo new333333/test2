@@ -295,7 +295,7 @@ public class WorkAreaOperation {
 			if(this.modifyEntries) rights.add(WorkAreaOperation.MODIFY_ENTRIES);
 			if(this.modifyEntryFields) rights.add(WorkAreaOperation.MODIFY_ENTRY_FIELDS);
 			if(this.deleteEntries) rights.add(WorkAreaOperation.DELETE_ENTRIES);
-			if(this.readEntries) rights.add(WorkAreaOperation.ADD_REPLIES);
+			if(this.readEntries) rights.add(WorkAreaOperation.READ_ENTRIES);
 			if(this.addReplies) rights.add(WorkAreaOperation.ADD_REPLIES);
 			if(this.generateReports) rights.add(WorkAreaOperation.GENERATE_REPORTS);
 			if(this.binderAdministration) rights.add(WorkAreaOperation.BINDER_ADMINISTRATION);
@@ -334,7 +334,7 @@ public class WorkAreaOperation {
 			Field f;
 			try {
 				f = c.getDeclaredField(rightName);
-				return f.getBoolean(this);
+				return ((Boolean) f.get(this)).booleanValue();
 			} catch (NoSuchFieldException e) {
 				throw new IllegalArgumentException("Invalid right name '" + rightName + "'", e);
 			} catch (IllegalAccessException e) {
