@@ -418,8 +418,8 @@ public class GwtViewHelper {
 		 */
 		private int compareBySharable(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
 			int reply;
-			boolean isSharable1 = psi1.getRights().getCanShareWithOthers();
-			boolean isSharable2 = psi2.getRights().getCanShareWithOthers();
+			boolean isSharable1 = psi1.getRights().getCanShareForward();
+			boolean isSharable2 = psi2.getRights().getCanShareForward();
 			if      (isSharable1 == isSharable2) reply = COMPARE_EQUAL;
 			else if (isSharable1)                reply = COMPARE_GREATER;
 			else                                 reply = COMPARE_LESS;
@@ -4762,7 +4762,7 @@ public class GwtViewHelper {
 				case VIEWER:       access = NLT.get("collections.access.viewer");      break;
 				}
 			}
-			if (rights.getCanShareWithOthers()) {
+			if (rights.getCanShareForward()) {
 				if (0 < access.length()) {
 					access += " + ";
 				}

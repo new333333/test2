@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
-import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -52,7 +51,7 @@ public class GwtSharingInfo
 	private ArrayList<GwtShareItem> m_listOfShareItems;
 	private ArrayList<GwtShareItem> m_listOfToBeDeletedShareItems;
 	private HashMap<EntityId, String> m_entityNamesMap;
-	private HashMap<EntityId, AccessRights> m_entityAccessRightsMap;	// Holds the "highest" access right the logged-in user has to the entity
+	private HashMap<EntityId, ShareRights> m_entityShareRightsMap;	// Holds the "highest" access right the logged-in user has to the entity
 	private SendToValue m_sendToValue;
 	private boolean m_notifyRecipients;
 	private boolean m_canShareWithExternalUsers;
@@ -67,7 +66,7 @@ public class GwtSharingInfo
 		m_listOfShareItems = null;
 		m_listOfToBeDeletedShareItems = null;
 		m_entityNamesMap = null;
-		m_entityAccessRightsMap = null;
+		m_entityShareRightsMap = null;
 		m_notifyRecipients = true;
 		m_canShareWithExternalUsers = false;
 		m_canShareWithInternalUsers = false;
@@ -104,16 +103,16 @@ public class GwtSharingInfo
 	}
 	
 	/**
-	 * Return the "highest" access right the logged-in user has to the given entity
+	 * Return the "highest" share right the logged-in user has to the given entity
 	 */
-	public AccessRights getAccessRights( EntityId entityId )
+	public ShareRights getShareRights( EntityId entityId )
 	{
 		Set<EntityId> entityIds;
 		
-		if ( entityId == null || m_entityAccessRightsMap == null )
-			return AccessRights.UNKNOWN;
+		if ( entityId == null || m_entityShareRightsMap == null )
+			return null;
 		
-		entityIds = m_entityAccessRightsMap.keySet();
+		entityIds = m_entityShareRightsMap.keySet();
 		if ( entityIds != null )
 		{
 			for ( EntityId nextEntityId : entityIds )
@@ -121,14 +120,17 @@ public class GwtSharingInfo
 				// Is this the EntityId we are looking for?
 				if ( entityId.equalsEntityId( nextEntityId ) )
 				{
+					ShareRights shareRights;
+					
 					// Yes
-					return m_entityAccessRightsMap.get( nextEntityId );
+					shareRights = m_entityShareRightsMap.get( nextEntityId );
+					return shareRights;
 				}
 			}
 		}
 		
 		// If we get here we did not find the entityId
-		return AccessRights.UNKNOWN;
+		return null;
 	}
 	
 	/**
@@ -275,12 +277,12 @@ public class GwtSharingInfo
 	/**
 	 * 
 	 */
-	public void setEntityAccessRights( EntityId entityId, AccessRights accessRights )
+	public void setEntityShareRights( EntityId entityId, ShareRights shareRights )
 	{
-		if ( m_entityAccessRightsMap == null )
-			m_entityAccessRightsMap = new HashMap<EntityId, AccessRights>();
+		if ( m_entityShareRightsMap == null )
+			m_entityShareRightsMap = new HashMap<EntityId, ShareRights>();
 		
-		m_entityAccessRightsMap.put( entityId, accessRights );
+		m_entityShareRightsMap.put( entityId, shareRights );
 	}
 	
 	/**

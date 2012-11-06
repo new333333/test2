@@ -2016,7 +2016,10 @@ public interface GwtTeamingMessages extends Messages
 	String editShareNoteDlg_noteLabel();
 
 	// Strings used in the Edit Share Rights dialog
+	String editShareRightsDlg_CanShareExternalLabel();
+	String editShareRightsDlg_CanShareInternalLabel();
 	String editShareRightsDlg_CanShareLabel();
+	String editShareRightsDlg_CanSharePublicLabel();
 	String editShareRightsDlg_caption();
 	String editShareRightsDlg_ContributorLabel();
 	String editShareRightsDlg_EditorLabel();

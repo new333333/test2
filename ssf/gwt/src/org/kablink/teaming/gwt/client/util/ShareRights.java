@@ -42,7 +42,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ShareRights implements IsSerializable
 {
 	private AccessRights m_accessRights;
-	private boolean m_canShareWithOthers;
+	private boolean m_canShareForward;
+	private boolean m_canShareWithExternalUsers;
+	private boolean m_canShareWithInternalUsers;
+	private boolean m_canShareWithPublic;
 	
 	/**
 	 * 
@@ -62,7 +65,10 @@ public class ShareRights implements IsSerializable
 	public ShareRights()
 	{
 		m_accessRights = AccessRights.UNKNOWN;
-		m_canShareWithOthers = false;
+		m_canShareWithExternalUsers = false;
+		m_canShareWithInternalUsers = false;
+		m_canShareWithPublic = false;
+		m_canShareForward = false;
 	}
 	
 	/**
@@ -76,9 +82,33 @@ public class ShareRights implements IsSerializable
 	/**
 	 * 
 	 */
-	public boolean getCanShareWithOthers()
+	public boolean getCanShareForward()
 	{
-		return m_canShareWithOthers;
+		return m_canShareForward;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getCanShareWithExternalUsers()
+	{
+		return m_canShareWithExternalUsers;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getCanShareWithInternalUsers()
+	{
+		return m_canShareWithInternalUsers;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getCanShareWithPublic()
+	{
+		return m_canShareWithPublic;
 	}
 	
 	/**
@@ -109,9 +139,33 @@ public class ShareRights implements IsSerializable
 	/**
 	 * 
 	 */
-	public void setCanShareWithOthers( boolean canShare )
+	public void setCanShareForward( boolean canShareForward )
 	{
-		m_canShareWithOthers = canShare;
+		m_canShareForward = canShareForward;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCanShareWithExternalUsers( boolean canShareWithExternalUsers )
+	{
+		m_canShareWithExternalUsers = canShareWithExternalUsers;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCanShareWithInternalUsers( boolean canShareWithInternalUsers )
+	{
+		m_canShareWithInternalUsers = canShareWithInternalUsers;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCanShareWithPublic( boolean canShareWithPublic )
+	{
+		m_canShareWithPublic = canShareWithPublic;
 	}
 }
 
