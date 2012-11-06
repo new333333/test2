@@ -63,7 +63,6 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
@@ -92,9 +91,20 @@ import org.kablink.teaming.web.util.MiscUtil;
 public class GwtShareHelper 
 {
 	protected static Log m_logger = LogFactory.getLog( GwtShareHelper.class );
-	private static long MILLISEC_IN_A_DAY = 86400000; 
-	
+	private static long MILLISEC_IN_A_DAY = 86400000;
 
+	
+	/**
+	 * 
+	 */
+	public enum ShareOperation
+	{
+		SHARE_FORWARD,
+		SHARE_WITH_EXTERNAL_USERS,
+		SHARE_WITH_INTERNAL_USERS,
+		SHARE_WITH_PUBLIC,
+	}
+	
 	/**
 	 * Compare the 2 RightSet objects to see if they have the same rights
 	 */
@@ -110,37 +120,85 @@ public class GwtShareHelper
 	}
 	
 	/**
-	 * See if the user can share the given entities for the given operation
+	 * See if the user can share the given entity
 	 */
 	public static boolean canShareWith(
 		AllModulesInjected ami,
-		List<EntityId> listOfEntityIds,
-		FolderOperation shareOperation )
+		EntityId entityId,
+		ShareOperation shareOperation )
 	{
 		BinderModule binderModule;
 		FolderModule folderModule;
 		User currentUser;
-		BinderOperation binderOperation;
 		
 		binderModule = ami.getBinderModule();
 		folderModule = ami.getFolderModule();
 		currentUser = GwtServerHelper.getCurrentUser();
 		
-		// Get the appropriate binder operation
-		if ( shareOperation == FolderOperation.allowSharing )
-			binderOperation = BinderOperation.allowSharing;
-		else if ( shareOperation == FolderOperation.allowSharingExternal )
-			binderOperation = BinderOperation.allowSharingExternal;
-		else if ( shareOperation == FolderOperation.allowSharingPublic )
-			binderOperation = BinderOperation.allowSharingPublic;
-		else if ( shareOperation == FolderOperation.allowSharingForward )
-			binderOperation = BinderOperation.allowSharingForward;
-		else
+		try
 		{
-			m_logger.info( "In GwtShareHelper.canShareWith(), unknown folder operation: " + shareOperation.toString() );
+			BinderOperation binderOperation;
+			FolderOperation folderOperation;
+
+			switch ( shareOperation )
+			{
+			case SHARE_FORWARD:
+				binderOperation = BinderOperation.allowSharingForward;
+				folderOperation = FolderOperation.allowSharingForward;
+				break;
+			
+			case SHARE_WITH_EXTERNAL_USERS:
+				binderOperation = BinderOperation.allowSharingExternal;
+				folderOperation = FolderOperation.allowSharingExternal;
+				break;
+			
+			case SHARE_WITH_INTERNAL_USERS:
+				binderOperation = BinderOperation.allowSharing;
+				folderOperation = FolderOperation.allowSharing;
+				break;
+			
+			case SHARE_WITH_PUBLIC:
+				binderOperation = BinderOperation.allowSharingPublic;
+				folderOperation = FolderOperation.allowSharingPublic;
+				break;
+			
+			default:
+				m_logger.info( "InGwtShareHelper.canShareWith(), unknown share operation: " + shareOperation.toString() );
+				return false;
+			}
+
+			if ( entityId.isBinder() )
+			{
+				Binder binder;
+				
+				binder = binderModule.getBinder( entityId.getEntityId() );
+				binderModule.checkAccess( currentUser, binder, binderOperation );
+			}
+			else
+			{
+				FolderEntry folderEntry;
+				
+				folderEntry = folderModule.getEntry( entityId.getBinderId(), entityId.getEntityId() );
+				folderModule.checkAccess( folderEntry, folderOperation );
+			}
+		}
+		catch ( AccessControlException acEx )
+		{
 			return false;
 		}
-		
+
+		// If we get here the user has rights to the given share operation
+		return true;
+	}
+	
+	/**
+	 * See if the user can share the given entities for the given operation
+	 */
+	public static boolean canShareWith(
+		AllModulesInjected ami,
+		List<EntityId> listOfEntityIds,
+		ShareOperation shareOperation )
+	{
 		// Go through the list of entities and see if the user has the right to the given share operation
 		if ( listOfEntityIds != null )
 		{
@@ -148,20 +206,8 @@ public class GwtShareHelper
 			{
 				for ( EntityId entityId : listOfEntityIds )
 				{
-					if ( entityId.isBinder() )
-					{
-						Binder binder;
-						
-						binder = binderModule.getBinder( entityId.getEntityId() );
-						binderModule.checkAccess( currentUser, binder, binderOperation );
-					}
-					else
-					{
-						FolderEntry folderEntry;
-						
-						folderEntry = folderModule.getEntry( entityId.getBinderId(), entityId.getEntityId() );
-						folderModule.checkAccess( folderEntry, shareOperation );
-					}
+					if ( canShareWith( ami, entityId, shareOperation ) == false )
+						return false;
 				}
 			}
 			catch ( AccessControlException acEx )
@@ -181,7 +227,7 @@ public class GwtShareHelper
 		AllModulesInjected ami,
 		List<EntityId> listOfEntityIds )
 	{
-		return canShareWith( ami, listOfEntityIds, FolderOperation.allowSharingExternal );
+		return canShareWith( ami, listOfEntityIds, ShareOperation.SHARE_WITH_EXTERNAL_USERS );
 	}
 
 	/**
@@ -191,7 +237,7 @@ public class GwtShareHelper
 		AllModulesInjected ami,
 		List<EntityId> listOfEntityIds )
 	{
-		return canShareWith( ami, listOfEntityIds, FolderOperation.allowSharing );
+		return canShareWith( ami, listOfEntityIds, ShareOperation.SHARE_WITH_INTERNAL_USERS );
 	}
 
 	/**
@@ -201,7 +247,7 @@ public class GwtShareHelper
 		AllModulesInjected ami,
 		List<EntityId> listOfEntityIds )
 	{
-		return canShareWith( ami, listOfEntityIds, FolderOperation.allowSharingPublic );
+		return canShareWith( ami, listOfEntityIds, ShareOperation.SHARE_WITH_PUBLIC );
 	}
 
 	/**
@@ -211,7 +257,7 @@ public class GwtShareHelper
 		AllModulesInjected ami,
 		List<EntityId> listOfEntityIds )
 	{
-		return canShareWith( ami, listOfEntityIds, FolderOperation.allowSharingForward );
+		return canShareWith( ami, listOfEntityIds, ShareOperation.SHARE_FORWARD );
 	}
 
 	/**
@@ -339,11 +385,80 @@ public class GwtShareHelper
 	}
 	
 	/**
+	 * Get AccessRights that corresponds to the given RightSet
+	 */
+	public static AccessRights getAccessRightsFromRightSet( RightSet rightSet )
+	{
+		AccessRights accessRights;
+		
+		accessRights = AccessRights.UNKNOWN;
+		
+		if ( rightSet != null )
+		{
+			RightSet viewerRightSet;
+			RightSet editorRightSet;
+			RightSet contributorRightSet;
+			boolean shareInternal;
+			boolean shareExternal;
+			boolean sharePublic;
+			boolean shareForward;
+
+			// areRightSetsEqual() compares "share internal", "share external", "share public" and "share forward".
+			// That is why we are setting them to false.
+			shareInternal = rightSet.isAllowSharing();
+			shareExternal = rightSet.isAllowSharingExternal();
+			sharePublic = rightSet.isAllowSharingPublic();
+			shareForward = rightSet.isAllowSharingForward();
+			rightSet.setAllowSharing( false );
+			rightSet.setAllowSharingExternal( false );
+			rightSet.setAllowSharingPublic( false );
+			rightSet.setAllowSharingForward( false );
+
+			viewerRightSet = getViewerRightSet();
+			editorRightSet = getEditorRightSet();
+			contributorRightSet = getContributorRightSet();
+
+			// Is the given RightSet equal to the "View" RightSet
+			if ( areRightSetsEqual( rightSet, viewerRightSet ) )
+			{
+				// Yes
+				accessRights = AccessRights.VIEWER;
+			}
+			// Is the given RightSet equal to the "Editor" RightSet
+			else if ( areRightSetsEqual( rightSet, editorRightSet ) )
+			{
+				// Yes
+				accessRights = AccessRights.EDITOR;
+			}
+			// Is the given RightSet equal to the "Contributor" RightSet
+			else if ( areRightSetsEqual( rightSet, contributorRightSet ) )
+			{
+				// Yes
+				accessRights = AccessRights.CONTRIBUTOR;
+			}
+			
+			// Restore the values we set to false.
+			rightSet.setAllowSharing( shareInternal );
+			rightSet.setAllowSharingExternal( shareExternal );
+			rightSet.setAllowSharingPublic( sharePublic );
+			rightSet.setAllowSharingForward( shareForward );
+		}
+		
+		return accessRights;
+	}
+
+	/**
 	 * Return the RightSet that corresponds to the "Contributor" rights
 	 */
 	private static RightSet getContributorRightSet()
 	{
-		return ShareItem.Role.CONTRIBUTOR.getRightSet();
+		RightSet rightSet;
+		List<WorkAreaOperation> operations;
+		
+		operations = ShareItem.Role.CONTRIBUTOR.getRightSet().getRights();
+		rightSet = new RightSet( operations.toArray( new WorkAreaOperation[ operations.size() ] ) );
+
+		return rightSet;
 	}
 	
 	/**
@@ -351,7 +466,13 @@ public class GwtShareHelper
 	 */
 	private static RightSet getEditorRightSet()
 	{
-		return ShareItem.Role.EDITOR.getRightSet();
+		RightSet rightSet;
+		List<WorkAreaOperation> operations;
+		
+		operations = ShareItem.Role.EDITOR.getRightSet().getRights();
+		rightSet = new RightSet( operations.toArray( new WorkAreaOperation[ operations.size() ] ) );
+		
+		return rightSet;
 	}
 	
 	/**
@@ -538,14 +659,18 @@ public class GwtShareHelper
 	}
 	
 	/**
-	 * Return the "highest" access rights the logged-in user has to the given entity
+	 * Return the "highest" share rights the logged-in user has to the given entity
 	 */
-	private static AccessRights getHighestEntityAccessRights( AllModulesInjected ami, EntityId entityId )
+	private static ShareRights getHighestEntityShareRights( AllModulesInjected ami, EntityId entityId )
 	{
 		ShareItemSelectSpec spec;
 		EntityIdentifier entityIdentifier;
 		List<ShareItem> listOfShareItems = null;
 		AccessRights accessRights;
+		ShareRights shareRights;
+		boolean result;
+		
+		shareRights = new ShareRights();
 		
 		// Get the current user's acl rights to the given entity.
 		accessRights = getHighestEntityAccessRightsFromACLs( ami, entityId );
@@ -574,11 +699,9 @@ public class GwtShareHelper
 			// Get the "highest" rights that have been given to the current user via a share.
 			for ( ShareItem nextShareItem : listOfShareItems )
 			{
-				ShareRights shareRights;
 				AccessRights nextAccessRights;
 				
-				shareRights = getShareRightsFromRightSet( nextShareItem.getRightSet() );
-				nextAccessRights = shareRights.getAccessRights();
+				nextAccessRights = getAccessRightsFromRightSet( nextShareItem.getRightSet() );
 				
 				switch( accessRights )
 				{
@@ -595,7 +718,34 @@ public class GwtShareHelper
 			}
 		}
 		
-		return accessRights;
+		shareRights.setAccessRights( accessRights );
+		
+		// Determine if the user has "can share with external users" rights.
+		result = canShareWith( ami, entityId, ShareOperation.SHARE_WITH_EXTERNAL_USERS );
+		shareRights.setCanShareWithExternalUsers( result );
+
+		// Determine if the user has "can share with internal users" rights.
+		result = canShareWith( ami, entityId, ShareOperation.SHARE_WITH_INTERNAL_USERS );
+		shareRights.setCanShareWithInternalUsers( result );
+
+		// Determine if the user has "can share with the public" rights.
+		result = canShareWith( ami, entityId, ShareOperation.SHARE_WITH_PUBLIC );
+		shareRights.setCanShareWithPublic( result );
+		
+		// Determine if the user has "can share forward" rights.
+		{
+			DefinableEntity entity;
+			
+			if ( entityId.isBinder() )
+				entity = ami.getBinderModule().getBinder( entityId.getEntityId() );
+			else
+				entity = ami.getFolderModule().getEntry( entityId.getBinderId(), entityId.getEntityId() );
+			
+			result = ami.getSharingModule().testShareEntityForward( entity );
+			shareRights.setCanShareForward( result );
+		}
+		
+		return shareRights;
 	}
 	
 	/**
@@ -746,8 +896,7 @@ public class GwtShareHelper
 					ShareRights shareRights;
 					
 					shareRights = getShareRightsFromRightSet( nextShareItem.getRightSet() );
-					gwtShareItem.setShareAccessRights( shareRights.getAccessRights() );
-					gwtShareItem.setShareCanShareWithOthers( shareRights.getCanShareWithOthers() );
+					gwtShareItem.setShareRights( shareRights );
 				}
 
 				listOfGwtShareItems.add( gwtShareItem );
@@ -862,9 +1011,12 @@ public class GwtShareHelper
 			m_logger.error( "In GwtShareHelper.getRightSet(), unknown share rights" );
 			break;
 		}
+		
+		rightSet.setAllowSharingForward( shareRights.getCanShareForward() );
+		rightSet.setAllowSharing( shareRights.getCanShareWithInternalUsers() );
+		rightSet.setAllowSharingExternal( shareRights.getCanShareWithExternalUsers() );
+		rightSet.setAllowSharingPublic( shareRights.getCanShareWithPublic() );
 	
-		rightSet.setAllowSharing( shareRights.getCanShareWithOthers() );
-
 		return rightSet;
 	}
 	
@@ -877,49 +1029,27 @@ public class GwtShareHelper
 
 		shareRights = new ShareRights();
 		shareRights.setAccessRights( ShareRights.AccessRights.UNKNOWN );
-		shareRights.setCanShareWithOthers( false );
 
 		if ( rightSet != null )
 		{
-			RightSet tmpRightSet;
+			AccessRights accessRights;
 
-			shareRights.setCanShareWithOthers( rightSet.isAllowSharing() );
-			
-			// areRightSetsEqual() compares "allow sharing".  That is why we
-			// are setting "allow sharing" to false.
-			rightSet.setAllowSharing( false );
+			accessRights = getAccessRightsFromRightSet( rightSet );
+			shareRights.setAccessRights( accessRights );
 
-			// Is the given RightSet equal to the "View" RightSet
-			tmpRightSet = getViewerRightSet();
-			if ( areRightSetsEqual( rightSet, tmpRightSet ) )
-			{
-				// Yes
-				shareRights.setAccessRights( ShareRights.AccessRights.VIEWER );
-				return shareRights;
-			}
+			// Does the RightSet allow "share with external users"?
+			shareRights.setCanShareWithExternalUsers( rightSet.isAllowSharingExternal() );
 			
-			// Is the given RightSet equal to the "Contributor" RightSet
-			tmpRightSet = getContributorRightSet();
-			if ( areRightSetsEqual( rightSet, tmpRightSet ) )
-			{
-				// Yes
-				shareRights.setAccessRights( ShareRights.AccessRights.CONTRIBUTOR );
-				
-				return shareRights;
-			}
+			// Does the RightSet allow "share with internal users"?
+			shareRights.setCanShareWithInternalUsers( rightSet.isAllowSharing() );
 			
-			// Is the given RightSet equal to the "Editor" RightSet
-			tmpRightSet = getEditorRightSet();
-			if ( areRightSetsEqual( rightSet, tmpRightSet ) )
-			{
-				// Yes
-				shareRights.setAccessRights( ShareRights.AccessRights.EDITOR );
-				
-				return shareRights;
-			}
+			// Does the RightSet allow "share with public"?
+			shareRights.setCanShareWithPublic( rightSet.isAllowSharingPublic() );
+			
+			// Does the RightSet allow "share forward"?
+			shareRights.setCanShareForward( rightSet.isAllowSharingForward() );
 		}
 		
-		// If we get here we didn't find a match.
 		return shareRights;
 	}
 
@@ -955,15 +1085,15 @@ public class GwtShareHelper
 		{
 			ArrayList<GwtShareItem> listOfGwtShareItems;
 			String entityName;
-			AccessRights accessRights;
+			ShareRights shareRights;
 
 			// Get the name of the entity
 			entityName = getEntityName( ami, nextEntityId );
 			sharingInfo.setEntityName( nextEntityId, entityName );
 			
-			// Get the highest acccess rights the logged-in user has to this entity
-			accessRights = getHighestEntityAccessRights( ami, nextEntityId );
-			sharingInfo.setEntityAccessRights( nextEntityId, accessRights );
+			// Get the highest share rights the logged-in user has to this entity
+			shareRights = getHighestEntityShareRights( ami, nextEntityId );
+			sharingInfo.setEntityShareRights( nextEntityId, shareRights );
 			
 			// Get the list of GwtShareItem objects for the given user/entity
 			listOfGwtShareItems = getListOfGwtShareItems( ami, currentUser, nextEntityId );
@@ -1036,7 +1166,13 @@ public class GwtShareHelper
 	 */
 	private static RightSet getViewerRightSet()
 	{
-		return ShareItem.Role.VIEWER.getRightSet();
+		RightSet rightSet;
+		List<WorkAreaOperation> operations;
+		
+		operations = ShareItem.Role.VIEWER.getRightSet().getRights();
+		rightSet = new RightSet( operations.toArray( new WorkAreaOperation[ operations.size() ] ) );
+
+		return rightSet;
 	}
 
 	/**
@@ -1199,14 +1335,21 @@ public class GwtShareHelper
 			if ( shareItemId == null )
 			{
 				// No, create a ShareItem object
-				shareItem = createShareItem( ami, currentUser, nextGwtShareItem );
+				try
+				{
+					shareItem = createShareItem( ami, currentUser, nextGwtShareItem );
 				
-				// createShareItem() may have created an external user.  Get the
-				// recipient id just in case.
-				nextGwtShareItem.setRecipientId( shareItem.getRecipientId() );
-
-				if ( sharingData.getNotifyRecipients() && (sharingData.getSendToValue() == SendToValue.ONLY_NEW_RECIPIENTS || sharingData.getSendToValue() == SendToValue.ONLY_MODIFIED_RECIPIENTS) )
-					sendEmail = true;
+					// createShareItem() may have created an external user.  Get the
+					// recipient id just in case.
+					nextGwtShareItem.setRecipientId( shareItem.getRecipientId() );
+	
+					if ( sharingData.getNotifyRecipients() && (sharingData.getSendToValue() == SendToValue.ONLY_NEW_RECIPIENTS || sharingData.getSendToValue() == SendToValue.ONLY_MODIFIED_RECIPIENTS) )
+						sendEmail = true;
+				}
+				catch ( Exception ex )
+				{
+					m_logger.error( "Error creating share item: " + ex.toString() );
+				}
 			}
 			else
 			{

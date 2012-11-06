@@ -700,8 +700,7 @@ public class ShareThisDlg extends DlgBox
 				if ( findShareItem( shareItem ) == -1 )
 				{
 					// No
-					shareItem.setShareAccessRights( getDefaultShareAccessRights() );
-					shareItem.setShareCanShareWithOthers( getDefaultShareCanShareWithOthers() );
+					shareItem.setShareRights( getDefaultShareRights() );
 					shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
 					shareItem.setComments( getDefaultComment() );
 					
@@ -811,14 +810,14 @@ public class ShareThisDlg extends DlgBox
 		
 		// Add the share rights
 		{
-			ShareRightsWidget accessWidget;
+			ShareRightsWidget rightsWidget;
 			
 			m_shareCellFormatter.setWordWrap( row, col, false );
 			m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
-			accessWidget = new ShareRightsWidget(
+			rightsWidget = new ShareRightsWidget(
 											shareItem,
-											m_sharingInfo.getAccessRights( shareItem.getEntityId() ) );
-			m_shareTable.setWidget( row, col, accessWidget );
+											m_sharingInfo.getShareRights( shareItem.getEntityId() ) );
+			m_shareTable.setWidget( row, col, rightsWidget );
 			++col;
 		}
 		
@@ -1544,11 +1543,16 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
-	 * Return the default share "can share with others" rights
+	 * 
 	 */
-	private boolean getDefaultShareCanShareWithOthers()
+	private ShareRights getDefaultShareRights()
 	{
-		return false;
+		ShareRights shareRights;
+		
+		shareRights = new ShareRights();
+		shareRights.setAccessRights( getDefaultShareAccessRights() );
+		
+		return shareRights;
 	}
 	
 	/**
@@ -1809,8 +1813,7 @@ public class ShareThisDlg extends DlgBox
 										shareItem.setRecipientId( Long.valueOf( nextTeamInfo.getBinderId() ) );
 										shareItem.setRecipientName( nextTeamInfo.getTitle() );
 										shareItem.setRecipientType( GwtRecipientType.TEAM );
-										shareItem.setShareAccessRights( getDefaultShareAccessRights() );
-										shareItem.setShareCanShareWithOthers( getDefaultShareCanShareWithOthers() );
+										shareItem.setShareRights( getDefaultShareRights() );
 										shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
 										
 										// Is this external user already in the list?
@@ -2441,8 +2444,7 @@ public class ShareThisDlg extends DlgBox
 								shareItem.setEntityName( getEntityName( nextEntityId ) );
 								shareItem.setRecipientName( emailAddress );
 								shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
-								shareItem.setShareAccessRights( getDefaultShareAccessRights() );
-								shareItem.setShareCanShareWithOthers( getDefaultShareCanShareWithOthers() );
+								shareItem.setShareRights( getDefaultShareRights() );
 								shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
 								
 								// Is this external user already in the list?

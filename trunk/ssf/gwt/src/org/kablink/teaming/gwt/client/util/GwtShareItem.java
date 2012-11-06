@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.util;
 import java.util.Comparator;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -388,14 +387,6 @@ public class GwtShareItem
 	/**
 	 * 
 	 */
-	public void setShareCanShareWithOthers( boolean canShareWithOthers )
-	{
-		m_shareRights.setCanShareWithOthers( canShareWithOthers );
-	}
-	
-	/**
-	 * 
-	 */
 	public void setShareExpirationValue( ShareExpirationValue value )
 	{
 		m_shareExpirationValue = new ShareExpirationValue( value );
@@ -404,9 +395,9 @@ public class GwtShareItem
 	/**
 	 * 
 	 */
-	public void setShareAccessRights( AccessRights accessRights )
+	public void setShareRights( ShareRights shareRights )
 	{
-		m_shareRights.setAccessRights( accessRights );
+		m_shareRights = shareRights;
 	}
 	
 	/**

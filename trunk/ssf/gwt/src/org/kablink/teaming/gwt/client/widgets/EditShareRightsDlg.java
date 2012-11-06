@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
@@ -42,6 +43,8 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -60,7 +63,10 @@ public class EditShareRightsDlg extends DlgBox
 	private RadioButton m_viewerRb;
 	private RadioButton m_editorRb;
 	private RadioButton m_contributorRb;
-	private CheckBox m_canShareCkbox;
+	private CheckBox m_canShareForwardCkbox;
+	private CheckBox m_canShareExternalCkbox;
+	private CheckBox m_canShareInternalCkbox;
+	private CheckBox m_canSharePublicCkbox;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private GwtShareItem m_shareItem;
 	
@@ -101,47 +107,102 @@ public class EditShareRightsDlg extends DlgBox
 	@Override
 	public Panel createContent( Object props )
 	{
+		GwtTeamingMessages messages;
 		VibeFlowPanel mainPanel;
 		VibeFlowPanel rbPanel;
 		VibeFlowPanel tmpPanel;
 		Label label;
 		
+		messages = GwtTeaming.getMessages();
+		
 		mainPanel = new VibeFlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 		mainPanel.addStyleName( "editShareRightsDlg_MainPanel" );
 
-		label = new Label( GwtTeaming.getMessages().editShareRightsDlg_GrantRightsLabel() );
+		label = new Label( messages.editShareRightsDlg_GrantRightsLabel() );
 		mainPanel.add( label );
 		
 		// Create a panel for the radio buttons to live in.
 		rbPanel = new VibeFlowPanel();
 		rbPanel.addStyleName( "editShareRightsDlg_RbPanel" );
 		
-		m_viewerRb = new RadioButton( "shareRights", GwtTeaming.getMessages().editShareRightsDlg_ViewerLabel() );
+		m_viewerRb = new RadioButton( "shareRights", messages.editShareRightsDlg_ViewerLabel() );
 		tmpPanel = new VibeFlowPanel();
 		tmpPanel.add( m_viewerRb );
 		rbPanel.add( tmpPanel );
 
-		m_editorRb = new RadioButton( "shareRights", GwtTeaming.getMessages().editShareRightsDlg_EditorLabel() );
+		m_editorRb = new RadioButton( "shareRights", messages.editShareRightsDlg_EditorLabel() );
 		tmpPanel = new VibeFlowPanel();
 		tmpPanel.add( m_editorRb );
 		rbPanel.add( tmpPanel );
 		
-		m_contributorRb = new RadioButton( "shareRights", GwtTeaming.getMessages().editShareRightsDlg_ContributorLabel() );
+		m_contributorRb = new RadioButton( "shareRights", messages.editShareRightsDlg_ContributorLabel() );
 		tmpPanel = new VibeFlowPanel();
 		tmpPanel.add( m_contributorRb );
 		rbPanel.add( tmpPanel );
 		
-		m_canShareCkbox = new CheckBox( GwtTeaming.getMessages().editShareRightsDlg_CanShareLabel() );
-		m_canShareCkbox.addStyleName( "editShareRightsDlg_CanShareCkbox" );
+		m_canShareForwardCkbox = new CheckBox( messages.editShareRightsDlg_CanShareLabel() );
+		m_canShareForwardCkbox.addStyleName( "editShareRightsDlg_CanShareCkbox" );
+		m_canShareForwardCkbox.addClickHandler( new ClickHandler()
+		{
+			@Override
+			public void onClick( ClickEvent event )
+			{
+				danceDlg();
+			}
+		} );
 		tmpPanel = new VibeFlowPanel();
 		tmpPanel.addStyleName( "margintop3" );
-		tmpPanel.add( m_canShareCkbox );
+		tmpPanel.add( m_canShareForwardCkbox );
+		rbPanel.add( tmpPanel );
+		
+		// Add the "allow share internal checkbox.
+		m_canShareInternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareInternalLabel() );
+		tmpPanel = new VibeFlowPanel();
+		tmpPanel.addStyleName( "marginleft2" );
+		tmpPanel.add( m_canShareInternalCkbox );
+		rbPanel.add( tmpPanel );
+		
+		// Add the "allow share external" checkbox.
+		m_canShareExternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareExternalLabel() );
+		tmpPanel = new VibeFlowPanel();
+		tmpPanel.addStyleName( "marginleft2" );
+		tmpPanel.add( m_canShareExternalCkbox );
+		rbPanel.add( tmpPanel );
+		
+		// Add the "allow share public" checkbox.
+		m_canSharePublicCkbox = new CheckBox( messages.editShareRightsDlg_CanSharePublicLabel() );
+		tmpPanel = new VibeFlowPanel();
+		tmpPanel.addStyleName( "marginleft2" );
+		tmpPanel.add( m_canSharePublicCkbox );
 		rbPanel.add( tmpPanel );
 		
 		mainPanel.add( rbPanel );
 		
 		return mainPanel;
+	}
+	
+	/**
+	 * 
+	 */
+	private void danceDlg()
+	{
+		if ( m_canShareForwardCkbox.isVisible() )
+		{
+			boolean enable;
+			
+			enable = m_canShareForwardCkbox.getValue();
+			m_canShareInternalCkbox.setEnabled( enable );
+			m_canShareExternalCkbox.setEnabled( enable );
+			m_canSharePublicCkbox.setEnabled( enable );
+			
+			if ( enable == false )
+			{
+				m_canShareInternalCkbox.setValue( false );
+				m_canShareExternalCkbox.setValue( false );
+				m_canSharePublicCkbox.setValue( false );
+			}
+		}
 	}
 	
 	
@@ -155,8 +216,10 @@ public class EditShareRightsDlg extends DlgBox
 		if ( m_shareItem != null )
 		{
 			AccessRights accessRights;
+			ShareRights shareRights;
 			
 			// Yes
+			shareRights = m_shareItem.getShareRights();
 			accessRights = ShareRights.AccessRights.UNKNOWN;
 			
 			if ( m_viewerRb.isVisible() && m_viewerRb.getValue() == true )
@@ -166,12 +229,27 @@ public class EditShareRightsDlg extends DlgBox
 			else if ( m_contributorRb.isVisible() && m_contributorRb.getValue() == true )
 				accessRights = ShareRights.AccessRights.CONTRIBUTOR;
 			
-			m_shareItem.setShareAccessRights( accessRights );
+			shareRights.setAccessRights( accessRights );
 
-			if ( m_canShareCkbox.isVisible() && m_canShareCkbox.getValue() == true )
-				m_shareItem.setShareCanShareWithOthers( true );
+			if ( m_canShareForwardCkbox.isVisible() && m_canShareForwardCkbox.getValue() == true )
+				shareRights.setCanShareForward( true );
 			else
-				m_shareItem.setShareCanShareWithOthers( false );
+				shareRights.setCanShareForward( false );
+			
+			if ( m_canShareInternalCkbox.isVisible() && m_canShareInternalCkbox.getValue() == true )
+				shareRights.setCanShareWithInternalUsers( true );
+			else
+				shareRights.setCanShareWithInternalUsers( false );
+
+			if ( m_canShareExternalCkbox.isVisible() && m_canShareExternalCkbox.getValue() == true )
+				shareRights.setCanShareWithExternalUsers( true );
+			else
+				shareRights.setCanShareWithExternalUsers( false );
+
+			if ( m_canSharePublicCkbox.isVisible() && m_canSharePublicCkbox.getValue() == true )
+				shareRights.setCanShareWithPublic( true );
+			else
+				shareRights.setCanShareWithPublic( false );
 
 			m_shareItem.setIsDirty( true );
 			
@@ -206,7 +284,7 @@ public class EditShareRightsDlg extends DlgBox
 	 */
 	public void init(
 		GwtShareItem shareItem,
-		AccessRights highestRightsPossible,
+		ShareRights highestRightsPossible,
 		EditSuccessfulHandler editSuccessfulHandler )
 	{
 		ShareRights shareRights;
@@ -238,11 +316,8 @@ public class EditShareRightsDlg extends DlgBox
 			break;
 		}
 		
-		// Initialize the "can share with others" checkbox"
-		m_canShareCkbox.setValue( shareRights.getCanShareWithOthers() );
-		
 		// Hide/show the controls for the rights the user can/cannot give
-		switch ( highestRightsPossible )
+		switch ( highestRightsPossible.getAccessRights() )
 		{
 		case CONTRIBUTOR:
 			m_viewerRb.setVisible( true );
@@ -264,6 +339,24 @@ public class EditShareRightsDlg extends DlgBox
 			m_contributorRb.setVisible( false );
 			break;
 		}
+		
+		// Show/hide the "share forward" checkbox depending on whether the user has "share forward" rights.
+		m_canShareForwardCkbox.setVisible( highestRightsPossible.getCanShareForward() );
+		m_canShareForwardCkbox.setValue( shareRights.getCanShareForward() );
+		
+		// Show/hide the "share internal" checkbox depending on whether the user has "share internal" rights.
+		m_canShareInternalCkbox.setVisible( m_canShareForwardCkbox.isVisible() && highestRightsPossible.getCanShareWithInternalUsers() );
+		m_canShareInternalCkbox.setValue( shareRights.getCanShareWithInternalUsers() );
+		
+		// Show/hide the "share external" checkbox depending on whether the user has "share external" rights.
+		m_canShareExternalCkbox.setVisible( m_canShareForwardCkbox.isVisible() && highestRightsPossible.getCanShareWithExternalUsers() );
+		m_canShareExternalCkbox.setValue( shareRights.getCanShareWithExternalUsers() );
+		
+		// Show/hide the "share public" checkbox depending on whether the user has "share public" rights.
+		m_canSharePublicCkbox.setVisible( m_canShareForwardCkbox.isVisible() && highestRightsPossible.getCanShareWithPublic() );
+		m_canSharePublicCkbox.setValue( shareRights.getCanShareWithPublic() );
+		
+		danceDlg();
 	}
 	
 	/**

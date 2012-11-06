@@ -65,7 +65,9 @@ public interface SharingModule {
 	public boolean testAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, SharingOperation operation);
 	
 	public boolean testAddShareEntity(DefinableEntity de);
-	
+
+	public boolean testShareEntityForward(DefinableEntity de);
+
 	public boolean isSharingEnabled();
 
     /**
