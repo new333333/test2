@@ -43,10 +43,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EmailAddress;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.GroupPrincipal;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
@@ -58,6 +61,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 
@@ -175,6 +179,60 @@ public class GwtEmailHelper {
 		catch (Exception ex) {
 			throw GwtServerHelper.getGwtTeamingException(ex);
 		}
+	}
+
+	/*
+	 * Scans the IDs in the given collection for any that resolve to an
+	 * all users group and returns a collection without them.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Collection<Long> removeAllUserGroups(Collection<Long> principalIds) {
+		// Are there any IDs in the collection we were given?
+		if (MiscUtil.hasItems(principalIds)) {
+			// Yes!  Are there any that resolve?
+			List<Principal> principalList = ResolveIds.getPrincipals(principalIds);
+			if (MiscUtil.hasItems(principalList)) {
+				// Yes!  Scan them.
+				List<Long> allUsersList = new ArrayList<Long>();
+				for (Principal p:  principalList) {
+					// Is this Principal a group?
+					if (p instanceof GroupPrincipal) {
+						// Yes!  Is it an all users group?
+						String internalId = p.getInternalId();
+						if ((null != internalId) &&
+								(internalId.equalsIgnoreCase(ObjectKeys.ALL_USERS_GROUP_INTERNALID) ||
+								 internalId.equalsIgnoreCase(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID))) {
+							// Yes!  Add its ID to the list of those
+							// we're tracking.
+							allUsersList.add(p.getId());
+						}
+					}
+				}
+
+				// Are we tracking any all user groups that are being
+				// sent to?
+				if (!(allUsersList.isEmpty())) {
+					// Yes!  Scan the original principal IDs...
+					List<Long> nonAllUserIds = new ArrayList<Long>();
+					for (Long pId:  principalIds) {
+						// ...tracking those that aren't all user
+						// ...groups...
+						if (!(allUsersList.contains(pId))) {
+							nonAllUserIds.add(pId);
+						}
+					}
+					
+					// ...and use the new collection.  We do this to
+					// ...avoid any side affects related to changing
+					// ...the initial collection we were given.
+					principalIds = nonAllUserIds;
+				}
+			}
+		}
+		
+		// If we get here, principalIds now refers to a collection
+		// without any all user groups.  Return it.
+		return principalIds;
 	}
 	
 	/**
@@ -321,7 +379,8 @@ public class GwtEmailHelper {
 	}
 
 	/**
-	 * Send a share notification mail message to a collection of users and/or explicit email addresses.
+	 * Send a share notification mail message to a collection of users
+	 * and/or explicit email addresses.
 	 * 
 	 * @param bs				- Access to modules.
 	 * @param share				- Share item.
@@ -348,36 +407,26 @@ public class GwtEmailHelper {
 			throws GwtTeamingException
 	{
 		try {
-			// Is sending email to the all user groups allowed?
+			// Is sending email to an all user group allowed?
 			if (!(SPropsUtil.getBoolean("mail.allowSendToAllUsers", false))) {
-				// Yes!  Do we have any principals that we're sending
-				// to?
-				if (MiscUtil.hasItems(principalIds)) {
-					// Yes!  Scan them.
-					boolean foundAllUsers = false;
-					Collection<Long> nonAllUserIds = new ArrayList<Long>();
-					for (Long pId:  principalIds) {
-						// Add non all user groups to the new
-						// collection and track whether we've found any
-						// all user groups.
-						if (GwtServerHelper.isAllUsersGroup(bs, pId))
-						     foundAllUsers = true;
-						else nonAllUserIds.add(pId);
-					}
-					
-					// If we found any all user groups...
-					if (foundAllUsers) {
-						// ...use the new collection.  We do this to
-						// ...avoid any side affects related to
-						// ...changing the initial collection we were
-						// ...given.
-						principalIds = nonAllUserIds;
-					}
-				}
+				// No!  Remove any that we're being asked to send to.
+				principalIds = removeAllUserGroups(principalIds);
+				ccIds        = removeAllUserGroups(ccIds      );
+				bccIds       = removeAllUserGroups(bccIds     );
 			}
-			
-			return
-				bs.getAdminModule().sendMail(
+
+			// Are there any actual targets for the email notification?
+			boolean hasTargets = (
+				MiscUtil.hasItems(principalIds)   ||
+				MiscUtil.hasItems(teamIds)        ||
+				MiscUtil.hasItems(emailAddresses) ||
+				MiscUtil.hasItems(ccIds)          ||
+				MiscUtil.hasItems(bccIds));
+
+			Map<String, Object> reply;
+			if (hasTargets) {
+				// Yes!  Send it.
+				reply = bs.getAdminModule().sendMail(
 					share,
 					sharedEntity,
 					principalIds,
@@ -385,6 +434,16 @@ public class GwtEmailHelper {
 					emailAddresses,
 					ccIds,
 					bccIds);
+			}
+			else {
+				// No, there aren't any targets!  Return an empty
+				// reply.
+				reply = new HashMap<String, Object>();
+			}
+			
+			// If we get here, reply contains a map of the results of
+			// the email notification.  Return it.
+			return reply;
 		}
 		
 		catch (Exception ex) {
