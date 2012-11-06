@@ -55,7 +55,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
 
 /**
- * A Generate dialog box class for use throughout Vibe.
+ * A general dialog box class for use throughout Vibe.
  * 
  * @author jwootton
  */
@@ -76,15 +76,15 @@ public abstract class DlgBox extends PopupPanel
 	protected boolean 				m_visible;					//
 	private Label 					m_caption;					//
 	private FlowPanel				m_captionImagePanel;		//
-	private Panel					m_headerPanel;
+	private Panel					m_headerPanel;				//
 	private FlowPanel 				m_errorPanel;				//
 	private Panel 					m_contentPanel;				//
 	private FlowPanel				m_footerPanel;				//
-	private InlineLabel 			m_statusLabel;
-	private Image					m_statusImg;
+	private InlineLabel 			m_statusLabel;				//
+	private Image					m_statusImg;				//
 	private int 					m_id;						//
-	private boolean					m_fixedSize;
-	private Integer					m_height;
+	private boolean					m_fixedSize;				//
+	private Integer					m_height;					//
     	
 	protected static int			m_numDlgsVisible = 0;		// Number of dialogs that are currently visible.
 	private   static int			m_uniqueId       = 100;		//
@@ -237,52 +237,6 @@ public abstract class DlgBox extends PopupPanel
 		setAnimationEnabled( true );
 		
 		setPopupPosition( xPos, yPos );
-		
-		// Create a callback that will be called when this dialog is visible.
-		// When the callback is called we will call makeDraggable().  We can't call
-		// makeDraggable() before the dialog is visible.
-		setPopupPositionAndShow( new PositionCallback()
-		{
-			@Override
-			public void setPosition( int offsetWidth, int offsetHeight )
-			{
-				ScheduledCommand cmd;
-				
-				cmd = new ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						makeDraggable( String.valueOf( m_id ) );
-						
-						// Are we dealing with a fixed sized dialog?
-						if ( m_fixedSize )
-						{
-							int spaceNeeded;
-							int contentPanelHeight;
-							
-							// Yes, make sure the content panel takes up all the room minus the room
-							// needed by the header and footer.
-							spaceNeeded = 0;
-							if ( m_headerPanel != null )
-								spaceNeeded += m_headerPanel.getOffsetHeight();
-							
-							if ( m_errorPanel != null )
-								spaceNeeded += m_errorPanel.getOffsetHeight();
-							
-							if ( m_footerPanel != null )
-								spaceNeeded += m_footerPanel.getOffsetHeight();
-							
-							spaceNeeded += 20;
-							
-							contentPanelHeight = m_height - spaceNeeded;
-							m_contentPanel.setHeight( String.valueOf( contentPanelHeight ) + "px" );
-						}
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}
-		} );
 	}// end DlgBox()
 	
 	
@@ -680,10 +634,55 @@ public abstract class DlgBox extends PopupPanel
 		}
 	}
 	
-	/**
+	/*
+	 * Asynchronously makes the dialog dragable.
+	 */
+	private void makeDraggableAsync()
+	{
+		ScheduledCommand cmd;
+		
+		cmd = new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				makeDraggableNow( String.valueOf( m_id ) );
+				
+				// Are we dealing with a fixed sized dialog?
+				if ( m_fixedSize )
+				{
+					int spaceNeeded;
+					int contentPanelHeight;
+					
+					// Yes, make sure the content panel takes up all the room minus the room
+					// needed by the header and footer.
+					spaceNeeded = 0;
+					if ( m_headerPanel != null )
+						spaceNeeded += m_headerPanel.getOffsetHeight();
+					
+					if ( m_errorPanel != null )
+						spaceNeeded += m_errorPanel.getOffsetHeight();
+					
+					if ( m_footerPanel != null )
+						spaceNeeded += m_footerPanel.getOffsetHeight();
+					
+					spaceNeeded += 20;
+					
+					contentPanelHeight = m_height - spaceNeeded;
+					m_contentPanel.setHeight( String.valueOf( contentPanelHeight ) + "px" );
+				}
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}// end makeDraggableAsync()
+	
+	/*
+	 * Synchronously makes the dialog dragable.
+	 * 
      * Makes this dialog draggable by using the native JQuery Draggable
      */
-    private static native void makeDraggable( String id ) /*-{
+    private static native void makeDraggableNow( String id )
+    /*-{
 		$wnd.jQuery( "#teamingDlgBox-" + id ).draggable( { handle : '#teamingDlgBoxHeader-' + id } );
 	}-*/;
 
@@ -792,7 +791,7 @@ public abstract class DlgBox extends PopupPanel
 			m_okBtn.setEnabled(enabled);
 		}
 	}// end setOkEnabled()
-	
+
 	/**
 	 * Show this dialog.
 	 * 
@@ -837,6 +836,8 @@ public abstract class DlgBox extends PopupPanel
 			// wait for the dialog to be displayed.
 			GwtClientHelper.setFocusDelayed( m_focusWidget );
 		}
+		
+		makeDraggableAsync();
 	}// end show()
 	
 	/**
@@ -888,6 +889,7 @@ public abstract class DlgBox extends PopupPanel
 				}
 				
 				setPopupPosition( x, y );
+				makeDraggableAsync();
 			}
 		};
 		setPopupPositionAndShow( posCallback );
@@ -944,8 +946,9 @@ public abstract class DlgBox extends PopupPanel
 	 * Callback interface to interact with a dialog asynchronously
 	 * after it loads. 
 	 */
-	public interface DlgBoxClient {
-		void onSuccess(DlgBox dlg);
+	public interface DlgBoxClient
+	{
+		void onSuccess( DlgBox dlg );
 		void onUnavailable();
 	}
 }

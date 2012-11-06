@@ -320,10 +320,13 @@ public class GwtServerHelper {
 
 	// The following are used as URL components when constructing the
 	// URLs for accessing the desktop download application information.
-	private static final String JSON_TAIL  = "version.json";
-	private static final String MACOS_TAIL = "novellfilr/osx/x64/";
-	private static final String WIN32_TAIL = "novellfilr/windows/x86/";
-	private static final String WIN64_TAIL = "novellfilr/windows/x64/";
+	private static final String JSON_TAIL		= "version.json";
+	private static final String MACOS_TAIL_FILR	= "novellfilr/osx/x64/";
+	private static final String MACOS_TAIL_VIBE	= "novellvibedesktop/osx/x64/";
+	private static final String WIN32_TAIL_FILR	= "novellfilr/windows/x86/";
+	private static final String WIN32_TAIL_VIBE	= "novellvibedesktop/windows/x86/";
+	private static final String WIN64_TAIL_FILR	= "novellfilr/windows/x64/";
+	private static final String WIN64_TAIL_VIBE	= "novellvibedesktop/windows/x64/";
 	
 	/**
 	 * Inner class used to compare two AssignmentInfo's.
@@ -4214,9 +4217,10 @@ public class GwtServerHelper {
 			}
 
 			// ...and construct and store the desktop application information.
-			reply.setMac(  buildDesktopAppUrl(baseUrl, MACOS_TAIL));
-			reply.setWin32(buildDesktopAppUrl(baseUrl, WIN32_TAIL));
-			reply.setWin64(buildDesktopAppUrl(baseUrl, WIN64_TAIL));
+			boolean isFilr = Utils.checkIfFilr();
+			reply.setMac(  buildDesktopAppUrl(baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE)));
+			reply.setWin32(buildDesktopAppUrl(baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE)));
+			reply.setWin64(buildDesktopAppUrl(baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE)));
 			
 			// If we get here, reply refers to the
 			// DesktopAppDownloadInfoRpcResponseData object
@@ -5775,35 +5779,36 @@ public class GwtServerHelper {
 			// ...get the URL to the current user's avatar...
 			String userAvatarUrl = getUserAvatarUrl(bs, request, getCurrentUser());
 
-			// If we're in Filr mode...
+			// ...if the zone configuration has an auto update URL...
 			boolean desktopAppEnabled        = false;
 			boolean showDesktopAppDownloader = false;
-			if (Utils.checkIfFilr()) {
-				// ...and the zone configuration has an auto update...
-				// ...URL...
-				ZoneConfig zc = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-				if (MiscUtil.hasString(zc.getFsaAutoUpdateUrl().trim())) {
-					// ...get what we know about desktop application
-					// ...deployment...
-					GwtFileSyncAppConfiguration fsaConfig = GwtServerHelper.getFileSyncAppConfiguration(bs);
-					desktopAppEnabled = fsaConfig.getIsDeploymentEnabled();
-					if (desktopAppEnabled) {
-						UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
-						String s = ((String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_SHOW_DESKTOP_APP_DOWNLOAD));
-						if (MiscUtil.hasString(s))
-						     showDesktopAppDownloader = Boolean.parseBoolean(s);
-						else showDesktopAppDownloader = true;
-					}
+			ZoneConfig zc = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+			if (MiscUtil.hasString(zc.getFsaAutoUpdateUrl().trim())) {
+				// ...get what we know about desktop application
+				// ...deployment...
+				GwtFileSyncAppConfiguration fsaConfig = GwtServerHelper.getFileSyncAppConfiguration(bs);
+				desktopAppEnabled = fsaConfig.getIsDeploymentEnabled();
+				if (desktopAppEnabled) {
+					UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
+					String s = ((String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_SHOW_DESKTOP_APP_DOWNLOAD));
+					if (MiscUtil.hasString(s))
+					     showDesktopAppDownloader = Boolean.parseBoolean(s);
+					else showDesktopAppDownloader = true;
 				}
-				
-				else {
-					m_logger.error("GwtServerHelper.getMainPageInfo():  The file synchronization application auto update URL is not available.");
-				}
+			}
+			
+			else {
+				m_logger.error("GwtServerHelper.getMainPageInfo():  The file synchronization application auto update URL is not available.");
 			}
 			
 			// ...and use this all to construct a
 			// ...MainPageInfoRpcResponseData to return.
-			return new MainPageInfoRpcResponseData(bi, userAvatarUrl, desktopAppEnabled, showDesktopAppDownloader);
+			return
+				new MainPageInfoRpcResponseData(
+					bi,
+					userAvatarUrl,
+					desktopAppEnabled,
+					showDesktopAppDownloader);
 		}
 		
 		catch (Exception ex) {
