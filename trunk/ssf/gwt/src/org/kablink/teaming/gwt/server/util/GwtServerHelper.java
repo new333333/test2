@@ -9410,6 +9410,20 @@ public class GwtServerHelper {
 		// false.
 		return false;
 	}
+
+	/**
+	 * Returns true if baseUrl is a valid desktop application download
+	 * URL and false otherwise.
+	 * 
+	 * @param baseUrl
+	 * 
+	 * @return
+	 */
+	public static boolean validateDesktopAppDownloadUrl(String baseUrl) {
+		String platformTail = (Utils.checkIfFilr() ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE);
+		String jsonData = doHTTPGet(baseUrl + platformTail + JSON_TAIL);
+		return MiscUtil.hasString(jsonData);
+	}
 	
 	/**
 	 * Validate the given email address.
