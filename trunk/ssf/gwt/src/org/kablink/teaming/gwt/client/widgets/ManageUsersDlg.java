@@ -222,6 +222,7 @@ public class ManageUsersDlg extends DlgBox
 		// Let the widget attach and then register our event handlers.
 		super.onAttach();
 		registerEvents();
+		setViewSizeAsync();
 	}
 	
 	/**
@@ -356,6 +357,40 @@ public class ManageUsersDlg extends DlgBox
 	public void onGetManageUsersTitle(GetManageUsersTitleEvent event) {
 		event.getManageUsersTitleCallback().manageUsersTitle(m_manageUsersInfo.getAdminActionTitle());
 	}
+
+	/*
+	 * Asynchronously adjusts the views size based on its header and
+	 * footer. 
+	 */
+	private void setViewSizeAsync() {
+		ScheduledCommand doSizing = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				setViewSizeNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doSizing);
+	}
+	
+	/*
+	 * Synchronously adjusts the views size based on its header and
+	 * footer. 
+	 */
+	private void setViewSizeNow() {
+		// If we don't have the height adjustment for the dialog yet...
+		if ((-1) == m_dlgHeightAdjust) {
+			// ...calculate it now...
+			m_dlgHeightAdjust =
+				(DIALOG_HEIGHT_ADJUST              +
+				getHeaderPanel().getOffsetHeight() +
+				getFooterPanel().getOffsetHeight());
+		}
+
+		// ...set the size of the personal workspaces view...
+		m_pwsView.setPixelSize(
+			(m_showCX - DIALOG_WIDTH_ADJUST),
+			(m_showCY - m_dlgHeightAdjust));
+	}
 	
 	/*
 	 * Asynchronously shows the import profiles dialog.
@@ -444,23 +479,8 @@ public class ManageUsersDlg extends DlgBox
 			
 			@Override
 			public void onSuccess(ViewBase pwsView) {
-				// If we don't have the height adjustment for the
-				// dialog yet...
+				// Store the view and add it to the panel.
 				m_pwsView = ((PersonalWorkspacesView) pwsView);
-				if ((-1) == m_dlgHeightAdjust) {
-					// ...calculate it now...
-					m_dlgHeightAdjust =
-						(DIALOG_HEIGHT_ADJUST              +
-						getHeaderPanel().getOffsetHeight() +
-						getFooterPanel().getOffsetHeight());
-				}
-
-				// ...set the size of the personal workspaces view...
-				m_pwsView.setPixelSize(
-					(m_showCX - DIALOG_WIDTH_ADJUST),
-					(m_showCY - m_dlgHeightAdjust));
-				
-				// ...and add it to the dialog.
 				m_rootPanel.add(m_pwsView);
 			}
 		});
