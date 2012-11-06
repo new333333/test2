@@ -92,6 +92,7 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
  * Implements a dialog for configuring folder columns.
  *  
  * @author phurley@novell.com
+ * @owner  drfoster@novell.com
  */
 public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHandler {
 	private BinderInfo						m_binderInfo;				// The binder the folder columns dialog is running against.
@@ -325,7 +326,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		mb.addItem(order);
 
 		FlowPanel fp = new FlowPanel();
-		Image i = new Image();
+		Image i = GwtClientHelper.buildImage(m_images.arrowUpDisabled().getSafeUri().asString());
 		i.addStyleName("folderColumnsDlg_MenuImg");
 		i.setTitle(m_messages.folderColumnsDlgMoveUp());
 		Element iE = i.getElement();
@@ -336,7 +337,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		mb.addItem(m_moveUp);
 		
 		fp = new FlowPanel();
-		i = new Image();
+		i = GwtClientHelper.buildImage(m_images.arrowDownDisabled().getSafeUri().asString());
 		i.addStyleName("folderColumnsDlg_MenuImg");
 		i.setTitle(m_messages.folderColumnsDlgMoveDown());
 		iE = i.getElement();
@@ -430,11 +431,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			// dialog!  Put a simple no available options message.
 			m_vp.add(new DlgLabel(m_messages.folderColumnsDlgNoOptions()));
 		}
-		
-		// Set the move buttons on the menu to an initially disabled
-		// state.
-		setMoveEnabled(m_moveUp,   ID_MOVE_UP,   false, m_images.arrowUp(),   m_images.arrowUpDisabled()  );
-		setMoveEnabled(m_moveDown, ID_MOVE_DOWN, false, m_images.arrowDown(), m_images.arrowDownDisabled());
 	}
 	
 	/**
@@ -882,11 +878,11 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		setMoveEnabled(m_moveDown, ID_MOVE_DOWN, canMoveDown, m_images.arrowDown(), m_images.arrowDownDisabled());
 	}
 
+
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the dialog and perform some operation on it.                  */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-	
 	
 	/*
 	 * Asynchronously loads the split point and performs some operation

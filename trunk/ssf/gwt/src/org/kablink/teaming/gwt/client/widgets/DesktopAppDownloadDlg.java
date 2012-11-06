@@ -72,9 +72,9 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 @SuppressWarnings("unused")
 public class DesktopAppDownloadDlg extends DlgBox {
-	private boolean									m_hasMac;					//
-	private boolean									m_hasWin32;					//
-	private boolean									m_hasWin64;					//
+	private boolean									m_hasMac;					// true -> We have the MacOS desktop application information.  false -> We don't.
+	private boolean									m_hasWin32;					// true -> We have the Win32 desktop application information.  false -> We don't.
+	private boolean									m_hasWin64;					// true -> We have the Win64 desktop application information.  false -> We don't.
 	private boolean									m_isFilr;					// true -> We're in Filr mode.  false -> We're in Vibe mode.
 	private DesktopAppDownloadInfoRpcResponseData	m_desktopAppDownloadInfo;	// Information about downloading the desktop application.  Read via a GWT RPC call when the dialog runs.
 	private GwtTeamingFilrImageBundle				m_filrImages;				// Access to Filr's images.
@@ -85,7 +85,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	private VibeFlexTable 							m_bodyTable;				// Table containing the body of the page.
 	private VibeFlowPanel							m_rootPanel;				// The main panel holding the dialog's content.
 
-	private final static boolean SHOW_MAC_CLIENT	= false;	// Initially, we're not going to show the Mac client.
+	private final static boolean SHOW_MAC_CLIENT_IN_FILR	= false;	// Initially, we're not going to show the Mac client in Filr.
 	
 	// Indexes of the various table cells containing the dialog's
 	// content.
@@ -103,8 +103,10 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	private final static int IOS_ROW		= 4;
 
 	// The URLs to the quick start help for the desktop applications.
-	private final static String	MAC_QUICKSTART_URL		= "http://www.novell.com/documentation/novell-filr1/filr1_qs_desktopmac/data/filr1_qs_desktop.html";
-	private final static String	WINDOWS_QUICKSTART_URL	= "http://www.novell.com/documentation/novell-filr1/filr1_qs_desktop/data/filr1_qs_desktop.html";
+	private final static String	MAC_QUICKSTART_URL_FILR		= "http://www.novell.com/documentation/novell-filr1/filr1_qs_desktopmac/data/filr1_qs_desktop.html";
+	private final static String	MAC_QUICKSTART_URL_VIBE		= "http://www.novell.com/documentation/novell-vibe1/vibe1_qs_desktopmac/data/vibe1_qs_desktop.html";
+	private final static String	WINDOWS_QUICKSTART_URL_FILR	= "http://www.novell.com/documentation/novell-filr1/filr1_qs_desktop/data/filr1_qs_desktop.html";
+	private final static String	WINDOWS_QUICKSTART_URL_VIBE	= "http://www.novell.com/documentation/novell-vibe1/vibe1_qs_desktop/data/vibe1_qs_desktop.html";
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -422,7 +424,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 			Anchor a = new Anchor();
 			a.addStyleName("vibe-desktopAppPage-instructionAnchor");
 			a.setTarget("_blank");
-			a.setHref(MAC_QUICKSTART_URL);
+			a.setHref(m_isFilr ? MAC_QUICKSTART_URL_FILR : MAC_QUICKSTART_URL_VIBE);
 			a.getElement().setInnerText(m_messages.downloadAppDlgDownloadMac2(m_company, m_product));
 	
 			// ...and add the instructions.
@@ -448,7 +450,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 			Anchor a = new Anchor();
 			a.addStyleName("vibe-desktopAppPage-instructionAnchor");
 			a.setTarget("_blank");
-			a.setHref(WINDOWS_QUICKSTART_URL);
+			a.setHref(m_isFilr ? WINDOWS_QUICKSTART_URL_FILR : WINDOWS_QUICKSTART_URL_VIBE);
 			a.getElement().setInnerText(m_messages.downloadAppDlgDownloadWindows2(m_company, m_product));
 
 			// ...and add the instructions.
@@ -631,7 +633,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		createContentBody();
 
 		// ...if we're not showing the Mac client yet...
-		if (!SHOW_MAC_CLIENT) {
+		if (m_isFilr && (!SHOW_MAC_CLIENT_IN_FILR)) {
 			// ...remove its row...
 			m_bodyTable.removeRow(MAC_ROW);
 		}
