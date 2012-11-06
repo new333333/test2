@@ -387,15 +387,20 @@ update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=1,FROMLOCAL=0,FROMOPENID=0 where ID
     <changeSet author="jong" context="data" failOnError="true" id="47">
         <comment>Store all login names in lower case</comment>
         <sql>
-update SS_Principals set name=LOWER(name);        
+UPDATE SS_PRINCIPALS SET NAME=LOWER(NAME);        
         </sql>
     </changeSet>
     
     <changeSet author="jong" context="data" failOnError="true" id="48">
         <comment>Store all email addresses in lower case</comment>
         <sql>
-update SS_EmailAddresses set address=LOWER(address);        
+UPDATE SS_EMAILADDRESSES SET ADDRESS=LOWER(ADDRESS);        
         </sql>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="49">
+        <comment>This column is no longer needed</comment>
+        <dropColumn tableName="SS_PRINCIPALS" columnName="IDENTITYSOURCE"/>
+    </changeSet>
+
 </databaseChangeLog>
