@@ -424,4 +424,9 @@ update SS_EmailAddresses set address=LOWER(address);
         </sql>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="54">
+        <comment>This column is no longer needed</comment>
+        <dropColumn tableName="SS_Principals" columnName="identitySource"/>
+    </changeSet>
+
 </databaseChangeLog>
