@@ -7483,6 +7483,38 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns whether the given ID is an 'all users' group.
+	 * 
+	 * @param bs
+	 * @param groupId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static boolean isAllUsersGroup(AllModulesInjected bs, Long groupId) throws GwtTeamingException {
+		try {
+			// Get the group object.
+			Principal group = bs.getProfileModule().getEntry(groupId);
+			if ((null != group) && (group instanceof Group)) {
+				String internalId = group.getInternalId();
+				if ((null != internalId) &&
+						(internalId.equalsIgnoreCase(ObjectKeys.ALL_USERS_GROUP_INTERNALID) ||
+						 internalId.equalsIgnoreCase(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID))) {
+					return true;
+				}
+			}
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
+		
+		// If we get here the group is not the "all users" group.
+		return false;
+	}
+	
+	/**
 	 * Return whether dynamic group membership is allowed.  It is allowed if the ldap
 	 * configuration has a value set for "LDAP attribute that uniquely identifies a user or group"
 	 */

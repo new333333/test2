@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +58,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 
 /**
@@ -346,6 +348,34 @@ public class GwtEmailHelper {
 			throws GwtTeamingException
 	{
 		try {
+			// Is sending email to the all user groups allowed?
+			if (!(SPropsUtil.getBoolean("mail.allowSendToAllUsers", false))) {
+				// Yes!  Do we have any principals that we're sending
+				// to?
+				if (MiscUtil.hasItems(principalIds)) {
+					// Yes!  Scan them.
+					boolean foundAllUsers = false;
+					Collection<Long> nonAllUserIds = new ArrayList<Long>();
+					for (Long pId:  principalIds) {
+						// Add non all user groups to the new
+						// collection and track whether we've found any
+						// all user groups.
+						if (GwtServerHelper.isAllUsersGroup(bs, pId))
+						     foundAllUsers = true;
+						else nonAllUserIds.add(pId);
+					}
+					
+					// If we found any all user groups...
+					if (foundAllUsers) {
+						// ...use the new collection.  We do this to
+						// ...avoid any side affects related to
+						// ...changing the initial collection we were
+						// ...given.
+						principalIds = nonAllUserIds;
+					}
+				}
+			}
+			
 			return
 				bs.getAdminModule().sendMail(
 					share,
