@@ -621,6 +621,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_TeamWSView();
 	String codeSplitFailure_TinyMCEDlg();
 	String codeSplitFailure_TrashView();
+	String codeSplitFailure_UserShareRightsDlg();
 	String codeSplitFailure_UserStatusControl();
 	String codeSplitFailure_ViewsMenuPopup();
 	String codeSplitFailure_WhoHasAccessDlg();
@@ -2128,5 +2129,8 @@ public interface GwtTeamingMessages extends Messages
 	String importProfilesDlgHeader();
 	String importProfilesDlgSuccess();
 	String importProfilesDlgViewSample();
+	
+	// Strings used by the 'User Share Rights' dialog.
+	String userShareRightsDlgHeader();
 
 }// end GwtTeamingMessages

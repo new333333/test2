@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportProfilesDlgEvent;
 import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
+import org.kablink.teaming.gwt.client.event.SetSelectedUserShareRightsEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -49,9 +50,11 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetManageUsersInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ImportProfilesDlg.ImportProfilesDlgClient;
+import org.kablink.teaming.gwt.client.widgets.UserShareRightsDlg.UserShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -74,7 +77,8 @@ public class ManageUsersDlg extends DlgBox
 		// Event handlers implemented by this class.
 		FullUIReloadEvent.Handler,
 		InvokeImportProfilesDlgEvent.Handler,
-		GetManageUsersTitleEvent.Handler
+		GetManageUsersTitleEvent.Handler,
+		SetSelectedUserShareRightsEvent.Handler
 {
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private ImportProfilesDlg				m_importProfilesDlg;		// An ImportProfilesDlg, once one is created.
@@ -86,6 +90,7 @@ public class ManageUsersDlg extends DlgBox
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ManageUsersInfoRpcResponseData	m_manageUsersInfo;			// Information necessary to run the manage users dialog.
 	private PersonalWorkspacesView			m_pwsView;					// The personal workspace view.
+	private UserShareRightsDlg				m_userShareRightsDlg;		// A UserShareRightsDlg, once one is created.
 	private VibeFlowPanel					m_rootPanel;				// The panel that holds the dialog's contents.
 
 	// Constant adjustments to the size of the personal workspaces view
@@ -100,6 +105,7 @@ public class ManageUsersDlg extends DlgBox
 		TeamingEvents.FULL_UI_RELOAD,
 		TeamingEvents.INVOKE_IMPORT_PROFILES_DLG,
 		TeamingEvents.GET_MANAGE_USERS_TITLE,
+		TeamingEvents.SET_SELECTED_USER_SHARE_RIGHTS,
 	};
 	
 	/*
@@ -286,6 +292,60 @@ public class ManageUsersDlg extends DlgBox
 	}
 	
 	/**
+	 * Handles SetSelectedUserShareRightsEvent's received by this class.
+	 * 
+	 * Implements the SetSelectedUserShareRightsEvent.Handler.onSetSelectedUserShareRights() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSetSelectedUserShareRights(SetSelectedUserShareRightsEvent event) {
+		// Do we have a personal workspace view?
+		if (null != m_pwsView) {
+			// Yes!  Is the event targeted to this folder?
+			Long eventFolderId = event.getFolderId();
+			if (eventFolderId.equals(m_manageUsersInfo.getProfilesRootWSInfo().getBinderIdAsLong())) {
+				// Yes!  Get the selected EntityId's...
+				List<EntityId> selectedEntityIds = event.getSelectedEntities();
+				if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+					selectedEntityIds = m_pwsView.getSelectedEntityIds();
+				}
+				
+				// ...and extract the selected user ID's from that.
+				final List<Long> selectedUserList = new ArrayList<Long>();
+				for (EntityId eid:  selectedEntityIds) {
+					selectedUserList.add(eid.getEntityId());
+				}
+
+				// Have we create a user share rights dialog yet?
+				if (null == m_userShareRightsDlg) {
+					// No!  Can we create one now?
+					UserShareRightsDlg.createAsync(new UserShareRightsDlgClient() {
+						@Override
+						public void onUnavailable() {
+							// Nothing to do.  Error handled in 
+							// asynchronous provider.
+						}
+						
+						@Override
+						public void onSuccess(UserShareRightsDlg usrDlg) {
+							// Yes, we created the user share rights
+							// dialog!  Show it.
+							m_userShareRightsDlg = usrDlg;
+							showUserShareRightsDlgAsync(selectedUserList);
+						}
+					});
+				}
+				
+				else {
+					// Yes, we have a user share rights dialog!  Show it.
+					showUserShareRightsDlgAsync(selectedUserList);
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Handles GetManageUsersTitleEvent's received by this class.
 	 * 
 	 * Implements the GetManageUsersTitleEvent.Handler.onGetManageUsersTitle() method.
@@ -315,6 +375,29 @@ public class ManageUsersDlg extends DlgBox
 	 */
 	private void showImportProfilesDlgNow() {
 		ImportProfilesDlg.initAndShow(m_importProfilesDlg, m_manageUsersInfo.getProfilesRootWSInfo());
+	}
+
+	/*
+	 * Asynchronously shows the user share rights dialog.
+	 */
+	private void showUserShareRightsDlgAsync(final List<Long> selectedUserList) {
+		ScheduledCommand doShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showUserShareRightsDlgNow(selectedUserList);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShow);
+	}
+
+	/*
+	 * Synchronously shows the user share rights dialog.
+	 */
+	private void showUserShareRightsDlgNow(List<Long> selectedUserList) {
+		UserShareRightsDlg.initAndShow(
+			m_userShareRightsDlg,
+			m_manageUsersInfo.getProfilesRootWSInfo(),
+			selectedUserList);
 	}
 
 	/**

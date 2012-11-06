@@ -1391,6 +1391,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case SET_SELECTED_USER_SHARE_RIGHTS:
+				// An SetSelectedUserShareRightsEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof SetSelectedUserShareRightsEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SetSelectedUserShareRightsEvent.registerEvent(eventBus, ((SetSelectedUserShareRightsEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case SET_SHARE_RIGHTS:
 				// A SetShareRightsEvent!  Can the event handler we were given handle that?
 				if ( eventHandler instanceof SetShareRightsEvent.Handler ) 
@@ -2323,8 +2332,9 @@ public class EventHelper {
 			case PURGE_SELECTED_ENTRIES:                       hasHandler = (eventHandler instanceof PurgeSelectedEntriesEvent.Handler);                   break;
 			case PURGE_SELECTED_USER_WORKSPACES:               hasHandler = (eventHandler instanceof PurgeSelectedUserWorkspacesEvent.Handler);            break;
 			case PURGE_SELECTED_USERS:                         hasHandler = (eventHandler instanceof PurgeSelectedUsersEvent.Handler);                     break;
-			case SET_FOLDER_SORT:                              hasHandler = (eventHandler instanceof SetFolderSortEvent.Handler);                          break;
 			case SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY:  hasHandler = (eventHandler instanceof SetDesktopDownloadAppControlVisibilityEvent.Handler); break;
+			case SET_FOLDER_SORT:                              hasHandler = (eventHandler instanceof SetFolderSortEvent.Handler);                          break;
+			case SET_SELECTED_USER_SHARE_RIGHTS:               hasHandler = (eventHandler instanceof SetSelectedUserShareRightsEvent.Handler);             break;
 			case SHARE_SELECTED_ENTRIES:                       hasHandler = (eventHandler instanceof ShareSelectedEntriesEvent.Handler);                   break;
 			case SUBSCRIBE_SELECTED_ENTRIES:                   hasHandler = (eventHandler instanceof SubscribeSelectedEntriesEvent.Handler);               break;
 			case TOGGLE_SHARED_VIEW:                  	       hasHandler = (eventHandler instanceof ToggleSharedViewEvent.Handler);                       break;

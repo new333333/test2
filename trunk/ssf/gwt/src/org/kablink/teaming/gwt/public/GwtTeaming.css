@@ -4798,4 +4798,8 @@ td.datePickerMonth {
 	.vibe-importProfilesDlg-panel      {}
 /* End:  Import profiles dialog styles. */
 
+/* Start:  User share rights dialog styles. */
+	.vibe-userShareRightsDlg-panel {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
+/* End:  User share rights dialog styles. */
+
 /* End */
