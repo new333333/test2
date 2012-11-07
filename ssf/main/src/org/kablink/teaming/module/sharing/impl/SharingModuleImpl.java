@@ -44,7 +44,6 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FolderEntry;
@@ -55,7 +54,6 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.jobs.ExpiredShareHandler;
-import org.kablink.teaming.jobs.LicenseMonitor;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
@@ -71,9 +69,7 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.util.Validator;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -82,7 +78,6 @@ import org.springframework.transaction.support.TransactionTemplate;
  * This module gives us the transaction semantics to deal with the "Shared with Me" features.  
  *
  * @author Peter Hurley
- *
  */
 public class SharingModuleImpl extends CommonDependencyInjection implements SharingModule, ZoneSchedule {
 
@@ -348,7 +343,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			}
 
 			// Is the entity a folder entry?
-	    	User user = RequestContextHolder.getRequestContext().getUser();
 			if (de.getEntityType().equals(EntityType.folderEntry)) {
 				// Yes!  Does the user have "share internal" rights on it and is the user enabled for doing this?
 				FolderEntry fe = ((FolderEntry) de);
@@ -448,7 +442,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC);
 
 			// Is the entity a folder entry?
-	    	User user = RequestContextHolder.getRequestContext().getUser();
 			if (de.getEntityType().equals(EntityType.folderEntry)) {
 				// Yes!  Does the user have "share public" rights on it and is the user enabled for doing this?
 				FolderEntry fe = ((FolderEntry) de);
@@ -513,6 +506,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
      * 
      * @return
      */
+	@Override
 	public boolean testShareEntityForward(DefinableEntity de) {
 		boolean reply = false;
 
@@ -528,7 +522,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_FORWARD);
 
 			// Is the entity a folder entry?
-	    	User user = RequestContextHolder.getRequestContext().getUser();
 			if (de.getEntityType().equals(EntityType.folderEntry)) {
 				// Yes!  Does the user have "share forward" rights on it?
 				FolderEntry fe = ((FolderEntry) de);
@@ -594,7 +587,11 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		if (accessControlManager == null) {
 			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
 		}
-		return accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL);
+		
+		return (
+			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL) ||
+			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL) ||
+			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC));
 	}
 
     //NO transaction
@@ -892,5 +889,4 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	private BinderProcessor loadBinderProcessor(Binder binder) {
 		return (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 	}
-
 }
