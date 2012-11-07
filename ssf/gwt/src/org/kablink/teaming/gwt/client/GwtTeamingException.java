@@ -63,6 +63,7 @@ public class GwtTeamingException extends SerializationException
 		NO_RPC_HANDLER,
 		USER_NOT_LOGGED_IN,
 		FOLDER_EXPECTED,
+		INVALID_AUTO_UPDATE_URL,
 		UNKNOWN;
 	}// end ExceptionType
 	
