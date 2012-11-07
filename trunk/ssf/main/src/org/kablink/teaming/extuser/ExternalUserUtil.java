@@ -30,28 +30,29 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.security.authentication;
+package org.kablink.teaming.extuser;
 
-import org.kablink.teaming.domain.User;
+import org.jasypt.encryption.StringEncryptor;
+import org.kablink.teaming.util.SpringContextUtil;
 
 /**
- * This exception is used to convey normal status code through call stack without
- * affecting the signatures of the existing methods. 
- * 
  * @author jong
  *
  */
-public class ExternalUserRequiresVerificationException extends RuntimeException {
-
-	private static final long serialVersionUID = 1L;
+public class ExternalUserUtil {
 	
-	private User user;
-
-	public ExternalUserRequiresVerificationException(User user) {
-		this.user = user;
+	public static final String QUERY_FIELD_NAME_FOR_EXTERNAL_USER_ENCRYPTED_TOKEN = "euet";
+	
+	public static String encryptUserId(Long userId)  {
+		return getStringEncryptor().encrypt(userId.toString());
 	}
 	
-	public User getExternalUser() {
-		return user;
+	public static Long decryptUserId(String encryptedUserId) {
+		return Long.valueOf(getStringEncryptor().decrypt(encryptedUserId));
 	}
+	
+	private static StringEncryptor getStringEncryptor() {
+		return (StringEncryptor) SpringContextUtil.getBean("encryptor");
+	}
+
 }
