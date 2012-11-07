@@ -4095,7 +4095,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
  		 			// Do the definitions need to be reset?
 		 			property = (String) adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS );
-		 			if ( property == null || property.length() == 0 )
+		 			if ( Utils.checkIfFilr() == false && (property == null || property.length() == 0) )
 		 			{
 		 				// Yes
 		 				upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_DEFINITIONS );
@@ -4103,7 +4103,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 		 			// Do the templates need to be reset?
 		 			property = (String) adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES );
-		 			if ( property == null || property.length() == 0 )
+		 			if ( Utils.checkIfFilr() == false && (property == null || property.length() == 0) )
 		 			{
 		 				// Yes
 		 				upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_TEMPLATES );
