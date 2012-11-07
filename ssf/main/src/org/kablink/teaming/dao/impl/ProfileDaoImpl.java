@@ -567,7 +567,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
  						public Object doInHibernate(Session session) throws HibernateException {
  	                	   //only returns active users
  	                 	   User user = (User)session.getNamedQuery( "find-User-By-ForeignName" )
- 	                             		.setString( ParameterNames.FOREIGN_NAME, foreignName )
+ 	                             		.setString( ParameterNames.FOREIGN_NAME, foreignName.toLowerCase() )
  	                             		.setLong( ParameterNames.ZONE_ID, zoneId )
  	                             		.setCacheable( isPrincipalQueryCacheable() )
  	                             		.uniqueResult();
