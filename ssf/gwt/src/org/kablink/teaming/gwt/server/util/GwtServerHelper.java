@@ -4215,11 +4215,6 @@ public class GwtServerHelper {
 			ZoneConfig	zc      = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
 			String		baseUrl = getFinalHttpUrl(zc.getFsaAutoUpdateUrl(), "From getDesktopAppDownloadInformation()");
 			if (MiscUtil.hasString(baseUrl)) {
-				// ...ensure it ends with a '/'...
-				if ('/' != baseUrl.charAt(baseUrl.length() - 1)) {
-					baseUrl += "/";
-				}
-	
 				// ...and construct and store the desktop
 				// ...application information.
 				boolean isFilr = Utils.checkIfFilr();
@@ -4745,6 +4740,11 @@ public class GwtServerHelper {
 		if (0 == httpUrl.length()) {
 			// No!  Return null.
 			return null;
+		}
+		
+		// Ensure the URL ends with a '/'.
+		if ('/' != httpUrl.charAt(httpUrl.length() - 1)) {
+			httpUrl += "/";
 		}
 		
 		HttpURLConnection	urlConnection = null;
@@ -9620,11 +9620,6 @@ public class GwtServerHelper {
 		baseUrl = getFinalHttpUrl(baseUrl, "From validateDesktopAppDownloadUrl()");
 		if (!(MiscUtil.hasString(baseUrl))) {
 			return false;
-		}
-		
-		// ...ensure it ends with a '/'...
-		if ('/' != baseUrl.charAt(baseUrl.length() - 1)) {
-			baseUrl += "/";
 		}
 		
 		// ...and test it.
