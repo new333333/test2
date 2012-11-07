@@ -178,6 +178,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UserAccessConfig;
+import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmdType;
@@ -249,6 +250,7 @@ import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.runwith.RunWithCallback;
@@ -4211,16 +4213,20 @@ public class GwtServerHelper {
 
 			// Extract the base desktop application update URL...
 			ZoneConfig	zc      = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-			String		baseUrl = zc.getFsaAutoUpdateUrl().trim();
-			if ('/' != baseUrl.charAt(baseUrl.length() - 1)) {
-				baseUrl += "/";
+			String		baseUrl = zc.getFsaAutoUpdateUrl();
+			baseUrl = ((null == baseUrl) ? "" : baseUrl.trim());
+			int urlLen = baseUrl.length();
+			if (0 < urlLen) {
+				if ('/' != baseUrl.charAt(urlLen - 1)) {
+					baseUrl += "/";
+				}
+	
+				// ...and construct and store the desktop application information.
+				boolean isFilr = Utils.checkIfFilr();
+				reply.setMac(  buildDesktopAppUrl(baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE)));
+				reply.setWin32(buildDesktopAppUrl(baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE)));
+				reply.setWin64(buildDesktopAppUrl(baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE)));
 			}
-
-			// ...and construct and store the desktop application information.
-			boolean isFilr = Utils.checkIfFilr();
-			reply.setMac(  buildDesktopAppUrl(baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE)));
-			reply.setWin32(buildDesktopAppUrl(baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE)));
-			reply.setWin64(buildDesktopAppUrl(baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE)));
 			
 			// If we get here, reply refers to the
 			// DesktopAppDownloadInfoRpcResponseData object
@@ -5783,7 +5789,9 @@ public class GwtServerHelper {
 			boolean desktopAppEnabled        = false;
 			boolean showDesktopAppDownloader = false;
 			ZoneConfig zc = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-			if (MiscUtil.hasString(zc.getFsaAutoUpdateUrl().trim())) {
+			String baseUrl = zc.getFsaAutoUpdateUrl();
+			baseUrl = ((null == baseUrl) ? "" : baseUrl.trim());
+			if (0 < baseUrl.length()) {
 				// ...get what we know about desktop application
 				// ...deployment...
 				GwtFileSyncAppConfiguration fsaConfig = GwtServerHelper.getFileSyncAppConfiguration(bs);
@@ -7179,6 +7187,45 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Returns sharing rights information about the system and a list
+	 * of users, based on their IDs.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static UserSharingRightsInfoRpcResponseData getUserSharingRightsInfo(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds) throws GwtTeamingException {
+		try {
+			// Create the UserSharingRightsInfoRpcResponseData to return.
+			UserSharingRightsInfoRpcResponseData reply = new UserSharingRightsInfoRpcResponseData();
+
+			// Set the global sharing options that are set on the zone.
+	    	Long					zoneId               = RequestContextHolder.getRequestContext().getZoneId();
+	    	ZoneConfig				zoneConfig           = getCoreDao().loadZoneConfig(zoneId);
+			AccessControlManager	accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
+			reply.setExternalEnabled(  accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL));
+			reply.setForwardingEnabled(accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_FORWARD) );
+			reply.setInternalEnabled(  accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL));
+			reply.setPublicEnabled(    accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC)  );
+
+//!			...this needs to be implemented...
+
+			// If we get here, reply refers to the
+			// UserSharingRightsInfoRpcResponseData containing the
+			// requested sharing rights information.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			throw getGwtTeamingException(ex);
+		}		
+	}
+	
+	/**
 	 * Returns the title for a target user, based on their ID, that we
 	 * should display to the current user based on their access to the
 	 * target user.
@@ -8302,6 +8349,7 @@ public class GwtServerHelper {
 		case GET_UPGRADE_INFO:
 		case GET_USER_ACCESS_CONFIG:
 		case GET_USER_PERMALINK:
+		case GET_USER_SHARING_RIGHTS_INFO:
 		case GET_USER_STATUS:
 		case GET_USER_WORKSPACE_INFO:
 		case GET_VERTICAL_ACTIVITY_STREAMS_TREE:
@@ -9472,6 +9520,17 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static boolean validateDesktopAppDownloadUrl(String baseUrl) {
+		// Ensure the URL ends with a '/'...
+		baseUrl = ((null == baseUrl) ? "" : baseUrl.trim());
+		int urlLen = baseUrl.length();
+		if (0 == urlLen) {
+			return false;
+		}
+		if ('/' != baseUrl.charAt(urlLen - 1)) {
+			baseUrl += "/";
+		}
+
+		// ...and test it.
 		String platformTail = (Utils.checkIfFilr() ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE);
 		String jsonData = doHTTPGet(baseUrl + platformTail + JSON_TAIL);
 		return MiscUtil.hasString(jsonData);

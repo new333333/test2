@@ -37,7 +37,11 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.GetUserSharingRightsInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -45,6 +49,7 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
@@ -56,10 +61,11 @@ import com.google.gwt.user.client.ui.Panel;
  */
 @SuppressWarnings("unused")
 public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler {
-	private BinderInfo			m_binderInfo;	// The profiles root workspace the dialog is running against.
-	private GwtTeamingMessages	m_messages;		// Access to Vibe's messages.
-	private List<Long>			m_userList;		// The List<Long> of user IDs whose sharing rights are being set.
-	private VibeFlowPanel		m_rootPanel;	// The panel holding the dialog's content.
+	private BinderInfo								m_binderInfo;	// The profiles root workspace the dialog is running against.
+	private GwtTeamingMessages						m_messages;		// Access to Vibe's messages.
+	private List<Long>								m_userIds;		// The List<Long> of user IDs whose sharing rights are being set.
+	private UserSharingRightsInfoRpcResponseData	m_rightsInfo;	//
+	private VibeFlowPanel							m_rootPanel;	// The panel holding the dialog's content.
 
 	/*
 	 * Class constructor.
@@ -143,6 +149,41 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	}
 
 	/*
+	 * Asynchronously loads the next part of the dialog.
+	 */
+	private void loadPart1Async() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart1Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the next part of the dialog.
+	 */
+	private void loadPart1Now() {
+		GwtClientHelper.executeCommand(new GetUserSharingRightsInfoCmd(m_userIds), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				// No!  Tell the user about the problem.
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetUserSharingRightsInfo());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// Yes!  Store it and populate the dialog.
+				m_rightsInfo = ((UserSharingRightsInfoRpcResponseData) result.getResponseData());
+				populateDlgAsync();
+			}
+		});
+	}
+	
+	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
@@ -172,11 +213,11 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	 * Asynchronously runs the given instance of the user share rights
 	 * dialog.
 	 */
-	private static void runDlgAsync(final UserShareRightsDlg usrDlg, final BinderInfo bi, final List<Long> userList) {
+	private static void runDlgAsync(final UserShareRightsDlg usrDlg, final BinderInfo bi, final List<Long> userIds) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				usrDlg.runDlgNow(bi, userList);
+				usrDlg.runDlgNow(bi, userIds);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -186,13 +227,13 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	 * Synchronously runs the given instance of the user share rights
 	 * dialog.
 	 */
-	private void runDlgNow(BinderInfo bi, List<Long> userList) {
+	private void runDlgNow(BinderInfo bi, List<Long> userIds) {
 		// Store the parameter...
 		m_binderInfo = bi;
-		m_userList   = userList;
+		m_userIds    = userIds;
 
 		// ...and populate the dialog.
-		populateDlgAsync();
+		loadPart1Async();
 	}
 	
 
@@ -222,7 +263,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 			// Parameters to initialize and show the dialog.
 			final UserShareRightsDlg	usrDlg,
 			final BinderInfo			bi,
-			final List<Long>			userList) {
+			final List<Long>			userIds) {
 		GWT.runAsync(UserShareRightsDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -245,7 +286,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(usrDlg, bi, userList);
+					runDlgAsync(usrDlg, bi, userIds);
 				}
 			}
 		});
@@ -266,9 +307,9 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	 * 
 	 * @param usrDlg
 	 * @param bi
-	 * @param userList
+	 * @param userIds
 	 */
-	public static void initAndShow(UserShareRightsDlg usrDlg, BinderInfo bi, List<Long> userList) {
-		doAsyncOperation(null, usrDlg, bi, userList);
+	public static void initAndShow(UserShareRightsDlg usrDlg, BinderInfo bi, List<Long> userIds) {
+		doAsyncOperation(null, usrDlg, bi, userIds);
 	}
 }

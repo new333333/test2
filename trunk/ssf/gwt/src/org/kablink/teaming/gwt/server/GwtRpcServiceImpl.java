@@ -1906,6 +1906,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_USER_SHARING_RIGHTS_INFO:
+		{
+			GetUserSharingRightsInfoCmd gusrCmd = ((GetUserSharingRightsInfoCmd) cmd);
+			UserSharingRightsInfoRpcResponseData result = GwtServerHelper.getUserSharingRightsInfo( this, getRequest( ri ), gusrCmd.getUserIds() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_USER_STATUS:
 		{
 			GetUserStatusCmd gusCmd;

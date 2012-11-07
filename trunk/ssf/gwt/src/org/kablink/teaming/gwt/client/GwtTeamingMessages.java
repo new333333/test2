@@ -431,6 +431,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetUpgradeInfo();
 	String rpcFailure_GetUserAccessInfo();
 	String rpcFailure_GetUserPermalink();
+	String rpcFailure_GetUserSharingRightsInfo();
 	String rpcFailure_GetUserWorkspaceInfo();
 	String rpcFailure_GetUserWorkspaceUrl();
 	String rpcFailure_GetViewFileUrl();
@@ -2137,5 +2138,12 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by the 'User Share Rights' dialog.
 	String userShareRightsDlgHeader();
+	String userShareRightsDlgLabel_Clear();
+	String userShareRightsDlgLabel_Set();
+	String userShareRightsDlgLabel_Unchanged();
+	String userShareRightsDlgRight_AllowExternal();
+	String userShareRightsDlgRight_AllowForwarding();
+	String userShareRightsDlgRight_AllowInternal();
+	String userShareRightsDlgRight_AllowPublic();
 
 }// end GwtTeamingMessages
