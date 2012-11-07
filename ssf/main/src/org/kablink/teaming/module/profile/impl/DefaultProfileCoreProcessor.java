@@ -433,6 +433,10 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
     		if (inputData.exists(ObjectKeys.FIELD_USER_TWITTERID) && !entryData.containsKey(ObjectKeys.FIELD_USER_TWITTERID)) {
     			entryData.put(ObjectKeys.FIELD_USER_TWITTERID, inputData.getSingleValue(ObjectKeys.FIELD_USER_TWITTERID));
     		}
+        	if ( inputData.exists( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE ) && !entryData.containsKey( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE ) )
+        	{
+        		entryData.put( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE, inputData.getSingleObject( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE ) );
+        	}
     	} else if(entry instanceof Application) {
         	if (inputData.exists(ObjectKeys.FIELD_APPLICATION_POST_URL) && !entryData.containsKey(ObjectKeys.FIELD_APPLICATION_POST_URL)) {
     			entryData.put(ObjectKeys.FIELD_APPLICATION_POST_URL, inputData.getSingleValue(ObjectKeys.FIELD_APPLICATION_POST_URL));
