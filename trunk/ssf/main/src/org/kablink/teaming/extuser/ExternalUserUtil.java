@@ -32,8 +32,12 @@
  */
 package org.kablink.teaming.extuser;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jasypt.encryption.StringEncryptor;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.util.StringUtil;
 
 /**
  * @author jong
@@ -49,6 +53,25 @@ public class ExternalUserUtil {
 	
 	public static Long decryptUserId(String encryptedUserId) {
 		return Long.valueOf(getStringEncryptor().decrypt(encryptedUserId));
+	}
+	
+	public static Map<String, String> getQueryParams(String url) {  
+	    Map<String, String> map = new HashMap<String, String>();  
+		int index = url.indexOf('?');
+		if(index < 0)
+			return map;
+		String query = url.substring(index+1);
+	    String[] params = StringUtil.split("&");  
+	    for (String param : params) {  
+	    	String[] elem = StringUtil.split("=");
+	        if(elem.length == 2)
+	        	map.put(elem[0], elem[1]);  
+	    }  
+	    return map;  
+	}  
+	
+	public static String getSessionKey(String queryParamFieldName) {
+		return ExternalUserUtil.class.getSimpleName() + "_" + queryParamFieldName;
 	}
 	
 	private static StringEncryptor getStringEncryptor() {
