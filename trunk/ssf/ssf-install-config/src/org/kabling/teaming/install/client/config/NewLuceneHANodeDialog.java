@@ -27,13 +27,13 @@ public class NewLuceneHANodeDialog extends DlgBox
 	private TextArea descriptionTextArea;
 	private Label errorLabel;
 	private List<HASearchNode> currentNodes;
+	private HASearchNode searchNode;
 
-	public NewLuceneHANodeDialog(List<HASearchNode> currentNodes)
+	public NewLuceneHANodeDialog(HASearchNode node,List<HASearchNode> currentNodes)
 	{
 		super(false, true, DlgButtonMode.OkCancel);
 		this.currentNodes = currentNodes;
-		
-
+		this.searchNode = node;
 	}
 
 	public boolean isValid()
@@ -54,7 +54,7 @@ public class NewLuceneHANodeDialog extends DlgBox
 
 
 		// Make sure we a unique name
-		if (currentNodes != null)
+		if (searchNode == null && currentNodes != null)
 		{
 			for (HASearchNode node : currentNodes)
 			{
@@ -128,6 +128,15 @@ public class NewLuceneHANodeDialog extends DlgBox
 			table.setWidget(row, 1, rmiPortSpinner);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
+		
+		if (searchNode != null)
+		{
+			hostTextBox.setText(searchNode.getHostName());
+			nameTextBox.setText(searchNode.getName());
+			rmiPortSpinner.setValue(searchNode.getRmiPort());
+			descriptionTextArea.setText(searchNode.getTitle());
+		}
+		
 		return content;
 	}
 
@@ -137,13 +146,16 @@ public class NewLuceneHANodeDialog extends DlgBox
 		if (!isValid())
 			return null;
 
-		HASearchNode node = new HASearchNode();
-		node.setName(nameTextBox.getText());
-		node.setHostName(hostTextBox.getText());
-		node.setTitle(descriptionTextArea.getText());
-		node.setRmiPort(rmiPortSpinner.getValueAsInt());
+		if (searchNode == null)
+		{
+			searchNode = new HASearchNode();
+		}
+		searchNode.setName(nameTextBox.getText());
+		searchNode.setHostName(hostTextBox.getText());
+		searchNode.setTitle(descriptionTextArea.getText());
+		searchNode.setRmiPort(rmiPortSpinner.getValueAsInt());
 
-		return node;
+		return searchNode;
 	}
 
 	@Override

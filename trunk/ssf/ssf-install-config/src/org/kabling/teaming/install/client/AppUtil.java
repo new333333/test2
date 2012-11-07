@@ -42,7 +42,7 @@ public final class AppUtil
 	}
 
 	/**
-	 * Get the RPC Service 
+	 * Get the RPC Service
 	 * 
 	 * @return
 	 */
@@ -62,7 +62,8 @@ public final class AppUtil
 	}
 
 	/**
-	 * Get the product information 
+	 * Get the product information
+	 * 
 	 * @return
 	 */
 	public static ProductInfo getProductInfo()
@@ -74,12 +75,35 @@ public final class AppUtil
 	{
 		productInfo = info;
 	}
-	
+
 	public static String getFormattedSize(long dataSize)
 	{
 		if (dataSize < 1024)
 			return dataSize + "m";
-		
-		return dataSize/1024 + "g";
+
+		return dataSize / 1024 + "g";
+	}
+
+	public static boolean isLocalIpAddr(String address)
+	{
+		if (address != null)
+		{
+			//If the value is localhost or 127.0.0.1, it is local
+			if (address.equalsIgnoreCase("localhost") || address.equals("127.0.0.1"))
+			{
+				return true;
+			}
+			
+			//We already have the local ip address from product info
+			//Let's check that
+			String localAddr = productInfo.getLocalIpAddress();
+			if (localAddr != null)
+			{
+				if (localAddr.equals(address))
+					return true;
+			}
+		}
+
+		return false;
 	}
 }

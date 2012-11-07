@@ -1,5 +1,6 @@
 package org.kabling.teaming.install.client.config;
 
+import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.ValueRequiredValidator;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
@@ -152,6 +153,16 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler,
 			return false;
 		}
 
+		if (configTypeListBox.getSelectedIndex() == 1)
+		{
+			//Remote lucene server cannot point to the local box
+			if (AppUtil.isLocalIpAddr(hostAddrTextBox.getText()))
+			{
+				setErrorMessage(RBUNDLE.remoteLuceneCannotPointToLocalBox());
+				return false;
+			}
+		}
+		
 		// If they have selected high availability, let's make sure they have
 		// atleast one search node
 		if (configTypeListBox.getSelectedIndex() == 2) {
