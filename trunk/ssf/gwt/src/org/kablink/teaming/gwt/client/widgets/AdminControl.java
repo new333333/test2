@@ -48,7 +48,6 @@ import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.AdminConsoleInfo;
-import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtMainPage;
@@ -60,7 +59,6 @@ import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveFileSyncAppConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -1215,63 +1213,9 @@ public class AdminControl extends TeamingPopupPanel
 				int x;
 				int y;
 				final GwtFileSyncAppConfiguration fileSyncAppConfiguration;
-				EditSuccessfulHandler editSuccessfullHandler;
 
 
 				fileSyncAppConfiguration = (GwtFileSyncAppConfiguration) response.getResponseData();
-				
-				// Create a handler that will be called when the user presses the ok button in the dialog.
-				editSuccessfullHandler = new EditSuccessfulHandler()
-				{
-					/**
-					 * This method gets called when user user presses ok in the "Configure File Sync App" dialog.
-					 */
-					@Override
-					public boolean editSuccessful( Object obj )
-					{
-						AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
-						GwtFileSyncAppConfiguration fileSyncAppConfig;
-
-						fileSyncAppConfig = (GwtFileSyncAppConfiguration) obj;
-						
-						// Create the callback that will be used when we issue an ajax request to save the file sync app configuration.
-						rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
-						{
-							/**
-							 * 
-							 */
-							@Override
-							public void onFailure( Throwable t )
-							{
-								GwtClientHelper.handleGwtRPCFailure(
-									t,
-									GwtTeaming.getMessages().rpcFailure_SaveFileSyncAppConfiguration() );
-							}
-					
-							/**
-							 * 
-							 * @param result
-							 */
-							@Override
-							public void onSuccess( VibeRpcResponse response )
-							{
-								// Nothing to do.
-							}
-						};
-				
-						// Issue an ajax request to save the File Sync App configuration.
-						{
-							SaveFileSyncAppConfigurationCmd cmd;
-							
-							// Issue an ajax request to save the File Sync App configuration to the db.  rpcSaveCallback will
-							// be called when we get the response back.
-							cmd = new SaveFileSyncAppConfigurationCmd( fileSyncAppConfig );
-							GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
-						}
-						
-						return true;
-					}
-				};
 				
 				// Get the position of the content control.
 				x = m_contentControlX;
@@ -1287,8 +1231,6 @@ public class AdminControl extends TeamingPopupPanel
 					height = m_dlgHeight;
 					width = m_dlgWidth;
 					ConfigureFileSyncAppDlg.createAsync(
-							editSuccessfullHandler,
-							null,
 							false, 
 							true,
 							x, 

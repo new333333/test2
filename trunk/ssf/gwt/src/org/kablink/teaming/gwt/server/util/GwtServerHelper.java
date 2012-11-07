@@ -8634,18 +8634,38 @@ public class GwtServerHelper {
 	/**
 	 * Save the given File Sync App configuration
 	 */
-	public static Boolean saveFileSyncAppConfiguration( AllModulesInjected allModules, GwtFileSyncAppConfiguration fsaConfiguration )
+	public static Boolean saveFileSyncAppConfiguration(
+		AllModulesInjected allModules,
+		GwtFileSyncAppConfiguration fsaConfiguration ) throws GwtTeamingException
 	{
 		AdminModule adminModule;
 		Boolean enabled;
 		Boolean deployEnabled;
 		Integer interval;
+		String autoUpdateUrl;
 		
 		adminModule = allModules.getAdminModule();
 		enabled = new Boolean( fsaConfiguration.getIsFileSyncAppEnabled() );
 		interval = new Integer( fsaConfiguration.getSyncInterval() );
 		deployEnabled = new Boolean( fsaConfiguration.getIsDeploymentEnabled() );
-		adminModule.setFileSynchAppSettings( enabled, interval, fsaConfiguration.getAutoUpdateUrl(), deployEnabled );
+		
+		// Did the user enter an auto update url?
+		autoUpdateUrl = fsaConfiguration.getAutoUpdateUrl();
+		if ( autoUpdateUrl != null && autoUpdateUrl.length() > 0 )
+		{
+			// Yes, is it valid?
+			if ( validateDesktopAppDownloadUrl( autoUpdateUrl ) == false )
+			{
+				GwtTeamingException gtEx;
+				
+				// No
+				gtEx = GwtServerHelper.getGwtTeamingException();
+				gtEx.setExceptionType( ExceptionType.INVALID_AUTO_UPDATE_URL );
+				throw gtEx;				
+			}
+		}
+		
+		adminModule.setFileSynchAppSettings( enabled, interval, autoUpdateUrl, deployEnabled );
 
 		return Boolean.TRUE;
 	}

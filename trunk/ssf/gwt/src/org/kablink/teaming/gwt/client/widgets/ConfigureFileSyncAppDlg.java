@@ -32,11 +32,15 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveFileSyncAppConfigurationCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -45,6 +49,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -63,7 +68,7 @@ import com.google.gwt.user.client.ui.TextBox;
  *
  */
 public class ConfigureFileSyncAppDlg extends DlgBox
-	implements KeyPressHandler
+	implements KeyPressHandler, EditSuccessfulHandler
 {
 	private RadioButton m_enableFileSyncRB;
 	private RadioButton m_disableFileSyncRB;
@@ -87,8 +92,6 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	 * 
 	 */
 	private ConfigureFileSyncAppDlg(
-		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
-		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		boolean autoHide,
 		boolean modal,
 		int xPos,
@@ -99,7 +102,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.OkCancel );
 
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().fileSyncAppDlgHeader(), editSuccessfulHandler, editCanceledHandler, null ); 
+		createAllDlgContent( GwtTeaming.getMessages().fileSyncAppDlgHeader(), this, null, null ); 
 	}
 	
 
@@ -204,7 +207,81 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		return mainPanel;
 	}
 	
+	/**
+	 * This method gets called when user user presses ok.
+	 */
+	@Override
+	public boolean editSuccessful( Object obj )
+	{
+		AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
+		GwtFileSyncAppConfiguration fileSyncAppConfig;
+		SaveFileSyncAppConfigurationCmd cmd;
+
+		fileSyncAppConfig = (GwtFileSyncAppConfiguration) obj;
+		
+		// Create the callback that will be used when we issue an ajax request to save the file sync app configuration.
+		rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				FlowPanel errorPanel;
+				Label label;
+				String errMsg = null;
+				
+				// Get the panel that holds the errors.
+				errorPanel = getErrorPanel();
+				errorPanel.clear();
+				
+				if ( caught instanceof GwtTeamingException )
+				{
+					GwtTeamingException ex;
+					
+					ex = (GwtTeamingException) caught;
+					if ( ex.getExceptionType() == ExceptionType.INVALID_AUTO_UPDATE_URL )
+					{
+						errMsg = GwtTeaming.getMessages().fileSyncApp_InvalidAutoUpdateUrlText();
+					}
+				}
+				
+				if ( errMsg == null )
+				{
+					errMsg = GwtTeaming.getMessages().fileSyncApp_OnSaveUnknownException( caught.toString() );
+				}
+				
+				label = new Label( errMsg );
+				label.addStyleName( "dlgErrorLabel" );
+				errorPanel.add( label );
+				
+				showErrorPanel();
+				m_autoUpdateUrlTextBox.setFocus( true );
+			}
 	
+			/**
+			 * 
+			 * @param result
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				// Close this dialog.
+				hide();
+			}
+		};
+
+		// Issue an ajax request to save the File Sync App configuration to the db.  rpcSaveCallback will
+		// be called when we get the response back.
+		cmd = new SaveFileSyncAppConfigurationCmd( fileSyncAppConfig );
+		GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
+		
+		// Returning false will prevent the dialog from closing.  We will close the dialog
+		// after we successfully save the configuration.
+		return false;
+	}
+
 	/**
 	 * Return the string entered by the user for the auto-update url
 	 */
@@ -327,6 +404,8 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		
 		// Initialize the auto-update url.
 		m_autoUpdateUrlTextBox.setText( fileSyncAppConfiguration.getAutoUpdateUrl() );
+		
+		hideErrorPanel();
 	}
 	
 	
@@ -367,8 +446,6 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	 * 
 	 */
 	public static void createAsync(
-							final EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
-							final EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 							final boolean autoHide,
 							final boolean modal,
 							final int left,
@@ -395,8 +472,6 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 				ConfigureFileSyncAppDlg cfsaDlg;
 				
 				cfsaDlg = new ConfigureFileSyncAppDlg(
-												editSuccessfulHandler,
-												editCanceledHandler,
 												autoHide,
 												modal,
 												left,
