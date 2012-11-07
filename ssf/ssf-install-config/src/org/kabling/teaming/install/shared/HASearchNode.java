@@ -55,4 +55,12 @@ public class HASearchNode implements Serializable
 	{
 		this.rmiPort = rmiPort;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "HASearchNode [name=" + name + ", title=" + title + ", hostName=" + hostName + ", rmiPort=" + rmiPort + "]";
+	}
+	
+	
 }
