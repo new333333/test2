@@ -56,6 +56,47 @@ import org.kablink.util.Validator;
 
 public class User extends UserPrincipal implements IndividualPrincipal {
 	
+	public enum ExtAccountState {
+		/**
+		 * The external user account was created as result of a sharing activity
+		 * performed by another user and an invitation has gone out.
+		 * 
+		 */
+		initial((short)1),
+		/**
+		 * The invited external user responded, and successfully bound his/her email
+		 * address with a specific identity/credential from a specific identity source,
+		 * which could be either an OpenID provider such as Google or the Filr system 
+		 * itself (via local registration), whichever the user chooses to utilize as
+		 * the initial means of authentication. Once bound, the user account doesn't
+		 * need to be bound again (that is, bind is a one-time thing), although the 
+		 * user can change the identity source subsequently (e.g. from Google to Yahoo
+		 * as OpenID provider) or can even utilize multiple identity sources (e.g.
+		 * Google as OpenID provider and Filr system for locally-managed credential).  
+		 */
+		bound((short)2),
+		/**
+		 * The user has been successfully verified and is ready to use the system.
+		 * Again, verification is needed/performed only once for each user account.
+		 */
+		verified((short)3);
+		short value;
+		ExtAccountState(short value) {
+			this.value = value;
+		}
+		public short getValue() {
+			return value;
+		}
+		public static ExtAccountState valueOf(short value) {
+			switch(value) {
+			case 1: return ExtAccountState.initial;
+			case 2: return ExtAccountState.bound;
+			case 3: return ExtAccountState.verified;
+			default: throw new IllegalArgumentException("Invalid db value " + value + " for enum ExtAccountState");
+			}
+		}
+	}
+
 	private final static int	WORK_DAY_START_DEFAULT	= 8;	// Original default was 6 in ss_calendar.js.
 	
     protected String firstName="";//set by hibernate access="field"
@@ -80,6 +121,9 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected Long maxGroupsQuota;
     protected Long maxGroupsFileSizeLimit;
     private SortedSet groupNames; // sorted set of group names; this field is computed
+    
+    protected String openidIdentity; // applicable only to external users using OpenID
+    protected Short extAccountState; // applicable only to external users
     
     // For use by Hibernate only
 	protected User() {
@@ -556,5 +600,25 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		
 		return reply;
     }
+
+	public String getOpenidIdentity() {
+		return openidIdentity;
+	}
+
+	public void setOpenidIdentity(String openidIdentity) {
+		this.openidIdentity = openidIdentity;
+	}
+
+	public ExtAccountState getExtAccountState() {
+		if(extAccountState == null)
+			return null;
+		else 
+			return ExtAccountState.valueOf(extAccountState.shortValue());
+	}
+
+	public void setExtAccountState(ExtAccountState extAccountState) {
+		this.extAccountState = (extAccountState == null)? null : extAccountState.getValue();
+	}
     
+
 }

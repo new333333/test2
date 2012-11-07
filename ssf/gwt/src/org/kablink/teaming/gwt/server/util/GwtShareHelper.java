@@ -960,8 +960,10 @@ public class GwtShareHelper
 							updates = new HashMap();
 							updates.put( ObjectKeys.FIELD_USER_EMAIL, recipientName );
 							updates.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, recipientName );
+							// Do NOT set the "fromOpenid" bit on initially. We will set it when the user actually
+							// logs in and binds a valid OpenID account with the email address specified during sharing.
 			 				user = profileModule.addUserFromPortal(
-			 													new IdentityInfo(false, false, false, true),
+			 													new IdentityInfo(false, false, false, false),
 			 													recipientName,
 			 													null,
 			 													updates,

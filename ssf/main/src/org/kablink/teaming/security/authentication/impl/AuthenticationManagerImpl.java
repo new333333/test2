@@ -66,6 +66,7 @@ import org.kablink.teaming.module.zone.ZoneException;
 import org.kablink.teaming.security.authentication.AuthenticationException;
 import org.kablink.teaming.security.authentication.AuthenticationManager;
 import org.kablink.teaming.security.authentication.DigestDoesNotMatchException;
+import org.kablink.teaming.security.authentication.ExternalUserRequiresVerificationException;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
@@ -189,6 +190,20 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
 				user = doAuthenticateOpenidUser(zoneName, userName);
 				
+				if(User.ExtAccountState.initial == user.getExtAccountState()) {
+					//bindExternalUser(user, )
+					throw new ExternalUserRequiresVerificationException(user);
+				}
+				else if(User.ExtAccountState.bound == user.getExtAccountState()) {
+					
+				}
+				else if(User.ExtAccountState.verified == user.getExtAccountState()) {
+					
+				}
+				else {
+					throw new InternalException("Encountered external user account '" + user.getId() + "' that is missing account state");
+				}
+
 				int syncMode = getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().getProfileSynchronizationMode();
 				if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_ON_FIRST_LOGIN_ONLY) {
 					if(user.getFirstLoginDate() != null)
@@ -506,7 +521,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
     	} catch (NoUserByTheNameException e) {
 			try {
 				// Try to find the user even if disabled or deleted
-				user = getProfileDao().findUserByNameDeadOrAlive( username, zoneName );
+				user = getProfileDao().findUserByNameDeadOrAlive( username, zoneName );				
 				throw new UserAccountNotActiveException("User account disabled or deleted [" 
 						+ zoneName + "," + username + "]", e);
 
