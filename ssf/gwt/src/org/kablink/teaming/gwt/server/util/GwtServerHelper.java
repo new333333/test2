@@ -1112,15 +1112,12 @@ public class GwtServerHelper {
 	 * Constructs a desktop application URL.
 	 */
 	private static FilenameUrlPair buildDesktopAppUrl(String baseUrl, String platformTail) {
-		String fName    = null;
-		String url      = null;
-		String jsonData = doHTTPGet(baseUrl + platformTail + JSON_TAIL);
-		if (MiscUtil.hasString(jsonData)) {
-			fName = getSFromJSO(JSONObject.fromObject(jsonData), "filename");
-			if (MiscUtil.hasString(fName)) {
-				url = (baseUrl + platformTail + fName);
-			}
-		}
+		String jsonData = doHTTPGet((baseUrl + platformTail + JSON_TAIL));
+		String fName    = getSFromJSO(jsonData, "filename");
+		String url;
+		if (MiscUtil.hasString(fName))
+		     url = (baseUrl + platformTail + fName);
+		else url = null;
 		
 		FilenameUrlPair reply;
 		if (MiscUtil.hasString(url))
@@ -1925,11 +1922,13 @@ public class GwtServerHelper {
 		String				reply         = null;
 		
 		try {
-			// Open the HTTP connection...
+			// Open the HTTP connection.
 			urlConnection = ((HttpURLConnection) new URL(httpUrl).openConnection());
 			urlConnection.setRequestMethod("GET");
+			urlConnection.setInstanceFollowRedirects(false);
+			urlConnection.connect();
 
-			// ...and read the content from it.
+			// Read the content from the HTTP connection.
 			String			line;
 			StringBuffer	result = new StringBuffer();
 			reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
@@ -4211,17 +4210,18 @@ public class GwtServerHelper {
 			// object we'll fill in and return.
 			DesktopAppDownloadInfoRpcResponseData reply = new DesktopAppDownloadInfoRpcResponseData();
 
-			// Extract the base desktop application update URL...
+			// Extract the base desktop application update URL and
+			// validate it for any redirects, ...
 			ZoneConfig	zc      = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-			String		baseUrl = zc.getFsaAutoUpdateUrl();
-			baseUrl = ((null == baseUrl) ? "" : baseUrl.trim());
-			int urlLen = baseUrl.length();
-			if (0 < urlLen) {
-				if ('/' != baseUrl.charAt(urlLen - 1)) {
+			String		baseUrl = getFinalHttpUrl(zc.getFsaAutoUpdateUrl(), "From getDesktopAppDownloadInformation()");
+			if (MiscUtil.hasString(baseUrl)) {
+				// ...ensure it ends with a '/'...
+				if ('/' != baseUrl.charAt(baseUrl.length() - 1)) {
 					baseUrl += "/";
 				}
 	
-				// ...and construct and store the desktop application information.
+				// ...and construct and store the desktop
+				// ...application information.
 				boolean isFilr = Utils.checkIfFilr();
 				reply.setMac(  buildDesktopAppUrl(baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE)));
 				reply.setWin32(buildDesktopAppUrl(baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE)));
@@ -4733,6 +4733,76 @@ public class GwtServerHelper {
 	public static String getFileEntrysFilename(AllModulesInjected bs, FolderEntry fileEntry) {
 		// Always use the initial form of the method.
 		return getFileEntrysFilename(bs, fileEntry, true);
+	}
+
+	/*
+	 * Establishes the connection to an HTTP URL and follows any
+	 * redirect, returning the final URL resolved to.
+	 */
+	private static String getFinalHttpUrl(String httpUrl, String usageForLog) {
+		// Do we have a URL to finalize?
+		httpUrl = ((null == httpUrl) ? "" : httpUrl.trim());
+		if (0 == httpUrl.length()) {
+			// No!  Return null.
+			return null;
+		}
+		
+		HttpURLConnection	urlConnection = null;
+		String				reply         = null;
+		
+		try {
+			// Open the HTTP connection.
+			urlConnection = ((HttpURLConnection) new URL(httpUrl).openConnection());
+			urlConnection.setRequestMethod("GET");
+			urlConnection.setInstanceFollowRedirects(false);
+			urlConnection.connect();
+
+			// Is the connection being redirected?
+			int status = urlConnection.getResponseCode();
+			switch (status) {
+			case HttpURLConnection.HTTP_MOVED_PERM:
+			case HttpURLConnection.HTTP_MOVED_TEMP:
+				// Yes!  Get the redirected URL..
+				reply = urlConnection.getHeaderField("Location");
+				
+				// ...and log the fact that it's being redirected.
+				m_logger.debug("GwtServerHelper.getFinalHttpUrl( '" + httpUrl + "' ):  " + usageForLog + "...");
+				m_logger.debug("...is being redirected to:  '" + reply + "'");
+				
+				break;
+				
+			case HttpURLConnection.HTTP_OK:
+				// No, the connection isn't being redirected!
+				// Everything is fine.  Return it.
+				reply = httpUrl;
+				break;
+				
+			default:
+				// Log any other connection status as an error and
+				// return null.
+				m_logger.error("GwtServerHelper.getFinalHttpUrl( '" + httpUrl + "' ):  Connection status:  " + status);
+				reply = null;
+				break;
+			}
+		}
+		
+		catch (Exception ex) {
+			// Log any exceptions as an error and return null.
+			m_logger.error("GwtServerHelper.getFinalHttpUrl( '" + httpUrl + "' )", ex);
+			reply = null;
+		}
+		
+		finally {
+			// If we have an HTTP connection...
+			if (null != urlConnection) {
+				// ...make sure it gets disconnected.
+				urlConnection.disconnect();
+			}
+		}
+
+		// If we get here, reply is null or refers to the final URL
+		// after following all redirects, ...  Return it.
+		return reply;
 	}
 	
 	/**
@@ -5340,6 +5410,25 @@ public class GwtServerHelper {
 		}
 		
 		return lpProperties;
+	}
+	
+	/*
+	 * Parses a JSON data string and if valid, returns a JSONObject.
+	 * Otherwise, returns null.
+	 */
+	private static JSONObject getJSOFromS(String jsonData) {
+		// If we don't have any JSON data to parse...
+		jsonData = ((null == jsonData) ? "" : jsonData.trim());
+		if (0 == jsonData.length()) {
+			// ...return null.
+			return null;
+		}
+
+		// Return the parsed JSONObject or null if the parse fails.
+		JSONObject reply;
+		try                  {reply = JSONObject.fromObject(jsonData);}
+		catch (Exception ex) {reply = null;                           }
+		return reply;
 	}
 	
 	/**
@@ -6335,16 +6424,23 @@ public class GwtServerHelper {
 	 */
 	private static String getSFromJSO(JSONObject jso, String key) {
 		String reply;
-		if (jso.has(key)) {
+		if ((null == jso) || (!(jso.has(key)))) {
+			reply = "";
+		}
+		else {
 			reply = jso.getString(key);
 			if (null == reply) {
 				reply = "";
 			}
 		}
-		else {
-			reply = "";
-		}
 		return reply;
+	}
+
+	/*
+	 * Parses and extracts a non-null string from a JSON data string. 
+	 */
+	private static String getSFromJSO(String jsonData, String key) {
+		return getSFromJSO(getJSOFromS(jsonData), key);
 	}
 	
 	/**
@@ -9520,20 +9616,21 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static boolean validateDesktopAppDownloadUrl(String baseUrl) {
-		// Ensure the URL ends with a '/'...
-		baseUrl = ((null == baseUrl) ? "" : baseUrl.trim());
-		int urlLen = baseUrl.length();
-		if (0 == urlLen) {
+		// Validate the URL for any redirects, ...
+		baseUrl = getFinalHttpUrl(baseUrl, "From validateDesktopAppDownloadUrl()");
+		if (!(MiscUtil.hasString(baseUrl))) {
 			return false;
 		}
-		if ('/' != baseUrl.charAt(urlLen - 1)) {
+		
+		// ...ensure it ends with a '/'...
+		if ('/' != baseUrl.charAt(baseUrl.length() - 1)) {
 			baseUrl += "/";
 		}
-
+		
 		// ...and test it.
 		String platformTail = (Utils.checkIfFilr() ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE);
-		String jsonData = doHTTPGet(baseUrl + platformTail + JSON_TAIL);
-		return MiscUtil.hasString(jsonData);
+		String jsonData = doHTTPGet((baseUrl + platformTail + JSON_TAIL));
+		return (null != getJSOFromS(jsonData));
 	}
 	
 	/**
