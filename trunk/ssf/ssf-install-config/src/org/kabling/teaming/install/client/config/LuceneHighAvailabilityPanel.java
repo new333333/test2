@@ -1,5 +1,6 @@
 package org.kabling.teaming.install.client.config;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -189,7 +190,7 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 		}
 		else if (event.getSource() == newButton)
 		{
-			NewLuceneHANodeDialog dlg = new NewLuceneHANodeDialog(config.getLucene());
+			NewLuceneHANodeDialog dlg = new NewLuceneHANodeDialog(dataProvider.getList());
 			dlg.createAllDlgContent("New Search Node", this, null, null);
 			dlg.show(true);
 		}
@@ -197,11 +198,21 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 
 	@Override
 	public boolean editSuccessful(Object obj) {
-		dataProvider.getList().add((HASearchNode)obj);
+		if (obj != null)
+			dataProvider.getList().add((HASearchNode)obj);
 		return true;
 	}
 
 	public List<HASearchNode> getAvailableNodes() {
-		return dataProvider.getList();
+		List<HASearchNode> returnList = new ArrayList<HASearchNode>();
+		
+		if (dataProvider.getList() != null)
+		{
+			for (HASearchNode node : dataProvider.getList())
+			{
+				returnList.add(node);
+			}
+		}
+		return returnList;
 	}
 }

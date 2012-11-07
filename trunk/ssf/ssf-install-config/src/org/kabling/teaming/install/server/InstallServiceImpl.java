@@ -65,6 +65,7 @@ import org.kabling.teaming.install.shared.ShellCommandInfo;
 import org.kabling.teaming.install.shared.WebService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -1234,7 +1235,35 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			resourceElement.setAttribute("lucene.index.hostname", lucene.getIndexHostName());
 		}
 
-		// TODO: Handle high availability nodes
+		if (lucene.getLocation().equals("ha"))
+		{
+			// Delete high availability nodes
+			NodeList nodeList = luceneElement.getElementsByTagName("HASearchNode");
+			if (nodeList != null)
+			{
+				for (int i = 0; i < nodeList.getLength(); i++)
+				{
+					Node currentNode = nodeList.item(i);
+					Node parent = currentNode.getParentNode();
+					parent.removeChild(currentNode);
+				}
+			}
+			
+			
+			for (int i = 0; i < lucene.getSearchNodesList().size(); i++)
+			{
+				HASearchNode searchNode = lucene.getSearchNodesList().get(i);
+				
+				Element node = document.createElement("HASearchNode");
+				node.setAttribute("ha.service.name", searchNode.getName());
+				node.setAttribute("ha.service.title", searchNode.getTitle());
+				node.setAttribute("ha.service.hostname", searchNode.getHostName());
+				node.setAttribute("ha.service.rmi.port", String.valueOf(searchNode.getRmiPort()));
+				
+				resourceElement.appendChild(node);
+			}
+		}
+
 	}
 
 	private void saveMemoryConfiguration(InstallerConfig config, Document document)
@@ -1723,16 +1752,16 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			String resourceName = "root";
 			String resourcePassword = "root";
 			String resourceHost = "localhost";
-			
+
 			if (dbConfig.getResourceHost() != null)
 				resourceHost = dbConfig.getResourceHost();
-			
+
 			if (dbConfig.getResourceUserName() != null)
 				resourceName = dbConfig.getResourceUserName();
-			
+
 			if (dbConfig.getResourcePassword() != null)
 				resourcePassword = dbConfig.getResourcePassword();
-			
+
 			if (checkDBExists("sitescape", dbConfig.getResourceUrl(), resourceName, resourcePassword))
 				return;
 
@@ -1771,9 +1800,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 				// Create the database if needed
 				int result = executeCommand(
-						"mysql -h " + resourceHost + " -u" + resourceName + " -p"
-								+ resourcePassword + " < /filrinstall/db/scripts/sql/mysql-create-empty-database.sql")
-						.getExitValue();
+						"mysql -h " + resourceHost + " -u" + resourceName + " -p" + resourcePassword
+								+ " < /filrinstall/db/scripts/sql/mysql-create-empty-database.sql").getExitValue();
 
 				// We got an error ( 0 for success, 1 for database exists)
 				if (!(result == 0 || result == 1))
@@ -1823,7 +1851,6 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				logger.debug("Error reconfiguring installer in silent mode,Error code " + result);
 				throw new ConfigurationSaveException();
 			}
-			
 
 			// Wizard configuration is done, put a temp file there
 			File file = new File("/filrinstall/configured");

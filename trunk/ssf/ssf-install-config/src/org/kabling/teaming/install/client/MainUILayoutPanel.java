@@ -4,7 +4,7 @@ import org.kabling.teaming.install.client.config.ClusteringPage;
 import org.kabling.teaming.install.client.config.ExportConfigurationPage;
 import org.kabling.teaming.install.client.config.InboundEmailPage;
 import org.kabling.teaming.install.client.config.JavaJDKPage;
-import org.kabling.teaming.install.client.config.LuenePage;
+import org.kabling.teaming.install.client.config.LucenePage;
 import org.kabling.teaming.install.client.config.NetworkInformationPage;
 import org.kabling.teaming.install.client.config.OutboundEmailPage;
 import org.kabling.teaming.install.client.config.RequestsAndConnectionsPage;
@@ -216,7 +216,7 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 			break;
 			
 		case LUCENE:
-			dlg = new LuenePage();
+			dlg = new LucenePage();
 			dlg.createAllDlgContent(AppUtil.getAppResource().lucene(), dlg, null, null);
 			break;
 

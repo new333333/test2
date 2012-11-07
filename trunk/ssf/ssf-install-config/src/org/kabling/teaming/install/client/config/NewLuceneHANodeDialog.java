@@ -9,7 +9,6 @@ import org.kabling.teaming.install.client.widgets.DlgBox;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.shared.HASearchNode;
-import org.kabling.teaming.install.shared.Lucene;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -25,15 +24,14 @@ public class NewLuceneHANodeDialog extends DlgBox
 	private VibeTextBox nameTextBox;
 	private VibeTextBox hostTextBox;
 	private GwValueSpinner rmiPortSpinner;
-	private Lucene lucene;
 	private TextArea descriptionTextArea;
 	private Label errorLabel;
+	private List<HASearchNode> currentNodes;
 
-	public NewLuceneHANodeDialog(Lucene lucene)
+	public NewLuceneHANodeDialog(List<HASearchNode> currentNodes)
 	{
 		super(false, true, DlgButtonMode.OkCancel);
-		this.lucene = lucene;
-		
+		this.currentNodes = currentNodes;
 		
 
 	}
@@ -54,16 +52,18 @@ public class NewLuceneHANodeDialog extends DlgBox
 			return false;
 		}
 
-		List<HASearchNode> nodes = lucene.getSearchNodesList();
 
 		// Make sure we a unique name
-		for (HASearchNode node : nodes)
+		if (currentNodes != null)
 		{
-			if (node.getName().equals(nameTextBox.getText()))
+			for (HASearchNode node : currentNodes)
 			{
-				errorLabel.setText("Search node name has to be unique.");
-				getErrorPanel().setVisible(true);
-				return false;
+				if (node.getName().equals(nameTextBox.getText()))
+				{
+					errorLabel.setText("Search node name has to be unique.");
+					getErrorPanel().setVisible(true);
+					return false;
+				}
 			}
 		}
 		getErrorPanel().setVisible(false);

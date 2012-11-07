@@ -234,4 +234,8 @@ public interface AppResource extends Messages
 	String nameColon();
 
 	String descriptionColon();
+
+	String noAvailabilityNodesExists();
+
+	String mergeFactorColon();
 }
