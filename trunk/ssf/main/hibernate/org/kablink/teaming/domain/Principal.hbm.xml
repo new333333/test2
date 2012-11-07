@@ -126,6 +126,8 @@
 		  <property name="timeZone" access="field" length="80"/>
 		  <property name="locale" access="field" length="32"/>
 		  <property name="digestSeed"/>
+		  <property name="openidIdentity" length="128"/>
+		  <property name="extAccountState" access="field" type="short"/>
 	    </subclass>
   	</subclass>
   	<subclass dynamic-update="true" name="org.kablink.teaming.domain.ApplicationPrincipal">

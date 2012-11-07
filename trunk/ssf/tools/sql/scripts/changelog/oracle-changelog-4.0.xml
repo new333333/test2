@@ -403,4 +403,29 @@ UPDATE SS_EMAILADDRESSES SET ADDRESS=LOWER(ADDRESS);
         <dropColumn tableName="SS_PRINCIPALS" columnName="IDENTITYSOURCE"/>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="50">
+        <comment>OpenID identity string</comment>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="OPENIDIDENTITY" type="VARCHAR2(128 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="51">
+        <createIndex indexName="OPENIDIDENTITY_PRINCIPAL" tableName="SS_PRINCIPALS" unique="true">
+            <column name="ZONEID"/>
+            <column name="OPENIDIDENTITY"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="52">
+        <comment>State of the account representing external user</comment>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="EXTACCOUNTSTATE" type="NUMBER(2,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

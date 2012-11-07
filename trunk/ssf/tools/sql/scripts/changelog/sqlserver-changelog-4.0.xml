@@ -399,4 +399,29 @@ update SS_EmailAddresses set address=LOWER(address);
         <dropColumn tableName="SS_Principals" columnName="identitySource"/>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="49">
+        <comment>OpenID identity string</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="openidIdentity" type="VARCHAR(128)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="50">
+        <createIndex indexName="openidIdentity_Principal" schemaName="dbo" tableName="SS_Principals" unique="true">
+            <column name="zoneId"/>
+            <column name="openidIdentity"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="51">
+        <comment>State of the account representing external user</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="extAccountState" type="SMALLINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

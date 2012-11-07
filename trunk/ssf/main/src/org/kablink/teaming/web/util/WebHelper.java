@@ -73,6 +73,7 @@ import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
+import org.kablink.teaming.util.ExternalUserUtil;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleMultipartFile;
@@ -83,9 +84,9 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.util.Html;
 import org.kablink.util.PortalDetector;
+import org.kablink.util.Validator;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
-
 
 public class WebHelper {
 	protected static Log logger = LogFactory.getLog(WebHelper.class);
@@ -333,6 +334,16 @@ public class WebHelper {
 			}
 		}
 		
+		return fillSession(ses, request);
+	}
+	
+	private static HttpSession fillSession(HttpSession ses, HttpServletRequest request) {
+		// This is an opportunity to fill the session with information from the request, if necessary.
+		
+		// This information is to aid with external user login
+		String value = request.getParameter(ExternalUserUtil.QUERY_FIELD_NAME_FOR_EXTERNAL_USER_ENCRYPTED_TOKEN);
+		if(Validator.isNotNull(value))
+			ses.setAttribute(ExternalUserUtil.class.getName() + "_" + ExternalUserUtil.QUERY_FIELD_NAME_FOR_EXTERNAL_USER_ENCRYPTED_TOKEN, value);
 		return ses;
 	}
 	
