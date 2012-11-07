@@ -118,21 +118,11 @@ public class IdentityInfo {
 				result = false;
 			}
 			else {
-				/*
 				// In this case, it's possible that both fromLocal and fromOpenid are false, which
 				// can happen at the time the user record is first created from the sharing dialogue.
 				// Appropriate flag(s) should be set once the user accepts the invitation and select
 				// either OpenID or Filr managed account or both.
 				result = true;
-				*/
-
-				// TODO For now, I will assume that external users always use OpenID.
-				if(fromLocal) {
-					result = true;
-				}
-				else {
-					result = fromOpenid;
-				}
 			}
 		}
 		
