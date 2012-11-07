@@ -1482,7 +1482,8 @@ public class GwtViewHelper {
 				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
 				for (Long userId:  userIds) {
 					// Can we resolve the user being disabled?
-					User user = getResolvedUser(userId);
+					User	user      = getResolvedUser(userId);
+					String	userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
 					if (null != user) {
 						// Yes!  Is it the user that's logged in?
 						if (user.getId().equals(currentUserId)) {
@@ -1495,8 +1496,16 @@ public class GwtViewHelper {
 						// Is it a reserved user?
 						if (user.isReserved()) {
 							// Yes!  They can't do that.  Ignore it.
-							String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
 							reply.addError(NLT.get("disableUserError.reserved", new String[]{userTitle}));
+							continue;
+						}
+						
+						// Was this user provisioned from an LDAP
+						// source?
+						if (user.getIdentityInfo().isFromLdap()) {
+							// Yes!  They can't be disabled this way.
+							// Ignore it.
+							reply.addError(NLT.get("disableUserError.fromLdap", new String[]{userTitle}));
 							continue;
 						}
 					}
@@ -1508,7 +1517,6 @@ public class GwtViewHelper {
 
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
-						String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
 						String messageKey;
 						if      (e instanceof AccessControlException) messageKey = "disableUserError.AccssControlException";
 						else                                          messageKey = "disableUserError.OtherException";
@@ -1617,6 +1625,20 @@ public class GwtViewHelper {
 				// Yes!  Scan them.
 				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
 				for (Long userId:  userIds) {
+					// Can we resolve the user being disabled?
+					User	user      = getResolvedUser(userId);
+					String	userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
+					if (null != user) {
+						// Yes!  Was this user provisioned from an LDAP
+						// source?
+						if (user.getIdentityInfo().isFromLdap()) {
+							// Yes!  They can't be enabled this way.
+							// Ignore it.
+							reply.addError(NLT.get("enableUserError.fromLdap", new String[]{userTitle}));
+							continue;
+						}
+					}
+					
 					try {
 						// Can we enable this user?
 						bs.getProfileModule().disableEntry(userId, false);	// false -> Enable.
@@ -1624,8 +1646,6 @@ public class GwtViewHelper {
 
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
-						User   user      = getResolvedUser(userId);
-						String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
 						String messageKey;
 						if      (e instanceof AccessControlException) messageKey = "enableUserError.AccssControlException";
 						else                                          messageKey = "enableUserError.OtherException";
