@@ -229,6 +229,8 @@ public interface AppResource extends Messages
 	
 	String newEllipsis();
 
+	String add();
+	
 	String remove();
 
 	String nameColon();
@@ -238,4 +240,6 @@ public interface AppResource extends Messages
 	String noAvailabilityNodesExists();
 
 	String mergeFactorColon();
+
+	String remoteLuceneCannotPointToLocalBox();
 }

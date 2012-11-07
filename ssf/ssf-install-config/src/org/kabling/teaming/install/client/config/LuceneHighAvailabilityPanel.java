@@ -87,7 +87,9 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 			@Override
 			public void update(int index, HASearchNode object, String value)
 			{
-				Window.alert("HA Create Node");
+				NewLuceneHANodeDialog dlg = new NewLuceneHANodeDialog(object,dataProvider.getList());
+				dlg.createAllDlgContent("New Search Node", LuceneHighAvailabilityPanel.this, null, null);
+				dlg.show(true);
 			}
 		});
 
@@ -190,7 +192,7 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 		}
 		else if (event.getSource() == newButton)
 		{
-			NewLuceneHANodeDialog dlg = new NewLuceneHANodeDialog(dataProvider.getList());
+			NewLuceneHANodeDialog dlg = new NewLuceneHANodeDialog(null,dataProvider.getList());
 			dlg.createAllDlgContent("New Search Node", this, null, null);
 			dlg.show(true);
 		}
@@ -199,8 +201,29 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 	@Override
 	public boolean editSuccessful(Object obj) {
 		if (obj != null)
-			dataProvider.getList().add((HASearchNode)obj);
+		{
+			HASearchNode node = (HASearchNode)obj;
+			if (!checkIfExists(node.getName()))
+			{
+				dataProvider.getList().add((HASearchNode)obj);
+			}
+			table.redraw();
+		}
 		return true;
+	}
+	
+	private boolean checkIfExists(String searchNode)
+	{
+		List<HASearchNode> nodes = getAvailableNodes();
+		
+		for (HASearchNode node: nodes)
+		{
+			if (node.getName().equals(searchNode))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public List<HASearchNode> getAvailableNodes() {
