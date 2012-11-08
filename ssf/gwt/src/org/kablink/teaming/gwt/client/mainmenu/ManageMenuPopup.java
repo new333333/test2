@@ -290,14 +290,21 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			m_filrBucket.add(m_trashTBI);
 		}
 		
-		// When all is said and done, where going to render anything
+		// When all is said and done, we're going to render anything
 		// that's left in the menus from the server at the bottom of
 		// the manage menu.  There are certain, known items that we
 		// don't want to render here.  The following will see to it
 		// that they're ignored by removing them from the appropriate
 		// lists.
-		addNestedItemFromUrl(m_ignoreBucket, m_commonActionsTBI, "site_administration");	// This is handled in the masthead.
-		addNestedItemFromUrl(m_ignoreBucket, m_commonActionsTBI, "binder_report");			// This is in the views menu.
+		
+		// Site administration is handled in the masthead.
+		addNestedItemFromUrl(m_ignoreBucket, m_commonActionsTBI, "site_administration");
+		
+		// In Vibe mode...
+		if (!(GwtClientHelper.isLicenseFilr())) {
+			// ...this is in the views menu.
+			addNestedItemFromUrl(m_ignoreBucket, m_commonActionsTBI, "binder_report");
+		}
 	}
 	
 	/*
