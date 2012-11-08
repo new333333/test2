@@ -65,7 +65,6 @@ import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.User.ExtAccountState;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
-import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
@@ -533,6 +532,7 @@ public class GwtShareHelper
 	
 	/**
 	 * Return the state of the external user account.  Possible values are, initial, bound and verified.
+	 * This method will return null if the given user is not an external user.
 	 */
 	private static ExtAccountState getExternalUserAccountState(
 		AllModulesInjected ami,
@@ -557,7 +557,8 @@ public class GwtShareHelper
 					User user;
 
 					user = (User) principal;
-					return user.getExtAccountState();
+					if ( user.getIdentityInfo().isInternal() == false )
+						return user.getExtAccountState();
 				}
 			}
 		}
@@ -1288,15 +1289,33 @@ public class GwtShareHelper
 		{
 			Map<String,Object> errorMap;
 			
-			errorMap = GwtEmailHelper.sendShareNotification(
-													ami,
-													shareItem,
-													sharedEntity,
-													principalIds,
-													teamIds,
-													null,	// null -> No stand alone email addresses.
-													null,	// null -> No CC'ed users.
-													bccIds );
+			if ( gwtShareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER &&
+				 getExternalUserAccountState( ami, gwtShareItem.getRecipientId() ) == ExtAccountState.initial )
+			{
+				errorMap = null;
+				
+			/*!!!
+				errorMap = GwtEmailHelper.sendShareInvite(
+														ami,
+														shareItem,
+														sharedEntity,
+														gwtShareItem.getRecipientId() );
+				// Here is the param/value that needs to be added to the permalink
+				String param = "euet=" + ExternalUserUtil.encryptUserId( gwtShareItem.getRecipientId() );
+			*/
+			}
+			else
+			{
+				errorMap = GwtEmailHelper.sendShareNotification(
+														ami,
+														shareItem,
+														sharedEntity,
+														principalIds,
+														teamIds,
+														null,	// null -> No stand alone email addresses.
+														null,	// null -> No CC'ed users.
+														bccIds );
+			}
 			
 			if ( errorMap != null )
 			{
