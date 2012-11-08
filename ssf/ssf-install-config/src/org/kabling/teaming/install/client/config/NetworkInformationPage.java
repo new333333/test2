@@ -148,7 +148,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 
 		{
 			row++;
-			// Host Name
+			// KeyStore
 			InlineLabel keyLabel = new InlineLabel(RBUNDLE.keyStoreFileColon());
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
@@ -163,13 +163,14 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
-		// Validate all the fields
+		//Host Name is required
 		if (!hostTextBox.isValid())
 		{
 			setErrorMessage(RBUNDLE.requiredField());
 			return null;
 		}
 
+		//Save the configuration
 		Network network = config.getNetwork();
 		network.setHost(hostTextBox.getText());
 		network.setPort(httpSpinner.getValueAsInt());
@@ -195,6 +196,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 	{
 		Network network = config.getNetwork();
 
+		//Initialize the UI with the data
 		if (network != null)
 		{
 			hostTextBox.setText(network.getHost());
