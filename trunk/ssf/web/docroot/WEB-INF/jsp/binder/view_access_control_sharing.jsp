@@ -171,10 +171,12 @@ function setItemToDelete(id) {
             </c:if>
           </td>
           <td class="ss_table_paragraph">
+            <c:if test="${ss_accessControlShareItemDeleteRights[shareItem.id]}">
               <input type="submit" name="revokeBtn" 
                 value="<ssf:nlt tag='button.delete'/>"
                 onClick="setItemToDelete('${shareItem.id}');"
               >
+            </c:if>
           </td>
         </tr>
         <% 

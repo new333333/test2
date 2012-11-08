@@ -62,6 +62,7 @@ import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.AccessUtils;
+import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
@@ -439,11 +440,14 @@ public class AccessControlController extends AbstractBinderController {
 			model.put(WebKeys.ACCESS_CONTROL_SHARE_ITEMS, shareItems);
 			
 			//Now load in the recipient objects
+			Map<Long, Boolean> deleteRights = new HashMap<Long, Boolean>();
 			Map<Long, DefinableEntity> recipients = new HashMap<Long, DefinableEntity>();
 			for (ShareItem shareItem : shareItems) {
 				recipients.put(shareItem.getId(), getSharingModule().getSharedRecipient(shareItem));
+				deleteRights.put(shareItem.getId(), getSharingModule().testAccess(shareItem, SharingModule.SharingOperation.deleteShareItem));
 			}
 			model.put(WebKeys.ACCESS_CONTROL_SHARE_ITEM_RECIPIENTS, recipients);
+			model.put(WebKeys.ACCESS_CONTROL_SHARE_ITEM_DELETE_RIGHTS, deleteRights);
 		}
 	}
 
