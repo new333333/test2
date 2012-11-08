@@ -1518,8 +1518,8 @@ public class GwtViewHelper {
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
 						String messageKey;
-						if      (e instanceof AccessControlException) messageKey = "disableUserError.AccssControlException";
-						else                                          messageKey = "disableUserError.OtherException";
+						if (e instanceof AccessControlException) messageKey = "disableUserError.AccssControlException";
+						else                                     messageKey = "disableUserError.OtherException";
 						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
 					}
 				}
@@ -1647,8 +1647,8 @@ public class GwtViewHelper {
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
 						String messageKey;
-						if      (e instanceof AccessControlException) messageKey = "enableUserError.AccssControlException";
-						else                                          messageKey = "enableUserError.OtherException";
+						if (e instanceof AccessControlException) messageKey = "enableUserError.AccssControlException";
+						else                                     messageKey = "enableUserError.OtherException";
 						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
 					}
 				}
