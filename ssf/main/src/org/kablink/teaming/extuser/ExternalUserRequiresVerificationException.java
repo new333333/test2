@@ -33,7 +33,7 @@
 package org.kablink.teaming.extuser;
 
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.exception.NoErrorRuntimeException;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * This exception is used to convey normal status code through call stack without
@@ -42,13 +42,14 @@ import org.kablink.teaming.exception.NoErrorRuntimeException;
  * @author jong
  *
  */
-public class ExternalUserRequiresVerificationException extends NoErrorRuntimeException {
+public class ExternalUserRequiresVerificationException extends AuthenticationException {
 
 	private static final long serialVersionUID = 1L;
 	
 	private User user;
 
 	public ExternalUserRequiresVerificationException(User user) {
+		super("Requires verification");
 		this.user = user;
 	}
 	
