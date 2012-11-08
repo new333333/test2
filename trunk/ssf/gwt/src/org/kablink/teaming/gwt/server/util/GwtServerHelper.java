@@ -4764,6 +4764,11 @@ public class GwtServerHelper {
 			case HttpURLConnection.HTTP_MOVED_TEMP:
 				// Yes!  Get the redirected URL..
 				reply = urlConnection.getHeaderField("Location");
+				if (MiscUtil.hasString(reply)) {
+					if ('/' != reply.charAt(reply.length() - 1)) {
+						reply += "/";
+					}
+				}
 				
 				// ...and log the fact that it's being redirected.
 				m_logger.debug("GwtServerHelper.getFinalHttpUrl( '" + httpUrl + "' ):  " + usageForLog + "...");
