@@ -82,15 +82,17 @@ public class ChangeLogUtils {
 			//Add the sharing actions to this report
  			Element shares = element.addElement(ObjectKeys.XTAG_ENTITY_SHARES);
  			for (ShareItem shareItem: shareItems) {
- 				Date expirationDate = shareItem.getEndDate();
- 			    SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
- 			    sd.setTimeZone(TimeZone.getTimeZone("GMT"));
- 	 			Element share = shares.addElement(ObjectKeys.XTAG_ENTITY_SHARE);
- 	 			share.addElement(ObjectKeys.XTAG_ENTITY_SHARE_SHARER_ID, String.valueOf(shareItem.getSharerId()));
- 	 			share.addElement(ObjectKeys.XTAG_ENTITY_SHARE_RECIPIENT_TYPE, shareItem.getRecipientType().toString());
- 	 			share.addElement(ObjectKeys.XTAG_ENTITY_SHARE_RECIPIENT_ID, String.valueOf(shareItem.getRecipientId()));
- 	 			if (expirationDate != null) share.addElement(ObjectKeys.XTAG_ENTITY_SHARE_EXPIRATION, sd.format(expirationDate));
- 	 			share.addElement(ObjectKeys.XTAG_ENTITY_SHARE_ROLE, shareItem.getRole().toString());
+ 				if (shareItem.isLatest()) {
+	 				Date expirationDate = shareItem.getEndDate();
+	 			    SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	 			    sd.setTimeZone(TimeZone.getTimeZone("GMT"));
+	 	 			Element share = shares.addElement(ObjectKeys.XTAG_ENTITY_SHARE);
+	 	 			share.addAttribute(ObjectKeys.XTAG_ENTITY_SHARE_SHARER_ID, String.valueOf(shareItem.getSharerId()));
+	 	 			share.addAttribute(ObjectKeys.XTAG_ENTITY_SHARE_RECIPIENT_TYPE, shareItem.getRecipientType().toString());
+	 	 			share.addAttribute(ObjectKeys.XTAG_ENTITY_SHARE_RECIPIENT_ID, String.valueOf(shareItem.getRecipientId()));
+	 	 			if (expirationDate != null) share.addAttribute(ObjectKeys.XTAG_ENTITY_SHARE_EXPIRATION, sd.format(expirationDate));
+	 	 			share.addAttribute(ObjectKeys.XTAG_ENTITY_SHARE_ROLE, shareItem.getRole().toString());
+ 				}
  			}
 		}
 		
