@@ -279,6 +279,32 @@ public interface AdminModule {
     public Map<String, Object> sendMail(ShareItem share, DefinableEntity sharedEntity, Collection<Long> principalIds, Collection<Long> teamIds,
     		Collection<String> emailAddresses, Collection<Long> ccIds, Collection<Long> bccIds) throws Exception;
     	 
+    /**
+     * Sends a share confirmation mail message to an external user.
+     * 
+     * @param share
+     * @param sharedEntity
+     * @param externalUserId
+     * 
+     * @return
+     * 
+     * @throws Exception
+     */
+    public Map<String, Object> sendShareConfirmMailToExternalUser(ShareItem share, DefinableEntity sharedEntity, Long externalUserId) throws Exception;
+    	 
+    /**
+     * Sends a share invitation mail message to an external user.
+     * 
+     * @param share
+     * @param sharedEntity
+     * @param externalUserId
+     * 
+     * @return
+     * 
+     * @throws Exception
+     */
+    public Map<String, Object> sendShareInviteMailToExternalUser(ShareItem share, DefinableEntity sharedEntity, Long externalUserId) throws Exception;
+    	 
     public void setMailConfigAndSchedules(MailConfig mailConfig, ScheduleInfo notifications, ScheduleInfo postings) throws AccessControlException;  
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess) throws AccessControlException;

@@ -88,6 +88,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.extension.ExtensionManager;
+import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.jobs.EmailNotification;
 import org.kablink.teaming.jobs.EmailPosting;
 import org.kablink.teaming.jobs.FileVersionAging;
@@ -1516,6 +1517,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	// Always use the initial form of the method.
     	return sendMail(null, ids, teamIds, emailAddresses, ccIds, bccIds, subject, body, false); 
     }
+    
     /**
      * Send a share notification mail message to a collection of users
      * and/or explicit email addresses.
@@ -1653,7 +1655,200 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 		catch (MailSendException ex) {
 	 			// The send failed!  Log the exception...
 	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
-	 			logger.error("EXCEPTION:  Error sending mail:" + exMsg);
+	 			logger.error("EXCEPTION:  Error sending share notification:" + exMsg);
+				logger.debug("EXCEPTION", ex);
+				errors.add(exMsg);
+
+				// ...and if there were any send failed
+				// ...sub-exceptions...
+				Exception[] exceptions = ex.getMessageExceptions();
+				int exCount = ((null == exceptions) ? 0 : exceptions.length);
+	 			if ((0 < exCount) && exceptions[0] instanceof SendFailedException) {
+	 				// ...return them in the error list too.
+	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
+	 				EmailHelper.addMailFailures(errors, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
+	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsendAddresses");
+	 				
+	 			}
+	 	   	}
+	 		
+	 		catch (MailAuthenticationException ex) {
+	 			// The send failed because we couldn't authenticate to
+	 			// the email server!  Log the exception.
+	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
+	       		logger.error("EXCEPTION:  Authentication Exception:" + exMsg);				
+				logger.debug("EXCEPTION", ex);
+				errors.add(exMsg);
+	 		} 
+		}
+
+		// If we get here, result refers to a map of any errors, ...
+		// Return it.
+    	return result;
+    }
+
+    /**
+     * Sends a share confirmation mail message to an external user.
+     * 
+     * @param share
+     * @param sharedEntity
+     * @param externalUserId
+     * 
+     * @return
+     * 
+     * @throws Exception
+     */
+	@Override
+    public Map<String, Object> sendShareConfirmMailToExternalUser(ShareItem share, DefinableEntity sharedEntity, Long externalUserId) throws Exception {
+		return sendShareMailToExternalUserImpl(share, sharedEntity, externalUserId, false);	// false -> Confirmation message.
+    }
+
+    /**
+     * Sends a share invitation mail message to an external user.
+     * 
+     * @param share
+     * @param sharedEntity
+     * @param externalUserId
+     * 
+     * @return
+     * 
+     * @throws Exception
+     */
+	@Override
+    public Map<String, Object> sendShareInviteMailToExternalUser(ShareItem share, DefinableEntity sharedEntity, Long externalUserId) throws Exception {
+		return sendShareMailToExternalUserImpl(share, sharedEntity, externalUserId, true);	// true -> Invitation message.
+    }
+
+    /*
+     * Sends a share confirmation or invitation mail message to an
+     * external user.
+     */
+    private Map<String, Object> sendShareMailToExternalUserImpl(
+    	ShareItem		share,			//
+    	DefinableEntity	sharedEntity,	//
+    	Long			externalUserId,	//
+    	boolean			invite)			// true -> Send an invitation.  false -> Send a confirmation.
+    		throws Exception
+    {
+    	// If sending email is not enabled in the system...
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		if (!(getCoreDao().loadZoneConfig(zoneId).getMailConfig().isSendMailEnabled())) {
+			// ...throw an appropriate exception.
+			throw new ConfigurationException(NLT.get("errorcode.sendmail.disabled"));
+		}
+
+		// Allocate the error tracking/reply objects.
+		List	errors = new ArrayList();
+		Map		result = new HashMap();
+		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
+		
+		// Allocate the maps of email addresses to locales we'll
+		// use for sending the notifications in the appropriate
+		// locale(s).
+		Map<Locale, List<InternetAddress>> toIAsMap  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>> ccIAsMap  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>> bccIAsMap = new HashMap<Locale, List<InternetAddress>>();
+		
+		// Process the external user we received into the appropriate
+		// email address to locale map.
+		List<Long> externalUserIds = new ArrayList<Long>();
+		externalUserIds.add(externalUserId);
+		boolean notifyAsBCC = SPropsUtil.getBoolean("mail.notifyAsBCC", true);
+		if (notifyAsBCC)
+		     EmailHelper.addPrincipalsToLocaleMap(MailModule.BCC, bccIAsMap, MiscUtil.validateCL(externalUserIds));
+		else EmailHelper.addPrincipalsToLocaleMap(MailModule.TO,  toIAsMap,  MiscUtil.validateCL(externalUserIds));
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+		// Once we get here, we have maps containing the valid //
+		// email addresses we need to send notifications to    //
+		// mapped with the locale to use to send them.         //
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+		// Get what we need from the zone for sending email.
+		Workspace		zone       = RequestContextHolder.getRequestContext().getZone();
+		MailModule		mm         = getMailModule();
+		String			mailSender = mm.getNotificationMailSenderName(zone);
+		String			defaultEMA = mm.getNotificationDefaultFrom(   zone); 
+
+		// Get what we need about the sending user for sending email.
+		Date			now         = new Date();
+		User			sendingUser = RequestContextHolder.getRequestContext().getUser();
+		TimeZone		tz          = sendingUser.getTimeZone();
+		InternetAddress	sendingIA   = new InternetAddress();
+		String			sendersEMA  = sendingUser.getEmailAddress();
+		sendingIA.setAddress(MiscUtil.hasString(sendersEMA) ? sendersEMA : defaultEMA);
+
+		// What Velocity template should we use for this mail?
+		String template;
+		if (sharedEntity instanceof FolderEntry)
+			 template = (invite ? "sharedEntryInvite.vm"  : "sharedEntryConfirm.vm" );
+		else template = (invite ? "sharedFolderInvite.vm" : "sharedFolderConfirm.vm");
+		
+		// Scan the unique Locale's we need to localize the share
+		// notification email into.
+		List<Locale>	targetLocales = MiscUtil.validateLL(EmailHelper.getTargetLocales(toIAsMap, ccIAsMap, bccIAsMap));
+		for (Locale locale:  targetLocales) {
+			// Extract the TO:, CC: and BCC: lists for this Locale.
+			List<InternetAddress> toIAs  = MiscUtil.validateIAL(toIAsMap.get( locale));
+			List<InternetAddress> ccIAs  = MiscUtil.validateIAL(ccIAsMap.get( locale));
+			List<InternetAddress> bccIAs = MiscUtil.validateIAL(bccIAsMap.get(locale));
+			
+			// Allocate a Map to hold the email components for building
+			// the mime...
+			Map mailMap = new HashMap();
+			
+			// ...add the from...
+			mailMap.put(MailModule.FROM, sendingIA);
+
+			// ...add the recipients...
+			mailMap.put(MailModule.TO,  toIAs );
+			mailMap.put(MailModule.CC,  ccIAs );
+			mailMap.put(MailModule.BCC, bccIAs);
+
+			// ...add the subject...
+			String shareTitle = sharedEntity.getTitle();
+			if (!(MiscUtil.hasString(shareTitle))) {
+				shareTitle = ("--" + NLT.get("entry.noTitle", locale) + "--");
+			}
+			String key = (invite ? "relevance.mailInvite" : "relevance.mailConfirm");
+			String subject = NLT.get(key, new Object[]{Utils.getUserTitle(sendingUser)}, locale);
+			subject       += " (" + shareTitle +")";
+			mailMap.put(MailModule.SUBJECT, subject);
+			
+			// ...generate the encrypted ID for the the targeted
+			// ...external user...
+			User shareRecipient = getProfileDao().loadUser(share.getRecipientId(), zoneId);
+			String encodedExternalUserId = ExternalUserUtil.encodeUserToken(shareRecipient);
+			
+			// ...generate and add the HTML variant...
+			StringWriter	writer  = new StringWriter();
+			Notify			notify  = new Notify(NotifyType.summary, locale, tz, now);
+           	NotifyVisitor	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
+		    VelocityContext	ctx     = getShareVelocityContext(visitor, share, sharedEntity, encodedExternalUserId);
+			visitor.processTemplate(template, ctx);
+			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, writer.toString());
+			
+			// ...generate and add the TEXT variant...
+			writer  = new StringWriter();
+			notify  = new Notify(NotifyType.summary, locale, tz, now);
+           	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
+		    ctx     = getShareVelocityContext(visitor, share, sharedEntity, encodedExternalUserId);
+			visitor.processTemplate(template, ctx);
+			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, writer.toString());
+
+			// ...create the mime helper... 
+			MimeSharePreparator helper = new MimeSharePreparator(share, sharedEntity, mailMap, logger);
+			helper.setDefaultFrom(sendingUser.getEmailAddress());
+			
+			try {
+				// ...and send the email.
+				mm.sendMail(mailSender, helper);
+			}
+			
+	 		catch (MailSendException ex) {
+	 			// The send failed!  Log the exception...
+	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
+	 			logger.error("EXCEPTION:  Error sending share " + (invite ? "invitation" : "confirmation") + " mail:" + exMsg);
 				logger.debug("EXCEPTION", ex);
 				errors.add(exMsg);
 
@@ -1688,7 +1883,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	/*
 	 * Returns a VelocityContext to use for share notification emails. 
 	 */
-	private static VelocityContext getShareVelocityContext(NotifyVisitor visitor, ShareItem share, DefinableEntity sharedEntity) {
+	private static VelocityContext getShareVelocityContext(NotifyVisitor visitor, ShareItem share, DefinableEntity sharedEntity, String encodedExternalUserId) {
 		// Create the context...
 	    VelocityContext	reply = NotifyBuilderUtil.getVelocityContext();
 	    
@@ -1698,9 +1893,17 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		reply.put("ssSharedEntity",    sharedEntity                                                             );
 		reply.put("ssShareExpiration", EmailHelper.getShareExpiration(visitor.getNotifyDef().getLocale(), share));
 		reply.put("user",              RequestContextHolder.getRequestContext().getUser()                       );
+		if (MiscUtil.hasString(encodedExternalUserId)) {
+			reply.put("ssShareEncodedExternalUserId", encodedExternalUserId);
+		}
 		
 		// ...and return it.
 		return reply;
+	}
+	
+	private static VelocityContext getShareVelocityContext(NotifyVisitor visitor, ShareItem share, DefinableEntity sharedEntity) {
+		// Always use the initial form of the method.
+		return getShareVelocityContext(visitor, share, sharedEntity, null);
 	}
 	
     private Set<InternetAddress> getEmail(Collection<Long>ids, List errors) {
@@ -2133,11 +2336,13 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
   		zoneConfig.setChangeLogsKeepDays(changeLogsKeepDays);
   	}
 
-    public ScheduleInfo getLogTablePurgeSchedule() {
+    @Override
+	public ScheduleInfo getLogTablePurgeSchedule() {
     	return getLogTablePurgeObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
     }
     
-    public void setLogTablePurgeSchedule(ScheduleInfo info) {
+    @Override
+	public void setLogTablePurgeSchedule(ScheduleInfo info) {
   	   	checkAccess(AdminOperation.manageLogTablePurge);
   	   	LogTablePurge obj = getLogTablePurgeObject();
     	obj.setScheduleInfo(info);

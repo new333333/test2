@@ -379,6 +379,88 @@ public class GwtEmailHelper {
 	}
 
 	/**
+	 * Sends a share confirmation mail message to an external user.
+	 * 
+	 * @param bs				- Access to modules.
+	 * @param share				- Describes the share.
+	 * @param sharedEntity		- Entity (folder or folder entry) being shared.
+	 * @param externalUserId	- ID of external user confirmation is being sent to.
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Map<String, Object> sendShareConfirmToExternalUser(
+		AllModulesInjected	bs,				//
+		ShareItem			share,			//
+		DefinableEntity		sharedEntity,	//
+		Long				externalUserId)	//
+			throws GwtTeamingException
+	{
+		try {
+			// Send the confirmation.
+			Map<String, Object> reply = bs.getAdminModule().sendShareConfirmMailToExternalUser(
+				share,
+				sharedEntity,
+				externalUserId);
+			
+			// If we get here, reply contains a map of the results of
+			// the email.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtEmailHelper.sendShareConfirmToExternalUser( SOURCE EXCEPTION ):  ", ex);
+			}
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
+	}
+	
+	/**
+	 * Sends a share invitation mail message to an external user.
+	 * 
+	 * @param bs				- Access to modules.
+	 * @param share				- Describes the share.
+	 * @param sharedEntity		- Entity (folder or folder entry) being shared.
+	 * @param externalUserId	- ID of external user invitation is being sent to.
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Map<String, Object> sendShareInviteToExternalUser(
+		AllModulesInjected	bs,					//
+		ShareItem			share,				//
+		DefinableEntity		sharedEntity,		//
+		Long				externalUserIdId)	//
+			throws GwtTeamingException
+	{
+		try {
+			// Send the invitation.
+			Map<String, Object> reply = bs.getAdminModule().sendShareInviteMailToExternalUser(
+				share,
+				sharedEntity,
+				externalUserIdId);
+			
+			// If we get here, reply contains a map of the results of
+			// the email.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtEmailHelper.sendShareInviteToExternalUser( SOURCE EXCEPTION ):  ", ex);
+			}
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
+	}
+	
+	/**
 	 * Send a share notification mail message to a collection of users
 	 * and/or explicit email addresses.
 	 * 

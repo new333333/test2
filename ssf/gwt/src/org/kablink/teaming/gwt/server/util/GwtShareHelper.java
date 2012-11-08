@@ -1294,15 +1294,11 @@ public class GwtShareHelper
 			{
 				errorMap = null;
 				
-			/*!!!
-				errorMap = GwtEmailHelper.sendShareInvite(
+				errorMap = GwtEmailHelper.sendShareInviteToExternalUser(
 														ami,
 														shareItem,
 														sharedEntity,
 														gwtShareItem.getRecipientId() );
-				// Here is the param/value that needs to be added to the permalink
-				String param = "euet=" + ExternalUserUtil.encryptUserId( gwtShareItem.getRecipientId() );
-			*/
 			}
 			else
 			{
