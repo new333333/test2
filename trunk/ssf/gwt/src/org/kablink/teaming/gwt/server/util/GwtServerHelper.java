@@ -9467,7 +9467,7 @@ public class GwtServerHelper {
 			// Add any errors that happened to the results.
 			if ( null != emailErrors )
 			{
-				results.setErrors( (String[])emailErrors.toArray( new String[0]) );
+				results.addErrors( emailErrors );
 			}
 		}
 			
