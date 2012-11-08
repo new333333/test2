@@ -188,22 +188,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				SessionUtil.sessionStartup();	
 			
 			if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
-				user = doAuthenticateOpenidUser(zoneName, userName);
+				user = fetchOpenidUser(zoneName, userName);
 				
-				if(User.ExtAccountState.initial == user.getExtAccountState()) {
-					//bindExternalUser(user, )
-					throw new ExternalUserRequiresVerificationException(user);
-				}
-				else if(User.ExtAccountState.bound == user.getExtAccountState()) {
-					
-				}
-				else if(User.ExtAccountState.verified == user.getExtAccountState()) {
-					
-				}
-				else {
-					throw new InternalException("Encountered external user account '" + user.getId() + "' that is missing account state");
-				}
-
 				int syncMode = getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().getProfileSynchronizationMode();
 				if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_ON_FIRST_LOGIN_ONLY) {
 					if(user.getFirstLoginDate() != null)
@@ -506,10 +492,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		return user;
 	}
 
-	/*
-	 * Handle authentication for all requests that used OpenID. 
-	 */
-	protected User doAuthenticateOpenidUser(String zoneName, String username) {
+	protected User fetchOpenidUser(String zoneName, String username) {
 		User user = null;
 		try {
 			user = getProfileDao().findUserByName(username, zoneName);

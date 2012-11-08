@@ -589,6 +589,51 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
  	   	}	        
  	}
 
+    @Override
+	public User findUserByOpenidIdentity(final String openidIdentity, String zoneName) {
+		long begin = System.nanoTime();
+		try {
+	    	final Binder top = getCoreDao().findTopWorkspace(zoneName);
+	    	return findUserByOpenidIdentity(openidIdentity, top.getId());
+    	}
+    	finally {
+    		end(begin, "findUserByOpenidIdentity(String,String)");
+    	}	        
+    }
+    
+    @Override
+ 	public User findUserByOpenidIdentity(final String openidIdentity, final Long zoneId) 
+		throws NoUserByTheNameException {
+ 	   long begin = System.nanoTime();
+ 	   try {
+ 	       User user = (User)getHibernateTemplate().execute(
+ 	                new HibernateCallback() {
+ 	                    @Override
+ 						public Object doInHibernate(Session session) throws HibernateException {
+ 	                	   //only returns active users
+ 	                 	   User user = (User)session.getNamedQuery( "find-User-By-OpenidIdentity" )
+ 	                             		.setString( ParameterNames.OPENID_IDENTITY, openidIdentity.toLowerCase() )
+ 	                             		.setLong( ParameterNames.ZONE_ID, zoneId )
+ 	                             		.setCacheable( isPrincipalQueryCacheable() )
+ 	                             		.uniqueResult();
+ 	                        //query ensures user is not deleted and not disabled
+ 	                 	   	if (user == null)
+ 	                            throw new NoUserByTheNameException(openidIdentity); 
+ 	                 	   	else 
+ 	                 	   		return user;
+ 	                    }
+ 	                }
+ 	             );		
+ 	        user = (User) filterInaccessiblePrincipal(user);
+ 	        if (user == null) 
+ 	        	throw new NoUserByTheNameException(openidIdentity); 
+ 	        return user;
+ 	   	}
+ 	   	finally {
+ 	   		end(begin, "findUserByOpenidIdentity(String,Long)");
+ 	   	}	        
+ 	}
+
  	/**
  	 * Find an user in the ss_principals table using the ldap guid.
  	 */

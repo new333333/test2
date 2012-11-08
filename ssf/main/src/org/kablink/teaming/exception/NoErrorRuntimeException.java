@@ -30,29 +30,18 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.extuser;
-
-import org.kablink.teaming.domain.User;
-import org.kablink.teaming.exception.NoErrorRuntimeException;
+package org.kablink.teaming.exception;
 
 /**
- * This exception is used to convey normal status code through call stack without
- * affecting the signatures of the existing methods. 
+ * This exception class serves as the top-most runtime exception used as
+ * conveying normal status code up through the stack. As such this class
+ * and any subclass of this must not be treated as error. 
  * 
  * @author jong
  *
  */
-public class ExternalUserRequiresVerificationException extends NoErrorRuntimeException {
+public class NoErrorRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
-	
-	private User user;
 
-	public ExternalUserRequiresVerificationException(User user) {
-		this.user = user;
-	}
-	
-	public User getExternalUser() {
-		return user;
-	}
 }

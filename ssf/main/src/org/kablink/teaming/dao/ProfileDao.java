@@ -126,6 +126,10 @@ public interface ProfileDao {
  	public User findUserByForeignName(String foreignName, Long zoneId) 
 		throws NoUserByTheNameException;
 
+	public User findUserByOpenidIdentity(final String openidIdentity, String zoneName);
+
+ 	public User findUserByOpenidIdentity(final String openidIdentity, final Long zoneId); 
+
  	public User findUserByLdapGuid( String ldapGuid, Long zoneId ) 
  	 		throws NoUserByTheNameException;
  	 	
