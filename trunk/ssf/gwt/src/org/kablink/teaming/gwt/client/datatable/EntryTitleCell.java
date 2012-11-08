@@ -433,6 +433,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		Element titleElement;
 		if (null != titleImg) {
 			if (titleIsLink && eti.isFile()) {
+				titleImg.getElement().setAttribute("border", "0");
 				Anchor a = new Anchor();
 				a.setHref(eti.getFileDownloadUrl());
 				a.setTarget("_blank");

@@ -70,25 +70,24 @@
 	.vibe-desktopAppPage-columnhead2 {
 		padding-left: 10px !important;
 	}
-	.vibe-desktopAppPage-links {
-		white-space: nowrap;
-	}
-	.vibe-desktopAppPage-links div {margin-top: 6px;}
-	.vibe-desktopAppPage-linkAnchor {text-decoration: none;}
+	.vibe-desktopAppPage-linksNoWrap      {white-space: nowrap;}
+	.vibe-desktopAppPage-linksWrap        {white-space: normal;}
+	.vibe-desktopAppPage-links div        {margin-top: 6px;}
+	.vibe-desktopAppPage-linkAnchor       {text-decoration: none;}
 	.vibe-desktopAppPage-linkAnchor:hover {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
-	.vibe-desktopAppPage-linkError {}
-	.vibe-desktopAppPage-logo {text-align: center;}
-	.vibe-desktopAppPage-logoImg {width: 50px;}	
-	.vibe-desktopAppPage-instructions {
+	.vibe-desktopAppPage-linkError        {}
+	.vibe-desktopAppPage-logo             {text-align: center;}
+	.vibe-desktopAppPage-logoImg          {width: 50px;}	
+	.vibe-desktopAppPage-instructions     {
 		color: #353838;
 		font-size: 12px;
 		line-height: 16px;
 		padding-right: 10px !important;
 	}
-	.vibe-desktopAppPage-instructionAnchor {text-decoration: none; white-space: normal !important;}
+	.vibe-desktopAppPage-instructionAnchor       {text-decoration: none; white-space: normal !important;}
 	.vibe-desktopAppPage-instructionAnchor:hover {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
-	.vibe-desktopAppPage-smallgray {font-size: 12px; color: #505354; padding-left: 5px;}
-	.vibe-desktopAppPage-footer {
+	.vibe-desktopAppPage-smallgray               {font-size: 12px; color: #505354; padding-left: 5px;}
+	.vibe-desktopAppPage-footer                  {
 		margin-top: 0px !important;
 	}
 /* End:  GWT desktop application download page styles. */

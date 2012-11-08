@@ -264,7 +264,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		
 		// ...and add that to the table.
 		ft.setWidget(    ANDROID_ROW, DOWNLOADS_COL, fp);
-		fcf.addStyleName(ANDROID_ROW, DOWNLOADS_COL, "vibe-desktopAppPage-links bottom");
+		fcf.addStyleName(ANDROID_ROW, DOWNLOADS_COL, "vibe-desktopAppPage-linksWrap bottom");
 	}
 	
 	/*
@@ -280,7 +280,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		
 		// ...and add that to the table.
 		ft.setWidget(    IOS_ROW, DOWNLOADS_COL, fp);
-		fcf.addStyleName(IOS_ROW, DOWNLOADS_COL, "vibe-desktopAppPage-links bottom");
+		fcf.addStyleName(IOS_ROW, DOWNLOADS_COL, "vibe-desktopAppPage-linksWrap bottom");
 	}
 	
 	/*
@@ -309,7 +309,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		
 		// ...and add that to the table.
 		ft.setWidget(    MAC_ROW, DOWNLOADS_COL, fp);
-		fcf.addStyleName(MAC_ROW, DOWNLOADS_COL, "vibe-desktopAppPage-links bottom");
+		fcf.addStyleName(MAC_ROW, DOWNLOADS_COL, "vibe-desktopAppPage-linksNoWrap bottom");
 	}
 	
 	/*
@@ -355,7 +355,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		rE.appendChild(fp.getElement());
 
 		// ...and style the row.
-		fcf.addStyleName(WINDOWS_ROW, DOWNLOADS_COL, "vibe-desktopAppPage-links bottom");
+		fcf.addStyleName(WINDOWS_ROW, DOWNLOADS_COL, "vibe-desktopAppPage-linksNoWrap bottom");
 	}
 
 	/*
@@ -379,7 +379,8 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		l.getElement().setInnerHTML(sb.toString());
 
 		// ...add them to the cell...
-		ft.setText(ANDROID_ROW, INSTRUCTIONS_COL, "");
+		ft.setText(                 ANDROID_ROW, INSTRUCTIONS_COL, "");
+		fcf.addStyleName(           ANDROID_ROW, INSTRUCTIONS_COL, "vibe-desktopAppPage-instructions bottom");
 		Element rE = fcf.getElement(ANDROID_ROW, INSTRUCTIONS_COL);
 		rE.appendChild(l.getElement());
 
@@ -404,7 +405,8 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		l.getElement().setInnerHTML(s1);
 		
 		// ...add them to the cell...
-		ft.setText(IOS_ROW, INSTRUCTIONS_COL, "");
+		ft.setText(                 IOS_ROW, INSTRUCTIONS_COL, "");
+		fcf.addStyleName(           IOS_ROW, INSTRUCTIONS_COL, "vibe-desktopAppPage-instructions bottom");
 		Element rE = fcf.getElement(IOS_ROW, INSTRUCTIONS_COL);
 		rE.appendChild(l.getElement());
 
