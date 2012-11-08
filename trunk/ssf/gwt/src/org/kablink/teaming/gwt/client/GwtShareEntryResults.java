@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -46,7 +47,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtShareEntryResults implements IsSerializable
 {
 	private ArrayList<GwtUser> m_noReadRights;	// List of users that do not have read rights to the entry being shared.
-	private String[] m_errors;
+	private ArrayList<String> m_errors;
 	
 	/**
 	 * Constructor method. 
@@ -58,6 +59,31 @@ public class GwtShareEntryResults implements IsSerializable
 		// Nothing to do.
 	}	
 	
+	/**
+	 * 
+	 */
+	public void addError( String error )
+	{
+		if ( m_errors == null )
+			m_errors = new ArrayList<String>();
+		
+		m_errors.add( error );
+	}
+	
+	/**
+	 * 
+	 */
+	public void addErrors( List<String> errors )
+	{
+		if ( errors != null )
+		{
+			for ( String error : errors )
+			{
+				addError( error );
+			}
+		}
+	}
+
 	/**
 	 * Add the given user to the list of users who do not have read rights to the entry being shared.
 	 */
@@ -74,7 +100,10 @@ public class GwtShareEntryResults implements IsSerializable
 	 */
 	public String[] getErrors()
 	{
-		return m_errors;
+		if ( m_errors != null )
+			return m_errors.toArray( new String[ m_errors.size() ] );
+	
+		return null;
 	}
 	
 	/**
@@ -83,13 +112,5 @@ public class GwtShareEntryResults implements IsSerializable
 	public ArrayList<GwtUser> getUsersWithoutReadRights()
 	{
 		return m_noReadRights;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setErrors( String[] errors )
-	{
-		m_errors = errors;
 	}
 }

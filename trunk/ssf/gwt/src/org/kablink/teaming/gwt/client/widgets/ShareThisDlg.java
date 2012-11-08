@@ -1207,7 +1207,7 @@ public class ShareThisDlg extends DlgBox
 							{
 								// Yes
 								// Make the error panel visible.
-								showErrors();
+								showErrorPanel();
 
 								// Enable the Ok button.
 								hideStatusMsg();
