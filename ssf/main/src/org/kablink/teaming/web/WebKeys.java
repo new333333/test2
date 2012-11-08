@@ -693,6 +693,7 @@ public class WebKeys {
 	public static final String ACCESS_CONTROL_CONFIGURE_ALLOWED = "ss_accessControlConfigureAllowed";
 	public static final String ACCESS_CONTROL_EXCEPTION = "ss_accessControlException";
 	public static final String ACCESS_CONTROL_SHARE_ITEMS = "ss_accessControlShareItems";
+	public static final String ACCESS_CONTROL_SHARE_ITEM_DELETE_RIGHTS = "ss_accessControlShareItemDeleteRights";
 	public static final String ACCESS_CONTROL_SHARE_ITEM_RECIPIENTS = "ss_accessControlShareItemRecipients";
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";
 	public static final String ACCESS_GROUPS_COUNT = "ss_accessGroupsCount";
