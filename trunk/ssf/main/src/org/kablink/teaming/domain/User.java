@@ -43,6 +43,7 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeSet;
@@ -53,6 +54,8 @@ import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.util.Validator;
+
+import com.googlecode.gwt.crypto.util.SecureRandom;
 
 public class User extends UserPrincipal implements IndividualPrincipal {
 	
@@ -125,6 +128,8 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected String openidIdentity; // applicable only to external users using OpenID
     protected Short extAccountState; // applicable only to external users
     
+    private static Random random = new Random(System.currentTimeMillis());
+    
     // For use by Hibernate only
 	protected User() {
     }
@@ -132,6 +137,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	// For use by application
 	public User(IdentityInfo identityInfo) {
 		super(identityInfo);
+		setDigestSeed(random.nextLong());
 	}
 	
 	public EntityIdentifier.EntityType getEntityType() {
@@ -499,20 +505,31 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 * invalidate existing RSS urls previously created for the user. 
 	 *
 	 */
-	public void incrementDigestSeed() {
+	public Long incrementDigestSeed() {
 		if(digestSeed == null) // null value is equivalent to zero
 			digestSeed = new Long(1);
 		else
 			digestSeed = new Long(digestSeed.longValue() + 1);
+		return digestSeed;
+	}
+	
+	public Long reseedDigestSeed() {
+		setDigestSeed(random.nextLong());
+		return this.digestSeed;
+	}
+	
+	public String getPrivateDigest() {
+		return getPrivateDigest(null);
 	}
 	
 	public String getPrivateDigest(String binderId) {
-		
-		Long digestSeed = getDigestSeed();
-		if(digestSeed == null)
-			digestSeed = 0L;
-		
-		return EncryptUtil.encryptSHA1(getId().toString(), digestSeed.toString(), binderId);
+		Long seed = getDigestSeed();
+		if(seed == null)
+			seed = 0L;
+		if(binderId != null)
+			return EncryptUtil.encryptSHA1(getId().toString(), seed.toString(), binderId);
+		else
+			return EncryptUtil.encryptSHA1(getId().toString(), seed.toString());
 	}
  
     public boolean isAllIndividualMember() {

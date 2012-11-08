@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jasypt.encryption.StringEncryptor;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.StringUtil;
 
@@ -45,9 +46,9 @@ import org.kablink.util.StringUtil;
  */
 public class ExternalUserUtil {
 	
-	public static final String QUERY_FIELD_NAME_FOR_EXTERNAL_USER_ENCRYPTED_TOKEN = "euet";
+	public static final String QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN = "euet";
 	
-	public static final String SESSION_KEY_FOR_EXTERNAL_USER_USER_ENCRYPTED_TOKEN = ExternalUserUtil.class.getSimpleName() + "_" + QUERY_FIELD_NAME_FOR_EXTERNAL_USER_ENCRYPTED_TOKEN;
+	public static final String SESSION_KEY_EXTERNAL_USER_ENCODED_TOKEN = ExternalUserUtil.class.getSimpleName() + "_" + QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN;
 
 	public static final String SESSION_KEY_FOR_OPENID_PROVIDER_NAME = ExternalUserUtil.class.getSimpleName() + "_openidprovidername";
 	
@@ -56,12 +57,16 @@ public class ExternalUserUtil {
 	public static final String OPENID_PROVIDER_NAME_AOL = "aol";
 	public static final String OPENID_PROVIDER_NAME_MYOPENID = "myopenid";
 	
-	public static String encryptUserId(Long userId)  {
-		return getStringEncryptor().encrypt(userId.toString());
+	public static String encodeUserToken(User user) {
+		return user.getId() + "_" + user.getPrivateDigest();
 	}
 	
-	public static Long decryptUserId(String encryptedUserId) {
-		return Long.valueOf(getStringEncryptor().decrypt(encryptedUserId));
+	public static Long getUserId(String encodedUserToken) {
+		return Long.valueOf(encodedUserToken.substring(0, encodedUserToken.indexOf('_')));
+	}
+	
+	public static String getPrivateDigest(String encodedUserToken) {
+		return encodedUserToken.substring(encodedUserToken.indexOf('_')+1);
 	}
 	
 	public static Map<String, String> getQueryParams(String url) {  
@@ -83,4 +88,12 @@ public class ExternalUserUtil {
 		return (StringEncryptor) SpringContextUtil.getBean("encryptor");
 	}
 
+	
+	public static void main(String[] args) throws Exception {
+		long l = 15;
+		String hex = Long.toHexString(l);
+		System.out.println(hex);
+		long l2 = Long.parseLong(hex, 16);
+		System.out.println(l2);
+	}
 }
