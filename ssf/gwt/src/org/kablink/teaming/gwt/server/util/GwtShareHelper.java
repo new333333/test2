@@ -63,7 +63,9 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.User.ExtAccountState;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
@@ -81,6 +83,7 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.util.MiscUtil;
 
 /**
@@ -529,6 +532,44 @@ public class GwtShareHelper
 	}
 	
 	/**
+	 * Return the state of the external user account.  Possible values are, initial, bound and verified.
+	 */
+	private static ExtAccountState getExternalUserAccountState(
+		AllModulesInjected ami,
+		Long userId )
+	{
+		try
+		{
+			ArrayList<Long> ids;
+			SortedSet<Principal> principals;
+			
+			ids = new ArrayList<Long>();
+			ids.add( userId );
+			principals = ami.getProfileModule().getPrincipals( ids );
+			if ( principals != null && principals.size() == 1 )
+			{
+				Principal principal;
+				
+				// 
+				principal = principals.first();
+				if ( principal instanceof User )
+				{
+					User user;
+
+					user = (User) principal;
+					return user.getExtAccountState();
+				}
+			}
+		}
+		catch ( AccessControlException acEx )
+		{
+			// Nothing to do
+		}
+		
+		return null;
+	}
+
+	/**
 	 * Return the name of the given group
 	 */
 	private static String getGroupName( AllModulesInjected ami, ShareItem shareItem )
@@ -960,6 +1001,7 @@ public class GwtShareHelper
 							updates = new HashMap();
 							updates.put( ObjectKeys.FIELD_USER_EMAIL, recipientName );
 							updates.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, recipientName );
+							updates.put( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE, ExtAccountState.initial );
 							// Do NOT set the "fromOpenid" bit on initially. We will set it when the user actually
 							// logs in and binds a valid OpenID account with the email address specified during sharing.
 			 				user = profileModule.addUserFromPortal(
@@ -1350,7 +1392,17 @@ public class GwtShareHelper
 				}
 				catch ( Exception ex )
 				{
+					String error;
+					String[] args;
+					
+					args = new String[3];
+					args[0] = nextGwtShareItem.getEntityName();
+					args[1] = nextGwtShareItem.getRecipientName();
+					args[2] = ex.toString();
+					error = NLT.get( "errorcode.sharing.entity", args );
+					results.addError( error );
 					m_logger.error( "Error creating share item: " + ex.toString() );
+					continue;
 				}
 			}
 			else
@@ -1370,6 +1422,13 @@ public class GwtShareHelper
 					if ( sharingData.getNotifyRecipients() && sharingData.getSendToValue() == SendToValue.ONLY_MODIFIED_RECIPIENTS )
 						sendEmail = true;
 				}
+			}
+			
+			// Is the recipient a newly created external user
+			if ( getExternalUserAccountState( ami, shareItem.getRecipientId() ) == ExtAccountState.initial )
+			{
+				// Yes, always send them an email.
+				sendEmail = true;
 			}
 			
 			// Send an email to this recipient
@@ -1401,7 +1460,7 @@ public class GwtShareHelper
 		// Add any errors that happened to the results.
 		if ( null != emailErrors )
 		{
-			results.setErrors( (String[])emailErrors.toArray( new String[0]) );
+			results.addErrors( emailErrors );
 		}
 		
 		return results;
@@ -1432,4 +1491,5 @@ public class GwtShareHelper
 	{
 		return bs.getSharingModule().isSharingEnabled();
 	}
+	
 }
