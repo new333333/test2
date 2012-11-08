@@ -51,6 +51,7 @@ import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.exception.NoErrorRuntimeException;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
@@ -395,6 +396,10 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 			catch(AuthenticationException e) {
 				Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
 				logger.warn("Authentication failure for zone " + zone + ": " + e.toString());
+				throw e;
+			}
+			catch(NoErrorRuntimeException e) {
+				// This is not an error. Just rethrow.
 				throw e;
 			}
 			catch(RuntimeException e) {

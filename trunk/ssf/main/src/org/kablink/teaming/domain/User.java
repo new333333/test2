@@ -606,6 +606,8 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	}
 
 	public void setOpenidIdentity(String openidIdentity) {
+		if(openidIdentity != null)
+			openidIdentity = openidIdentity.toLowerCase();
 		this.openidIdentity = openidIdentity;
 	}
 

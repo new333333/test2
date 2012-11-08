@@ -283,9 +283,6 @@ public class Constants {
 	public static final String FOLDER_ID_FIELD = "_folderId"; // This numeric field contains folder ID. Used only for folders.
 	public static final String GENERAL_TEXT_FIELD = "_generalText"; // This field contains textual representation of all field values except for title and description fields.
 	public static final String IDENTITY_INTERNAL_FIELD = "_iInternal";
-	public static final String IDENTITY_FROM_LDAP_FIELD = "_iFromLdap";
-	public static final String IDENTITY_FROM_LOCAL_FIELD = "_iFromLocal";
-	public static final String IDENTITY_FROM_OPENID_FIELD = "_iFromOpenid";
 	public static final String IS_HOME_DIR_FIELD = "_isHomeDir";
 	public static final String IS_MYFILES_DIR_FIELD = "_isMyFilesDir";
 	public static final String RESOURCE_DRIVER_NAME_FIELD = "_resourceDriverName";

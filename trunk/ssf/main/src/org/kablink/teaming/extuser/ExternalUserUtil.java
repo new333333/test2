@@ -47,6 +47,15 @@ public class ExternalUserUtil {
 	
 	public static final String QUERY_FIELD_NAME_FOR_EXTERNAL_USER_ENCRYPTED_TOKEN = "euet";
 	
+	public static final String SESSION_KEY_FOR_EXTERNAL_USER_USER_ENCRYPTED_TOKEN = ExternalUserUtil.class.getSimpleName() + "_" + QUERY_FIELD_NAME_FOR_EXTERNAL_USER_ENCRYPTED_TOKEN;
+
+	public static final String SESSION_KEY_FOR_OPENID_PROVIDER_NAME = ExternalUserUtil.class.getSimpleName() + "_openidprovidername";
+	
+	public static final String OPENID_PROVIDER_NAME_GOOGLE = "google";
+	public static final String OPENID_PROVIDER_NAME_YAHOO = "yahoo";
+	public static final String OPENID_PROVIDER_NAME_AOL = "aol";
+	public static final String OPENID_PROVIDER_NAME_MYOPENID = "myopenid";
+	
 	public static String encryptUserId(Long userId)  {
 		return getStringEncryptor().encrypt(userId.toString());
 	}
@@ -61,18 +70,14 @@ public class ExternalUserUtil {
 		if(index < 0)
 			return map;
 		String query = url.substring(index+1);
-	    String[] params = StringUtil.split("&");  
+	    String[] params = StringUtil.split(query, "&");  
 	    for (String param : params) {  
-	    	String[] elem = StringUtil.split("=");
+	    	String[] elem = StringUtil.split(param, "=");
 	        if(elem.length == 2)
 	        	map.put(elem[0], elem[1]);  
 	    }  
 	    return map;  
 	}  
-	
-	public static String getSessionKey(String queryParamFieldName) {
-		return ExternalUserUtil.class.getSimpleName() + "_" + queryParamFieldName;
-	}
 	
 	private static StringEncryptor getStringEncryptor() {
 		return (StringEncryptor) SpringContextUtil.getBean("encryptor");
