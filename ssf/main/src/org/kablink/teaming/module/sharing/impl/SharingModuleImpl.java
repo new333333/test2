@@ -41,6 +41,7 @@ import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
@@ -60,6 +61,7 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.sharing.SharingModule;
@@ -67,6 +69,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -129,7 +132,16 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			} else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
 				//Users can be guest (i.e., shared), internal, or external
 				if (((User)recipient).isShared()) {
+					if (!zoneConfig.getAuthenticationConfig().isAllowAnonymousAccess()) {
+						//Anonymous has not been enabled by the administrator
+						throw new AccessControlException();
+					}
 					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC);
+					//Also make sure the rights being given out are no more than Viewer
+					if (!validateGuestAccessRights(shareItem)) {
+						//There are rights that are not allowed for sharing with guest. Throw an error
+						throw new AccessControlException();
+					}
 				} else if (recipient.getIdentityInfo().isInternal()) {
 					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL);
 				} else {
@@ -578,6 +590,20 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		return reply;
 	}
 	
+	//Routine to validate the rights being given to guest in a share
+	public boolean validateGuestAccessRights(ShareItem shareItem) {
+		List<WorkAreaOperation> rights = shareItem.getRightSet().getRights();
+		for (WorkAreaOperation wao : rights) {
+			//The following rights are OK for guest. All other rights are not allowed
+			if (!WorkAreaOperation.READ_ENTRIES.equals(wao) && 
+					!WorkAreaOperation.VIEW_BINDER_TITLE.equals(wao) && 
+					!WorkAreaOperation.ADD_REPLIES.equals(wao)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
     
 	@Override
 	public boolean isSharingEnabled() {
@@ -604,10 +630,14 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				getCoreDao().save(shareItem);
+				
+				//Log this share action in the change log
+				addShareItemChangeLogEntry(shareItem, ChangeLog.SHARE_ADD);
+
 				return null;
 			}
 		});
-
+		
 		//Index the entity that is being shared
 		indexSharedEntity(shareItem);
 	}
@@ -643,6 +673,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 
 				// Save new snapshot
 				getCoreDao().save(latestShareItem);
+
+				//Log this share action in the change log
+				addShareItemChangeLogEntry(latestShareItem, ChangeLog.SHARE_MODIFY);
 				
 				return null;
 			}
@@ -671,10 +704,14 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				getCoreDao().delete(shareItem);
+				
+				//Log this share action in the change log
+				addShareItemChangeLogEntry(shareItem, ChangeLog.SHARE_DELETE);
+				
 				return null;
 			}
 		});
-		
+
 		//Index the entity that is being shared
 		indexSharedEntity(shareItem);
 	}
@@ -889,4 +926,20 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	private BinderProcessor loadBinderProcessor(Binder binder) {
 		return (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 	}
+	
+	private void addShareItemChangeLogEntry(ShareItem shareItem, String action) {
+		EntityIdentifier entityIdentifier = shareItem.getSharedEntityIdentifier();
+		if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
+			FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
+			FolderCoreProcessor processor = (FolderCoreProcessor)getProcessorManager().getProcessor(
+					fe.getParentFolder(), fe.getParentFolder().getProcessorKey(FolderCoreProcessor.PROCESSOR_KEY));
+			processor.processChangeLog(fe, action);
+		} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
+				entityIdentifier.getEntityType().equals(EntityType.workspace)) {
+			Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
+			BinderProcessor processor = loadBinderProcessor(binder);
+			processor.processChangeLog(binder, action);
+		}
+	}
+
 }

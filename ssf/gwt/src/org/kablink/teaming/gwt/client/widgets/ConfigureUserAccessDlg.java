@@ -69,6 +69,7 @@ public class ConfigureUserAccessDlg extends DlgBox
 	implements EditSuccessfulHandler
 {
 	CheckBox m_allowGuestAccessCkbox;
+	CheckBox m_guestReadOnlyCkbox;
 	CheckBox m_allowSelfRegOfInternalUserAccountCkbox;
 	CheckBox m_allowExternalUserAccessCkbox;
 	CheckBox m_allowSelfRegOfExternalUserAccountCkbox;
@@ -137,6 +138,17 @@ public class ConfigureUserAccessDlg extends DlgBox
 			panel.addStyleName( "marginbottom2" );
 			m_allowGuestAccessCkbox = new CheckBox( messages.configureUserAccessDlg_AllowGuestAccessLabel() );
 			panel.add( m_allowGuestAccessCkbox );
+			mainPanel.add( panel );
+		}
+		
+		// Add the "Allow Guest read only" checkbox;
+		{
+			FlowPanel panel;
+			
+			panel = new FlowPanel();
+			panel.addStyleName( "marginbottom2" );
+			m_guestReadOnlyCkbox = new CheckBox( messages.configureUserAccessDlg_AllowGuestReadOnlyLabel() );
+			panel.add( m_guestReadOnlyCkbox );
 			mainPanel.add( panel );
 		}
 		
@@ -280,6 +292,14 @@ public class ConfigureUserAccessDlg extends DlgBox
 	/**
 	 * 
 	 */
+	private boolean getGuestReadOnly()
+	{
+		return m_guestReadOnlyCkbox.getValue();
+	}
+	
+	/**
+	 * 
+	 */
 	private boolean getAllowInternalSelfReg()
 	{
 		if ( m_allowSelfRegOfInternalUserAccountCkbox != null )
@@ -300,6 +320,7 @@ public class ConfigureUserAccessDlg extends DlgBox
 		config.setAllowExternalUsers( getAllowExternalUsers() );
 		config.setAllowExternalUsersSelfReg( getAllowExternalSelfReg() );
 		config.setAllowGuestAccess( getAllowGuestAccess() );
+		config.setGuestReadOnly( getGuestReadOnly() );
 		config.setAllowSelfReg( getAllowInternalSelfReg() );
 		
 		return config;

@@ -44,6 +44,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.InternalException;
+import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -240,6 +241,15 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			if (!config.isAllowAnonymousAccess()) {
 				//Guest access is not enabled, disallow access to everything
 				return false;
+			}
+			//See if the user is only allowed "read only" rights
+			if (config.isAnonymousReadOnly()) {
+				//This is the guest account and it is read only. Only allow checks for read rights
+				if (!WorkAreaOperation.READ_ENTRIES.equals(workAreaOperation) &&
+						!WorkAreaOperation.VIEW_BINDER_TITLE.equals(workAreaOperation)) {
+					//Rights other than "read" rights are not permitted by read only guests
+					return false;
+				}
 			}
 		}
 		if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && 

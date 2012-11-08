@@ -7202,6 +7202,7 @@ public class GwtServerHelper {
 		
 		// Check for guest access
 		config.setAllowGuestAccess( authConfig.isAllowAnonymousAccess() );
+		config.setGuestReadOnly( authConfig.isAnonymousReadOnly() );
 		
 		if ( ReleaseInfo.isLicenseRequiredEdition() )
 		{
@@ -8503,6 +8504,7 @@ public class GwtServerHelper {
 		case SAVE_TASK_STATUS:
 		case SAVE_SEARCH:
 		case SAVE_TAG_SORT_ORDER:
+		case SAVE_USER_ACCESS_CONFIG:
 		case SAVE_WHATS_NEW_SETTINGS:
 		case SET_DESKTOP_APP_DOWNLOAD_VISIBILITY:
 		case SET_ENTRIES_PIN_STATE:
@@ -9030,6 +9032,9 @@ public class GwtServerHelper {
 		
 		// Set "guest access"
 		authConfig.setAllowAnonymousAccess( config.getAllowGuestAccess() );
+		
+		// Set "guest read only"
+		authConfig.setAnonymousReadOnly( config.getGuestReadOnly() );
 		
 		if ( ReleaseInfo.isLicenseRequiredEdition() )
 		{

@@ -45,6 +45,7 @@ public class UserAccessConfig
 	implements IsSerializable, VibeRpcResponseData
 {
 	private boolean m_allowGuestAccess;
+	private boolean m_guestReadOnly;
 	private boolean m_allowSelfReg;
 	private boolean m_allowExternalUsers;
 	private boolean m_allowExternalUsersSelfReg;
@@ -92,6 +93,14 @@ public class UserAccessConfig
 	/**
 	 * 
 	 */
+	public boolean getGuestReadOnly()
+	{
+		return m_guestReadOnly;
+	}
+
+	/**
+	 * 
+	 */
 	public boolean getAllowSelfReg()
 	{
 		return m_allowSelfReg;
@@ -119,6 +128,14 @@ public class UserAccessConfig
 	public void setAllowGuestAccess( boolean allow )
 	{
 		m_allowGuestAccess = allow;
+	}
+
+	/**
+	 * 
+	 */
+	public void setGuestReadOnly( boolean readOnly )
+	{
+		m_guestReadOnly = readOnly;
 	}
 
 	/**

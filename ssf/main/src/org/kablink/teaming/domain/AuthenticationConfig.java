@@ -39,6 +39,7 @@ public class AuthenticationConfig  {
 
 	private boolean allowLocalLogin = true;
 	private boolean allowAnonymousAccess = true;
+	private boolean anonymousReadOnly = false;
 	private boolean allowSelfRegistration = false;
 	private Long lastUpdate;
 	
@@ -52,6 +53,13 @@ public class AuthenticationConfig  {
 	}
 	public void setAllowAnonymousAccess(boolean allowAnonymousAccess) {
 		this.allowAnonymousAccess = allowAnonymousAccess;
+	}
+	public boolean isAnonymousReadOnly() {
+		return anonymousReadOnly;
+	}
+	public void setAnonymousReadOnly(Boolean anonymousReadOnly) {
+		if (anonymousReadOnly == null) anonymousReadOnly = false;
+		this.anonymousReadOnly = anonymousReadOnly;
 	}
 	public boolean isAllowLocalLogin() {
 		return allowLocalLogin;

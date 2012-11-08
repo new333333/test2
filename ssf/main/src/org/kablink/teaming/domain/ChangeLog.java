@@ -84,6 +84,9 @@ public class ChangeLog extends ZonedObject {
 	public static final String ACCESSMODIFY="modifyAccess";
 	public static final String CHANGETIMESTAMPS="changeTimestamps";
 	public static final String UPDATEMODIFICATIONSTAMP="updateModificationStamp";
+	public static final String SHARE_ADD="shareEntityAdd";
+	public static final String SHARE_MODIFY="shareEntityModify";
+	public static final String SHARE_DELETE="shareEntityDelete";
 	
 	protected static final Log logger = LogFactory.getLog(ChangeLog.class);
 	

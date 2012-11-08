@@ -143,6 +143,7 @@ public class BaseAuthenticationModule extends CommonDependencyInjection
 	public void setAuthenticationConfigForZone(Long zoneId, AuthenticationConfig authConfig) {
 		ZoneConfig zoneConfig = getZoneModule().getZoneConfig(zoneId);
 		zoneConfig.getAuthenticationConfig().setAllowAnonymousAccess(authConfig.isAllowAnonymousAccess());
+		zoneConfig.getAuthenticationConfig().setAnonymousReadOnly(authConfig.isAnonymousReadOnly());
 		zoneConfig.getAuthenticationConfig().setAllowLocalLogin(authConfig.isAllowLocalLogin());
 		zoneConfig.getAuthenticationConfig().setAllowSelfRegistration(authConfig.isAllowSelfRegistration());
 	}
