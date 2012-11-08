@@ -20,7 +20,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -224,20 +223,7 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 		newCreation = false;
 		return true;
 	}
-	private boolean checkIfExists(String searchNode)
-	{
-		List<HASearchNode> nodes = getAvailableNodes();
-		
-		for (HASearchNode node: nodes)
-		{
-			if (node.getName().equals(searchNode))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
+	
 	public List<HASearchNode> getAvailableNodes() {
 		List<HASearchNode> returnList = new ArrayList<HASearchNode>();
 		
@@ -248,7 +234,6 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 				returnList.add(node);
 			}
 		}
-		Window.alert("Return list "+returnList.size());
 		return returnList;
 	}
 

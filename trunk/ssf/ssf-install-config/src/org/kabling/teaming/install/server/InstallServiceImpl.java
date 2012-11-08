@@ -1241,12 +1241,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			NodeList nodeList = resourceElement.getElementsByTagName("HASearchNode");
 			if (nodeList != null)
 			{
-				int nodeLength = nodeList.getLength();
-				for (int i = 0; i < nodeLength; i++)
+				while (nodeList.item(0) != null)
 				{
-					Node currentNode = nodeList.item(i);
+					Node currentNode = nodeList.item(0);
 					Node parent = currentNode.getParentNode();
 					parent.removeChild(currentNode);
+					
 				}
 			}
 			
