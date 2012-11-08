@@ -58,11 +58,11 @@ public class ExternalUserUtil {
 	public static final String OPENID_PROVIDER_NAME_MYOPENID = "myopenid";
 	
 	public static String encodeUserToken(User user) {
-		return user.getId() + "_" + user.getPrivateDigest();
+		return Long.toHexString(user.getId().longValue()) + "_" + user.getPrivateDigest();
 	}
 	
 	public static Long getUserId(String encodedUserToken) {
-		return Long.valueOf(encodedUserToken.substring(0, encodedUserToken.indexOf('_')));
+		return Long.parseLong(encodedUserToken.substring(0, encodedUserToken.indexOf('_')), 16);
 	}
 	
 	public static String getPrivateDigest(String encodedUserToken) {
