@@ -89,7 +89,7 @@ public class ChangeLogUtils {
  	 			share.addElement(ObjectKeys.XTAG_ENTITY_SHARE_SHARER_ID, String.valueOf(shareItem.getSharerId()));
  	 			share.addElement(ObjectKeys.XTAG_ENTITY_SHARE_RECIPIENT_TYPE, shareItem.getRecipientType().toString());
  	 			share.addElement(ObjectKeys.XTAG_ENTITY_SHARE_RECIPIENT_ID, String.valueOf(shareItem.getRecipientId()));
- 	 			share.addElement(ObjectKeys.XTAG_ENTITY_SHARE_EXPIRATION, sd.format(expirationDate));
+ 	 			if (expirationDate != null) share.addElement(ObjectKeys.XTAG_ENTITY_SHARE_EXPIRATION, sd.format(expirationDate));
  	 			share.addElement(ObjectKeys.XTAG_ENTITY_SHARE_ROLE, shareItem.getRole().toString());
  			}
 		}
