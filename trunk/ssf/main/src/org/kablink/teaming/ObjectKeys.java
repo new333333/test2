@@ -749,9 +749,17 @@ public interface ObjectKeys {
     public static final String XTAG_ENTITY_DEFINITION_NAME="entryDefName";
     public static final String XTAG_ENTITY_ICONNAME="iconName";
     public static final String XTAG_ENTITY_ATTACHMENTS="attachments";
+    public static final String XTAG_ENTITY_SHARES="shares";
     //values of name= attribute on XTAG_ELEMENT_TYPE_PROPERTY for entities   
     public static final String XTAG_ENTITY_PARENTBINDER="parentBinder";
     public static final String XTAG_ENTITY_DEFINITION="entryDef";
+    //values of name= attribute on XTAG_ELEMENT_TYPE_PROPERTY for share   
+    public static final String XTAG_ENTITY_SHARE="share";
+    public static final String XTAG_ENTITY_SHARE_SHARER_ID="sharerId";
+    public static final String XTAG_ENTITY_SHARE_RECIPIENT_TYPE="recipientType";
+    public static final String XTAG_ENTITY_SHARE_RECIPIENT_ID="recipientId";
+    public static final String XTAG_ENTITY_SHARE_EXPIRATION="expiration";
+    public static final String XTAG_ENTITY_SHARE_ROLE="role";
     //values of name= attributes on XTAG_ELEMENT_TYPE_ATTRIBUTE for principals
     public static final String XTAG_PRINCIPAL_FOREIGNNAME="foreignName";
     public static final String XTAG_PRINCIPAL_NAME="name";

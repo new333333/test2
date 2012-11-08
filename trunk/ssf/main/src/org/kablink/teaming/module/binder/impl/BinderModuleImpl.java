@@ -262,6 +262,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 									.getZoneId()),
 					WorkAreaOperation.ZONE_ADMINISTRATION);
 		} else {
+			if (user.isShared()) {
+				//See if the user is only allowed "read only" rights
+				ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+				if (zoneConfig.getAuthenticationConfig().isAnonymousReadOnly()) {
+					//This is the guest account and it is read only. Only allow checks for read rights
+					switch (operation) {
+						case readEntries:
+						case viewBinderTitle:
+							//Allow these rights to be checked. All other rights will fail
+							break;
+						default:
+							throw new AccessControlException(operation.toString(), new Object[] {});
+					}
+				}
+			}
 			switch (operation) {
 			case addFolder:
 				getAccessControlManager().checkOperation(user, binder,

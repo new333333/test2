@@ -2044,6 +2044,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the Configure User Access dialog
 	String configureUserAccessDlg_Header();
 	String configureUserAccessDlg_AllowGuestAccessLabel();
+	String configureUserAccessDlg_AllowGuestReadOnlyLabel();
 	String configureUserAccessDlg_AllowSelfRegInternalUserAccountLabel();
 	String configureUserAccessDlg_AllowExternalUserAccessLabel();
 	String configureUserAccessDlg_AllowSelfRegExternalUserAccountLabel();

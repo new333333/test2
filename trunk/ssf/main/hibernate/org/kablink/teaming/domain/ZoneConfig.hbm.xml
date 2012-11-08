@@ -45,6 +45,7 @@
      <component name="authenticationConfig" class="org.kablink.teaming.domain.AuthenticationConfig">
  		 <property name="allowLocalLogin" />
  		 <property name="allowAnonymousAccess"/>
+ 		 <property name="anonymousReadOnly"/>
 	     <property name="allowSelfRegistration"/>
     	 <property name="lastUpdate"/>
     </component>

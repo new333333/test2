@@ -94,6 +94,7 @@ import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.jobs.DefaultFolderNotification;
@@ -271,6 +272,15 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		}
 	}
 	public void checkAccess(Folder folder, FolderOperation operation) throws AccessControlException {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		if (user.isShared()) {
+			//See if the user is only allowed "read only" rights
+			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+			if (zoneConfig.getAuthenticationConfig().isAnonymousReadOnly()) {
+				//This is the guest account and it is read only. Only allow checks for read rights
+				throw new AccessControlException(operation.toString(), new Object[] {});
+			}
+		}
 		switch (operation) {
 			case addEntry: 
 			case synchronize:
@@ -300,7 +310,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 				}
 				break;
 			default:
-				throw new NotSupportedException(operation.toString(), "checkAccess");
+				throw new AccessControlException(operation.toString(), new Object[] {});
 				
 		}
 	}
@@ -322,6 +332,21 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		}
 	}
 	public void checkAccess(FolderEntry entry, FolderOperation operation) throws AccessControlException {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		if (user.isShared()) {
+			//See if the user is only allowed "read only" rights
+			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+			if (zoneConfig.getAuthenticationConfig().isAnonymousReadOnly()) {
+				//This is the guest account and it is read only. Only allow checks for read rights
+				switch (operation) {
+					case readEntry:
+						//Allow this right to be checked. All other rights will fail
+						break;
+					default:
+						throw new AccessControlException(operation.toString(), new Object[] {});
+				}
+			}
+		}
 		switch (operation) {
 			case readEntry:
 			case copyEntry:
