@@ -1238,10 +1238,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		if (lucene.getLocation().equals("ha"))
 		{
 			// Delete high availability nodes
-			NodeList nodeList = luceneElement.getElementsByTagName("HASearchNode");
+			NodeList nodeList = resourceElement.getElementsByTagName("HASearchNode");
 			if (nodeList != null)
 			{
-				for (int i = 0; i < nodeList.getLength(); i++)
+				int nodeLength = nodeList.getLength();
+				for (int i = 0; i < nodeLength; i++)
 				{
 					Node currentNode = nodeList.item(i);
 					Node parent = currentNode.getParentNode();

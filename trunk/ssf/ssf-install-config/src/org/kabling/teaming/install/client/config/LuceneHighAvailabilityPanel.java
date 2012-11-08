@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.kabling.teaming.install.client.AppUtil;
+import org.kabling.teaming.install.client.EditCanceledHandler;
 import org.kabling.teaming.install.client.EditSuccessfulHandler;
 import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.client.images.CellTableResource;
@@ -29,7 +30,7 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 
-public class LuceneHighAvailabilityPanel extends Composite implements Handler,ClickHandler,EditSuccessfulHandler
+public class LuceneHighAvailabilityPanel extends Composite implements Handler,ClickHandler,EditSuccessfulHandler,EditCanceledHandler
 {
 	private MultiSelectionModel<HASearchNode> selectionModel;
 	private CellTable<HASearchNode> table;
@@ -39,6 +40,7 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 	private ListDataProvider<HASearchNode> dataProvider;
 	protected AppResource RBUNDLE = AppUtil.getAppResource();
 	private InstallerConfig config;
+	private boolean newCreation;
 	public LuceneHighAvailabilityPanel()
 	{
 		content = new FlowPanel();
@@ -47,7 +49,7 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 		FlowPanel actionsPanel = new FlowPanel();
 		content.add(actionsPanel);
 		
-		newButton = new Button(RBUNDLE.newEllipsis());
+		newButton = new Button(RBUNDLE.add());
 		newButton.addClickHandler(this);
 		newButton.addStyleName("luceneHAButton");
 		actionsPanel.add(newButton);
@@ -87,6 +89,7 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 			@Override
 			public void update(int index, HASearchNode object, String value)
 			{
+				newCreation = false;
 				NewLuceneHANodeDialog dlg = new NewLuceneHANodeDialog(object,dataProvider.getList());
 				dlg.createAllDlgContent("New Search Node", LuceneHighAvailabilityPanel.this, null, null);
 				dlg.show(true);
@@ -192,6 +195,7 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 		}
 		else if (event.getSource() == newButton)
 		{
+			newCreation = true;
 			NewLuceneHANodeDialog dlg = new NewLuceneHANodeDialog(null,dataProvider.getList());
 			dlg.createAllDlgContent("New Search Node", this, null, null);
 			dlg.show(true);
@@ -200,18 +204,26 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 
 	@Override
 	public boolean editSuccessful(Object obj) {
+		
 		if (obj != null)
 		{
-			HASearchNode node = (HASearchNode)obj;
-			if (!checkIfExists(node.getName()))
+			if (newCreation)
 			{
-				dataProvider.getList().add((HASearchNode)obj);
+				HASearchNode node = (HASearchNode)obj;
+				dataProvider.getList().add(node);
+				newCreation = false;
 			}
 			table.redraw();
 		}
 		return true;
 	}
 	
+	@Override
+	public boolean editCanceled()
+	{
+		newCreation = false;
+		return true;
+	}
 	private boolean checkIfExists(String searchNode)
 	{
 		List<HASearchNode> nodes = getAvailableNodes();
@@ -236,6 +248,9 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 				returnList.add(node);
 			}
 		}
+		Window.alert("Return list "+returnList.size());
 		return returnList;
 	}
+
+	
 }

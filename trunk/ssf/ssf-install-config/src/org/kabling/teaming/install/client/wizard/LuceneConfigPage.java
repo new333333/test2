@@ -96,7 +96,7 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 	@Override
 	public boolean canFinish()
 	{
-		return false;
+		return true;
 	}
 
 	@Override
