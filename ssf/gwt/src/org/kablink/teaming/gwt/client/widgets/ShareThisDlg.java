@@ -985,6 +985,7 @@ public class ShareThisDlg extends DlgBox
 			mainTable.setWidget( row, 0, shareLabel );
 			mainTable.setWidget( row, 1, findTable );
 			mainRowFormatter.setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
+			mainCellFormatter.setWidth( row, 1, "100%" );
 			
 			// Add an "add external user" image.
 			{

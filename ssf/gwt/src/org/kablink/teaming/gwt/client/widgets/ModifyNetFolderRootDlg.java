@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
@@ -1067,6 +1068,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private void syncNetFolderServer()
 	{
 		SyncNetFolderServerCmd cmd;
+		HashSet<NetFolderRoot> toBeSyncd;
 		AsyncCallback<VibeRpcResponse> rpcCallback = null;
 		
 		// Create the callback that will be used when we issue an ajax call
@@ -1110,7 +1112,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		};
 
 		// Issue an ajax request to sync the net folder server.
-		cmd = new SyncNetFolderServerCmd( m_netFolderRoot.getName() );
+		toBeSyncd = new HashSet<NetFolderRoot>();
+		toBeSyncd.add( m_netFolderRoot );
+		cmd = new SyncNetFolderServerCmd( toBeSyncd );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 	

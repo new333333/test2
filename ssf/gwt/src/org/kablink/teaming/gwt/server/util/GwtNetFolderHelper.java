@@ -66,6 +66,7 @@ import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.NetFolder.NetFolderStatus;
+import org.kablink.teaming.gwt.client.NetFolderRoot.NetFolderRootStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderServersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse.GwtConnectionTestStatusCode;
@@ -74,7 +75,6 @@ import org.kablink.teaming.jobs.Schedule;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
-import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
@@ -130,6 +130,39 @@ public class GwtNetFolderHelper
 		}
 		
 		return netFolders;
+	}
+	
+	/**
+	 * Check the status of each net folder root in the list.
+	 */
+	public static Set<NetFolderRoot> checkNetFolderServerStatus(
+		AllModulesInjected ami,
+		HttpServletRequest req,
+		Set<NetFolderRoot> netFolderServers ) throws GwtTeamingException
+	{
+		for ( NetFolderRoot nextNetFolderServer : netFolderServers )
+		{
+			String statusTicketId;
+
+			statusTicketId = nextNetFolderServer.getStatusTicketId();
+			if ( statusTicketId != null )
+			{
+				StatusTicket statusTicket;
+				
+				statusTicket = GwtWebStatusTicket.findStatusTicket( statusTicketId, req );
+				if ( statusTicket != null )
+				{
+					if ( statusTicket.isDone() )
+						nextNetFolderServer.setStatus( NetFolderRootStatus.READY );
+				}
+				else
+				{
+					nextNetFolderServer.setStatus( NetFolderRootStatus.READY );
+				}
+			}
+		}
+		
+		return netFolderServers;
 	}
 	
 	/**
@@ -846,13 +879,33 @@ public class GwtNetFolderHelper
 	}
 	
 	/**
-	 * Sync the given net folder server by syncing all the net folders associated with it.
+	 * Sync the given net folder servers by syncing all the net folders associated with it.
 	 */
-	public static Boolean syncNetFolderServer(
+	public static Set<NetFolderRoot> syncNetFolderServers(
 		AllModulesInjected ami,
-		String netFolderServerName )
+		HttpServletRequest req,
+		Set<NetFolderRoot> netFolderServers )
 	{
-		return ami.getResourceDriverModule().synchronize( netFolderServerName, false, null );
+		for ( NetFolderRoot nextServer : netFolderServers )
+		{
+			StatusTicket statusTicket = null;
+			String statusTicketId;
+
+			statusTicketId = "sync_net_folder_server" + nextServer.getName();
+			statusTicket = GwtWebStatusTicket.newStatusTicket( statusTicketId, req );
+			if ( ami.getResourceDriverModule().synchronize( nextServer.getName(), false, statusTicket ) )
+			{
+				// The binder was not deleted (typical situation).
+				nextServer.setStatus( NetFolderRootStatus.SYNC_IN_PROGRESS );
+				nextServer.setStatusTicketId( statusTicketId );
+			}
+			else
+			{
+				nextServer.setStatus( NetFolderRootStatus.SYNC_FAILURE );
+			}
+		}
+
+		return netFolderServers;
 	}
 	
 	/**

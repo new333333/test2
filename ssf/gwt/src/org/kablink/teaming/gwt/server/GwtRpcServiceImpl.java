@@ -303,6 +303,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case CHECK_NET_FOLDER_SERVERS_STATUS:
+		{
+			CheckNetFolderServerStatusCmd csCmd;
+			Set<NetFolderRoot> listOfNetFolderServers;
+			
+			csCmd = (CheckNetFolderServerStatusCmd) cmd;
+			listOfNetFolderServers = GwtNetFolderHelper.checkNetFolderServerStatus(
+																	this,
+																	req,
+																	csCmd.getListOfNetFolderServersToCheck() );
+			response = new VibeRpcResponse( new CheckNetFolderServerStatusRpcResponseData( listOfNetFolderServers ) );
+			return response;
+		}
+		
 		case COLLAPSE_SUBTASKS:
 		{
 			CollapseSubtasksCmd csCmd = ((CollapseSubtasksCmd) cmd);
@@ -2641,12 +2655,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SYNC_NET_FOLDER_SERVER:
 		{
 			SyncNetFolderServerCmd snfsCmd;
-			BooleanRpcResponseData responseData;
-			Boolean result;
+			SyncNetFolderRootsRpcResponseData responseData;
+			Set<NetFolderRoot> listOfNetFolderServers;
 			
 			snfsCmd = (SyncNetFolderServerCmd) cmd;
-			result = GwtNetFolderHelper.syncNetFolderServer( this, snfsCmd.getNetFolderServerName() );
-			responseData = new BooleanRpcResponseData( result );
+			listOfNetFolderServers = GwtNetFolderHelper.syncNetFolderServers( this, req, snfsCmd.getNetFolderServers() );
+			responseData = new SyncNetFolderRootsRpcResponseData( listOfNetFolderServers );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

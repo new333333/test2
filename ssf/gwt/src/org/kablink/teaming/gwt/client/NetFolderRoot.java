@@ -59,6 +59,8 @@ public class NetFolderRoot
 	private String m_proxyPwd = "";
 	private GwtSchedule m_syncSchedule;
 	private ArrayList<GwtPrincipal> m_principals;
+	private NetFolderRootStatus m_status;
+	private String m_statusTicketId;
 	
 	// This information is specific to WebDAV
 	private boolean m_allowSelfSignedCerts = false;
@@ -67,13 +69,23 @@ public class NetFolderRoot
 	
 	
 	/**
+	 * The different statuses of a net folder root
+	 */
+	public enum NetFolderRootStatus implements IsSerializable
+	{
+		SYNC_IN_PROGRESS,
+		SYNC_FAILURE,
+		READY
+	}
+	
+	/**
 	 * Constructor method. 
 	 * 
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public NetFolderRoot()
 	{
-		// Nothing to do.
+		m_status = NetFolderRootStatus.READY;
 	}	
 	
 	/**
@@ -100,7 +112,9 @@ public class NetFolderRoot
 		m_proxyPwd = root.getProxyPwd();
 		m_principals = root.getListOfPrincipals();
 		m_syncSchedule = root.getSyncSchedule();
-		
+
+		m_statusTicketId = root.getStatusTicketId();
+
 		// Copy WebDAV info
 		m_allowSelfSignedCerts = root.getAllowSelfSignedCerts();
 		m_isSharePointServer = root.getIsSharePointServer();
@@ -204,6 +218,22 @@ public class NetFolderRoot
 	public NetFolderRootType getRootType()
 	{
 		return m_rootType;
+	}
+	
+	/**
+	 * 
+	 */
+	public NetFolderRootStatus getStatus()
+	{
+		return m_status;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getStatusTicketId()
+	{
+		return m_statusTicketId;
 	}
 	
 	/**
@@ -314,6 +344,22 @@ public class NetFolderRoot
 		m_rootType = type;
 	}
 
+	/**
+	 * 
+	 */
+	public void setStatus( NetFolderRootStatus status )
+	{
+		m_status = status;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setStatusTicketId( String id )
+	{
+		m_statusTicketId = id;
+	}
+	
 	/**
 	 * 
 	 */
