@@ -1070,6 +1070,7 @@ public class WebKeys {
     public static final String LOGIN_ERROR_LOGIN_FAILED="loginFailed";
     public static final String LOGIN_ERROR_LOGINS_NOT_ALLOWED="loginsNotAllowed";
     public static final String LOGIN_ERROR_USER_ALREADY_LOGGED_IN="userAlreadyLoggedIn";
+    public static final String LOGIN_STATUS = "ss_loginStatus";
     public static final String LOGIN_URL="ss_loginUrl";
     public static final String LOGIN_POST_URL="ss_loginPostUrl";
     public static final String LOGOUT_URL="ss_logoutUrl";

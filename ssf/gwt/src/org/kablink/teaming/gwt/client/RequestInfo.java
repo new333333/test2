@@ -295,6 +295,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
+	 * Return the login status.
+	 * 
+	 * @return
+	 */
+	public final native String getLoginStatus()
+	/*-{
+		return this.loginStatus;
+	}-*/;
+	
+	/**
 	 * Return the URL we should use when we are trying to log in.
 	 * 
 	 * @return

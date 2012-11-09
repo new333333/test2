@@ -691,4 +691,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/folder_generic_large.gif")
 	public ImageResource genericFolderLarge();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/emailConfirmation.png")
+	public ImageResource emailConfirmation();
+	
 }// end GwtTeamingImageBundle

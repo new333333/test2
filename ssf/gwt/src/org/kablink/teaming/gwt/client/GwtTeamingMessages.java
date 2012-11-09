@@ -694,6 +694,7 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlg_AuthProviderVerisign();
 	String loginDlg_AuthProviderYahoo();
 	String loginDlg_AuthProviderUnknown();
+	String loginDlg_ConfirmationText();
 	String loginDlgAuthenticating();
 	String loginDlgCreateNewAccount();
 	String loginDlgKablinkHeader();

@@ -46,6 +46,8 @@ import javax.servlet.http.HttpSession;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.extuser.ExternalUserRequiresVerificationException;
+import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.SPropsUtil;
@@ -69,20 +71,30 @@ import org.springframework.web.portlet.ModelAndView;
  *
  */
 public class LoginController  extends SAbstractControllerRetry {
+
+	private static final String LOGIN_STATUS_AUTHENTICATION_FAILED = "authenticationFailed";
+	private static final String LOGIN_STATUS_CONFIRMATION_REQUIRED = "confirmationRequired";
+	private static final String LOGIN_STATUS_PROMPT_FOR_LOGIN = "promptForLogin";
 	
 	//caller will retry on OptimisiticLockExceptions
+	@Override
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) 
 			throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 	}
 	
+	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 			throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 	}
 	
+	@SuppressWarnings("deprecation")
+	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		Object sessionObj;
+		
 		// Force the Vibe product that's running to be determined.
 		// This will set the session captive state, ... into the
 		// session cache as appropriate.
@@ -113,11 +125,127 @@ public class LoginController  extends SAbstractControllerRetry {
 		if(Validator.isNotNull(url)) {
 			model.put(WebKeys.URL, url);
 		}
+		
+		// Look in the http session for an authentication exception
         HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
-    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
-    	if(ex != null) {
-    		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
-    		session.removeAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    	sessionObj = session.getAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY );
+    	if ( sessionObj != null )
+    	{
+    		if ( sessionObj instanceof ExternalUserRequiresVerificationException )
+    		{
+    			ExternalUserRequiresVerificationException ex;
+    			
+    			// An external user successfully logged in for the first time.
+    			// Get the external user that authenticated.
+    			ex = (ExternalUserRequiresVerificationException) sessionObj;
+    			
+    			// Send the external user a confirmation email.
+    			{
+	    			String permaLink = null;
+        			User extUser;
+        			String redirectUrl;
+
+        			extUser = ex.getExternalUser();
+        			
+        			// Get the original url the user used to hit Filr.
+    				redirectUrl = ex.getRedirectUrl();
+    				
+    				// Get the permalink to the item that was shared.  redirectUrl is the original url the
+    				// user was sent in the first share email.  We need to replace "euet=xxx" with
+    				// "euet=some new token value".
+    				if ( redirectUrl != null && redirectUrl.length() > 0 )
+    				{
+    	    			String newToken;
+    	    			String[] params;
+
+    				    // Create a new token
+    					newToken = ExternalUserUtil.encodeUserToken( extUser );
+
+    					params = redirectUrl.split( "&" );
+    					for ( String param : params )
+    					{
+    						String[] split;
+    						
+    						split = param.split( "=" );
+    						if ( split != null && split.length == 2 )
+    						{
+    							String name;
+    							String value;
+
+    							name = split[0];
+    							value = split[1];
+    							if ( value != null && name != null && name.equalsIgnoreCase( "euet" ) )
+    							{
+    								String old;
+    								String replacement;
+    								
+    								old = name + "=" + value;
+    								replacement = name + "=" + newToken;
+    								permaLink = redirectUrl.replaceFirst( old, replacement );
+    								break;
+    							}
+    						}
+    					}
+    				}
+					
+					// Do we have a permalink?
+					if ( permaLink != null )
+					{
+						// Send a confirmation email to the user.
+						try
+						{
+							// Send the confirmation.
+							//!!! getAdminModule().sendShareConfirmMailToExternalUser( extUser.getId(), permaLink );
+						}
+						catch ( Exception sendEmailEx )
+						{
+						}
+					}
+    			}
+
+    			// Tell the login dialog that an external user authenticated for the first time.
+    			// The login dialog ui should tell the user to go check their email.
+    			model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_CONFIRMATION_REQUIRED );
+    		}
+    		else if ( sessionObj instanceof AuthenticationException )
+    		{
+        		AuthenticationException ex;
+
+        		// Authentication failed.
+        		ex = (AuthenticationException) sessionObj;
+        		model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_AUTHENTICATION_FAILED );
+        		model.put( WebKeys.LOGIN_ERROR, ex.getMessage() );
+
+        		HttpServletRequest req = WebHelper.getHttpServletRequest(request);
+        		if(BrowserSniffer.is_wap_xhtml(req) || 
+        				BrowserSniffer.is_blackberry(req) || 
+        				BrowserSniffer.is_iphone(req) ||
+        				BrowserSniffer.is_droid(req)) {
+        			
+        			String view = "mobile/show_login_form";
+        			
+        			Cookie[] cookies = request.getCookies();
+        			if(cookies != null) {
+        				for(Cookie cookie:cookies) {
+        					//if we found the native mobile and we have an error logging in then
+        					if(cookie.getName().equals(WebKeys.URL_NATIVE_MOBILE_APP_COOKIE) && ex != null) {
+        						String value = cookie.getValue();
+        						model.put(WebKeys.URL_OPERATION2, value);
+        						view = "mobile/redirected_login";
+        						break;
+        					}
+        				}
+        			}
+        			
+        			return new ModelAndView(view, model);
+        		}
+    		}
+
+    		session.removeAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY );
+    	}
+    	else
+    	{
+    		model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_PROMPT_FOR_LOGIN );
     	}
 
     	// Is self registration permitted?
@@ -138,30 +266,6 @@ public class LoginController  extends SAbstractControllerRetry {
 		{
 			model.put(WebKeys.URL, refererUrl);
 			model.put( "loginRefererUrl", refererUrl );
-		}
-		
-		HttpServletRequest req = WebHelper.getHttpServletRequest(request);
-		if(BrowserSniffer.is_wap_xhtml(req) || 
-				BrowserSniffer.is_blackberry(req) || 
-				BrowserSniffer.is_iphone(req) ||
-				BrowserSniffer.is_droid(req)) {
-			
-			String view = "mobile/show_login_form";
-			
-			Cookie[] cookies = request.getCookies();
-			if(cookies != null) {
-				for(Cookie cookie:cookies) {
-					//if we found the native mobile and we have an error logging in then
-					if(cookie.getName().equals(WebKeys.URL_NATIVE_MOBILE_APP_COOKIE) && ex != null) {
-						String value = cookie.getValue();
-						model.put(WebKeys.URL_OPERATION2, value);
-						view = "mobile/redirected_login";
-						break;
-					}
-				}
-			}
-			
-			return new ModelAndView(view, model);
 		}
 		
 		boolean durangoUI = GwtUIHelper.isGwtUIActive(request);
