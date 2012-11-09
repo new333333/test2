@@ -33,8 +33,8 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
+import org.kablink.teaming.gwt.client.NetFolderRoot.NetFolderRootStatus;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -42,6 +42,7 @@ import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -53,6 +54,8 @@ import com.google.gwt.user.client.ui.Image;
  */
 public class NetFolderRootNameCell extends AbstractCell<NetFolderRoot>
 {
+	private static String m_imgHtml;
+
 	/**
 	 * 
 	 */
@@ -60,6 +63,16 @@ public class NetFolderRootNameCell extends AbstractCell<NetFolderRoot>
 	{
 		// We care about click and keydown action
 		super( "click", "keydown" );
+	
+		if ( m_imgHtml == null )
+		{
+			ImageResource imgResource;
+			Image img;
+			
+			imgResource = GwtTeaming.getImageBundle().spinner16();
+			img = GwtClientHelper.buildImage( imgResource );
+			m_imgHtml = img.toString();
+		}
 	}
 
 	/**
@@ -104,6 +117,7 @@ public class NetFolderRootNameCell extends AbstractCell<NetFolderRoot>
 		
 		{
 			SafeHtml safeValue;
+			NetFolderRootStatus status;
 
 			// Wrap everything in a <div>
 			sb.appendHtmlConstant( "<div class=\"netFolderRoot_NamePanel\">" );
@@ -129,6 +143,30 @@ public class NetFolderRootNameCell extends AbstractCell<NetFolderRoot>
 			safeValue = SafeHtmlUtils.fromString( value.getName() );
 			sb.append( safeValue );
 			sb.appendHtmlConstant( "</span>" );
+			
+			status = value.getStatus();
+			if ( status != NetFolderRootStatus.READY )
+			{
+				String statusMsg;
+				
+				// Get the appropriate status message.
+				if ( status == NetFolderRootStatus.SYNC_IN_PROGRESS )
+				{
+					// Add the spinner
+					sb.appendHtmlConstant( m_imgHtml );
+
+					statusMsg = GwtTeaming.getMessages().manageNetFolderServersDlg_Syncing();
+				}
+				else if ( status == NetFolderRootStatus.SYNC_FAILURE )
+					statusMsg = GwtTeaming.getMessages().manageNetFolderServersDlg_SyncFailure();
+				else
+					statusMsg = GwtTeaming.getMessages().manageNetFolderServersDlg_UnknownStatus();
+					
+				// Add a status message
+				sb.appendHtmlConstant( "<span class=\"groupStatus\">" );
+				sb.appendEscaped( statusMsg );
+				sb.appendHtmlConstant( "</span>" );
+			}
 			
 			// Close the <div>
 			sb.appendHtmlConstant( "</div>" );

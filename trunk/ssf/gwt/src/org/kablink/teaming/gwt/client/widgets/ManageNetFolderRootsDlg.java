@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -39,16 +40,21 @@ import java.util.Set;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.NetFolderRoot.NetFolderRootStatus;
 import org.kablink.teaming.gwt.client.datatable.NetFolderRootNameCell;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderRootCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderRootModifiedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.CheckNetFolderServerStatusCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.CheckNetFolderServerStatusRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderRootsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderServersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFolderRootsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFolderServerCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -69,6 +75,7 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -174,6 +181,81 @@ public class ManageNetFolderRootsDlg extends DlgBox
 	}
 
 	/**
+	 * Check the sync status of each net folder root that has a sync in progress.
+	 */
+	private void checkSyncStatus()
+	{
+		HashSet<NetFolderRoot> listOfNetFolderRootsToCheck;
+		
+		listOfNetFolderRootsToCheck = new HashSet<NetFolderRoot>();
+		
+		if ( m_listOfNetFolderRoots != null )
+		{
+			for ( NetFolderRoot nextFolderRoot : m_listOfNetFolderRoots )
+			{
+				if ( nextFolderRoot.getStatus() == NetFolderRootStatus.SYNC_IN_PROGRESS &&
+					 nextFolderRoot.getStatusTicketId() != null )
+				{
+					listOfNetFolderRootsToCheck.add( nextFolderRoot );
+				}
+			}
+		}
+		
+		if ( listOfNetFolderRootsToCheck.size() > 0 )
+		{
+			CheckNetFolderServerStatusCmd cmd;
+			AsyncCallback<VibeRpcResponse> rpcCallback = null;
+
+			// Create the callback that will be used when we issue an ajax call
+			// to check the sync status of the net folder roots.
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( final Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+											t,
+											GwtTeaming.getMessages().rpcFailure_CheckNetFolderRootsStatus() );
+				}
+		
+				@Override
+				public void onSuccess( final VibeRpcResponse response )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							if ( response.getResponseData() != null )
+							{
+								if ( response.getResponseData() != null )
+								{
+									Set<NetFolderRoot> listOfNetFolderRoots;
+									CheckNetFolderServerStatusRpcResponseData responseData;
+									
+									responseData = (CheckNetFolderServerStatusRpcResponseData) response.getResponseData();
+									
+									listOfNetFolderRoots = responseData.getListOfNetFolderServers();
+									
+									// Update the status of each of the folder roots.
+									updateFolderRootStatus( listOfNetFolderRoots );
+								}
+							}
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+
+			// Issue an ajax request to check the sync status of the list of net folder roots.
+			cmd = new CheckNetFolderServerStatusCmd( listOfNetFolderRootsToCheck );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+	}
+	
+	/**
 	 * Create all the controls that make up the dialog box.
 	 */
 	@Override
@@ -238,6 +320,29 @@ public class ManageNetFolderRootsDlg extends DlgBox
 						public void execute()
 						{
 							deleteSelectedNetFolderRoots();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			menuPanel.add( label );
+
+			// Add a "Sync" button.
+			label = new InlineLabel( messages.manageNetFolderServersDlg_SyncLabel() );
+			label.addStyleName( "manageNetFolderRootsDlg_Btn" );
+			label.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							syncSelectedNetFolderRoots();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -746,6 +851,159 @@ public class ManageNetFolderRootsDlg extends DlgBox
 		}
 	}
 
+	/**
+	 * Sync the given net folder roots
+	 */
+	private void syncNetFolderRoots( final Set<NetFolderRoot> selectedRoots )
+	{
+		SyncNetFolderServerCmd cmd;
+		AsyncCallback<VibeRpcResponse> rpcCallback = null;
+
+		if ( selectedRoots == null || selectedRoots.size() == 0 )
+			return;
+		
+		// Mark each of the selected net folders as "sync in progress"
+		for ( NetFolderRoot nextNetFolderRoot : selectedRoots )
+		{
+			nextNetFolderRoot.setStatus( NetFolderRootStatus.SYNC_IN_PROGRESS );
+		}
+
+		// Create the callback that will be used when we issue an ajax call
+		// to sync the net folder roots.
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( final Throwable t )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_SyncNetFolderRoots() );
+
+						// Update the table to reflect the fact that we sync'd a net folder root.
+						m_dataProvider.refresh();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+	
+			@Override
+			public void onSuccess( final VibeRpcResponse response )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						if ( response.getResponseData() != null )
+						{
+							SyncNetFolderRootsRpcResponseData responseData;
+							Set<NetFolderRoot> listOfNetFolderRoots;
+							
+							responseData = (SyncNetFolderRootsRpcResponseData) response.getResponseData();
+							
+							listOfNetFolderRoots = responseData.getListOfNetFolderRoots();
+							
+							updateFolderRootStatus( listOfNetFolderRoots );
+						}
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		};
+
+		// Update the table to reflect the fact that net folder sync is in progress
+		m_dataProvider.refresh();
+
+		// Issue an ajax request to sync the list of net folder roots.
+		cmd = new SyncNetFolderServerCmd( selectedRoots );
+		GwtClientHelper.executeCommand( cmd, rpcCallback );
+	}
+	
+	/**
+	 * Sync the selected net folder roots.
+	 */
+	private void syncSelectedNetFolderRoots()
+	{
+		Set<NetFolderRoot> selectedRoots;
+		
+		selectedRoots = getSelectedNetFolderRoots();
+
+		// Do we have any net folder roots to sync?
+		if ( selectedRoots == null || selectedRoots.size() == 0 )
+		{
+			// No
+			Window.alert( GwtTeaming.getMessages().manageNetFolderServersDlg_SelectServersToSync() );
+			return;
+		}
+		
+		syncNetFolderRoots( selectedRoots );
+	}
+	
+	/**
+	 * For each net folder root in the given list, find the net folder root in our internal list
+	 * and update its status
+	 */
+	private void updateFolderRootStatus( Set<NetFolderRoot> listOfNetFolderRoots )
+	{
+		if ( listOfNetFolderRoots != null )
+		{
+			boolean checkAgain;
+			
+			checkAgain = false;
+			
+			for ( NetFolderRoot nextNetFolderRoot : listOfNetFolderRoots )
+			{
+				NetFolderRoot ourNetFolderRoot;
+				
+				ourNetFolderRoot = findNetFolderRootById( nextNetFolderRoot.getId() );
+				
+				if ( ourNetFolderRoot != null )
+				{
+					NetFolderRootStatus status;
+					String statusTicketId;
+
+					status = nextNetFolderRoot.getStatus();
+					ourNetFolderRoot.setStatus( status );
+					
+					statusTicketId = nextNetFolderRoot.getStatusTicketId();
+					ourNetFolderRoot.setStatusTicketId( statusTicketId );
+					
+					if ( status != NetFolderRootStatus.READY )
+					{
+						checkAgain = true;
+					}
+				}
+			}
+			
+			// Update the table to reflect the fact that we sync'd a net folder root.
+			m_dataProvider.refresh();
+			
+			if ( checkAgain )
+			{
+				Timer timer;
+				
+				timer = new Timer()
+				{
+					@Override
+					public void run()
+					{
+						checkSyncStatus();
+					}
+				};
+				timer.schedule( 5000 );
+			}
+		}
+	}
+	
 	/**
 	 * Loads the ManageNetFolderRootsDlg split point and returns an instance
 	 * of it via the callback.

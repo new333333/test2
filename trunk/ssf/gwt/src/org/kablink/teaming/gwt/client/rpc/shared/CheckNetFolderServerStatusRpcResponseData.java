@@ -30,60 +30,46 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
+
 
 import java.util.Set;
 
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 
 
-
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds all of the information necessary to execute the "sync net folder server" command.
- * 
+ * This class holds the response data for the "check net folder server status" rpc command
  * @author jwootton
  *
  */
-public class SyncNetFolderServerCmd extends VibeRpcCmd
+public class CheckNetFolderServerStatusRpcResponseData
+	implements IsSerializable, VibeRpcResponseData
 {
-	private Set<NetFolderRoot> m_servers;
+	private Set<NetFolderRoot> m_listOfNetFolderServers;
 	
 	/**
-	 * For GWT serialization, must have a zero param contructor
+	 * 
 	 */
-	public SyncNetFolderServerCmd()
+	public CheckNetFolderServerStatusRpcResponseData()
 	{
-		super();
 	}
 	
 	/**
 	 * 
 	 */
-	public SyncNetFolderServerCmd( Set<NetFolderRoot> servers)
+	public CheckNetFolderServerStatusRpcResponseData( Set<NetFolderRoot> listOfNetFolderServers )
 	{
-		m_servers = servers;
-	}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCmdType()
-	{
-		return VibeRpcCmdType.SYNC_NET_FOLDER_SERVER.ordinal();
+		m_listOfNetFolderServers = listOfNetFolderServers;
 	}
 	
 	/**
 	 * 
 	 */
-	public Set<NetFolderRoot> getNetFolderServers()
+	public Set<NetFolderRoot> getListOfNetFolderServers()
 	{
-		return m_servers;
+		return m_listOfNetFolderServers;
 	}
 }

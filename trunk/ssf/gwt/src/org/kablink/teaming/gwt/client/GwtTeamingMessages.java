@@ -303,6 +303,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_ChangeFavoriteState();
 	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_CheckNetFoldersStatus();
+	String rpcFailure_CheckNetFolderRootsStatus();
 	String rpcFailure_CollapseSubtasks();
 	String rpcFailure_CopyEntries();
 	String rpcFailure_CreateBlogPage();
@@ -498,6 +499,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_ShareEntry();
 	String rpcFailure_SyncNetFolders();
 	String rpcFailure_SyncNetFolderServer();
+	String rpcFailure_SyncNetFolderRoots();
 	String rpcFailure_TestGroupMembershipCriteria();
 	String rpcFailure_ErrorTestingNetFolderServerConnection();
 	String rpcFailure_TrackingBinder();
@@ -1931,6 +1933,11 @@ public interface GwtTeamingMessages extends Messages
 	String manageNetFolderServersDlg_NoNetFolderServersLabel();
 	String manageNetFolderServersDlg_ServerPathCol();
 	String manageNetFolderServersDlg_SelectServersToDelete();
+	String manageNetFolderServersDlg_SelectServersToSync();
+	String manageNetFolderServersDlg_SyncLabel();
+	String manageNetFolderServersDlg_Syncing();
+	String manageNetFolderServersDlg_SyncFailure();
+	String manageNetFolderServersDlg_UnknownStatus();
 
 	// Strings used in the modify Net Folder Server dialog
 	String modifyNetFolderServerDlg_AddHeader();

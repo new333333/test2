@@ -41,19 +41,20 @@ import org.kablink.teaming.gwt.client.NetFolderRoot;
 
 
 /**
- * This class holds all of the information necessary to execute the "sync net folder server" command.
+ * This class holds all of the information necessary to execute the
+ * "check net folder server status" command.
  * 
  * @author jwootton
  *
  */
-public class SyncNetFolderServerCmd extends VibeRpcCmd
+public class CheckNetFolderServerStatusCmd extends VibeRpcCmd
 {
-	private Set<NetFolderRoot> m_servers;
+	private Set<NetFolderRoot> m_listOfNetFolderServersToCheck;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
-	public SyncNetFolderServerCmd()
+	public CheckNetFolderServerStatusCmd()
 	{
 		super();
 	}
@@ -61,9 +62,9 @@ public class SyncNetFolderServerCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public SyncNetFolderServerCmd( Set<NetFolderRoot> servers)
+	public CheckNetFolderServerStatusCmd( Set<NetFolderRoot> listOfNetFolderServersToCheck )
 	{
-		m_servers = servers;
+		m_listOfNetFolderServersToCheck = listOfNetFolderServersToCheck;
 	}
 	
 	/**
@@ -76,14 +77,14 @@ public class SyncNetFolderServerCmd extends VibeRpcCmd
 	@Override
 	public int getCmdType()
 	{
-		return VibeRpcCmdType.SYNC_NET_FOLDER_SERVER.ordinal();
+		return VibeRpcCmdType.CHECK_NET_FOLDER_SERVERS_STATUS.ordinal();
 	}
 	
 	/**
 	 * 
 	 */
-	public Set<NetFolderRoot> getNetFolderServers()
+	public Set<NetFolderRoot> getListOfNetFolderServersToCheck()
 	{
-		return m_servers;
+		return m_listOfNetFolderServersToCheck;
 	}
 }
