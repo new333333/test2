@@ -168,6 +168,8 @@ public abstract class Principal extends Entry implements IPrincipal {
         return getEmailAddress(PRIMARY_EMAIL);
     }
     public void setEmailAddress(String address) {
+    	if(address != null)
+    		address = address.toLowerCase();
     	setEmailAddress(PRIMARY_EMAIL, address);
    }
     /**
@@ -185,6 +187,8 @@ public abstract class Principal extends Entry implements IPrincipal {
        	return (a==null ? "":a.getAddress());
     }
     public void setEmailAddress(String type, String address) {
+    	if(address != null)
+    		address = address.toLowerCase();
     	if (emailAddresses == null) emailAddresses = new HashMap();
     	if (Validator.isNull(address)) {
     		emailAddresses.remove(type);
@@ -201,6 +205,8 @@ public abstract class Principal extends Entry implements IPrincipal {
         return getEmailAddress(MOBILE_EMAIL);
     }
     public void setMobileEmailAddress(String address) {
+    	if(address != null)
+    		address = address.toLowerCase();
         setEmailAddress(MOBILE_EMAIL, address);
     }
    /**
@@ -210,6 +216,8 @@ public abstract class Principal extends Entry implements IPrincipal {
         return getEmailAddress(TEXT_EMAIL);
     }
     public void setTxtEmailAddress(String address) {
+    	if(address != null)
+    		address = address.toLowerCase();
         setEmailAddress(TEXT_EMAIL, address);
     }
     /**
@@ -219,6 +227,8 @@ public abstract class Principal extends Entry implements IPrincipal {
         return getEmailAddress(BCC_EMAIL);
     }
     public void setBccEmailAddress(String address) {
+    	if(address != null)
+    		address = address.toLowerCase();    	
         setEmailAddress(BCC_EMAIL, address);
     }
     /**
