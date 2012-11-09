@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -49,66 +51,6 @@ public class UserSharingRightsInfoRpcResponseData implements IsSerializable, Vib
 	private boolean 							m_internalEnabled;		//
 	private boolean								m_publicEnabled;		//
 	private Map<Long, PerUserShareRightsInfo>	m_userRightsMap;		//
-	
-	/**
-	 * Inner class used to track the rights granted on a per user
-	 * basis. 
-	 */
-	public static class PerUserShareRightsInfo implements IsSerializable {
-		private boolean m_allowExternal;	//
-		private boolean m_allowForwarding;	//
-		private boolean m_allowInternal;	//
-		private boolean m_allowPublic;		//
-		
-		/**
-		 * Constructor method. 
-		 * 
-		 * For GWT serialization, must have a zero parameter constructor.
-		 */
-		public PerUserShareRightsInfo() {
-			// Initialize the super class.
-			super();
-		}
-		
-		/**
-		 * Constructor method. 
-		 * 
-		 * @param allowExternal
-		 * @param allowForwarding
-		 * @param allowInternal
-		 * @param allowPublic
-		 */
-		public PerUserShareRightsInfo(boolean allowExternal, boolean allowForwarding, boolean allowInternal, boolean allowPublic) {
-			// Initialize this object...
-			this();
-
-			// ...and store the parameters.
-			setAllowExternal(  allowExternal  );
-			setAllowForwarding(allowForwarding);
-			setAllowInternal(  allowInternal  );
-			setAllowPublic(    allowPublic    );
-		}
-
-		/**
-		 * Get'er methods.
-		 * 
-		 * @return
-		 */
-		public boolean isAllowExternal()   {return m_allowExternal;  }
-		public boolean isAllowForwarding() {return m_allowForwarding;}
-		public boolean isAllowInternal()   {return m_allowInternal;  }
-		public boolean isAllowPublic()     {return m_allowPublic;    }
-
-		/**
-		 * Set'er methods.
-		 * 
-		 * @param
-		 */
-		public void setAllowExternal(  boolean allowExternal)   {m_allowExternal   = allowExternal;  }
-		public void setAllowForwarding(boolean allowForwarding) {m_allowForwarding = allowForwarding;}
-		public void setAllowInternal(  boolean allowInternal)   {m_allowInternal   = allowInternal;  }
-		public void setAllowPublic(    boolean allowPublic)     {m_allowPublic     = allowPublic;    }
-	}
 	
 	/**
 	 * Constructor method. 
