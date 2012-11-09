@@ -55,11 +55,9 @@ import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.util.Validator;
 
-import com.googlecode.gwt.crypto.util.SecureRandom;
-
 public class User extends UserPrincipal implements IndividualPrincipal {
 	
-	public enum ExtAccountState {
+	public enum ExtProvState {
 		/**
 		 * The external user account was created as result of a sharing activity
 		 * performed by another user and an invitation has gone out.
@@ -84,18 +82,18 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		 */
 		verified((short)3);
 		short value;
-		ExtAccountState(short value) {
+		ExtProvState(short value) {
 			this.value = value;
 		}
 		public short getValue() {
 			return value;
 		}
-		public static ExtAccountState valueOf(short value) {
+		public static ExtProvState valueOf(short value) {
 			switch(value) {
-			case 1: return ExtAccountState.initial;
-			case 2: return ExtAccountState.bound;
-			case 3: return ExtAccountState.verified;
-			default: throw new IllegalArgumentException("Invalid db value " + value + " for enum ExtAccountState");
+			case 1: return ExtProvState.initial;
+			case 2: return ExtProvState.bound;
+			case 3: return ExtProvState.verified;
+			default: throw new IllegalArgumentException("Invalid db value " + value + " for enum ExtProvState");
 			}
 		}
 	}
@@ -125,8 +123,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected Long maxGroupsFileSizeLimit;
     private SortedSet groupNames; // sorted set of group names; this field is computed
     
-    protected String openidIdentity; // applicable only to external users using OpenID
-    protected Short extAccountState; // applicable only to external users
+    protected Short extProvState; // applicable only to external users
     
     private static Random random = new Random(System.currentTimeMillis());
     
@@ -618,25 +615,15 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		return reply;
     }
 
-	public String getOpenidIdentity() {
-		return openidIdentity;
-	}
-
-	public void setOpenidIdentity(String openidIdentity) {
-		if(openidIdentity != null)
-			openidIdentity = openidIdentity.toLowerCase();
-		this.openidIdentity = openidIdentity;
-	}
-
-	public ExtAccountState getExtAccountState() {
-		if(extAccountState == null)
+	public ExtProvState getExtProvState() {
+		if(extProvState == null)
 			return null;
 		else 
-			return ExtAccountState.valueOf(extAccountState.shortValue());
+			return ExtProvState.valueOf(extProvState.shortValue());
 	}
 
-	public void setExtAccountState(ExtAccountState extAccountState) {
-		this.extAccountState = (extAccountState == null)? null : extAccountState.getValue();
+	public void setExtProvState(ExtProvState extProvState) {
+		this.extProvState = (extProvState == null)? null : extProvState.getValue();
 	}
     
 

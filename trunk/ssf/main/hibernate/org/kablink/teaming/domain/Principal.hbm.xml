@@ -126,8 +126,7 @@
 		  <property name="timeZone" access="field" length="80"/>
 		  <property name="locale" access="field" length="32"/>
 		  <property name="digestSeed"/>
-		  <property name="openidIdentity" length="128"/>
-		  <property name="extAccountState" access="field" type="short"/>
+		  <property name="extProvState" access="field" type="short"/>
 	    </subclass>
   	</subclass>
   	<subclass dynamic-update="true" name="org.kablink.teaming.domain.ApplicationPrincipal">
@@ -162,6 +161,5 @@
   <query name="find-Principal-id-By-ForeignName"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.foreignName=:foreignName and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
   <query name="find-User-By-ObjectSid"><![CDATA[from org.kablink.teaming.domain.User user where user.objectSid=:objectSid and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
   <query name="find-Principal-id-By-ObjectSid"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.objectSid=:objectSid and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
-  <query name="find-User-By-OpenidIdentity"><![CDATA[from org.kablink.teaming.domain.User user where user.openidIdentity=:openidIdentity and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
   
 </hibernate-mapping>

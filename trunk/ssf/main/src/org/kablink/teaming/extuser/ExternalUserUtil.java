@@ -54,8 +54,6 @@ public class ExternalUserUtil {
 	
 	public static final String OPENID_PROVIDER_NAME_GOOGLE = "google";
 	public static final String OPENID_PROVIDER_NAME_YAHOO = "yahoo";
-	public static final String OPENID_PROVIDER_NAME_AOL = "aol";
-	public static final String OPENID_PROVIDER_NAME_MYOPENID = "myopenid";
 	
 	private static final String DELIM = ".";
 	

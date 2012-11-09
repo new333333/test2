@@ -63,7 +63,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.User.ExtAccountState;
+import org.kablink.teaming.domain.User.ExtProvState;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
@@ -534,7 +534,7 @@ public class GwtShareHelper
 	 * Return the state of the external user account.  Possible values are, initial, bound and verified.
 	 * This method will return null if the given user is not an external user.
 	 */
-	private static ExtAccountState getExternalUserAccountState(
+	private static ExtProvState getExternalUserAccountState(
 		AllModulesInjected ami,
 		Long userId )
 	{
@@ -558,7 +558,7 @@ public class GwtShareHelper
 
 					user = (User) principal;
 					if ( user.getIdentityInfo().isInternal() == false )
-						return user.getExtAccountState();
+						return user.getExtProvState();
 				}
 			}
 		}
@@ -1002,7 +1002,7 @@ public class GwtShareHelper
 							updates = new HashMap();
 							updates.put( ObjectKeys.FIELD_USER_EMAIL, recipientName );
 							updates.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, recipientName );
-							updates.put( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE, ExtAccountState.initial );
+							updates.put( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE, ExtProvState.initial );
 							// Do NOT set the "fromOpenid" bit on initially. We will set it when the user actually
 							// logs in and binds a valid OpenID account with the email address specified during sharing.
 			 				user = profileModule.addUserFromPortal(
@@ -1290,7 +1290,7 @@ public class GwtShareHelper
 			Map<String,Object> errorMap;
 			
 			if ( gwtShareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER &&
-				 getExternalUserAccountState( ami, gwtShareItem.getRecipientId() ) == ExtAccountState.initial )
+				 getExternalUserAccountState( ami, gwtShareItem.getRecipientId() ) == ExtProvState.initial )
 			{
 				errorMap = null;
 				
@@ -1440,7 +1440,7 @@ public class GwtShareHelper
 			}
 			
 			// Is the recipient a newly created external user
-			if ( getExternalUserAccountState( ami, shareItem.getRecipientId() ) == ExtAccountState.initial )
+			if ( getExternalUserAccountState( ami, shareItem.getRecipientId() ) == ExtProvState.initial )
 			{
 				// Yes, always send them an email.
 				sendEmail = true;
