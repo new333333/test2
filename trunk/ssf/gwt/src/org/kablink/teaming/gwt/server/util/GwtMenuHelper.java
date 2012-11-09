@@ -452,6 +452,10 @@ public class GwtMenuHelper {
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		int defaultEntryDefs = ((null == defaultEntryDefinitions) ? 0 : defaultEntryDefinitions.size());
 		
+		// Define the toolbar item for the add items.
+		ToolbarItem addTBI = new ToolbarItem("1_add");
+		markTBITitle(addTBI, "toolbar.new");
+		
 		// Is the folder other than a mirrored folder or is it a
 		// mirrored folder that can be written to?
 		boolean hasVT = MiscUtil.hasString(viewType);
@@ -459,13 +463,8 @@ public class GwtMenuHelper {
 		BinderModule   bm = bs.getBinderModule();
 		TemplateModule tm = bs.getTemplateModule();
 		if ((!(folder.isMirrored())) || isFolderWritableMirrored(folder)) {
-			// Yes!  Define the toolbar items for them.
-			ToolbarItem addTBI = new ToolbarItem("1_add");
-			markTBITitle(addTBI, "toolbar.new");
-			entryToolbar.addNestedItem(addTBI);
-			
-			// Is this a non-blog folder that user has rights add a new
-			// sub-folder to?
+			// Yes!  Is this a non-blog folder that user has rights add
+			// a new sub-folder to?
 			if ((!(isViewBlog(viewType))) && bm.testAccess(folder, BinderOperation.addFolder)) {
 				// Yes!  Can we access any folder templates?
 				List<TemplateBinder> folderTemplates = tm.getTemplates(Definition.FOLDER_VIEW);
@@ -553,7 +552,16 @@ public class GwtMenuHelper {
 			}
 		}
 
+		// If we added anything to the add toolbar item...
+		if (addTBI.hasNestedToolbarItems()) {
+			// ...add that to the entry toolbar.
+			entryToolbar.addNestedItem(addTBI);
+		}
+
+		// Do we have a view type?
 		if (hasVT) {
+			// Yes!  Handle the special add cases for view types that
+			// need it.
 			if (isViewPhotoAlbum(viewType)) {
 				if (bm.testAccess(folder, BinderOperation.addFolder)) {
 					TemplateBinder photoTemplate = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_PHOTO);
@@ -563,7 +571,7 @@ public class GwtMenuHelper {
 		        		url.setParameter(WebKeys.URL_BINDER_ID, getFolderSetFolderId(bs, folder, viewType).toString());
 						url.setParameter(WebKeys.URL_TEMPLATE_NAME, ObjectKeys.DEFAULT_TEMPLATE_NAME_PHOTO);
 						
-						ToolbarItem addTBI = new ToolbarItem("1_add_folder"       );
+						addTBI = new ToolbarItem("1_add_folder"       );
 						markTBITitle(addTBI, "toolbar.menu.add_photo_album_folder");
 						// markTBIPopup(addTBI                                    );
 						markTBIUrl(     addTBI, url                               );
@@ -581,7 +589,7 @@ public class GwtMenuHelper {
 		        		url.setParameter(WebKeys.URL_BINDER_ID, getFolderSetFolderId(bs, folder, viewType).toString());
 						url.setParameter(WebKeys.URL_TEMPLATE_NAME, ObjectKeys.DEFAULT_TEMPLATE_NAME_WIKI);
 						
-						ToolbarItem addTBI = new ToolbarItem("1_add_folder");
+						addTBI = new ToolbarItem("1_add_folder");
 						markTBITitle(   addTBI, "toolbar.menu.add_wiki_folder");
 						// markTBIPopup(addTBI                                );
 						markTBIUrl(     addTBI, url                           );
