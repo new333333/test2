@@ -94,6 +94,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -296,18 +297,24 @@ public class GwtViewHelper {
 	 * Two GwtPerShareInfo's are sorted by their share date.
 	 */
 	private static class PerShareInfoComparator implements Comparator<GwtPerShareInfo> {
-		private boolean			m_sortDescend;	// true -> Sort the list descending.  false -> Sort it ascending.
-		private CollectionType	m_ct;			// The collection type of the per share info's being sorted.
+		private boolean				m_sortDescend;	// true -> Sort the list descending.  false -> Sort it ascending.
+		private CollectionType		m_ct;			// The collection type of the per share info's being sorted.
+		private String				m_sortBy;		// The column being sorted by.
 		
 		/**
 		 * Constructor method.
+		 * 
+		 * @param ct
+		 * @param sortBy
+		 * @param sortDescend
 		 */
-		public PerShareInfoComparator(CollectionType ct, boolean sortDescend) {
+		public PerShareInfoComparator(CollectionType ct, String sortBy, boolean sortDescend) {
 			// Initialize the super class...
 			super();
 			
-			// ...and store the parameters.
+			// ...store the parameters.
 			m_ct          = ct;
+			m_sortBy      = sortBy;
 			m_sortDescend = sortDescend;
 		}
 
@@ -324,9 +331,11 @@ public class GwtViewHelper {
 		@Override
 		public int compare(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
 			int  reply;
-			if (CollectionType.SHARED_WITH_ME.equals(m_ct))
-			     reply = compareByRights(psi1, psi2);
-			else reply = compareByDates( psi1, psi2);
+			if      (FolderColumn.COLUMN_SHARE_DATE.equals(      m_sortBy)) reply = compareByShareDates(     psi1, psi2);
+			else if (FolderColumn.COLUMN_SHARE_EXPIRATION.equals(m_sortBy)) reply = compareByExpirationDates(psi1, psi2);
+			else if (FolderColumn.COLUMN_SHARE_ACCESS.equals(    m_sortBy)) reply = compareByRights(         psi1, psi2);
+			else if (FolderColumn.COLUMN_SHARE_MESSAGE.equals(   m_sortBy)) reply = compareByMessage(        psi1, psi2);
+			else                                                            reply = compareByRecipient(m_ct, psi1, psi2);
 			
 			// If we're doing a descending sort...
 			if (m_sortDescend) {
@@ -340,22 +349,70 @@ public class GwtViewHelper {
 		}
 
 		/*
-		 * Compares two GwtPerShareInfo objects by share dates.
+		 * Compares two dates.
 		 */
-		private int compareByDates(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
+		private static int compareByDates(Date d1, Date d2) {
 			int  reply;
-			Date d1    = psi1.getShareDate(); long l1 = ((null == d1) ? 0 : d1.getTime());
-			Date d2    = psi2.getShareDate(); long l2 = ((null == d2) ? 0 : d2.getTime());
+			long l1 = ((null == d1) ? 0 : d1.getTime());
+			long l2 = ((null == d2) ? 0 : d2.getTime());
 			if (l1 < l2)
 				 reply = COMPARE_LESS;
 			else reply = COMPARE_GREATER;
 			return reply;
 		}
 		
-		/*
-		 * Compares two GwtPerShareInfo objects by share rights.
+		/**
+		 * Compares two GwtPerShareInfo objects by expiration dates.
+		 * 
+		 * @param psi1
+		 * @param psi2
 		 */
-		private int compareByRights(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
+		public static int compareByExpirationDates(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
+			return compareByDates(psi1.getRightsExpire(), psi2.getRightsExpire());
+		}
+		
+		/**
+		 * Compares two GwtPerShareInfo objects by their share message.
+		 * 
+		 * @param psi1
+		 * @param psi2
+		 */
+		public static int compareByMessage(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
+			return compareByString(psi1.getComment(), psi2.getComment());
+		}
+		
+		/**
+		 * Compares two GwtPerShareInfo objects by their sharer or
+		 * share recipient.
+		 *
+		 * @param ct
+		 * @param psi1
+		 * @param psi2
+		 */
+		public static int compareByRecipient(CollectionType ct, GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
+			// Extract the recipient titles to compare...
+			String s1;
+			String s2;
+			if (CollectionType.SHARED_BY_ME.equals(ct)) {
+				s1 = psi1.getRecipientTitle();
+				s2 = psi2.getRecipientTitle();
+			}
+			else {
+				s1 = psi1.getSharerTitle();
+				s2 = psi2.getSharerTitle();
+			}
+
+			// ...and compare them.
+			return compareByString(s1, s2);
+		}
+		
+		/**
+		 * Compares two GwtPerShareInfo objects by share rights.
+		 * 
+		 * @param psi1
+		 * @param psi2
+		 */
+		public static int compareByRights(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
 			int reply = COMPARE_EQUAL;
 			AccessRights ar1 = psi1.getRights().getAccessRights();
 			AccessRights ar2 = psi2.getRights().getAccessRights();
@@ -403,12 +460,6 @@ public class GwtViewHelper {
 				break;
 			}
 			
-			// If the rights compare equal...
-			if (COMPARE_EQUAL == reply) {
-				// ...compare by dates too.
-				reply = compareByDates(psi1, psi2);
-			}
-			
 			return reply;
 		}
 		
@@ -416,7 +467,7 @@ public class GwtViewHelper {
 		 * Compares two GwtPerShareInfo objects by whether they're
 		 * sharable.
 		 */
-		private int compareBySharable(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
+		private static int compareBySharable(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
 			int reply;
 			boolean isSharable1 = psi1.getRights().getCanShareForward();
 			boolean isSharable2 = psi2.getRights().getCanShareForward();
@@ -427,14 +478,37 @@ public class GwtViewHelper {
 		}
 
 		/**
+		 * Compares two GwtPerShareInfo objects by share dates.
+		 * 
+		 * @param psi1
+		 * @param psi2
+		 */
+		public static int compareByShareDates(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
+			return compareByDates(psi1.getShareDate(), psi2.getShareDate());
+		}
+		
+		/*
+		 * Compares two strings.
+		 */
+		private static int compareByString(String s1, String s2) {
+			if (null == s1) s1 = "";
+			if (null == s2) s2 = "";
+			return MiscUtil.safeSColatedCompare(s1, s2);
+		}
+		
+		/**
 		 * Sorts the List<GwtPerShareInfo> attached to the
 		 * GwtSharedMeItem's in a List<GwtSharedMeItem>.
 		 * 
+		 * @param bs
+		 * @param ct
 		 * @param shareItems
+		 * @param sortBy
+		 * @param sortDescend
 		 */
-		public static void sortPerShareInfoLists(CollectionType ct, boolean sortDescend, List<GwtSharedMeItem> shareItems) {
+		public static void sortPerShareInfoLists(AllModulesInjected bs, CollectionType ct, List<GwtSharedMeItem> shareItems, String sortBy, boolean sortDescend) {
 			// Scan the List<GwtSharedMeItem>.
-			Comparator<GwtPerShareInfo> psiComparator = new PerShareInfoComparator(ct, sortDescend);
+			Comparator<GwtPerShareInfo> psiComparator = new PerShareInfoComparator(ct, sortBy, sortDescend);
 			for (GwtSharedMeItem meItem:  shareItems) {
 				// If this GwtSharedMeItem has any GwtPerShareInfo's...
 				List<GwtPerShareInfo> psiList = meItem.getPerShareInfos();
@@ -453,7 +527,6 @@ public class GwtViewHelper {
 	@SuppressWarnings("unchecked")
 	private static class SharedMeEntriesMapComparator implements Comparator<Map> {
 		private boolean 				m_sortDescend;	//
-		@SuppressWarnings("unused")
 		private List<GwtSharedMeItem>	m_shareItems;	//
 		private String					m_sortBy;		//
 		
@@ -511,6 +584,23 @@ public class GwtViewHelper {
 					reply = MiscUtil.safeSColatedCompare(s1, s2);
 				}
 				
+				else if (MiscUtil.hasItems(m_shareItems)){
+					GwtPerShareInfo psi1 = getPSI(entryMap1);
+					GwtPerShareInfo psi2 = getPSI(entryMap2);
+					
+					if     ((null == psi1) && (null == psi2)) reply = COMPARE_EQUAL;
+					else if (null == psi1)                    reply = COMPARE_LESS;
+					else if (null == psi2)                    reply = COMPARE_GREATER;
+					else {
+						if      (m_sortBy.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_ACCESS))      {reply = PerShareInfoComparator.compareByRights(                                  psi1, psi2);}
+						else if (m_sortBy.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_DATE))        {reply = PerShareInfoComparator.compareByShareDates(                              psi1, psi2);}
+						else if (m_sortBy.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_EXPIRATION))  {reply = PerShareInfoComparator.compareByExpirationDates(                         psi1, psi2);}
+						else if (m_sortBy.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_MESSAGE))     {reply = PerShareInfoComparator.compareByMessage(                                 psi1, psi2);}
+						else if (m_sortBy.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_BY))   {reply = PerShareInfoComparator.compareByRecipient(CollectionType.SHARED_WITH_ME, psi1, psi2);}
+						else if (m_sortBy.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_WITH)) {reply = PerShareInfoComparator.compareByRecipient(CollectionType.SHARED_BY_ME,   psi1, psi2);}
+					}
+				}
+				
 				// Sort on any other columns that make sense here.
 			}
 
@@ -523,6 +613,18 @@ public class GwtViewHelper {
 			// If we get here, reply contains the appropriate value for
 			// the compare.  Return it.
 			return reply;
+		}
+		
+		/*
+		 * Returns the GwtPerShareInfo from an entry map.
+		 */
+		private GwtPerShareInfo getPSI(Map entryMap) {
+			String					docIdS     = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
+			Long					docId      = Long.parseLong(docIdS);
+			String					entityType = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD);
+			GwtSharedMeItem			si         = GwtSharedMeItem.findShareMeInList(docId, entityType, m_shareItems);
+			List<GwtPerShareInfo>	psiList    = si.getPerShareInfos();
+			return (MiscUtil.hasItems(psiList) ? psiList.get(0) : null);
 		}
 		
 		/*
@@ -769,6 +871,7 @@ public class GwtViewHelper {
 		
 		// Finally, apply the sorting to the search entries...
 		searchEntries = postProcessSharedMeMap(
+			bs,
 			searchEntries,
 			shareItems,
 			sortDescend,
@@ -1132,7 +1235,7 @@ public class GwtViewHelper {
 	 * Converts a List<ShareItem> into a List<GwtShareMeItem>
 	 * representing the 'Shared by Me' items.
 	 */
-	private static List<GwtSharedMeItem> convertItemListToByMeList(AllModulesInjected bs, HttpServletRequest request, List<ShareItem> shareItems, Long userId) throws Exception {
+	private static List<GwtSharedMeItem> convertItemListToByMeList(AllModulesInjected bs, HttpServletRequest request, List<ShareItem> shareItems, Long userId, String sortBy, boolean sortDescend) throws Exception {
 		// Allocate a List<GwtSharedMeItem> to hold the converted
 		// List<ShareItem> information.
 		List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
@@ -1177,7 +1280,7 @@ public class GwtViewHelper {
 				// No!  Skip it
 				continue;
 			}
-			
+
 			// Is this share item's entity in the trash?
 			if (GwtServerHelper.isEntityPreDeleted(siEntity)) {
 				// Yes!  Skip it.
@@ -1206,12 +1309,15 @@ public class GwtViewHelper {
 			}
 			
 			// Add information about this share item as a 
-			meItem.addPerShareInfo(si);
+			meItem.addPerShareInfo(
+				si,
+				getRecipientTitle(bs, si.getRecipientType(), si.getRecipientId()),
+				getRecipientTitle(bs, RecipientType.user,    si.getSharerId()));
 		}
 
 		// Sort the GwtPerShareInfo's attached to the
 		// List<GwtSharedMeItem> we're going to return.
-		PerShareInfoComparator.sortPerShareInfoLists(CollectionType.SHARED_BY_ME, false, reply);
+		PerShareInfoComparator.sortPerShareInfoLists(bs, CollectionType.SHARED_BY_ME, reply, sortBy, sortDescend);
 		
 		// If we get here, reply refers to the List<GwtSharedMeItem>
 		// built from condensing the List<ShareItem>.  Return it.
@@ -1222,7 +1328,7 @@ public class GwtViewHelper {
 	 * Converts a List<ShareItem> into a List<GwtShareMeItem>
 	 * representing the 'Shared with Me' items.
 	 */
-	private static List<GwtSharedMeItem> convertItemListToWithMeList(AllModulesInjected bs, HttpServletRequest request, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups) {
+	private static List<GwtSharedMeItem> convertItemListToWithMeList(AllModulesInjected bs, HttpServletRequest request, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups, String sortBy, boolean sortDescend) {
 		// Allocate a List<GwtSharedMeItem> to hold the converted
 		// List<ShareItem> information.
 		List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
@@ -1287,7 +1393,10 @@ public class GwtViewHelper {
 					
 			// The share recipient belongs with this user!  Add the
 			// information about it to the GwtSharedMeItem.
-			meItem.addPerShareInfo(si);
+			meItem.addPerShareInfo(
+				si,
+				getRecipientTitle(bs, si.getRecipientType(), si.getRecipientId()),
+				getRecipientTitle(bs, RecipientType.user,    si.getSharerId()));
 
 			// Has the GwtSharedMeItem actually been shared with
 			// the current user?
@@ -1300,7 +1409,7 @@ public class GwtViewHelper {
 		
 		// Sort the GwtPerShareInfo's attached to the
 		// List<GwtSharedMeItem> we're going to return.
-		PerShareInfoComparator.sortPerShareInfoLists(CollectionType.SHARED_WITH_ME, true, reply);
+		PerShareInfoComparator.sortPerShareInfoLists(bs, CollectionType.SHARED_WITH_ME, reply, sortBy, sortDescend);
 		
 		// If we get here, reply refers to the List<GwtSharedMeItem>
 		// built from condensing the List<ShareItem>.  Return it.
@@ -2012,12 +2121,12 @@ public class GwtViewHelper {
 			else if (colName.equals("rating"))           {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
 			else if (colName.equals("responsible"))      {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                }
 			else if (colName.equals("size"))             {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                  }
-			else if (colName.equals("share_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_ACCESS);       fc.setColumnSortable(false);                        }
-			else if (colName.equals("share_date"))       {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_DATE);         fc.setColumnSortable(false);                        }
-			else if (colName.equals("share_expiration")) {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_EXPIRATION);   fc.setColumnSortable(false);                        }
-			else if (colName.equals("share_message"))    {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_MESSAGE);      fc.setColumnSortable(false);                        }
-			else if (colName.equals("share_sharedBy"))   {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_SHARED_BY);    fc.setColumnSortable(false);                        }
-			else if (colName.equals("share_sharedWith")) {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_SHARED_WITH);  fc.setColumnSortable(false);                        }
+			else if (colName.equals("share_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_ACCESS);                                                           }
+			else if (colName.equals("share_date"))       {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_DATE);                                                             }
+			else if (colName.equals("share_expiration")) {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_EXPIRATION);                                                       }
+			else if (colName.equals("share_message"))    {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_MESSAGE);                                                          }
+			else if (colName.equals("share_sharedBy"))   {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_SHARED_BY);                                                        }
+			else if (colName.equals("share_sharedWith")) {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_SHARED_WITH);                                                      }
 			else if (colName.equals("state"))            {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);}
 			else if (colName.equals("status"))           {fc.setColumnSearchKey(Constants.STATUS_FIELD);                                                                     }
 			else if (colName.equals("tasks"))            {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                      }
@@ -2484,7 +2593,7 @@ public class GwtViewHelper {
 	private static String[] getCollectionColumnNames(CollectionType ct) {
 		String[] reply;
 		switch (ct) {
-		case MY_FILES:       reply = pruneColumnNames(ct, "title", "comments", "family",   "date"                                                                   ); break;
+		case MY_FILES:       reply = pruneColumnNames(ct, "title", "comments", "size",   "date"                                                                     ); break;
 		case NET_FOLDERS:    reply = pruneColumnNames(ct, "title", "date",     "netfolder_access", "descriptionHtml"                                                ); break;
 		case SHARED_BY_ME:   reply = pruneColumnNames(ct, "title", "comments", "share_sharedWith", "share_date", "share_expiration", "share_access", "share_message"); break;
 		case SHARED_WITH_ME: reply = pruneColumnNames(ct, "title", "comments", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message"); break;
@@ -3516,8 +3625,10 @@ public class GwtViewHelper {
 
 			// Factor in the user's sorting selection.
 			FolderDisplayDataRpcResponseData fdd = getFolderDisplayData(bs, request, folderInfo);
-			options.put(ObjectKeys.SEARCH_SORT_BY,      fdd.getFolderSortBy()     );
-			options.put(ObjectKeys.SEARCH_SORT_DESCEND, fdd.getFolderSortDescend());
+			String	sortBy      = fdd.getFolderSortBy();
+			boolean	sortDescend = fdd.getFolderSortDescend();
+			options.put(ObjectKeys.SEARCH_SORT_BY,      sortBy     );
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, sortDescend);
 
 			// What do we know about pinning of entries on this folder?
 			boolean folderSupportsPinning = getFolderSupportsPinning(folderInfo);
@@ -3547,8 +3658,8 @@ public class GwtViewHelper {
 			boolean					isCollectionSharedByMe   = (isCollection && CollectionType.SHARED_BY_ME.equals(  collectionType));
 			boolean					isCollectionSharedWithMe = (isCollection && CollectionType.SHARED_WITH_ME.equals(collectionType));
 			List<GwtSharedMeItem> 	shareItems;
-			if      (isCollectionSharedByMe)   shareItems = getSharedByMeItems(  bs, request);
-			else if (isCollectionSharedWithMe) shareItems = getSharedWithMeItems(bs, request);
+			if      (isCollectionSharedByMe)   shareItems = getSharedByMeItems(  bs, request, sortBy, sortDescend);
+			else if (isCollectionSharedWithMe) shareItems = getSharedWithMeItems(bs, request, sortBy, sortDescend);
 			else                               shareItems = null;
 
 			// Is the user currently viewing pinned entries?
@@ -3568,7 +3679,6 @@ public class GwtViewHelper {
 				else if (isProfilesRootWS) searchResults = bs.getProfileModule().getUsers(         options);
 				else if (isCollection)     searchResults = getCollectionEntries(bs, request, binder, quickFilter, options, collectionType, shareItems);
 				else {
-					boolean sortDescend = fdd.getFolderSortDescend();
 					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
 					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);
 					options.put(ObjectKeys.SEARCH_SORT_DESCEND,           sortDescend           );
@@ -3995,7 +4105,7 @@ public class GwtViewHelper {
 										if (isEntityFolderEntry) {
 											value = trimFileSize(value);
 											if (MiscUtil.hasString(value)) {
-												value += "KB";
+												value += " KB";
 											}
 										}
 										else {
@@ -4690,6 +4800,38 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * Returns the title to use for comparisons of a sharer or
+	 * share recipient.
+	 */
+	@SuppressWarnings("unchecked")
+	private static String getRecipientTitle(AllModulesInjected bs, RecipientType rt, Long sId) {
+		String reply = "";
+		try {
+			switch (rt) {
+			case user:
+			case group:
+				// Resolve the user/group...
+				List<Long> principalIds = new ArrayList<Long>();
+				principalIds.add(sId);
+				List<Principal> principals = ResolveIds.getPrincipals(principalIds, false);
+				if (MiscUtil.hasItems(principalIds)) {
+					// ...and return its title.
+					reply = ((Principal) principals.get(0)).getTitle();
+				}
+				break;
+				
+			case team:
+				// Return the title of the binder.
+				Binder binder = bs.getBinderModule().getBinder(sId);
+				reply = binder.getTitle();
+				break;
+			}
+		}
+		catch (Exception ex) {/* Ignore. */}
+		return reply;
+	}
+	
+	/*
 	 * Resolves, if possible, a user ID to a User object.
 	 */
 	@SuppressWarnings("unchecked")
@@ -4712,7 +4854,7 @@ public class GwtViewHelper {
 	 * Returns a List<GwtSharedMeItem> of the items shared by the
 	 * current user.
 	 */
-	private static List<GwtSharedMeItem> getSharedByMeItems(AllModulesInjected bs, HttpServletRequest request) throws Exception {
+	private static List<GwtSharedMeItem> getSharedByMeItems(AllModulesInjected bs, HttpServletRequest request, String sortBy, boolean sortDescend) throws Exception {
 		// Construct a list containing just this user's ID...
 		Long		userId = GwtServerHelper.getCurrentUserId();
 		List<Long>	users  = new ArrayList<Long>();
@@ -4726,7 +4868,7 @@ public class GwtViewHelper {
 
 		// ...and finally, convert the List<ShareItem> into a
 		// ...List<GwtShareMeItem> and return that.
-		List<GwtSharedMeItem> siList = convertItemListToByMeList(bs, request, shareItems, userId);
+		List<GwtSharedMeItem> siList = convertItemListToByMeList(bs, request, shareItems, userId, sortBy, sortDescend);
 		return siList;
 	}
 	
@@ -4734,7 +4876,7 @@ public class GwtViewHelper {
 	 * Returns a List<GwtSharedMeItem> of the items shared with the
 	 * current user.
 	 */
-	private static List<GwtSharedMeItem> getSharedWithMeItems(AllModulesInjected bs, HttpServletRequest request) {
+	private static List<GwtSharedMeItem> getSharedWithMeItems(AllModulesInjected bs, HttpServletRequest request, String sortBy, boolean sortDescend) {
 		// Construct a list containing just this user's ID...
 		Long		userId = GwtServerHelper.getCurrentUserId();
 		List<Long>	users  = new ArrayList<Long>();
@@ -4753,7 +4895,7 @@ public class GwtViewHelper {
 
 		// ...and finally, convert the List<ShareItem> into a
 		// ...List<GwtShareMeItem> and return that.
-		List<GwtSharedMeItem> siList = convertItemListToWithMeList(bs, request, shareItems, userId, teams, groups);
+		List<GwtSharedMeItem> siList = convertItemListToWithMeList(bs, request, shareItems, userId, teams, groups, sortBy, sortDescend);
 		return siList;
 	}
 	
@@ -5604,7 +5746,7 @@ public class GwtViewHelper {
 	 * returned for a 'Shared by/with Me' collection view.
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<Map> postProcessSharedMeMap(List<Map> searchEntries, List<GwtSharedMeItem> shareItems, boolean sortDescend, String sortBy) {
+	private static List<Map> postProcessSharedMeMap(AllModulesInjected bs, List<Map> searchEntries, List<GwtSharedMeItem> shareItems, boolean sortDescend, String sortBy) {
 		// Do we have any search entries to process?
 		if (MiscUtil.hasItems(searchEntries)) {
 			// Yes!  Sort the list, based on the the information we
