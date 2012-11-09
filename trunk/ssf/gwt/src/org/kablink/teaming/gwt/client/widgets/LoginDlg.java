@@ -72,6 +72,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -81,6 +82,7 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 
 
@@ -99,6 +101,7 @@ public class LoginDlg extends DlgBox
 	private TextBox m_userIdTxtBox = null;
 	private Element m_pwdLabelElement = null;
 	private PasswordTextBox m_pwdTxtBox = null;
+	private Button m_okBtn;
 	private Button m_cancelBtn = null;
 	private Label m_loginFailedMsg = null;
 	private Label m_authenticatingMsg = null;
@@ -109,9 +112,18 @@ public class LoginDlg extends DlgBox
 	private CheckBox m_useOpenIdCkbox = null;
 	private FlowPanel m_openIdProvidersPanel = null;
 	private Hidden m_openIdProviderInput = null;
-	private AsyncCallback<VibeRpcResponse> m_rpcGetLoginInfoCallback = null;
 	private boolean m_requestedLoginInfo = false;
 
+	/**
+	 * 
+	 */
+	public enum LoginStatus
+	{
+		AuthenticationFailed,
+		ConfirmationRequested,
+		PromptForLogin
+	}
+	
 	/**
 	 * 
 	 */
@@ -213,7 +225,7 @@ public class LoginDlg extends DlgBox
 		super( autoHide, modal, xPos, yPos );
 	
 		String headerText;
-		
+
 		m_loginUrl = loginUrl;
 		m_springSecurityRedirect = springSecurityRedirect;
 		
@@ -225,51 +237,18 @@ public class LoginDlg extends DlgBox
 		else
 			headerText = GwtTeaming.getMessages().loginDlgKablinkHeader();
 		
-		// Create the callback that will be used when we issue an ajax call to get login information
-		m_rpcGetLoginInfoCallback = new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void onFailure( Throwable t )
-			{
-				// Don't call GwtClientHelper.handleGwtRPCFailure() like we would normally do.  If the
-				// session has expired, handleGwtRPCFailure() will invoke this login dialog again
-				// and we will be in an infinite loop.
-				// GwtClientHelper.handleGwtRPCFailure(
-				//	t,
-				//	GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo());
-			}// end onFailure()
-	
-			/**
-			 * 
-			 * @param result
-			 */
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				Scheduler.ScheduledCommand cmd;
-				final GwtLoginInfo loginInfo;
-				
-				loginInfo = (GwtLoginInfo) response.getResponseData();
-				
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						danceDlg( loginInfo );
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}// end onSuccess()
-		};
-
 		createAllDlgContent( headerText, null, null, properties ); 
 	}// end LoginDlg()
 	
 
+	/**
+	 * 
+	 */
+	private void debugAlert( String msg )
+	{
+		//Window.alert( msg );
+	}
+	
 	/**
 	 * Clear all the content from the dialog and start fresh.
 	 */
@@ -382,11 +361,10 @@ public class LoginDlg extends DlgBox
 		{
 			Element okElement;
 			Element cancelElement;
-			Button okBtn;
 			
 			okElement = Document.get().getElementById( "loginOkBtn" );
-			okBtn = Button.wrap( okElement );
-			okBtn.setText( GwtTeaming.getMessages().login() );
+			m_okBtn = Button.wrap( okElement );
+			m_okBtn.setText( GwtTeaming.getMessages().login() );
 			
 			cancelElement = Document.get().getElementById( "loginCancelBtn" );
 			m_cancelBtn = Button.wrap( cancelElement );
@@ -639,6 +617,7 @@ public class LoginDlg extends DlgBox
 	 */
 	private void danceDlg( GwtLoginInfo loginInfo )
 	{
+		debugAlert( "in danceDlg" );
 		m_selfRegInfo = loginInfo.getSelfRegistrationInfo();
 		
 		// Hide or show the self registration controls.
@@ -653,6 +632,7 @@ public class LoginDlg extends DlgBox
 		// Is OpenID authentication available?
 		if ( loginInfo.getAllowOpenIdAuthentication() )
 		{
+			debugAlert( "openid auth is allowed" );
 			// Yes
 			// Create the controls needed for openid authentication.
 			createOpenIdControls( loginInfo.getOpenIDAuthenticationProviders() );
@@ -723,13 +703,54 @@ public class LoginDlg extends DlgBox
 	{
 		GetLoginInfoCmd cmd;
 		
+		debugAlert( "in getLoginInfoFromServer() m_requestedLoginInfo: " + m_requestedLoginInfo );
 		if ( m_requestedLoginInfo == false )
 		{
+			AsyncCallback<VibeRpcResponse> rpcCallback;
+			
 			m_requestedLoginInfo = true;
 
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure( Throwable t )
+				{
+					// Don't call GwtClientHelper.handleGwtRPCFailure() like we would normally do.  If the
+					// session has expired, handleGwtRPCFailure() will invoke this login dialog again
+					// and we will be in an infinite loop.
+					// GwtClientHelper.handleGwtRPCFailure(
+					//	t,
+					//	GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo());
+					debugAlert( "In m_rpcGetLoginInfoCallback / onFailure()" );
+				}// end onFailure()
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					debugAlert( "in m_rpcGetLoginInfoCallback / onSuccess()" );
+					if ( response.getResponseData() != null && response.getResponseData() instanceof GwtLoginInfo )
+					{
+						final GwtLoginInfo loginInfo;
+
+						debugAlert( "response data is not null" );
+						loginInfo = (GwtLoginInfo) response.getResponseData();
+						
+						danceDlg( loginInfo );
+					}
+				}// end onSuccess()
+			};
+			
 			// Issue an ajax request to get login information
+			debugAlert( "about to execute GetLoginInfoCmd" );
 			cmd = new GetLoginInfoCmd();
-			GwtClientHelper.executeCommand( cmd, m_rpcGetLoginInfoCallback );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
 	}
 	
@@ -748,7 +769,7 @@ public class LoginDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void hideAuthenticatingMsg()
+	private void hideAuthenticatingMsg()
 	{
 		m_authenticatingMsg.setVisible( false );
 	}// end hideAuthenticatingMsg()
@@ -757,7 +778,7 @@ public class LoginDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void hideLoginFailedMsg()
+	private void hideLoginFailedMsg()
 	{
 		m_loginFailedMsg.setVisible( false );
 	}// end hideLoginFailedMsg()
@@ -794,49 +815,104 @@ public class LoginDlg extends DlgBox
 	/**
 	 * Should we allow the user to cancel the login dialog.
 	 */
-	public void setAllowCancel( boolean allowCancel )
+	private void setAllowCancel( boolean allowCancel )
 	{
 		m_cancelBtn.setVisible( allowCancel );
 	}// end setAllowCancel()
 	
-	
+
 	/**
-	 * Override this method so we can issue an ajax request to get information about self
-	 * registration every time this dialog is invoked.
+	 * 
 	 */
-	@Override
-	public void show()
+	public void showDlg( boolean allowCancel, LoginStatus loginStatus )
 	{
-		Scheduler.ScheduledCommand cmd;
+		debugAlert( "In LoginDlg.showDlg()" );
+
+		// Otherwise, we assume we're to initialize and show the
+		// LoginDlg we were given!  Initialize...
+		setAllowCancel( allowCancel );
 		
-		super.show();
+		hideAuthenticatingMsg();
+		hideLoginFailedMsg();
+		switch ( loginStatus )
+		{
+		case AuthenticationFailed:
+		     showLoginFailedMsg();
+			break;
+			
+		case ConfirmationRequested:
+			showConfirmationRequestedUI();
+			break;
+			
+		case PromptForLogin:
+			break;
+		}
 		
-		cmd = new Scheduler.ScheduledCommand()
+		setPopupPositionAndShow( new PopupPanel.PositionCallback()
 		{
 			@Override
-			public void execute()
+			public void setPosition(int offsetWidth, int offsetHeight)
 			{
-				// Issue an ajax request to get self registration info
-				getLoginInfoFromServer();
+				int x = ( ( Window.getClientWidth()  - offsetWidth  ) / 2 );
+				int y = ( ( Window.getClientHeight() - offsetHeight ) / 3 );
+				
+				setPopupPosition( x, y );
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
-	}// end show()
-	
+		} );
+
+		// Issue an ajax request to get self registration info
+		if ( loginStatus != LoginStatus.ConfirmationRequested )
+			getLoginInfoFromServer();
+	}
 	
 	/**
 	 * 
 	 */
-	public void showAuthenticatingMsg()
+	private void showAuthenticatingMsg()
 	{
 		m_authenticatingMsg.setVisible( true );
 	}// end showAuthenticatingMsg()
 
+	/**
+	 * An external user has logged in for the first time.  We need to tell the user that a confirmation
+	 * email has been sent and to please follow the instructions in the email to complete the registration
+	 * process.
+	 */
+	private void showConfirmationRequestedUI()
+	{
+		FlowPanel panel;
+		FlexTable table;
+		FlexCellFormatter cellFormatter;
+		InlineLabel label;
+		Image img;
+		
+		m_mainPanel.clear();
+		
+		panel = new FlowPanel();
+		panel.addStyleName( "loginDlg_confirmationPanel" );
+		
+		table = new FlexTable();
+		cellFormatter = table.getFlexCellFormatter();
+		panel.add( table );
+		
+		// Add an image
+		img = new Image( GwtTeaming.getImageBundle().emailConfirmation() );
+		img.addStyleName( "loginDlg_confirmationImg" );
+		table.setWidget( 0, 0, img );
+		cellFormatter.setVerticalAlignment( 0, 0, HasVerticalAlignment.ALIGN_TOP );
+		
+		// Add a message telling the user to check their email.
+		label = new InlineLabel( GwtTeaming.getMessages().loginDlg_ConfirmationText() );
+		label.addStyleName( "loginDlg_confirmationHint" );
+		table.setWidget( 0, 1, label );
+		
+		m_mainPanel.add( panel );
+	}
 	
 	/**
 	 * 
 	 */
-	public void showLoginFailedMsg()
+	private void showLoginFailedMsg()
 	{
 		m_loginFailedMsg.setVisible( true );
 	}// end hideLoginFailedMsg()
@@ -864,6 +940,18 @@ public class LoginDlg extends DlgBox
 	}// end updateSelfRegistrationControls()
 	
 	/**
+	 * Return whether we should use OpenID authentication 
+	 */
+	private boolean getUseOpenIDAuthentication()
+	{
+		if ( m_useOpenIdCkbox != null && m_useOpenIdCkbox.getValue() == true )
+			return true;
+		
+		return false;
+	}
+
+
+	/**
 	 * Callback interface to interact with the dialog asynchronously
 	 * after it loads. 
 	 */
@@ -873,317 +961,48 @@ public class LoginDlg extends DlgBox
 		void onUnavailable();
 	}
 	
-	/*
-	 * Asynchronously loads the LoginDlg and performs some operation
-	 * against the code.
-	 */
-	private static void doAsyncOperation(
-		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
-		final LoginDlgClient dlgClient,
-		final boolean prefetch,
-		
-		// Creation parameters.
-		final boolean autoHide,
-		final boolean modal,
-		final int xPos,
-		final int yPos,
-		final Object properties,
-		final String loginUrl,
-		final String springSecurityRedirect,
-		
-		// initAndShow parameters.
-		final LoginDlg show_loginDlg,
-		final boolean show_allowCancel,
-		final boolean show_showLoginFailedMsg )
-	{
-		loadControl1(
-			// Prefetch parameters.
-			dlgClient,
-			prefetch,
-			
-			// Creation parameters.
-			autoHide,
-			modal,
-			xPos,
-			yPos,
-			properties,
-			loginUrl,
-			springSecurityRedirect,
-			
-			// initAndShow parameters.
-			show_loginDlg,
-			show_allowCancel,
-			show_showLoginFailedMsg );
-	}// doAsyncOperation
-
-	/*
-	 * Various control loaders used to load the split points containing
-	 * the code for the controls by the LoginDlg object.
+	/**
+	 * Loads the LoginDlg split point and returns an instance
+	 * of it via the callback.
 	 * 
-	 * Loads the split point for the LoginDlg.
 	 */
-	private static void loadControl1(
-		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
-		final LoginDlgClient dlgClient,
-		final boolean prefetch,
-		
-		// Creation parameters.
-		final boolean autoHide,
-		final boolean modal,
-		final int xPos,
-		final int yPos,
-		final Object properties,
-		final String loginUrl,
-		final String springSecurityRedirect,
-		
-		// initAndShow parameters.
-		final LoginDlg show_loginDlg,
-		final boolean show_allowCancel,
-		final boolean show_showLoginFailedMsg )
+	public static void createAsync(
+							final boolean autoHide,
+							final boolean modal,
+							final int left,
+							final int top,
+							final Object properties,
+							final String loginUrl,
+							final String springSecurityRedirect,
+							final LoginDlgClient loginDlgClient )
 	{
 		GWT.runAsync( LoginDlg.class, new RunAsyncCallback()
-		{			
+		{
+			@Override
+			public void onFailure(Throwable reason)
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_LoginDlg() );
+				if ( loginDlgClient != null )
+				{
+					loginDlgClient.onUnavailable();
+				}
+			}
+
 			@Override
 			public void onSuccess()
 			{
-				initLoginDlg_Finish(
-					// Prefetch parameters.
-					dlgClient,
-					prefetch,
-					
-					// Creation parameters.
-					autoHide,
-					modal,
-					xPos,
-					yPos,
-					properties,
-					loginUrl,
-					springSecurityRedirect,
-					
-					// initAndShow parameters.
-					show_loginDlg,
-					show_allowCancel,
-					show_showLoginFailedMsg );
-			}// end onSuccess()
-			
-			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_LoginDlg() );
-				dlgClient.onUnavailable();
-			}// end onFailure()
-		});
-	}
-	
-	/*
-	 * Finishes the initialization of the LoginDlg object.
-	 */
-	private static void initLoginDlg_Finish(
-		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
-		final LoginDlgClient dlgClient,
-		final boolean prefetch,
-		
-		// Creation parameters.
-		final boolean autoHide,
-		final boolean modal,
-		final int xPos,
-		final int yPos,
-		final Object properties,
-		final String loginUrl,
-		final String springSecurityRedirect,
-		
-		// initAndShow parameters.
-		final LoginDlg show_loginDlg,
-		final boolean show_allowCancel,
-		final boolean show_showLoginFailedMsg )
-	{
-		// On a prefetch...
-		if ( prefetch )
-		{
-			// ...we simply call the success handler with null for the
-			// ...parameter.
-			dlgClient.onSuccess( null );
-		}
-
-		// If we weren't given a LoginDlg...
-		else if ( null == show_loginDlg )
-		{
-			// ...we assume we're to create one.
-			LoginDlg dlg = new LoginDlg(
-				autoHide,
-				modal,
-				xPos,
-				yPos,
-				properties,
-				loginUrl,
-				springSecurityRedirect );
-			
-			dlgClient.onSuccess( dlg );
-		}
-		
-		else
-		{
-			// Otherwise, we assume we're to initialize and show the
-			// LoginDlg we were given!  Initialize...
-			show_loginDlg.setAllowCancel( show_allowCancel );
-			if ( show_showLoginFailedMsg )
-			     show_loginDlg.showLoginFailedMsg();
-			else show_loginDlg.hideLoginFailedMsg();
-			show_loginDlg.hideAuthenticatingMsg();
-			
-			// ...and show it.
-			show_loginDlg.setPopupPositionAndShow( new PopupPanel.PositionCallback()
-			{
-				@Override
-				public void setPosition(int offsetWidth, int offsetHeight)
-				{
-					int x = ( ( Window.getClientWidth()  - offsetWidth  ) / 2 );
-					int y = ( ( Window.getClientHeight() - offsetHeight ) / 3 );
-					
-					show_loginDlg.setPopupPosition( x, y );
-				}// end setPosition()
-			} );
-		}
-	}
-	
-	/**
-	 * Loads the LoginDlg split point and returns an instance of it via
-	 * the callback.
-	 * 
-	 * @param autoHide
-	 * @param modal
-	 * @param xPos
-	 * @param yPos
-	 * @param properties
-	 * @param loginUrl	The URL we should use when we post the request to log in.
-	 * @param springSecurityRedirect
-	 * @param dlgClient
-	 */
-	public static void createAsync(
-		final boolean autoHide,
-		final boolean modal,
-		final int xPos,
-		final int yPos,
-		final Object properties,
-		final String loginUrl,
-		final String springSecurityRedirect,
-		final LoginDlgClient dlgClient )
-	{
-		doAsyncOperation(
-			// Prefetch parameters.  false -> Not a prefetch.
-			dlgClient,
-			false,
-			
-			// Creation parameters.
-			autoHide,
-			modal,
-			xPos,
-			yPos,
-			properties,
-			loginUrl,
-			springSecurityRedirect,
-			
-			// initAndShow parameters ignored.
-			null,
-			false,
-			false );
-	}// end createAsync()
-
-	/**
-	 * Initialize and show the dialog.
-	 * 
-	 * @param loginDlg
-	 * @param allowCancel
-	 * @param showLoginFailedMsg
-	 */
-	public static void initAndShow(
-		final LoginDlg loginDlg,
-		final boolean allowCancel,
-		final boolean showLoginFailedMsg )
-	{
-		doAsyncOperation(
-			// Prefetch parameters.  false -> Not a prefetch.
-			null,
-			false,
-			
-			// Creation parameters ignored.
-			false,
-			false,
-			-1,
-			-1,
-			null,
-			null,
-			null,
-			
-			// initAndShow parameters.
-			loginDlg,
-			allowCancel,
-			showLoginFailedMsg );
-	}// end initAndShow()
-	
-	/**
-	 * Causes the split point for the LoginDlg to be fetched.
-	 * 
-	 * @param dlgClient
-	 */
-	public static void prefetch( LoginDlgClient dlgClient )
-	{
-		// If we weren't give a LoginDlgClient...
-		if ( null == dlgClient )
-		{
-			// ...create a dummy one...
-			dlgClient = new LoginDlgClient()
-			{				
-				@Override
-				public void onUnavailable()
-				{
-					// Unused.
-				}// end onUnavailable()
+				LoginDlg loginDlg;
 				
-				@Override
-				public void onSuccess( LoginDlg dlg )
-				{
-					// Unused.
-				}// end onSuccess()
-			};
-		}
-
-		// ...and perform the prefetch.
-		doAsyncOperation(
-			// Prefetch parameters.  true -> Prefetch only.
-			dlgClient,
-			true,
-			
-			// Creation parameters ignored.
-			false,
-			false,
-			-1,
-			-1,
-			null,
-			null,
-			null,
-			
-			// initAndShow parameters ignored.
-			null,
-			false,
-			false );
-	}// end prefetch()
-	
-	public static void prefetch()
-	{
-		// Always use the initial form of the method.
-		prefetch( null );
-	}// end prefetch()
-	
-	
-	/**
-	 * Return whether we should use OpenID authentication 
-	 */
-	private boolean getUseOpenIDAuthentication()
-	{
-		if ( m_useOpenIdCkbox != null && m_useOpenIdCkbox.getValue() == true )
-			return true;
-		
-		return false;
+				loginDlg = new LoginDlg(
+									autoHide,
+									modal,
+									left,
+									top,
+									properties,
+									loginUrl,
+									springSecurityRedirect );
+				loginDlgClient.onSuccess( loginDlg );
+			}
+		});
 	}
 }// end LoginDlg

@@ -86,6 +86,7 @@
 		loginError:							'<ssf:escapeJavaScript>${ss_loginError}</ssf:escapeJavaScript>',
 		loginPostUrl:						'<ssf:escapeJavaScript>${ss_loginPostUrl}</ssf:escapeJavaScript>',
 		loginRefererUrl:					'${loginRefererUrl}',
+		loginStatus:						'<ssf:escapeJavaScript>${ss_loginStatus}</ssf:escapeJavaScript>',
 		modifyUrl:							'${ss_modifyEntryAdapter}',
 		namespace:                          '${ss_namespace}',
 		productName:						'${productName}',

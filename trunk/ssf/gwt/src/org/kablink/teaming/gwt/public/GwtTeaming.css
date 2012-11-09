@@ -1418,6 +1418,26 @@ body, table td, select
 	margin-top: 4px;
 }
 
+.loginDlg_confirmationPanel
+{
+	padding-top: 12px;
+	padding-left: 12px;
+	padding-bottom: 12px;
+	width: 350px;
+}
+
+.loginDlg_confirmationImg
+{
+}
+
+.loginDlg_confirmationHint
+{
+	font-size: medium !important;
+	white-space: normal;
+}
+
+
+
 /* Styles used by the WorkspaceTreeControl. */
 .workspaceTreeBinderAnchor            {color: #353838; text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-size: .9em;}
 .workspaceTreeBinderAnchor_collection {font-size: 14px; padding-left: 2px; color: #000;}

@@ -152,6 +152,7 @@ import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
 import org.kablink.teaming.gwt.client.widgets.LoginDlg;
 import org.kablink.teaming.gwt.client.widgets.LoginDlg.LoginDlgClient;
+import org.kablink.teaming.gwt.client.widgets.LoginDlg.LoginStatus;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl.MainMenuControlClient;
 import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadControlCookies;
@@ -1545,6 +1546,29 @@ public class GwtMainPage extends ResizeComposite
 	}-*/;
 	
 	/**
+	 * Get the login status from the request info
+	 */
+	private LoginStatus getLoginStatus()
+	{
+		LoginStatus loginStatus = LoginStatus.PromptForLogin;
+		String status;
+		
+		// errorDetails = m_requestInfo.getLoginError();
+		status = m_requestInfo.getLoginStatus();
+		if ( status != null )
+		{
+			if ( status.equalsIgnoreCase( "authenticationFailed" ) )
+				loginStatus = LoginStatus.AuthenticationFailed;
+			else if ( status.equalsIgnoreCase( "confirmationRequired" ) )
+				loginStatus = LoginStatus.ConfirmationRequested;
+			else if ( status.equalsIgnoreCase( "promptForLogin" ) )
+				loginStatus = LoginStatus.PromptForLogin;
+		}
+			
+		return loginStatus;
+	}
+	
+	/**
 	 * This method will handle the landing page options such as "hide the masthead", "hide the sidebar", etc.
 	 */
 	public void handleLandingPageOptions( final String binderId, final boolean hideMasthead, final boolean hideSidebar, final boolean showBranding, final boolean hideMenu )
@@ -1705,36 +1729,38 @@ public class GwtMainPage extends ResizeComposite
 
 		if ( m_loginDlg == null )
 		{
+			LoginDlgClient dlgClient;
 			String refererUrl;
 			
 			// Get the url to go to after the user logs in.
 			refererUrl = m_requestInfo.getLoginRefererUrl();
 			
-			// Create the login dialog.
+			dlgClient = new LoginDlgClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( LoginDlg dlg )
+				{
+					m_loginDlg = dlg;
+					invokeLoginDlgImpl( allowCancel );
+				}
+				
+			};
+			
 			LoginDlg.createAsync(
-				false,
-				true,
-				0,
-				0,
-				null,
-				m_requestInfo.getLoginUrl(),
-				refererUrl,
-				new LoginDlgClient()
-				{					
-					@Override
-					public void onUnavailable()
-					{
-						// Nothing to do.  Error handled in
-						// asynchronous provider.
-					}// end onUnavailable()
-					
-					@Override
-					public void onSuccess( LoginDlg dlg )
-					{
-						m_loginDlg = dlg;
-						invokeLoginDlgImpl( allowCancel );
-					}// end onSuccess()
-				} );
+							false, 
+							true, 
+							0, 
+							0, 
+							null,
+							m_requestInfo.getLoginUrl(),
+							refererUrl,
+							dlgClient );
 		}
 		
 		else
@@ -1743,12 +1769,23 @@ public class GwtMainPage extends ResizeComposite
 		}
 	}// end invokeLoginDlg()
 	
+	/**
+	 * 
+	 */
 	private void invokeLoginDlgImpl( final boolean allowCancel )
 	{
-		String loginErr = m_requestInfo.getLoginError();
-		boolean showLoginFailedMsg = ( loginErr != null && loginErr.length() > 0 );
-		
-		LoginDlg.initAndShow( m_loginDlg, allowCancel, showLoginFailedMsg );
+		if ( m_loginDlg != null )
+		{
+			LoginStatus loginStatus;
+			
+			loginStatus = getLoginStatus();
+			
+			m_loginDlg.showDlg( allowCancel, loginStatus );
+		}
+		else
+		{
+			Window.alert( "In invokeLoginDlgImpl() and m_loginDlg is null" );
+		}
 	}//end involeLoginDlgImpl()
 	
 	
