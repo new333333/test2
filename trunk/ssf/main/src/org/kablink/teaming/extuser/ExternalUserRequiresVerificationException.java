@@ -47,13 +47,18 @@ public class ExternalUserRequiresVerificationException extends AuthenticationExc
 	private static final long serialVersionUID = 1L;
 	
 	private User user;
+	private String redirectUrl;
 
-	public ExternalUserRequiresVerificationException(User user) {
+	public ExternalUserRequiresVerificationException(User user, String redirectUrl) {
 		super("Requires verification");
 		this.user = user;
 	}
 	
 	public User getExternalUser() {
 		return user;
+	}
+	
+	public String getRedirectUrl() {
+		return redirectUrl;
 	}
 }
