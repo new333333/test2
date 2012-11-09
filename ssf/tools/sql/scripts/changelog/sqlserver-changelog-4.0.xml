@@ -400,37 +400,28 @@ update SS_EmailAddresses set address=LOWER(address);
     </changeSet>
     
     <changeSet author="jong" context="schema" failOnError="true" id="49">
-        <comment>OpenID identity string</comment>
+        <comment>State of the external user self-provisioning upon invitation</comment>
         <addColumn tableName="SS_Principals">
-            <column name="openidIdentity" type="VARCHAR(128)">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
-    </changeSet>
-
-    <changeSet author="jong" context="schema" failOnError="true" id="50">
-        <createIndex indexName="openidIdentity_Principal" schemaName="dbo" tableName="SS_Principals" unique="true">
-            <column name="zoneId"/>
-            <column name="openidIdentity"/>
-        </createIndex>
-    </changeSet>
-
-    <changeSet author="jong" context="schema" failOnError="true" id="51">
-        <comment>State of the account representing external user</comment>
-        <addColumn tableName="SS_Principals">
-            <column name="extAccountState" type="SMALLINT">
+            <column name="extProvState" type="SMALLINT">
                 <constraints nullable="true" />
             </column>
         </addColumn>
     </changeSet>
     
-    <changeSet author="peter" context="schema" failOnError="true" id="52">
+    <changeSet author="peter" context="schema" failOnError="true" id="50">
         <comment>Is guest read only</comment>
         <addColumn tableName="SS_ZoneConfig">
             <column name="anonymousReadOnly" type="TINYINT">
                 <constraints nullable="true" />
             </column>
         </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="data" failOnError="true" id="51">
+        <comment>Delete all OpenID providers other than google and yahoo</comment>
+        <sql>
+delete from SS_OpenIDProviders where name != 'google' and name != 'yahoo';
+        </sql>
     </changeSet>
 
 </databaseChangeLog>

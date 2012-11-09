@@ -670,7 +670,7 @@ public interface ObjectKeys {
     public static final String FIELD_USER_WS_SEARCHTITLE="wsSearchTitle";
     public static final String FIELD_USER_WS_TITLE="wsTitle";
     public static final String FIELD_USER_PRINCIPAL_IDENTITY_INFO="identityInfo";
-    public static final String FIELD_USER_EXT_ACCOUNT_STATE="extAccountState";
+    public static final String FIELD_USER_EXT_ACCOUNT_STATE="extProvState";
     public static final String FIELD_PRINCIPAL_FOREIGNNAME="foreignName";
     public static final String FIELD_PRINCIPAL_LDAPGUID="ldapGuid";
     public static final String FIELD_PRINCIPAL_OBJECTSID = "objectSid";
