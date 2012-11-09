@@ -57,16 +57,18 @@ public class ExternalUserUtil {
 	public static final String OPENID_PROVIDER_NAME_AOL = "aol";
 	public static final String OPENID_PROVIDER_NAME_MYOPENID = "myopenid";
 	
+	private static final String DELIM = ".";
+	
 	public static String encodeUserToken(User user) {
-		return Long.toHexString(user.getId().longValue()) + "_" + user.getPrivateDigest();
+		return Long.toHexString(user.getId().longValue()) + DELIM + user.getPrivateDigest();
 	}
 	
 	public static Long getUserId(String encodedUserToken) {
-		return Long.parseLong(encodedUserToken.substring(0, encodedUserToken.indexOf('_')), 16);
+		return Long.parseLong(encodedUserToken.substring(0, encodedUserToken.indexOf(DELIM)), 16);
 	}
 	
 	public static String getPrivateDigest(String encodedUserToken) {
-		return encodedUserToken.substring(encodedUserToken.indexOf('_')+1);
+		return encodedUserToken.substring(encodedUserToken.indexOf(DELIM)+1);
 	}
 	
 	public static Map<String, String> getQueryParams(String url) {  
