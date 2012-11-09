@@ -215,9 +215,6 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 		m_addCommentPanel.getRowFormatter().setVerticalAlign(0, HasVerticalAlignment.ALIGN_TOP);
 		VibeFlowPanel hintPanel = new VibeFlowPanel();
 		hintPanel.addStyleName(m_baseStyle + "-addCommentHintPanel");
-		InlineLabel hint = new InlineLabel(m_messages.manageCommentsCompositeWhoHasAccess());
-		hint.addStyleName(m_baseStyle + "-addCommentHint");
-		hintPanel.add(hint);
 		Button sendButton = new Button(m_messages.manageCommentsCompositeSend());
 		String sendStyle = (m_baseStyle + "-sendButton ");
 		if (m_isIE)
@@ -235,6 +232,9 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 		});
 		sendButton.addKeyDownHandler(this);
 		hintPanel.add(sendButton);
+		InlineLabel hint = new InlineLabel(m_messages.manageCommentsCompositeWhoHasAccess());
+		hint.addStyleName(m_baseStyle + "-addCommentHint");
+		hintPanel.add(hint);
 		m_addCommentPanel.setWidget(1, 1, hintPanel);
 		m_fp.add(m_addCommentPanel);
 	}

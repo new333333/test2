@@ -382,7 +382,7 @@
 /* Start:  Manage comments composite styles. */
 	.vibe-manageCommentsComposite                        {background-color: white !important;}
 	.vibe-manageCommentsComposite-addCommentAvatar       {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px; border-radius: 2px;}
-	.vibe-manageCommentsComposite-addCommentHint         {color: #4D6D8B; font-size: 1em;}
+	.vibe-manageCommentsComposite-addCommentHint         {color: #949494; font-size: .8em; display: inline-block; width: 280px;}
 	.vibe-manageCommentsComposite-addCommentHintPanel    {padding-top: 5px; padding-right: 5px;}
 	.vibe-manageCommentsComposite-addCommentPanel        {color: #353838; background-color: #F6F6F6; border-top-color: #cccccc; border-top-style: solid; border-top-width: 1px; padding-top: 15px; padding-bottom: 15px; box-shadow: 0px 2px 3px #e0e0e0 inset;}
 	.vibe-manageCommentsComposite-addCommentPanel-nonIE  {width: 100%; }

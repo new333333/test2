@@ -2497,8 +2497,8 @@ body, table td, select
 
 .mastheadFilrActionsPanel
 {
-	bottom: 5px;
-	left: 160px;
+	bottom: 0px;
+	left: 180px;
 	position: absolute;
 }
 
