@@ -335,7 +335,7 @@
 		border: 0px;
 	}
 	.vibe-mainMenuSearch_InputBlur  {color: #e0e0e0;}
-	.vibe-mainMenuSearch_InputFocus {color: #000000 !important;}
+	.vibe-mainMenuSearch_InputFocus {color: #ffffff !important;}
 	.vibe-mainMenuSearchOptions_Button
 	{
 		border: 0px !important;
@@ -362,7 +362,7 @@
 		white-space: nowrap;
 		
 		background-color: #949494;
-		border: 1px solid #c4c4c4;
+		border: 1px solid #b8b8b8;
 		-moz-border-radius: 15px;
 		border-radius: 15px;
 		-webkit-border-radius: 15px;
