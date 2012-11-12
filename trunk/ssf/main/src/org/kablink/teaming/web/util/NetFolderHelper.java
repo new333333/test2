@@ -282,7 +282,20 @@ public class NetFolderHelper
 		Binder binder = null;
 		Long templateId = null;
 		List<TemplateBinder> listOfTemplateBinders;
+		String templateInternalId;
 		
+		// Are we going to create a "home directory" net folder?
+		if ( isHomeDir )
+		{
+			// Yes
+			templateInternalId = ObjectKeys.DEFAULT_FOLDER_FILR_HOME_FOLDER_CONFIG;
+		}
+		else
+		{
+			// No
+			templateInternalId = ObjectKeys.DEFAULT_FOLDER_FILR_ROOT_CONFIG ;
+		}
+
 		// Find the template binder for mirrored folders.
 		listOfTemplateBinders = templateModule.getTemplates( Boolean.TRUE );
 		if ( listOfTemplateBinders != null )
@@ -292,7 +305,7 @@ public class NetFolderHelper
 				String internalId;
 				
 				internalId = nextTemplateBinder.getInternalId();
-				if ( internalId != null && internalId.equalsIgnoreCase( ObjectKeys.DEFAULT_FOLDER_FILR_ROOT_CONFIG ) )
+				if ( internalId != null && internalId.equalsIgnoreCase( templateInternalId) )
 				{
 					templateId = nextTemplateBinder.getId();
 					break;
