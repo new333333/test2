@@ -23,8 +23,8 @@ import com.google.gwt.user.client.ui.Panel;
  * UI for setting up Lucene
  * 
  */
-public class LucenePage extends ConfigPageDlgBox implements ClickHandler,
-		ChangeHandler {
+public class LucenePage extends ConfigPageDlgBox implements ClickHandler, ChangeHandler
+{
 	private VibeTextBox hostAddrTextBox;
 	private GwValueSpinner rmiPortSpinner;
 	private GwValueSpinner maxBoolsSpinner;
@@ -37,7 +37,8 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler,
 	private static final String HIGH_AVAILABILITY = "ha";
 
 	@Override
-	public Panel createContent(Object propertiesObj) {
+	public Panel createContent(Object propertiesObj)
+	{
 		FlowPanel fPanel = new FlowPanel();
 		fPanel.addStyleName("configPage");
 
@@ -60,12 +61,10 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler,
 			hostTable.setWidget(row, 0, keyLabel);
 			hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			maxBoolsSpinner = new GwValueSpinner(10000, 10000, 12000,
-					RBUNDLE.default10000());
+			maxBoolsSpinner = new GwValueSpinner(10000, 10000, 12000, RBUNDLE.default10000());
 			maxBoolsSpinner.getValSpinnerLabel().addStyleName("infoLabel");
 			hostTable.setWidget(row, 1, maxBoolsSpinner);
-			hostTable.getFlexCellFormatter()
-					.addStyleName(row, 1, "table-value");
+			hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
 		{
@@ -75,19 +74,16 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler,
 			hostTable.setWidget(row, 0, keyLabel);
 			hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			mergeFactorSpinner = new GwValueSpinner(10, 10, 50,
-					RBUNDLE.default10());
+			mergeFactorSpinner = new GwValueSpinner(10, 10, 50, RBUNDLE.default10());
 			mergeFactorSpinner.getValSpinnerLabel().addStyleName("infoLabel");
 			hostTable.setWidget(row, 1, mergeFactorSpinner);
-			hostTable.getFlexCellFormatter()
-					.addStyleName(row, 1, "table-value");
+			hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
 		{
 			row++;
 			// Configuration type
-			InlineLabel keyLabel = new InlineLabel(
-					RBUNDLE.configurationTypeColon());
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.configurationTypeColon());
 			hostTable.setWidget(row, 0, keyLabel);
 			hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
@@ -95,11 +91,9 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler,
 			configTypeListBox.addChangeHandler(this);
 			configTypeListBox.addItem(RBUNDLE.local(), LOCAL);
 			configTypeListBox.addItem(RBUNDLE.server(), SERVER);
-			configTypeListBox.addItem(RBUNDLE.highAvailablity(),
-					HIGH_AVAILABILITY);
+			configTypeListBox.addItem(RBUNDLE.highAvailablity(), HIGH_AVAILABILITY);
 			hostTable.setWidget(row, 1, configTypeListBox);
-			hostTable.getFlexCellFormatter()
-					.addStyleName(row, 1, "table-value");
+			hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
 		{
@@ -110,11 +104,9 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler,
 			hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 			hostAddrTextBox = new VibeTextBox();
-			hostAddrTextBox.setValidator(new ValueRequiredValidator(
-					hostAddrTextBox));
+			hostAddrTextBox.setValidator(new ValueRequiredValidator(hostAddrTextBox));
 			hostTable.setWidget(row, 1, hostAddrTextBox);
-			hostTable.getFlexCellFormatter()
-					.addStyleName(row, 1, "table-value");
+			hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
 		{
@@ -124,12 +116,10 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler,
 			hostTable.setWidget(row, 0, keyLabel);
 			hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			rmiPortSpinner = new GwValueSpinner(1199, 1024, 9999,
-					RBUNDLE.defaultIs1199());
+			rmiPortSpinner = new GwValueSpinner(1199, 1024, 9999, RBUNDLE.defaultIs1199());
 			rmiPortSpinner.addStyleName("luceneConfigWizRmiSpinnerLabel");
 			hostTable.setWidget(row, 1, rmiPortSpinner);
-			hostTable.getFlexCellFormatter()
-					.addStyleName(row, 1, "table-value");
+			hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
 		{
@@ -139,35 +129,37 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler,
 			haPanel = new LuceneHighAvailabilityPanel();
 			haPanel.setVisible(false);
 			hostTable.setWidget(row, 1, haPanel);
-			hostTable.getFlexCellFormatter()
-					.addStyleName(row, 1, "table-value");
+			hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
 		return fPanel;
 	}
 
-	private boolean isValid() {
+	private boolean isValid()
+	{
 		// Make sure the host name is not empty
-		if (!hostAddrTextBox.isValid()) {
+		if (!hostAddrTextBox.isValid())
+		{
 			setErrorMessage(RBUNDLE.allFieldsRequired());
 			return false;
 		}
 
 		if (configTypeListBox.getSelectedIndex() == 1)
 		{
-			//Remote lucene server cannot point to the local box
+			// Remote lucene server cannot point to the local box
 			if (AppUtil.isLocalIpAddr(hostAddrTextBox.getText()))
 			{
 				setErrorMessage(RBUNDLE.remoteLuceneCannotPointToLocalBox());
 				return false;
 			}
 		}
-		
+
 		// If they have selected high availability, let's make sure they have
 		// atleast one search node
-		if (configTypeListBox.getSelectedIndex() == 2) {
-			if (haPanel.getAvailableNodes() == null
-					|| haPanel.getAvailableNodes().size() == 0) {
+		if (configTypeListBox.getSelectedIndex() == 2)
+		{
+			if (haPanel.getAvailableNodes() == null || haPanel.getAvailableNodes().size() == 0)
+			{
 				setErrorMessage(RBUNDLE.noAvailabilityNodesExists());
 				return false;
 			}
@@ -177,7 +169,8 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler,
 	}
 
 	@Override
-	public Object getDataFromDlg() {
+	public Object getDataFromDlg()
+	{
 
 		if (!isValid())
 			return null;
@@ -197,38 +190,45 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler,
 		lucene.setIndexHostName(hostAddrTextBox.getText());
 		lucene.setRmiPort(rmiPortSpinner.getValueAsInt());
 
-		if (configTypeListBox.getSelectedIndex() == 2) {
+		if (configTypeListBox.getSelectedIndex() == 2)
+		{
 			// Save high availability information
 			lucene.setSearchNodesList(haPanel.getAvailableNodes());
 		}
-		
-		GWT.log(lucene.toString());
+
 		return config;
 	}
 
 	@Override
-	public FocusWidget getFocusWidget() {
+	public FocusWidget getFocusWidget()
+	{
 		return null;
 	}
 
 	@Override
-	public void initUIWithData() {
+	public void initUIWithData()
+	{
 		Lucene lucene = config.getLucene();
 
-		if (lucene != null) {
+		if (lucene != null)
+		{
 			maxBoolsSpinner.setValue(lucene.getMaxBooleans());
 			mergeFactorSpinner.setValue(lucene.getMergeFactor());
-			
-			if (lucene.getLocation().equals("::luceneMode_Local")
-					|| lucene.getLocation().equals(LOCAL)) {
+
+			if (lucene.getLocation().equals("::luceneMode_Local") || lucene.getLocation().equals(LOCAL))
+			{
 				configTypeListBox.setSelectedIndex(0);
 				showUIForLocalMode();
-			} else if (lucene.getLocation().equals(SERVER)) {
+			}
+			else if (lucene.getLocation().equals(SERVER))
+			{
 				configTypeListBox.setSelectedIndex(1);
 				hostAddrTextBox.setText(lucene.getIndexHostName());
 				rmiPortSpinner.setValue(lucene.getRmiPort());
 				showUIForServerMode();
-			} else {
+			}
+			else
+			{
 				configTypeListBox.setSelectedIndex(2);
 				showUIForHighAvailabilityMode();
 			}
@@ -236,23 +236,32 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler,
 	}
 
 	@Override
-	public void onChange(ChangeEvent event) {
-		if (event.getSource() == configTypeListBox) {
+	public void onChange(ChangeEvent event)
+	{
+		if (event.getSource() == configTypeListBox)
+		{
 			int index = configTypeListBox.getSelectedIndex();
 
 			if (index == 0) // Local
 			{
 				showUIForLocalMode();
-			} else if (index == 1) // Server
+			}
+			else if (index == 1) // Server
 			{
 				showUIForServerMode();
-			} else {
+			}
+			else
+			{
 				showUIForHighAvailabilityMode();
 			}
 		}
 	}
 
-	private void showUIForLocalMode() {
+	/**
+	 * Point to local host and the port to 1199
+	 */
+	private void showUIForLocalMode()
+	{
 		hostAddrTextBox.setText("localhost");
 		hostAddrTextBox.setEnabled(false);
 
@@ -262,7 +271,11 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler,
 		haPanel.setVisible(false);
 	}
 
-	private void showUIForServerMode() {
+	/**
+	 * Allow user to edit the host and rmi port
+	 */
+	private void showUIForServerMode()
+	{
 		hostAddrTextBox.setText(config.getLucene().getIndexHostName());
 		rmiPortSpinner.setValue(config.getLucene().getRmiPort());
 
@@ -272,7 +285,11 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler,
 		haPanel.setVisible(false);
 	}
 
-	private void showUIForHighAvailabilityMode() {
+	/**
+	 * Show high availability nodes creation/view
+	 */
+	private void showUIForHighAvailabilityMode()
+	{
 		hostAddrTextBox.setText(config.getLucene().getIndexHostName());
 		rmiPortSpinner.setValue(config.getLucene().getRmiPort());
 

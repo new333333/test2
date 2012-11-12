@@ -1396,22 +1396,26 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		if (ssoElement == null)
 			return;
 
+		Element iChainElement = getElement(ssoElement, "iChain");
 		{
-			Element iChainElement = getElement(ssoElement, "iChain");
 			if (iChainElement != null)
 			{
 				iChainElement.setAttribute("enable", String.valueOf(sso.isiChainEnabled()));
 			}
 
+			Element proxyElement = getElement(iChainElement, "Proxy");
+			if (proxyElement != null)
+			{
+				proxyElement.setAttribute("ipaddr", sso.getiChainProxyAddr());
+			}
+			
 			Element logoffUrlElement = getElement(iChainElement, "Logoff");
 			if (logoffUrlElement != null)
 			{
 				logoffUrlElement.setAttribute("url", sso.getiChainLogoffUrl());
 			}
-		}
-
-		{
-			Element webDavProxyElement = getElement(ssoElement, "iChain");
+			
+			Element webDavProxyElement = getElement(iChainElement, "WebDAVProxy");
 			if (webDavProxyElement != null)
 			{
 				webDavProxyElement.setAttribute("enable", String.valueOf(sso.isiChainWebDAVProxyEnabled()));

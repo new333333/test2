@@ -42,7 +42,7 @@ public class ExportConfigurationPage extends ConfigPageDlgBox implements ClickHa
 		exportLabel.addStyleName("configPageTitleDescLabel");
 		exportContent.add(exportLabel);
 
-		exportButton = new Button("Export");
+		exportButton = new Button(RBUNDLE.export());
 		exportButton.addClickHandler(this);
 		exportButton.addStyleName("exportButton");
 		exportContent.add(exportButton);

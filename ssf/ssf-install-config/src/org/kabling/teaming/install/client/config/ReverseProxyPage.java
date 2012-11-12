@@ -169,7 +169,7 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			accessGatewayAddrTextBox.setText(sso.getiChainProxyAddr());
 			webDavValidator.setRequired(useAccessGatewayWebDavCheckBox.getValue());
 			
-			logoutUrlTextBox.setText(sso.getWinAuthLogoffUrl());
+			logoutUrlTextBox.setText(sso.getiChainLogoffUrl());
 
 			useAccessGatewayWebDavCheckBox.setValue(sso.isiChainWebDAVProxyEnabled());
 			webDavGatewayAddrTextBox.setText(sso.getiChainWebDAVProxyHost());

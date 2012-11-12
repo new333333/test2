@@ -29,7 +29,7 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 
-public class LuceneHighAvailabilityPanel extends Composite implements Handler,ClickHandler,EditSuccessfulHandler,EditCanceledHandler
+public class LuceneHighAvailabilityPanel extends Composite implements Handler, ClickHandler, EditSuccessfulHandler, EditCanceledHandler
 {
 	private MultiSelectionModel<HASearchNode> selectionModel;
 	private CellTable<HASearchNode> table;
@@ -38,35 +38,40 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 	private Button newButton;
 	private ListDataProvider<HASearchNode> dataProvider;
 	protected AppResource RBUNDLE = AppUtil.getAppResource();
-	private InstallerConfig config;
+
+	// newCreation flag helps to keep track of whether we are editing an existing node
+	// or creating a new one as we are using one dialog for creation and editing.
+	// When editSuccessful get's called, we can use this flag to determine and update the
+	// list provider accordingly
 	private boolean newCreation;
+
 	public LuceneHighAvailabilityPanel()
 	{
 		content = new FlowPanel();
 		initWidget(content);
-		
+
 		FlowPanel actionsPanel = new FlowPanel();
 		content.add(actionsPanel);
-		
+
+		// Add buttons to add/remove search nodes
 		newButton = new Button(RBUNDLE.add());
 		newButton.addClickHandler(this);
 		newButton.addStyleName("luceneHAButton");
 		actionsPanel.add(newButton);
-		
+
 		deleteButton = new Button(RBUNDLE.remove());
 		deleteButton.addClickHandler(this);
 		deleteButton.setEnabled(false);
 		deleteButton.addStyleName("luceneHAButton");
 		actionsPanel.add(deleteButton);
 	}
-	
+
 	public void updateUI(InstallerConfig config)
 	{
-		this.config = config;
 		if (table == null)
 		{
-			CellTable.Resources res =  GWT.create(CellTableResource.class);
-			table = new CellTable<HASearchNode>(5,res);
+			CellTable.Resources res = GWT.create(CellTableResource.class);
+			table = new CellTable<HASearchNode>(5, res);
 			table.setWidth("400px");
 			content.add(table);
 		}
@@ -88,9 +93,12 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 			@Override
 			public void update(int index, HASearchNode object, String value)
 			{
+				// editing an existing one
 				newCreation = false;
-				NewLuceneHANodeDialog dlg = new NewLuceneHANodeDialog(object,dataProvider.getList());
-				dlg.createAllDlgContent("New Search Node", LuceneHighAvailabilityPanel.this, null, null);
+
+				// Show the dialog to edit
+				NewLuceneHANodeDialog dlg = new NewLuceneHANodeDialog(object, dataProvider.getList());
+				dlg.createAllDlgContent(RBUNDLE.newSearchNode(), LuceneHighAvailabilityPanel.this, null, null);
 				dlg.show(true);
 			}
 		});
@@ -116,9 +124,9 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 		};
 
 		// Add the columns.
-		table.addColumn(nameColumn, "Name");
-		table.addColumn(hostNameColumn, "Address");
-		table.addColumn(portColumn, "RMI Port");
+		table.addColumn(nameColumn, RBUNDLE.name());
+		table.addColumn(hostNameColumn, RBUNDLE.hostName());
+		table.addColumn(portColumn, RBUNDLE.rmiPort());
 
 		// Create a data provider.
 		dataProvider = new ListDataProvider<HASearchNode>();
@@ -135,39 +143,40 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 		{
 			for (HASearchNode contact : searchNodesList)
 			{
-				//Ignore the dummy elements
+				// Ignore the dummy elements
+				// Default installer.xml contains this nodes..
 				if (contact.getHostName().startsWith("xxx.") || contact.getHostName().startsWith("yyy."))
 				{
 					continue;
 				}
 				list.add(contact);
 			}
+
+			// We don't have anything to display
 			if (list.size() == 0)
 			{
-				table.setEmptyTableWidget(new Label("No high availability nodes found"));
+				table.setEmptyTableWidget(new Label(RBUNDLE.noAvailabilityNodesExists()));
 			}
 		}
+		// We don't have anything to display
 		else
 		{
-			table.setEmptyTableWidget(new Label("No high availability nodes found"));
+			table.setEmptyTableWidget(new Label(RBUNDLE.noAvailabilityNodesExists()));
 		}
 
 		selectionModel = new MultiSelectionModel<HASearchNode>();
 		table.setSelectionModel(selectionModel);
 		selectionModel.addSelectionChangeHandler(this);
 
-//		PagerResource resource = GWT.create(PagerResource.class);
-//		pager = new SimplePager(TextLocation.CENTER, resource, false, getPageSize(), true);
-//		pager.setRangeLimited(true);
-//		pager.getElement().setAttribute("align", "center");
 	}
 
 	@Override
 	public void onSelectionChange(SelectionChangeEvent event)
 	{
+		// Enable/Disable delete button based on selection
 		if (selectionModel instanceof MultiSelectionModel)
 		{
-			
+
 			Set<HASearchNode> selectedSet = ((MultiSelectionModel<HASearchNode>) selectionModel).getSelectedSet();
 			if (selectedSet.size() > 0)
 			{
@@ -179,54 +188,67 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 			}
 		}
 	}
-	
+
 	@Override
 	public void onClick(ClickEvent event)
 	{
 		Set<HASearchNode> selectedSet = ((MultiSelectionModel<HASearchNode>) selectionModel).getSelectedSet();
 		if (event.getSource() == deleteButton)
 		{
-			for (HASearchNode node: selectedSet)
+			// Delete the selected nodes
+			for (HASearchNode node : selectedSet)
 			{
 				dataProvider.getList().remove(node);
 			}
-			table.setRowCount(dataProvider.getList().size());
+			int currentSize = dataProvider.getList().size();
+			table.setRowCount(currentSize);
+			if (currentSize == 0)
+			{
+				table.setEmptyTableWidget(new Label(RBUNDLE.noAvailabilityNodesExists()));
+			}
 		}
 		else if (event.getSource() == newButton)
 		{
+			// Set the newCreation flag
 			newCreation = true;
-			NewLuceneHANodeDialog dlg = new NewLuceneHANodeDialog(null,dataProvider.getList());
-			dlg.createAllDlgContent("New Search Node", this, null, null);
+			NewLuceneHANodeDialog dlg = new NewLuceneHANodeDialog(null, dataProvider.getList());
+			dlg.createAllDlgContent(RBUNDLE.newSearchNode(), this, null, null);
 			dlg.show(true);
 		}
 	}
 
 	@Override
-	public boolean editSuccessful(Object obj) {
-		
+	public boolean editSuccessful(Object obj)
+	{
+
 		if (obj != null)
 		{
+			// If we are creating a new one, add it to the list provider
 			if (newCreation)
 			{
-				HASearchNode node = (HASearchNode)obj;
+				HASearchNode node = (HASearchNode) obj;
 				dataProvider.getList().add(node);
+				// Reset the flag
 				newCreation = false;
 			}
 			table.redraw();
 		}
 		return true;
 	}
-	
+
 	@Override
 	public boolean editCanceled()
 	{
 		newCreation = false;
 		return true;
 	}
-	
-	public List<HASearchNode> getAvailableNodes() {
+
+	public List<HASearchNode> getAvailableNodes()
+	{
 		List<HASearchNode> returnList = new ArrayList<HASearchNode>();
-		
+
+		// Copy the data from list provider as the dataProvider.getList() has few decorating
+		// wrappers GWT serialization does not like
 		if (dataProvider.getList() != null)
 		{
 			for (HASearchNode node : dataProvider.getList())
@@ -237,5 +259,4 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler,Cl
 		return returnList;
 	}
 
-	
 }

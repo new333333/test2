@@ -6,6 +6,8 @@ import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.shared.Clustered;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -18,10 +20,10 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 
 /**
- *  UI for setting up clustering
- *
+ * UI for setting up clustering
+ * 
  */
-public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler
+public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, ChangeHandler
 {
 	private VibeTextBox jvmRouteTextBox;
 	private ListBox cacheProviderListBox;
@@ -31,7 +33,12 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler
 	private CheckBox enableClusteredCheckBox;
 	private ValueRequiredBasedOnBoolValidator jvmRouteValidator;
 	private ValueRequiredBasedOnBoolValidator multicastHostValidator;
-	
+	private FlowPanel contentPanel;
+	private VibeTextBox memcachedAddressesTextBox;
+	private FlexTable ehcacheTable;
+	private FlexTable memcacheTable;
+	private ValueRequiredBasedOnBoolValidator memcachedAddrValidator;
+
 	@Override
 	public Panel createContent(Object propertiesObj)
 	{
@@ -43,7 +50,7 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler
 		titleDescLabel.addStyleName("configPageTitleDescLabel");
 		fPanel.add(titleDescLabel);
 
-		FlowPanel contentPanel = new FlowPanel();
+		contentPanel = new FlowPanel();
 		fPanel.add(contentPanel);
 		contentPanel.addStyleName("clusteringPageContent");
 
@@ -82,61 +89,11 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler
 			cacheProviderListBox = new ListBox(false);
 			cacheProviderListBox.addItem("ehcache");
 			cacheProviderListBox.addItem("memcache");
+			cacheProviderListBox.addChangeHandler(this);
 			table.setWidget(row, 1, cacheProviderListBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
-		{
-			row++;
-			// Description about network interface
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.networkInterfaceForCacheDesc());
-			keyLabel.addStyleName("networkInterfaceForCacheDescLabel");
-			table.setWidget(row, 0, keyLabel);
-			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-			table.getFlexCellFormatter().setColSpan(row, 0, 2);
-		}
-
-		{
-			row++;
-			// Host Name
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.hostNameColon());
-			table.setWidget(row, 0, keyLabel);
-			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-
-			hostNameTextBox = new VibeTextBox();
-			hostNameTextBox.setWatermark(RBUNDLE.optional());
-			table.setWidget(row, 1, hostNameTextBox);
-			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-		}
-
-		{
-			row++;
-			// Mulitcast Group Address (Ip Address)
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.multicastGroupAddrColon());
-			table.setWidget(row, 0, keyLabel);
-			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-
-			multicastGroupAddrTextBox = new VibeTextBox();
-			multicastHostValidator = new ValueRequiredBasedOnBoolValidator(true, multicastGroupAddrTextBox);
-			multicastGroupAddrTextBox.setValidator(multicastHostValidator);
-			table.setWidget(row, 1, multicastGroupAddrTextBox);
-			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-		}
-
-		{
-			row++;
-			// Mulitcast Group Address (Ip Address)
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.multicastGroupPortColon());
-			table.setWidget(row, 0, keyLabel);
-			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-
-			multicastGroupPortSpinner = new GwValueSpinner(4446, 1024, 9999, null);
-			table.setWidget(row, 1, multicastGroupPortSpinner);
-			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-		}
-
-		//TODO: Memcached addresses
-		
 		return fPanel;
 	}
 
@@ -145,24 +102,40 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler
 	{
 		if (enableClusteredCheckBox.getValue())
 		{
-			if (!(hostNameTextBox.isValid() & multicastGroupAddrTextBox.isValid()))
+			if (cacheProviderListBox.getSelectedIndex() <= 0 && !(hostNameTextBox.isValid() & multicastGroupAddrTextBox.isValid()))
 			{
 				setErrorMessage(RBUNDLE.allFieldsRequired());
 				return null;
 			}
+			else if (cacheProviderListBox.getSelectedIndex() == 1)
+			{
+				if (!(memcachedAddressesTextBox.isValid()))
+				{
+					setErrorMessage(RBUNDLE.allFieldsRequired());
+					return null;
+				}
+			}
 		}
+		
+		//Save the settings
 		Clustered clustered = config.getClustered();
-
+		
 		clustered.setEnabled(enableClusteredCheckBox.getValue());
 		clustered.setJvmRoute(jvmRouteTextBox.getText());
-		clustered.setCacheService(hostNameTextBox.getText());
-		clustered.setCacheGroupAddress(multicastGroupAddrTextBox.getText());
-		clustered.setCacheGroupPort(multicastGroupPortSpinner.getValueAsInt());
-
+		
+		//Save type
 		if (cacheProviderListBox.getSelectedIndex() == 0)
+		{
 			clustered.setCachingProvider("ehcache");
+			clustered.setCacheService(hostNameTextBox.getText());
+			clustered.setCacheGroupAddress(multicastGroupAddrTextBox.getText());
+			clustered.setCacheGroupPort(multicastGroupPortSpinner.getValueAsInt());
+		}
 		else
+		{
 			clustered.setCachingProvider("memcache");
+			clustered.setMemCachedAddress(memcachedAddressesTextBox.getText());
+		}
 		
 		return config;
 	}
@@ -181,23 +154,27 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler
 		if (clustered != null)
 		{
 			enableClusteredCheckBox.setValue(clustered.isEnabled());
-			
-			//Set the validator state based on if clustering is enabled
+
+			// Set the validator state based on if clustering is enabled
 			jvmRouteValidator.setRequired(enableClusteredCheckBox.getValue());
-			multicastHostValidator.setRequired(enableClusteredCheckBox.getValue());
-			
-			hostNameTextBox.setText(clustered.getCacheService());
 			jvmRouteTextBox.setText(clustered.getJvmRoute());
 
 			if (clustered.getCachingProvider().equals("ehcache"))
+			{
 				cacheProviderListBox.setSelectedIndex(0);
+				contentPanel.add(createEhCacheUI());
+				hostNameTextBox.setText(clustered.getCacheService());
+				multicastHostValidator.setRequired(enableClusteredCheckBox.getValue());
+				multicastGroupAddrTextBox.setText(clustered.getCacheGroupAddress());
+				multicastGroupPortSpinner.setValue(clustered.getCacheGroupPort());
+			}
 			else
+			{
 				cacheProviderListBox.setSelectedIndex(1);
-
-			multicastGroupAddrTextBox.setText(clustered.getCacheGroupAddress());
-			multicastGroupPortSpinner.setValue(clustered.getCacheGroupPort());
-
-			//TODO: Memcached addresses
+				contentPanel.add(createMemCacheUI());
+				memcachedAddressesTextBox.setText(clustered.getMemCachedAddress());
+				memcachedAddrValidator.setRequired(enableClusteredCheckBox.getValue());
+			}
 		}
 	}
 
@@ -205,13 +182,131 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler
 	public void onClick(ClickEvent event)
 	{
 		super.onClick(event);
-		
+
 		if (event.getSource() == enableClusteredCheckBox)
 		{
 			jvmRouteValidator.setRequired(enableClusteredCheckBox.getValue());
-			multicastHostValidator.setRequired(enableClusteredCheckBox.getValue());
+			if (multicastHostValidator != null)
+				multicastHostValidator.setRequired(enableClusteredCheckBox.getValue());
+			
+			if (memcachedAddrValidator != null)
+				memcachedAddrValidator.setRequired(enableClusteredCheckBox.getValue());
 		}
 	}
-	
+
+	private FlexTable createEhCacheUI()
+	{
+
+		// All the other content goes inside a table
+		ehcacheTable = new FlexTable();
+
+		int row = 0;
+		{
+			row++;
+			// Description about network interface
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.networkInterfaceForCacheDesc());
+			keyLabel.addStyleName("networkInterfaceForCacheDescLabel");
+			ehcacheTable.setWidget(row, 0, keyLabel);
+			ehcacheTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+			ehcacheTable.getFlexCellFormatter().setColSpan(row, 0, 2);
+		}
+
+		{
+			row++;
+			// Host Name
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.hostNameColon());
+			ehcacheTable.setWidget(row, 0, keyLabel);
+			ehcacheTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			hostNameTextBox = new VibeTextBox();
+			hostNameTextBox.setWatermark(RBUNDLE.optional());
+			ehcacheTable.setWidget(row, 1, hostNameTextBox);
+			ehcacheTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
+
+		{
+			row++;
+			// Mulitcast Group Address (Ip Address)
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.multicastGroupAddrColon());
+			ehcacheTable.setWidget(row, 0, keyLabel);
+			ehcacheTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			multicastGroupAddrTextBox = new VibeTextBox();
+			multicastHostValidator = new ValueRequiredBasedOnBoolValidator(true, multicastGroupAddrTextBox);
+			multicastGroupAddrTextBox.setValidator(multicastHostValidator);
+			ehcacheTable.setWidget(row, 1, multicastGroupAddrTextBox);
+			ehcacheTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
+
+		{
+			row++;
+			// Mulitcast Group Address (Ip Address)
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.multicastGroupPortColon());
+			ehcacheTable.setWidget(row, 0, keyLabel);
+			ehcacheTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			multicastGroupPortSpinner = new GwValueSpinner(4446, 1024, 9999, null);
+			ehcacheTable.setWidget(row, 1, multicastGroupPortSpinner);
+			ehcacheTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
+
+		return ehcacheTable;
+	}
+
+	private FlexTable createMemCacheUI()
+	{
+		memcacheTable = new FlexTable();
+
+		int row = 0;
+		{
+			row++;
+			// Description about network interface
+			HTML keyLabel = new HTML(RBUNDLE.memcacheAddressDesc());
+			keyLabel.addStyleName("networkInterfaceForCacheDescLabel");
+			memcacheTable.setWidget(row, 0, keyLabel);
+			memcacheTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+			memcacheTable.getFlexCellFormatter().setColSpan(row, 0, 2);
+		}
+
+		{
+			row++;
+			// Memcached addresses
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.serverAddressColon());
+			memcacheTable.setWidget(row, 0, keyLabel);
+			memcacheTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			memcachedAddressesTextBox = new VibeTextBox();
+			memcachedAddrValidator = new ValueRequiredBasedOnBoolValidator(true, memcachedAddressesTextBox);
+			memcacheTable.setWidget(row, 1, memcachedAddressesTextBox);
+			memcacheTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
+		return memcacheTable;
+	}
+
+	@Override
+	public void onChange(ChangeEvent event)
+	{
+		if (event.getSource() == cacheProviderListBox)
+		{
+			// Ehcache
+			if (cacheProviderListBox.getSelectedIndex() == 0)
+			{
+				if (ehcacheTable == null)
+					contentPanel.add(createEhCacheUI());
+				ehcacheTable.setVisible(true);
+				if (memcacheTable != null)
+					memcacheTable.setVisible(false);
+			}
+			// Memcache
+			else
+			{
+				if (memcacheTable == null)
+					contentPanel.add(createMemCacheUI());
+				memcacheTable.setVisible(true);
+				if (ehcacheTable != null)
+					ehcacheTable.setVisible(false);
+			}
+		}
+	}
 
 }
