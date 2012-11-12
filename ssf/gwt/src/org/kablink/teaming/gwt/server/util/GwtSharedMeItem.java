@@ -89,18 +89,18 @@ public class GwtSharedMeItem {
 		 * 
 		 * Implements the Comparator.compare() method.
 		 * 
-		 * @param entryMap1
-		 * @param entryMap2
+		 * @param em1
+		 * @param em2
 		 * 
 		 * @return
 		 */
 		@Override
-		public int compare(Map entryMap1, Map entryMap2) {
+		public int compare(Map em1, Map em2) {
 			int reply = MiscUtil.COMPARE_EQUAL;
 
 			// Do the entry maps refer to different entity types?
-			String  et1 = getSafeStringFromEntryMap(entryMap1, Constants.ENTITY_FIELD);
-			String  et2 = getSafeStringFromEntryMap(entryMap2, Constants.ENTITY_FIELD);
+			String  et1 = getSafeStringFromEntryMap(em1, Constants.ENTITY_FIELD);
+			String  et2 = getSafeStringFromEntryMap(em2, Constants.ENTITY_FIELD);
 			if (!(et1.equals(et2))) {
 				// Yes!  Simply sort them, that's all we need to apply.
 				if (et1.equals(EntityType.folder.name()))
@@ -109,20 +109,25 @@ public class GwtSharedMeItem {
 			}
 			
 			else {
-				String s1;
-				String s2;
-				
 				// No, the entry maps refer to the same entity types!
 				// What field are we sorting on?
 				if (m_sortBy.equalsIgnoreCase(Constants.SORT_TITLE_FIELD)) {
-					s1    = getSafeStringFromEntryMap(entryMap1, Constants.TITLE_FIELD);
-					s2    = getSafeStringFromEntryMap(entryMap2, Constants.TITLE_FIELD);
+					String s1 = getSafeStringFromEntryMap(em1, Constants.TITLE_FIELD);
+					String s2 = getSafeStringFromEntryMap(em2, Constants.TITLE_FIELD);
 					reply = MiscUtil.safeSColatedCompare(s1, s2);
 				}
 				
+				else if (m_sortBy.equalsIgnoreCase(Constants.TOTALREPLYCOUNT_FIELD)) {
+					int i1 = getSafeIntFromEntryMap(em1, Constants.TOTALREPLYCOUNT_FIELD);
+					int i2 = getSafeIntFromEntryMap(em2, Constants.TOTALREPLYCOUNT_FIELD);
+					if      (i1 == i2) reply = MiscUtil.COMPARE_EQUAL;
+					else if (i1 <  i2) reply = MiscUtil.COMPARE_LESS;
+					else               reply = MiscUtil.COMPARE_GREATER;
+				}
+				
 				else if (MiscUtil.hasItems(m_shareItems)){
-					GwtPerShareInfo psi1 = getPSI(entryMap1);
-					GwtPerShareInfo psi2 = getPSI(entryMap2);
+					GwtPerShareInfo psi1 = getPSI(em1);
+					GwtPerShareInfo psi2 = getPSI(em2);
 					
 					if     ((null == psi1) && (null == psi2)) reply = MiscUtil.COMPARE_EQUAL;
 					else if (null == psi1)                    reply = MiscUtil.COMPARE_LESS;
@@ -161,6 +166,17 @@ public class GwtSharedMeItem {
 			GwtSharedMeItem			si         = GwtSharedMeItem.findShareMeInList(docId, entityType, m_shareItems);
 			List<GwtPerShareInfo>	psiList    = si.getPerShareInfos();
 			return (MiscUtil.hasItems(psiList) ? psiList.get(0) : null);
+		}
+		
+		/*
+		 * Returns an integer from a string in an entry map.
+		 */
+		private static int getSafeIntFromEntryMap(Map map, String key) {
+			String reply = GwtServerHelper.getStringFromEntryMap(map, key);
+			if (null == reply) {
+				reply = "-1";
+			}
+			return Integer.parseInt(reply);
 		}
 		
 		/*
