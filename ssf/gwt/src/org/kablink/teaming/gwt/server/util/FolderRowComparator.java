@@ -56,45 +56,45 @@ import org.kablink.teaming.gwt.client.util.ViewFileInfo;
  * @author drfoster@novell.com
  */
 public class FolderRowComparator implements Comparator<FolderRow> {
-	private boolean 			m_sortAscending;	//
+	private boolean 			m_sortDescending;	//
 	private FolderColumn		m_sortColumn;		// The column being sorted.
 	private List<FolderColumn>	m_folderColumns;	//
-	private String				m_sortKey;			//
+	private String				m_sortBy;			//
 	private StringComparator	m_sc;				//
 	
 	// The default sort key to use of the given one doesn't map to a
 	// defined column.
-	private final static String DEFAULT_SORT_KEY	= "_sortTitle";
+	private final static String DEFAULT_SORT_BY	= "_sortTitle";
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param sortKey
-	 * @param sortAscending
+	 * @param sortBy
+	 * @param sortDescending
 	 * @param folderColumns
 	 */
-	public FolderRowComparator(String sortKey, boolean sortAscending, List<FolderColumn> folderColumns) {
+	public FolderRowComparator(String sortBy, boolean sortDescending, List<FolderColumn> folderColumns) {
 		// Initialize the super class...
 		super();
 
 		// ...store the parameters...
-		m_sortKey       = sortKey;
-		m_sortAscending = sortAscending;
-		m_folderColumns = folderColumns;
+		m_sortBy         = sortBy;
+		m_sortDescending = sortDescending;
+		m_folderColumns  = folderColumns;
 
 		// ...and initialize the other data members.
 		m_sc = new StringComparator(GwtServerHelper.getCurrentUser().getLocale());
 		
 		// Can we find the FolderColumn for the sort key were were
 		// given?
-		m_sortColumn = getColumn(m_sortKey);
-		if ((null == m_sortColumn) && (!(DEFAULT_SORT_KEY.equals(m_sortKey)))) {
+		m_sortColumn = getColumn(m_sortBy);
+		if ((null == m_sortColumn) && (!(DEFAULT_SORT_BY.equals(m_sortBy)))) {
 			// No!  Can we find it for the default sort key?
-			m_sortColumn = getColumn(DEFAULT_SORT_KEY);
+			m_sortColumn = getColumn(DEFAULT_SORT_BY);
 			if (null != m_sortColumn) {
 				// Yes!  Use that as the sort key instead of the key we
 				// were given.
-				m_sortKey = DEFAULT_SORT_KEY;
+				m_sortBy = DEFAULT_SORT_BY;
 			}
 		}
 	}
@@ -124,7 +124,7 @@ public class FolderRowComparator implements Comparator<FolderRow> {
 		
 		// ...and compare those.
 		int reply = m_sc.compare(s1, s2);
-		if (!m_sortAscending) {
+		if (m_sortDescending) {
 			reply = (-reply);
 		}
 		
@@ -137,13 +137,13 @@ public class FolderRowComparator implements Comparator<FolderRow> {
 	 * Searches the global folder columns for the one using the sort
 	 * key in question.
 	 */
-	private FolderColumn getColumn(String sortKey) {
+	private FolderColumn getColumn(String sortBy) {
 		// Do we have a List<FolderColumn> to search?
 		if (null != m_folderColumns) {
 			// Yes!  Scan the FolderColumn's in the list.
 			for (FolderColumn fc:  m_folderColumns) {
 				// Does this column use the sort key in question?
-				if (sortKey.equals(fc.getColumnSortKey())) {
+				if (sortBy.equals(fc.getColumnSortKey())) {
 					// Yes!  Return it.
 					return fc;
 				}
