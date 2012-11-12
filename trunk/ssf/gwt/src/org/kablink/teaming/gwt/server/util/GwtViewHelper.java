@@ -1529,6 +1529,32 @@ public class GwtViewHelper {
 						}
 					}
 						
+					else if (FolderColumn.isColumnSharedBy(cName) || FolderColumn.isColumnSharedWith(cName)) {
+						// A shared by/with column!  Are there any
+						// values for that?
+						List<AssignmentInfo> aiList = fr.getColumnValueAsAssignmentInfos(fc);
+						if (MiscUtil.hasItems(aiList)) {
+							// Yes!  Scan them...
+							boolean found = false;
+							for (AssignmentInfo ai:  aiList) {
+								// ...if this value contains the quick
+								// ...filter...
+								if (valueContainsQuickFilter(ai.getTitle(), quickFilter)) {
+									// ...add it to the reply list.
+									reply.add(fr);
+									found = true;
+									break;
+								}
+							}
+							
+							// Once we move the row to the reply...
+							if (found) {
+								// ...stop scanning the columns.
+								break;
+							}
+						}
+					}
+					
 					else if (FolderColumn.isColumnShareMessage(cName)) {
 						// The share message column!  Are there any
 						// values for that?
