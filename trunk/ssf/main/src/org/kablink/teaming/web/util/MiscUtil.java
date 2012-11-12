@@ -85,6 +85,12 @@ public final class MiscUtil
 {
 	protected static Log m_logger = LogFactory.getLog(MiscUtil.class);
 	
+	// The following are used as the return values for the various
+	// comparators.
+	public final static int COMPARE_EQUAL	=   0;
+	public final static int COMPARE_GREATER	=   1;
+	public final static int COMPARE_LESS	= (-1);
+	
 	public static class IdTriple {
 		public Long		m_binderId;		//
 		public Long		m_entryId;		//

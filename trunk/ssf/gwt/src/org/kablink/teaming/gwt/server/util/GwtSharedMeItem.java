@@ -33,11 +33,18 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
+import org.kablink.teaming.gwt.client.util.CollectionType;
+import org.kablink.teaming.gwt.server.util.GwtPerShareInfo.PerShareInfoComparator;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.util.search.Constants;
 
 /**
  * Used to track items for the 'Shared by/with Me' collection points.
@@ -49,6 +56,125 @@ public class GwtSharedMeItem {
 	private List<GwtPerShareInfo>	m_perShareInfos;	//
 	private String					m_entityFamily;		//
 	
+	/**
+	 * Inner class used to compare two Map's of 'Shared by/with Me'
+	 * entry maps.
+	 */
+	@SuppressWarnings("unchecked")
+	public static class SharedMeEntriesMapComparator implements Comparator<Map> {
+		private boolean 				m_sortDescend;	//
+		private List<GwtSharedMeItem>	m_shareItems;	//
+		private String					m_sortBy;		//
+		
+		/**
+		 * Constructor method.
+		 *
+		 * @param shareItems
+		 * @param sortKey
+		 * @param sortDescend
+		 */
+		public SharedMeEntriesMapComparator(List<GwtSharedMeItem> shareItems, String sortBy, boolean sortDescend) {
+			// Initialize the super class...
+			super();
+
+			// ...and store the parameters.
+			m_shareItems  = shareItems;
+			m_sortBy      = sortBy;
+			m_sortDescend = sortDescend;
+		}
+
+		/**
+		 * Compares two search entry Map's based on the criteria passed
+		 * into the constructor.
+		 * 
+		 * Implements the Comparator.compare() method.
+		 * 
+		 * @param entryMap1
+		 * @param entryMap2
+		 * 
+		 * @return
+		 */
+		@Override
+		public int compare(Map entryMap1, Map entryMap2) {
+			int reply = MiscUtil.COMPARE_EQUAL;
+
+			// Do the entry maps refer to different entity types?
+			String  et1 = getSafeStringFromEntryMap(entryMap1, Constants.ENTITY_FIELD);
+			String  et2 = getSafeStringFromEntryMap(entryMap2, Constants.ENTITY_FIELD);
+			if (!(et1.equals(et2))) {
+				// Yes!  Simply sort them, that's all we need to apply.
+				if (et1.equals(EntityType.folder.name()))
+				     reply = MiscUtil.COMPARE_LESS;
+				else reply = MiscUtil.COMPARE_GREATER;
+			}
+			
+			else {
+				String s1;
+				String s2;
+				
+				// No, the entry maps refer to the same entity types!
+				// What field are we sorting on?
+				if (m_sortBy.equalsIgnoreCase(Constants.SORT_TITLE_FIELD)) {
+					s1    = getSafeStringFromEntryMap(entryMap1, Constants.TITLE_FIELD);
+					s2    = getSafeStringFromEntryMap(entryMap2, Constants.TITLE_FIELD);
+					reply = MiscUtil.safeSColatedCompare(s1, s2);
+				}
+				
+				else if (MiscUtil.hasItems(m_shareItems)){
+					GwtPerShareInfo psi1 = getPSI(entryMap1);
+					GwtPerShareInfo psi2 = getPSI(entryMap2);
+					
+					if     ((null == psi1) && (null == psi2)) reply = MiscUtil.COMPARE_EQUAL;
+					else if (null == psi1)                    reply = MiscUtil.COMPARE_LESS;
+					else if (null == psi2)                    reply = MiscUtil.COMPARE_GREATER;
+					else {
+						if      (m_sortBy.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_ACCESS))      {reply = PerShareInfoComparator.compareByRights(                                  psi1, psi2);}
+						else if (m_sortBy.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_DATE))        {reply = PerShareInfoComparator.compareByShareDates(                              psi1, psi2);}
+						else if (m_sortBy.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_EXPIRATION))  {reply = PerShareInfoComparator.compareByExpirationDates(                         psi1, psi2);}
+						else if (m_sortBy.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_MESSAGE))     {reply = PerShareInfoComparator.compareByMessage(                                 psi1, psi2);}
+						else if (m_sortBy.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_BY))   {reply = PerShareInfoComparator.compareByRecipient(CollectionType.SHARED_WITH_ME, psi1, psi2);}
+						else if (m_sortBy.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_WITH)) {reply = PerShareInfoComparator.compareByRecipient(CollectionType.SHARED_BY_ME,   psi1, psi2);}
+					}
+				}
+				
+				// Sort on any other columns that make sense here.
+			}
+
+			// If we're doing a descending sort...
+			if (m_sortDescend) {
+				// ...invert the reply.
+				reply = (-reply);
+			}
+
+			// If we get here, reply contains the appropriate value for
+			// the compare.  Return it.
+			return reply;
+		}
+		
+		/*
+		 * Returns the GwtPerShareInfo from an entry map.
+		 */
+		private GwtPerShareInfo getPSI(Map entryMap) {
+			String					docIdS     = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
+			Long					docId      = Long.parseLong(docIdS);
+			String					entityType = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD);
+			GwtSharedMeItem			si         = GwtSharedMeItem.findShareMeInList(docId, entityType, m_shareItems);
+			List<GwtPerShareInfo>	psiList    = si.getPerShareInfos();
+			return (MiscUtil.hasItems(psiList) ? psiList.get(0) : null);
+		}
+		
+		/*
+		 * Returns a non-null string from an entry map.
+		 */
+		private static String getSafeStringFromEntryMap(Map map, String key) {
+			String reply = GwtServerHelper.getStringFromEntryMap(map, key);
+			if (null == reply) {
+				reply = "";
+			}
+			return reply;
+		}
+	}
+
 	/**
 	 * Constructor method.
 	 * 
