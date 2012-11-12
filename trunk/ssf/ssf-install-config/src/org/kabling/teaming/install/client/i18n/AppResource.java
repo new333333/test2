@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.client.i18n;
 
 import com.google.gwt.i18n.client.Messages;
+import com.google.gwt.user.cellview.client.Header;
 
 public interface AppResource extends Messages
 {
@@ -242,4 +243,16 @@ public interface AppResource extends Messages
 	String mergeFactorColon();
 
 	String remoteLuceneCannotPointToLocalBox();
+
+	String name();
+
+	String hostName();
+
+	String rmiPort();
+
+	String newSearchNode();
+	String searchNodeUnique();
+
+	String serverAddressColon();
+	String memcacheAddressDesc();
 }

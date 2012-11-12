@@ -33,11 +33,14 @@ public class NewLuceneHANodeDialog extends DlgBox
 	{
 		super(false, true, DlgButtonMode.OkCancel);
 		this.currentNodes = currentNodes;
+		
+		//Save the node, this helps to determine if we are creating or editing existing node
 		this.searchNode = node;
 	}
 
 	public boolean isValid()
 	{
+		//Set up the error label
 		if (errorLabel == null)
 		{
 			errorLabel = new Label();
@@ -45,9 +48,10 @@ public class NewLuceneHANodeDialog extends DlgBox
 			getErrorPanel().add(errorLabel);
 		}
 		
+		//We need to have the name and host name
 		if (!(nameTextBox.isValid() & hostTextBox.isValid()))
 		{
-			errorLabel.setText("Required fields. It cannot be empty");
+			errorLabel.setText(RBUNDLE.requiredField());
 			getErrorPanel().setVisible(true);
 			return false;
 		}
@@ -60,7 +64,7 @@ public class NewLuceneHANodeDialog extends DlgBox
 			{
 				if (node.getName().equals(nameTextBox.getText()))
 				{
-					errorLabel.setText("Search node name has to be unique.");
+					errorLabel.setText(RBUNDLE.searchNodeUnique());
 					getErrorPanel().setVisible(true);
 					return false;
 				}
@@ -146,6 +150,7 @@ public class NewLuceneHANodeDialog extends DlgBox
 		if (!isValid())
 			return null;
 
+		//If the search node is null, create it
 		if (searchNode == null)
 		{
 			searchNode = new HASearchNode();

@@ -207,7 +207,6 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			return null;
 		}
 
-		// TODO: What is required
 		EmailProtocol protocol = protocolListBox.getSelectedIndex() == 0 ? EmailProtocol.SMTP : EmailProtocol.SMTPS;
 		EmailSettings emailSettings = config.getEmailSettings();
 		emailSettings.setTransportProtocol(protocol);
