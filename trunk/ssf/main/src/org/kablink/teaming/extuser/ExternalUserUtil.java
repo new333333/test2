@@ -71,6 +71,8 @@ public class ExternalUserUtil {
 	
 	public static Map<String, String> getQueryParams(String url) {  
 	    Map<String, String> map = new HashMap<String, String>();  
+	    if(url == null)
+	    	return map;
 		int index = url.indexOf('?');
 		if(index < 0)
 			return map;
