@@ -1750,7 +1750,7 @@ public class GwtViewHelper {
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
 			if      (colName.equals("author"))           {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
-			else if (colName.equals("comments"))         {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);        fc.setColumnSortable(!isCollection);                }
+			else if (colName.equals("comments"))         {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
 			else if (colName.equals("date"))             {fc.setColumnSearchKey(Constants.MODIFICATION_DATE_FIELD);                                                          }
 			else if (colName.equals("description"))      {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
 			else if (colName.equals("descriptionHtml"))  {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
