@@ -349,7 +349,7 @@ public class FolderEntryComposite extends ResizeComposite
 	 */
 	private void createCaptionComments(Panel container) {
 		// What's the visibility state for comments on this entry?
-		m_commentsVisible = FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), true);
+		m_commentsVisible = FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), false);
 
 		// Create the outer panel for the comment caption...
 		VibeFlowPanel outerPanel = new VibeFlowPanel();
@@ -481,7 +481,7 @@ public class FolderEntryComposite extends ResizeComposite
 	public void doNavigate(ViewFolderEntryInfo vfei) {
 		m_vfei = vfei;
 		m_caption.setText(m_vfei.getTitle());
-		if (m_commentsVisible != FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), true)) {
+		if (m_commentsVisible != FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), false)) {
 			toggleCommentsVisibility();
 		}
 		refreshFolderEntryViewer();
@@ -660,6 +660,16 @@ public class FolderEntryComposite extends ResizeComposite
 		m_commentsArea = new FolderEntryComments(this, m_fed.getComments(), this); m_contentPanel.add(m_commentsArea);
 		if (!m_commentsVisible) {
 			m_commentsArea.setCommentsVisible(false);
+			Timer timer = new Timer() {
+				@Override
+				public void run() {
+					// We do this again 1/2 second later to ensure it
+					// gets hidden after its fully initialized.  On the
+					// first display, sometimes it doesn't stay hidden.
+					m_commentsArea.setCommentsVisible(false);
+				}
+			};
+			timer.schedule(500);
 		}
 	}
 
@@ -1418,8 +1428,8 @@ public class FolderEntryComposite extends ResizeComposite
 		
 		// ...and store the current state in a cookie.
 		if (m_commentsVisible)
-		     FolderEntryCookies.removeCookieValue(    Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId()       );
-		else FolderEntryCookies.setBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), false);
+		     FolderEntryCookies.setBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), true);
+		else FolderEntryCookies.removeCookieValue(    Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId()      );
 	}
 	
 	/**
