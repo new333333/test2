@@ -11,13 +11,9 @@
   <property name="library">true</property>
   <property name="mirrored">true</property>
   <property name="uniqueTitle">false</property>
-  <property name="inheritFunctionMembership">false</property>
+  <property name="inheritFunctionMembership">true</property>
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
-  <workAreaFunctionMembership>
-    <property name="functionName">__role.viewBinderTitle</property>
-    <property name="members">-1</property>
-  </workAreaFunctionMembership>
   <definition name="_mirroredFileFolder" internalId="402883a41edab1d5011edac394df0032" databaseId="402883a41edab1d5011edac394df0032"/>
   <definition name="_mirroredFileEntry" internalId="402883a41edab1d5011edabc90aa0031" databaseId="402883a41edab1d5011edabc90aa0031"/>
 </template>
