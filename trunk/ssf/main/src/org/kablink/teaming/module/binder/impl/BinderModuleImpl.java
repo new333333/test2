@@ -446,10 +446,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public Binder getBinder(Long binderId, boolean thisLevelOnly) throws NoBinderByTheIdException,
 			AccessControlException {
 		Binder binder = loadBinder(binderId);
-		// If Net Folder or a sub-folder within one, then do not assume that the user necessarily has
-		// READ access to the folder to account for "inferred" LIST permission.
-		if(binder.isAclExternallyControlled())
-			return binder;
 		// Check if the user has "read" access to the binder.
 		if (!(binder instanceof TemplateBinder)) {
 			try {
