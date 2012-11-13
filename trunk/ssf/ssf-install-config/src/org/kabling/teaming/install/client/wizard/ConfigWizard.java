@@ -19,7 +19,7 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
-		
+
 {
 	private IWizardPage<InstallerConfig> currentPage;
 	private FlowPanel wizardContentPanel;
@@ -39,9 +39,10 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 	InitialConfigPage configPage;
 	DatabaseConfigPage dbPage;
 	LuceneConfigPage lucenePage;
-	//StoragePage storagePage;
+	// StoragePage storagePage;
 	ImportConfigPage importPage;
-	
+	PasswordPage pwdPage;
+
 	public ConfigWizard(InstallerConfig config)
 	{
 		super(false, true);
@@ -69,7 +70,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 
 		// Add pages (3 page wizard)
 		// Initial Page
-		configPage = new InitialConfigPage(this,config);
+		configPage = new InitialConfigPage(this, config);
 
 		// Database Page
 		dbPage = new DatabaseConfigPage(this, config);
@@ -77,9 +78,12 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		// Lucene Page
 		lucenePage = new LuceneConfigPage(this, config);
 
-		//Import Page
+		// Import Page
 		importPage = new ImportConfigPage(this);
-		
+
+		// Password Page
+		pwdPage = new PasswordPage(this, config);
+
 		// Show first page
 		currentPage = configPage;
 		showPage(currentPage);
@@ -88,7 +92,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 	private void showPage(IWizardPage<InstallerConfig> pageToShow)
 	{
 		currentPage = pageToShow;
-		
+
 		updateButtons();
 
 		// Clear any errors as we are moving to a new page
@@ -104,7 +108,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 	public void previousPage()
 	{
 		IWizardPage<InstallerConfig> previousPage = currentPage.getPreviousPage();
-		
+
 		if (previousPage != null)
 		{
 			currentPage = previousPage;
@@ -117,9 +121,9 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 	{
 		if (!currentPage.isValid())
 			return;
-		
+
 		currentPage.save();
-		
+
 		IWizardPage<InstallerConfig> nextPage = currentPage.getNextPage();
 
 		if (nextPage != null)
@@ -135,6 +139,8 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		if (!currentPage.isValid())
 			return;
 		
+		currentPage.save();
+
 		showStatusIndicator(AppUtil.getAppResource().pleaseWait());
 		AppUtil.getInstallService().saveConfiguration(config, new SaveConfigCallback());
 	}
@@ -199,12 +205,12 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 	{
 		m_footerPanel = new HorizontalPanel();
 		m_footerPanel.setWidth("100%");
-		
+
 		// Associate this panel with its stylesheet.
 		m_footerPanel.setStyleName("teamingDlgBoxFooter");
 
 		previousButton = new Button(RBUNDLE.previous());
-		//We want the next/previous button to go all the way right
+		// We want the next/previous button to go all the way right
 		previousButton.addClickHandler(this);
 		previousButton.addStyleName("teamingButton");
 		m_footerPanel.add(previousButton);
@@ -336,11 +342,11 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		public void onSuccess(Void coid)
 		{
 			hideStatusIndicator();
-			//Set the flag that we have configured
+			// Set the flag that we have configured
 			AppUtil.getProductInfo().setConfigured(true);
-			
+
 			AppUtil.getEventBus().fireEvent(new ConfigWizardSucessEvent(true));
-			
+
 			ConfigWizard.this.hide(true);
 		}
 	}
@@ -357,10 +363,8 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 			@Override
 			public void setPosition(int offsetWidth, int offsetHeight)
 			{
-				int left = ConfigWizard.this.getAbsoluteLeft() + ConfigWizard.this.getOffsetWidth() / 2 - offsetWidth
-						/ 2;
-				int top = ConfigWizard.this.getAbsoluteTop() + ConfigWizard.this.getOffsetHeight() / 2 - offsetHeight
-						/ 2;
+				int left = ConfigWizard.this.getAbsoluteLeft() + ConfigWizard.this.getOffsetWidth() / 2 - offsetWidth / 2;
+				int top = ConfigWizard.this.getAbsoluteTop() + ConfigWizard.this.getOffsetHeight() / 2 - offsetHeight / 2;
 				loadingWidget.setPopupPosition(left, top);
 			}
 		});
@@ -371,12 +375,12 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		if (loadingWidget != null)
 			loadingWidget.hide();
 	}
-	
+
 	public Button getFinishButton()
 	{
 		return finishButton;
 	}
-	
+
 	public Button getNextButton()
 	{
 		return nextButton;
