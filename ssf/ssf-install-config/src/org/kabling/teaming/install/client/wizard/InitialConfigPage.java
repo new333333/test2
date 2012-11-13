@@ -1,5 +1,7 @@
 package org.kabling.teaming.install.client.wizard;
 
+import org.kabling.teaming.install.shared.Database;
+import org.kabling.teaming.install.shared.DatabaseConfig;
 import org.kabling.teaming.install.shared.InstallerConfig;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -57,7 +59,6 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			useDefaultsRB = new RadioButton("config", "Small Deployment");
 			useDefaultsRB.addStyleName("configSelectRB");
 			useDefaultsRB.addClickHandler(this);
-			useDefaultsRB.setValue(true);
 			radioPanel.add(useDefaultsRB);
 
 			HTML defaultConfigDescLabel = new HTML(
@@ -84,6 +85,8 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 					"Upgrade from an older Filr appliance. <br> Select this option if you have already exported the configuration details from the appliance and would like to use those settings.");
 			upgradeConfigDescLabel.addStyleName("configDescLabel");
 			radioPanel.add(upgradeConfigDescLabel);
+		
+			customRB.setValue(true);
 		}
 
 		return fPanel;
@@ -98,7 +101,13 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	@Override
 	public void onClick(ClickEvent event)
 	{
-		if (event.getSource() == useDefaultsRB || event.getSource() == customRB || event.getSource() == upgradeRB) 
+		if (event.getSource() == useDefaultsRB) 
+		{
+			config.setAdvancedConfiguration(false);
+			wizard.getFinishButton().setEnabled(true);
+			wizard.getNextButton().setEnabled(false);
+		}
+		else if (event.getSource() == customRB || event.getSource() == upgradeRB) 
 		{
 			config.setAdvancedConfiguration(true);
 			wizard.getFinishButton().setEnabled(false);
@@ -109,7 +118,13 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	@Override
 	public void save()
 	{
-
+		//For small deployment, set the default password to be root
+		if (useDefaultsRB.getValue())
+		{
+			Database db = config.getDatabase();
+			DatabaseConfig dbConfig = db.getDatabaseConfig("Installed");
+			dbConfig.setResourcePassword("root");
+		}
 	}
 
 	@Override
@@ -120,7 +135,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	@Override
 	public IWizardPage<InstallerConfig> getNextPage() {
 		if (useDefaultsRB.getValue())
-			return wizard.pwdPage;
+			return null;
 		else if (customRB.getValue())
 			return wizard.dbPage;
 		
