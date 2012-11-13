@@ -387,14 +387,14 @@ update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=1,FROMLOCAL=0,FROMOPENID=0 where ID
     <changeSet author="jong" context="data" failOnError="true" id="47">
         <comment>Store all login names in lower case</comment>
         <sql>
-UPDATE SS_PRINCIPALS SET NAME=LOWER(NAME);        
+update SS_PRINCIPALS set NAME=LOWER(NAME);        
         </sql>
     </changeSet>
     
     <changeSet author="jong" context="data" failOnError="true" id="48">
         <comment>Store all email addresses in lower case</comment>
         <sql>
-UPDATE SS_EMAILADDRESSES SET ADDRESS=LOWER(ADDRESS);        
+update SS_EMAILADDRESSES set ADDRESS=LOWER(ADDRESS);        
         </sql>
     </changeSet>
     
@@ -424,8 +424,29 @@ UPDATE SS_EMAILADDRESSES SET ADDRESS=LOWER(ADDRESS);
     <changeSet author="jong" context="data" failOnError="true" id="52">
         <comment>Delete all OpenID providers other than google and yahoo</comment>
         <sql>
-DELETE FROM SS_OPENIDPROVIDERS WHERE NAME != 'GOOGLE' AND NAME != 'YAHOO';
+delete from SS_OPENIDPROVIDERS where NAME != 'google' and NAME != 'yahoo';
         </sql>
     </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="53">
+        <comment>Regex used to filter on email address</comment>
+        <addColumn tableName="SS_OPENIDPROVIDERS">
+            <column name="EMAILREGEX" type="VARCHAR2(128 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="data" failOnError="true" id="54">
+        <comment>Delete all OpenID providers other than google and yahoo</comment>
+        <sql>
+update SS_OPENIDPROVIDERS set EMAILREGEX='.*gmail.com' where NAME='google';
+update SS_OPENIDPROVIDERS set EMAILREGEX='.*yahoo.com' where NAME='yahoo';
+        </sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="55">
+	    <addNotNullConstraint tableName="SS_OPENIDPROVIDERS" columnName="EMAILREGEX" columnDataType="VARCHAR2(128 CHAR)"/>
+    </changeSet>    
 
 </databaseChangeLog>

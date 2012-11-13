@@ -55,6 +55,8 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.extuser.ExternalUserRespondingToInvitationException;
+import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -141,6 +143,11 @@ public class LoginFilter  implements Filter {
 					}
 				}
 
+				if(req.getQueryString().contains(ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN + "=")) {
+					// Looks like a response from external user to an invitation or confirmation.
+					ExternalUserUtil.handleResponseToInvitation(req, Http.getCompleteURL(req));
+				}
+
 				if(WebHelper.isGuestLoggedIn(req)) {
 					// User is logged in as guest, which simply means that the user
 					// is currently accessing Teaming without logging in as a regular 
@@ -163,7 +170,12 @@ public class LoginFilter  implements Filter {
 					
 				}
 			}
-		} catch(Exception e) {
+		}
+		catch(ExternalUserRespondingToInvitationException e) {
+			// This is NOT an error. Just re-throw it.
+			throw e;
+		}
+		catch(Exception e) {
 			res.sendRedirect(getErrorUrl(req, e.getLocalizedMessage()));
 		}
 	}
@@ -272,15 +284,6 @@ public class LoginFilter  implements Filter {
 					req.setAttribute(WebKeys.REFERER_URL, refererURL);
 				chain.doFilter(req, res);										
 			}
-/*			// Dead code.
-			else if(1 == 0 && (BrowserSniffer.is_wap_xhtml(req) || 
-					BrowserSniffer.is_blackberry(req) || 
-					BrowserSniffer.is_iphone(req))) {
-				// Mobile interaction. 
-				// Guest access not allowed. Redirect the guest to the login page.
-				res.sendRedirect(getMobileLoginURL(req, currentURL));
-			}
-*/
 			else {
 				// The guest is requesting a non-mobile page that isn't the login form.
 				// We need to check whether we should allow this or not.

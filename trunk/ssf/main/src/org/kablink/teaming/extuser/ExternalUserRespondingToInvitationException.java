@@ -30,82 +30,39 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.extuser;
 
-package org.kablink.teaming.domain;
+import org.kablink.teaming.domain.User;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * @author jong
  *
  */
-public class OpenIDProvider extends ZonedObject {
+public class ExternalUserRespondingToInvitationException extends AuthenticationException {
 
-	public OpenIDProvider() {	
-	}
+	private static final long serialVersionUID = 1L;
 	
-	public OpenIDProvider(String name, String title, String url, String regex, String emailRegex) {
-		this.name = name;
-		this.title = title;
-		this.url = url;
-		this.regex = regex; 
-		this.emailRegex = emailRegex;
-	}
-	
-	// Internal database id.
-	private String id;
-	// Provider name (e.g. google). This is all low case and must be unique within a zone.
-	private String name;
-	// Provider title used for display (e.g. Google).
-	private String title;
-	// Provider discovery URL (e.g. https://www.google.com/accounts/o8/id). This is NOT OpenID endpoint.
-	private String url;
-	// Regex used to validate claimed identity or discovery URL.
-	private String regex;
-	// Regex used to filter on email address.
-	private String emailRegex;
-	
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
+	private User user;
+	private String allowedOpenidProviderName;
+	private String invitationLink;
 
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		if(name != null)
-			name = name.toLowerCase();
-		this.name = name;
+	public ExternalUserRespondingToInvitationException(User user, String allowedOpenidProviderName, String invitationLink) {
+		super("External user is responding to invitation");
+		this.user = user;
+		this.allowedOpenidProviderName = allowedOpenidProviderName;
+		this.invitationLink = invitationLink;
 	}
 	
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
+	public User getExternalUser() {
+		return user;
 	}
 	
-	public String getUrl() {
-		return url;
-	}
-	public void setUrl(String url) {
-		this.url = url;
+	public String getInvitationLink() {
+		return invitationLink;
 	}
 	
-	public String getRegex() {
-		return regex;
+	public String getAllowedOpenidProviderName() {
+		return allowedOpenidProviderName;
 	}
-	public void setRegex(String regex) {
-		this.regex = regex;
-	}
-
-	public String getEmailRegex() {
-		return emailRegex;
-	}
-
-	public void setEmailRegex(String emailRegex) {
-		this.emailRegex = emailRegex;
-	}
-
 }

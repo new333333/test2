@@ -424,4 +424,25 @@ delete from SS_OpenIDProviders where name != 'google' and name != 'yahoo';
         </sql>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="52">
+        <comment>Regex used to filter on email address</comment>
+        <addColumn tableName="SS_OpenIDProviders">
+            <column name="emailRegex" type="NVARCHAR(128)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="data" failOnError="true" id="53">
+        <comment>Delete all OpenID providers other than google and yahoo</comment>
+        <sql>
+update SS_OpenIDProviders set emailRegex='.*gmail.com' where name='google';
+update SS_OpenIDProviders set emailRegex='.*yahoo.com' where name='yahoo';
+        </sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="54">
+	    <addNotNullConstraint tableName="SS_OpenIDProviders" columnName="emailRegex" columnDataType="NVARCHAR(128)"/>
+    </changeSet>
+        
 </databaseChangeLog>
