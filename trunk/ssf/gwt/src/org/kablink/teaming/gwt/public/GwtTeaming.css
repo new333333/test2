@@ -4819,18 +4819,23 @@ td.datePickerMonth {
 /* End:  Import profiles dialog styles. */
 
 /* Start:  User share rights dialog styles. */
-	.vibe-userShareRightsDlg-header          {white-space: normal; color: #666;}
-	.vibe-userShareRightsDlg-headerCell      {vertical-align: top; text-align: center;}
-	.vibe-userShareRightsDlg-panel           {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
-	.vibe-userShareRightsDlg-progressBar     {margin-bottom: 5px; margin-top: 10px;}
-	.vibe-userShareRightsDlg-progressLabel   {margin-left: 3px;}
-	.vibe-userShareRightsDlg-progressPanel   {white-space: nowrap; font-size: 1.1em; font-weight: bold;}
-	.vibe-userShareRightsDlg-progressSpinner {}
-	.vibe-userShareRightsDlg-radio           {}
-	.vibe-userShareRightsDlg-radioCell       {text-align: center;}
-	.vibe-userShareRightsDlg-row             {white-space: nowrap; color: #666;}
-	.vibe-userShareRightsDlg-rowCell         {text-align: right;}
-	.vibe-userShareRightsDlg-table           {width: 400px;}
+	.vibe-userShareRightsDlg-header           {white-space: normal; color: #666;}
+	.vibe-userShareRightsDlg-headerCell       {vertical-align: top;}
+	.vibe-userShareRightsDlg-headerCell2      {padding-top: 10px;}
+	.vibe-userShareRightsDlg-headerCellCenter {text-align: center;}
+	.vibe-userShareRightsDlg-headerCellLeft   {text-align: left;}
+	.vibe-userShareRightsDlg-headerCellSpacer {border-bottom-color: #cccccc; border-bottom-style: solid; border-bottom-width: 1px; padding-top: 10px;}
+	.vibe-userShareRightsDlg-panel            {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
+	.vibe-userShareRightsDlg-progressBar      {margin-bottom: 5px; margin-top: 10px;}
+	.vibe-userShareRightsDlg-progressLabel    {margin-left: 3px;}
+	.vibe-userShareRightsDlg-progressPanel    {white-space: nowrap; font-size: 1.1em; font-weight: bold;}
+	.vibe-userShareRightsDlg-progressSpinner  {}
+	.vibe-userShareRightsDlg-radio            {}
+	.vibe-userShareRightsDlg-radioCell        {text-align: center;}
+	.vibe-userShareRightsDlg-row              {color: #666; font-weight: bold;}
+	.vibe-userShareRightsDlg-rowCell          {}
+	.vibe-userShareRightsDlg-rowCellForward   {width: 150px;}
+	.vibe-userShareRightsDlg-table            {}
 /* End:  User share rights dialog styles. */
 
 /* End */

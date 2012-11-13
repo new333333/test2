@@ -431,7 +431,6 @@ public class ManageUsersDlg extends DlgBox
 	private void showUserShareRightsDlgNow(List<Long> selectedUserList) {
 		UserShareRightsDlg.initAndShow(
 			m_userShareRightsDlg,
-			m_manageUsersInfo.getProfilesRootWSInfo(),
 			selectedUserList);
 	}
 
