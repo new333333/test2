@@ -1914,7 +1914,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			// ...generate the encrypted ID for the the targeted
 			// ...external user...
 			User shareRecipient = getProfileDao().loadUser(share.getRecipientId(), zoneId);
-			String encodedExternalUserId = ExternalUserUtil.encodeUserToken(shareRecipient);
+			String encodedExternalUserId = ExternalUserUtil.encodeUserTokenWithNewSeed(shareRecipient);
 			
 			// ...generate and add the HTML variant...
 			StringWriter	writer  = new StringWriter();

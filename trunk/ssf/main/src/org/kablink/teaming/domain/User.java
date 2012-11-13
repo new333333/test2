@@ -134,7 +134,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	// For use by application
 	public User(IdentityInfo identityInfo) {
 		super(identityInfo);
-		setDigestSeed(random.nextLong());
 	}
 	
 	public EntityIdentifier.EntityType getEntityType() {
