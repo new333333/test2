@@ -2624,7 +2624,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SET_USER_SHARING_RIGHTS_INFO:
 		{
 			SetUserSharingRightsInfoCmd susrCmd = ((SetUserSharingRightsInfoCmd) cmd);
-			ErrorListRpcResponseData result = GwtServerHelper.setUserSharingRightsInfo( this, getRequest( ri ), susrCmd.getSharingRightsMap() );
+			ErrorListRpcResponseData result = GwtServerHelper.setUserSharingRightsInfo( this, getRequest( ri ), susrCmd.getUserIds(), susrCmd.getSharingRights() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

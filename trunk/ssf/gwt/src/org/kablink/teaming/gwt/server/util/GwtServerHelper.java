@@ -256,7 +256,6 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
-import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.runwith.RunWithCallback;
 import org.kablink.teaming.security.runwith.RunWithTemplate;
@@ -1697,7 +1696,7 @@ public class GwtServerHelper {
 				}
 				catch (Exception ex)
 				{
-					//!!! What to do.
+					// !!! What to do.
 					membershipIds = new HashSet<Long>();
 				}
 
@@ -7323,11 +7322,12 @@ public class GwtServerHelper {
 			// being requested?
 			if ((null != userIds) && (1 == userIds.size())) {
 				// Yes!  Can we resolve that to a User?
-				boolean allowExternal   = false;
-				boolean allowForwarding = false;
-				boolean allowInternal   = false;
-				boolean allowPublic     = false;
-				List<Principal> pList = ResolveIds.getPrincipals(userIds);
+				boolean			allowExternal   = false;
+				boolean			allowForwarding = false;
+				boolean			allowInternal   = false;
+				boolean			allowPublic     = false;
+				Workspace		ws              = null;
+				List<Principal>	pList           = ResolveIds.getPrincipals(userIds);
 				if (MiscUtil.hasItems(pList)) {
 					Principal p = pList.get(0);
 					if (p instanceof UserPrincipal) {
@@ -7337,7 +7337,7 @@ public class GwtServerHelper {
 						if (null != wsId) {
 							// Yes!  Can we read the roles assigned to
 							// that workspace?
-							Workspace ws = bs.getWorkspaceModule().getWorkspace(wsId);
+							ws = bs.getWorkspaceModule().getWorkspace(wsId);
 							Map model = new HashMap();
 							AccessControlController.setupAccess(bs, ws, model);
 							List functions = ((List) model.get(WebKeys.ACCESS_SORTED_FUNCTIONS));
@@ -7361,10 +7361,13 @@ public class GwtServerHelper {
 					}
 				}
 
-				// Construct a per user sharing rights for this user's
-				// workspace and add it to the reply.
-				PerUserShareRightsInfo psri = new PerUserShareRightsInfo(allowExternal, allowForwarding, allowInternal, allowPublic);
-				reply.addUserRights(userIds.get(0), psri);
+				// If this user has a user workspace...
+				if (null != ws) {
+					// ...construct a per user sharing rights for it
+					// ...and add it to the reply.
+					PerUserShareRightsInfo psri = new PerUserShareRightsInfo(allowExternal, allowForwarding, allowInternal, allowPublic);
+					reply.addUserRights(userIds.get(0), psri);
+				}
 			}
 
 			// If we get here, reply refers to the
@@ -8056,7 +8059,7 @@ public class GwtServerHelper {
 					}
 					catch (Exception ex)
 					{
-						//!!! What to do.
+						// !!! What to do.
 						membershipIds = new HashSet<Long>();
 					}
 					finally
@@ -9285,100 +9288,100 @@ public class GwtServerHelper {
 			expandedBindersList);
 	}
 
-	/*
-	 * Sets or clears the function (i.e., rights) on the given
-	 * WorkArea.
-	 */
-	private static void setFunctionOnWorkArea(AllModulesInjected bs, WorkArea wa, Function f, boolean set) {
-//!		...this needs to be implemented...
-	}
-	
 	/**
 	 * Sets the sharing rights information on user workspaces for a
 	 * collection of users. 
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param sharingRightsMap
+	 * @param userIds
+	 * @param sharingRights
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	@SuppressWarnings("unused")
-	public static ErrorListRpcResponseData setUserSharingRightsInfo(AllModulesInjected bs, HttpServletRequest request, Map<Long, CombinedPerUserShareRightsInfo> sharingRightsMap) throws GwtTeamingException {
+	public static ErrorListRpcResponseData setUserSharingRightsInfo(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, CombinedPerUserShareRightsInfo sharingRights) throws GwtTeamingException {
 		try {
 			// Create the ErrorListRpcResponseData to return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// We're we given any share rights to set?
-			if (MiscUtil.hasItems(sharingRightsMap)) {
-				// Yes!  Access the function we may need to set/clear
-				// on the selected user workspaces.
-				Function allowExternal   = null;
-				Function allowForwarding = null;
-				Function allowInternal   = null;
-				Function allowPublic     = null;
+			if (MiscUtil.hasItems(userIds) && (null != sharingRights)) {
+				// Yes!  Are there any rights actually being set?
+				PerUserShareRightsInfo setFlags = sharingRights.getSetFlags();
+				if (!(setFlags.anyFlagsSet())) {
+					// No!  Bail, there's nothing to do.
+					return reply;
+				}
+				
+				// Get the right values to be set.
+				PerUserShareRightsInfo valueFlags = sharingRights.getValueFlags();
+				
+				// Access the Function's we may need to set/clear
+				// on the selected user workspaces...
+				Long allowExternal   = null;
+				Long allowForwarding = null;
+				Long allowInternal   = null;
+				Long allowPublic     = null;
 				List<Function> fs = bs.getAdminModule().getFunctions();
 				for (Function f:  fs) {
 					String fId = f.getInternalId();
 					if (MiscUtil.hasString(fId)) {
-						if      (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID)) allowExternal   = f;
-						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID))  allowForwarding = f;
-						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID)) allowInternal   = f;
-						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID))   allowPublic     = f;
+						if      (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID)) allowExternal   = f.getId();
+						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID))  allowForwarding = f.getId();
+						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID)) allowInternal   = f.getId();
+						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID))   allowPublic     = f.getId();
 					}
 				}
 
-				// Scan the user IDs we're to set the rights for.
-				WorkspaceModule	wm      = bs.getWorkspaceModule();
-				List<Long>		userIds = new ArrayList<Long>();
-				for (Long userId: sharingRightsMap.keySet()) {
-					// Are there any rights actually being set for
-					// this user?
-					CombinedPerUserShareRightsInfo	rightsInfo = sharingRightsMap.get(userId);
-					PerUserShareRightsInfo			setFlags   = rightsInfo.getSetFlags();
-					if (!(setFlags.anyFlagsSet())) {
-						// No!  Continue with the next one.
-						continue;
-					}
-					
-					// Get the rights to be set.
-					PerUserShareRightsInfo	valueFlags = rightsInfo.getValueFlags();
-					User					user       = null;
-
-					try {
-						// Can we access this User?
-						userIds.clear();
-						userIds.add(userId);
-						List<Principal> pList = ResolveIds.getPrincipals(userIds);
-						if (MiscUtil.hasItems(pList)) {
-							Principal p = pList.get(0);
+				// ...and access the modules we'll need to set them.
+				WorkspaceModule	wm  = bs.getWorkspaceModule();
+				AdminModule		am  = bs.getAdminModule();
+				
+				// Can we resolve the user ID's of the users we're to
+				// set the rights for?
+				List<Principal> pList = ResolveIds.getPrincipals(userIds);
+				if (MiscUtil.hasItems(pList)) {
+					// Yes!  Scan them.
+					for (Principal p: pList) {
+						User user = null;
+						try {
+							// Can we access this Principal as a User?
 							if (p instanceof UserPrincipal) {
 								// Yes!  Does this user have a
 								// workspace ID?
 								user = ((User) p);
 								Long wsId = user.getWorkspaceId();
-								if (null != wsId) {
-									// Yes!  Set/clear the various
-									// sharing rights on it. 
+								if (null == wsId) {
+									// No!  Add a warning that this
+									// user's sharing rights could not
+									// be set.
+									reply.addWarning(
+										NLT.get("setUserSharingRightsError.NoWorkspace",
+										new String[]{Utils.getUserTitle(user)}));
+								}
+								else {
+									// Yes, this user has a workspace!
+									// Set/clear the various sharing
+									// rights on it. 
 									Workspace ws = wm.getWorkspace(wsId);
-									if (setFlags.isAllowExternal())   setFunctionOnWorkArea(bs, ws, allowExternal,   valueFlags.isAllowExternal()  );
-									if (setFlags.isAllowForwarding()) setFunctionOnWorkArea(bs, ws, allowForwarding, valueFlags.isAllowForwarding());
-									if (setFlags.isAllowExternal())   setFunctionOnWorkArea(bs, ws, allowExternal,   valueFlags.isAllowExternal()  );
-									if (setFlags.isAllowPublic())     setFunctionOnWorkArea(bs, ws, allowPublic,     valueFlags.isAllowPublic()    );
+									if (setFlags.isAllowExternal())   am.updateWorkAreaFunctionMembership(ws, allowExternal,   valueFlags.isAllowExternal(),   ObjectKeys.OWNER_USER_ID);
+									if (setFlags.isAllowForwarding()) am.updateWorkAreaFunctionMembership(ws, allowForwarding, valueFlags.isAllowForwarding(), ObjectKeys.OWNER_USER_ID);
+									if (setFlags.isAllowInternal())   am.updateWorkAreaFunctionMembership(ws, allowInternal,   valueFlags.isAllowInternal(),   ObjectKeys.OWNER_USER_ID);
+									if (setFlags.isAllowPublic())     am.updateWorkAreaFunctionMembership(ws, allowPublic,     valueFlags.isAllowPublic(),     ObjectKeys.OWNER_USER_ID);
 								}
 							}
 						}
-					}
-					
-					catch (Exception e) {
-						// Tracking any that we couldn't set.
-						String userTitle = ((null == user) ? NLT.get("setUserSharingRightsError.NoUser") : Utils.getUserTitle(user));
-						String messageKey;
-						if (e instanceof AccessControlException) messageKey = "setUserSharingRightsError.AccssControlException";
-						else                                     messageKey = "setUserSharingRightsError.OtherException";
-						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+						
+						catch (Exception e) {
+							// Track everything we couldn't set.
+							String userTitle = ((null == user) ? NLT.get("setUserSharingRightsError.NoUser") : Utils.getUserTitle(user));
+							String messageKey;
+							if (e instanceof AccessControlException) messageKey = "setUserSharingRightsError.AccssControlException";
+							else                                     messageKey = "setUserSharingRightsError.OtherException";
+							reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+						}
 					}
 				}
 			}

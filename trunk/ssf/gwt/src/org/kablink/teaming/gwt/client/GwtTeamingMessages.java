@@ -521,6 +521,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_UpdateCalendarEventTask();
 	String rpcFailure_UpdateFavorites();
 	String rpcFailure_UploadFileBlob();
+	String rpcFailure_SetUserSharingRightsInfo();
 	String rpcFailure_ValidateEmailAddress();
 	String rpcFailure_ValidateUploads();
 
@@ -2146,10 +2147,13 @@ public interface GwtTeamingMessages extends Messages
 	String importProfilesDlgViewSample();
 	
 	// Strings used by the 'User Share Rights' dialog.
-	String userShareRightsDlgHeader();
+	String userShareRightsDlgErrorNoWorkspace();
+	String userShareRightsDlgErrorSetFailures();
+	String userShareRightsDlgHeader(int count);
 	String userShareRightsDlgLabel_Clear();
 	String userShareRightsDlgLabel_Set();
 	String userShareRightsDlgLabel_Unchanged();
+	String userShareRightsDlgProgress(int done, int total);
 	String userShareRightsDlgRight_AllowExternal();
 	String userShareRightsDlgRight_AllowForwarding();
 	String userShareRightsDlgRight_AllowInternal();
