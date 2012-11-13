@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.client;
 
 import org.kabling.teaming.install.client.config.ClusteringPage;
+import org.kabling.teaming.install.client.config.DatabasePage;
 import org.kabling.teaming.install.client.config.ExportConfigurationPage;
 import org.kabling.teaming.install.client.config.InboundEmailPage;
 import org.kabling.teaming.install.client.config.JavaJDKPage;
@@ -175,6 +176,11 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 			dlg.createAllDlgContent(AppUtil.getAppResource().clustering(), dlg, null, null);
 			break;
 
+		case DATABASE:
+			dlg = new DatabasePage();
+			dlg.createAllDlgContent(AppUtil.getAppResource().database(), dlg, null, null);
+			break;
+			
 		case NETWORK:
 			dlg = new NetworkInformationPage();
 			dlg.createAllDlgContent(AppUtil.getAppResource().network(), dlg, null, null);

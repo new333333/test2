@@ -85,7 +85,6 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			upgradeConfigDescLabel.addStyleName("configDescLabel");
 			radioPanel.add(upgradeConfigDescLabel);
 		}
-		wizard.getNextButton().setEnabled(!useDefaultsRB.getValue());
 
 		return fPanel;
 	}
@@ -93,22 +92,13 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	@Override
 	public boolean canFinish()
 	{
-		if (useDefaultsRB == null || useDefaultsRB.getValue())
-			return true;
-
 		return false;
 	}
 
 	@Override
 	public void onClick(ClickEvent event)
 	{
-		if (event.getSource() == useDefaultsRB) 
-		{
-			config.setAdvancedConfiguration(false);
-			wizard.getFinishButton().setEnabled(true);
-			wizard.getNextButton().setEnabled(false);
-		}
-		else if (event.getSource() == customRB || event.getSource() == upgradeRB) 
+		if (event.getSource() == useDefaultsRB || event.getSource() == customRB || event.getSource() == upgradeRB) 
 		{
 			config.setAdvancedConfiguration(true);
 			wizard.getFinishButton().setEnabled(false);
@@ -130,7 +120,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	@Override
 	public IWizardPage<InstallerConfig> getNextPage() {
 		if (useDefaultsRB.getValue())
-			return null;
+			return wizard.pwdPage;
 		else if (customRB.getValue())
 			return wizard.dbPage;
 		
