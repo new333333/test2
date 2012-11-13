@@ -45,7 +45,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcRespons
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUserSharingRightsInfoCmd.CombinedPerUserShareRightsInfo;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.ProgressDlg;
@@ -73,8 +72,6 @@ import com.google.gwt.user.client.ui.RadioButton;
  * @author drfoster@novell.com
  */
 public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler {
-	@SuppressWarnings("unused")
-	private BinderInfo								m_binderInfo;			// The profiles root workspace the dialog is running against.
 	private GwtTeamingMessages						m_messages;				// Access to Vibe's messages.
 	private InlineLabel								m_progressIndicator;	// Text under the progress bar that displays what's going on.
 	private int										m_totalDone;			// Tracks a running count of users whose sharing rights we've set.
@@ -85,19 +82,23 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	private VibeFlowPanel							m_progressPanel;		// Panel containing the progress bar.
 	private VibeVerticalPanel						m_vp;					// The panel holding the dialog's content.
 
-	// Indexes of the various data columns.
+	// Indexes of the various table columns.
 	private final static int COLUMN_HEADER		= 0;
-	private final static int COLUMN_INTERNAL	= 1;
-	private final static int COLUMN_EXTERNAL	= 2;
-	private final static int COLUMN_PUBLIC		= 3;
-	private final static int COLUMN_FORWARDING	= 4;
+	private final static int COLUMN_ALLOW		= 1;
+	private final static int COLUMN_CLEAR		= 2;
+	private final static int COLUMN_NO_CHANGE	= 3;
 	
-	// Indexes of the various data rows.
-	private final static int ROW_HEADER		= 0;
-	private final static int ROW_SET		= 1;
-	private final static int ROW_CLEAR		= 2;
-	private final static int ROW_UNCHANGED	= 3;
-	
+	// Indexes of the various table rows.
+	private final static int ROW_HEADER_1	= 0;
+	private final static int ROW_INTERNAL	= 1;
+	private final static int ROW_EXTERNAL	= 2;
+	private final static int ROW_PUBLIC		= 3;
+	private final static int ROW_SPACER		= 4;
+	private final static int ROW_HEADER_2	= 5;
+	private final static int ROW_FORWARDING	= 6;
+
+	// The following is used to generate the IDs used for the various
+	// radio buttons contained in the dialog.
 	private final static String RBID_BASE	= "rb";
 	
 	/*
@@ -123,12 +124,39 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	}
 
 	/*
+	 * Adds a column header cell to the table.
+	 */
+	private void addColumnHeaderCell(FlexTable ft, FlexCellFormatter fcf, int row, int column, String text) {
+		InlineLabel	il = new InlineLabel();
+		if (null != text) {
+			il.getElement().setInnerText(text);
+		}
+		il.addStyleName(                   "vibe-userShareRightsDlg-header"          );
+		fcf.addStyleName(     row, column, "vibe-userShareRightsDlg-headerCell"      );
+		if (COLUMN_HEADER != column)
+		     fcf.addStyleName(row, column, "vibe-userShareRightsDlg-headerCellCenter");
+		else fcf.addStyleName(row, column, "vibe-userShareRightsDlg-headerCellLeft"  );
+		if (ROW_HEADER_2 == row) {
+		     fcf.addStyleName(row, column, "vibe-userShareRightsDlg-headerCell2"     );
+		}
+		else if (ROW_SPACER == row) {
+		     fcf.addStyleName(row, column, "vibe-userShareRightsDlg-headerCellSpacer");
+		}
+		ft.setWidget(         row, column, il);
+	}
+	
+	private void addColumnHeaderCell(FlexTable ft, FlexCellFormatter fcf, int row, int column) {
+		// Always use the initial form of the method.
+		addColumnHeaderCell(ft, fcf, row, column, null);
+	}
+	
+	/*
 	 * Adds a rights clear cell to the table.
 	 */
 	private void addRadioCell(FlexTable ft, FlexCellFormatter fcf, int row, int column, boolean checked) {
-		String rbGroup = (RBID_BASE + ":" + column);
-		String rbId    = (rbGroup   + ":" + row);
-		RadioButton rb = new RadioButton(rbGroup);
+		String		rbGroup = getRBGroup(      row   );
+		String		rbId    = getRBId(rbGroup, column);
+		RadioButton	rb      = new RadioButton(rbGroup);
 		rb.getElement().setId(rbId);
 		rb.addStyleName(              "vibe-userShareRightsDlg-radio"    );
 		fcf.addStyleName(row, column, "vibe-userShareRightsDlg-radioCell");
@@ -137,25 +165,18 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	}
 	
 	/*
-	 * Adds a rights column header cell to the table.
+	 * Adds a row header cell to the table.
 	 */
-	private void addRightsColumnHeaderCell(FlexTable ft, FlexCellFormatter fcf, int column, String text) {
+	private void addRowHeaderCell(FlexTable ft, FlexCellFormatter fcf, int row, int column, String text) {
 		InlineLabel il = new InlineLabel(text);
-		il.addStyleName(                     "vibe-userShareRightsDlg-header"    );
-		fcf.addStyleName(ROW_HEADER, column, "vibe-userShareRightsDlg-headerCell");
-		ft.setWidget(    ROW_HEADER, column, il);
+		il.addStyleName(                  "vibe-userShareRightsDlg-row"           );
+		fcf.addStyleName(    row, column, "vibe-userShareRightsDlg-rowCell"       );
+		if ((ROW_FORWARDING == row) && (COLUMN_HEADER == column)) {
+			fcf.addStyleName(row, column, "vibe-userShareRightsDlg-rowCellForward");
+		}
+		ft.setWidget(        row, column, il);
 	}
 	
-	/*
-	 * Adds a rights row header cell to the table.
-	 */
-	private void addRightsRowHeaderCell(FlexTable ft, FlexCellFormatter fcf, int row, String text) {
-		InlineLabel il = new InlineLabel(text);
-		il.addStyleName(                     "vibe-userShareRightsDlg-row"    );
-		fcf.addStyleName(row, COLUMN_HEADER, "vibe-userShareRightsDlg-rowCell");
-		ft.setWidget(    row, COLUMN_HEADER, il);
-	}
-
 	/*
 	 * Constructs and returns an Image with a spinner in it.
 	 */
@@ -192,40 +213,40 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 		boolean isRBChecked;
 		if (m_rightsInfo.isExternalEnabled()) {
 			// Yes!  Initialize its set and value flags.
-			isRBChecked = isRBChecked(ROW_SET, COLUMN_EXTERNAL);
+			isRBChecked = isRBChecked(ROW_EXTERNAL, COLUMN_ALLOW);
 			valueFlags.setAllowExternal(isRBChecked);
 			if (hasUnchanged)
-			     setFlags.setAllowExternal(!(isRBChecked(ROW_UNCHANGED, COLUMN_EXTERNAL)));
+			     setFlags.setAllowExternal(!(isRBChecked(ROW_EXTERNAL, COLUMN_NO_CHANGE)));
 			else setFlags.setAllowExternal(isRBChecked != m_singleUserRights.isAllowExternal());
 		}
 		
 		// Do we have a forwarding column?
 		if (m_rightsInfo.isForwardingEnabled()) {
 			// Yes!  Initialize its set and value flags.
-			isRBChecked = isRBChecked(ROW_SET, COLUMN_FORWARDING);
+			isRBChecked = isRBChecked(ROW_FORWARDING, COLUMN_ALLOW);
 			valueFlags.setAllowForwarding(isRBChecked);
 			if (hasUnchanged)
-			     setFlags.setAllowForwarding(!(isRBChecked(ROW_UNCHANGED, COLUMN_FORWARDING)));
+			     setFlags.setAllowForwarding(!(isRBChecked(ROW_FORWARDING, COLUMN_NO_CHANGE)));
 			else setFlags.setAllowForwarding(isRBChecked != m_singleUserRights.isAllowForwarding());
 		}
 		
 		// Do we have an internal column?
 		if (m_rightsInfo.isInternalEnabled()) {
 			// Yes!  Initialize its set and value flags.
-			isRBChecked = isRBChecked(ROW_SET, COLUMN_INTERNAL);
+			isRBChecked = isRBChecked(ROW_INTERNAL, COLUMN_ALLOW);
 			valueFlags.setAllowInternal(isRBChecked);
 			if (hasUnchanged)
-			     setFlags.setAllowInternal(!(isRBChecked(ROW_UNCHANGED, COLUMN_INTERNAL)));
+			     setFlags.setAllowInternal(!(isRBChecked(ROW_INTERNAL, COLUMN_NO_CHANGE)));
 			else setFlags.setAllowInternal(isRBChecked != m_singleUserRights.isAllowInternal());
 		}
 		
 		// Do we have a public column?
 		if (m_rightsInfo.isPublicEnabled()) {
 			// Yes!  Initialize its set and value flags.
-			isRBChecked = isRBChecked(ROW_SET, COLUMN_PUBLIC);
+			isRBChecked = isRBChecked(ROW_PUBLIC, COLUMN_ALLOW);
 			valueFlags.setAllowPublic(isRBChecked);
 			if (hasUnchanged)
-			     setFlags.setAllowPublic(!(isRBChecked(ROW_UNCHANGED, COLUMN_PUBLIC)));
+			     setFlags.setAllowPublic(!(isRBChecked(ROW_PUBLIC, COLUMN_NO_CHANGE)));
 			else setFlags.setAllowPublic(isRBChecked != m_singleUserRights.isAllowPublic());
 		}
 
@@ -316,11 +337,17 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	}
 
 	/*
+	 * Generates the IDs used for the various radio buttons.
+	 */
+	private String getRBId(String rbGroup, int column) {return (rbGroup   + ":" + column);}
+	private String getRBGroup(             int row)    {return (RBID_BASE + ":" + row   );}
+	
+	/*
 	 * Returns true if a radio button is checked and false otherwise.
 	 */
 	private boolean isRBChecked(int row, int column) {
-		String			rbGroup = (RBID_BASE + ":" + column);
-		String			rbId    = (rbGroup   + ":" + row);
+		String			rbGroup = getRBGroup(      row   );
+		String			rbId    = getRBId(rbGroup, column);
 		InputElement	rb      = Document.get().getElementById(rbId).getFirstChildElement().cast();
 		return rb.isChecked();								
 	}
@@ -353,19 +380,21 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 
 			@Override
 			public void onSuccess(VibeRpcResponse result) {
-				// Yes!  Store it and populate the dialog.
+				// Yes!  Store it...
 				m_rightsInfo = ((UserSharingRightsInfoRpcResponseData) result.getResponseData());
 				if (1 == m_userIds.size()) {
 					m_singleUserRights = m_rightsInfo.getUserRights(m_userIds.get(0));
 					if (null == m_singleUserRights) {
-						GwtClientHelper.deferredAlert(m_messages.userShareRightsDlgErrorNoWorkspace());
+						GwtClientHelper.deferredAlert(m_messages.userShareRightsDlgError_NoWorkspace());
 						return;
 					}
 				}
+				
 				else {
 					m_singleUserRights = null;
 				}
 				
+				// ...and populate the dialog.
 				populateDlgAsync();
 			}
 		});
@@ -396,50 +425,82 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 		ft.addStyleName("vibe-userShareRightsDlg-table");
 		m_vp.add(ft);
 		FlexCellFormatter fcf = ft.getFlexCellFormatter();
-		ft.setCellPadding(2);
-		ft.setCellSpacing(2);
+		ft.setCellPadding(4);
+		ft.setCellSpacing(0);
 
 		// ...define the column header cells...
-		if (m_rightsInfo.isInternalEnabled())   addRightsColumnHeaderCell(ft, fcf, COLUMN_INTERNAL,   m_messages.userShareRightsDlgRight_AllowInternal()  );
-		if (m_rightsInfo.isExternalEnabled())   addRightsColumnHeaderCell(ft, fcf, COLUMN_EXTERNAL,   m_messages.userShareRightsDlgRight_AllowExternal()  );
-		if (m_rightsInfo.isPublicEnabled())     addRightsColumnHeaderCell(ft, fcf, COLUMN_PUBLIC,     m_messages.userShareRightsDlgRight_AllowPublic()    );
-		if (m_rightsInfo.isForwardingEnabled()) addRightsColumnHeaderCell(ft, fcf, COLUMN_FORWARDING, m_messages.userShareRightsDlgRight_AllowForwarding());
-		
-		// ...define the row header cells...
-		addRightsRowHeaderCell(    ft, fcf, ROW_SET,       m_messages.userShareRightsDlgLabel_Set()      );
-		addRightsRowHeaderCell(    ft, fcf, ROW_CLEAR,     m_messages.userShareRightsDlgLabel_Clear()    );
+		addColumnHeaderCell(    ft, fcf, ROW_HEADER_1, COLUMN_HEADER,    m_messages.userShareRightsDlgLabel_AllowSharingWith());
+		addColumnHeaderCell(    ft, fcf, ROW_HEADER_1, COLUMN_ALLOW,     m_messages.userShareRightsDlgLabel_Allow()           );
+		addColumnHeaderCell(    ft, fcf, ROW_HEADER_1, COLUMN_CLEAR,     m_messages.userShareRightsDlgLabel_Clear()           );
 		if (null == m_singleUserRights) {
-			addRightsRowHeaderCell(ft, fcf, ROW_UNCHANGED, m_messages.userShareRightsDlgLabel_Unchanged());
+			addColumnHeaderCell(ft, fcf, ROW_HEADER_1, COLUMN_NO_CHANGE, m_messages.userShareRightsDlgLabel_NoChange()        );
 		}
-		
-		// ...define the rights setting cells...
-		if (m_rightsInfo.isInternalEnabled())   addRadioCell(ft, fcf, ROW_SET, COLUMN_INTERNAL,   ((null != m_singleUserRights) && m_singleUserRights.isAllowInternal())  );
-		if (m_rightsInfo.isExternalEnabled())   addRadioCell(ft, fcf, ROW_SET, COLUMN_EXTERNAL,   ((null != m_singleUserRights) && m_singleUserRights.isAllowExternal())  );
-		if (m_rightsInfo.isPublicEnabled())     addRadioCell(ft, fcf, ROW_SET, COLUMN_PUBLIC,     ((null != m_singleUserRights) && m_singleUserRights.isAllowPublic())    );
-		if (m_rightsInfo.isForwardingEnabled()) addRadioCell(ft, fcf, ROW_SET, COLUMN_FORWARDING, ((null != m_singleUserRights) && m_singleUserRights.isAllowForwarding()));
-		
-		// ...define the rights clearing cells...
-		if (m_rightsInfo.isInternalEnabled())   addRadioCell(ft, fcf, ROW_CLEAR, COLUMN_INTERNAL,   ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowInternal())))  );
-		if (m_rightsInfo.isExternalEnabled())   addRadioCell(ft, fcf, ROW_CLEAR, COLUMN_EXTERNAL,   ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowExternal())))  );
-		if (m_rightsInfo.isPublicEnabled())     addRadioCell(ft, fcf, ROW_CLEAR, COLUMN_PUBLIC,     ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowPublic())))    );
-		if (m_rightsInfo.isForwardingEnabled()) addRadioCell(ft, fcf, ROW_CLEAR, COLUMN_FORWARDING, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowForwarding()))));
 
-		// ...if we were given multiple users...
-		if (null == m_singleUserRights) {
-			// ...define the rights unchanged cells...
-			if (m_rightsInfo.isInternalEnabled())   addRadioCell(ft, fcf, ROW_UNCHANGED, COLUMN_INTERNAL,   true);
-			if (m_rightsInfo.isExternalEnabled())   addRadioCell(ft, fcf, ROW_UNCHANGED, COLUMN_EXTERNAL,   true);
-			if (m_rightsInfo.isPublicEnabled())     addRadioCell(ft, fcf, ROW_UNCHANGED, COLUMN_PUBLIC,     true);
-			if (m_rightsInfo.isForwardingEnabled()) addRadioCell(ft, fcf, ROW_UNCHANGED, COLUMN_FORWARDING, true);
+		// ...if sharing with internal users is enabled...
+		if (m_rightsInfo.isInternalEnabled()) {
+			// ...define the share internal cells...
+			addRowHeaderCell(ft, fcf, ROW_INTERNAL, COLUMN_HEADER, m_messages.userShareRightsDlgLabel_InternalUsers());
+			addRadioCell(    ft, fcf, ROW_INTERNAL, COLUMN_ALLOW, ((null != m_singleUserRights) &&    m_singleUserRights.isAllowInternal()));
+			addRadioCell(    ft, fcf, ROW_INTERNAL, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowInternal()))));
+			if (null == m_singleUserRights) {
+				addRadioCell(ft, fcf, ROW_INTERNAL, COLUMN_NO_CHANGE, true);
+			}
 		}
 		
-		// ...add a progress bar...
+		// ...if sharing with external users is enabled...
+		if (m_rightsInfo.isExternalEnabled()) {
+			// ...define the share external cells...
+			addRowHeaderCell(ft, fcf, ROW_EXTERNAL, COLUMN_HEADER, m_messages.userShareRightsDlgLabel_ExternalUsers());
+			addRadioCell(    ft, fcf, ROW_EXTERNAL, COLUMN_ALLOW, ((null != m_singleUserRights) &&    m_singleUserRights.isAllowExternal())  );
+			addRadioCell(    ft, fcf, ROW_EXTERNAL, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowExternal()))));
+			if (null == m_singleUserRights) {
+				addRadioCell(ft, fcf, ROW_EXTERNAL, COLUMN_NO_CHANGE, true);
+			}
+		}
+		
+		// ...if sharing with the public is enabled...
+		if (m_rightsInfo.isPublicEnabled()) {
+			// ...define the share public cells...
+			addRowHeaderCell(ft, fcf, ROW_PUBLIC, COLUMN_HEADER, m_messages.userShareRightsDlgLabel_Public());
+			addRadioCell(    ft, fcf, ROW_PUBLIC, COLUMN_ALLOW, ((null != m_singleUserRights) &&    m_singleUserRights.isAllowPublic())  );
+			addRadioCell(    ft, fcf, ROW_PUBLIC, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowPublic()))));
+			if (null == m_singleUserRights) {
+				addRadioCell(ft, fcf, ROW_PUBLIC, COLUMN_NO_CHANGE, true);
+			}
+		}
+
+		// ...if share forwarding is enabled...
+		if (m_rightsInfo.isForwardingEnabled()) {
+			// ...define the spacer above the share forwarding cells...
+			addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_HEADER   );
+			addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_ALLOW    );
+			addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_CLEAR    );
+			if (null == m_singleUserRights) {
+				addColumnHeaderCell(ft, fcf, ROW_SPACER, COLUMN_NO_CHANGE);
+			}
+			
+			// ...define the share forwarding header cells...
+			addColumnHeaderCell(    ft, fcf, ROW_HEADER_2, COLUMN_ALLOW,     m_messages.userShareRightsDlgLabel_Allow());
+			addColumnHeaderCell(    ft, fcf, ROW_HEADER_2, COLUMN_CLEAR,     m_messages.userShareRightsDlgLabel_Clear());
+			if (null == m_singleUserRights) {
+				addColumnHeaderCell(ft, fcf, ROW_HEADER_2, COLUMN_NO_CHANGE, m_messages.userShareRightsDlgLabel_NoChange());
+			}
+			
+			// ...define the share forwarding cells...
+			addRowHeaderCell(   ft, fcf, ROW_FORWARDING, COLUMN_HEADER, m_messages.userShareRightsDlgLabel_AllowForwarding());
+			addRadioCell(       ft, fcf, ROW_FORWARDING, COLUMN_ALLOW, ((null != m_singleUserRights) &&    m_singleUserRights.isAllowForwarding())  );
+			addRadioCell(       ft, fcf, ROW_FORWARDING, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowForwarding()))));
+			if (null == m_singleUserRights) {
+				addRadioCell(   ft, fcf, ROW_FORWARDING, COLUMN_NO_CHANGE, true);
+			}
+		}
+		
+		// ...define a progress bar...
 		m_progressBar = new ProgressBar(0, m_userIds.size());
 		m_progressBar.addStyleName("vibe-userShareRightsDlg-progressBar");
 		m_vp.add(m_progressBar);
 		m_progressBar.setVisible(false);
 		
-		// ...and a panel for displaying progress, when needed...
 		m_progressPanel = new VibeFlowPanel();
 		m_progressPanel.addStyleName("vibe-userShareRightsDlg-progressPanel");
 		m_vp.add(m_progressPanel);
@@ -453,18 +514,18 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 		// ...the dialog.
 		setCancelEnabled(true);
 		setOkEnabled(    true);
-		show(true);
+		center();
 	}
 	
 	/*
 	 * Asynchronously runs the given instance of the user share rights
 	 * dialog.
 	 */
-	private static void runDlgAsync(final UserShareRightsDlg usrDlg, final BinderInfo bi, final List<Long> userIds) {
+	private static void runDlgAsync(final UserShareRightsDlg usrDlg, final List<Long> userIds) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				usrDlg.runDlgNow(bi, userIds);
+				usrDlg.runDlgNow(userIds);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -474,10 +535,9 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	 * Synchronously runs the given instance of the user share rights
 	 * dialog.
 	 */
-	private void runDlgNow(BinderInfo bi, List<Long> userIds) {
-		// Store the parameters...
-		m_binderInfo = bi;
-		m_userIds    = userIds;
+	private void runDlgNow(List<Long> userIds) {
+		// Store the parameter...
+		m_userIds = userIds;
 		
 		// ...update the dialog's caption...
 		setCaption(m_messages.userShareRightsDlgHeader(m_userIds.size()));
@@ -650,7 +710,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 								// Yes!  Tell the user about the
 								// problem(s).
 								GwtClientHelper.displayMultipleErrors(
-									m_messages.userShareRightsDlgErrorSetFailures(),
+									m_messages.userShareRightsDlgError_SetFailures(),
 									collectedErrors);
 							}
 							
@@ -712,7 +772,6 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 			
 			// Parameters to initialize and show the dialog.
 			final UserShareRightsDlg	usrDlg,
-			final BinderInfo			bi,
 			final List<Long>			userIds) {
 		GWT.runAsync(UserShareRightsDlg.class, new RunAsyncCallback() {
 			@Override
@@ -736,7 +795,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(usrDlg, bi, userIds);
+					runDlgAsync(usrDlg, userIds);
 				}
 			}
 		});
@@ -749,17 +808,16 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	 * @param usrDlgClient
 	 */
 	public static void createAsync(UserShareRightsDlgClient usrDlgClient) {
-		doAsyncOperation(usrDlgClient, null, null, null);
+		doAsyncOperation(usrDlgClient, null, null);
 	}
 	
 	/**
 	 * Initializes and shows the user share rights dialog.
 	 * 
 	 * @param usrDlg
-	 * @param bi
 	 * @param userIds
 	 */
-	public static void initAndShow(UserShareRightsDlg usrDlg, BinderInfo bi, List<Long> userIds) {
-		doAsyncOperation(null, usrDlg, bi, userIds);
+	public static void initAndShow(UserShareRightsDlg usrDlg, List<Long> userIds) {
+		doAsyncOperation(null, usrDlg, userIds);
 	}
 }

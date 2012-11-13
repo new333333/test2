@@ -2147,16 +2147,17 @@ public interface GwtTeamingMessages extends Messages
 	String importProfilesDlgViewSample();
 	
 	// Strings used by the 'User Share Rights' dialog.
-	String userShareRightsDlgErrorNoWorkspace();
-	String userShareRightsDlgErrorSetFailures();
+	String userShareRightsDlgError_NoWorkspace();
+	String userShareRightsDlgError_SetFailures();
 	String userShareRightsDlgHeader(int count);
+	String userShareRightsDlgLabel_Allow();
+	String userShareRightsDlgLabel_AllowForwarding();
+	String userShareRightsDlgLabel_AllowSharingWith();
 	String userShareRightsDlgLabel_Clear();
-	String userShareRightsDlgLabel_Set();
-	String userShareRightsDlgLabel_Unchanged();
+	String userShareRightsDlgLabel_ExternalUsers();
+	String userShareRightsDlgLabel_InternalUsers();
+	String userShareRightsDlgLabel_NoChange();
+	String userShareRightsDlgLabel_Public();
 	String userShareRightsDlgProgress(int done, int total);
-	String userShareRightsDlgRight_AllowExternal();
-	String userShareRightsDlgRight_AllowForwarding();
-	String userShareRightsDlgRight_AllowInternal();
-	String userShareRightsDlgRight_AllowPublic();
 
 }// end GwtTeamingMessages
