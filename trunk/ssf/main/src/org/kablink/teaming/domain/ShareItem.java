@@ -300,9 +300,11 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 				WorkAreaOperation.ADD_REPLIES, 
 				WorkAreaOperation.MODIFY_ENTRIES, 
 				WorkAreaOperation.CREATE_ENTRIES, 
+				WorkAreaOperation.CREATE_FOLDERS, 
 				WorkAreaOperation.DELETE_ENTRIES,
 				WorkAreaOperation.BINDER_ADMINISTRATION, 
-				WorkAreaOperation.CREATE_ENTRY_ACLS, 
+				WorkAreaOperation.ADD_COMMUNITY_TAGS, 
+				WorkAreaOperation.GENERATE_REPORTS, 
 				WorkAreaOperation.CHANGE_ACCESS_CONTROL
 				}),
 		NONE("share.role.title.none",
