@@ -33,12 +33,29 @@
 package org.kablink.teaming.extuser;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jasypt.encryption.StringEncryptor;
+import org.kablink.teaming.InternalException;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
+import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.NoUserByTheNameException;
+import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
+import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.StringUtil;
+import org.kablink.util.Validator;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
 /**
  * @author jong
@@ -46,6 +63,8 @@ import org.kablink.util.StringUtil;
  */
 public class ExternalUserUtil {
 	
+	private static Log logger = LogFactory.getLog(ExternalUserUtil.class);
+
 	public static final String QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN = "euet";
 	
 	public static final String SESSION_KEY_EXTERNAL_USER_ENCODED_TOKEN = ExternalUserUtil.class.getSimpleName() + "_" + QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN;
@@ -86,10 +105,98 @@ public class ExternalUserUtil {
 	    return map;  
 	}  
 	
+	public static OpenIDProvider getAllowedOpenIDProviderGivenEmailAddress(String emailAddress) {
+    	Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+     	
+    	List<OpenIDProvider> providers = getCoreDao().findOpenIDProviders(zoneId);
+    	
+    	if(providers != null) {
+    		for(OpenIDProvider provider:providers) {
+    			// Since this method is called only when dealing with external user invitation/confirmation,
+    			// some inefficiency in the processing is acceptable.
+    			if(emailAddress.matches(provider.getEmailRegex())) {
+    				return provider; // Match found
+    			}
+    		}
+    	}
+    	
+    	return null;
+	}
+	
+	public static void handleResponseToInvitation(HttpServletRequest req, String url) 
+			throws ExternalUserRespondingToInvitationException, InternalException {
+		Map<String,String> queryParams = ExternalUserUtil.getQueryParams(url);
+		String token = queryParams.get(ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN);
+		if(Validator.isNotNull(token)) {
+			String zoneName = getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName());
+			Long userId = ExternalUserUtil.getUserId(token);
+			// Load the user object by the ID value encoded in the token. 
+			User user = findExternalUserById(userId, zoneName);
+			// If still here, the ID value encoded in the token refers to a valid user account.
+			// Validate the token against the current state of the account to make sure that the client didn't forge the token/link.
+			validateDigest(user, ExternalUserUtil.getPrivateDigest(token));
+			// If still here, the digest validation was successful.
+			if(User.ExtProvState.initial == user.getExtProvState()) {
+				// The user is responding to the invitation previously sent out.
+				OpenIDProvider openidProvider = ExternalUserUtil.getAllowedOpenIDProviderGivenEmailAddress(user.getName());				
+				// Create an exception object to be used as more like a normal status code
+				ExternalUserRespondingToInvitationException exc = new ExternalUserRespondingToInvitationException(user, (openidProvider==null)? null:openidProvider.getName(), url);
+				// Unfortunately, the spring security framework won't store this exception into the session even though
+				// it correctly catches it and triggers redirect to the login page. So we must put it in ourselves.
+				HttpSession session = req.getSession(false);
+				session.setAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY, exc);
+				// Throwing this exception is NOT an indication of an error. Rather, this signals
+				// GWT layer to proceed to the next step in the normal flow.
+				throw exc;
+			}
+		}
+	}
+	
+	private static void validateDigest(User user, String digest) {
+		if(!user.getPrivateDigest().equals(digest)) {
+			logger.warn("User '" + user.getName() + "' supplied invalid digest value");
+			throw new UsernameNotFoundException("User '" + user.getName() + "' supplied invalid digest value");
+		}
+	}
+
+	private static User findExternalUserById(Long userId, String zoneName) throws UsernameNotFoundException {
+		User user;
+		try {
+			user = getProfileDao().loadUser(userId, zoneName);
+		}
+		catch (NoWorkspaceByTheNameException e) {
+    		throw new UsernameNotFoundException("No user with id '" + userId + "'", e);
+    	} 
+		catch (NoUserByTheNameException e) {
+    		throw new UsernameNotFoundException("No user with id '" + userId + "'", e);
+    	}
+		
+    	// Only external user can get to this code path.
+		if(user.getIdentityInfo().isInternal()) {
+			// This shouldn't happen
+			logger.error("User id '" + userId + "' represents an internal user");
+    		throw new UsernameNotFoundException("No user with id '" + userId + "'");
+		}
+		else {
+			return user;
+		}
+	}
+
 	private static StringEncryptor getStringEncryptor() {
 		return (StringEncryptor) SpringContextUtil.getBean("encryptor");
 	}
 
+	private static ProfileDao getProfileDao() {
+		return (ProfileDao) SpringContextUtil.getBean("profileDao");
+	}
+	
+	private static ZoneModule getZoneModule() {
+		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
+	}
+	
+	private static CoreDao getCoreDao() {
+		return (CoreDao) SpringContextUtil.getBean("coreDao");
+	}
 	
 	public static void main(String[] args) throws Exception {
 		long l = 209;
