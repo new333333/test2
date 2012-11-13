@@ -89,11 +89,11 @@ public class ExternalUserUtil {
 		return Long.toHexString(user.getId().longValue()) + DELIM + user.getPrivateDigest();
 	}
 	
-	public static Long getUserId(String encodedUserToken) {
+	private static Long getUserId(String encodedUserToken) {
 		return Long.parseLong(encodedUserToken.substring(0, encodedUserToken.indexOf(DELIM)), 16);
 	}
 	
-	public static String getPrivateDigest(String encodedUserToken) {
+	private static String getPrivateDigest(String encodedUserToken) {
 		return encodedUserToken.substring(encodedUserToken.indexOf(DELIM)+1);
 	}
 	
@@ -113,24 +113,6 @@ public class ExternalUserUtil {
 	    }  
 	    return map;  
 	}  
-	
-	public static OpenIDProvider getAllowedOpenIDProviderGivenEmailAddress(String emailAddress) {
-    	Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
-     	
-    	List<OpenIDProvider> providers = getCoreDao().findOpenIDProviders(zoneId);
-    	
-    	if(providers != null) {
-    		for(OpenIDProvider provider:providers) {
-    			// Since this method is called only when dealing with external user invitation/confirmation,
-    			// some inefficiency in the processing is acceptable.
-    			if(emailAddress.matches(provider.getEmailRegex())) {
-    				return provider; // Match found
-    			}
-    		}
-    	}
-    	
-    	return null;
-	}
 	
 	public static void handleResponseToInvitation(HttpServletRequest req, String url) 
 			throws ExternalUserRespondingToInvitationException, InternalException {
@@ -159,6 +141,24 @@ public class ExternalUserUtil {
 				throw exc;
 			}
 		}
+	}
+	
+	private static OpenIDProvider getAllowedOpenIDProviderGivenEmailAddress(String emailAddress) {
+    	Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+     	
+    	List<OpenIDProvider> providers = getCoreDao().findOpenIDProviders(zoneId);
+    	
+    	if(providers != null) {
+    		for(OpenIDProvider provider:providers) {
+    			// Since this method is called only when dealing with external user invitation/confirmation,
+    			// some inefficiency in the processing is acceptable.
+    			if(emailAddress.matches(provider.getEmailRegex())) {
+    				return provider; // Match found
+    			}
+    		}
+    	}
+    	
+    	return null;
 	}
 	
 	private static void validateDigest(User user, String digest) {
