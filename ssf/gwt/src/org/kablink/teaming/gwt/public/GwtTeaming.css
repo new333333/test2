@@ -4819,7 +4819,18 @@ td.datePickerMonth {
 /* End:  Import profiles dialog styles. */
 
 /* Start:  User share rights dialog styles. */
-	.vibe-userShareRightsDlg-panel {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
+	.vibe-userShareRightsDlg-header          {white-space: normal; color: #666;}
+	.vibe-userShareRightsDlg-headerCell      {vertical-align: top; text-align: center;}
+	.vibe-userShareRightsDlg-panel           {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
+	.vibe-userShareRightsDlg-progressBar     {margin-bottom: 5px; margin-top: 10px;}
+	.vibe-userShareRightsDlg-progressLabel   {margin-left: 3px;}
+	.vibe-userShareRightsDlg-progressPanel   {white-space: nowrap; font-size: 1.1em; font-weight: bold;}
+	.vibe-userShareRightsDlg-progressSpinner {}
+	.vibe-userShareRightsDlg-radio           {}
+	.vibe-userShareRightsDlg-radioCell       {text-align: center;}
+	.vibe-userShareRightsDlg-row             {white-space: nowrap; color: #666;}
+	.vibe-userShareRightsDlg-rowCell         {text-align: right;}
+	.vibe-userShareRightsDlg-table           {width: 400px;}
 /* End:  User share rights dialog styles. */
 
 /* End */

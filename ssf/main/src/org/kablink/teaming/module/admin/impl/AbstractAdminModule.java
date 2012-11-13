@@ -1124,6 +1124,101 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			}
     	}
     }
+    
+	/**
+	 * Sets or clears a member from a WorkArea Function (i.e., role.)
+	 * 
+	 * @param wa
+	 * @param functionId
+	 * @param set
+	 * @param memberIds
+	 */
+	@Override
+	public void updateWorkAreaFunctionMemberships(WorkArea wa, Long functionId, boolean set, Collection<Long> memberIds) {
+		// Is there a WorkAreaFunctionMembership on this WorkArea?
+		WorkAreaFunctionMembership wafm = getWorkAreaFunctionMembership(wa, functionId);
+		final boolean newWAFM = (null == wafm);
+		if (newWAFM) {
+			// No!  If we're clearing the members...
+			if (!set) {
+				// ...simply bail as there's nothing we need to do.
+				return;
+			}
+			
+			// Create a WorkAreaFunctionMembership for it now.
+			wafm = new WorkAreaFunctionMembership();
+			wafm.setFunctionId(functionId);
+			wafm.setWorkAreaId(wa.getWorkAreaId());
+			wafm.setWorkAreaType(wa.getWorkAreaType());
+			wafm.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+		}
+		final WorkAreaFunctionMembership finalWAFM = wafm;
+		
+		// Does the Function have any members on this WorkArea?
+		Set<Long> wafmMemberIds = finalWAFM.getMemberIds();
+		if (null == wafmMemberIds) {
+			// No!  Create an empty set to store them in.
+			wafmMemberIds = new HashSet<Long>();
+			finalWAFM.setMemberIds(wafmMemberIds);
+		}
+
+		// Are we setting the member on this function?
+		int changeCount = 0;
+		for (Long memberId:  memberIds) {
+			boolean setHasMember = wafmMemberIds.contains(memberId);
+			if (set) {
+				// Yes!  If it's already a member... 
+				if (setHasMember) {
+					// ...then nothing is changing...skip it...
+					continue;
+				}
+				
+				// ...otherwise, add it to the set.
+				wafmMemberIds.add(memberId);
+				changeCount += 1;
+			}
+			
+			else {
+				// No, we must be clearing the member!  If it isn't
+				// a member...
+				if (!setHasMember) {
+					// ...then nothing is changing...skip it...
+					continue;
+				}
+				
+				// ...otherwise, from it from the set.
+				wafmMemberIds.remove(memberId);
+				changeCount += 1;
+			}
+		}
+
+		// If we aren't making any changes to the function
+		// membership...
+		if (0 == changeCount) {
+			// ...simply bail as there's nothing we need to do.
+			return;
+		}
+
+		// Finally, add/update membership on the WorkArea Function. 
+		getTransactionTemplate().execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				if (newWAFM)
+				     getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(   finalWAFM);
+				else getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(finalWAFM);
+				return null;
+			}
+		});
+	}
+
+	@Override
+	public void updateWorkAreaFunctionMembership(WorkArea wa, Long functionId, boolean set, Long memberId) {
+		// Always use the initial form of the method.
+		Collection<Long> memberIds = new ArrayList<Long>();
+		memberIds.add(memberId);
+		updateWorkAreaFunctionMemberships(wa, functionId, set, memberIds);
+	}
+	
     @Override
 	public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
 		// open to anyone - only way to get parentMemberships
@@ -1316,7 +1411,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			Binder binder = (Binder)workArea;
 			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null);
 		}
-     } 
+     }
+	
 	private void processAccessChangeLog(WorkArea workArea, String operation) {
 		if ((workArea instanceof Binder) && !(workArea instanceof TemplateBinder)) {
         	Binder binder = (Binder)workArea;
@@ -2367,5 +2463,4 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     protected String getLogTablePurgeProperty(String zoneName, String name) {
 		return SZoneConfig.getString(zoneName, "logTablePurgeConfiguration/property[@name='" + name + "']");
 	}
-
 }

@@ -310,8 +310,9 @@ public interface AdminModule {
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess) throws AccessControlException;
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess, boolean justThisScope, String scope) throws AccessControlException;
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
-    public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit,
-			boolean justThisScope, String scope) throws AccessControlException;
+    public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit, boolean justThisScope, String scope) throws AccessControlException;
+	public void updateWorkAreaFunctionMembership(WorkArea wa, Long functionId, boolean set, Long memberId);
+	public void updateWorkAreaFunctionMemberships(WorkArea wa, Long functionId, boolean set, Collection<Long> memberIds);
     public void setWorkAreaOwner(WorkArea workArea, Long userId, boolean propagate) throws AccessControlException;
     public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly);
 	public void updateDefaultDefinitions(AllModulesInjected bs, Long topId, Boolean newDefinitionsOnly, Collection ids);
@@ -417,5 +418,4 @@ public interface AdminModule {
     public ScheduleInfo getLogTablePurgeSchedule();
     
     public void setLogTablePurgeSchedule(ScheduleInfo info);
-
  }

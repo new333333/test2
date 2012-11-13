@@ -32,8 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
 
@@ -46,7 +45,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class SetUserSharingRightsInfoCmd extends VibeRpcCmd {
-	private Map<Long, CombinedPerUserShareRightsInfo>	m_sharingRightsMap;	//
+	private List<Long>						m_userIds;			//
+	private CombinedPerUserShareRightsInfo	m_sharingRights;	//
 	
 	/**
 	 * Inner class used to track which sharing rights are to be set and
@@ -104,24 +104,23 @@ public class SetUserSharingRightsInfoCmd extends VibeRpcCmd {
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
 	public SetUserSharingRightsInfoCmd() {
-		// Initialize the super class...
+		// Initialize the super class.
 		super();
-		
-		// ...and initialize anything else that requires it.
-		m_sharingRightsMap = new HashMap<Long, CombinedPerUserShareRightsInfo>();
 	}
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * @param sharingRightsMap
+	 * @param userIds
+	 * @param sharingRights
 	 */
-	public SetUserSharingRightsInfoCmd(Map<Long, CombinedPerUserShareRightsInfo> sharingRightsMap) {
+	public SetUserSharingRightsInfoCmd(List<Long> userIds, CombinedPerUserShareRightsInfo sharingRights) {
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameter.
-		setSharingRightsMap(sharingRightsMap);
+		// ...and store the parameters.
+		setUserIds(      userIds      );
+		setSharingRights(sharingRights);
 	}
 	
 	/**
@@ -129,15 +128,16 @@ public class SetUserSharingRightsInfoCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public Map<Long, CombinedPerUserShareRightsInfo> getSharingRightsMap() {return m_sharingRightsMap;}
+	public List<Long>                     getUserIds()       {return m_userIds;      }
+	public CombinedPerUserShareRightsInfo getSharingRights() {return m_sharingRights;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void addSharingRights(   Long userId, CombinedPerUserShareRightsInfo  sharingRights)    {m_sharingRightsMap.put(userId, sharingRights);}
-	public void setSharingRightsMap(Map<Long,    CombinedPerUserShareRightsInfo> sharingRightsMap) {m_sharingRightsMap = sharingRightsMap;        }
+	public void setUserIds(      List<Long> userIds)                           {m_userIds       = userIds;      }
+	public void setSharingRights(CombinedPerUserShareRightsInfo sharingRights) {m_sharingRights = sharingRights;}
 	
 	/**
 	 * Returns the command's enumeration value.
