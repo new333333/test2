@@ -159,7 +159,7 @@ public class LoginController  extends SAbstractControllerRetry {
     	    			String[] params;
 
     				    // Create a new token
-    					newToken = ExternalUserUtil.encodeUserToken( extUser );
+    					newToken = ExternalUserUtil.encodeUserTokenWithNewSeed( extUser );
 
     					params = redirectUrl.split( "&" );
     					for ( String param : params )

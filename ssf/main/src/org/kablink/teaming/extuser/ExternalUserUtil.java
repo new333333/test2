@@ -56,6 +56,9 @@ import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * @author jong
@@ -76,7 +79,13 @@ public class ExternalUserUtil {
 	
 	private static final String DELIM = ".";
 	
-	public static String encodeUserToken(User user) {
+	public static String encodeUserTokenWithNewSeed(User user) {
+		user.reseedDigestSeed();
+		updateUser(user);
+		return Long.toHexString(user.getId().longValue()) + DELIM + user.getPrivateDigest();
+	}
+	
+	public static String encodeUserTokenWithExistingSeed(User user) {
 		return Long.toHexString(user.getId().longValue()) + DELIM + user.getPrivateDigest();
 	}
 	
@@ -182,6 +191,16 @@ public class ExternalUserUtil {
 		}
 	}
 
+	private static void updateUser(final User user) {
+		getTransactionTemplate().execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				getCoreDao().update(user);
+				return null;
+			}
+		});
+	}
+
 	private static StringEncryptor getStringEncryptor() {
 		return (StringEncryptor) SpringContextUtil.getBean("encryptor");
 	}
@@ -198,6 +217,10 @@ public class ExternalUserUtil {
 		return (CoreDao) SpringContextUtil.getBean("coreDao");
 	}
 	
+	private static TransactionTemplate getTransactionTemplate() {
+		return (TransactionTemplate) SpringContextUtil.getBean("transactionTemplate");
+	}
+
 	public static void main(String[] args) throws Exception {
 		long l = 209;
 		String hex = Long.toHexString(l);
