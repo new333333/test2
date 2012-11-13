@@ -1581,6 +1581,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
+	//This routine should be kept in sync with the Viewer role definition in ShareItem
 	private void fillFilrRoleViewer(Function function) {
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
@@ -1597,6 +1598,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
+	//This routine should be kept in sync with the Editor role definition in ShareItem
 	private void fillFilrRoleEditor(Function function) {
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
@@ -1621,6 +1623,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
+	//This routine should be kept in sync with the Contributor role definition in ShareItem
 	private void fillFilrRoleContributor(Function function) {
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
