@@ -41,7 +41,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 	LuceneConfigPage lucenePage;
 	// StoragePage storagePage;
 	ImportConfigPage importPage;
-	PasswordPage pwdPage;
+	//PasswordPage pwdPage;
 
 	public ConfigWizard(InstallerConfig config)
 	{
@@ -82,7 +82,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		importPage = new ImportConfigPage(this);
 
 		// Password Page
-		pwdPage = new PasswordPage(this, config);
+		//pwdPage = new PasswordPage(this, config);
 
 		// Show first page
 		currentPage = configPage;
