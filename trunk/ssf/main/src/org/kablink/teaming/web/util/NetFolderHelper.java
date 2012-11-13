@@ -102,7 +102,8 @@ public class NetFolderHelper
 		String volume = null;
 		String path = null;
 		String serverUNC;
-		ResourceDriverConfig rdConfig;		
+		ResourceDriverConfig rdConfig;
+		boolean canSyncNetFolder = false;
 
 		// Are we running Filr?
 		if ( Utils.checkIfFilr() == false )
@@ -208,10 +209,20 @@ public class NetFolderHelper
 											filrAdminTasks.toString() );
 			}
 		}
+		else
+		{
+			// A net folder server already exists.  Is it fully configured?
+			if ( isNetFolderServerConfigured( rdConfig ) )
+			{
+				// Yes, this means we can sync the home directory net folder if we need to.
+				canSyncNetFolder = true;
+			}
+		}
 		
 		if ( rdConfig != null )
 		{
 			Binder netFolderBinder;
+			boolean syncNeeded = false;
 			
 			// Does a net folder already exist for this user's home directory
 			netFolderBinder = NetFolderHelper.findHomeDirNetFolder(
@@ -236,6 +247,8 @@ public class NetFolderHelper
 															null,
 															workspaceId,
 															true );
+				
+				syncNeeded = true;
 			}
 			else
 			{
@@ -257,7 +270,28 @@ public class NetFolderHelper
 	   				mid = new MapInputData( formData );
 
 	   				// Modify the existing net folder with the home directory information.
-		   			binderModule.modifyBinder( netFolderBinder.getId(), mid, fileMap, deleteAtts, null );				
+		   			binderModule.modifyBinder( netFolderBinder.getId(), mid, fileMap, deleteAtts, null );
+		   			
+		   			syncNeeded = false;
+				}
+			}
+			
+			// Do we need to sync the home directory net folder?
+			if ( syncNeeded )
+			{
+				// Yes
+				// Can we sync the home directory net folder?
+				if ( canSyncNetFolder )
+				{
+					// Yes, sync it.
+					try
+					{
+						folderModule.synchronize( netFolderBinder.getId(), null );
+					}
+					catch ( Exception e )
+					{
+						m_logger.error( "Error syncing next net folder: " + netFolderBinder.getName() + ", " + e.toString() );
+					}
 				}
 			}
 		}
@@ -595,6 +629,34 @@ public class NetFolderHelper
 	}
 	
 	/**
+	 * Determine if the given net folder server is fully configured
+	 */
+	private static boolean isNetFolderServerConfigured( ResourceDriverConfig rdConfig )
+	{
+		String path;
+		String name;
+		String pwd;
+		
+		if ( rdConfig == null )
+			return false;
+		
+		// Is the driver configured
+		path = rdConfig.getRootPath();
+		name = rdConfig.getAccountName();
+		pwd = rdConfig.getPassword();
+		if ( path != null && path.length() > 0 &&
+			 name != null && name.length() > 0 &&
+			 pwd != null && pwd.length() > 0 )
+		{
+			// Yes
+			return true;
+		}
+		
+		// If we get here the net folder server is not fully configured
+		return false;
+	}
+
+	/**
 	 * 
 	 */
 	@SuppressWarnings("unchecked")
@@ -661,30 +723,14 @@ public class NetFolderHelper
 		FilrAdminTasks filrAdminTasks;
 		ResourceDriverConfig rdConfig;
 		boolean isConfigured1;
+		boolean isConfigured2;
 		boolean reIndexNeeded = false;
 
 		adminModule.checkAccess( AdminOperation.manageResourceDrivers );
 
-		// Get the current configuration
-		{
-			String path;
-			String name;
-			String pwd;
-			
-			// Is the driver configured
-			isConfigured1 = false;
-			rdConfig = ResourceDriverManagerUtil.getResourceDriverManager().getDriverConfig( rootName );
-			path = rdConfig.getRootPath();
-			name = rdConfig.getAccountName();
-			pwd = rdConfig.getPassword();
-			if ( path != null && path.length() > 0 &&
-				 name != null && name.length() > 0 &&
-				 pwd != null && pwd.length() > 0 )
-			{
-				// Yes
-				isConfigured1 = true;
-			}
-		}
+		// Is the driver configured
+		rdConfig = ResourceDriverManagerUtil.getResourceDriverManager().getDriverConfig( rootName );
+		isConfigured1 = isNetFolderServerConfigured( rdConfig );
 		
 		options = new HashMap();
 		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
@@ -749,29 +795,11 @@ public class NetFolderHelper
 		}
 		
 		// Is the configuration complete?
-		{
-			String path;
-			String name;
-			String pwd;
-			boolean isConfigured2;
-			
-			// Is the driver configured
-			isConfigured2 = false;
-			rdConfig = ResourceDriverManagerUtil.getResourceDriverManager().getDriverConfig( rootName );
-			path = rdConfig.getRootPath();
-			name = rdConfig.getAccountName();
-			pwd = rdConfig.getPassword();
-			if ( path != null && path.length() > 0 &&
-				 name != null && name.length() > 0 &&
-				 pwd != null && pwd.length() > 0 )
-			{
-				// Yes
-				isConfigured2 = true;
-			}
-			
-			if ( isConfigured1 != isConfigured2 )
-				reIndexNeeded = true;
-		}
+		rdConfig = ResourceDriverManagerUtil.getResourceDriverManager().getDriverConfig( rootName );
+		isConfigured2 = isNetFolderServerConfigured( rdConfig );
+
+		if ( isConfigured1 != isConfigured2 )
+			reIndexNeeded = true;
 		
 		// Re-index all of the net folders that reference this net folder server.  We need to do
 		// this so "home directory" net folders will show up in "My files" after the net folder server
