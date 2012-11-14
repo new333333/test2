@@ -55,6 +55,10 @@ import org.kablink.teaming.domain.WfAcl;
 import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
@@ -81,6 +85,7 @@ public class AccessUtils  {
 	protected FunctionManager functionManager;
 	protected ProfileDao profileDao;
 	protected CoreDao coreDao;
+	protected BinderModule binderModule;
 	public AccessUtils() {
 		if(instance != null)
 			throw new SingletonViolationException(AccessUtils.class);
@@ -124,6 +129,16 @@ public class AccessUtils  {
 			return coreDao;
 		} else {
 			return (CoreDao) SpringContextUtil.getBean("coreDao");
+		}
+	}
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
+	protected BinderModule getBinderModule() {
+		if (binderModule != null) {
+			return binderModule;
+		} else {
+			return (BinderModule) SpringContextUtil.getBean("binderModule");
 		}
 	}
 
@@ -517,7 +532,7 @@ public class AccessUtils  {
        			getInstance().getAccessControlManager().checkOperation(user, entry, operation);
        			if (!widen) {
        				//"Widening" is not allowed, so also check for read access to the folder
-       				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
+       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
        			}
        			return;
        		}
@@ -535,7 +550,7 @@ public class AccessUtils  {
   					getInstance().getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_READ);
   	       			if (!widen) {
   	       				//"Widening" is not allowed, so also check for read access to the folder
-  	       				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
+  	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
   	       			}
   					return;
   				}
@@ -547,7 +562,7 @@ public class AccessUtils  {
   					getInstance().getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_MODIFY);
   	       			if (!widen) {
   	       				//"Widening" is not allowed, so also check for read access to the folder
-  	       				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
+  	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
   	       			}
   					return;
   				}
@@ -559,7 +574,7 @@ public class AccessUtils  {
   					getInstance().getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_DELETE);
   	       			if (!widen) {
   	       				//"Widening" is not allowed, so also check for read access to the folder
-  	       				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
+  	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
   	       			}
   					return;
   				}
@@ -569,7 +584,7 @@ public class AccessUtils  {
        	//Next, try if the binder allows access
        	if (!entry.hasEntryAcl() || entry.isIncludeFolderAcl()) {
 	       	try {
-	       		getInstance().getAccessControlManager().checkOperation(user, binder, operation);
+	       		getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
 	       		return;
 	       	} catch (OperationAccessControlException ex3) {
 	       		ace = ex3;
@@ -585,40 +600,38 @@ public class AccessUtils  {
       			try {
       				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_READ);
 	      			return;
-      			} catch (OperationAccessControlException ex3) {}
+     			} catch (AccessControlException ex3) {}
 	      	} else if (WorkAreaOperation.MODIFY_ENTRIES.equals(operation) && entry.getCreation() != null && 
 	      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
       			try {
       				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY);
 	      			return;
-      			} catch (OperationAccessControlException ex3) {}
+      			} catch (AccessControlException ex3) {}
 	      	} else if (WorkAreaOperation.DELETE_ENTRIES.equals(operation) && entry.getCreation() != null && 
 	      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
       			try {
       				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_DELETE);
 	      			return;
-      			} catch (OperationAccessControlException ex3) {}
+      			} catch (AccessControlException ex3) {}
 	      	}
        	}
        	
        	//See if the entry was shared 
        	try {
 			//Start by trying to see if the entry allows access
-       		getInstance().getAccessControlManager().checkOperation(user, entry, operation);
+   			getInstance().getAccessControlManager().checkOperation(user, entry, operation);
        		//It did, but now check if widening is allowed. 
        		//  If widening is not allowed, then sharing cannot go beyond the current folder without the ability to also read the folder
        		//  This is somewhat useless since if you can read the folder, you could have seen this entry already
-     			if (!widen) {
-	       				//"Widening" is not allowed, so also check for read access to the folder
-	       				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
-	       			}
+ 			if (!widen) {
+   				//"Widening" is not allowed, so also check for read access to the folder
+ 				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
+   			}
 			return;
-       	} catch (OperationAccessControlException ex) {
+       	} catch (AccessControlException ex) {
        		ace = ex;
-       	} catch (OperationAccessControlExceptionNoName ex2) {
-       		ace2 = ex2;
        	}
-       	
+
        	//Nothing allowed the operation, so throw an error
        	if (ace != null) {
        		throw ace;
