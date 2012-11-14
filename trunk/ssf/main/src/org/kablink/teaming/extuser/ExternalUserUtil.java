@@ -152,7 +152,7 @@ public class ExternalUserUtil {
     		for(OpenIDProvider provider:providers) {
     			// Since this method is called only when dealing with external user invitation/confirmation,
     			// some inefficiency in the processing is acceptable.
-    			if(emailAddress.matches(provider.getEmailRegex())) {
+    			if(provider.getEmailRegex() != null && emailAddress.matches(provider.getEmailRegex())) {
     				return provider; // Match found
     			}
     		}

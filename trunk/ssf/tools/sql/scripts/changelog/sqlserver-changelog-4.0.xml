@@ -441,8 +441,4 @@ update SS_OpenIDProviders set emailRegex='.*yahoo.com' where name='yahoo';
         </sql>
     </changeSet>
 
-    <changeSet author="jong" context="schema" failOnError="true" id="54">
-	    <addNotNullConstraint tableName="SS_OpenIDProviders" columnName="emailRegex" columnDataType="NVARCHAR(128)"/>
-    </changeSet>
-        
 </databaseChangeLog>
