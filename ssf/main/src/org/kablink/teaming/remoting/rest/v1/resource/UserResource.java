@@ -74,6 +74,7 @@ import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.UserBrief;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
@@ -89,6 +90,7 @@ public class UserResource extends AbstractPrincipalResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<UserBrief> getUsers(
             @QueryParam("id") Set<Long> ids,
+            @QueryParam("keyword") String keyword,
             @QueryParam("name") String name,
             @QueryParam("email") String email,
             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
@@ -113,6 +115,10 @@ public class UserResource extends AbstractPrincipalResource {
         if (email!=null) {
             criterion.add(Restrictions.like(Constants.EMAIL_FIELD, email.replace('@', '?')));
             nextParams.put("email", email);
+        }
+        if (keyword!=null) {
+            criterion.add(Restrictions.like(Constants.TITLE_FIELD, SearchUtils.modifyQuickFilter(keyword)));
+            nextParams.put("keyword", keyword);
         }
 
         String nextUrl = "/users";

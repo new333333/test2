@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "user")
 public class User extends Principal {
+    private Boolean person;
     private String firstName;
    	private String middleName;
    	private String lastName;
@@ -64,6 +65,14 @@ public class User extends Principal {
     @Override
     public Object clone() throws CloneNotSupportedException {
         return new User(this);
+    }
+
+    public Boolean getPerson() {
+        return person;
+    }
+
+    public void setPerson(Boolean person) {
+        this.person = person;
     }
 
     @XmlElement(name="disk_quota")
