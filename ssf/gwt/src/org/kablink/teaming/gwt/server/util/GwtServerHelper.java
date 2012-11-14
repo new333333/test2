@@ -9754,7 +9754,7 @@ public class GwtServerHelper {
 		// If we get here, everything worked.
 		return Boolean.TRUE;
 	}
-	
+
 	/**
 	 * Returns true if the current user should have their My Files area
 	 * mapped to their home directory and false otherwise.
@@ -9783,6 +9783,17 @@ public class GwtServerHelper {
 		return false;
 	}
 
+	/**
+	 * Returns true if the current user has a home folder and false otherwise.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
+	 */
+	public static boolean userHasHomeFolder(AllModulesInjected bs) {
+		return (null != getHomeFolderId(bs));
+	}
+	
 	/**
 	 * Returns true if baseUrl is a valid desktop application download
 	 * URL and false otherwise.

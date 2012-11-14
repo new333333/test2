@@ -5212,13 +5212,45 @@ public class GwtViewHelper {
 		if (null == bi) {
 			return false;
 		}
+
+		// Is the binder a workspace?
+		User user = GwtServerHelper.getCurrentUser();
 		vi.setViewType(ViewType.BINDER);
 		if (bi.isBinderWorkspace()) {
+			// Yes!  Does it have the showCollection parameter?
 			String showCollection = getQueryParameterString(nvMap, WebKeys.URL_SHOW_COLLECTION);
 			if (MiscUtil.hasString(showCollection)) {
-				bi = GwtServerHelper.buildCollectionBI(
-					CollectionType.getEnum(showCollection),
-					GwtServerHelper.getCurrentUser().getWorkspaceId());
+				// Yes!  What collection type is being shown?
+				CollectionType ct = CollectionType.getEnum(showCollection);
+				switch (ct) {
+				case MY_FILES:
+					// My Files!  We don't allow that for guest or if
+					// adHoc folders are not allowed and the user
+					// doesn't have a home folder.  In those cases, we
+					// go to Shared With Me.
+					if (user.isShared() ||
+							(GwtServerHelper.useHomeAsMyFiles(bs) && (!(GwtServerHelper.userHasHomeFolder(bs))))) {
+						ct = CollectionType.SHARED_WITH_ME;
+					}
+					
+					break;
+					
+				case NET_FOLDERS:
+					// Net Folders!  We don't allow that for guest.  In
+					// that case, we go to Shared With Me..
+					if (user.isShared()) {
+						ct = CollectionType.SHARED_WITH_ME;
+					}
+					
+					break;
+					
+				default:
+					// All other scenarios we allow through.
+					break;
+				}
+
+				// Return a BinderInfo for the collection.
+				bi = GwtServerHelper.buildCollectionBI(ct, user.getWorkspaceId());
 			}
 		}
 		vi.setBinderInfo(bi);
