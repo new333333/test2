@@ -12,7 +12,7 @@
 	<property name="title" length="128" not-null="true"/>
 	<property name="url" length="256" not-null="true"/>
 	<property name="regex" length="256" not-null="true"/>
-	<property name="emailRegex" length="128" not-null="true"/>
+	<property name="emailRegex" length="128"/>
 	<properties name="providerNameKey" unique="true" update="false" insert="false">
 		<property name="zoneId" access="field" update="false" insert="false"/>
 		<property name="name" update="false" insert="false"/>
