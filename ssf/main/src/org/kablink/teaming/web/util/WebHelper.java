@@ -334,16 +334,6 @@ public class WebHelper {
 			}
 		}
 		
-		return fillSession(ses, request);
-	}
-	
-	private static HttpSession fillSession(HttpSession ses, HttpServletRequest request) {
-		// This is an opportunity to fill the session with information from the request, if necessary.
-		
-		// This information is to aid with external user login
-		String value = request.getParameter(ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN);
-		if(Validator.isNotNull(value))
-			ses.setAttribute(ExternalUserUtil.class.getName() + "_" + ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN, value);
 		return ses;
 	}
 	

@@ -17,6 +17,7 @@
 		<property name="authenticationSuccessHandler" ref="authenticationSuccessHandler" />
 		<property name="authenticationFailureHandler" ref="authenticationFailureHandler" />
 		<property name="sessionAuthenticationStrategy" ref="sessionAuthenticationStrategy" />
+		<property name="authenticationDetailsSource" ref="authenticationDetailsSource" />
     </bean>
 
 	<bean id="sessionAuthenticationStrategy" class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy">

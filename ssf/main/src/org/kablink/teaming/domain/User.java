@@ -65,20 +65,16 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		 */
 		initial((short)1),
 		/**
-		 * The invited external user responded, and successfully bound his/her email
-		 * address with a specific identity/credential from a specific identity source,
-		 * which could be either an OpenID provider such as Google or the Filr system 
-		 * itself (via local registration), whichever the user chooses to utilize as
-		 * the initial means of authentication. Once bound, the user account doesn't
-		 * need to be bound again (that is, bind is a one-time thing), although the 
-		 * user can change the identity source subsequently (e.g. from Google to Yahoo
-		 * as OpenID provider) or can even utilize multiple identity sources (e.g.
-		 * Google as OpenID provider and Filr system for locally-managed credential).  
+		 * The invited external user responded, and through self-provisioning interface
+		 * successfully supplied his credential to use with local Filr authentication
+		 * in the future. The account still needs to be confirmed/verified before
+		 * the user can actually log into Fir using the specified credential and
+		 * start accessing data. 
 		 */
-		bound((short)2),
+		credentialed((short)2),
 		/**
 		 * The user has been successfully verified and is ready to use the system.
-		 * Again, verification is needed/performed only once for each user account.
+		 * Verification is needed/performed only once for each user account.
 		 */
 		verified((short)3);
 		short value;
@@ -91,7 +87,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		public static ExtProvState valueOf(short value) {
 			switch(value) {
 			case 1: return ExtProvState.initial;
-			case 2: return ExtProvState.bound;
+			case 2: return ExtProvState.credentialed;
 			case 3: return ExtProvState.verified;
 			default: throw new IllegalArgumentException("Invalid db value " + value + " for enum ExtProvState");
 			}

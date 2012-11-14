@@ -36,12 +36,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jasypt.encryption.StringEncryptor;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -70,8 +68,6 @@ public class ExternalUserUtil {
 
 	public static final String QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN = "euet";
 	
-	public static final String SESSION_KEY_EXTERNAL_USER_ENCODED_TOKEN = ExternalUserUtil.class.getSimpleName() + "_" + QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN;
-
 	public static final String SESSION_KEY_FOR_OPENID_PROVIDER_NAME = ExternalUserUtil.class.getSimpleName() + "_openidprovidername";
 	
 	public static final String OPENID_PROVIDER_NAME_GOOGLE = "google";
@@ -97,14 +93,20 @@ public class ExternalUserUtil {
 		return encodedUserToken.substring(encodedUserToken.indexOf(DELIM)+1);
 	}
 	
-	public static Map<String, String> getQueryParams(String url) {  
-	    Map<String, String> map = new HashMap<String, String>();  
+	public static Map<String, String> getQueryParamsFromUrl(String url) {   
 	    if(url == null)
-	    	return map;
+	    	return new HashMap<String, String>();
 		int index = url.indexOf('?');
 		if(index < 0)
-			return map;
+			return new HashMap<String, String>();
 		String query = url.substring(index+1);
+		return getQueryParamsFromQueryString(query);
+	}  
+	
+	public static Map<String, String> getQueryParamsFromQueryString(String query) {
+	    Map<String, String> map = new HashMap<String, String>();
+	    if(query == null)
+	    	return map;
 	    String[] params = StringUtil.split(query, "&");  
 	    for (String param : params) {  
 	    	String[] elem = StringUtil.split(param, "=");
@@ -112,11 +114,29 @@ public class ExternalUserUtil {
 	        	map.put(elem[0], elem[1]);  
 	    }  
 	    return map;  
-	}  
+	}
+	
+	public static void handleResponseToConfirmation(String userToken) {
+		if(Validator.isNotNull(userToken)) {
+			String zoneName = getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName());
+			Long userId = ExternalUserUtil.getUserId(userToken);
+			// Load the user object by the ID value encoded in the token. 
+			User user = findExternalUserById(userId, zoneName);
+			// If still here, the ID value encoded in the token refers to a valid user account.
+			// Validate the token against the current state of the account to make sure that the client didn't forge the token/link.
+			validateDigest(user, ExternalUserUtil.getPrivateDigest(userToken));
+			// If still here, the digest validation was successful.
+			if(User.ExtProvState.credentialed == user.getExtProvState()) {
+				// The user is responding to the confirmation previously sent out.
+				// Mark the user object as successfully provisioned and confirmed.
+				markAsVerified(user);
+			}
+		}
+	}
 	
 	public static void handleResponseToInvitation(HttpSession session, String url) 
 			throws ExternalUserRespondingToInvitationException, InternalException {
-		Map<String,String> queryParams = ExternalUserUtil.getQueryParams(url);
+		Map<String,String> queryParams = ExternalUserUtil.getQueryParamsFromUrl(url);
 		String token = queryParams.get(ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN);
 		if(Validator.isNotNull(token)) {
 			String zoneName = getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName());
@@ -140,6 +160,22 @@ public class ExternalUserUtil {
 				throw exc;
 			}
 		}
+	}
+	
+	public static void markAsCredentialed(User user) {
+		user.setExtProvState(User.ExtProvState.credentialed);
+		updateUser(user);
+	}
+	
+	public static void markAsVerified(User user) {
+		user.getIdentityInfo().setFromLocal(true);
+		user.setExtProvState(User.ExtProvState.verified);
+		updateUser(user);
+	}
+	
+	public static void markAsBoundToOpenid(User user) {
+		user.getIdentityInfo().setFromOpenid(true);
+		updateUser(user);
 	}
 	
 	private static OpenIDProvider getAllowedOpenIDProviderGivenEmailAddress(String emailAddress) {
@@ -198,10 +234,6 @@ public class ExternalUserUtil {
 				return null;
 			}
 		});
-	}
-
-	private static StringEncryptor getStringEncryptor() {
-		return (StringEncryptor) SpringContextUtil.getBean("encryptor");
 	}
 
 	private static ProfileDao getProfileDao() {
