@@ -45,6 +45,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class PrincipalInfo implements IsSerializable {
 	private boolean			m_userDisabled;			// true -> The principal is disabled.  false -> It's not.
 	private boolean			m_userHasWS;			// true -> The principal's workspace exists.
+	private boolean			m_userPerson;			// true -> The principal is person.  false -> It's not (could be a system user such as File Synchronization Agent, ...)
 	private boolean			m_userWSInTrash;		// true -> The principal's workspace exists and is in the trash.
 	private GwtPresenceInfo m_presence;				// Only used for individual assignees.
 	private int             m_members = (-1);		// Only used for group and team assignees.
@@ -72,6 +73,7 @@ public class PrincipalInfo implements IsSerializable {
 	 */
 	public boolean         isUserDisabled()         {return m_userDisabled;       }
 	public boolean         isUserHasWS()            {return m_userHasWS;          }
+	public boolean         isUserPerson()           {return m_userPerson;         }
 	public boolean         isUserWSInTrash()        {return m_userWSInTrash;      }
 	public GwtPresenceInfo getPresence()            {return m_presence;           }
 	public int             getMembers()             {return m_members;            }
@@ -90,6 +92,7 @@ public class PrincipalInfo implements IsSerializable {
 	 */
 	public void setUserDisabled(       boolean         userDisabled)        {m_userDisabled        = userDisabled;       }
 	public void setUserHasWS(          boolean         userHasWS)           {m_userHasWS           = userHasWS;          }
+	public void setUserPerson(         boolean         userPerson)          {m_userPerson          = userPerson;         }
 	public void setUserWSInTrash(      boolean         userWSInTrash)       {m_userWSInTrash       = userWSInTrash;      }
 	public void setPresence(           GwtPresenceInfo presence)            {m_presence            = presence;           }
 	public void setMembers(            int             members)             {m_members             = members;            }

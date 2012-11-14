@@ -6300,6 +6300,7 @@ public class GwtServerHelper {
 						
 						user = (User) nextManager;
 						principalInfo.setPresenceUserWSId( user.getWorkspaceId() );
+						principalInfo.setUserPerson(       user.isPerson()       );
 
 						if ( isPresenceEnabled() )
 						     presenceInfo = getPresenceInfo( user );
