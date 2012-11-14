@@ -2429,14 +2429,16 @@ public class GwtMenuHelper {
 			// for a collection view?
 			else if (isBinderCollection) {
 				boolean isCollectionMyFiles      = (CollectionType.MY_FILES       == folderInfo.getCollectionType());
+				boolean isCollectionNetFolders   = (CollectionType.NET_FOLDERS    == folderInfo.getCollectionType());
 				boolean isCollectionSharedByMe   = (CollectionType.SHARED_BY_ME   == folderInfo.getCollectionType());
 				boolean isCollectionSharedWithMe = (CollectionType.SHARED_WITH_ME == folderInfo.getCollectionType());
 				if ((!(Utils.checkIfFilr())) && (isCollectionSharedByMe || isCollectionSharedWithMe)) {
 					constructEntryToggleSharedViewItem(entryToolbar, bs, request                                                                                  );
 				}
+				boolean useHomeAsMyFiles = GwtServerHelper.useHomeAsMyFiles(bs);
 				if (isCollectionMyFiles) {
 					Long homeFolderTargetId;
-					if (GwtServerHelper.useHomeAsMyFiles( bs ))
+					if (useHomeAsMyFiles)
 					     homeFolderTargetId = GwtServerHelper.getHomeFolderId(bs);
 					else homeFolderTargetId = null;
 					constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws, homeFolderTargetId         );
@@ -2444,7 +2446,9 @@ public class GwtMenuHelper {
 				if (isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe) {
 				    constructEntryShareItem(           entryToolbar, bs, request                                                                                  );
 				}
-				constructEntryDeleteItem(              entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
+				if ((isCollectionMyFiles && (!useHomeAsMyFiles)) && (!isCollectionNetFolders)) {
+					constructEntryDeleteItem(          entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
+				}
 				if (isCollectionMyFiles && supportsApplets && (null != GwtServerHelper.getMyFilesContainerId(bs))) {
 					constructEntryDropBoxItem(         entryToolbar                                                                                               );
 				}
