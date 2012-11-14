@@ -2135,7 +2135,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     private Set<InternetAddress> getEmail(Collection<Long>ids, List errors) {
     	Set<InternetAddress> addrs=null;
     	if (ids != null && !ids.isEmpty()) {
-    		boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
+    		boolean sendingToAllUsersIsAllowed = EmailHelper.canSendToAllUsers();
     		Long allUsersGroupId = Utils.getAllUsersGroupId();
     		if (!sendingToAllUsersIsAllowed && ids.contains(allUsersGroupId)) {
     			ids.remove(allUsersGroupId);
@@ -2166,7 +2166,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     }
     private boolean checkIfRemovedSendToAllUsers(Collection<Long>ids) {
     	if (ids != null && !ids.isEmpty()) {
-    		boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
+    		boolean sendingToAllUsersIsAllowed = EmailHelper.canSendToAllUsers();
     		Long allUsersGroupId = Utils.getAllUsersGroupId();
     		Long allExtUsersGroupId = Utils.getAllExtUsersGroupId();
     		if (!sendingToAllUsersIsAllowed && 

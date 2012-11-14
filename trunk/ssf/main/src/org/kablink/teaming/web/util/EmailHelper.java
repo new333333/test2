@@ -49,7 +49,6 @@ import javax.mail.internet.InternetAddress;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -233,6 +232,16 @@ public class EmailHelper {
 					Locale.getDefault()));
 		}
 	}
+
+	/**
+	 * Returns true if sending to all users is enabled and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean canSendToAllUsers() {
+		return SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
+	}
 	
 	/*
 	 * Returns a Set<Long> of the IDs of the members of a group.
@@ -243,7 +252,10 @@ public class EmailHelper {
 		Set<Long> groupMemberIds = null;
 		try {
 			ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
-			groupMemberIds = profileDao.explodeGroups(groupIds, group.getZoneId());
+			groupMemberIds = profileDao.explodeGroups(
+				groupIds,
+				group.getZoneId(),
+				canSendToAllUsers());
 		}
 		catch (Exception ex) {/* Ignored. */}
 		return validatePrincipalIds(groupMemberIds);
@@ -402,8 +414,7 @@ public class EmailHelper {
 	 */
 	private static boolean includeGroup(Long groupId) {
 		// If we're not allowed to send email to all users...
-		boolean	sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
-		if (!sendingToAllUsersIsAllowed) {
+		if (!(canSendToAllUsers())) {
 			// ...and this is one of the all users groups...
 			if (groupId.equals(Utils.getAllUsersGroupId()) || groupId.equals(Utils.getAllExtUsersGroupId())) {
 				// ...exclude it.
@@ -416,51 +427,38 @@ public class EmailHelper {
 	}
 
 	/*
-	 * Scans the IDs in the given collection for any that resolve to an
-	 * all users group and returns a collection without them.
+	 * Scans the IDs in the given collection for any that are an all
+	 * users group and returns a collection without them.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unused")
 	private static Collection<Long> removeAllUserGroups(Collection<Long> principalIds) {
 		// Are there any IDs in the collection we were given?
 		if (MiscUtil.hasItems(principalIds)) {
-			// Yes!  Are there any that resolve?
-			List<Principal> principalList = ResolveIds.getPrincipals(principalIds);
-			if (MiscUtil.hasItems(principalList)) {
-				// Yes!  Scan them.
-				List<Long> allUsersList = new ArrayList<Long>();
-				for (Principal p:  principalList) {
-					// Is this Principal a group?
-					if (p instanceof GroupPrincipal) {
-						// Yes!  Is it an all users group?
-						String internalId = p.getInternalId();
-						if ((null != internalId) &&
-								(internalId.equalsIgnoreCase(ObjectKeys.ALL_USERS_GROUP_INTERNALID) ||
-								 internalId.equalsIgnoreCase(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID))) {
-							// Yes!  Add its ID to the list of those
-							// we're tracking.
-							allUsersList.add(p.getId());
-						}
-					}
-				}
+			// Yes!  Allocate a collection holding a copy of the list
+			// we can remove the user groups from.
+			List<Long>	nonAllUserIds = new ArrayList<Long>(principalIds);
 
-				// Are we tracking any all user groups that are being
-				// sent to?
-				if (!(allUsersList.isEmpty())) {
-					// Yes!  Scan the original principal IDs...
-					List<Long> nonAllUserIds = new ArrayList<Long>();
-					for (Long pId:  principalIds) {
-						// ...tracking those that aren't all user
-						// ...groups...
-						if (!(allUsersList.contains(pId))) {
-							nonAllUserIds.add(pId);
-						}
-					}
-					
-					// ...and use the new collection.  We do this to
-					// ...avoid any side affects related to changing
-					// ...the initial collection we were given.
-					principalIds = nonAllUserIds;
-				}
+			// If the collection contains all users...
+			boolean removedAUGs = false;
+			Long	augId       = Utils.getAllUsersGroupId();
+			if (nonAllUserIds.contains(augId)) {
+				// ...remove it.
+				nonAllUserIds.remove(augId);
+				removedAUGs = true;
+			}
+			
+			// If the collection contains all external users...
+			augId = Utils.getAllExtUsersGroupId();
+			if (nonAllUserIds.contains(augId)) {
+				// ...remove it.
+				nonAllUserIds.remove(augId);
+				removedAUGs = true;
+			}
+
+			// If we removed an any all user groups...
+			if (removedAUGs) {
+				// ...return the list without them.
+				principalIds = nonAllUserIds;
 			}
 		}
 		
@@ -569,14 +567,6 @@ public class EmailHelper {
 			throws Exception
 	{
 		try {
-			// Is sending email to an all user group allowed?
-			if (!(SPropsUtil.getBoolean("mail.allowSendToAllUsers", false))) {
-				// No!  Remove any that we're being asked to send to.
-				principalIds = removeAllUserGroups(principalIds);
-				ccIds        = removeAllUserGroups(ccIds      );
-				bccIds       = removeAllUserGroups(bccIds     );
-			}
-
 			// Are there any actual targets for the email notification?
 			boolean hasTargets = (
 				MiscUtil.hasItems(principalIds)   ||
