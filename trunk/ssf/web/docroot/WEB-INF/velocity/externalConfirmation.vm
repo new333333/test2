@@ -27,19 +27,8 @@
  * are trademarks of SiteScape, Inc.
  *#
 #if ($ssVisitor.isHtml())  
-	<a href="$ssVisitor.getConfirmPermaLink($ssSharedEntity, $ssShareEncodedExternalUserId)">$esc.html(${ssSharedEntity.Title})</a><br/><br/>
-	#if (${ssShare.Comment})
-		$esc.html(${ssShare.Comment})
-	#end
-	<br /><br />
-	$esc.html(${ssShareExpiration})<br />
+	<a href="$ssEntityPermalinkurl">$esc.html(${ssEntityPermalinkurl})</a><br/>
 
 #else
-	#ss_printLn($ssVisitor.getConfirmPermaLink($ssSharedEntity, $ssShareEncodedExternalUserId))
-	
-	#if (${ssShare.Comment})
-		#ss_printLn(${ssShare.Comment})
-	#end
-	
-	#ss_printLn(${ssShareExpiration})
+	#ss_printLn($ssEntityPermalinkurl)
 #end

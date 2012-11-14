@@ -280,17 +280,16 @@ public interface AdminModule {
     		Collection<String> emailAddresses, Collection<Long> ccIds, Collection<Long> bccIds) throws Exception;
     	 
     /**
-     * Sends a share confirmation mail message to an external user.
+     * Sends a confirmation mail message to an external user.
      * 
-     * @param share
-     * @param sharedEntity
      * @param externalUserId
+     * @param entityPermalinkUrl
      * 
      * @return
      * 
      * @throws Exception
      */
-    public Map<String, Object> sendShareConfirmMailToExternalUser(ShareItem share, DefinableEntity sharedEntity, Long externalUserId) throws Exception;
+    public Map<String, Object> sendConfirmationMailToExternalUser(Long externalUserId, String entityPermalinkUrl) throws Exception;
     	 
     /**
      * Sends a share invitation mail message to an external user.
