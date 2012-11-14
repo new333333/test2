@@ -114,7 +114,7 @@ public class ExternalUserUtil {
 	    return map;  
 	}  
 	
-	public static void handleResponseToInvitation(HttpServletRequest req, String url) 
+	public static void handleResponseToInvitation(HttpSession session, String url) 
 			throws ExternalUserRespondingToInvitationException, InternalException {
 		Map<String,String> queryParams = ExternalUserUtil.getQueryParams(url);
 		String token = queryParams.get(ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN);
@@ -134,7 +134,6 @@ public class ExternalUserUtil {
 				ExternalUserRespondingToInvitationException exc = new ExternalUserRespondingToInvitationException(user, (openidProvider==null)? null:openidProvider.getName(), url);
 				// Unfortunately, the spring security framework won't store this exception into the session even though
 				// it correctly catches it and triggers redirect to the login page. So we must put it in ourselves.
-				HttpSession session = req.getSession(false);
 				session.setAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY, exc);
 				// Throwing this exception is NOT an indication of an error. Rather, this signals
 				// GWT layer to proceed to the next step in the normal flow.

@@ -145,7 +145,7 @@ public class LoginFilter  implements Filter {
 
 				if(req.getQueryString() != null && req.getQueryString().contains(ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN + "=")) {
 					// Looks like a response from external user to an invitation or confirmation.
-					ExternalUserUtil.handleResponseToInvitation(req, Http.getCompleteURL(req));
+					ExternalUserUtil.handleResponseToInvitation(WebHelper.getRequiredSession(req), Http.getCompleteURL(req));
 				}
 
 				if(WebHelper.isGuestLoggedIn(req)) {
