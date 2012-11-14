@@ -2190,7 +2190,7 @@ public class BinderHelper {
 	}
 	public static List BuildChangeLogBeans(AllModulesInjected bs, DefinableEntity entity, 
 			List changeLogs, Map<Long,FolderEntry> folderEntries, Long version) {
-		return BuildChangeLogBeans(bs, entity, changeLogs, folderEntries, null, false);
+		return BuildChangeLogBeans(bs, entity, changeLogs, folderEntries, version, false);
 	}
 	public static List BuildChangeLogBeans(AllModulesInjected bs, DefinableEntity entity, 
 			List changeLogs, Map<Long,FolderEntry> folderEntries, Long version, boolean showAll) {
