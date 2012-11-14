@@ -56,6 +56,20 @@ public class SavedRequestAwareAuthenticationSuccessHandler extends org.springfra
     	if(session != null) {
     		String redirectUrl = (String) session.getAttribute(FILR_REDIRECT_AFTER_SUCCESSFUL_LOGIN);
     		if(redirectUrl != null) {
+    			// This block of code exists to handle the situation where the system needs to redirect
+    			// the client to the original resource it attempted to access after successful
+    			// authentication via an OpenID provider. Unlike with form-based login, the referer
+    			// header information is lost during the OpenID handshake process involving the
+    			// browser and the OpenID provider and is not addressed by Spring security. As such,
+    			// we need to take care of that situation ourselves by saving the redirect url info
+    			// in the guest session object immediately before embarking on OpenID handshake. 
+    			// After successful authentication with OpenID provider, Spring security will move
+    			// that attribute from the guest session to the newly created session (this is possible
+    			// because of the custom configuration we have on the "sessionAuthenticationStrategy"
+    			// bean). And then finally here in this block of code, we're retrieving the saved info
+    			// and redirect the client to that original url.
+    		    // Again, with regular form-based login, this custom code won't get executed and
+    			// instead the regular code defined in the super class will get executed.
     			if(logger.isDebugEnabled())
     				logger.debug("Redirecting to '" + redirectUrl + "' based on the session attribute '" + FILR_REDIRECT_AFTER_SUCCESSFUL_LOGIN + "'");
     			session.removeAttribute(FILR_REDIRECT_AFTER_SUCCESSFUL_LOGIN);

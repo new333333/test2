@@ -17,6 +17,8 @@
 
     <!-- ============================== Form-based authentication ============================ -->
     
+    <bean id="authenticationDetailsSource" class="org.springframework.security.web.authentication.WebAuthenticationDetailsSource"/>
+    
     <import resource="security-auth-form-common.xml"/>
         
     <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
