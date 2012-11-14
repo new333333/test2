@@ -276,6 +276,7 @@ public class ResourceUtil {
         populatePrincipalBrief(model, user);
         if (user instanceof org.kablink.teaming.domain.User) {
             org.kablink.teaming.domain.User u = (org.kablink.teaming.domain.User) user;
+            model.setPerson(u.isPerson());
             model.setFirstName(u.getFirstName());
             model.setMiddleName(u.getMiddleName());
             model.setLastName(u.getLastName());
@@ -296,6 +297,7 @@ public class ResourceUtil {
     public static User buildUser(org.kablink.teaming.domain.User user, boolean includeAttachments, boolean textDescriptions) {
         User model = new User();
         populatePrincipal(model, user, includeAttachments, textDescriptions);
+        model.setPerson(user.isPerson());
         model.setFirstName(user.getFirstName());
         model.setMiddleName(user.getMiddleName());
         model.setLastName(user.getLastName());
@@ -533,6 +535,7 @@ public class ResourceUtil {
 
     private static void populatePrincipalBrief(PrincipalBrief model, org.kablink.teaming.domain.Principal principal) {
         populateEntryBrief(model, principal);
+        model.setReserved(principal.isReserved());
         model.setName(principal.getName());
         model.setEmailAddress(principal.getEmailAddress());
     }

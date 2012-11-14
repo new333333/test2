@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement (name="user_brief")
 public class UserBrief extends PrincipalBrief {
+    private Boolean person;
 	private String firstName;
 	private String lastName;
 	private String middleName;
@@ -52,6 +53,7 @@ public class UserBrief extends PrincipalBrief {
 
     public UserBrief(UserBrief orig) {
         super(orig);
+        this.person = orig.person;
         this.firstName = orig.firstName;
         this.lastName = orig.lastName;
         this.middleName = orig.middleName;
@@ -60,6 +62,14 @@ public class UserBrief extends PrincipalBrief {
     @Override
     public Object clone() throws CloneNotSupportedException {
         return new UserBrief(this);
+    }
+
+    public Boolean getPerson() {
+        return person;
+    }
+
+    public void setPerson(Boolean person) {
+        this.person = person;
     }
 
     @XmlElement(name = "first_name")

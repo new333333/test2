@@ -32,11 +32,9 @@
  */
 package org.kablink.teaming.remoting.rest.v1.util;
 
-import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.UserBrief;
-import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.util.search.Constants;
 
 import java.util.Map;
@@ -57,6 +55,7 @@ public class UserBriefBuilder extends PrincipalBriefBuilder implements SearchRes
     public UserBrief build(Map entry) {
         UserBrief user = new UserBrief();
         populatePrincipalBrief(user, entry);
+        user.setPerson(getBoolean(entry, Constants.PERSONFLAG_FIELD));
         user.setFirstName(getString(entry, ObjectKeys.FIELD_USER_FIRSTNAME));
         user.setMiddleName(getString(entry, ObjectKeys.FIELD_USER_MIDDLENAME));
         user.setLastName(getString(entry, ObjectKeys.FIELD_USER_LASTNAME));

@@ -44,6 +44,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class PrincipalBrief extends EntryBrief {
     private String name;
     private String emailAddress;
+    private Boolean reserved;
 
     public PrincipalBrief() {
     }
@@ -74,6 +75,14 @@ public class PrincipalBrief extends EntryBrief {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public Boolean getReserved() {
+        return reserved;
+    }
+
+    public void setReserved(Boolean reserved) {
+        this.reserved = reserved;
     }
 
     @Override

@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.document.DateTools;
+import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -48,6 +49,7 @@ import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.runwith.RunWithCallback;
 import org.kablink.teaming.security.runwith.RunWithTemplate;
@@ -826,5 +828,27 @@ public class SearchUtils {
 		// newly created folder.  Return it.
 		return reply;
 	}
+
+    /**
+     * Adds a quick filter to the search filter in the options map.
+     *
+     * @param options
+     * @param quickFilter
+     */
+    public static String modifyQuickFilter(String quickFilter) {
+        // If we weren't given a quick filter to add...
+        quickFilter = ((null == quickFilter) ? "" : quickFilter.trim());
+        if (0 == quickFilter.length()) {
+            // ...there's nothing to do.  Bail.
+            return null;
+        }
+
+        // If the quick filter doesn't end with an '*'...
+        if (!(quickFilter.endsWith("*"))) {
+            // ...add one.
+            quickFilter += "*";
+        }
+        return quickFilter;
+    }
 
 }

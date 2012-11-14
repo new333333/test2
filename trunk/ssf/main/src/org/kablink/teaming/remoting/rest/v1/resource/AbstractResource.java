@@ -328,6 +328,9 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected Criterion buildUsersCriterion() {
         return Restrictions.conjunction()
+                .add(Restrictions.eq(Constants.PERSONFLAG_FIELD, Boolean.TRUE.toString()))
+                .add(Restrictions.eq(Constants.IDENTITY_INTERNAL_FIELD, Boolean.TRUE.toString()))
+                .add(Restrictions.eq(Constants.DISABLED_USER_FIELD, Boolean.FALSE.toString()))
                 .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
                 .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER));
     }
