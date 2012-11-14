@@ -316,6 +316,15 @@ public class ResourceUtil {
         }
         model.setSkypeId(user.getSkypeId());
         model.setTwitterId(user.getTwitterId());
+
+        CustomAttribute attribute = user.getCustomAttribute("picture");
+        if (attribute!=null) {
+            Attachment attachment = (Attachment) attribute.getValueSet().iterator().next();
+            if (attachment!=null) {
+                model.setAvatarAttachmentId(attachment.getId());
+            }
+        }
+
         if (user.getMiniBlogId()!=null) {
             model.setMiniBlog(new LongIdLinkPair(user.getMiniBlogId(), LinkUriUtil.getFolderLinkUri(user.getMiniBlogId())));
         }

@@ -47,6 +47,7 @@ public class User extends Principal {
    	private String timeZone;
    	private String skypeId;
    	private String twitterId;
+   	private String avatarAttachmentId;
    	private LongIdLinkPair miniBlog;
    	private Long diskQuota;
    	private Long fileSizeLimit;
@@ -189,6 +190,15 @@ public class User extends Principal {
 
     public void setTwitterId(String twitterId) {
         this.twitterId = twitterId;
+    }
+
+    @XmlElement(name="avatar_attachment_id")
+    public String getAvatarAttachmentId() {
+        return avatarAttachmentId;
+    }
+
+    public void setAvatarAttachmentId(String avatarAttachmentId) {
+        this.avatarAttachmentId = avatarAttachmentId;
     }
 
     @XmlElement(name="hidden_files_folder")
