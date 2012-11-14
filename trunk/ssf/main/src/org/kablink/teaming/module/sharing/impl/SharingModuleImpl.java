@@ -67,6 +67,7 @@ import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.sharing.SharingModule;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
@@ -75,6 +76,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.util.api.ApiErrorCode;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -122,6 +124,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                 throw new NoGroupByTheIdException(shareItem.getRecipientId());
             }
    		} else if (shareItem.getRecipientType().equals(RecipientType.user)) {
+            if (shareItem.getRecipientId().equals(user.getId())) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Can't share with yourself.");
+            }
             recipient = getProfileModule().getEntry(shareItem.getRecipientId());
             if (!recipient.getEntityType().equals(EntityType.user)) {
                 throw new NoUserByTheIdException(shareItem.getRecipientId());
