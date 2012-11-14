@@ -45,6 +45,8 @@ import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NoGroupByTheIdException;
+import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FolderEntry;
@@ -114,11 +116,18 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
 		}
 		Principal recipient = null;
-		if (shareItem.getRecipientType().equals(RecipientType.group) ||
-				shareItem.getRecipientType().equals(RecipientType.user)) {
+		if (shareItem.getRecipientType().equals(RecipientType.group)) {
 			recipient = getProfileModule().getEntry(shareItem.getRecipientId());
-		}
-    	
+            if (!recipient.getEntityType().equals(EntityType.group)) {
+                throw new NoGroupByTheIdException(shareItem.getRecipientId());
+            }
+   		} else if (shareItem.getRecipientType().equals(RecipientType.user)) {
+            recipient = getProfileModule().getEntry(shareItem.getRecipientId());
+            if (!recipient.getEntityType().equals(EntityType.user)) {
+                throw new NoUserByTheIdException(shareItem.getRecipientId());
+            }
+        }
+
 		switch (operation) {
 		case addShareItem:
 			//Make sure sharing is enabled at the zone level for this type of user
