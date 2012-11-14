@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.portlet.binder;
 
-import static org.kablink.util.search.Constants.COMMAND_DEFINITION_FIELD;
-
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +44,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
@@ -54,19 +51,14 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -74,6 +66,7 @@ import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
@@ -82,17 +75,20 @@ import org.springframework.web.portlet.ModelAndView;
 
 /**
  * Controller to handle type to find and lookup for search widgets
+ * 
  * @author Janet
- *
  */
+@SuppressWarnings("unchecked")
 public class TypeToFindAjaxController extends SAbstractController {
 	public static Pattern replacePtrn = Pattern.compile("([\\p{Punct}&&[^\\*]])");
 
 	//caller will retry on OptimisiticLockExceptions
+	@Override
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 	}
 	
+	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -279,7 +275,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 					// to disallow sending email to the all users
 		    		// group?
 					boolean sendingEmail = PortletRequestUtils.getBooleanParameter(request, WebKeys.SENDING_EMAIL, false);
-					if (sendingEmail && (!(SPropsUtil.getBoolean("mail.allowSendToAllUsers", false)))) {
+					if (sendingEmail && (!(EmailHelper.canSendToAllUsers()))) {
 						// Yes!  We need to remove the all users group
 						// from the search results.  Scan them.
 						int size = searchEntries.size();
