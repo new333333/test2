@@ -1209,6 +1209,8 @@ div.ss_sliding_table_column0 {
   	color: ${ss_sliding_table_text_color};
   	white-space:nowrap;
   	text-decoration:none!important;
+  	height: 26px;
+  	line-height: 18px;
 	}
 div.ss_sliding_table_column1 {
   	position: absolute; 
@@ -1224,6 +1226,8 @@ div.ss_sliding_table_column1 {
   	color: ${ss_sliding_table_link_color};
   	white-space:nowrap;
   	text-decoration: none;
+  	height: 26px;
+  	line-height: 18px;
 	}
 div.ss_sliding_table_column {
     position: absolute; 
@@ -1237,6 +1241,7 @@ div.ss_sliding_table_column {
 input.ss_sliding_table_checkbox {
 	margin:  -1px 0px 0px 0px;
 	padding:  0px;
+	height: 12px !important;
 }
 img.ss_sliding_table_column_image {
 	margin: 0px;
@@ -5226,7 +5231,7 @@ span.ss_infoDivValue {
 */
 .ss_muster_users { 
 	font-size: 11px !important;
-	font-weight: bold; 
+	font-weight: normal; 
 	color: #353838;
 }
 .ss_muster_users:hover {
