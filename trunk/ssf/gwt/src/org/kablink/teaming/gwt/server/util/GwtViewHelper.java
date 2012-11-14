@@ -3547,7 +3547,9 @@ public class GwtViewHelper {
 								pi = getPIFromPId(bs, request, p.getId());
 								if (null != pi) {
 									// ...store it directly.
-									fr.setColumnValue(fc, pi);
+									if (pi.isUserPerson() || (!(Utils.checkIfFilr()))) {
+										fr.setColumnValue(fc, pi);
+									}
 								}
 							}
 						}
@@ -3996,6 +3998,7 @@ public class GwtViewHelper {
 					boolean   userWSInTrash = (userHasWS && userWS.isPreDeleted());
 					reply.setUserDisabled( user.isDisabled());
 					reply.setUserHasWS(    userHasWS        );
+					reply.setUserPerson(   user.isPerson()  );
 					reply.setUserWSInTrash(userWSInTrash    );
 					reply.setViewProfileEntryUrl(getViewProfileEntryUrl(bs, request, pId));
 					reply.setPresenceUserWSId(user.getWorkspaceId());
