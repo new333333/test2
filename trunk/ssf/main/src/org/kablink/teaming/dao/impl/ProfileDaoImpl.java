@@ -1615,9 +1615,10 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			if (allowAllUsersGroup && (ids.contains(allId) || users.contains(allId))) {
 				//need to remove some users from the all users group.  Original list may add them back in.
 				//so need to do this step last
+				FilterControls filter = new FilterControls("identityInfo.internal", Boolean.TRUE);
 				List<Object[]> result = getCoreDao().loadObjects(
-						new ObjectControls(User.class, new String[]{ObjectKeys.FIELD_ID}), null, zoneId);
-				//remove users not included
+						new ObjectControls(User.class, new String[]{ObjectKeys.FIELD_ID}), filter, zoneId);
+				//remove users not to be included
 				result.remove(getReservedId(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId));
 				result.remove(getReservedId(ObjectKeys.GUEST_USER_INTERNALID, zoneId));
 				result.remove(getReservedId(ObjectKeys.JOB_PROCESSOR_INTERNALID, zoneId));
@@ -1626,6 +1627,20 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 				users.addAll(result);
 			} 
 			users.remove(allId);
+			Long allExtId = getReservedId(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, zoneId);
+			if (allowAllUsersGroup && (ids.contains(allExtId) || users.contains(allExtId))) {
+				FilterControls filter = new FilterControls("identityInfo.internal", Boolean.FALSE);
+				List<Object[]> result = getCoreDao().loadObjects(
+						new ObjectControls(User.class, new String[]{ObjectKeys.FIELD_ID}), filter, zoneId);
+				//remove users not to be included
+				result.remove(getReservedId(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId));
+				result.remove(getReservedId(ObjectKeys.GUEST_USER_INTERNALID, zoneId));
+				result.remove(getReservedId(ObjectKeys.JOB_PROCESSOR_INTERNALID, zoneId));
+				result.remove(getReservedId(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, zoneId));
+				result.remove(getReservedId(ObjectKeys.FILE_SYNC_AGENT_INTERNALID, zoneId));
+				users.addAll(result);
+			} 
+			users.remove(allExtId);
 			return users;		
     	}
     	finally {
