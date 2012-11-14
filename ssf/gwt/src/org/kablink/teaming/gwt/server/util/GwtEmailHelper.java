@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,14 +41,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EmailAddress;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.GroupPrincipal;
-import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -61,8 +54,6 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.ResolveIds;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 
 /**
@@ -181,60 +172,6 @@ public class GwtEmailHelper {
 		}
 	}
 
-	/*
-	 * Scans the IDs in the given collection for any that resolve to an
-	 * all users group and returns a collection without them.
-	 */
-	@SuppressWarnings("unchecked")
-	private static Collection<Long> removeAllUserGroups(Collection<Long> principalIds) {
-		// Are there any IDs in the collection we were given?
-		if (MiscUtil.hasItems(principalIds)) {
-			// Yes!  Are there any that resolve?
-			List<Principal> principalList = ResolveIds.getPrincipals(principalIds);
-			if (MiscUtil.hasItems(principalList)) {
-				// Yes!  Scan them.
-				List<Long> allUsersList = new ArrayList<Long>();
-				for (Principal p:  principalList) {
-					// Is this Principal a group?
-					if (p instanceof GroupPrincipal) {
-						// Yes!  Is it an all users group?
-						String internalId = p.getInternalId();
-						if ((null != internalId) &&
-								(internalId.equalsIgnoreCase(ObjectKeys.ALL_USERS_GROUP_INTERNALID) ||
-								 internalId.equalsIgnoreCase(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID))) {
-							// Yes!  Add its ID to the list of those
-							// we're tracking.
-							allUsersList.add(p.getId());
-						}
-					}
-				}
-
-				// Are we tracking any all user groups that are being
-				// sent to?
-				if (!(allUsersList.isEmpty())) {
-					// Yes!  Scan the original principal IDs...
-					List<Long> nonAllUserIds = new ArrayList<Long>();
-					for (Long pId:  principalIds) {
-						// ...tracking those that aren't all user
-						// ...groups...
-						if (!(allUsersList.contains(pId))) {
-							nonAllUserIds.add(pId);
-						}
-					}
-					
-					// ...and use the new collection.  We do this to
-					// ...avoid any side affects related to changing
-					// ...the initial collection we were given.
-					principalIds = nonAllUserIds;
-				}
-			}
-		}
-		
-		// If we get here, principalIds now refers to a collection
-		// without any all user groups.  Return it.
-		return principalIds;
-	}
-	
 	/**
 	 * Save the email notification information for the current user
 	 * on the specified binder.
@@ -373,166 +310,6 @@ public class GwtEmailHelper {
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
 			     m_logger.debug("GwtEmailHelper.saveEmailNotificationInfo( SOURCE EXCEPTION ):  ", ex);
-			}
-			throw GwtServerHelper.getGwtTeamingException(ex);
-		}
-	}
-
-	/**
-	 * Sends a share confirmation mail message to an external user.
-	 * 
-	 * @param bs				- Access to modules.
-	 * @param share				- Describes the share.
-	 * @param sharedEntity		- Entity (folder or folder entry) being shared.
-	 * @param externalUserId	- ID of external user confirmation is being sent to.
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static Map<String, Object> sendShareConfirmToExternalUser(
-		AllModulesInjected	bs,				//
-		ShareItem			share,			//
-		DefinableEntity		sharedEntity,	//
-		Long				externalUserId)	//
-			throws GwtTeamingException
-	{
-		try {
-			// Send the confirmation.
-			Map<String, Object> reply = bs.getAdminModule().sendShareConfirmMailToExternalUser(
-				share,
-				sharedEntity,
-				externalUserId);
-			
-			// If we get here, reply contains a map of the results of
-			// the email.  Return it.
-			return reply;
-		}
-		
-		catch (Exception ex) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtEmailHelper.sendShareConfirmToExternalUser( SOURCE EXCEPTION ):  ", ex);
-			}
-			throw GwtServerHelper.getGwtTeamingException(ex);
-		}
-	}
-	
-	/**
-	 * Sends a share invitation mail message to an external user.
-	 * 
-	 * @param bs				- Access to modules.
-	 * @param share				- Describes the share.
-	 * @param sharedEntity		- Entity (folder or folder entry) being shared.
-	 * @param externalUserId	- ID of external user invitation is being sent to.
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static Map<String, Object> sendShareInviteToExternalUser(
-		AllModulesInjected	bs,					//
-		ShareItem			share,				//
-		DefinableEntity		sharedEntity,		//
-		Long				externalUserIdId)	//
-			throws GwtTeamingException
-	{
-		try {
-			// Send the invitation.
-			Map<String, Object> reply = bs.getAdminModule().sendShareInviteMailToExternalUser(
-				share,
-				sharedEntity,
-				externalUserIdId);
-			
-			// If we get here, reply contains a map of the results of
-			// the email.  Return it.
-			return reply;
-		}
-		
-		catch (Exception ex) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtEmailHelper.sendShareInviteToExternalUser( SOURCE EXCEPTION ):  ", ex);
-			}
-			throw GwtServerHelper.getGwtTeamingException(ex);
-		}
-	}
-	
-	/**
-	 * Send a share notification mail message to a collection of users
-	 * and/or explicit email addresses.
-	 * 
-	 * @param bs				- Access to modules.
-	 * @param share				- Share item.
-	 * @param sharedEntity		- Entity (folder or folder entry) being shared.
-	 * @param principalIds		- toList,  users and groups
-	 * @param teamIds			- toList,  teams.
-	 * @param emailAddresses	- toList,  stand alone email address.
-	 * @param ccIds				- ccList,  users and groups
-	 * @param bccIds			- bccList, users and groups
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static Map<String, Object> sendShareNotification(
-		AllModulesInjected	bs,				//
-		ShareItem			share,			//
-		DefinableEntity		sharedEntity,	//
-		Collection<Long>	principalIds,	//
-		Collection<Long>	teamIds,		//
-		Collection<String>	emailAddresses,	//
-		Collection<Long>	ccIds, 			//
-		Collection<Long>	bccIds)			//
-			throws GwtTeamingException
-	{
-		try {
-			// Is sending email to an all user group allowed?
-			if (!(SPropsUtil.getBoolean("mail.allowSendToAllUsers", false))) {
-				// No!  Remove any that we're being asked to send to.
-				principalIds = removeAllUserGroups(principalIds);
-				ccIds        = removeAllUserGroups(ccIds      );
-				bccIds       = removeAllUserGroups(bccIds     );
-			}
-
-			// Are there any actual targets for the email notification?
-			boolean hasTargets = (
-				MiscUtil.hasItems(principalIds)   ||
-				MiscUtil.hasItems(teamIds)        ||
-				MiscUtil.hasItems(emailAddresses) ||
-				MiscUtil.hasItems(ccIds)          ||
-				MiscUtil.hasItems(bccIds));
-
-			Map<String, Object> reply;
-			if (hasTargets) {
-				// Yes!  Send it.
-				reply = bs.getAdminModule().sendMail(
-					share,
-					sharedEntity,
-					principalIds,
-					teamIds,
-					emailAddresses,
-					ccIds,
-					bccIds);
-			}
-			else {
-				// No, there aren't any targets!  Return an empty
-				// reply.
-				reply = new HashMap<String, Object>();
-			}
-			
-			// If we get here, reply contains a map of the results of
-			// the email notification.  Return it.
-			return reply;
-		}
-		
-		catch (Exception ex) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtEmailHelper.sendShareNotification( SOURCE EXCEPTION ):  ", ex);
 			}
 			throw GwtServerHelper.getGwtTeamingException(ex);
 		}

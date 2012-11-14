@@ -83,6 +83,7 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 
 /**
@@ -1294,7 +1295,7 @@ public class GwtShareHelper
 			{
 				errorMap = null;
 				
-				errorMap = GwtEmailHelper.sendShareInviteToExternalUser(
+				errorMap = EmailHelper.sendShareInviteToExternalUser(
 														ami,
 														shareItem,
 														sharedEntity,
@@ -1302,7 +1303,7 @@ public class GwtShareHelper
 			}
 			else
 			{
-				errorMap = GwtEmailHelper.sendShareNotification(
+				errorMap = EmailHelper.sendShareNotification(
 														ami,
 														shareItem,
 														sharedEntity,

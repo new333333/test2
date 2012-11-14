@@ -40,8 +40,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.logging.Log;
-import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -51,28 +49,22 @@ import org.springframework.mail.javamail.MimeMessageHelper;
  * 
  * @author drfoster@novell
  */
-@SuppressWarnings({"unchecked", "unused"})
+@SuppressWarnings({"unchecked"})
 public class MimeSharePreparator extends AbstractMailPreparator {
-	private DefinableEntity	m_sharedEntity;	//
-	private Map				m_details;		//
-	private ShareItem		m_share;		//
+	private Map m_details;		//
 
 	/**
 	 * Constructor method.
 	 * 
-	 * @param share
-	 * @param sharedEntity
 	 * @param details
 	 * @param logger
 	 */
-	public MimeSharePreparator(ShareItem share, DefinableEntity sharedEntity, Map details, Log logger) {
+	public MimeSharePreparator(Map details, Log logger) {
 		// Initialize the super class...
 		super(logger);
 		
-		// ...and store the parameters.
-		m_share        = share;
-		m_sharedEntity = sharedEntity;
-		m_details      = details;
+		// ...and store the parameter.
+		m_details = details;
 	}
 
 	/**

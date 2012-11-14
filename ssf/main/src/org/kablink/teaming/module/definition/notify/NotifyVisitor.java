@@ -160,9 +160,6 @@ public class NotifyVisitor {
 	public String getPermaLink(DefinableEntity entity) {
 		return PermaLinkUtil.getPermalinkForEmail(entity);
 	}
-	public String getConfirmPermaLink(DefinableEntity entity, String encodedExternalUserId) {
-		return getPermalinkWithEncodedExternalUserId(entity, encodedExternalUserId);
-	}
 	public String getInvitePermaLink(DefinableEntity entity, String encodedExternalUserId) {
 		return getPermalinkWithEncodedExternalUserId(entity, encodedExternalUserId);
 	}
