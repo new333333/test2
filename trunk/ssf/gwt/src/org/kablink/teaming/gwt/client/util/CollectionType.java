@@ -43,7 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public enum CollectionType implements IsSerializable {
 	// *** WARNING *** WARNING *** WARNING *** WARNING ***
 	// ***
-	// *** The ordinal value of MY_FILES (i.e., 0) is hard coded in
+	// *** The ordinal values (i.e., MY_FILES = 0) are hard coded in
 	// *** PermaLinkUtil.getUserPermalink().  If the ordinal value
 	// *** of that enumeration changes, PermaLinkUtil.java MUST be
 	// *** changed accordingly.
