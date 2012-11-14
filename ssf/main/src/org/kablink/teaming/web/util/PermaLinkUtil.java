@@ -53,7 +53,21 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
 public class PermaLinkUtil {
+    public static final int COLLECTION_MY_FILES = 0;
+    public static final int COLLECTION_NET_FOLDERS = 1;
+    public static final int COLLECTION_SHARED_BY_ME = 2;
+    public static final int COLLECTION_SHARED_WITH_ME = 3;
+
 	private static final Log m_logger = LogFactory.getLog(PermaLinkUtil.class);
+
+	public static String getUserPermalink(HttpServletRequest request, String userId, Integer collection) {
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true, true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name());
+        adapterUrl.setParameter(WebKeys.URL_SHOW_COLLECTION, collection.toString());
+		return adapterUrl.toString();
+	}
 
 	//userId may be placeholder
 	public static String getUserPermalink(HttpServletRequest request, String userId, boolean startWithActivityStreams, boolean startWithMyFiles) {
@@ -69,7 +83,7 @@ public class PermaLinkUtil {
 		}
 		return adapterUrl.toString();
 	}
-	
+
 	public static String getUserPermalink(HttpServletRequest request, String userId) {
 		return getUserPermalink(request, userId, false, false);
 	}

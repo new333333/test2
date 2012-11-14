@@ -59,6 +59,7 @@ import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -113,6 +114,10 @@ public class SelfResource extends AbstractFileResource {
         user.addAdditionalLink("net_folders", "/self/net_folders");
         user.addAdditionalLink("shared_with_me", "/self/shared_with_me");
         user.addAdditionalLink("shared_by_me", "/self/shared_by_me");
+        user.addAdditionalPermaLink("my_files", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_MY_FILES));
+        user.addAdditionalPermaLink("net_folders", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_NET_FOLDERS));
+        user.addAdditionalPermaLink("shared_with_me", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_SHARED_WITH_ME));
+        user.addAdditionalPermaLink("shared_by_me", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_SHARED_BY_ME));
         Long myFilesFolderId = SearchUtils.getMyFilesFolderId(this, entry.getWorkspaceId(), true);
         if (myFilesFolderId!=null) {
             user.setHiddenFilesFolder(new LongIdLinkPair(myFilesFolderId, LinkUriUtil.getFolderLinkUri(myFilesFolderId)));
@@ -507,7 +512,9 @@ public class SelfResource extends AbstractFileResource {
         binder.setId(ObjectKeys.MY_FILES_ID);
         binder.setTitle("My Files");
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
+        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, user.getId().toString(), PermaLinkUtil.COLLECTION_MY_FILES));
         String baseUri = "/self/my_files";
+        binder.setLink(baseUri);
         binder.addAdditionalLink("child_binders", baseUri + "/library_folders");
         binder.addAdditionalLink("child_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
@@ -525,6 +532,8 @@ public class SelfResource extends AbstractFileResource {
         binder.setTitle("Shared with Me");
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
         Long userId = getLoggedInUserId();
+        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, userId.toString(), PermaLinkUtil.COLLECTION_SHARED_WITH_ME));
+        binder.setLink("/self/shared_with_me");
         String baseUri = "/shares/with_user/" + userId;
         binder.addAdditionalLink("child_binders", baseUri + "/binders");
         binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
@@ -545,6 +554,8 @@ public class SelfResource extends AbstractFileResource {
         binder.setTitle("Shared by Me");
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
         Long userId = getLoggedInUserId();
+        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, userId.toString(), PermaLinkUtil.COLLECTION_SHARED_BY_ME));
+        binder.setLink("/self/shared_by_me");
         String baseUri = "/shares/by_user/" + userId;
         binder.addAdditionalLink("child_binders", baseUri + "/binders");
 //        binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
@@ -565,6 +576,8 @@ public class SelfResource extends AbstractFileResource {
         binder.setTitle("Net Folders");
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
         Long userId = getLoggedInUserId();
+        binder.setLink("/self/net_folders");
+        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, userId.toString(), PermaLinkUtil.COLLECTION_NET_FOLDERS));
         String baseUri = "/net_folders";
         binder.addAdditionalLink("child_binders", baseUri);
         //binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
