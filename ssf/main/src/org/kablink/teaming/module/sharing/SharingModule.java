@@ -40,7 +40,6 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.security.AccessControlException;
 
 /**
@@ -65,6 +64,7 @@ public interface SharingModule {
 	public boolean testAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, SharingOperation operation);
 	
 	public boolean testAddShareEntity(DefinableEntity de);
+	public boolean testAddShareEntityPublic(DefinableEntity de);
 
 	public boolean testShareEntityForward(DefinableEntity de);
 
