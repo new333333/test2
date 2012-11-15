@@ -189,15 +189,45 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 						topFolder = topFolder.getParentBinder();
 					}
 					//Now check if the root folder allows the requested operation
-					if (topFolder == null || !testAccess(shareItem, topFolder.getEntityIdentifier(), operation)) {
-						//The root folder does not allow this operation
-						throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
-					}
-					if (tryingToAllowShareForward) {
-						//Test if root allows sharing forward
-						if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingForward)) {
-							throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+					if (topFolder != null) {
+						//Check if the binder allows share forward
+						if (tryingToAllowShareForward) {
+							//Test if entry allows sharing forward
+							if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingForward)) {
+								throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
+							}
 						}
+						if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
+							if (recipient.getIdentityInfo().isInternal()) {
+								if (!binderModule.testAccess(topFolder, BinderOperation.allowSharing)) {
+									throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+								}
+							} else {
+								if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingExternal)) {
+									throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+								}
+							}
+						} else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
+							if (((User)recipient).isShared()) {
+								if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingPublic)) {
+									throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+								}
+							} else if (recipient.getIdentityInfo().isInternal()) {
+								if (!binderModule.testAccess(topFolder, BinderOperation.allowSharing)) {
+									throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+								}
+							} else {
+								if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingExternal)) {
+									throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+								}
+							}
+						} else if (shareItem.getRecipientType().equals(RecipientType.team)) {
+							//Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
+							throw new AccessControlException();
+						}
+					} else {
+						//The root folder does not exist
+						throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
 					}
 				}
 				//Check if the entry allows share forward
@@ -386,6 +416,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 						parentBinderToTest = parentBinderToTest.getParentBinder();
 					}
 				}
+				//Look for at least one type of sharing being enabled: internal, external or public
+				// Does the user have "share internal" rights and is the user enabled to do this?
 				if (accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL) && 
 						folderModule.testAccess(fe, FolderOperation.allowSharing)) {
 					// Yes!
@@ -397,9 +429,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 					}
 				}
 				// Does the user have "share external" rights and is the user enabled to do this?
-				else if (accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL) &&
-						folderModule.testAccess( fe, FolderOperation.allowSharingExternal ) )
-				{
+				if (!reply && accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL) &&
+						folderModule.testAccess( fe, FolderOperation.allowSharingExternal ) ) {
 					// Yes
 					//In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
 					if (parentBinderToTest != null) {

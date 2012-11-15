@@ -584,7 +584,13 @@ public class AccessUtils  {
        	//Next, try if the binder allows access
        	if (!entry.hasEntryAcl() || entry.isIncludeFolderAcl()) {
 	       	try {
-	       		getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
+	       		if (operation.equals(WorkAreaOperation.READ_ENTRIES)) {
+	       			getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
+	       		} else if (operation.equals(WorkAreaOperation.VIEW_BINDER_TITLE)) {
+	       			getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.viewBinderTitle);
+	       		} else {
+	       			getInstance().getAccessControlManager().checkOperation(user, binder, operation);
+	       		}
 	       		return;
 	       	} catch (OperationAccessControlException ex3) {
 	       		ace = ex3;
