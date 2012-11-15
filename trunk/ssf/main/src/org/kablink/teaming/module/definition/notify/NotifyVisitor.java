@@ -190,27 +190,35 @@ public class NotifyVisitor {
 		return result;
 	}
 	public String getUserThumbnailInlineImage(Principal p) {
-		ConvertedFileModule convertedFileModule = (ConvertedFileModule) SpringContextUtil.getBean("convertedFileModule");
 		String s_photo = "";
 		String ext = "";
 		if (!this.notifyDef.isRedacted()) {
-			Set photos = null;
-			CustomAttribute ca = p.getCustomAttribute("picture");
-			if (ca != null) photos = ca.getValueSet();
-			if (photos != null) {
-				FileAttachment photo = (FileAttachment)photos.iterator().next();
-				String fileName = photo.getFileItem().getName();
-				if (fileName.lastIndexOf(".") > 0) {
-					ext = fileName.substring(fileName.lastIndexOf(".")+1);
+			try {
+				Set photos = null;
+				CustomAttribute ca = p.getCustomAttribute("picture");
+				if (ca != null) photos = ca.getValueSet();
+				if (photos != null) {
+					FileAttachment photo = (FileAttachment)photos.iterator().next();
+					String fileName = photo.getFileItem().getName();
+					if (fileName.lastIndexOf(".") > 0) {
+						ext = fileName.substring(fileName.lastIndexOf(".")+1);
+					}
+					ByteArrayOutputStream baos = new ByteArrayOutputStream(
+							SSBlobSerializableType.OUTPUT_BYTE_ARRAY_INITIAL_SIZE);
+					ConvertedFileModule convertedFileModule = ((ConvertedFileModule) SpringContextUtil.getBean("convertedFileModule"));
+					convertedFileModule.readThumbnailFile(p.getParentBinder(), p, photo, baos);
+					try {
+						s_photo = new String(Base64.encodeBase64(baos.toByteArray()),"utf-8");
+					} catch (UnsupportedEncodingException e) {
+						s_photo = "";
+					}
 				}
-				ByteArrayOutputStream baos = new ByteArrayOutputStream(
-						SSBlobSerializableType.OUTPUT_BYTE_ARRAY_INITIAL_SIZE);
-				convertedFileModule.readThumbnailFile(p.getParentBinder(), p, photo, baos);
-				try {
-					s_photo = new String(Base64.encodeBase64(baos.toByteArray()),"utf-8");
-				} catch (UnsupportedEncodingException e) {
-					s_photo = "";
-				}
+			}
+			
+			catch (Exception ex) {
+				NotifyBuilderUtil.logger.error("Error processing thumbnail image for '" + p.getTitle() + "' :", ex);
+				s_photo = "";
+				ext     = "";
 			}
 		}
 		if (!s_photo.equals("") && !ext.equals("")) {
