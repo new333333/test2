@@ -673,21 +673,32 @@ public class EntityIndexUtils {
     		entryAclField = Constants.ENTRY_ACL_FIELD;
     		teamAclField = Constants.TEAM_ACL_FIELD;
          	entityIdentifiers.add(entity.getEntityIdentifier());
-    	} else if(entity instanceof Folder) {
+    	} else if(entity instanceof Binder) {
     		entryAclField = Constants.FOLDER_ACL_FIELD;
     		teamAclField = Constants.TEAM_ACL_FIELD;
-    		WorkArea workArea = (Folder) entity;
+    		WorkArea workArea = (Binder) entity;
         	entityIdentifiers.add(entity.getEntityIdentifier());
-        	while(workArea.isFunctionMembershipInherited()) {
-        		workArea = workArea.getParentWorkArea();
-        		if(workArea instanceof DefinableEntity)
-        			entityIdentifiers.add(((DefinableEntity)workArea).getEntityIdentifier());
+        	if (workArea.isAclExternallyControlled()) {
+            	while (workArea.isExtFunctionMembershipInherited()) {
+            		workArea = workArea.getParentWorkArea();
+            		if(workArea instanceof DefinableEntity) {
+            			entityIdentifiers.add(((DefinableEntity)workArea).getEntityIdentifier());
+            		}
+            	}
+        	} else {
+            	while (workArea.isFunctionMembershipInherited()) {
+            		workArea = workArea.getParentWorkArea();
+            		if(workArea instanceof DefinableEntity) {
+            			entityIdentifiers.add(((DefinableEntity)workArea).getEntityIdentifier());
+            		}
+            	}
         	}
     	}
     	else {
     		return; // sharing not supported
     	}
     	Long allUsersId = Utils.getAllUsersGroupId();
+    	boolean personal = Utils.isWorkareaInProfilesTree((WorkArea)entity);
      	Map<RecipientType, Set<Long>> idMap = profileDao.getRecipientIdsWithGrantedRightToSharedEntities(
      			entityIdentifiers, WorkAreaOperation.READ_ENTRIES.getName());
      	for (Long id : idMap.get(RecipientType.user)) {
@@ -695,7 +706,16 @@ public class EntityIndexUtils {
      	}
      	for (Long id : idMap.get(RecipientType.group)) {
      		if (id.equals(allUsersId)) {
-     			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, Constants.READ_ACL_ALL)); 
+     			if (entity instanceof FolderEntry) {
+	       			//If this is an entry and it includes the folder ACL, add "all" and "global"
+     				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, Constants.READ_ACL_ALL)); 
+	       			if (!personal) {
+	       				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, Constants.READ_ACL_GLOBAL)); 
+	       			}
+     			} else {
+     				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, Constants.READ_ACL_GLOBAL)); 
+     				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, Constants.READ_ACL_ALL)); 
+     			}
      		} else {
      			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, id.toString())); 
      		}
