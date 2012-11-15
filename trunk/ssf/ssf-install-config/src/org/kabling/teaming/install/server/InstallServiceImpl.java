@@ -1849,11 +1849,18 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		{
 
 			// Run the reconfigure
-			int result = executeCommand("cd /filrinstall; pwd; ./installer-filr.linux --silent --reconfigure").getExitValue();
+			ShellCommandInfo info = executeCommand("cd /filrinstall;./installer-filr.linux --silent --reconfigure");
 
-			if (result != 0)
+			if (info.getExitValue() != 0)
 			{
-				logger.debug("Error reconfiguring installer in silent mode,Error code " + result);
+				if(info.getOutput() != null)
+				{
+					for (String debugStr : info.getOutput())
+					{
+						logger.info(debugStr);
+					}
+				}
+				logger.debug("Error reconfiguring installer in silent mode,Error code " + info.getExitValue());
 				throw new ConfigurationSaveException();
 			}
 
