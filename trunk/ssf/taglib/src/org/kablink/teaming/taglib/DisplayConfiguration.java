@@ -57,6 +57,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.NLT;
@@ -121,7 +122,6 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 						jspBase = DEFAULT_EXT_BASE + Utils.getZoneKey() +
 							File.separator + extensionName + File.separator + "jsp" + File.separator;
 					for (Element nextItem:itemList) {
-						
 						//Find the jsp to run. Look in the definition configuration for this.
 						//Get the item type of the current item being processed 
 						String itemType = nextItem.attributeValue("name", "");
@@ -146,6 +146,18 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 						//get Item from main config document
 						Element itemDefinition = configBuilder.getItem(configDefinition, itemType);
 						if (itemDefinition != null) {
+							//See if this item is allowed by license
+							String license = itemDefinition.attributeValue("license", "");
+							String notLicense = itemDefinition.attributeValue("notLicense", "");
+							//Check if there is a license restriction. If so make sure the right license is in use
+							if (!license.equals("") && !LicenseChecker.isAuthorizedByLicense(license)) {
+								//Not running the right license, skip this item
+								continue;
+							}
+							if (!notLicense.equals("") && LicenseChecker.isAuthorizedByLicense(notLicense)) {
+								//Not allowed under this license, skip this item
+								continue;
+							}
 							String jspName;
 							String defaultJsp=configBuilder.getItemJspByStyle(itemDefinition, itemType, this.configJspStyle);
 							if (itemType.equals("customJsp")) {
