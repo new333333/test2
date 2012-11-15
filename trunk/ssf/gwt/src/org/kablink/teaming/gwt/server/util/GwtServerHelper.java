@@ -241,7 +241,6 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
-import org.kablink.teaming.portlet.binder.AccessControlController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
 import org.kablink.teaming.portletadapter.portlet.RenderResponseImpl;
@@ -254,9 +253,9 @@ import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.runwith.RunWithCallback;
 import org.kablink.teaming.security.runwith.RunWithTemplate;
@@ -7353,51 +7352,71 @@ public class GwtServerHelper {
 			// Create the UserSharingRightsInfoRpcResponseData to return.
 			UserSharingRightsInfoRpcResponseData reply = new UserSharingRightsInfoRpcResponseData();
 
-			// Set the global sharing options that are set on the zone.
-	    	Long					zoneId               = RequestContextHolder.getRequestContext().getZoneId();
-	    	ZoneConfig				zoneConfig           = getCoreDao().loadZoneConfig(zoneId);
-			AccessControlManager	accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
-			reply.setExternalEnabled(  accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL));
-			reply.setForwardingEnabled(accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_FORWARD) );
-			reply.setInternalEnabled(  accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL));
-			reply.setPublicEnabled(    accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC)  );
+			// Are there any work area function memberships configured
+			// on the zone?
+	    	ZoneConfig							zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+			AdminModule							am         = bs.getAdminModule();
+			List<WorkAreaFunctionMembership>	wafmList   = am.getWorkAreaFunctionMemberships(zoneConfig);
+			if (MiscUtil.hasItems(wafmList)) {
+				// Yes!  Scan them.
+				for (WorkAreaFunctionMembership wafm:  wafmList) {
+					// Is this an internal function that has members?
+					String fiId = am.getFunction(wafm.getFunctionId()).getInternalId();
+					if (MiscUtil.hasString(fiId) && MiscUtil.hasItems(wafm.getMemberIds())) {
+						// Yes!  Check it for being one of the sharing
+						// functions.
+						if      (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID)) reply.setExternalEnabled(  true);
+						else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_FORWARD_SHARING_INTERNALID))  reply.setForwardingEnabled(true);
+						else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_INTERNAL_SHARING_INTERNALID)) reply.setInternalEnabled(  true);
+						else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_PUBLIC_SHARING_INTERNALID))   reply.setPublicEnabled(    true);
 
+						// Once we set all the flags...
+						if (reply.allFlagsSet()) {
+							// ...we can quit looking.
+							break;
+						}
+					}
+				}
+			}
+			
 			// We're we given a single user whose sharing rights are
 			// being requested?
 			if ((null != userIds) && (1 == userIds.size())) {
 				// Yes!  Can we resolve that to a User?
-				boolean			allowExternal   = false;
-				boolean			allowForwarding = false;
-				boolean			allowInternal   = false;
-				boolean			allowPublic     = false;
-				Workspace		ws              = null;
-				List<Principal>	pList           = ResolveIds.getPrincipals(userIds);
+				Long					wsId  = null;
+				List<Principal>			pList = ResolveIds.getPrincipals(userIds);
+				PerUserShareRightsInfo	psri  = new PerUserShareRightsInfo();
 				if (MiscUtil.hasItems(pList)) {
 					Principal p = pList.get(0);
 					if (p instanceof UserPrincipal) {
 						// Yes!  Does that user have a workspace ID?
 						User user = ((User) p);
-						Long wsId = user.getWorkspaceId();
+						wsId = user.getWorkspaceId();
 						if (null != wsId) {
-							// Yes!  Can we read the roles assigned to
-							// that workspace?
-							ws = bs.getWorkspaceModule().getWorkspace(wsId);
-							Map model = new HashMap();
-							AccessControlController.setupAccess(bs, ws, model);
-							List functions = ((List) model.get(WebKeys.ACCESS_SORTED_FUNCTIONS));
-							if (MiscUtil.hasItems(functions)) {
-								// Yes!  Scan then.
-								for (Object fO:  functions) {
-									// Is this role an internal role?
-									Function f = ((Function) fO);
-									String fId = f.getInternalId();
-									if (MiscUtil.hasString(fId)) {
-										// Yes!  Track the sharing ones
-										// that we care about.
-										if      (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID)) allowExternal   = true;
-										else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID))  allowForwarding = true;
-										else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID)) allowInternal   = true;
-										else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID))   allowPublic     = true;
+							// Yes!  Are there any work area function
+							// memberships configured on that
+							// workspace?
+							wafmList = am.getWorkAreaFunctionMemberships(bs.getWorkspaceModule().getWorkspace(wsId));
+							if (MiscUtil.hasItems(wafmList)) {
+								// Yes!  Scan them.
+								for (WorkAreaFunctionMembership wafm:  wafmList) {
+									// Is this an internal function
+									// that has owner as a member?
+									String		fiId      = am.getFunction(wafm.getFunctionId()).getInternalId();
+									Set<Long>	memberIds = wafm.getMemberIds();
+									if (MiscUtil.hasString(fiId) && MiscUtil.hasItems(memberIds) && memberIds.contains(ObjectKeys.OWNER_USER_ID)) {
+										// Yes!  Check for it being one
+										// of the sharing functions.
+										if      (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID)) psri.setAllowExternal(  true);
+										else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID))  psri.setAllowForwarding(true);
+										else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID)) psri.setAllowInternal(  true);
+										else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID))   psri.setAllowPublic(    true);
+										
+										// Once we set all the flags...
+										if (psri.allFlagsSet()) {
+											// ...we can quit looking.
+											break;
+										}
 									}
 								}
 							}
@@ -7406,10 +7425,9 @@ public class GwtServerHelper {
 				}
 
 				// If this user has a user workspace...
-				if (null != ws) {
-					// ...construct a per user sharing rights for it
-					// ...and add it to the reply.
-					PerUserShareRightsInfo psri = new PerUserShareRightsInfo(allowExternal, allowForwarding, allowInternal, allowPublic);
+				if (null != wsId) {
+					// ...add their per user sharing rights to the
+					// ...reply.
 					reply.addUserRights(userIds.get(0), psri);
 				}
 			}

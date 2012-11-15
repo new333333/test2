@@ -3278,10 +3278,11 @@ public class GwtViewHelper {
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 
 			// Are we populating the profiles root binder?
+			boolean isManageUsers = false;
 			if (isProfilesRootWS) {
 				// Yes!  Is it for the manage users feature of the
 				// administration console?
-				boolean isManageUsers = folderInfo.getWorkspaceType().isProfileRootManagement();
+				isManageUsers = folderInfo.getWorkspaceType().isProfileRootManagement();
 				if (isManageUsers) {
 					// Yes!  Then we include disabled users.
 					options.put(ObjectKeys.SEARCH_INCLUDE_DISABLED_USERS, Boolean.TRUE);
@@ -3547,7 +3548,7 @@ public class GwtViewHelper {
 								pi = getPIFromPId(bs, request, p.getId());
 								if (null != pi) {
 									// ...store it directly.
-									if (pi.isUserPerson() || (!(Utils.checkIfFilr()))) {
+									if (pi.isUserPerson() || isManageUsers || (!(Utils.checkIfFilr()))) {
 										fr.setColumnValue(fc, pi);
 									}
 								}

@@ -77,6 +77,7 @@ import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.CollectionType;
@@ -971,9 +972,12 @@ public class GwtMenuHelper {
 			needSep2 = true;
 		}
 
-		// ...if the user can manage profiles and if system wide
+		// ...if the user can manage profiles and if any system wide
 		// ...sharing is enabled...
-		if (canManageProfiles && bs.getSharingModule().isSharingEnabled()) {
+		UserSharingRightsInfoRpcResponseData usri;
+		try                  {usri = GwtServerHelper.getUserSharingRightsInfo(bs, request, null);}
+		catch (Exception ex) {usri = null;                                                       }
+		if (canManageProfiles && (null != usri) && usri.anyFlagsSet()) {
 			// ...if needed add a separator item...
 			addNestedSeparatorIfNeeded(moreTBI, (needSep2 || needSeparator));
 			

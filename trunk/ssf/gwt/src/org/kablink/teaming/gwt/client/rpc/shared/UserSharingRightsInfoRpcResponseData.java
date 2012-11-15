@@ -88,4 +88,30 @@ public class UserSharingRightsInfoRpcResponseData implements IsSerializable, Vib
 	public void setInternalEnabled(  boolean                             internalEnabled)   {m_internalEnabled   = internalEnabled;  }
 	public void setPublicEnabled(    boolean                             publicEnabled)     {m_publicEnabled     = publicEnabled;    }
 	public void setUserRightsMap(    Map<Long, PerUserShareRightsInfo>   userRightsMap)     {m_userRightsMap     = userRightsMap;    }
+	
+	/**
+	 * Returns true if all of the flags are set and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean allFlagsSet() {
+		return (
+			m_externalEnabled   &&
+			m_forwardingEnabled &&
+			m_internalEnabled   &&
+			m_publicEnabled);
+	}
+	
+	/**
+	 * Returns true if any of the flags are set and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean anyFlagsSet() {
+		return (
+			m_externalEnabled   ||
+			m_forwardingEnabled ||
+			m_internalEnabled   ||
+			m_publicEnabled);
+	}
 }
