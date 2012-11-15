@@ -39,6 +39,9 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.CompleteExternalUserSelfRegistrationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLoginInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
@@ -49,6 +52,7 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -80,6 +84,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
@@ -113,6 +118,16 @@ public class LoginDlg extends DlgBox
 	private FlowPanel m_openIdProvidersPanel = null;
 	private Hidden m_openIdProviderInput = null;
 	private boolean m_requestedLoginInfo = false;
+	private LoginStatus m_loginStatus;
+	private TextBox m_firstNameTxtBox;
+	private TextBox m_lastNameTxtBox;
+	private PasswordTextBox m_pwd1TxtBox;
+	private PasswordTextBox m_pwd2TxtBox;
+	private RadioButton m_registerUsingOpenIdRb;
+	private String m_openIdProviderUrl;
+	private RadioButton m_registerUsingSelfRegRb;
+	private FlowPanel m_selfRegPanel;
+	private Button m_registerBtn;
 
 	/**
 	 * 
@@ -120,7 +135,7 @@ public class LoginDlg extends DlgBox
 	public enum LoginStatus
 	{
 		AuthenticationFailed,
-		ConfirmationRequested,
+		RegistrationRequired,
 		PromptForLogin
 	}
 	
@@ -263,13 +278,35 @@ public class LoginDlg extends DlgBox
 	@Override
 	public Panel createContent( Object props )
 	{
-		Element formElement;
-
 		// Hide the close image in the upper-right-hand corner
 		hideCloseImg();
 		
 		m_mainPanel = new FlowPanel();
 		
+		// The appropriate ui will be created by showDlg()
+		
+		init( props );
+
+		return m_mainPanel;
+	}// end createContent()
+	
+	
+	/*
+	 * Override the createFooter() method so we can control what buttons are in the footer.
+	 */
+	@Override
+	public FlowPanel createFooter()
+	{
+		return null;
+	}// end createFooter()
+
+	/**
+	 * 
+	 */
+	private void createFormPanel()
+	{
+		Element formElement;
+
 		// Get the <form ...> element that was created by GwtMainPage.jsp
 		formElement = Document.get().getElementById( "loginFormId" );
 		m_formPanel = new LoginFormPanel( formElement );
@@ -298,49 +335,7 @@ public class LoginDlg extends DlgBox
 				}
 			}
 		});
-		
-		// Add a row for the "user id" controls.
-		{
-			Element userIdElement;
-			
-			m_userIdLabelElement = Document.get().getElementById( "userIdLabel" );
-			m_userIdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgUserId() );
-			
-			userIdElement = Document.get().getElementById( "j_usernameId" );
-			m_userIdTxtBox = TextBox.wrap( userIdElement );
-		}
-		
-		// Add a row for the "password" controls.
-		{
-			Element pwdTxtBoxElement;
-			
-			m_pwdLabelElement = Document.get().getElementById( "pwdLabel" );
-			m_pwdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgPassword() );
-			
-			pwdTxtBoxElement = Document.get().getElementById( "j_passwordId" );
-			m_pwdTxtBox = PasswordTextBox.wrap( pwdTxtBoxElement );
-		}
-		
-		// Add a "login failed" label to the dialog.
-		{
-			Element loginFailedElement;
-			
-			loginFailedElement = Document.get().getElementById( "loginFailedMsgDiv" );
-			loginFailedElement.setInnerText( GwtTeaming.getMessages().loginDlgLoginFailed() );
-			m_loginFailedMsg = Label.wrap( loginFailedElement );
-			m_loginFailedMsg.setVisible( false );
-		}
-		
-		// Add a "Authenticating..." label to the dialog.
-		{
-			Element authenticatingElement;
-			
-			authenticatingElement = Document.get().getElementById( "authenticatingDiv" );
-			authenticatingElement.setInnerText( GwtTeaming.getMessages().loginDlgAuthenticating() );
-			m_authenticatingMsg = Label.wrap( authenticatingElement );
-			m_authenticatingMsg.setVisible( false );
-		}
-		
+
 		// Create a panel where hidden inputs will live.
 		m_hiddenInputPanel = new FlowPanel();
 		m_formPanel.add( m_hiddenInputPanel );
@@ -356,113 +351,15 @@ public class LoginDlg extends DlgBox
 			hiddenInput.setValue( m_springSecurityRedirect );
 			m_hiddenInputPanel.add( hiddenInput );
 		}
-		
-		// Create the ok and cancel buttons
+
+		// Add a hidden input that will hold the url of the selected OpenID authentication provider
 		{
-			Element okElement;
-			Element cancelElement;
-			
-			okElement = Document.get().getElementById( "loginOkBtn" );
-			m_okBtn = Button.wrap( okElement );
-			m_okBtn.setText( GwtTeaming.getMessages().login() );
-			
-			cancelElement = Document.get().getElementById( "loginCancelBtn" );
-			m_cancelBtn = Button.wrap( cancelElement );
-			m_cancelBtn.setText( GwtTeaming.getMessages().cancel() );
-			m_cancelBtn.addClickHandler( this );
-			m_cancelBtn.setVisible( false );
+			m_openIdProviderInput = new Hidden();
+			m_openIdProviderInput.setName( "openid_identifier" );
+			m_openIdProviderInput.setValue( "" );
+			m_hiddenInputPanel.add( m_openIdProviderInput );
 		}
-		
-		// Create a "Create new account" link that will initially be hidden.
-		// We will show this link later when we get the response to our request to get
-		// self registration info and self registration is allowed.
-		{
-			ClickHandler clickHandler;
-			MouseOverHandler mouseOverHandler;
-			MouseOutHandler mouseOutHandler;
-			Element selfRegElement;
-			
-			selfRegElement = Document.get().getElementById( "createNewAccountSpan" );
-			selfRegElement.setInnerText( GwtTeaming.getMessages().loginDlgCreateNewAccount() );
-			m_selfRegLink = InlineLabel.wrap( selfRegElement );
-			m_selfRegLink.setVisible( false );
-			
-			// Add a clickhandler to the "Create new account" link.  When the user clicks on the link we
-			// will invoke the "Create user" page.
-			clickHandler = new ClickHandler()
-			{
-				/**
-				 * Clear all branding information.
-				 */
-				@Override
-				public void onClick( ClickEvent event )
-				{
-					String url;
-					
-					// Get the url we need to invoke the "Create User" page.
-					url = m_selfRegInfo.getCreateUserUrl();
-					
-					// Invoke the "Create User" page in a new window.
-					Window.open( url, "self_reg_create_new_account", "height=750,resizeable,scrollbars,width=750" );
-				}//end onClick()
-			};
-			m_selfRegLink.addClickHandler( clickHandler );
-			
-			// Add a mouse-over handler
-			mouseOverHandler = new MouseOverHandler()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onMouseOver( MouseOverEvent event )
-				{
-					Widget widget;
-					
-					widget = (Widget)event.getSource();
-					widget.removeStyleName( "subhead-control-bg1" );
-					widget.addStyleName( "subhead-control-bg2" );
-				}// end onMouseOver()
-			};
-			m_selfRegLink.addMouseOverHandler( mouseOverHandler );
-
-			// Add a mouse-out handler
-			mouseOutHandler = new MouseOutHandler()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onMouseOut( MouseOutEvent event )
-				{
-					Widget widget;
-					
-					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
-					widget = (Widget)event.getSource();
-					widget.removeStyleName( "subhead-control-bg2" );
-					widget.addStyleName( "subhead-control-bg1" );
-				}// end onMouseOut()
-			};
-			m_selfRegLink.addMouseOutHandler( mouseOutHandler );
-		}
-		
-		m_mainPanel.add( m_formPanel );
-
-		init( props );
-
-		return m_mainPanel;
-	}// end createContent()
-	
-	
-	/*
-	 * Override the createFooter() method so we can control what buttons are in the footer.
-	 */
-	@Override
-	public FlowPanel createFooter()
-	{
-		return null;
-	}// end createFooter()
-	
+	}
 	
 	/**
 	 * Override the createHeader() method because we need to make it nicer.
@@ -537,14 +434,6 @@ public class LoginDlg extends DlgBox
 			};
 			m_useOpenIdCkbox.addValueChangeHandler( valueChangeHandler );
 
-			// Add a hidden input that will hold the url of the selected OpenID authentication provider
-			{
-				m_openIdProviderInput = new Hidden();
-				m_openIdProviderInput.setName( "openid_identifier" );
-				m_openIdProviderInput.setValue( "" );
-				m_hiddenInputPanel.add( m_openIdProviderInput );
-			}
-			
 			// Create a panel that holds all of the openid authentication providers
 			{
 				// Add a panel that will hold all of the OpenID authentication providers.
@@ -678,6 +567,13 @@ public class LoginDlg extends DlgBox
 	/**
 	 * 
 	 */
+	private void danceRegistrationControls()
+	{
+	}
+	
+	/**
+	 * 
+	 */
 	@Override
 	public Object getDataFromDlg()
 	{
@@ -685,6 +581,24 @@ public class LoginDlg extends DlgBox
 		return new Object();
 	}// end getDataFromDlg()
 	
+	/**
+	 * 
+	 */
+	private Long getExtUserId()
+	{
+		return GwtTeaming.getMainPage().getLoginExternalUserId();
+	}
+	
+	/**
+	 * 
+	 */
+	private String getFirstName()
+	{
+		if ( m_firstNameTxtBox != null )
+			return m_firstNameTxtBox.getValue();
+		
+		return null;
+	}
 	
 	/**
 	 *  
@@ -695,6 +609,17 @@ public class LoginDlg extends DlgBox
 		return m_userIdTxtBox;
 	}// end getFocusWidget()
 	
+	
+	/**
+	 * 
+	 */
+	private String getLastName()
+	{
+		if ( m_lastNameTxtBox != null )
+			return m_lastNameTxtBox.getValue();
+		
+		return null;
+	}
 	
 	/**
 	 * Issue an ajax request to get login info from the server.
@@ -755,6 +680,110 @@ public class LoginDlg extends DlgBox
 	}
 	
 	/**
+	 * 
+	 */
+	private String getPwd1()
+	{
+		if ( m_pwd1TxtBox != null )
+			return m_pwd1TxtBox.getValue();
+		
+		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	private String getPwd2()
+	{
+		if ( m_pwd2TxtBox != null )
+			return m_pwd2TxtBox.getValue();
+		
+		return null;
+	}
+	
+	/**
+	 * This method gets called when the user clicks on the Register button
+	 */
+	private void handleClickOnRegisterBtn()
+	{
+		if ( m_registerUsingOpenIdRb != null && m_registerUsingOpenIdRb.getValue() == true )
+		{
+			// Submit the form using the openid provider url
+			m_openIdProviderInput.setValue( m_openIdProviderUrl );
+			m_formPanel.submit();
+		}
+		else
+		{
+			CompleteExternalUserSelfRegistrationCmd cmd;
+			AsyncCallback<VibeRpcResponse> rpcCallback;
+			
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure( Throwable t )
+				{
+					// Don't call GwtClientHelper.handleGwtRPCFailure() like we would normally do.  If the
+					// session has expired, handleGwtRPCFailure() will invoke this login dialog again
+					// and we will be in an infinite loop.
+					// GwtClientHelper.handleGwtRPCFailure(
+					//	t,
+					//	GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo());
+					debugAlert( "In CompleteExternalUserSelfRegistrationCmd / onFailure()" );
+				}// end onFailure()
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					debugAlert( "In CompleteExternalUserSelfRegistrationCmd / onSuccess()" );
+					if ( response.getResponseData() != null && response.getResponseData() instanceof BooleanRpcResponseData )
+					{
+						BooleanRpcResponseData responseData;
+						
+						responseData = (BooleanRpcResponseData) response.getResponseData();
+						if ( responseData.getBooleanValue() == true )
+						{
+							ScheduledCommand cmd;
+							
+							cmd = new ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									showExternalUserRegConfirmation();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+						else
+							Window.alert( GwtTeaming.getMessages().loginDlg_externalUserSelfRegFailed() );
+					}
+				}
+			};
+			
+			// Did the user fill out all the necessary information
+			if ( isExternalUserSelfRegDataValid() == false )
+			{
+				// No, just bail.  The user will have already been told what's wrong.
+			}
+			
+			cmd = new CompleteExternalUserSelfRegistrationCmd(
+															getExtUserId(),
+															getFirstName(),
+															getLastName(),
+															getPwd1(),
+															GwtTeaming.getMainPage().getLoginConfirmationUrl() );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+	}
+	
+	/**
 	 * Submit the login form using the url of the selecte openid authentication provider.
 	 */
 	private void handleOpenIDAuthProviderSelected( GwtOpenIDAuthenticationProvider provider )
@@ -771,7 +800,8 @@ public class LoginDlg extends DlgBox
 	 */
 	private void hideAuthenticatingMsg()
 	{
-		m_authenticatingMsg.setVisible( false );
+		if ( m_authenticatingMsg != null )
+			m_authenticatingMsg.setVisible( false );
 	}// end hideAuthenticatingMsg()
 
 	
@@ -793,6 +823,50 @@ public class LoginDlg extends DlgBox
 	}// end init()
 
 	
+	/**
+	 * Did the user fill out all the necessary data for external user self registration
+	 */
+	private boolean isExternalUserSelfRegDataValid()
+	{
+		String name;
+		String pwd1;
+		String pwd2;
+		
+		name = getFirstName();
+		if ( name == null || name.length() == 0 )
+		{
+			Window.alert( GwtTeaming.getMessages().loginDlg_firstNameRequired() );
+			m_firstNameTxtBox.setFocus( true );
+			return false;
+		}
+		
+		name = getLastName();
+		if ( name == null || name.length() == 0 )
+		{
+			Window.alert( GwtTeaming.getMessages().loginDlg_lastNameRequired() );
+			m_lastNameTxtBox.setFocus( true );
+			return false;
+		}
+		
+		pwd1 = getPwd1();
+		if ( pwd1 == null || pwd1.length() == 0 )
+		{
+			Window.alert( GwtTeaming.getMessages().loginDlg_pwdRequired() );
+			m_pwd1TxtBox.setFocus( true );
+			return false;
+		}
+		
+		pwd2 = getPwd2();
+		if ( pwd1.equalsIgnoreCase( pwd2 ) == false )
+		{
+			Window.alert( GwtTeaming.getMessages().loginDlg_pwdDoNotMatch() );
+			m_pwd2TxtBox.setFocus( true );
+			return false;
+		}
+		
+		// If we get here, everything is good.
+		return true;
+	}
 	/*
 	 * This method gets called when the user clicks on a button in the footer.
 	 */
@@ -817,7 +891,8 @@ public class LoginDlg extends DlgBox
 	 */
 	private void setAllowCancel( boolean allowCancel )
 	{
-		m_cancelBtn.setVisible( allowCancel );
+		if ( m_cancelBtn != null )
+			m_cancelBtn.setVisible( allowCancel );
 	}// end setAllowCancel()
 	
 
@@ -827,27 +902,28 @@ public class LoginDlg extends DlgBox
 	public void showDlg( boolean allowCancel, LoginStatus loginStatus )
 	{
 		debugAlert( "In LoginDlg.showDlg()" );
-
-		// Otherwise, we assume we're to initialize and show the
-		// LoginDlg we were given!  Initialize...
-		setAllowCancel( allowCancel );
 		
-		hideAuthenticatingMsg();
-		hideLoginFailedMsg();
+		m_loginStatus = loginStatus;
+
 		switch ( loginStatus )
 		{
 		case AuthenticationFailed:
-		     showLoginFailedMsg();
-			break;
+			showRegularLoginUI();
+		    showLoginFailedMsg();
+		    break;
 			
-		case ConfirmationRequested:
-			showConfirmationRequestedUI();
+		case RegistrationRequired:
+			showExternalUserRegistrationUI();
 			break;
 			
 		case PromptForLogin:
+			showRegularLoginUI();
+			hideLoginFailedMsg();
 			break;
 		}
-		
+
+		setAllowCancel( allowCancel );
+
 		setPopupPositionAndShow( new PopupPanel.PositionCallback()
 		{
 			@Override
@@ -860,8 +936,8 @@ public class LoginDlg extends DlgBox
 			}
 		} );
 
-		// Issue an ajax request to get self registration info
-		if ( loginStatus != LoginStatus.ConfirmationRequested )
+		// Issue an ajax request to get self registration info and a list of open id providers
+		if ( loginStatus != LoginStatus.RegistrationRequired )
 			getLoginInfoFromServer();
 	}
 	
@@ -874,11 +950,9 @@ public class LoginDlg extends DlgBox
 	}// end showAuthenticatingMsg()
 
 	/**
-	 * An external user has logged in for the first time.  We need to tell the user that a confirmation
-	 * email has been sent and to please follow the instructions in the email to complete the registration
-	 * process.
+	 * Show the message when the external user has completed the registration
 	 */
-	private void showConfirmationRequestedUI()
+	private void showExternalUserRegConfirmation()
 	{
 		FlowPanel panel;
 		FlexTable table;
@@ -906,7 +980,378 @@ public class LoginDlg extends DlgBox
 		label.addStyleName( "loginDlg_confirmationHint" );
 		table.setWidget( 0, 1, label );
 		
+		m_registerBtn.setVisible( false );
+		
 		m_mainPanel.add( panel );
+	}
+	
+	/**
+	 * An external user needs to complete the registration process.  Show the UI needed for that.
+	 */
+	private void showExternalUserRegistrationUI()
+	{
+		String openIdProviderName;
+		GwtTeamingMessages messages;
+		FlowPanel panel;
+		
+		m_mainPanel.clear();
+
+		messages = GwtTeaming.getMessages();
+		
+		createFormPanel();
+		
+		panel = new FlowPanel();
+		panel.addStyleName( "loginDlg_RegistrationRequiredPanel" );
+		m_mainPanel.add( panel );
+		
+		// Hide the ok and cancel buttons
+		{
+			Element okElement;
+			Element cancelElement;
+			
+			okElement = Document.get().getElementById( "loginOkBtn" );
+			m_okBtn = Button.wrap( okElement );
+			m_okBtn.setVisible( false );
+			
+			cancelElement = Document.get().getElementById( "loginCancelBtn" );
+			m_cancelBtn = Button.wrap( cancelElement );
+			m_cancelBtn.setText( messages.cancel() );
+			m_cancelBtn.addClickHandler( this );
+			m_cancelBtn.setVisible( false );
+		}
+
+		// Show the Register button
+		{
+			Element element;
+			
+			element = Document.get().getElementById( "loginRegisterBtn" );
+			m_registerBtn = Button.wrap( element );
+			m_registerBtn.setText( messages.loginDlg_Register() );
+			m_registerBtn.setVisible( true );
+			
+			m_registerBtn.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							handleClickOnRegisterBtn();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+
+		// Get the name of the OpenID provider the user can use to complete the registration.
+		openIdProviderName = GwtTeaming.getMainPage().getLoginOpenIdProviderName();
+
+		// Get the url of the OpenID provider
+		m_openIdProviderUrl = GwtTeaming.getMainPage().getLoginOpenIdProviderUrl();
+		
+		// Does the user have the option of completing the registration using OpenID? 
+		if ( openIdProviderName != null && openIdProviderName.length() > 0 &&
+			 m_openIdProviderUrl != null && m_openIdProviderUrl.length() > 0 )
+		{
+			ValueChangeHandler<java.lang.Boolean> valueChangeHandler;
+			FlowPanel rbPanel;
+
+			// Yes
+			rbPanel = new FlowPanel();
+			m_registerUsingOpenIdRb = new RadioButton( "regMethod", messages.loginDlg_RegisterUsingOpenID( openIdProviderName ) );
+			rbPanel.add( m_registerUsingOpenIdRb );
+			panel.add( rbPanel );
+			
+			rbPanel = new FlowPanel();
+			m_registerUsingSelfRegRb = new RadioButton( "regMethod", messages.loginDlg_RegisterUsingSelfReg() );
+			rbPanel.add( m_registerUsingSelfRegRb );
+			panel.add( rbPanel );
+
+			valueChangeHandler = new ValueChangeHandler<java.lang.Boolean>()
+			{
+				@Override
+				public void onValueChange( ValueChangeEvent<java.lang.Boolean> event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							danceRegistrationControls();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			
+			m_registerUsingOpenIdRb.addValueChangeHandler( valueChangeHandler );
+			m_registerUsingSelfRegRb.addValueChangeHandler( valueChangeHandler );
+			
+			m_registerUsingSelfRegRb.setValue( true );
+		}
+		
+		// Create a panel that holds the self registration controls
+		{
+			FlexTable table;
+			Label label;
+			int row;
+
+			m_selfRegPanel = new FlowPanel();
+			m_selfRegPanel.addStyleName( "loginDlg_selfRegPanel" );
+			
+			// If we created radio buttons, indent the self registration panel 
+			if ( m_registerUsingSelfRegRb != null )
+				m_selfRegPanel.addStyleName( "marginleft2" );
+
+			// Add some instructions
+			label = new Label( messages.loginDlg_ExtUserRegistrationHint() );
+			label.addStyleName( "loginDlg_extUserSelfRegHint" );
+			m_selfRegPanel.add( label );
+			
+			panel.add( m_selfRegPanel );
+			
+			row = 0;
+			table = new FlexTable();
+			
+			m_selfRegPanel.add( table );
+			
+			// Add the controls for the first name
+			{
+				label = new Label( messages.loginDlg_FirstNameLabel() );
+				table.setHTML( row, 0, label.getElement().getInnerHTML() );
+	
+				m_firstNameTxtBox = new TextBox();
+				m_firstNameTxtBox.setVisibleLength( 20 );
+				table.setWidget( row, 1, m_firstNameTxtBox );
+			
+				++row;
+			}
+			
+			// Add the controls for the last name
+			{
+				label = new Label( messages.loginDlg_LastNameLabel() );
+				table.setHTML( row, 0, label.getElement().getInnerHTML() );
+	
+				m_lastNameTxtBox = new TextBox();
+				m_lastNameTxtBox.setVisibleLength( 20 );
+				table.setWidget( row, 1, m_lastNameTxtBox );
+				
+				++row;
+			}
+			
+			// Add the controls for the password
+			{
+				label = new InlineLabel( messages.loginDlg_PwdLabel() );
+				table.setHTML( row, 0, label.getElement().getInnerHTML() );
+				
+				m_pwd1TxtBox = new PasswordTextBox();
+				m_pwd1TxtBox.setVisibleLength( 20 );
+				table.setWidget( row, 1, m_pwd1TxtBox );
+				++row;
+			}
+
+			// Add the controls for the reenter password
+			{
+				label = new InlineLabel( messages.loginDlg_ReenterPwdLabel() );
+				table.setHTML( row, 0, label.getElement().getInnerHTML() );
+				
+				m_pwd2TxtBox = new PasswordTextBox();
+				m_pwd2TxtBox.setVisibleLength( 20 );
+				table.setWidget( row, 1, m_pwd2TxtBox );
+				++row;
+			}
+		}
+		
+		// Hide the user name and password controls that are used for regular authentication
+		{
+			Element element;
+			TextBox txtBox;
+			PasswordTextBox pwd;
+			InlineLabel label;
+			
+			element = Document.get().getElementById( "userIdLabel" );
+			if ( element != null )
+			{
+				label = InlineLabel.wrap( element );
+				label.setVisible( false );
+			}
+
+			element = Document.get().getElementById( "j_usernameId" );
+			if ( element != null )
+			{
+				txtBox = TextBox.wrap( element );
+				txtBox.setVisible( false );
+			}
+
+			element = Document.get().getElementById( "pwdLabel" );
+			if ( element != null )
+			{
+				label = InlineLabel.wrap( element );
+				label.setVisible( false );
+			}
+
+			element = Document.get().getElementById( "j_passwordId" );
+			if ( element != null )
+			{
+				pwd = PasswordTextBox.wrap( element );
+				pwd.setVisible( false );
+			}
+		}
+
+		danceRegistrationControls();
+		
+		m_mainPanel.add( m_formPanel );
+	}
+	
+	/**
+	 * Show the UI needed for regular login
+	 */
+	private void showRegularLoginUI()
+	{
+		m_mainPanel.clear();
+		
+		createFormPanel();
+		
+		// Add a row for the "user id" controls.
+		{
+			Element userIdElement;
+			
+			m_userIdLabelElement = Document.get().getElementById( "userIdLabel" );
+			m_userIdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgUserId() );
+			
+			userIdElement = Document.get().getElementById( "j_usernameId" );
+			m_userIdTxtBox = TextBox.wrap( userIdElement );
+		}
+		
+		// Add a row for the "password" controls.
+		{
+			Element pwdTxtBoxElement;
+			
+			m_pwdLabelElement = Document.get().getElementById( "pwdLabel" );
+			m_pwdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgPassword() );
+			
+			pwdTxtBoxElement = Document.get().getElementById( "j_passwordId" );
+			m_pwdTxtBox = PasswordTextBox.wrap( pwdTxtBoxElement );
+		}
+		
+		// Add a "login failed" label to the dialog.
+		{
+			Element loginFailedElement;
+			
+			loginFailedElement = Document.get().getElementById( "loginFailedMsgDiv" );
+			loginFailedElement.setInnerText( GwtTeaming.getMessages().loginDlgLoginFailed() );
+			m_loginFailedMsg = Label.wrap( loginFailedElement );
+			m_loginFailedMsg.setVisible( false );
+		}
+		
+		// Add a "Authenticating..." label to the dialog.
+		{
+			Element authenticatingElement;
+			
+			authenticatingElement = Document.get().getElementById( "authenticatingDiv" );
+			authenticatingElement.setInnerText( GwtTeaming.getMessages().loginDlgAuthenticating() );
+			m_authenticatingMsg = Label.wrap( authenticatingElement );
+			m_authenticatingMsg.setVisible( false );
+		}
+		
+		// Create the ok and cancel buttons
+		{
+			Element okElement;
+			Element cancelElement;
+			
+			okElement = Document.get().getElementById( "loginOkBtn" );
+			m_okBtn = Button.wrap( okElement );
+			m_okBtn.setText( GwtTeaming.getMessages().login() );
+			
+			cancelElement = Document.get().getElementById( "loginCancelBtn" );
+			m_cancelBtn = Button.wrap( cancelElement );
+			m_cancelBtn.setText( GwtTeaming.getMessages().cancel() );
+			m_cancelBtn.addClickHandler( this );
+			m_cancelBtn.setVisible( false );
+		}
+		
+		// Create a "Create new account" link that will initially be hidden.
+		// We will show this link later when we get the response to our request to get
+		// self registration info and self registration is allowed.
+		{
+			ClickHandler clickHandler;
+			MouseOverHandler mouseOverHandler;
+			MouseOutHandler mouseOutHandler;
+			Element selfRegElement;
+			
+			selfRegElement = Document.get().getElementById( "createNewAccountSpan" );
+			selfRegElement.setInnerText( GwtTeaming.getMessages().loginDlgCreateNewAccount() );
+			m_selfRegLink = InlineLabel.wrap( selfRegElement );
+			m_selfRegLink.setVisible( false );
+			
+			// Add a clickhandler to the "Create new account" link.  When the user clicks on the link we
+			// will invoke the "Create user" page.
+			clickHandler = new ClickHandler()
+			{
+				/**
+				 * Clear all branding information.
+				 */
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					String url;
+					
+					// Get the url we need to invoke the "Create User" page.
+					url = m_selfRegInfo.getCreateUserUrl();
+					
+					// Invoke the "Create User" page in a new window.
+					Window.open( url, "self_reg_create_new_account", "height=750,resizeable,scrollbars,width=750" );
+				}//end onClick()
+			};
+			m_selfRegLink.addClickHandler( clickHandler );
+			
+			// Add a mouse-over handler
+			mouseOverHandler = new MouseOverHandler()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onMouseOver( MouseOverEvent event )
+				{
+					Widget widget;
+					
+					widget = (Widget)event.getSource();
+					widget.removeStyleName( "subhead-control-bg1" );
+					widget.addStyleName( "subhead-control-bg2" );
+				}// end onMouseOver()
+			};
+			m_selfRegLink.addMouseOverHandler( mouseOverHandler );
+
+			// Add a mouse-out handler
+			mouseOutHandler = new MouseOutHandler()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onMouseOut( MouseOutEvent event )
+				{
+					Widget widget;
+					
+					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
+					widget = (Widget)event.getSource();
+					widget.removeStyleName( "subhead-control-bg2" );
+					widget.addStyleName( "subhead-control-bg1" );
+				}// end onMouseOut()
+			};
+			m_selfRegLink.addMouseOutHandler( mouseOutHandler );
+		}
+		
+		m_mainPanel.add( m_formPanel );
 	}
 	
 	/**
@@ -944,7 +1389,7 @@ public class LoginDlg extends DlgBox
 	 */
 	private boolean getUseOpenIDAuthentication()
 	{
-		if ( m_useOpenIdCkbox != null && m_useOpenIdCkbox.getValue() == true )
+		if ( m_useOpenIdCkbox != null && m_useOpenIdCkbox.isVisible() && m_useOpenIdCkbox.getValue() == true )
 			return true;
 		
 		return false;

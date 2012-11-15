@@ -123,6 +123,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
@@ -279,6 +280,7 @@ import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Clipboard;
+import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.FavoritesLimitExceededException;
 import org.kablink.teaming.web.util.GwtUIHelper;
@@ -1581,6 +1583,47 @@ public class GwtServerHelper {
 		catch (Exception ex) {
 			throw getGwtTeamingException(ex);
 		}
+	}
+	
+	/**
+	 * Complete the self registration of an external user
+	 */
+	public static Boolean completeExternalUserSelfRegistration(
+		AllModulesInjected ami,
+		Long extUserId,
+		String firstName,
+		String lastName,
+		String pwd,
+		String permaLink )
+	{
+		try
+		{
+			ProfileDao profileDao;
+			Map updates;
+			User extUser;
+			
+			// Get the external user.
+			profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
+			extUser = profileDao.loadUser( extUserId, RequestContextHolder.getRequestContext().getZoneId() );
+			
+			updates = new HashMap();
+			updates.put( ObjectKeys.FIELD_USER_PASSWORD, pwd );
+			updates.put( ObjectKeys.FIELD_USER_FIRSTNAME, firstName );
+			updates.put( ObjectKeys.FIELD_USER_LASTNAME, lastName );
+
+			ami.getProfileModule().modifyUserFromPortal( extUser, updates, null );
+			
+			ExternalUserUtil.markAsCredentialed( extUser );
+			
+			// Send an email informing the user that their registration is complete.
+			EmailHelper.sendConfirmationToExternalUser( ami, extUserId, permaLink );
+		}
+		catch ( Exception ex )
+		{
+			return false;
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -8372,6 +8415,7 @@ public class GwtServerHelper {
 		case CHECK_NET_FOLDERS_STATUS:
 		case CHECK_NET_FOLDER_SERVERS_STATUS:
 		case COLLAPSE_SUBTASKS:
+		case COMPLETE_EXTERNAL_USER_SELF_REGISTRATION:
 		case COPY_ENTRIES:
 		case CREATE_NET_FOLDER:
 		case CREATE_NET_FOLDER_ROOT:

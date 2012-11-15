@@ -373,6 +373,7 @@
 		<div class="teamingDlgBoxFooter" id="loginDlgFooterId" style="margin: 0px !important;">
 			<button type="submit" class="gwt-Button teamingButton" id="loginOkBtn" ></button>
 			<button type="button" class="gwt-Button teamingButton" style="" id="loginCancelBtn"></button>
+			<button type="button" class="gwt-Button teamingButton" style="display: none;" id="loginRegisterBtn"></button>
 		</div>
 
 	</form>

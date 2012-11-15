@@ -33,6 +33,8 @@
 package org.kablink.teaming.portlet.forum;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -45,8 +47,10 @@ import javax.servlet.http.HttpSession;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.extuser.ExternalUserRequiresVerificationException;
+import org.kablink.teaming.extuser.ExternalUserRespondingToInvitationException;
 import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
@@ -73,7 +77,7 @@ import org.springframework.web.portlet.ModelAndView;
 public class LoginController  extends SAbstractControllerRetry {
 
 	private static final String LOGIN_STATUS_AUTHENTICATION_FAILED = "authenticationFailed";
-	private static final String LOGIN_STATUS_CONFIRMATION_REQUIRED = "confirmationRequired";
+	private static final String LOGIN_STATUS_REGISTRATION_REQUIRED = "registrationRequired";
 	private static final String LOGIN_STATUS_PROMPT_FOR_LOGIN = "promptForLogin";
 	
 	//caller will retry on OptimisiticLockExceptions
@@ -131,81 +135,170 @@ public class LoginController  extends SAbstractControllerRetry {
     	sessionObj = session.getAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY );
     	if ( sessionObj != null )
     	{
-    		if ( sessionObj instanceof ExternalUserRequiresVerificationException )
+    		if ( sessionObj instanceof ExternalUserRespondingToInvitationException )
     		{
-    			ExternalUserRequiresVerificationException ex;
-    			
-    			// An external user successfully logged in for the first time.
-    			// Get the external user that authenticated.
-    			ex = (ExternalUserRequiresVerificationException) sessionObj;
-    			
-    			// Send the external user a confirmation email.
+    			if ( Utils.checkIfFilr() )
     			{
-	    			String permaLink = null;
-        			User extUser;
-        			String redirectUrl;
-
+	    			ExternalUserRespondingToInvitationException ex;
+	    			String providerName;
+	    			User extUser;
+	    			
+	    			ex = (ExternalUserRespondingToInvitationException) sessionObj;
         			extUser = ex.getExternalUser();
-        			
-        			// Get the original url the user used to hit Filr.
-    				redirectUrl = ex.getRedirectUrl();
-    				
-    				// Get the permalink to the item that was shared.  redirectUrl is the original url the
-    				// user was sent in the first share email.  We need to replace "euet=xxx" with
-    				// "euet=some new token value".
-    				if ( redirectUrl != null && redirectUrl.length() > 0 )
-    				{
-    	    			String newToken;
-    	    			String[] params;
-
-    				    // Create a new token
-    					newToken = ExternalUserUtil.encodeUserTokenWithNewSeed( extUser );
-
-    					params = redirectUrl.split( "&" );
-    					for ( String param : params )
-    					{
-    						String[] split;
-    						
-    						split = param.split( "=" );
-    						if ( split != null && split.length == 2 )
-    						{
-    							String name;
-    							String value;
-
-    							name = split[0];
-    							value = split[1];
-    							if ( value != null && name != null && name.equalsIgnoreCase( "euet" ) )
-    							{
-    								String old;
-    								String replacement;
-    								
-    								old = name + "=" + value;
-    								replacement = name + "=" + newToken;
-    								permaLink = redirectUrl.replaceFirst( old, replacement );
-    								break;
-    							}
-    						}
-    					}
-    				}
-					
-					// Do we have a permalink?
-					if ( permaLink != null )
-					{
-						// Send a confirmation email to the user.
-						try
-						{
-							// Send the confirmation.
-							//!!! getAdminModule().sendShareConfirmMailToExternalUser( extUser.getId(), permaLink );
-						}
-						catch ( Exception sendEmailEx )
-						{
-						}
-					}
+	    			
+	    			// Get the name of the opend id provider this user can use
+	    			providerName = ex.getAllowedOpenidProviderName();
+	    			if ( providerName != null && providerName.length() > 0 )
+	    			{
+	    				String providerUrl;
+	    				
+	    				// Get the url needed to authenticate using this provider
+	    				providerUrl = getOpenIDProviderUrl( providerName );
+	    				
+	    				if ( providerUrl != null && providerUrl.length() > 0 )
+	    				{
+	    					// Tell the login dialog the name of the open id provider the user can use.
+	    					model.put( WebKeys.LOGIN_OPEN_ID_PROVIDER_NAME, providerName );
+	    					model.put( WebKeys.LOGIN_OPEN_ID_PROVIDER_URL, providerUrl );
+	    				}
+	    			}
+	    			
+	    			// Send the external user a confirmation email.
+	    			{
+		    			String permaLink = null;
+	        			String invitationLink;
+	
+	        			// Get the original url the user used to hit Filr.
+	    				invitationLink = ex.getInvitationLink();
+	    				
+	    				// invitationLink is the original url the
+	    				// user was sent in the first share email.  We need to replace "euet=xxx" with
+	    				// "euet=some new token value".
+	    				if ( invitationLink != null && invitationLink.length() > 0 )
+	    				{
+	    	    			String newToken;
+	    	    			String[] params;
+	
+	    				    // Create a new token
+	    					newToken = ExternalUserUtil.encodeUserTokenWithNewSeed( extUser );
+	
+	    					params = invitationLink.split( "&" );
+	    					for ( String param : params )
+	    					{
+	    						String[] split;
+	    						
+	    						split = param.split( "=" );
+	    						if ( split != null && split.length == 2 )
+	    						{
+	    							String name;
+	    							String value;
+	
+	    							name = split[0];
+	    							value = split[1];
+	    							if ( value != null && name != null && name.equalsIgnoreCase( "euet" ) )
+	    							{
+	    								String old;
+	    								String replacement;
+	    								
+	    								old = name + "=" + value;
+	    								replacement = name + "=" + newToken;
+	    								permaLink = invitationLink.replaceFirst( old, replacement );
+	    								break;
+	    							}
+	    						}
+	    					}
+	    				}
+						
+						// Do we have a permalink?
+						if ( permaLink != null )
+							model.put( WebKeys.LOGIN_CONFIRMATION_URL, permaLink );
+	    			}
+	
+	    			// Tell the login dialog the id of the external user
+	    			model.put( WebKeys.LOGIN_EXTERNAL_USER_ID, String.valueOf( extUser.getId() ) );
+	    			
+	    			// Tell the login dialog that an external user is responding to an invitation.
+	    			model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_REGISTRATION_REQUIRED );
     			}
-
-    			// Tell the login dialog that an external user authenticated for the first time.
-    			// The login dialog ui should tell the user to go check their email.
-    			model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_CONFIRMATION_REQUIRED );
+    		}
+    		else if ( sessionObj instanceof ExternalUserRequiresVerificationException )
+    		{
+    			if ( Utils.checkIfFilr() )
+    			{
+	    			ExternalUserRequiresVerificationException ex;
+	    			
+	    			// An external user successfully logged in for the first time.
+	    			// Get the external user that authenticated.
+	    			ex = (ExternalUserRequiresVerificationException) sessionObj;
+	    			
+	    			// Send the external user a confirmation email.
+	    			{
+		    			String permaLink = null;
+	        			User extUser;
+	        			String redirectUrl;
+	
+	        			extUser = ex.getExternalUser();
+	        			
+	        			// Get the original url the user used to hit Filr.
+	    				redirectUrl = ex.getRedirectUrl();
+	    				
+	    				// Get the permalink to the item that was shared.  redirectUrl is the original url the
+	    				// user was sent in the first share email.  We need to replace "euet=xxx" with
+	    				// "euet=some new token value".
+	    				if ( redirectUrl != null && redirectUrl.length() > 0 )
+	    				{
+	    	    			String newToken;
+	    	    			String[] params;
+	
+	    				    // Create a new token
+	    					newToken = ExternalUserUtil.encodeUserTokenWithNewSeed( extUser );
+	
+	    					params = redirectUrl.split( "&" );
+	    					for ( String param : params )
+	    					{
+	    						String[] split;
+	    						
+	    						split = param.split( "=" );
+	    						if ( split != null && split.length == 2 )
+	    						{
+	    							String name;
+	    							String value;
+	
+	    							name = split[0];
+	    							value = split[1];
+	    							if ( value != null && name != null && name.equalsIgnoreCase( "euet" ) )
+	    							{
+	    								String old;
+	    								String replacement;
+	    								
+	    								old = name + "=" + value;
+	    								replacement = name + "=" + newToken;
+	    								permaLink = redirectUrl.replaceFirst( old, replacement );
+	    								break;
+	    							}
+	    						}
+	    					}
+	    				}
+						
+						// Do we have a permalink?
+						if ( permaLink != null )
+						{
+							// Send a confirmation email to the user.
+							try
+							{
+								// Send the confirmation.
+								//!!! getAdminModule().sendShareConfirmMailToExternalUser( extUser.getId(), permaLink );
+							}
+							catch ( Exception sendEmailEx )
+							{
+							}
+						}
+	    			}
+	
+	    			// Tell the login dialog that an external user authenticated for the first time.
+	    			// The login dialog ui should tell the user to go check their email.
+	    			model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_REGISTRATION_REQUIRED );
+    			}
     		}
     		else if ( sessionObj instanceof AuthenticationException )
     		{
@@ -298,5 +391,37 @@ public class LoginController  extends SAbstractControllerRetry {
 		}
 		
 		return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
-	} 
+	}
+	
+	/**
+	 * Return a list of OpenID Authentication providers supported by Vibe
+	 */
+	private String getOpenIDProviderUrl( String providerName )
+	{
+		List<OpenIDProvider> providers; 
+		
+		if ( providerName == null )
+			return null;
+		
+		// Get a list of the OpenID providers
+		providers = getAdminModule().getOpenIDProviders();
+		if ( providers != null && providers.size() > 0 )
+		{
+			Iterator<OpenIDProvider> iterator;
+			
+			iterator = providers.iterator();
+			while ( iterator.hasNext() )
+			{
+				OpenIDProvider provider;
+				
+				provider = iterator.next();
+				
+				if ( providerName.equalsIgnoreCase( provider.getName() ) )
+					return provider.getUrl();
+			}
+		}
+		
+		// If we get here we did not find the given provider name
+		return null;
+	}
 }

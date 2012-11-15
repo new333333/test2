@@ -1066,10 +1066,14 @@ public class WebKeys {
 
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String LIST_UNSEEN_COUNTS_BINDER_IDS="ss_unseenCountsBinderIds";
+    public static final String LOGIN_CONFIRMATION_URL = "ss_login_confirmation_url";
     public static final String LOGIN_ERROR="ss_loginError";
     public static final String LOGIN_ERROR_LOGIN_FAILED="loginFailed";
     public static final String LOGIN_ERROR_LOGINS_NOT_ALLOWED="loginsNotAllowed";
     public static final String LOGIN_ERROR_USER_ALREADY_LOGGED_IN="userAlreadyLoggedIn";
+    public static final String LOGIN_EXTERNAL_USER_ID = "ss_login_external_user_id";
+    public static final String LOGIN_OPEN_ID_PROVIDER_NAME = "ss_login_open_id_provider_name";
+    public static final String LOGIN_OPEN_ID_PROVIDER_URL = "ss_login_open_id_provider_url";
     public static final String LOGIN_STATUS = "ss_loginStatus";
     public static final String LOGIN_URL="ss_loginUrl";
     public static final String LOGIN_POST_URL="ss_loginPostUrl";
