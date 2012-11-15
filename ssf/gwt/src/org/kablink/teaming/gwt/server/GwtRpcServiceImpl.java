@@ -337,7 +337,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 																		srCmd.getFirstName(),
 																		srCmd.getLastName(),
 																		srCmd.getPwd(),
-																		srCmd.getPermaLink() );
+																		srCmd.getInvitationUrl() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}

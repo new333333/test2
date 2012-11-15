@@ -44,7 +44,7 @@ public class CompleteExternalUserSelfRegistrationCmd extends VibeRpcCmd
 	private String m_firstName;
 	private String m_lastName;
 	private String m_pwd;
-	private String m_permaLink;
+	private String m_invitationUrl;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
@@ -68,7 +68,7 @@ public class CompleteExternalUserSelfRegistrationCmd extends VibeRpcCmd
 		m_firstName = firstName;
 		m_lastName = lastName;
 		m_pwd = pwd;
-		m_permaLink = permaLink;
+		m_invitationUrl = permaLink;
 	}
 	
 	/**
@@ -111,9 +111,9 @@ public class CompleteExternalUserSelfRegistrationCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public String getPermaLink()
+	public String getInvitationUrl()
 	{
-		return m_permaLink;
+		return m_invitationUrl;
 	}
 	
 	/**

@@ -83,7 +83,7 @@
 		timeZone:							'${ssUser.timeZone.ID}',
 		timeZoneIdAbrev:					'<fmt:formatDate value="<%= now %>" pattern="z" timeZone="${ssUser.timeZone.ID}" />',
 		timeZoneOffsetHour:					${tzOffsetHour},
-		loginConfirmationUrl:				'<ssf:escapeJavaScript>${ss_login_confirmation_url}</ssf:escapeJavaScript>',
+		loginInvitationUrl:					'<ssf:escapeJavaScript>${ss_login_invitation_url}</ssf:escapeJavaScript>',
 		loginError:							'<ssf:escapeJavaScript>${ss_loginError}</ssf:escapeJavaScript>',
 		loginExternalUserId:				'<ssf:escapeJavaScript>${ss_login_external_user_id}</ssf:escapeJavaScript>',
 		loginOpenIdProviderName:			'<ssf:escapeJavaScript>${ss_login_open_id_provider_name}</ssf:escapeJavaScript>',

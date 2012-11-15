@@ -1551,9 +1551,9 @@ public class GwtMainPage extends ResizeComposite
 	/**
 	 * 
 	 */
-	public String getLoginConfirmationUrl()
+	public String getLoginInvitationUrl()
 	{
-		return m_requestInfo.getLoginConfirmationUrl();
+		return m_requestInfo.getLoginInvitationUrl();
 	}
 	
 	/**

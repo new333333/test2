@@ -697,6 +697,7 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlg_AuthProviderVerisign();
 	String loginDlg_AuthProviderYahoo();
 	String loginDlg_AuthProviderUnknown();
+	String loginDlg_AuthenticateUsingOpenID( String providerName );
 	String loginDlg_ConfirmationText();
 	String loginDlg_externalUserSelfRegFailed();
 	String loginDlg_ExtUserRegistrationHint();
@@ -704,12 +705,12 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlg_firstNameRequired();
 	String loginDlg_LastNameLabel();
 	String loginDlg_lastNameRequired();
+	String loginDlg_OrLabel();
 	String loginDlg_PwdLabel();
 	String loginDlg_pwdRequired();
 	String loginDlg_pwdDoNotMatch();
 	String loginDlg_ReenterPwdLabel();
 	String loginDlg_Register();
-	String loginDlg_RegisterUsingOpenID( String providerName );
 	String loginDlg_RegisterUsingSelfReg();
 	String loginDlgAuthenticating();
 	String loginDlgCreateNewAccount();
