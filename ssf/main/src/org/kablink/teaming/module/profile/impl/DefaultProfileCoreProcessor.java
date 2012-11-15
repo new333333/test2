@@ -406,13 +406,13 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
    			}
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL)) {
-    			entryData.put(ObjectKeys.FIELD_USER_EMAIL, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL));
+    			entryData.put(ObjectKeys.FIELD_USER_EMAIL, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL).toLowerCase());
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL_MOBILE) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL_MOBILE)) {
-    			entryData.put(ObjectKeys.FIELD_USER_EMAIL_MOBILE, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL_MOBILE));
+    			entryData.put(ObjectKeys.FIELD_USER_EMAIL_MOBILE, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL_MOBILE).toLowerCase());
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL_TEXT) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL_TEXT)) {
-    			entryData.put(ObjectKeys.FIELD_USER_EMAIL_TEXT, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL_TEXT));
+    			entryData.put(ObjectKeys.FIELD_USER_EMAIL_TEXT, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL_TEXT).toLowerCase());
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_TIMEZONE) && !entryData.containsKey(ObjectKeys.FIELD_USER_TIMEZONE)) {
     			Object tz = inputData.getSingleObject(ObjectKeys.FIELD_USER_TIMEZONE);
