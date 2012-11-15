@@ -370,7 +370,7 @@
 	.vibe-addFilesHtml5Popup-innerHintBrowseUpload       {visibility: hidden; width: 0px; margin: 0px;}
 	.vibe-addFilesHtml5Popup-innerHintBusy               {margin-right: 10px; vertical-align: middle;}
 	.vibe-addFilesHtml5Popup-innerHintLabel              {}
-	.vibe-addFilesHtml5Popup-innerHintPanel              {position: absolute; top: 50px; left: 25%; right: 25%; color: white; font-size: 1.3em; text-align: center; padding: 15px; -moz-border-radius: 10px; border-radius: 10px; -webkit-border-radius: 10px; background: url("images/trans50_black.png") repeat;}
+	.vibe-addFilesHtml5Popup-innerHintPanel              {position: absolute; top: 50px; left: 25%; right: 25%; color: white; font-size: 1.3em; text-align: center; padding: 15px; -moz-border-radius: 10px; border-radius: 10px; -webkit-border-radius: 10px; background: url("images/trans30_black.png") repeat;}
 	.vibe-addFilesHtml5Popup-panel                       {z-index: 1001;}
 	.vibe-addFilesHtml5Popup-progressBar-panel           {padding: 6px; margin-left: auto; margin-right: auto; margin-top: 15px;}
 	.vibe-addFilesHtml5Popup-progressBar-perItem-bar     {margin-bottom: 3px; width: 250px !important;}
