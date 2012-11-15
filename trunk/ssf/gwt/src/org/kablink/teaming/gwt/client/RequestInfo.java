@@ -274,6 +274,14 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the url that will be used in the confirmation email
+	 */
+	public final native String getLoginConfirmationUrl()
+	/*-{
+		return this.loginConfirmationUrl;
+	}-*/;
+	
+	/**
 	 * Return the error message from the last login.
 	 * 
 	 * @return
@@ -281,6 +289,32 @@ public class RequestInfo extends JavaScriptObject
 	public final native String getLoginError()
 	/*-{
 		return this.loginError;
+	}-*/;
+	
+	/**
+	 * Return the external user id
+	 * 
+	 * @return
+	 */
+	public final native String getLoginExternalUserId()
+	/*-{
+		return this.loginExternalUserId;
+	}-*/;
+	
+	/**
+	 * Return the name of the open id provider the user can use.
+	 */
+	public final native String getLoginOpenIdProviderName()
+	/*-{
+		return this.loginOpenIdProviderName;
+	}-*/;
+	
+	/**
+	 * Return the url of the open id provider the user can use.
+	 */
+	public final native String getLoginOpenIdProviderUrl()
+	/*-{
+		return this.loginOpenIdProviderUrl;
 	}-*/;
 	
 	/**

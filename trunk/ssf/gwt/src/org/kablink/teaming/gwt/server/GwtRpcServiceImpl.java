@@ -325,6 +325,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case COMPLETE_EXTERNAL_USER_SELF_REGISTRATION:
+		{
+			CompleteExternalUserSelfRegistrationCmd srCmd;
+			Boolean result;
+			
+			srCmd = (CompleteExternalUserSelfRegistrationCmd) cmd;
+			result = GwtServerHelper.completeExternalUserSelfRegistration(
+																		this,
+																		srCmd.getExtUserId(),
+																		srCmd.getFirstName(),
+																		srCmd.getLastName(),
+																		srCmd.getPwd(),
+																		srCmd.getPermaLink() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case COPY_ENTRIES:
 		{
 			CopyEntriesCmd ceCmd = ((CopyEntriesCmd) cmd);

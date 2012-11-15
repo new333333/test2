@@ -1546,6 +1546,46 @@ public class GwtMainPage extends ResizeComposite
 	}-*/;
 	
 	/**
+	 * 
+	 */
+	public String getLoginConfirmationUrl()
+	{
+		return m_requestInfo.getLoginConfirmationUrl();
+	}
+	
+	/**
+	 * 
+	 */
+	public Long getLoginExternalUserId()
+	{
+		String userId;
+		
+		userId = m_requestInfo.getLoginExternalUserId();
+		if ( userId != null && userId.length() > 0 )
+		{
+			return new Long( userId );
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Get the name of the openid provider that can be used in the login dialog
+	 */
+	public String getLoginOpenIdProviderName()
+	{
+		return m_requestInfo.getLoginOpenIdProviderName();
+	}
+	
+	/**
+	 * Get the url of the openid provider that can be used in the login dialog
+	 */
+	public String getLoginOpenIdProviderUrl()
+	{
+		return m_requestInfo.getLoginOpenIdProviderUrl();
+	}
+	
+	/**
 	 * Get the login status from the request info
 	 */
 	private LoginStatus getLoginStatus()
@@ -1559,8 +1599,8 @@ public class GwtMainPage extends ResizeComposite
 		{
 			if ( status.equalsIgnoreCase( "authenticationFailed" ) )
 				loginStatus = LoginStatus.AuthenticationFailed;
-			else if ( status.equalsIgnoreCase( "confirmationRequired" ) )
-				loginStatus = LoginStatus.ConfirmationRequested;
+			else if ( status.equalsIgnoreCase( "registrationRequired" ) )
+				loginStatus = LoginStatus.RegistrationRequired;
 			else if ( status.equalsIgnoreCase( "promptForLogin" ) )
 				loginStatus = LoginStatus.PromptForLogin;
 		}
