@@ -1066,7 +1066,7 @@ public class WebKeys {
 
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String LIST_UNSEEN_COUNTS_BINDER_IDS="ss_unseenCountsBinderIds";
-    public static final String LOGIN_CONFIRMATION_URL = "ss_login_confirmation_url";
+    public static final String LOGIN_INVITATION_URL = "ss_login_invitation_url";
     public static final String LOGIN_ERROR="ss_loginError";
     public static final String LOGIN_ERROR_LOGIN_FAILED="loginFailed";
     public static final String LOGIN_ERROR_LOGINS_NOT_ALLOWED="loginsNotAllowed";

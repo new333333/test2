@@ -1411,6 +1411,13 @@ body, table td, select
 	margin-top: 8px;
 }
 
+.loginDlg_OrText
+{
+	margin-bottom: 8px;
+	margin-top: 12px;
+	text-align: center;	
+}
+
 .loginDlg_pleaseSelectProviderLabel
 {
 	margin-bottom: 10px;
@@ -1420,6 +1427,7 @@ body, table td, select
 
 .loginDlg_extUserSelfRegHint
 {
+	font-size: small;
 	margin-bottom: .75em;
 	width: 370px;
 }

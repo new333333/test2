@@ -1593,13 +1593,14 @@ public class GwtServerHelper {
 		String firstName,
 		String lastName,
 		String pwd,
-		String permaLink )
+		String invitationUrl )
 	{
 		try
 		{
 			ProfileDao profileDao;
 			Map updates;
 			User extUser;
+			String confirmationUrl = null;
 			
 			// Get the external user.
 			profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
@@ -1614,8 +1615,45 @@ public class GwtServerHelper {
 			
 			ExternalUserUtil.markAsCredentialed( extUser );
 			
+			// invitationUrl is the original url the user was sent in the first share email.
+			// We need to replace "euet=xxx" with "euet=some new token value".
+			if ( invitationUrl != null && invitationUrl.length() > 0 )
+			{
+    			String newToken;
+    			String[] params;
+
+			    // Create a new token
+				newToken = ExternalUserUtil.encodeUserTokenWithNewSeed( extUser );
+
+				params = invitationUrl.split( "&" );
+				for ( String param : params )
+				{
+					String[] split;
+					
+					split = param.split( "=" );
+					if ( split != null && split.length == 2 )
+					{
+						String name;
+						String value;
+
+						name = split[0];
+						value = split[1];
+						if ( value != null && name != null && name.equalsIgnoreCase( "euet" ) )
+						{
+							String old;
+							String replacement;
+							
+							old = name + "=" + value;
+							replacement = name + "=" + newToken;
+							confirmationUrl = invitationUrl.replaceFirst( old, replacement );
+							break;
+						}
+					}
+				}
+			}
+
 			// Send an email informing the user that their registration is complete.
-			EmailHelper.sendConfirmationToExternalUser( ami, extUserId, permaLink );
+			EmailHelper.sendConfirmationToExternalUser( ami, extUserId, confirmationUrl );
 		}
 		catch ( Exception ex )
 		{

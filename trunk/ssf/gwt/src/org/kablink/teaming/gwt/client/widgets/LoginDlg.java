@@ -57,6 +57,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -110,24 +111,24 @@ public class LoginDlg extends DlgBox
 	private Button m_cancelBtn = null;
 	private Label m_loginFailedMsg = null;
 	private Label m_authenticatingMsg = null;
-	private String m_loginUrl = null;
-	private String m_springSecurityRedirect = null;	// This values tells Teaming what url to go to after the user authenticates.
-	private GwtSelfRegistrationInfo m_selfRegInfo = null;
 	private InlineLabel m_selfRegLink = null;
 	private CheckBox m_useOpenIdCkbox = null;
 	private FlowPanel m_openIdProvidersPanel = null;
 	private Hidden m_openIdProviderInput = null;
-	private boolean m_requestedLoginInfo = false;
-	private LoginStatus m_loginStatus;
 	private TextBox m_firstNameTxtBox;
 	private TextBox m_lastNameTxtBox;
 	private PasswordTextBox m_pwd1TxtBox;
 	private PasswordTextBox m_pwd2TxtBox;
-	private RadioButton m_registerUsingOpenIdRb;
-	private String m_openIdProviderUrl;
-	private RadioButton m_registerUsingSelfRegRb;
 	private FlowPanel m_selfRegPanel;
 	private Button m_registerBtn;
+
+	private String m_loginUrl = null;
+	private String m_springSecurityRedirect = null;	// This values tells Teaming what url to go to after the user authenticates.
+	private GwtSelfRegistrationInfo m_selfRegInfo = null;
+	private boolean m_requestedLoginInfo = false;
+	private LoginStatus m_loginStatus;
+	private String m_openIdProviderUrl;
+	private boolean m_useOpenIdAuth = false;
 
 	/**
 	 * 
@@ -567,13 +568,6 @@ public class LoginDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void danceRegistrationControls()
-	{
-	}
-	
-	/**
-	 * 
-	 */
 	@Override
 	public Object getDataFromDlg()
 	{
@@ -706,81 +700,73 @@ public class LoginDlg extends DlgBox
 	 */
 	private void handleClickOnRegisterBtn()
 	{
-		if ( m_registerUsingOpenIdRb != null && m_registerUsingOpenIdRb.getValue() == true )
-		{
-			// Submit the form using the openid provider url
-			m_openIdProviderInput.setValue( m_openIdProviderUrl );
-			m_formPanel.submit();
-		}
-		else
-		{
-			CompleteExternalUserSelfRegistrationCmd cmd;
-			AsyncCallback<VibeRpcResponse> rpcCallback;
-			
-			rpcCallback = new AsyncCallback<VibeRpcResponse>()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onFailure( Throwable t )
-				{
-					// Don't call GwtClientHelper.handleGwtRPCFailure() like we would normally do.  If the
-					// session has expired, handleGwtRPCFailure() will invoke this login dialog again
-					// and we will be in an infinite loop.
-					// GwtClientHelper.handleGwtRPCFailure(
-					//	t,
-					//	GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo());
-					debugAlert( "In CompleteExternalUserSelfRegistrationCmd / onFailure()" );
-				}// end onFailure()
+		CompleteExternalUserSelfRegistrationCmd cmd;
+		AsyncCallback<VibeRpcResponse> rpcCallback;
 		
-				/**
-				 * 
-				 * @param result
-				 */
-				@Override
-				public void onSuccess( VibeRpcResponse response )
-				{
-					debugAlert( "In CompleteExternalUserSelfRegistrationCmd / onSuccess()" );
-					if ( response.getResponseData() != null && response.getResponseData() instanceof BooleanRpcResponseData )
-					{
-						BooleanRpcResponseData responseData;
-						
-						responseData = (BooleanRpcResponseData) response.getResponseData();
-						if ( responseData.getBooleanValue() == true )
-						{
-							ScheduledCommand cmd;
-							
-							cmd = new ScheduledCommand()
-							{
-								@Override
-								public void execute()
-								{
-									showExternalUserRegConfirmation();
-								}
-							};
-							Scheduler.get().scheduleDeferred( cmd );
-						}
-						else
-							Window.alert( GwtTeaming.getMessages().loginDlg_externalUserSelfRegFailed() );
-					}
-				}
-			};
-			
-			// Did the user fill out all the necessary information
-			if ( isExternalUserSelfRegDataValid() == false )
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( Throwable t )
 			{
-				// No, just bail.  The user will have already been told what's wrong.
+				// Don't call GwtClientHelper.handleGwtRPCFailure() like we would normally do.  If the
+				// session has expired, handleGwtRPCFailure() will invoke this login dialog again
+				// and we will be in an infinite loop.
+				// GwtClientHelper.handleGwtRPCFailure(
+				//	t,
+				//	GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo());
+				debugAlert( "In CompleteExternalUserSelfRegistrationCmd / onFailure()" );
+			}// end onFailure()
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				debugAlert( "In CompleteExternalUserSelfRegistrationCmd / onSuccess()" );
+				if ( response.getResponseData() != null && response.getResponseData() instanceof BooleanRpcResponseData )
+				{
+					BooleanRpcResponseData responseData;
+					
+					responseData = (BooleanRpcResponseData) response.getResponseData();
+					if ( responseData.getBooleanValue() == true )
+					{
+						ScheduledCommand cmd;
+						
+						cmd = new ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								showExternalUserRegConfirmation();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+					else
+						Window.alert( GwtTeaming.getMessages().loginDlg_externalUserSelfRegFailed() );
+				}
 			}
-			
-			cmd = new CompleteExternalUserSelfRegistrationCmd(
-															getExtUserId(),
-															getFirstName(),
-															getLastName(),
-															getPwd1(),
-															GwtTeaming.getMainPage().getLoginConfirmationUrl() );
-			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		};
+		
+		// Did the user fill out all the necessary information
+		if ( isExternalUserSelfRegDataValid() == false )
+		{
+			// No, just bail.  The user will have already been told what's wrong.
+			return;
 		}
+		
+		cmd = new CompleteExternalUserSelfRegistrationCmd(
+														getExtUserId(),
+														getFirstName(),
+														getLastName(),
+														getPwd1(),
+														GwtTeaming.getMainPage().getLoginInvitationUrl() );
+		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 	
 	/**
@@ -810,7 +796,8 @@ public class LoginDlg extends DlgBox
 	 */
 	private void hideLoginFailedMsg()
 	{
-		m_loginFailedMsg.setVisible( false );
+		if ( m_loginFailedMsg != null )
+			m_loginFailedMsg.setVisible( false );
 	}// end hideLoginFailedMsg()
 	
 	
@@ -946,7 +933,8 @@ public class LoginDlg extends DlgBox
 	 */
 	private void showAuthenticatingMsg()
 	{
-		m_authenticatingMsg.setVisible( true );
+		if ( m_authenticatingMsg != null )
+			m_authenticatingMsg.setVisible( true );
 	}// end showAuthenticatingMsg()
 
 	/**
@@ -1049,55 +1037,6 @@ public class LoginDlg extends DlgBox
 			} );
 		}
 
-		// Get the name of the OpenID provider the user can use to complete the registration.
-		openIdProviderName = GwtTeaming.getMainPage().getLoginOpenIdProviderName();
-
-		// Get the url of the OpenID provider
-		m_openIdProviderUrl = GwtTeaming.getMainPage().getLoginOpenIdProviderUrl();
-		
-		// Does the user have the option of completing the registration using OpenID? 
-		if ( openIdProviderName != null && openIdProviderName.length() > 0 &&
-			 m_openIdProviderUrl != null && m_openIdProviderUrl.length() > 0 )
-		{
-			ValueChangeHandler<java.lang.Boolean> valueChangeHandler;
-			FlowPanel rbPanel;
-
-			// Yes
-			rbPanel = new FlowPanel();
-			m_registerUsingOpenIdRb = new RadioButton( "regMethod", messages.loginDlg_RegisterUsingOpenID( openIdProviderName ) );
-			rbPanel.add( m_registerUsingOpenIdRb );
-			panel.add( rbPanel );
-			
-			rbPanel = new FlowPanel();
-			m_registerUsingSelfRegRb = new RadioButton( "regMethod", messages.loginDlg_RegisterUsingSelfReg() );
-			rbPanel.add( m_registerUsingSelfRegRb );
-			panel.add( rbPanel );
-
-			valueChangeHandler = new ValueChangeHandler<java.lang.Boolean>()
-			{
-				@Override
-				public void onValueChange( ValueChangeEvent<java.lang.Boolean> event )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute() 
-						{
-							danceRegistrationControls();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			};
-			
-			m_registerUsingOpenIdRb.addValueChangeHandler( valueChangeHandler );
-			m_registerUsingSelfRegRb.addValueChangeHandler( valueChangeHandler );
-			
-			m_registerUsingSelfRegRb.setValue( true );
-		}
-		
 		// Create a panel that holds the self registration controls
 		{
 			FlexTable table;
@@ -1107,10 +1046,6 @@ public class LoginDlg extends DlgBox
 			m_selfRegPanel = new FlowPanel();
 			m_selfRegPanel.addStyleName( "loginDlg_selfRegPanel" );
 			
-			// If we created radio buttons, indent the self registration panel 
-			if ( m_registerUsingSelfRegRb != null )
-				m_selfRegPanel.addStyleName( "marginleft2" );
-
 			// Add some instructions
 			label = new Label( messages.loginDlg_ExtUserRegistrationHint() );
 			label.addStyleName( "loginDlg_extUserSelfRegHint" );
@@ -1170,6 +1105,83 @@ public class LoginDlg extends DlgBox
 			}
 		}
 		
+		// Get the name of the OpenID provider the user can use to complete the registration.
+		openIdProviderName = GwtTeaming.getMainPage().getLoginOpenIdProviderName();
+
+		// Get the url of the OpenID provider
+		m_openIdProviderUrl = GwtTeaming.getMainPage().getLoginOpenIdProviderUrl();
+		
+		// Does the user have the option of completing the registration using OpenID? 
+		if ( openIdProviderName != null && openIdProviderName.length() > 0 &&
+			 m_openIdProviderUrl != null && m_openIdProviderUrl.length() > 0 )
+		{
+			FlowPanel openIdPanel;
+			FlexTable table;
+			FlexCellFormatter cellFormatter;
+			Label label;
+			Image providerImg;
+
+			// Yes
+
+			// Add the word "Or"
+			{
+				Label orLabel;
+				
+				orLabel = new Label( messages.loginDlg_OrLabel() );
+				orLabel.addStyleName( "loginDlg_OrText" );
+				panel.add( orLabel );
+			}
+			
+			// Create an image for the openId provider
+			{
+				final GwtOpenIDAuthenticationProvider provider;
+				
+				provider = new GwtOpenIDAuthenticationProvider();
+				provider.setName( openIdProviderName );
+				provider.setTitle( openIdProviderName );
+				provider.setUrl( m_openIdProviderUrl );
+				
+				providerImg = new OpenIDAuthProviderImg( provider );
+				providerImg = new Image( providerImg.getUrl() );
+				providerImg.addStyleName( "loginDlg_openIdProviderImg" );
+				providerImg.setPixelSize( 50, 30 );
+				
+				providerImg.addClickHandler( new ClickHandler() 
+				{
+					@Override
+					public void onClick( ClickEvent event )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute() 
+							{
+								m_useOpenIdAuth = true;
+								handleOpenIDAuthProviderSelected( provider );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				} );
+			}
+			
+			openIdPanel = new FlowPanel();
+			panel.add( openIdPanel );
+			
+			table = new FlexTable();
+			panel.add( table );
+			
+			label = new Label( messages.loginDlg_AuthenticateUsingOpenID( openIdProviderName ) );
+			label.getElement().getStyle().setWidth( 290, Unit.PX );
+			table.setWidget( 0, 0, label );
+			
+			table.setWidget( 0, 1, providerImg );
+			cellFormatter = table.getFlexCellFormatter();
+			cellFormatter.setVerticalAlignment( 0, 1, HasVerticalAlignment.ALIGN_TOP );
+		}
+		
 		// Hide the user name and password controls that are used for regular authentication
 		{
 			Element element;
@@ -1206,8 +1218,6 @@ public class LoginDlg extends DlgBox
 			}
 		}
 
-		danceRegistrationControls();
-		
 		m_mainPanel.add( m_formPanel );
 	}
 	
@@ -1390,6 +1400,11 @@ public class LoginDlg extends DlgBox
 	private boolean getUseOpenIDAuthentication()
 	{
 		if ( m_useOpenIdCkbox != null && m_useOpenIdCkbox.isVisible() && m_useOpenIdCkbox.getValue() == true )
+			return true;
+		
+		// m_useOpenIdAuth is used when we are displaying the external user self registration ui
+		// and the user selected to authenticate using an OpenID provider.
+		if ( m_useOpenIdAuth )
 			return true;
 		
 		return false;

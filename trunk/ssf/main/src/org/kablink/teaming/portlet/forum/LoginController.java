@@ -137,11 +137,12 @@ public class LoginController  extends SAbstractControllerRetry {
     	{
     		if ( sessionObj instanceof ExternalUserRespondingToInvitationException )
     		{
-    			if ( Utils.checkIfFilr() )
+    			if ( Utils.checkIfFilr() || Utils.checkIfFilrAndVibe() )
     			{
 	    			ExternalUserRespondingToInvitationException ex;
 	    			String providerName;
 	    			User extUser;
+        			String invitationUrl;
 	    			
 	    			ex = (ExternalUserRespondingToInvitationException) sessionObj;
         			extUser = ex.getExternalUser();
@@ -163,62 +164,19 @@ public class LoginController  extends SAbstractControllerRetry {
 	    				}
 	    			}
 	    			
-	    			// Send the external user a confirmation email.
-	    			{
-		    			String permaLink = null;
-	        			String invitationLink;
-	
-	        			// Get the original url the user used to hit Filr.
-	    				invitationLink = ex.getInvitationLink();
-	    				
-	    				// invitationLink is the original url the
-	    				// user was sent in the first share email.  We need to replace "euet=xxx" with
-	    				// "euet=some new token value".
-	    				if ( invitationLink != null && invitationLink.length() > 0 )
-	    				{
-	    	    			String newToken;
-	    	    			String[] params;
-	
-	    				    // Create a new token
-	    					newToken = ExternalUserUtil.encodeUserTokenWithNewSeed( extUser );
-	
-	    					params = invitationLink.split( "&" );
-	    					for ( String param : params )
-	    					{
-	    						String[] split;
-	    						
-	    						split = param.split( "=" );
-	    						if ( split != null && split.length == 2 )
-	    						{
-	    							String name;
-	    							String value;
-	
-	    							name = split[0];
-	    							value = split[1];
-	    							if ( value != null && name != null && name.equalsIgnoreCase( "euet" ) )
-	    							{
-	    								String old;
-	    								String replacement;
-	    								
-	    								old = name + "=" + value;
-	    								replacement = name + "=" + newToken;
-	    								permaLink = invitationLink.replaceFirst( old, replacement );
-	    								break;
-	    							}
-	    						}
-	    					}
-	    				}
-						
-						// Do we have a permalink?
-						if ( permaLink != null )
-							model.put( WebKeys.LOGIN_CONFIRMATION_URL, permaLink );
-	    			}
-	
-	    			// Tell the login dialog the id of the external user
-	    			model.put( WebKeys.LOGIN_EXTERNAL_USER_ID, String.valueOf( extUser.getId() ) );
-	    			
-	    			// Tell the login dialog that an external user is responding to an invitation.
-	    			model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_REGISTRATION_REQUIRED );
+        			// Get the original url the user used to hit Filr.
+    				invitationUrl = ex.getInvitationLink();
+
+    				if ( invitationUrl != null && invitationUrl.length() > 0 )
+    				{
+						model.put( WebKeys.LOGIN_INVITATION_URL, invitationUrl );
+		
+		    			// Tell the login dialog the id of the external user
+		    			model.put( WebKeys.LOGIN_EXTERNAL_USER_ID, String.valueOf( extUser.getId() ) );
+		    			
+		    			// Tell the login dialog that an external user is responding to an invitation.
+		    			model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_REGISTRATION_REQUIRED );
+    				}
     			}
     		}
     		else if ( sessionObj instanceof ExternalUserRequiresVerificationException )

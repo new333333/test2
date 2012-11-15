@@ -274,11 +274,11 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
-	 * Return the url that will be used in the confirmation email
+	 * Return the invitation url
 	 */
-	public final native String getLoginConfirmationUrl()
+	public final native String getLoginInvitationUrl()
 	/*-{
-		return this.loginConfirmationUrl;
+		return this.loginInvitationUrl;
 	}-*/;
 	
 	/**
