@@ -72,7 +72,6 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -484,6 +483,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
      * 
      * @return
      */
+	@Override
 	public boolean testAddShareEntityPublic(DefinableEntity de) {
 		boolean reply = false;
 
