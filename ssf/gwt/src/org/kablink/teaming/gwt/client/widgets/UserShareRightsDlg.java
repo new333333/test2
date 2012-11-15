@@ -437,6 +437,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 		}
 
 		// ...if sharing with internal users is enabled...
+		int upperParts = 0;
 		if (m_rightsInfo.isInternalEnabled()) {
 			// ...define the share internal cells...
 			addRowHeaderCell(ft, fcf, ROW_INTERNAL, COLUMN_HEADER, m_messages.userShareRightsDlgLabel_InternalUsers());
@@ -445,6 +446,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 			if (null == m_singleUserRights) {
 				addRadioCell(ft, fcf, ROW_INTERNAL, COLUMN_NO_CHANGE, true);
 			}
+			upperParts += 1;
 		}
 		
 		// ...if sharing with external users is enabled...
@@ -456,6 +458,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 			if (null == m_singleUserRights) {
 				addRadioCell(ft, fcf, ROW_EXTERNAL, COLUMN_NO_CHANGE, true);
 			}
+			upperParts += 1;
 		}
 		
 		// ...if sharing with the public is enabled...
@@ -467,23 +470,27 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 			if (null == m_singleUserRights) {
 				addRadioCell(ft, fcf, ROW_PUBLIC, COLUMN_NO_CHANGE, true);
 			}
+			upperParts += 1;
 		}
 
 		// ...if share forwarding is enabled...
 		if (m_rightsInfo.isForwardingEnabled()) {
-			// ...define the spacer above the share forwarding cells...
-			addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_HEADER   );
-			addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_ALLOW    );
-			addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_CLEAR    );
-			if (null == m_singleUserRights) {
-				addColumnHeaderCell(ft, fcf, ROW_SPACER, COLUMN_NO_CHANGE);
-			}
+			if (0 < upperParts) {
+				// ...define the spacer above the share forwarding
+				// ...cells...
+				addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_HEADER   );
+				addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_ALLOW    );
+				addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_CLEAR    );
+				if (null == m_singleUserRights) {
+					addColumnHeaderCell(ft, fcf, ROW_SPACER, COLUMN_NO_CHANGE);
+				}
 			
-			// ...define the share forwarding header cells...
-			addColumnHeaderCell(    ft, fcf, ROW_HEADER_2, COLUMN_ALLOW,     m_messages.userShareRightsDlgLabel_Allow());
-			addColumnHeaderCell(    ft, fcf, ROW_HEADER_2, COLUMN_CLEAR,     m_messages.userShareRightsDlgLabel_Clear());
-			if (null == m_singleUserRights) {
-				addColumnHeaderCell(ft, fcf, ROW_HEADER_2, COLUMN_NO_CHANGE, m_messages.userShareRightsDlgLabel_NoChange());
+				// ...define the share forwarding header cells...
+				addColumnHeaderCell(    ft, fcf, ROW_HEADER_2, COLUMN_ALLOW,     m_messages.userShareRightsDlgLabel_Allow());
+				addColumnHeaderCell(    ft, fcf, ROW_HEADER_2, COLUMN_CLEAR,     m_messages.userShareRightsDlgLabel_Clear());
+				if (null == m_singleUserRights) {
+					addColumnHeaderCell(ft, fcf, ROW_HEADER_2, COLUMN_NO_CHANGE, m_messages.userShareRightsDlgLabel_NoChange());
+				}
 			}
 			
 			// ...define the share forwarding cells...

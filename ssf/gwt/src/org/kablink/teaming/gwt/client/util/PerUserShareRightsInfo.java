@@ -95,6 +95,19 @@ public class PerUserShareRightsInfo implements IsSerializable {
 	public void setAllowPublic(    boolean allowPublic)     {m_allowPublic     = allowPublic;    }
 
 	/**
+	 * Returns true if all of the flags are set and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean allFlagsSet() {
+		return (
+			m_allowExternal   &&
+			m_allowForwarding &&
+			m_allowInternal   &&
+			m_allowPublic);
+	}
+
+	/**
 	 * Returns true if any of the flags are set and false otherwise.
 	 * 
 	 * @return
