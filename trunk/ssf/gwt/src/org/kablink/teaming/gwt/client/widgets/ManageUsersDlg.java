@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspacesView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.event.CheckManageUsersActiveEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportProfilesDlgEvent;
 import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
@@ -75,6 +76,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class ManageUsersDlg extends DlgBox
 	implements ViewReady,
 		// Event handlers implemented by this class.
+		CheckManageUsersActiveEvent.Handler,
 		FullUIReloadEvent.Handler,
 		InvokeImportProfilesDlgEvent.Handler,
 		GetManageUsersTitleEvent.Handler,
@@ -102,6 +104,7 @@ public class ManageUsersDlg extends DlgBox
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+		TeamingEvents.CHECK_MANAGE_USERS_ACTIVE,
 		TeamingEvents.FULL_UI_RELOAD,
 		TeamingEvents.INVOKE_IMPORT_PROFILES_DLG,
 		TeamingEvents.GET_MANAGE_USERS_TITLE,
@@ -226,6 +229,18 @@ public class ManageUsersDlg extends DlgBox
 	}
 	
 	/**
+	 * Handles CheckManageUsersActiveEvent's received by this class.
+	 * 
+	 * Implements the CheckManageUsersActiveEvent.Handler.onCheckManageUsersActive() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCheckManageUsersActive(CheckManageUsersActiveEvent event) {
+		event.getManageUsersActiveCallback().manageUsersActive(true);
+	}
+
+	/**
 	 * Called when the data table is detached.
 	 * 
 	 * Overrides the Widget.onDetach() method.
@@ -254,6 +269,18 @@ public class ManageUsersDlg extends DlgBox
 		}
 	}
 	
+	/**
+	 * Handles GetManageUsersTitleEvent's received by this class.
+	 * 
+	 * Implements the GetManageUsersTitleEvent.Handler.onGetManageUsersTitle() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onGetManageUsersTitle(GetManageUsersTitleEvent event) {
+		event.getManageUsersTitleCallback().manageUsersTitle(m_manageUsersInfo.getAdminActionTitle());
+	}
+
 	/**
 	 * Handles InvokeImportProfilesDlgEvent's received by this class.
 	 * 
@@ -346,18 +373,6 @@ public class ManageUsersDlg extends DlgBox
 		}
 	}
 	
-	/**
-	 * Handles GetManageUsersTitleEvent's received by this class.
-	 * 
-	 * Implements the GetManageUsersTitleEvent.Handler.onGetManageUsersTitle() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onGetManageUsersTitle(GetManageUsersTitleEvent event) {
-		event.getManageUsersTitleCallback().manageUsersTitle(m_manageUsersInfo.getAdminActionTitle());
-	}
-
 	/*
 	 * Asynchronously adjusts the views size based on its header and
 	 * footer. 
