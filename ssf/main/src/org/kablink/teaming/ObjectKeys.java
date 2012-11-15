@@ -873,6 +873,12 @@ public interface ObjectKeys {
     public static final String MOBILE_WHATS_NEW_VIEW_SITE = "site";
     public static final String MOBILE_WHATS_NEW_VIEW_MICROBLOG = "microblog";
     
+    //License options
+    public static final String LICENSE_OPTION_GUEST_ACCESS = "com.novell.teaming.GuestAccess";
+    public static final String LICENSE_OPTION_VIBE = "com.novell.teaming.Vibe";
+    public static final String LICENSE_OPTION_FILR = "com.novell.teaming.Filr";
+    public static final String LICENSE_OPTION_EXT_USERS = "com.novell.teaming.ExtUsers";
+    
     //License Activity
     public static final int LOGIN_ACTIVITY_YEARS = 1;
 	
