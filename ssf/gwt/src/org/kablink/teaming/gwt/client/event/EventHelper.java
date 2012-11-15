@@ -495,6 +495,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case CHECK_MANAGE_USERS_ACTIVE:
+				// An CheckManageUsersActiveEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof CheckManageUsersActiveEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CheckManageUsersActiveEvent.registerEvent(eventBus, ((CheckManageUsersActiveEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case CONTENT_CHANGED:
 				// A ContentChangedEvent!  Can the event handler we
 				// were given handle that?
@@ -2318,6 +2327,7 @@ public class EventHelper {
 			
 			case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:           hasHandler = (eventHandler instanceof ChangeEntryTypeSelectedEntriesEvent.Handler);         break;
 			case CHANGE_FAVORITE_STATE:                        hasHandler = (eventHandler instanceof ChangeFavoriteStateEvent.Handler);                    break;
+			case CHECK_MANAGE_USERS_ACTIVE:                    hasHandler = (eventHandler instanceof CheckManageUsersActiveEvent.Handler);                 break;
 			case COPY_SELECTED_ENTRIES:                        hasHandler = (eventHandler instanceof CopySelectedEntriesEvent.Handler);                    break;
 			case DELETE_SELECTED_ENTRIES:                      hasHandler = (eventHandler instanceof DeleteSelectedEntriesEvent.Handler);                  break;
 			case DELETE_SELECTED_USER_WORKSPACES:              hasHandler = (eventHandler instanceof DeleteSelectedUserWorkspacesEvent.Handler);           break;

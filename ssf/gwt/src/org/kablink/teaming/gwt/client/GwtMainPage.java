@@ -48,6 +48,8 @@ import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeFavoriteStateEvent;
+import org.kablink.teaming.gwt.client.event.CheckManageUsersActiveEvent;
+import org.kablink.teaming.gwt.client.event.CheckManageUsersActiveEvent.ManageUsersActiveCallback;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
@@ -176,6 +178,7 @@ import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -1120,7 +1123,7 @@ public class GwtMainPage extends ResizeComposite
 	private native void initGotoContentUrlJS( GwtMainPage gwtMainPage ) /*-{
 		$wnd.ss_gotoContentUrl = function( url )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::gotoUrlAsync(Ljava/lang/String;)( url );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::gotoUrlAsync_FromJSP(Ljava/lang/String;)( url );
 		}//end ss_gotoContentUrl
 	}-*/;
 	
@@ -2032,6 +2035,59 @@ public class GwtMainPage extends ResizeComposite
 		};
 		Scheduler.get().scheduleDeferred( gotoUrl );
 	}// end gotoUrlAsync()
+	
+	private void gotoUrlAsync_FromJSP( final String url )
+	{
+		// Is the admin control active?
+		if ( isAdminActive() )
+		{
+			// Yes!  This is a hack at best to handle when the JSP
+			// based 'Add user' page closes so that we don't pull the
+			// rug out from under the admin console and/or the manage
+			// users page.  If the manage users page is active, we
+			// simply ask it to reload and otherwise ignore the URL.
+			// Otherwise, the timer will fire and we'll process the URL
+			// as normal.
+			
+			// Create the timer...
+			final Timer timer = new Timer()
+			{
+				@Override
+				public void run()
+				{
+					// ...if the timer fires, handle the URL as
+					// ...normal.
+					gotoUrlAsync( url );
+				}
+			};
+			timer.schedule(250);
+			
+			// Fire an event to detect if the manage users facility
+			// is active...
+			GwtTeaming.fireEvent(
+				new CheckManageUsersActiveEvent(
+					new ManageUsersActiveCallback()
+					{
+						@Override
+						public void manageUsersActive( boolean active )
+						{
+							if (active) {
+								// ...and if it is, kill the timer and
+								// ...tell the manage users to reload.
+								timer.cancel();
+								FullUIReloadEvent.fireOneAsync();
+							}
+						}
+					} ) );
+		}
+		
+		else
+		{
+			// No, the admin control is not active!  Simply process
+			// the URL.
+			gotoUrlAsync( url );
+		}
+	}
 	
 	/*
 	 * This method will be called synchronously goto a URL,
