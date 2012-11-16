@@ -4886,4 +4886,24 @@ td.datePickerMonth {
 
 /* End: */
 
+/**
+ * Styles used in the Edit Net Folder Rights dialog
+ */
+.editNetFolderRightsDlg_MainPanel
+{
+}
+
+.editNetFolderRightsDlg_RightsCkbox
+{
+}
+
+.editNetFolderRightsDlg_Instructions
+{
+	margin-bottom: 6px;
+	margin-left: 4px;
+}
+
+/* End */
+
+
 /* End */

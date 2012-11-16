@@ -559,6 +559,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_DiscussionFolderView();
 	String codeSplitFailure_DiscussionWSView();
 	String codeSplitFailure_EditBrandingDlg();
+	String codeSplitFailure_EditNetFolderRightsDlg();
 	String codeSplitFailure_EditShareNoteDlg();
 	String codeSplitFailure_EditShareRightsDlg();
 	String codeSplitFailure_EmailNotificationDlg();
@@ -2181,6 +2182,15 @@ public interface GwtTeamingMessages extends Messages
 	String noRights();
 	String publicRights();
 	String viewRights();
+
+	// Strings used in the Edit Net Folder Rights dialog
+	String editNetFolderRightsDlg_CanViewLabel();
+	String editNetFolderRightsDlg_Caption();
+	String editNetFolderRightsDlg_Instructions();
+	String editNetFolderRightsDlg_ReShareLabel();
+	String editNetFolderRightsDlg_ShareInternalLabel();
+	String editNetFolderRightsDlg_ShareExternalLabel();
+	String editNetFolderRightsDlg_SharePublicLabel();
 
 	// Strings used for the empty collection view widget.
 	String emptyCollection_Info_MyFiles( String product );
