@@ -72,12 +72,12 @@ public class EmptyCollectionComposite extends ResizeComposite {
 		m_messages   = GwtTeaming.getMessages();
 		m_product    =
 			(GwtClientHelper.isLicenseFilr() ?
-				m_messages.emptyCollection_Product_Filr() :
-				m_messages.emptyCollection_Product_Vibe());
+				m_messages.productFilr() :
+				m_messages.productVibe());
 		
 		// ...create the content...
 		m_rootPanel = new VibeFlowPanel();
-		m_rootPanel.addStyleName("vibe-emptyCollection-rootPanel");
+		m_rootPanel.addStyleName("vibe-emptyWidget-rootPanel");
 		createContent();
 		
 		// ...and initialize the composite with the panel.
@@ -90,7 +90,7 @@ public class EmptyCollectionComposite extends ResizeComposite {
 	private void createContent() {
 		// Generate the header icon...
 		VibeFlowPanel fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-emptyCollection-headImage");
+		fp.addStyleName("vibe-emptyWidget-headImage");
 		m_rootPanel.add(fp);
 		ImageResource ir;
 		switch (m_ct) {
@@ -105,7 +105,7 @@ public class EmptyCollectionComposite extends ResizeComposite {
 
 		// ...generate the header text...
 		fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-emptyCollection-head");
+		fp.addStyleName("vibe-emptyWidget-head");
 		m_rootPanel.add(fp);
 		String s;
 		switch (m_ct) {
@@ -119,7 +119,7 @@ public class EmptyCollectionComposite extends ResizeComposite {
 
 		// ...generate the sub header...
 		fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-emptyCollection-headSub");
+		fp.addStyleName("vibe-emptyWidget-headSub");
 		m_rootPanel.add(fp);
 		switch (m_ct) {
 		default:
@@ -132,7 +132,7 @@ public class EmptyCollectionComposite extends ResizeComposite {
 
 		// ...generate the main body of information...
 		fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-emptyCollection-info");
+		fp.addStyleName("vibe-emptyWidget-info");
 		m_rootPanel.add(fp);
 		switch (m_ct) {
 		default:
@@ -148,24 +148,24 @@ public class EmptyCollectionComposite extends ResizeComposite {
 		switch (m_ct) {
 		case SHARED_BY_ME:
 			fp = new VibeFlowPanel();
-			fp.addStyleName("vibe-emptyCollection-info");
+			fp.addStyleName("vibe-emptyWidget-info");
 			m_rootPanel.add(fp);
 			fp.getElement().setInnerText(m_messages.emptyCollection_Info_SharedByMe_2());
 			break;
 			
 		case NET_FOLDERS:
 			fp = new VibeFlowPanel();
-			fp.addStyleName("vibe-emptyCollection-info marginleft1");
+			fp.addStyleName("vibe-emptyWidget-info marginleft1");
 			m_rootPanel.add(fp);
 			fp.getElement().setInnerText("• " + m_messages.emptyCollection_Info_NetFolders_2());
 			
 			fp = new VibeFlowPanel();
-			fp.addStyleName("vibe-emptyCollection-info marginleft1");
+			fp.addStyleName("vibe-emptyWidget-info marginleft1");
 			m_rootPanel.add(fp);
 			fp.getElement().setInnerText("• " + m_messages.emptyCollection_Info_NetFolders_3());
 			fp = new VibeFlowPanel();
 			
-			fp.addStyleName("vibe-emptyCollection-info");
+			fp.addStyleName("vibe-emptyWidget-info");
 			m_rootPanel.add(fp);
 			fp.getElement().setInnerText(m_messages.emptyCollection_Info_NetFolders_4(m_product));
 			break;

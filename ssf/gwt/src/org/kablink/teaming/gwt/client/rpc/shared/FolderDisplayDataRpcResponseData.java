@@ -43,6 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private boolean				m_folderOwnedByCurrentUser;	//
 	private boolean				m_folderSortDescend;		//
 	private boolean				m_folderSupportsPinning;	//
 	private boolean				m_viewPinnedEntries;		//
@@ -71,19 +72,21 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	 * @param folderSupportsPinning
 	 * @param viewPinnedEntries
 	 * @param viewSharedFiles
+	 * @param folderOwnedByCurrentUser
 	 */
-	public FolderDisplayDataRpcResponseData(String folderSortBy, boolean folderSortDescend, int folderPageSize, Map<String, String> folderColumnWidths, boolean folderSupportsPinning, boolean viewPinnedEntries, boolean viewSharedFiles) {
+	public FolderDisplayDataRpcResponseData(String folderSortBy, boolean folderSortDescend, int folderPageSize, Map<String, String> folderColumnWidths, boolean folderSupportsPinning, boolean viewPinnedEntries, boolean viewSharedFiles, boolean folderOwnedByCurrentUser) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setFolderSortBy(         folderSortBy         );
-		setFolderSortDescend(    folderSortDescend    );
-		setFolderPageSize(       folderPageSize       );
-		setFolderColumnWidths(   folderColumnWidths   );
-		setFolderSupportsPinning(folderSupportsPinning);
-		setViewPinnedEntries(    viewPinnedEntries    );
-		setViewSharedFiles(      viewSharedFiles      );
+		setFolderSortBy(            folderSortBy            );
+		setFolderSortDescend(       folderSortDescend       );
+		setFolderPageSize(          folderPageSize          );
+		setFolderColumnWidths(      folderColumnWidths      );
+		setFolderSupportsPinning(   folderSupportsPinning   );
+		setViewPinnedEntries(       viewPinnedEntries       );
+		setViewSharedFiles(         viewSharedFiles         );
+		setFolderOwnedByCurrentUser(folderOwnedByCurrentUser);
 	}
 	
 	/**
@@ -91,24 +94,26 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	 * 
 	 * @return
 	 */
-	public boolean             getFolderSortDescend()     {return m_folderSortDescend;    }
-	public boolean             getFolderSupportsPinning() {return m_folderSupportsPinning;}
-	public boolean             getViewPinnedEntries()     {return m_viewPinnedEntries;    }
-	public boolean             getViewSharedFiles()       {return m_viewSharedFiles;      }
-	public int                 getFolderPageSize()        {return m_folderPageSize;       }
-	public Map<String, String> getFolderColumnWidths()    {return m_folderColumnWidths;   }
-	public String              getFolderSortBy()          {return m_folderSortBy;         }
+	public boolean             getFolderOwnedByCurrentUser() {return m_folderOwnedByCurrentUser;}
+	public boolean             getFolderSortDescend()        {return m_folderSortDescend;       }
+	public boolean             getFolderSupportsPinning()    {return m_folderSupportsPinning;   }
+	public boolean             getViewPinnedEntries()        {return m_viewPinnedEntries;       }
+	public boolean             getViewSharedFiles()          {return m_viewSharedFiles;         }
+	public int                 getFolderPageSize()           {return m_folderPageSize;          }
+	public Map<String, String> getFolderColumnWidths()       {return m_folderColumnWidths;      }
+	public String              getFolderSortBy()             {return m_folderSortBy;            }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderSortDescend(    boolean             folderSortDescend)     {m_folderSortDescend     = folderSortDescend;    }
-	public void setFolderSupportsPinning(boolean             folderSupportsPinning) {m_folderSupportsPinning = folderSupportsPinning;}
-	public void setViewPinnedEntries(    boolean             viewPinnedEntries)     {m_viewPinnedEntries     = viewPinnedEntries;    }
-	public void setViewSharedFiles(      boolean             viewSharedFiles)       {m_viewSharedFiles       = viewSharedFiles;      }
-	public void setFolderPageSize(       int                 folderPageSize)        {m_folderPageSize        = folderPageSize;       }
-	public void setFolderColumnWidths(   Map<String, String> folderColumnWidths)    {m_folderColumnWidths    = folderColumnWidths;   }
-	public void setFolderSortBy(         String              folderSortBy)          {m_folderSortBy          = folderSortBy;         }
+	public void setFolderOwnedByCurrentUser(boolean             folderOwnedByCurrentUser) {m_folderOwnedByCurrentUser = folderOwnedByCurrentUser;}
+	public void setFolderSortDescend(       boolean             folderSortDescend)        {m_folderSortDescend        = folderSortDescend;       }
+	public void setFolderSupportsPinning(   boolean             folderSupportsPinning)    {m_folderSupportsPinning    = folderSupportsPinning;   }
+	public void setViewPinnedEntries(       boolean             viewPinnedEntries)        {m_viewPinnedEntries        = viewPinnedEntries;       }
+	public void setViewSharedFiles(         boolean             viewSharedFiles)          {m_viewSharedFiles          = viewSharedFiles;         }
+	public void setFolderPageSize(          int                 folderPageSize)           {m_folderPageSize           = folderPageSize;          }
+	public void setFolderColumnWidths(      Map<String, String> folderColumnWidths)       {m_folderColumnWidths       = folderColumnWidths;      }
+	public void setFolderSortBy(            String              folderSortBy)             {m_folderSortBy             = folderSortBy;            }
 }

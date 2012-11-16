@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * File folder view.
@@ -95,6 +96,26 @@ public class FileFolderView extends DataTableFolderViewBase {
 				vClient.onUnavailable();
 			}
 		});
+	}
+	
+	/**
+	 * Returns the widget to use for displaying the table empty message.
+	 * 
+	 * Provided as a convenience method.  Class that extend this may
+	 * override to provide whatever they want displayed.
+	 * 
+	 * Overrides the DataTableFolderViewBase.getEmptyTableWidget()
+	 * method.
+	 * 
+	 * @return
+	 */
+	@Override
+	protected Widget getEmptyTableWidget() {
+		Widget reply;
+		if (getFolderDisplayData().getFolderOwnedByCurrentUser())
+		     reply = new EmptyFileFolderComposite();
+		else reply = super.getEmptyTableWidget();
+		return reply;
 	}
 	
 	/**

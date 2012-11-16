@@ -56,6 +56,10 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource entry_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/file_folder_transparent_72.png")
+	public ImageResource fileFolder_transparent_72();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/Filr_bg.png")
 	public ImageResource filrBackground();
 	
