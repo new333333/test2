@@ -132,6 +132,10 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource myFiles_transparent_48();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/myfiles_transparent_72.png")
+	public ImageResource myFiles_transparent_72();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/netfolder.png")
 	public ImageResource netFolder();
 	
@@ -146,6 +150,10 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/netfolders_transparent_48.png")
 	public ImageResource netFolders_transparent_48();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/netfolders_transparent_72.png")
+	public ImageResource netFolders_transparent_72();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/group.png")
@@ -176,6 +184,10 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource sharedByMe_transparent_40();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_by_me_transparent_72.png")
+	public ImageResource sharedByMe_transparent_72();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/shared.png")
 	public ImageResource sharedWithMe();
 	
@@ -190,6 +202,10 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_with_me_transparent_48.png")
 	public ImageResource sharedWithMe_transparent_48();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_with_me_transparent_72.png")
+	public ImageResource sharedWithMe_transparent_72();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/whatsnew_transparent_48.png")
