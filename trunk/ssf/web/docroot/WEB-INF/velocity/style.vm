@@ -27,7 +27,9 @@
  * are trademarks of SiteScape, Inc.
  *#
 #if ($ssVisitor.isHtml())
- #set ($creatorImage =  ${ssVisitor.getUserThumbnailInlineImage($ssVisitor.Entity.Creation.Principal)})
+ #if ($ssVisitor.isAvatarShown())
+   #set ($creatorImage =  ${ssVisitor.getUserThumbnailInlineImage($ssVisitor.Entity.Creation.Principal)})
+ #end
  <style type="text/css">
 	.e-user-avatar {
 	  background: #e5e5e5;
