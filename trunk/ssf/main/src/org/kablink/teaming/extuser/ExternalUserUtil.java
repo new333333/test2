@@ -148,11 +148,10 @@ public class ExternalUserUtil {
 				// Unfortunately, the spring security framework won't store this exception into the session even though
 				// it correctly catches it and triggers redirect to the login page. So we must put it in ourselves.
 				session.setAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY, exc);
-				// Store in the session the original access url minus the token so that we can redirect
-				// the user to correct entity after successful authentication with OpenID, if the user
-				// chooses to authenticate via OpenID rather than going through the self-provisioning steps.
-				// Replace the token query param with something bogus but innocent/unharmful one.
-    			session.setAttribute(SavedRequestAwareAuthenticationSuccessHandler.FILR_REDIRECT_AFTER_SUCCESSFUL_LOGIN, removeTokenFromUrl(url));
+				// Store in the session the original access url so that we can redirect the user to correct entity
+				// after successful authentication with OpenID, in the case the user chooses to authenticate via 
+				// OpenID rather than going through the self-provisioning steps.
+    			session.setAttribute(SavedRequestAwareAuthenticationSuccessHandler.FILR_REDIRECT_AFTER_SUCCESSFUL_LOGIN, url);
 				// Throwing this exception is NOT an indication of an error. Rather, this signals
 				// GWT layer to proceed to the next step in the normal flow.
 				throw exc;

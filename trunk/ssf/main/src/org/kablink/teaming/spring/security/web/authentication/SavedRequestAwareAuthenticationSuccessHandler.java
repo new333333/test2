@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -70,6 +71,14 @@ public class SavedRequestAwareAuthenticationSuccessHandler extends org.springfra
     			// and redirect the client to that original url.
     		    // Again, with regular form-based login, this custom code won't get executed and
     			// instead the regular code defined in the super class will get executed.
+    			
+    			// Whether it was a form-based login or OpenID or whatever else, user authentication
+    			// has completed successfully and we should allow the user to access system.
+    			// As such, we're removing user token, if any, from the original url before redirecting
+    			// the user to it. This is to prevent the system from going through the same steps
+    			// to process the token, whether it was for invitation or verification.
+    			redirectUrl = ExternalUserUtil.removeTokenFromUrl(redirectUrl);
+    			
     			if(logger.isDebugEnabled())
     				logger.debug("Redirecting to '" + redirectUrl + "' based on the session attribute '" + FILR_REDIRECT_AFTER_SUCCESSFUL_LOGIN + "'");
     			session.removeAttribute(FILR_REDIRECT_AFTER_SUCCESSFUL_LOGIN);
