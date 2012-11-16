@@ -40,6 +40,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.util.Validator;
 import org.springframework.security.core.AuthenticationException;
 
