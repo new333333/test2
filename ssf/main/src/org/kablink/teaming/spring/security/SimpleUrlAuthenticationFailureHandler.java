@@ -34,6 +34,7 @@
 package org.kablink.teaming.spring.security;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -77,6 +78,13 @@ public class SimpleUrlAuthenticationFailureHandler extends org.springframework.s
                 request.getRequestDispatcher(failureUrl).forward(request, response);
             } else {
                 logger.debug("Redirecting to " + failureUrl);
+                String redirectUrl = request.getParameter("spring-security-redirect");
+                if(Validator.isNotNull(redirectUrl)) {
+                    if(failureUrl.contains("?"))
+                    	failureUrl += "&refererUrl=" + URLEncoder.encode(redirectUrl, "UTF-8");
+                    else
+                    	failureUrl +="?refererUrl=" + URLEncoder.encode(redirectUrl, "UTF-8");
+                }
                 getRedirectStrategy().sendRedirect(request, response, failureUrl);
             }
         }
