@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client;
 
 
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -54,6 +56,7 @@ public class NetFolder
 	private NetFolderStatus m_status;
 	private String m_statusTicketId;
 	private GwtSchedule m_syncSchedule;
+	private ArrayList<GwtRole> m_roles;
 	private boolean m_isHomeDir;
 	
 	/**
@@ -134,6 +137,14 @@ public class NetFolder
 	/**
 	 * 
 	 */
+	public ArrayList<GwtRole> getRoles()
+	{
+		return m_roles;
+	}
+	
+	/**
+	 * 
+	 */
 	public GwtSchedule getSyncSchedule()
 	{
 		return m_syncSchedule;
@@ -199,6 +210,14 @@ public class NetFolder
 		m_relativePath = relativePath;
 	}
 
+	/**
+	 * Set the roles
+	 */
+	public void setRoles( ArrayList<GwtRole> roles )
+	{
+		m_roles = roles;
+	}
+	
 	/**
 	 * 
 	 */

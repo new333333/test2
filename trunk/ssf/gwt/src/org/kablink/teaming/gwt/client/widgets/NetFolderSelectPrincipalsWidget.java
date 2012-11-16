@@ -32,7 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.GwtPrincipal;
+import org.kablink.teaming.gwt.client.GwtRole;
+import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.PerUserRightsInfo;
 import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
@@ -99,6 +103,82 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 	public int getNumCols()
 	{
 		return 3;
+	}
+	
+	/**
+	 * Return the list of roles (rights) the user has given out.
+	 */
+	public ArrayList<GwtRole> getRoles()
+	{
+		GwtRole viewRole;
+		GwtRole shareExternalRole;
+		GwtRole shareInternalRole;
+		GwtRole sharePublicRole;
+		GwtRole reshareRole;
+		ArrayList<GwtRole> roles;
+		ArrayList<GwtPrincipal> principals;
+		
+		roles = new ArrayList<GwtRole>();
+
+		// Create the necessary role objects
+		{
+			viewRole = new GwtRole();
+			viewRole.setType( GwtRoleType.View );
+			roles.add( viewRole );
+
+			shareExternalRole = new GwtRole();
+			shareExternalRole.setType( GwtRoleType.ShareExternal );
+			roles.add( shareExternalRole );
+
+			reshareRole = new GwtRole();
+			reshareRole.setType( GwtRoleType.ShareForward );
+			roles.add( reshareRole );
+
+			shareInternalRole = new GwtRole();
+			shareInternalRole.setType( GwtRoleType.ShareInternal );
+			roles.add( shareInternalRole );
+			
+			sharePublicRole = new GwtRole();
+			sharePublicRole.setType( GwtRoleType.SharePublic );
+			roles.add( sharePublicRole );
+		}
+		
+		// Get the list of principals
+		principals = getListOfSelectedPrincipals();
+		if ( principals != null && principals.size() > 0 )
+		{
+			for ( GwtPrincipal nextPrincipal : principals )
+			{
+				Object obj;
+				
+				obj = nextPrincipal.getAdditionalData();
+				if ( obj != null && obj instanceof PerUserRightsInfo )
+				{
+					PerUserRightsInfo rightsInfo;
+					Long memberId;
+					
+					memberId = nextPrincipal.getIdLong();
+					rightsInfo = (PerUserRightsInfo) obj;
+					
+					if ( rightsInfo.canAccess() )
+						viewRole.addMember( memberId );
+					
+					if ( rightsInfo.canReshare() )
+						reshareRole.addMember( memberId );
+						
+					if ( rightsInfo.canShareExternal() )
+						shareExternalRole.addMember( memberId );
+					
+					if ( rightsInfo.canShareInternal() )
+						shareInternalRole.addMember( memberId );
+					
+					if ( rightsInfo.canSharePublic() )
+						sharePublicRole.addMember( memberId );
+				}
+			}
+		}
+		
+		return roles;
 	}
 	
 	/**

@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -681,6 +682,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		netFolder.setRelativePath( getRelativePath() );
 		netFolder.setNetFolderRootName( getNetFolderRootName() );
 		netFolder.setSyncSchedule( getSyncSchedule() );
+		netFolder.setRoles( getRoles() );
 		
 		if ( m_netFolder != null )
 			netFolder.setId( m_netFolder.getId() );
@@ -759,6 +761,14 @@ public class ModifyNetFolderDlg extends DlgBox
 	private GwtSchedule getSyncSchedule()
 	{
 		return m_scheduleWidget.getSchedule( );
+	}
+	
+	/**
+	 * Return the roles (rights) the user defined on this net folder
+	 */
+	private ArrayList<GwtRole> getRoles()
+	{
+		return m_selectPrincipalsWidget.getRoles();
 	}
 	
 	/**

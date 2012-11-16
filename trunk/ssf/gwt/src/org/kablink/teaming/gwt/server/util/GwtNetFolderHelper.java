@@ -58,6 +58,7 @@ import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver.ConnectionTestStatus;
 import org.kablink.teaming.gwt.client.GwtGroup;
+import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtSchedule.DayFrequency;
 import org.kablink.teaming.gwt.client.GwtSchedule.TimeFrequency;
@@ -198,6 +199,9 @@ public class GwtNetFolderHelper
 												scheduleInfo,
 												parentBinder.getId(),
 												false );
+			
+			// Set the rights on the net folder
+			setNetFolderRights( ami, binder.getId(), netFolder.getRoles() );
 
 			newNetFolder = new NetFolder();
 			newNetFolder.setName( netFolder.getName() );
@@ -206,6 +210,7 @@ public class GwtNetFolderHelper
 			newNetFolder.setId( binder.getId() );
 			newNetFolder.setStatus( NetFolderStatus.READY );
 			newNetFolder.setSyncSchedule( netFolder.getSyncSchedule() );
+			newNetFolder.setRoles( netFolder.getRoles() );
 		}
 		catch ( Exception ex )
 		{
@@ -783,6 +788,9 @@ public class GwtNetFolderHelper
 										netFolder.getNetFolderRootName(),
 										netFolder.getRelativePath(),
 										scheduleInfo );
+
+			// Set the rights on the net folder
+			setNetFolderRights( ami, netFolder.getId(), netFolder.getRoles() );
 		}
 		catch ( Exception ex )
 		{
@@ -840,6 +848,94 @@ public class GwtNetFolderHelper
 		return netFolderRoot;
 	}
 
+	/**
+	 * 
+	 */
+	private static void setNetFolderRights(
+		AllModulesInjected ami,
+		Long binderId,
+		ArrayList<GwtRole> roles )
+	{
+		AdminModule adminModule;
+		Binder binder;
+		List<Function> listOfFunctions;
+
+		if ( binderId == null && roles == null )
+		{
+			m_logger.error( "In GwtNetFolderHelper.setNetFolderRights(), invalid parameters" );
+		}
+		
+		adminModule = ami.getAdminModule();
+		
+		// Get the binder's work area
+		binder = ami.getBinderModule().getBinder( binderId );
+		
+		// Get a list of all the functions;
+		listOfFunctions = adminModule.getFunctions();
+
+		for ( GwtRole nextRole : roles )
+		{
+			Long fnId = null;
+			
+			// Get the Function for the given role
+			{
+				String fnInternalId = null;
+				
+				// Get the internal id of the appropriate function
+				switch ( nextRole.getType() )
+				{
+				case ShareExternal:
+					fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID;
+					break;
+					
+				case ShareForward:
+					fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID;
+					break;
+					
+				case ShareInternal:
+					fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID;
+					break;
+				
+				case SharePublic:
+					fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID;
+					break;
+				}
+				
+				// Did we find the function's internal id?
+				if ( fnInternalId == null )
+				{
+					// No
+					m_logger.error( "In GwtNetFolderHelper.setNetFolderRights(), could not find internal function id for role: " + nextRole.getType() );
+					continue;
+				}
+
+				// For the given internal function id, get the function's real id.
+				for ( Function nextFunction : listOfFunctions )
+				{
+					String nextInternalId;
+					
+					nextInternalId = nextFunction.getInternalId();
+					if ( fnInternalId.equalsIgnoreCase( nextInternalId ) )
+					{
+						fnId = nextFunction.getId();
+						break;
+					}
+				}
+			}
+			
+			// Did we find the function for the given role?
+			if ( fnId == null )
+			{
+				// No
+				m_logger.error( "In GwtNetFolderHelper.setNetFolderRights(), could not find function for role: " + nextRole.getType() );
+				continue;
+			}
+
+			// Update the function's membership.
+			adminModule.updateWorkAreaFunctionMemberships( binder, fnId, true, nextRole.getMemberIds() );
+		}
+	}
+	
 	/**
 	 * Sync the given list of net folders
 	 */
