@@ -2152,10 +2152,10 @@ public interface GwtTeamingMessages extends Messages
 	String manageUserDlgCaption();
 	
 	// Strings used by the 'Import Profiles' dialog.
-	String importProfilesDlgErrorBogusJSONData(String msg);
-	String importProfilesDlgErrorFailed(String msg);
+	String importProfilesDlgErrorBogusJSONData( String msg );
+	String importProfilesDlgErrorFailed( String msg );
 	String importProfilesDlgErrorNoFile();
-	String importProfilesDlgErrorParse(String msg);
+	String importProfilesDlgErrorParse( String msg );
 	String importProfilesDlgHeader();
 	String importProfilesDlgSuccess();
 	String importProfilesDlgViewSample();
@@ -2163,7 +2163,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used by the 'User Share Rights' dialog.
 	String userShareRightsDlgError_NoWorkspace();
 	String userShareRightsDlgError_SetFailures();
-	String userShareRightsDlgHeader(int count);
+	String userShareRightsDlgHeader( int count );
 	String userShareRightsDlgLabel_Allow();
 	String userShareRightsDlgLabel_AllowForwarding();
 	String userShareRightsDlgLabel_AllowSharingWith();
@@ -2172,7 +2172,7 @@ public interface GwtTeamingMessages extends Messages
 	String userShareRightsDlgLabel_InternalUsers();
 	String userShareRightsDlgLabel_NoChange();
 	String userShareRightsDlgLabel_Public();
-	String userShareRightsDlgProgress(int done, int total);
+	String userShareRightsDlgProgress( int done, int total );
 
 	// Strings used to represent the different rights
 	String externalRights();
@@ -2181,5 +2181,21 @@ public interface GwtTeamingMessages extends Messages
 	String noRights();
 	String publicRights();
 	String viewRights();
+
+	// Strings used for the empty collection view widget.
+	String emptyCollection_Info_MyFiles( String product );
+	String emptyCollection_Info_SharedByMe_1( String product );
+	String emptyCollection_Info_SharedByMe_2();
+	String emptyCollection_Info_SharedWithMe( String product );
+	String emptyCollection_Info_NetFolders_1( String product );
+	String emptyCollection_Info_NetFolders_2();
+	String emptyCollection_Info_NetFolders_3();
+	String emptyCollection_Info_NetFolders_4( String product );
+	String emptyCollection_Product_Filr();
+	String emptyCollection_Product_Vibe();
+	String emptyCollection_SubHead_MyFiles();
+	String emptyCollection_SubHead_SharedByMe();
+	String emptyCollection_SubHead_SharedWithMe();
+	String emptyCollection_SubHead_NetFolders();
 	
 }// end GwtTeamingMessages

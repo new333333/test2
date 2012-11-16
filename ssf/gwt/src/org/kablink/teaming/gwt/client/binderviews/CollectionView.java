@@ -44,6 +44,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Collection view.
@@ -178,6 +179,22 @@ public class CollectionView extends DataTableFolderViewBase {
 				vClient.onUnavailable();
 			}
 		});
+	}
+	
+	/**
+	 * Returns the widget to use for displaying the table empty message.
+	 * 
+	 * Provided as a convenience method.  Class that extend this may
+	 * override to provide whatever they want displayed.
+	 * 
+	 * Overrides the DataTableFolderViewBase.getEmptyTableWidget()
+	 * method.
+	 * 
+	 * @return
+	 */
+	@Override
+	protected Widget getEmptyTableWidget() {
+		return new EmptyCollectionComposite(getFolderInfo().getCollectionType());
 	}
 	
 	/**
