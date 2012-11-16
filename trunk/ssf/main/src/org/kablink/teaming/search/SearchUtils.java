@@ -851,4 +851,41 @@ public class SearchUtils {
         return quickFilter;
     }
 
+    public static Map searchForNetFolders(AllModulesInjected mods, String quickFilter, Map options) {
+        Binder nfBinder = getCoreDao().loadReservedBinder(
+                ObjectKeys.NET_FOLDERS_ROOT_INTERNALID,
+                RequestContextHolder.getRequestContext().getZoneId());
+        Long nfBinderId = nfBinder.getId();
+
+        Criteria crit = new Criteria();
+        crit.add(eq(Constants.DOC_TYPE_FIELD,            Constants.DOC_TYPE_BINDER));
+        crit.add(eq(Constants.IS_TOP_FOLDER_FIELD,       Constants.TRUE));
+        crit.add(eq(Constants.HAS_RESOURCE_DRIVER_FIELD, Constants.TRUE));
+        crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD,   nfBinderId.toString()));
+
+        quickFilter = modifyQuickFilter(quickFilter);
+
+        // Do we have a quick filter?
+        if (null != quickFilter) {
+            crit.add(like(Constants.TITLE_FIELD, quickFilter));
+        }
+
+        // Add in the sort information...
+        boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
+        String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
+        crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
+        crit.addOrder(new Order(sortBy,                 sortAscend));
+
+        // ...and issue the query and return the entries.
+        return
+            mods.getBinderModule().searchFolderOneLevelWithInferredAccess(
+                crit,
+                Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
+                GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+                GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+                nfBinderId,
+                nfBinder.getPathName());
+
+
+    }
 }

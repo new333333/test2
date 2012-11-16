@@ -642,6 +642,8 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      * @return
      */
     public abstract List<Definition> getViewDefinitions();
+
+    protected abstract Binder newInstance();
     /**
      * Return a list of definitions for workflows
      * @return
@@ -951,4 +953,20 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	}
 	/*****************End File Related Stuff***********/
 
+    public Binder asLimitedBinder(boolean setParent) {
+        Binder limited = newInstance();
+        limited.entryDef = this.entryDef;
+        limited.id = this.id;
+        if (setParent) {
+            parentBinder = this.getParentBinder();
+            if (parentBinder!=null) {
+                limited.parentBinder = this.getParentBinder().asLimitedBinder(false);
+            }
+        }
+        limited.pathName = this.pathName;
+        limited.library = this.library;
+        limited.mirrored = this.mirrored;
+        limited.title = this.title;
+        return limited;
+    }
 }

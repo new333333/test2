@@ -168,24 +168,7 @@ public class NetFoldersResource extends AbstractResource {
     }
 
     protected SearchResultList<BinderBrief> _getNetFolders(boolean textDescriptions, int offset, int maxCount, String nextUrl, Map<String, Object> nextParams) {
-        Binder nfBinder = getCoreDao().loadReservedBinder(
-     				ObjectKeys.NET_FOLDERS_ROOT_INTERNALID,
-     				RequestContextHolder.getRequestContext().getZoneId());
-     	Long nfBinderId = nfBinder.getId();
-        Criteria crit = new Criteria();
-     	crit.add(eq(Constants.DOC_TYPE_FIELD,            Constants.DOC_TYPE_BINDER));
-     	crit.add(eq(Constants.IS_TOP_FOLDER_FIELD,       Constants.TRUE));
-        crit.add(eq(Constants.HAS_RESOURCE_DRIVER_FIELD, Constants.TRUE));
-     	crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD,   nfBinderId.toString()));
-
-        // ...and issue the query and return the entries.
-        Map map = getBinderModule().searchFolderOneLevelWithInferredAccess(
-                crit,
-                Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
-                offset,
-                maxCount,
-                nfBinderId,
-                nfBinder.getPathName());
+        Map map = SearchUtils.searchForNetFolders(this, null, new HashMap());
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), map, nextUrl, nextParams, offset);
         for (BinderBrief binder : results.getResults()) {

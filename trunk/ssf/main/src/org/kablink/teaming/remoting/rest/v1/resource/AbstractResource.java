@@ -113,7 +113,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected org.kablink.teaming.domain.Folder _getFolder(long id) {
         try{
-            org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(id);
+            org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(id, false, true);
             if (binder instanceof org.kablink.teaming.domain.Folder) {
                 org.kablink.teaming.domain.Folder folder = (org.kablink.teaming.domain.Folder) binder;
                 if (!folder.isPreDeleted()) {

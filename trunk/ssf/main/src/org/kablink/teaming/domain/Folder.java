@@ -205,9 +205,14 @@ public class Folder extends Binder {
     		return getDefs(definitionType);
     	else
     		return getDefs(Definition.FOLDER_VIEW);
-    }	    
-    
-     /**
+    }
+
+    @Override
+    protected Binder newInstance() {
+        return new Folder();
+    }
+
+    /**
      * Processor type for folders may be different and dependent on
      * the definition
      * @param processorKey

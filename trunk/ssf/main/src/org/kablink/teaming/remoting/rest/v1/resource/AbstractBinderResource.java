@@ -134,7 +134,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
             newBinderId = getLoggedInUser().getWorkspaceId();
         }
 
-        org.kablink.teaming.domain.Binder parentBinder = getBinderModule().getBinder(newBinderId);
+        org.kablink.teaming.domain.Binder parentBinder = _getBinder(newBinderId);
         getBinderModule().moveBinder(binder.getId(), parentBinder.getId(), null);
 
         Binder modifiedBinder = ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
@@ -474,7 +474,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
     protected SearchResultList<BinderBrief> getSubBinders(long id, Criterion filter, Integer offset, Integer maxCount,
                                                           String nextUrl, Map<String, Object> nextParams, boolean textDescriptions) {
-        _getBinder(id);
+        org.kablink.teaming.domain.Binder binder = _getBinder(id);
         if (offset==null) {
             offset = 0;
         }
@@ -487,7 +487,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
         crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
         crit.add(Restrictions.eq(Constants.BINDERS_PARENT_ID_FIELD, ((Long) id).toString()));
-        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
+        Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount, binder.getId(), binder.getPathName());
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultMap, nextUrl, nextParams, offset);
         return results;
@@ -503,14 +503,14 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         crit.add(buildAncentryCriterion(id));
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
         BinderTree results = new BinderTree();
-        SearchResultBuilderUtil.buildSearchResultsTree(results, id, new BinderBriefBuilder(textDescriptions), resultMap);
+        SearchResultBuilderUtil.buildSearchResultsTree(this, results, id, new BinderBriefBuilder(textDescriptions), resultMap);
         results.setItem(null);
         return results;
     }
 
     protected org.kablink.teaming.domain.Binder _getBinder(long id) {
         try{
-            return getBinderModule().getBinder(id);
+            return getBinderModule().getBinder(id, false, true);
         } catch (NoBinderByTheIdException e) {
             // Throw exception below.
         }

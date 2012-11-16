@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -75,6 +76,7 @@ public class BinderBrief extends DefinableEntityBrief {
 		return homeDir;
 	}
 
+    @XmlElement(name = "home_dir")
 	public void setHomeDir(Boolean homeDir) {
 		this.homeDir = homeDir;
 	}
