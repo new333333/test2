@@ -2174,4 +2174,12 @@ public interface GwtTeamingMessages extends Messages
 	String userShareRightsDlgLabel_Public();
 	String userShareRightsDlgProgress(int done, int total);
 
+	// Strings used to represent the different rights
+	String externalRights();
+	String forwardingRights();
+	String internalRights();
+	String noRights();
+	String publicRights();
+	String viewRights();
+	
 }// end GwtTeamingMessages

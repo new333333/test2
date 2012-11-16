@@ -4865,4 +4865,25 @@ td.datePickerMonth {
 	.vibe-userShareRightsDlg-table            {}
 /* End:  User share rights dialog styles. */
 
+
+/* Start: Net Folder Rights widget styles */
+.netFolderRightsWidget_RightsLabel
+{
+	color: #5691A6;
+	padding-left: 4px;
+}
+
+.netFolderRightsWidget_RightsLabel:hover
+{
+	cursor: pointer;
+	background: url(images/blends/teal_slice.png) repeat-x;
+	background-position:center;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+
+/* End: */
+
 /* End */

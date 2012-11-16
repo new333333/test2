@@ -37,114 +37,111 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class represents the different "share forward" rights
+ * Class used to track rights on a per user basis. 
+ * 
+ * @author jwootton@novell.com
  */
-public class ShareForwardRights implements IsSerializable
+public class PerUserRightsInfo
+	implements IsSerializable
 {
-	private boolean m_canShareInternal;
-	private boolean m_canShareExternal;
-	private boolean m_canSharePublic;
+	private PerUserShareRightsInfo m_shareRightsInfo;
+	private boolean m_canAccess;
+
 	
 	/**
+	 * Constructor method. 
 	 * 
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public ShareForwardRights()
+	public PerUserRightsInfo()
 	{
-		m_canShareInternal = true;
-		m_canShareExternal = false;
-		m_canSharePublic = false;
+		// Initialize the super class.
+		super();
 	}
 	
 	/**
-	 * 
+	 * Constructor method. 
 	 */
-	public boolean canShareExternal()
+	public PerUserRightsInfo(
+		PerUserShareRightsInfo shareRightsInfo,
+		boolean canAccess )
 	{
-		return m_canShareExternal;
+		this();
+
+		m_shareRightsInfo = shareRightsInfo;
+		setCanAccess( canAccess );
 	}
-	
+
 	/**
 	 * 
 	 */
-	public boolean canShareForward()
+	public boolean canAccess()
 	{
-		if ( m_canShareInternal == true || m_canShareExternal == true || m_canSharePublic == true )
-			return true;
+		return m_canAccess;
+	}
+
+	/**
+	 * 
+	 */
+	public String getRightsAsString()
+	{
+		StringBuffer rights;
 		
-		return false;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean canShareInternal()
-	{
-		return m_canShareInternal;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean canSharePublic()
-	{
-		return m_canSharePublic;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getShareRightsAsString()
-	{
-		String rights;
-		
-		rights = "";
-		if ( canShareInternal() )
-			rights += GwtTeaming.getMessages().shareInternal();
-		
-		if ( canShareExternal() )
+		rights = new StringBuffer();
+		if ( m_shareRightsInfo != null )
 		{
-			if ( rights.length() > 0 )
-				rights += "/";
+			if ( m_shareRightsInfo.isAllowInternal() )
+				rights.append( GwtTeaming.getMessages().internalRights() );
 			
-			rights += GwtTeaming.getMessages().shareExternal();
-		}
-		
-		if ( canSharePublic() )
-		{
-			if ( rights.length() > 0 )
-				rights += "/";
+			if ( m_shareRightsInfo.isAllowInternal() )
+			{
+				if ( rights.length() > 0 )
+					rights.append( "/" );
+				rights.append( GwtTeaming.getMessages().externalRights() );
+			}
 			
-			rights += GwtTeaming.getMessages().sharePublic();
+			if ( m_shareRightsInfo.isAllowPublic() )
+			{
+				if ( rights.length() > 0 )
+					rights.append( "/" );
+				rights.append( GwtTeaming.getMessages().publicRights() );
+			}
+			
+			if ( m_shareRightsInfo.isAllowForwarding() )
+			{
+				if ( rights.length() > 0 )
+					rights.append( "/" );
+				rights.append( GwtTeaming.getMessages().forwardingRights() );
+			}
+			
+			if ( m_canAccess )
+			{
+				if ( rights.length() > 0 )
+					rights.append( "/" );
+				rights.append( GwtTeaming.getMessages().viewRights() );
+			}
 		}
 		
 		if ( rights.length() == 0 )
-			rights = GwtTeaming.getMessages().none();
-		
-		return rights;
+			return GwtTeaming.getMessages().noRights();
+			
+		return rights.toString();
 	}
 	
+
 	/**
 	 * 
 	 */
-	public void setCanShareExternal( boolean canShare )
+	public PerUserShareRightsInfo getShareRights()
 	{
-		m_canShareExternal = canShare;
+		return m_shareRightsInfo;
 	}
-	
+
 	/**
 	 * 
 	 */
-	public void setCanShareInternal( boolean canShare )
+	public void setCanAccess( boolean canAccess )
 	{
-		m_canShareInternal = canShare;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setCanSharePublic( boolean canShare )
-	{
-		m_canSharePublic = canShare;
+		m_canAccess = canAccess;
 	}
 }
-
