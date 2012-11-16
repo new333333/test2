@@ -1625,31 +1625,7 @@ public class GwtServerHelper {
 			    // Create a new token
 				newToken = ExternalUserUtil.encodeUserTokenWithNewSeed( extUser );
 
-				params = invitationUrl.split( "&" );
-				for ( String param : params )
-				{
-					String[] split;
-					
-					split = param.split( "=" );
-					if ( split != null && split.length == 2 )
-					{
-						String name;
-						String value;
-
-						name = split[0];
-						value = split[1];
-						if ( value != null && name != null && name.equalsIgnoreCase( "euet" ) )
-						{
-							String old;
-							String replacement;
-							
-							old = name + "=" + value;
-							replacement = name + "=" + newToken;
-							confirmationUrl = invitationUrl.replaceFirst( old, replacement );
-							break;
-						}
-					}
-				}
+				confirmationUrl = ExternalUserUtil.replaceTokenInUrl(invitationUrl, newToken);
 			}
 
 			// Send an email informing the user that their registration is complete.

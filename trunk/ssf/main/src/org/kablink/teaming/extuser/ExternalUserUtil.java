@@ -49,6 +49,7 @@ import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.spring.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
@@ -83,14 +84,6 @@ public class ExternalUserUtil {
 	
 	public static String encodeUserTokenWithExistingSeed(User user) {
 		return Long.toHexString(user.getId().longValue()) + DELIM + user.getPrivateDigest();
-	}
-	
-	private static Long getUserId(String encodedUserToken) {
-		return Long.parseLong(encodedUserToken.substring(0, encodedUserToken.indexOf(DELIM)), 16);
-	}
-	
-	private static String getPrivateDigest(String encodedUserToken) {
-		return encodedUserToken.substring(encodedUserToken.indexOf(DELIM)+1);
 	}
 	
 	public static Map<String, String> getQueryParamsFromUrl(String url) {   
@@ -155,6 +148,11 @@ public class ExternalUserUtil {
 				// Unfortunately, the spring security framework won't store this exception into the session even though
 				// it correctly catches it and triggers redirect to the login page. So we must put it in ourselves.
 				session.setAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY, exc);
+				// Store in the session the original access url minus the token so that we can redirect
+				// the user to correct entity after successful authentication with OpenID, if the user
+				// chooses to authenticate via OpenID rather than going through the self-provisioning steps.
+				// Replace the token query param with something bogus but innocent/unharmful one.
+    			session.setAttribute(SavedRequestAwareAuthenticationSuccessHandler.FILR_REDIRECT_AFTER_SUCCESSFUL_LOGIN, removeTokenFromUrl(url));
 				// Throwing this exception is NOT an indication of an error. Rather, this signals
 				// GWT layer to proceed to the next step in the normal flow.
 				throw exc;
@@ -178,6 +176,41 @@ public class ExternalUserUtil {
 		updateUser(user);
 	}
 	
+	public static String replaceTokenInUrl(String url, String newToken) {
+		if(url == null)
+			return null;
+		Map<String, String> params = getQueryParamsFromUrl(url);
+		String token = params.get(QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN);
+		if(Validator.isNotNull(token)) {
+			// Old token exists in the url. Replace it with new token.
+			return url.replace(QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN + "=" + token, QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN + "=" + newToken);
+		}
+		else {
+			// The link doesn't contain token. No replacement possible.
+			return url;
+		}
+	}
+	
+	public static String removeTokenFromUrl(String url) {
+		if(url == null)
+			return null;
+		Map<String, String> params = getQueryParamsFromUrl(url);
+		String token = params.get(QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN);
+		if(Validator.isNotNull(token))
+			// Replace the token param with something bogus but innocent/unharmful.
+			return url.replace(QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN + "=" + token, "1=1");
+		else
+			return url;
+	}
+	
+	private static Long getUserId(String encodedUserToken) {
+		return Long.parseLong(encodedUserToken.substring(0, encodedUserToken.indexOf(DELIM)), 16);
+	}
+	
+	private static String getPrivateDigest(String encodedUserToken) {
+		return encodedUserToken.substring(encodedUserToken.indexOf(DELIM)+1);
+	}
+	
 	private static OpenIDProvider getAllowedOpenIDProviderGivenEmailAddress(String emailAddress) {
     	Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
      	
@@ -199,7 +232,7 @@ public class ExternalUserUtil {
 	private static void validateDigest(User user, String digest) {
 		if(!user.getPrivateDigest().equals(digest)) {
 			logger.warn("User '" + user.getName() + "' supplied invalid digest value");
-			throw new UsernameNotFoundException("User '" + user.getName() + "' supplied invalid digest value");
+			throw new UsernameNotFoundException("Invalid link");
 		}
 	}
 
@@ -257,6 +290,6 @@ public class ExternalUserUtil {
 		String hex = Long.toHexString(l);
 		System.out.println(hex);
 		long l2 = Long.parseLong(hex, 16);
-		System.out.println(l2);
+		System.out.println(l2);		
 	}
 }
