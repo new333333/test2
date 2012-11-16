@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.PerUserRightsInfo;
+import org.kablink.teaming.gwt.client.widgets.EditNetFolderRightsDlg.EditNetFolderRightsDlgClient;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -52,25 +53,21 @@ import com.google.gwt.user.client.ui.InlineLabel;
 public class NetFolderRightsWidget extends Composite
 	implements ClickHandler
 {
-	private Long m_userId;
 	private PerUserRightsInfo m_rightsInfo;
 	private InlineLabel m_rightsLabel;
 	private Image m_rightsImg;
 	private EditSuccessfulHandler m_editRightsHandler;
 
-//	private static EditShareRightsDlg m_editShareRightsDlg;
+	private static EditNetFolderRightsDlg m_editNetFolderRightsDlg;
 	
 	
 	/**
 	 * 
 	 */
-	public NetFolderRightsWidget(
-		Long userId,
-		PerUserRightsInfo rightsInfo )
+	public NetFolderRightsWidget( PerUserRightsInfo rightsInfo )
 	{
 		ImageResource imageResource;
 		
-		m_userId = userId;
 		m_rightsInfo = rightsInfo;
 
 		m_rightsLabel = new InlineLabel( m_rightsInfo.getRightsAsString() );
@@ -91,12 +88,11 @@ public class NetFolderRightsWidget extends Composite
 	 */
 	private void invokeEditRightsDlg()
 	{
-/*
-		if ( m_editShareRightsDlg != null )
+		if ( m_editNetFolderRightsDlg != null )
 		{
-			if ( m_editShareRightsHandler == null )
+			if ( m_editRightsHandler == null )
 			{
-				m_editShareRightsHandler = new EditSuccessfulHandler()
+				m_editRightsHandler = new EditSuccessfulHandler()
 				{
 					@Override
 					public boolean editSuccessful( Object obj )
@@ -105,8 +101,8 @@ public class NetFolderRightsWidget extends Composite
 						{
 							Boolean retValue;
 							
-							// Did the "Edit Share Rights" dialog successfully update
-							// our GwtShareItem.
+							// Did the "Edit Net Folder Rights" dialog successfully update
+							// our PerUserRightsInfo object?
 							retValue = (Boolean) obj;
 							if ( retValue == true )
 								updateRightsLabel();
@@ -117,13 +113,13 @@ public class NetFolderRightsWidget extends Composite
 				};
 			}
 			
-			// Invoke the "edit share rights" dialog.
-			m_editShareRightsDlg.init( m_shareInfo, m_highestRightsPossible, m_editShareRightsHandler );
-			m_editShareRightsDlg.showRelativeToTarget( m_rightsLabel );
+			// Invoke the "edit net folder rights" dialog.
+			m_editNetFolderRightsDlg.init( m_rightsInfo, m_editRightsHandler );
+			m_editNetFolderRightsDlg.showRelativeToTarget( m_rightsLabel );
 		}
 		else
 		{
-			EditShareRightsDlg.createAsync( true, true, new EditShareRightsDlgClient()
+			EditNetFolderRightsDlg.createAsync( true, true, new EditNetFolderRightsDlgClient()
 			{
 				@Override
 				public void onUnavailable() 
@@ -132,15 +128,14 @@ public class NetFolderRightsWidget extends Composite
 				}
 				
 				@Override
-				public void onSuccess( EditShareRightsDlg esrDlg )
+				public void onSuccess( EditNetFolderRightsDlg enfrDlg )
 				{
-					m_editShareRightsDlg = esrDlg;
-					invokeEditShareRightsDlg();
+					m_editNetFolderRightsDlg = enfrDlg;
+					invokeEditRightsDlg();
 				}
 			} );
 			
 		}
-*/
 	}
 	
 	/**

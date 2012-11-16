@@ -124,7 +124,7 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 				PerUserRightsInfo rightsInfo;
 				
 				rightsInfo = (PerUserRightsInfo) principal.getAdditionalData();
-				widget = new NetFolderRightsWidget( principal.getIdLong(), rightsInfo );
+				widget = new NetFolderRightsWidget( rightsInfo );
 				return widget;
 			}
 			

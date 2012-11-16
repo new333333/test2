@@ -79,6 +79,50 @@ public class PerUserRightsInfo
 	{
 		return m_canAccess;
 	}
+	
+	/**
+	 * 
+	 */
+	public boolean canReshare()
+	{
+		if ( m_shareRightsInfo != null )
+			return m_shareRightsInfo.isAllowForwarding();
+
+		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean canShareExternal()
+	{
+		if ( m_shareRightsInfo != null )
+			return m_shareRightsInfo.isAllowExternal();
+
+		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean canShareInternal()
+	{
+		if ( m_shareRightsInfo != null )
+			return m_shareRightsInfo.isAllowInternal();
+
+		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean canSharePublic()
+	{
+		if ( m_shareRightsInfo != null )
+			return m_shareRightsInfo.isAllowPublic();
+
+		return false;
+	}
 
 	/**
 	 * 
@@ -93,7 +137,7 @@ public class PerUserRightsInfo
 			if ( m_shareRightsInfo.isAllowInternal() )
 				rights.append( GwtTeaming.getMessages().internalRights() );
 			
-			if ( m_shareRightsInfo.isAllowInternal() )
+			if ( m_shareRightsInfo.isAllowExternal() )
 			{
 				if ( rights.length() > 0 )
 					rights.append( "/" );
@@ -128,20 +172,47 @@ public class PerUserRightsInfo
 		return rights.toString();
 	}
 	
-
-	/**
-	 * 
-	 */
-	public PerUserShareRightsInfo getShareRights()
-	{
-		return m_shareRightsInfo;
-	}
-
 	/**
 	 * 
 	 */
 	public void setCanAccess( boolean canAccess )
 	{
 		m_canAccess = canAccess;
+	}
+
+	/**
+	 * 
+	 */
+	public void setCanReshare( boolean allow )
+	{
+		if ( m_shareRightsInfo != null )
+			m_shareRightsInfo.setAllowForwarding( allow );
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCanShareExternal( boolean allow )
+	{
+		if ( m_shareRightsInfo != null )
+			m_shareRightsInfo.setAllowExternal( allow );
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCanShareInternal( boolean allow )
+	{
+		if ( m_shareRightsInfo != null )
+			m_shareRightsInfo.setAllowInternal( allow );
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCanSharePublic( boolean allow )
+	{
+		if ( m_shareRightsInfo != null )
+			m_shareRightsInfo.setAllowPublic( allow );
 	}
 }
