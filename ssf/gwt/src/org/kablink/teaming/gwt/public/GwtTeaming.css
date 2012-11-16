@@ -4852,7 +4852,7 @@ td.datePickerMonth {
 	.vibe-userShareRightsDlg-headerCellCenter {text-align: center;}
 	.vibe-userShareRightsDlg-headerCellLeft   {text-align: left;}
 	.vibe-userShareRightsDlg-headerCellSpacer {border-bottom-color: #cccccc; border-bottom-style: solid; border-bottom-width: 1px; padding-top: 10px;}
-	.vibe-userShareRightsDlg-panel            {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
+	.vibe-userShareRightsDlg-panel            {text-align: left; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
 	.vibe-userShareRightsDlg-progressBar      {margin-bottom: 5px; margin-top: 10px;}
 	.vibe-userShareRightsDlg-progressLabel    {margin-left: 3px;}
 	.vibe-userShareRightsDlg-progressPanel    {white-space: nowrap; font-size: 1.1em; font-weight: bold;}
