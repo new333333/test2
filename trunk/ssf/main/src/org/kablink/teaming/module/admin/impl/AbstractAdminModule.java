@@ -1137,8 +1137,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	public void updateWorkAreaFunctionMemberships(WorkArea wa, Long functionId, boolean set, Collection<Long> memberIds) {
 		// Is there a WorkAreaFunctionMembership on this WorkArea?
 		WorkAreaFunctionMembership wafm = getWorkAreaFunctionMembership(wa, functionId);
-		final boolean newWAFM = (null == wafm);
-		if (newWAFM) {
+		final boolean finalNewWAFM = (null == wafm);
+		if (finalNewWAFM) {
 			// No!  If we're clearing the members...
 			if (!set) {
 				// ...simply bail as there's nothing we need to do.
@@ -1162,32 +1162,47 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			finalWAFM.setMemberIds(wafmMemberIds);
 		}
 
-		// Are we setting the member on this function?
+		// We're we given any member IDs to set?
+		boolean removeWAFM = false;
 		int changeCount = 0;
-		for (Long memberId:  memberIds) {
-			boolean setHasMember = wafmMemberIds.contains(memberId);
-			if (set) {
-				// Yes!  If it's already a member... 
-				if (setHasMember) {
-					// ...then nothing is changing...skip it...
-					continue;
+		if (MiscUtil.hasItems(memberIds)) {
+			// Yes!  Scan them.
+			for (Long memberId:  memberIds) {
+				// Are we setting the member on this function?
+				boolean setHasMember = wafmMemberIds.contains(memberId);
+				if (set) {
+					// Yes!  If it's already a member... 
+					if (setHasMember) {
+						// ...then nothing is changing...skip it...
+						continue;
+					}
+					
+					// ...otherwise, add it to the set.
+					wafmMemberIds.add(memberId);
+					changeCount += 1;
 				}
 				
-				// ...otherwise, add it to the set.
-				wafmMemberIds.add(memberId);
-				changeCount += 1;
+				else {
+					// No, we must be clearing the member!  If it isn't
+					// a member...
+					if (!setHasMember) {
+						// ...then nothing is changing...skip it...
+						continue;
+					}
+					
+					// ...otherwise, from it from the set.
+					wafmMemberIds.remove(memberId);
+					changeCount += 1;
+				}
 			}
-			
-			else {
-				// No, we must be clearing the member!  If it isn't
-				// a member...
-				if (!setHasMember) {
-					// ...then nothing is changing...skip it...
-					continue;
-				}
-				
-				// ...otherwise, from it from the set.
-				wafmMemberIds.remove(memberId);
+		}
+		
+		else {
+			// No, we weren't given any member IDs to set!  If there
+			// any that are existing...
+			if (MiscUtil.hasItems(wafmMemberIds)) {
+				// ...we need to remove them.
+				removeWAFM   = true;
 				changeCount += 1;
 			}
 		}
@@ -1199,13 +1214,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			return;
 		}
 
-		// Finally, add/update membership on the WorkArea Function. 
+		// Finally, add/update membership on the WorkArea Function.
+		final boolean finalRemoveWAFM = removeWAFM;
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				if (newWAFM)
-				     getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(   finalWAFM);
-				else getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(finalWAFM);
+				if      (finalRemoveWAFM) getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(finalWAFM);
+				else if (finalNewWAFM)    getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(   finalWAFM);
+				else                      getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(finalWAFM);
 				return null;
 			}
 		});
