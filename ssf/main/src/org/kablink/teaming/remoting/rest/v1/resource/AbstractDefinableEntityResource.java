@@ -43,12 +43,14 @@ import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
+import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.BaseFileProperties;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.Permission;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.search.SearchFieldResult;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.*;
 
@@ -87,53 +89,15 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
         if (criterion==null) {
             throw new BadRequestException(ApiErrorCode.SERVER_ERROR, "Unsupported entity type: " + entity.getEntityTypedId());
         }
-        BinderBrief [] binders = new BinderBrief[0];
         Criteria crit = new Criteria();
         crit.add(criterion);
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1);
         List<Map> entries = (List<Map>)resultMap.get(ObjectKeys.SEARCH_ENTRIES);
         Map entry = entries.iterator().next();
         if (entry!=null) {
-            Set<String> binderIds = null;
-            Object value = entry.get(Constants.ENTRY_ANCESTRY);
-            if (value instanceof SearchFieldResult) {
-                SearchFieldResult ancestry = (SearchFieldResult) entry.get(Constants.ENTRY_ANCESTRY);
-                binderIds = ancestry.getValueSet();
-            } else {
-                binderIds = new HashSet<String>();
-                binderIds.add((String)value);
-            }
-            int idCount = 0;
-            Junction idJunction = Restrictions.disjunction();
-            for (String binderId : binderIds) {
-                if (!((entity instanceof Binder) && binderId.equals(Long.toString(id)))) {
-                    idJunction.add(Restrictions.eq(Constants.DOCID_FIELD, binderId));
-                    idCount++;
-                }
-            }
-            if (idCount>0) {
-                Junction outer = Restrictions.conjunction();
-                outer.add(buildBindersCriterion());
-                outer.add(idJunction);
-                crit = new Criteria();
-                crit.add(outer);
-                resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1);
-                entries = (List<Map>)resultMap.get(ObjectKeys.SEARCH_ENTRIES);
-                BinderBriefBuilder builder = new BinderBriefBuilder();
-                List<BinderBrief> binderList = new ArrayList<BinderBrief>(entries.size());
-                for (Map binderEntry : entries) {
-                    binderList.add(builder.build(binderEntry));
-                }
-                Collections.sort(binderList, new Comparator<BinderBrief>() {
-                    public int compare(BinderBrief o1, BinderBrief o2) {
-                        return o1.getPath().compareTo(o2.getPath());
-                    }
-                });
-                binders = binderList.toArray(new BinderBrief[binderList.size()]);
-            }
+            return SearchResultBuilderUtil.getAncestryFromEntryMap(this, new BinderBriefBuilder(), id, entity.getEntityType(), entry);
         }
-
-        return binders;
+        return new BinderBrief[0];
     }
 
     @GET

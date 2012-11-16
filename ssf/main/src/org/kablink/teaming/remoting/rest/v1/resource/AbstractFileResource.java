@@ -287,7 +287,7 @@ abstract public class AbstractFileResource extends AbstractResource {
             if (!(entity instanceof Group))
                 throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
         } else if (et == EntityIdentifier.EntityType.workspace || et == EntityIdentifier.EntityType.folder || et == EntityIdentifier.EntityType.profiles) {
-            entity = getBinderModule().getBinder(entityId);
+            entity = getBinderModule().getBinder(entityId, false, true);
         } else {
             throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entityType + "' is unknown or not supported by this method");
         }

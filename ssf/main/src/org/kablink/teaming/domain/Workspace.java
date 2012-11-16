@@ -145,7 +145,12 @@ public class Workspace extends Binder  {
     	else
     		return getDefs(Definition.WORKSPACE_VIEW);
     }
-    
+
+    @Override
+    protected Binder newInstance() {
+        return new Workspace();
+    }
+
     /**
      * @hibernate.property
      * @return

@@ -120,7 +120,7 @@ public class BinderResource extends AbstractResource {
 
     protected org.kablink.teaming.domain.Binder _getBinder(long id) {
         try{
-            return getBinderModule().getBinder(id);
+            return getBinderModule().getBinder(id, false, true);
         } catch (NoBinderByTheIdException e) {
             // Throw exception below.
         }

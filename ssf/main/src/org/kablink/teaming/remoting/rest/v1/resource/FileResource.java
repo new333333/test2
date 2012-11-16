@@ -215,7 +215,7 @@ public class FileResource extends AbstractFileResource {
             finalParentId = newFolderId;
             newFolderId = SearchUtils.getMyFilesFolderId(this, this.getLoggedInUser().getWorkspaceId(), true);
         }
-        Binder binder = getBinderModule().getBinder(newFolderId);
+        Binder binder = getBinderModule().getBinder(newFolderId, false, true);
         if (!(binder instanceof Folder)) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The binder with the specified id is not a valid folder: " + newFolderId);
         }

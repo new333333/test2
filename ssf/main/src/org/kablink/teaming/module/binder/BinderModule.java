@@ -372,6 +372,9 @@ public interface BinderModule {
     public Binder getBinder(Long binderId, boolean thisLevelOnly)
 			throws NoBinderByTheIdException, AccessControlException;
 
+    public Binder getBinder(Long binderId, boolean thisLevelOnly, boolean returnLimitedBinderIfInferredAccess)
+			throws NoBinderByTheIdException, AccessControlException;
+
     public Binder getBinderWithoutAccessCheck(Long binderId) throws NoBinderByTheIdException;
     
     /**

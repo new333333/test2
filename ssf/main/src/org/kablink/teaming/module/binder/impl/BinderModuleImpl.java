@@ -252,6 +252,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	public void checkAccess(User user, Binder binder, BinderOperation operation, boolean thisLevelOnly)
 			throws AccessControlException {
+        _checkAccess(user, binder, operation, thisLevelOnly);
+    }
+
+	private boolean _checkAccess(User user, Binder binder, BinderOperation operation, boolean thisLevelOnly)
+			throws AccessControlException {
+        boolean fullAccess = true;
 		if (user == null) {
 			user = RequestContextHolder.getRequestContext().getUser();
 		}
@@ -384,6 +390,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 							//There are no sub-binders to see, so return no access
 							throw e;
 						}
+                        fullAccess = false;
 					} else {
 						//We aren't looking for any potential sub-binders. So, just throw the access control error
 						throw e;
@@ -412,6 +419,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 			}
 		}
+        return fullAccess;
 	}
 
 	private Binder loadBinder(Long binderId) {
@@ -444,6 +452,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return getBinder(binderId, Boolean.FALSE);
 	}
 	public Binder getBinder(Long binderId, boolean thisLevelOnly) throws NoBinderByTheIdException,
+            AccessControlException {
+        return getBinder(binderId, thisLevelOnly, Boolean.FALSE);
+    }
+
+	public Binder getBinder(Long binderId, boolean thisLevelOnly, boolean returnLimitedBinderIfInferredAccess) throws NoBinderByTheIdException,
 			AccessControlException {
 		Binder binder = loadBinder(binderId);
 		// Check if the user has "read" access to the binder.
@@ -452,7 +465,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				checkAccess(null, binder, BinderOperation.readEntries, thisLevelOnly);
 			} catch(AccessControlException ace) {
 				try {
-					checkAccess(null, binder, BinderOperation.viewBinderTitle, thisLevelOnly);
+					boolean fullAccess = _checkAccess(null, binder, BinderOperation.viewBinderTitle, thisLevelOnly);
+                    if (!fullAccess && returnLimitedBinderIfInferredAccess) {
+                        binder = binder.asLimitedBinder(true);
+                    }
 				} catch(AccessControlException ace2) {
 					throw ace;
 				}

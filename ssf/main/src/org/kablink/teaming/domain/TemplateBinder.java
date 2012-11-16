@@ -74,6 +74,12 @@ public class TemplateBinder extends Binder {
     public List getViewDefinitions() {
 		return getDefs(definitionType);
     }
+
+    @Override
+    protected Binder newInstance() {
+        return new TemplateBinder();
+    }
+
     /**
      * @hibernate.component prefix="tDescription_"
      */

@@ -15,7 +15,7 @@
  *
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  *
  * Attribution Information:
  * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
@@ -33,21 +33,18 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.util.AllModulesInjected;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * User: david
- * Date: 5/18/12
- * Time: 1:05 PM
+ * Date: 11/16/12
+ * Time: 9:58 AM
  */
-public interface SearchResultBuilder<T> {
-    public void setTextDescriptions(boolean textDescriptions);
-    public T build(Map entry);
-    public Object getId(T obj);
-    public Object getParentId(T obj);
-    public SearchResultTreeNode<T> factoryTreeNode(T obj);
+public interface ContainerSearchResultBuilder<T> extends SearchResultBuilder<T> {
+    public T[] factoryArray(int length);
+    public T lookup(AllModulesInjected ami, Object id);
+    public void sort(List<T> objs);
+    public EntityIdentifier.EntityType getType(T obj);
 }

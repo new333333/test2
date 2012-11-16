@@ -32,11 +32,19 @@
  */
 package org.kablink.teaming.remoting.rest.v1.util;
 
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
+import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.util.search.Constants;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,12 +52,16 @@ import java.util.Map;
  * Date: 5/18/12
  * Time: 1:07 PM
  */
-public class BinderBriefBuilder extends DefinableEntityBriefBuilder implements SearchResultBuilder<BinderBrief> {
+public class BinderBriefBuilder extends DefinableEntityBriefBuilder implements ContainerSearchResultBuilder<BinderBrief> {
     public BinderBriefBuilder() {
     }
 
     public BinderBriefBuilder(boolean textDescriptions) {
         super(textDescriptions);
+    }
+
+    public BinderBrief[] factoryArray(int length) {
+        return new BinderBrief[length];
     }
 
     public BinderBrief build(Map entry) {
@@ -66,6 +78,35 @@ public class BinderBriefBuilder extends DefinableEntityBriefBuilder implements S
             LinkUriUtil.populateWorkspaceLinks(binder);
         }
         return binder;
+    }
+
+    public EntityIdentifier.EntityType getType(BinderBrief obj) {
+        try {
+            return EntityIdentifier.EntityType.valueOf(obj.getEntityType());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    public BinderBrief lookup(AllModulesInjected ami, Object id) {
+        BinderBrief bb = null;
+        try {
+            Binder binder = ami.getBinderModule().getBinder((Long) id, false, true);
+            bb = ResourceUtil.buildBinderBrief(binder);
+        } catch (NoBinderByTheIdException e) {
+            // Ignore
+        } catch (AccessControlException e) {
+            // Ignore
+        }
+        return bb;
+    }
+
+    public void sort(List<BinderBrief> objs) {
+        Collections.sort(objs, new Comparator<BinderBrief>() {
+            public int compare(BinderBrief o1, BinderBrief o2) {
+                return o1.getPath().compareTo(o2.getPath());
+            }
+        });
     }
 
     public Object getId(BinderBrief obj) {
