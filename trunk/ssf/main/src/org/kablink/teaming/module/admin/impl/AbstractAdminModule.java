@@ -1200,7 +1200,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		else {
 			// No, we weren't given any member IDs to set!  If there
 			// any that are existing...
-			if (MiscUtil.hasItems(wafmMemberIds)) {
+			if (set && MiscUtil.hasItems(wafmMemberIds)) {
 				// ...we need to remove them.
 				removeWAFM   = true;
 				changeCount += 1;
