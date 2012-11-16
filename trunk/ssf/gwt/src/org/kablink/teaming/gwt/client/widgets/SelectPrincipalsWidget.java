@@ -930,6 +930,22 @@ public class SelectPrincipalsWidget extends Composite
 	}
 	
 	/**
+	 * Set the flag that determines if the user can search for external users.
+	 */
+	public void setSearchForExternalPrincipals( boolean canSearch )
+	{
+		m_findCtrl.setSearchForExternalPrincipals( canSearch );
+	}
+	
+	/**
+	 * Set the flag that determines if the user can search for internal users.
+	 */
+	public void setSearchForInternalPrincipals( boolean canSearch )
+	{
+		m_findCtrl.setSearchForInternalPrincipals( canSearch );
+	}
+	
+	/**
 	 * Unhighlight the given row in the table that holds the list of principals
 	 */
 	private void unhighlightPrincipal( int row )

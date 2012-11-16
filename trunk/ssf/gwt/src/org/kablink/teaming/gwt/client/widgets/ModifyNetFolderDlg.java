@@ -825,6 +825,10 @@ public class ModifyNetFolderDlg extends DlgBox
 				m_selectPrincipalsWidget.init( null );	//!!! Finish
 			else
 				m_selectPrincipalsWidget.init( null );
+
+			// Only allow the user to search for internal users.
+			m_selectPrincipalsWidget.setSearchForExternalPrincipals( false );
+			m_selectPrincipalsWidget.setSearchForInternalPrincipals( true );
 		}
 		else
 		{

@@ -34,8 +34,8 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtPrincipal;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.util.ShareForwardRights;
-import org.kablink.teaming.gwt.client.widgets.SelectPrincipalsWidget.PrincipalNameWidget;
+import org.kablink.teaming.gwt.client.util.PerUserRightsInfo;
+import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -118,15 +118,17 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 		
 		if ( col == 1 )
 		{
-			if ( principal.getAdditionalData() instanceof ShareForwardRights )
+			if ( principal.getAdditionalData() instanceof PerUserRightsInfo )
 			{
-				ShareForwardRights rights;
+				NetFolderRightsWidget widget;
+				PerUserRightsInfo rightsInfo;
 				
-				rights = (ShareForwardRights) principal.getAdditionalData();
-				return new InlineLabel( rights.getShareRightsAsString() );
+				rightsInfo = (PerUserRightsInfo) principal.getAdditionalData();
+				widget = new NetFolderRightsWidget( principal.getIdLong(), rightsInfo );
+				return widget;
 			}
 			
-			return new InlineLabel( "Could not get ShareForwardRights" );
+			return new InlineLabel( "Could not get PerUserRightsInfo" );
 		}
 		
 		if ( col == 2 )
@@ -147,7 +149,10 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 	{
 		if ( principal != null )
 		{
-			principal.setAdditionalData( new ShareForwardRights() );
+			PerUserRightsInfo rightsInfo;
+			
+			rightsInfo = new PerUserRightsInfo( new PerUserShareRightsInfo(), false );
+			principal.setAdditionalData( rightsInfo );
 		}
 	}
 	
