@@ -129,8 +129,8 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		m_isFilr     = GwtClientHelper.isLicenseFilr();
 		m_filrImages = GwtTeaming.getFilrImageBundle();
 		m_messages   = GwtTeaming.getMessages();
-		m_company    = m_messages.downloadAppDlg_Novell();
-		m_product    = (m_isFilr ? m_messages.downloadAppDlg_Filr() : m_messages.downloadAppDlg_Vibe());
+		m_company    = m_messages.companyNovell();
+		m_product    = (m_isFilr ? m_messages.productFilr() : m_messages.productVibe());
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(

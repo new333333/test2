@@ -42,6 +42,11 @@ import com.google.gwt.i18n.client.Messages;
  */
 public interface GwtTeamingMessages extends Messages
 {
+	// Base product names.  Non-translatable?
+	String companyNovell();
+	String productFilr();
+	String productVibe();
+	
 	// Strings used in the "find" name-completion control
 	String nOfn( int value1, int value2, int value3 );
 	String searching();
@@ -1927,6 +1932,7 @@ public interface GwtTeamingMessages extends Messages
 	String createBlogPageDlg_noNameSpecified();
 
 	// Strings used with Filr
+	String folders();
 	String myFiles();
 	String netFolders();
 	String sharedByMe();
@@ -2099,9 +2105,6 @@ public interface GwtTeamingMessages extends Messages
 	String desktopAppCtrl_Hint_Vibe();
 	
 	// String used in the desktop application download dialog.
-	String downloadAppDlg_Filr();
-	String downloadAppDlg_Novell();
-	String downloadAppDlg_Vibe();
 	String downloadAppDlgAlt_AndroidDownloads();
 	String downloadAppDlgAlt_IOSDownloads();
 	String downloadAppDlgAlt_MacDownloads();
@@ -2201,11 +2204,15 @@ public interface GwtTeamingMessages extends Messages
 	String emptyCollection_Info_NetFolders_2();
 	String emptyCollection_Info_NetFolders_3();
 	String emptyCollection_Info_NetFolders_4( String product );
-	String emptyCollection_Product_Filr();
-	String emptyCollection_Product_Vibe();
 	String emptyCollection_SubHead_MyFiles();
 	String emptyCollection_SubHead_SharedByMe();
 	String emptyCollection_SubHead_SharedWithMe();
 	String emptyCollection_SubHead_NetFolders();
+	
+	// Strings used for the empty file folder view widget.
+	String emptyFileFolder_Info_1();
+	String emptyFileFolder_Info_2( String company, String product );
+	String emptyFileFolder_Info_3( String product );
+	String emptyFileFolder_SubHead();
 	
 }// end GwtTeamingMessages

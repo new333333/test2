@@ -522,10 +522,10 @@
 	.vibe-profileEntryDlg-title       {font-size: 20px; font-weight: 200; font-family: Arial, Helvetica, sans-serif; color:#5691A6!important;}
 /* End:  Profile entry dialog styles. */
 
-/* Start:  Empty collection widget styles. */
-	.vibe-emptyCollection-head      {font-size: 1.8em; font-style: oblique; color: #5691A6;}
-	.vibe-emptyCollection-headImage {position: absolute; top: 0px; right: 0px; padding: 10px 20px; background: linear-gradient(to bottom,  #b8b8b8 0%,#64696B 45%,#3C4143 100%); border-bottom-left-radius: 10px; border-top-right-radius: 10px; }
-	.vibe-emptyCollection-headSub   {font-size: 1.2em; color: #949494; width: 380px;}
-	.vibe-emptyCollection-info      {font-size: 1em; color: #353838; margin-top: 10px; line-height: 1.4em; width: 380px;}	
-	.vibe-emptyCollection-rootPanel {position:relative; background-color: #fafafa; margin: 20px 40px; border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 500px; font-size: 1.15em;}
-/* End:  Empty collection widget styles. */
+/* Start:  Empty widget styles. */
+	.vibe-emptyWidget-head      {font-size: 1.8em; font-style: oblique; color: #5691A6;}
+	.vibe-emptyWidget-headImage {position: absolute; top: 0px; right: 0px; padding: 10px 20px; background: linear-gradient(to bottom,  #b8b8b8 0%,#64696B 45%,#3C4143 100%); border-bottom-left-radius: 10px; border-top-right-radius: 10px; }
+	.vibe-emptyWidget-headSub   {font-size: 1.2em; color: #949494; width: 380px;}
+	.vibe-emptyWidget-info      {font-size: 1em; color: #353838; margin-top: 10px; line-height: 1.4em; width: 380px;}	
+	.vibe-emptyWidget-rootPanel {position:relative; background-color: #fafafa; margin: 20px 40px; border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 500px; font-size: 1.15em;}
+/* End:  Empty widget styles. */

@@ -2971,8 +2971,9 @@ public class GwtViewHelper {
 		try {
 			Long			folderId             = folderInfo.getBinderIdAsLong();
 			User			user                 = GwtServerHelper.getCurrentUser();
-			UserProperties	userProperties       = bs.getProfileModule().getUserProperties(user.getId());
-			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
+			Long			userId               = user.getId();
+			UserProperties	userProperties       = bs.getProfileModule().getUserProperties(userId);
+			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(userId, folderId);
 			
 			// Allow for collection sort information being stored on
 			// the same binder.
@@ -3031,6 +3032,16 @@ public class GwtViewHelper {
 			default:              viewSharedFiles = false;                                           break;
 			}
 
+			// Does the current user own this folder?
+			boolean folderOwnedByCurrentUser; 
+			try {
+				Folder f = bs.getFolderModule().getFolder(folderId);
+				folderOwnedByCurrentUser = f.getOwnerId().equals(userId);
+			}
+			catch (Exception ex) {
+				folderOwnedByCurrentUser = false;
+			}
+
 			// Finally, use the data we obtained to create a
 			// FolderDisplayDataRpcResponseData and return that. 
 			return
@@ -3041,7 +3052,8 @@ public class GwtViewHelper {
 					cwData.getColumnWidths(),
 					folderSupportsPinning,
 					viewPinnedEntries,
-					viewSharedFiles);
+					viewSharedFiles,
+					folderOwnedByCurrentUser);
 		}
 		
 		catch (Exception e) {
