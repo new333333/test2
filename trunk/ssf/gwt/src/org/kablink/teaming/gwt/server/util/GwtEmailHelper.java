@@ -90,13 +90,13 @@ public class GwtEmailHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param binderId
+	 * @param entityId
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static EmailNotificationInfoRpcResponseData getEmailNotificationInfo(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
+	public static EmailNotificationInfoRpcResponseData getEmailNotificationInfo(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) throws GwtTeamingException {
 		try {
 			// Construct an EmailNotificationInfoRpcResponseData
 			// object to return.
@@ -116,13 +116,28 @@ public class GwtEmailHelper {
 				}
 			}
 
-			// We're we given a binder ID?
-			if (null != binderId) {
-				// Yes!  Does the user have any subscriptions set on
-				// this binder?
-				BinderModule bm = bs.getBinderModule();
-				Binder binder = bm.getBinder(binderId);
-				Subscription sub = bm.getSubscription(binder);
+			// We're we given an entity ID?
+			if (null != entityId) {
+				// Yes!  Is it for a binder?
+				Subscription sub;
+				if (entityId.isBinder()) {
+					// Yes!  Does the user have any subscriptions set
+					// on this binder?
+					BinderModule bm = bs.getBinderModule();
+					Binder binder = bm.getBinder(entityId.getEntityId());
+					sub = bm.getSubscription(binder);
+				}
+				
+				else {
+					// No, it isn't for a folder!  It must be for a
+					// folder entry.  Does the user have any
+					// subscriptions set on that entry?
+					FolderModule fm = bs.getFolderModule();
+					FolderEntry fe = fm.getEntry(entityId.getBinderId(), entityId.getEntityId());
+					sub = fm.getSubscription(fe);
+				}
+
+				// Did we get any subscriptions?
 				if (null != sub) {
 					// Yes!  Analyze them.
 					Map<Integer, String[]> subStyles     = sub.getStyles();
@@ -155,14 +170,15 @@ public class GwtEmailHelper {
 						if (MiscUtil.hasString(currentStyles.get(MSG_NOATT_STYLE + t))) reply.addMsgNoAttAddress(ea);
 						if (MiscUtil.hasString(currentStyles.get(TEXT_STYLE      + t))) reply.addTextAddress(    ea);
 					}
-					reply.setOverridePresets(MiscUtil.hasString(currentStyles.get(String.valueOf(OVERRIDE_STYLE))));
+					if (entityId.isBinder()) {
+						reply.setOverridePresets(MiscUtil.hasString(currentStyles.get(String.valueOf(OVERRIDE_STYLE))));
+					}
 				}
 			}
 			
-			
 			// If we get here, reply refers to an
 			// EmailNotificationInfoRpcResponseData object with the
-			// user's subscription information to this binder.
+			// user's subscription information to the entity.
 			// Return it.
 			return reply;
 		}

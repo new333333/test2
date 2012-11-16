@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import org.kablink.teaming.gwt.client.util.EntityId;
+
 /**
  * This class holds all of the information necessary to execute the
  * 'get email notification information' command.
@@ -39,7 +41,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  * @author drfoster@novell.com
  */
 public class GetEmailNotificationInfoCmd extends VibeRpcCmd {
-	private Long m_binderId;	// null -> Entry entry subscription mode.  non-null -> Binder email notification mode.
+	private EntityId m_entityid;	// null -> Entity list subscription mode.  non-null -> Single entity (binder or entry) subscription mode.
 	
 	/**
 	 * Constructor method.
@@ -53,11 +55,11 @@ public class GetEmailNotificationInfoCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param binderId
+	 * @param entityid
 	 */
-	public GetEmailNotificationInfoCmd(Long binderId) {
+	public GetEmailNotificationInfoCmd(EntityId entityid) {
 		this();
-		setBinderId(binderId);
+		setEntityId(entityid);
 	}
 
 	/**
@@ -65,14 +67,14 @@ public class GetEmailNotificationInfoCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public Long getBinderId() {return m_binderId;}
+	public EntityId getEntityId() {return m_entityid;}
 	
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param binderId
+	 * @param entityid
 	 */
-	public void setBinderId(Long binderId) {m_binderId = binderId;}
+	public void setEntityId(EntityId entityid) {m_entityid = entityid;}
 	
 	/**
 	 * Returns the command's enumeration value.

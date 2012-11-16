@@ -66,18 +66,17 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-
 /**
  * Implements Vibe's email notification dialog.
  *  
  * @author drfoster@novell.com
  */
 public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandler {
-	private BinderInfo								m_binderInfo;				// The binder the dialog is running against.  null -> Entity subscription mode.
 	private CheckBox								m_footerCB;					//
 	private EmailNotificationInfoRpcResponseData	m_emailNotificationInfo;	//
 	private GwtTeamingMainMenuImageBundle			m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages						m_messages;					// Access to Vibe's messages.
+	private Long									m_binderId;					//
 	private List<EntityId>							m_entityIds;				// List<EntityId> of entity subscriptions.  null -> Binder email notification mode.
 	private ListBox									m_digestList;				//
 	private ListBox									m_msgList;					//
@@ -168,7 +167,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 		ListBox emaBox = new ListBox(true);
 		emaBox.addStyleName("vibe-emailNotifDlg_SectionList " + emaBoxStyle);
 	    emaBox.setVisibleItemCount(4);
-	    if (isEntitySubscriptions()) {
+	    if (isMultipleEntitySubscriptions()) {
 	    	emaBox.addItem(m_messages.mainMenuEmailNotificationDlgNoChanges(),              EMA_VALUE_NO_CHANGES        );
 	    	emaBox.addItem(m_messages.mainMenuEmailNotificationDlgClearEntrySubscription(), EMA_VALUE_CLEAR_SUBSCRIPTION);
 	    }
@@ -293,7 +292,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 				// Is this one of the built-in (i.e.,
 				// '--make a selection--', ...) items?
 				String itemValue = emaBox.getValue(i);
-				boolean isBuiltIn = ((0 == i) || ((1 == i) && isEntitySubscriptions()));
+				boolean isBuiltIn = ((0 == i) || ((1 == i) && isMultipleEntitySubscriptions()));
 				if (isBuiltIn) {
 					// Yes!  We only add those that will involve a
 					// change on the server to the list.
@@ -328,16 +327,26 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * Returns false if the dialog is running in entity subscription
 	 * mode or true if it's running in binder email notification mode.
 	 */
-	private boolean isBinderEmailNotifications() {
-		return (null != m_binderInfo);
+	private boolean isBinderSubscription() {
+		return (null == m_entityIds);
 	}
 	
 	/*
-	 * Returns true if the dialog is running in entity subscription
-	 * mode or false if it's running in binder email notification mode.
+	 * Returns true if the dialog is running in multiple entity
+	 * subscription mode or false if it's running in binder or single
+	 * entity subscription mode.
 	 */
-	private boolean isEntitySubscriptions() {
-		return (null != m_entityIds);
+	private boolean isMultipleEntitySubscriptions() {
+		return ((null != m_entityIds) && (1 < m_entityIds.size()));
+	}
+	
+	/*
+	 * Returns true if the dialog is running in single entity
+	 * subscription mode or false if it's running in binder or multiple
+	 * entity subscription mode.
+	 */
+	private boolean isSingleEntitySubscription() {
+		return ((null != m_entityIds) && (1 == m_entityIds.size()));
 	}
 	
 	/*
@@ -358,9 +367,9 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 */
 	private void populateDlgNow() {
 		GetEmailNotificationInfoCmd geniCmd;
-		if (isEntitySubscriptions())
-		     geniCmd = new GetEmailNotificationInfoCmd();
-		else geniCmd = new GetEmailNotificationInfoCmd(m_binderInfo.getBinderIdAsLong());
+		if      (isBinderSubscription())       geniCmd = new GetEmailNotificationInfoCmd(new EntityId(null, m_binderId, EntityId.FOLDER));
+		else if (isSingleEntitySubscription()) geniCmd = new GetEmailNotificationInfoCmd(m_entityIds.get(0));
+		else                                   geniCmd = new GetEmailNotificationInfoCmd();
 		GwtClientHelper.executeCommand(geniCmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -424,7 +433,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 		m_vp.add(fp);
 		
 		// ...if we're in binder email notification mode...
-		if (isBinderEmailNotifications()) {
+		if (isBinderSubscription()) {
 			// ...create the widgets for the digest selection...
 			m_digestList = buildEMAListWidgets(
 				"vibe-emailNotifDlg_DigestPanel",
@@ -458,10 +467,10 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 			m_messages.mainMenuEmailNotificationDlgTextMessaging(),
 			"vibe-emailNotifDlg_Text",
 			m_emailNotificationInfo.getTextAddresses(),
-			"vibe-emailNotifDlg_TextList" + (isBinderEmailNotifications() ? "" : " vibe-emailNotifDlg_TextListBottom"));
+			"vibe-emailNotifDlg_TextList" + (isBinderSubscription() ? "" : " vibe-emailNotifDlg_TextListBottom"));
 
 		// ...finally, if we're in binder email notification mode...
-		if (isBinderEmailNotifications()) {
+		if (isBinderSubscription()) {
 			// ...create the widgets for the override presets checkbox
 			// ...label.
 			fp = new FlowPanel();
@@ -515,8 +524,15 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 */
 	private void runDlgNow(BinderInfo bi, List<EntityId> entityIds) {
 		// Store the parameters...
-		m_binderInfo = bi;			// null -> Entity subscription mode.
-		m_entityIds  = entityIds;	// null -> Binder email notification mode.
+		EntityId singleEID = (((null != entityIds) && (1 == entityIds.size())) ? entityIds.get(0) : null);
+		if ((null != singleEID) && singleEID.isBinder()) {
+			m_binderId = singleEID.getEntityId();
+			entityIds  = null;
+		}
+		else {
+			m_binderId = ((null == bi) ? null : bi.getBinderIdAsLong());
+		}
+		m_entityIds = entityIds;
 
 		// ...and display a reading message, start populating the
 		// ...dialog and show it.
@@ -544,13 +560,13 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	private void saveEmailNotificationInfoNow() {
 		// Create a save command with the contents of the dialog.
 		SaveEmailNotificationInfoCmd seniCmd;
-		if (isEntitySubscriptions())
-		     seniCmd = new SaveEmailNotificationInfoCmd(m_entityIds);
-		else seniCmd = new SaveEmailNotificationInfoCmd(m_binderInfo.getBinderIdAsLong());
+		if (isBinderSubscription())
+		     seniCmd = new SaveEmailNotificationInfoCmd(m_binderId );
+		else seniCmd = new SaveEmailNotificationInfoCmd(m_entityIds);
 		if (!(getSelectedEMAs(seniCmd.getMsgAddressTypes(),      m_msgList     ))) return;
 		if (!(getSelectedEMAs(seniCmd.getMsgNoAttAddressTypes(), m_msgNoAttList))) return;
 		if (!(getSelectedEMAs(seniCmd.getTextAddressTypes(),     m_textList    ))) return;
-		if (isBinderEmailNotifications()) {
+		if (isBinderSubscription()) {
 			seniCmd.setOverridePresets(m_footerCB.getValue());
 			if (!(getSelectedEMAs(seniCmd.getDigestAddressTypes(), m_digestList))) return;
 		}
