@@ -15,12 +15,12 @@ public class ShellCommand
 	public ShellCommand(String cmd) throws IOException
 	{
 		logger.debug("Command to execute " + cmd);
-		p = Runtime.getRuntime().exec(cmd);
+		p = Runtime.getRuntime().exec(new String[] {cmd});
 		// This sleep is to work around a bug in JVM 1.4.1 on Linux/Solaris.
 		// We need to give up control before calling getOutputStream().
 		try
 		{
-			Thread.sleep(1);
+			Thread.sleep(10);
 		}
 		catch (Exception ex)
 		{
