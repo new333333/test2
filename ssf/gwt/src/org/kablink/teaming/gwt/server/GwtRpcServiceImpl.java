@@ -1043,7 +1043,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_EMAIL_NOTIFICATION_INFORMATION:
 		{
 			GetEmailNotificationInfoCmd geniCmd = ((GetEmailNotificationInfoCmd) cmd);
-			EmailNotificationInfoRpcResponseData result = GwtEmailHelper.getEmailNotificationInfo( this, getRequest( ri ), geniCmd.getBinderId() );
+			EmailNotificationInfoRpcResponseData result = GwtEmailHelper.getEmailNotificationInfo( this, getRequest( ri ), geniCmd.getEntityId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
