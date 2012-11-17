@@ -832,9 +832,9 @@ public class ModifyNetFolderDlg extends DlgBox
 		if ( m_selectPrincipalsWidget != null )
 		{
 			if ( m_netFolder != null )
-				m_selectPrincipalsWidget.init( null );	//!!! Finish
+				m_selectPrincipalsWidget.initWidget( m_netFolder.getRoles() );
 			else
-				m_selectPrincipalsWidget.init( null );
+				m_selectPrincipalsWidget.initWidget( null );
 
 			// Only allow the user to search for internal users.
 			m_selectPrincipalsWidget.setSearchForExternalPrincipals( false );

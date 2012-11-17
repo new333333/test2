@@ -60,6 +60,7 @@ import org.kablink.teaming.fi.connection.acl.AclResourceDriver.ConnectionTestSta
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtSchedule;
+import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
 import org.kablink.teaming.gwt.client.GwtSchedule.DayFrequency;
 import org.kablink.teaming.gwt.client.GwtSchedule.TimeFrequency;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -85,6 +86,7 @@ import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.search.Constants;
 
@@ -473,6 +475,70 @@ public class GwtNetFolderHelper
 	}
 
 	/**
+	 * For the given role, find the corresponding function id
+	 */
+	private static Long getFunctionIdFromRole(
+		AllModulesInjected ami,
+		GwtRole role )
+	{
+		Long fnId = null;
+		String fnInternalId = null;
+		List<Function> listOfFunctions;
+
+		if ( role == null )
+		{
+			m_logger.error( "In GwtNetFolderHelper.getFunctionIdFromRole(), invalid parameter" );
+			return null;
+		}
+		
+		// Get the internal id of the appropriate function
+		switch ( role.getType() )
+		{
+		case ShareExternal:
+			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID;
+			break;
+			
+		case ShareForward:
+			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID;
+			break;
+			
+		case ShareInternal:
+			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID;
+			break;
+		
+		case SharePublic:
+			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID;
+			break;
+		}
+		
+		// Did we find the function's internal id?
+		if ( fnInternalId == null )
+		{
+			// No
+			m_logger.error( "In GwtNetFolderHelper.getFunctionIdFromRole(), could not find internal function id for role: " + role.getType() );
+			return null;
+		}
+
+		// Get a list of all the functions;
+		listOfFunctions = ami.getAdminModule().getFunctions();
+		
+		// For the given internal function id, get the function's real id.
+		for ( Function nextFunction : listOfFunctions )
+		{
+			String nextInternalId;
+			
+			nextInternalId = nextFunction.getInternalId();
+			if ( fnInternalId.equalsIgnoreCase( nextInternalId ) )
+			{
+				fnId = nextFunction.getId();
+				break;
+			}
+		}
+		
+		return fnId;
+	}
+
+	/**
 	 * For the given ScheduleInfo object return a a GwtSchedule object that represents the data in
 	 * the ScheduleInfo object.
 	 */
@@ -671,6 +737,7 @@ public class GwtNetFolderHelper
 		NetFolder netFolder;
 		Binder binder;
 		GwtSchedule gwtSchedule;
+		ArrayList<GwtRole> listOfRoles;
 		
 		netFolder = new NetFolder();
 		netFolder.setId( id );
@@ -685,8 +752,129 @@ public class GwtNetFolderHelper
 		// Get the net folder's sync schedule.
 		gwtSchedule = getGwtSyncSchedule( ami, binder );
 		netFolder.setSyncSchedule( gwtSchedule );
+		
+		// Get the rights associated with this net folder.
+		listOfRoles = getNetFolderRights( ami, binder );
+		netFolder.setRoles( listOfRoles );
 
 		return netFolder;
+	}
+	
+	/**
+	 * Return the roles (rights) that have been set on this net folder
+	 */
+	@SuppressWarnings("rawtypes")
+	private static ArrayList<GwtRole> getNetFolderRights(
+		AllModulesInjected ami,
+		Binder binder )
+	{
+		ArrayList<GwtRole> listOfRoles;
+		GwtRole role;
+		AdminModule adminModule;
+		
+		listOfRoles = new ArrayList<GwtRole>();
+		role = new GwtRole();
+		role.setType( GwtRoleType.View );
+		listOfRoles.add( role );
+		role = new GwtRole();
+		role.setType( GwtRoleType.ShareExternal );
+		listOfRoles.add( role );
+		role = new GwtRole();
+		role.setType( GwtRoleType.ShareForward );
+		listOfRoles.add( role );
+		role = new GwtRole();
+		role.setType( GwtRoleType.ShareInternal );
+		listOfRoles.add( role );
+		role = new GwtRole();
+		role.setType( GwtRoleType.SharePublic );
+		listOfRoles.add( role );
+		
+		adminModule = ami.getAdminModule();
+		
+		for ( GwtRole nextRole : listOfRoles )
+		{
+			Long fnId = null;
+			WorkAreaFunctionMembership membership;
+			Set<Long> memberIds;
+			List principals = null;
+			
+			// Get the Function id for the given role
+			fnId = getFunctionIdFromRole( ami, nextRole );
+
+			// Did we find the function for the given role?
+			if ( fnId == null )
+			{
+				// No
+				m_logger.error( "In GwtNetFolderHelper.getNetFolderRights(), could not find function for role: " + nextRole.getType() );
+				continue;
+			}
+
+			// Get the role's membership
+			membership = adminModule.getWorkAreaFunctionMembership( binder, fnId );
+			if ( membership == null )
+				continue;
+			
+			// Get the member ids
+			memberIds = membership.getMemberIds();
+			if ( memberIds == null )
+				continue;
+			
+			try 
+			{
+				principals = ResolveIds.getPrincipals( memberIds );
+			}
+			catch ( Exception ex )
+			{
+				// Nothing to do
+			}
+			
+			if ( MiscUtil.hasItems( principals ) == false )
+				continue;
+
+			for ( Object nextObj :  principals )
+			{
+				if ( nextObj instanceof Principal )
+				{
+					Principal nextPrincipal;
+					
+					nextPrincipal = (Principal) nextObj;
+
+					if ( nextPrincipal instanceof Group )
+					{
+						Group nextGroup;
+						GwtGroup gwtGroup;
+						
+						nextGroup = (Group) nextPrincipal;
+						
+						gwtGroup = new GwtGroup();
+						gwtGroup.setInternal( nextGroup.getIdentityInfo().isInternal() );
+						gwtGroup.setId( nextGroup.getId().toString() );
+						gwtGroup.setName( nextGroup.getName() );
+						gwtGroup.setTitle( nextGroup.getTitle() );
+						
+						nextRole.addMember( gwtGroup );
+					}
+					else if ( nextPrincipal instanceof User )
+					{
+						User user;
+						GwtUser gwtUser;
+						
+						user = (User) nextPrincipal;
+	
+						gwtUser = new GwtUser();
+						gwtUser.setInternal( user.getIdentityInfo().isInternal() );
+						gwtUser.setUserId( user.getId() );
+						gwtUser.setName( user.getName() );
+						gwtUser.setTitle( Utils.getUserTitle( user ) );
+						gwtUser.setWorkspaceTitle( user.getWSTitle() );
+	
+						nextRole.addMember( gwtUser );
+					}
+				}
+			}
+		}// end for
+
+		return listOfRoles;
 	}
 	
 	/**
@@ -858,7 +1046,7 @@ public class GwtNetFolderHelper
 	{
 		AdminModule adminModule;
 		Binder binder;
-		List<Function> listOfFunctions;
+		ArrayList<Long> emptyMembershipList;
 
 		if ( binderId == null && roles == null )
 		{
@@ -870,59 +1058,15 @@ public class GwtNetFolderHelper
 		// Get the binder's work area
 		binder = ami.getBinderModule().getBinder( binderId );
 		
-		// Get a list of all the functions;
-		listOfFunctions = adminModule.getFunctions();
-
+		emptyMembershipList = new ArrayList<Long>();
+		
 		for ( GwtRole nextRole : roles )
 		{
 			Long fnId = null;
 			
-			// Get the Function for the given role
-			{
-				String fnInternalId = null;
-				
-				// Get the internal id of the appropriate function
-				switch ( nextRole.getType() )
-				{
-				case ShareExternal:
-					fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID;
-					break;
-					
-				case ShareForward:
-					fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID;
-					break;
-					
-				case ShareInternal:
-					fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID;
-					break;
-				
-				case SharePublic:
-					fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID;
-					break;
-				}
-				
-				// Did we find the function's internal id?
-				if ( fnInternalId == null )
-				{
-					// No
-					m_logger.error( "In GwtNetFolderHelper.setNetFolderRights(), could not find internal function id for role: " + nextRole.getType() );
-					continue;
-				}
+			// Get the Function id for the given role
+			fnId = getFunctionIdFromRole( ami, nextRole );
 
-				// For the given internal function id, get the function's real id.
-				for ( Function nextFunction : listOfFunctions )
-				{
-					String nextInternalId;
-					
-					nextInternalId = nextFunction.getInternalId();
-					if ( fnInternalId.equalsIgnoreCase( nextInternalId ) )
-					{
-						fnId = nextFunction.getId();
-						break;
-					}
-				}
-			}
-			
 			// Did we find the function for the given role?
 			if ( fnId == null )
 			{
@@ -930,6 +1074,9 @@ public class GwtNetFolderHelper
 				m_logger.error( "In GwtNetFolderHelper.setNetFolderRights(), could not find function for role: " + nextRole.getType() );
 				continue;
 			}
+
+			// Zero out this membership for this function.
+			adminModule.updateWorkAreaFunctionMemberships( binder, fnId, true, emptyMembershipList ); 
 
 			// Update the function's membership.
 			adminModule.updateWorkAreaFunctionMemberships( binder, fnId, true, nextRole.getMemberIds() );
