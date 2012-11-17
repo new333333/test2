@@ -77,13 +77,13 @@ public class ExternalUserUtil {
 	private static final String DELIM = ".";
 	
 	public static String encodeUserTokenWithNewSeed(User user) {
-		user.reseedDigestSeed();
+		user.reseedExtProvSeed();
 		updateUser(user);
-		return Long.toHexString(user.getId().longValue()) + DELIM + user.getPrivateDigest();
+		return Long.toHexString(user.getId().longValue()) + DELIM + user.computeExtProvHash();
 	}
 	
 	public static String encodeUserTokenWithExistingSeed(User user) {
-		return Long.toHexString(user.getId().longValue()) + DELIM + user.getPrivateDigest();
+		return Long.toHexString(user.getId().longValue()) + DELIM + user.computeExtProvHash();
 	}
 	
 	public static Map<String, String> getQueryParamsFromUrl(String url) {   
@@ -229,7 +229,7 @@ public class ExternalUserUtil {
 	}
 	
 	private static void validateDigest(User user, String digest) {
-		if(!user.getPrivateDigest().equals(digest)) {
+		if(!user.computeExtProvHash().equals(digest)) {
 			logger.warn("User '" + user.getName() + "' supplied invalid digest value");
 			throw new UsernameNotFoundException("Invalid link");
 		}

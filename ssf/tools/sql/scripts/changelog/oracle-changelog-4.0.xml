@@ -445,4 +445,13 @@ update SS_OPENIDPROVIDERS set EMAILREGEX='.*yahoo.com' where NAME='yahoo';
         </sql>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="55">
+        <comment>Seed used for external user self-provisioning</comment>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="EXTPROVSEED" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
