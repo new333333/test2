@@ -1046,7 +1046,6 @@ public class GwtNetFolderHelper
 	{
 		AdminModule adminModule;
 		Binder binder;
-		ArrayList<Long> emptyMembershipList;
 
 		if ( binderId == null && roles == null )
 		{
@@ -1057,8 +1056,6 @@ public class GwtNetFolderHelper
 		
 		// Get the binder's work area
 		binder = ami.getBinderModule().getBinder( binderId );
-		
-		emptyMembershipList = new ArrayList<Long>();
 		
 		for ( GwtRole nextRole : roles )
 		{
@@ -1075,11 +1072,8 @@ public class GwtNetFolderHelper
 				continue;
 			}
 
-			// Zero out this membership for this function.
-			adminModule.updateWorkAreaFunctionMemberships( binder, fnId, true, emptyMembershipList ); 
-
-			// Update the function's membership.
-			adminModule.updateWorkAreaFunctionMemberships( binder, fnId, true, nextRole.getMemberIds() );
+			// Reset the function's membership.
+			adminModule.resetWorkAreaFunctionMemberships( binder, fnId, nextRole.getMemberIds() );
 		}
 	}
 	
