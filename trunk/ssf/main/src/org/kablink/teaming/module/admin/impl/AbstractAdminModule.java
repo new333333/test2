@@ -1126,21 +1126,22 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     }
     
 	/**
-	 * Sets or clears a member from a WorkArea Function (i.e., role.)
+	 * Adds or removes a collection of members from a WorkArea Function
+	 * (i.e., role.)
 	 * 
-	 * @param wa
-	 * @param functionId
-	 * @param set
-	 * @param memberIds
+	 * @param wa			- The WorkArea to update.
+	 * @param functionId	- The ID of function to update on the WorkArea.
+	 * @param add			- true -> Add the members to the WorkArea for the function.  false -> Remove them.
+	 * @param memberIds		- Collection of member IDs to be added or removed.
 	 */
 	@Override
-	public void updateWorkAreaFunctionMemberships(WorkArea wa, Long functionId, boolean set, Collection<Long> memberIds) {
+	public void updateWorkAreaFunctionMemberships(WorkArea wa, Long functionId, boolean add, Collection<Long> memberIds) {
 		// Is there a WorkAreaFunctionMembership on this WorkArea?
 		WorkAreaFunctionMembership wafm = getWorkAreaFunctionMembership(wa, functionId);
 		final boolean finalNewWAFM = (null == wafm);
 		if (finalNewWAFM) {
 			// No!  If we're clearing the members...
-			if (!set) {
+			if (!add) {
 				// ...simply bail as there's nothing we need to do.
 				return;
 			}
@@ -1152,25 +1153,23 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			wafm.setWorkAreaType(wa.getWorkAreaType());
 			wafm.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
 		}
-		final WorkAreaFunctionMembership finalWAFM = wafm;
 		
 		// Does the Function have any members on this WorkArea?
-		Set<Long> wafmMemberIds = finalWAFM.getMemberIds();
+		Set<Long> wafmMemberIds = wafm.getMemberIds();
 		if (null == wafmMemberIds) {
 			// No!  Create an empty set to store them in.
 			wafmMemberIds = new HashSet<Long>();
-			finalWAFM.setMemberIds(wafmMemberIds);
+			wafm.setMemberIds(wafmMemberIds);
 		}
 
 		// We're we given any member IDs to set?
-		boolean removeWAFM = false;
 		int changeCount = 0;
 		if (MiscUtil.hasItems(memberIds)) {
 			// Yes!  Scan them.
 			for (Long memberId:  memberIds) {
 				// Are we setting the member on this function?
 				boolean setHasMember = wafmMemberIds.contains(memberId);
-				if (set) {
+				if (add) {
 					// Yes!  If it's already a member... 
 					if (setHasMember) {
 						// ...then nothing is changing...skip it...
@@ -1197,16 +1196,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			}
 		}
 		
-		else {
-			// No, we weren't given any member IDs to set!  If there
-			// any that are existing...
-			if (set && MiscUtil.hasItems(wafmMemberIds)) {
-				// ...we need to remove them.
-				removeWAFM   = true;
-				changeCount += 1;
-			}
-		}
-
 		// If we aren't making any changes to the function
 		// membership...
 		if (0 == changeCount) {
@@ -1215,13 +1204,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
 
 		// Finally, add/update membership on the WorkArea Function.
-		final boolean finalRemoveWAFM = removeWAFM;
+		final boolean						finalHasMembers = MiscUtil.hasItems(wafmMemberIds);
+		final WorkAreaFunctionMembership	finalWAFM       = wafm;
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				if      (finalRemoveWAFM) getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(finalWAFM);
-				else if (finalNewWAFM)    getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(   finalWAFM);
-				else                      getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(finalWAFM);
+				if      ( finalNewWAFM)    getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(   finalWAFM);
+				else if (!finalHasMembers) getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(finalWAFM);
+				else                       getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(finalWAFM);
 				return null;
 			}
 		});
@@ -1233,6 +1223,76 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		Collection<Long> memberIds = new ArrayList<Long>();
 		memberIds.add(memberId);
 		updateWorkAreaFunctionMemberships(wa, functionId, set, memberIds);
+	}
+	
+	/**
+	 * Resets the member list on a WorkArea Function (i.e., role.)
+	 * 
+	 * @param wa			- The WorkArea whose function membership is to be reset.
+	 * @param functionId	- The ID of the function whose membership is to be reset.
+	 * @param memberIds		- Collection of member IDs to be stored.  If empty, the function will be removed. 
+	 */
+	@Override
+	public void resetWorkAreaFunctionMemberships(WorkArea wa, Long functionId, Collection<Long> memberIds) {
+		// Is there a WorkAreaFunctionMembership on this WorkArea?
+		WorkAreaFunctionMembership wafm = getWorkAreaFunctionMembership(wa, functionId);
+		final boolean finalNewWAFM = (null == wafm);
+		if (finalNewWAFM) {
+			// No!  If there aren't any members to store...
+			if (!(MiscUtil.hasItems(memberIds))) {
+				// ...simply bail as there's nothing we need to do.
+				return;
+			}
+			
+			// Create a WorkAreaFunctionMembership for it now.
+			wafm = new WorkAreaFunctionMembership();
+			wafm.setFunctionId(functionId);
+			wafm.setWorkAreaId(wa.getWorkAreaId());
+			wafm.setWorkAreaType(wa.getWorkAreaType());
+			wafm.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+		}
+		
+		// Ensure we have a non-null collection of member IDs.
+		if (null == memberIds) {
+			memberIds = new HashSet<Long>();
+		}
+		
+		// Is there currently a member set stored on the function?
+		Set<Long> wafmMemberIds = wafm.getMemberIds();
+		if (null == wafmMemberIds) {
+			// No!  Create an empty set for them with the members we
+			// were given.
+			wafmMemberIds = new HashSet<Long>(memberIds);
+			wafm.setMemberIds(wafmMemberIds);
+		}
+		
+		else {
+			// Yes, there is a member set on the function!  Clear its
+			// contents and store the new member list.
+			wafmMemberIds.clear();
+			wafmMemberIds.addAll(memberIds);
+		}
+		
+		// Finally, reset the membership on the WorkArea Function.
+		final boolean						finalHasMembers = MiscUtil.hasItems(wafmMemberIds);
+		final WorkAreaFunctionMembership	finalWAFM       = wafm;
+		getTransactionTemplate().execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				if      ( finalNewWAFM)    getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(   finalWAFM);
+				else if (!finalHasMembers) getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(finalWAFM);
+				else                       getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(finalWAFM);
+				return null;
+			}
+		});
+	}
+
+	@Override
+	public void resetWorkAreaFunctionMembership(WorkArea wa, Long functionId, Long memberId) {
+		// Always use the initial form of the method.
+		Collection<Long> memberIds = new ArrayList<Long>();
+		memberIds.add(memberId);
+		resetWorkAreaFunctionMemberships(wa, functionId, memberIds);
 	}
 	
     @Override
