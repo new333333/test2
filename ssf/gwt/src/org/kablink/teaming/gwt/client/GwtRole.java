@@ -47,7 +47,7 @@ public class GwtRole
 	implements IsSerializable
 {
 	private GwtRoleType m_roleType;
-	private ArrayList<Long> m_memberIds;
+	private ArrayList<GwtPrincipal> m_listOfMembers;
 	
 	/**
 	 * 
@@ -70,36 +70,60 @@ public class GwtRole
 	 */
 	public GwtRole()
 	{
-		m_memberIds = new ArrayList<Long>();
+		m_listOfMembers = new ArrayList<GwtPrincipal>();
 	}	
 		
 	/**
 	 * 
 	 */
-	public void addMember( Long memberId )
+	public void addMember( GwtPrincipal member )
 	{
-		if ( memberId == null )
+		Long memberId;
+		
+		if ( member == null )
 			return;
 		
-		if ( m_memberIds == null )
-			m_memberIds = new ArrayList<Long>();
+		memberId = member.getIdLong();
+		
+		if ( m_listOfMembers == null )
+			m_listOfMembers = new ArrayList<GwtPrincipal>();
 		
 		// Make sure this member is not already in the list.
-		for ( Long nextId : m_memberIds )
+		for ( GwtPrincipal nextPrincipal : m_listOfMembers )
 		{
-			if ( memberId.equals( nextId ) )
+			if ( memberId.equals( nextPrincipal.getIdLong() ) )
 				return;
 		}
 		
-		m_memberIds.add( memberId );
+		m_listOfMembers.add( member );
 	}
 
 	/**
 	 * 
 	 */
+	public ArrayList<GwtPrincipal> getListOfMembers()
+	{
+		return m_listOfMembers;
+	}
+	
+	/**
+	 * 
+	 */
 	public ArrayList<Long> getMemberIds()
 	{
-		return m_memberIds;
+		ArrayList<Long> memberIds;
+		
+		memberIds = new ArrayList<Long>();
+		
+		if ( m_listOfMembers != null )
+		{
+			for ( GwtPrincipal nextPrincipal : m_listOfMembers )
+			{
+				memberIds.add( nextPrincipal.getIdLong() );
+			}
+		}
+		
+		return memberIds;
 	}
 	
 	/**

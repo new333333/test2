@@ -185,8 +185,10 @@ public class PerUserRightsInfo
 	 */
 	public void setCanReshare( boolean allow )
 	{
-		if ( m_shareRightsInfo != null )
-			m_shareRightsInfo.setAllowForwarding( allow );
+		if ( m_shareRightsInfo == null )
+			m_shareRightsInfo = new PerUserShareRightsInfo();
+		
+		m_shareRightsInfo.setAllowForwarding( allow );
 	}
 	
 	/**
@@ -194,8 +196,10 @@ public class PerUserRightsInfo
 	 */
 	public void setCanShareExternal( boolean allow )
 	{
-		if ( m_shareRightsInfo != null )
-			m_shareRightsInfo.setAllowExternal( allow );
+		if ( m_shareRightsInfo == null )
+			m_shareRightsInfo = new PerUserShareRightsInfo();
+		
+		m_shareRightsInfo.setAllowExternal( allow );
 	}
 	
 	/**
@@ -203,8 +207,10 @@ public class PerUserRightsInfo
 	 */
 	public void setCanShareInternal( boolean allow )
 	{
-		if ( m_shareRightsInfo != null )
-			m_shareRightsInfo.setAllowInternal( allow );
+		if ( m_shareRightsInfo == null )
+			m_shareRightsInfo = new PerUserShareRightsInfo();
+		
+		m_shareRightsInfo.setAllowInternal( allow );
 	}
 	
 	/**
@@ -212,7 +218,9 @@ public class PerUserRightsInfo
 	 */
 	public void setCanSharePublic( boolean allow )
 	{
-		if ( m_shareRightsInfo != null )
-			m_shareRightsInfo.setAllowPublic( allow );
+		if ( m_shareRightsInfo == null )
+			m_shareRightsInfo = new PerUserShareRightsInfo();
+		
+		m_shareRightsInfo.setAllowPublic( allow );
 	}
 }

@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.kablink.teaming.gwt.client.GwtPrincipal;
 import org.kablink.teaming.gwt.client.GwtRole;
@@ -155,25 +156,23 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 				if ( obj != null && obj instanceof PerUserRightsInfo )
 				{
 					PerUserRightsInfo rightsInfo;
-					Long memberId;
 					
-					memberId = nextPrincipal.getIdLong();
 					rightsInfo = (PerUserRightsInfo) obj;
 					
 					if ( rightsInfo.canAccess() )
-						viewRole.addMember( memberId );
+						viewRole.addMember( nextPrincipal );
 					
 					if ( rightsInfo.canReshare() )
-						reshareRole.addMember( memberId );
+						reshareRole.addMember( nextPrincipal );
 						
 					if ( rightsInfo.canShareExternal() )
-						shareExternalRole.addMember( memberId );
+						shareExternalRole.addMember( nextPrincipal );
 					
 					if ( rightsInfo.canShareInternal() )
-						shareInternalRole.addMember( memberId );
+						shareInternalRole.addMember( nextPrincipal );
 					
 					if ( rightsInfo.canSharePublic() )
-						sharePublicRole.addMember( memberId );
+						sharePublicRole.addMember( nextPrincipal );
 				}
 			}
 		}
@@ -219,7 +218,81 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 		
 		return null;
 	}
-	
+
+	/**
+	 * 
+	 */
+	public void initWidget( ArrayList<GwtRole> listOfRoles )
+	{
+		HashMap<Long, GwtPrincipal> listOfPrincipals;
+		
+		listOfPrincipals = new HashMap<Long, GwtPrincipal>();
+		
+		if ( listOfRoles != null )
+		{
+			// Go through each role and add each member of the role to our list of principals.
+			// We only want a member to appear once in the list.
+			for ( GwtRole nextRole : listOfRoles )
+			{
+				ArrayList<GwtPrincipal> listOfMembers;
+				
+				listOfMembers = nextRole.getListOfMembers();
+				if ( listOfMembers == null )
+					continue;
+				
+				for ( GwtPrincipal nextMember : listOfMembers )
+				{
+					GwtPrincipal principal;
+					Object obj;
+					
+					// Is this principal already in our list.
+					principal = listOfPrincipals.get( nextMember.getIdLong() );
+					if ( principal == null )
+					{
+						// No, add them.
+						listOfPrincipals.put( nextMember.getIdLong(), nextMember );
+						principal = nextMember;
+						principal.setAdditionalData( new PerUserRightsInfo() );
+					}
+					
+					// Initialize the rights this user has
+					obj = principal.getAdditionalData();
+					if ( obj != null && obj instanceof PerUserRightsInfo )
+					{
+						PerUserRightsInfo rightsInfo;
+
+						rightsInfo = (PerUserRightsInfo) obj;
+						
+						switch ( nextRole.getType() )
+						{
+						case ShareExternal:
+							rightsInfo.setCanShareExternal( true );
+							break;
+						
+						case ShareForward:
+							rightsInfo.setCanReshare( true );
+							break;
+							
+						case ShareInternal:
+							rightsInfo.setCanShareInternal( true );
+							break;
+							
+						case SharePublic:
+							rightsInfo.setCanSharePublic( true );
+							break;
+							
+						case View:
+							rightsInfo.setCanAccess( true );
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		init( new ArrayList<GwtPrincipal>( listOfPrincipals.values() ) );
+	}
+
 	/**
 	 * This method gets called when the user adds a principal to the list.  We will add a
 	 * ShareRights object to the principal
