@@ -127,6 +127,7 @@
 		  <property name="locale" access="field" length="32"/>
 		  <property name="digestSeed"/>
 		  <property name="extProvState" access="field" type="short"/>
+		  <property name="extProvSeed"/>
 	    </subclass>
   	</subclass>
   	<subclass dynamic-update="true" name="org.kablink.teaming.domain.ApplicationPrincipal">

@@ -120,6 +120,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     private SortedSet groupNames; // sorted set of group names; this field is computed
     
     protected Short extProvState; // applicable only to external users
+    protected Long extProvSeed; // applicable only to external users 
     
     private static Random random = new Random(System.currentTimeMillis());
     
@@ -505,13 +506,24 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		return digestSeed;
 	}
 	
-	public Long reseedDigestSeed() {
-		setDigestSeed(random.nextLong());
-		return this.digestSeed;
+	public Long getExtProvSeed() {
+		return extProvSeed;
+	}
+
+	public void setExtProvSeed(Long extProvSeed) {
+		this.extProvSeed = extProvSeed;
+	}
+
+	public Long reseedExtProvSeed() {
+		setExtProvSeed(random.nextLong());
+		return getExtProvSeed();
 	}
 	
-	public String getPrivateDigest() {
-		return getPrivateDigest(null);
+	public String computeExtProvHash() {
+		Long seed = getExtProvSeed();
+		if(seed == null)
+			seed = 0L;
+		return EncryptUtil.encryptSHA1(getId().toString(), seed.toString());
 	}
 	
 	public String getPrivateDigest(String binderId) {
