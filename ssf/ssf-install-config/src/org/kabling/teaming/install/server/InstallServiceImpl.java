@@ -1898,13 +1898,16 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 					throw new ConfigurationSaveException();
 				}
 
-				// Setup
+				// Setup luceneindex.root.dir on ssf-ext.properties
 				info = executeCommand("sed -i  -e 's|data.luceneindex.root.dir=/vastorage/filr|data.luceneindex.root.dir=/vastorage/search|' /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties");
 				if (info.getExitValue() != 0)
 				{
 					logger.debug("Error setting up data.luceneindex.root.dir=/vastorage/search" + info.getExitValue());
 					throw new ConfigurationSaveException();
 				}
+				
+				// Setup luceneindex.root.dir on ssf-ext.properties
+				info = executeCommand("chkconfig teaming on");
 				
 				try
 				{
