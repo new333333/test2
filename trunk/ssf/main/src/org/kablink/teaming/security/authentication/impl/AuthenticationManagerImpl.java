@@ -198,8 +198,17 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				else if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_ON_EVERY_LOGIN) {
 					// Should sync.
 				}
-				else {
+				else { // never
 					updates.clear(); // Should not sync.
+				}
+				
+				if(User.ExtProvState.credentialed == user.getExtProvState() || User.ExtProvState.verified == user.getExtProvState()) {
+					// This external user has already gone through the self-provisioning step where
+					// he at least supplied credential information (along with first and last name).
+					// In this case, we should not allow the first/last names from OpenID provider
+					// to overwrite the values that the user supplied explicitly through self-provisioning.
+					updates.remove(ObjectKeys.FIELD_USER_FIRSTNAME);
+					updates.remove(ObjectKeys.FIELD_USER_LASTNAME);
 				}
 			}
 			else {
