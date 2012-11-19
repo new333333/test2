@@ -1206,7 +1206,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		m_columnWidths.put(     FolderColumn.COLUMN_DOWNLOAD, new ColumnWidth(  8         ));	// ...be a percentage value.
 		m_columnWidths.put(     FolderColumn.COLUMN_HTML,     new ColumnWidth( 10         ));
 		m_columnWidths.put(     FolderColumn.COLUMN_LOCATION, new ColumnWidth( 30         ));
-		m_columnWidths.put(     FolderColumn.COLUMN_NUMBER,   new ColumnWidth(  5         ));
+		m_columnWidths.put(     FolderColumn.COLUMN_NUMBER,   new ColumnWidth( 60, Unit.PX));
 		m_columnWidths.put(     FolderColumn.COLUMN_RATING,   new ColumnWidth( 10         ));
 		m_columnWidths.put(     FolderColumn.COLUMN_SIZE,     new ColumnWidth( 80, Unit.PX));
 		m_columnWidths.put(     FolderColumn.COLUMN_STATE,    new ColumnWidth(  8         ));
