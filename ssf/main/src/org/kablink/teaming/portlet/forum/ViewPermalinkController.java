@@ -255,6 +255,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		String captive = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CAPTIVE, null);
 		String showTrash = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SHOW_TRASH, "");
 		String invokeShare = PortletRequestUtils.getStringParameter(request, WebKeys.URL_INVOKE_SHARE, "");
+		String invokeSubscribe = PortletRequestUtils.getStringParameter(request, WebKeys.URL_INVOKE_SUBSCRIBE, "");
 		Boolean loginUrl = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_LOGIN_URL, false);
 		EntityType entityType = EntityType.none;
 		DefinableEntity entity = null;
@@ -515,13 +516,9 @@ public class ViewPermalinkController  extends SAbstractController {
 		else if("false".equals(captive))
 			url.setParameter(WebKeys.URL_CAPTIVE, "false");
 		
-		if (MiscUtil.hasString(showTrash)) {
-			url.setParameter(WebKeys.URL_SHOW_TRASH, showTrash);
-		}
-		
-		if (MiscUtil.hasString(invokeShare)) {
-			url.setParameter(WebKeys.URL_INVOKE_SHARE, invokeShare);
-		}
+		if (MiscUtil.hasString(showTrash))       url.setParameter(WebKeys.URL_SHOW_TRASH,       showTrash      );
+		if (MiscUtil.hasString(invokeShare))     url.setParameter(WebKeys.URL_INVOKE_SHARE,     invokeShare    );
+		if (MiscUtil.hasString(invokeSubscribe)) url.setParameter(WebKeys.URL_INVOKE_SUBSCRIBE, invokeSubscribe);
 				
     	return url;
 	}
