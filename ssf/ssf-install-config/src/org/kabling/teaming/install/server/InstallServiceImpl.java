@@ -1246,21 +1246,20 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 					Node currentNode = nodeList.item(0);
 					Node parent = currentNode.getParentNode();
 					parent.removeChild(currentNode);
-					
+
 				}
 			}
-			
-			
+
 			for (int i = 0; i < lucene.getSearchNodesList().size(); i++)
 			{
 				HASearchNode searchNode = lucene.getSearchNodesList().get(i);
-				
+
 				Element node = document.createElement("HASearchNode");
 				node.setAttribute("ha.service.name", searchNode.getName());
 				node.setAttribute("ha.service.title", searchNode.getTitle());
 				node.setAttribute("ha.service.hostname", searchNode.getHostName());
 				node.setAttribute("ha.service.rmi.port", String.valueOf(searchNode.getRmiPort()));
-				
+
 				resourceElement.appendChild(node);
 			}
 		}
@@ -1408,13 +1407,13 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			{
 				proxyElement.setAttribute("ipaddr", sso.getiChainProxyAddr());
 			}
-			
+
 			Element logoffUrlElement = getElement(iChainElement, "Logoff");
 			if (logoffUrlElement != null)
 			{
 				logoffUrlElement.setAttribute("url", sso.getiChainLogoffUrl());
 			}
-			
+
 			Element webDavProxyElement = getElement(iChainElement, "WebDAVProxy");
 			if (webDavProxyElement != null)
 			{
@@ -1853,7 +1852,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 			if (info.getExitValue() != 0)
 			{
-				if(info.getOutput() != null)
+				if (info.getOutput() != null)
 				{
 					for (String debugStr : info.getOutput())
 					{
@@ -1864,11 +1863,49 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				throw new ConfigurationSaveException();
 			}
 
+			// Setup Encoding on hostname information in installer.xml
+			info = executeCommand("hostname -f");
+			List<String> outputList = info.getOutput();
+			if (info.getExitValue() == 0 && outputList != null && outputList.get(0) != null)
+			{
+				String hostName = info.getOutput().get(0);
+				info = executeCommand("sed -i -e's/@@HOSTNAME@@/"+hostName+ "/' /filrinstall/installer.xml");
+				if (info.getExitValue() != 0)
+				{
+					logger.debug("Unable to set hostName " + info.getExitValue());
+				}
+			}
+			
 			// Wizard configuration is done, put a temp file there
 			File file = new File("/filrinstall/configured");
+			
 			// If it exists, ignore
 			if (!System.getProperty("os.name").startsWith("Win") && !file.exists())
 			{
+				// Setup Encoding on /etc/init.d/teaming file
+				info = executeCommand("sed -i -e's/ISO8859-1/UTF-8/' /etc/init.d/teaming");
+				if (info.getExitValue() != 0)
+				{
+					logger.debug("Error setting up UTF-8 Encoding " + info.getExitValue());
+					throw new ConfigurationSaveException();
+				}
+
+				// Replace Novell Vibe with Novell Filr on ssf-ext.properties
+				info = executeCommand("sed -i \"s/Novell Vibe/Novell Filr/g\" /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties");
+				if (info.getExitValue() != 0)
+				{
+					logger.debug("Error setting up Novell Filr string on ssf-ext.properties" + info.getExitValue());
+					throw new ConfigurationSaveException();
+				}
+
+				// Setup
+				info = executeCommand("sed -i  -e 's|data.luceneindex.root.dir=/vastorage/filr|data.luceneindex.root.dir=/vastorage/search|' /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties");
+				if (info.getExitValue() != 0)
+				{
+					logger.debug("Error setting up data.luceneindex.root.dir=/vastorage/search" + info.getExitValue());
+					throw new ConfigurationSaveException();
+				}
+				
 				try
 				{
 					file.createNewFile();
