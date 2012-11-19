@@ -46,7 +46,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class ViewForumEntryEvent extends VibeEventBase<ViewForumEntryEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
-	private String m_viewForumEntryUrl;
+	private String	m_viewForumEntryUrl;	//
 
 	/**
 	 * Handler interface for this event.
@@ -61,10 +61,27 @@ public class ViewForumEntryEvent extends VibeEventBase<ViewForumEntryEvent.Handl
 	 * @param viewForumEntryUrl
 	 */
 	public ViewForumEntryEvent(String viewForumEntryUrl) {
+		// Initialize the super class...
 		super();
-		m_viewForumEntryUrl = viewForumEntryUrl;
+		
+		// ...and store the parameters.
+		setViewForumEntryUrl(viewForumEntryUrl);
 	}
 	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public String  getViewForumEntryUrl() {return m_viewForumEntryUrl;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setViewForumEntryUrl(String viewForumEntryUrl) {m_viewForumEntryUrl = viewForumEntryUrl;}
+
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 
@@ -102,16 +119,6 @@ public class ViewForumEntryEvent extends VibeEventBase<ViewForumEntryEvent.Handl
 		return TeamingEvents.VIEW_FORUM_ENTRY;
 	}
 		
-	/**
-	 * Returns the URL to view the forum entry associated with this
-	 * event.
-	 * 
-	 * @return
-	 */
-	public String getViewForumEntryUrl() {
-		return m_viewForumEntryUrl;
-	}
-
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.

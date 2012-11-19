@@ -32,6 +32,11 @@
  */
 package org.kablink.teaming.web;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 public class WebKeys {
 	// Attribute names reserved by portlet specification
 	public static final String JAVAX_PORTLET_CONFIG = "javax.portlet.config";
@@ -149,6 +154,7 @@ public class WebKeys {
 	public static final String URL_VIBE_URL_FLAG_DEPRECATED="vibe_url";	
 	public static final String URL_NOVL_ROOT_FLAG="novl_root";
 	public static final String URL_NOVL_URL_FLAG="novl_url";	
+	public static final String URL_INVOKE_SHARE="invokeShare";	
 	public static final String URL_CONTEXT="context";
 	public static final String URL_CSS_SHEET="sheet";
 	public static final String URL_CSS_THEME="theme";
@@ -1709,6 +1715,4 @@ public class WebKeys {
     public static final String SERVLET_DOWNLOAD_REPORT="reportDownload";
     public static final String SERVLET_PORTAL_LOGIN="portalLogin";
     public static final String SERVLET_PORTAL_LOGOUT="portalLogout";
-
-    
 }
