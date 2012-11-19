@@ -1079,6 +1079,9 @@ public class GwtNetFolderHelper
 			// Reset the function's membership.
 			adminModule.resetWorkAreaFunctionMemberships( binder, fnId, nextRole.getMemberIds() );
 		}
+		
+		// Re-index this binder.
+		ami.getBinderModule().indexBinder( binderId, false );
 	}
 	
 	/**
