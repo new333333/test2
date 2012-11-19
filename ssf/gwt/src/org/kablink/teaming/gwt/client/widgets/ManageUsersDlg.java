@@ -82,6 +82,8 @@ public class ManageUsersDlg extends DlgBox
 		GetManageUsersTitleEvent.Handler,
 		SetSelectedUserShareRightsEvent.Handler
 {
+	private boolean							m_dlgAttached;				//
+	private boolean							m_viewReady;				//
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private ImportProfilesDlg				m_importProfilesDlg;		// An ImportProfilesDlg, once one is created.
 	private int								m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
@@ -222,10 +224,13 @@ public class ManageUsersDlg extends DlgBox
 	 */
 	@Override
 	public void onAttach() {
-		// Let the widget attach and then register our event handlers.
+		// Attach the widget and register the event handlers...
 		super.onAttach();
 		registerEvents();
-		setViewSizeAsync();
+
+		// ...and set the views size if its ready.
+		m_dlgAttached = true;
+		setViewSizeIfReady();
 	}
 	
 	/**
@@ -372,6 +377,17 @@ public class ManageUsersDlg extends DlgBox
 			}
 		}
 	}
+
+	/*
+	 * Sets the view's size once thing are ready for it.
+	 */
+	private void setViewSizeIfReady() {
+		// If the dialog is attached and the view is ready...
+		if (m_dlgAttached && m_viewReady) {
+			// ...it's ready to be sized.
+			setViewSizeAsync();
+		}
+	}
 	
 	/*
 	 * Asynchronously adjusts the views size based on its header and
@@ -457,7 +473,8 @@ public class ManageUsersDlg extends DlgBox
 	 */
 	@Override
 	public void viewReady() {
-		// Nothing to do.
+		m_viewReady = true;
+		setViewSizeIfReady();
 	}
 	
 	/*
@@ -479,7 +496,9 @@ public class ManageUsersDlg extends DlgBox
 	private void populateDlgNow() {
 		// Clear anything already in the dialog (from a previous
 		// usage, ...)
-		m_pwsView = null;
+		m_dlgAttached =
+		m_viewReady   = false;
+		m_pwsView     = null;
 		m_rootPanel.clear();
 		
 		// Create a PersonalWorkspacesView widget for the selected
