@@ -1040,6 +1040,13 @@ public class ContentControl extends Composite
 						// If we get here, we just run the JSP based folder
 						// entry viewer.
 						jsViewFolderEntry( url, "no" );
+						if (vi.isInvokeShare()) {
+							EntityId eid = vi.getFolderEntryInfo().getEntityId();
+							GwtTeaming.fireEventAsync(
+								new ShareSelectedEntriesEvent(
+									eid.getBinderId(),
+									eid ) );
+						}
 						
 						m_viewMode = ViewMode.JSP_ENTRY_VIEW;
 						break;
@@ -1085,8 +1092,18 @@ public class ContentControl extends Composite
 				// ...GWT widget it may have...
 				m_mainPage.getMainContentLayoutPanel().showWidget( null );
 				
-				// ...and make sure the ContentControl is showing.
+				// ...make sure the ContentControl is showing...
 				ShowContentControlEvent.fireOne();
+
+				// ...and if requested...
+				if ( vi.isInvokeShare() )
+				{
+					// ...invoke the share dialog on the view.
+					GwtTeaming.fireEventAsync(
+						new InvokeShareBinderEvent(
+							vi.getBinderInfo().getBinderId() ) );
+				}
+				
 				break;
 
 			case JSP_ENTRY_VIEW:
