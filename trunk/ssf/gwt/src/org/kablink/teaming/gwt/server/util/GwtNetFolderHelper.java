@@ -510,7 +510,7 @@ public class GwtNetFolderHelper
 			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID;
 			break;
 			
-		case View:
+		case AllowAccess:
 			fnInternalId = ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID;
 			break;
 		}
@@ -778,7 +778,7 @@ public class GwtNetFolderHelper
 		
 		listOfRoles = new ArrayList<GwtRole>();
 		role = new GwtRole();
-		role.setType( GwtRoleType.View );
+		role.setType( GwtRoleType.AllowAccess );
 		listOfRoles.add( role );
 		role = new GwtRole();
 		role.setType( GwtRoleType.ShareExternal );

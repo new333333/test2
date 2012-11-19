@@ -2179,15 +2179,15 @@ public interface GwtTeamingMessages extends Messages
 	String userShareRightsDlgProgress( int done, int total );
 
 	// Strings used to represent the different rights
+	String allowAccess();
 	String externalRights();
 	String forwardingRights();
 	String internalRights();
 	String noRights();
 	String publicRights();
-	String viewRights();
 
 	// Strings used in the Edit Net Folder Rights dialog
-	String editNetFolderRightsDlg_CanViewLabel();
+	String editNetFolderRightsDlg_AllowAccessLabel();
 	String editNetFolderRightsDlg_Caption();
 	String editNetFolderRightsDlg_Instructions();
 	String editNetFolderRightsDlg_ReShareLabel();
