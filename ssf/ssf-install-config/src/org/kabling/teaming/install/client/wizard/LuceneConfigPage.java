@@ -167,7 +167,7 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 
 			validatedCredentials = true;
 			wizard.hideStatusIndicator();
-			wizard.nextPage();
+			wizard.finish();
 		}
 	}
 
