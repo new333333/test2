@@ -505,9 +505,13 @@ public class GwtNetFolderHelper
 		case ShareInternal:
 			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID;
 			break;
-		
+			
 		case SharePublic:
 			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID;
+			break;
+			
+		case View:
+			fnInternalId = ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID;
 			break;
 		}
 		
