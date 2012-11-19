@@ -107,6 +107,7 @@ public interface FolderModule {
 	   allowSharingExternal(false, true),
 	   allowSharingPublic(false, true),
 	   allowSharingForward(false, true),
+	   allowAccessNetFolder(false, true),
 	   
 	   // Derived operations - The following three operations are derived from core operations for the purpose of added convenience
 	   addFile(true, false),

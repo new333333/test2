@@ -480,4 +480,10 @@ update SS_OpenIDProviders set emailRegex='.*yahoo.com' where name='yahoo';
         </addColumn>
     </changeSet>
 
+    <changeSet author="peter" context="schema" failOnError="true" id="61">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_allowAccessNetFolder" type="BIT"/>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

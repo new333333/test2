@@ -50,6 +50,7 @@
     	<property name="allowSharingExternal" column="right_allowSharingExternal" access="field"/>
     	<property name="allowSharingPublic" column="right_allowSharingPublic" access="field"/>
     	<property name="allowSharingForward" column="right_allowSharingForward" access="field"/>
+    	<property name="allowAccessNetFolder" column="right_allowAccessNetFolder" access="field"/>
     </component> 
   </class>
 </hibernate-mapping>
