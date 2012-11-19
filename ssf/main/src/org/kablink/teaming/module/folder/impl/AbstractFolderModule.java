@@ -497,11 +497,11 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	
 		// Check if the user has "read" access to the folder.
 		try {
-			getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);
+			getBinderModule().checkAccess(folder, BinderOperation.readEntries);
 		} catch(AccessControlException ace) {
 			//Can't read it, so try seeing if the folder title is readable
 			try {
-				getAccessControlManager().checkOperation(folder, WorkAreaOperation.VIEW_BINDER_TITLE);
+				getBinderModule().checkAccess(folder, BinderOperation.viewBinderTitle);
 			} catch(AccessControlException ace2) {
 				throw ace;
 			}
@@ -623,7 +623,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         		!inputData.getSingleValue("title").equals(entry.getTitle())) { 
         	// This is renaming of a Net Folder entry, which means that the user is attempting to rename a file.
 			// Do the checking in a way that is consistent with the file system semantic.
-			getAccessControlManager().checkOperation(entry.getParentFolder(), WorkAreaOperation.MODIFY_ENTRIES);
+			getBinderModule().checkAccess(entry.getParentFolder(), BinderOperation.modifyEntries);
         }
         else {
 			try {
@@ -1446,9 +1446,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     	for(Object o : folder.getFolders()) {
     		Folder f = (Folder) o;
     		if (f.isDeleted() || f.isPreDeleted()) continue;
-    		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES) ||
-    				getAccessControlManager().testOperation(f, WorkAreaOperation.VIEW_BINDER_TITLE))
+    		if (getBinderModule().testAccess(f, BinderOperation.readEntries) ||
+    				getBinderModule().testAccess(f, BinderOperation.viewBinderTitle)) {
     			titles.add(f.getTitle());
+    		}
     	}
     	
     	return titles;    	
@@ -1463,9 +1464,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     	for(Object o : folder.getFolders()) {
     		Folder f = (Folder) o;
     		if (f.isDeleted() || f.isPreDeleted()) continue;
-    		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES) || 
-    				getAccessControlManager().testOperation(f, WorkAreaOperation.VIEW_BINDER_TITLE))
+    		if (getBinderModule().testAccess(f, BinderOperation.readEntries) ||
+    				getBinderModule().testAccess(f, BinderOperation.viewBinderTitle)) {
     			subFolders.add(f);
+    		}
     	}
     	
     	return subFolders;    	

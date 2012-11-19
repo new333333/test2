@@ -56,6 +56,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.ShareItem;
@@ -190,6 +191,33 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 	public boolean testOperation(User user,
 			WorkArea workArea, WorkAreaOperation workAreaOperation) {
 		long begin = System.nanoTime();
+		//See if this is a net folder
+		if (workArea.isAclExternallyControlled() && !workAreaOperation.equals(WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER)) {
+			//We must also check that the user has the right to access this net folder
+			Binder topFolder = null;
+			if (workArea instanceof FolderEntry) {
+				topFolder = ((FolderEntry)workArea).getParentBinder();
+			} else if (workArea instanceof Folder) {
+				topFolder = (Folder)workArea;
+			}
+			while (topFolder != null) {
+				if (topFolder.getParentBinder() != null &&
+						!topFolder.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
+					//We have found the top folder (i.e., the net folder root)
+					break;
+				}
+				//Go up a level
+				topFolder = topFolder.getParentBinder();
+			}
+			//Now check if the root folder allows access
+			if (topFolder != null) {
+				if (!testOperation(user, topFolder, WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER)) {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
 		
 		boolean result = testOperationRecursive(user, workArea, workArea, workAreaOperation);
 
