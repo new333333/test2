@@ -1620,7 +1620,6 @@ public class GwtServerHelper {
 			if ( invitationUrl != null && invitationUrl.length() > 0 )
 			{
     			String newToken;
-    			String[] params;
 
 			    // Create a new token
 				newToken = ExternalUserUtil.encodeUserTokenWithNewSeed( extUser );
@@ -7560,12 +7559,13 @@ public class GwtServerHelper {
 	 * @param ri
 	 * @param binderId
 	 * @param entryId
+	 * @param invokeShare
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static String getViewFolderEntryUrl(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long entryId) throws GwtTeamingException {
+	public static String getViewFolderEntryUrl(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long entryId, boolean invokeShare) throws GwtTeamingException {
 		try {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
@@ -7573,13 +7573,21 @@ public class GwtServerHelper {
 				FolderEntry entry = bs.getFolderModule().getEntry(null, entryId);
 				binderId = entry.getParentBinder().getId();
 			}
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(binderId));
-			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID,  String.valueOf(entryId ));			
+			adapterUrl.setParameter(    WebKeys.URL_BINDER_ID,    String.valueOf(binderId));
+			adapterUrl.setParameter(    WebKeys.URL_ENTRY_ID,     String.valueOf(entryId ));
+			if (invokeShare) {
+				adapterUrl.setParameter(WebKeys.URL_INVOKE_SHARE, "1"                     );
+			}
 			return adapterUrl.toString();
 		}
 		catch (Exception ex) {
 			throw getGwtTeamingException(ex);
 		}		
+	}
+	
+	public static String getViewFolderEntryUrl(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long entryId) throws GwtTeamingException {
+		// Always use the initial form of the method.
+		return getViewFolderEntryUrl(bs, request, binderId, entryId, false);	// false -> Don't invoke the share dialog on the entry.
 	}
 
 	/**

@@ -4781,7 +4781,7 @@ public class GwtViewHelper {
 					}
 					
 					// Setup a binder view based on the binder ID.
-					else if (!(initVIFromBinderId(request, bs, nvMap, WebKeys.URL_BINDER_ID, vi, true))) {
+					else if (!(initVIFromBinderId(request, bs, nvMap, WebKeys.URL_BINDER_ID, vi))) {
 						m_logger.debug("GwtViewHelper.getViewInfo():  3:Could not determine a view.");
 						return null;
 					}
@@ -4817,7 +4817,7 @@ public class GwtViewHelper {
 				}
 				
 				// Setup a binder view based on the binder ID.
-				if (!(initVIFromBinderId(request, bs, nvMap, WebKeys.URL_BINDER_ID, vi, true))) {
+				if (!(initVIFromBinderId(request, bs, nvMap, WebKeys.URL_BINDER_ID, vi))) {
 					m_logger.debug("GwtViewHelper.getViewInfo():  4:Could not determine a view.");
 					return null;
 				}
@@ -4860,8 +4860,16 @@ public class GwtViewHelper {
 					boolean entryViewIgnore = GwtClientHelper.hasString(getQueryParameterString(nvMap, WebKeys.URL_ENTRY_VIEW_IGNORE));
 					if (MiscUtil.hasString(entryViewStyle) && MiscUtil.hasString(entryId) && (!entryViewIgnore)) {
 						// Yes!  Adjust the ViewInfo accordingly.
+						String invokeShare = getQueryParameterString(nvMap, WebKeys.URL_INVOKE_SHARE);
 						vi.setViewType(ViewType.BINDER_WITH_ENTRY_VIEW);
-						vi.setEntryViewUrl(GwtServerHelper.getViewFolderEntryUrl(bs, request, binderId, Long.parseLong(entryId)));
+						vi.setEntryViewUrl(
+							GwtServerHelper.getViewFolderEntryUrl(
+								bs,
+								request,
+								binderId,
+								Long.parseLong(entryId),
+								(MiscUtil.hasString(invokeShare) && invokeShare.trim().equals("1"))));
+						vi.setInvokeShare(false);	// We'll invoke the share on the entry, not the binder.
 
 					}
 				}
@@ -4960,9 +4968,18 @@ public class GwtViewHelper {
 			Long				entryId  = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID );
 			ViewFolderEntryInfo	vfei     = buildViewFolderEntryInfo(bs, request, binderId, entryId);
 			
-			// ...and mark the ViewInfo as such.
+			// ...mark the ViewInfo as such...
 			vi.setViewFolderEntryInfo(vfei                 );
 			vi.setViewType(           ViewType.FOLDER_ENTRY);
+			
+			// ...if we're supposed to invoke the share dialog on this
+			// ...entry...
+			String invokeShare = getQueryParameterString(nvMap, WebKeys.URL_INVOKE_SHARE);
+			if (MiscUtil.hasString(invokeShare) && invokeShare.trim().equals("1")) {
+				// Yes!  Mark the ViewInfo accordingly.
+				FolderEntry fe = GwtUIHelper.getEntrySafely(bs.getFolderModule(), binderId, entryId);
+				vi.setInvokeShare((null != fe) && GwtShareHelper.isEntitySharable(bs, fe));
+			}
 		}
 		
 		// If we get here reply refers to the BinderInfo requested or
@@ -5218,14 +5235,14 @@ public class GwtViewHelper {
 	 * Returns true if the ViewInfo was initialized and false
 	 * otherwise.
 	 */
-	private static boolean initVIFromBinderId(HttpServletRequest request, AllModulesInjected bs, Map<String, String> nvMap, String binderIdName, ViewInfo vi, boolean checkForTrash) {
+	private static boolean initVIFromBinderId(HttpServletRequest request, AllModulesInjected bs, Map<String, String> nvMap, String binderIdName, ViewInfo vi) {
 		// Initialize as a binder based on the user's workspace.
 		Long binderId = getQueryParameterLong(nvMap, binderIdName);
 		BinderInfo bi = GwtServerHelper.getBinderInfo(bs, request, String.valueOf(binderId));
 		if (null == bi) {
 			return false;
 		}
-
+		
 		// Is the binder a workspace?
 		User user = GwtServerHelper.getCurrentUser();
 		vi.setViewType(ViewType.BINDER);
@@ -5268,17 +5285,25 @@ public class GwtViewHelper {
 		}
 		vi.setBinderInfo(bi);
 
-		// Do we need to check for a show trash flag?
-		if (checkForTrash) {
-			// Yes!  Are we showing the trash on a this binder?
-			boolean showTrash = getQueryParameterBoolean(nvMap, WebKeys.URL_SHOW_TRASH);
-			if (showTrash) {
-				// Yes!  Update the folder/workspace type
-				// accordingly.
-				if      (bi.isBinderFolder())    bi.setFolderType(   FolderType.TRASH   );
-				else if (bi.isBinderWorkspace()) bi.setWorkspaceType(WorkspaceType.TRASH);
-			}
+		// Are we showing the trash on a this binder?
+		boolean showTrash = getQueryParameterBoolean(nvMap, WebKeys.URL_SHOW_TRASH);
+		if (showTrash) {
+			// Yes!  Update the folder/workspace type
+			// accordingly.
+			if      (bi.isBinderFolder())    bi.setFolderType(   FolderType.TRASH   );
+			else if (bi.isBinderWorkspace()) bi.setWorkspaceType(WorkspaceType.TRASH);
 		}
+
+		// Are we supposed to invoke the share dialog on this binder?
+		String invokeShare = getQueryParameterString(nvMap, WebKeys.URL_INVOKE_SHARE);
+		if (MiscUtil.hasString(invokeShare) && invokeShare.trim().equals("1")) {
+			// Yes!  Mark the ViewInfo accordingly.
+			Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
+			vi.setInvokeShare((null != binder) && GwtShareHelper.isEntitySharable(bs, binder));
+		}
+
+		// Finally, return true since if we get here, the view has been
+		// initialized.
 		return true;
 	}
 	

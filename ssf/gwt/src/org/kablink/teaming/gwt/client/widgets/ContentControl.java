@@ -75,8 +75,10 @@ import org.kablink.teaming.gwt.client.event.EventsHandledBySourceMarker;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetCurrentViewInfoEvent;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
+import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShowBlogFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowCalendarFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowCollectionViewEvent;
@@ -542,8 +544,9 @@ public class ContentControl extends Composite
 	 */
 	private static void pushContentHistoryUrl( String url )
 	{
-		// Simply call the JavaScript implementation method.
-		jsPushContentHistoryUrl( url );
+		// Simply call the JavaScript implementation method on the
+		// sanitized URL.
+		jsPushContentHistoryUrl( sanitizeHistoryUrl( url ) );
 	}// end pushContentHistoryUrl()
 	
 	/**
@@ -562,6 +565,26 @@ public class ContentControl extends Composite
 		setUrl(         "",  Instigator.FORCE_FULL_RELOAD );
 		setViewFromUrl( url, Instigator.FORCE_FULL_RELOAD );
 	}// end reload()
+
+	/*
+	 * Does whatever's necessary to sanitize a URL before it gets
+	 * pushed on the history URL stack.
+	 */
+	private static String sanitizeHistoryUrl( String url )
+	{
+		url = sanitizeHistoryUrlImpl(url, "/invokeShare/1");
+		url = sanitizeHistoryUrlImpl(url, "&invokeShare=1");
+		return url;
+	}
+	
+	private static String sanitizeHistoryUrlImpl( String url, String removeThis )
+	{
+		int pos = url.indexOf(removeThis);
+		if (0 < pos) {
+			url = GwtClientHelper.replace(url, removeThis, "");
+		}
+		return url;
+	}
 	
 	/**
 	 * Set the width and height of this control.
@@ -755,6 +778,13 @@ public class ContentControl extends Composite
 										GwtTeaming.fireEventAsync(
 											new ViewForumEntryEvent(
 												vi.getEntryViewUrl() ) );
+									}
+									
+									else if ( vi.isInvokeShare() )
+									{
+										GwtTeaming.fireEventAsync(
+											new InvokeShareBinderEvent(
+												bi.getBinderId() ) );
 									}
 								}// end execute()
 							};
@@ -983,13 +1013,19 @@ public class ContentControl extends Composite
 					{
 						// Yes!  Fire the event that will display the
 						// folder entry viewer.
-						ViewFolderEntryInfo vfei = vi.getFolderEntryInfo();
+						final ViewFolderEntryInfo vfei = vi.getFolderEntryInfo();
 						GwtTeaming.fireEvent( new ShowFolderEntryEvent( vfei, new ViewReady()
 						{
 							@Override
 							public void viewReady()
 							{
-								// Nothing to do.
+								if (vi.isInvokeShare()) {
+									EntityId eid = vfei.getEntityId();
+									GwtTeaming.fireEventAsync(
+										new ShareSelectedEntriesEvent(
+											eid.getBinderId(),
+											eid ) );
+								}
 							}//end viewReady()
 						} ) );
 						
