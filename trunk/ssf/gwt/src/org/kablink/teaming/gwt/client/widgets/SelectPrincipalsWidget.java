@@ -352,6 +352,14 @@ public class SelectPrincipalsWidget extends Composite
 		txt = getNoPrincipalsHint();
 		m_principalsTable.setText( row, 0, txt );
 	}
+
+	/**
+	 * Override this method to add additional information to the principal object.
+	 */
+	protected void addAdditionalPrincipalInfo( GwtPrincipal principal )
+	{
+		
+	}
 	
 	/**
 	 * Add the given principal to the first of the table that holds the list of principals
@@ -811,11 +819,14 @@ public class SelectPrincipalsWidget extends Composite
 					if ( findPrincipal( principal ) == -1 )
 					{
 						// No
-						// Notify that a principal was added
-						principalAdded( principal );
-
+						// Give the opportunity to add additional info to this principal
+						addAdditionalPrincipalInfo( principal );
+						
 						// Add the principal to our list of principals
 						addPrincipal( principal, true );
+
+						// Notify that a principal was added
+						principalAdded( principal );
 					}
 					else
 					{

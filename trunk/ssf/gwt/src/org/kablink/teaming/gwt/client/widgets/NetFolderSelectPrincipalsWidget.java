@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.GwtPrincipal;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderRightsDlgEvent;
 import org.kablink.teaming.gwt.client.util.PerUserRightsInfo;
 import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
 
@@ -61,6 +62,21 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 		super();
 	}
 
+	/**
+	 * Add additional information to the principal object.
+	 */
+	@Override
+	protected void addAdditionalPrincipalInfo( GwtPrincipal principal )
+	{
+		if ( principal != null )
+		{
+			PerUserRightsInfo rightsInfo;
+			
+			rightsInfo = new PerUserRightsInfo( new PerUserShareRightsInfo(), false );
+			principal.setAdditionalData( rightsInfo );
+		}
+	}
+	
 	/**
 	 * 
 	 */
@@ -203,7 +219,7 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 				PerUserRightsInfo rightsInfo;
 				
 				rightsInfo = (PerUserRightsInfo) principal.getAdditionalData();
-				widget = new NetFolderRightsWidget( rightsInfo );
+				widget = new NetFolderRightsWidget( rightsInfo, principal.getIdLong() );
 				return widget;
 			}
 			
@@ -295,17 +311,18 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 
 	/**
 	 * This method gets called when the user adds a principal to the list.  We will add a
-	 * ShareRights object to the principal
+	 * PerUserRightsInfo object to the principal
 	 */
 	@Override
 	protected void principalAdded( GwtPrincipal principal )
 	{
 		if ( principal != null )
 		{
-			PerUserRightsInfo rightsInfo;
+			InvokeEditNetFolderRightsDlgEvent event;
 			
-			rightsInfo = new PerUserRightsInfo( new PerUserShareRightsInfo(), false );
-			principal.setAdditionalData( rightsInfo );
+			// Fire an event to invoke the "edit net folder rights" dialog.
+			event = new InvokeEditNetFolderRightsDlgEvent( principal.getIdLong() );
+			GwtTeaming.fireEvent( event );
 		}
 	}
 	

@@ -918,6 +918,18 @@ public class EventHelper {
 					registrationHandler = InvokeEditInPlaceEvent.registerEvent(eventBus, ((InvokeEditInPlaceEvent.Handler) eventHandler));
 				}
 				break;
+
+			case INVOKE_EDIT_NET_FOLDER_RIGHTS_DLG:
+				// An InvokeEditNetFolderRightsDlgEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeEditNetFolderRightsDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeEditNetFolderRightsDlgEvent.registerEvent(
+																					eventBus,
+																					((InvokeEditNetFolderRightsDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 				
 			case INVOKE_EMAIL_NOTIFICATION:
 				// An InvokeEmailNotificationEvent!  Can the event
@@ -2200,6 +2212,7 @@ public class EventHelper {
 			case INVOKE_DOWNLOAD_DESKTOP_APP:                  hasHandler = (eventHandler instanceof InvokeDownloadDesktopAppEvent.Handler);               break;
 			case INVOKE_DROPBOX:						       hasHandler = (eventHandler instanceof InvokeDropBoxEvent.Handler);                          break;
 			case INVOKE_EDIT_IN_PLACE:					       hasHandler = (eventHandler instanceof InvokeEditInPlaceEvent.Handler);                      break;
+			case INVOKE_EDIT_NET_FOLDER_RIGHTS_DLG:			   hasHandler = (eventHandler instanceof InvokeEditNetFolderRightsDlgEvent.Handler); 	       break;
 			case INVOKE_EMAIL_NOTIFICATION:         	       hasHandler = (eventHandler instanceof InvokeEmailNotificationEvent.Handler);                break;
 			case INVOKE_HELP:                       	       hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                             break;
 			case INVOKE_IMPORT_ICAL_FILE:           	       hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);                   break;

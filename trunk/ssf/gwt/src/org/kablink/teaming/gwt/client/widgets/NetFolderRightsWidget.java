@@ -33,8 +33,14 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderRightsDlgEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.PerUserRightsInfo;
 import org.kablink.teaming.gwt.client.widgets.EditNetFolderRightsDlg.EditNetFolderRightsDlgClient;
 
@@ -45,30 +51,43 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * This widget is used to display the rights a user has to a net folder and allow the user
  * to change the rights.
  */
 public class NetFolderRightsWidget extends Composite
-	implements ClickHandler
+	implements ClickHandler, InvokeEditNetFolderRightsDlgEvent.Handler
 {
+	private Long m_principalId;
 	private PerUserRightsInfo m_rightsInfo;
 	private InlineLabel m_rightsLabel;
 	private Image m_rightsImg;
 	private EditSuccessfulHandler m_editRightsHandler;
+	private List<HandlerRegistration> m_registeredEventHandlers;
 
 	private static EditNetFolderRightsDlg m_editNetFolderRightsDlg;
 	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private static TeamingEvents[] m_registeredEvents = new TeamingEvents[] 
+	{
+		TeamingEvents.INVOKE_EDIT_NET_FOLDER_RIGHTS_DLG
+	};
 	
+
+
 	/**
 	 * 
 	 */
-	public NetFolderRightsWidget( PerUserRightsInfo rightsInfo )
+	public NetFolderRightsWidget( PerUserRightsInfo rightsInfo, Long principalId )
 	{
 		ImageResource imageResource;
 		
 		m_rightsInfo = rightsInfo;
+		m_principalId = principalId;
 
 		m_rightsLabel = new InlineLabel( m_rightsInfo.getRightsAsString() );
 		m_rightsLabel.addStyleName( "netFolderRightsWidget_RightsLabel" );
@@ -155,6 +174,98 @@ public class NetFolderRightsWidget extends Composite
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
+	}
+
+	/**
+	 * Called when the dialog is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach()
+	{
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the dialog is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach()
+	{
+		// Let the widget detach and then unregister our event handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+	
+	/**
+	 * Handles the InvokeEditNetFolderRightsDlgEvent received by this class
+	 */
+	@Override
+	public void onInvokeEditNetFolderRightsDlg( InvokeEditNetFolderRightsDlgEvent event )
+	{
+		final Long principalId;
+		
+		// Get the id of the principal we want to edit the net folder rights for.
+		principalId = event.getPrincipalId();
+		
+		// Is this event meant for this widget?
+		if ( principalId != null && principalId.equals( m_principalId ) )
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					// Invoke the edit rights dialog.
+					invokeEditRightsDlg();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents()
+	{
+		// If we haven't allocated a list to track events we've registered yet...
+		if ( null == m_registeredEventHandlers )
+		{
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if ( m_registeredEventHandlers.isEmpty() )
+		{
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+											GwtTeaming.getEventBus(),
+											m_registeredEvents,
+											this,
+											m_registeredEventHandlers );
+		}
+	}
+
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents()
+	{
+		// If we have a non-empty list of registered events...
+		if ( null != m_registeredEventHandlers && !m_registeredEventHandlers.isEmpty() )
+		{
+			// ...unregister them.  (Note that this will also empty the list.)
+			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
+		}
 	}
 
 	/**
