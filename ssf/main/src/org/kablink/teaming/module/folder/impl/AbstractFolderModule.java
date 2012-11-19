@@ -623,7 +623,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         		!inputData.getSingleValue("title").equals(entry.getTitle())) { 
         	// This is renaming of a Net Folder entry, which means that the user is attempting to rename a file.
 			// Do the checking in a way that is consistent with the file system semantic.
-			getBinderModule().checkAccess(entry.getParentFolder(), BinderOperation.modifyEntries);
+			getAccessControlManager().checkOperation(entry.getParentFolder(), WorkAreaOperation.MODIFY_ENTRIES);
         }
         else {
 			try {
