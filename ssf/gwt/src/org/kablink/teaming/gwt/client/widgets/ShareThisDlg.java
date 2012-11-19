@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeEditShareRightsDlgEvent;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtGroup;
@@ -628,14 +629,16 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * Add a share for the given GwtTeamingItem
 	 */
-	private void addShare( GwtTeamingItem gwtTeamingItem )
+	private GwtShareItem addShare( GwtTeamingItem gwtTeamingItem )
 	{
+		GwtShareItem shareItem = null;
+		
 		if ( gwtTeamingItem == null )
-			return;
+			return null;
 		
 		for ( EntityId nextEntityId : m_entityIds )
 		{
-			GwtShareItem shareItem = null;
+			shareItem = null;
 			
 			// Are we dealing with a User?
 			if ( gwtTeamingItem instanceof GwtUser )
@@ -652,7 +655,7 @@ public class ShareThisDlg extends DlgBox
 				{
 					// Yes, tell them they can't.
 					Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithYourself() );
-					return;
+					return null;
 				}
 				
 				// Is this an external user?
@@ -663,7 +666,7 @@ public class ShareThisDlg extends DlgBox
 					{
 						// No, tell the user they can't do this.
 						Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser() );
-						return;
+						return null;
 					}
 				}
 				
@@ -711,9 +714,12 @@ public class ShareThisDlg extends DlgBox
 				{
 					// Yes, tell the user
 					Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( shareItem.getRecipientName() ) );
+					shareItem = null;
 				}
 			}
 		}// end for()
+		
+		return shareItem;
 	}
 	
 	/**
@@ -2091,6 +2097,8 @@ public class ShareThisDlg extends DlgBox
 			@Override
 			public void execute() 
 			{
+				GwtShareItem shareItem;
+				
 				// Hide the search-results widget.
 				m_findCtrl.hideSearchResults();
 				
@@ -2098,7 +2106,18 @@ public class ShareThisDlg extends DlgBox
 				m_findCtrl.clearText();
 
 				// Create a GwtShareItem for every entity we are sharing with.
-				addShare( selectedObj );
+				shareItem = addShare( selectedObj );
+				
+				if ( shareItem != null )
+				{
+					InvokeEditShareRightsDlgEvent event;
+					
+					// Fire an event to invoke the "edit share rights" dialog.
+					event = new InvokeEditShareRightsDlgEvent(
+															shareItem.getRecipientId(),
+															shareItem.getEntityId().getEntityId() );
+					GwtTeaming.fireEvent( event );
+				}
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
