@@ -314,15 +314,8 @@ public class GwtShareHelper
 			{
 			case AFTER_DAYS:
 			{
-				long milliSecToExpire;
-				Date now;
-
+                // Don't calculate the expiration date (endDate) here.  Let the SharingModule do that.
 				daysToExpire = expirationValue.getValue().intValue();
-				milliSecToExpire = daysToExpire * MILLISEC_IN_A_DAY;
-
-				// Calculate the end date based on the days-to-expire.
-				now = new Date();
-				endDate = new Date( now.getTime() + milliSecToExpire );
 				break;
 			}
 

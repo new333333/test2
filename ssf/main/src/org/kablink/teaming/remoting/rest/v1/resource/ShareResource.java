@@ -22,6 +22,7 @@ import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.file.FileIndexData;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
@@ -49,6 +50,11 @@ public class ShareResource extends AbstractResource {
     @Path("/{id}")
     public Share getShare(@PathParam("id") Long id) {
         ShareItem share = getSharingModule().getShareItem(id);
+        if (!share.isLatest() || !share.getSharerId().equals(getLoggedInUserId())) {
+            // Don't allow the user to modify a share that is not the latest version of the share, or that was shared
+            // by someone else.
+            throw new NoShareItemByTheIdException(id);
+        }
         return ResourceUtil.buildShare(share);
     }
 
@@ -57,6 +63,11 @@ public class ShareResource extends AbstractResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Share updateShare(@PathParam("id") Long id, Share share) {
         ShareItem origItem = getSharingModule().getShareItem(id);
+        if (!origItem.isLatest() || !origItem.getSharerId().equals(getLoggedInUserId())) {
+            // Don't allow the user to modify a share that is not the latest version of the share, or that was shared
+            // by someone else.
+            throw new NoShareItemByTheIdException(id);
+        }
         // You can't change the shared entity or the recipient via this API.  Perhaps I should fail if the client supplies
         // these values and they don't match?
         share.setSharedEntity(new EntityId(origItem.getSharedEntityIdentifier().getEntityId(), origItem.getSharedEntityIdentifier().getEntityType().name(), null));
@@ -565,13 +576,6 @@ public class ShareResource extends AbstractResource {
     private ShareItemSelectSpec getSharedWithSpec(Long userId) {
         ShareItemSelectSpec spec = new ShareItemSelectSpec();
         spec.setRecipientsFromUserMembership(userId);
-        spec.setLatest(true);
-        return spec;
-    }
-
-    private ShareItemSelectSpec getSharedBySpec(Long userId) {
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setSharerId(userId);
         spec.setLatest(true);
         return spec;
     }

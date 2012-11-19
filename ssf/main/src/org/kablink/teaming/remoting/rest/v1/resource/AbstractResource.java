@@ -57,6 +57,7 @@ import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.FilePropertiesBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.*;
@@ -211,6 +212,43 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
     }
 
+    protected ShareItemSelectSpec getSharedBySpec(Long userId) {
+        ShareItemSelectSpec spec = new ShareItemSelectSpec();
+        spec.setSharerId(userId);
+        spec.setLatest(true);
+        return spec;
+    }
+
+    protected Share shareEntity(org.kablink.teaming.domain.DefinableEntity entity, Share share) {
+        share.setSharedEntity(new EntityId(entity.getId(), entity.getEntityType().name(), null));
+        ShareItem item = toShareItem(share);
+        ShareItem existing = findExistingShare(getLoggedInUserId(), entity.getEntityIdentifier(), item.getRecipientId(), item.getRecipientType());
+        if (existing!=null) {
+            getSharingModule().modifyShareItem(item, existing.getId());
+        } else {
+            getSharingModule().addShareItem(item);
+        }
+        return ResourceUtil.buildShare(item);
+    }
+
+    protected ShareItem findExistingShare(Long sharer, EntityIdentifier sharedEntity, Long recipientId, ShareItem.RecipientType recipientType) {
+        ShareItemSelectSpec spec = getSharedBySpec(sharer);
+        spec.setSharedEntityIdentifier(sharedEntity);
+        if (recipientType== ShareItem.RecipientType.user) {
+            spec.setRecipients(recipientId, null, null);
+        } else if (recipientType== ShareItem.RecipientType.group) {
+            spec.setRecipients(null, recipientId, null);
+        } else {
+            spec.setRecipients(null, null, recipientId);
+        }
+
+        List<ShareItem> shares = getShareItems(spec);
+        if (shares.size()==0) {
+            return null;
+        }
+        return shares.get(0);
+    }
+
     protected List<ShareItem> getShareItems(ShareItemSelectSpec spec) {
         return getShareItems(spec, null);
     }
@@ -219,7 +257,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
         List<ShareItem> filteredItems = new ArrayList<ShareItem>(shareItems.size());
         for (ShareItem item : shareItems) {
-            if (!item.isExpired() && item.isLatest() && (excludedSharer==null || excludedSharer!=item.getSharerId())) {
+            if (!item.isExpired() && item.isLatest() && (excludedSharer==null || !excludedSharer.equals(item.getSharerId()))) {
                 filteredItems.add(item);
             }
         }
@@ -445,11 +483,17 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         } catch (IllegalArgumentException e) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The 'role' value must be one of the following: VIEWER, EDITOR, CONTRIBUTOR");
         }
+        if (share.getDaysToExpire()!=null && share.getEndDate()!=null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "You cannot specify both 'days_to_expire' and 'expiration'.");
+        }
+
         WorkAreaOperation.RightSet rights = (WorkAreaOperation.RightSet) role.getRightSet().clone();
         if (Boolean.TRUE.equals(share.isCanShare())) {
             rights.setAllowSharing(true);
         }
-        return new ShareItem(getLoggedInUserId(), entity, share.getComment(), share.getEndDate(), recType, recipient.getId(), rights);
+        ShareItem shareItem = new ShareItem(getLoggedInUserId(), entity, share.getComment(), share.getEndDate(), recType, recipient.getId(), rights);
+        shareItem.setDaysToExpire(share.getDaysToExpire());
+        return shareItem;
     }
 
     protected void populateParentBinderPaths(SearchResultList list) {

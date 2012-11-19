@@ -35,6 +35,7 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import com.sun.jersey.spi.resource.Singleton;
 import org.dom4j.Document;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoTagByTheIdException;
@@ -231,11 +232,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
     @POST
     @Path("{id}/shares")
     public Share shareEntity(@PathParam("id") Long id, Share share) {
-        _getFolderEntry(id);
-        share.setSharedEntity(new EntityId(id, EntityIdentifier.EntityType.folderEntry.name(), null));
-        ShareItem item = toShareItem(share);
-        getSharingModule().addShareItem(item);
-        return ResourceUtil.buildShare(item);
+        return shareEntity(_getFolderEntry(id), share);
     }
 
     protected org.kablink.teaming.domain.FolderEntry _getFolderEntry(long id) {

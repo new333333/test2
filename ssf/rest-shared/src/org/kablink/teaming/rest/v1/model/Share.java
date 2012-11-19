@@ -32,6 +32,7 @@ public class Share extends BaseRestObject {
     protected String comment;
 	private LongIdLinkPair sharer;
     protected Date startDate;
+    protected Integer daysToExpire;
     protected Date endDate;
     private EntityId recipient;
     private EntityId sharedEntity;
@@ -63,7 +64,16 @@ public class Share extends BaseRestObject {
 		this.startDate = startDate;
 	}
 
-	@XmlElement(name = "expiration")
+    @XmlElement(name = "days_to_expire")
+    public Integer getDaysToExpire() {
+        return daysToExpire;
+    }
+
+    public void setDaysToExpire(Integer daysToExpire) {
+        this.daysToExpire = daysToExpire;
+    }
+
+    @XmlElement(name = "expiration")
     public Date getEndDate() {
         return endDate;
     }

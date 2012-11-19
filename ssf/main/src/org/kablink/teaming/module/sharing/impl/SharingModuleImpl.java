@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.sharing.impl;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,6 +87,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author Peter Hurley
  */
 public class SharingModuleImpl extends CommonDependencyInjection implements SharingModule, ZoneSchedule {
+    private static long MILLISEC_IN_A_DAY = 86400000;
 
 	private FolderModule folderModule;
 	private BinderModule binderModule;
@@ -668,6 +670,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     //NO transaction
 	@Override
 	public void addShareItem(final ShareItem shareItem) {
+        determineExpiration(shareItem);
+
 		// Access check (throws error if not allowed)
 		checkAccess(shareItem, SharingOperation.addShareItem);
 		
@@ -696,6 +700,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			throw new IllegalArgumentException("Previous share item ID must be specified");
 		if(latestShareItem.getId() != null)
 			throw new IllegalArgumentException("Latest share item must be transient");
+
+        determineExpiration(latestShareItem);
 		
 		// Access check (throws error if not allowed)
 		checkAccess(latestShareItem, SharingOperation.modifyShareItem);
@@ -729,7 +735,17 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		//Index the entity that is being shared
 		indexSharedEntity(latestShareItem);		
 	}
-	
+
+    private void determineExpiration(ShareItem latestShareItem) {
+        int daysToExpire = latestShareItem.getDaysToExpire();
+        if (daysToExpire>0) {
+            long milliSecToExpire = daysToExpire * MILLISEC_IN_A_DAY;
+            // Calculate the end date based on the days-to-expire.
+            Date now = new Date();
+            latestShareItem.setEndDate(new Date( now.getTime() + milliSecToExpire ));
+        }
+    }
+
     //NO transaction
 	@Override
 	public void deleteShareItem(Long shareItemId) {
