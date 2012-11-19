@@ -157,15 +157,15 @@ public class PerUserRightsInfo
 					rights.append( "/" );
 				rights.append( GwtTeaming.getMessages().forwardingRights() );
 			}
-			
-			if ( m_canAccess )
-			{
-				if ( rights.length() > 0 )
-					rights.append( "/" );
-				rights.append( GwtTeaming.getMessages().viewRights() );
-			}
 		}
 		
+		if ( m_canAccess )
+		{
+			if ( rights.length() > 0 )
+				rights.append( "/" );
+			rights.append( GwtTeaming.getMessages().allowAccess() );
+		}
+
 		if ( rights.length() == 0 )
 			return GwtTeaming.getMessages().noRights();
 			

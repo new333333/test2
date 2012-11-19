@@ -124,7 +124,7 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 		// Create the necessary role objects
 		{
 			viewRole = new GwtRole();
-			viewRole.setType( GwtRoleType.View );
+			viewRole.setType( GwtRoleType.AllowAccess );
 			roles.add( viewRole );
 
 			shareExternalRole = new GwtRole();
@@ -281,7 +281,7 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 							rightsInfo.setCanSharePublic( true );
 							break;
 							
-						case View:
+						case AllowAccess:
 							rightsInfo.setCanAccess( true );
 							break;
 						}

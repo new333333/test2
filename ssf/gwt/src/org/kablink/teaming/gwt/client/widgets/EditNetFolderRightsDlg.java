@@ -41,6 +41,10 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -56,7 +60,7 @@ import com.google.gwt.user.client.ui.Panel;
 public class EditNetFolderRightsDlg extends DlgBox
 	implements EditSuccessfulHandler
 {
-	private CheckBox m_canViewCkbox;
+	private CheckBox m_allowAccessCkbox;
 	private CheckBox m_canShareForwardCkbox;
 	private CheckBox m_canShareExternalCkbox;
 	private CheckBox m_canShareInternalCkbox;
@@ -116,10 +120,28 @@ public class EditNetFolderRightsDlg extends DlgBox
 		label.addStyleName( "editNetFolderRightsDlg_Instructions" );
 		mainPanel.add( label );
 		
-		// Add the "View items" checkbox
-		m_canViewCkbox = new CheckBox( messages.editNetFolderRightsDlg_CanViewLabel() );
-		m_canViewCkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
-		mainPanel.add( m_canViewCkbox );
+		// Add the "Allow access to the net folder" checkbox
+		m_allowAccessCkbox = new CheckBox( messages.editNetFolderRightsDlg_AllowAccessLabel() );
+		m_allowAccessCkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
+		m_allowAccessCkbox.addClickHandler( new ClickHandler()
+		{
+			@Override
+			public void onClick( ClickEvent event )
+			{
+				ScheduledCommand cmd;
+				
+				cmd = new ScheduledCommand()
+				{
+					@Override
+					public void execute() 
+					{
+						danceDlg();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		} );
+		mainPanel.add( m_allowAccessCkbox );
 		
 		// Add the "Re-share" checkbox
 		m_canShareForwardCkbox = new CheckBox( messages.editNetFolderRightsDlg_ReShareLabel() );
@@ -151,6 +173,22 @@ public class EditNetFolderRightsDlg extends DlgBox
 
 		return mainPanel;
 	}
+
+	/**
+	 * 
+	 */
+	private void danceDlg()
+	{
+		boolean enable;
+		
+		enable = m_allowAccessCkbox.getValue();
+		
+		// Enable/disable the checkboxes depending on whether "allow access" is checked.
+		m_canShareExternalCkbox.setEnabled( enable );
+		m_canShareForwardCkbox.setEnabled( enable );
+		m_canShareInternalCkbox.setEnabled( enable );
+		m_canSharePublicCkbox.setEnabled( enable );
+	}
 	
 	/**
 	 * 
@@ -162,11 +200,22 @@ public class EditNetFolderRightsDlg extends DlgBox
 		if ( m_rightsInfo != null )
 		{
 			// Yes
-			m_rightsInfo.setCanAccess( m_canViewCkbox.getValue() );
-			m_rightsInfo.setCanReshare( m_canShareForwardCkbox.getValue() );
-			m_rightsInfo.setCanShareExternal( m_canShareExternalCkbox.getValue() );
-			m_rightsInfo.setCanShareInternal( m_canShareInternalCkbox.getValue() );
-			m_rightsInfo.setCanSharePublic( m_canSharePublicCkbox.getValue() );
+			m_rightsInfo.setCanAccess( m_allowAccessCkbox.getValue() );
+
+			if ( m_allowAccessCkbox.getValue() )
+			{
+				m_rightsInfo.setCanReshare( m_canShareForwardCkbox.getValue() );
+				m_rightsInfo.setCanShareExternal( m_canShareExternalCkbox.getValue() );
+				m_rightsInfo.setCanShareInternal( m_canShareInternalCkbox.getValue() );
+				m_rightsInfo.setCanSharePublic( m_canSharePublicCkbox.getValue() );
+			}
+			else
+			{
+				m_rightsInfo.setCanReshare( false );
+				m_rightsInfo.setCanShareExternal( false );
+				m_rightsInfo.setCanShareInternal( false );
+				m_rightsInfo.setCanSharePublic( false );
+			}
 
 			// Do we have a handler we should call?
 			if ( m_editSuccessfulHandler != null )
@@ -208,7 +257,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 		m_canShareForwardCkbox.setValue( false );
 		m_canShareInternalCkbox.setValue( false );
 		m_canSharePublicCkbox.setValue( false );
-		m_canViewCkbox.setValue( false );
+		m_allowAccessCkbox.setValue( false );
 
 		if ( m_rightsInfo != null )
 		{
@@ -216,8 +265,10 @@ public class EditNetFolderRightsDlg extends DlgBox
 			m_canShareForwardCkbox.setValue( m_rightsInfo.canReshare() );
 			m_canShareInternalCkbox.setValue( m_rightsInfo.canShareInternal() );
 			m_canSharePublicCkbox.setValue( m_rightsInfo.canSharePublic() );
-			m_canViewCkbox.setValue( m_rightsInfo.canAccess() );
+			m_allowAccessCkbox.setValue( m_rightsInfo.canAccess() );
 		}
+		
+		danceDlg();
 	}
 	
 	/**

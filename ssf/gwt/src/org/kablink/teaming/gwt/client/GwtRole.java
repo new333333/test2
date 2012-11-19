@@ -58,7 +58,7 @@ public class GwtRole
 		ShareForward,
 		ShareInternal,
 		SharePublic,
-		View,
+		AllowAccess,
 		
 		Unknown
 	}
