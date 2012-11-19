@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeEditShareRightsDlgEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.widgets.EditShareRightsDlg.EditShareRightsDlgClient;
@@ -89,6 +90,18 @@ public class ShareRightsWidget extends Composite
 		
 		m_shareInfo = shareInfo;
 		m_highestRightsPossible = highestRightsPossible;
+		
+		// Are we dealing with an external user?
+		if ( m_shareInfo.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
+		{
+			// Yes, don't let the user give the external user rights to share.
+			m_highestRightsPossible = new ShareRights();
+			m_highestRightsPossible.setAccessRights( highestRightsPossible.getAccessRights() );
+			m_highestRightsPossible.setCanShareForward( false );
+			m_highestRightsPossible.setCanShareWithExternalUsers( false );
+			m_highestRightsPossible.setCanShareWithInternalUsers( false );
+			m_highestRightsPossible.setCanShareWithPublic( false );
+		}
 
 		m_rightsLabel = new InlineLabel( shareInfo.getShareRightsAsString() );
 		m_rightsLabel.addStyleName( "shareThisDlg_RightsLabel" );
