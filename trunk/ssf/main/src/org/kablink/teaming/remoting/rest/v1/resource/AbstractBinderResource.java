@@ -277,11 +277,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @POST
     @Path("{id}/shares")
     public Share shareEntity(@PathParam("id") Long id, Share share) {
-        org.kablink.teaming.domain.Binder binder = _getBinder(id);
-        share.setSharedEntity(new EntityId(id, binder.getEntityType().name(), null));
-        ShareItem item = toShareItem(share);
-        getSharingModule().addShareItem(item);
-        return ResourceUtil.buildShare(item);
+        return shareEntity(_getBinder(id), share);
     }
 
     @GET

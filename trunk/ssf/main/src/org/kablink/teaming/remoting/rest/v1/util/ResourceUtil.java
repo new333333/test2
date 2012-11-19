@@ -722,6 +722,9 @@ public class ResourceUtil {
         Share model = new Share();
         model.setComment(shareItem.getComment());
         model.setSharer(new LongIdLinkPair(shareItem.getSharerId(), LinkUriUtil.getUserLinkUri(shareItem.getSharerId())));
+        if (shareItem.getDaysToExpire()>0) {
+            model.setDaysToExpire(shareItem.getDaysToExpire());
+        }
         model.setStartDate(shareItem.getStartDate());
         model.setEndDate(shareItem.getEndDate());
         model.setId(shareItem.getId());
