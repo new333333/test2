@@ -991,7 +991,10 @@ public class ShareThisDlg extends DlgBox
 			mainTable.setWidget( row, 0, shareLabel );
 			mainTable.setWidget( row, 1, findTable );
 			mainRowFormatter.setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
-			mainCellFormatter.setWidth( row, 1, "*" );
+			// On IE calling m_cellFormatter.setWidth( row, col, "*" ); throws an exception.
+			// That is why we are calling DOM.setElementAttribute(...) instead.
+			//mainCellFormatter.setWidth( row, 1, "*" );
+			DOM.setElementAttribute( mainCellFormatter.getElement( row, 1 ), "width", "*" );
 			
 			// Add an "add external user" image.
 			{
