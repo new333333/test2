@@ -7560,12 +7560,13 @@ public class GwtServerHelper {
 	 * @param binderId
 	 * @param entryId
 	 * @param invokeShare
+	 * @param invokeSubscribe
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static String getViewFolderEntryUrl(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long entryId, boolean invokeShare) throws GwtTeamingException {
+	public static String getViewFolderEntryUrl(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long entryId, boolean invokeShare, boolean invokeSubscribe) throws GwtTeamingException {
 		try {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
@@ -7573,11 +7574,13 @@ public class GwtServerHelper {
 				FolderEntry entry = bs.getFolderModule().getEntry(null, entryId);
 				binderId = entry.getParentBinder().getId();
 			}
-			adapterUrl.setParameter(    WebKeys.URL_BINDER_ID,    String.valueOf(binderId));
-			adapterUrl.setParameter(    WebKeys.URL_ENTRY_ID,     String.valueOf(entryId ));
-			if (invokeShare) {
-				adapterUrl.setParameter(WebKeys.URL_INVOKE_SHARE, "1"                     );
-			}
+			
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(binderId));
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID,  String.valueOf(entryId ));
+			
+			if (invokeShare)     adapterUrl.setParameter(WebKeys.URL_INVOKE_SHARE,     "1");
+			if (invokeSubscribe) adapterUrl.setParameter(WebKeys.URL_INVOKE_SUBSCRIBE, "1");
+			
 			return adapterUrl.toString();
 		}
 		catch (Exception ex) {
@@ -7587,7 +7590,14 @@ public class GwtServerHelper {
 	
 	public static String getViewFolderEntryUrl(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long entryId) throws GwtTeamingException {
 		// Always use the initial form of the method.
-		return getViewFolderEntryUrl(bs, request, binderId, entryId, false);	// false -> Don't invoke the share dialog on the entry.
+		return
+			getViewFolderEntryUrl(
+				bs,
+				request,
+				binderId,
+				entryId,
+				false,	// false -> Don't invoke the share     dialog on the entry.
+				false);	// false -> Don't invoke the subscribe dialog on the entry.
 	}
 
 	/**

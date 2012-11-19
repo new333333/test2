@@ -75,6 +75,7 @@ import org.kablink.teaming.gwt.client.event.EventsHandledBySourceMarker;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetCurrentViewInfoEvent;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
+import org.kablink.teaming.gwt.client.event.InvokeEmailNotificationEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
@@ -104,6 +105,7 @@ import org.kablink.teaming.gwt.client.event.ShowTeamRootWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowTrashEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.ShowTeamWSEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
@@ -574,6 +576,10 @@ public class ContentControl extends Composite
 	{
 		url = sanitizeHistoryUrlImpl(url, "/invokeShare/1");
 		url = sanitizeHistoryUrlImpl(url, "&invokeShare=1");
+		
+		url = sanitizeHistoryUrlImpl(url, "/invokeSubscribe/1");
+		url = sanitizeHistoryUrlImpl(url, "&invokeSubscribe=1");
+		
 		return url;
 	}
 	
@@ -780,11 +786,18 @@ public class ContentControl extends Composite
 												vi.getEntryViewUrl() ) );
 									}
 									
-									else if ( vi.isInvokeShare() )
+									else
 									{
-										GwtTeaming.fireEventAsync(
-											new InvokeShareBinderEvent(
+										if ( vi.isInvokeShare() )
+										{
+											GwtTeaming.fireEventAsync(
+												new InvokeShareBinderEvent(
 												bi.getBinderId() ) );
+										}
+										if ( vi.isInvokeSubscribe() )
+										{
+											InvokeEmailNotificationEvent.fireOneAsync();
+										}
 									}
 								}// end execute()
 							};
@@ -1019,10 +1032,18 @@ public class ContentControl extends Composite
 							@Override
 							public void viewReady()
 							{
-								if (vi.isInvokeShare()) {
-									EntityId eid = vfei.getEntityId();
+								EntityId eid = vfei.getEntityId();
+								if ( vi.isInvokeShare() )
+								{
 									GwtTeaming.fireEventAsync(
 										new ShareSelectedEntriesEvent(
+											eid.getBinderId(),
+											eid ) );
+								}
+								if ( vi.isInvokeSubscribe() )
+								{
+									GwtTeaming.fireEventAsync(
+										new SubscribeSelectedEntriesEvent(
 											eid.getBinderId(),
 											eid ) );
 								}
@@ -1040,14 +1061,21 @@ public class ContentControl extends Composite
 						// If we get here, we just run the JSP based folder
 						// entry viewer.
 						jsViewFolderEntry( url, "no" );
-						if (vi.isInvokeShare()) {
-							EntityId eid = vi.getFolderEntryInfo().getEntityId();
+						EntityId eid = vi.getFolderEntryInfo().getEntityId();
+						if ( vi.isInvokeShare() )
+						{
 							GwtTeaming.fireEventAsync(
 								new ShareSelectedEntriesEvent(
 									eid.getBinderId(),
 									eid ) );
 						}
-						
+						if ( vi.isInvokeSubscribe() )
+						{
+							GwtTeaming.fireEventAsync(
+								new SubscribeSelectedEntriesEvent(
+									eid.getBinderId(),
+									eid ) );
+						}
 						m_viewMode = ViewMode.JSP_ENTRY_VIEW;
 						break;
 					}
@@ -1095,13 +1123,17 @@ public class ContentControl extends Composite
 				// ...make sure the ContentControl is showing...
 				ShowContentControlEvent.fireOne();
 
-				// ...and if requested...
+				// ...if requested invoke the share and/or subscribe
+				// ...dialogs on the view.
 				if ( vi.isInvokeShare() )
 				{
-					// ...invoke the share dialog on the view.
 					GwtTeaming.fireEventAsync(
 						new InvokeShareBinderEvent(
 							vi.getBinderInfo().getBinderId() ) );
+				}
+				if ( vi.isInvokeSubscribe() )
+				{
+					InvokeEmailNotificationEvent.fireOneAsync();
 				}
 				
 				break;

@@ -43,12 +43,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class ViewInfo implements IsSerializable, VibeRpcResponseData {
-	private BinderInfo			m_binderInfo;	// If m_viewType is BINDER or BINDER_WITH_ENTRY_VIEW, a BinderInfo object that describes it.
-	private boolean				m_invokeShare;	// true -> Invoke the sharing dialog on the entity after the view initiates.
-	private String				m_entryViewUrl;	// If m_viewType is BINDER_WITH_ENTRY_VIEW, the URL to use to view the entry AFTER loading the binder.
-	private Long				m_baseBinderId;	// For all m_viewTypes, any binderId found in the URL.
-	private ViewFolderEntryInfo	m_vfei;			// If m_viewType is FOLDER_ENTRY, a ViewFolderEntryInfo object that describes it.
-	private ViewType			m_viewType;		// The type of the view.
+	private BinderInfo			m_binderInfo;		// If m_viewType is BINDER or BINDER_WITH_ENTRY_VIEW, a BinderInfo object that describes it.
+	private boolean				m_invokeShare;		// true -> Invoke the sharing   dialog on the entity after the view initiates.
+	private boolean				m_invokeSubscribe;	// true -> Invoke the subscribe dialog on the entity after the view initiates.
+	private String				m_entryViewUrl;		// If m_viewType is BINDER_WITH_ENTRY_VIEW, the URL to use to view the entry AFTER loading the binder.
+	private Long				m_baseBinderId;		// For all m_viewTypes, any binderId found in the URL.
+	private ViewFolderEntryInfo	m_vfei;				// If m_viewType is FOLDER_ENTRY, a ViewFolderEntryInfo object that describes it.
+	private ViewType			m_viewType;			// The type of the view.
 	
 	/**
 	 * Constructor method.
@@ -84,6 +85,7 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	public boolean             isAdvancedSearchView() {return  ViewType.ADVANCED_SEARCH.equals(m_viewType);                                                       }
 	public boolean             isBinderView()         {return (ViewType.BINDER.equals(         m_viewType) || ViewType.BINDER_WITH_ENTRY_VIEW.equals(m_viewType));}
 	public boolean             isInvokeShare()        {return m_invokeShare;                                                                                      }
+	public boolean             isInvokeSubscribe()    {return m_invokeSubscribe;                                                                                  }
 	public BinderInfo          getBinderInfo()        {return m_binderInfo;                                                                                       }
 	public Long                getBaseBinderId()      {return m_baseBinderId;                                                                                     }
 	public String              getEntryViewUrl()      {return m_entryViewUrl;                                                                                     }
@@ -95,10 +97,11 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public void setBinderInfo(         BinderInfo          binderInfo)   {m_binderInfo   = binderInfo;  }
-	public void setInvokeShare(        boolean             invokeShare)  {m_invokeShare  = invokeShare; }
-	public void setBaseBinderId(       Long                baseBinderId) {m_baseBinderId = baseBinderId;}
-	public void setEntryViewUrl(       String              entryViewUrl) {m_entryViewUrl = entryViewUrl;}
-	public void setViewFolderEntryInfo(ViewFolderEntryInfo vfei)         {m_vfei         = vfei;        }
-	public void setViewType(           ViewType            viewType)     {m_viewType     = viewType;    }	
+	public void setBinderInfo(         BinderInfo          binderInfo)      {m_binderInfo      = binderInfo;     }
+	public void setInvokeShare(        boolean             invokeShare)     {m_invokeShare     = invokeShare;    }
+	public void setInvokeSubscribe(    boolean             invokeSubscribe) {m_invokeSubscribe = invokeSubscribe;}
+	public void setBaseBinderId(       Long                baseBinderId)    {m_baseBinderId    = baseBinderId;   }
+	public void setEntryViewUrl(       String              entryViewUrl)    {m_entryViewUrl    = entryViewUrl;   }
+	public void setViewFolderEntryInfo(ViewFolderEntryInfo vfei)            {m_vfei            = vfei;           }
+	public void setViewType(           ViewType            viewType)        {m_viewType        = viewType;       }	
 }

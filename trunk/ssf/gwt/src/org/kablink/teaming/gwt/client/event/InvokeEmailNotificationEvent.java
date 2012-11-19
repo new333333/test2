@@ -74,10 +74,17 @@ public class InvokeEmailNotificationEvent extends VibeEventBase<InvokeEmailNotif
     }
 	
 	/**
-	 * Fires a new one of these events.
+	 * Synchronously fires a new one of these events.
 	 */
 	public static void fireOne() {
 		GwtTeaming.fireEvent(new InvokeEmailNotificationEvent());
+	}
+    
+	/**
+	 * Asynchronously fires a new one of these events.
+	 */
+	public static void fireOneAsync() {
+		GwtTeaming.fireEventAsync(new InvokeEmailNotificationEvent());
 	}
     
 	/**

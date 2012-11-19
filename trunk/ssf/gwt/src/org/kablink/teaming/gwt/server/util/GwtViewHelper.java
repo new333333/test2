@@ -4860,7 +4860,6 @@ public class GwtViewHelper {
 					boolean entryViewIgnore = GwtClientHelper.hasString(getQueryParameterString(nvMap, WebKeys.URL_ENTRY_VIEW_IGNORE));
 					if (MiscUtil.hasString(entryViewStyle) && MiscUtil.hasString(entryId) && (!entryViewIgnore)) {
 						// Yes!  Adjust the ViewInfo accordingly.
-						String invokeShare = getQueryParameterString(nvMap, WebKeys.URL_INVOKE_SHARE);
 						vi.setViewType(ViewType.BINDER_WITH_ENTRY_VIEW);
 						vi.setEntryViewUrl(
 							GwtServerHelper.getViewFolderEntryUrl(
@@ -4868,8 +4867,10 @@ public class GwtViewHelper {
 								request,
 								binderId,
 								Long.parseLong(entryId),
-								(MiscUtil.hasString(invokeShare) && invokeShare.trim().equals("1"))));
-						vi.setInvokeShare(false);	// We'll invoke the share on the entry, not the binder.
+								isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SHARE,     "1"),
+								isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SUBSCRIBE, "1")));
+						vi.setInvokeShare(    false);	// We'll invoke any share     on the entry, not the binder.
+						vi.setInvokeSubscribe(false);	// We'll invoke any subscribe on the entry, not the binder.
 
 					}
 				}
@@ -4974,11 +4975,19 @@ public class GwtViewHelper {
 			
 			// ...if we're supposed to invoke the share dialog on this
 			// ...entry...
-			String invokeShare = getQueryParameterString(nvMap, WebKeys.URL_INVOKE_SHARE);
-			if (MiscUtil.hasString(invokeShare) && invokeShare.trim().equals("1")) {
-				// Yes!  Mark the ViewInfo accordingly.
+			boolean invokeShare = isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SHARE, "1");
+			if (invokeShare) {
+				// ...mark the ViewInfo accordingly...
 				FolderEntry fe = GwtUIHelper.getEntrySafely(bs.getFolderModule(), binderId, entryId);
 				vi.setInvokeShare((null != fe) && GwtShareHelper.isEntitySharable(bs, fe));
+			}
+			
+			// ...if we're supposed to invoke the subscribe dialog on
+			// ...this entry...
+			boolean invokeSubscribe = isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SUBSCRIBE, "1");
+			if (invokeSubscribe) {
+				// ...mark the ViewInfo accordingly.
+				vi.setInvokeSubscribe(true);
 			}
 		}
 		
@@ -5295,11 +5304,16 @@ public class GwtViewHelper {
 		}
 
 		// Are we supposed to invoke the share dialog on this binder?
-		String invokeShare = getQueryParameterString(nvMap, WebKeys.URL_INVOKE_SHARE);
-		if (MiscUtil.hasString(invokeShare) && invokeShare.trim().equals("1")) {
+		if (isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SHARE, "1")) {
 			// Yes!  Mark the ViewInfo accordingly.
 			Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
 			vi.setInvokeShare((null != binder) && GwtShareHelper.isEntitySharable(bs, binder));
+		}
+		
+		// Are we supposed to invoke the subscribe dialog on this binder?
+		if (isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SUBSCRIBE, "1")) {
+			// Yes!  Mark the ViewInfo accordingly.
+			vi.setInvokeSubscribe(true);
 		}
 
 		// Finally, return true since if we get here, the view has been
@@ -5351,6 +5365,15 @@ public class GwtViewHelper {
 		// If we get here, we couldn't find the entry in question.
 		// Return false.
 		return false;
+	}
+
+	/*
+	 * Returns true if a query parameter is set to a specific value and
+	 * false otherwise.
+	 */
+	private static boolean isQueryParamSet(Map<String, String> nvMap, String name, String value) {
+		String qp = getQueryParameterString(nvMap, name);
+		return (MiscUtil.hasString(qp) && qp.trim().equalsIgnoreCase(value.trim()));
 	}
 
 	/**
