@@ -170,6 +170,8 @@ public interface ObjectKeys {
 	public static final String FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID="402883b90d0de1f3010d0df5582b0039";
 	//reserved id for _allowChangingAccessControl pseudo role
 	public static final String FUNCTION_ENABLE_CHANGING_ACCESS_CONTROL_INTERNALID="402883b90d0de1f3010d0df5582b0041";
+	//reserved id for _allowAccessNetFolder pseudo role
+	public static final String FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID="402883b90d0de1f3010d0df5582b0042";
 
 	//reserved id for View Binder Title role
 	public static final String FUNCTION_VIEW_BINDER_TITLE_INTERNALID="402883b90d0de1f3010d0df5582b0033";
@@ -288,6 +290,7 @@ public interface ObjectKeys {
     public static final String ROLE_ALLOW_SHARING_PUBLIC="__role.allowSharingPublic";
     public static final String ROLE_ALLOW_SHARING_FORWARD="__role.allowSharingForward";
     public static final String ROLE_ENABLE_CHANGING_ACCESS_CONTROL="__role.enableChangingAccessControl";
+    public static final String ROLE_ALLOW_ACCESS_NET_FOLDER="__role.allowAccessNetFolder";
 
     //map keys from admin/sendMail
     public static final String SENDMAIL_ERRORS="errors";

@@ -413,6 +413,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.ALLOW_SHARING_FORWARD);
 				break;
+			case allowAccessNetFolder:
+				getAccessControlManager().checkOperation(user, binder,
+						WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER);
+				break;
 			default:
 				throw new NotSupportedException(operation.toString(),
 						"checkAccess");

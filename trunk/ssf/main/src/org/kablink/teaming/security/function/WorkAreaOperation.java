@@ -86,6 +86,7 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation ALLOW_SHARING_EXTERNAL = new WorkAreaOperation("allowSharingExternal");
     public final static WorkAreaOperation ALLOW_SHARING_PUBLIC = new WorkAreaOperation("allowSharingPublic");
     public final static WorkAreaOperation ALLOW_SHARING_FORWARD = new WorkAreaOperation("allowSharingForward");
+    public final static WorkAreaOperation ALLOW_ACCESS_NET_FOLDER = new WorkAreaOperation("allowAccessNetFolder");
 
     // The following rights should not be used in access management of workareas.
     // Used to give access to zone-wide functions to a group of users
@@ -208,6 +209,7 @@ public class WorkAreaOperation {
 		protected Boolean allowSharingExternal = Boolean.FALSE;
 		protected Boolean allowSharingPublic = Boolean.FALSE;
 		protected Boolean allowSharingForward = Boolean.FALSE;
+		protected Boolean allowAccessNetFolder = Boolean.FALSE;
 		
 		public RightSet() {}
 		
@@ -254,6 +256,7 @@ public class WorkAreaOperation {
 			result = 29 * result + (Boolean.TRUE.equals(allowSharingExternal) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(allowSharingPublic) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(allowSharingForward) ? 1231 : 1237);
+			result = 29 * result + (Boolean.TRUE.equals(allowAccessNetFolder) ? 1231 : 1237);
 			return result;
 		}
 
@@ -287,6 +290,7 @@ public class WorkAreaOperation {
 			if(!equalRights(this.allowSharingExternal, that.allowSharingExternal)) return false;
 			if(!equalRights(this.allowSharingPublic, that.allowSharingPublic)) return false;
 			if(!equalRights(this.allowSharingForward, that.allowSharingForward)) return false;
+			if(!equalRights(this.allowAccessNetFolder, that.allowAccessNetFolder)) return false;
 			return true;
 		}
 
@@ -316,6 +320,7 @@ public class WorkAreaOperation {
 			if(this.allowSharingExternal) rights.add(WorkAreaOperation.ALLOW_SHARING_EXTERNAL);
 			if(this.allowSharingPublic) rights.add(WorkAreaOperation.ALLOW_SHARING_PUBLIC);
 			if(this.allowSharingForward) rights.add(WorkAreaOperation.ALLOW_SHARING_FORWARD);
+			if(this.allowAccessNetFolder) rights.add(WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER);
 			return rights;
 		}
 
@@ -570,6 +575,15 @@ public class WorkAreaOperation {
 
 		public void setAllowSharingForward(boolean allowSharingForward) {
 			this.allowSharingForward = allowSharingForward;
+		}
+		
+		public boolean isAllowAccessNetFolder() {
+			if(allowAccessNetFolder == null) return false;
+			return allowAccessNetFolder;
+		}
+
+		public void setAllowAccessNetFolder(boolean allowAccessNetFolder) {
+			this.allowAccessNetFolder = allowAccessNetFolder;
 		}
 		
 		private boolean equalRights(Boolean right1, Boolean right2) {
