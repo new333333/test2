@@ -277,7 +277,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     
 	public boolean getFsaEnabled() {
 		if(fsaEnabled == null)
-			return SPropsUtil.getBoolean("fsa.enabled.default", false);
+			return SPropsUtil.getBoolean("fsa.enabled.default", true);
 		else
 			return fsaEnabled.booleanValue();
 	}
