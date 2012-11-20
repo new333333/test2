@@ -64,6 +64,10 @@ public class GangliaMonitoring extends QuartzJobBean {
 	private AtomicInteger foldersShared;
 	private AtomicLong restRequests;
 	
+	public GangliaMonitoring() {
+		instance = this;
+	}
+	
 	public static int incrementUniqueLoggedInUsers() {
 		if(instance == null) return 0; // not ready
 		return instance.uniqueLoggedInUsers.addAndGet(1);
