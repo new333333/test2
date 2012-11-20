@@ -54,6 +54,14 @@ public class RequestInfo extends JavaScriptObject
 	}// end RequestInfo()
 	
 	/**
+	 * Return whether the logged in user can see other users in the system.
+	 */
+	public final native boolean canSeeOtherUsers()
+	/*-{
+		return this.getBFromS( this.canSeeOtherUsers );
+	}-*/;
+
+	/**
 	 * Return the the session captive state.
 	 * 
 	 * @return

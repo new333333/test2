@@ -48,6 +48,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
@@ -67,6 +68,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -1488,6 +1490,20 @@ public class GwtUIHelper {
 		boolean showWhatsNew;
 		if (isLicenseFilr) {
 			showWhatsNew = false;
+			
+			// Does the user have rights to see other users?
+			{
+				Binder binder;
+				boolean canSeeOtherUsers;
+				CoreDao coreDao;
+				
+				coreDao = (CoreDao) SpringContextUtil.getBean( "coreDao" );
+				binder = coreDao.loadReservedBinder(
+												ObjectKeys.PROFILE_ROOT_INTERNALID,
+												RequestContextHolder.getRequestContext().getZoneId() );
+				canSeeOtherUsers = bs.getBinderModule().testAccess( binder, BinderOperation.readEntries );
+				model.put( "canSeeOtherUsers", String.valueOf( canSeeOtherUsers ) );
+			}
 		}
 		else {
 			String showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
