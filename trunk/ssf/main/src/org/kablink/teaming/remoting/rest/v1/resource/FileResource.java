@@ -159,6 +159,24 @@ public class FileResource extends AbstractFileResource {
    		return readFileContent(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), getIfModifiedSinceDate(request));
    	}
 
+   	@GET
+    @Path("thumbnail")
+   	public Response readThumbnailFileContentById(@PathParam("id") String fileId,
+   			@Context HttpServletRequest request) {
+   		FileAttachment fa = findFileAttachment(fileId);
+   		DefinableEntity entity = fa.getOwner().getEntity();
+   		return readFileContent(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), getIfModifiedSinceDate(request), FileType.thumbnail);
+   	}
+
+   	@GET
+    @Path("scaled")
+   	public Response readScaledFileContentById(@PathParam("id") String fileId,
+   			@Context HttpServletRequest request) {
+   		FileAttachment fa = findFileAttachment(fileId);
+   		DefinableEntity entity = fa.getOwner().getEntity();
+   		return readFileContent(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), getIfModifiedSinceDate(request), FileType.scaled);
+   	}
+
     @DELETE
     public void deleteFileContent(@PathParam("id") String fileId) throws WriteFilesException, WriteEntryDataException {
         FileAttachment fa = findFileAttachment(fileId);

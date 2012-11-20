@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.module.file;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.kablink.teaming.UncheckedIOException;
@@ -42,6 +43,25 @@ import org.kablink.teaming.repository.RepositoryServiceException;
 
 public interface ConvertedFileModule {
 
+    /**
+     * Returns an InputStream containing the scaled file
+     * @param binder
+     * @param entry
+     * @param fa
+     * @return
+     */
+    public InputStream getScaledInputStream(Binder binder, DefinableEntity entry,
+                                            FileAttachment fa);
+
+    /**
+     * Returns an InputStream containing the thumbnail of the file
+     * @param binder
+     * @param entry
+     * @param fa
+     * @return
+     */
+    public InputStream getThumbnailInputStream(Binder binder, DefinableEntity entry,
+                                               FileAttachment fa);
     /**
      * Reads the specified scaled file into the output stream.
      * 

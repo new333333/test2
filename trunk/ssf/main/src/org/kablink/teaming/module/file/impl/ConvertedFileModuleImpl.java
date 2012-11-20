@@ -124,18 +124,47 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 		ImageConverter converter = this.imageConverterManager.getConverter();
 		converter.deleteConvertedFile(binder, entity, fa);
 	}
+
+    public InputStream getScaledInputStream(Binder binder, DefinableEntity entry,
+                                               FileAttachment fa) {
+        ImageConverter converter = null;
+
+        try
+        {
+            converter = this.imageConverterManager.getConverter();
+            return converter.convertToScaledImage(binder, entry, fa,
+                    new ImageConverter.Parameters(IImageConverterManager.IMAGEWIDTH, 0));
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
+
+    }
 	
-	public void readScaledFile(Binder binder, DefinableEntity entry, 
+    public InputStream getThumbnailInputStream(Binder binder, DefinableEntity entry,
+                                               FileAttachment fa) {
+        ImageConverter converter = null;
+
+        try
+        {
+            converter = this.imageConverterManager.getConverter();
+            return converter.convertToThumbnail(binder, entry, fa,
+                    new ImageConverter.Parameters(IImageConverterManager.IMAGEWIDTH, 0));
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
+
+    }
+
+	public void readScaledFile(Binder binder, DefinableEntity entry,
 			FileAttachment fa, OutputStream out)
 	{
-		ImageConverter converter = null;
-		
 		try
 		{
-			converter = this.imageConverterManager.getConverter();
-			FileCopyUtils.copy(converter.convertToScaledImage(binder, entry, fa,
-									new ImageConverter.Parameters(IImageConverterManager.IMAGEWIDTH, IImageConverterManager.IMAGEHEIGHT)),
-							   out);
+			FileCopyUtils.copy(getScaledInputStream(binder, entry, fa), out);
 		}
 		catch (IOException e)
 		{
@@ -153,14 +182,9 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 			Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out)
 	{
-		ImageConverter converter = null;
-		
 		try
 		{
-			converter = this.imageConverterManager.getConverter();
-			FileCopyUtils.copy(converter.convertToThumbnail(binder, entry, fa,
-									new ImageConverter.Parameters(IImageConverterManager.IMAGEWIDTH, 0)),
-							   out);
+			FileCopyUtils.copy(getThumbnailInputStream(binder, entry, fa), out);
 		}
 		catch (IOException e)
 		{
