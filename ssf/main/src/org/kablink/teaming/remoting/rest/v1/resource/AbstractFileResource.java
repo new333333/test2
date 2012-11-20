@@ -45,6 +45,12 @@ import java.util.Set;
  * Time: 10:39 AM
  */
 abstract public class AbstractFileResource extends AbstractResource {
+    protected static enum FileType {
+        main,
+        thumbnail,
+        scaled
+    }
+
     protected Date dateFromISO8601(String modDateISO8601) {
         if (Validator.isNotNull(modDateISO8601)) {
             DateTime dateTime = ISODateTimeFormat.dateTimeParser().parseDateTime(modDateISO8601);
@@ -203,7 +209,11 @@ abstract public class AbstractFileResource extends AbstractResource {
             throw new NotFoundException(ApiErrorCode.FILE_NOT_FOUND, "File '" + filename + "' is not found for entity '" + entity.getId() + "' of type '" + entity.getEntityType().name() + "'");
     }
 
-    protected Response readFileContent(String entityType, long entityId, String filename, Date ifModifiedSinceDate)
+    protected Response readFileContent(String entityType, long entityId, String filename, Date ifModifiedSinceDate) {
+        return readFileContent(entityType, entityId, filename, ifModifiedSinceDate, FileType.main);
+    }
+
+    protected Response readFileContent(String entityType, long entityId, String filename, Date ifModifiedSinceDate, FileType type)
             throws BadRequestException {
         EntityIdentifier.EntityType et = entityTypeFromString(entityType);
         Binder binder;
@@ -237,8 +247,19 @@ abstract public class AbstractFileResource extends AbstractResource {
                 return Response.status(Response.Status.NOT_MODIFIED).build();
             }
         }
-        String mt = new MimetypesFileTypeMap().getContentType(filename);
-        return Response.ok(getFileModule().readFile(binder, entity, fa), mt).lastModified(lastModDate).build();
+        String mt;
+        InputStream is;
+        if (type==FileType.thumbnail) {
+            is = getConvertedFileModule().getThumbnailInputStream(binder, entity, fa);
+            mt = "image/jpeg";
+        } else if (type==FileType.scaled) {
+            is = getConvertedFileModule().getScaledInputStream(binder, entity, fa);
+            mt = "image/jpeg";
+        } else {
+            is = getFileModule().readFile(binder, entity, fa);
+            mt = new MimetypesFileTypeMap().getContentType(filename);
+        }
+        return Response.ok(is, mt).lastModified(lastModDate).build();
     }
 
     protected void deleteFile(String entityType, long entityId, String filename)

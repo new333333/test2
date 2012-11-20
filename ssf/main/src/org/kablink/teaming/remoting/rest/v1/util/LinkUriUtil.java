@@ -208,6 +208,8 @@ public class LinkUriUtil {
         fp.addAdditionalLink("parent_folder", baseUrl + "/parent_folder");
         fp.addAdditionalLink("shares", fp.getOwningEntity().getLink() + "/shares");
         fp.addAdditionalLink("versions", baseUrl + "/versions");
+        fp.addAdditionalLink("thumbnail", baseUrl + "/thumbnail");
+        fp.addAdditionalLink("scaled_image", baseUrl + "/scaled");
         fp.addAdditionalLink("current_version", baseUrl + "/versions/current");
     }
 
