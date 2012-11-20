@@ -43,16 +43,19 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.web.servlet.listener.SessionListener.ActiveSessionCounter;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
  * @author jong
  *
  */
-public class BaseMonitoring {
+public class GangliaMonitoring extends QuartzJobBean {
 
-	private static BaseMonitoring instance; // A singleton instance
+	private static GangliaMonitoring instance; // A singleton instance
 	
-	private static final Log logger = LogFactory.getLog(BaseMonitoring.class);
+	private static final Log logger = LogFactory.getLog(GangliaMonitoring.class);
 	
 	private AtomicInteger uniqueLoggedInUsers;
 	private AtomicInteger fileWrites;
@@ -91,7 +94,7 @@ public class BaseMonitoring {
 		return instance.restRequests.addAndGet(1);
 	}
 	
-	public static void dump() throws IOException {
+	public void dump() throws IOException {
 		if(instance == null) return; // not ready
 
 		File gangliaDir = new File(DirPath.getWebappRootDirPath() + "/../var/ganglia");
@@ -117,7 +120,20 @@ public class BaseMonitoring {
 		}
 	}
 
-	private static void writeProperty(PrintWriter writer, String key, String value) {
+	@Override
+	protected void executeInternal(JobExecutionContext arg0)
+			throws JobExecutionException {
+		// This task does not need to run in any user's account/context.
+		try {
+			dump();
+		}
+		catch(Exception e) {
+			logger.warn("Error while writing monitoring information", e);
+		}
+	}
+
+	private void writeProperty(PrintWriter writer, String key, String value) {
 		writer.println(key + "=" + value);
 	}
+
 }
