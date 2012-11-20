@@ -15,6 +15,11 @@
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
   <workAreaFunctionMembership>
+    <property name="functionName">__role.binderAdmin</property>
+    <property name="memberName">_filesyncagent</property>
+    <property name="members"></property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
     <property name="functionName">__role.viewBinderTitle</property>
     <property name="members">-1</property>
   </workAreaFunctionMembership>
