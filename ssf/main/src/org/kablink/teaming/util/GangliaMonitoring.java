@@ -57,12 +57,12 @@ public class GangliaMonitoring extends QuartzJobBean {
 	
 	private static final Log logger = LogFactory.getLog(GangliaMonitoring.class);
 	
-	private AtomicInteger uniqueLoggedInUsers;
-	private AtomicInteger fileWrites;
-	private AtomicInteger fileReads;
-	private AtomicInteger filesShared;
-	private AtomicInteger foldersShared;
-	private AtomicLong restRequests;
+	private AtomicInteger uniqueLoggedInUsers = new AtomicInteger();
+	private AtomicInteger fileWrites = new AtomicInteger();
+	private AtomicInteger fileReads = new AtomicInteger();
+	private AtomicInteger filesShared = new AtomicInteger();
+	private AtomicInteger foldersShared = new AtomicInteger();
+	private AtomicLong restRequests = new AtomicLong();
 	
 	public GangliaMonitoring() {
 		instance = this;
@@ -101,7 +101,7 @@ public class GangliaMonitoring extends QuartzJobBean {
 	public void dump() throws IOException {
 		if(instance == null) return; // not ready
 
-		File gangliaDir = new File(DirPath.getWebappRootDirPath() + "/../var/ganglia");
+		File gangliaDir = new File(DirPath.getWebappRootDirPath() + "/../../var/ganglia");
 		if(!gangliaDir.exists()) {
 			logger.info("Creating directory [" + gangliaDir.getAbsolutePath() + "]");
 			gangliaDir.mkdirs();
