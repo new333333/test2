@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -57,20 +58,22 @@ public class GangliaMonitoring extends QuartzJobBean {
 	
 	private static final Log logger = LogFactory.getLog(GangliaMonitoring.class);
 	
-	private AtomicInteger uniqueLoggedInUsers = new AtomicInteger();
+	private ConcurrentHashMap<String,String> uniqueLoggedInUsers = new ConcurrentHashMap<String,String>();
+
 	private AtomicInteger fileWrites = new AtomicInteger();
 	private AtomicInteger fileReads = new AtomicInteger();
 	private AtomicInteger filesShared = new AtomicInteger();
 	private AtomicInteger foldersShared = new AtomicInteger();
+	
 	private AtomicLong restRequests = new AtomicLong();
 	
 	public GangliaMonitoring() {
 		instance = this;
 	}
 	
-	public static int incrementUniqueLoggedInUsers() {
-		if(instance == null) return 0; // not ready
-		return instance.uniqueLoggedInUsers.addAndGet(1);
+	public static int addLoggedInUser(String username) {
+		instance.uniqueLoggedInUsers.put(username, username);
+		return instance.uniqueLoggedInUsers.size();
 	}
 	
 	public static int incrementFileWrites() {
@@ -112,9 +115,22 @@ public class GangliaMonitoring extends QuartzJobBean {
 			logger.debug("Writing monitoring information to file [" + gangliaFile.getAbsolutePath() + "]");
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(gangliaFile)));
 		try {
+			/*
+			 * Number of valid sessions in memory
+			 */
 			writeProperty(writer, "sessions", String.valueOf(ActiveSessionCounter.getActiveSessionCount()));
+			/*
+			 * Peak number of valid sessions in memory
+			 */
 			writeProperty(writer, "peakSessions", String.valueOf(ActiveSessionCounter.getPeakActiveSessionCount()));
-			writeProperty(writer, "uniqueLoggedInUsers", String.valueOf(instance.uniqueLoggedInUsers.get()));
+			/*
+			 * Number of unique users who ever logged into Filr using web client since the server started.
+			 * It doesn't necessarily mean that those users are still logged in.
+			 */
+			writeProperty(writer, "uniqueLoggedInUsers", String.valueOf(instance.uniqueLoggedInUsers.size()));
+			/*
+			 * 
+			 */
 			writeProperty(writer, "fileWrites", String.valueOf(instance.fileWrites.get()));
 			writeProperty(writer, "fileReads", String.valueOf(instance.fileReads.get()));
 			writeProperty(writer, "filesShared", String.valueOf(instance.filesShared.get()));
