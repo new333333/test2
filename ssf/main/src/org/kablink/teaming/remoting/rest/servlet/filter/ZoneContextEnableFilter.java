@@ -53,7 +53,7 @@ public class ZoneContextEnableFilter implements Filter {
 		// Zone context is already set up by ZoneContextValve. 
 		// We only need to override this one particular attribute in preparation
 		// for client-server interaction through SOAP API with WSS auth.
-Bu		ZoneContextHolder.setUseRuntimeContext(USE_RUNTIME_CONTEXT);
+		ZoneContextHolder.setUseRuntimeContext(USE_RUNTIME_CONTEXT);
 		
 		chain.doFilter(request, response);
 	}
