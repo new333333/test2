@@ -107,7 +107,9 @@ public class GangliaMonitoring extends QuartzJobBean {
 			gangliaDir.mkdirs();
 		}
 
-		File gangliaFile = new File(gangliaDir, "server_metrics.properties");
+		File gangliaFile = new File(gangliaDir, "metrics.properties");
+		if(logger.isDebugEnabled())
+			logger.debug("Writing monitoring information to file [" + gangliaFile.getAbsolutePath() + "]");
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(gangliaFile)));
 		try {
 			writeProperty(writer, "sessions", String.valueOf(ActiveSessionCounter.getActiveSessionCount()));
