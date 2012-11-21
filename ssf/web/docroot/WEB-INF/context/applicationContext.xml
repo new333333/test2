@@ -1474,30 +1474,4 @@ text/calendar											  ics
     <security:http pattern="/bitbucket/**" security="none" />
     <security:http pattern="/html/**" security="none" />
           
-	<!-- =============================== Ganglia Monitoring Support ============================== -->
-	
-	<bean id="gangliaMonitoring" class="org.springframework.scheduling.quartz.JobDetailBean">
-	  <property name="jobClass" value="org.kablink.teaming.util.GangliaMonitoring" />
-	</bean>
-
-	<bean id="gangliaMonitoringTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-	    <property name="jobDetail" ref="gangliaMonitoring" />
-	    <!-- Don't kick in until 60 seconds after server startup -->
-	    <property name="startDelay" value="60000" />
-	    <!-- Run every 60 seconds -->
-	    <property name="repeatInterval" value="60000" />
-	</bean>
-
-	<!-- ============================= Local and Transient Qurtz Scheduler ============================= -->
-	
-	<!--  Unlike the global Quartz scheduler, this scheduler is local, node-specific, cluster-unaware,
-	      transient, and non-persistent.  -->
-	<bean id="localScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-	    <property name="triggers">
-	        <list>
-	            <ref bean="gangliaMonitoringTrigger" />
-	        </list>
-	    </property>
-	</bean>
-
 </beans>
