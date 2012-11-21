@@ -63,6 +63,7 @@ import org.kablink.teaming.spring.security.ldap.LdapAuthenticationProvider;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedAuthenticator;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedFilterBasedLdapUserSearch;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedLdapAuthenticationProvider;
+import org.kablink.teaming.util.GangliaMonitoring;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
@@ -500,7 +501,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	     			
 	    			if(result instanceof SynchNotifiableAuthentication)
 	    				((SynchNotifiableAuthentication)result).synchDone();
-	    			return result;
+	    			return successfulAuthentication(result);
 	    		} catch(AuthenticationException e) {
 	    			exc = e;
 	    		} catch(UserAccountNotActiveException e) {
@@ -539,7 +540,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
     					(Map) result.getPrincipal(), getAuthenticator());			
      			SimpleProfiler.stop( "4a-system account: AuthenticationManagerUtil.authenticate()" );
 
-    			return result;
+    			return successfulAuthentication(result);
     		}
     	}
     	
@@ -547,6 +548,11 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
     		throw exc;
     	else
     		throw new UsernameNotFoundException("No such user " + authentication.getName());
+	}
+	
+	private Authentication successfulAuthentication(Authentication result) {
+		GangliaMonitoring.addLoggedInUser(getLoginName(result));
+		return result;
 	}
 	
 	private String getAuthenticator() {

@@ -135,6 +135,7 @@ import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.FileStore;
 import org.kablink.teaming.util.FileUploadItem;
+import org.kablink.teaming.util.GangliaMonitoring;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
@@ -419,14 +420,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			}
 		}
 		
-		RepositoryUtil.readVersionedFile(fa, binder, entry, versionName, latestVersionName, out);			
+		RepositoryUtil.readVersionedFile(fa, binder, entry, versionName, latestVersionName, out);	
+		
+		GangliaMonitoring.incrementFileReads();
 	}
 	
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
-		return readFile(binder, entry, fa, false);
-	}
-	
-	protected InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa, boolean readRawFile) { 
 		String versionName = null;
 		String latestVersionName = null;
 		
@@ -446,7 +445,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			}
 		}
 		
-		return RepositoryUtil.readVersionedFile(fa, binder, entry, versionName, latestVersionName, readRawFile);
+		InputStream result = RepositoryUtil.readVersionedFile(fa, binder, entry, versionName, latestVersionName, false);
+		
+		GangliaMonitoring.incrementFileReads();
+		
+		return result;
 	}
 	
     public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
@@ -476,6 +479,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			if (this.writeFileTransactional(binder, entry, fui, errors)) {
     				//	only advance on success
     				++i;
+    				GangliaMonitoring.incrementFileWrites();
     			} else {//error handled
 	    			if (fui.isRegistered()) getCoreDao().unRegisterFileName(binder, fui.getOriginalFilename());
     				fileUploadItems.remove(i);
