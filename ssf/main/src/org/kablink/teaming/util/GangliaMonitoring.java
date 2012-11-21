@@ -44,9 +44,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.web.servlet.listener.SessionListener.ActiveSessionCounter;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
  * @author jong
@@ -63,7 +60,9 @@ public class GangliaMonitoring {
 	private AtomicInteger fileWrites = new AtomicInteger();
 	private AtomicInteger fileReads = new AtomicInteger();
 	private AtomicInteger filesShared = new AtomicInteger();
+	private AtomicInteger filesSharedSince = new AtomicInteger();
 	private AtomicInteger foldersShared = new AtomicInteger();
+	private AtomicInteger foldersSharedSince = new AtomicInteger();
 	
 	private AtomicLong restRequests = new AtomicLong();
 	
@@ -93,11 +92,13 @@ public class GangliaMonitoring {
 	
 	public static int incrementFilesShared() {
 		if(instance == null) return 0; // not ready
+		instance.filesSharedSince.addAndGet(1);
 		return instance.filesShared.addAndGet(1);
 	}
 	
 	public static int incrementFoldersShared() {
 		if(instance == null) return 0; // not ready
+		instance.foldersSharedSince.addAndGet(1);
 		return instance.foldersShared.addAndGet(1);
 	}
 	
@@ -148,9 +149,17 @@ public class GangliaMonitoring {
 			 */
 			writeProperty(writer, "filesShared", String.valueOf(instance.filesShared.get()));
 			/*
+			 * Number of files shared since the last time the information was dumped.
+			 */
+			writeProperty(writer, "filesSharedSince", String.valueOf(instance.filesSharedSince.get()));
+			/*
 			 * Number of folders shared since the server started.
 			 */
 			writeProperty(writer, "foldersShared", String.valueOf(instance.foldersShared.get()));
+			/*
+			 * Number of folders shared since the last time the information was dumped.
+			 */
+			writeProperty(writer, "foldersSharedSince", String.valueOf(instance.foldersSharedSince.get()));
 			/*
 			 * Number of REST calls made to this server.
 			 */
