@@ -1474,4 +1474,7 @@ text/calendar											  ics
     <security:http pattern="/bitbucket/**" security="none" />
     <security:http pattern="/html/**" security="none" />
           
+	<!-- =============================== Ganglia Monitoring Support ============================== -->
+	<bean id="gangliaMonitoring" class="org.kablink.teaming.util.GangliaMonitoring"/>
+	
 </beans>
