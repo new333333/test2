@@ -73,6 +73,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.util.GangliaMonitoring;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -689,6 +690,11 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		
 		//Index the entity that is being shared
 		indexSharedEntity(shareItem);
+		
+		if(shareItem.getSharedEntityIdentifier().getEntityType() == EntityIdentifier.EntityType.folderEntry)
+			GangliaMonitoring.incrementFilesShared();
+		else if(shareItem.getSharedEntityIdentifier().getEntityType() == EntityIdentifier.EntityType.folder)
+			GangliaMonitoring.incrementFoldersShared();
 	}
 	
     //NO transaction

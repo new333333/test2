@@ -129,12 +129,28 @@ public class GangliaMonitoring extends QuartzJobBean {
 			 */
 			writeProperty(writer, "uniqueLoggedInUsers", String.valueOf(instance.uniqueLoggedInUsers.size()));
 			/*
-			 * 
+			 * Number of file writes to the file repositories including the remote file systems
+			 * exposed through Net Folders and Home Directories, and the local file repository
+			 * exposed through ad-hoc file folders.
 			 */
 			writeProperty(writer, "fileWrites", String.valueOf(instance.fileWrites.get()));
+			/*
+			 * Number of file reads from the file repositories including the remote file systems
+			 * exposed through Net Folders and Home Directories, and the local file repository
+			 * exposed through ad-hoc file folders.
+			 */
 			writeProperty(writer, "fileReads", String.valueOf(instance.fileReads.get()));
+			/*
+			 * Number of files shared since the server started.
+			 */
 			writeProperty(writer, "filesShared", String.valueOf(instance.filesShared.get()));
+			/*
+			 * Number of folders shared since the server started.
+			 */
 			writeProperty(writer, "foldersShared", String.valueOf(instance.foldersShared.get()));
+			/*
+			 * Number of REST calls made to this server.
+			 */
 			writeProperty(writer, "restRequests", String.valueOf(instance.restRequests));
 		}
 		finally {
