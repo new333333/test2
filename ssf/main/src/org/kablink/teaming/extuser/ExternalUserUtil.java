@@ -82,10 +82,6 @@ public class ExternalUserUtil {
 		return Long.toHexString(user.getId().longValue()) + DELIM + user.computeExtProvHash();
 	}
 	
-	public static String encodeUserTokenWithExistingSeed(User user) {
-		return Long.toHexString(user.getId().longValue()) + DELIM + user.computeExtProvHash();
-	}
-	
 	public static Map<String, String> getQueryParamsFromUrl(String url) {   
 	    if(url == null)
 	    	return new HashMap<String, String>();
