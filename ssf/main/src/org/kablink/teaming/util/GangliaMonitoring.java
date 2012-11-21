@@ -166,6 +166,10 @@ public class GangliaMonitoring {
 			writeProperty(writer, "restRequests", String.valueOf(instance.restRequests));
 		}
 		finally {
+			// Reset/clear variables as appropriate.
+			instance.filesSharedSince.set(0);
+			instance.foldersSharedSince.set(0);
+			// Close the output file.
 			writer.close();
 		}
 	}
