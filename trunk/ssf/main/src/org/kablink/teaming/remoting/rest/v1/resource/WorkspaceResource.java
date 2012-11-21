@@ -56,6 +56,7 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Junction;
 import org.kablink.util.search.Restrictions;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,6 +74,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Path("/workspaces")
 @Singleton
@@ -84,10 +86,20 @@ public class WorkspaceResource extends AbstractBinderResource {
     }
 
     @GET
-    public SearchResultList<BinderBrief> getWorkspaces(@QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+    public SearchResultList<BinderBrief> getWorkspaces(@QueryParam("id") Set<Long> ids,
+                                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                        @QueryParam("first") @DefaultValue("0") Integer offset,
                                                        @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Document queryDoc = buildQueryDocument("<query/>", buildWorkspacesCriterion());
+        Junction criterion = Restrictions.conjunction();
+        criterion.add(buildWorkspacesCriterion());
+        if (ids!=null) {
+            Junction or = Restrictions.disjunction();
+            for (Long id : ids) {
+                or.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
+            }
+            criterion.add(or);
+        }
+        Document queryDoc = buildQueryDocument("<query/>", criterion);
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
