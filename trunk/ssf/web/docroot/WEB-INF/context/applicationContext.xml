@@ -1475,6 +1475,6 @@ text/calendar											  ics
     <security:http pattern="/html/**" security="none" />
           
 	<!-- =============================== Ganglia Monitoring Support ============================== -->
-	<bean id="gangliaMonitoring" class="org.kablink.teaming.util.GangliaMonitoring"/>
+	<bean id="gangliaMonitoring" class="org.kablink.teaming.util.GangliaMonitoring" depends-on="sPropsUtil"/>
 	
 </beans>
