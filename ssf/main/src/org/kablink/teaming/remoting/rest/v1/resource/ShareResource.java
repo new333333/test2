@@ -20,9 +20,10 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.file.FileIndexData;
-import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
@@ -402,13 +403,15 @@ public class ShareResource extends AbstractResource {
             if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
                 try {
                     FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
-                    SharedFolderEntryBrief binderBrief = resultMap.get(entry.getId());
-                    if (binderBrief!=null) {
-                        binderBrief.addShare(ResourceUtil.buildShare(shareItem));
-                    } else {
-                        binderBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, entry);
-                        binderBrief.setParentBinder(new ParentBinder(topId, topHref));
-                        resultMap.put(entry.getId(), binderBrief);
+                    if (!entry.isPreDeleted()) {
+                        SharedFolderEntryBrief binderBrief = resultMap.get(entry.getId());
+                        if (binderBrief!=null) {
+                            binderBrief.addShare(ResourceUtil.buildShare(shareItem));
+                        } else {
+                            binderBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, entry);
+                            binderBrief.setParentBinder(new ParentBinder(topId, topHref));
+                            resultMap.put(entry.getId(), binderBrief);
+                        }
                     }
                 } catch (AccessControlException e) {
                     logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
@@ -430,7 +433,7 @@ public class ShareResource extends AbstractResource {
             if (shareItem.getSharedEntityIdentifier().getEntityType().isBinder()) {
                 try {
                     Binder binder = (Binder) getSharingModule().getSharedEntity(shareItem);
-                    if (!onlyLibrary || binder.getEntityType() == EntityIdentifier.EntityType.workspace || binder.isLibrary()) {
+                    if (!isBinderPreDeleted(binder) && (!onlyLibrary || binder.getEntityType() == EntityIdentifier.EntityType.workspace || binder.isLibrary())) {
                         SharedBinderBrief binderBrief = resultMap.get(binder.getId());
                         if (binderBrief!=null) {
                             binderBrief.addShare(ResourceUtil.buildShare(shareItem));
@@ -459,16 +462,18 @@ public class ShareResource extends AbstractResource {
             if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
                 try {
                     FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
-                    Set<Attachment> attachments = entry.getAttachments();
-                    for (Attachment attachment : attachments) {
-                        if (attachment instanceof FileAttachment) {
-                            SharedFileProperties fileProps = resultMap.get(attachment.getId());
-                            if (fileProps!=null) {
-                                fileProps.addShare(ResourceUtil.buildShare(shareItem));
-                            } else {
-                                fileProps = ResourceUtil.buildSharedFileProperties(shareItem, (FileAttachment) attachment);
-                                fileProps.setBinder(new ParentBinder(topId, topHref));
-                                resultMap.put(attachment.getId(), fileProps);
+                    if (!entry.isPreDeleted()) {
+                        Set<Attachment> attachments = entry.getAttachments();
+                        for (Attachment attachment : attachments) {
+                            if (attachment instanceof FileAttachment) {
+                                SharedFileProperties fileProps = resultMap.get(attachment.getId());
+                                if (fileProps!=null) {
+                                    fileProps.addShare(ResourceUtil.buildShare(shareItem));
+                                } else {
+                                    fileProps = ResourceUtil.buildSharedFileProperties(shareItem, (FileAttachment) attachment);
+                                    fileProps.setBinder(new ParentBinder(topId, topHref));
+                                    resultMap.put(attachment.getId(), fileProps);
+                                }
                             }
                         }
                     }
