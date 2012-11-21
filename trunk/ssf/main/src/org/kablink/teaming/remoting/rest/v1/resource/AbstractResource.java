@@ -50,7 +50,9 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
@@ -148,6 +150,15 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
 
         return results;
+    }
+
+    protected boolean isBinderPreDeleted(Binder binder) {
+        if (binder instanceof org.kablink.teaming.domain.Folder) {
+            return ((org.kablink.teaming.domain.Folder)binder).isPreDeleted();
+        } else if (binder instanceof Workspace) {
+            return ((Workspace)binder).isPreDeleted();
+        }
+        return false;
     }
 
     protected Document getDocument(String xml) {
