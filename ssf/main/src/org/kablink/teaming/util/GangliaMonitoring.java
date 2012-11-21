@@ -52,7 +52,7 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
  * @author jong
  *
  */
-public class GangliaMonitoring extends QuartzJobBean {
+public class GangliaMonitoring {
 
 	private static GangliaMonitoring instance; // A singleton instance
 	
@@ -67,8 +67,13 @@ public class GangliaMonitoring extends QuartzJobBean {
 	
 	private AtomicLong restRequests = new AtomicLong();
 	
+	private Thread task;
+	
 	public GangliaMonitoring() {
 		instance = this;
+		task = new Thread(new GangliaDumpTask(SPropsUtil.getInt("ganglia.dump.interval", 30)));
+		task.setDaemon(true);
+		task.start();
 	}
 	
 	public static int addLoggedInUser(String username) {
@@ -101,9 +106,7 @@ public class GangliaMonitoring extends QuartzJobBean {
 		return instance.restRequests.addAndGet(1);
 	}
 	
-	public void dump() throws IOException {
-		if(instance == null) return; // not ready
-
+	void dump() throws IOException {
 		File gangliaDir = new File(DirPath.getWebappRootDirPath() + "/../../var/ganglia");
 		if(!gangliaDir.exists()) {
 			logger.info("Creating directory [" + gangliaDir.getAbsolutePath() + "]");
@@ -158,20 +161,32 @@ public class GangliaMonitoring extends QuartzJobBean {
 		}
 	}
 
-	@Override
-	protected void executeInternal(JobExecutionContext arg0)
-			throws JobExecutionException {
-		// This task does not need to run in any user's account/context.
-		try {
-			dump();
-		}
-		catch(Exception e) {
-			logger.warn("Error while writing monitoring information", e);
-		}
-	}
-
 	private void writeProperty(PrintWriter writer, String key, String value) {
 		writer.println(key + "=" + value);
 	}
 
+	class GangliaDumpTask implements Runnable {
+
+		private int interval; // dump interval in seconds
+		
+		public GangliaDumpTask(int interval) {
+			this.interval = interval;
+		}
+		
+		@Override
+		public void run() {
+			// This task does not need to run in any user's account/context.
+			while(true) {
+				try {
+					// Give the server time to start up fully, before begin dumping the stats.
+					Thread.sleep(interval*1000);
+					dump();
+				}
+				catch(Exception e) {
+					logger.warn("Error while writing monitoring information", e);
+				}	
+			}
+		}
+		
+	}
 }
