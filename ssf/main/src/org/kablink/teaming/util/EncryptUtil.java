@@ -61,13 +61,22 @@ public class EncryptUtil {
 		return encrypt("SHA-1", input);
 	}
 	
-	public static String encrypt(String algorithm, String[] input) {
+	public static String encryptSHA256(Object... input) {
+		return  encrypt("SHA-256", input);
+	}
+	private static String encrypt(String algorithm, Object[] input) {
 		try {
 			MessageDigest md = MessageDigest.getInstance(algorithm);
 			md.reset();
 			for(int i = 0; i < input.length; i++) {
-				if(input[i] != null)
-					md.update(input[i].getBytes("UTF-8"));
+				if(input[i] != null) {
+					if(input[i] instanceof String)
+						md.update(((String)input[i]).getBytes("UTF-8"));
+					else if(input[i] instanceof byte[])
+						md.update(((byte[])input[i]));
+					else
+						md.update(input[i].toString().getBytes("UTF-8"));
+				}
 			}
 			byte[] messageDigest = md.digest();
 			
