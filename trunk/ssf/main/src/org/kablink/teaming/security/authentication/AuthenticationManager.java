@@ -44,10 +44,6 @@ public interface AuthenticationManager {
 			Map updates, String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException;
 
-	public User authenticate(String zoneName, String username, String password,
-			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
-	throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException;
-
 	public User authenticate(String zoneName, Long userId, String binderId, String privateDigest, 
 			String authenticatorName) throws DigestDoesNotMatchException, 
 			UserDoesNotExistException, UserAccountNotActiveException;

@@ -90,13 +90,7 @@ public class AuthenticationManagerUtil {
 			final boolean passwordAutoSynch, final boolean ignorePassword,
 			final String authenticatorName) throws UserDoesNotExistException, UserAccountNotActiveException,
 			PasswordDoesNotMatchException {
-		return (User) RunasTemplate.runasAdmin(new RunasCallback() {
-			public Object doAs() {
-				return getAuthenticationManager().authenticate(zoneName,
-						username, password, passwordAutoSynch, ignorePassword,
-						authenticatorName);
-			}
-		}, zoneName);
+		throw new UnsupportedOperationException("This method is no longer implemented");
 	}
 
 	public static User authenticate(final String zoneName, final Long userId,
