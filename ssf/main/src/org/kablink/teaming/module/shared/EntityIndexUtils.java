@@ -35,6 +35,7 @@ package org.kablink.teaming.module.shared;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -665,6 +666,7 @@ public class EntityIndexUtils {
     }
     
     //Routine to add the sharing ids into the index doc
+    //Returns true if sharing ids were added, false if not
     private static void addSharingIds(Document doc, DefinableEntity entity) {
     	Set<EntityIdentifier> entityIdentifiers = new HashSet<EntityIdentifier>();
      	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
@@ -697,31 +699,55 @@ public class EntityIndexUtils {
     	else {
     		return; // sharing not supported
     	}
+    	List<Long> sharingIds = new ArrayList<Long>();
+    	List<Long> sharingTeamIds = new ArrayList<Long>();
     	Long allUsersId = Utils.getAllUsersGroupId();
     	boolean personal = Utils.isWorkareaInProfilesTree((WorkArea)entity);
      	Map<RecipientType, Set<Long>> idMap = profileDao.getRecipientIdsWithGrantedRightToSharedEntities(
      			entityIdentifiers, WorkAreaOperation.READ_ENTRIES.getName());
      	for (Long id : idMap.get(RecipientType.user)) {
-     		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, id.toString())); 
+     		Field f = FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, id.toString());
+     		if (!doc.getFields().contains(f)) {
+     			doc.add(f); 
+     			sharingIds.add(id);
+     		}
      	}
      	for (Long id : idMap.get(RecipientType.group)) {
      		if (id.equals(allUsersId)) {
-     			if (entity instanceof FolderEntry) {
-	       			//If this is an entry and it includes the folder ACL, add "all" and "global"
-     				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, Constants.READ_ACL_ALL)); 
-	       			if (!personal) {
-	       				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, Constants.READ_ACL_GLOBAL)); 
-	       			}
-     			} else {
-     				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, Constants.READ_ACL_GLOBAL)); 
-     				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, Constants.READ_ACL_ALL)); 
+     			Field f = FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, Constants.READ_ACL_ALL);
+     			if (!doc.getFields().contains(f)) {
+     				doc.add(f); 
+     				sharingIds.add(id);
+     			}
+     			if (!(entity instanceof FolderEntry) || !personal) {
+	       			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, Constants.READ_ACL_GLOBAL)); 
      			}
      		} else {
-     			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, id.toString())); 
+     			Field f = FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, id.toString());
+     			if (!doc.getFields().contains(f)) {
+     				doc.add(f); 
+     				sharingIds.add(id);
+     			}
      		}
      	}
      	for (Long id : idMap.get(RecipientType.team)) {
-     		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(teamAclField, id.toString())); 
+     		Field f = FieldFactory.createFieldNotStoredNotAnalyzed(teamAclField, id.toString());
+     		if (!doc.getFields().contains(f)) {
+     			doc.add(f); 
+     			sharingTeamIds.add(id);
+     		}
+     	}
+     	if (!sharingIds.isEmpty() || !sharingTeamIds.isEmpty()) {
+     		//Indicate that this entity has been shared 
+     		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.SHARED, Constants.SHARED_IS_SHARED));
+	     	for (Long id : sharingIds) {
+	     		//Indicate that this entity has been shared 
+	     		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.SHARED_IDS, String.valueOf(id)));
+	     	}
+	     	for (Long id : sharingTeamIds) {
+	     		//Indicate that this entity has been shared 
+	     		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.SHARED_TEAM_IDS, String.valueOf(id)));
+	     	}
      	}
     }
     
@@ -772,6 +798,20 @@ public class EntityIndexUtils {
      	}
     }
     
+    //Routines to add the net folder root acl into the index doc
+    private static void addRootAcl(Document doc, DefinableEntity entity) {
+    	Set<String> rootIds = AccessUtils.getRootIds(entity);
+    	for (String id : rootIds) {
+    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ROOT_FOLDER_ACL_FIELD, id));
+    	}
+    }
+    private static void addRootAcl(org.dom4j.Element parent, DefinableEntity entity) {
+    	Set<String> rootIds = AccessUtils.getRootIds(entity);
+      	String ids = LongIdUtil.getIdsAsString(rootIds);
+    	Element acl = parent.addElement(Constants.ROOT_FOLDER_ACL_FIELD);
+   		acl.setText(ids);
+    }
+    
     private static void addEntryAcls(Document doc, Binder binder, Entry entry) {
 		//get real entry access
     	String[] acls = StringUtil.split(getEntryAclString(binder, entry), " ");
@@ -820,6 +860,8 @@ public class EntityIndexUtils {
 		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.BINDER_OWNER_ACL_FIELD, ownerStr));    	
 		//Add sharing acls
 		addSharingIds(doc, binder);
+		//Add the net folder root ACL
+		addRootAcl(doc, binder);
     }
     //Add acl fields for binder for storage in dom4j documents.
     //In this case replace owner with real owner in _folderAcl
@@ -843,6 +885,8 @@ public class EntityIndexUtils {
    		acl.setText(tms);
    		//Add sharing ids
    		addSharingIds(parent, binder);
+   		//Add root acl
+   		addRootAcl(parent, binder);
     }
     
     public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly) {
@@ -943,7 +987,7 @@ public class EntityIndexUtils {
 	       			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
 	       		}
 	       		//add binder access
-	    		addBinderAcls(doc, binder);
+	    		//addBinderAcls(doc, binder);
        		} else {
 	       		//add entry access. 
 	       		if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
@@ -958,7 +1002,7 @@ public class EntityIndexUtils {
 	       				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
 	       			}
 	           		//add binder access
-	        		addBinderAcls(doc, binder);
+	        		//addBinderAcls(doc, binder);
 	       		}
 	       		else {
 	       			Entry e = (Entry)entry;
@@ -994,8 +1038,9 @@ public class EntityIndexUtils {
 	       			}
 	       		}
        		}
-       		//Finally, add in the sharing acls
+       		//Finally, add in the sharing acls and root acl
        		addSharingIds(doc, entry);
+       		addRootAcl(doc, entry);
     	} else if (entry instanceof User) {
             // Add the Entry_ACL field
     		String[] acls = StringUtil.split(getUserEntryAccess((User)entry), " ");
@@ -1003,11 +1048,13 @@ public class EntityIndexUtils {
     			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
            	//add binder access
         	addBinderAcls(doc, binder);
+        	addRootAcl(doc, binder);
 
     	} else {
     		addReadAccess(doc, binder, fieldsOnly);
-       		//Finally, add in the sharing acls
+       		//Finally, add in the sharing acls and root acl
        		addSharingIds(doc, binder);
+       		addRootAcl(doc, binder);
     	}
 	}
     //This is used to store the "read" acls in a document that is not a search document
@@ -1034,6 +1081,7 @@ public class EntityIndexUtils {
      		addSharingIds(parent, entry);
        		//add binder access
     		addBinderAcls(parent, binder);
+    		addRootAcl(parent, binder);
 
     	} else if (entry instanceof User) {
     		// Add the Entry_ACL field
@@ -1041,9 +1089,11 @@ public class EntityIndexUtils {
        		acl.setText(getUserEntryAccess((User)entry));
        		//add binder access
 			addBinderAcls(parent, binder);
+			addRootAcl(parent, binder);
 
     	} else {
      		addReadAccess(parent, binder, fieldsOnly);
+     		addRootAcl(parent, binder);
     	}
 	}
  

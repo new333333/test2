@@ -90,6 +90,7 @@ public class QueryBuilder {
 	private static final String TEAM_PREFIX=Constants.TEAM_ACL_FIELD + ":";
 	private static final String FOLDER_PREFIX=Constants.FOLDER_ACL_FIELD + ":";
 	private static final String ENTRY_PREFIX=Constants.ENTRY_ACL_FIELD + ":";
+	private static final String ROOT_PREFIX=Constants.ROOT_FOLDER_ACL_FIELD + ":";
 	private static final String ENTRY_ALL=ENTRY_PREFIX+Constants.READ_ACL_ALL;
 	private static final String ENTRY_ALL_GLOBAL=ENTRY_PREFIX+Constants.READ_ACL_GLOBAL;
 	private static final String FOLDER_ALL_GLOBAL=FOLDER_PREFIX+Constants.READ_ACL_GLOBAL;
@@ -712,6 +713,7 @@ public class QueryBuilder {
 	private StringBuilder getAclClauseForIds(Set principalIds, Long userId, StringBuilder qString)
 	{
 		Long allUsersGroupId = Utils.getAllUsersGroupId();
+		Long allExtUsersGroupId = Utils.getAllExtUsersGroupId();
       	Set principalIds2 = new HashSet(principalIds);
       	User user = null;
       	if (userId != null) {
@@ -762,6 +764,17 @@ public class QueryBuilder {
 			}
 		}
 		String entryAll = getConditionExp(ENTRY_PREFIX, Constants.READ_ACL_ALL, conditionsMet);
+		
+		//Start with the Net Folder Root acl
+		String rootPrincipals = idField(principalIds, ROOT_PREFIX, new ArrayList<Long>());
+		rootPrincipals += " OR " + ROOT_PREFIX + Constants.ROOT_FOLDER_ALL;
+		if (user.getIdentityInfo().isInternal() && !user.isShared()) {
+			rootPrincipals += " OR " + ROOT_PREFIX + String.valueOf(allUsersGroupId);
+		} else if (!user.getIdentityInfo().isInternal() && !user.isShared()) {
+			rootPrincipals += " OR " + ROOT_PREFIX + String.valueOf(allExtUsersGroupId);
+		}
+		//Removed next line until this is made to work
+		//qString.append("(" + rootPrincipals + ") AND ");
 		
 		// folderAcl:1,2,3...
 		if (widen) {
