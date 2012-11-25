@@ -49,12 +49,14 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
 import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -445,6 +447,61 @@ public class AccessUtils  {
         	}
         }
         return readEntries;
+	}
+	
+	//Routine to get the expanded list of ids who can read an entity (including function conditions)
+	public static Set<String> getRootIds(DefinableEntity entity) {
+		Set<String> rootIds = new HashSet<String>();
+		if (!((WorkArea)entity).isAclExternallyControlled()) {
+			//If this is not a net folder, then allow all
+			rootIds.add(Constants.ROOT_FOLDER_ALL);
+			return rootIds;
+		}
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		
+	    //Find the workArea that actually defines the ACL
+	    WorkArea workArea = (WorkArea) entity;
+	    Binder topFolder = null;
+		if (workArea instanceof FolderEntry) {
+			topFolder = ((FolderEntry)workArea).getParentBinder();
+		} else if (workArea instanceof Folder) {
+			topFolder = (Folder)workArea;
+		}
+		while (topFolder != null) {
+			if (topFolder.getParentBinder() != null &&
+					!topFolder.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
+				//We have found the top folder (i.e., the net folder root)
+				break;
+			}
+			//Go up a level looking for the root
+			topFolder = topFolder.getParentBinder();
+		}
+		//See if the top folder is inheriting from its parent
+		while (topFolder != null && topFolder.isFunctionMembershipInherited()) {
+			topFolder = topFolder.getParentBinder();
+		}
+		if (topFolder == null) {
+			//This shouldn't happen; assume no access
+			return new HashSet<String>();
+		}
+		workArea = topFolder;
+			
+		//Start with a list of the functions (aka Roles) that are used in this workArea
+		List<WorkAreaFunctionMembership> wfms = getInstance().getWorkAreaFunctionMembershipManager()
+        	.findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER);
+        
+		//Look at each function (aka Role) to get its read membership. (Note, conditions don't affect root acl)
+        for (WorkAreaFunctionMembership wfm:wfms) {
+        	Long fId = wfm.getFunctionId();
+        	Function f = getInstance().getFunctionManager().getFunction(zoneId, fId);
+    		for (Long mId : (Set<Long>)wfm.getMemberIds()) {
+    	    	String sId = String.valueOf(mId);
+    	    	if (mId.equals(ObjectKeys.TEAM_MEMBER_ID)) sId = Constants.READ_ACL_TEAM;
+    	    	if (mId.equals(ObjectKeys.OWNER_USER_ID)) sId = Constants.READ_ACL_BINDER_OWNER;
+    			rootIds.add(sId);
+    		}
+    	}
+        return rootIds;
 	}
 	
 	public static void readCheck(User user, DefinableEntity entity) throws AccessControlException {

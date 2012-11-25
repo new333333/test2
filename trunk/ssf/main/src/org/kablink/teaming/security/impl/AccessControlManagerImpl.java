@@ -209,13 +209,17 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				//Go up a level
 				topFolder = topFolder.getParentBinder();
 			}
+			//See if the top folder is inheriting from its parent
+			while (topFolder != null && topFolder.isFunctionMembershipInherited()) {
+				topFolder = topFolder.getParentBinder();
+			}
 			//Now check if the root folder allows access
 			if (topFolder != null) {
 				if (!testOperation(user, topFolder, WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER)) {
-					//return false;
+					return false;
 				}
 			} else {
-				//return false;
+				return false;
 			}
 		}
 		
