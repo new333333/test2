@@ -374,7 +374,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     		checkAccess(shareItem, entityIdentifier, operation);
     		return true;
     	}
-    	catch (AccessControlException ac) {
+    	catch (Exception e) {
     		return false;
     	}
     }
