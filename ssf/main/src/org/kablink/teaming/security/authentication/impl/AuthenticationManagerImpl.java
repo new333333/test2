@@ -212,7 +212,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				}
 			}
 			else {
-				user = doAuthenticateUser(zoneName, userName, password, passwordAutoSynch, ignorePassword);
+				user = doAuthenticateUser(authenticationServiceProvider, zoneName, userName, password, passwordAutoSynch, ignorePassword);
 			}
 			
 			//Make sure this user account hasn't been disabled
@@ -331,27 +331,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			updates.put("emailAddress", emailAddress);
 	}
 	
-	public User authenticate(String zoneName, String username, String password,
-			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
-		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException {
-		validateZone(zoneName);
-		User user=null;
-		boolean hadSession = SessionUtil.sessionActive();
-		try {
-			if (!hadSession) SessionUtil.sessionStartup();	
-			user = doAuthenticateUser(zoneName, username, password, passwordAutoSynch, ignorePassword);
-			if(authenticatorName != null)
-				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
-		} finally {
-			if (!hadSession) SessionUtil.sessionStop();			
-		}
-		return user;
-	}
-	
 	/*
 	 * Handle authentication for all requests that didn't use OpenID. 
 	 */
-	protected User doAuthenticateUser(String zoneName, String username, String password,
+	protected User doAuthenticateUser(AuthenticationServiceProvider authenticationServiceProvider, String zoneName, String username, String password,
 				boolean passwordAutoSynch, boolean ignorePassword)
 			throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException {
 		User user = null;
@@ -363,8 +346,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 
 			ldapGuid = null;
 			
-			// Are we dealing with one of the system accounts? ie admin
-			if ( !MiscUtil.isSystemUserAccount( username ) )
+			if(AuthenticationServiceProvider.LOCAL != authenticationServiceProvider)
 			{
 				LdapModule ldapModule;
 				Binder top;

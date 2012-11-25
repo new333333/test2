@@ -34,9 +34,11 @@
 package org.kablink.teaming.module.authentication.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
@@ -106,6 +108,10 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	protected Class localAuthenticationProviderClass;
 	protected boolean authenticateLdapMatchingUsersUsingLdapOnly = true;
 	
+	protected Set<String> cacheUsingAuthenticators;
+	protected int cacheUsingAuthenticatorTimeout; // in seconds
+	protected ConcurrentHashMap<String, Long> lastRegularAuthenticationTimes;
+	
 	public AbstractAuthenticationProviderModule() throws ClassNotFoundException {
 		nonLocalAuthenticators = new HashMap<Long, ProviderManager>();
 		localProviders = new HashMap<Long, ZoneAwareLocalAuthenticationProvider>();
@@ -115,6 +121,12 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	public void afterPropertiesSet() throws Exception {
 		localAuthenticationProviderClass = ReflectHelper.classForName(SPropsUtil.getString("local.authentication.provider.class", "org.kablink.teaming.spring.security.ZoneAwareLocalAuthenticationProviderImpl"));
 		authenticateLdapMatchingUsersUsingLdapOnly = SPropsUtil.getBoolean("authenticate.ldap.matching.users.using.ldap.only", true);
+		String strs[] = SPropsUtil.getStringArray("cache.using.authenticators", ",");
+		cacheUsingAuthenticators = new HashSet<String>();
+		for(String str:strs)
+			cacheUsingAuthenticators.add(str);
+		cacheUsingAuthenticatorTimeout = SPropsUtil.getInt("cache.using.authenticator.timeout", 30);
+		lastRegularAuthenticationTimes = new ConcurrentHashMap<String, Long>();
 	}
 
 	protected void addZone(ZoneConfig zoneConfig) throws Exception
@@ -416,6 +428,29 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		}
     }
 
+	private void updateLastRegularAuthenticationTimeIfApplicable(Authentication authentication) {
+		if(cacheUsingAuthenticators.contains(getAuthenticator())) {
+			lastRegularAuthenticationTimes.put(authentication.getName(), System.currentTimeMillis());
+		}
+	}
+	
+	private boolean useRegularAuthentication(Authentication authentication) {
+		if(MiscUtil.isSystemUserAccount(authentication.getName()))
+			return false; // must use local authentication
+		
+		if(!cacheUsingAuthenticators.contains(getAuthenticator()))
+			return true; // must use regular authentication
+		
+		Long lastRegularAuthenticationTime = lastRegularAuthenticationTimes.get(authentication.getName());
+		if(lastRegularAuthenticationTime == null)
+			return true; // First time logging in through this server since the server started - must use regular authentication
+		
+		if(System.currentTimeMillis() - lastRegularAuthenticationTime > cacheUsingAuthenticatorTimeout * 1000)
+			return true; // The specified time limit has passed since the last time the user used regular authentication - must use regular authentication again
+		else
+			return false; // Still within time limit. Can use locally cached credential.
+	}
+	
 	protected Authentication doAuthenticate(Authentication authentication) throws AuthenticationException {
 		AuthenticationException exc = null;
     	Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
@@ -435,7 +470,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
        		Object credentials = authentication.getCredentials();
        		
         	// Are we dealing with one of Teaming's system accounts such as "admin" or "guest"?
-        	if ( !MiscUtil.isSystemUserAccount( authentication.getName() ) )
+        	if (useRegularAuthentication(authentication))
         	{
         		boolean userIsInternal;
         		AuthenticationServiceProvider authenticationServiceProvider = AuthenticationServiceProvider.UNKNOWN;
@@ -447,6 +482,9 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	    			SimpleProfiler.start( "3-authenticators.get(zone).authenticate(authentication)" );
 	     			result = performAuthentication(zone, authentication);
 	     			SimpleProfiler.stop( "3-authenticators.get(zone).authenticate(authentication)" );
+	     			
+	     			// If still here, the authentication was successful.
+	     			updateLastRegularAuthenticationTimeIfApplicable(authentication);
 	     			
 	     			String loginName = getLoginName(result);
 	     			
@@ -522,7 +560,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	    			exc = new UserIdNotUniqueException( errDesc );
 	    		}
         	}
-        	else { // Yes, system account
+        	else { // Yes, system account or should use cached LDAP credential
      			// Do not try non-local authentication. Authenticate only against local users.
      			SimpleProfiler.start( "3a-system account: localProviders.get(zone).authenticate(authentication)" );
     			result = localProviders.get(zone).authenticate(authentication);

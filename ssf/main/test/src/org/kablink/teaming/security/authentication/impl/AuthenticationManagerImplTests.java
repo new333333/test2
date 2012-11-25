@@ -72,41 +72,5 @@ public class AuthenticationManagerImplTests extends AbstractTransactionalDataSou
 		authMgr = new AuthenticationManagerImpl();
 		authMgr.setProfileDao(profileDaoMock);
 	}
-	
-	public void testAuthenticateOk() {
-		// Define expected behavior of the mock object.
-		profileDaoControl.reset();
-		profileDaoMock.findUserByName("testUser", "testZone");
-		profileDaoControl.setReturnValue(user);
-		profileDaoControl.replay();
-		
-		user.setPassword("testPassword");
 
-		// Execute the method being tested.
-		User authenticatedUser = authMgr.authenticate("testZone", "testUser", "testPassword", false, false, null);
-		assertEquals(user, authenticatedUser);
-		
-		// Verifies that all expectations have been met.
-		profileDaoControl.verify();
-	}
-	
-	public void testAuthenticateUserDoesNotExistException() {
-		// Define expected behavior of the mock object. 
-		profileDaoControl.reset();
-		profileDaoMock.findUserByName("testUser", "testZone");
-		profileDaoControl.setThrowable(new NoUserByTheNameException(""));
-		profileDaoControl.replay();
-		
-		// Execute the method being tested.
-		try {
-			authMgr.authenticate("testZone", "testUser", "testPassword", false, false, "test");
-			fail("Should throw UserDoesNotExistException");
-		}
-		catch(UserDoesNotExistException e) {
-			assertTrue(true); // All is well
-		}
-		
-		// Verifies that all expectations have been met.
-		profileDaoControl.verify();
-	}
 }
