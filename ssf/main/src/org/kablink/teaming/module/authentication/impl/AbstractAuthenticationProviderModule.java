@@ -442,13 +442,22 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 			return true; // must use regular authentication
 		
 		Long lastRegularAuthenticationTime = lastRegularAuthenticationTimes.get(authentication.getName());
-		if(lastRegularAuthenticationTime == null)
+		if(lastRegularAuthenticationTime == null) {
+			if(logger.isDebugEnabled())
+				logger.debug("user='" + authentication.getName() + "' authenticator='" + getAuthenticator() + "' - Use regular auth because first time");
 			return true; // First time logging in through this server since the server started - must use regular authentication
+		}
 		
-		if(System.currentTimeMillis() - lastRegularAuthenticationTime > cacheUsingAuthenticatorTimeout * 1000)
+		if(System.currentTimeMillis() - lastRegularAuthenticationTime > cacheUsingAuthenticatorTimeout * 1000) {
+			if(logger.isDebugEnabled())
+				logger.debug("user='" + authentication.getName() + "' authenticator='" + getAuthenticator() + "' - Use regular auth because cache time limit has passed");
 			return true; // The specified time limit has passed since the last time the user used regular authentication - must use regular authentication again
-		else
+		}
+		else {
+			if(logger.isTraceEnabled())
+				logger.trace("user='" + authentication.getName() + "' authenticator='" + getAuthenticator() + "' - Use local cache");
 			return false; // Still within time limit. Can use locally cached credential.
+		}
 	}
 	
 	protected Authentication doAuthenticate(Authentication authentication) throws AuthenticationException {
