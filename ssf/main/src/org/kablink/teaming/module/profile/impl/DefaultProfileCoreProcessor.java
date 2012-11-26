@@ -405,6 +405,17 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 					}
    			}
     		}
+    		// Unfortunately, we don't have the ability to express in the definition that a field value should be in 
+    		// lower case. Consequently, we need to special handle these values here to make sure they are converted
+    		// to lower case before being stored in the database. 
+    		// TODO Enhance definition builder to be able to express this.
+    		if(entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL))
+    			entryData.put(ObjectKeys.FIELD_USER_EMAIL, ((String)entryData.get(ObjectKeys.FIELD_USER_EMAIL)).toLowerCase());
+    		if(entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL_MOBILE))
+    			entryData.put(ObjectKeys.FIELD_USER_EMAIL_MOBILE, ((String)entryData.get(ObjectKeys.FIELD_USER_EMAIL_MOBILE)).toLowerCase());
+    		if(entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL_TEXT))
+    			entryData.put(ObjectKeys.FIELD_USER_EMAIL_TEXT, ((String)entryData.get(ObjectKeys.FIELD_USER_EMAIL_TEXT)).toLowerCase());
+    			
     		if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL)) {
     			entryData.put(ObjectKeys.FIELD_USER_EMAIL, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL).toLowerCase());
     		}
