@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspacesView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.CheckManageUsersActiveEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportProfilesDlgEvent;
@@ -76,6 +77,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class ManageUsersDlg extends DlgBox
 	implements ViewReady,
 		// Event handlers implemented by this class.
+		AdministrationExitEvent.Handler,
 		CheckManageUsersActiveEvent.Handler,
 		FullUIReloadEvent.Handler,
 		InvokeImportProfilesDlgEvent.Handler,
@@ -106,6 +108,7 @@ public class ManageUsersDlg extends DlgBox
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+		TeamingEvents.ADMINISTRATION_EXIT,
 		TeamingEvents.CHECK_MANAGE_USERS_ACTIVE,
 		TeamingEvents.FULL_UI_RELOAD,
 		TeamingEvents.INVOKE_IMPORT_PROFILES_DLG,
@@ -217,6 +220,20 @@ public class ManageUsersDlg extends DlgBox
 		return null;
 	}
 
+	/**
+	 * Handles AdministrationExitEvent's received by this class.
+	 * 
+	 * Implements the AdministrationExitEvent.Handler.onAdministrationExit() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onAdministrationExit(AdministrationExitEvent event) {
+		// If the administration console is exited, simply close the
+		// dialog.
+		hide();
+	}
+	
 	/**
 	 * Called when the data table is attached.
 	 * 
