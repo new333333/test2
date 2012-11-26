@@ -85,8 +85,6 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	private VibeFlexTable 							m_bodyTable;				// Table containing the body of the page.
 	private VibeFlowPanel							m_rootPanel;				// The main panel holding the dialog's content.
 
-	private final static boolean SHOW_MAC_CLIENT_IN_FILR	= false;	// Initially, we're not going to show the Mac client in Filr.
-	
 	// Indexes of the various table cells containing the dialog's
 	// content.
 	private final static int PRODUCT_COL		= 0;
@@ -634,12 +632,6 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		createContentSubhead();
 		createContentBody();
 
-		// ...if we're not showing the Mac client yet...
-		if (m_isFilr && (!SHOW_MAC_CLIENT_IN_FILR)) {
-			// ...remove its row...
-			m_bodyTable.removeRow(MAC_ROW);
-		}
-		
 		// ...and show the dialog.
 		show(true);
 	}
