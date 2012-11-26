@@ -774,7 +774,7 @@ public class QueryBuilder {
 			rootPrincipals += " OR " + ROOT_PREFIX + String.valueOf(allExtUsersGroupId);
 		}
 		//Removed next line until this is made to work
-		//qString.append("(" + rootPrincipals + ") AND ");
+		qString.append("(" + rootPrincipals + ") AND ");
 		
 		// folderAcl:1,2,3...
 		if (widen) {
