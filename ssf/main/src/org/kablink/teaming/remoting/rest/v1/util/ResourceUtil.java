@@ -157,7 +157,7 @@ public class ResourceUtil {
         fp.setVersionNumber(fa.getVersionNumber());
         fp.setMajorVersion(fa.getMajorVersionNumber());
         fp.setMinorVersion(fa.getMinorVersionNumber());
-        LinkUriUtil.populateFileLinks(fp);
+        LinkUriUtil.populateFileLinks(fp, fa.getOwningEntityId(), fa.getOwningEntityType());
         return fp;
     }
 
@@ -197,7 +197,7 @@ public class ResourceUtil {
         fp.setPermaLink(PermaLinkUtil.getPermalink(entity.getId(), entity.getEntityType(), null));
         Long binderId = entity.getParentBinder().getId();
         fp.setBinder(new ParentBinder(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
-        LinkUriUtil.populateFileLinks(fp);
+        LinkUriUtil.populateFileLinks(fp, entity.getId(), entity.getEntityType());
     }
 
     public static TeamBrief buildTeamBrief(org.kablink.teaming.domain.TeamInfo binder) {

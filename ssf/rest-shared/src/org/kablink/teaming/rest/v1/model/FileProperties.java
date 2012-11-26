@@ -32,10 +32,13 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 //This annotation is necessary not only for XML but also for JSON representation.
@@ -48,6 +51,9 @@ public class FileProperties extends BaseFileProperties {
 	private Long lockedBy;
 	private Calendar lockExpiration;
     private String permaLink;
+    @XmlElementWrapper(name="permalinks")
+    @XmlElement(name="permalink")
+    private List<Link> additionalPermaLinks;
 
 	public FileProperties() {
 		super();
@@ -61,6 +67,7 @@ public class FileProperties extends BaseFileProperties {
         this.lockedBy = orig.lockedBy;
         this.lockExpiration = orig.lockExpiration;
         this.permaLink = orig.permaLink;
+        this.additionalPermaLinks = orig.additionalPermaLinks;
     }
 
     @XmlElement(name="owning_entity")
@@ -116,8 +123,28 @@ public class FileProperties extends BaseFileProperties {
         this.permaLink = permaLink;
     }
 
+    public List<Link> getAdditionalPermaLinks() {
+        return additionalPermaLinks;
+    }
+
+    public void addAdditionalPermaLink(String relation, String uri) {
+        addAdditionalPermaLink(new Link(relation, uri));
+    }
+
+    public void addAdditionalPermaLink(String uri) {
+        addAdditionalPermaLink(new Link(null, uri));
+    }
+
+    public void addAdditionalPermaLink(Link link) {
+        if (additionalPermaLinks ==null) {
+            additionalPermaLinks = new ArrayList<Link>();
+        }
+        additionalPermaLinks.add(link);
+    }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         return new FileProperties(this);
     }
+
 }

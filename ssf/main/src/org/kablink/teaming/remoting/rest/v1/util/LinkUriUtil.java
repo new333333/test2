@@ -37,6 +37,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.search.Constants;
 
 import java.util.HashMap;
@@ -154,6 +155,13 @@ public class LinkUriUtil {
         populateBaseFolderEntryLinks(model);
         model.addAdditionalLink("reservation", model.getLink() + "/reservation");
         model.addAdditionalLink("shares", model.getLink() + "/shares");
+        if (model instanceof FolderEntry) {
+            ((FolderEntry)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((FolderEntry) model).getId(), EntityIdentifier.EntityType.folderEntry, null));
+            ((FolderEntry)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((FolderEntry) model).getId(), EntityIdentifier.EntityType.folderEntry, null));
+        } else if (model instanceof FolderEntryBrief) {
+            ((FolderEntryBrief)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((FolderEntryBrief) model).getId(), EntityIdentifier.EntityType.folderEntry, null));
+            ((FolderEntryBrief)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((FolderEntryBrief) model).getId(), EntityIdentifier.EntityType.folderEntry, null));
+        }
     }
 
     public static void populateUserLinks(BaseRestObject model) {
@@ -190,15 +198,29 @@ public class LinkUriUtil {
         populateBinderLinks(model);
         model.addAdditionalLink("child_workspaces", model.getLink() + "/workspaces");
         model.addAdditionalLink("child_folders", model.getLink() + "/folders");
+        if (model instanceof Workspace) {
+            ((Workspace)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((Workspace) model).getId(), EntityIdentifier.EntityType.workspace, null));
+            ((Workspace)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((Workspace) model).getId(), EntityIdentifier.EntityType.workspace, null));
+        } else if (model instanceof BinderBrief) {
+            ((BinderBrief)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((BinderBrief) model).getId(), EntityIdentifier.EntityType.workspace, null));
+            ((BinderBrief)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((BinderBrief) model).getId(), EntityIdentifier.EntityType.workspace, null));
+        }
     }
 
     public static void populateFolderLinks(BaseRestObject model) {
         populateBinderLinks(model);
         model.addAdditionalLink("child_entries", model.getLink() + "/entries");
         model.addAdditionalLink("child_folders", model.getLink() + "/folders");
+        if (model instanceof Folder) {
+            ((Folder)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((Folder) model).getId(), EntityIdentifier.EntityType.folder, null));
+            ((Folder)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((Folder) model).getId(), EntityIdentifier.EntityType.folder, null));
+        } else if (model instanceof BinderBrief) {
+            ((BinderBrief)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((BinderBrief) model).getId(), EntityIdentifier.EntityType.folder, null));
+            ((BinderBrief)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((BinderBrief) model).getId(), EntityIdentifier.EntityType.folder, null));
+        }
     }
 
-    public static void populateFileLinks(FileProperties fp) {
+    public static void populateFileLinks(FileProperties fp, Long owningEntityId, EntityIdentifier.EntityType owningEntityType) {
         fp.setLink(getFilePropertiesLinkUri(fp));
         String baseUrl = getFileBaseLinkUri(fp);
         fp.addAdditionalLink("content", baseUrl);
@@ -211,6 +233,12 @@ public class LinkUriUtil {
         fp.addAdditionalLink("thumbnail", baseUrl + "/thumbnail");
         fp.addAdditionalLink("scaled_image", baseUrl + "/scaled");
         fp.addAdditionalLink("current_version", baseUrl + "/versions/current");
+        if (owningEntityType== EntityIdentifier.EntityType.folder ||
+                owningEntityType== EntityIdentifier.EntityType.folderEntry ||
+                owningEntityType== EntityIdentifier.EntityType.workspace) {
+            fp.addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(owningEntityId, owningEntityType, null));
+            fp.addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(owningEntityId, owningEntityType, null));
+        }
     }
 
     public static void populateFileVersionLinks(FileVersionProperties fp) {

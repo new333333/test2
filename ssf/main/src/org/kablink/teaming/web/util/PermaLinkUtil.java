@@ -146,6 +146,24 @@ public class PermaLinkUtil {
 			adapterUrl.setParameter(WebKeys.URL_CAPTIVE, captive.toString());
 		return adapterUrl.toString();
 	}
+	public static String getSubscribePermalink(Long entityId, EntityIdentifier.EntityType entityType, Boolean captive) {
+		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+		getPermalinkURL(adapterUrl, entityId, entityType);
+        adapterUrl.setParameter(WebKeys.URL_INVOKE_SUBSCRIBE, "1");
+		if(captive != null)
+			adapterUrl.setParameter(WebKeys.URL_CAPTIVE, captive.toString());
+		return adapterUrl.toString();
+	}
+
+	public static String getSharePermalink(Long entityId, EntityIdentifier.EntityType entityType, Boolean captive) {
+		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+		getPermalinkURL(adapterUrl, entityId, entityType);
+        adapterUrl.setParameter(WebKeys.URL_INVOKE_SHARE, "1");
+		if(captive != null)
+			adapterUrl.setParameter(WebKeys.URL_CAPTIVE, captive.toString());
+		return adapterUrl.toString();
+	}
+
 	protected static void getPermalinkURL(AdaptedPortletURL adapterUrl, Long entityId, EntityIdentifier.EntityType entityType) {
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entityType.name());

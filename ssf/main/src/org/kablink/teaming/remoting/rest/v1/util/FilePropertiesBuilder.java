@@ -84,7 +84,7 @@ public class FilePropertiesBuilder implements SearchResultBuilder<FileProperties
         fp.setVersionNumber(getInteger(doc, Constants.FILE_VERSION_FIELD));
         fp.setMajorVersion(getInteger(doc, Constants.FILE_MAJOR_VERSION_FIELD));
         fp.setMinorVersion(getInteger(doc, Constants.FILE_MINOR_VERSION_FIELD));
-        LinkUriUtil.populateFileLinks(fp);
+        LinkUriUtil.populateFileLinks(fp, owningEntityId, owningEntityType);
         return fp;
     }
 
