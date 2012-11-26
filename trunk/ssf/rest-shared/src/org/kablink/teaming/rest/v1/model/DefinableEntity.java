@@ -209,6 +209,7 @@ public abstract class DefinableEntity extends SearchableObject {
         }
         additionalPermaLinks.add(link);
     }
+
     @XmlElement(name="title")
     public String getTitle() {
         return title;

@@ -1,6 +1,9 @@
 package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: david
@@ -17,6 +20,9 @@ public abstract class DefinableEntityBrief extends SearchableObject {
    	private String family;
     private String icon;
     private String permaLink;
+    @XmlElementWrapper(name="permalinks")
+    @XmlElement(name="permalink")
+    private List<Link> additionalPermaLinks;
     private HistoryStamp creation;
    	private HistoryStamp modification;
 
@@ -40,6 +46,7 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.permaLink = orig.permaLink;
         this.creation = orig.creation;
         this.modification = orig.modification;
+        this.additionalPermaLinks = orig.additionalPermaLinks;
     }
 
     public HistoryStamp getCreation() {
@@ -134,4 +141,24 @@ public abstract class DefinableEntityBrief extends SearchableObject {
     public void setPermaLink(String permaLink) {
         this.permaLink = permaLink;
     }
+
+    public List<Link> getAdditionalPermaLinks() {
+        return additionalPermaLinks;
+    }
+
+    public void addAdditionalPermaLink(String relation, String uri) {
+        addAdditionalPermaLink(new Link(relation, uri));
+    }
+
+    public void addAdditionalPermaLink(String uri) {
+        addAdditionalPermaLink(new Link(null, uri));
+    }
+
+    public void addAdditionalPermaLink(Link link) {
+        if (additionalPermaLinks ==null) {
+            additionalPermaLinks = new ArrayList<Link>();
+        }
+        additionalPermaLinks.add(link);
+    }
+
 }
