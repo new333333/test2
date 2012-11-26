@@ -115,8 +115,8 @@ public class GangliaMonitoring {
 		}
 
 		File gangliaFile = new File(gangliaDir, "metrics.properties");
-		if(logger.isDebugEnabled())
-			logger.debug("Writing monitoring information to file [" + gangliaFile.getAbsolutePath() + "]");
+		if(logger.isTraceEnabled())
+			logger.trace("Writing monitoring information to file [" + gangliaFile.getAbsolutePath() + "]");
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(gangliaFile)));
 		try {
 			/*
