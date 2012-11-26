@@ -57,6 +57,7 @@ public class GangliaMonitoringFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
 		GangliaMonitoring.incrementRestRequests();
+        chain.doFilter(request, response);
 	}
 
 	@Override
