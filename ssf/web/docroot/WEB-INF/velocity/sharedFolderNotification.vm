@@ -26,20 +26,30 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#if ($ssVisitor.isHtml())  
-	<a href="$ssVisitor.getPermaLink($ssSharedEntity)">$esc.html(${ssSharedEntity.Title})</a><br/><br/>
-	#if (${ssShare.Comment})
-		$esc.html(${ssShare.Comment})
-	#end
-	<br /><br />
-	$esc.html(${ssShareExpiration})<br />
+#if ($ssVisitor.isHtml())
+	#parse("style.vm")
+	
+	<div class="email-block">  
+		<div class="email-share">$esc.html(${ssSharer})</div>  
+		<div class="email-url"><a class="email-anchor" href="$ssVisitor.getPermaLink($ssSharedEntity)">$esc.html(${ssSharedEntity.Title})</a></div>
+		<div class="email-expire">$esc.html(${ssShareExpiration})</div>
+		#if ($ssShare.Comment && $ssShare.Comment != "")
+			<div class="email-note">$esc.html(${ssShare.Comment})</div>
+		#end
+		<div class="email-logo">Novell<span style="font-size: 8px;">&reg;</span> $esc.html(${ssProduct})</div>
+	</div>
+	
 
 #else
+	#ss_printLn(${ssSharer})
+	
 	#ss_printLn($ssVisitor.getPermaLink($ssSharedEntity))
 	
-	#if (${ssShare.Comment})
+	#ss_printLn(${ssShareExpiration})
+	
+	#if ($ssShare.Comment && $ssShare.Comment != "")
 		#ss_printLn(${ssShare.Comment})
 	#end
 	
-	#ss_printLn(${ssShareExpiration})
+	#ss_printLn("Novell® ${ssProduct}")
 #end

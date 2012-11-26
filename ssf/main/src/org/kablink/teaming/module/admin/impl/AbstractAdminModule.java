@@ -1795,8 +1795,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			if (!(MiscUtil.hasString(shareTitle))) {
 				shareTitle = ("--" + NLT.get("entry.noTitle", locale) + "--");
 			}
-			String subject = NLT.get("relevance.mailShared", new Object[]{Utils.getUserTitle(sendingUser)}, locale);
-			subject       += " (" + shareTitle +")";
+			String subject = NLT.get("relevance.mailShared", new Object[]{Utils.getUserTitle(sendingUser), shareTitle}, locale);
 			mailMap.put(MailModule.SUBJECT, subject);
 			
 			// ...generate and add the HTML variant...
@@ -1839,7 +1838,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 				// ...return them in the error list too.
 	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
 	 				EmailHelper.addMailFailures(errors, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
-	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsendAddresses");
+	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsentAddresses");
 	 				
 	 			}
 	 	   	}
@@ -1983,7 +1982,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 				// ...return them in the error list too.
 	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
 	 				EmailHelper.addMailFailures(errors, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
-	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsendAddresses");
+	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsentAddresses");
 	 				
 	 			}
 	 	   	}
@@ -2145,7 +2144,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 				// ...return them in the error list too.
 	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
 	 				EmailHelper.addMailFailures(errors, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
-	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsendAddresses");
+	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsentAddresses");
 	 				
 	 			}
 	 	   	}
@@ -2190,11 +2189,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	    VelocityContext	reply = NotifyBuilderUtil.getVelocityContext();
 	    
 	    // ...initialize it...
-		reply.put("ssVisitor",         visitor                                                                  );
-		reply.put("ssShare",           share                                                                    );
-		reply.put("ssSharedEntity",    sharedEntity                                                             );
-		reply.put("ssShareExpiration", EmailHelper.getShareExpiration(visitor.getNotifyDef().getLocale(), share));
-		reply.put("user",              RequestContextHolder.getRequestContext().getUser()                       );
+	    User user = RequestContextHolder.getRequestContext().getUser();
+		reply.put("ssVisitor",         visitor                                                                                                     );
+		reply.put("ssShare",           share                                                                                                       );
+		reply.put("ssSharedEntity",    sharedEntity                                                                                                );
+		reply.put("ssShareExpiration", EmailHelper.getShareExpiration(visitor.getNotifyDef().getLocale(), share)                                   );
+		reply.put("ssSharer",          NLT.get("share.notify.sharer", new String[]{visitor.getUserTitle(user)}, visitor.getNotifyDef().getLocale()));
+		reply.put("ssProduct",         (Utils.checkIfFilr() ? "Filr" : "Vibe")                                                                     );
+		reply.put("user",              user                                                                                                        );
 		if (MiscUtil.hasString(encodedExternalUserId)) {
 			reply.put("ssShareEncodedExternalUserId", encodedExternalUserId);
 		}
