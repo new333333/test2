@@ -1432,15 +1432,11 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	private Query makeAclInheritingEntriesPermissibleAclQuery(Query aclQuery) {
 		Query aclInheritingEntriesClause = makeAclInheritingEntriesQuery();
 		
-		if(!(aclQuery instanceof BooleanQuery)) {
-			BooleanQuery bq = new BooleanQuery();
-			bq.add(aclQuery, BooleanClause.Occur.SHOULD);
-			aclQuery = bq;
-		}
+		BooleanQuery result = new BooleanQuery();
+		result.add(aclQuery, BooleanClause.Occur.SHOULD);
+		result.add(aclInheritingEntriesClause, BooleanClause.Occur.SHOULD);
 		
-		((BooleanQuery)aclQuery).add(aclInheritingEntriesClause, BooleanClause.Occur.SHOULD);
-		
-		return aclQuery;
+		return result;
 	}
 	
 	private Query makeAclInheritingEntriesQuery() {
