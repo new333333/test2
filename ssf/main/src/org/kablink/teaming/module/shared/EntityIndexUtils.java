@@ -713,22 +713,11 @@ public class EntityIndexUtils {
      		}
      	}
      	for (Long id : idMap.get(RecipientType.group)) {
-     		if (id.equals(allUsersId)) {
-     			Field f = FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, Constants.READ_ACL_ALL);
-     			if (!doc.getFields().contains(f)) {
-     				doc.add(f); 
-     				sharingIds.add(id);
-     			}
-     			if (!(entity instanceof FolderEntry) || !personal) {
-	       			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, Constants.READ_ACL_GLOBAL)); 
-     			}
-     		} else {
-     			Field f = FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, id.toString());
-     			if (!doc.getFields().contains(f)) {
-     				doc.add(f); 
-     				sharingIds.add(id);
-     			}
-     		}
+ 			Field f = FieldFactory.createFieldNotStoredNotAnalyzed(entryAclField, id.toString());
+ 			if (!doc.getFields().contains(f)) {
+ 				doc.add(f); 
+ 				sharingIds.add(id);
+ 			}
      	}
      	for (Long id : idMap.get(RecipientType.team)) {
      		Field f = FieldFactory.createFieldNotStoredNotAnalyzed(teamAclField, id.toString());
