@@ -332,7 +332,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			if (allUsersId != null && !workArea.getWorkAreaType().equals(ZoneConfig.WORKAREA_TYPE) 
 					&& userApplicationLevelMembersToLookup.contains(allUsersId) && 
 					Utils.canUserOnlySeeCommonGroupMembers(user)) {
-				if (Utils.isWorkareaInProfilesTree(workArea)) {
+				if (Utils.isWorkareaInProfilesTree(workAreaStart) && !user.getId().equals(workAreaStart.getOwnerId())) {
 					//If this user does not share a group with the binder owner, remove the "All Users" group.
 					boolean remove = true;
 					if (workArea.getWorkAreaType().equals(EntityType.workspace.name()) ||
@@ -358,7 +358,10 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 						}
 					}
 					if (remove) {
+						//The user is only allowed to see users in a common group, and the user does not share a common group.
+						//So, we remove the All Users and All Ext Users groups to force using just the real groups and users in the ACL check
 						userApplicationLevelMembersToLookup.remove(allUsersId);
+						userApplicationLevelMembersToLookup.remove(allExtUsersId);
 					}
 				}
 			}
