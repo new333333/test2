@@ -2423,9 +2423,12 @@ public class GwtMenuHelper {
 			// view!  Are we returning them for the root profiles
 			// workspace view?
 			else if (folderInfo.isBinderProfilesRootWS()) {
-				// Yes!  Construct the items for viewing the root
-				// profiles binder.
-				constructEntryProfilesRootWSItems(entryToolbar, bs, request, ws, folderInfo.getWorkspaceType().isProfileRootManagement());
+				// Yes!  Can the user access the root profiles binder?
+				if (GwtServerHelper.canUserViewBinder(folderInfo)) {
+					// Yes!  Construct the items for viewing the root
+					// profiles binder.
+					constructEntryProfilesRootWSItems(entryToolbar, bs, request, ws, folderInfo.getWorkspaceType().isProfileRootManagement());
+				}
 			}
 			
 			// No, we aren't returning the toolbar items for the root

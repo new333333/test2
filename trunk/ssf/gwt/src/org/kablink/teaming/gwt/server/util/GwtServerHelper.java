@@ -1584,6 +1584,41 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns true if the user can view the binder referenced by a
+	 * BinderInfo and false otherwise.
+	 * 
+	 * @param user
+	 * @param bi
+	 * 
+	 * @return
+	 */
+	public static boolean canUserViewBinder(User user, BinderInfo bi) {
+		boolean	reply;
+		if (bi.isBinderCollection()) {
+			reply = GwtServerHelper.canUserAccessCollection(user, bi.getCollectionType());
+		}
+		else if (bi.isBinderProfilesRootWS()) {
+			boolean isGuestOrExternal = (user.isShared() || (!(user.getIdentityInfo().isInternal())));
+			reply = (!isGuestOrExternal);
+		}
+		else {
+			reply = true;
+		}
+		return reply;
+	}
+	
+	public static boolean canUserViewBinder(AllModulesInjected bs, Long userId, BinderInfo bi) {
+		// Always use the initial form of the method.
+		User user = ((User) bs.getProfileModule().getEntry(userId));
+		return canUserViewBinder(user, bi);
+	}
+	
+	public static boolean canUserViewBinder(BinderInfo bi) {
+		// Always use the initial form of the method.
+		return canUserViewBinder(getCurrentUser(), bi);
+	}
+	
+	/**
 	 * Changes the favorite state of the given binder.  If
 	 * makeFavoriate is true, the binder is made a favorite.
 	 * Otherwise, it is removed from the user's favorites list.
