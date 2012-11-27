@@ -497,6 +497,9 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (share.getDaysToExpire()!=null && share.getEndDate()!=null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "You cannot specify both 'days_to_expire' and 'expiration'.");
         }
+        if (share.getDaysToExpire()!=null && share.getDaysToExpire()<=0) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'days_to_expire' must be greater than 0.");
+        }
 
         WorkAreaOperation.RightSet rights = (WorkAreaOperation.RightSet) role.getRightSet().clone();
         if (Boolean.TRUE.equals(share.isCanShare())) {
