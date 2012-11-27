@@ -1935,6 +1935,7 @@ public interface GwtTeamingMessages extends Messages
 	String folders();
 	String myFiles();
 	String netFolders();
+	String peopleList();
 	String sharedByMe();
 	String sharedWithMe();
 
@@ -2214,5 +2215,10 @@ public interface GwtTeamingMessages extends Messages
 	String emptyFileFolder_Info_2( String company, String product );
 	String emptyFileFolder_Info_3( String product );
 	String emptyFileFolder_SubHead();
+	
+	// Strings used for the empty people view widget.
+	String emptyPeople_Info_1( String company, String product );
+	String emptyPeople_Info_2( String company, String product );
+	String emptyPeople_SubHead();
 	
 }// end GwtTeamingMessages
