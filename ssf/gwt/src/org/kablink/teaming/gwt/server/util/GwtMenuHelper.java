@@ -2432,31 +2432,37 @@ public class GwtMenuHelper {
 			// profiles workspace view either!  Are we returning them
 			// for a collection view?
 			else if (isBinderCollection) {
-				boolean isCollectionMyFiles      = (CollectionType.MY_FILES       == folderInfo.getCollectionType());
-				boolean isCollectionNetFolders   = (CollectionType.NET_FOLDERS    == folderInfo.getCollectionType());
-				boolean isCollectionSharedByMe   = (CollectionType.SHARED_BY_ME   == folderInfo.getCollectionType());
-				boolean isCollectionSharedWithMe = (CollectionType.SHARED_WITH_ME == folderInfo.getCollectionType());
-				if ((!(Utils.checkIfFilr())) && (isCollectionSharedByMe || isCollectionSharedWithMe)) {
-					constructEntryToggleSharedViewItem(entryToolbar, bs, request                                                                                  );
+				// Yes!  Can the user access this collection?
+				CollectionType ct = folderInfo.getCollectionType();
+				if (GwtServerHelper.canUserAccessCollection(ct)) {
+					// Yes!  Construct the appropriate menu items for
+					// it.
+					boolean isCollectionMyFiles      = (CollectionType.MY_FILES       == ct);
+					boolean isCollectionNetFolders   = (CollectionType.NET_FOLDERS    == ct);
+					boolean isCollectionSharedByMe   = (CollectionType.SHARED_BY_ME   == ct);
+					boolean isCollectionSharedWithMe = (CollectionType.SHARED_WITH_ME == ct);
+					if ((!(Utils.checkIfFilr())) && (isCollectionSharedByMe || isCollectionSharedWithMe)) {
+						constructEntryToggleSharedViewItem(entryToolbar, bs, request                                                                                  );
+					}
+					boolean useHomeAsMyFiles = GwtServerHelper.useHomeAsMyFiles(bs);
+					if (isCollectionMyFiles) {
+						Long homeFolderTargetId;
+						if (useHomeAsMyFiles)
+						     homeFolderTargetId = GwtServerHelper.getHomeFolderId(bs);
+						else homeFolderTargetId = null;
+						constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws, homeFolderTargetId         );
+					}
+					if (isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe) {
+					    constructEntryShareItem(           entryToolbar, bs, request                                                                                  );
+					}
+					if ((isCollectionMyFiles && (!useHomeAsMyFiles)) && (!isCollectionNetFolders)) {
+						constructEntryDeleteItem(          entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
+					}
+					if (isCollectionMyFiles && supportsApplets && (null != GwtServerHelper.getMyFilesContainerId(bs))) {
+						constructEntryDropBoxItem(         entryToolbar                                                                                               );
+					}
+					constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
 				}
-				boolean useHomeAsMyFiles = GwtServerHelper.useHomeAsMyFiles(bs);
-				if (isCollectionMyFiles) {
-					Long homeFolderTargetId;
-					if (useHomeAsMyFiles)
-					     homeFolderTargetId = GwtServerHelper.getHomeFolderId(bs);
-					else homeFolderTargetId = null;
-					constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws, homeFolderTargetId         );
-				}
-				if (isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe) {
-				    constructEntryShareItem(           entryToolbar, bs, request                                                                                  );
-				}
-				if ((isCollectionMyFiles && (!useHomeAsMyFiles)) && (!isCollectionNetFolders)) {
-					constructEntryDeleteItem(          entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
-				}
-				if (isCollectionMyFiles && supportsApplets && (null != GwtServerHelper.getMyFilesContainerId(bs))) {
-					constructEntryDropBoxItem(         entryToolbar                                                                                               );
-				}
-				constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
 			}
 			
 			else {

@@ -3241,10 +3241,23 @@ public class GwtViewHelper {
 	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter) throws GwtTeamingException {
 		try {
 			// Access the binder/folder.
-			Long	folderId = folderInfo.getBinderIdAsLong();
-			Binder	binder   = bs.getBinderModule().getBinder(folderId);
-			Folder	folder   = ((binder instanceof Folder) ? ((Folder) binder) : null);
-			boolean	isFolder = (null != folder);
+			Long			folderId       = folderInfo.getBinderIdAsLong();
+			Binder			binder         = bs.getBinderModule().getBinder(folderId);
+			Folder			folder         = ((binder instanceof Folder) ? ((Folder) binder) : null);
+			boolean			isFolder       = (null != folder);
+			boolean			isCollection   = folderInfo.isBinderCollection();
+			CollectionType	collectionType = folderInfo.getCollectionType();
+
+			// Is this a collection the user can't access?
+			if (isCollection && (!(GwtServerHelper.canUserAccessCollection(collectionType)))) {
+				// Yes!  Return an empty set of rows.
+				return
+					new FolderRowsRpcResponseData(
+						new ArrayList<FolderRow>(),	// FolderRows.
+						0,							// Start index.
+						0,							// Total count.
+						new ArrayList<Long>());		// Contributor IDs.
+			}
 			
 			// If we're reading from a mirrored file folder...
 			if (FolderType.MIRROREDFILE == folderInfo.getFolderType()) {
@@ -3265,7 +3278,6 @@ public class GwtViewHelper {
 			boolean isGuestbook      = false;
 			boolean isMilestone      = false;
 			boolean isSurvey         = false;
-			boolean isCollection     = folderInfo.isBinderCollection();
 			boolean isProfilesRootWS = folderInfo.isBinderProfilesRootWS();
 			boolean isTrash          = folderInfo.isBinderTrash();
 			switch (folderInfo.getFolderType()) {
@@ -3340,7 +3352,6 @@ public class GwtViewHelper {
 
 			// If we're working with a 'Shared by/with Me' collection,
 			// get the shared items.
-			CollectionType			collectionType           = folderInfo.getCollectionType();
 			boolean					isCollectionSharedByMe   = (isCollection && CollectionType.SHARED_BY_ME.equals(  collectionType));
 			boolean					isCollectionSharedWithMe = (isCollection && CollectionType.SHARED_WITH_ME.equals(collectionType));
 			List<GwtSharedMeItem> 	shareItems;
@@ -5259,33 +5270,27 @@ public class GwtViewHelper {
 			// Yes!  Does it have the showCollection parameter?
 			String showCollection = getQueryParameterString(nvMap, WebKeys.URL_SHOW_COLLECTION);
 			if (MiscUtil.hasString(showCollection)) {
-				// Yes!  What collection type is being shown?
+				// Yes!  Can the user access this collection type being
+				// shown?
 				CollectionType ct = CollectionType.getEnum(showCollection);
-				switch (ct) {
-				case MY_FILES:
-					// My Files!  We don't allow that for guest or if
-					// adHoc folders are not allowed and the user
-					// doesn't have a home folder.  In those cases, we
-					// go to Shared With Me.
-					if (user.isShared() ||
-							(GwtServerHelper.useHomeAsMyFiles(bs) && (!(GwtServerHelper.userHasHomeFolder(bs))))) {
-						ct = CollectionType.SHARED_WITH_ME;
+				if (GwtServerHelper.canUserAccessCollection(user, ct)) {
+					// Yes!  What collection type is it?
+					switch (ct) {
+					case MY_FILES:
+						// My Files!  We don't allow that if adHoc
+						// folders are not allowed and the user doesn't
+						// have a home folder.  In those cases, we go
+						// to Shared With Me.
+						if (GwtServerHelper.useHomeAsMyFiles(bs) && (!(GwtServerHelper.userHasHomeFolder(bs)))) {
+							ct = CollectionType.SHARED_WITH_ME;
+						}
+						
+						break;
+						
+					default:
+						// All other scenarios we allow through.
+						break;
 					}
-					
-					break;
-					
-				case NET_FOLDERS:
-					// Net Folders!  We don't allow that for guest.  In
-					// that case, we go to Shared With Me..
-					if (user.isShared()) {
-						ct = CollectionType.SHARED_WITH_ME;
-					}
-					
-					break;
-					
-				default:
-					// All other scenarios we allow through.
-					break;
 				}
 
 				// Return a BinderInfo for the collection.
