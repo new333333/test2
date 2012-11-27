@@ -633,6 +633,26 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * Returns true if the user can view the binder referenced by a
+	 * BinderInfo and false otherwise.
+	 */
+	private static boolean canUserViewBinder(BinderInfo bi) {
+		boolean	reply;
+		User	user = GwtServerHelper.getCurrentUser();
+		if (bi.isBinderCollection()) {
+			reply = GwtServerHelper.canUserAccessCollection(user, bi.getCollectionType());
+		}
+		else if (bi.isBinderProfilesRootWS()) {
+			boolean isGuestOrExternal = (user.isShared() || (!(user.getIdentityInfo().isInternal())));
+			reply = (!isGuestOrExternal);
+		}
+		else {
+			reply = true;
+		}
+		return reply;
+	}
+	
+	/*
 	 * Extracts the ID's of the entry contributors and adds them to the
 	 * contributor ID's list if they're not already there. 
 	 */
@@ -3240,17 +3260,9 @@ public class GwtViewHelper {
 	@SuppressWarnings("unchecked")
 	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter) throws GwtTeamingException {
 		try {
-			// Access the binder/folder.
-			Long			folderId       = folderInfo.getBinderIdAsLong();
-			Binder			binder         = bs.getBinderModule().getBinder(folderId);
-			Folder			folder         = ((binder instanceof Folder) ? ((Folder) binder) : null);
-			boolean			isFolder       = (null != folder);
-			boolean			isCollection   = folderInfo.isBinderCollection();
-			CollectionType	collectionType = folderInfo.getCollectionType();
-
-			// Is this a collection the user can't access?
-			if (isCollection && (!(GwtServerHelper.canUserAccessCollection(collectionType)))) {
-				// Yes!  Return an empty set of rows.
+			// Is this a binder the user can view?
+			if (!(canUserViewBinder(folderInfo))) {
+				// No!  Return an empty set of rows.
 				return
 					new FolderRowsRpcResponseData(
 						new ArrayList<FolderRow>(),	// FolderRows.
@@ -3258,6 +3270,12 @@ public class GwtViewHelper {
 						0,							// Total count.
 						new ArrayList<Long>());		// Contributor IDs.
 			}
+			
+			// Access the binder/folder.
+			Long	folderId = folderInfo.getBinderIdAsLong();
+			Binder	binder   = bs.getBinderModule().getBinder(folderId);
+			Folder	folder   = ((binder instanceof Folder) ? ((Folder) binder) : null);
+			boolean	isFolder = (null != folder);
 			
 			// If we're reading from a mirrored file folder...
 			if (FolderType.MIRROREDFILE == folderInfo.getFolderType()) {
@@ -3352,6 +3370,8 @@ public class GwtViewHelper {
 
 			// If we're working with a 'Shared by/with Me' collection,
 			// get the shared items.
+			CollectionType			collectionType           = folderInfo.getCollectionType();
+			boolean					isCollection             = folderInfo.isBinderCollection();
 			boolean					isCollectionSharedByMe   = (isCollection && CollectionType.SHARED_BY_ME.equals(  collectionType));
 			boolean					isCollectionSharedWithMe = (isCollection && CollectionType.SHARED_WITH_ME.equals(collectionType));
 			List<GwtSharedMeItem> 	shareItems;

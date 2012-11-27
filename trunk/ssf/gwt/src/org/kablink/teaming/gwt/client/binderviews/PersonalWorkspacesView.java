@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.Map;
@@ -46,6 +45,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Personal Workspaces (root binder) view.
@@ -122,6 +122,22 @@ public class PersonalWorkspacesView extends DataTableFolderViewBase {
 				vClient.onUnavailable();
 			}
 		});
+	}
+	
+	/**
+	 * Returns the widget to use for displaying the table empty message.
+	 * 
+	 * Provided as a convenience method.  Class that extend this may
+	 * override to provide whatever they want displayed.
+	 * 
+	 * Overrides the DataTableFolderViewBase.getEmptyTableWidget()
+	 * method.
+	 * 
+	 * @return
+	 */
+	@Override
+	protected Widget getEmptyTableWidget() {
+		return new EmptyPeopleComposite();
 	}
 	
 	/**
