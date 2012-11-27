@@ -1558,8 +1558,9 @@ public class GwtServerHelper {
 			break;
 			
 		case NET_FOLDERS:
-			// We never support Net Folders for the guest or external
-			// users.
+		case SHARED_BY_ME:
+			// We never support Net Folders or Shared By Me for the
+			// guest or external users.
 			if (isGuestOrExternal) {
 				reply = false;
 			}
