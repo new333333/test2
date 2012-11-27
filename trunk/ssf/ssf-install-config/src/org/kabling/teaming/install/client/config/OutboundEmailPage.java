@@ -129,7 +129,6 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 			passwordTextBox = new VibePasswordTextBox();
-			passwordTextBox.setValidator(new ValueRequiredValidator(passwordTextBox));
 			table.setWidget(row, 1, passwordTextBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -201,7 +200,7 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 	public Object getDataFromDlg()
 	{
 
-		if (!(hostTextBox.isValid() & usernameTextBox.isValid() & passwordTextBox.isValid()))
+		if (!(hostTextBox.isValid() & usernameTextBox.isValid()))
 		{
 			setErrorMessage(RBUNDLE.allFieldsRequired());
 			return null;
@@ -217,7 +216,8 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			emailSettings.setSmtpHost(hostTextBox.getText());
 			emailSettings.setSmtpAuthEnabled(authRequiredCheckBox.getValue());
 			emailSettings.setSmtpUser(usernameTextBox.getText());
-			emailSettings.setSmtpPassword(passwordTextBox.getText());
+			if (!passwordTextBox.getText().trim().equals(""))
+				emailSettings.setSmtpPassword(passwordTextBox.getText());
 			emailSettings.setSmtpPort(portSpinner.getValueAsInt());
 			//emailSettings.setSmtpSendPartial(allowSendEmailUsersCheckBox.getValue());
 		}
@@ -227,7 +227,8 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			emailSettings.setSmtpsHost(hostTextBox.getText());
 			emailSettings.setSmtpsAuthEnabled(authRequiredCheckBox.getValue());
 			emailSettings.setSmtpsUser(usernameTextBox.getText());
-			emailSettings.setSmtpsPassword(passwordTextBox.getText());
+			if (!passwordTextBox.getText().trim().equals(""))
+				emailSettings.setSmtpsPassword(passwordTextBox.getText());
 			emailSettings.setSmtpsPort(portSpinner.getValueAsInt());
 			//emailSettings.setSmtpsSendPartial(allowSendEmailUsersCheckBox.getValue());
 		}
