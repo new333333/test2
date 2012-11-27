@@ -1876,37 +1876,38 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				}
 			}
 			
+			
+			// Setup Encoding on /etc/init.d/teaming file
+			info = executeCommand("sed -i -e's/ISO8859-1/UTF-8/' /etc/init.d/teaming");
+			if (info.getExitValue() != 0)
+			{
+				logger.debug("Error setting up UTF-8 Encoding " + info.getExitValue());
+				throw new ConfigurationSaveException();
+			}
+
+			// Replace Novell Vibe with Novell Filr on ssf-ext.properties
+			info = executeCommand("sed -i \"s/Novell Vibe/Novell Filr/g\" /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties");
+			if (info.getExitValue() != 0)
+			{
+				logger.debug("Error setting up Novell Filr string on ssf-ext.properties" + info.getExitValue());
+				throw new ConfigurationSaveException();
+			}
+
+			// Setup luceneindex.root.dir on ssf-ext.properties
+			info = executeCommand("sed -i  -e 's|data.luceneindex.root.dir=/vastorage/filr|data.luceneindex.root.dir=/vastorage/search|' /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties");
+			if (info.getExitValue() != 0)
+			{
+				logger.debug("Error setting up data.luceneindex.root.dir=/vastorage/search" + info.getExitValue());
+				throw new ConfigurationSaveException();
+			}
+			
+			
 			// Wizard configuration is done, put a temp file there
 			File file = new File("/filrinstall/configured");
-			
 			// If it exists, ignore
 			if (!System.getProperty("os.name").startsWith("Win") && !file.exists())
 			{
-				// Setup Encoding on /etc/init.d/teaming file
-				info = executeCommand("sed -i -e's/ISO8859-1/UTF-8/' /etc/init.d/teaming");
-				if (info.getExitValue() != 0)
-				{
-					logger.debug("Error setting up UTF-8 Encoding " + info.getExitValue());
-					throw new ConfigurationSaveException();
-				}
-
-				// Replace Novell Vibe with Novell Filr on ssf-ext.properties
-				info = executeCommand("sed -i \"s/Novell Vibe/Novell Filr/g\" /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties");
-				if (info.getExitValue() != 0)
-				{
-					logger.debug("Error setting up Novell Filr string on ssf-ext.properties" + info.getExitValue());
-					throw new ConfigurationSaveException();
-				}
-
-				// Setup luceneindex.root.dir on ssf-ext.properties
-				info = executeCommand("sed -i  -e 's|data.luceneindex.root.dir=/vastorage/filr|data.luceneindex.root.dir=/vastorage/search|' /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties");
-				if (info.getExitValue() != 0)
-				{
-					logger.debug("Error setting up data.luceneindex.root.dir=/vastorage/search" + info.getExitValue());
-					throw new ConfigurationSaveException();
-				}
-				
-				// Setup luceneindex.root.dir on ssf-ext.properties
+				// Setup chkconfig so that teaming starts always
 				info = executeCommand("chkconfig teaming on");
 				
 				try
