@@ -1534,6 +1534,55 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Returns true if the user supports the give collection type in
+	 * the current environment or false otherwise.
+	 * 
+	 * @param user
+	 * @param ct
+	 * 
+	 * @return
+	 */
+	public static boolean canUserAccessCollection(User user, CollectionType ct) {		
+		boolean isGuestOrExternal = (user.isShared() || (!(user.getIdentityInfo().isInternal())));
+		boolean reply             = true;
+		switch (ct) {
+		default:
+			break;
+			
+		case MY_FILES:
+			// For Filr, we don't support My Files for the guest or
+			// external users. 
+			if (Utils.checkIfFilr() && isGuestOrExternal) {
+				reply = false;
+			}
+			break;
+			
+		case NET_FOLDERS:
+			// We never support Net Folders for the guest or external
+			// users.
+			if (isGuestOrExternal) {
+				reply = false;
+			}
+			break;
+		}
+
+		// If we get here, reply is true if the user can access the
+		// given collection type and false otherwise.  Return it.
+		return reply;
+	}
+	
+	public static boolean canUserAccessCollection(CollectionType ct) {
+		// Always use the initial form of the method.
+		return canUserAccessCollection(getCurrentUser(), ct);
+	}
+	
+	public static boolean canUserAccessCollection(AllModulesInjected bs, Long userId, CollectionType ct) {
+		// Always use the initial form of the method.
+		User user = ((User) bs.getProfileModule().getEntry(userId));
+		return canUserAccessCollection(user, ct);
+	}
+	
+	/**
 	 * Changes the favorite state of the given binder.  If
 	 * makeFavoriate is true, the binder is made a favorite.
 	 * Otherwise, it is removed from the user's favorites list.
@@ -9887,7 +9936,7 @@ public class GwtServerHelper {
 	public static boolean userHasHomeFolder(AllModulesInjected bs) {
 		return (null != getHomeFolderId(bs));
 	}
-	
+
 	/**
 	 * Returns true if baseUrl is a valid desktop application download
 	 * URL and false otherwise.
