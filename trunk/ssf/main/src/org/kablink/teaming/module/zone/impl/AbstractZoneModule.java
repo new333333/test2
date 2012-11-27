@@ -1899,19 +1899,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_CHANGING_ACCESS_CONTROL_INTERNALID)) {
-			function = new Function();
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_ENABLE_CHANGING_ACCESS_CONTROL);
-			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
-			function.setInternalId(ObjectKeys.FUNCTION_ENABLE_CHANGING_ACCESS_CONTROL_INTERNALID);
-			function.addOperation(WorkAreaOperation.ENABLE_CHANGING_ACCESS_CONTROL);
-			function.setZoneWide(true);
-			//generate functionId
-			getFunctionManager().addFunction(function);
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		}
-		
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID)) {
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
@@ -1936,7 +1923,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 					f.getName().equals("__role.FilrFolderOwner") ||
 					f.getName().equals("__role.FilrFileRead") || 
 					f.getName().equals("__role.FilrFileWrite") || 
-					f.getName().equals("__role.FilrFileOwner")) {
+					f.getName().equals("__role.FilrFileOwner") ||
+					f.getName().equals("__role.enableChangingAccessControl")) {
 				try{
 					getFunctionManager().deleteFunction(f, true);
 				} catch(Exception e) {
