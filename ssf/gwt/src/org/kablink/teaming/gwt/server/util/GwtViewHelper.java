@@ -633,26 +633,6 @@ public class GwtViewHelper {
 	}
 
 	/*
-	 * Returns true if the user can view the binder referenced by a
-	 * BinderInfo and false otherwise.
-	 */
-	private static boolean canUserViewBinder(BinderInfo bi) {
-		boolean	reply;
-		User	user = GwtServerHelper.getCurrentUser();
-		if (bi.isBinderCollection()) {
-			reply = GwtServerHelper.canUserAccessCollection(user, bi.getCollectionType());
-		}
-		else if (bi.isBinderProfilesRootWS()) {
-			boolean isGuestOrExternal = (user.isShared() || (!(user.getIdentityInfo().isInternal())));
-			reply = (!isGuestOrExternal);
-		}
-		else {
-			reply = true;
-		}
-		return reply;
-	}
-	
-	/*
 	 * Extracts the ID's of the entry contributors and adds them to the
 	 * contributor ID's list if they're not already there. 
 	 */
@@ -3261,7 +3241,7 @@ public class GwtViewHelper {
 	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter) throws GwtTeamingException {
 		try {
 			// Is this a binder the user can view?
-			if (!(canUserViewBinder(folderInfo))) {
+			if (!(GwtServerHelper.canUserViewBinder(folderInfo))) {
 				// No!  Return an empty set of rows.
 				return
 					new FolderRowsRpcResponseData(
