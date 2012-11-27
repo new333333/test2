@@ -15,19 +15,27 @@
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
   <workAreaFunctionMembership>
-    <property name="functionName">__role.allowSharingExternal</property>
-    <property name="members">-1</property>
-  </workAreaFunctionMembership>
-  <workAreaFunctionMembership>
-    <property name="functionName">__role.allowSharingPublic</property>
-    <property name="members">-1</property>
+    <property name="functionName">__role.participant</property>
+    <property name="members">-1 -2</property>
   </workAreaFunctionMembership>
   <workAreaFunctionMembership>
     <property name="functionName">__role.allowSharing</property>
     <property name="members">-1</property>
   </workAreaFunctionMembership>
   <workAreaFunctionMembership>
-    <property name="functionName">__role.allowSharingForward</property>
+    <property name="functionName">__role.binderAdmin</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.allowAccessNetFolder</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.teamMember</property>
+    <property name="members">-1 -2</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.allowSharingPublic</property>
     <property name="members">-1</property>
   </workAreaFunctionMembership>
   <workAreaFunctionMembership>
@@ -35,16 +43,12 @@
     <property name="members">-1 -2</property>
   </workAreaFunctionMembership>
   <workAreaFunctionMembership>
-    <property name="functionName">__role.participant</property>
-    <property name="members">-1 -2</property>
-  </workAreaFunctionMembership>
-  <workAreaFunctionMembership>
-    <property name="functionName">__role.binderAdmin</property>
+    <property name="functionName">__role.allowSharingExternal</property>
     <property name="members">-1</property>
   </workAreaFunctionMembership>
   <workAreaFunctionMembership>
-    <property name="functionName">__role.teamMember</property>
-    <property name="members">-1 -2</property>
+    <property name="functionName">__role.allowSharingForward</property>
+    <property name="members">-1</property>
   </workAreaFunctionMembership>
   <definition name="_userWorkspace" internalId="402883b90cc53079010cc539bf26000b" databaseId="402883b90cc53079010cc539bf26000b"/>
   <dashboard>
@@ -86,8 +90,8 @@
     <component name="binder_9">
       <property name="displayStyle">border</property>
       <property name="title">__definition_default_folder_task</property>
-      <property name="name">task</property>
       <property name="roles"></property>
+      <property name="name">task</property>
       <data>
         <property name="resultsCount">5</property>
       </data>
@@ -95,8 +99,8 @@
     <component name="binder_8">
       <property name="displayStyle">border</property>
       <property name="title">__definition_default_folder_guestbook</property>
-      <property name="name">guestbook</property>
       <property name="roles"></property>
+      <property name="name">guestbook</property>
       <data>
         <property name="summaryWordCount">20</property>
         <property name="resultsCount">5</property>
@@ -211,6 +215,7 @@
     <property name="inheritTeamMembers">true</property>
     <definition name="_taskFolder" databaseId="402883c1129b1f8101129b28bc620003"/>
     <definition name="_taskEntry" databaseId="402883c1129b1f8101129b28bbe50002"/>
+    <definition name="_task_workflow" databaseId="24e350dd203897f40120389be0c80007"/>
     <definition name="_task_workflow" databaseId="24e350dd203897f40120389be0c80007"/>
     <definition name="_task_workflow" databaseId="24e350dd203897f40120389be0c80007"/>
     <definition name="_task_workflow" databaseId="24e350dd203897f40120389be0c80007">
