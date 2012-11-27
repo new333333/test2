@@ -153,22 +153,6 @@
     <definition name="_calendarEntry" databaseId="402883c6115753d80111577dbe29000d"/>
   </template>
   <template type="5">
-    <attribute name="templateTitle" type="string">__template_folder_library</attribute>
-    <attribute name="templateDescription" type="description">__template_folder_library_description</attribute>
-    <attribute name="templateHidden" type="boolean">false</attribute>
-    <attribute name="title" type="string">__template_folder_library</attribute>
-    <attribute name="description" type="description"></attribute>
-    <attribute name="iconName" type="string">/icons/folder_blue_file_library.png</attribute>
-    <property name="library">true</property>
-    <property name="mirrored">false</property>
-    <property name="uniqueTitle">false</property>
-    <property name="inheritFunctionMembership">true</property>
-    <property name="inheritDefinitions">false</property>
-    <property name="inheritTeamMembers">true</property>
-    <definition name="_libraryFolder" internalId="402883c6115753d8011157619e350009" databaseId="402883c6115753d8011157619e350009"/>
-    <definition name="_libraryEntry" internalId="402883c6115753d8011157829367000f" databaseId="402883c6115753d8011157829367000f"/>
-  </template>
-  <template type="5">
     <attribute name="templateTitle" type="string">__template_folder_guestbook</attribute>
     <attribute name="templateDescription" type="description">__template_folder_guestbook_description</attribute>
     <attribute name="templateHidden" type="boolean">false</attribute>
