@@ -96,6 +96,7 @@ public class Utils {
 		FILR,
 		FILR_AND_VIBE,
 		VIBE,
+		IPRINT,
 		
 		NO_OVERRIDE;
 		
@@ -107,6 +108,7 @@ public class Utils {
 		boolean isFilrEnabled()       {return (isFilr() || isFilrAndVibe());}
 		boolean isLicenseOverridden() {return (!(this.equals(NO_OVERRIDE)));}
 		boolean isVibe()              {return    this.equals(VIBE);         }
+		boolean isIPrint()            {return    this.equals(IPRINT);       }
 		boolean isVibeEnabled()       {return (isVibe() || isFilrAndVibe());}
 		
 		/*
@@ -122,6 +124,7 @@ public class Utils {
 				if      (uiType.equalsIgnoreCase("Filr"))        reply = LicenseOverride.FILR;
 				else if (uiType.equalsIgnoreCase("FilrAndVibe")) reply = LicenseOverride.FILR_AND_VIBE;
 				else if (uiType.equalsIgnoreCase("Vibe"))        reply = LicenseOverride.VIBE;
+				else if (uiType.equalsIgnoreCase("iPrint"))      reply = LicenseOverride.IPRINT;
 			}
 			
 			// If we get here, reply refers to the ssf*.properties, if
@@ -694,13 +697,34 @@ public class Utils {
 	}
 	
 	/**
+	 * Check if this is a iPrint only license
+	 * 
+	 * @return
+	 */
+	public static boolean checkIfIPrint() {
+		// If we have an ssf*.properties license override...
+		LicenseOverride lo = LicenseOverride.getLicenseOverride();
+		if (lo.isLicenseOverridden()) {
+			// ...that's all we look at.
+			return lo.isIPrint();
+		}
+		
+		// No ssf*.properties override!  Check the license.
+		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.iPrint")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
 	 * Check if this is a Kablink (i.e., no license)
 	 * 
 	 * @return
 	 */
 	public static boolean checkIfKablink() {
 		//See if no product licenses exist (vibe or filr)
-		if (!checkIfVibe() && !checkIfFilr()) return true;
+		if (!checkIfVibe() && !checkIfFilr() && !checkIfIPrint()) return true;
 		return false;
 	}
 	
