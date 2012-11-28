@@ -216,7 +216,11 @@ public class DefaultSendEmail extends SimpleTriggerJob implements SendEmail {
     public void schedule(JavaMailSender mailSender, String account, String password, MimeMessage message, String comment, File fileDir, boolean now) {
 		//each job is new 
 		GregorianCalendar start = new GregorianCalendar();
-		if (now) start.add(Calendar.MINUTE, 1);
+		int secondsDelay = 60;
+		try {
+			secondsDelay = SPropsUtil.getInt("mail.seconds.delay", secondsDelay);
+		} catch(Exception e) {}
+		if (now) start.add(Calendar.SECOND, secondsDelay);
 		else start.add(Calendar.HOUR_OF_DAY, 1);
 
 		JobDataMap data = new JobDataMap();
