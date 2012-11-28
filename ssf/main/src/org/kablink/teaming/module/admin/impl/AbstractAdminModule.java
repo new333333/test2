@@ -965,12 +965,25 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		
 		//get list of current readers to compare for indexing
-		List<WorkAreaFunctionMembership>wfms = 
+		List<WorkAreaFunctionMembership>wfmsRead = 
 	       		getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.READ_ENTRIES);
-       	TreeSet<Long> original = new TreeSet();
-        for (WorkAreaFunctionMembership wfm:wfms) {
-        	original.addAll(wfm.getMemberIds());
+       	TreeSet<Long> originalRead = new TreeSet();
+        for (WorkAreaFunctionMembership wfm:wfmsRead) {
+        	originalRead.addAll(wfm.getMemberIds());
     	}
+		List<WorkAreaFunctionMembership> wfmsVBT = 
+       		getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.VIEW_BINDER_TITLE);
+		TreeSet<Long> originalVBT = new TreeSet();
+	    for (WorkAreaFunctionMembership wfm:wfmsVBT) {
+	    	originalVBT.addAll(wfm.getMemberIds());
+		}
+	    List<WorkAreaFunctionMembership> wfmsNFA = 
+   		getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER);
+		TreeSet<Long> originalNFA = new TreeSet();
+		for (WorkAreaFunctionMembership wfm:wfmsNFA) {
+			originalNFA.addAll(wfm.getMemberIds());
+		}
+
       	boolean conditionsExistInOrigianl = checkIfConditionsExist(workArea);
         //first remove any that are not in the new list
         getTransactionTemplate().execute(new TransactionCallback() {
@@ -1057,17 +1070,31 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				return null;
         	}});
 		//get new list of readers
-      	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.READ_ENTRIES);
-      	TreeSet<Long> current = new TreeSet();
-      	for (WorkAreaFunctionMembership wfm:wfms) {
-      		current.addAll(wfm.getMemberIds());
+      	wfmsRead = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.READ_ENTRIES);
+      	TreeSet<Long> currentRead = new TreeSet();
+      	for (WorkAreaFunctionMembership wfm:wfmsRead) {
+      		currentRead.addAll(wfm.getMemberIds());
+      	}
+      	wfmsVBT = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.VIEW_BINDER_TITLE);
+      	TreeSet<Long> currentVBT = new TreeSet();
+      	for (WorkAreaFunctionMembership wfm:wfmsVBT) {
+      		currentVBT.addAll(wfm.getMemberIds());
+      	}
+      	wfmsNFA = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER);
+      	TreeSet<Long> currentNFA = new TreeSet();
+      	for (WorkAreaFunctionMembership wfm:wfmsNFA) {
+      		currentNFA.addAll(wfm.getMemberIds());
       	}
       	//only re-index if readers were affected.  Do outside transaction
       	boolean conditionsExist = checkIfConditionsExist(workArea);
-		if ((!original.equals(current) || conditionsExist || conditionsExistInOrigianl) && (workArea instanceof Binder)) {
+		if (!originalNFA.equals(currentNFA) && (workArea instanceof Binder)) {
+			Binder binder = (Binder)workArea;
+			loadBinderProcessor(binder).indexBinderIncremental(binder, true);
+		} else if ((!originalRead.equals(currentRead) || !originalVBT.equals(currentVBT) || 
+				conditionsExist || conditionsExistInOrigianl) && (workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
 			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null);
-		} else if (!original.equals(current) && workArea instanceof Entry) {
+		} else if (!originalRead.equals(currentRead) && workArea instanceof Entry) {
 			Entry entry = (Entry)workArea;
 			List entries = new ArrayList();
 			entries.add(entry);
