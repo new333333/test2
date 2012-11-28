@@ -49,8 +49,8 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.extuser.ExternalUserRequiresVerificationException;
 import org.kablink.teaming.extuser.ExternalUserRespondingToInvitationException;
+import org.kablink.teaming.extuser.ExternalUserRespondingToVerificationException;
 import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
@@ -179,84 +179,12 @@ public class LoginController  extends SAbstractControllerRetry {
     				}
     			}
     		}
-    		else if ( sessionObj instanceof ExternalUserRequiresVerificationException )
-    		{
-    			if ( Utils.checkIfFilr() )
-    			{
-	    			ExternalUserRequiresVerificationException ex;
-	    			
-	    			// An external user successfully logged in for the first time.
-	    			// Get the external user that authenticated.
-	    			ex = (ExternalUserRequiresVerificationException) sessionObj;
-	    			
-	    			// Send the external user a confirmation email.
-	    			{
-		    			String permaLink = null;
-	        			User extUser;
-	        			String redirectUrl;
-	
-	        			extUser = ex.getExternalUser();
-	        			
-	        			// Get the original url the user used to hit Filr.
-	    				redirectUrl = ex.getRedirectUrl();
-	    				
-	    				// Get the permalink to the item that was shared.  redirectUrl is the original url the
-	    				// user was sent in the first share email.  We need to replace "euet=xxx" with
-	    				// "euet=some new token value".
-	    				if ( redirectUrl != null && redirectUrl.length() > 0 )
-	    				{
-	    	    			String newToken;
-	    	    			String[] params;
-	
-	    				    // Create a new token
-	    					newToken = ExternalUserUtil.encodeUserTokenWithNewSeed( extUser );
-	
-	    					params = redirectUrl.split( "&" );
-	    					for ( String param : params )
-	    					{
-	    						String[] split;
-	    						
-	    						split = param.split( "=" );
-	    						if ( split != null && split.length == 2 )
-	    						{
-	    							String name;
-	    							String value;
-	
-	    							name = split[0];
-	    							value = split[1];
-	    							if ( value != null && name != null && name.equalsIgnoreCase( "euet" ) )
-	    							{
-	    								String old;
-	    								String replacement;
-	    								
-	    								old = name + "=" + value;
-	    								replacement = name + "=" + newToken;
-	    								permaLink = redirectUrl.replaceFirst( old, replacement );
-	    								break;
-	    							}
-	    						}
-	    					}
-	    				}
-						
-						// Do we have a permalink?
-						if ( permaLink != null )
-						{
-							// Send a confirmation email to the user.
-							try
-							{
-								// Send the confirmation.
-								//!!! getAdminModule().sendShareConfirmMailToExternalUser( extUser.getId(), permaLink );
-							}
-							catch ( Exception sendEmailEx )
-							{
-							}
-						}
-	    			}
-	
-	    			// Tell the login dialog that an external user authenticated for the first time.
-	    			// The login dialog ui should tell the user to go check their email.
-	    			model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_REGISTRATION_REQUIRED );
-    			}
+    		else if(sessionObj instanceof ExternalUserRespondingToVerificationException) {
+    			ExternalUserRespondingToVerificationException ex = (ExternalUserRespondingToVerificationException) sessionObj;
+        		model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_PROMPT_FOR_LOGIN );
+        		String refererUrl = ex.getVerificationLink();
+    			model.put(WebKeys.URL, refererUrl);
+    			model.put( "loginRefererUrl", refererUrl );
     		}
     		else if ( sessionObj instanceof AuthenticationException )
     		{

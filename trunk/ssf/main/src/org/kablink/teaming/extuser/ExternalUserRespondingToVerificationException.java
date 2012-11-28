@@ -36,29 +36,31 @@ import org.kablink.teaming.domain.User;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * This exception is used to convey normal status code through call stack without
- * affecting the signatures of the existing methods. 
- * 
  * @author jong
  *
  */
-public class ExternalUserRequiresVerificationException extends AuthenticationException {
+public class ExternalUserRespondingToVerificationException extends AuthenticationException {
 
 	private static final long serialVersionUID = 1L;
 	
 	private User user;
-	private String redirectUrl;
+	private String verificationLink;
 
-	public ExternalUserRequiresVerificationException(User user, String redirectUrl) {
-		super("Requires verification");
+	/**
+	 * @param msg
+	 */
+	public ExternalUserRespondingToVerificationException(User user, String verificationLink) {
+		super("External user is responding to verification");
 		this.user = user;
+		this.verificationLink = verificationLink;
 	}
-	
+
 	public User getExternalUser() {
 		return user;
 	}
 	
-	public String getRedirectUrl() {
-		return redirectUrl;
+	public String getVerificationLink() {
+		return verificationLink;
 	}
+	
 }

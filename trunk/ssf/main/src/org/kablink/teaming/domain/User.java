@@ -523,7 +523,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		Long seed = getExtProvSeed();
 		if(seed == null)
 			seed = 0L;
-		return EncryptUtil.encryptSHA256(getId(), String.valueOf(getCreation().getDate().getTime()), seed);
+		return EncryptUtil.encryptSHA256(getId(), getName(), seed);
 	}
 	
 	public String getPrivateDigest(String binderId) {

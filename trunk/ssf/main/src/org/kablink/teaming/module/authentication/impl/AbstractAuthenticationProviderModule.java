@@ -53,7 +53,6 @@ import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
-import org.kablink.teaming.extuser.ExternalUserRequiresVerificationException;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
@@ -404,10 +403,6 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 			catch(AuthenticationServiceException e) {
 				Throwable t = e.getCause();
 				logger.error(e.getMessage() + ((t != null)? ": " + t.toString() : ""));
-				throw e;
-			}
-			catch(ExternalUserRequiresVerificationException e) {
-				// This is not an error. Just rethrow.
 				throw e;
 			}
 			catch(AuthenticationException e) {
