@@ -1087,13 +1087,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
       	}
       	//only re-index if readers were affected.  Do outside transaction
       	boolean conditionsExist = checkIfConditionsExist(workArea);
-		if (!originalNFA.equals(currentNFA) && (workArea instanceof Binder)) {
-			Binder binder = (Binder)workArea;
-			loadBinderProcessor(binder).indexBinderIncremental(binder, true);
-		} else if ((!originalRead.equals(currentRead) || !originalVBT.equals(currentVBT) || 
+		if ((!originalRead.equals(currentRead) || !originalVBT.equals(currentVBT) || !originalNFA.equals(currentNFA) ||
 				conditionsExist || conditionsExistInOrigianl) && (workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
-			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null);
+			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null, true);
 		} else if (!originalRead.equals(currentRead) && workArea instanceof Entry) {
 			Entry entry = (Entry)workArea;
 			List entries = new ArrayList();
@@ -1512,7 +1509,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         //index outside of transaction
         if (index && (workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
-			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null);
+			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null, true);
 		}
      }
 	

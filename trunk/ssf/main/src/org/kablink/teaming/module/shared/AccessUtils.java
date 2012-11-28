@@ -485,6 +485,7 @@ public class AccessUtils  {
 			return new HashSet<String>();
 		}
 		workArea = topFolder;
+		Long ownerId = topFolder.getOwnerId();		//The owner of the folder supplying the acl
 			
 		//Start with a list of the functions (aka Roles) that are used in this workArea
 		List<WorkAreaFunctionMembership> wfms = getInstance().getWorkAreaFunctionMembershipManager()
@@ -496,8 +497,8 @@ public class AccessUtils  {
         	Function f = getInstance().getFunctionManager().getFunction(zoneId, fId);
     		for (Long mId : (Set<Long>)wfm.getMemberIds()) {
     	    	String sId = String.valueOf(mId);
-    	    	if (mId.equals(ObjectKeys.TEAM_MEMBER_ID)) sId = Constants.READ_ACL_TEAM;
-    	    	if (mId.equals(ObjectKeys.OWNER_USER_ID)) sId = Constants.READ_ACL_BINDER_OWNER;
+    	    	if (mId.equals(ObjectKeys.TEAM_MEMBER_ID)) sId = Constants.READ_ACL_TEAM + String.valueOf(topFolder.getId());
+    	    	if (mId.equals(ObjectKeys.OWNER_USER_ID)) sId = String.valueOf(ownerId);
     			rootIds.add(sId);
     		}
     	}

@@ -112,7 +112,7 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 	public ChangeLog processChangeLog(Binder binder, String operation) { 
 		return null;
 	}
-    public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground) {
+    public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground, boolean indexEntries) {
     	//don't index
     }
     public void indexTeamMembership(Binder binder, boolean cascade) {
