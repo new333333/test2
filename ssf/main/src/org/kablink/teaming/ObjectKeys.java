@@ -89,6 +89,8 @@ public interface ObjectKeys {
 	public static final String DEFAULT_MIRRORED_FILE_FOLDER_DEF="402883a41edab1d5011edac394df0032";
 	public static final String DEFAULT_LIBRARY_ENTRY_DEF="402883c6115753d8011157829367000f";
 	public static final String DEFAULT_LIBRARY_FOLDER_DEF="402883c6115753d8011157619e350009";
+	public static final String DEFAULT_MIRRORED_FILR_FILE_ENTRY_DEF="402883a41edab1d5011edac394df0033";
+	public static final String DEFAULT_MIRRORED_FILR_FILE_FOLDER_DEF="402883a41edab1d5011edac394df0034";
 
 	//reserved internalIds for templates.
 	//presence is used to distinquish system templates from customer templates
