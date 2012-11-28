@@ -946,7 +946,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			// shared but also to the sub-binders as long as those sub-binders inherit ACLs from
 			// their parents. 
 			Binder binder = (Binder) entity;
-			loadBinderProcessor(binder).indexFunctionMembership(binder, true, Boolean.FALSE);
+			loadBinderProcessor(binder).indexFunctionMembership(binder, true, Boolean.FALSE, false);
 		}
 	}
 
