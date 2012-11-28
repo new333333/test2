@@ -2424,7 +2424,7 @@ public class GwtMenuHelper {
 			// workspace view?
 			else if (folderInfo.isBinderProfilesRootWS()) {
 				// Yes!  Can the user access the root profiles binder?
-				if (GwtServerHelper.canUserViewBinder(folderInfo)) {
+				if (GwtServerHelper.canUserViewBinder(bs, folderInfo)) {
 					// Yes!  Construct the items for viewing the root
 					// profiles binder.
 					constructEntryProfilesRootWSItems(entryToolbar, bs, request, ws, folderInfo.getWorkspaceType().isProfileRootManagement());
@@ -2437,7 +2437,7 @@ public class GwtMenuHelper {
 			else if (isBinderCollection) {
 				// Yes!  Can the user access this collection?
 				CollectionType ct = folderInfo.getCollectionType();
-				if (GwtServerHelper.canUserAccessCollection(ct)) {
+				if (GwtServerHelper.canUserAccessCollection(bs, ct)) {
 					// Yes!  Construct the appropriate menu items for
 					// it.
 					boolean isCollectionMyFiles      = (CollectionType.MY_FILES       == ct);

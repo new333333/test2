@@ -3241,7 +3241,7 @@ public class GwtViewHelper {
 	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter) throws GwtTeamingException {
 		try {
 			// Is this a binder the user can view?
-			if (!(GwtServerHelper.canUserViewBinder(folderInfo))) {
+			if (!(GwtServerHelper.canUserViewBinder(bs, folderInfo))) {
 				// No!  Return an empty set of rows.
 				return
 					new FolderRowsRpcResponseData(
@@ -5270,31 +5270,10 @@ public class GwtViewHelper {
 			// Yes!  Does it have the showCollection parameter?
 			String showCollection = getQueryParameterString(nvMap, WebKeys.URL_SHOW_COLLECTION);
 			if (MiscUtil.hasString(showCollection)) {
-				// Yes!  Can the user access this collection type being
-				// shown?
-				CollectionType ct = CollectionType.getEnum(showCollection);
-				if (GwtServerHelper.canUserAccessCollection(user, ct)) {
-					// Yes!  What collection type is it?
-					switch (ct) {
-					case MY_FILES:
-						// My Files!  We don't allow that if adHoc
-						// folders are not allowed and the user doesn't
-						// have a home folder.  In those cases, we go
-						// to Shared With Me.
-						if (GwtServerHelper.useHomeAsMyFiles(bs) && (!(GwtServerHelper.userHasHomeFolder(bs)))) {
-							ct = CollectionType.SHARED_WITH_ME;
-						}
-						
-						break;
-						
-					default:
-						// All other scenarios we allow through.
-						break;
-					}
-				}
-
-				// Return a BinderInfo for the collection.
-				bi = GwtServerHelper.buildCollectionBI(ct, user.getWorkspaceId());
+				// Yes!  Return a BinderInfo for the collection.
+				bi = GwtServerHelper.buildCollectionBI(
+					CollectionType.getEnum(showCollection),
+					user.getWorkspaceId());
 			}
 		}
 		vi.setBinderInfo(bi);
