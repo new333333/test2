@@ -3547,7 +3547,7 @@ public class BinderHelper {
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		} else if (ObjectKeys.SEARCH_SCOPE_NET_FOLDERS.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
 			//Search just the user's net folders
-			//Build the ancilary criteria for searching within the My Files collection
+			//Build the ancilary criteria for searching within the Net Folders collection
 			Criteria crit = SearchUtils.getNetFoldersSearchCriteria(bs);
 			// Perform the search for the binders to search...
 			int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
@@ -3569,6 +3569,34 @@ public class BinderHelper {
 			}
 			//Now, using the binderIds, get the entries that match the search options
 			crit = SearchUtils.getBinderEntriesSearchCriteria(bs, binderIds, false);
+			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
+		} else if (ObjectKeys.SEARCH_SCOPE_SHARED_WITH_ME.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
+			//Search the user's "shared with me" files
+			//Build the ancilary criteria for searching within this collection
+			Criteria crit = SearchUtils.getSharedWithMePrincipalsCriteria();
+			
+			// Perform the search for the binders to search...
+			int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+			Map searchResults = bs.getBinderModule().executeSearchQuery(
+				crit,
+				Constants.SEARCH_MODE_NORMAL,
+				0,
+				maxResults);
+			
+			// Get the binder hits
+			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+			List<String> binderIds = new ArrayList();
+			List<String> entryIds = new ArrayList();
+			for (Map entryMap:  searchEntries) {
+				String docId = (String)entryMap.get(Constants.DOCID_FIELD);
+				String docType = (String)entryMap.get(Constants.DOC_TYPE_FIELD);
+				if (docId != null && Constants.DOC_TYPE_BINDER.equals(docType)) {
+					binderIds.add(docId);
+				} else if (docId != null && Constants.DOC_TYPE_ENTRY.equals(docType)) {
+					entryIds.add(docId);
+				}
+			}
+			crit = SearchUtils.getSharedWithMeSearchCriteria(binderIds, entryIds);
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		} else if (ObjectKeys.SEARCH_SCOPE_CURRENT.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
 			//Search the current folder (if known)

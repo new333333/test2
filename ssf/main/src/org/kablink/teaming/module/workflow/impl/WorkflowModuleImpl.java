@@ -862,6 +862,11 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
    					 " " + tx.message);
    			} catch (Exception ex) {
    				logger.error("Error processing timeout", ex);
+   				Timer timer = (Timer)context.getSession().load(Timer.class, timerId);
+				if(logger.isDebugEnabled())	logger.debug("Forcibly deleting timer '"+timer+"'");
+				SchedulerSession schedulerSession = context.getSchedulerSession();
+				schedulerSession.deleteTimer(timer);
+
    			} finally {
 				context.close();
 			}

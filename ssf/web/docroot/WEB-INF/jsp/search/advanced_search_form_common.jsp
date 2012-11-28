@@ -119,6 +119,16 @@
 								<ssf:nlt tag="search.scope.netFolders"/>
 							  </td>
 							</tr>
+						    <tr>
+						      <td width="20">
+								<input type="radio" name="scope" value="sharedWithMe" 
+								<c:if test="${ss_searchScope == 'sharedWithMe'}"> checked="checked" </c:if>
+								style="width:20px;">
+							  </td>
+							  <td>
+								<ssf:nlt tag="search.scope.sharedWithMe"/>
+							  </td>
+							</tr>
 						    <c:if test="${ss_searchContext == 'binder' || scope == 'current'}">
 						     <tr>
 						      <td width="20" valign="top">
