@@ -50,14 +50,20 @@ import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
+import org.kablink.teaming.remoting.rest.v1.util.FilePropertiesBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
+import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 import org.kablink.teaming.rest.v1.model.ParentBinder;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.util.api.ApiErrorCode;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Junction;
+import org.kablink.util.search.Restrictions;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -78,17 +84,63 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * User: david
  * Date: 5/22/12
  * Time: 11:02 AM
  */
-@Path("/files/{id}")
+@Path("/files")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FileResource extends AbstractFileResource {
+
+    @GET
+    public SearchResultList<FileProperties> getFiles(
+            @QueryParam("id") Set<String> ids,
+            @QueryParam("file_name") String fileName,
+            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
+            @QueryParam("library") @DefaultValue("false") boolean onlyLibraryFiles,
+            @QueryParam("first") @DefaultValue("0") Integer offset,
+            @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        nextParams.put("library", Boolean.toString(onlyLibraryFiles));
+
+        Junction criterion = Restrictions.conjunction()
+            .add(buildAttachmentsCriterion());
+
+        if (ids!=null && ids.size()>0) {
+            Junction or = Restrictions.disjunction();
+            for (String id : ids) {
+                or.add(Restrictions.eq(Constants.FILE_ID_FIELD, id));
+            }
+            criterion.add(or);
+            nextParams.put("id", ids);
+        }
+        if (onlyLibraryFiles) {
+            criterion.add(buildLibraryCriterion(onlyLibraryFiles));
+        }
+        if (fileName!=null) {
+            nextParams.put("file_name", fileName);
+            criterion.add(buildFileNameCriterion(fileName));
+        }
+        Criteria crit = new Criteria();
+        crit.add(criterion);
+        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<FileProperties> results = new SearchResultList<FileProperties>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new FilePropertiesBuilder(), resultsMap, "/files", nextParams, offset);
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
+
+        return results;
+
+    }
+
     @POST
+    @Path("{id}")
    	@Consumes(MediaType.MULTIPART_FORM_DATA)
    	public FileProperties writeFileContentById_MultipartFormData(@PathParam("id") String fileId,
    			@QueryParam("data_name") String dataName,
@@ -118,6 +170,7 @@ public class FileResource extends AbstractFileResource {
    	}
 
    	@POST
+    @Path("{id}")
    	public FileProperties writeFileContentById_Raw(@PathParam("id") String fileId,
                @QueryParam("data_name") String dataName,
                @QueryParam("mod_date") String modDateISO8601,
@@ -146,12 +199,14 @@ public class FileResource extends AbstractFileResource {
    	}
 
    	@POST
+    @Path("{id}")
    	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
    	public FileProperties writeFileContentById_ApplicationFormUrlencoded(@PathParam("id") String fileId) {
    		throw new UnsupportedMediaTypeException("'" + MediaType.APPLICATION_FORM_URLENCODED + "' format is not supported by this method. Use '" + MediaType.MULTIPART_FORM_DATA + "' or raw type");
    	}
 
    	@GET
+    @Path("{id}")
    	public Response readFileContentById(@PathParam("id") String fileId,
    			@Context HttpServletRequest request) {
    		FileAttachment fa = findFileAttachment(fileId);
@@ -160,7 +215,7 @@ public class FileResource extends AbstractFileResource {
    	}
 
    	@GET
-    @Path("thumbnail")
+    @Path("{id}/thumbnail")
    	public Response readThumbnailFileContentById(@PathParam("id") String fileId,
    			@Context HttpServletRequest request) {
    		FileAttachment fa = findFileAttachment(fileId);
@@ -169,7 +224,7 @@ public class FileResource extends AbstractFileResource {
    	}
 
    	@GET
-    @Path("scaled")
+    @Path("{id}/scaled")
    	public Response readScaledFileContentById(@PathParam("id") String fileId,
    			@Context HttpServletRequest request) {
    		FileAttachment fa = findFileAttachment(fileId);
@@ -178,6 +233,7 @@ public class FileResource extends AbstractFileResource {
    	}
 
     @DELETE
+    @Path("{id}")
     public void deleteFileContent(@PathParam("id") String fileId) throws WriteFilesException, WriteEntryDataException {
         FileAttachment fa = findFileAttachment(fileId);
         DefinableEntity entity = fa.getOwner().getEntity();
@@ -185,7 +241,7 @@ public class FileResource extends AbstractFileResource {
     }
 
     @POST
-    @Path("/name")
+    @Path("{id}/name")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileProperties renameFile(@PathParam("id") String fileId,
@@ -219,7 +275,7 @@ public class FileResource extends AbstractFileResource {
     }
 
     @POST
-    @Path("/parent_folder")
+    @Path("{id}/parent_folder")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileProperties moveFile(@PathParam("id") String fileId,
@@ -251,7 +307,7 @@ public class FileResource extends AbstractFileResource {
     }
 
     @GET
-    @Path("/metadata")
+    @Path("{id}/metadata")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileProperties getMetaData(@PathParam("id") String fileId) {
         FileAttachment fa = findFileAttachment(fileId);
@@ -259,7 +315,7 @@ public class FileResource extends AbstractFileResource {
     }
 
     @GET
-    @Path("/major_version")
+    @Path("{id}/major_version")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileProperties getMajorVersion(@PathParam("id") String fileId) {
         FileAttachment fa = findFileAttachment(fileId);
@@ -269,7 +325,7 @@ public class FileResource extends AbstractFileResource {
     }
 
     @POST
-    @Path("/major_version")
+    @Path("{id}/major_version")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileProperties incrementMajorVersion(@PathParam("id") String fileId) {
         FileAttachment fa = findFileAttachment(fileId);
@@ -278,7 +334,7 @@ public class FileResource extends AbstractFileResource {
     }
 
     @GET
-    @Path("/versions")
+    @Path("{id}/versions")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public SearchResultList<FileVersionProperties> getVersions(@PathParam("id") String fileId) {
         FileAttachment fa = findFileAttachment(fileId);
@@ -289,7 +345,7 @@ public class FileResource extends AbstractFileResource {
     }
 
     @GET
-    @Path("/versions/current")
+    @Path("{id}/versions/current")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileVersionProperties getCurrent(@PathParam("id") String fileId) {
         FileAttachment fa = findFileAttachment(fileId);
@@ -300,7 +356,7 @@ public class FileResource extends AbstractFileResource {
     }
 
     @POST
-    @Path("/versions/current")
+    @Path("{id}/versions/current")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileVersionProperties setCurrent(@PathParam("id") String fileId,
                                      FileVersionProperties properties) {
