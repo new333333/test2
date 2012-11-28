@@ -1537,12 +1537,13 @@ public class GwtServerHelper {
 	 * Returns true if the user supports the give collection type in
 	 * the current environment or false otherwise.
 	 * 
+	 * @param bs
 	 * @param user
 	 * @param ct
 	 * 
 	 * @return
 	 */
-	public static boolean canUserAccessCollection(User user, CollectionType ct) {		
+	public static boolean canUserAccessCollection(AllModulesInjected bs, User user, CollectionType ct) {		
 		boolean isGuestOrExternal = (user.isShared() || (!(user.getIdentityInfo().isInternal())));
 		boolean reply             = true;
 		switch (ct) {
@@ -1554,6 +1555,13 @@ public class GwtServerHelper {
 			// external users. 
 			if (Utils.checkIfFilr() && isGuestOrExternal) {
 				reply = false;
+			}
+			else {
+				// The user can access My Files if adHoc folders are
+				// not allowed and the user doesn't have a home folder.
+				if (useHomeAsMyFiles(bs, user) && (!(userHasHomeFolder(bs, user)))) {
+					reply = false;
+				}
 			}
 			break;
 			
@@ -1572,30 +1580,31 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
-	public static boolean canUserAccessCollection(CollectionType ct) {
+	public static boolean canUserAccessCollection(AllModulesInjected bs, CollectionType ct) {
 		// Always use the initial form of the method.
-		return canUserAccessCollection(getCurrentUser(), ct);
+		return canUserAccessCollection(bs, getCurrentUser(), ct);
 	}
 	
 	public static boolean canUserAccessCollection(AllModulesInjected bs, Long userId, CollectionType ct) {
 		// Always use the initial form of the method.
 		User user = ((User) bs.getProfileModule().getEntry(userId));
-		return canUserAccessCollection(user, ct);
+		return canUserAccessCollection(bs, user, ct);
 	}
 	
 	/**
 	 * Returns true if the user can view the binder referenced by a
 	 * BinderInfo and false otherwise.
 	 * 
+	 * @param bs
 	 * @param user
 	 * @param bi
 	 * 
 	 * @return
 	 */
-	public static boolean canUserViewBinder(User user, BinderInfo bi) {
+	public static boolean canUserViewBinder(AllModulesInjected bs, User user, BinderInfo bi) {
 		boolean	reply;
 		if (bi.isBinderCollection()) {
-			reply = GwtServerHelper.canUserAccessCollection(user, bi.getCollectionType());
+			reply = canUserAccessCollection(bs, user, bi.getCollectionType());
 		}
 		else if (bi.isBinderProfilesRootWS()) {
 			boolean isGuestOrExternal = (user.isShared() || (!(user.getIdentityInfo().isInternal())));
@@ -1610,12 +1619,12 @@ public class GwtServerHelper {
 	public static boolean canUserViewBinder(AllModulesInjected bs, Long userId, BinderInfo bi) {
 		// Always use the initial form of the method.
 		User user = ((User) bs.getProfileModule().getEntry(userId));
-		return canUserViewBinder(user, bi);
+		return canUserViewBinder(bs, user, bi);
 	}
 	
-	public static boolean canUserViewBinder(BinderInfo bi) {
+	public static boolean canUserViewBinder(AllModulesInjected bs, BinderInfo bi) {
 		// Always use the initial form of the method.
-		return canUserViewBinder(getCurrentUser(), bi);
+		return canUserViewBinder(bs, getCurrentUser(), bi);
 	}
 	
 	/**
@@ -1882,7 +1891,7 @@ public class GwtServerHelper {
 	/*
 	 * Creates a user's My Files container and returns its ID.
 	 */
-	private static Long createMyFilesFolder(AllModulesInjected bs) {
+	private static Long createMyFilesFolder(AllModulesInjected bs, User user) {
 		// Can we determine the template to use for the My Files
 		// folder?
 		TemplateBinder	mfFolderTemplate   = bs.getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY);
@@ -1906,7 +1915,7 @@ public class GwtServerHelper {
 				}
 				
 				// Can we create a folder with this name?
-				final Long		mfFolderId = bs.getTemplateModule().addBinder(mfFolderTemplateId, getCurrentUser().getWorkspaceId(), mfTitle, null).getId();
+				final Long		mfFolderId = bs.getTemplateModule().addBinder(mfFolderTemplateId, user.getWorkspaceId(), mfTitle, null).getId();
 				final Binder	mfFolder   = bm.getBinder(mfFolderId); 
 				if (null != mfFolder) {
 					// Yes!  Mark it as being the My Files folder...
@@ -1943,6 +1952,12 @@ public class GwtServerHelper {
 		// If we get here, reply is null or refers to the ID of the
 		// newly created folder.  Return it.
 		return reply;
+	}
+	
+	@SuppressWarnings("unused")
+	private static Long createMyFilesFolder(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		return createMyFilesFolder(bs, getCurrentUser());
 	}
 	
 	/**
@@ -5475,11 +5490,11 @@ public class GwtServerHelper {
 	/*
 	 * Returns a List<Long> of the current user's home folder IDs.
 	 */
-	private static List<Long> getHomeFolderIds(AllModulesInjected bs) {
+	private static List<Long> getHomeFolderIds(AllModulesInjected bs, User user) {
 		// Build a search for the user's binders...
 		Criteria crit = new Criteria();
 		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(getCurrentUser().getWorkspaceId())}));
+		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(user.getWorkspaceId())}));
 		
 		// ...that are file folders...
 		crit.add(in(Constants.FAMILY_FIELD,     new String[]{Definition.FAMILY_FILE}));
@@ -5511,20 +5526,32 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
+	@SuppressWarnings("unused")
+	private static List<Long> getHomeFolderIds(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		return getHomeFolderIds(bs, getCurrentUser());
+	}
+	
 	/**
 	 * Returns the current user's home folder ID.
 	 * 
 	 * @param bs
+	 * @param user
 	 * 
 	 * @return
 	 */
-	public static Long getHomeFolderId(AllModulesInjected bs) {
-		List<Long> homeFolderIds = getHomeFolderIds(bs);
+	public static Long getHomeFolderId(AllModulesInjected bs, User user) {
+		List<Long> homeFolderIds = getHomeFolderIds(bs, user);
 		Long reply;
 		if ((null != homeFolderIds) && (!(homeFolderIds.isEmpty())))
 		     reply = homeFolderIds.get(0);
 		else reply = null;
 		return reply;
+	}
+	
+	public static Long getHomeFolderId(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		return getHomeFolderId(bs, getCurrentUser());
 	}
 	
 	/**
@@ -6032,7 +6059,7 @@ public class GwtServerHelper {
 			if (0 < baseUrl.length()) {
 				// ...get what we know about desktop application
 				// ...deployment...
-				GwtFileSyncAppConfiguration fsaConfig = GwtServerHelper.getFileSyncAppConfiguration(bs);
+				GwtFileSyncAppConfiguration fsaConfig = getFileSyncAppConfiguration(bs);
 				desktopAppEnabled = fsaConfig.getIsDeploymentEnabled();
 				if (desktopAppEnabled) {
 					UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
@@ -6107,15 +6134,19 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static Long getMyFilesContainerId(AllModulesInjected bs) {
+	public static Long getMyFilesContainerId(AllModulesInjected bs, User user) {
 		Long reply;
-		if (useHomeAsMyFiles( bs ))
-		     reply = getHomeFolderId(bs);
+		if (useHomeAsMyFiles(bs, user))
+		     reply = getHomeFolderId(bs, user);
 		else reply = null;
 		if (null == reply) {
-			reply = getMyFilesFolderId(bs, true);	// true -> Create it if it doesn't exist.
+			reply = getMyFilesFolderId(bs, user, true);	// true -> Create it if it doesn't exist.
 		}
 		return reply;
+	}
+	public static Long getMyFilesContainerId(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		return getMyFilesContainerId(bs, getCurrentUser());
 	}
 
 	/**
@@ -6139,12 +6170,13 @@ public class GwtServerHelper {
 	 * Returns a List<Long> of the current user's My Files folder IDs.
 	 * 
 	 * @param bs
+	 * @param user
 	 */
-	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs) {
+	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs, User user) {
 		// Build a search for the user's binders...
 		Criteria crit = new Criteria();
 		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(getCurrentUser().getWorkspaceId())}));
+		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(user.getWorkspaceId())}));
 		
 		// ...that are marked as their My Files folder...
 		crit.add(in(Constants.FAMILY_FIELD,         new String[]{Definition.FAMILY_FILE}));
@@ -6175,27 +6207,38 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
+	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		return getMyFilesFolderIds(bs, getCurrentUser());
+	}
+	
 	/**
 	 * If the user has a folder that's recognized as their My Files
 	 * folder, it's ID is returned.  Otherwise, null is returned.
 	 * 
 	 * @param bs
+	 * @param user
 	 * 
 	 * @return
 	 */
-	public static Long getMyFilesFolderId(AllModulesInjected bs, boolean createIfNeccessary) {
+	public static Long getMyFilesFolderId(AllModulesInjected bs, User user, boolean createIfNeccessary) {
 		Long reply;
-		List<Long> mfFolderIds = getMyFilesFolderIds(bs);
+		List<Long> mfFolderIds = getMyFilesFolderIds(bs, user);
 		if ((null != mfFolderIds) && (!(mfFolderIds.isEmpty()))) {
 			reply = mfFolderIds.get(0);
 		}
 		else if (createIfNeccessary) {
-			reply = createMyFilesFolder(bs);
+			reply = createMyFilesFolder(bs, user);
 		}
 		else {
 			reply = null;
 		}
 		return reply;
+	}
+	
+	public static Long getMyFilesFolderId(AllModulesInjected bs, boolean createIfNeccessary) {
+		// Always use the initial form of the method.
+		return getMyFilesFolderId(bs, getCurrentUser(), createIfNeccessary);
 	}
 	
 	/**
@@ -7889,7 +7932,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw getGwtTeamingException(ex);
 		}
 		
 		// If we get here the group is not the "all users" group.
@@ -9046,7 +9089,7 @@ public class GwtServerHelper {
 				GwtTeamingException gtEx;
 				
 				// No
-				gtEx = GwtServerHelper.getGwtTeamingException();
+				gtEx = getGwtTeamingException();
 				gtEx.setExceptionType( ExceptionType.INVALID_AUTO_UPDATE_URL );
 				throw gtEx;				
 			}
@@ -9938,19 +9981,19 @@ public class GwtServerHelper {
 	 * Returns true if the current user should have their My Files area
 	 * mapped to their home directory and false otherwise.
 	 * 
-	 * @param ami
+	 * @param bs
+	 * @param user
 	 * 
 	 * @return
 	 */
-	public static boolean useHomeAsMyFiles(AllModulesInjected ami) {
+	public static boolean useHomeAsMyFiles(AllModulesInjected bs, User user) {
 		// If we're running Filr...
 		if (Utils.checkIfFilr()) {
 			// ...and the user has been provisioned from ldap...
-			User			user   = getCurrentUser();
-			IdentityInfo	idInfo = user.getIdentityInfo();
+			IdentityInfo idInfo = user.getIdentityInfo();
 			if (idInfo.isFromLdap()) {
 				// ...check the user's and/or zone setting.
-				Boolean result = GwtUIHelper.getEffectiveAdhocFolderSetting(ami, user);
+				Boolean result = GwtUIHelper.getEffectiveAdhocFolderSetting(bs, user);
 				if ((null != result) && (!(result))) {
 					return true;
 				}
@@ -9961,16 +10004,26 @@ public class GwtServerHelper {
 		// false.
 		return false;
 	}
+	
+	public static boolean useHomeAsMyFiles(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		return useHomeAsMyFiles(bs, getCurrentUser());
+	}
 
 	/**
 	 * Returns true if the current user has a home folder and false otherwise.
 	 * 
 	 * @param bs
+	 * @param user
 	 * 
 	 * @return
 	 */
+	public static boolean userHasHomeFolder(AllModulesInjected bs, User user) {
+		return (null != getHomeFolderId(bs, user));
+	}
+	
 	public static boolean userHasHomeFolder(AllModulesInjected bs) {
-		return (null != getHomeFolderId(bs));
+		return userHasHomeFolder(bs, getCurrentUser());
 	}
 
 	/**
