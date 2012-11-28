@@ -94,6 +94,12 @@ public class BinderViewsHelper {
 	private static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized strings.
 	private static ShareThisDlg			m_shareDlg;								// An instance of a share this dialog.
 	private static WhoHasAccessDlg		m_whaDlg;								// An instance of a who has access dialog used to view who has access to an entity. 
+
+	// Controls whether a prompt is included in the purge user
+	// workspace confirmation dialog allowing for the purging of the
+	// source information for net folders.  true -> The prompt is
+	// included.  false -> It's not.
+	private static boolean PROMPT_PURGE_USER_WORKSPACE_NET_FOLDERS	= false;
 	
 	/*
 	 * Constructor method. 
@@ -829,7 +835,11 @@ public class BinderViewsHelper {
 
 		// Is the user sure they want to the selected user workspaces
 		// and user objects?
-		final CheckBox cb = new CheckBox(m_messages.binderViewsPromptPurgeMirroredFolders());
+		CheckBox cb;
+		if (PROMPT_PURGE_USER_WORKSPACE_NET_FOLDERS)
+		     cb = new CheckBox(m_messages.binderViewsPromptPurgeMirroredFolders());
+		else cb = null;
+		final CheckBox finalCB = cb;
 		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -851,7 +861,11 @@ public class BinderViewsHelper {
 						@Override
 						public void accepted() {
 							// Yes, they're sure!  Perform the purge.
-							DeletePurgeUsersHelper.purgeUsersAsync(userIds, cb.getValue());
+							DeletePurgeUsersHelper.purgeUsersAsync(
+								userIds,
+								((null == finalCB) ?
+									false          :
+									finalCB.getValue()));
 						}
 
 						@Override
@@ -860,7 +874,7 @@ public class BinderViewsHelper {
 						}
 					},
 					m_messages.binderViewsConfirmPurgeUsers(),
-					cb);
+					finalCB);
 			}
 		});
 	}
@@ -880,7 +894,11 @@ public class BinderViewsHelper {
 		
 		// Is the user sure they want to purge the selected user
 		// workspaces?
-		final CheckBox cb = new CheckBox(m_messages.binderViewsPromptPurgeMirroredFolders());
+		CheckBox cb;
+		if (PROMPT_PURGE_USER_WORKSPACE_NET_FOLDERS)
+		     cb = new CheckBox(m_messages.binderViewsPromptPurgeMirroredFolders());
+		else cb = null;
+		final CheckBox finalCB = cb;
 		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -902,7 +920,11 @@ public class BinderViewsHelper {
 						@Override
 						public void accepted() {
 							// Yes, they're sure!  Perform the purge.
-							DeletePurgeUsersHelper.purgeUserWorkspacesAsync(userIds, cb.getValue());
+							DeletePurgeUsersHelper.purgeUserWorkspacesAsync(
+								userIds,
+								((null == finalCB) ?
+									false          :
+									finalCB.getValue()));
 						}
 
 						@Override
@@ -911,7 +933,7 @@ public class BinderViewsHelper {
 						}
 					},
 					m_messages.binderViewsConfirmPurgeUserWS(),
-					cb);
+					finalCB);
 			}
 		});
 	}
