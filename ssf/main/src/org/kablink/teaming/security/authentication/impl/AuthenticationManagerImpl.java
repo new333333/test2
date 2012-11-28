@@ -54,7 +54,6 @@ import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
-import org.kablink.teaming.extuser.ExternalUserRequiresVerificationException;
 import org.kablink.teaming.modelprocessor.ProcessorManager;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;

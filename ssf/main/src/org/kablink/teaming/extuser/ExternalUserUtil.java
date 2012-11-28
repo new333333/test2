@@ -105,7 +105,7 @@ public class ExternalUserUtil {
 	    return map;  
 	}
 	
-	public static void handleResponseToConfirmation(String userToken) {
+	public static void handleResponseToConfirmationAfterSuccessfulLocalLogin(String userToken) {
 		if(Validator.isNotNull(userToken)) {
 			String zoneName = getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName());
 			Long userId = ExternalUserUtil.getUserId(userToken);
@@ -123,7 +123,7 @@ public class ExternalUserUtil {
 		}
 	}
 	
-	public static void handleResponseToInvitation(HttpSession session, String url) 
+	public static void handleResponseToInvitationOrConfirmation(HttpSession session, String url) 
 			throws ExternalUserRespondingToInvitationException, InternalException {
 		Map<String,String> queryParams = ExternalUserUtil.getQueryParamsFromUrl(url);
 		String token = queryParams.get(ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN);
@@ -141,6 +141,32 @@ public class ExternalUserUtil {
 				OpenIDProvider openidProvider = ExternalUserUtil.getAllowedOpenIDProviderGivenEmailAddress(user.getName());				
 				// Create an exception object to be used as more like a normal status code
 				ExternalUserRespondingToInvitationException exc = new ExternalUserRespondingToInvitationException(user, (openidProvider==null)? null:openidProvider.getName(), url);
+				// Unfortunately, the spring security framework won't store this exception into the session even though
+				// it correctly catches it and triggers redirect to the login page. So we must put it in ourselves.
+				session.setAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY, exc);
+				// Store in the session the original access url so that we can redirect the user to correct entity
+				// after successful authentication with OpenID, in the case the user chooses to authenticate via 
+				// OpenID rather than going through the self-provisioning steps.
+    			session.setAttribute(SavedRequestAwareAuthenticationSuccessHandler.FILR_REDIRECT_AFTER_SUCCESSFUL_LOGIN, url);
+				// Throwing this exception is NOT an indication of an error. Rather, this signals
+				// GWT layer to proceed to the next step in the normal flow.
+				throw exc;
+			}
+			else if(User.ExtProvState.credentialed == user.getExtProvState()) {
+				// The user is responding to the confirmation previously sent out.
+				// In this case, in order to verify the user's identity and finalize on the whole
+				// self-provisioning process for the user, we need to ask the user to log in using
+				// the credential previously supplied by the person. That's how we verify the person
+				// and make sure that the person clicking on the confirmation link is the same
+				// person that supplied the credential.
+				// In this case, there's no need to present OpenID login dialog.
+				// Note that at this particular point in time it's possible that the user has
+				// already logged in using OpenID and hence has a valid interactive session.
+				// Once the user logs in again using local authentication, then the old session
+				// will be disposed of and new session will be created.
+				
+				// Create an exception object to be used as more like a normal status code
+				ExternalUserRespondingToVerificationException exc = new ExternalUserRespondingToVerificationException(user, url);
 				// Unfortunately, the spring security framework won't store this exception into the session even though
 				// it correctly catches it and triggers redirect to the login page. So we must put it in ourselves.
 				session.setAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY, exc);

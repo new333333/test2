@@ -56,6 +56,7 @@ import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.extuser.ExternalUserRespondingToInvitationException;
+import org.kablink.teaming.extuser.ExternalUserRespondingToVerificationException;
 import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
@@ -145,7 +146,7 @@ public class LoginFilter  implements Filter {
 
 				if(req.getQueryString() != null && req.getQueryString().contains(ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN + "=")) {
 					// This might be a response from external user to an invitation. Should check and deal with it if so.
-					ExternalUserUtil.handleResponseToInvitation(WebHelper.getRequiredSession(req), Http.getCompleteURL(req));
+					ExternalUserUtil.handleResponseToInvitationOrConfirmation(WebHelper.getRequiredSession(req), Http.getCompleteURL(req));
 				}
 
 				if(WebHelper.isGuestLoggedIn(req)) {
@@ -172,6 +173,10 @@ public class LoginFilter  implements Filter {
 			}
 		}
 		catch(ExternalUserRespondingToInvitationException e) {
+			// This is NOT an error. Just re-throw it.
+			throw e;
+		}
+		catch(ExternalUserRespondingToVerificationException e) {
 			// This is NOT an error. Just re-throw it.
 			throw e;
 		}
