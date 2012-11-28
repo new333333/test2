@@ -41,6 +41,8 @@
 	<definitionFile>config/definitions/_welcomeWorkspace.xml</definitionFile>
 	<definitionFile>config/definitions/_mirroredFileEntry.xml</definitionFile>
 	<definitionFile>config/definitions/_mirroredFileFolder.xml</definitionFile>
+	<definitionFile>config/definitions/_mirroredFilrFileEntry.xml</definitionFile>
+	<definitionFile>config/definitions/_mirroredFilrFileFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_publish_workflow.xml</definitionFile>
 	<templateFile>config/templates/_folder_blog.xml</templateFile>
 	<templateFile>config/templates/_folder_calendar.xml</templateFile>
