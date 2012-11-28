@@ -34,14 +34,17 @@ package org.kablink.teaming.search;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -73,6 +76,10 @@ public class SearchUtils {
 	protected static CoreDao getCoreDao() {
 		return (CoreDao)SpringContextUtil.getBean("coreDao");
 	};
+
+	protected static ProfileDao getProfileDao() {
+		return (ProfileDao)SpringContextUtil.getBean("profileDao");
+	}
 
 	public static Criteria tasksForUser(Long userId, String[] groupIds, String[] teamIds, Date from, Date to)
 	{
@@ -887,5 +894,37 @@ public class SearchUtils {
                 nfBinder.getPathName());
 
 
+    }
+    
+    public static Criteria getSharedWithMePrincipalsCriteria() {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Set<Long> principalIds = getProfileDao().getAllPrincipalIds(user);
+		Set<String> pIds = new HashSet<String>();
+		for (Long pid : principalIds) {
+			pIds.add(String.valueOf(pid));
+		}
+		Criteria crit = new Criteria();
+		crit.add(in(DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER, Constants.DOC_TYPE_ENTRY, 
+				Constants.DOC_TYPE_ATTACHMENT}));
+		crit.add(in(SHARED_IDS, pIds));
+		return crit;
+    }
+    
+    public static Criteria getSharedWithMeSearchCriteria(List<String> binderIds, List<String> entryIds) {
+		Criteria crit = new Criteria();
+		crit.add(in(DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER, Constants.DOC_TYPE_ENTRY, 
+				Constants.DOC_TYPE_ATTACHMENT}));
+		
+		Disjunction disjunction = disjunction();
+		if ((null != binderIds) && (!(binderIds.isEmpty()))) {
+			disjunction.add(in(ENTRY_ANCESTRY, binderIds));
+		}
+		
+		if ((null != entryIds) && (!(entryIds.isEmpty()))) {
+			disjunction.add(in(Constants.DOCID_FIELD, entryIds));
+		}
+		
+		crit.add(disjunction);
+		return crit;
     }
 }
