@@ -36,4 +36,6 @@ public interface InstallServiceAsync
 	void getTimeZones(AsyncCallback<Map<String, String>> callback);
 
 	void logout(AsyncCallback<Void> callback);
+
+	void markConfigurationDone(String configType, AsyncCallback<Void> callback);
 }
