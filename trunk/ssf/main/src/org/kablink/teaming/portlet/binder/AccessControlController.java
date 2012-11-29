@@ -408,7 +408,7 @@ public class AccessControlController extends AbstractBinderController {
 			 WorkAreaHelper.buildAccessControlTableBeans(bs,                    wArea, functions, membership, model       );
 		else WorkAreaHelper.buildAccessControlTableBeans(bs, request, response, wArea, functions, membership, model, false);
 
-		if (!wArea.isFunctionMembershipInherited()) {
+		if (wArea.isFunctionMembershipInherited()) {
 			WorkArea parentArea = wArea.getParentWorkArea();
 			if (parentArea != null) {
 				List parentMembership;
