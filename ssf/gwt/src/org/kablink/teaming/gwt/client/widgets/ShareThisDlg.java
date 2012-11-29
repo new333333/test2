@@ -2020,14 +2020,15 @@ public class ShareThisDlg extends DlgBox
 			{
 				// No
 				m_addExternalUserImg.setVisible( false );
-				m_findCtrl.setSearchForExternalPrincipals( false );
 			}
 			else
 			{
 				// Yes
 				m_addExternalUserImg.setVisible( true );
-				m_findCtrl.setSearchForExternalPrincipals( true );
 			}
+
+			// We never want external users to be included in the name completion.
+			m_findCtrl.setSearchForExternalPrincipals( false );
 
 			// Is sharing with an internal user available?
 			m_findCtrl.setSearchForInternalPrincipals( sharingInfo.getCanShareWithInternalUsers() );
