@@ -98,6 +98,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.LocaleUtils;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
@@ -634,6 +635,17 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		
 		if(version.intValue() <= 11) {
 			correctFilrRoles(zoneConfig);
+		}
+		
+		if (version.intValue() <= 12) {
+			if (Utils.checkIfFilr()) {
+				//In Filr, we must reset all of the definitions and templates and definitions automatically
+				//But this is only done when needed (i.e., update the version if another change is made)
+				getAdminModule().updateDefaultDefinitions(top.getId(), false);
+				getTemplateModule().updateDefaultTemplates(top.getId(), true);
+				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
+				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
+			}
 		}
 		
   	}
