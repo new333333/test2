@@ -144,13 +144,13 @@ public class BinderViewsHelper {
 				public void onSuccess(final ChangeEntryTypesDlg cetDlg) {
 					// ...and show it.
 					m_cetDlg = cetDlg;
-					ScheduledCommand doSubscribe = new ScheduledCommand() {
+					ScheduledCommand doChangeEntryType = new ScheduledCommand() {
 						@Override
 						public void execute() {
 							changeEntryTypesAsync(entityIds, reloadEvent);
 						}
 					};
-					Scheduler.get().scheduleDeferred(doSubscribe);
+					Scheduler.get().scheduleDeferred(doChangeEntryType);
 				}
 			});
 		}
@@ -1081,7 +1081,7 @@ public class BinderViewsHelper {
 	 *
 	 * @param entityIds
 	 */
-	public static void subscribeToEntries(final List<EntityId> entityIds) {
+	public static void subscribeToEntries(final List<EntityId> entityIds, final UIObject showRelativeTo) {
 		// If we weren't given any entity IDs to be subscribed to...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
@@ -1105,7 +1105,7 @@ public class BinderViewsHelper {
 					ScheduledCommand doSubscribe = new ScheduledCommand() {
 						@Override
 						public void execute() {
-							subscribeToEntriesAsync(entityIds);
+							subscribeToEntriesAsync(entityIds, showRelativeTo);
 						}
 					};
 					Scheduler.get().scheduleDeferred(doSubscribe);
@@ -1116,19 +1116,24 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've instantiated an email notification dialog
 			// already!  Simply show it.
-			subscribeToEntriesAsync(entityIds);
+			subscribeToEntriesAsync(entityIds, showRelativeTo);
 		}
+	}
+	
+	public static void subscribeToEntries(final List<EntityId> entityIds) {
+		// Always use the initial form of the method.
+		subscribeToEntries(entityIds, null);
 	}
 
 	/*
 	 * Asynchronously invokes the appropriate UI to subscribe to the
 	 * entries based on a List<EntityId> of the entries.
 	 */
-	private static void subscribeToEntriesAsync(final List<EntityId> entityIds) {
+	private static void subscribeToEntriesAsync(final List<EntityId> entityIds, final UIObject showRelativeTo) {
 		ScheduledCommand doShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				subscribeToEntriesNow(entityIds);
+				subscribeToEntriesNow(entityIds, showRelativeTo);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doShow);
@@ -1138,8 +1143,8 @@ public class BinderViewsHelper {
 	 * Synchronously invokes the appropriate UI to subscribe to the
 	 * entries based on a List<EntityId> of the entries.
 	 */
-	private static void subscribeToEntriesNow(final List<EntityId> entityIds) {
-		EmailNotificationDlg.initAndShow(m_enDlg, entityIds);
+	private static void subscribeToEntriesNow(final List<EntityId> entityIds, final UIObject showRelativeTo) {
+		EmailNotificationDlg.initAndShow(m_enDlg, entityIds, showRelativeTo);
 	}
 	
 	/**

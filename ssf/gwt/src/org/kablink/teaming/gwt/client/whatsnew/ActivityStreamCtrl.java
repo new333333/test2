@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.DeleteEntryEvent;
@@ -73,7 +74,6 @@ import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
-import org.kablink.teaming.gwt.client.widgets.SubscribeToEntryDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
@@ -183,7 +183,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 	// This menu is used to display an Actions menu for an item in the list.
 	private ActionsPopupMenu m_actionsPopupMenu = null;
 	private ShowSettingPopupMenu m_showSettingPopupMenu = null;
-	private SubscribeToEntryDlg m_subscribeToEntryDlg = null;
 	private TagThisDlg m_tagThisDlg = null;
 	private ShareThisDlg m_shareThisDlg = null;
 	private ActivityStreamDataType m_showSetting = ActivityStreamDataType.OTHER;
@@ -1267,23 +1266,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	private void invokeSubscribeToEntryDlg( final ActivityStreamUIEntry entry )
 	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				if ( m_subscribeToEntryDlg == null )
-				{
-					m_subscribeToEntryDlg = new SubscribeToEntryDlg( false, true, 0, 0 );
-				}
-				
-				m_subscribeToEntryDlg.init( entry.getEntryId(), entry.getEntryTitle() );
-				m_subscribeToEntryDlg.showRelativeToTarget( entry );
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		List<EntityId> entityIds = new ArrayList<EntityId>();
+		entityIds.add( entry.getEntryEntityId() );
+		BinderViewsHelper.subscribeToEntries( entityIds, entry );
 	}
 	
 	
