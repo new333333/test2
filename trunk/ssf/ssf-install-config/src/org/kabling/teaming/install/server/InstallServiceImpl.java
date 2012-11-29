@@ -21,10 +21,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -1743,8 +1740,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		return commandInfo;
 	}
 
-	@Override
-	public void createDatabase(Database database) throws ConfigurationSaveException
+	public void updateMySqlLiquiBaseProperties(Database database) throws ConfigurationSaveException
 	{
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
@@ -1752,13 +1748,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			// Update the mysql-liquibase.properties
 			DatabaseConfig dbConfig = database.getDatabaseConfig("Installed");
 
-			// Check to see if database exists
 			String resourceName = "root";
 			String resourcePassword = "root";
-			String resourceHost = "localhost";
-
-			if (dbConfig.getResourceHost() != null)
-				resourceHost = dbConfig.getResourceHost();
 
 			if (dbConfig.getResourceUserName() != null)
 				resourceName = dbConfig.getResourceUserName();
@@ -1801,18 +1792,49 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 						throw new ConfigurationSaveException();
 					}
 				}
+			}
+		}
 
-				// Create the database if needed
-				int result = executeCommand(
-						"mysql -h " + resourceHost + " -u" + resourceName + " -p" + resourcePassword
-								+ " < /filrinstall/db/scripts/sql/mysql-create-empty-database.sql").getExitValue();
+	}
 
-				// We got an error ( 0 for success, 1 for database exists)
-				if (!(result == 0 || result == 1))
-				{
-					logger.debug("Error creating database,Error code " + result);
-					throw new ConfigurationSaveException();
-				}
+	@Override
+	public void createDatabase(Database database) throws ConfigurationSaveException
+	{
+		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
+		{
+			updateMySqlLiquiBaseProperties(database);
+			
+			
+			// Update the mysql-liquibase.properties
+			DatabaseConfig dbConfig = database.getDatabaseConfig("Installed");
+
+			// Check to see if database exists
+			String resourceName = "root";
+			String resourcePassword = "root";
+			String resourceHost = "localhost";
+
+			if (dbConfig.getResourceHost() != null)
+				resourceHost = dbConfig.getResourceHost();
+
+			if (dbConfig.getResourceUserName() != null)
+				resourceName = dbConfig.getResourceUserName();
+
+			if (dbConfig.getResourcePassword() != null)
+				resourcePassword = dbConfig.getResourcePassword();
+
+			if (checkDBExists("sitescape", dbConfig.getResourceUrl(), resourceName, resourcePassword))
+				return;
+
+			// Create the database if needed
+			int result = executeCommand(
+					"mysql -h " + resourceHost + " -u" + resourceName + " -p" + resourcePassword
+							+ " < /filrinstall/db/scripts/sql/mysql-create-empty-database.sql").getExitValue();
+
+			// We got an error ( 0 for success, 1 for database exists)
+			if (!(result == 0 || result == 1))
+			{
+				logger.debug("Error creating database,Error code " + result);
+				throw new ConfigurationSaveException();
 			}
 		}
 
@@ -1821,6 +1843,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	@Override
 	public void updateDatabase(Database database) throws ConfigurationSaveException
 	{
+		updateMySqlLiquiBaseProperties(database);
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
 			// Update the database
@@ -1846,7 +1869,6 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		// reconfigures
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
-
 			// Run the reconfigure
 			ShellCommandInfo info = executeCommand("cd /filrinstall;./installer-filr.linux --silent --reconfigure");
 
@@ -1869,14 +1891,13 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			if (info.getExitValue() == 0 && outputList != null && outputList.get(0) != null)
 			{
 				String hostName = info.getOutput().get(0);
-				info = executeCommand("sed -i -e's/@@HOSTNAME@@/"+hostName+ "/' /filrinstall/installer.xml");
+				info = executeCommand("sed -i -e's/@@HOSTNAME@@/" + hostName + "/' /filrinstall/installer.xml");
 				if (info.getExitValue() != 0)
 				{
 					logger.debug("Unable to set hostName " + info.getExitValue());
 				}
 			}
-			
-			
+
 			// Setup Encoding on /etc/init.d/teaming file
 			info = executeCommand("sed -i -e's/ISO8859-1/UTF-8/' /etc/init.d/teaming");
 			if (info.getExitValue() != 0)
@@ -1900,24 +1921,14 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				logger.debug("Error setting up data.luceneindex.root.dir=/vastorage/search" + info.getExitValue());
 				throw new ConfigurationSaveException();
 			}
-			
-			
-			// Wizard configuration is done, put a temp file there
+
+			// If the configuration is not done, add this to restart filr after reboot
 			File file = new File("/filrinstall/configured");
 			// If it exists, ignore
-			if (!System.getProperty("os.name").startsWith("Win") && !file.exists())
+			if (!file.exists())
 			{
 				// Setup chkconfig so that teaming starts always
 				info = executeCommand("chkconfig teaming on");
-				
-				try
-				{
-					file.createNewFile();
-				}
-				catch (Exception e)
-				{
-					logger.debug("Error creating /filrinstall/configured file");
-				}
 			}
 		}
 
@@ -1967,13 +1978,15 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		{
 			executeCommand("/sbin/rcfilr restart");
 
-			int tries = 30;
+			int tries = 2;
 
 			while (tries > 0)
 			{
 				try
 				{
-					Thread.sleep(1000);
+					// Sleeping for minute and 20 seconds
+					// This is temporary workaround
+					Thread.sleep(80000);
 					if (isFilrServerRunning())
 						return;
 				}
@@ -2110,33 +2123,37 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	public Map<String, String> getTimeZones()
 	{
 		TreeMap<String, String> timeZoneMap = TimeZoneHelper.getTimeZoneIdDisplayStrings();
-		return sortMapByValues(timeZoneMap);
+		return timeZoneMap;
 	}
 
-	public static <K, V extends Comparable<? super V>> Map<K, V> sortMapByValues(final Map<K, V> mapToSort)
+	@Override
+	public void markConfigurationDone(String configType)
 	{
-		List<Map.Entry<K, V>> entries = new ArrayList<Map.Entry<K, V>>(mapToSort.size());
-
-		entries.addAll(mapToSort.entrySet());
-
-		Collections.sort(entries, new Comparator<Map.Entry<K, V>>()
+		// Wizard configuration is done, put a temp file there
+		File file = new File("/filrinstall/configured");
+		// If it exists, ignore
+		if (!System.getProperty("os.name").startsWith("Win") && !file.exists())
 		{
-			@Override
-			public int compare(final Map.Entry<K, V> entry1, final Map.Entry<K, V> entry2)
+			try
 			{
-				return entry1.getValue().compareTo(entry2.getValue());
+				//Create configured file
+				file.createNewFile();
+				
+				//Also create configurationDetails.properties file to store if this is small or large deployment
+				File configurationDetailsFile = new File("/filrinstall/configurationDetails.properties");
+				
+				//Save the property of the type of configuration
+				Properties prop = new Properties();
+				prop.setProperty("type", configType);
+				
+				//Store the properties
+				store(prop, configurationDetailsFile);
+
 			}
-		});
-
-		Map<K, V> sortedMap = new LinkedHashMap<K, V>();
-
-		for (Map.Entry<K, V> entry : entries)
-		{
-			sortedMap.put(entry.getKey(), entry.getValue());
-
+			catch (Exception e)
+			{
+				logger.debug("Error creating /filrinstall/configured file");
+			}
 		}
-
-		return sortedMap;
-
 	}
 }

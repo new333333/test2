@@ -254,7 +254,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 				// Host Name Value
-				InlineLabel valueLabel = new InlineLabel(dbConfig.getResourceHost());
+				InlineLabel valueLabel = new InlineLabel(dbConfig.getHostNameFromUrl());
 				table.setWidget(row, 1, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 

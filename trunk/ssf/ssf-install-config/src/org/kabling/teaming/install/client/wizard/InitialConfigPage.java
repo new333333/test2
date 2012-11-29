@@ -141,4 +141,13 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 		
 		return wizard.importPage;
 	}
+	
+	public String getDeploymentType()
+	{
+		if (useDefaultsRB.getValue())
+			return "local";
+		else if (customRB.getValue())
+			return "large";
+		return null;
+	}
 }

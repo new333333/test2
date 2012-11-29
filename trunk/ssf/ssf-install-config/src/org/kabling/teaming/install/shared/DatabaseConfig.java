@@ -114,4 +114,20 @@ public class DatabaseConfig implements Serializable
 	{
 		this.resourceHost = resourceHost;
 	}
+	
+	public String getHostNameFromUrl()
+	{
+		String url = getResourceUrl();
+		// url example jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor
+		String pattern = "//";
+
+		if (url != null)
+		{
+			int startIndex = url.indexOf(pattern) + pattern.length();
+			int endIndex = url.indexOf(":", startIndex);
+			url = url.substring(startIndex, endIndex);
+			return url;
+		}
+		return url;
+	}
 }

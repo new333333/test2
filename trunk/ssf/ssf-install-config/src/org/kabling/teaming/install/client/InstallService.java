@@ -93,4 +93,6 @@ public interface InstallService extends RemoteService
 	Map<String, String> getTimeZones();
 	
 	void logout();
+	
+	void markConfigurationDone(String configType);
 }

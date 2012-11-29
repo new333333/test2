@@ -142,6 +142,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		currentPage.save();
 
 		showStatusIndicator(AppUtil.getAppResource().pleaseWait());
+		finishButton.setEnabled(false);
 		AppUtil.getInstallService().saveConfiguration(config, new SaveConfigCallback());
 	}
 
@@ -262,6 +263,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		@Override
 		public void onFailure(Throwable caught)
 		{
+			finishButton.setEnabled(true);
 			hideStatusIndicator();
 			setErrorMessage(caught.getMessage());
 		}
@@ -280,6 +282,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		@Override
 		public void onFailure(Throwable caught)
 		{
+			finishButton.setEnabled(true);
 			hideStatusIndicator();
 			setErrorMessage("Creating the database failed.");
 		}
@@ -298,6 +301,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		@Override
 		public void onFailure(Throwable caught)
 		{
+			finishButton.setEnabled(true);
 			hideStatusIndicator();
 			setErrorMessage("Updating the database failed.");
 		}
@@ -316,6 +320,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		@Override
 		public void onFailure(Throwable caught)
 		{
+			finishButton.setEnabled(true);
 			hideStatusIndicator();
 			setErrorMessage("Reconfiguring the Filr Server failed.");
 		}
@@ -325,6 +330,9 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		{
 			loadingWidget.setText(AppUtil.getAppResource().startingServer());
 			AppUtil.getInstallService().startFilrServer(new StartFilrCallback());
+			
+			if (configPage.getDeploymentType() != null)
+				AppUtil.getInstallService().markConfigurationDone(configPage.getDeploymentType(), new MarkDeploymentDoneCallback());
 		}
 	}
 
@@ -334,6 +342,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		@Override
 		public void onFailure(Throwable caught)
 		{
+			finishButton.setEnabled(true);
 			hideStatusIndicator();
 			setErrorMessage("Starting the Filr Server failed.");
 		}
@@ -348,6 +357,20 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 			AppUtil.getEventBus().fireEvent(new ConfigWizardSucessEvent(true));
 
 			ConfigWizard.this.hide(true);
+		}
+	}
+	
+	class MarkDeploymentDoneCallback implements AsyncCallback<Void>
+	{
+
+		@Override
+		public void onFailure(Throwable caught)
+		{
+		}
+
+		@Override
+		public void onSuccess(Void coid)
+		{
 		}
 	}
 
