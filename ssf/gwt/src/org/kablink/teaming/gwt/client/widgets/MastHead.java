@@ -181,22 +181,14 @@ public class MastHead extends Composite
 		{
 			GlobalSearchComposite globalSearchWidget;
 			FlowPanel globalSearchPanel;
-			String whatsNewStyleName;
 			
 			// Yes
-			// If the user cannot see other users we will hide the "Users" image and move
-			// the "what's new" image to be where the "Users" image would normally be.
-			whatsNewStyleName = "mastheadFilr_PeoplePanel";
-			
 			// Create a link for the user to click on that will invoke "Users in the system" page
-			if ( m_requestInfo.canSeeOtherUsers() )
 			{
 				FlowPanel panel;
 				FlowPanel imgPanel;
 				Image img;
 				
-				whatsNewStyleName = "mastheadFilr_WhatsNewPanel";
-
 				panel = new FlowPanel();
 				panel.addStyleName( "mastheadFilr_PeoplePanel" );
 				
@@ -236,7 +228,7 @@ public class MastHead extends Composite
 				Image img;
 				
 				panel = new FlowPanel();
-				panel.addStyleName( whatsNewStyleName );
+				panel.addStyleName( "mastheadFilr_WhatsNewPanel" );
 				
 				imgPanel = new FlowPanel();
 				imgPanel.addStyleName( "mastheadFilr_WhatsNewImgPanel" );
