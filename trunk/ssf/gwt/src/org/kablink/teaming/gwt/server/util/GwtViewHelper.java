@@ -4813,9 +4813,10 @@ public class GwtViewHelper {
 			else {
 				// No, it's not a request to show team members!  Are we
 				// viewing a folder while changing its view?
-				boolean       viewFolderListing = action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING);
-				ProfileModule pm                = bs.getProfileModule();
-				Long          userId            = GwtServerHelper.getCurrentUserId();
+				boolean			viewFolderListing = action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				ProfileModule	pm                = bs.getProfileModule();
+				User			user              = GwtServerHelper.getCurrentUser();
+				Long			userId            = user.getId();
 				if (viewFolderListing && op.equals(WebKeys.OPERATION_SET_DISPLAY_DEFINITION)) {
 					// Yes!  Do we have both the view definition and
 					// binder ID's?
@@ -4866,23 +4867,41 @@ public class GwtViewHelper {
 					
 					// Is the URL to view a specific entry within the
 					// folder?
-					String  entryViewStyle  =                           getQueryParameterString(nvMap, WebKeys.URL_ENTRY_VIEW_STYLE  );
-					String  entryId         =                           getQueryParameterString(nvMap, WebKeys.URL_ENTRY_ID          );
-					boolean entryViewIgnore = GwtClientHelper.hasString(getQueryParameterString(nvMap, WebKeys.URL_ENTRY_VIEW_IGNORE));
-					if (MiscUtil.hasString(entryViewStyle) && MiscUtil.hasString(entryId) && (!entryViewIgnore)) {
-						// Yes!  Adjust the ViewInfo accordingly.
-						vi.setViewType(ViewType.BINDER_WITH_ENTRY_VIEW);
-						vi.setEntryViewUrl(
-							GwtServerHelper.getViewFolderEntryUrl(
-								bs,
-								request,
-								binderId,
-								Long.parseLong(entryId),
-								isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SHARE,     "1"),
-								isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SUBSCRIBE, "1")));
-						vi.setInvokeShare(    false);	// We'll invoke any share     on the entry, not the binder.
-						vi.setInvokeSubscribe(false);	// We'll invoke any subscribe on the entry, not the binder.
+					String  entryViewStyle = getQueryParameterString(nvMap, WebKeys.URL_ENTRY_VIEW_STYLE);
+					String  entryId        = getQueryParameterString(nvMap, WebKeys.URL_ENTRY_ID        );
+					if (MiscUtil.hasString(entryViewStyle) && MiscUtil.hasString(entryId)) {
+						// Yes!  If we're not ignoring the entry
+						// view...
+						boolean entryViewIgnore = GwtClientHelper.hasString(getQueryParameterString(nvMap, WebKeys.URL_ENTRY_VIEW_IGNORE));
+						if (!entryViewIgnore) {
+							// ...adjust the ViewInfo accordingly.
+							vi.setViewType(ViewType.BINDER_WITH_ENTRY_VIEW);
+							vi.setEntryViewUrl(
+								GwtServerHelper.getViewFolderEntryUrl(
+									bs,
+									request,
+									binderId,
+									Long.parseLong(entryId),
+									isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SHARE,     "1"),
+									isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SUBSCRIBE, "1")));
+							vi.setInvokeShare(    false);	// We'll invoke any share     on the entry, not the binder.
+							vi.setInvokeSubscribe(false);	// We'll invoke any subscribe on the entry, not the binder.
+						}
 
+						// Is the folder this entry is located in
+						// accessible to the user?
+						BinderInfo bi = vi.getBinderInfo();
+						if (!(bi.isBinderAccessible())) {
+							// No!  Set the entry view's underlying
+							// context to the user's Shared With Me
+							// view.
+							bi = GwtServerHelper.getBinderInfo(bs, request, user.getWorkspaceId());
+							bi.setWorkspaceType( WorkspaceType.NOT_A_WORKSPACE);
+							bi.setFolderType(    FolderType.NOT_A_FOLDER      );
+							bi.setBinderType(    BinderType.COLLECTION        );
+							bi.setCollectionType(CollectionType.SHARED_WITH_ME);
+							vi.setBinderInfo(    bi                           );
+						}
 					}
 				}
 				
