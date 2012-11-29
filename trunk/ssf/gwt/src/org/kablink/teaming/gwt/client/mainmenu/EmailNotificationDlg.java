@@ -64,6 +64,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -82,6 +83,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	private ListBox									m_msgList;					//
 	private ListBox									m_msgNoAttList;				//
 	private ListBox									m_textList;					//
+	private UIObject								m_showRelativeTo;			//
 	private VerticalPanel							m_vp;						//
 
 	// The following are used as the values for the non-email address
@@ -499,20 +501,22 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 			m_vp.add(fp);
 		}
 		
-		// Show the dialog (perhaps again) so that it can be positioned
-		// correctly based on its new content.
-		show(true);
+		// Show the dialog so that it can be positioned correctly based
+		// on its new content.
+		if (null == m_showRelativeTo)
+		     show(                true            );
+		else showRelativeToTarget(m_showRelativeTo);
 	}
 	
 	/*
 	 * Asynchronously runs the given instance of the email notification
 	 * dialog.
 	 */
-	private static void runDlgAsync(final EmailNotificationDlg enDlg, final BinderInfo bi, final List<EntityId> entityIds) {
+	private static void runDlgAsync(final EmailNotificationDlg enDlg, final BinderInfo bi, final List<EntityId> entityIds, final UIObject showRelativeTo) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				enDlg.runDlgNow(bi, entityIds);
+				enDlg.runDlgNow(bi, entityIds, showRelativeTo);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -522,7 +526,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * Synchronously runs the given instance of the email notification
 	 * dialog.
 	 */
-	private void runDlgNow(BinderInfo bi, List<EntityId> entityIds) {
+	private void runDlgNow(BinderInfo bi, List<EntityId> entityIds, UIObject showRelativeTo) {
 		// Store the parameters...
 		EntityId singleEID = (((null != entityIds) && (1 == entityIds.size())) ? entityIds.get(0) : null);
 		if ((null != singleEID) && singleEID.isBinder()) {
@@ -532,13 +536,13 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 		else {
 			m_binderId = ((null == bi) ? null : bi.getBinderIdAsLong());
 		}
-		m_entityIds = entityIds;
+		m_entityIds      = entityIds;
+		m_showRelativeTo = showRelativeTo;
 
 		// ...and display a reading message, start populating the
 		// ...dialog and show it.
 		displayReading();
 		populateDlgAsync();
-		show(true);
 	}
 	
 	/*
@@ -616,7 +620,8 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 			// initAndShow parameters,
 			final EmailNotificationDlg	enDlg,
 			final BinderInfo			bi,
-			final List<EntityId>		entityIds) {
+			final List<EntityId>		entityIds,
+			final UIObject				showRelativeTo) {
 		GWT.runAsync(EmailNotificationDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -639,7 +644,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(enDlg, bi, entityIds);
+					runDlgAsync(enDlg, bi, entityIds, showRelativeTo);
 				}
 			}
 		});
@@ -652,14 +657,14 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * @param enDlgClient
 	 */
 	public static void createAsync(EmailNotificationDlgClient enDlgClient) {
-		doAsyncOperation(enDlgClient, null, null, null);
+		doAsyncOperation(enDlgClient, null, null, null, null);
 	}
 	
 	/*
 	 * Initializes and shows the email notification dialog.
 	 */
-	private static void initAndShowImpl(EmailNotificationDlg enDlg, BinderInfo bi, List<EntityId> entityIds) {
-		doAsyncOperation(null, enDlg, bi, entityIds);
+	private static void initAndShowImpl(EmailNotificationDlg enDlg, BinderInfo bi, List<EntityId> entityIds, UIObject showRelativeTo) {
+		doAsyncOperation(null, enDlg, bi, entityIds, showRelativeTo);
 	}
 	
 	/**
@@ -668,9 +673,14 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * @param enDlg
 	 * @param bi
 	 */
-	public static void initAndShow(EmailNotificationDlg enDlg, BinderInfo bi) {
+	public static void initAndShow(EmailNotificationDlg enDlg, BinderInfo bi, UIObject showRelativeTo) {
 		// Always use the implementation form of the method.
-		initAndShowImpl(enDlg, bi, ((List<EntityId>) null));
+		initAndShowImpl(enDlg, bi, ((List<EntityId>) null), showRelativeTo);
+	}
+	
+	public static void initAndShow(EmailNotificationDlg enDlg, BinderInfo bi) {
+		// Always use the previous form of the method.
+		initAndShow(enDlg, bi, null);
 	}
 	
 	/**
@@ -680,9 +690,14 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * @param enDlg
 	 * @param entityIds
 	 */
-	public static void initAndShow(EmailNotificationDlg enDlg, List<EntityId> entityIds) {
+	public static void initAndShow(EmailNotificationDlg enDlg, List<EntityId> entityIds, UIObject showRelativeTo) {
 		// Always use the implementation form of the method.
-		initAndShowImpl(enDlg, null, entityIds);
+		initAndShowImpl(enDlg, null, entityIds, showRelativeTo);
+	}
+	
+	public static void initAndShow(EmailNotificationDlg enDlg, List<EntityId> entityIds) {
+		// Always use the previous form of the method.
+		initAndShow(enDlg, entityIds, null);
 	}
 	
 	/**
@@ -692,11 +707,15 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * @param enDlg
 	 * @param entityId
 	 */
-	public static void initAndShow(EmailNotificationDlg enDlg, EntityId entityId) {
+	public static void initAndShow(EmailNotificationDlg enDlg, EntityId entityId, UIObject showRelativeTo) {
 		// Always use the implementation form of the method.
 		List<EntityId> entityIds = new ArrayList<EntityId>();
 		entityIds.add(entityId);
-		initAndShowImpl(enDlg, null, entityIds);
+		initAndShowImpl(enDlg, null, entityIds, showRelativeTo);
 	}
 	
+	public static void initAndShow(EmailNotificationDlg enDlg, EntityId entityId) {
+		// Always use the previous form of the method.
+		initAndShow(enDlg, entityId, null);
+	}
 }
