@@ -723,6 +723,17 @@ public class SelectPrincipalsWidget extends Composite
 	}
 	
 	/**
+	 * 
+	 */
+	public boolean isReady()
+	{
+		if ( m_findCtrl != null )
+			return true;
+		
+		return false;
+	}
+	
+	/**
 	 * Called when the dialog is attached.
 	 * 
 	 * Overrides the Widget.onAttach() method.
@@ -790,14 +801,6 @@ public class SelectPrincipalsWidget extends Composite
 					
 					// Yes
 					user = (GwtUser) selectedObj;
-					
-					// Is this an external user?
-					if ( !user.isInternal() )
-					{
-						// Yes, tell the user they can't do this.
-						Window.alert( getCantSelectExternalUserPrompt() );
-						return;
-					}
 					
 					principal = user;
 				}
@@ -945,7 +948,8 @@ public class SelectPrincipalsWidget extends Composite
 	 */
 	public void setSearchForExternalPrincipals( boolean canSearch )
 	{
-		m_findCtrl.setSearchForExternalPrincipals( canSearch );
+		if ( m_findCtrl != null )
+			m_findCtrl.setSearchForExternalPrincipals( canSearch );
 	}
 	
 	/**
@@ -953,7 +957,8 @@ public class SelectPrincipalsWidget extends Composite
 	 */
 	public void setSearchForInternalPrincipals( boolean canSearch )
 	{
-		m_findCtrl.setSearchForInternalPrincipals( canSearch );
+		if ( m_findCtrl != null )
+			m_findCtrl.setSearchForInternalPrincipals( canSearch );
 	}
 	
 	/**

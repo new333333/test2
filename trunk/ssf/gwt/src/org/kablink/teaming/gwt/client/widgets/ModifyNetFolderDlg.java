@@ -69,6 +69,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -829,7 +830,7 @@ public class ModifyNetFolderDlg extends DlgBox
 	 */
 	private void initShareRights()
 	{
-		if ( m_selectPrincipalsWidget != null )
+		if ( m_selectPrincipalsWidget != null && m_selectPrincipalsWidget.isReady() )
 		{
 			if ( m_netFolder != null )
 				m_selectPrincipalsWidget.initWidget( m_netFolder.getRoles() );
@@ -849,7 +850,18 @@ public class ModifyNetFolderDlg extends DlgBox
 				@Override
 				public void execute()
 				{
-					initShareRights();
+					Timer timer;
+					
+					timer = new Timer()
+					{
+						@Override
+						public void run()
+						{
+							initShareRights();
+						}
+					};
+					
+					timer.schedule( 250 );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
