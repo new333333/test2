@@ -132,6 +132,11 @@ public class ReleaseInfo {
 	
 	public static final String getLocalizedReleaseInfo(Locale locale) {
 		Date date = getBuildDate();
+		if (date == null) {
+			//If there isn't a build date, set it to 1/1/70 so it doesn't throw an error
+			date = new Date();
+			date.setTime(0);
+		}
 		DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, locale);
 		return buildReleaseInfoString(df.format(date));
 	}
