@@ -98,6 +98,7 @@ import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.IndexOptimizationSchedule;
 import org.kablink.teaming.module.admin.ManageIndexException;
+import org.kablink.teaming.module.admin.SendMailErrorWrapper;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
@@ -1740,8 +1741,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
 
 		// Allocate the error tracking/reply objects.
-		List	errors = new ArrayList();
-		Map		result = new HashMap();
+		List<SendMailErrorWrapper>	errors = new ArrayList<SendMailErrorWrapper>();
+		Map							result = new HashMap();
 		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
 		
 		// Allocate the maps of email addresses to locales we'll
@@ -1852,7 +1853,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
 	 			logger.error("EXCEPTION:  Error sending share notification:" + exMsg);
 				logger.debug("EXCEPTION", ex);
-				errors.add(exMsg);
+				errors.add(new SendMailErrorWrapper(ex, exMsg));
 
 				// ...and if there were any send failed
 				// ...sub-exceptions...
@@ -1873,7 +1874,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
 	       		logger.error("EXCEPTION:  Authentication Exception:" + exMsg);				
 				logger.debug("EXCEPTION", ex);
-				errors.add(exMsg);
+				errors.add(new SendMailErrorWrapper(ex, exMsg));
 	 		} 
 		}
 
@@ -1902,8 +1903,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
 
 		// Allocate the error tracking/reply objects.
-		List	errors = new ArrayList();
-		Map		result = new HashMap();
+		List<SendMailErrorWrapper>	errors = new ArrayList<SendMailErrorWrapper>();
+		Map							result = new HashMap();
 		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
 		
 		// Allocate the maps of email addresses to locales we'll
@@ -1996,7 +1997,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
 	 			logger.error("EXCEPTION:  Error sending confirmation mail:" + exMsg);
 				logger.debug("EXCEPTION", ex);
-				errors.add(exMsg);
+				errors.add(new SendMailErrorWrapper(ex, exMsg));
 
 				// ...and if there were any send failed
 				// ...sub-exceptions...
@@ -2017,7 +2018,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
 	       		logger.error("EXCEPTION:  Authentication Exception:" + exMsg);				
 				logger.debug("EXCEPTION", ex);
-				errors.add(exMsg);
+				errors.add(new SendMailErrorWrapper(ex, exMsg));
 	 		} 
 		}
 
@@ -2047,8 +2048,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
 
 		// Allocate the error tracking/reply objects.
-		List	errors = new ArrayList();
-		Map		result = new HashMap();
+		List<SendMailErrorWrapper>	errors = new ArrayList<SendMailErrorWrapper>();
+		Map							result = new HashMap();
 		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
 		
 		// Allocate the maps of email addresses to locales we'll
@@ -2158,7 +2159,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
 	 			logger.error("EXCEPTION:  Error sending share invitation mail:" + exMsg);
 				logger.debug("EXCEPTION", ex);
-				errors.add(exMsg);
+				errors.add(new SendMailErrorWrapper(ex, exMsg));
 
 				// ...and if there were any send failed
 				// ...sub-exceptions...
@@ -2179,7 +2180,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
 	       		logger.error("EXCEPTION:  Authentication Exception:" + exMsg);				
 				logger.debug("EXCEPTION", ex);
-				errors.add(exMsg);
+				errors.add(new SendMailErrorWrapper(ex, exMsg));
 	 		} 
 		}
 

@@ -74,6 +74,7 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationT
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
+import org.kablink.teaming.module.admin.SendMailErrorWrapper;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -1217,8 +1218,8 @@ public class GwtShareHelper
 	/**
 	 * Send an email to the given recipient
 	 */
-	@SuppressWarnings("rawtypes")
-	private static List sendEmailToRecipient(
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static List<SendMailErrorWrapper> sendEmailToRecipient(
 		AllModulesInjected ami,
 		ShareItem shareItem,
 		GwtShareItem gwtShareItem,
@@ -1309,7 +1310,7 @@ public class GwtShareHelper
 			
 			if ( errorMap != null )
 			{
-				emailErrors = (List) errorMap.get( ObjectKeys.SENDMAIL_ERRORS );
+				emailErrors = ((List<SendMailErrorWrapper>) errorMap.get( ObjectKeys.SENDMAIL_ERRORS ));
 			}
 		}
 		catch ( Exception ex )
@@ -1322,7 +1323,6 @@ public class GwtShareHelper
 	/**
 	 * Save the given share data. 
 	 */
-	@SuppressWarnings({ "unchecked" })
 	public static GwtShareEntryResults shareEntry(
 		AllModulesInjected ami,
 		GwtSharingInfo sharingData )
@@ -1332,7 +1332,7 @@ public class GwtShareHelper
 		ArrayList<GwtShareItem> listOfGwtShareItems;
 		ArrayList<GwtShareItem> listOfGwtShareItemsToDelete;
 		User currentUser;
-		List emailErrors;
+		List<SendMailErrorWrapper> emailErrors;
 
 		sharingModule = ami.getSharingModule();
 
@@ -1443,7 +1443,7 @@ public class GwtShareHelper
 			// Send an email to this recipient
 			if ( sendEmail )
 			{
-				List entityEmailErrors = null;
+				List<SendMailErrorWrapper> entityEmailErrors = null;
 				
 				// Send an email to each of the recipients
 				entityEmailErrors = sendEmailToRecipient(
@@ -1469,7 +1469,7 @@ public class GwtShareHelper
 		// Add any errors that happened to the results.
 		if ( null != emailErrors )
 		{
-			results.addErrors( emailErrors );
+			results.addErrors( SendMailErrorWrapper.getErrorMessages( emailErrors ) );
 		}
 		
 		return results;
