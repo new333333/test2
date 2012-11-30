@@ -3,6 +3,8 @@ package org.kabling.teaming.install.client.config;
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigModifiedEvent;
 import org.kabling.teaming.install.client.ConfigModifiedEvent.ConfigModifiedEventHandler;
+import org.kabling.teaming.install.client.RevertChangesEvent;
+import org.kabling.teaming.install.client.RevertChangesEvent.RevertChangesEventHandler;
 import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.shared.Clustered;
 import org.kabling.teaming.install.shared.Database;
@@ -25,7 +27,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
-public class ConfigSummaryPage extends Composite implements ConfigModifiedEventHandler
+public class ConfigSummaryPage extends Composite implements ConfigModifiedEventHandler,RevertChangesEventHandler
 {
 	private GetConfigInformationCallback getConfigCallback = new GetConfigInformationCallback();
 	private FlowPanel content;
@@ -41,6 +43,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 
 		// Look for config modifications
 		AppUtil.getEventBus().addHandler(ConfigModifiedEvent.TYPE, this);
+		AppUtil.getEventBus().addHandler(RevertChangesEvent.TYPE, this);
 
 		// Get the configuration data
 		AppUtil.getInstallService().getConfiguration(getConfigCallback);
@@ -837,6 +840,15 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 	public void onEvent(ConfigModifiedEvent event)
 	{
 		//If the configuration has been changed, we will rebuild the UI
+		if (event.isModified())
+		{
+			AppUtil.getInstallService().getConfiguration(getConfigCallback);
+		}
+	}
+
+	@Override
+	public void onEvent(RevertChangesEvent event)
+	{
 		if (event.isModified())
 		{
 			AppUtil.getInstallService().getConfiguration(getConfigCallback);

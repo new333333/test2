@@ -102,7 +102,6 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 				hostTextBox = new TextBox();
-				hostTextBox.setText("localhost");
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 				table.setWidget(row, 1, hostTextBox);
 			}
@@ -225,10 +224,6 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 					{
 						userTextBox.setText(config.getResourceUserName());
 
-						// TODO
-						String hostName = getHostName(config.getResourceUrl());
-						hostTextBox.setText(hostName);
-
 						String portStr = getHostPort(config.getResourceUrl());
 						if (portStr != null)
 						{
@@ -295,21 +290,6 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 			}
 		}
 
-	}
-
-	private String getHostName(String url)
-	{
-		// url example jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor
-		String pattern = "//";
-
-		if (url != null)
-		{
-			int startIndex = url.indexOf(pattern) + pattern.length();
-			int endIndex = url.indexOf(":", startIndex);
-			url = url.substring(startIndex, endIndex);
-			return url;
-		}
-		return url;
 	}
 
 	private String getHostPort(String url)

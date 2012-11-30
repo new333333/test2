@@ -144,7 +144,6 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 
 		if (lucene != null)
 		{
-			luceneAddrTextBox.setText(lucene.getIndexHostName());
 			rmiPortSpinner.setValue(lucene.getRmiPort());
 		}
 	}

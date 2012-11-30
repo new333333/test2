@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.jvnet.libpam.PAM;
@@ -71,6 +72,7 @@ import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.google.gwt.thirdparty.guava.common.io.Files;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -1036,6 +1038,22 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	@Override
 	public void saveConfiguration(InstallerConfig config) throws ConfigurationSaveException
 	{
+		//Make a copy of the original installer.xml so that we can revert if we need to
+		try
+		{
+			File srcFile = new File("/filrinstall/installer.xml");
+			File destFile = new File("/filrinstall/installer.xml.orig");
+			
+			//If the file already exists, user has been making changes before applying the reconfigure action
+			if (!destFile.exists())
+				FileUtils.copyFile(srcFile, new File("/filrinstall/installer.xml.orig"), true);
+		}
+		catch(IOException ioe)
+		{
+			//We can ignore if the copy does not work
+		}
+		
+		
 		Document document = null;
 		try
 		{
@@ -1932,6 +1950,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			}
 		}
 
+		//Delete the backup copy
+		File srcFile = new File("/filrinstall/installer.xml.orig");
+		if (srcFile.exists())
+			srcFile.delete();
+			
 		if (restartServer)
 			startFilrServer();
 	}
@@ -2155,5 +2178,22 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				logger.debug("Error creating /filrinstall/configured file");
 			}
 		}
+	}
+
+	@Override
+	public void reverConfiguration() throws IOException
+	{
+		File srcFile = new File("/filrinstall/installer.xml.orig");
+		if (srcFile.exists())
+			FileUtils.copyFile(srcFile, new File("/filrinstall/installer.xml"), true);
+		
+		srcFile.delete();
+	}
+
+	@Override
+	public boolean isUnsavedConfigurationExists()
+	{
+		File srcFile = new File("/filrinstall/installer.xml.orig");
+		return srcFile.exists();
 	}
 }

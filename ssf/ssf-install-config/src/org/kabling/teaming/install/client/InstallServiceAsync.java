@@ -38,4 +38,8 @@ public interface InstallServiceAsync
 	void logout(AsyncCallback<Void> callback);
 
 	void markConfigurationDone(String configType, AsyncCallback<Void> callback);
+
+	void reverConfiguration(AsyncCallback<Void> callback);
+
+	void isUnsavedConfigurationExists(AsyncCallback<Boolean> callback);
 }
