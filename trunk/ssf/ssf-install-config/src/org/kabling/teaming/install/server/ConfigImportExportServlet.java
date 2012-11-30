@@ -22,6 +22,7 @@ package org.kabling.teaming.install.server;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -68,7 +69,10 @@ public class ConfigImportExportServlet extends HttpServlet
 
 		//Add the files that need to be zipped part of export
 		if (TimeZoneHelper.isUnix())
+		{
 			filesToZipMap.put("installer.xml", "/filrinstall/installer.xml");
+			filesToZipMap.put("configurationDetails.properties", "/filrinstall/configurationDetails.properties");
+		}
 		else
 			filesToZipMap.put("installer.xml", "c:/test/installer.xml");
 			
@@ -172,6 +176,10 @@ public class ConfigImportExportServlet extends HttpServlet
 		//Zip all the files that we need to send as part of export configuration
 		for (Entry<String, String> entry : filesToZipMap.entrySet())
 		{
+			//If the file does not exist, ignore and continue
+			if (!(new File(entry.getValue()).exists()))
+				continue;
+			
 			zos.putNextEntry(new ZipEntry(entry.getKey()));
 			byte[] b = new byte[1024];
 			int len;

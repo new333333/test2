@@ -9,6 +9,7 @@ import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.shared.Clustered;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.DatabaseConfig;
+import org.kabling.teaming.install.shared.Lucene;
 import org.kabling.teaming.install.shared.SSO;
 import org.kabling.teaming.install.shared.DatabaseConfig.DatabaseType;
 import org.kabling.teaming.install.shared.EmailSettings.EmailProtocol;
@@ -79,7 +80,10 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 
 		// Database Section
 		content.add(buildDatabaseSection());
-
+		
+		// Lucene Section
+		content.add(buildLuceneSection());
+				
 		// WebDav Section
 		content.add(buildWebDavSection());
 
@@ -133,31 +137,8 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 1, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 
-				// Http Port
-				keyLabel = new InlineLabel(RBUNDLE.httpPortColon());
-				table.setWidget(row, 2, keyLabel);
-				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
-
-				// Http Port Value
-				valueLabel = new InlineLabel(String.valueOf(network.getPort()));
-				table.setWidget(row, 3, valueLabel);
-				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
-			}
-
-			row++;
-			{
-				// Secure HTTP Port
-				InlineLabel keyLabel = new InlineLabel(RBUNDLE.secureHttpPortColon());
-				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-				table.setWidget(row, 0, keyLabel);
-
-				// Secure Http Port Value
-				InlineLabel valueLabel = new InlineLabel(String.valueOf(network.getSecurePort()));
-				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-				table.setWidget(row, 1, valueLabel);
-
 				// Listen Port
-				keyLabel = new InlineLabel(RBUNDLE.listenPortColon());
+				keyLabel = new InlineLabel(RBUNDLE.httpPortColon());
 				table.setWidget(row, 2, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
 
@@ -171,7 +152,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 			row++;
 			{
 				// Secure Listen Port
-				InlineLabel keyLabel = new InlineLabel(RBUNDLE.secureListenPortColon());
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.secureHttpPortColon());
 				table.setWidget(row, 0, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
@@ -180,29 +161,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 				table.setWidget(row, 1, valueLabel);
 
-				// Shutdown port
-				keyLabel = new InlineLabel(RBUNDLE.shutdownPortColon());
-				table.setWidget(row, 2, keyLabel);
-				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
-
-				// Shutdown port value
-				valueLabel = new InlineLabel(String.valueOf(network.getShutdownPort()));
-				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
-				table.setWidget(row, 3, valueLabel);
-			}
-
-			row++;
-			{
-				// AJP port
-				InlineLabel keyLabel = new InlineLabel(RBUNDLE.ajpPortColon());
-				table.setWidget(row, 0, keyLabel);
-				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-
-				// AJP port Value
-				InlineLabel valueLabel = new InlineLabel(String.valueOf(network.getAjpPort()));
-				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-				table.setWidget(row, 1, valueLabel);
-
+				
 				// Session Time out
 				keyLabel = new InlineLabel(RBUNDLE.sessionTimeOutColon());
 				table.setWidget(row, 2, keyLabel);
@@ -341,6 +300,52 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		content.add(valueLabel);
 		return sectionPanel;
 	}
+	
+	/**
+	 *Lucene
+	 * 
+	 * @return
+	 */
+	private FlowPanel buildLuceneSection()
+	{
+		FlowPanel sectionPanel = createSection(RBUNDLE.lucene());
+
+		FlexTable table = new FlexTable();
+		table.addStyleName("configSummary");
+		sectionPanel.add(table);
+
+		Lucene lucene = config.getLucene();
+
+		if (lucene != null)
+		{
+			int row = 0;
+			{
+				// Host 
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.hostNameColon());
+				table.setWidget(row, 0, keyLabel);
+				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+				InlineLabel valueLabel = new InlineLabel(String.valueOf(lucene.getIndexHostName()));
+				table.setWidget(row, 1, valueLabel);
+				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			}
+
+			row++;
+			{
+				// RMI Port
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.rmiPortColon());
+				table.setWidget(row, 0, keyLabel);
+				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+				InlineLabel valueLabel = new InlineLabel(String.valueOf(lucene.getRmiPort()));
+				table.setWidget(row, 1, valueLabel);
+				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			}
+		}
+
+		return sectionPanel;
+	}
+	
 
 	/**
 	 * Request and Connections
@@ -745,9 +750,10 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 
 		SSO sso = config.getSso();
 
+		int row = 0;
 		if (sso != null)
 		{
-			int row = 0;
+			
 			{
 				// Enabled
 				InlineLabel keyLabel = new InlineLabel(RBUNDLE.enabledColon());
@@ -789,6 +795,35 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				valueLabel = new InlineLabel(sso.getiChainWebDAVProxyHost());
 				table.setWidget(row, 3, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
+			}
+		}
+		
+		//We are displaying network http port and secure port as part of reverse proxy
+		Network network = config.getNetwork();
+		if (network != null)
+		{
+			{
+				row++;
+				// Http Port
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.reverseProxyHttpPortColon());
+				table.setWidget(row, 0, keyLabel);
+				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+				// Http Port Value
+				InlineLabel valueLabel = new InlineLabel(String.valueOf(network.getPort()));
+				table.setWidget(row, 1, valueLabel);
+				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+				
+				// Secure HTTP Port
+				keyLabel = new InlineLabel(RBUNDLE.reverseProxySecureHttpPortColon());
+				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
+				table.setWidget(row, 2, keyLabel);
+
+				// Secure Http Port Value
+				valueLabel = new InlineLabel(String.valueOf(network.getSecurePort()));
+				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
+				table.setWidget(row, 3, valueLabel);
+				
 			}
 		}
 		

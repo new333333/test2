@@ -42,6 +42,7 @@ public interface AppResource extends Messages
 	
 	String webDavAuthentication();
 	String reverseProxy();
+	String reverseProxyIntegration();
 
 	String pleaseWait();
 
@@ -258,4 +259,10 @@ public interface AppResource extends Messages
 	String revertChanges();
 
 	String changesReverted();
+
+	String reverseProxySecureHttpPortColon();
+
+	String reverseProxyHttpPortColon();
+
+	String enabled();
 }

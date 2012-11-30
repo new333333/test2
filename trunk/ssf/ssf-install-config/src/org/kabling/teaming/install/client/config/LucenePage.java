@@ -6,6 +6,7 @@ import org.kabling.teaming.install.client.ValueRequiredValidator;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.shared.Lucene;
+import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -55,6 +56,7 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 		FlexTable hostTable = new FlexTable();
 		contentPanel.add(hostTable);
 
+		if (!AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
 			// Max Bools
 			InlineLabel keyLabel = new InlineLabel(RBUNDLE.maxBooleansColon());
@@ -67,6 +69,7 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 			hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
+		if (!AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
 			row++;
 			// Merge Factor
@@ -176,8 +179,12 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 			return null;
 
 		Lucene lucene = config.getLucene();
-		lucene.setMaxBooleans(maxBoolsSpinner.getValueAsInt());
-		lucene.setMergeFactor(mergeFactorSpinner.getValueAsInt());
+		
+		if (maxBoolsSpinner != null)
+			lucene.setMaxBooleans(maxBoolsSpinner.getValueAsInt());
+		
+		if (mergeFactorSpinner != null)
+			lucene.setMergeFactor(mergeFactorSpinner.getValueAsInt());
 
 		// Configuration type (local, server or ha)
 		if (configTypeListBox.getSelectedIndex() == 0)
@@ -212,8 +219,11 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 
 		if (lucene != null)
 		{
-			maxBoolsSpinner.setValue(lucene.getMaxBooleans());
-			mergeFactorSpinner.setValue(lucene.getMergeFactor());
+			if (maxBoolsSpinner != null)
+				maxBoolsSpinner.setValue(lucene.getMaxBooleans());
+			
+			if (mergeFactorSpinner != null)
+				mergeFactorSpinner.setValue(lucene.getMergeFactor());
 
 			if (lucene.getLocation().equals("::luceneMode_Local") || lucene.getLocation().equals(LOCAL))
 			{
@@ -249,6 +259,8 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 			else if (index == 1) // Server
 			{
 				showUIForServerMode();
+				if (hostAddrTextBox.getText().equals("localhost"))
+					hostAddrTextBox.setText("");
 			}
 			else
 			{

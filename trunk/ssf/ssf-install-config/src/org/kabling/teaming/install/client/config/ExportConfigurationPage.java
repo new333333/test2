@@ -1,6 +1,8 @@
 package org.kabling.teaming.install.client.config;
 
+import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
+import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -74,7 +76,9 @@ public class ExportConfigurationPage extends ConfigPageDlgBox implements ClickHa
 		super.onClick(event);
 		if (event.getSource() == exportButton)
 		{
-			if (GWT.isProdMode())
+			//Since the filr is overlayed into root.war, the path we need to go for filr is /InstallConfig/fileUpload
+			
+			if (GWT.isProdMode() && !AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 				Window.Location.replace("/filrconfig/InstallConfig/fileUpload");
 			else
 				Window.Location.replace("/InstallConfig/fileUpload");
