@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeRunAReportDlgEvent;
 import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -71,6 +72,7 @@ import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgCli
 import org.kablink.teaming.gwt.client.widgets.ManageNetFolderRootsDlg.ManageNetFolderRootsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFoldersDlg.ManageNetFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg.ManageUsersDlgClient;
+import org.kablink.teaming.gwt.client.widgets.RunAReportDlg.RunAReportDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -113,6 +115,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeManageNetFolderRootsDlgEvent.Handler,
 		InvokeManageGroupsDlgEvent.Handler,
 		InvokeManageUsersDlgEvent.Handler,
+		InvokeRunAReportDlgEvent.Handler,
 		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
@@ -131,6 +134,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
 	private ManageUsersDlg m_manageUsersDlg = null;
+	private RunAReportDlg m_runAReportDlg = null;
 	private ConfigureUserAccessDlg m_configureUserAccessDlg = null;
 	private ConfigureAdhocFoldersDlg m_configureAdhocFoldersDlg = null;
 
@@ -146,6 +150,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
 		TeamingEvents.INVOKE_MANAGE_USERS_DLG,
+		TeamingEvents.INVOKE_RUN_A_REPORT_DLG,
 		
 		// Login/out events.
 		TeamingEvents.PRE_LOGOUT,
@@ -318,6 +323,14 @@ public class AdminControl extends TeamingPopupPanel
 			{
 				for (GwtAdminAction action : actions )
 				{
+					if ( ! RunAReportDlg.SHOW_RUN_A_REPORT_OPTION )
+					{
+						if ( AdminAction.RUN_A_REPORT.equals( action.getActionType() ) )
+						{
+							continue;
+						}
+					}
+					
 					AdminActionControl adminActionControl;
 					
 					// Add a ui widget for this administration action.
@@ -527,6 +540,14 @@ public class AdminControl extends TeamingPopupPanel
 					adminCategories = adminConsoleInfo.getCategories();
 					for ( GwtAdminCategory category : adminCategories )
 					{
+						if ( RunAReportDlg.SHOW_RUN_A_REPORT_OPTION )
+						{
+							if ( GwtAdminCategory.GwtAdminCategoryType.REPORTS.equals( category.getCategoryType() ) )
+							{
+								continue;
+							}
+						}
+						
 						// Add this administration category to the page.
 						addCategory( category );
 					}
@@ -733,6 +754,12 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Fire the event to invoke the "Manage users" dialog.
 			InvokeManageUsersDlgEvent.fireOne();
+		}
+		
+		else if ( adminAction.getActionType() == AdminAction.RUN_A_REPORT )
+		{
+			// Fire the event to invoke the "Run a Report" dialog.
+			InvokeRunAReportDlgEvent.fireOne();
 		}
 		
 		else
@@ -1634,6 +1661,65 @@ public class AdminControl extends TeamingPopupPanel
 	{
 		doPreLogoutCleanup();
 	}// end onPreLogout()
+	
+	/**
+	 * Handles InvokeRunAReportDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeRunAReportDlgEvent.Handler.onInvokeRunAReportDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeRunAReportDlg( InvokeRunAReportDlgEvent event )
+	{
+		// Get the position of the content control.
+		final int x = m_contentControlX;
+		final int y = m_contentControlY;
+		
+		// Have we already created a "Run a Report" dialog?
+		if ( m_runAReportDlg == null )
+		{
+			// No, create one.
+			RunAReportDlg.createAsync( new RunAReportDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final RunAReportDlg muDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_runAReportDlg = muDlg;
+							RunAReportDlg.initAndShow( m_runAReportDlg, x, y );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			},
+			false,	// false -> Not auto hide.
+			true,	// true  -> Modal.
+			x, 
+			y,
+			m_dlgWidth,
+			m_dlgHeight );
+		}
+		
+		else
+		{
+			// Yes, we've already created a "Run a Report" dialog!
+			// Simply initialize and show it.
+			RunAReportDlg.initAndShow( m_runAReportDlg, x, y );
+		}
+	}
 	
 	/**
 	 * Handles SidebarHideEvent's received by this class.
