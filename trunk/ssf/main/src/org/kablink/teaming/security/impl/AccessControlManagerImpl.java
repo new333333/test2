@@ -216,10 +216,12 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			//Now check if the root folder allows access
 			if (topFolder != null) {
 				if (!testOperation(user, topFolder, WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER)) {
-					return false;
+					//TODO This next line was removed temporarially until we can get net folder access to work right - pmh
+					//return false;
 				}
 			} else {
-				return false;
+				//TODO This next line was removed temporarially until we can get net folder access to work right - pmh
+				//return false;
 			}
 		}
 		

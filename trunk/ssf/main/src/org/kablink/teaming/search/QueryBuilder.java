@@ -773,8 +773,8 @@ public class QueryBuilder {
 		} else if (!user.getIdentityInfo().isInternal() && !user.isShared()) {
 			rootPrincipals += " OR " + ROOT_PREFIX + String.valueOf(allExtUsersGroupId);
 		}
-		//Removed next line until this is made to work
-		qString.append("(" + rootPrincipals + ") AND ");
+		//TODO This next line was removed temporarially until we can get net folder access to work right - pmh
+		//qString.append("(" + rootPrincipals + ") AND ");
 		
 		// folderAcl:1,2,3...
 		if (widen) {
