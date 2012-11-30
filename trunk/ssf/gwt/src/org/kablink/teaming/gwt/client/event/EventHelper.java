@@ -99,6 +99,7 @@ public class EventHelper {
 		case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	reply = new InvokeManageNetFolderRootsDlgEvent(); break;
 		case INVOKE_MANAGE_GROUPS_DLG:				reply = new InvokeManageGroupsDlgEvent();		  break;
 		case INVOKE_MANAGE_USERS_DLG:				reply = new InvokeManageUsersDlgEvent();		  break;
+		case INVOKE_RUN_A_REPORT_DLG:				reply = new InvokeRunAReportDlgEvent();		      break;
 		case LOGIN:                             	reply = new LoginEvent();                         break;
 		case PRE_LOGOUT:                        	reply = new PreLogoutEvent();                     break;
 		case PREVIEW_LANDING_PAGE:					reply = new PreviewLandingPageEvent();			  break;
@@ -1036,6 +1037,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_RUN_A_REPORT_DLG:
+				// An InvokeRunAReportDlgEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof InvokeRunAReportDlgEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeRunAReportDlgEvent.registerEvent(eventBus, ((InvokeRunAReportDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case INVOKE_SEND_EMAIL_TO_TEAM:
 				// An InvokeSendEmailToTeamEvent!  Can the event
 				// handler we were given handle that?
@@ -2234,6 +2244,7 @@ public class EventHelper {
 			case INVOKE_MANAGE_GROUPS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		           break;
 			case INVOKE_MANAGE_USERS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageUsersDlgEvent.Handler);		           break;
 			case INVOKE_REPLY:                      	       hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                            break;
+			case INVOKE_RUN_A_REPORT_DLG:				       hasHandler = (eventHandler instanceof InvokeRunAReportDlgEvent.Handler);		               break;
 			case INVOKE_SEND_EMAIL_TO_TEAM:                    hasHandler = (eventHandler instanceof InvokeSendEmailToTeamEvent.Handler);                  break;
 			case INVOKE_SEND_TO_FRIEND:					       hasHandler = (eventHandler instanceof InvokeSendToFriendEvent.Handler);			           break;
 			case INVOKE_SHARE:                      	       hasHandler = (eventHandler instanceof InvokeShareEvent.Handler);                            break;

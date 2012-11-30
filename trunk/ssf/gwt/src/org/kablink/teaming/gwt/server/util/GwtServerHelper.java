@@ -3124,6 +3124,19 @@ public class GwtServerHelper {
 					systemCategory.addAdminOption( adminAction );
 				}
 			}
+			
+			// Does the user have rights to run reports?
+			if ( adminModule.testAccess( AdminOperation.report ) )
+			{
+				// Yes
+				title = NLT.get( "administration.category.reports" );
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, "", AdminAction.RUN_A_REPORT );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
 		}
 		
 		// Create a "Reports" category

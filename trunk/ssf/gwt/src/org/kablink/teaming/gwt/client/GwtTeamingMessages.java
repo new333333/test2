@@ -617,6 +617,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ProjectStatsWidget();
 	String codeSplitFailure_ProjectManagementWSView();
 	String codeSplitFailure_QuickViewDlg();
+	String codeSplitFailure_RunAReportDlg();
 	String codeSplitFailure_SearchOptionsComposite();
 	String codeSplitFailure_SelectPrincipalsWidget();
 	String codeSplitFailure_SurveyFolderView();
@@ -2220,5 +2221,8 @@ public interface GwtTeamingMessages extends Messages
 	String emptyPeople_Info_1( String company, String product );
 	String emptyPeople_Info_2( String company, String product );
 	String emptyPeople_SubHead();
+	
+	// Strings used by the 'Run a Report' dialog.
+	String runAReportDlgCaption();
 	
 }// end GwtTeamingMessages

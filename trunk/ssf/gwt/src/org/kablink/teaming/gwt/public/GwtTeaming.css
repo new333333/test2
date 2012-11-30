@@ -4905,5 +4905,10 @@ td.datePickerMonth {
 
 /* End */
 
+/* Start:  Run a report dialog styles. */
+	.vibe-runAReportDlg           {}
+	.vibe-runAReportDlg-rootPanel {background-color: white;}
+/* End:  Run a report dialog styles. */
+
 
 /* End */
