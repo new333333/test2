@@ -5104,6 +5104,7 @@ public class GwtViewHelper {
 
 			// Get the access control information for the work are.
 			Map model = new HashMap();
+			model.put(WebKeys.ACCESS_HONOR_INHERITANCE, Boolean.TRUE);
 			AccessControlController.setupAccess(bs, workArea, model);
 			List groups = ((List) model.get(WebKeys.ACCESS_SORTED_GROUPS));
 			List users  = ((List) model.get(WebKeys.ACCESS_SORTED_USERS ));

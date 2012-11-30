@@ -704,6 +704,7 @@ public class WebKeys {
 	public static final String ACCESS_CONTROL_SHARE_ITEM_RECIPIENTS = "ss_accessControlShareItemRecipients";
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";
 	public static final String ACCESS_GROUPS_COUNT = "ss_accessGroupsCount";
+	public static final String ACCESS_HONOR_INHERITANCE = "ss_accessHonorInheritance";
 	public static final String ACCESS_USERS_COUNT = "ss_accessUsersCount";
 	public static final String ACCESS_ALL_USERS_GROUP = "ss_accessAllUsersGroup";
 	public static final String ACCESS_APPLICATIONS_COUNT = "ss_accessApplicationsCount";

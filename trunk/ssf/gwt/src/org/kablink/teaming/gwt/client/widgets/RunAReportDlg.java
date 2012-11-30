@@ -40,15 +40,22 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.GetManageUsersInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetReportsInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ReportsInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg.ManageUsersDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -72,6 +79,7 @@ public class RunAReportDlg extends DlgBox
 	private int							m_showCX;					// ...width and...
 	private int							m_showCY;					// ...height of the dialog.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private ReportsInfoRpcResponseData	m_reportsInfo;				//
 	private VibeFlowPanel				m_rootPanel;				// The panel that holds the dialog's contents.
 
 	// The following defines the TeamingEvents that are handled by
@@ -88,7 +96,7 @@ public class RunAReportDlg extends DlgBox
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private RunAReportDlg(boolean autoHide, boolean modal, int x, int y, int cx, int cy) {
+	private RunAReportDlg(RunAReportDlgClient rarDlgClient, boolean autoHide, boolean modal, int x, int y, int cx, int cy) {
 		// Initialize the superclass...
 		super(
 			autoHide,
@@ -111,7 +119,7 @@ public class RunAReportDlg extends DlgBox
 			m_messages.runAReportDlgCaption(),
 			DlgBox.getSimpleSuccessfulHandler(),
 			DlgBox.getSimpleCanceledHandler(),
-			null);	// null -> No callback data for createContent(). 
+			rarDlgClient); 
 	}
 
 	/**
@@ -125,6 +133,32 @@ public class RunAReportDlg extends DlgBox
 	 */
 	@Override
 	public Panel createContent(Object callbackData) {
+		// Can we get the information necessary to construct the
+		// reports list?
+		final RunAReportDlg			rarDlg       = this;
+		final RunAReportDlgClient	rarDlgClient = ((RunAReportDlgClient) callbackData);
+		GwtClientHelper.executeCommand(new GetReportsInfoCmd(), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				// No!  Tell the user about the problem...
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetReportsInfo());
+
+				// ...and tell the caller that the dialog will be
+				// ...unavailable.
+				rarDlgClient.onUnavailable();
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// Yes!  Store it and tell the caller that the dialog
+				// is available.
+				m_reportsInfo = ((ReportsInfoRpcResponseData) result.getResponseData());
+				rarDlgClient.onSuccess(rarDlg);
+			}
+		});
+		
 		// Create the main panel that will hold the dialog's content...
 		m_rootPanel = new VibeFlowPanel();
 		m_rootPanel.addStyleName("vibe-runAReportDlg-rootPanel");
@@ -345,8 +379,7 @@ public class RunAReportDlg extends DlgBox
 					// Yes!  Create the dialog.  Note that its
 					// construction flow will call the appropriate
 					// method off the RunAReportDlgClient object.
-					RunAReportDlg rarDlg = new RunAReportDlg(autoHide, modal, createX, createY, createCX, createCY);
-					rarDlgClient.onSuccess(rarDlg);
+					new RunAReportDlg(rarDlgClient, autoHide, modal, createX, createY, createCX, createCY);
 				}
 				
 				else {
