@@ -1615,10 +1615,24 @@ public class ShareThisDlg extends DlgBox
 							// Was the email associated with an internal user?
 							if ( vibeResult.getResponseData() != null )
 							{
+								GwtShareItem shareItem;
+								
 								// Yes
 								gwtUser = (GwtUser) vibeResult.getResponseData();
-								addShare( gwtUser );
+								shareItem = addShare( gwtUser );
+
+								if ( shareItem != null )
+								{
+									InvokeEditShareRightsDlgEvent event;
+
+									// Fire an event to invoke the "edit share rights" dialog.
+									event = new InvokeEditShareRightsDlgEvent(
+																			shareItem.getRecipientId(),
+																			shareItem.getEntityId().getEntityId() );
+									GwtTeaming.fireEvent( event );
+								}
 							}
+								
 							else
 							{
 								// No

@@ -1137,6 +1137,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			
 			setupInitialOpenIDProviderList();
 
+			// If we are running Filr reset the templates.
+			if ( Utils.checkIfFilr() )
+			{
+				getTemplateModule().updateDefaultTemplates( top.getId(), true );
+			}
+
     		return top;
  	}
  	
