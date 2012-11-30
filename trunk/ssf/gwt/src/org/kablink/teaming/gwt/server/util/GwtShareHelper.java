@@ -45,6 +45,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -63,6 +64,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.User.ExtProvState;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -84,6 +86,7 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 
@@ -96,6 +99,7 @@ public class GwtShareHelper
 {
 	protected static Log m_logger = LogFactory.getLog( GwtShareHelper.class );
 	private static long MILLISEC_IN_A_DAY = 86400000;
+	private static AccessControlManager m_accessControlManager = null;
 
 	
 	/**
@@ -134,11 +138,25 @@ public class GwtShareHelper
 		BinderModule binderModule;
 		FolderModule folderModule;
 		User currentUser;
+    	Long zoneId;
+    	ZoneConfig zoneConfig;
 		
 		binderModule = ami.getBinderModule();
 		folderModule = ami.getFolderModule();
 		currentUser = GwtServerHelper.getCurrentUser();
 		
+		if ( m_accessControlManager == null )
+			m_accessControlManager = (AccessControlManager) SpringContextUtil.getBean( "accessControlManager" );
+		
+		if ( m_accessControlManager == null )
+		{
+			m_logger.error( "In GwtShareHelper.canShareWith(), unable to get the access control manager" );
+			return false;
+		}
+
+    	zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	zoneConfig = getCoreDao().loadZoneConfig( zoneId );
+
 		try
 		{
 			BinderOperation binderOperation;
@@ -147,21 +165,33 @@ public class GwtShareHelper
 			switch ( shareOperation )
 			{
 			case SHARE_FORWARD:
+				// Is share forwarding enabled at the zone level?
+				m_accessControlManager.checkOperation( zoneConfig, WorkAreaOperation.ENABLE_SHARING_FORWARD );
+
 				binderOperation = BinderOperation.allowSharingForward;
 				folderOperation = FolderOperation.allowSharingForward;
 				break;
 			
 			case SHARE_WITH_EXTERNAL_USERS:
+				// Is sharing with external users enabled at the zone level?
+				m_accessControlManager.checkOperation( zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL );
+				
 				binderOperation = BinderOperation.allowSharingExternal;
 				folderOperation = FolderOperation.allowSharingExternal;
 				break;
 			
 			case SHARE_WITH_INTERNAL_USERS:
+				// Is sharing with internal users enabled at the zone level?
+				m_accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL );
+				
 				binderOperation = BinderOperation.allowSharing;
 				folderOperation = FolderOperation.allowSharing;
 				break;
 			
 			case SHARE_WITH_PUBLIC:
+				// Is sharing with the public enabled at the zone level?
+				m_accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC);
+				
 				binderOperation = BinderOperation.allowSharingPublic;
 				folderOperation = FolderOperation.allowSharingPublic;
 				break;
@@ -171,6 +201,8 @@ public class GwtShareHelper
 				return false;
 			}
 
+			// If we get here the given share operation is enabled at the zone level
+			
 			if ( entityId.isBinder() )
 			{
 				Binder binder;
@@ -456,6 +488,14 @@ public class GwtShareHelper
 		rightSet = new RightSet( operations.toArray( new WorkAreaOperation[ operations.size() ] ) );
 
 		return rightSet;
+	}
+	
+	/**
+	 * 
+	 */
+	private static CoreDao getCoreDao()
+	{
+		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
 	}
 	
 	/**
