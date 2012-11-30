@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -44,7 +45,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetManageUsersInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetReportsInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ReportsInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ReportsInfoRpcResponseData.ReportInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.EntryType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -54,9 +57,13 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -71,7 +78,8 @@ public class RunAReportDlg extends DlgBox
 		// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler
 {
-	public static final boolean	SHOW_RUN_A_REPORT_OPTION	= false;	// DRF:  Leave false on checkin until I get this working.
+	public static final boolean	SHOW_GWT_ADMIN_REPORTS	= false;	// DRF:  Leave false on checkin until I get the GWT stuff working.
+	public static final boolean	SHOW_JSP_ADMIN_REPORTS	= true;		// DRF:  Leave true  on checkin until I get the GWT stuff working.
 	
 	private GwtTeamingMessages			m_messages;					// Access to Vibe's messages.
 	private int							m_showX;					// The x and...
@@ -172,7 +180,47 @@ public class RunAReportDlg extends DlgBox
 	 * Creates the widgets within the dialog.
 	 */
 	private void createContentWidgets() {
-//!		...this needs to be implemented...		
+		// Add the <SELECT> for which report to run...
+		InlineLabel il = new InlineLabel(m_messages.runAReportDlgChoose());
+		il.addStyleName("vibe-runAReportDlg-chooseLabel");
+		il.setWordWrap(false);
+		m_rootPanel.add(il);
+		final ListBox reportsLB = new ListBox();
+		reportsLB.addStyleName("vibe-runAReportDlg-chooseSelect");
+		m_rootPanel.add(reportsLB);
+		reportsLB.addItem(m_messages.runAReportDlgSelect(), "");
+		for (ReportInfo report:  m_reportsInfo.getReports()) {
+			reportsLB.addItem(report.getTitle(), String.valueOf(report.getReport().ordinal()));
+		}
+		reportsLB.setSelectedIndex(0);
+		
+		// ...and add a handler to it to handle the user's selection.
+		reportsLB.addChangeHandler(new ChangeHandler() {
+			@Override
+			public void onChange(ChangeEvent event) {
+				// If the user has somehow selected the select a report
+				// option...
+				int		si     = reportsLB.getSelectedIndex();
+				String	report = reportsLB.getValue(si);
+				if (0 == report.length()) {
+					// ...ignore it.
+					return;
+				}
+
+				// Get the ReportInfo for the selected report...
+				ReportInfo selectedReport = getReportInfo(AdminAction.getEnum(Integer.parseInt(report)));
+				
+				// ...and if the first item in the <SELECT> is the
+				// ...select a report option... 
+				if ((0 < si) && (0 == reportsLB.getValue(0).length())) {
+					// ...remove it...
+					reportsLB.removeItem(0);
+				}
+
+				// ...and handle the selected report.
+				handleReportActionAsync(selectedReport);
+			}
+		});
 	}
 	
 	/**
@@ -201,6 +249,40 @@ public class RunAReportDlg extends DlgBox
 		return null;
 	}
 
+	/*
+	 * Returns the ReportInfo from the ReportInfoRpcResponseData that
+	 * corresponds to an AdminAction.
+	 */
+	private ReportInfo getReportInfo(AdminAction reportAction) {
+		for (ReportInfo report:  m_reportsInfo.getReports()) {
+			if (report.getReport().equals(reportAction)) {
+				return report;
+			}
+		}
+		return null;
+	}
+
+	/*
+	 * Asynchronously handles invoking a report.
+	 */
+	private void handleReportActionAsync(final ReportInfo report) {
+		ScheduledCommand doReport = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				handleReportActionNow(report);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doReport);
+	}
+	
+	/*
+	 * Synchronously handles invoking a report.
+	 */
+	private void handleReportActionNow(ReportInfo report) {
+//!		...this needs to be implemented...
+		GwtClientHelper.deferredAlert("RunAReportDlg.handleReportActionNow():  " + report.getReport().name());
+	}
+	
 	/**
 	 * Handles AdministrationExitEvent's received by this class.
 	 * 

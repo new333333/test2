@@ -106,4 +106,26 @@ public enum AdminAction implements IsSerializable
 	{
 		return m_unlocalizedDesc;
 	}// end getUnlocalizedDesc()
+	
+	/**
+	 * Converts the ordinal value of an AdminAction to its enumeration
+	 * equivalent.
+	 * 
+	 * @param actionOrdinal
+	 * 
+	 * @return
+	 */
+	public static AdminAction getEnum( int actionOrdinal )
+	{
+		AdminAction action;
+		try
+		{
+			action = AdminAction.values()[actionOrdinal];
+		}
+		catch ( ArrayIndexOutOfBoundsException e )
+		{
+			action = AdminAction.UNDEFINED;
+		}
+		return action;
+	}// end getEnum()
 }// end AdminAction

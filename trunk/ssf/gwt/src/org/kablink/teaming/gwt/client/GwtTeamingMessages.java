@@ -2225,5 +2225,7 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by the 'Run a Report' dialog.
 	String runAReportDlgCaption();
+	String runAReportDlgChoose();
+	String runAReportDlgSelect();
 	
 }// end GwtTeamingMessages

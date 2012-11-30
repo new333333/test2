@@ -323,10 +323,13 @@ public class AdminControl extends TeamingPopupPanel
 			{
 				for (GwtAdminAction action : actions )
 				{
-					if ( ! RunAReportDlg.SHOW_RUN_A_REPORT_OPTION )
+					// If we're not showing the GWT reports...
+					if ( ! RunAReportDlg.SHOW_GWT_ADMIN_REPORTS )
 					{
+						// ...and this is the GWT reports action...
 						if ( AdminAction.RUN_A_REPORT.equals( action.getActionType() ) )
 						{
+							// ...skip it.
 							continue;
 						}
 					}
@@ -540,10 +543,14 @@ public class AdminControl extends TeamingPopupPanel
 					adminCategories = adminConsoleInfo.getCategories();
 					for ( GwtAdminCategory category : adminCategories )
 					{
-						if ( RunAReportDlg.SHOW_RUN_A_REPORT_OPTION )
+						// If we're not showing the JSP reports...
+						if ( ! RunAReportDlg.SHOW_JSP_ADMIN_REPORTS )
 						{
+							// ...and this is the JSP reports
+							// ...category...
 							if ( GwtAdminCategory.GwtAdminCategoryType.REPORTS.equals( category.getCategoryType() ) )
 							{
+								// ...ignore it.
 								continue;
 							}
 						}
