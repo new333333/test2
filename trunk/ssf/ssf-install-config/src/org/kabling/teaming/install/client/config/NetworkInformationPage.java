@@ -69,7 +69,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			httpSpinner = new GwValueSpinner(80, 80, 9999, null);
+			httpSpinner = new GwValueSpinner(8080, 1024, 9999, null);
 			table.setWidget(row, 1, httpSpinner);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -81,7 +81,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			httpSecureSpinner = new GwValueSpinner(443, 80, 9999, null);
+			httpSecureSpinner = new GwValueSpinner(8443, 1024, 9999, null);
 			table.setWidget(row, 1, httpSecureSpinner);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -93,7 +93,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			listenSpinner = new GwValueSpinner(443, 80, 9999, null);
+			listenSpinner = new GwValueSpinner(8080, 1024, 9999, null);
 			table.setWidget(row, 1, listenSpinner);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -105,7 +105,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			secureListenSpinner = new GwValueSpinner(443, 80, 9999, null);
+			secureListenSpinner = new GwValueSpinner(8443, 1024, 9999, null);
 			table.setWidget(row, 1, secureListenSpinner);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -117,7 +117,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			shutDownPortSpinner = new GwValueSpinner(8005, 80, 9999, null);
+			shutDownPortSpinner = new GwValueSpinner(8005, 1024, 9999, null);
 			table.setWidget(row, 1, shutDownPortSpinner);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -129,7 +129,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			ajpPortSpinner = new GwValueSpinner(8009, 80, 9999, null);
+			ajpPortSpinner = new GwValueSpinner(8009, 1024, 9999, null);
 			table.setWidget(row, 1, ajpPortSpinner);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}

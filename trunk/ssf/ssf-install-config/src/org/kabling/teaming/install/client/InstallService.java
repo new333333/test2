@@ -1,5 +1,6 @@
 package org.kabling.teaming.install.client;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.kabling.teaming.install.shared.ConfigurationSaveException;
@@ -95,4 +96,8 @@ public interface InstallService extends RemoteService
 	void logout();
 	
 	void markConfigurationDone(String configType);
+	
+	void reverConfiguration() throws IOException;
+	
+	boolean isUnsavedConfigurationExists();
 }
