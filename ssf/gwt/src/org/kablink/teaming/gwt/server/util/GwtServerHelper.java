@@ -6104,8 +6104,7 @@ public class GwtServerHelper {
 	
 	/**
 	 * Returns a ManageUsersInfoRpcResponseData object
-	 * containing the information for downloading the desktop
-	 * applications.
+	 * containing the information for managing users.
 	 * 
 	 * @param bs
 	 * @param request
@@ -6130,8 +6129,8 @@ public class GwtServerHelper {
 
 			// If we get here, reply refers to the
 			// ManageUsersInfoRpcResponseData object
-			// containing the information about downloading the desktop
-			// application.  Return it.
+			// containing the information about managing user.  Return
+			// it.
 			return reply;
 		}
 		catch (Exception ex) {
@@ -8718,6 +8717,7 @@ public class GwtServerHelper {
 		case GET_PROJECT_INFO:
 		case GET_QUICK_VIEW_INFO:
 		case GET_RECENT_PLACES:
+		case GET_REPORTS_INFO:
 		case GET_ROOT_WORKSPACE_ID:
 		case GET_SAVED_SEARCHES:
 		case GET_SEND_TO_FRIEND_URL:

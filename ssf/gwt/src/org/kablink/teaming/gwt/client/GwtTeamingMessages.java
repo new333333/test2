@@ -410,6 +410,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetProfileStats();
 	String rpcFailure_GetProjectInfo();
 	String rpcFailure_GetRecentPlaces();
+	String rpcFailure_GetReportsInfo();
 	String rpcFailure_GetRootWorkspaceId();
 	String rpcFailure_GetSavedSearches();
 	String rpcFailure_GetSelfRegInfo();

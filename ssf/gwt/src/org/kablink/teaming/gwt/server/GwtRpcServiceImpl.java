@@ -154,6 +154,7 @@ import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
 import org.kablink.teaming.gwt.server.util.GwtNetFolderHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
+import org.kablink.teaming.gwt.server.util.GwtReportsHelper;
 import org.kablink.teaming.gwt.server.util.GwtSearchHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.gwt.server.util.GwtShareHelper;
@@ -1680,6 +1681,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			List<RecentPlaceInfo> result = GwtMenuHelper.getRecentPlaces( this, getRequest( ri ), ((GetRecentPlacesCmd) cmd).getBinderId() );
 			GetRecentPlacesRpcResponseData responseData = new GetRecentPlacesRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_REPORTS_INFO:
+		{
+			ReportsInfoRpcResponseData result = GwtReportsHelper.getReportsInfo( this, getRequest( ri ) );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
