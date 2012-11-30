@@ -4906,8 +4906,10 @@ td.datePickerMonth {
 /* End */
 
 /* Start:  Run a report dialog styles. */
-	.vibe-runAReportDlg           {}
-	.vibe-runAReportDlg-rootPanel {background-color: white;}
+	.vibe-runAReportDlg              {}
+	.vibe-runAReportDlg-chooseLabel  {font-weight: bold;}
+	.vibe-runAReportDlg-chooseSelect {margin-left: 10px; padding-left: 5px;}
+	.vibe-runAReportDlg-rootPanel    {background-color: white; padding: 10px;}
 /* End:  Run a report dialog styles. */
 
 
