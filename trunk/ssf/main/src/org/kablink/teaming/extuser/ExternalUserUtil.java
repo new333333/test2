@@ -44,10 +44,13 @@ import org.kablink.teaming.InternalException;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
 import org.kablink.teaming.domain.OpenIDProvider;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.spring.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -224,6 +227,30 @@ public class ExternalUserUtil {
 			return url;
 	}
 	
+	public static boolean shouldPermitAccess(User user) {
+		if(user.getIdentityInfo().isInternal())
+			return true; // This code only concerns external user
+		
+		if(user.getIdentityInfo().isFromOpenid())
+			return true; // This user has already logged into Filr successfully using OpenID at least once in the past. Keep allow access.
+		
+		if(user.getExtProvState() == User.ExtProvState.verified)
+			return true; // This user has already completed self-provisioning. Keep allow access.
+		
+		if(user.getExtProvState() == User.ExtProvState.credentialed)
+			return true; // This user is in the process of self-provisioning. Keep allow access.
+		
+		// Check if the user still has at least one unexpired entity shared with him.
+		ShareItemSelectSpec spec = new ShareItemSelectSpec();
+		spec.setRecipients(user.getId(), null, null);
+		spec.excludeExpired();
+		List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+		if(shareItems != null && shareItems.size() > 0)
+			return true;
+		else
+			return false;
+	}
+	
 	private static Long getUserId(String encodedUserToken) {
 		return Long.parseLong(encodedUserToken.substring(0, encodedUserToken.indexOf(DELIM)), 16);
 	}
@@ -306,6 +333,10 @@ public class ExternalUserUtil {
 		return (TransactionTemplate) SpringContextUtil.getBean("transactionTemplate");
 	}
 
+	private static SharingModule getSharingModule() {
+		return (SharingModule) SpringContextUtil.getBean("sharingModule");
+	}
+	
 	public static void main(String[] args) throws Exception {
 		long l = 209;
 		String hex = Long.toHexString(l);

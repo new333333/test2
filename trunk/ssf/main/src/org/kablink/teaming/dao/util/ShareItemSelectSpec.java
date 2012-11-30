@@ -206,7 +206,7 @@ public class ShareItemSelectSpec {
 	}
 	
 	/**
-	 * Defines selection criterion around 'end date' attribute.
+	 * Defines selection criterion around 'end date' attribute in such a way that it would filter out all expired items.
 	 * 
 	 */
 	public void excludeExpired() {
