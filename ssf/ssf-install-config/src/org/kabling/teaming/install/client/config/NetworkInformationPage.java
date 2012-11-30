@@ -1,11 +1,16 @@
 package org.kabling.teaming.install.client.config;
 
+import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.ValueRequiredValidator;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.shared.Network;
+import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -13,17 +18,16 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 
-public class NetworkInformationPage extends ConfigPageDlgBox
+public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHandler
 {
 	private VibeTextBox hostTextBox;
-	private GwValueSpinner httpSpinner;
 	private GwValueSpinner listenSpinner;
 	private GwValueSpinner secureListenSpinner;
 	private GwValueSpinner shutDownPortSpinner;
 	private GwValueSpinner ajpPortSpinner;
 	private GwValueSpinner sessionTimeOutSpinner;
 	private VibeTextBox keyStoreFileTextBox;
-	private GwValueSpinner httpSecureSpinner;
+	private CheckBox httpEnabledCheckBox;
 
 	@Override
 	public Panel createContent(Object propertiesObj)
@@ -64,44 +68,29 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 
 		{
 			row++;
-			// Http Port
+			// Listen Port
 			InlineLabel keyLabel = new InlineLabel(RBUNDLE.httpPortColon());
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			httpSpinner = new GwValueSpinner(8080, 1024, 9999, null);
-			table.setWidget(row, 1, httpSpinner);
-			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-		}
-
-		{
-			row++;
-			// Secure HTTP Port
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.secureHttpPortColon());
-			table.setWidget(row, 0, keyLabel);
-			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-
-			httpSecureSpinner = new GwValueSpinner(8443, 1024, 9999, null);
-			table.setWidget(row, 1, httpSecureSpinner);
-			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-		}
-
-		{
-			row++;
-			// Listen Port
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.listenPortColon());
-			table.setWidget(row, 0, keyLabel);
-			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-
+			FlowPanel portEnablePanel = new FlowPanel();
+			
 			listenSpinner = new GwValueSpinner(8080, 1024, 9999, null);
-			table.setWidget(row, 1, listenSpinner);
+			table.setWidget(row, 1, portEnablePanel);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			
+			httpEnabledCheckBox = new CheckBox(RBUNDLE.enabled());
+			httpEnabledCheckBox.addStyleName("networkPageHttpEnabledCheckBox");
+			httpEnabledCheckBox.addClickHandler(this);
+			
+			portEnablePanel.add(listenSpinner);
+			portEnablePanel.add(httpEnabledCheckBox);
 		}
 
 		{
 			row++;
 			// Secure Listen Port
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.secureListenPortColon());
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.secureHttpPortColon());
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
@@ -110,6 +99,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
+		if (!AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
 			row++;
 			// Shutdown port
@@ -122,6 +112,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
+		if (!AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
 			row++;
 			// AJP port
@@ -173,15 +164,21 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 		//Save the configuration
 		Network network = config.getNetwork();
 		network.setHost(hostTextBox.getText());
-		network.setPort(httpSpinner.getValueAsInt());
-		network.setSecurePort(httpSecureSpinner.getValueAsInt());
-		network.setListenPort(listenSpinner.getValueAsInt());
 		network.setSecureListenPort(secureListenSpinner.getValueAsInt());
-		network.setShutdownPort(shutDownPortSpinner.getValueAsInt());
-		network.setAjpPort(ajpPortSpinner.getValueAsInt());
+		
+		if (shutDownPortSpinner != null)
+			network.setShutdownPort(shutDownPortSpinner.getValueAsInt());
+		
+		if (ajpPortSpinner != null)
+			network.setAjpPort(ajpPortSpinner.getValueAsInt());
 		network.setSessionTimeoutMinutes(sessionTimeOutSpinner.getValueAsInt());
 		network.setKeystoreFile(keyStoreFileTextBox.getText());
 
+		if (httpEnabledCheckBox.getValue())
+			network.setListenPort(listenSpinner.getValueAsInt());
+		else
+			network.setListenPort(0);
+		
 		return config;
 	}
 
@@ -200,15 +197,36 @@ public class NetworkInformationPage extends ConfigPageDlgBox
 		if (network != null)
 		{
 			hostTextBox.setText(network.getHost());
-			httpSpinner.setValue(network.getPort());
-			httpSecureSpinner.setValue(network.getSecurePort());
-			listenSpinner.setValue(network.getListenPort());
 			secureListenSpinner.setValue(network.getSecureListenPort());
-			shutDownPortSpinner.setValue(network.getShutdownPort());
-			ajpPortSpinner.setValue(network.getAjpPort());
+			
+			if (shutDownPortSpinner != null)
+				shutDownPortSpinner.setValue(network.getShutdownPort());
+			
+			if (ajpPortSpinner != null)
+				ajpPortSpinner.setValue(network.getAjpPort());
 			sessionTimeOutSpinner.setValue(network.getSessionTimeoutMinutes());
 			keyStoreFileTextBox.setText(network.getKeystoreFile());
+			
+			if (network.getListenPort() != 0)
+			{
+				listenSpinner.setValue(network.getListenPort());
+			}
+			else
+			{
+				listenSpinner.setEnabled(false);
+			}
+			httpEnabledCheckBox.setValue(network.getListenPort() != 0);
 		}
 	}
-
+	
+	@Override
+	public void onClick(ClickEvent event)
+	{
+		super.onClick(event);
+		
+		if (event.getSource() == httpEnabledCheckBox)
+		{
+			listenSpinner.setEnabled(httpEnabledCheckBox.getValue());
+		}
+	}
 }

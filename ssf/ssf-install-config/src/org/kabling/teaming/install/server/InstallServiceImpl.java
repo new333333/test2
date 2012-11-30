@@ -72,7 +72,6 @@ import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.google.gwt.thirdparty.guava.common.io.Files;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**

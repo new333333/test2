@@ -2,7 +2,9 @@ package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.ValueRequiredBasedOnBoolValidator;
+import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
+import org.kabling.teaming.install.shared.Network;
 import org.kabling.teaming.install.shared.SSO;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -26,6 +28,9 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 	private ValueRequiredBasedOnBoolValidator accessGatewayAddrValidator;
 	private ValueRequiredBasedOnBoolValidator accessGatewayLogOffValidator;
 	private ValueRequiredBasedOnBoolValidator webDavValidator;
+	private GwValueSpinner httpSpinner;
+	private GwValueSpinner httpSecureSpinner;
+	private CheckBox httpEnabledCheckBox;
 
 	@Override
 	public Panel createContent(Object propertiesObj)
@@ -107,6 +112,39 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			table.setWidget(row, 1, webDavGatewayAddrTextBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
+		
+		FlexTable portTable = new FlexTable();
+		portTable.addStyleName("reverProxyPortTable");
+		contentPanel.add(portTable);
+		
+		row = 0;
+		{
+			// Http Port
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.reverseProxyHttpPortColon());
+			portTable.setWidget(row, 0, keyLabel);
+			portTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			httpSpinner = new GwValueSpinner(8080, 1024, 9999, null);
+			portTable.setWidget(row, 1, httpSpinner);
+			portTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			
+			httpEnabledCheckBox = new CheckBox(RBUNDLE.enabled());
+			httpEnabledCheckBox.addClickHandler(this);
+			portTable.setWidget(row, 2, httpEnabledCheckBox);
+			portTable.getFlexCellFormatter().addStyleName(row, 2, "table-value");
+		}
+
+		{
+			row++;
+			// Secure HTTP Port
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.reverseProxySecureHttpPortColon());
+			portTable.setWidget(row, 0, keyLabel);
+			portTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			httpSecureSpinner = new GwValueSpinner(8443, 1024, 9999, null);
+			portTable.setWidget(row, 1, httpSecureSpinner);
+			portTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
 
 		return fPanel;
 	}
@@ -144,6 +182,16 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			sso.setiChainWebDAVProxyEnabled(useAccessGatewayWebDavCheckBox.getValue());
 			sso.setiChainWebDAVProxyHost(webDavGatewayAddrTextBox.getText());
 		}
+		
+		//Save HTTP Port info
+		Network network = config.getNetwork();
+		network.setPort(httpSpinner.getValueAsInt());
+		network.setSecurePort(httpSecureSpinner.getValueAsInt());
+		if (httpEnabledCheckBox.getValue())
+			network.setPort(httpSpinner.getValueAsInt());
+		else
+			network.setPort(0);
+		
 		return config;
 	}
 
@@ -174,6 +222,23 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			useAccessGatewayWebDavCheckBox.setValue(sso.isiChainWebDAVProxyEnabled());
 			webDavGatewayAddrTextBox.setText(sso.getiChainWebDAVProxyHost());
 		}
+		
+		Network network = config.getNetwork();
+
+		//Initialize the UI with the data
+		if (network != null)
+		{
+			if (network.getPort() != 0)
+			{
+				httpSpinner.setValue(network.getPort());
+			}
+			else
+			{
+				httpSpinner.setEnabled(false);
+			}
+			httpEnabledCheckBox.setValue(network.getPort() != 0);
+			httpSecureSpinner.setValue(network.getSecurePort());
+		}
 	}
 
 	@Override
@@ -192,6 +257,7 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 				logoutUrlTextBox.clearError();
 			}
 		}
+		
 		else if (event.getSource() == useAccessGatewayWebDavCheckBox)
 		{
 			webDavValidator.setRequired(useAccessGatewayWebDavCheckBox.getValue());
@@ -199,6 +265,10 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			{
 				webDavGatewayAddrTextBox.clearError();
 			}
+		}
+		else if (event.getSource() == httpEnabledCheckBox)
+		{
+			httpSpinner.setEnabled(httpEnabledCheckBox.getValue());
 		}
 
 	}
