@@ -33,7 +33,9 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
@@ -41,10 +43,13 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetManageUsersInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetReportsInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ReportsInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.ReportsInfoRpcResponseData.ReportInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.EntryType;
@@ -65,6 +70,7 @@ import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -88,6 +94,7 @@ public class RunAReportDlg extends DlgBox
 	private int							m_showCY;					// ...height of the dialog.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ReportsInfoRpcResponseData	m_reportsInfo;				//
+	private ScrollPanel					m_reportPanel;				// The panel that holds the report's contents.
 	private VibeFlowPanel				m_rootPanel;				// The panel that holds the dialog's contents.
 
 	// The following defines the TeamingEvents that are handled by
@@ -221,6 +228,12 @@ public class RunAReportDlg extends DlgBox
 				handleReportActionAsync(selectedReport);
 			}
 		});
+		
+		// Create a panel to hold the selected report.
+		m_reportPanel = new ScrollPanel();
+		m_reportPanel.addStyleName("vibe-runAReportDlg-reportPanel");
+		m_rootPanel.add(m_reportPanel);
+		m_reportPanel.setVisible(false);
 	}
 	
 	/**
@@ -279,8 +292,21 @@ public class RunAReportDlg extends DlgBox
 	 * Synchronously handles invoking a report.
 	 */
 	private void handleReportActionNow(ReportInfo report) {
-//!		...this needs to be implemented...
-		GwtClientHelper.deferredAlert("RunAReportDlg.handleReportActionNow():  " + report.getReport().name());
+		m_reportPanel.clear();
+		
+		switch (report.getReport()) {
+		case REPORT_VIEW_CREDITS:
+			showCredits();
+			break;
+			
+		default:
+//!			...this needs to be implemented...		
+			m_reportPanel.setVisible(false);
+			GwtClientHelper.deferredAlert("RunAReportDlg.handleReportActionNow( " + report.getReport().name() + " ):  ...this needs to be implemented...");
+			return;
+		}
+		
+		m_reportPanel.setVisible(true);
 	}
 	
 	/**
@@ -400,6 +426,31 @@ public class RunAReportDlg extends DlgBox
 		populateDlgAsync();
 	}
 
+	/*
+	 * Reads the credits HTML from the server and stores it in the
+	 * report panel.
+	 */
+	private void showCredits() {
+		GwtClientHelper.executeCommand(
+				new GetJspHtmlCmd(VibeJspHtmlType.CREDITS),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetCreditsHtml(),
+					VibeJspHtmlType.ACCESSORY_PANEL.toString());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Display the credits HTML in the report panel.
+				JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
+				m_reportPanel.getElement().setInnerHTML(responseData.getHtml());
+			}
+		});
+	}
+	
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */

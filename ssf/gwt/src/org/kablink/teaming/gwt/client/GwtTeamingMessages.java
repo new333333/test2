@@ -375,6 +375,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetBinderInfo();
 	String rpcFailure_GetBinderPermalink();
 	String rpcFailure_GetBranding();
+	String rpcFailure_GetCreditsHtml();
 	String rpcFailure_GetDefaultActivityStream();
 	String rpcFailure_GetFileSyncAppConfiguration();
 	String rpcFailure_GetEntryPermalink();

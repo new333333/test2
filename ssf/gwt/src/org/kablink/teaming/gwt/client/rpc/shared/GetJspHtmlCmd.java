@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,8 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import java.util.HashMap;
 import java.util.Map;
-
 
 /**
  * This class holds all of the information necessary to execute the
@@ -42,8 +42,8 @@ import java.util.Map;
  * @author phurley@novell.com
  */
 public class GetJspHtmlCmd extends VibeRpcCmd {
-	private VibeJspHtmlType m_jspType;	//
-	private Map<String,Object>	m_model;	//
+	private Map<String, Object>	m_model;	//
+	private VibeJspHtmlType		m_jspType;	//
 	
 	/**
 	 * Constructor method.
@@ -51,6 +51,7 @@ public class GetJspHtmlCmd extends VibeRpcCmd {
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
 	public GetJspHtmlCmd() {
+		// Initialize the super class.
 		super();
 	}
 	
@@ -61,9 +62,22 @@ public class GetJspHtmlCmd extends VibeRpcCmd {
 	 * @param model
 	 */
 	public GetJspHtmlCmd(VibeJspHtmlType jspType, Map<String,Object> model) {
+		// Initialize this object...
 		this();
-		m_jspType = jspType;
-		m_model = model;
+
+		// ...and store the parameters.
+		setJspType(jspType);
+		setModel(  model  );
+	}
+	
+	/**
+	 * Constructor method
+	 * 
+	 * @param jspType
+	 */
+	public GetJspHtmlCmd(VibeJspHtmlType jspType) {
+		// Always use the previous version of the constructor.
+		this(jspType, new HashMap<String, Object>());
 	}
 	
 	/**
@@ -71,8 +85,16 @@ public class GetJspHtmlCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public VibeJspHtmlType getJspType() {return m_jspType;}
-	public Map<String,Object> getModel() {return m_model;}
+	public Map<String, Object> getModel()   {return m_model;  }
+	public VibeJspHtmlType     getJspType() {return m_jspType;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setModel(  Map<String, Object> model)   {m_model   = model;  }
+	public void setJspType(VibeJspHtmlType     jspType) {m_jspType = jspType;}
 	
 	/**
 	 * Returns the command's enumeration value.

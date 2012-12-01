@@ -4160,29 +4160,31 @@ public class GwtViewHelper {
 	}
 	
 	/**
-	 * Gets HTML from the execution of a jsp
+	 * Returns the HTML from the executing a JSP.
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param jsp
+	 * @param response
+	 * @param servletContext
+	 * @param jspType
 	 * @param model
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static JspHtmlRpcResponseData getJspHtml(AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, VibeJspHtmlType jspType, Map<String,Object> model) throws GwtTeamingException {
-		String html = "";
+	public static JspHtmlRpcResponseData getJspHtml(AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, VibeJspHtmlType jspType, Map<String, Object> model) throws GwtTeamingException {
+		String html    = "";
 		String jspPath = null;
+		
 		try {
-			// The following are the supported jsp calls.
+			// The following are the supported JSP types.
 			switch (jspType) {
-			case ACCESSORY_PANEL:
-			{
+			case ACCESSORY_PANEL: {
 				try {
 					// Build request and render objects needed to build
 					// the toolbar.
-					String portletName = "ss_forum";
-					PortletInfo portletInfo = ((PortletInfo) AdaptedPortlets.getPortletInfo(portletName));
+					String		portletName = "ss_forum";
+					PortletInfo	portletInfo = ((PortletInfo) AdaptedPortlets.getPortletInfo(portletName));
 					
 					RenderRequestImpl renderReq = new RenderRequestImpl(request, portletInfo, AdaptedPortlets.getPortletContext());
 					
@@ -4241,19 +4243,18 @@ public class GwtViewHelper {
 				}
 			}
 			
-			case ACCESSORY:
-			{
+			case ACCESSORY: {
 				try {
 					// Set up bean used by the dashboard component (aka
 					// accessory).
-					User user = RequestContextHolder.getRequestContext().getUser();
-					String s_binderId = (String) model.get("binderId");
-					Binder binder = bs.getBinderModule().getBinder(Long.valueOf(s_binderId));
-					String componentId = (String) model.get("ssComponentId");
-					String scope = componentId.split("_")[0];
+					User	user        = RequestContextHolder.getRequestContext().getUser();
+					String	s_binderId  = ((String) model.get("binderId"));
+					Binder	binder      = bs.getBinderModule().getBinder(Long.valueOf(s_binderId));
+					String	componentId = ((String) model.get("ssComponentId"));
+					String	scope       = componentId.split("_")[0];
 
-					UserProperties userProperties = new UserProperties(user.getId());
-					Map userProps = new HashMap();
+					UserProperties	userProperties = new UserProperties(user.getId());
+					Map				userProps      = new HashMap();
 		    		if (null != userProperties.getProperties()) {
 		    			userProps = userProperties.getProperties();
 		    		}
@@ -4281,6 +4282,23 @@ public class GwtViewHelper {
 					String[] args = new String[]{e.getMessage()};
 					html = NLT.get("errorcode.dashboardComponentViewFailure", args);
 				}
+			}
+			
+			case CREDITS: {
+				Map<String, Object> creditsModel = new HashMap<String, Object>();
+				if (null != model) {
+					creditsModel.putAll(model);
+				}
+	    		creditsModel.put(WebKeys.URL_GWT_REPORT, Boolean.TRUE);
+				html = GwtServerHelper.executeJsp(
+					bs,
+					request,
+					response,
+					servletContext,
+					"administration/credits.jsp",
+					creditsModel);
+				
+				break;
 			}
 			
 			default: 
