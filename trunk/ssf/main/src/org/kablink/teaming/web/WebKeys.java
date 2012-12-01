@@ -126,6 +126,7 @@ public class WebKeys {
     public static final String URL_ATTRIBUTE_ID = "attrId";
     public static final String URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE = "showWhatsNew";
     public static final String URL_BINDER_ID="binderId";
+    public static final String URL_GWT_REPORT="GwtReport";
     public static final String URL_MULTIPLE_ENTITY_IDS="multipleEntityIds";
     public static final String URL_ZONE_UUID="zoneUUID";
     public static final String URL_BINDER_PARENT_ID="binderParentId";
