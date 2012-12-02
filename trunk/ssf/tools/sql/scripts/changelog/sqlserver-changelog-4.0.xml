@@ -457,8 +457,8 @@ update SS_OpenIDProviders set emailRegex='.*yahoo.com' where name='yahoo';
     </changeSet>
 
     <changeSet author="jong" context="schema" failOnError="true" id="56">
-        <comment>Increase password column size from 64 to 128 characters and also allow Unicode characters</comment>
-        <modifyDataType tableName="SS_Principals" columnName="password" newDataType="NVARCHAR(128)"/>
+        <comment>Increase password column size from 64 to 128 characters</comment>
+        <modifyDataType tableName="SS_Principals" columnName="password" newDataType="VARCHAR(128)"/>
     </changeSet>
 
 </databaseChangeLog>
