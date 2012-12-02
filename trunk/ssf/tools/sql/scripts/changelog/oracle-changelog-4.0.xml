@@ -465,4 +465,11 @@ update SS_OPENIDPROVIDERS set EMAILREGEX='.*yahoo.com' where NAME='yahoo';
         <modifyDataType tableName="SS_PRINCIPALS" columnName="PASSWORD" newDataType="VARCHAR2(128 CHAR)"/>
     </changeSet>
 
+    <changeSet author="jong" context="data" failOnError="true" id="58">
+        <comment>Store all foreign names in lower case</comment>
+        <sql>
+update SS_PRINCIPALS set FOREIGNNAME=LOWER(FOREIGNNAME);        
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
