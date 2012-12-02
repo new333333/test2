@@ -192,4 +192,17 @@ public class EncryptUtil {
 		return (StringEncryptor) SpringContextUtil.getBean("encryptor");
 	}
 
+	/*
+	public static void main(String[] args) {
+		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+		encryptor.setPassword("gangnamstyle");
+		encryptor.setAlgorithm("PBEWithMD5AndDES");
+		
+		String pwd = "";
+		for(int i = 0; i < 64; i++) {
+			pwd += i;
+			System.out.println("Password length=" + pwd.length() + ", Encrypted str length=" + encryptor.encrypt(pwd).length());
+		}
+	}
+	*/
 }
