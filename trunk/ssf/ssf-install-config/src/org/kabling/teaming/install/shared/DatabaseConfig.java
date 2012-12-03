@@ -27,6 +27,7 @@ public class DatabaseConfig implements Serializable
 	private String resourceUserName;
 	private String resourcePassword;
 	private String resourceDriverClassName;
+	private String resourceDatabase;
 
 	// Utility variable
 	private String resourceHost;
@@ -129,5 +130,15 @@ public class DatabaseConfig implements Serializable
 			return url;
 		}
 		return url;
+	}
+
+	public String getResourceDatabase()
+	{
+		return resourceDatabase;
+	}
+
+	public void setResourceDatabase(String resourceDatabase)
+	{
+		this.resourceDatabase = resourceDatabase;
 	}
 }

@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PasswordPage implements IWizardPage<InstallerConfig>
 {
-	private static final String DEFAULT_DB = "sitescape";
+	private static final String DEFAULT_DB = "filr";
 	private TextBox userTextBox;
 	private PasswordTextBox userPwdTextBox;
 	private InstallerConfig config;
