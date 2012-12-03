@@ -1,13 +1,17 @@
 package org.kabling.teaming.install.server;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
@@ -1037,22 +1041,21 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	@Override
 	public void saveConfiguration(InstallerConfig config) throws ConfigurationSaveException
 	{
-		//Make a copy of the original installer.xml so that we can revert if we need to
+		// Make a copy of the original installer.xml so that we can revert if we need to
 		try
 		{
 			File srcFile = new File("/filrinstall/installer.xml");
 			File destFile = new File("/filrinstall/installer.xml.orig");
-			
-			//If the file already exists, user has been making changes before applying the reconfigure action
+
+			// If the file already exists, user has been making changes before applying the reconfigure action
 			if (!destFile.exists())
 				FileUtils.copyFile(srcFile, new File("/filrinstall/installer.xml.orig"), true);
 		}
-		catch(IOException ioe)
+		catch (IOException ioe)
 		{
-			//We can ignore if the copy does not work
+			// We can ignore if the copy does not work
 		}
-		
-		
+
 		Document document = null;
 		try
 		{
@@ -1774,7 +1777,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 			if (dbConfig.getResourcePassword() != null)
 				resourcePassword = dbConfig.getResourcePassword();
-			
+
 			if (dbConfig.getResourceDatabase() != null)
 				resourceDatabase = dbConfig.getResourceDatabase();
 
@@ -1824,8 +1827,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
 			updateMySqlLiquiBaseProperties(database);
-			
-			
+
 			// Update the mysql-liquibase.properties
 			DatabaseConfig dbConfig = database.getDatabaseConfig("Installed");
 
@@ -1843,13 +1845,16 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 			if (dbConfig.getResourcePassword() != null)
 				resourcePassword = dbConfig.getResourcePassword();
-			
+
 			if (dbConfig.getResourceDatabase() != null)
 				databaseName = dbConfig.getResourceDatabase();
 
 			if (checkDBExists(databaseName, dbConfig.getResourceUrl(), resourceName, resourcePassword))
 				return;
 
+			// Update mysql-create-empty-database.sql with the database name
+			updateCreateScriptWithDatabaseName(databaseName);
+			
 			// Create the database if needed
 			int result = executeCommand(
 					"mysql -h " + resourceHost + " -u" + resourceName + " -p" + resourcePassword
@@ -1863,6 +1868,58 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			}
 		}
 
+	}
+
+	private void updateCreateScriptWithDatabaseName(String dbName)
+	{
+		try
+		{
+			FileInputStream fstream = new FileInputStream("/filrinstall/db/scripts/sql/mysql-create-empty-database.sql");
+			DataInputStream in = new DataInputStream(fstream);
+			
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String strLine;
+			StringBuilder updatedLine = new StringBuilder();
+
+			while ((strLine = br.readLine()) != null)
+			{
+				//If it starts with create database, we will update the database name
+				//3rd token is the database name
+				if (strLine.startsWith("create database"))
+				{
+					String tokens[] = strLine.split(" ");
+					StringBuilder lineStr = new StringBuilder();
+					for (int i = 0; i < tokens.length; i++)
+					{
+						if (i == 2)
+							lineStr.append(dbName);
+						else
+							lineStr.append(tokens[i]);
+
+						lineStr.append(" ");
+					}
+					updatedLine.append(lineStr.toString());
+					updatedLine.append("\n");
+				}
+				else
+				{
+					updatedLine.append(strLine);
+					updatedLine.append("\n");
+				}
+			}
+			in.close();
+			
+			//Put the changes back
+			FileWriter fileWriter = new FileWriter("/filrinstall/db/scripts/sql/mysql-create-empty-database.sql");
+			BufferedWriter out = new BufferedWriter(fileWriter);
+			out.write(updatedLine.toString());
+			out.close();
+		}
+		catch (Exception e)
+		{
+			logger.debug("Error updating mysql-create-empty-database.sql file");
+			throw new ConfigurationSaveException();
+		}
 	}
 
 	@Override
@@ -1957,11 +2014,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			}
 		}
 
-		//Delete the backup copy
+		// Delete the backup copy
 		File srcFile = new File("/filrinstall/installer.xml.orig");
 		if (srcFile.exists())
 			srcFile.delete();
-			
+
 		if (restartServer)
 			startFilrServer();
 	}
@@ -2166,17 +2223,17 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		{
 			try
 			{
-				//Create configured file
+				// Create configured file
 				file.createNewFile();
-				
-				//Also create configurationDetails.properties file to store if this is small or large deployment
+
+				// Also create configurationDetails.properties file to store if this is small or large deployment
 				File configurationDetailsFile = new File("/filrinstall/configurationDetails.properties");
-				
-				//Save the property of the type of configuration
+
+				// Save the property of the type of configuration
 				Properties prop = new Properties();
 				prop.setProperty("type", configType);
-				
-				//Store the properties
+
+				// Store the properties
 				store(prop, configurationDetailsFile);
 
 			}
@@ -2193,7 +2250,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		File srcFile = new File("/filrinstall/installer.xml.orig");
 		if (srcFile.exists())
 			FileUtils.copyFile(srcFile, new File("/filrinstall/installer.xml"), true);
-		
+
 		srcFile.delete();
 	}
 
