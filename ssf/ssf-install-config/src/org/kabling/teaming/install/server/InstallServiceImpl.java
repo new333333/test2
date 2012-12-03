@@ -1767,14 +1767,18 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 			String resourceName = "root";
 			String resourcePassword = "root";
+			String resourceDatabase = "filr";
 
 			if (dbConfig.getResourceUserName() != null)
 				resourceName = dbConfig.getResourceUserName();
 
 			if (dbConfig.getResourcePassword() != null)
 				resourcePassword = dbConfig.getResourcePassword();
+			
+			if (dbConfig.getResourceDatabase() != null)
+				resourceDatabase = dbConfig.getResourceDatabase();
 
-			if (checkDBExists("sitescape", dbConfig.getResourceUrl(), resourceName, resourcePassword))
+			if (checkDBExists(resourceDatabase, dbConfig.getResourceUrl(), resourceName, resourcePassword))
 				return;
 
 			logger.info("Database does not exist, updating mysql-liquibase.properties");
@@ -1829,6 +1833,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			String resourceName = "root";
 			String resourcePassword = "root";
 			String resourceHost = "localhost";
+			String databaseName = "filr";
 
 			if (dbConfig.getResourceHost() != null)
 				resourceHost = dbConfig.getResourceHost();
@@ -1838,8 +1843,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 			if (dbConfig.getResourcePassword() != null)
 				resourcePassword = dbConfig.getResourcePassword();
+			
+			if (dbConfig.getResourceDatabase() != null)
+				databaseName = dbConfig.getResourceDatabase();
 
-			if (checkDBExists("sitescape", dbConfig.getResourceUrl(), resourceName, resourcePassword))
+			if (checkDBExists(databaseName, dbConfig.getResourceUrl(), resourceName, resourcePassword))
 				return;
 
 			// Create the database if needed

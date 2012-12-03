@@ -126,7 +126,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 				dbNameTextBox = new TextBox();
-				dbNameTextBox.setText("sitescape");
+				dbNameTextBox.setText("filr");
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 				table.setWidget(row, 1, dbNameTextBox);
 			}
@@ -261,6 +261,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 			config.setId("Installed");
 			config.setResourcePassword(userPwdTextBox.getText());
 			config.setResourceUserName(userTextBox.getText());
+			config.setResourceDatabase(dbNameTextBox.getText());
 			config.setType(DatabaseType.MYSQL);
 			config.setResourceFor("icecore");
 			config.setResourceDriverClassName("com.mysql.jdbc.Driver");
@@ -282,6 +283,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 						config.setResourcePassword(userPwdTextBox.getText());
 						config.setResourceUserName(userTextBox.getText());
 						config.setResourceHost(hostTextBox.getText());
+						config.setResourceDatabase(dbNameTextBox.getText());
 						config.setResourceUrl("jdbc:mysql://" + hostTextBox.getText() + ":" + portSpinner.getValue()
 								+ "/"+dbNameTextBox.getText() + "?useUnicode=true&amp;characterEncoding=UTF-8");
 						break;
@@ -294,7 +296,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 
 	private String getHostPort(String url)
 	{
-		// url example jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor
+		// url example jdbc:jtds:sqlserver://localhost/filr;SelectMethod=cursor
 		// Note SQL server does not have a port
 		String pattern = "//";
 		if (url != null)
