@@ -888,7 +888,7 @@ public abstract class DlgBox extends PopupPanel
 					y -= (offsetHeight + 10);
 				}
 				
-				setPopupPosition( x, y );
+				setPopupPosition( x, Math.max( y, 0 ) );
 				makeDraggableAsync();
 			}
 		};

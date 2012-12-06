@@ -31,6 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.portlet.administration;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,6 +59,6 @@ public class CreditsController extends  SAbstractController {
 		}
 		Map model = new HashMap();
 		model.put(WebKeys.URL_GWT_REPORT, String.valueOf(gwtReport));
-		return new ModelAndView("administration/credits", model);
+		return new ModelAndView(WebKeys.VIEW_ADMIN_CREDITS, model);
 	}
 }

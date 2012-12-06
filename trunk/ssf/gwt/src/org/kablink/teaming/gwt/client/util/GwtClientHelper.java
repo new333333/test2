@@ -321,30 +321,15 @@ public class GwtClientHelper {
 	public static void deferredAlert(final String msg, int delay) {
 		// Were we given a message to display?
 		if (hasString(msg)) {
-			// Yes!  If we don't have a specific amount of time to
-			// delay...
-			if (0 >= delay) {
-				// ...simply defer the alert...
-				ScheduledCommand cmd = new ScheduledCommand() {
+			// Yes!  Display it when appropriate.
+			deferCommand(
+				new ScheduledCommand() {
 					@Override
 					public void execute() {
 						Window.alert(msg);
 					}
-				};
-				Scheduler.get().scheduleDeferred(cmd);
-			}
-			
-			else {
-				// ...otherwise, delay the amount of time requested and
-				// ...then display the alert.
-				Timer timer = new Timer() {
-					@Override
-					public void run() {
-						Window.alert(msg);
-					}
-				};
-				timer.schedule(delay);
-			}
+				},
+				delay);
 		}
 	}
 	
@@ -397,28 +382,14 @@ public class GwtClientHelper {
 		if (hasString(baseError) && hasItems(multiErrors)) {
 			// Yes!  If we don't have a specific amount of time to
 			// delay...
-			if (0 >= delay) {
-				// ...simply defer the alert....
-				ScheduledCommand cmd = new ScheduledCommand() {
+			deferCommand(
+				new ScheduledCommand() {
 					@Override
 					public void execute() {
 						displayMultipleErrorsNow(baseError, multiErrors);
 					}
-				};
-				Scheduler.get().scheduleDeferred(cmd);
-			}
-			
-			else {
-				// ...otherwise, delay the amount of time requested and
-				// ...then display the alert.
-				Timer timer = new Timer() {
-					@Override
-					public void run() {
-						displayMultipleErrorsNow(baseError, multiErrors);
-					}
-				};
-				timer.schedule(delay);
-			}
+				},
+				delay);
 		}
 	}
 
@@ -1393,6 +1364,38 @@ public class GwtClientHelper {
 				((null == s2) ? "" : s2));
 	}
 	
+	/**
+	 * Executes a SceduledCommand.
+	 * 
+	 * @param cmd
+	 * @param delay
+	 */
+	public static void deferCommand(final ScheduledCommand cmd, final int delay) {
+		// Yes!  If we don't have a specific amount of time to
+		// delay...
+		if (0 >= delay) {
+			// ...simply schedule the command...
+			Scheduler.get().scheduleDeferred(cmd);
+		}
+		
+		else {
+			// ...otherwise, delay the amount of time requested and
+			// ...then execute the command.
+			Timer timer = new Timer() {
+				@Override
+				public void run() {
+					cmd.execute();
+				}
+			};
+			timer.schedule(delay);
+		}
+	}
+	
+	public static void deferCommand(ScheduledCommand cmd) {
+		// Always use the initial form of the method.
+		deferCommand(cmd, 0);
+	}
+
 	/**
 	 * For the given list box, select the item in the list box that has
 	 * the given value.

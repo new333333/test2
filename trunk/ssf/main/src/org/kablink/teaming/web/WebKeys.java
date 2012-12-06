@@ -1578,6 +1578,7 @@ public class WebKeys {
     public static final String VIEW_ADD_BINDER_TYPE = "binder/add_binder_type";
     public static final String VIEW_ADD_TEAM_MEMBERS = "binder/add_team_members";
     public static final String VIEW_ADMIN_CHANGELOG="administration/changeLog";
+    public static final String VIEW_ADMIN_CREDITS="administration/credits";
     public static final String VIEW_ADMIN_UPDATE_CHANGELOG="administration/updateChangeLog";
     public static final String VIEW_ADMIN_CONFIGURE_HOME_PAGE="administration/configureHomePage";
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";

@@ -1,4 +1,3 @@
-<%
 /**
  * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
@@ -31,17 +30,64 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-%>
-<%@ page import="org.kablink.teaming.util.NLT" %>
-<%@ page import="org.kablink.teaming.util.ReleaseInfo" %>
+package org.kablink.teaming.gwt.client.widgets;
 
-<meta name="gwt:property" content="locale=<%= NLT.get( "Teaming.Lang" ) %>">
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 
-<link href="<html:rootPath/>js/gwt/gwtteaming/GwtTeaming.css"                rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>js/gwt/gwtteaming/GwtProfile.css"                rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>js/gwt/gwtteaming/GwtLandingPage.css"            rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>js/gwt/gwtteaming/GwtBinderViews.css"            rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>js/gwt/gwtteaming/GwtMenus.css"                  rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>js/gwt/gwtteaming/GwtFolderEntryView.css"        rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>js/gwt/gwtteaming/GwtDesktopAppDownloadPage.css" rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>js/gwt/gwtteaming/GwtReports.css"                rel="stylesheet" type="text/css" />
+/**
+ * Composite that runs a user activity report.
+ * 
+ * @author drfoster@novell.com
+ */
+public class UserActivityReportComposite extends ReportCompositeBase {
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+	};
+	
+	/**
+	 * Constructor method.
+	 */
+	public UserActivityReportComposite() {
+		// Simply initialize the super class.
+		super();
+	}
+	
+	/**
+	 * Creates the content for the report.
+	 * 
+	 * Overrides the ReportCompositeBase.createContent() method.
+	 */
+	@Override
+	public void createContent() {
+		// Let the super class create the initial base content.
+		super.createContent();
+		
+//!		...this needs to be implemented...
+		m_rootContent.getElement().setInnerText("UserActivityReportComposite:  ...this needs to be implemented...");
+	}
+	
+	/**
+	 * Returns a TeamingEvents[] of the events to be registered for the
+	 * composite.
+	 *
+	 * Implements the ReportCompositeBase.getRegisteredEvents() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public TeamingEvents[] getRegisteredEvents() {
+		return REGISTERED_EVENTS;
+	}
+	
+	/**
+	 * Resets the reports content.
+	 * 
+	 * Implements the ReportCompositeBase.resetReport() method.
+	 */
+	@Override
+	public void resetReport() {
+//!		...this needs to be implemented...
+	}
+}

@@ -42,9 +42,11 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -67,6 +69,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import org.kablink.teaming.BinderQuotaException;
@@ -163,6 +166,7 @@ import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -202,6 +206,9 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.tree.DomTreeBuilder;
+import org.kablink.teaming.web.tree.SearchTreeHelper;
+import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DashboardHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
@@ -450,6 +457,57 @@ public class GwtViewHelper {
 		return reply;
 	}
 
+	/*
+	 * Returns a JSP file name, ensuring it has a .jsp extension.
+	 */
+	private static String buildJspName(String baseJsp) {
+		// If we weren't given base name...
+		if (null == baseJsp) {
+			// ...return null.
+			return null;
+		}
+
+		// If the base name only contains white space...
+		baseJsp = baseJsp.trim();
+		if (0 == baseJsp.length()) {
+			// ...return a 0 length string.
+			return baseJsp;
+		}
+
+		// If the trimmed base name already ends with .jsp...
+		if (baseJsp.toLowerCase().endsWith(".jsp")) {
+			// ...simply return it.
+			return baseJsp;
+		}
+
+		// Otherwise, return the base name with .jsp appended.
+		return (baseJsp + ".jsp");
+	}
+	
+	/*
+	 * Builds a model Map for running a report JSP.
+	 */
+	private static Map<String, Object> buildReportModelMap(Map<String, Object> baseModel) {
+		// Construct the base Map...
+		Map<String, Object> reply = new HashMap<String, Object>();
+		if (null != baseModel) {
+			reply.putAll(baseModel);
+		}
+		reply.put(WebKeys.URL_GWT_REPORT, Boolean.TRUE);
+
+		// ...and add the default start/end dates.
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.add(Calendar.MONTH, -1);
+		Date startDate = cal.getTime();
+		Date endDate = new Date();
+		reply.put(WebKeys.REPORT_START_DATE, startDate);
+		reply.put(WebKeys.REPORT_END_DATE, endDate);
+
+		// If we get here, reply refers to the model Map for running a
+		// report.  Return it.
+		return reply;
+	}
+	
 	/*
 	 * Returns an entry map that represents a List<GwtSharedMeItem>.
 	 */
@@ -3190,10 +3248,22 @@ public class GwtViewHelper {
 			// ...set the entry's description...
 			Description	feDesc = fe.getDescription();
 			if (null != feDesc) {
-				boolean		feDescHtml = (Description.FORMAT_HTML == feDesc.getFormat());
+				boolean feDescHtml = (Description.FORMAT_HTML == feDesc.getFormat());
 				reply.setDescIsHtml(feDescHtml              );
-				reply.setDesc(      feDesc.getText()        );
 				reply.setDescTxt(   feDesc.getStrippedText());
+				
+				String desc = feDesc.getText();
+				if (MiscUtil.hasString(desc)) {
+					desc = MarkupUtil.markupStringReplacement(
+						null,
+						null,
+						request,
+						null,
+						fe,
+						desc,
+						WebKeys.MARKUP_VIEW);
+				}
+				reply.setDesc(desc);
 			}
 			else {
 				reply.setDescIsHtml(true);
@@ -4178,6 +4248,9 @@ public class GwtViewHelper {
 		
 		try {
 			// The following are the supported JSP types.
+			AdminModule   am = bs.getAdminModule();
+			BinderModule  bm = bs.getBinderModule();
+			ProfileModule pm = bs.getProfileModule();
 			switch (jspType) {
 			case ACCESSORY_PANEL: {
 				try {
@@ -4202,7 +4275,7 @@ public class GwtViewHelper {
 					// Display the whole accessory panel.
 					User user = RequestContextHolder.getRequestContext().getUser();
 					String s_binderId = (String) model.get("binderId");
-					Binder binder = bs.getBinderModule().getBinder(Long.valueOf(s_binderId));
+					Binder binder = bm.getBinder(Long.valueOf(s_binderId));
 
 					UserProperties userProperties = new UserProperties(user.getId());
 					Map userProps = new HashMap();
@@ -4211,7 +4284,7 @@ public class GwtViewHelper {
 		    		}
 
 		    		if (null != user) {
-		    			userProperties = bs.getProfileModule().getUserProperties(user.getId());
+		    			userProperties = pm.getUserProperties(user.getId());
 		    		}
 		    		
 					// Build the 'Add Accessory' toolbar.
@@ -4249,7 +4322,7 @@ public class GwtViewHelper {
 					// accessory).
 					User	user        = RequestContextHolder.getRequestContext().getUser();
 					String	s_binderId  = ((String) model.get("binderId"));
-					Binder	binder      = bs.getBinderModule().getBinder(Long.valueOf(s_binderId));
+					Binder	binder      = bm.getBinder(Long.valueOf(s_binderId));
 					String	componentId = ((String) model.get("ssComponentId"));
 					String	scope       = componentId.split("_")[0];
 
@@ -4259,7 +4332,7 @@ public class GwtViewHelper {
 		    			userProps = userProperties.getProperties();
 		    		}
 		    		if (null != user) {
-		    			userProperties = bs.getProfileModule().getUserProperties(user.getId());
+		    			userProperties = pm.getUserProperties(user.getId());
 		    		}
 		    		if ((null != componentId) && (!(componentId.equals("")))) {
 			    		Map<String,Object> componentModel = new HashMap<String,Object>();
@@ -4284,19 +4357,97 @@ public class GwtViewHelper {
 				}
 			}
 			
-			case CREDITS: {
-				Map<String, Object> creditsModel = new HashMap<String, Object>();
-				if (null != model) {
-					creditsModel.putAll(model);
-				}
-	    		creditsModel.put(WebKeys.URL_GWT_REPORT, Boolean.TRUE);
+			case ADMIN_REPORT_CHANGELOG: {
+				// Create a model Map for the change log report JSP
+				// page...
+				Map<String, Object> changeLogModel = buildReportModelMap(model);
+	    		
+	    		// ...and run the JSP to produce the target HTML.
 				html = GwtServerHelper.executeJsp(
 					bs,
 					request,
 					response,
 					servletContext,
-					"administration/credits.jsp",
+					buildJspName(WebKeys.VIEW_ADMIN_CHANGELOG),
+					changeLogModel);
+
+				break;
+			}
+				
+			case ADMIN_REPORT_CREDITS: {
+				// Create a model Map for the credits JSP page...
+				Map<String, Object> creditsModel = buildReportModelMap(model);
+	    		
+	    		// ...and run the JSP to produce the target HTML.
+				html = GwtServerHelper.executeJsp(
+					bs,
+					request,
+					response,
+					servletContext,
+					buildJspName(WebKeys.VIEW_ADMIN_CREDITS),
 					creditsModel);
+				
+				break;
+			}
+
+			case ADMIN_REPORT_DATA_QUOTA_EXCEEDED:
+			case ADMIN_REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED:
+			case ADMIN_REPORT_DISK_USAGE: {
+				// Create a model Map for the report's JSP page...
+				Map<String, Object> reportModel = buildReportModelMap(model);
+				
+				// ...add the specific beans required by these report
+				// ...pages...
+				Map aclMap = BinderHelper.getAccessControlMapBean(reportModel);
+				aclMap.put("generateQuotaReport", am.testAccess(AdminOperation.report));
+
+				// ...decided on the appropriate JSP view for the
+				// ...report...
+				String jspView;
+				switch (jspType) {
+				default:
+				case ADMIN_REPORT_DISK_USAGE:                     jspView = WebKeys.VIEW_QUOTA_REPORT;                    break;
+				case ADMIN_REPORT_DATA_QUOTA_EXCEEDED:            jspView = WebKeys.VIEW_QUOTA_EXCEEDED_REPORT;           break;
+				case ADMIN_REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED:  jspView = WebKeys.VIEW_QUOTA_HIGHWATER_EXCEEDED_REPORT; break;
+				}
+	    		
+	    		// ...and run that JSP to produce the target HTML.
+				html = GwtServerHelper.executeJsp(
+					bs,
+					request,
+					response,
+					servletContext,
+					buildJspName(jspView),
+					reportModel);
+				
+				break;
+			}
+			
+			case ADMIN_REPORT_XSS: {
+				// Create a model Map for the XSS JSP page...
+				Map<String, Object> xssModel = buildReportModelMap(model);
+
+				// ...add the specific beans required by the XSS
+				// ...page...
+	    		Map accessControlMap = BinderHelper.getAccessControlMapBean(xssModel);
+	    		accessControlMap.put("generateReport", am.testAccess(AdminOperation.report));
+	    		
+	    		Document pTree = DocumentHelper.createDocument();
+	        	Element rootElement = pTree.addElement(DomTreeBuilder.NODE_ROOT);
+	        	Document wsTree = bm.getDomBinderTree(RequestContextHolder.getRequestContext().getZoneId(), new WsDomTreeBuilder(null, true, bs, new SearchTreeHelper()), 1);
+	        	rootElement.appendAttributes(wsTree.getRootElement());
+	        	rootElement.appendContent(wsTree.getRootElement());
+	     		xssModel.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
+	     		xssModel.put(WebKeys.WORKSPACE_DOM_TREE, pTree);		
+	    		
+	    		// ...and run the JSP to produce the target HTML.
+				html = GwtServerHelper.executeJsp(
+					bs,
+					request,
+					response,
+					servletContext,
+					buildJspName(WebKeys.VIEW_XSS_REPORT),
+					xssModel);
 				
 				break;
 			}

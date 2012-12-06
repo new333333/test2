@@ -351,6 +351,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case CREATE_EMAIL_REPORT:
+		{
+			CreateEmailReportCmd cerCmd = ((CreateEmailReportCmd) cmd);
+			EmailReportRpcResponseData responseData = GwtReportsHelper.createEmailReport( this, getRequest( ri ), cerCmd.getBegin(), cerCmd.getEnd(), cerCmd.getEmailType() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case CREATE_GROUP:
 		{
 			CreateGroupCmd cgCmd;
@@ -385,6 +393,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			response = new VibeRpcResponse( groupInfo );
 			
+			return response;
+		}
+		
+		case CREATE_LICENSE_REPORT:
+		{
+			CreateLicenseReportCmd clrCmd = ((CreateLicenseReportCmd) cmd);
+			LicenseReportRpcResponseData responseData = GwtReportsHelper.createLicenseReport( this, getRequest( ri ), clrCmd.getBegin(), clrCmd.getEnd() );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
@@ -1792,6 +1808,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			responseData = new StringRpcResponseData( permalink );
 			response = new VibeRpcResponse( responseData );
 			return response;
+		}
+		
+		case GET_SYSTEM_ERROR_LOG_URL:
+		{
+			String systemErrorLogUrl = GwtReportsHelper.getSystemErrorLogUrl( this, getRequest( ri ) );
+			return new VibeRpcResponse( new StringRpcResponseData( systemErrorLogUrl ));
 		}
 		
 		case GET_TAG_RIGHTS_FOR_BINDER:

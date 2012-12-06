@@ -65,6 +65,9 @@
 
 </script>
 
+<c:if test="${GwtReport == 'true'}">
+	<br />
+</c:if>
 <div class="ss_pseudoPortal">
 
 <ssf:form titleTag="administration.credits" ignore="${GwtReport}">
