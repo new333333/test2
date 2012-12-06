@@ -30,41 +30,70 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import java.util.Date;
 
 /**
- * This enumeration defines all possible Vibe OnPrem GWT RPC commands.
+ * This class holds all of the information necessary to execute the
+ * 'create license report' command.
  * 
- * @author jwootton@novell.com
+ * @author drfoster@novell.com
  */
-public enum VibeJspHtmlType implements IsSerializable
-{
-	ACCESSORY_PANEL,
-	ACCESSORY,
-
-	ADMIN_REPORT_CHANGELOG,
-	ADMIN_REPORT_CREDITS,
-	ADMIN_REPORT_DATA_QUOTA_EXCEEDED,
-	ADMIN_REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED,
-	ADMIN_REPORT_DISK_USAGE,
-	ADMIN_REPORT_XSS,
+public class CreateLicenseReportCmd extends VibeRpcCmd {
+	private Date	m_begin;	//
+	private Date	m_end;		//
 	
-	UNDEFINED;
-
-	public static VibeJspHtmlType getEnum( int jspType )
-	{
-		VibeJspHtmlType cmd;
-		try
-		{
-			cmd = VibeJspHtmlType.values()[jspType];
-		}
-		catch ( ArrayIndexOutOfBoundsException e )
-		{
-			cmd = VibeJspHtmlType.UNDEFINED;
-		}
-		return cmd;
-	}	// end getEnum()
-}// end VibeJspHtmlType()
+	/**
+	 * Constructor method.
+	 * 
+	 * For GWT serialization, must have a zero parameter constructor.
+	 */
+	public CreateLicenseReportCmd() {
+		// Initialize the super class.
+		super();
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param begin
+	 * @param end
+	 */
+	public CreateLicenseReportCmd(Date begin, Date end) {
+		// Initialize this object...
+		super();
+		
+		// ...and store the parameters.
+		setBegin(begin);
+		setEnd(  end  );
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public Date getBegin() {return m_begin;}
+	public Date getEnd()   {return m_end;  }
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setBegin(Date begin) {m_begin = begin;}
+	public void setEnd(  Date end)   {m_end   = end;  }
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.CREATE_LICENSE_REPORT.ordinal();
+	}
+}

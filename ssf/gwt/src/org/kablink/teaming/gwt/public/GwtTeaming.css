@@ -4882,8 +4882,6 @@ td.datePickerMonth {
 	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
-
-
 /* End: */
 
 /**
@@ -4902,16 +4900,6 @@ td.datePickerMonth {
 	margin-bottom: 6px;
 	margin-left: 4px;
 }
-
 /* End */
-
-/* Start:  Run a report dialog styles. */
-	.vibe-runAReportDlg              {}
-	.vibe-runAReportDlg-chooseLabel  {font-weight: bold;}
-	.vibe-runAReportDlg-chooseSelect {margin-left: 10px; padding-left: 5px;}
-	.vibe-runAReportDlg-reportPanel  {border-top: 1px solid #cccccc; margin-top: 10px;}
-	.vibe-runAReportDlg-rootPanel    {background-color: white; padding: 10px;}
-/* End:  Run a report dialog styles. */
-
 
 /* End */

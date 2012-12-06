@@ -312,8 +312,10 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CollapseSubtasks();
 	String rpcFailure_CopyEntries();
 	String rpcFailure_CreateBlogPage();
+	String rpcFailure_CreateEmailReport();
 	String rpcFailure_CreateGroup();
 	String rpcFailure_CreateGroupAlreadyExists();
+	String rpcFailure_CreateLicenseReport();
 	String rpcFailure_DeleteNetFolders();
 	String rpcFailure_DeleteNetFolderServers();
 	String rpcFailure_DeleteFolderEntries();
@@ -375,8 +377,12 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetBinderInfo();
 	String rpcFailure_GetBinderPermalink();
 	String rpcFailure_GetBranding();
+	String rpcFailure_GetChangeLogsHtml();
 	String rpcFailure_GetCreditsHtml();
+	String rpcFailure_GetDataQuotaExceededHtml();
+	String rpcFailure_GetDataQuotaHighwaterExceededHtml();
 	String rpcFailure_GetDefaultActivityStream();
+	String rpcFailure_GetDiskUsageHtml();
 	String rpcFailure_GetFileSyncAppConfiguration();
 	String rpcFailure_GetEntryPermalink();
 	String rpcFailure_GetFavorites();
@@ -422,6 +428,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetSiteAdminUrl();
 	String rpcFailure_GetStatus();
 	String rpcFailure_GetSubscriptionData();
+	String rpcFailure_GetSystemErrorLogUrl();
 	String rpcFailure_GetTags();
 	String rpcFailure_GetTagRights();
 	String rpcFailure_GetTagSortOrder();
@@ -447,6 +454,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetViewInfo();
 	String rpcFailure_GetWhoHasAccess();
 	String rpcFailure_GetWorkspaceContributorIds();
+	String rpcFailure_GetXssHtml();
 	String rpcFailure_ImportIcalByUrl();
 	String rpcFailure_IsAllUsersGroup();
 	String rpcFailure_IsPersonTracked();
@@ -2227,6 +2235,42 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used by the 'Run a Report' dialog.
 	String runAReportDlgCaption();
 	String runAReportDlgChoose();
+	String runAReportDlgInternalError_UnknownReport(String unknownReport);
 	String runAReportDlgSelect();
+	String runAReportDlgSystemErrorLogLink();
+	
+	// String used by the 'Email Report' dialog.
+	String emailReportDlgAndSeparator();
+	String emailReportDlgCaption();
+	String emailReportDlgReportColumn_AttachedFiles();
+	String emailReportDlgReportColumn_Comment();
+	String emailReportDlgReportColumn_From();
+	String emailReportDlgReportColumn_LogStatus();
+	String emailReportDlgReportColumn_LogType();
+	String emailReportDlgReportColumn_SendDate();
+	String emailReportDlgReportColumn_Subject();
+	String emailReportDlgReportColumn_ToAddresses();
+	String emailReportDlgRunReport();
+	String emailReportDlgTypeErrors();
+	String emailReportDlgTypeReceived();
+	String emailReportDlgTypeSent();
+	String emailReportDlgWarning_NoData();
+	
+	// String used by the 'License Report' dialog.
+	String licenseReportDlgAndSeparator();
+	String licenseReportDlgCaption();
+	String licenseReportDlgReport_Activity();
+	String licenseReportDlgReport_AllowedExt();
+	String licenseReportDlgReport_AllowedExtNote();
+	String licenseReportDlgReport_AllowedReg();
+	String licenseReportDlgReport_AllowedRegNote();
+	String licenseReportDlgReport_CurrentActive(long count);
+	String licenseReportDlgReport_CurrentLicense();
+	String licenseReportDlgReport_Effective();
+	String licenseReportDlgReport_KeyIssued();
+	String licenseReportDlgReport_KeyUID();
+	String licenseReportDlgReport_License(String company, String product, String date);
+	String licenseReportDlgReport_ProductTitle();
+	String licenseReportDlgRunReport();
 	
 }// end GwtTeamingMessages

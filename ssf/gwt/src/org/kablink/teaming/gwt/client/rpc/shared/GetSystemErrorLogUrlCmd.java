@@ -30,41 +30,47 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
- * This enumeration defines all possible Vibe OnPrem GWT RPC commands.
+ * This class holds all of the information necessary to execute the
+ * 'Get System Error Log URL' command.
  * 
- * @author jwootton@novell.com
+ * @author drfoster@novell.com
  */
-public enum VibeJspHtmlType implements IsSerializable
-{
-	ACCESSORY_PANEL,
-	ACCESSORY,
-
-	ADMIN_REPORT_CHANGELOG,
-	ADMIN_REPORT_CREDITS,
-	ADMIN_REPORT_DATA_QUOTA_EXCEEDED,
-	ADMIN_REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED,
-	ADMIN_REPORT_DISK_USAGE,
-	ADMIN_REPORT_XSS,
+public class GetSystemErrorLogUrlCmd extends VibeRpcCmd {
 	
-	UNDEFINED;
-
-	public static VibeJspHtmlType getEnum( int jspType )
-	{
-		VibeJspHtmlType cmd;
-		try
-		{
-			cmd = VibeJspHtmlType.values()[jspType];
-		}
-		catch ( ArrayIndexOutOfBoundsException e )
-		{
-			cmd = VibeJspHtmlType.UNDEFINED;
-		}
-		return cmd;
-	}	// end getEnum()
-}// end VibeJspHtmlType()
+	/**
+	 * Constructor method.
+	 * 
+	 * For GWT serialization, must have a zero parameter constructor.
+	 */
+	public GetSystemErrorLogUrlCmd() {
+		// Initialize the super class.
+		super();
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_SYSTEM_ERROR_LOG_URL.ordinal();
+	}
+}

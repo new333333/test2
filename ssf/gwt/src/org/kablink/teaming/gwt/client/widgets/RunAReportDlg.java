@@ -44,33 +44,33 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetManageUsersInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetReportsInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSystemErrorLogUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ReportsInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.ReportsInfoRpcResponseData.ReportInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.EntryType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
-import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg.ManageUsersDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -78,7 +78,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  *  
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class RunAReportDlg extends DlgBox
 	implements
 		// Event handlers implemented by this class.
@@ -90,13 +89,67 @@ public class RunAReportDlg extends DlgBox
 	private GwtTeamingMessages			m_messages;					// Access to Vibe's messages.
 	private int							m_showX;					// The x and...
 	private int							m_showY;					// ...y position and...
-	private int							m_showCX;					// ...width and...
-	private int							m_showCY;					// ...height of the dialog.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private ReportsInfoRpcResponseData	m_reportsInfo;				//
-	private ScrollPanel					m_reportPanel;				// The panel that holds the report's contents.
+	private Map<AdminAction, Widget>	m_reportWidgets;			// Map of report widgets, as they get created.
+	private ReportsInfoRpcResponseData	m_reportsInfo;				// Information about the available reports obtained via a GWT RPC request to the server.
+	private ScrollPanel					m_reportScrollPanel;		// The scroll panel that holds the the report's contents.
 	private VibeFlowPanel				m_rootPanel;				// The panel that holds the dialog's contents.
 
+	/*
+	 * Inner class used to wrap an HTMLPanel for report content.
+	 */
+	private static class ReportHTMLPanel extends HTMLPanel {
+		private boolean	m_firstAttach = true;	// Set false after the panel's been attached once.
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param html
+		 */
+		public ReportHTMLPanel(String html) {
+			// Simply initialize the super class.
+			super(html);
+		}
+		
+		/**
+		 * Called when the HTMLPanel is attached to the document.
+		 * 
+		 * Overrides the Widget.onAttach() method.
+		 */
+		@Override
+		public void onAttach() {
+			// Tell the super class that we've attached...
+			super.onAttach();
+
+			// ...and if this the first time we've attached...
+			if (m_firstAttach) {
+				// ...execute the HTML's contained JavaScript.
+				m_firstAttach = false;
+				executeJavaScriptAsync();
+			}
+		}
+		
+		/*
+		 * Asynchronously executes the JavaScript in the HTML panel.
+		 */
+		private void executeJavaScriptAsync() {
+			GwtClientHelper.deferCommand(
+				new ScheduledCommand() {
+					@Override
+					public void execute() {
+						executeJavaScriptNow();
+					}
+				});
+		}
+		
+		/*
+		 * Asynchronously executes the JavaScript in the HTML panel.
+		 */
+		private void executeJavaScriptNow() {
+			GwtClientHelper.jsExecuteJavaScript(getElement(), true);
+		}
+	}
+	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
@@ -120,13 +173,12 @@ public class RunAReportDlg extends DlgBox
 			DlgButtonMode.Close);
 
 		// ...store the parameters...
-		m_showX  = x;
-		m_showY  = y;
-		m_showCX = cx;
-		m_showCY = cy;
+		m_showX = x;
+		m_showY = y;
 		
 		// ...initialize everything else...
-		m_messages = GwtTeaming.getMessages();
+		m_messages      = GwtTeaming.getMessages();
+		m_reportWidgets = new HashMap<AdminAction, Widget>();
 		
 		// ...and create the dialog's content.
 		addStyleName("vibe-runAReportDlg");
@@ -137,6 +189,276 @@ public class RunAReportDlg extends DlgBox
 			rarDlgClient); 
 	}
 
+	/*
+	 * Wraps the given HTML in an HTMLPanel, stores it in the dialog's
+	 * ScrollPanel and executes its contained JavaScript.
+	 */
+	private void buildAndSetHtmlContent(AdminAction reportAction, String html) {
+		// Create the HTMLPanel...
+		ReportHTMLPanel htmlPanel = new ReportHTMLPanel(html);
+		htmlPanel.addStyleName("vibe-runAReportDlg-reportHtmltPanel");
+		
+		// ...put it in the ScrollPanel...
+		m_reportScrollPanel.setWidget(htmlPanel);
+
+		// ...and store it in the Map tracking them.
+		m_reportWidgets.put(reportAction, htmlPanel);
+	}
+	
+	/*
+	 * Reads the change log report HTML from the server and stores it
+	 * in the report panel.
+	 * 
+	 * JSP/JavaScript files used:
+	 * - changeLog.jap
+	 * 		- single.jsp (via a find tag)
+	 *		- find.js
+	 */
+	private void buildChangeLogReport() {
+		GwtClientHelper.executeCommand(
+				new GetJspHtmlCmd(VibeJspHtmlType.ADMIN_REPORT_CHANGELOG),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetChangeLogsHtml());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Display the change log report HTML in the report's
+				// content panel.
+				JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
+				buildAndSetHtmlContent(AdminAction.REPORT_VIEW_CHANGELOG, responseData.getHtml());
+			}
+		});
+		
+//!		...this needs to be implemented...
+		// Need to get this working in Vibe.  Currently, the find
+		// widget doesn't work.  Other than that, the report functions
+		// as it should (i.e., if you manually enter the binder and/or
+		// entry IDs.
+		
+//!		...this needs to be implemented...
+/*
+		ChangeLogReportComposite clrc = new ChangeLogReportComposite();
+		m_reportScrollPanel.setWidget(clrc);
+		m_reportWidgets.put(AdminAction.REPORT_VIEW_CHANGELOG, clrc);
+*/
+	}
+	
+	/*
+	 * Reads the credits HTML from the server and stores it in the
+	 * report panel.
+	 */
+	private void buildCreditsReport() {
+		GwtClientHelper.executeCommand(
+				new GetJspHtmlCmd(VibeJspHtmlType.ADMIN_REPORT_CREDITS),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetCreditsHtml());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Display the credits report HTML in the report's
+				// content panel.
+				JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
+				buildAndSetHtmlContent(AdminAction.REPORT_VIEW_CREDITS, responseData.getHtml());
+			}
+		});
+	}
+	
+	/*
+	 * Reads the data quota exceeded report HTML from the server and
+	 * stores it in the report panel.
+	 */
+	private void buildDataQuotaExceededReport() {
+		GwtClientHelper.executeCommand(
+				new GetJspHtmlCmd(VibeJspHtmlType.ADMIN_REPORT_DATA_QUOTA_EXCEEDED),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetDataQuotaExceededHtml());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Display the data quota exceeded report HTML in the
+				// report's content panel.
+				JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
+				buildAndSetHtmlContent(AdminAction.REPORT_DATA_QUOTA_EXCEEDED, responseData.getHtml());
+			}
+		});
+	}
+	
+	/*
+	 * Reads the data quota high water exceeded report HTML from the
+	 * server and stores it in the report panel.
+	 */
+	private void buildDataQuotaHighwaterExceededReport() {
+		GwtClientHelper.executeCommand(
+				new GetJspHtmlCmd(VibeJspHtmlType.ADMIN_REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetDataQuotaHighwaterExceededHtml());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Display the data quota high water exceeded report
+				// HTML in the report's content panel.
+				JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
+				buildAndSetHtmlContent(AdminAction.REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED, responseData.getHtml());
+			}
+		});
+	}
+	
+	/*
+	 * Reads the disk usage report HTML from the server and stores it
+	 * in the report panel.
+	 */
+	private void buildDiskUsageReport() {
+		GwtClientHelper.executeCommand(
+				new GetJspHtmlCmd(VibeJspHtmlType.ADMIN_REPORT_DISK_USAGE),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetDiskUsageHtml());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Display the disk usage report HTML in the report's
+				// content panel.
+				JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
+				buildAndSetHtmlContent(AdminAction.REPORT_DISK_USAGE, responseData.getHtml());
+			}
+		});
+	}
+	
+	/*
+	 * Constructs a widget for running an email report and stores it in
+	 * the report panel.
+	 */
+	private void buildEmailReport() {
+		EmailReportComposite erc = new EmailReportComposite();
+		m_reportScrollPanel.setWidget(erc);
+		m_reportWidgets.put(AdminAction.REPORT_EMAIL, erc);
+	}
+	
+	/*
+	 * Constructs a widget for running a license report and stores it
+	 * in the report panel.
+	 */
+	private void buildLicenseReport() {
+		LicenseReportComposite lrc = new LicenseReportComposite();
+		m_reportScrollPanel.setWidget(lrc);
+		m_reportWidgets.put(AdminAction.REPORT_LICENSE, lrc);
+	}
+	
+	/*
+	 * Constructs a widget for running a login report and stores it in
+	 * the report panel.
+	 */
+	private void buildLoginReport() {
+		LoginReportComposite lrc = new LoginReportComposite();
+		m_reportScrollPanel.setWidget(lrc);
+		m_reportWidgets.put(AdminAction.REPORT_LOGIN, lrc);
+	}
+	
+	/*
+	 * Constructs a widget for running a user access report and stores
+	 * it in the report panel.
+	 */
+	private void buildUserAccessReport() {
+		UserAccessReportComposite uarc = new UserAccessReportComposite();
+		m_reportScrollPanel.setWidget(uarc);
+		m_reportWidgets.put(AdminAction.REPORT_USER_ACCESS, uarc);
+	}
+	
+	/*
+	 * Constructs a widget for running a user activity report and
+	 * stores it in the report panel.
+	 */
+	private void buildUserActivityReport() {
+		UserActivityReportComposite uarc = new UserActivityReportComposite();
+		m_reportScrollPanel.setWidget(uarc);
+		m_reportWidgets.put(AdminAction.REPORT_ACTIVITY_BY_USER, uarc);
+	}
+	
+	/*
+	 * Reads the URL to download the system error log from the server
+	 * and generates an HTML link to it in the report panel.
+	 */
+	private void buildSystemErrorLogReport() {
+		// Get the URL to the system error logs from the server...
+		GwtClientHelper.executeCommand(
+				new GetSystemErrorLogUrlCmd(),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetSystemErrorLogUrl());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// ...extract the URL from the RPC response...
+				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+				String url = responseData.getStringValue();
+				
+				// ...and generate the HTML for a link to download the
+				// ...log in the report's content panel
+				Anchor a = new Anchor();
+				a.addStyleName("vibe-runAReportDlg-systemLogsLink");
+				a.setTarget("_blank");
+				a.setHref(url);
+				a.getElement().setInnerText(m_messages.runAReportDlgSystemErrorLogLink());
+				buildAndSetHtmlContent(
+					AdminAction.REPORT_VIEW_SYSTEM_ERROR_LOG,
+					("<br />" + GwtClientHelper.getWidgetHTML(a)));
+			}
+		});
+	}
+	
+	/*
+	 * Reads the XSS report HTML from the server and stores it in the
+	 * report panel.
+	 */
+	private void buildXssReport() {
+		GwtClientHelper.executeCommand(
+				new GetJspHtmlCmd(VibeJspHtmlType.ADMIN_REPORT_XSS),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetXssHtml());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Display the XSS report HTML in the report's content
+				// panel.
+				JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
+				buildAndSetHtmlContent(AdminAction.REPORT_XSS, responseData.getHtml());
+			}
+		});
+	}
+	
 	/**
 	 * Creates all the controls that make up the dialog.
 	 * 
@@ -229,11 +551,10 @@ public class RunAReportDlg extends DlgBox
 			}
 		});
 		
-		// Create a panel to hold the selected report.
-		m_reportPanel = new ScrollPanel();
-		m_reportPanel.addStyleName("vibe-runAReportDlg-reportPanel");
-		m_rootPanel.add(m_reportPanel);
-		m_reportPanel.setVisible(false);
+		// Create the panels to hold the selected report.
+		m_reportScrollPanel = new ScrollPanel();
+		m_reportScrollPanel.addStyleName("vibe-runAReportDlg-reportScrollPanel");
+		m_rootPanel.add(m_reportScrollPanel);
 	}
 	
 	/**
@@ -279,34 +600,50 @@ public class RunAReportDlg extends DlgBox
 	 * Asynchronously handles invoking a report.
 	 */
 	private void handleReportActionAsync(final ReportInfo report) {
-		ScheduledCommand doReport = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				handleReportActionNow(report);
-			}
-		};
-		Scheduler.get().scheduleDeferred(doReport);
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					handleReportActionNow(report);
+				}
+			});
 	}
 	
 	/*
 	 * Synchronously handles invoking a report.
 	 */
 	private void handleReportActionNow(ReportInfo report) {
-		m_reportPanel.clear();
-		
-		switch (report.getReport()) {
-		case REPORT_VIEW_CREDITS:
-			showCredits();
-			break;
-			
-		default:
-//!			...this needs to be implemented...		
-			m_reportPanel.setVisible(false);
-			GwtClientHelper.deferredAlert("RunAReportDlg.handleReportActionNow( " + report.getReport().name() + " ):  ...this needs to be implemented...");
-			return;
+		// Have we created the widget for this report yet?
+		AdminAction reportAction = report.getReport();
+		Widget w = m_reportWidgets.get(reportAction);
+		if (null == w) {
+			// No!  Display the newly selected report.
+			switch (reportAction) {
+			case REPORT_ACTIVITY_BY_USER:               buildUserActivityReport();               break;
+			case REPORT_DATA_QUOTA_EXCEEDED:            buildDataQuotaExceededReport();          break;
+			case REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED:  buildDataQuotaHighwaterExceededReport(); break;
+			case REPORT_DISK_USAGE:                     buildDiskUsageReport();                  break;
+			case REPORT_EMAIL:                          buildEmailReport();                      break;
+			case REPORT_LICENSE:                        buildLicenseReport();                    break;
+			case REPORT_LOGIN:                          buildLoginReport();                      break;
+			case REPORT_VIEW_CHANGELOG:                 buildChangeLogReport();                  break;
+			case REPORT_VIEW_CREDITS:                   buildCreditsReport();                    break;
+			case REPORT_VIEW_SYSTEM_ERROR_LOG:          buildSystemErrorLogReport();             break;
+			case REPORT_XSS:                            buildXssReport();                        break;
+			case REPORT_USER_ACCESS:                    buildUserAccessReport();                 break;
+				
+			default:
+				// Display an error for anything we don't know about. 
+				GwtClientHelper.deferredAlert(m_messages.runAReportDlgInternalError_UnknownReport(reportAction.name()));
+				break;
+			}
 		}
 		
-		m_reportPanel.setVisible(true);
+		else {
+			// Yes, we've already created widget for this report!
+			// Simply show it.
+			m_reportScrollPanel.setWidget(w);
+		}
 	}
 	
 	/**
@@ -324,7 +661,7 @@ public class RunAReportDlg extends DlgBox
 	}
 	
 	/**
-	 * Called when the data table is attached.
+	 * Called when the dialog is attached to the document.
 	 * 
 	 * Overrides the Widget.onAttach() method.
 	 */
@@ -336,7 +673,7 @@ public class RunAReportDlg extends DlgBox
 	}
 	
 	/**
-	 * Called when the data table is detached.
+	 * Called when the dialog is detached from the document.
 	 * 
 	 * Overrides the Widget.onDetach() method.
 	 */
@@ -352,13 +689,13 @@ public class RunAReportDlg extends DlgBox
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				populateDlgNow();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					populateDlgNow();
+				}
+			});
 	}
 	
 	/*
@@ -375,6 +712,7 @@ public class RunAReportDlg extends DlgBox
 		// ...and position and show the dialog.
 		setPopupPosition(m_showX, m_showY);
 		show();
+		setReportSizeAsync();
 	}
 	
 	/*
@@ -404,13 +742,13 @@ public class RunAReportDlg extends DlgBox
 	 * dialog.
 	 */
 	private static void runDlgAsync(final RunAReportDlg rarDlg, final int x, final int y) {
-		ScheduledCommand doRun = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				rarDlg.runDlgNow(x, y);
-			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					rarDlg.runDlgNow(x, y);
+				}
+			});
 	}
 	
 	/*
@@ -427,28 +765,26 @@ public class RunAReportDlg extends DlgBox
 	}
 
 	/*
-	 * Reads the credits HTML from the server and stores it in the
-	 * report panel.
+	 * Asynchronously sets the size of the report panel.
 	 */
-	private void showCredits() {
-		GwtClientHelper.executeCommand(
-				new GetJspHtmlCmd(VibeJspHtmlType.CREDITS),
-				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetCreditsHtml(),
-					VibeJspHtmlType.ACCESSORY_PANEL.toString());
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Display the credits HTML in the report panel.
-				JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
-				m_reportPanel.getElement().setInnerHTML(responseData.getHtml());
-			}
-		});
+	private void setReportSizeAsync() {
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					setReportSizeNow();
+				}
+			});
+	}
+	
+	/*
+	 * Synchronously sets the size of the report panel.
+	 */
+	private void setReportSizeNow() {
+		int rt = m_reportScrollPanel.getElement().getOffsetTop();
+		int ft = getFooterPanel().getElement().getOffsetTop();
+		int rh = ((ft - rt) - 5);
+		m_reportScrollPanel.setHeight(rh + "px");
 	}
 	
 	/*

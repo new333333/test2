@@ -61,7 +61,6 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -235,7 +234,7 @@ public class ManageUsersDlg extends DlgBox
 	}
 	
 	/**
-	 * Called when the data table is attached.
+	 * Called when the manage users dialog is attached.
 	 * 
 	 * Overrides the Widget.onAttach() method.
 	 */
@@ -263,7 +262,7 @@ public class ManageUsersDlg extends DlgBox
 	}
 
 	/**
-	 * Called when the data table is detached.
+	 * Called when the manage users dialog is detached.
 	 * 
 	 * Overrides the Widget.onDetach() method.
 	 */
@@ -411,13 +410,13 @@ public class ManageUsersDlg extends DlgBox
 	 * footer. 
 	 */
 	private void setViewSizeAsync() {
-		ScheduledCommand doSizing = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				setViewSizeNow();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doSizing);
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					setViewSizeNow();
+				}
+			});
 	}
 	
 	/*
@@ -444,13 +443,13 @@ public class ManageUsersDlg extends DlgBox
 	 * Asynchronously shows the import profiles dialog.
 	 */
 	private void showImportProfilesDlgAsync() {
-		ScheduledCommand doShow = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				showImportProfilesDlgNow();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doShow);
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					showImportProfilesDlgNow();
+				}
+			});
 	}
 
 	/*
@@ -464,13 +463,13 @@ public class ManageUsersDlg extends DlgBox
 	 * Asynchronously shows the user share rights dialog.
 	 */
 	private void showUserShareRightsDlgAsync(final List<Long> selectedUserList) {
-		ScheduledCommand doShow = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				showUserShareRightsDlgNow(selectedUserList);
-			}
-		};
-		Scheduler.get().scheduleDeferred(doShow);
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					showUserShareRightsDlgNow(selectedUserList);
+				}
+			});
 	}
 
 	/*
@@ -498,13 +497,13 @@ public class ManageUsersDlg extends DlgBox
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				populateDlgNow();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					populateDlgNow();
+				}
+			});
 	}
 	
 	/*
@@ -567,13 +566,13 @@ public class ManageUsersDlg extends DlgBox
 	 * dialog.
 	 */
 	private static void runDlgAsync(final ManageUsersDlg muDlg, final int x, final int y) {
-		ScheduledCommand doRun = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				muDlg.runDlgNow(x, y);
-			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					muDlg.runDlgNow(x, y);
+				}
+			});
 	}
 	
 	/*
