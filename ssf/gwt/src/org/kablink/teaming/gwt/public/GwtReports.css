@@ -37,6 +37,9 @@
 		.vibe-licenseReportComposite-datesPanel        {display: block; white-space: nowrap; margin-top: 5px;}
 		.vibe-licenseReportComposite-reportDataCaption {font-weight: bold;}
 		.vibe-licenseReportComposite-reportDataCurLic  {}
+		.vibe-licenseReportComposite-reportDataStats   {}
+		.vibe-licenseReportComposite-reportDataStatsHC {padding-right: 5px;}
+		.vibe-licenseReportComposite-reportDataStatsHR {font-size: 11px; font-family: arial, sans-serif; font-weight: bold;}
 		.vibe-licenseReportComposite-reportPanel       {display: block; border: 1px solid #ccc; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; margin-top: 10px; padding: 5px; font-size: 12px; font-family: arial, sans-serif; }
 		.vibe-licenseReportComposite-runButton         {white-space: nowrap; margin-top: 20px; margin-left: 0.5em;}
 		.vibe-licenseReportComposite-widgetsPanel      {display: block; margin-top: 10px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; border: 1px solid #cccccc; padding: 5px; background-color: #ededed;}

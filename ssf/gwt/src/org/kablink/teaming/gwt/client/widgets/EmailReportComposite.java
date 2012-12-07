@@ -149,7 +149,7 @@ public class EmailReportComposite extends ReportCompositeBase {
 		super.createContent();
 
 		// ...add a caption above the content...
-		InlineLabel il = buildInlineLabel(m_messages.emailReportDlgCaption(), "vibe-emailReportComposite-caption");
+		InlineLabel il = buildInlineLabel(m_messages.emailReportCaption(), "vibe-emailReportComposite-caption");
 		m_rootContent.add(il);
 
 		// ...add a panel for the report widgets...
@@ -172,7 +172,7 @@ public class EmailReportComposite extends ReportCompositeBase {
 		dates.add(m_beginDateBox);
 
 		// ...and 'and' between the two date selectors...
-		il = buildInlineLabel(m_messages.emailReportDlgAndSeparator(), "vibe-emailReportComposite-andSeparator");
+		il = buildInlineLabel(m_messages.emailReportAndSeparator(), "vibe-emailReportComposite-andSeparator");
 		dates.add(il);
 		
 		// ...and an ending date selector...
@@ -186,7 +186,7 @@ public class EmailReportComposite extends ReportCompositeBase {
 		fp.add(types);
 
 		// ...add the sent radio button...
-		RadioButton	rb = new RadioButton("emailTypes", m_messages.emailReportDlgTypeSent());
+		RadioButton	rb = new RadioButton("emailTypes", m_messages.emailReportTypeSent());
 		rb.addStyleName("vibe-emailReportComposite-typeRadio");
 		rb.setValue(true);
 		m_emailType = EmailType.SENT;
@@ -199,7 +199,7 @@ public class EmailReportComposite extends ReportCompositeBase {
 		types.add(rb);
 		
 		// ...add the received radio button...
-		rb = new RadioButton("emailTypes", m_messages.emailReportDlgTypeReceived());
+		rb = new RadioButton("emailTypes", m_messages.emailReportTypeReceived());
 		rb.addStyleName("vibe-emailReportComposite-typeRadio");
 		rb.addClickHandler(new ClickHandler() {
 			@Override
@@ -210,7 +210,7 @@ public class EmailReportComposite extends ReportCompositeBase {
 		types.add(rb);
 		
 		// ...add the errors radio button...
-		rb = new RadioButton("emailTypes", m_messages.emailReportDlgTypeErrors());
+		rb = new RadioButton("emailTypes", m_messages.emailReportTypeErrors());
 		rb.addStyleName("vibe-emailReportComposite-typeRadio");
 		rb.addClickHandler(new ClickHandler() {
 			@Override
@@ -221,7 +221,7 @@ public class EmailReportComposite extends ReportCompositeBase {
 		types.add(rb);
 
 		// ...add the 'Run Report' push button...
-		Button runReportBtn = new Button(m_messages.emailReportDlgRunReport());
+		Button runReportBtn = new Button(m_messages.emailReportRunReport());
 		runReportBtn.addStyleName("vibe-emailReportComposite-runButton");
 		runReportBtn.addClickHandler(new ClickHandler() {
 			@Override
@@ -350,7 +350,7 @@ public class EmailReportComposite extends ReportCompositeBase {
 		else {
 			// No, there aren't any items in the report!  Tell the user
 			// the report was empty.
-			GwtClientHelper.deferredAlert(m_messages.emailReportDlgWarning_NoData());
+			GwtClientHelper.deferredAlert(m_messages.emailReportWarning_NoData());
 		}
 	}
 
@@ -377,14 +377,14 @@ public class EmailReportComposite extends ReportCompositeBase {
 		// ...and if the report panel is visible...
 		if (visible) {
 			// ...recreate the table's header.
-			m_reportTable.setWidget(0,  COL_SEND_DATE,      buildInlineLabel(m_messages.emailReportDlgReportColumn_SendDate(),      "vibe-emailReportComposite-reportTableHeaderCell"));
-			m_reportTable.setWidget(0,  COL_FROM,           buildInlineLabel(m_messages.emailReportDlgReportColumn_From(),          "vibe-emailReportComposite-reportTableHeaderCell"));
-			m_reportTable.setWidget(0,  COL_TO_ADDRESSES,   buildInlineLabel(m_messages.emailReportDlgReportColumn_ToAddresses(),   "vibe-emailReportComposite-reportTableHeaderCell"));
-			m_reportTable.setWidget(0,  COL_LOG_TYPE,       buildInlineLabel(m_messages.emailReportDlgReportColumn_LogType(),       "vibe-emailReportComposite-reportTableHeaderCell"));
-			m_reportTable.setWidget(0,  COL_LOG_STATUS,     buildInlineLabel(m_messages.emailReportDlgReportColumn_LogStatus(),     "vibe-emailReportComposite-reportTableHeaderCell"));
-			m_reportTable.setWidget(0,  COL_SUBJECT,        buildInlineLabel(m_messages.emailReportDlgReportColumn_Subject(),       "vibe-emailReportComposite-reportTableHeaderCell"));
-			m_reportTable.setWidget(0,  COL_ATTACHED_FILES, buildInlineLabel(m_messages.emailReportDlgReportColumn_AttachedFiles(), "vibe-emailReportComposite-reportTableHeaderCell"));
-			m_reportTable.setWidget(0,  COL_COMMENT,        buildInlineLabel(m_messages.emailReportDlgReportColumn_Comment(),       "vibe-emailReportComposite-reportTableHeaderCell"));
+			m_reportTable.setWidget(0,  COL_SEND_DATE,      buildInlineLabel(m_messages.emailReportReportColumn_SendDate(),      "vibe-emailReportComposite-reportTableHeaderCell"));
+			m_reportTable.setWidget(0,  COL_FROM,           buildInlineLabel(m_messages.emailReportReportColumn_From(),          "vibe-emailReportComposite-reportTableHeaderCell"));
+			m_reportTable.setWidget(0,  COL_TO_ADDRESSES,   buildInlineLabel(m_messages.emailReportReportColumn_ToAddresses(),   "vibe-emailReportComposite-reportTableHeaderCell"));
+			m_reportTable.setWidget(0,  COL_LOG_TYPE,       buildInlineLabel(m_messages.emailReportReportColumn_LogType(),       "vibe-emailReportComposite-reportTableHeaderCell"));
+			m_reportTable.setWidget(0,  COL_LOG_STATUS,     buildInlineLabel(m_messages.emailReportReportColumn_LogStatus(),     "vibe-emailReportComposite-reportTableHeaderCell"));
+			m_reportTable.setWidget(0,  COL_SUBJECT,        buildInlineLabel(m_messages.emailReportReportColumn_Subject(),       "vibe-emailReportComposite-reportTableHeaderCell"));
+			m_reportTable.setWidget(0,  COL_ATTACHED_FILES, buildInlineLabel(m_messages.emailReportReportColumn_AttachedFiles(), "vibe-emailReportComposite-reportTableHeaderCell"));
+			m_reportTable.setWidget(0,  COL_COMMENT,        buildInlineLabel(m_messages.emailReportReportColumn_Comment(),       "vibe-emailReportComposite-reportTableHeaderCell"));
 			m_reportTableRF.addStyleName(0, "vibe-emailReportComposite-reportTableHeaderRow");
 		}
 	}

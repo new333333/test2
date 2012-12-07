@@ -51,6 +51,8 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -109,7 +111,7 @@ public class LicenseReportComposite extends ReportCompositeBase {
 		super.createContent();
 		
 		// ...add a caption above the content...
-		InlineLabel il = buildInlineLabel(m_messages.licenseReportDlgCaption(), "vibe-licenseReportComposite-caption");
+		InlineLabel il = buildInlineLabel(m_messages.licenseReportCaption(), "vibe-licenseReportComposite-caption");
 		m_rootContent.add(il);
 
 		// ...add a panel for the report widgets...
@@ -132,7 +134,7 @@ public class LicenseReportComposite extends ReportCompositeBase {
 		dates.add(m_beginDateBox);
 
 		// ...and 'and' between the two date selectors...
-		il = buildInlineLabel(m_messages.licenseReportDlgAndSeparator(), "vibe-licenseReportComposite-andSeparator");
+		il = buildInlineLabel(m_messages.licenseReportAndSeparator(), "vibe-licenseReportComposite-andSeparator");
 		dates.add(il);
 		
 		// ...and an ending date selector...
@@ -140,7 +142,7 @@ public class LicenseReportComposite extends ReportCompositeBase {
 		dates.add(m_endDateBox);
 
 		// ...add the 'Run Report' push button...
-		Button runReportBtn = new Button(m_messages.licenseReportDlgRunReport());
+		Button runReportBtn = new Button(m_messages.licenseReportRunReport());
 		runReportBtn.addStyleName("vibe-licenseReportComposite-runButton");
 		runReportBtn.addClickHandler(new ClickHandler() {
 			@Override
@@ -227,7 +229,7 @@ public class LicenseReportComposite extends ReportCompositeBase {
 
 		// Add a caption with the product/version information.
 		LicenseReleaseInfo lri = m_licenseReport.getReleaseInfo();
-		InlineLabel il = new InlineLabel(m_messages.licenseReportDlgReport_License(lri.getName(), lri.getVersion(), m_licenseReport.getReportDate()));
+		InlineLabel il = new InlineLabel(m_messages.licenseReportReport_License(lri.getName(), lri.getVersion(), m_licenseReport.getReportDate()));
 		il.addStyleName("vibe-licenseReportComposite-reportDataCaption");
 		m_reportPanel.add(il);
 
@@ -239,7 +241,7 @@ public class LicenseReportComposite extends ReportCompositeBase {
 
 			// ...and generate the display from that.
 			addBR(m_reportPanel, 2);
-			il = new InlineLabel(m_messages.licenseReportDlgReport_CurrentLicense());
+			il = new InlineLabel(m_messages.licenseReportReport_CurrentLicense());
 			il.addStyleName("vibe-licenseReportComposite-reportDataCaption");
 			m_reportPanel.add(il);
 			
@@ -248,32 +250,32 @@ public class LicenseReportComposite extends ReportCompositeBase {
 			m_reportPanel.add(ft);
 			ft.setCellSpacing(2);
 			ft.setCellPadding(0);
-			ft.setText(0, 0, m_messages.licenseReportDlgReport_ProductTitle());
+			ft.setText(0, 0, m_messages.licenseReportReport_ProductTitle());
 			ft.setText(0, 1, safeS(curLic.getProductTitle()) + " " + safeS(curLic.getProductVersion()));
 			
-			ft.setText(1, 0, m_messages.licenseReportDlgReport_KeyUID());
+			ft.setText(1, 0, m_messages.licenseReportReport_KeyUID());
 			ft.setText(1, 1, safeS(m_licenseReport.getLicenseKey()));
 			
-			ft.setText(2, 0, m_messages.licenseReportDlgReport_KeyIssued());
+			ft.setText(2, 0, m_messages.licenseReportReport_KeyIssued());
 			ft.setText(2, 1, safeS(curLic.getIssued()));
 			
-			ft.setText(3, 0, m_messages.licenseReportDlgReport_Effective());
+			ft.setText(3, 0, m_messages.licenseReportReport_Effective());
 			ft.setText(3, 1, safeS(curLic.getEffectiveStart()) + " - " + safeS(curLic.getEffectiveEnd()));
 			
-			ft.setText(4, 0, m_messages.licenseReportDlgReport_AllowedReg());
+			ft.setText(4, 0, m_messages.licenseReportReport_AllowedReg());
 			long uc = m_licenseReport.getRegisteredUsers();
-			ft.setText(4, 1, (0 > uc) ? m_messages.licenseReportDlgReport_AllowedRegNote() : String.valueOf(uc));
+			ft.setText(4, 1, (0 > uc) ? m_messages.licenseReportReport_AllowedRegNote() : String.valueOf(uc));
 			
-			ft.setText(5, 0, m_messages.licenseReportDlgReport_AllowedExt());
+			ft.setText(5, 0, m_messages.licenseReportReport_AllowedExt());
 			uc = m_licenseReport.getExternalUsers();
-			ft.setText(5, 1, (0 > uc) ? m_messages.licenseReportDlgReport_AllowedExtNote() : String.valueOf(uc));
+			ft.setText(5, 1, (0 > uc) ? m_messages.licenseReportReport_AllowedExtNote() : String.valueOf(uc));
 		}
 
 		// Add information about the dates this report spans.
 		addBR(m_reportPanel, 1);
-		il = buildInlineLabel(safeS(m_messages.licenseReportDlgReport_Activity()), "vibe-licenseReportComposite-reportDataCaption");
+		il = buildInlineLabel(safeS(m_messages.licenseReportReport_Activity()), "vibe-licenseReportComposite-reportDataCaption");
 		m_reportPanel.add(il);
-		il = buildInlineLabel(" " + safeS(m_licenseReport.getBeginDate()) + " " + m_messages.licenseReportDlgAndSeparator() + " " + safeS(m_licenseReport.getEndDate()));
+		il = buildInlineLabel(" " + safeS(m_licenseReport.getBeginDate()) + " " + m_messages.licenseReportAndSeparator() + " " + safeS(m_licenseReport.getEndDate()));
 		m_reportPanel.add(il);
 
 		// Are there any license statistics items?
@@ -283,12 +285,37 @@ public class LicenseReportComposite extends ReportCompositeBase {
 			// count.
 			LicenseStatsItem curStat = licenseStats.get(licenseStats.size() - 1);
 			addBR(m_reportPanel, 1);
-			il = buildInlineLabel(safeS(m_messages.licenseReportDlgReport_CurrentActive(safeL(curStat.getActiveUserCount()))));
+			il = buildInlineLabel(safeS(m_messages.licenseReportReport_CurrentActive(safeL(curStat.getActiveUserCount()))));
 			m_reportPanel.add(il);
 
-			// Scan the license statistics.
+			// Create a table for the report snapshots...
+			addBR(m_reportPanel, 2);
+			VibeFlexTable ft = new VibeFlexTable();
+			ft.addStyleName("vibe-licenseReportComposite-reportDataStats");
+			m_reportPanel.add(ft);
+			ft.setCellSpacing(2);
+			ft.setCellPadding(0);
+
+			// ...create a header for that table.
+			FlexCellFormatter fcf = ft.getFlexCellFormatter();
+			ft.setText(0, 0, m_messages.licenseReportReport_StatsCol_Date()    ); fcf.addStyleName(0, 0, "vibe-licenseReportComposite-reportDataStatsHC");
+			ft.setText(0, 1, m_messages.licenseReportReport_StatsCol_Local()   ); fcf.addStyleName(0, 1, "vibe-licenseReportComposite-reportDataStatsHC");
+			ft.setText(0, 2, m_messages.licenseReportReport_StatsCol_LDAP()    ); fcf.addStyleName(0, 2, "vibe-licenseReportComposite-reportDataStatsHC");
+			ft.setText(0, 3, m_messages.licenseReportReport_StatsCol_OpenId()  ); fcf.addStyleName(0, 3, "vibe-licenseReportComposite-reportDataStatsHC");
+			ft.setText(0, 4, m_messages.licenseReportReport_StatsCol_365()     ); fcf.addStyleName(0, 4, "vibe-licenseReportComposite-reportDataStatsHC");
+			ft.setText(0, 5, m_messages.licenseReportReport_StatsCol_Checksum()); fcf.addStyleName(0, 5, "vibe-licenseReportComposite-reportDataStatsHC");
+			ft.getRowFormatter().addStyleName(0, "vibe-licenseReportComposite-reportDataStatsHR");
+
+			// ...scan the license snapshots....
 			for (LicenseStatsItem lsi:  licenseStats) {
-//!				...this needs to be implemented...
+				// ...and create a row for each.
+				int row = ft.getRowCount();
+				ft.setText(row, 0, safeS(lsi.getSnapshotDate())                    );
+				ft.setText(row, 1, String.valueOf(      lsi.getInternalUserCount())); fcf.setHorizontalAlignment(row, 1, HasHorizontalAlignment.ALIGN_CENTER);
+				ft.setText(row, 2, String.valueOf(      lsi.getExternalUserCount())); fcf.setHorizontalAlignment(row, 2, HasHorizontalAlignment.ALIGN_CENTER);
+				ft.setText(row, 3, String.valueOf(safeL(lsi.getOpenIdUserCount())) ); fcf.setHorizontalAlignment(row, 3, HasHorizontalAlignment.ALIGN_CENTER);
+				ft.setText(row, 4, String.valueOf(safeL(lsi.getActiveUserCount())) ); fcf.setHorizontalAlignment(row, 4, HasHorizontalAlignment.ALIGN_CENTER);
+				ft.setText(row, 5, String.valueOf(      lsi.getCheckSum())         ); fcf.setHorizontalAlignment(row, 5, HasHorizontalAlignment.ALIGN_CENTER);
 			}
 		}
 	}
