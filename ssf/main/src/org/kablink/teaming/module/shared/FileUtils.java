@@ -62,6 +62,7 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ExtendedMultipartFile;
 import org.kablink.teaming.util.NoContentMultipartFile;
@@ -312,27 +313,19 @@ public class FileUtils {
 			// file system in proxy mode regardless of sharing. 
 			return false; // proxy mode
 		}
+		else if(ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(user.getInternalId())) {
+			// The file operation is being requested by background job such as re-indexing
+			// triggered by ACL changes. We need to allow it to access file system in 
+			// proxy mode, which doesn't introduce security risk because even background
+			// jobs are subject to normal ACL checking.
+			return false; // proxy mode
+		}
 		else {
-			boolean shareGrantedAccess;
+			boolean shareGrantedAccess = false;
 			
-			if(entity instanceof FolderEntry) {
-				FolderEntry entry = (FolderEntry) entity;
-				if(entry.hasEntryExternalAcl()) { // This entry has its own (external) ACL
-					shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(user, entry, workAreaOperation);
-				}
-				else { // This entry inherits its ACL from the parent folder
-					shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(user, entry.getParentFolder(), workAreaOperation);
-				}
-			}
-			else if(entity instanceof Folder) {
-				shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(user, (Folder) entity, workAreaOperation);			
-			}
-			else {
-				// Sharing facility only supports folders and folder entries, which means that the user
-				// can never be assigned the specified rights on this entity through sharing.
-				shareGrantedAccess = false;
-			}
-			
+			if(entity instanceof WorkArea)
+				shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(user, (WorkArea) entity, workAreaOperation);
+						
 			if(shareGrantedAccess)
 				return false; // proxy mode
 			else
