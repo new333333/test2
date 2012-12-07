@@ -2251,7 +2251,6 @@ public interface GwtTeamingMessages extends Messages
 	String runAReportDlgChoose();
 	String runAReportDlgInternalError_UnknownReport(String unknownReport);
 	String runAReportDlgSelect();
-	String runAReportDlgSystemErrorLogLink();
 
 	// String used by the 'Email Report' dialog.
 	String emailReportAndSeparator();
@@ -2310,5 +2309,9 @@ public interface GwtTeamingMessages extends Messages
 	String loginReportType_All();
 	String loginReportType_Summaries();
 	String loginReportWarning_UserAlreadySelected(String name);
+	
+	// String used by the 'System Error Log Report' composite.
+	String systemErrorLogReportCaption();
+	String systemErrorLogReportRunReport();
 	
 }// end GwtTeamingMessages
