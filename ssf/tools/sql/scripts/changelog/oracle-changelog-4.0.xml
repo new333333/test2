@@ -472,4 +472,18 @@ update SS_PRINCIPALS set FOREIGNNAME=LOWER(FOREIGNNAME);
         </sql>
     </changeSet>
 
+    <changeSet author="jay" context="schema" failOnError="true" id="59">
+        <comment>Add fsaAllowCachePwd and fsaMaxFileSize</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="FSAALLOWCACHEPWD" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="FSAMAXFILESIZE" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

@@ -396,7 +396,7 @@ public interface AdminModule {
 	
 	public void disableSimpleProfiler();
 	
-	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled );
+	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled, Boolean allowCachePwd, Integer maxFileSize );
 	
 	public void addOpenIDProvider(OpenIDProvider openIDProvider);
 	

@@ -1500,16 +1500,17 @@ public interface GwtTeamingMessages extends Messages
 	String invalidHeaderTextColor( String color );
 
 	// Strings used in the Novell Desktop App dialog (File Sync)
+	String fileSyncAppAllowAccess( String productName );
+	String fileSyncAppAllowCachePwd();
 	String fileSyncAppAutoUpdateUrlLabel();
 	String fileSyncAppAutoUpdateUrlRequiredPrompt();
 	String fileSyncAppDlgHeader();
 	String fileSyncAppEnableDeployLabel();
 	String fileSyncAppIntervalLabel();
 	String fileSyncApp_InvalidAutoUpdateUrlText();
+	String fileSyncAppMaxFileSizeLabel();
+	String fileSyncAppMBLabel();
 	String fileSyncAppMinutesLabel();
-	String fileSyncAppOff();
-	String fileSyncAppOn();
-	String fileSyncAppOnOffLabel();
 	String fileSyncApp_OnSaveUnknownException( String desc );
 
 	// Strings used by the filter bar in the various binder views.
