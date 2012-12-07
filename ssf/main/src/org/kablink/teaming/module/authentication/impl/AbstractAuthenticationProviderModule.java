@@ -496,52 +496,63 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	     			
 	     			authenticationServiceProvider = getAuthenticationServiceProvider(result);
 	     			
+	     			// Get default settings first
+	     			boolean createUser = SPropsUtil.getBoolean("portal.user.auto.create", true);
+	     			boolean passwordAutoSynch = SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
+	     			boolean ignorePassword = SPropsUtil.getBoolean("portal.password.ignore", true);
+	     			boolean updateUser = true; // No config setting exists for this
+	     			
 	     			if(SPropsUtil.getBoolean("authenticator.synch." + getAuthenticator(), false)) {
-		     			// Get default settings
-		     			boolean passwordAutoSynch = 
-		     					SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
-		     			boolean ignorePassword =
-		     					SPropsUtil.getBoolean("portal.password.ignore", true);
-		     			boolean createUser = 
-		     					SPropsUtil.getBoolean("portal.user.auto.create", true);
-		     			if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
-		     				// Override the above default settings which apply only to local and LDAP users.
-		     				passwordAutoSynch = false;
-		     				ignorePassword = true;
-		     				ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zone);
-		     				if(zoneConfig.getOpenIDConfig().isSelfProvisioningEnabled())
-		     					createUser = true;
-		     				else
-		     					createUser = false;
-		     			}
-		     			// This is not used for authentication but for profile synchronization.
-		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate1" );
-		    			AuthenticationManagerUtil.authenticate(authenticationServiceProvider,
-		    					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
-		    					loginName, 
-		    					(String) credentials,
-		    					createUser,
-		    					passwordAutoSynch,
-		    					ignorePassword,
-		    					(Map) result.getPrincipal(), 
-		    					getAuthenticator());
-		     			SimpleProfiler.stop( "4-AuthenticationManagerUtil.authenticate1" );
+	     				// This authenticator is permitted to sync information from the identity source.
+	     				// So should simply honor the default settings.	     				
 	     			}
 	     			else {
-	        			// This is not used for authentication or profile synchronization but merely to log the authenticator.
-		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate2" );
-	        			AuthenticationManagerUtil.authenticate(authenticationServiceProvider,
-	        					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
-	        					loginName, 
-	        					(String) credentials,
-	        					false, 
-	        					false, 
-	        					true, 
-	        					(Map) result.getPrincipal(), getAuthenticator());			
-		     			SimpleProfiler.stop( "4-AuthenticationManagerUtil.authenticate2" );
+		     			if(cacheUsingAuthenticators.contains(getAuthenticator())) {
+		     				// This authenticator is set up to utilize cached credential. In this case,
+		     				// we must allow caching of password (i.e, password sync). Otherwise,
+		     				// the authenticator will fail very soon when it tries to utilize cached
+		     				// credential in subsequent requests.
+		     				passwordAutoSynch = true;
+		     				// Set this to false to avoid incurring of overhead involved in updating
+		     				// user profile. Cache using authenticators tend to be stateless clients
+		     				// such as REST and SOAP clients. While we want them to be able to create
+		     				// new user account in Filr by initially sync'ing user profile information
+		     				// from the LDAP source in the same way web authenticator does, we do NOT
+		     				// want them to trigger frequent profile updates (e.g. every 30 seconds)
+		     				// on existing user accounts. Profile updates on existing accounts should
+		     				// only be triggered by stateful client such as browser.
+		     				updateUser = false;
+		     			}
+		     			else {
+		     				// We will not allow sync.
+		     				createUser = false;
+		     				passwordAutoSynch = false;
+		     				ignorePassword = true;
+		     			}
 	     			}
 	     			
-	    			if(result instanceof SynchNotifiableAuthentication)
+	     			if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
+	     				// If OpenID, override the default settings. OpenID is applicable only with web authenticator.
+	     				// Don't allow OpenID user to self provision himself.
+	     				createUser = false;
+	     				passwordAutoSynch = false;
+	     				ignorePassword = true;
+	     			}
+
+	     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate" );
+	    			AuthenticationManagerUtil.authenticate(authenticationServiceProvider,
+	    					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
+	    					loginName, 
+	    					(String) credentials,
+	    					createUser,
+	    					updateUser,
+	    					passwordAutoSynch,
+	    					ignorePassword,
+	    					(Map) result.getPrincipal(), 
+	    					getAuthenticator());
+	     			SimpleProfiler.stop( "4-AuthenticationManagerUtil.authenticate" );
+
+	     			if(result instanceof SynchNotifiableAuthentication)
 	    				((SynchNotifiableAuthentication)result).synchDone();
 	    			return successfulAuthentication(result);
 	    		} catch(AuthenticationException e) {
@@ -577,6 +588,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
     					(String) result.getName(), 
     					(String) credentials,
     					false, 
+    					false,
     					false, 
     					true, 
     					(Map) result.getPrincipal(), getAuthenticator());			

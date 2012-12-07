@@ -164,7 +164,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  	@Override
 	public User authenticate(AuthenticationServiceProvider authenticationServiceProvider, 
 			String zoneName, String userName, String password,
-			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
+			boolean createUser, boolean updateUser, boolean passwordAutoSynch, boolean ignorePassword, 
 			Map updates, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException
 	{
@@ -214,12 +214,17 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				user = doAuthenticateUser(authenticationServiceProvider, zoneName, userName, password, passwordAutoSynch, ignorePassword);
 			}
 			
+			// If still here, a matching user account has been found.
+			
 			//Make sure this user account hasn't been disabled
 			if (!user.isActive() && !MiscUtil.isSystemUserAccount( userName )) {
 				//This account is not active
 				throw new UserAccountNotActiveException(NLT.get("error.accountNotActive"));
 			}
-			if (updates != null && !updates.isEmpty()) { // There are some update data
+			
+			// Again, the user account already exists, so we can safely rule out creation situation.
+			if (updateUser & updates != null && !updates.isEmpty()) { 
+				// Updating user profile is permitted and there are some update data
 				if(authenticationServiceProvider != AuthenticationServiceProvider.LOCAL) {
 	   				// We don't want to sync ldap attributes if the user is one of the 5
 	   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
@@ -246,6 +251,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
 		} 
 		catch (UserDoesNotExistException nu) {
+			// Matching user account doesn't exist in the database yet
  			if (createUser) {
 				if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
 					int syncMode = getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().getProfileSynchronizationMode();
@@ -258,6 +264,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  					// For external users, there's no need for separate step for synchronizing profile info
  					// because all the information is already ready and presented to the method that creates the user.
  					syncUser = false;
+ 					// Note: This code never gets executed, because we do not allow self provisioning for OpenID user.
+ 					// That is createUser will never be set to true under this situation.
  	 				user=getProfileModule().addUserFromPortal(
  	 						new IdentityInfo(false, false, false, true),
  	 						userName, password, updates, null);
