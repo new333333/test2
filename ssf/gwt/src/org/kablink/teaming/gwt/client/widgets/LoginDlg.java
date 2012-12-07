@@ -308,6 +308,9 @@ public class LoginDlg extends DlgBox
 	{
 		Element formElement;
 
+		if ( m_formPanel != null )
+			return;
+		
 		// Get the <form ...> element that was created by GwtMainPage.jsp
 		formElement = Document.get().getElementById( "loginFormId" );
 		m_formPanel = new LoginFormPanel( formElement );
@@ -1058,6 +1061,22 @@ public class LoginDlg extends DlgBox
 			
 			m_selfRegPanel.add( table );
 			
+			// Add a read-only control for the user id
+			{
+				TextBox txtBox;
+				
+				label = new Label( messages.loginDlgUserId() );
+				table.setHTML( row, 0, label.getElement().getInnerHTML() );
+	
+				txtBox = new TextBox();
+				txtBox.setReadOnly( true );
+				txtBox.setValue( GwtTeaming.getMainPage().getLoginExternalUserName() );
+				txtBox.setVisibleLength( 20 );
+				table.setWidget( row, 1, txtBox );
+			
+				++row;
+			}
+			
 			// Add the controls for the first name
 			{
 				label = new Label( messages.loginDlg_FirstNameLabel() );
@@ -1233,12 +1252,18 @@ public class LoginDlg extends DlgBox
 		// Add a row for the "user id" controls.
 		{
 			Element userIdElement;
+			String userName;
 			
 			m_userIdLabelElement = Document.get().getElementById( "userIdLabel" );
 			m_userIdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgUserId() );
 			
 			userIdElement = Document.get().getElementById( "j_usernameId" );
 			m_userIdTxtBox = TextBox.wrap( userIdElement );
+			
+			// Do we have the user name for an external user trying to log in for the first time?
+			userName = GwtTeaming.getMainPage().getLoginExternalUserName();
+			if ( userName != null && userName.length() > 0 )
+				m_userIdTxtBox.setValue( userName );
 		}
 		
 		// Add a row for the "password" controls.

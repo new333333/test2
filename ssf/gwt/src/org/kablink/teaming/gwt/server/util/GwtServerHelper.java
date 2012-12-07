@@ -2739,7 +2739,9 @@ public class GwtServerHelper {
 			try
 			{
 				if ( adminModule.testAccess( AdminOperation.manageFunction ) &&
-						LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder"))
+					 LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
+					 adminModule.testAccess( AdminOperation.manageResourceDrivers ) &&
+					 binderModule.testAccess( top, BinderOperation.indexBinder ) )
 				{
 					// Yes
 					title = NLT.get( "administration.manage.resourceDrivers" );
@@ -2760,8 +2762,22 @@ public class GwtServerHelper {
 			// Does the user have rights to "Manage net folders"?
 			try
 			{
+				Binder netFoldersParentBinder = null;
+				
+				try
+				{
+					netFoldersParentBinder = getCoreDao().loadReservedBinder(
+															ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
+															RequestContextHolder.getRequestContext().getZoneId() );
+				}
+				catch ( Exception ex )
+				{
+				}
+
 				if ( adminModule.testAccess( AdminOperation.manageFunction ) &&
-						LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder"))
+					 LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
+					 netFoldersParentBinder != null &&
+					 binderModule.testAccess( netFoldersParentBinder, BinderOperation.modifyBinder ) )
 				{
 					// Yes
 					title = NLT.get( "administration.manage.netFolders" );

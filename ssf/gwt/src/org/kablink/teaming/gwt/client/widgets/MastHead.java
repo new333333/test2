@@ -901,19 +901,28 @@ public class MastHead extends Composite
 	@Override
 	public void onClick( ClickEvent event )
 	{
-		Widget eventSource;
+		Scheduler.ScheduledCommand cmd;
+		final Widget eventSource;
 		
 		// Get the widget that was clicked on.
 		eventSource = (Widget) event.getSource();
 
-		if ( eventSource == m_loginLink )
+		cmd = new Scheduler.ScheduledCommand()
 		{
-			LoginEvent.fireOne();
-		}
-		else if ( eventSource == m_userName || eventSource == m_userNamePanel )
-		{
-			invokeUserActionsPopup();
-		}
+			@Override
+			public void execute() 
+			{
+				if ( eventSource == m_loginLink )
+				{
+					LoginEvent.fireOne();
+				}
+				else if ( eventSource == m_userName || eventSource == m_userNamePanel )
+				{
+					invokeUserActionsPopup();
+				}
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}// end onClick()
 	
 	

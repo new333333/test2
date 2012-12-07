@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
+import org.kablink.teaming.gwt.client.admin.AdminConsoleHomePage;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
@@ -79,6 +80,7 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -128,7 +130,7 @@ public class AdminControl extends TeamingPopupPanel
 	private int m_contentControlHeight;
 	private int m_dlgWidth;
 	private int m_dlgHeight;
-	private String m_homePageUrl = null;
+	private AdminConsoleHomePage m_homePage = null;
 	private ConfigureFileSyncAppDlg m_configureFileSyncAppDlg = null;
 	private ManageGroupsDlg m_manageGroupsDlg = null;
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
@@ -559,7 +561,6 @@ public class AdminControl extends TeamingPopupPanel
 						addCategory( category );
 					}
 					
-					m_homePageUrl = adminConsoleInfo.getHomePageUrl();
 					showHomePage();
 				}
 			};
@@ -585,16 +586,30 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
-					int x;
-					int y;
-					GwtUpgradeInfo upgradeInfo;
+					final GwtUpgradeInfo upgradeInfo;
+					Scheduler.ScheduledCommand cmd;
 					
 					upgradeInfo = (GwtUpgradeInfo) response.getResponseData();
 					
-					// Show the AdminInfoDlg
-					x = m_adminActionsTreeControl.getAbsoluteLeft() + m_adminActionsTreeControl.getOffsetWidth();
-					y = m_adminActionsTreeControl.getAbsoluteTop();
-					showAdminInfoDlg( upgradeInfo, x, y );
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							int x;
+							int y;
+
+							// Update the admin console home page with the latest info.
+							if ( m_homePage != null )
+								m_homePage.init( upgradeInfo );
+							
+							// Show the AdminInfoDlg
+							x = m_adminActionsTreeControl.getAbsoluteLeft() + m_adminActionsTreeControl.getOffsetWidth();
+							y = m_adminActionsTreeControl.getAbsoluteTop();
+							showAdminInfoDlg( upgradeInfo, x, y );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}// end onSuccess()
 			};
 
@@ -666,9 +681,15 @@ public class AdminControl extends TeamingPopupPanel
 			m_registeredEvents,
 			this );
 		
+		Scheduler.ScheduledCommand cmd;
 		final FlowPanel mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "adminControl" );
 		
+		mainPanel.addStyleName( "adminControl" );
+
+		// Create the home page that will be displayed when nothing is selected.
+		m_homePage = new AdminConsoleHomePage();
+		mainPanel.add( m_homePage );
+
 		// Create the control that holds all of the administration actions
 		m_adminActionsTreeControl = new AdminActionsTreeControl();
 		mainPanel.add( m_adminActionsTreeControl );
@@ -677,7 +698,7 @@ public class AdminControl extends TeamingPopupPanel
 		// box to be displayed because initially this control's width and height are 0.
 		setStylePrimaryName( "adminControlPopup" );
 		
-		// Create a control to hold the administration page for the selection administration action.
+		// Create a control to hold the administration page for the selected administration action.
 		ContentControl.createAsync(
 				mainPage,
 				"adminContentControl",
@@ -700,6 +721,17 @@ public class AdminControl extends TeamingPopupPanel
 				relayoutPage();
 			}// end onSuccess()
 		} );
+		
+		// Issue an rpc request to get the info needed to update the home page
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute() 
+			{
+				updateHomePage();
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 		
 		setWidget( mainPanel );
 	}// end AdminControl()
@@ -889,6 +921,22 @@ public class AdminControl extends TeamingPopupPanel
 	
 	
 	/**
+	 * 
+	 */
+	public int getContentHeight()
+	{
+		return m_dlgHeight;
+	}
+	
+	/**
+	 * 
+	 */
+	public int getContentWidth()
+	{
+		return m_dlgWidth;
+	}
+	
+	/**
 	 * Issue an ajax request to get the upgrade information from the server.
 	 */
 	public static void getUpgradeInfoFromServer( AsyncCallback<VibeRpcResponse> callback )
@@ -1010,6 +1058,13 @@ public class AdminControl extends TeamingPopupPanel
 		style = m_contentControl.getElement().getStyle();
 		style.setLeft( x, Style.Unit.PX );
 
+		// Set the position and width of the admin home page
+		style = m_homePage.getElement().getStyle();
+		style.setLeft( m_contentControlX, Unit.PX );
+		style.setTop( 8, Unit.PX );
+		style.setWidth( m_contentControlWidth, Unit.PX );
+		style.setHeight( m_contentControlHeight, Unit.PX );
+
 		// Set the height of the tree control.
 		style = m_adminActionsTreeControl.getElement().getStyle();
 		style.setHeight( height, Style.Unit.PX );
@@ -1117,16 +1172,11 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	public void showHomePage()
 	{
-		if ( m_homePageUrl != null )
+		if ( m_homePage != null )
 		{
-			// Clear the iframe's content 
 			m_contentControl.clear();
-			
-			// Set the iframe's content to the instructions page.
-			m_contentControl.setUrl( m_homePageUrl, Instigator.ADMINISTRATION_CONSOLE );
-			
-			showContentPanel();
-			relayoutPage();
+			m_contentControl.setVisible( false );
+			m_homePage.setVisible( true );
 		}
 	}
 	
@@ -1759,6 +1809,55 @@ public class AdminControl extends TeamingPopupPanel
 			showTreeControl();
 		}
 	}// end onSidebarShow()
+	
+	/**
+	 * Update the information found on the home page
+	 */
+	private void updateHomePage()
+	{
+		AsyncCallback<VibeRpcResponse> callback;
+		
+		callback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetUpgradeInfo() );
+			}
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				final GwtUpgradeInfo upgradeInfo;
+				Scheduler.ScheduledCommand cmd;
+				
+				upgradeInfo = (GwtUpgradeInfo) response.getResponseData();
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute() 
+					{
+						// Update the admin console home page with the latest info.
+						if ( m_homePage != null )
+							m_homePage.init( upgradeInfo );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}// end onSuccess()
+		};
+
+		getUpgradeInfoFromServer( callback );
+	}
 	
 	/**
 	 * Callback interface to interact with the admin control

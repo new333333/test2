@@ -310,6 +310,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
+	 * Return the external user name
+	 * 
+	 * @return
+	 */
+	public final native String getLoginExternalUserName()
+	/*-{
+		return this.loginExternalUserName;
+	}-*/;
+	
+	/**
 	 * Return the name of the open id provider the user can use.
 	 */
 	public final native String getLoginOpenIdProviderName()
@@ -514,6 +524,14 @@ public class RequestInfo extends JavaScriptObject
 		return (this.getBFromS( this.isSiteAdmin ));
 	}-*/;
 
+	/**
+	 * Return the flag that tells us if the login dialog can have a cancel button.
+	 */
+	public final native boolean getLoginCanCancel()
+	/*-{
+		return (this.getBFromS( this.loginCanCancel ));
+	}-*/;
+	
 	/**
 	 * Return the name (Novell vs. Kablink) of the version of Teaming
 	 * that's running.

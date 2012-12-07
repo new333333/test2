@@ -2232,13 +2232,25 @@ public interface GwtTeamingMessages extends Messages
 	String emptyPeople_Info_2( String company, String product );
 	String emptyPeople_SubHead();
 	
+	// Strings used in the administration console home page
+	String adminConsoleInfoWidget_AdminGuideLabel();
+	String adminConsoleInfoWidget_BuildLabel();
+	String adminConsoleInfoWidget_FilrApplianceLabel();
+	String adminConsoleInfoWidget_FilrHeader();
+	String adminConsoleInfoWidget_GeneralInfoFilr();
+	String adminConsoleInfoWidget_GeneralInfoVibe();
+	String adminConsoleInfoWidget_KablinkHeader();
+	String adminConsoleInfoWidget_NovellHeader();
+	String adminConsoleInfoWidget_ReleaseLabel();
+	String adminConsoleInfoWidget_SeeAdminGuide();
+	
 	// Strings used by the 'Run a Report' dialog.
 	String runAReportDlgCaption();
 	String runAReportDlgChoose();
 	String runAReportDlgInternalError_UnknownReport(String unknownReport);
 	String runAReportDlgSelect();
 	String runAReportDlgSystemErrorLogLink();
-	
+
 	// String used by the 'Email Report' dialog.
 	String emailReportDlgAndSeparator();
 	String emailReportDlgCaption();
