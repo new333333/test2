@@ -46,7 +46,21 @@
 	/* End:  License report composite styles. */
 	
 	/* Start:  Login report composite styles. */
-		.vibe-loginReportComposite- {}
+		.vibe-loginReportComposite-andSeparator {white-space: nowrap; margin-left: 8px; margin-right: 10px;}
+		.vibe-loginReportComposite-runButton    {white-space: nowrap; margin-top: 20px; margin-left: 0.5em;}
+		.vibe-loginReportComposite-caption      {font-weight: bold; font-size: 13px; margin-top: 10px; white-space: nowrap;}
+		.vibe-loginReportComposite-datesPanel   {display: block; white-space: nowrap; margin-top: 5px;}
+		.vibe-loginReportComposite-peopleFind   {width: 250px;}
+		.vibe-loginReportComposite-peopleLabel  {margin-right: 5px;}
+		.vibe-loginReportComposite-peopleList   {width: 260px; background-color: white;}
+		.vibe-loginReportComposite-peoplePanel  {margin-top: 15px; margin-bottom: 15px;}
+		.vibe-loginReportComposite-peopleRemove {white-space: nowrap; margin-left: 0.5em;}
+		.vibe-loginReportComposite-runButton    {white-space: nowrap; margin-top: 20px; margin-left: 0.5em;}
+		.vibe-loginReportComposite-sortCap      {margin-right: 5px; font-size: 12px;}
+		.vibe-loginReportComposite-sortList     {background-color: white;}
+		.vibe-loginReportComposite-sortPanel    {margin-left: 35px; white-space: nowrap;}
+		.vibe-loginReportComposite-typeRadio    {white-space: nowrap; margin-top: 15px;}
+		.vibe-loginReportComposite-widgetsPanel {display: block; margin-top: 10px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; border: 1px solid #cccccc; padding: 5px; background-color: #ededed;}
 	/* End:  Login report composite styles. */
 	
 	/* Start:  Base report composite styles. */

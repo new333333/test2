@@ -316,6 +316,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CreateGroup();
 	String rpcFailure_CreateGroupAlreadyExists();
 	String rpcFailure_CreateLicenseReport();
+	String rpcFailure_CreateLoginReport();
 	String rpcFailure_DeleteNetFolders();
 	String rpcFailure_DeleteNetFolderServers();
 	String rpcFailure_DeleteFolderEntries();
@@ -2291,5 +2292,23 @@ public interface GwtTeamingMessages extends Messages
 	String licenseReportReport_StatsCol_OpenId();
 	String licenseReportReport_StatsCol_365();
 	String licenseReportRunReport();
+	
+	// String used by the 'Login Report' dialog.
+	String loginReportAndSeparator();
+	String loginReportCaption1();
+	String loginReportCaption2();
+	String loginReportPeople();
+	String loginReportRemove();
+	String loginReportRunReport();
+	String loginReportSort();
+	String loginReportSortAll_Date();
+	String loginReportSortAll_User();
+	String loginReportSortSummaries_Last();
+	String loginReportSortSummaries_None();
+	String loginReportSortSummaries_Number();
+	String loginReportSortSummaries_User();
+	String loginReportType_All();
+	String loginReportType_Summaries();
+	String loginReportWarning_UserAlreadySelected(String name);
 	
 }// end GwtTeamingMessages

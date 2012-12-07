@@ -131,6 +131,23 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Add some <br/>'s to a Widget.
+	 * 
+	 * @param w
+	 * @param c
+	 */
+	public static void addBR(Widget w, int c) {
+		if (0 < c) {
+			StringBuffer brBuf = new StringBuffer();
+			for (int i = 0; i < c; i += 1) {
+				brBuf.append("<br/>");
+			}
+			String html = w.getElement().getInnerHTML();
+			w.getElement().setInnerHTML(html + brBuf.toString());
+		}
+	}
+	
+	/**
 	 * Adds a Long to a List<Long> if it's not already there.
 	 * 
 	 * @param lList
