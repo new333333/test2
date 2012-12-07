@@ -1161,6 +1161,7 @@ public class AdminControl extends TeamingPopupPanel
 	            	// Get the upgrade info from the server.  If there are upgrade tasks that
 					// need to be performed, AdminInfoDlg will display them.
 					showUpgradeTasks();
+					updateHomePage();
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
