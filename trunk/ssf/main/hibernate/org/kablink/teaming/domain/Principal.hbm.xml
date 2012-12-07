@@ -155,6 +155,7 @@
   <query name="find-User-Company"><![CDATA[from org.kablink.teaming.domain.User user where user.name=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
   <query name="find-User-Company-DeadOrAlive"><![CDATA[from org.kablink.teaming.domain.User user where user.name=:userName and user.zoneId=:zoneId]]></query>
   <query name="find-Principal-Company"><![CDATA[from org.kablink.teaming.domain.Principal user where user.name=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
+  <query name="find-Principal-id-Company"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.name=:name and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
   
   <query name="find-User-By-LdapGuid-Company"><![CDATA[from org.kablink.teaming.domain.User user where user.ldapGuid=:ldapGuid and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
   <query name="find-Principal-id-By-LdapGuid-Company"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.ldapGuid=:ldapGuid and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>

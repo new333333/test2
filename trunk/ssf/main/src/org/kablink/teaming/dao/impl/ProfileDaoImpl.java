@@ -770,6 +770,36 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
  	@Override
+	public Long findPrincipalIdByName( final String name, final Long zoneId ) 
+	{
+	   long begin = System.nanoTime();
+	   try
+	   {
+	       Long id = (Long)getHibernateTemplate().execute(
+                new HibernateCallback()
+                {
+                    @Override
+					public Object doInHibernate(Session session) throws HibernateException
+                    {
+                 	   //only returns active principals
+                       // We store names in lower case in the database.
+                  	   return session.getNamedQuery( "find-Principal-id-Company" )
+                             		.setString( ParameterNames.NAME, name.toLowerCase() )
+                             		.setLong( ParameterNames.ZONE_ID, zoneId )
+                             		.setCacheable( isPrincipalQueryCacheable() )
+                             		.uniqueResult();
+                    }
+                }
+             );		
+	       return id;
+	   }
+	   finally
+	   {
+		   end(begin, "findPrincipalIdByName(String,Long)");
+	   }	        
+	}
+
+ 	@Override
 	public Principal findPrincipalByName(final String name, final Long zoneId) 
  		throws NoPrincipalByTheNameException {
  		if(name.startsWith(FAKE_NAME_PREFIX)) {
