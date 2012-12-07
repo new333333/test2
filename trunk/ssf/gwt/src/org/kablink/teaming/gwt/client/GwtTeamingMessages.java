@@ -2252,37 +2252,43 @@ public interface GwtTeamingMessages extends Messages
 	String runAReportDlgSystemErrorLogLink();
 
 	// String used by the 'Email Report' dialog.
-	String emailReportDlgAndSeparator();
-	String emailReportDlgCaption();
-	String emailReportDlgReportColumn_AttachedFiles();
-	String emailReportDlgReportColumn_Comment();
-	String emailReportDlgReportColumn_From();
-	String emailReportDlgReportColumn_LogStatus();
-	String emailReportDlgReportColumn_LogType();
-	String emailReportDlgReportColumn_SendDate();
-	String emailReportDlgReportColumn_Subject();
-	String emailReportDlgReportColumn_ToAddresses();
-	String emailReportDlgRunReport();
-	String emailReportDlgTypeErrors();
-	String emailReportDlgTypeReceived();
-	String emailReportDlgTypeSent();
-	String emailReportDlgWarning_NoData();
+	String emailReportAndSeparator();
+	String emailReportCaption();
+	String emailReportReportColumn_AttachedFiles();
+	String emailReportReportColumn_Comment();
+	String emailReportReportColumn_From();
+	String emailReportReportColumn_LogStatus();
+	String emailReportReportColumn_LogType();
+	String emailReportReportColumn_SendDate();
+	String emailReportReportColumn_Subject();
+	String emailReportReportColumn_ToAddresses();
+	String emailReportRunReport();
+	String emailReportTypeErrors();
+	String emailReportTypeReceived();
+	String emailReportTypeSent();
+	String emailReportWarning_NoData();
 	
 	// String used by the 'License Report' dialog.
-	String licenseReportDlgAndSeparator();
-	String licenseReportDlgCaption();
-	String licenseReportDlgReport_Activity();
-	String licenseReportDlgReport_AllowedExt();
-	String licenseReportDlgReport_AllowedExtNote();
-	String licenseReportDlgReport_AllowedReg();
-	String licenseReportDlgReport_AllowedRegNote();
-	String licenseReportDlgReport_CurrentActive(long count);
-	String licenseReportDlgReport_CurrentLicense();
-	String licenseReportDlgReport_Effective();
-	String licenseReportDlgReport_KeyIssued();
-	String licenseReportDlgReport_KeyUID();
-	String licenseReportDlgReport_License(String company, String product, String date);
-	String licenseReportDlgReport_ProductTitle();
-	String licenseReportDlgRunReport();
+	String licenseReportAndSeparator();
+	String licenseReportCaption();
+	String licenseReportReport_Activity();
+	String licenseReportReport_AllowedExt();
+	String licenseReportReport_AllowedExtNote();
+	String licenseReportReport_AllowedReg();
+	String licenseReportReport_AllowedRegNote();
+	String licenseReportReport_CurrentActive(long count);
+	String licenseReportReport_CurrentLicense();
+	String licenseReportReport_Effective();
+	String licenseReportReport_KeyIssued();
+	String licenseReportReport_KeyUID();
+	String licenseReportReport_License(String company, String product, String date);
+	String licenseReportReport_ProductTitle();
+	String licenseReportReport_StatsCol_Checksum();
+	String licenseReportReport_StatsCol_Date();
+	String licenseReportReport_StatsCol_Local();
+	String licenseReportReport_StatsCol_LDAP();
+	String licenseReportReport_StatsCol_OpenId();
+	String licenseReportReport_StatsCol_365();
+	String licenseReportRunReport();
 	
 }// end GwtTeamingMessages
