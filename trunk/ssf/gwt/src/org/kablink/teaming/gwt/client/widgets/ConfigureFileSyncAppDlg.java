@@ -56,9 +56,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 
 
@@ -70,11 +70,12 @@ import com.google.gwt.user.client.ui.TextBox;
 public class ConfigureFileSyncAppDlg extends DlgBox
 	implements KeyPressHandler, EditSuccessfulHandler
 {
-	private RadioButton m_enableFileSyncRB;
-	private RadioButton m_disableFileSyncRB;
+	private CheckBox m_enableFileSyncAccessCB;
 	private CheckBox m_enableDeployCB;
+	private CheckBox m_allowPwdCacheCB;
 	private TextBox m_syncIntervalTextBox;
 	private TextBox m_autoUpdateUrlTextBox;
+	private TextBox m_maxFileSizeTextBox;
 	
 	/**
 	 * Callback interface to interact with the "configure file sync app" dialog
@@ -115,7 +116,6 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		GwtTeamingMessages messages;
 		FlowPanel mainPanel = null;
 		FlexTable table;
-		Label spacer;
 		int nextRow;
 
 		messages = GwtTeaming.getMessages();
@@ -131,34 +131,26 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		
 		// Add the controls for enable/disable File Sync App
 		{
-			FlowPanel rbPanel;
+			String productName;
 			
-			table.setText( nextRow, 0, messages.fileSyncAppOnOffLabel() );
-			++nextRow;
+			productName = "Vibe";
+			if ( GwtClientHelper.isLicenseFilr() )
+				productName = "Filr";
 			
-			rbPanel = new FlowPanel();
+			m_enableFileSyncAccessCB = new CheckBox( messages.fileSyncAppAllowAccess( productName ) );
 			
-			m_enableFileSyncRB = new RadioButton( "fileSyncEnabled", messages.fileSyncAppOn() );
-			m_enableFileSyncRB.setValue( Boolean.FALSE );
-			rbPanel.add( m_enableFileSyncRB );
-			
-			m_disableFileSyncRB = new RadioButton( "fileSyncEnabled", messages.fileSyncAppOff() );
-			m_disableFileSyncRB.setValue( Boolean.TRUE );
-			rbPanel.add( m_disableFileSyncRB );
-			
-			table.setWidget( nextRow, 0, rbPanel );
+			table.setWidget( nextRow, 0, m_enableFileSyncAccessCB );
 			++nextRow;
 		}
-		
-		// Add an empty row to add some space.
-		spacer = new Label( " " );
-		spacer.addStyleName( "marginTop10px" );
-		table.setWidget( nextRow, 0, spacer );
-		++nextRow;
 		
 		// Create the "Allow deployment of Desktop application" checkbox
 		m_enableDeployCB = new CheckBox( messages.fileSyncAppEnableDeployLabel() );
 		table.setWidget( nextRow, 0, m_enableDeployCB );
+		++nextRow;
+		
+		// Create the "Allow desktop application to cache password"
+		m_allowPwdCacheCB = new CheckBox( messages.fileSyncAppAllowCachePwd() );
+		table.setWidget( nextRow, 0, m_allowPwdCacheCB );
 		++nextRow;
 		
 		// Create the controls for File Sync interval
@@ -185,20 +177,45 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			++nextRow;
 		}
 		
-		// Add an empty row to add some space.
-		spacer = new Label( " " );
-		spacer.addStyleName( "marginTop10px" );
-		table.setWidget( nextRow, 0, spacer );
-		++nextRow;
-		
 		// Create the controls for auto-update url.
 		{
-			table.setText( nextRow, 0, messages.fileSyncAppAutoUpdateUrlLabel() );
-			++nextRow;
+			FlexTable tmpTable;
+			InlineLabel label;
+			
+			tmpTable = new FlexTable();
+			tmpTable.setCellSpacing( 4 );
+			
+			label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel() );
+			tmpTable.setWidget( 0, 0, label );
 			
 			// Create a textbox for the user to enter the auto-update url.
 			m_autoUpdateUrlTextBox = new TextBox();
-			table.setWidget( nextRow, 0, m_autoUpdateUrlTextBox );
+			tmpTable.setWidget( 0, 1, m_autoUpdateUrlTextBox );
+			
+			table.setWidget( nextRow, 0, tmpTable );
+			++nextRow;
+		}
+		
+		// Create the controls for the max file size
+		{
+			FlexTable tmpTable;
+			InlineLabel label;
+			
+			tmpTable = new FlexTable();
+			tmpTable.setCellSpacing( 4 );
+			
+			label = new InlineLabel( messages.fileSyncAppMaxFileSizeLabel() );
+			tmpTable.setWidget( 0, 0, label );
+			
+			m_maxFileSizeTextBox = new TextBox();
+			m_maxFileSizeTextBox.addKeyPressHandler( this );
+			m_maxFileSizeTextBox.setVisibleLength( 3 );
+			tmpTable.setWidget( 0, 1, m_maxFileSizeTextBox );
+			
+			label = new InlineLabel( messages.fileSyncAppMBLabel() );
+			tmpTable.setWidget( 0, 2, label );
+			
+			table.setWidget( nextRow, 0, tmpTable );
 			++nextRow;
 		}
 		
@@ -283,6 +300,14 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	}
 
 	/**
+	 * Return whether the value entered by the user for allowing the file sync app to cache passwords
+	 */
+	private boolean getAllowCachePwd()
+	{
+		return m_allowPwdCacheCB.getValue();
+	}
+	
+	/**
 	 * Return the string entered by the user for the auto-update url
 	 */
 	private String getAutoUpdateUrl()
@@ -316,6 +341,12 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		
 		// Get whether the file sync app can be deployed
 		fileSyncAppConfig.setIsDeploymentEnabled( deployEnabled );
+		
+		// Get whether the file sync app can cache the user's password
+		fileSyncAppConfig.setAllowCachePwd( getAllowCachePwd() );
+		
+		// Get the max file size the file sync app can sync
+		fileSyncAppConfig.setMaxFileSize( getMaxFileSize() );
 
 		// If the "allow deployment..." checkbox is checked the user must have an auto-update url
 		if ( deployEnabled && (autoUpdateUrl == null || autoUpdateUrl.length() == 0) )
@@ -358,7 +389,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	 */
 	private boolean getIsFileSyncAppEnabled()
 	{
-		if ( m_enableFileSyncRB.getValue() == Boolean.TRUE )
+		if ( m_enableFileSyncAccessCB.getValue() == Boolean.TRUE )
 			return true;
 
 		return false;
@@ -375,6 +406,20 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		return false;
 	}
 	
+	/**
+	 * Get the max file size entered by the user
+	 */
+	private int getMaxFileSize()
+	{
+		String maxStr;
+		int max = 0;
+		
+		maxStr = m_maxFileSizeTextBox.getValue();
+		if ( maxStr != null && maxStr.length() > 0 )
+			max = Integer.parseInt( maxStr );
+		
+		return max;
+	}
 	
 	/**
 	 * Initialize the controls in the dialog with the values from the given values.
@@ -382,21 +427,16 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	public void init( GwtFileSyncAppConfiguration fileSyncAppConfiguration )
 	{
 		int interval;
+		int size;
 		
 		// Initialize the on/off radio buttons.
-		if ( fileSyncAppConfiguration.getIsFileSyncAppEnabled() )
-		{
-			m_enableFileSyncRB.setValue( true );
-			m_disableFileSyncRB.setValue( false );
-		}
-		else
-		{
-			m_enableFileSyncRB.setValue( false );
-			m_disableFileSyncRB.setValue( true );
-		}
-		
+		m_enableFileSyncAccessCB.setValue( fileSyncAppConfiguration.getIsFileSyncAppEnabled() );
+			
 		// Initialize the deployment enabled checkbox
 		m_enableDeployCB.setValue( fileSyncAppConfiguration.getIsDeploymentEnabled() );
+
+		// Initialize the allow pwd  cache checkbox
+		m_allowPwdCacheCB.setValue( fileSyncAppConfiguration.getAllowCachePwd() );
 		
 		// Initialize the interval textbox
 		interval = fileSyncAppConfiguration.getSyncInterval();
@@ -404,6 +444,10 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		
 		// Initialize the auto-update url.
 		m_autoUpdateUrlTextBox.setText( fileSyncAppConfiguration.getAutoUpdateUrl() );
+		
+		// Initialize the max file size
+		size = fileSyncAppConfiguration.getMaxFileSize();
+		m_maxFileSizeTextBox.setText( String.valueOf( size ) );
 		
 		hideErrorPanel();
 	}

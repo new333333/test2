@@ -4676,6 +4676,12 @@ public class GwtServerHelper {
 		// Get the whether the File Sync App is enabled.
 		fileSyncAppConfiguration.setIsFileSyncAppEnabled( zoneConfig.getFsaEnabled() );
 		
+		// Get the setting that determines whether the desktop app can remember the password
+		fileSyncAppConfiguration.setAllowCachePwd( zoneConfig.getFsaAllowCachePwd() );
+		
+		// Get the max file size the desktop app can download
+		fileSyncAppConfiguration.setMaxFileSize( zoneConfig.getFsaMaxFileSize() );
+		
 		// Get the File Sync App sync interval.
 		fileSyncAppConfiguration.setSyncInterval( zoneConfig.getFsaSynchInterval() );
 		
@@ -9175,13 +9181,17 @@ public class GwtServerHelper {
 		AdminModule adminModule;
 		Boolean enabled;
 		Boolean deployEnabled;
+		Boolean allowCachePwd;
 		Integer interval;
+		Integer maxFileSize;
 		String autoUpdateUrl;
 		
 		adminModule = allModules.getAdminModule();
 		enabled = new Boolean( fsaConfiguration.getIsFileSyncAppEnabled() );
 		interval = new Integer( fsaConfiguration.getSyncInterval() );
 		deployEnabled = new Boolean( fsaConfiguration.getIsDeploymentEnabled() );
+		allowCachePwd = new Boolean( fsaConfiguration.getAllowCachePwd() );
+		maxFileSize = new Integer( fsaConfiguration.getMaxFileSize() );
 		
 		// Did the user enter an auto update url?
 		autoUpdateUrl = fsaConfiguration.getAutoUpdateUrl();
@@ -9199,7 +9209,13 @@ public class GwtServerHelper {
 			}
 		}
 		
-		adminModule.setFileSynchAppSettings( enabled, interval, autoUpdateUrl, deployEnabled );
+		adminModule.setFileSynchAppSettings(
+										enabled,
+										interval,
+										autoUpdateUrl,
+										deployEnabled,
+										allowCachePwd,
+										maxFileSize );
 
 		return Boolean.TRUE;
 	}

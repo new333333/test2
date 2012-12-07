@@ -56,7 +56,7 @@ public class BaseAdminModule extends AbstractAdminModule {
 		// Noop	
 	}
 	
-	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled ) {
+	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled, Boolean allowCachePwd, Integer maxFileSize ) {
 		// Noop
 	}
 

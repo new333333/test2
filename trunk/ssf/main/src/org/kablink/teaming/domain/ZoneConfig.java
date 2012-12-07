@@ -62,9 +62,10 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private MailConfig mailConfig;
 	private Boolean fsaEnabled;
 	private Boolean fsaDeployEnabled;
+	private Boolean fsaAllowCachePwd;
 	private Integer fsaSynchInterval;
 	private String fsaAutoUpdateUrl;
-	private Long fsaMaxFileSize;
+	private Integer fsaMaxFileSize;
 	private OpenIDConfig openIDConfig;
 	private Boolean externalUserEnabled;
 	private String localeLanguage;
@@ -275,6 +276,10 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     	return "";
     }
     
+/**
+ * The following methods deal with the settings used by the desktop application (file sync app)
+ */
+    
 	public boolean getFsaEnabled() {
 		if(fsaEnabled == null)
 			return SPropsUtil.getBoolean("fsa.enabled.default", true);
@@ -302,15 +307,34 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public void setFsaAutoUpdateUrl(String fsaAutoUpdateUrl) {
 		this.fsaAutoUpdateUrl = fsaAutoUpdateUrl;
 	}
-	public long getFsaMaxFileSize() {
+	public int getFsaMaxFileSize() {
 		if(fsaMaxFileSize == null)
-			return SPropsUtil.getLong("fsa.max.file.size", 1073741824L);
+			return SPropsUtil.getInt( "fsa.max.file.size", 50 );
 		else
 			return fsaMaxFileSize;
 	}
-	public void setFsaMaxFileSize(long fsaMaxFileSize) {
+	public void setFsaMaxFileSize( int fsaMaxFileSize) {
 		// In this version of Vibe, this field is NOT persisted to database. So, this method shouldn't be used.
 		this.fsaMaxFileSize = fsaMaxFileSize;
+	}
+
+	/**
+	 * 
+	 */
+	public boolean getFsaAllowCachePwd()
+	{
+		if ( fsaAllowCachePwd == null )
+			return SPropsUtil.getBoolean( "fsa.allow.cache.pwd.default", true );
+		else
+			return fsaAllowCachePwd.booleanValue();
+	}
+	
+	/**
+	 * 
+	 */
+	public void setFsaAllowCachePwd( boolean allow )
+	{
+		fsaAllowCachePwd = Boolean.valueOf( allow );
 	}
 
 	/**
@@ -332,6 +356,11 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 		fsaDeployEnabled = Boolean.valueOf( enabled );
 	}
 
+/**
+ * End of methods dealing with desktop application
+ */
+
+	
 	public boolean isExternalUserEnabled() {
 		if(externalUserEnabled == null)
 			return SPropsUtil.getBoolean("external.user.enabled.default", false);

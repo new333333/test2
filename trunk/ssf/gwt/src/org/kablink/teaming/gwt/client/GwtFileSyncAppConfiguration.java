@@ -48,7 +48,9 @@ public class GwtFileSyncAppConfiguration
 {
 	private boolean m_isFileSyncAppEnabled = false;
 	private boolean m_deploymentEnabled = false;
+	private boolean m_allowCachePwd = false;
 	private int m_syncInterval = 15;
+	private int m_maxFileSize = 0;
 	private String m_autoUpdateUrl = null;
 	
 	/**
@@ -58,13 +60,20 @@ public class GwtFileSyncAppConfiguration
 	{
 	}
 	
-	
 	/**
 	 * 
 	 */
 	public String getAutoUpdateUrl()
 	{
 		return m_autoUpdateUrl;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getAllowCachePwd()
+	{
+		return m_allowCachePwd;
 	}
 	
 	/**
@@ -82,6 +91,14 @@ public class GwtFileSyncAppConfiguration
 	{
 		return m_isFileSyncAppEnabled;
 	}
+
+	/**
+	 * 
+	 */
+	public int getMaxFileSize()
+	{
+		return m_maxFileSize;
+	}
 	
 	/**
 	 * The sync interval is in minutes.
@@ -91,6 +108,13 @@ public class GwtFileSyncAppConfiguration
 		return m_syncInterval;
 	}
 	
+	/**
+	 * 
+	 */
+	public void setAllowCachePwd( boolean allow )
+	{
+		m_allowCachePwd = allow;
+	}
 	
 	/**
 	 * 
@@ -116,6 +140,13 @@ public class GwtFileSyncAppConfiguration
 		m_isFileSyncAppEnabled = enabled;
 	}
 	
+	/**
+	 * 
+	 */
+	public void setMaxFileSize( int size )
+	{
+		m_maxFileSize = size;
+	}
 	
 	/**
 	 * 
