@@ -404,6 +404,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case CREATE_LOGIN_REPORT:
+		{
+			CreateLoginReportCmd clrCmd = ((CreateLoginReportCmd) cmd);
+			StringRpcResponseData responseData = GwtReportsHelper.createLoginReport( this, getRequest( ri ), clrCmd.getBegin(), clrCmd.getEnd(), clrCmd.getUserIds(), clrCmd.getReportType(), clrCmd.getLongSortBy(), clrCmd.getShortSortBy() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case CREATE_NET_FOLDER:
 		{
 			CreateNetFolderCmd cnfCmd;

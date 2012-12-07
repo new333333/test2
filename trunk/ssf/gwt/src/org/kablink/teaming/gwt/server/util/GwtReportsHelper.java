@@ -39,6 +39,7 @@ import java.io.FilenameFilter;
 import java.io.FilterOutputStream;
 import java.text.Collator;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -71,6 +72,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.LicenseReportRpcResponseData.Li
 import org.kablink.teaming.gwt.client.rpc.shared.LicenseReportRpcResponseData.LicenseStatsItem;
 import org.kablink.teaming.gwt.client.rpc.shared.ReportsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ReportsInfoRpcResponseData.ReportInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.license.LicenseModule;
@@ -209,7 +211,7 @@ public class GwtReportsHelper {
 	
 	/**
 	 * Creates a license report and returns the results via a
-	 * LicenseResportRpcResponseData object.
+	 * LicenseReportRpcResponseData object.
 	 * 
 	 * The logic for this method was copied from
 	 * LicenseReportController.populateModel().
@@ -370,8 +372,7 @@ public class GwtReportsHelper {
 			reply.setReleaseInfo(    lri                    );
 			reply.setLicenseKey(     uids.toString()        );
 			reply.setRegisteredUsers(lm.getRegisteredUsers());
-			reply.setExternalUsers(  lm.getExternalUsers()  );
-			
+			reply.setExternalUsers(  lm.getExternalUsers()  );			
 			
 			// If we get here, reply refers to the 
 			// LicenseReportRpcResponseData object containing the results
@@ -384,6 +385,72 @@ public class GwtReportsHelper {
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
 			     m_logger.debug("GwtReportsHelper.createLicenseReport( SOURCE EXCEPTION ):  ", ex);
+			}
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}		
+	}
+	
+	/**
+	 * Creates a login report and returns a URL to the results via a
+	 * StringRpcResponseData object.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param begin
+	 * @param end
+	 * @param userIds
+	 * @param reportType
+	 * @param longSortBy
+	 * @param shortSortBy
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static StringRpcResponseData createLoginReport(AllModulesInjected bs, HttpServletRequest request, Date begin, Date end, List<Long> userIds, String reportType, String longSortBy, String shortSortBy) throws GwtTeamingException {
+		try {
+			// Convert the List<Long> of user IDs to string form for the
+			// URL...
+			String users;
+			if (MiscUtil.hasItems(userIds)) {
+				StringBuffer ub = new StringBuffer("");
+				for (Long uid:  userIds) {
+					ub.append(" " + String.valueOf(uid) + " ");
+				}
+				users = ub.toString();
+			}
+			else {
+				users = "";
+			}
+			
+			// ...construct the URL...
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+			String url = (
+				WebUrlUtil.getServletRootURL(request)                                     +
+				WebKeys.SERVLET_DOWNLOAD_REPORT                                           + "?" +
+				WebKeys.URL_REPORT_TYPE         + "=login"                                + "&" +
+				WebKeys.URL_REPORT_OPTION_TYPE  + "=" + reportType                        + "&" +
+				WebKeys.URL_REPORT_SORT_TYPE    + "=" + shortSortBy                       + "&" +
+				WebKeys.URL_REPORT_SORT_TYPE_2  + "=" + longSortBy                        + "&" +
+				WebKeys.URL_START_DATE_YYYYMMDD + "=" + formatter.format(begin.getTime()) + "&" +
+				WebKeys.URL_END_DATE_YYYYMMDD   + "=" + formatter.format(end.getTime())   + "&" +
+				"users=" + users);
+			
+			// ...and construct a StringRpcResponseData object
+			// ...containing the URL.
+			StringRpcResponseData reply = new StringRpcResponseData(url);
+			
+			// If we get here, reply refers to the
+			// StringRpcResponseData object containing the results of
+			// the report.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtReportsHelper.createLoginReport( SOURCE EXCEPTION ):  ", ex);
 			}
 			throw GwtServerHelper.getGwtTeamingException(ex);
 		}		

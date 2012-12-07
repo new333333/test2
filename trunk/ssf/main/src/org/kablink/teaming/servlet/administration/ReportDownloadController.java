@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,7 +35,7 @@ package org.kablink.teaming.servlet.administration;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -58,7 +58,6 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.report.ReportModule;
-import org.kablink.teaming.module.report.ReportModule.UserQuotaOption;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.util.LongIdUtil;
@@ -67,13 +66,17 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.servlet.SAbstractController;
 import org.kablink.teaming.web.tree.TreeHelper;
-import org.kablink.teaming.web.util.PortletRequestUtils;
-import org.kablink.util.Validator;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
-
+/**
+ * ?
+ *  
+ * @author ?
+ */
+@SuppressWarnings("unchecked")
 public class ReportDownloadController extends  SAbstractController {
 	
 	private FileTypeMap mimeTypes;
@@ -127,25 +130,35 @@ public class ReportDownloadController extends  SAbstractController {
 		this.mimeTypes = mimeTypes;
 	}
 	
+	@Override
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
 		Map formData = request.getParameterMap();
 		MapInputData inputData = new MapInputData(formData);
-		GregorianCalendar cal = new GregorianCalendar();
-		Date startDate = inputData.getDateValue(WebKeys.URL_START_DATE);
-		Date endDate = inputData.getDateValue(WebKeys.URL_END_DATE);
 		
-        String sortType = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_SORT_TYPE, "");
-        
-        String sortType2 = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_SORT_TYPE_2, "");
-        
+		Date startDate;
+		String dateStr = ServletRequestUtils.getStringParameter(request, WebKeys.URL_START_DATE_YYYYMMDD, "");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+		if (MiscUtil.hasString(dateStr))
+		     startDate = formatter.parse(dateStr);
+		else startDate = inputData.getDateValue(WebKeys.URL_START_DATE);
+		
+		Date endDate;
+		dateStr = ServletRequestUtils.getStringParameter(request, WebKeys.URL_END_DATE_YYYYMMDD, "");
+		if (MiscUtil.hasString(dateStr))
+		     endDate = formatter.parse(dateStr);
+		else endDate = inputData.getDateValue(WebKeys.URL_END_DATE);
+		
+        String sortType   = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_SORT_TYPE,   "");
+        String sortType2  = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_SORT_TYPE_2, "");
         String optionType = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_OPTION_TYPE, "");
         
         Set memberIds = new HashSet();
         if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
         
 		if(endDate != null) {
+			GregorianCalendar cal = new GregorianCalendar();
 			cal.setTime(endDate);
 			cal.add(Calendar.DATE, 1);
 			endDate = cal.getTime();

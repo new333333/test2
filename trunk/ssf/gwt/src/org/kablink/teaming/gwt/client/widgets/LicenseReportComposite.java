@@ -86,20 +86,6 @@ public class LicenseReportComposite extends ReportCompositeBase {
 		super();
 	}
 
-	/*
-	 * Add some <br/>'s to a panel.
-	 */
-	private void addBR(VibeFlowPanel fp, int c) {
-		if (0 < c) {
-			StringBuffer brBuf = new StringBuffer();
-			for (int i = 0; i < c; i += 1) {
-				brBuf.append("<br/>");
-			}
-			String html = fp.getElement().getInnerHTML();
-			fp.getElement().setInnerHTML(html + brBuf.toString());
-		}
-	}
-	
 	/**
 	 * Creates the content for the report.
 	 * 
@@ -240,7 +226,7 @@ public class LicenseReportComposite extends ReportCompositeBase {
 			LicenseItem curLic = licenses.get(licenses.size() - 1);
 
 			// ...and generate the display from that.
-			addBR(m_reportPanel, 2);
+			GwtClientHelper.addBR(m_reportPanel, 2);
 			il = new InlineLabel(m_messages.licenseReportReport_CurrentLicense());
 			il.addStyleName("vibe-licenseReportComposite-reportDataCaption");
 			m_reportPanel.add(il);
@@ -272,7 +258,7 @@ public class LicenseReportComposite extends ReportCompositeBase {
 		}
 
 		// Add information about the dates this report spans.
-		addBR(m_reportPanel, 1);
+		GwtClientHelper.addBR(m_reportPanel, 1);
 		il = buildInlineLabel(safeS(m_messages.licenseReportReport_Activity()), "vibe-licenseReportComposite-reportDataCaption");
 		m_reportPanel.add(il);
 		il = buildInlineLabel(" " + safeS(m_licenseReport.getBeginDate()) + " " + m_messages.licenseReportAndSeparator() + " " + safeS(m_licenseReport.getEndDate()));
@@ -284,12 +270,12 @@ public class LicenseReportComposite extends ReportCompositeBase {
 			// Yes!  The current one is last one.  Add the current user
 			// count.
 			LicenseStatsItem curStat = licenseStats.get(licenseStats.size() - 1);
-			addBR(m_reportPanel, 1);
+			GwtClientHelper.addBR(m_reportPanel, 1);
 			il = buildInlineLabel(safeS(m_messages.licenseReportReport_CurrentActive(safeL(curStat.getActiveUserCount()))));
 			m_reportPanel.add(il);
 
 			// Create a table for the report snapshots...
-			addBR(m_reportPanel, 2);
+			GwtClientHelper.addBR(m_reportPanel, 2);
 			VibeFlexTable ft = new VibeFlexTable();
 			ft.addStyleName("vibe-licenseReportComposite-reportDataStats");
 			m_reportPanel.add(ft);

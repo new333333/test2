@@ -181,6 +181,7 @@ public class WebKeys {
 	public static final String URL_ELEMENT_TO_EDIT = "_element";
 	public static final String URL_ELEMENT = "element";
 	public static final String URL_END_DATE = "ss_endDate";
+	public static final String URL_END_DATE_YYYYMMDD = "ss_endDateYYYYMMDD";
 	public static final String URL_ENTITY_ID = "entityId";
     public static final String URL_ENTITY_TYPE="entityType";
     public static final String URL_ENTITY_TYPE_PLACE_HOLDER="ss_entity_type_place_holder";
@@ -257,6 +258,7 @@ public class WebKeys {
     public static final String URL_SHOW_TRASH="showTrash";
     public static final String URL_SHOW_COLLECTION="showCollection";
 	public static final String URL_START_DATE = "ss_startDate";
+	public static final String URL_START_DATE_YYYYMMDD = "ss_startDateYYYYMMDD";
 	public static final String URL_STATUS_TICKET_ID = "ss_statusId";
 	public static final String URL_STATUS_WINDOW = "statusWindow";
 	public static final String URL_SHOW_MENU = "showMenu";
