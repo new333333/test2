@@ -46,9 +46,13 @@ public class AuthenticationManagerUtil {
 
 	public static User authenticate(final AuthenticationServiceProvider authenticationServiceProvider,
 			final String zoneName,
-			final String username, final String password,
-			final boolean createUser, final boolean passwordAutoSynch,
-			final boolean ignorePassword, final Map updates,
+			final String username, 
+			final String password,
+			final boolean createUser,
+			final boolean updateUser,
+			final boolean passwordAutoSynch,
+			final boolean ignorePassword, 
+			final Map updates,
 			final String authenticatorName)
 			throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException {
 		// Note on 'ignorePassword' argument - If this is true, it indicates that the actual authentication
@@ -63,7 +67,7 @@ public class AuthenticationManagerUtil {
 				return getAuthenticationManager().authenticate(
 						authenticationServiceProvider,
 						zoneName,
-						username, password, createUser, passwordAutoSynch,
+						username, password, createUser, updateUser, passwordAutoSynch,
 						ignorePassword, updates, authenticatorName);
 			}
 		}, zoneName);
@@ -82,7 +86,7 @@ public class AuthenticationManagerUtil {
 		boolean createUser = 
 			SPropsUtil.getBoolean("portal.user.auto.create", true);
 		
-		return authenticate(AuthenticationServiceProvider.UNKNOWN, zoneName, username, password, createUser, passwordAutoSynch, ignorePassword, updates, authenticatorName);
+		return authenticate(AuthenticationServiceProvider.UNKNOWN, zoneName, username, password, createUser, true, passwordAutoSynch, ignorePassword, updates, authenticatorName);
 	}
 	
 	public static User authenticate(final String zoneName,
