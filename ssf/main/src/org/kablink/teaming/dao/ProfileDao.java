@@ -137,6 +137,8 @@ public interface ProfileDao {
  	public Long findPrincipalIdByObjectSid(String objectSid, Long zoneId);
  	 	 	
  	public Long findPrincipalIdByForeignName(String foreignName, Long zoneId);
+ 	
+ 	public Long findPrincipalIdByName(String name, Long zoneId);
 
  	public Principal findPrincipalByName(String name, Long zoneId) 
  		throws NoPrincipalByTheNameException;
