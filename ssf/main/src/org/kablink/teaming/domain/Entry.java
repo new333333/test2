@@ -46,9 +46,9 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 @SuppressWarnings("unchecked")
 public abstract class Entry extends DefinableEntity implements WorkArea {
  
-    protected Boolean hasEntryAcl = Boolean.FALSE;
-    protected Boolean checkFolderAcl = Boolean.FALSE;
-    protected Boolean hasEntryExternalAcl = Boolean.FALSE;
+    protected Boolean hasEntryAcl = Boolean.FALSE; // Used for internally-controlled ACLs only
+    protected Boolean checkFolderAcl = Boolean.FALSE; // Used for internally-controlled ACLs only
+    protected Boolean hasEntryExternalAcl = Boolean.FALSE; // Used for externally-controlled ACLs only
     protected String entryDefId; //initialized by hiberate access=field
 
     public Entry() {
