@@ -129,6 +129,7 @@ public class LoginDlg extends DlgBox
 	private LoginStatus m_loginStatus;
 	private String m_openIdProviderUrl;
 	private boolean m_useOpenIdAuth = false;
+	private boolean m_initialized = false;
 
 	/**
 	 * 
@@ -893,6 +894,23 @@ public class LoginDlg extends DlgBox
 	{
 		debugAlert( "In LoginDlg.showDlg()" );
 		
+		if ( m_initialized )
+		{
+			setPopupPositionAndShow( new PopupPanel.PositionCallback()
+			{
+				@Override
+				public void setPosition(int offsetWidth, int offsetHeight)
+				{
+					int x = ( ( Window.getClientWidth()  - offsetWidth  ) / 2 );
+					int y = ( ( Window.getClientHeight() - offsetHeight ) / 3 );
+					
+					setPopupPosition( x, y );
+				}
+			} );
+
+			return;
+		}
+		
 		m_loginStatus = loginStatus;
 
 		switch ( loginStatus )
@@ -929,6 +947,8 @@ public class LoginDlg extends DlgBox
 		// Issue an ajax request to get self registration info and a list of open id providers
 		if ( loginStatus != LoginStatus.RegistrationRequired )
 			getLoginInfoFromServer();
+		
+		m_initialized = true;
 	}
 	
 	/**
