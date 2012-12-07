@@ -25,7 +25,7 @@
 		.vibe-emailReportComposite-reportTableCell-type          { white-space: nowrap;}
 		.vibe-emailReportComposite-reportTableHeaderCell         {font-size: 11px;}
 		.vibe-emailReportComposite-reportTableHeaderRow          {font-family: arial, sans-serif; color: #666; font-size: 0.6em; padding-top: 0.2em; padding-bottom: 0.2em; padding-left: 0; padding-right: .7em; border-bottom: 1px solid #D2D5D1; white-space: nowrap; background:url(images/blends/gray_blend8_28.png) repeat-x; background-position:bottom; border-collapse: separate; border-spacing: 0px; color: #333; background-color: transparent;}
-		.vibe-emailReportComposite-runButton                     {white-space: nowrap; margin-top: 20px; margin-left: 0.5em;}
+		.vibe-emailReportComposite-runButton                     {white-space: nowrap; margin-top: 20px; margin-left: 0.5em; margin-bottom: 10px;}
 		.vibe-emailReportComposite-typesPanel                    {display: block; white-space: nowrap; margin-top: 5px;}
 		.vibe-emailReportComposite-typeRadio                     {white-space: nowrap; margin-right: 10px;}
 		.vibe-emailReportComposite-widgetsPanel                  {display: block; margin-top: 10px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; border: 1px solid #cccccc; padding: 5px; background-color: #ededed;}
@@ -41,13 +41,13 @@
 		.vibe-licenseReportComposite-reportDataStatsHC {padding-right: 5px;}
 		.vibe-licenseReportComposite-reportDataStatsHR {font-size: 11px; font-family: arial, sans-serif; font-weight: bold;}
 		.vibe-licenseReportComposite-reportPanel       {display: block; border: 1px solid #ccc; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; margin-top: 10px; padding: 5px; font-size: 12px; font-family: arial, sans-serif; }
-		.vibe-licenseReportComposite-runButton         {white-space: nowrap; margin-top: 20px; margin-left: 0.5em;}
+		.vibe-licenseReportComposite-runButton         {white-space: nowrap; margin-top: 20px; margin-left: 0.5em; margin-bottom: 10px;}
 		.vibe-licenseReportComposite-widgetsPanel      {display: block; margin-top: 10px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; border: 1px solid #cccccc; padding: 5px; background-color: #ededed;}
 	/* End:  License report composite styles. */
 	
 	/* Start:  Login report composite styles. */
 		.vibe-loginReportComposite-andSeparator {white-space: nowrap; margin-left: 8px; margin-right: 10px;}
-		.vibe-loginReportComposite-runButton    {white-space: nowrap; margin-top: 20px; margin-left: 0.5em;}
+		.vibe-loginReportComposite-runButton    {white-space: nowrap; margin-top: 20px; margin-left: 0.5em; margin-bottom: 10px;}
 		.vibe-loginReportComposite-caption      {font-weight: bold; font-size: 13px; margin-top: 10px; white-space: nowrap;}
 		.vibe-loginReportComposite-datesPanel   {display: block; white-space: nowrap; margin-top: 5px;}
 		.vibe-loginReportComposite-peopleFind   {width: 250px;}
@@ -55,7 +55,6 @@
 		.vibe-loginReportComposite-peopleList   {width: 260px; background-color: white;}
 		.vibe-loginReportComposite-peoplePanel  {margin-top: 15px; margin-bottom: 15px;}
 		.vibe-loginReportComposite-peopleRemove {white-space: nowrap; margin-left: 0.5em;}
-		.vibe-loginReportComposite-runButton    {white-space: nowrap; margin-top: 20px; margin-left: 0.5em;}
 		.vibe-loginReportComposite-sortCap      {margin-right: 5px; font-size: 12px;}
 		.vibe-loginReportComposite-sortList     {background-color: white;}
 		.vibe-loginReportComposite-sortPanel    {margin-left: 35px; white-space: nowrap;}
@@ -76,6 +75,12 @@
 		.vibe-runAReportDlg-rootPanel          {background-color: white; padding: 10px;}
 		.vibe-runAReportDlg-systemLogsLink     {}
 	/* End:  Run a report dialog styles. */
+	
+	/* Start:  System error log report composite styles. */
+		.vibe-systemErrorLogReportComposite-caption      {font-weight: bold; font-size: 13px; margin-top: 10px; white-space: nowrap;}
+		.vibe-systemErrorLogReportComposite-runButton    {white-space: nowrap; margin-top: 20px; margin-left: 0.5em; margin-bottom: 10px;}
+		.vibe-systemErrorLogReportComposite-widgetsPanel {display: block; margin-top: 10px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; border: 1px solid #cccccc; padding: 5px; background-color: #ededed;}
+	/* End:  System error log report composite styles. */
 	
 	/* Start:  User access report composite styles. */
 		.vibe-userAccessReportComposite-rootPanel {display: block; margin-top: 18px;}

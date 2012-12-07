@@ -45,10 +45,8 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetReportsInfoCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSystemErrorLogUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ReportsInfoRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.ReportsInfoRpcResponseData.ReportInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -63,7 +61,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -399,39 +396,13 @@ public class RunAReportDlg extends DlgBox
 	}
 	
 	/*
-	 * Reads the URL to download the system error log from the server
-	 * and generates an HTML link to it in the report panel.
+	 * Constructs a widget for running a system error log report and
+	 * stores it in the report panel.
 	 */
 	private void buildSystemErrorLogReport() {
-		// Get the URL to the system error logs from the server...
-		GwtClientHelper.executeCommand(
-				new GetSystemErrorLogUrlCmd(),
-				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetSystemErrorLogUrl());
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// ...extract the URL from the RPC response...
-				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
-				String url = responseData.getStringValue();
-				
-				// ...and generate the HTML for a link to download the
-				// ...log in the report's content panel
-				Anchor a = new Anchor();
-				a.addStyleName("vibe-runAReportDlg-systemLogsLink");
-				a.setTarget("_blank");
-				a.setHref(url);
-				a.getElement().setInnerText(m_messages.runAReportDlgSystemErrorLogLink());
-				buildAndSetHtmlContent(
-					AdminAction.REPORT_VIEW_SYSTEM_ERROR_LOG,
-					("<br />" + GwtClientHelper.getWidgetHTML(a)));
-			}
-		});
+		SystemErrorLogReportComposite selrc = new SystemErrorLogReportComposite();
+		m_reportScrollPanel.setWidget(selrc);
+		m_reportWidgets.put(AdminAction.REPORT_VIEW_SYSTEM_ERROR_LOG, selrc);
 	}
 	
 	/*
