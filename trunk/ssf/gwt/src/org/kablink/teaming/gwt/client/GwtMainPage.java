@@ -794,7 +794,7 @@ public class GwtMainPage extends ResizeComposite
 					@Override
 					public void execute()
 					{
-						invokeLoginDlg( false );
+						invokeLoginDlg( getLoginCanCancel() );
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -822,6 +822,14 @@ public class GwtMainPage extends ResizeComposite
 		}
 	}// end constructMainPage_Finish()
 
+	/**
+	 * 
+	 */
+	public AdminControl getAdminControl()
+	{
+		return m_adminControl;
+	}
+	
 	/**
 	 * Get the collection point data and then after the rpc request
 	 * returns show the collection point.
@@ -1551,6 +1559,14 @@ public class GwtMainPage extends ResizeComposite
 	/**
 	 * 
 	 */
+	public boolean getLoginCanCancel()
+	{
+		return m_requestInfo.getLoginCanCancel();
+	}
+	
+	/**
+	 * 
+	 */
 	public String getLoginInvitationUrl()
 	{
 		return m_requestInfo.getLoginInvitationUrl();
@@ -1570,6 +1586,18 @@ public class GwtMainPage extends ResizeComposite
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getLoginExternalUserName()
+	{
+		String name;
+		
+		name = m_requestInfo.getLoginExternalUserName();
+		
+		return name;
 	}
 	
 	/**
@@ -2648,7 +2676,17 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onLogin( LoginEvent event )
 	{
-		invokeLoginDlg( true );
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new ScheduledCommand()
+		{
+			@Override
+			public void execute() 
+			{
+				invokeLoginDlg( true );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}// end onLogin()
 	
 	/**

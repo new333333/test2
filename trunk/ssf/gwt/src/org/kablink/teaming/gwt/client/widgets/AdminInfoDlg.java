@@ -108,6 +108,186 @@ public class AdminInfoDlg extends DlgBox
 		return mainPanel;
 	}
 	
+
+	/**
+	 * Create the ui that displays the admin tasks that need to be completed
+	 */
+	public static void createTasksToDoUI(
+		GwtUpgradeInfo upgradeInfo,
+		FlexTable table,
+		int row,
+		boolean wordWrap,
+		String tdStyleName )
+	{
+		FlexTable.FlexCellFormatter cellFormatter; 
+
+		cellFormatter = table.getFlexCellFormatter();
+		
+		// Are there upgrade tasks that need to be performed?
+		if ( upgradeInfo.doUpgradeTasksExist() )
+		{
+			// Yes
+			// Add text to let the user know there are upgrade tasks that need to be completed.
+			{
+				FlowPanel panel;
+				Image img;
+				InlineLabel label;
+				
+				panel = new FlowPanel();
+				
+				img = new Image( GwtTeaming.getImageBundle().warningIcon16() );
+				img.getElement().setAttribute( "align", "absmiddle" );
+				panel.add( img );
+				
+				label = new InlineLabel( " " + GwtTeaming.getMessages().adminInfoDlgUpgradeTasksNotDone() );
+				panel.add( label );
+				
+				cellFormatter.setColSpan( row, 0, 2 );
+				cellFormatter.setWordWrap( row, 0, wordWrap );
+				if ( tdStyleName != null )
+					cellFormatter.addStyleName( row, 0, tdStyleName );
+				table.setHTML( row, 0, panel.getElement().getInnerHTML() );
+				++row;
+			}
+
+			// Are we dealing with the "admin" user?
+			if ( upgradeInfo.getIsAdmin() )
+			{
+				ArrayList<GwtUpgradeInfo.UpgradeTask> upgradeTasks;
+				
+				// Yes
+				// Get the list of upgrade tasks
+				upgradeTasks = upgradeInfo.getUpgradeTasks();
+				
+				if ( upgradeTasks != null && upgradeTasks.size() > 0 )
+				{
+					UListElement uList;
+					
+					uList = Document.get().createULElement();
+					uList.getStyle().setMarginTop( 0, Unit.PX );
+					uList.getStyle().setMarginBottom( 0, Unit.PX );
+				
+					// Display a message for each upgrade task.
+					for ( GwtUpgradeInfo.UpgradeTask task : upgradeTasks )
+					{
+						String taskInfo;
+						
+						taskInfo = null;
+						switch ( task )
+						{
+						case UPGRADE_DEFINITIONS:
+							taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeDefinitions();
+							break;
+							
+						case UPGRADE_SEARCH_INDEX:
+							taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeSearchIndex();
+							break;
+							
+						case UPGRADE_TEMPLATES:
+							taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeTemplates();
+							break;
+						}
+						
+						if ( taskInfo != null )
+						{
+							LIElement liElement;
+
+							liElement = Document.get().createLIElement();
+							liElement.setInnerText( taskInfo );
+							
+							uList.appendChild( liElement );
+						}
+					}
+					
+					cellFormatter.setColSpan( row, 0, 2 );
+					cellFormatter.setWordWrap( row, 0, wordWrap );
+					if ( tdStyleName != null )
+						cellFormatter.addStyleName( row, 0, tdStyleName );
+					table.setHTML( row, 0, uList.getString() );
+				}
+			}
+			else
+			{
+				cellFormatter.setColSpan( row, 0, 2 );
+				cellFormatter.setWordWrap( row, 0, wordWrap );
+				if ( tdStyleName != null )
+					cellFormatter.addStyleName( row, 0, tdStyleName );
+				table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgLoginAsAdmin() );
+				++row;
+			}
+		}
+		
+		// Are we running Filr?
+		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
+		{
+			ArrayList<GwtFilrAdminTask> listOfTasks;
+			
+			// Yes
+			// Are there any tasks the admin needs to do?
+			listOfTasks = upgradeInfo.getFilrAdminTasks();
+			if ( listOfTasks != null && listOfTasks.size() > 0 )
+			{
+				UListElement uList;
+				FlowPanel panel;
+				Image img;
+				InlineLabel label;
+				
+				// Yes
+				panel = new FlowPanel();
+				
+				img = new Image( GwtTeaming.getImageBundle().warningIcon16() );
+				img.getElement().setAttribute( "align", "absmiddle" );
+				panel.add( img );
+				
+				label = new InlineLabel( " " + GwtTeaming.getMessages().adminInfoDlgFilrTasksToBeCompleted() );
+				panel.add( label );
+				
+				uList = Document.get().createULElement();
+				uList.getStyle().setMarginTop( 0, Unit.PX );
+				uList.getStyle().setMarginBottom( 0, Unit.PX );
+			
+				// Add text to let the user know there are upgrade tasks that need to be completed.
+				row += 3;
+				cellFormatter.setColSpan( row, 0, 2 );
+				cellFormatter.setWordWrap( row, 0, wordWrap );
+				if ( tdStyleName != null )
+					cellFormatter.addStyleName( row, 0, tdStyleName );
+				table.setHTML( row, 0, panel.getElement().getInnerHTML() );
+				++row;
+
+				// Display a message for each task.
+				for ( GwtFilrAdminTask nextTask : listOfTasks )
+				{
+					if ( nextTask instanceof GwtEnterProxyCredentialsTask )
+					{
+						GwtEnterProxyCredentialsTask tmpTask;
+						LIElement liElement;
+						String txt;
+						
+						panel = new FlowPanel();
+						
+						tmpTask = (GwtEnterProxyCredentialsTask) nextTask;
+						txt = GwtTeaming.getMessages().adminInfoDlgEnterProxyCredentials( tmpTask.getServerName() );
+						label = new InlineLabel( " " + txt );
+						panel.add( label );
+
+						liElement = Document.get().createLIElement();
+						liElement.getStyle().setMarginBottom( 8, Unit.PX );
+						liElement.setInnerHTML( panel.getElement().getInnerHTML() );
+						
+						uList.appendChild( liElement );
+					}
+				}
+
+				cellFormatter.setColSpan( row, 0, 2 );
+				cellFormatter.setWordWrap( row, 0, wordWrap );
+				if ( tdStyleName != null )
+					cellFormatter.addStyleName( row, 0, tdStyleName );
+				table.setHTML( row, 0, uList.getString() );
+				++row;
+			}
+		}
+	}
 	
 	/**
 	 * 
@@ -163,143 +343,28 @@ public class AdminInfoDlg extends DlgBox
 			++row;
 		}
 		
-		// Are there upgrade tasks that need to be performed?
-		if ( upgradeInfo.doUpgradeTasksExist() )
-		{
-			// Yes
-			
-			// Add text to let the user know there are upgrade tasks that need to be completed.
-			++row;
-			cellFormatter.setColSpan( row, 0, 2 );
-			cellFormatter.setWordWrap( row, 0, false );
-			m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgUpgradeTasksNotDone() );
-			++row;
-
-			// Are we dealing with the "admin" user?
-			if ( upgradeInfo.getIsAdmin() )
-			{
-				ArrayList<GwtUpgradeInfo.UpgradeTask> upgradeTasks;
-				
-				// Yes
-				// Get the list of upgrade tasks
-				upgradeTasks = upgradeInfo.getUpgradeTasks();
-				
-				if ( upgradeTasks != null && upgradeTasks.size() > 0 )
-				{
-					UListElement uList;
-					
-					uList = Document.get().createULElement();
-					uList.getStyle().setMarginTop( 0, Unit.PX );
-					uList.getStyle().setMarginBottom( 0, Unit.PX );
-				
-					// Display a message for each upgrade task.
-					for ( GwtUpgradeInfo.UpgradeTask task : upgradeTasks )
-					{
-						String taskInfo;
-						
-						taskInfo = null;
-						switch ( task )
-						{
-						case UPGRADE_DEFINITIONS:
-							taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeDefinitions();
-							break;
-							
-						case UPGRADE_SEARCH_INDEX:
-							taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeSearchIndex();
-							break;
-							
-						case UPGRADE_TEMPLATES:
-							taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeTemplates();
-							break;
-						}
-						
-						if ( taskInfo != null )
-						{
-							LIElement liElement;
-
-							liElement = Document.get().createLIElement();
-							liElement.setInnerText( taskInfo );
-							
-							uList.appendChild( liElement );
-						}
-					}
-					
-					cellFormatter.setColSpan( row, 0, 2 );
-					cellFormatter.setWordWrap( row, 0, false );
-					m_table.setHTML( row, 0, uList.getString() );
-				}
-			}
-			else
-			{
-				cellFormatter.setColSpan( row, 0, 2 );
-				cellFormatter.setWordWrap( row, 0, false );
-				m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgLoginAsAdmin() );
-				++row;
-			}
-		}
-		
-		// Are we running Filr?
+		// Are we running Filr
 		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
 		{
-			ArrayList<GwtFilrAdminTask> listOfTasks;
+			String filrApplianceReleaseInfo;
 			
 			// Yes
-			// Are there any tasks the admin needs to do?
-			listOfTasks = upgradeInfo.getFilrAdminTasks();
-			if ( listOfTasks != null && listOfTasks.size() > 0 )
+			// Do we have release info on the Filr appliance?
+			filrApplianceReleaseInfo = upgradeInfo.getFilrApplianceReleaseInfo();
+			if ( filrApplianceReleaseInfo != null )
 			{
-				UListElement uList;
-				
-				uList = Document.get().createULElement();
-				uList.getStyle().setMarginTop( 0, Unit.PX );
-				uList.getStyle().setMarginBottom( 0, Unit.PX );
-			
 				// Yes
-				// Add text to let the user know there are upgrade tasks that need to be completed.
-				row += 3;
-				cellFormatter.setColSpan( row, 0, 2 );
-				cellFormatter.setWordWrap( row, 0, false );
-				m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgFilrTasksToBeCompleted() );
-				++row;
-
-				// Display a message for each task.
-				for ( GwtFilrAdminTask nextTask : listOfTasks )
-				{
-					if ( nextTask instanceof GwtEnterProxyCredentialsTask )
-					{
-						GwtEnterProxyCredentialsTask tmpTask;
-						LIElement liElement;
-						String txt;
-						FlowPanel panel;
-						InlineLabel label;
-						Image img;
-						
-						panel = new FlowPanel();
-						
-						img = new Image( GwtTeaming.getImageBundle().warningIcon16() );
-						img.getElement().setAttribute( "align", "absmiddle" );
-						panel.add( img );
-						
-						tmpTask = (GwtEnterProxyCredentialsTask) nextTask;
-						txt = GwtTeaming.getMessages().adminInfoDlgEnterProxyCredentials( tmpTask.getServerName() );
-						label = new InlineLabel( " " + txt );
-						panel.add( label );
-
-						liElement = Document.get().createLIElement();
-						liElement.getStyle().setMarginBottom( 8, Unit.PX );
-						liElement.setInnerHTML( panel.getElement().getInnerHTML() );
-						
-						
-						uList.appendChild( liElement );
-					}
-				}
-
-				cellFormatter.setColSpan( row, 0, 2 );
-				cellFormatter.setWordWrap( row, 0, false );
-				m_table.setHTML( row, 0, uList.getString() );
+				// Add a row for the Filr appliance release info.
+				m_table.setText( row, 1, filrApplianceReleaseInfo );
+				cellFormatter.setWordWrap( row, 1, false );
+				m_table.setText( row, 2, " " );
+				
 				++row;
 			}
 		}
+
+		// Create the ui that displays that tasks that need to be completed.
+		AdminInfoDlg.createTasksToDoUI( upgradeInfo, m_table, row, false, null );
 	}
 	
 	/**

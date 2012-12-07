@@ -32,15 +32,27 @@
  */
 package org.kablink.teaming.util;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class ReleaseInfo {
 
 	private static final String KABLINK_TEAMING = "Kablink Vibe";
+	
+	protected static Log m_logger = LogFactory.getLog( ReleaseInfo.class );
 	
 	static String name;
 	static String version;
@@ -56,6 +68,13 @@ public class ReleaseInfo {
 			licenseRequiredEdition = false;
 			
 		version = SPropsUtil.getString("release.version", "0");
+
+		// Are we running Filr
+		if ( Utils.checkIfFilr() )
+		{
+			// Yes, get the Filr release version
+			version = SPropsUtil.getString( "filr.release.version", "0" );
+		}
 		
 		buildNumber = SPropsUtil.getString("release.build.number", "0");
 		buildDate = SPropsUtil.getString("release.build.date", "");
@@ -66,8 +85,25 @@ public class ReleaseInfo {
 	
 	static final String releaseInfo = buildReleaseInfoString(buildDate);
 
+	// Dump out the release information.  This must be done after the call to buildReleaseInfoString();
+	static
+	{
+		if ( m_logger.isInfoEnabled() )
+			m_logger.info( ReleaseInfo.getReleaseInfo() );
+		else
+			System.out.println( ReleaseInfo.getReleaseInfo() );
+	}
+	
 	private static final String buildReleaseInfoString(String buildDateStr) {
-		return name + " " + version + " (Build " + buildNumber + " / " + buildDateStr + ")";
+		return name + " " + version + " (" + NLT.get( "releaseInfo.build" ) + buildNumber  + " / " + buildDateStr + ")";
+	}
+	
+	/**
+	 * 
+	 */
+	public static final String getBuildAsStr()
+	{
+		return buildNumber + " / " + buildDate;
 	}
 	
 	/**
@@ -81,6 +117,15 @@ public class ReleaseInfo {
 	public static final String getName() {
 		return name;
 	}
+	
+	/**
+	 * 
+	 */
+	public static final String getNameAndVersion()
+	{
+		return name + " " + version;
+	}
+	
 	/**
 	 * Returns build number if official release or <code>0</code> if unofficial. 
 	 * @return
@@ -141,6 +186,89 @@ public class ReleaseInfo {
 		return buildReleaseInfoString(df.format(date));
 	}
 	
+	/**
+	 * Get the Filr appliance version and build as a string
+	 */
+	public static String getFilrApplianceReleaseInfo()
+	{
+		String releaseStr = null;
+		
+		// Are we running Filr?
+		if ( Utils.checkIfFilr() )
+		{
+			String filePath;
+			File file;
+			
+			// Yes
+			// Try to open the file, /etc/Novell-VA-release
+			filePath = File.separator + "etc" + File.separator + "Novell-VA-release";
+			file = new File( filePath );
+			if ( file.exists() )
+			{
+				FileInputStream fileInputStream;
+				DataInputStream inputStream;
+				InputStreamReader inputStreamReader;
+				BufferedReader reader;
+				
+				try
+				{
+					String name;
+					
+					fileInputStream = new FileInputStream( file );
+					inputStream = new DataInputStream( fileInputStream );
+					inputStreamReader = new InputStreamReader( inputStream );
+					reader = new BufferedReader( inputStreamReader );
+					
+					// Read the name of the appliance
+					name = reader.readLine();
+					if ( name != null )
+					{
+						String nextLine;
+						String version = null;
+						
+						// Read the version = x.x.x line
+						nextLine = reader.readLine();
+						if ( nextLine != null )
+						{
+							int index;
+							
+							// Find the =
+							index = nextLine.indexOf( '=' );
+							if ( index > 0 )
+							{
+								++index;
+								while ( nextLine.charAt( index ) == ' ' )
+									++index;
+								
+								version = nextLine.substring( index );
+							}
+						}
+						
+						if ( version != null )
+						{
+							releaseStr = NLT.get( "filr.appliance" ) + " " + version;
+						}
+					}
+				}
+				catch ( FileNotFoundException ex )
+				{
+					// This will never happen because we already checked for the existence of the file.
+				}
+				catch ( IOException ioEx )
+				{
+					// Nothing to do
+					m_logger.error( "In ReleaseInfo.getFilrApplianceReleaseInfo(), error reading from /etc/Novell-VA-release" );
+				}
+			}
+			else
+			{
+				m_logger.info( "In ReleaseInfo.getFilrApplianceReleaseInfo(), can't find /etc/Novell-VA-release" );
+			}
+		}
+		
+		return releaseStr;
+	}
+
 	public static final boolean isLicenseRequiredEdition() {
 		return licenseRequiredEdition;
 	}

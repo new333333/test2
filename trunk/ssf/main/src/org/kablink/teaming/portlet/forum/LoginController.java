@@ -45,15 +45,18 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.extuser.ExternalUserRespondingToInvitationException;
 import org.kablink.teaming.extuser.ExternalUserRespondingToVerificationException;
-import org.kablink.teaming.extuser.ExternalUserUtil;
+import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -174,14 +177,22 @@ public class LoginController  extends SAbstractControllerRetry {
 		    			// Tell the login dialog the id of the external user
 		    			model.put( WebKeys.LOGIN_EXTERNAL_USER_ID, String.valueOf( extUser.getId() ) );
 		    			
+		    			// Tell the login dialog the user id of the external user.
+		    			model.put( WebKeys.LOGIN_EXTERNAL_USER_NAME, extUser.getName() );
+		    			
 		    			// Tell the login dialog that an external user is responding to an invitation.
 		    			model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_REGISTRATION_REQUIRED );
     				}
     			}
     		}
     		else if(sessionObj instanceof ExternalUserRespondingToVerificationException) {
+    			User extUser;
     			ExternalUserRespondingToVerificationException ex = (ExternalUserRespondingToVerificationException) sessionObj;
+
+    			extUser = ex.getExternalUser();
+    			
         		model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_PROMPT_FOR_LOGIN );
+        		model.put( WebKeys.LOGIN_EXTERNAL_USER_NAME, extUser.getName() );
         		String refererUrl = ex.getVerificationLink();
     			model.put(WebKeys.URL, refererUrl);
     			model.put( "loginRefererUrl", refererUrl );
@@ -264,6 +275,18 @@ public class LoginController  extends SAbstractControllerRetry {
 			// Add a flag that tells us if we should prompt for login.
 			model.put( "promptForLogin", "true" );
 			
+			// Can the login dialog have a cancel button?
+			if ( Validator.isNull( refererUrl ) && isGuestAccessAllowed() )
+			{
+				// Yes, guest access is allowed.
+				model.put( WebKeys.LOGIN_CAN_CANCEL, "true" );
+			}
+			else
+			{
+				// No
+				model.put( WebKeys.LOGIN_CAN_CANCEL, "false" );
+			}
+			
 			// Add the user's name to the response.
 			model.put( "userFullName", Utils.getUserTitle( user ) );
 			
@@ -310,4 +333,42 @@ public class LoginController  extends SAbstractControllerRetry {
 		// If we get here we did not find the given provider name
 		return null;
 	}
+
+	/*
+	 * See if the license allows for guest access.  If so see if guest access is turned on. 
+	 */
+	protected boolean isGuestAccessAllowed()
+	{
+		if ( ReleaseInfo.isLicenseRequiredEdition() )
+		{
+			if ( LicenseChecker.isAuthorizedByLicense( "com.novell.teaming.GuestAccess" ) )
+			{
+				return isGuestAccessTurnedOn();
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return isGuestAccessTurnedOn();
+		}
+	}
+	
+	/**
+	 * See if the administrator has turned on guest access.
+	 */
+	private boolean isGuestAccessTurnedOn()
+	{
+		Long zoneId;
+		AuthenticationConfig config;
+
+		zoneId = getZoneModule().getZoneIdByVirtualHost( ZoneContextHolder.getServerName() );
+		config = getAuthenticationModule().getAuthenticationConfigForZone( zoneId );
+		
+		return config.isAllowAnonymousAccess();
+	}
+	
+
 }

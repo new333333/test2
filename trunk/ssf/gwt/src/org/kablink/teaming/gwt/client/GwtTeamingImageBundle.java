@@ -695,5 +695,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/emailConfirmation.png")
 	public ImageResource emailConfirmation();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/admin_72.png")
+	public ImageResource adminConsoleHomePage();
 	
+
 }// end GwtTeamingImageBundle

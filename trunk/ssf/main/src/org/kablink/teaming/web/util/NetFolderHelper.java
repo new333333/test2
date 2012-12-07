@@ -65,6 +65,8 @@ import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
@@ -700,7 +702,7 @@ public class NetFolderHelper
 	public static ResourceDriverConfig modifyNetFolderRoot(
 		AdminModule adminModule,
 		ResourceDriverModule resourceDriverModule,
-		ProfileModule profileModule,
+		final ProfileModule profileModule,
 		BinderModule binderModule,
 		WorkspaceModule workspaceModule,
 		String rootName,
@@ -788,10 +790,28 @@ public class NetFolderHelper
 			filrAdminTasks.deleteEnterNetFolderServerProxyCredentialsTask( rdConfig.getId() );
 	
 			// Save the FilrAdminTasks to the administrator's user properties
-			profileModule.setUserProperty(
-										adminUser.getId(),
-										ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS,
-										filrAdminTasks.toString() );
+			{
+				RunasCallback callback;
+				final String tmpXmlStr;
+				final Long adminId;
+				
+				tmpXmlStr = filrAdminTasks.toString();
+				adminId = adminUser.getId();
+				
+				callback = new RunasCallback()
+				{
+					@Override
+					public Object doAs()
+					{
+						profileModule.setUserProperty(
+													adminId,
+													ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS,
+													tmpXmlStr );
+						return null;
+					}
+				};
+				RunasTemplate.runasAdmin( callback, RequestContextHolder.getRequestContext().getZoneName() );
+			}
 		}
 		
 		// Is the configuration complete?

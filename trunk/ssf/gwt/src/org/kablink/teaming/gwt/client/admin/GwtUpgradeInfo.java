@@ -50,6 +50,9 @@ public class GwtUpgradeInfo
 	implements IsSerializable, VibeRpcResponseData
 {
 	private String m_releaseInfo;
+	private String m_filrApplianceReleaseInfo;
+	private String m_nameAndVersion;
+	private String m_build;
 	private ArrayList<UpgradeTask> m_upgradeTasks = null;
 	private ArrayList<GwtFilrAdminTask> m_filrAdminTasks = null;
 	private boolean m_upgradeTasksExist = false;
@@ -119,6 +122,14 @@ public class GwtUpgradeInfo
 	/**
 	 * 
 	 */
+	public String getBuild()
+	{
+		return m_build;
+	}
+	
+	/**
+	 * 
+	 */
 	public boolean getIsAdmin()
 	{
 		return m_isAdmin;
@@ -130,6 +141,22 @@ public class GwtUpgradeInfo
 	public ArrayList<GwtFilrAdminTask> getFilrAdminTasks()
 	{
 		return m_filrAdminTasks;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getFilrApplianceReleaseInfo()
+	{
+		return m_filrApplianceReleaseInfo;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getNameAndVersion()
+	{
+		return m_nameAndVersion;
 	}
 	
 	/**
@@ -158,6 +185,29 @@ public class GwtUpgradeInfo
 		m_isAdmin = isAdmin;
 	}// end setIsAdmin()
 	
+	/**
+	 * 
+	 */
+	public void setBuild( String build )
+	{
+		m_build = build;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setFilrApplianceReleaseInfo( String releaseInfo )
+	{
+		m_filrApplianceReleaseInfo = releaseInfo;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setNameAndVersion( String nameAndVersion )
+	{
+		m_nameAndVersion = nameAndVersion;
+	}
 	
 	/**
 	 * 
