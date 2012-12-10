@@ -80,8 +80,7 @@ public class RunAReportDlg extends DlgBox
 		// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler
 {
-	public static final boolean	SHOW_GWT_ADMIN_REPORTS	= false;	// DRF:  Leave false on checkin until I get the GWT stuff working.
-	public static final boolean	SHOW_JSP_ADMIN_REPORTS	= true;		// DRF:  Leave true  on checkin until I get the GWT stuff working.
+	public static final boolean	SHOW_JSP_ADMIN_REPORTS	= false;	// DRF:  Leave false on checkin.  Used to bring back the JSP versions for testing.
 	
 	private GwtTeamingMessages			m_messages;					// Access to Vibe's messages.
 	private int							m_showX;					// The x and...

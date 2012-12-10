@@ -446,6 +446,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case CREATE_USER_ACTIVITY_REPORT:
+		{
+			CreateUserActivityReportCmd cuarCmd = ((CreateUserActivityReportCmd) cmd);
+			StringRpcResponseData responseData = GwtReportsHelper.createUserActivityReport( this, getRequest( ri ), cuarCmd.getBegin(), cuarCmd.getEnd(), cuarCmd.getUserIds(), cuarCmd.getReportType() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case DELETE_NET_FOLDERS:
 		{
 			Boolean result;
