@@ -313,6 +313,7 @@ public class LoginReportComposite extends ReportCompositeBase
 	 */
 	private void createReport() {
 		// Construct a List<Long> with the IDs of the selected users...
+		m_busySpinner.center();
 		List<Long> userIds = new ArrayList<Long>();
 		int c = m_userList.getItemCount();
 		for (int i = 0; i < c; i += 1) {
@@ -334,6 +335,7 @@ public class LoginReportComposite extends ReportCompositeBase
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
+				m_busySpinner.hide();
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_CreateLoginReport());
@@ -351,6 +353,9 @@ public class LoginReportComposite extends ReportCompositeBase
 						m_downloadForm.submit();
 					}
 				});
+				
+				// Finally, hide any busy spinner that may be showing.
+				m_busySpinner.hide();
 			}
 		});
 	}

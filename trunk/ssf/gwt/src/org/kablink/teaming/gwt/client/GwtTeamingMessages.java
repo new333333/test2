@@ -317,6 +317,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CreateGroupAlreadyExists();
 	String rpcFailure_CreateLicenseReport();
 	String rpcFailure_CreateLoginReport();
+	String rpcFailure_CreateUserAccessReport();
 	String rpcFailure_DeleteNetFolders();
 	String rpcFailure_DeleteNetFolderServers();
 	String rpcFailure_DeleteFolderEntries();
@@ -2313,5 +2314,18 @@ public interface GwtTeamingMessages extends Messages
 	// String used by the 'System Error Log Report' composite.
 	String systemErrorLogReportCaption();
 	String systemErrorLogReportRunReport();
+	
+	// String used by the 'User Access Report' composite.
+	String userAccessReportCaption();
+	String userAccessReportObjectsColName();
+	String userAccessReportObjectsColType();
+	String userAccessReportObjectsHint();
+	String userAccessReportObjectType_Folder();
+	String userAccessReportObjectType_Profiles();
+	String userAccessReportObjectType_Unknown();
+	String userAccessReportObjectType_Workspace();
+	String userAccessReportUser();
+	String userAccessReportUserHint();
+	String userAccessReportWarning_NoData();
 	
 }// end GwtTeamingMessages

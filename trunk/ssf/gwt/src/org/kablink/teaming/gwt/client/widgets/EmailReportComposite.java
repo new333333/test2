@@ -252,11 +252,13 @@ public class EmailReportComposite extends ReportCompositeBase {
 	 * Creates a report and uploads it into the display.
 	 */
 	private void createReport() {
+		m_busySpinner.center();
 		GwtClientHelper.executeCommand(
 				new CreateEmailReportCmd(m_beginDateBox.getValue(), m_endDateBox.getValue(), m_emailType),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
+				m_busySpinner.hide();
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_CreateEmailReport());
@@ -352,6 +354,9 @@ public class EmailReportComposite extends ReportCompositeBase {
 			// the report was empty.
 			GwtClientHelper.deferredAlert(m_messages.emailReportWarning_NoData());
 		}
+		
+		// Finally, hide any busy spinner that may be showing.
+		m_busySpinner.hide();
 	}
 
 	/**
