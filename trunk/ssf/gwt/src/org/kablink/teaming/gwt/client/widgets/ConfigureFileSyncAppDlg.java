@@ -190,6 +190,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			
 			// Create a textbox for the user to enter the auto-update url.
 			m_autoUpdateUrlTextBox = new TextBox();
+			m_autoUpdateUrlTextBox.setVisibleLength( 40 );
 			tmpTable.setWidget( 0, 1, m_autoUpdateUrlTextBox );
 			
 			table.setWidget( nextRow, 0, tmpTable );
@@ -412,7 +413,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	private int getMaxFileSize()
 	{
 		String maxStr;
-		int max = 0;
+		int max = -1;
 		
 		maxStr = m_maxFileSizeTextBox.getValue();
 		if ( maxStr != null && maxStr.length() > 0 )
@@ -428,6 +429,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	{
 		int interval;
 		int size;
+		String value;
 		
 		// Initialize the on/off radio buttons.
 		m_enableFileSyncAccessCB.setValue( fileSyncAppConfiguration.getIsFileSyncAppEnabled() );
@@ -447,7 +449,11 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		
 		// Initialize the max file size
 		size = fileSyncAppConfiguration.getMaxFileSize();
-		m_maxFileSizeTextBox.setText( String.valueOf( size ) );
+		if ( size < 0 )
+			value = "";
+		else
+			value = String.valueOf( size );
+		m_maxFileSizeTextBox.setText( value );
 		
 		hideErrorPanel();
 	}
