@@ -318,6 +318,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CreateLicenseReport();
 	String rpcFailure_CreateLoginReport();
 	String rpcFailure_CreateUserAccessReport();
+	String rpcFailure_CreateUserActivityReport();
 	String rpcFailure_DeleteNetFolders();
 	String rpcFailure_DeleteNetFolderServers();
 	String rpcFailure_DeleteFolderEntries();
@@ -2327,5 +2328,16 @@ public interface GwtTeamingMessages extends Messages
 	String userAccessReportUser();
 	String userAccessReportUserHint();
 	String userAccessReportWarning_NoData();
+	
+	// String used by the 'User Activity Report' composite.
+	String userActivityReportAndSeparator();
+	String userActivityReportCaption1();
+	String userActivityReportCaption2();
+	String userActivityReportPeople();
+	String userActivityReportRemove();
+	String userActivityReportRunReport();
+	String userActivityReportType_All();
+	String userActivityReportType_Summaries();
+	String userActivityReportWarning_UserAlreadySelected(String name);
 	
 }// end GwtTeamingMessages

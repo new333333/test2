@@ -511,6 +511,68 @@ public class GwtReportsHelper {
 		}		
 	}
 	
+	/**
+	 * Creates a user activity report and returns a URL to the results
+	 * via a StringRpcResponseData object.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param begin
+	 * @param end
+	 * @param userIds
+	 * @param reportType
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static StringRpcResponseData createUserActivityReport(AllModulesInjected bs, HttpServletRequest request, Date begin, Date end, List<Long> userIds, String reportType) throws GwtTeamingException {
+		try {
+			// Convert the List<Long> of user IDs to string form for the
+			// URL...
+			String users;
+			if (MiscUtil.hasItems(userIds)) {
+				StringBuffer ub = new StringBuffer("");
+				for (Long uid:  userIds) {
+					ub.append(" " + String.valueOf(uid) + " ");
+				}
+				users = ub.toString();
+			}
+			else {
+				users = "";
+			}
+			
+			// ...construct the URL...
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+			String url = (
+				WebUrlUtil.getServletRootURL(request)                                     +
+				WebKeys.SERVLET_DOWNLOAD_REPORT                                           + "?" +
+				WebKeys.URL_REPORT_TYPE         + "=activityByUser"                       + "&" +
+				WebKeys.URL_REPORT_FLAVOR       + "=" + reportType                        + "&" +
+				WebKeys.URL_START_DATE_YYYYMMDD + "=" + formatter.format(begin.getTime()) + "&" +
+				WebKeys.URL_END_DATE_YYYYMMDD   + "=" + formatter.format(end.getTime())   + "&" +
+				"users=" + users);
+			
+			// ...and construct a StringRpcResponseData object
+			// ...containing the URL.
+			StringRpcResponseData reply = new StringRpcResponseData(url);
+			
+			// If we get here, reply refers to the
+			// StringRpcResponseData object containing the results of
+			// the report.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtReportsHelper.createUserActivityReport( SOURCE EXCEPTION ):  ", ex);
+			}
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}		
+	}
+	
 	/*
 	 * Copied from LicenseReportController.getValue().
 	 */

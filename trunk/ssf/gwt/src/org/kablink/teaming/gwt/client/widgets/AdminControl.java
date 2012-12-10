@@ -325,17 +325,6 @@ public class AdminControl extends TeamingPopupPanel
 			{
 				for (GwtAdminAction action : actions )
 				{
-					// If we're not showing the GWT reports...
-					if ( ! RunAReportDlg.SHOW_GWT_ADMIN_REPORTS )
-					{
-						// ...and this is the GWT reports action...
-						if ( AdminAction.RUN_A_REPORT.equals( action.getActionType() ) )
-						{
-							// ...skip it.
-							continue;
-						}
-					}
-					
 					AdminActionControl adminActionControl;
 					
 					// Add a ui widget for this administration action.

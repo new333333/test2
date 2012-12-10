@@ -96,11 +96,22 @@
 		.vibe-userAccessReportComposite-reportTableHeaderRow       {font-family: arial, sans-serif; color: #666; font-size: 0.6em; padding-top: 0.2em; padding-bottom: 0.2em; padding-left: 0; padding-right: .7em; border-bottom: 1px solid #D2D5D1; white-space: nowrap; background:url(images/blends/gray_blend8_28.png) repeat-x; background-position:bottom; border-collapse: separate; border-spacing: 0px; color: #333; background-color: transparent;}
 		.vibe-userAccessReportComposite-rootPanel                  {display: block; margin-top: 18px;}
 		.vibe-userAccessReportComposite-userFind                   {width: 250px;}
-		.vibe-userAccessReportComposite-userPanel                  {margin-top: 10px;}
+		.vibe-userAccessReportComposite-userPanel                  {margin-top: 10px; margin-bottom: 10px;}
 		.vibe-userAccessReportComposite-widgetsPanel               {display: block; margin-top: 10px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; border: 1px solid #cccccc; padding: 5px; background-color: #ededed;}
 	/* End:  User access report composite styles. */
 	
 	/* Start:  User activity report composite styles. */
-		.vibe-userActivityReportComposite- {}
+		.vibe-userActivityReportComposite-andSeparator {white-space: nowrap; margin-left: 8px; margin-right: 10px;}
+		.vibe-userActivityReportComposite-runButton    {white-space: nowrap; margin-top: 20px; margin-left: 0.5em; margin-bottom: 10px;}
+		.vibe-userActivityReportComposite-caption      {font-weight: bold; font-size: 13px; margin-top: 10px; white-space: nowrap;}
+		.vibe-userActivityReportComposite-datesPanel   {display: block; white-space: nowrap; margin-top: 5px;}
+		.vibe-userActivityReportComposite-peopleFind   {width: 250px;}
+		.vibe-userActivityReportComposite-peopleLabel  {margin-right: 5px;}
+		.vibe-userActivityReportComposite-peopleList   {width: 260px; background-color: white;}
+		.vibe-userActivityReportComposite-peoplePanel  {margin-top: 15px; margin-bottom: 15px;}
+		.vibe-userActivityReportComposite-peopleRemove {white-space: nowrap; margin-left: 0.5em;}
+		.vibe-userActivityReportComposite-typePanel    {}
+		.vibe-userActivityReportComposite-typeRadio    {white-space: nowrap; margin-top: 15px;}
+		.vibe-userActivityReportComposite-widgetsPanel {display: block; margin-top: 10px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; border: 1px solid #cccccc; padding: 5px; background-color: #ededed;}
 	/* End:  User activity report composite styles. */
 /* End:  GWT reports styles. */
