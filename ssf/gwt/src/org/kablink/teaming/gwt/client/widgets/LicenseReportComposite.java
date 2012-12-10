@@ -149,11 +149,13 @@ public class LicenseReportComposite extends ReportCompositeBase {
 	 * Creates a report and uploads it into the display.
 	 */
 	private void createReport() {
+		m_busySpinner.center();
 		GwtClientHelper.executeCommand(
 				new CreateLicenseReportCmd(m_beginDateBox.getValue(), m_endDateBox.getValue()),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
+				m_busySpinner.hide();
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_CreateLicenseReport());
@@ -304,6 +306,9 @@ public class LicenseReportComposite extends ReportCompositeBase {
 				ft.setText(row, 5, String.valueOf(      lsi.getCheckSum())         ); fcf.setHorizontalAlignment(row, 5, HasHorizontalAlignment.ALIGN_CENTER);
 			}
 		}
+		
+		// Finally, hide any busy spinner that may be showing.
+		m_busySpinner.hide();
 	}
 	
 	/**

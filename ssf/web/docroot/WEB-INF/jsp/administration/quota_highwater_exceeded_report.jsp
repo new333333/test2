@@ -117,7 +117,10 @@ var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param
 </c:if>
 
 <c:if test="${!ss_quotasEnabled}">
-  <ssf:form titleTag="administration.quotas.notEnabled">
+  <ssf:form titleTag="administration.quotas.notEnabled" ignore="${GwtReport}">
+	<c:if test="${GwtReport == 'true'}">
+		<div class="marginbottom2 ss_bold"><ssf:nlt tag="administration.quotas.notEnabled"/></div>
+	</c:if>
 	<c:if test="${GwtReport != 'true'}">
 	    <br/>
 	    <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"

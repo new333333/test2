@@ -83,7 +83,21 @@
 	/* End:  System error log report composite styles. */
 	
 	/* Start:  User access report composite styles. */
-		.vibe-userAccessReportComposite-rootPanel {display: block; margin-top: 18px;}
+		.vibe-userAccessReportComposite-caption                    {font-weight: bold; font-size: 13px; margin-top: 10px; white-space: nowrap;}
+		.vibe-userAccessReportComposite-label                      {font-size: 13px;}
+		.vibe-userAccessReportComposite-reportPanel                {display: block; border: 1px solid #ccc; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; margin-top: 10px;}
+		.vibe-userAccessReportComposite-reportTable                {margin-top: 10px;}
+		.vibe-userAccessReportComposite-reportTableCell            {vertical-align: top; padding-right: 15px; font-size: 12px;}
+		.vibe-userAccessReportComposite-reportTableCell-link       {white-space: nowrap; cursor: pointer; text-decoration: none;}
+		.vibe-userAccessReportComposite-reportTableCell-link:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-userAccessReportComposite-reportTableCell-name       {white-space: nowrap;}
+		.vibe-userAccessReportComposite-reportTableCell-type       {white-space: nowrap;}
+		.vibe-userAccessReportComposite-reportTableHeaderCell      {font-size: 11px;}
+		.vibe-userAccessReportComposite-reportTableHeaderRow       {font-family: arial, sans-serif; color: #666; font-size: 0.6em; padding-top: 0.2em; padding-bottom: 0.2em; padding-left: 0; padding-right: .7em; border-bottom: 1px solid #D2D5D1; white-space: nowrap; background:url(images/blends/gray_blend8_28.png) repeat-x; background-position:bottom; border-collapse: separate; border-spacing: 0px; color: #333; background-color: transparent;}
+		.vibe-userAccessReportComposite-rootPanel                  {display: block; margin-top: 18px;}
+		.vibe-userAccessReportComposite-userFind                   {width: 250px;}
+		.vibe-userAccessReportComposite-userPanel                  {margin-top: 10px;}
+		.vibe-userAccessReportComposite-widgetsPanel               {display: block; margin-top: 10px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; border: 1px solid #cccccc; padding: 5px; background-color: #ededed;}
 	/* End:  User access report composite styles. */
 	
 	/* Start:  User activity report composite styles. */

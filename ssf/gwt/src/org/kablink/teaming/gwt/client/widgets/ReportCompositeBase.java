@@ -53,6 +53,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public abstract class ReportCompositeBase extends Composite {
 	protected GwtTeamingMessages		m_messages;					// Access to Vibe's messages.
 	private   List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	protected SpinnerPopup				m_busySpinner;              // A popup that contains a spinner class that extend this can use when they're busy.
 	protected VibeFlowPanel				m_rootContent;				// The main panel containing the composite's content.
 
 	/**
@@ -63,8 +64,9 @@ public abstract class ReportCompositeBase extends Composite {
 		super();
 	
 		// ...initialize everything else...
-		m_messages = GwtTeaming.getMessages();
-
+		m_messages    = GwtTeaming.getMessages();
+		m_busySpinner = new SpinnerPopup();
+		
 		// ...and create the composite's content.
 		createContent();
 		initWidget(m_rootContent);
@@ -144,6 +146,7 @@ public abstract class ReportCompositeBase extends Composite {
 		registerEvents();
 		
 		// ...and reset the report.
+		m_busySpinner.hide();
 		resetReport();
 	}
 	

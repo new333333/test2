@@ -73,10 +73,13 @@ import org.kablink.teaming.gwt.client.rpc.shared.LicenseReportRpcResponseData.Li
 import org.kablink.teaming.gwt.client.rpc.shared.ReportsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ReportsInfoRpcResponseData.ReportInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.UserAccessReportRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.UserAccessReportRpcResponseData.UserAccessItem;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.report.ReportModule;
+import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
@@ -451,6 +454,58 @@ public class GwtReportsHelper {
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
 			     m_logger.debug("GwtReportsHelper.createLoginReport( SOURCE EXCEPTION ):  ", ex);
+			}
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}		
+	}
+	
+	/**
+	 * Creates a user access report and returns the data via a
+	 * UserAccessReportRpcResponseData object.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static UserAccessReportRpcResponseData createUserAccessReport(AllModulesInjected bs, HttpServletRequest request, Long userId) throws GwtTeamingException {
+		try {
+			// Create the base URL for modifying an entity's ACLs...
+			AdaptedPortletURL modifyACLsUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			modifyACLsUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+			
+			// ...and use it to construct a
+			// ...UserAccessReportRpcResponseData object to return.
+			UserAccessReportRpcResponseData reply = new UserAccessReportRpcResponseData(modifyACLsUrl.toString());
+			
+			// Does the given user have access to any items?
+			List<Map<String, Object>> report = bs.getReportModule().generateAccessReportByUser(userId, null, null, "summary");
+			if (MiscUtil.hasItems(report)) {
+				// Yes!  Scan them...
+				for (Map<String, Object> item:  report) {
+					// ...and add a UserAccessItem to the reply object
+					// ...for each.
+					reply.addUserAccessItem(new UserAccessItem(
+						((String) item.get(ReportModule.ENTITY_PATH)),
+						((String) item.get(ReportModule.ENTITY_TYPE)),
+						((Long)   item.get(ReportModule.BINDER_ID))));
+				}
+			}
+	        
+			// If we get here, reply refers to the
+			// UserAccessReportRpcResponseData object containing the
+			// results of the report.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtReportsHelper.createUserAccessReport( SOURCE EXCEPTION ):  ", ex);
 			}
 			throw GwtServerHelper.getGwtTeamingException(ex);
 		}		
