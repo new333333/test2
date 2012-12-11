@@ -30,7 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.util;
+package org.kablink.teaming.util.encrypt;
 
 import java.util.Date;
 import java.util.Enumeration;
@@ -38,33 +38,36 @@ import java.util.Properties;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
-import org.jasypt.properties.EncryptableProperties;
-import org.jasypt.properties.PropertyValueEncryptionUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.kablink.util.FileUtil;
 import org.kablink.util.Validator;
+import org.kablink.util.encrypt.PropertyEncrypt;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.util.PropertiesClassPathConfigFiles;
 import org.apache.commons.codec.binary.Base64;
 public class EncryptedClassPathConfigFiles extends PropertiesClassPathConfigFiles
 	implements InitializingBean {
 	
 	protected PBEStringEncryptor encryptor=null;
+	protected PBEStringEncryptor encryptor_preFilr1_0=null;
 	private Properties props;
 	protected String eConfigFile;
 	protected Resource eResource=null;
-	    
-
-	
+	    	
 	public void setEncryptor(PBEStringEncryptor encryptor) {
 		this.encryptor = encryptor;
 	}
+	
+	public void setEncryptor_preFilr1_0(PBEStringEncryptor encryptor_preFilr1_0) {
+		this.encryptor_preFilr1_0 = encryptor_preFilr1_0;
+	}
+	
     public void afterPropertiesSet() throws Exception {
     	super.afterPropertiesSet();
     	props = super.getProperties();
@@ -73,6 +76,7 @@ public class EncryptedClassPathConfigFiles extends PropertiesClassPathConfigFile
     	key = new String(Base64.decodeBase64(key.getBytes()), "UTF-8");
     	//set key for encryption
     	encryptor.setPassword(key);
+    	encryptor_preFilr1_0.setPassword(key);
     	if (eResource != null) {
     	   	Properties tempProps = new Properties();
     	   	InputStream is = eResource.getInputStream();
@@ -88,13 +92,30 @@ public class EncryptedClassPathConfigFiles extends PropertiesClassPathConfigFile
 	        		for (int i=0; i<eProps.length; ++i) {
 	        			String val = tempProps.getProperty(eProps[i].trim());
 	        			if (Validator.isNull(val)) continue;//not supplied
-	        			if (!PropertyValueEncryptionUtils.isEncryptedValue(val)) {
+	        			if(PropertyEncrypt.isEncrypted_preFilr1_0(val)) {
+	        				// The property is encrypted using old encryption algorithm (pre Filr 1.0 and Vibe 4.0)
+	        				// We need to re-encrypt this value using new algorithm.
+	        				String baseEncryptedValue = PropertyEncrypt.getBaseEncryptedValue_preFilr1_0(val);
+	        				// Decrypt using old algorithm
+	        				String decryptedValue = encryptor_preFilr1_0.decrypt(baseEncryptedValue);
+	        				// Encrypt using new algorithm
+	        				String encVal = encryptor.encrypt(decryptedValue);
+	        				int beginIndex = origStr.indexOf(eProps[i]+"=");
+	        				int index = origStr.indexOf("=", beginIndex+eProps[i].length());
+	        				index = origStr.indexOf(val, index+1);
+	        				String strToReplace = origStr.substring(beginIndex, index+val.length());
+	        				String strToReplaceWith = eProps[i] + "=" + PropertyEncrypt.getDecoratedEncryptedValue(encVal);
+	        				origStr = origStr.replace(strToReplace, strToReplaceWith);
+	        				needUpdate = true;
+	        			}
+	        			else if (!PropertyEncrypt.isEncrypted(val)) {
+	        				// This property is not encrypted at all.
 	        				String encVal = encryptor.encrypt(val);
 	        				int beginIndex = origStr.indexOf(eProps[i]+"=");
 	        				int index = origStr.indexOf("=", beginIndex+eProps[i].length());
 	        				index = origStr.indexOf(val, index+1);
 	        				String strToReplace = origStr.substring(beginIndex, index+val.length());
-	        				String strToReplaceWith = eProps[i] + "=ENC("+ encVal +")";
+	        				String strToReplaceWith = eProps[i] + "=" + PropertyEncrypt.getDecoratedEncryptedValue(encVal);
 	        				origStr = origStr.replace(strToReplace, strToReplaceWith);
 	        				needUpdate = true;
 	        			}
@@ -111,10 +132,10 @@ public class EncryptedClassPathConfigFiles extends PropertiesClassPathConfigFile
     	   	}
         	props.putAll(tempProps);
     	}
-    	props = new EncryptableProperties(props, encryptor);
- 
- 
+    	
+    	props = new PropertyEncrypt(props, encryptor, encryptor_preFilr1_0);
     }
+    
     //overload
     public Properties getProperties() {
     	return props;

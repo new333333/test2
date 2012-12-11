@@ -30,7 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.util;
+package org.kablink.teaming.util.encrypt;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -41,7 +41,9 @@ import org.apache.commons.logging.LogFactory;
 import org.jasypt.encryption.StringEncryptor;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.domain.User;
-import org.kablink.util.PasswordEncryptor;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.util.PasswordHashEncryptor;
 
 public class EncryptUtil {
 	
@@ -55,7 +57,12 @@ public class EncryptUtil {
     private static final String[] ASYMMETRIC_ENCRYPTION_ALGORITHMS = new String[] {"SHA", "SHA-256", "MD5"};
     
     // We support only one symmetric encryption algorithm.
-    private static final String SOLE_SYMMETRIC_ENCRYPTION_ALGORITHM = "PBEWithMD5AndDES";
+    
+    // Symmetric encryption algorithm used beginning with Filr 1.0 release.
+    private static final String SYMMETRIC_ENCRYPTION_ALGORITHM = "PBEWITHSHA256AND128BITAES-CBC-BC";
+
+    // Symmetric encryption algorithm used before Filr 1.0 (that is, up to Vibe 3.3/Granite release)
+    private static final String SYMMETRIC_ENCRYPTION_ALGORITHM_PRE_FILR_1_0 = "PBEWithMD5AndDES";
     
 	public static String encryptSHA1(String... input) {
 		return encrypt("SHA-1", input);
@@ -102,24 +109,36 @@ public class EncryptUtil {
 	public static boolean checkPassword(String passwordToCheck, User user) {
 		if(passwordToCheck == null)
 			return false;
+		
 		String alg = passwordEncryptionAlgorithmForMatching(user);
-		if(alg.equals(SOLE_SYMMETRIC_ENCRYPTION_ALGORITHM)) {
+		
+		if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM)) {
+			// New symmetric encryption algorithm
 			if(logger.isDebugEnabled())
-				logger.debug("Checking password for the user " + user.getName() + " using symmetric algorithm " + alg);
+				logger.debug("Checking password for the user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
 			// Since encryption of the same password value doesn't necessarily result in the same encrypted value,
 			// we must decrypt the user's stored password and compare it with the user entered value.
 			return passwordToCheck.equals(getStringEncryptor().decrypt(user.getPassword()));
 		}
-		for(String asymAlg : ASYMMETRIC_ENCRYPTION_ALGORITHMS) {
-			if(alg.equals(asymAlg)) {
-				if(logger.isDebugEnabled())
-					logger.debug("Checking password for the user " + user.getName() + " using asymmetric algorithm " + alg);
-				// Apply the same algorithm to the user entered value and compare it with the user's 
-				// stored (encrypted) password.
-				return PasswordEncryptor.encrypt(alg, passwordToCheck).equals(user.getPassword());
-			}
+		else if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM_PRE_FILR_1_0)) {
+			// Old symmetric encryption algorithm
+			if(logger.isDebugEnabled())
+				logger.debug("Checking password for the user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
+			return passwordToCheck.equals(getStringEncryptor_PreFilr1_0().decrypt(user.getPassword()));			
 		}
-		return false;
+		else {
+			// Asymmetric encryption algorithm
+			for(String asymAlg : ASYMMETRIC_ENCRYPTION_ALGORITHMS) {
+				if(alg.equals(asymAlg)) {
+					if(logger.isDebugEnabled())
+						logger.debug("Checking password for the user " + user.getName() + " using asymmetric algorithm " + alg);
+					// Apply the same algorithm to the user entered value and compare it with the user's 
+					// stored (encrypted) password.
+					return PasswordHashEncryptor.encrypt(alg, passwordToCheck).equals(user.getPassword());
+				}
+			}
+			return false; // Unrecognized algorithm
+		}
 	}
 	
 	/*
@@ -153,14 +172,21 @@ public class EncryptUtil {
 			return null;
 		}
 		String alg = passwordEncryptionAlgorithmForMatching(user);
-		if(alg.equals(SOLE_SYMMETRIC_ENCRYPTION_ALGORITHM)) {
+		if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM)) {
 			if(logger.isDebugEnabled())
-				logger.debug("Decrypting password for the user " + user.getName() + " using symmetric algorithm " + alg);
+				logger.debug("Decrypting password for the user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
 			return getStringEncryptor().decrypt(user.getPassword());
 		}
-		if(logger.isDebugEnabled())
-			logger.debug("Cannot decrypt password for the user " + user.getName() + " using asymmetric algorithm " + alg);
-		return null;
+		else if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM_PRE_FILR_1_0)) {
+			if(logger.isDebugEnabled())
+				logger.debug("Decrypting password for the user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
+			return getStringEncryptor_PreFilr1_0().decrypt(user.getPassword());			
+		}
+		else {
+			if(logger.isDebugEnabled())
+				logger.debug("Cannot decrypt password for the user '" + user.getName() + "' since it uses asymmetric algorithm '" + alg + "'");
+			return null;
+		}
 	}
 	
 	public static String passwordEncryptionAlgorithmForMatching(User user) {
@@ -173,23 +199,34 @@ public class EncryptUtil {
 	}
 	
 	static String encryptPassword(String alg, String password, String username) {
-		if(alg.equals(SOLE_SYMMETRIC_ENCRYPTION_ALGORITHM)) {
+		if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM)) {
 			if(logger.isDebugEnabled())
-				logger.debug("Encrypting password for the user " + username + " using symmetric algorithm " + alg);
+				logger.debug("Encrypting password for the user '" + username + "' using symmetric algorithm '" + alg + "'");
 			return getStringEncryptor().encrypt(password);
 		}
-		for(String asymAlg : ASYMMETRIC_ENCRYPTION_ALGORITHMS) {
-			if(alg.equals(asymAlg)) {
-				if(logger.isDebugEnabled())
-					logger.debug("Encrypting password for the user " + username + " using asymmetric algorithm " + alg);
-				return PasswordEncryptor.encrypt(alg, password);
-			}
+		else if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM_PRE_FILR_1_0)) {
+			if(logger.isDebugEnabled())
+				logger.debug("Encrypting password for the user '" + username + "' using symmetric algorithm '" + alg + "'");
+			return getStringEncryptor_PreFilr1_0().encrypt(password);
 		}
-		throw new ConfigurationException("Invalid password encryption algorithm: " + alg);
+		else {
+			for(String asymAlg : ASYMMETRIC_ENCRYPTION_ALGORITHMS) {
+				if(alg.equals(asymAlg)) {
+					if(logger.isDebugEnabled())
+						logger.debug("Encrypting password for the user " + username + " using asymmetric algorithm " + alg);
+					return PasswordHashEncryptor.encrypt(alg, password);
+				}
+			}
+			throw new ConfigurationException("Invalid password encryption algorithm '" + alg + "'");
+		}
 	}
 	
 	static StringEncryptor getStringEncryptor() {
 		return (StringEncryptor) SpringContextUtil.getBean("encryptor");
+	}
+
+	static StringEncryptor getStringEncryptor_PreFilr1_0() {
+		return (StringEncryptor) SpringContextUtil.getBean("encryptor_preFilr1_0");
 	}
 
 }

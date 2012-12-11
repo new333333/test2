@@ -54,8 +54,8 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.authentication.util.AuthenticationAdapter;
 import org.kablink.teaming.module.zone.ZoneModule;
-import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.springframework.security.core.AuthenticationException;
 
 

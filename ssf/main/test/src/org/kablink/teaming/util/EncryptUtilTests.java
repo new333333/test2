@@ -33,6 +33,9 @@
 
 package org.kablink.teaming.util;
 
+import java.io.UnsupportedEncodingException;
+
+import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 
@@ -44,6 +47,14 @@ import junit.framework.TestCase;
  */
 public class EncryptUtilTests extends TestCase {
 
+	public void testBase64DecodePassword() throws UnsupportedEncodingException {
+		String base64EncodedPassword = "U2l0ZVNjYXBl";
+		String base64DecodedPassword = new String(Base64.decodeBase64(base64EncodedPassword.getBytes()), "UTF-8");
+		System.out.println("Base64 decoded password = '" + base64DecodedPassword + "'");
+		System.out.println();
+		assertEquals(base64EncodedPassword, Base64.encodeBase64String(base64DecodedPassword.getBytes("UTF-8")));
+	}
+	
 	public void testLengthOfMultiBytePassword_PBEWithMD5AndDES() {
 		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
 		encryptor.setPassword("gangnamstyle");
