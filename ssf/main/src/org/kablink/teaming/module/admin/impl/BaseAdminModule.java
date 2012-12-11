@@ -35,6 +35,7 @@ package org.kablink.teaming.module.admin.impl;
 import java.util.List;
 
 import org.kablink.teaming.domain.IndexNode;
+import org.kablink.teaming.domain.MobileAppsConfig;
 import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.OpenIDProvider;
 
@@ -104,5 +105,16 @@ public class BaseAdminModule extends AbstractAdminModule {
 	public void setOpenIDConfig(OpenIDConfig openIDConfig) {
 		// Noop
 	}
+
+	@Override
+	public MobileAppsConfig getMobileAppsConfig()
+	{
+		return null;
+	}
 	
+	@Override
+	public void setMobileAppsConfig( MobileAppsConfig config )
+	{
+		// Noop
+	}
 }

@@ -52,6 +52,7 @@ public enum AdminAction implements IsSerializable
 	CONFIGURE_FOLDER_SEARCH_NODES( "Configure folder search nodes" ),
 	CONFIGURE_HOME_PAGE( "Configure home page" ),
 	CONFIGURE_MOBILE_ACCESS( "Configure mobile access" ),
+	CONFIGURE_MOBILE_APPS( "Configure Mobile Apps" ),
 	CONFIGURE_ROLE_DEFINITIONS( "Configure role definitions" ),
 	CONFIGURE_SCHEDULE( "Configure weekend and holiday schedule" ),
 	CONFIGURE_SEARCH_INDEX( "Configure search index" ),

@@ -56,5 +56,12 @@
  		 <property name="authenticationEnabled" column="openidAuthenticationEnabled" access="field"/>
  		 <property name="profileSynchronizationMode" column="openidProfileSyncMode" access="field"/>
     </component>
+    <component name="mobileAppsConfig" class="org.kablink.teaming.domain.MobileAppsConfig">
+		<property name="mobileAppsEnabled"/>
+		<property name="mobileAppsAllowCachePwd"/>
+   		<property name="mobileAppsAllowCacheContent"/>
+   		<property name="mobileAppsAllowPlayWithOtherApps"/>
+   		<property name="mobileAppsSyncInterval"/>
+    </component>
    </class>
 </hibernate-mapping>

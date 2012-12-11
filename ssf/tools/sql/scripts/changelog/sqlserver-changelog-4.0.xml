@@ -482,4 +482,37 @@ update SS_Principals set foreignName=LOWER(foreignName);
         </addColumn>
     </changeSet>
 
+    <changeSet author="jay" context="schema" failOnError="true" id="59">
+        <comment>Enable mobile apps to access Filr</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="mobileAppsEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Allow mobile apps to cache users password</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="mobileAppsAllowCachePwd" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Allow mobile apps to cache content</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="mobileAppsAllowCacheContent" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Allow mobile apps to interact with other applications</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="mobileAppsAllowPlayWithOtherApps" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Sync interval for mobile apps</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="mobileAppsSyncInterval" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

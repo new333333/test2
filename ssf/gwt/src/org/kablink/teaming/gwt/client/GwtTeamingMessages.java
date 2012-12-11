@@ -406,6 +406,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetLocale();
 	String rpcFailure_GetMainPageInfo();
 	String rpcFailure_GetManageUsersInfo();
+	String rpcFailure_GetMobileAppsConfiguration();
 	String rpcFailure_GetMyFilesContainerInfo();
 	String rpcFailure_GetMyTeams();
 	String rpcFailure_NumberOfMembers();
@@ -566,6 +567,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_CollectionView();
 	String codeSplitFailure_ConfigureAdhocFoldersDlg();
 	String codeSplitFailure_ConfigureFileSyncAppDlg();
+	String codeSplitFailure_ConfigureMobileAppsDlg();
 	String codeSplitFailure_ConfigureUserAccessDlg();
 	String codeSplitFailure_ConfirmDlg();
 	String codeSplitFailure_ContentControl();
@@ -2315,7 +2317,17 @@ public interface GwtTeamingMessages extends Messages
 	// String used by the 'System Error Log Report' composite.
 	String systemErrorLogReportCaption();
 	String systemErrorLogReportRunReport();
-	
+
+	// Strings used in the Configure Mobile Apps dialog
+	String configureMobileAppsDlgAllowAccess( String productName );
+	String configureMobileAppsDlgAllowCacheContent();
+	String configureMobileAppsDlgAllowCachePwd();
+	String configureMobileAppsDlgAllowPlayWithOtherApps();
+	String configureMobileAppsDlgHeader();
+	String configureMobileAppsDlgOnSaveUnknownException( String err );
+	String configureMobileAppsSyncIntervalLabel();
+	String configureMobileAppsSyncMinutesLabel();
+
 	// String used by the 'User Access Report' composite.
 	String userAccessReportCaption();
 	String userAccessReportObjectsColName();

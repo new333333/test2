@@ -90,6 +90,7 @@ public class EventHelper {
 		case INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG:	reply = new InvokeConfigureAdhocFoldersDlgEvent();break;
 		case INVOKE_CONFIGURE_COLUMNS:				reply = new InvokeConfigureColumnsEvent();        break;
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	reply = new InvokeConfigureFileSyncAppDlgEvent(); break;
+		case INVOKE_CONFIGURE_MOBILE_APPS_DLG:		reply = new InvokeConfigureMobileAppsDlgEvent();  break;
 		case INVOKE_CONFIGURE_USER_ACCESS_DLG:		reply = new InvokeConfigureUserAccessDlgEvent();  break;
 		case INVOKE_DOWNLOAD_DESKTOP_APP:           reply = new InvokeDownloadDesktopAppEvent();      break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
@@ -881,6 +882,15 @@ public class EventHelper {
 				{
 					handlerNotDefined = false;
 					registrationHandler = InvokeConfigureFileSyncAppDlgEvent.registerEvent( eventBus, ((InvokeConfigureFileSyncAppDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case INVOKE_CONFIGURE_MOBILE_APPS_DLG:
+				// An InvokeConfigureMobileAppsDlgEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeConfigureMobileAppsDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeConfigureMobileAppsDlgEvent.registerEvent( eventBus, ((InvokeConfigureMobileAppsDlgEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2228,6 +2238,7 @@ public class EventHelper {
 			case INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG:	       hasHandler = (eventHandler instanceof InvokeConfigureAdhocFoldersDlgEvent.Handler);         break;
 			case INVOKE_CONFIGURE_COLUMNS:				       hasHandler = (eventHandler instanceof InvokeConfigureColumnsEvent.Handler);                 break;
 			case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	       hasHandler = (eventHandler instanceof InvokeConfigureFileSyncAppDlgEvent.Handler);          break;
+			case INVOKE_CONFIGURE_MOBILE_APPS_DLG:	       	   hasHandler = (eventHandler instanceof InvokeConfigureMobileAppsDlgEvent.Handler);           break;
 			case INVOKE_CONFIGURE_USER_ACCESS_DLG:		       hasHandler = (eventHandler instanceof InvokeConfigureUserAccessDlgEvent.Handler);           break;
 			case INVOKE_DOWNLOAD_DESKTOP_APP:                  hasHandler = (eventHandler instanceof InvokeDownloadDesktopAppEvent.Handler);               break;
 			case INVOKE_DROPBOX:						       hasHandler = (eventHandler instanceof InvokeDropBoxEvent.Handler);                          break;
