@@ -133,6 +133,9 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_SIMPLE_PROFILE,							// Invokes the simple profile dialog.
 	INVOKE_SUBSCRIBE,								// Invokes the 'subscribe to this entry' UI.
 	INVOKE_TAG,										// Invokes the 'tag this entry' UI.
+	INVOKE_USER_DESKTOP_SETTINGS_DLG,				// Invokes the 'user desktop application settings' dialog.
+	INVOKE_USER_MOBILE_SETTINGS_DLG,				// Invokes the 'user mobile  application settings' dialog.
+	INVOKE_USER_SHARE_SETTINGS_DLG,					// Invokes the 'user share               settings' dialog.
 	
 	JSP_LAYOUT_CHANGED,								// The layout of JSP content has changed.
 	
@@ -267,7 +270,10 @@ public enum TeamingEvents implements IsSerializable {
 	RESET_ENTRY_MENU,								// Resets the Entry Menu on the Given Folder.
 	SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY,	// Sets the visibility of the desktop application download control. 
 	SET_FOLDER_SORT,								// Sets a folder sort options.
-	SET_SELECTED_USER_SHARE_RIGHTS,					// Sets the share rights for the selected users.
+	SET_SELECTED_USER_DESKTOP_SETTINGS,				// Sets the desktop application settings for the selected users.
+	SET_SELECTED_USER_MOBILE_SETTINGS,				// Sets the mobile  application settings for the selected users.
+	SET_SELECTED_USER_SHARE_RIGHTS,					// Sets the share               rights   for the selected users.
+	SET_SELECTED_USER_SHARE_SETTINGS,				// Sets the share               settings for the selected users.
 	SHARE_SELECTED_ENTRIES,							// Shares the Selected Entries.
 	SUBSCRIBE_SELECTED_ENTRIES,						// Subscribes the Current User to the Selected Entries.
 	TOGGLE_SHARED_VIEW,								// Toggles the 'Shared by/with Me' Views Between Files and All Entries.
