@@ -980,13 +980,32 @@ public class GwtMenuHelper {
 		if (canManageProfiles && (null != usri) && usri.anyFlagsSet()) {
 			// ...if needed add a separator item...
 			addNestedSeparatorIfNeeded(moreTBI, (needSep2 || needSeparator));
+			needSeparator =
+			needSep2      = false;
 			
-			// ...and add the set selected user share rights.
+			// ...add the set selected user share rights...
 			tbi = new ToolbarItem("1_setShareRights");
 			markTBITitle(tbi, "toolbar.setUserWSShareRights");
 			markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_SHARE_RIGHTS);
 			moreTBI.addNestedItem(tbi);
 		}
+		
+		// ...and add the set selected user desktop and mobile rights.
+		addNestedSeparatorIfNeeded(moreTBI, (needSep2 || needSeparator));
+		needSeparator =
+		needSep2      = false;
+		tbi = new ToolbarItem("1_setShareSettings");
+		markTBITitle(tbi, "toolbar.setUserShareSettings");
+		markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_SHARE_SETTINGS);
+		moreTBI.addNestedItem(tbi);
+		tbi = new ToolbarItem("1_setDesktopSettings");
+		markTBITitle(tbi, "toolbar.setUserDesktopSettings");
+		markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_DESKTOP_SETTINGS);
+		moreTBI.addNestedItem(tbi);
+		tbi = new ToolbarItem("1_setMobileSettings");
+		markTBITitle(tbi, "toolbar.setUserMobileSettings");
+		markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_MOBILE_SETTINGS);
+		moreTBI.addNestedItem(tbi);
 				
 		// Finally, if we added anything to the more toolbar...
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {
