@@ -39,7 +39,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Miscellaneous utilities.
  */
-public class PasswordEncryptor {
+public class PasswordHashEncryptor {
 	
     private static Long PASSWORD_DIGEST=new Long(32958);
 

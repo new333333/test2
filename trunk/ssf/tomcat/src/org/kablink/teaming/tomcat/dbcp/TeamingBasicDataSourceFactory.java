@@ -46,8 +46,9 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.naming.ResourceRef;
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
-import org.jasypt.properties.EncryptableProperties;
+import org.kablink.util.encrypt.PropertyEncrypt;
 
 public class TeamingBasicDataSourceFactory extends BasicDataSourceFactory {
 	
@@ -82,9 +83,13 @@ public class TeamingBasicDataSourceFactory extends BasicDataSourceFactory {
 					if(key != null && !key.equals("")) {
 						key = new String(Base64.decodeBase64(key.getBytes()), "UTF-8");
 						StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-						encryptor.setAlgorithm("PBEWithMD5AndDES");
+						encryptor.setProvider(new BouncyCastleProvider());
+						encryptor.setAlgorithm("PBEWITHSHA256AND128BITAES-CBC-BC");
 						encryptor.setPassword(key);
-						props = new EncryptableProperties(props, encryptor);
+						StandardPBEStringEncryptor encryptor_preFilr1_0 = new StandardPBEStringEncryptor();
+						encryptor_preFilr1_0.setAlgorithm("PBEWithMD5AndDES");
+						encryptor_preFilr1_0.setPassword(key);
+						props = new PropertyEncrypt(props, encryptor, encryptor_preFilr1_0);
 						safePassword = props.getProperty("database.password");
 					}
 				}		

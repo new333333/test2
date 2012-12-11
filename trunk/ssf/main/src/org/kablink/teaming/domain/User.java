@@ -51,8 +51,8 @@ import java.util.TreeSet;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
-import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.util.Validator;
 
 public class User extends UserPrincipal implements IndividualPrincipal {
