@@ -161,12 +161,12 @@ public class UserAccessReportComposite extends ReportCompositeBase
 		super.createContent();
 		
 		// ...add a caption above the content...
-		InlineLabel il = buildInlineLabel(m_messages.userAccessReportCaption(), "vibe-userAccessReportComposite-caption");
+		InlineLabel il = buildInlineLabel(m_messages.userAccessReportCaption(), "vibe-reportCompositeBase-caption");
 		m_rootContent.add(il);
 
 		// ...add a panel for the report widgets...
 		VibeFlowPanel fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-userAccessReportComposite-widgetsPanel");
+		fp.addStyleName("vibe-reportCompositeBase-widgetsPanel");
 		m_rootContent.add(fp);
 
 		// ...add a hint for the user select widget...

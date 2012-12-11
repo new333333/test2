@@ -149,12 +149,12 @@ public class EmailReportComposite extends ReportCompositeBase {
 		super.createContent();
 
 		// ...add a caption above the content...
-		InlineLabel il = buildInlineLabel(m_messages.emailReportCaption(), "vibe-emailReportComposite-caption");
+		InlineLabel il = buildInlineLabel(m_messages.emailReportCaption(), "vibe-reportCompositeBase-caption");
 		m_rootContent.add(il);
 
 		// ...add a panel for the report widgets...
 		VibeFlowPanel fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-emailReportComposite-widgetsPanel");
+		fp.addStyleName("vibe-reportCompositeBase-widgetsPanel");
 		m_rootContent.add(fp);
 
 		// ...add a horizontal panel for the date selectors...
@@ -172,7 +172,7 @@ public class EmailReportComposite extends ReportCompositeBase {
 		dates.add(m_beginDateBox);
 
 		// ...and 'and' between the two date selectors...
-		il = buildInlineLabel(m_messages.emailReportAndSeparator(), "vibe-emailReportComposite-andSeparator");
+		il = buildInlineLabel(m_messages.emailReportAndSeparator(), "vibe-reportCompositeBase-andSeparator");
 		dates.add(il);
 		
 		// ...and an ending date selector...
@@ -222,7 +222,7 @@ public class EmailReportComposite extends ReportCompositeBase {
 
 		// ...add the 'Run Report' push button...
 		Button runReportBtn = new Button(m_messages.emailReportRunReport());
-		runReportBtn.addStyleName("vibe-emailReportComposite-runButton");
+		runReportBtn.addStyleName("vibe-reportCompositeBase-buttonBase vibe-reportCompositeBase-runButton");
 		runReportBtn.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
