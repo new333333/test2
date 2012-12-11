@@ -48,6 +48,7 @@ import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MailConfig;
+import org.kablink.teaming.domain.MobileAppsConfig;
 import org.kablink.teaming.domain.NoApplicationByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.OpenIDConfig;
@@ -91,6 +92,7 @@ public interface AdminModule {
 		manageFileSynchApp,
 		manageOpenID,
 		manageExternalUser,
+		manageMobileApps
 	}
 	/**
 	 * The method name to be called is used as the operation.   This
@@ -419,4 +421,8 @@ public interface AdminModule {
     public ScheduleInfo getLogTablePurgeSchedule();
     
     public void setLogTablePurgeSchedule(ScheduleInfo info);
+    
+    public MobileAppsConfig getMobileAppsConfig();
+    
+    public void setMobileAppsConfig( MobileAppsConfig mobileAppsConfig );
  }

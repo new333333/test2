@@ -370,6 +370,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   			case manageFileSynchApp:
   			case manageOpenID:
   			case manageExternalUser:
+  			case manageMobileApps:
   				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    				break;
 			case report:

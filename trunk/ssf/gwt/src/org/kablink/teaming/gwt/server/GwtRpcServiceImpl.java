@@ -72,6 +72,7 @@ import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
+import org.kablink.teaming.gwt.client.GwtMobileAppsConfiguration;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
@@ -1547,6 +1548,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_MOBILE_APPS_CONFIG:
+		{
+			GwtMobileAppsConfiguration mobileAppsConfiguration; 
+
+			mobileAppsConfiguration = GwtServerHelper.getMobileAppsConfiguration( this );
+			response = new VibeRpcResponse( mobileAppsConfiguration );
+			return response;
+		}
+		
 		case GET_MODIFY_BINDER_URL:
 		{
 			GetModifyBinderUrlCmd gmbuCmd;
@@ -2518,6 +2528,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveFolderSortCmd sfsCmd = ((SaveFolderSortCmd) cmd);
 			Boolean result = saveFolderSort( ri, sfsCmd.getBinderInfo(), sfsCmd.getSortKey(), sfsCmd.getSortAscending() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
+		case SAVE_MOBILE_APPS_CONFIGURATION:
+		{
+			SaveMobileAppsConfigurationCmd smacCmd;
+			Boolean result;
+			
+			smacCmd = ((SaveMobileAppsConfigurationCmd) cmd);
+			result = GwtServerHelper.saveMobileAppsConfiguration( this, smacCmd.getMobileAppsConfiguration() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
 		

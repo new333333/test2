@@ -73,6 +73,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Boolean adHocFoldersEnabled;
 	private Integer auditTrailKeepDays;
 	private Integer changeLogsKeepDays;
+	private MobileAppsConfig mobileAppsConfig;
 
 	public ZoneConfig()
 	{
@@ -84,6 +85,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 		this.weekendsAndHolidaysConfig = new WeekendsAndHolidaysConfig();
 		this.mailConfig = new MailConfig();
 		this.openIDConfig = new OpenIDConfig();
+		this.mobileAppsConfig = new MobileAppsConfig();
 	}
 	public void setZoneId(Long zoneId)
 	{
@@ -426,5 +428,25 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	}
 	public void setChangeLogsKeepDays(int changeLogsKeepDays) {
 		this.changeLogsKeepDays = changeLogsKeepDays;
+	}
+
+	
+	/**
+	 * 
+	 */
+	public MobileAppsConfig getMobileAppsConfig()
+	{
+		if ( mobileAppsConfig == null )
+			return new MobileAppsConfig();
+		
+		return mobileAppsConfig;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setMobileAppsConfig( MobileAppsConfig config )
+	{
+		mobileAppsConfig = config;
 	}
 }

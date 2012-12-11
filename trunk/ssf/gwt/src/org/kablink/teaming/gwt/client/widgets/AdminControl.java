@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureAdhocFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeConfigureMobileAppsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
@@ -52,6 +53,7 @@ import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtMainPage;
+import org.kablink.teaming.gwt.client.GwtMobileAppsConfiguration;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.AdminConsoleHomePage;
@@ -60,6 +62,7 @@ import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMobileAppsConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -67,6 +70,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.ConfigureAdhocFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ConfigureMobileAppsDlg.ConfigureMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUserAccessDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
@@ -112,6 +116,7 @@ public class AdminControl extends TeamingPopupPanel
 	// Event handlers implemented by this class.
 		InvokeConfigureAdhocFoldersDlgEvent.Handler,
 		InvokeConfigureFileSyncAppDlgEvent.Handler,
+		InvokeConfigureMobileAppsDlgEvent.Handler,
 		InvokeConfigureUserAccessDlgEvent.Handler,
 		InvokeManageNetFoldersDlgEvent.Handler,
 		InvokeManageNetFolderRootsDlgEvent.Handler,
@@ -132,6 +137,7 @@ public class AdminControl extends TeamingPopupPanel
 	private int m_dlgHeight;
 	private AdminConsoleHomePage m_homePage = null;
 	private ConfigureFileSyncAppDlg m_configureFileSyncAppDlg = null;
+	private ConfigureMobileAppsDlg m_configureMobileAppsDlg = null;
 	private ManageGroupsDlg m_manageGroupsDlg = null;
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
@@ -147,6 +153,7 @@ public class AdminControl extends TeamingPopupPanel
 		// Administration events.
 		TeamingEvents.INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,
+		TeamingEvents.INVOKE_CONFIGURE_MOBILE_APPS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
@@ -756,6 +763,11 @@ public class AdminControl extends TeamingPopupPanel
 			// Fire the event to invoke the "Configure File Sync" dialog.
 			InvokeConfigureFileSyncAppDlgEvent.fireOne();
 		}
+		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_MOBILE_APPS )
+		{
+			// Fire the event to invoke the "Configure Mobile apps" dialog.
+			InvokeConfigureMobileAppsDlgEvent.fireOne();
+		}
 		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_USER_ACCESS )
 		{
 			// Fire the event to invoke the "Configure User Access" dialog
@@ -1355,6 +1367,114 @@ public class AdminControl extends TeamingPopupPanel
 			
 			// Issue an ajax request to get the File Sync App configuration from the db.
 			cmd = new GetFileSyncAppConfigurationCmd();
+			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
+		}
+	}
+	
+
+	/**
+	 * Handles InvokeConfigureMobileAppsDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeConfigureMobileAppsDlgEvent.Handler.onInvokeConfigureMobileAppsDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeConfigureMobileAppsDlg( InvokeConfigureMobileAppsDlgEvent event )
+	{
+		AsyncCallback<VibeRpcResponse> rpcReadCallback;
+		
+		// Create a callback that will be called when we get the mobile apps configuration.
+		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetMobileAppsConfiguration() );
+			}
+	
+			/**
+			 * We successfully retrieved the Mobile Apps configuration.  Now invoke the "Configure Mobile Apps" dialog.
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				int x;
+				int y;
+				final GwtMobileAppsConfiguration mobileAppsConfiguration;
+
+
+				mobileAppsConfiguration = (GwtMobileAppsConfiguration) response.getResponseData();
+				
+				// Get the position of the content control.
+				x = m_contentControlX;
+				y = m_contentControlY;
+				
+				// Have we already created a "Configure Mobile Apps" dialog?
+				if ( m_configureMobileAppsDlg == null )
+				{
+					int width;
+					int height;
+					
+					// No, create one.
+					height = m_dlgHeight;
+					width = m_dlgWidth;
+					ConfigureMobileAppsDlg.createAsync(
+													false, 
+													true,
+													x, 
+													y,
+													width,
+													height,
+													new ConfigureMobileAppsDlgClient()
+					{			
+						@Override
+						public void onUnavailable()
+						{
+							// Nothing to do.  Error handled in asynchronous provider.
+						}
+						
+						@Override
+						public void onSuccess( final ConfigureMobileAppsDlg cmaDlg )
+						{
+							ScheduledCommand cmd;
+							
+							cmd = new ScheduledCommand()
+							{
+								@Override
+								public void execute() 
+								{
+									m_configureMobileAppsDlg = cmaDlg;
+									
+									m_configureMobileAppsDlg.init( mobileAppsConfiguration );
+									m_configureMobileAppsDlg.show();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					} );
+				}
+				else
+				{
+					m_configureMobileAppsDlg.init( mobileAppsConfiguration );
+					m_configureMobileAppsDlg.setPopupPosition( x, y );
+					m_configureMobileAppsDlg.show();
+				}
+			}
+		};
+
+		// Issue an ajax request to get the Mobile Apps configuration.  When we get the Mobile Apps configuration
+		// we will invoke the "Configure Mobile Apps" dialog.
+		{
+			GetMobileAppsConfigCmd cmd;
+			
+			// Issue an ajax request to get the Mobile Apps configuration from the db.
+			cmd = new GetMobileAppsConfigCmd();
 			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 		}
 	}

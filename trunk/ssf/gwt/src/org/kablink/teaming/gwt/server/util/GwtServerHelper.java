@@ -103,6 +103,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
+import org.kablink.teaming.domain.MobileAppsConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
@@ -132,6 +133,7 @@ import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
+import org.kablink.teaming.gwt.client.GwtMobileAppsConfiguration;
 import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
@@ -3135,6 +3137,19 @@ public class GwtServerHelper {
 					
 					adminAction = new GwtAdminAction();
 					adminAction.init( title, "", AdminAction.CONFIGURE_FILE_SYNC_APP );
+					
+					// Add this action to the "system" category
+					systemCategory.addAdminOption( adminAction );
+				}
+
+				// Does the user have rights to "Configure Mobile Apps"?
+				if ( adminModule.testAccess( AdminOperation.manageMobileApps ) )
+				{
+					// Yes
+					title = NLT.get( "administration.configureMobileApps" );
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, "", AdminAction.CONFIGURE_MOBILE_APPS );
 					
 					// Add this action to the "system" category
 					systemCategory.addAdminOption( adminAction );
@@ -6233,6 +6248,43 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Return a GwtMobileAppsConfiguration object that holds the mobile apps configuration data
+	 * 
+	 * @return
+	 */
+	public static GwtMobileAppsConfiguration getMobileAppsConfiguration( AllModulesInjected allModules )
+	{
+		GwtMobileAppsConfiguration gwtMobileAppsConfig;
+		MobileAppsConfig mobileAppsConfig;
+		ZoneConfig zoneConfig;
+		ZoneModule zoneModule;
+		
+		zoneModule = allModules.getZoneModule();
+		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+		mobileAppsConfig = zoneConfig.getMobileAppsConfig();
+		
+		gwtMobileAppsConfig = new GwtMobileAppsConfiguration();
+		
+		// Get the whether mobile apps are enabled.
+		gwtMobileAppsConfig.setMobileAppsEnabled( mobileAppsConfig.getMobileAppsEnabled() );
+		
+		// Get the setting that determines whether the mobile apps can remember the password
+		gwtMobileAppsConfig.setAllowCachePwd( mobileAppsConfig.getMobileAppsAllowCachePwd() );
+		
+		// Get the setting that determines if mobile apps can cache content.
+		gwtMobileAppsConfig.setAllowCacheContent( mobileAppsConfig.getMobileAppsAllowCacheContent() );
+
+		// Get the setting that determines if the mobile apps can play with other apps.
+		gwtMobileAppsConfig.setAllowPlayWithOtherApps( mobileAppsConfig.getMobileAppsAllowPlayWithOtherApps() );
+
+		// Get the Mobile Apps sync interval.
+		gwtMobileAppsConfig.setSyncInterval( mobileAppsConfig.getMobileAppsSyncInterval() );
+		
+		return gwtMobileAppsConfig;
+	}
+	
+	
+	/**
 	 * Returns the ID of the folder that a user will use as their My
 	 * Files container.
 	 * 
@@ -8799,6 +8851,7 @@ public class GwtServerHelper {
 		case GET_MAIN_PAGE_INFO:
 		case GET_MANAGE_USERS_INFO:
 		case GET_MICRO_BLOG_URL:
+		case GET_MOBILE_APPS_CONFIG:
 		case GET_MODIFY_BINDER_URL:
 		case GET_MY_FILES_CONTAINER_INFO:
 		case GET_MY_TASKS:
@@ -8888,6 +8941,7 @@ public class GwtServerHelper {
 		case SAVE_FOLDER_ENTRY_DLG_POSITION:
 		case SAVE_FOLDER_PINNING_STATE:
 		case SAVE_FOLDER_SORT:
+		case SAVE_MOBILE_APPS_CONFIGURATION:
 		case SAVE_PERSONAL_PREFERENCES:
 		case SAVE_SHARED_FILES_STATE:
 		case SAVE_SUBSCRIPTION_DATA:
@@ -9315,6 +9369,31 @@ public class GwtServerHelper {
 		}
 	}
 
+	/**
+	 * Save the given Mobile Apps configuration
+	 */
+	public static Boolean saveMobileAppsConfiguration(
+		AllModulesInjected allModules,
+		GwtMobileAppsConfiguration gwtMobileAppsConfig ) throws GwtTeamingException
+	{
+		AdminModule adminModule;
+		MobileAppsConfig mobileAppsConfig;
+		
+		adminModule = allModules.getAdminModule();
+		
+		mobileAppsConfig = new MobileAppsConfig();
+		mobileAppsConfig.setMobileAppsAllowCacheContent( gwtMobileAppsConfig.getAllowCacheContent() );
+		mobileAppsConfig.setMobileAppsAllowCachePwd( gwtMobileAppsConfig.getAllowCachePwd() );
+		mobileAppsConfig.setMobileAppsAllowPlayWithOtherApps( gwtMobileAppsConfig.getAllowPlayWithOtherApps() );
+		mobileAppsConfig.setMobileAppsEnabled( gwtMobileAppsConfig.getMobileAppsEnabled() );
+		mobileAppsConfig.setMobileAppsSyncInterval( gwtMobileAppsConfig.getSyncInterval() );
+		
+		adminModule.setMobileAppsConfig( mobileAppsConfig );
+
+		return Boolean.TRUE;
+	}
+	
+	
 	/**
 	 * Saves a search based on its tab ID and SavedSearchInfo.
 	 *
