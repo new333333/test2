@@ -117,15 +117,15 @@ public class UserActivityReportComposite extends ReportCompositeBase
 		super.createContent();
 		
 		// ...add the captions above the content...
-		InlineLabel il = buildInlineLabel(m_messages.userActivityReportCaption1(), "vibe-userActivityReportComposite-caption");
+		InlineLabel il = buildInlineLabel(m_messages.userActivityReportCaption1(), "vibe-reportCompositeBase-caption");
 		m_rootContent.add(il);
 		GwtClientHelper.addBR(m_rootContent, 2);
-		il = buildInlineLabel(m_messages.userActivityReportCaption2(), "vibe-userActivityReportComposite-caption");
+		il = buildInlineLabel(m_messages.userActivityReportCaption2(), "vibe-reportCompositeBase-caption");
 		m_rootContent.add(il);
 
 		// ...add a panel for the report widgets...
 		VibeFlowPanel fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-userActivityReportComposite-widgetsPanel");
+		fp.addStyleName("vibe-reportCompositeBase-widgetsPanel");
 		m_rootContent.add(fp);
 
 		// ...add a horizontal panel for the date selectors...
@@ -143,7 +143,7 @@ public class UserActivityReportComposite extends ReportCompositeBase
 		dates.add(m_beginDateBox);
 
 		// ...and 'and' between the two date selectors...
-		il = buildInlineLabel(m_messages.userActivityReportAndSeparator(), "vibe-userActivityReportComposite-andSeparator");
+		il = buildInlineLabel(m_messages.userActivityReportAndSeparator(), "vibe-reportCompositeBase-andSeparator");
 		dates.add(il);
 		
 		// ...and an ending date selector...
@@ -157,7 +157,7 @@ public class UserActivityReportComposite extends ReportCompositeBase
 		ft.setCellSpacing(2);
 		fp.add(ft);
 		ft.setWidget(0, 0, buildInlineLabel(m_messages.userActivityReportPeople(), "vibe-userActivityReportComposite-peopleLabel"));
-		FindCtrl.createAsync(this, GwtSearchCriteria.SearchType.PERSON, new FindCtrlClient() {			
+		FindCtrl.createAsync(this, GwtSearchCriteria.SearchType.USER, new FindCtrlClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -187,7 +187,7 @@ public class UserActivityReportComposite extends ReportCompositeBase
 		m_userList.setVisibleItemCount(3);
 		ft.setWidget(1, 1, m_userList);
 		Button removeBtn = new Button(m_messages.userActivityReportRemove());
-		removeBtn.addStyleName("vibe-userActivityReportComposite-peopleRemove");
+		removeBtn.addStyleName("vibe-reportCompositeBase-buttonBase vibe-userActivityReportComposite-peopleRemove");
 		removeBtn.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -231,7 +231,7 @@ public class UserActivityReportComposite extends ReportCompositeBase
 		
 		// ...add the 'Run Report' push button...
 		Button runReportBtn = new Button(m_messages.userActivityReportRunReport());
-		runReportBtn.addStyleName("vibe-userActivityReportComposite-runButton");
+		runReportBtn.addStyleName("vibe-reportCompositeBase-buttonBase vibe-reportCompositeBase-runButton");
 		runReportBtn.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {

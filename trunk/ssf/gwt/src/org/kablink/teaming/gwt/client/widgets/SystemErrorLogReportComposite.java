@@ -79,17 +79,17 @@ public class SystemErrorLogReportComposite extends ReportCompositeBase {
 		super.createContent();
 		
 		// ...add the captions above the content...
-		InlineLabel il = buildInlineLabel(m_messages.systemErrorLogReportCaption(), "vibe-systemErrorLogReportComposite-caption");
+		InlineLabel il = buildInlineLabel(m_messages.systemErrorLogReportCaption(), "vibe-reportCompositeBase-caption");
 		m_rootContent.add(il);
 
 		// ...add a panel for the report widgets...
 		VibeFlowPanel fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-systemErrorLogReportComposite-widgetsPanel");
+		fp.addStyleName("vibe-reportCompositeBase-widgetsPanel");
 		m_rootContent.add(fp);
 
 		// ...add the 'Run Report' push button...
 		Button runReportBtn = new Button(m_messages.systemErrorLogReportRunReport());
-		runReportBtn.addStyleName("vibe-systemErrorLogReportComposite-runButton");
+		runReportBtn.addStyleName("vibe-reportCompositeBase-buttonBase vibe-reportCompositeBase-runButton");
 		runReportBtn.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
