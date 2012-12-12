@@ -377,7 +377,7 @@ public class SelfResource extends AbstractFileResource {
             crit.add(buildFileNameCriterion(fileName));
         }
         SearchResultList<FileProperties> resultList = lookUpAttachments(crit, offset, maxCount, "/self/my_files/library_files", nextParams);
-        Long hiddenFolderId = SearchUtils.getMyFilesFolderId(this, getLoggedInUser().getWorkspaceId(), true);
+        Long hiddenFolderId = SearchUtils.getMyFilesFolderId(this, getLoggedInUser().getWorkspaceId(), false);
         if (hiddenFolderId!=null) {
             for (FileProperties file : resultList.getResults()) {
                 if (file.getBinder().getId().equals(hiddenFolderId)) {

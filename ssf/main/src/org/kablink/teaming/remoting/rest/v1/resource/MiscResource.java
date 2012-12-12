@@ -56,6 +56,7 @@ import org.kablink.teaming.rest.v1.model.RootRestObject;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.search.Constants;
 
 import java.io.InputStream;
@@ -98,11 +99,19 @@ public class MiscResource extends AbstractResource {
         ReleaseInfo releaseInfo = new ReleaseInfo();
         releaseInfo.setBuildDate(ResourceUtil.toCalendar(org.kablink.teaming.util.ReleaseInfo.getBuildDate()));
         releaseInfo.setBuildNumber(org.kablink.teaming.util.ReleaseInfo.getBuildNumber());
+        releaseInfo.setApplianceVersion(org.kablink.teaming.util.ReleaseInfo.getApplianceVersion());
+        releaseInfo.setApplianceBuildNumber(org.kablink.teaming.util.ReleaseInfo.getApplianceBuildNumber());
         releaseInfo.setContentVersion(org.kablink.teaming.util.ReleaseInfo.getContentVersion());
         releaseInfo.setLicenseRequiredEdition(org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition());
         releaseInfo.setProductName(org.kablink.teaming.util.ReleaseInfo.getName());
         releaseInfo.setProductVersion(org.kablink.teaming.util.ReleaseInfo.getVersion());
         releaseInfo.setServerStartTime(ResourceUtil.toCalendar(org.kablink.teaming.util.ReleaseInfo.getServerStartTime()));
+        String revStr = SPropsUtil.getString("rest.api.revision", "0");
+        try {
+            releaseInfo.setRestApiRevision(Integer.parseInt(revStr));
+        } catch (NumberFormatException e) {
+            releaseInfo.setRestApiRevision(0);
+        }
         return releaseInfo;
 	}
 

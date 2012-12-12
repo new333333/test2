@@ -185,13 +185,56 @@ public class ReleaseInfo {
 		DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, locale);
 		return buildReleaseInfoString(df.format(date));
 	}
-	
+
+    public static String getFilrApplianceReleaseInfo()
+    {
+        String version = getApplianceVersionString();
+        if ( version != null )
+        {
+            return NLT.get( "filr.appliance" ) + " " + version;
+        }
+        return null;
+    }
+
+    public static String getApplianceVersion()
+    {
+        String versionStr = getApplianceVersionString();
+        if ( versionStr != null )
+        {
+            int index = versionStr.lastIndexOf('.');
+            if (index>=0)
+            {
+                return versionStr.substring(0, index);
+            }
+            return versionStr;
+        }
+        return null;
+    }
+
+    public static Integer getApplianceBuildNumber()
+    {
+        String versionStr = getApplianceVersionString();
+        if ( versionStr != null )
+        {
+            int index = versionStr.lastIndexOf('.');
+            if (index>=0)
+            {
+                try {
+                    return Integer.parseInt(versionStr.substring(index + 1));
+                } catch (NumberFormatException e) {
+                    // Ignore
+                }
+            }
+        }
+        return null;
+    }
+
 	/**
 	 * Get the Filr appliance version and build as a string
 	 */
-	public static String getFilrApplianceReleaseInfo()
+	public static String getApplianceVersionString()
 	{
-		String releaseStr = null;
+		String version = null;
 		
 		// Are we running Filr?
 		if ( Utils.checkIfFilr() )
@@ -224,8 +267,7 @@ public class ReleaseInfo {
 					if ( name != null )
 					{
 						String nextLine;
-						String version = null;
-						
+
 						// Read the version = x.x.x line
 						nextLine = reader.readLine();
 						if ( nextLine != null )
@@ -242,11 +284,6 @@ public class ReleaseInfo {
 								
 								version = nextLine.substring( index );
 							}
-						}
-						
-						if ( version != null )
-						{
-							releaseStr = NLT.get( "filr.appliance" ) + " " + version;
 						}
 					}
 				}
@@ -266,7 +303,7 @@ public class ReleaseInfo {
 			}
 		}
 		
-		return releaseStr;
+		return version;
 	}
 
 	public static final boolean isLicenseRequiredEdition() {
