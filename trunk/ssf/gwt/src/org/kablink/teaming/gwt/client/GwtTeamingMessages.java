@@ -2324,6 +2324,7 @@ public interface GwtTeamingMessages extends Messages
 	String configureMobileAppsDlgAllowCachePwd();
 	String configureMobileAppsDlgAllowPlayWithOtherApps();
 	String configureMobileAppsDlgHeader();
+	String configureMobileAppsDlgHeader2();
 	String configureMobileAppsDlgOnSaveUnknownException( String err );
 	String configureMobileAppsSyncIntervalLabel();
 	String configureMobileAppsSyncMinutesLabel();

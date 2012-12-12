@@ -45,6 +45,9 @@ import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeRunAReportDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeUserShareSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -53,7 +56,7 @@ import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtMainPage;
-import org.kablink.teaming.gwt.client.GwtMobileAppsConfiguration;
+import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.AdminConsoleHomePage;
@@ -123,6 +126,9 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeManageGroupsDlgEvent.Handler,
 		InvokeManageUsersDlgEvent.Handler,
 		InvokeRunAReportDlgEvent.Handler,
+		InvokeUserDesktopSettingsDlgEvent.Handler,
+		InvokeUserMobileSettingsDlgEvent.Handler,
+		InvokeUserShareSettingsDlgEvent.Handler,
 		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
@@ -160,6 +166,9 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
 		TeamingEvents.INVOKE_MANAGE_USERS_DLG,
 		TeamingEvents.INVOKE_RUN_A_REPORT_DLG,
+		TeamingEvents.INVOKE_USER_DESKTOP_SETTINGS_DLG,
+		TeamingEvents.INVOKE_USER_MOBILE_SETTINGS_DLG,
+		TeamingEvents.INVOKE_USER_SHARE_SETTINGS_DLG,
 		
 		// Login/out events.
 		TeamingEvents.PRE_LOGOUT,
@@ -1406,10 +1415,10 @@ public class AdminControl extends TeamingPopupPanel
 			{
 				int x;
 				int y;
-				final GwtMobileAppsConfiguration mobileAppsConfiguration;
+				final GwtZoneMobileAppsConfig mobileAppsConfiguration;
 
 
-				mobileAppsConfiguration = (GwtMobileAppsConfiguration) response.getResponseData();
+				mobileAppsConfiguration = (GwtZoneMobileAppsConfig) response.getResponseData();
 				
 				// Get the position of the content control.
 				x = m_contentControlX;
@@ -1886,6 +1895,131 @@ public class AdminControl extends TeamingPopupPanel
 			// Simply initialize and show it.
 			RunAReportDlg.initAndShow( m_runAReportDlg, x, y );
 		}
+	}
+	
+	/**
+	 * Handles the InvokeUserDesktopSettingsDlgEvent
+	 */
+	@Override
+	public void onInvokeUserDesktopSettingsDlg( InvokeUserDesktopSettingsDlgEvent event )
+	{
+		Window.alert( "User desktop settings not yet implemented" );
+	}
+	
+	/**
+	 * Handles the InvokeUserMobileSettingsDlgEvent
+	 */
+	@Override
+	public void onInvokeUserMobileSettingsDlg( InvokeUserMobileSettingsDlgEvent event )
+	{
+		Window.alert( "user mobile settings not yet implemented" );
+		if ( event != null )
+			return;
+		
+		AsyncCallback<VibeRpcResponse> rpcReadCallback;
+		
+		// Create a callback that will be called when we get the mobile apps configuration.
+		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetMobileAppsConfiguration() );
+			}
+	
+			/**
+			 * We successfully retrieved the Mobile Apps configuration.  Now invoke the "Configure Mobile Apps" dialog.
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				int x;
+				int y;
+				final GwtZoneMobileAppsConfig mobileAppsConfiguration;
+
+
+				mobileAppsConfiguration = (GwtZoneMobileAppsConfig) response.getResponseData();
+				
+				// Get the position of the content control.
+				x = m_contentControlX;
+				y = m_contentControlY;
+				
+				// Have we already created a "Configure Mobile Apps" dialog?
+				if ( m_configureMobileAppsDlg == null )
+				{
+					int width;
+					int height;
+					
+					// No, create one.
+					height = m_dlgHeight;
+					width = m_dlgWidth;
+					ConfigureMobileAppsDlg.createAsync(
+													false, 
+													true,
+													x, 
+													y,
+													width,
+													height,
+													new ConfigureMobileAppsDlgClient()
+					{			
+						@Override
+						public void onUnavailable()
+						{
+							// Nothing to do.  Error handled in asynchronous provider.
+						}
+						
+						@Override
+						public void onSuccess( final ConfigureMobileAppsDlg cmaDlg )
+						{
+							ScheduledCommand cmd;
+							
+							cmd = new ScheduledCommand()
+							{
+								@Override
+								public void execute() 
+								{
+									m_configureMobileAppsDlg = cmaDlg;
+									
+									m_configureMobileAppsDlg.init( mobileAppsConfiguration );
+									m_configureMobileAppsDlg.show();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					} );
+				}
+				else
+				{
+					m_configureMobileAppsDlg.init( mobileAppsConfiguration );
+					m_configureMobileAppsDlg.setPopupPosition( x, y );
+					m_configureMobileAppsDlg.show();
+				}
+			}
+		};
+
+		// Issue an ajax request to get the Mobile Apps configuration.  When we get the Mobile Apps configuration
+		// we will invoke the "Configure Mobile Apps" dialog.
+		{
+			GetMobileAppsConfigCmd cmd;
+			
+			// Issue an ajax request to get the Mobile Apps configuration from the db.
+			cmd = new GetMobileAppsConfigCmd();
+			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
+		}
+	}
+	
+	/**
+	 * Handles the InvokeUserShareSettingsDlgEvent
+	 */
+	@Override
+	public void onInvokeUserShareSettingsDlg( InvokeUserShareSettingsDlgEvent event )
+	{
+		Window.alert( "user share settings not yet implemented" );
 	}
 	
 	/**
