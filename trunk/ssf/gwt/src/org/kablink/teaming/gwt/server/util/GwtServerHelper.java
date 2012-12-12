@@ -171,6 +171,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.Sys
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
+import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersStateRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUserSharingRightsInfoCmd.CombinedPerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersInfoRpcResponseData;
@@ -336,6 +337,12 @@ public class GwtServerHelper {
 	private static final String WIN32_TAIL_VIBE	= "novellvibedesktop/windows/x86/";
 	private static final String WIN64_TAIL_FILR	= "novellfilr/windows/x64/";
 	private static final String WIN64_TAIL_VIBE	= "novellvibedesktop/windows/x64/";
+	
+	// Keys used to store user management state in the session cache.
+	private static final String CACHED_MANAGE_USERS_SHOW_EXTERNAL	= "manageUsersShowExternal";
+	private static final String CACHED_MANAGE_USERS_SHOW_ENABLED	= "manageUsersShowEnabled";
+	private static final String CACHED_MANAGE_USERS_SHOW_DISABLED	= "manageUsersShowDisabled";
+	private static final String CACHED_MANAGE_USERS_SHOW_INTERNAL	= "manageUsersShowInternal";
 	
 	/**
 	 * Inner class used to compare two AssignmentInfo's.
@@ -6248,6 +6255,45 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Returns a ManageUsersStateRpcResponseData object
+	 * containing the information for managing users.
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ManageUsersStateRpcResponseData getManageUsersState(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
+		try {
+			HttpSession hSession = getCurrentHttpSession();
+			Boolean showExternal = ((Boolean) hSession.getAttribute(CACHED_MANAGE_USERS_SHOW_EXTERNAL));
+			Boolean showEnabled  = ((Boolean) hSession.getAttribute(CACHED_MANAGE_USERS_SHOW_ENABLED));
+			Boolean showDisabled = ((Boolean) hSession.getAttribute(CACHED_MANAGE_USERS_SHOW_DISABLED));
+			Boolean showInternal = ((Boolean) hSession.getAttribute(CACHED_MANAGE_USERS_SHOW_INTERNAL));
+
+			// Construct the ManageUsersStateRpcResponseData
+			// object to return.
+			ManageUsersStateRpcResponseData reply =
+				new ManageUsersStateRpcResponseData(
+					((null == showInternal) || showInternal),
+					((null == showExternal) || showExternal),
+					((null == showDisabled) || showDisabled),
+					((null == showEnabled)  || showEnabled));
+
+			// If we get here, reply refers to the
+			// ManageUsersStateRpcResponseData object
+			// containing the information about managing user.  Return
+			// it.
+			return reply;
+		}
+		catch (Exception ex) {
+			throw getGwtTeamingException(ex);
+		}		
+	}
+
+	/**
 	 * Return a GwtMobileAppsConfiguration object that holds the mobile apps configuration data
 	 * 
 	 * @return
@@ -8850,6 +8896,7 @@ public class GwtServerHelper {
 		case GET_LOGIN_INFO:
 		case GET_MAIN_PAGE_INFO:
 		case GET_MANAGE_USERS_INFO:
+		case GET_MANAGE_USERS_STATE:
 		case GET_MICRO_BLOG_URL:
 		case GET_MOBILE_APPS_CONFIG:
 		case GET_MODIFY_BINDER_URL:

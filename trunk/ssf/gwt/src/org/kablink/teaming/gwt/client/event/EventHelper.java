@@ -1289,6 +1289,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case MANAGE_USERS_FILTER:
+				// An ManageUsersFilterEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ManageUsersFilterEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ManageUsersFilterEvent.registerEvent(eventBus, ((ManageUsersFilterEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case MARK_ENTRY_READ:
 				// An MarkEntryReadEvent!  Can the event handler we
 				// were given handle that?
@@ -2267,6 +2276,7 @@ public class EventHelper {
 			
 			case GET_MANAGE_MENU_POPUP:                        hasHandler = (eventHandler instanceof GetManageMenuPopupEvent.Handler);                     break;
 			case HIDE_MANAGE_MENU:						       hasHandler = (eventHandler instanceof HideManageMenuEvent.Handler);		                   break;
+			case MANAGE_USERS_FILTER:                     	   hasHandler = (eventHandler instanceof ManageUsersFilterEvent.Handler);                 	   break;
 			case MENU_HIDE:                     		       hasHandler = (eventHandler instanceof MenuHideEvent.Handler);                 	           break;
 			case MENU_SHOW:                     		       hasHandler = (eventHandler instanceof MenuShowEvent.Handler);                               break;
 
