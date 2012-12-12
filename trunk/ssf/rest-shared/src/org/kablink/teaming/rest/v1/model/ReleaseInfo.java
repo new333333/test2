@@ -42,9 +42,12 @@ public class ReleaseInfo extends BaseRestObject {
    	private String productVersion;
    	private Integer buildNumber;
    	private Calendar buildDate;
+    private String applianceVersion;
+    private Integer applianceBuildNumber;
    	private Calendar serverStartTime;
    	private Boolean licenseRequiredEdition;
    	private String contentVersion;
+    private Integer restApiRevision;
 
     @XmlElement(name="build_date")
     public Calendar getBuildDate() {
@@ -107,5 +110,32 @@ public class ReleaseInfo extends BaseRestObject {
 
     public void setServerStartTime(Calendar serverStartTime) {
         this.serverStartTime = serverStartTime;
+    }
+
+    @XmlElement(name="rest_api_revision")
+    public Integer getRestApiRevision() {
+        return restApiRevision;
+    }
+
+    public void setRestApiRevision(Integer restApiRevision) {
+        this.restApiRevision = restApiRevision;
+    }
+
+    @XmlElement(name="appliance_version")
+    public String getApplianceVersion() {
+        return applianceVersion;
+    }
+
+    public void setApplianceVersion(String applianceVersion) {
+        this.applianceVersion = applianceVersion;
+    }
+
+    @XmlElement(name="appliance_build_number")
+    public Integer getApplianceBuildNumber() {
+        return applianceBuildNumber;
+    }
+
+    public void setApplianceBuildNumber(Integer applianceBuildNumber) {
+        this.applianceBuildNumber = applianceBuildNumber;
     }
 }
