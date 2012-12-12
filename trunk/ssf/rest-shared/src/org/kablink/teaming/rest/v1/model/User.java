@@ -52,6 +52,7 @@ public class User extends Principal {
    	private Long diskQuota;
    	private Long fileSizeLimit;
    	private Long diskSpaceUsed;
+    private Long diskSpaceQuota;
     private LongIdLinkPair hiddenFilesFolder;
    	private LongIdLinkPair workspace;
 
@@ -92,6 +93,15 @@ public class User extends Principal {
 
     public void setDiskSpaceUsed(Long diskSpaceUsed) {
         this.diskSpaceUsed = diskSpaceUsed;
+    }
+
+    @XmlElement(name="disk_space_quota")
+    public Long getDiskSpaceQuota() {
+        return diskSpaceQuota;
+    }
+
+    public void setDiskSpaceQuota(Long diskSpaceQuota) {
+        this.diskSpaceQuota = diskSpaceQuota;
     }
 
     @XmlElement(name="file_size_limit")
