@@ -121,6 +121,7 @@ Portals Bridges 1.0
 Portlet API 2.0 (2.0 refers to specification version, not library version, so we keep in in the file name)
 Quartz 1.8.5 (all)
 ridl.jar (from OpenOffice 2.0)
+rmiauth 1.0 (Adds username/password authentication on top of RMI; https://code.google.com/p/rmiauth)
 SAAJ 1.2 DO NOT UPGRADE (V1.2 used the ASL1.1, newer versions are from glassfish project which uses cppl and gpl2.0)
 Saxpath 1.0 (for ssfs)
 Servlet 3.0/JSP 2.2
