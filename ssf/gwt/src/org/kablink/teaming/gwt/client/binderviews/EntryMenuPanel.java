@@ -53,6 +53,8 @@ import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ManageUsersFilterEvent;
+import org.kablink.teaming.gwt.client.event.ManageUsersFilterEvent.ManageUsersFilter;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
@@ -86,6 +88,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderFiltersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetManageUsersStateCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersStateRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -93,6 +97,7 @@ import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg;
 import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -133,6 +138,8 @@ public class EntryMenuPanel extends ToolPanelBase
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private List<ToolbarItem>				m_configureToolbarItems;	//
 	private List<ToolbarItem>				m_toolbarItems;				//
+	private ManageUserFilterItems			m_manageUserFilters;		//
+	private ManageUsersStateRpcResponseData	m_manageUsersState;			//
 	private VibeFlexTable					m_grid;						//
 	private VibeFlowPanel					m_configPanel;				//
 	private VibeFlowPanel					m_filterOptionsPanel;		//
@@ -148,6 +155,55 @@ public class EntryMenuPanel extends ToolPanelBase
 	private VibeMenuItem					m_trashPurgeSelectedMenu;	//
 	private VibeMenuItem					m_trashRestoreAllMenu;		//
 	private VibeMenuItem					m_trashRestoreSelectedMenu;	//
+
+	/**
+	 * Inner class used to encapsulate the manage users filter items.
+	 */
+	public static class ManageUserFilterItems {
+		private VibeMenuItem	m_enabledFilter;	//
+		private VibeMenuItem	m_externalFilter;	//
+		private VibeMenuItem	m_disabledFilter;	//
+		private VibeMenuItem	m_internalFilter;	//
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param internal
+		 * @param external
+		 * @param disabled
+		 * @param enabled
+		 */
+		public ManageUserFilterItems(VibeMenuItem internal, VibeMenuItem external, VibeMenuItem disabled, VibeMenuItem enabled) {
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameters.
+			setInternalFilter(internal);
+			setExternalFilter(external);
+			setDisabledFilter(disabled);
+			setEnabledFilter( enabled );
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public VibeMenuItem getEnabledFilter()  {return m_enabledFilter; }
+		public VibeMenuItem getExternalFilter() {return m_externalFilter;}
+		public VibeMenuItem getDisabledFilter() {return m_internalFilter;}
+		public VibeMenuItem getInternalFilter() {return m_disabledFilter;}
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setEnabledFilter( VibeMenuItem enabled)  {m_enabledFilter  = enabled; }
+		public void setExternalFilter(VibeMenuItem external) {m_externalFilter = external;}
+		public void setDisabledFilter(VibeMenuItem disabled) {m_disabledFilter = disabled;}
+		public void setInternalFilter(VibeMenuItem internal) {m_internalFilter = internal;}
+	}
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -222,17 +278,62 @@ public class EntryMenuPanel extends ToolPanelBase
 		m_configPanel.addStyleName(m_isIE ? "displayInline" : "displayInlineBlock");
 		rightPanel.add(m_configPanel);
 	}
+
+	/*
+	 * Constructs the filter options menu, adds it to the filter
+	 * options panel and returns it.
+	 */
+	private PopupMenu constructFilterDropdownMenu(boolean canHaveCheckedItems) {
+		// Create the filter options menu bar...
+		VibeFlowPanel fp = new VibeFlowPanel();
+		fp.addStyleName("vibe-filterMenuBar vibe-entryMenuBar");
+		fp.addStyleName(m_isIE ? "displayInline" : "displayInlineBlock");
+		final Anchor a = new Anchor();
+		a.setTitle(m_messages.vibeEntryMenu_Alt_FilterOptions());
+		Image filterImg = new Image(m_images.menuButton());
+		filterImg.addStyleName("vibe-filterMenuImg");
+		filterImg.getElement().setAttribute("align", "absmiddle");
+		a.getElement().appendChild(filterImg.getElement());
+		final PopupMenu reply = new PopupMenu(true, false, canHaveCheckedItems);
+		reply.addStyleName("vibe-filterMenuBarDropDown");
+		a.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				reply.showRelativeToTarget(m_filterOptionsPanel);
+			}
+		});
+		fp.add(a);
+		m_filterOptionsPanel.add(fp);
+
+		// If we get here, reply refers to the filter options menu.
+		// Return it.
+		return reply;
+	}
+
+	/*
+	 * Constructs and returns a manauge users filter item.
+	 */
+	private VibeMenuItem constructManageUsersFilterItem(PopupMenu filterDropdownMenu, ManageUsersFilter muf, String mufText, boolean mufChecked) {
+		VibeMenuItem reply = filterDropdownMenu.addMenuItem(
+			new ManageUsersFilterEvent(muf),
+			null,
+			mufText);
+		reply.setCheckedState(mufChecked);
+		return reply;
+	}
 	
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public VibeFlowPanel getConfigPanel()        {return m_configPanel;       }
-	public VibeFlowPanel getFilterOptionsPanel() {return m_filterOptionsPanel;}
-	public VibeFlowPanel getFiltersPanel()       {return m_filtersPanel;      }
-	public VibeFlowPanel getQuickFilterPanel()   {return m_quickFilterPanel;  }
-	public VibeMenuItem  getAddFilesMenuItem()   {return m_addFilesMenu;      }
+	public ManageUserFilterItems           getManageUserFilters()  {return m_manageUserFilters; }
+	public ManageUsersStateRpcResponseData getManageUsersState()   {return m_manageUsersState;  }
+	public VibeFlowPanel                   getConfigPanel()        {return m_configPanel;       }
+	public VibeFlowPanel                   getFilterOptionsPanel() {return m_filterOptionsPanel;}
+	public VibeFlowPanel                   getFiltersPanel()       {return m_filtersPanel;      }
+	public VibeFlowPanel                   getQuickFilterPanel()   {return m_quickFilterPanel;  }
+	public VibeMenuItem                    getAddFilesMenuItem()   {return m_addFilesMenu;      }
 	
 
 	/**
@@ -341,17 +442,39 @@ public class EntryMenuPanel extends ToolPanelBase
 				
 				@Override
 				public void onSuccess(VibeRpcResponse response) {
-					// Store the filter information and continue loading.
+					// Store the filter information and continue
+					// loading.
 					m_binderFilters = ((BinderFiltersRpcResponseData) response.getResponseData());
+					loadPart3Async();
+				}
+			});
+		}
+
+		else if (m_binderInfo.isBinderProfilesRootWSManagement()) {
+			GwtClientHelper.executeCommand(
+					new GetManageUsersStateCmd(),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetManageUsersState());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Store the state information and continue
+					// loading.
+					m_manageUsersState = ((ManageUsersStateRpcResponseData) response.getResponseData());
 					loadPart3Async();
 				}
 			});
 		}
 		
 		else {
-			// No, we either working with a workspace or trash folder!
-			// No filtering.  Simply proceed with the next stop of
-			// loading.
+			// No, we either working with another workspace or trash
+			// folder!  No filtering.  Simply proceed with the next
+			// stop of loading.
 			loadPart3Async();
 		}
 	}
@@ -631,6 +754,23 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * current binder.
 	 */
 	private void renderDefinedFiltering() {
+		// If we're rendering the menu for managing users... 
+		if (ManageUsersDlg.SHOW_FILTER_OPTIONS && m_binderInfo.isBinderProfilesRootWSManagement()) {
+			// ...there are predefined filters that are specific to
+			// ...that.  Construct the filter drop down menu...
+			PopupMenu filterDropdownMenu = constructFilterDropdownMenu(true);	// true -> Items may be checked.
+			
+			// ...construct the menu items and store them so they can
+			// ...be easily accessed by the manage users dialog.
+			m_manageUserFilters = new ManageUserFilterItems(
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_INTERNAL_USERS, m_messages.vibeEntryMenu_ManageUsers_InternalFilter(), m_manageUsersState.isShowInternal()),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_EXTERNAL_USERS, m_messages.vibeEntryMenu_ManageUsers_ExternalFilter(), m_manageUsersState.isShowExternal()),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_DISABLED_USERS, m_messages.vibeEntryMenu_ManageUsers_DisabledFilter(), m_manageUsersState.isShowDisabled()),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_ENABLED_USERS,  m_messages.vibeEntryMenu_ManageUsers_EnabledFilter(),  m_manageUsersState.isShowEnabled()));
+			
+			return;
+		}
+		
 		// If we don't have any binder filter information...
 		if (null == m_binderFilters) {
 			// ...there's nothing to render.  Bail.
@@ -639,7 +779,7 @@ public class EntryMenuPanel extends ToolPanelBase
 
 		// If there aren't any filters defined and the user can't
 		// define any...
-		final List<BinderFilter> filtersList   = m_binderFilters.getBinderFilters(); int filtersCount = ((null == filtersList) ? 0 : filtersList.size());
+		final List<BinderFilter> filtersList   = m_binderFilters.getBinderFilters(); int     filtersCount     = ((null == filtersList) ? 0 : filtersList.size());
 		final String             filterEditUrl = m_binderFilters.getFilterEditUrl(); boolean hasFilterEditUrl = GwtClientHelper.hasString(filterEditUrl);
 		if ((0 == filtersCount) && (!hasFilterEditUrl)) {
 			// ...there's nothing to render.  Bail.
@@ -661,25 +801,7 @@ public class EntryMenuPanel extends ToolPanelBase
 		}
 		
 		// Create the filter options menu bar...
-		VibeFlowPanel fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-filterMenuBar vibe-entryMenuBar");
-		fp.addStyleName(m_isIE ? "displayInline" : "displayInlineBlock");
-		final Anchor a = new Anchor();
-		a.setTitle(m_messages.vibeEntryMenu_Alt_FilterOptions());
-		Image filterImg = new Image(m_images.menuButton());
-		filterImg.addStyleName("vibe-filterMenuImg");
-		filterImg.getElement().setAttribute("align", "absmiddle");
-		a.getElement().appendChild(filterImg.getElement());
-		final PopupMenu filterDropdownMenu = new PopupMenu(true, false, false);
-		filterDropdownMenu.addStyleName("vibe-filterMenuBarDropDown");
-		a.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				filterDropdownMenu.showRelativeToTarget(m_filterOptionsPanel);
-			}
-		});
-		fp.add(a);
-		m_filterOptionsPanel.add(fp);
+		PopupMenu filterDropdownMenu = constructFilterDropdownMenu(false);	// false -> Items aren't checked.
 		
 		// If we have an edit filters URL...
 		if (hasFilterEditUrl) {

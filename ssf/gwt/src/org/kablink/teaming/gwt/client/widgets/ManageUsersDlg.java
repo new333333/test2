@@ -92,6 +92,8 @@ public class ManageUsersDlg extends DlgBox
 		SetSelectedUserShareRightsEvent.Handler,
 		SetSelectedUserShareSettingsEvent.Handler
 {
+	public final static boolean	SHOW_FILTER_OPTIONS	= false;	//! DRF:  Leave false on checkin until I get this working.
+	
 	private boolean							m_dlgAttached;				//
 	private boolean							m_viewReady;				//
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.

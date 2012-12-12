@@ -153,6 +153,7 @@ public enum TeamingEvents implements IsSerializable {
 	
 	GET_MANAGE_MENU_POPUP,							// Returns the manage menu (Workspace or Folder) currently loaded in the main menu bar.
 	HIDE_MANAGE_MENU,								// Hides the manage menu loaded in the main menu bar.
+	MANAGE_USERS_FILTER,							// Set or clears a filter in the manage users dialog.
 	MENU_HIDE,										// Hides the main menu
 	MENU_SHOW,										// Shows the main menu
 

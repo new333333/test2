@@ -406,6 +406,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetLocale();
 	String rpcFailure_GetMainPageInfo();
 	String rpcFailure_GetManageUsersInfo();
+	String rpcFailure_GetManageUsersState();
 	String rpcFailure_GetMobileAppsConfiguration();
 	String rpcFailure_GetMyFilesContainerInfo();
 	String rpcFailure_GetMyTeams();
@@ -1571,6 +1572,10 @@ public interface GwtTeamingMessages extends Messages
 	String vibeEntryMenu_ClearFilters();
 	String vibeEntryMenu_GlobalizeFilter(String filterName);
 	String vibeEntryMenu_ManageFilters();
+	String vibeEntryMenu_ManageUsers_EnabledFilter();
+	String vibeEntryMenu_ManageUsers_ExternalFilter();
+	String vibeEntryMenu_ManageUsers_DisabledFilter();
+	String vibeEntryMenu_ManageUsers_InternalFilter();
 	String vibeEntryMenu_PersonalizeFilter(String filterName);
 	String vibeEntryMenu_Warning_FoldersIgnored();
 	String vibeEntryMenu_Warning_OnlyFolders();

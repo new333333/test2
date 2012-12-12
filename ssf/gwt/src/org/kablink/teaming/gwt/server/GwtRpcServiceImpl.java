@@ -1520,6 +1520,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_MANAGE_USERS_STATE:
+		{
+			ManageUsersStateRpcResponseData result = GwtServerHelper.getManageUsersState( this, getRequest( ri ) );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_MAIN_PAGE_INFO:
 		{
 			GetMainPageInfoCmd gcwCmd = ((GetMainPageInfoCmd) cmd);
