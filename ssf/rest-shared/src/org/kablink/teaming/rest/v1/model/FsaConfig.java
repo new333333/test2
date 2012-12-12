@@ -43,9 +43,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "fsa_config")
 public class FsaConfig {
     private Boolean enabled;
+    private Boolean allowCachedPassword;
    	private Integer syncInterval;
    	private String autoUpdateUrl;
-   	private Long maxFileSize;
+   	private Integer maxFileSize;
 
     @XmlElement(name="auto_update_url")
     public String getAutoUpdateUrl() {
@@ -65,12 +66,21 @@ public class FsaConfig {
         this.enabled = enabled;
     }
 
+    @XmlElement(name="allow_cached_password")
+    public Boolean getAllowCachedPassword() {
+        return allowCachedPassword;
+    }
+
+    public void setAllowCachedPassword(Boolean allowCachedPassword) {
+        this.allowCachedPassword = allowCachedPassword;
+    }
+
     @XmlElement(name="max_file_size")
-    public Long getMaxFileSize() {
+    public Integer getMaxFileSize() {
         return maxFileSize;
     }
 
-    public void setMaxFileSize(Long maxFileSize) {
+    public void setMaxFileSize(Integer maxFileSize) {
         this.maxFileSize = maxFileSize;
     }
 

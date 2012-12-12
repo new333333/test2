@@ -104,6 +104,7 @@ public class SelfResource extends AbstractFileResource {
         Principal entry = getLoggedInUser();
 
         User user = ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry, includeAttachments, textDescriptions);
+        user.setDiskSpaceQuota(getProfileModule().getMaxUserQuota(entry.getId()));
         user.setLink("/self");
         user.addAdditionalLink("roots", "/self/roots");
         if (user.getWorkspace()!=null) {
