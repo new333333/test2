@@ -32,44 +32,24 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
-
+import java.util.ArrayList;
 
 /**
- * This class holds all of the information necessary to execute the "Save Mobile Apps Configuration" command.
- * 
+ * This class holds all of the information necessary to execute the "Get User Mobile Apps Config" command.
  * @author jwootton
  *
  */
-public class SaveMobileAppsConfigurationCmd extends VibeRpcCmd
+public class GetUserMobileAppsConfigCmd extends VibeRpcCmd
 {
-	private GwtZoneMobileAppsConfig m_mobileAppsConfiguration;
+	private ArrayList<Long> m_userIds;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
-	public SaveMobileAppsConfigurationCmd()
+	public GetUserMobileAppsConfigCmd()
 	{
 		super();
 	}
-	
-	/**
-	 * 
-	 */
-	public SaveMobileAppsConfigurationCmd( GwtZoneMobileAppsConfig mobileAppsConfiguration )
-	{
-		this();
-		m_mobileAppsConfiguration = mobileAppsConfiguration;
-	}
-	
-	/**
-	 * 
-	 */
-	public GwtZoneMobileAppsConfig getMobileAppsConfiguration()
-	{
-		return m_mobileAppsConfiguration;
-	}
-	
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -81,6 +61,28 @@ public class SaveMobileAppsConfigurationCmd extends VibeRpcCmd
 	@Override
 	public int getCmdType()
 	{
-		return VibeRpcCmdType.SAVE_MOBILE_APPS_CONFIGURATION.ordinal();
+		return VibeRpcCmdType.GET_MOBILE_APPS_CONFIG.ordinal();
+	}
+	
+	/**
+	 * 
+	 */
+	public ArrayList<Long> getUserIds()
+	{
+		return m_userIds;
+	}
+	
+	/**
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	public void setUserIds( ArrayList<Long> userIds )
+	{
+		if ( userIds != null )
+		{
+			m_userIds = (ArrayList<Long>) userIds.clone();
+		}
+		else
+			m_userIds = null;
 	}
 }

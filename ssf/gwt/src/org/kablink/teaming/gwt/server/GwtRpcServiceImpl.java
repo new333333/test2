@@ -72,7 +72,7 @@ import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
-import org.kablink.teaming.gwt.client.GwtMobileAppsConfiguration;
+import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
@@ -1550,7 +1550,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_MOBILE_APPS_CONFIG:
 		{
-			GwtMobileAppsConfiguration mobileAppsConfiguration; 
+			GwtZoneMobileAppsConfig mobileAppsConfiguration; 
 
 			mobileAppsConfiguration = GwtServerHelper.getMobileAppsConfiguration( this );
 			response = new VibeRpcResponse( mobileAppsConfiguration );

@@ -30,57 +30,95 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.rpc.shared;
+package org.kablink.teaming.gwt.client;
 
-import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
+
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This class holds all of the information necessary to execute the "Save Mobile Apps Configuration" command.
- * 
+ * This class is used to hold the Mobile applications Configuration data stored in a user's properties.
  * @author jwootton
  *
  */
-public class SaveMobileAppsConfigurationCmd extends VibeRpcCmd
+public class GwtUserMobileAppsConfig
+	implements IsSerializable, VibeRpcResponseData
 {
-	private GwtZoneMobileAppsConfig m_mobileAppsConfiguration;
+	private boolean m_mobileAppsEnabled = true;
+	private boolean m_allowCachePwd = true;
+	private boolean m_allowCacheContent = true;
+	private boolean m_allowPlayWithOtherApps = true;
 	
 	/**
-	 * For GWT serialization, must have a zero param contructor
+	 * 
 	 */
-	public SaveMobileAppsConfigurationCmd()
+	public GwtUserMobileAppsConfig()
 	{
-		super();
+	}
+
+	/**
+	 * 
+	 */
+	public boolean getAllowCacheContent()
+	{
+		return m_allowCacheContent;
 	}
 	
 	/**
 	 * 
 	 */
-	public SaveMobileAppsConfigurationCmd( GwtZoneMobileAppsConfig mobileAppsConfiguration )
+	public boolean getAllowCachePwd()
 	{
-		this();
-		m_mobileAppsConfiguration = mobileAppsConfiguration;
+		return m_allowCachePwd;
 	}
 	
 	/**
 	 * 
 	 */
-	public GwtZoneMobileAppsConfig getMobileAppsConfiguration()
+	public boolean getAllowPlayWithOtherApps()
 	{
-		return m_mobileAppsConfiguration;
+		return m_allowPlayWithOtherApps;
 	}
 	
+	/**
+	 * 
+	 */
+	public boolean getMobileAppsEnabled()
+	{
+		return m_mobileAppsEnabled;
+	}
 	
 	/**
-	 * Returns the command's enumeration value.
 	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
 	 */
-	@Override
-	public int getCmdType()
+	public void setAllowCacheContent( boolean allow )
 	{
-		return VibeRpcCmdType.SAVE_MOBILE_APPS_CONFIGURATION.ordinal();
+		m_allowCacheContent = allow;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAllowCachePwd( boolean allow )
+	{
+		m_allowCachePwd = allow;
+	}
+
+	/**
+	 * 
+	 */
+	public void setAllowPlayWithOtherApps( boolean allow )
+	{
+		m_allowPlayWithOtherApps = allow;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setMobileAppsEnabled( boolean enabled )
+	{
+		m_mobileAppsEnabled = enabled;
 	}
 }

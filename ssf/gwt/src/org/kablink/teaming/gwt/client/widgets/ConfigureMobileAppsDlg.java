@@ -33,7 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
-import org.kablink.teaming.gwt.client.GwtMobileAppsConfiguration;
+import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveMobileAppsConfigurationCmd;
@@ -49,7 +49,6 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -111,19 +110,22 @@ public class ConfigureMobileAppsDlg extends DlgBox
 	{
 		GwtTeamingMessages messages;
 		FlowPanel mainPanel = null;
-		FlexTable table;
-		int nextRow;
+		FlowPanel ckboxPanel;
+		FlowPanel tmpPanel;
+		Label label;
 
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 		
-		table = new FlexTable();
-		table.setCellSpacing( 4 );
-		table.addStyleName( "dlgContent" );
+		label = new Label( messages.configureMobileAppsDlgHeader2() );
+		mainPanel.add( label );
 		
-		nextRow = 0;
+		ckboxPanel = new FlowPanel();
+		ckboxPanel.addStyleName( "marginleft1" );
+		ckboxPanel.addStyleName( "marginbottom2" );
+		mainPanel.add( ckboxPanel );
 		
 		// Add the controls for the "allow mobile applications to access Filr"
 		{
@@ -134,25 +136,28 @@ public class ConfigureMobileAppsDlg extends DlgBox
 				productName = "Filr";
 			
 			m_enableMobileAppsAccessCB = new CheckBox( messages.configureMobileAppsDlgAllowAccess( productName ) );
-			
-			table.setWidget( nextRow, 0, m_enableMobileAppsAccessCB );
-			++nextRow;
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_enableMobileAppsAccessCB );
+			ckboxPanel.add( tmpPanel );
 		}
 		
 		// Create the "Allow mobile applications to cache password"
 		m_allowPwdCacheCB = new CheckBox( messages.configureMobileAppsDlgAllowCachePwd() );
-		table.setWidget( nextRow, 0, m_allowPwdCacheCB );
-		++nextRow;
+		tmpPanel = new FlowPanel();
+		tmpPanel.add( m_allowPwdCacheCB );
+		ckboxPanel.add( tmpPanel );
 		
 		// Create the "Allow mobile applications to cache content offline"
 		m_allowOfflineContentCB = new CheckBox( messages.configureMobileAppsDlgAllowCacheContent() );
-		table.setWidget( nextRow, 0, m_allowOfflineContentCB );
-		++nextRow;
+		tmpPanel = new FlowPanel();
+		tmpPanel.add( m_allowOfflineContentCB );
+		ckboxPanel.add( tmpPanel );
 		
 		// Create the "Allow mobile applications to interact with other applications"
 		m_allowPlayWithOtherAppsCB = new CheckBox( messages.configureMobileAppsDlgAllowPlayWithOtherApps() );
-		table.setWidget( nextRow, 0, m_allowPlayWithOtherAppsCB );
-		++nextRow;
+		tmpPanel = new FlowPanel();
+		tmpPanel.add( m_allowPlayWithOtherAppsCB );
+		ckboxPanel.add( tmpPanel );
 		
 		// Create the controls for sync interval
 		{
@@ -174,11 +179,8 @@ public class ConfigureMobileAppsDlg extends DlgBox
 			intervalLabel = new Label( messages.configureMobileAppsSyncMinutesLabel() );
 			hPanel.add( intervalLabel );
 			
-			table.setWidget( nextRow, 0, hPanel );
-			++nextRow;
+			mainPanel.add( hPanel );
 		}
-		
-		mainPanel.add( table );
 		
 		return mainPanel;
 	}
@@ -190,10 +192,10 @@ public class ConfigureMobileAppsDlg extends DlgBox
 	public boolean editSuccessful( Object obj )
 	{
 		AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
-		GwtMobileAppsConfiguration mobileAppsConfig;
+		GwtZoneMobileAppsConfig mobileAppsConfig;
 		SaveMobileAppsConfigurationCmd cmd;
 
-		mobileAppsConfig = (GwtMobileAppsConfiguration) obj;
+		mobileAppsConfig = (GwtZoneMobileAppsConfig) obj;
 		
 		// Create the callback that will be used when we issue an ajax request to save the mobile apps configuration.
 		rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
@@ -276,9 +278,9 @@ public class ConfigureMobileAppsDlg extends DlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
-		GwtMobileAppsConfiguration mobileAppsConfig;
+		GwtZoneMobileAppsConfig mobileAppsConfig;
 		
-		mobileAppsConfig = new GwtMobileAppsConfiguration();
+		mobileAppsConfig = new GwtZoneMobileAppsConfig();
 
 		// Get whether mobile apps can access Filr
 		mobileAppsConfig.setMobileAppsEnabled( getMobileAppsEnabled() );
@@ -337,7 +339,7 @@ public class ConfigureMobileAppsDlg extends DlgBox
 	/**
 	 * Initialize the controls in the dialog with the values from the given values.
 	 */
-	public void init( GwtMobileAppsConfiguration mobileAppsConfiguration )
+	public void init( GwtZoneMobileAppsConfig mobileAppsConfiguration )
 	{
 		int interval;
 		

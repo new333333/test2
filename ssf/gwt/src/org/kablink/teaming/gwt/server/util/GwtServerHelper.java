@@ -133,7 +133,7 @@ import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
-import org.kablink.teaming.gwt.client.GwtMobileAppsConfiguration;
+import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
@@ -6252,9 +6252,9 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static GwtMobileAppsConfiguration getMobileAppsConfiguration( AllModulesInjected allModules )
+	public static GwtZoneMobileAppsConfig getMobileAppsConfiguration( AllModulesInjected allModules )
 	{
-		GwtMobileAppsConfiguration gwtMobileAppsConfig;
+		GwtZoneMobileAppsConfig gwtMobileAppsConfig;
 		MobileAppsConfig mobileAppsConfig;
 		ZoneConfig zoneConfig;
 		ZoneModule zoneModule;
@@ -6263,7 +6263,7 @@ public class GwtServerHelper {
 		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
 		mobileAppsConfig = zoneConfig.getMobileAppsConfig();
 		
-		gwtMobileAppsConfig = new GwtMobileAppsConfiguration();
+		gwtMobileAppsConfig = new GwtZoneMobileAppsConfig();
 		
 		// Get the whether mobile apps are enabled.
 		gwtMobileAppsConfig.setMobileAppsEnabled( mobileAppsConfig.getMobileAppsEnabled() );
@@ -9374,7 +9374,7 @@ public class GwtServerHelper {
 	 */
 	public static Boolean saveMobileAppsConfiguration(
 		AllModulesInjected allModules,
-		GwtMobileAppsConfiguration gwtMobileAppsConfig ) throws GwtTeamingException
+		GwtZoneMobileAppsConfig gwtMobileAppsConfig ) throws GwtTeamingException
 	{
 		AdminModule adminModule;
 		MobileAppsConfig mobileAppsConfig;
