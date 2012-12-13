@@ -3799,6 +3799,10 @@ public class BinderHelper {
 		if (tabData.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) options.put(ObjectKeys.SEARCH_SORT_DESCEND, tabData.get(ObjectKeys.SEARCH_SORT_DESCEND));
 		if (tabData.containsKey(ObjectKeys.SEARCH_SORT_BY_SECONDARY)) options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY, tabData.get(ObjectKeys.SEARCH_SORT_BY_SECONDARY));
 		if (tabData.containsKey(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY)) options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, tabData.get(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY));
+		if (tabData.containsKey(ObjectKeys.SEARCH_SCOPE)) options.put(ObjectKeys.SEARCH_SCOPE, tabData.get(ObjectKeys.SEARCH_SCOPE));
+		if (tabData.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS)) options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, tabData.get(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS));
+		if (tabData.containsKey(ObjectKeys.SEARCH_CRITERIA_AND)) options.put(ObjectKeys.SEARCH_CRITERIA_AND, tabData.get(ObjectKeys.SEARCH_CRITERIA_AND));
+		if (tabData.containsKey(ObjectKeys.SEARCH_CRITERIA_OR)) options.put(ObjectKeys.SEARCH_CRITERIA_OR, tabData.get(ObjectKeys.SEARCH_CRITERIA_OR));
 		return options;
 	}
 	
