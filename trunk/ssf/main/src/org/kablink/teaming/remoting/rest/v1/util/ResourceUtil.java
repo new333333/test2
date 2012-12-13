@@ -370,7 +370,7 @@ public class ResourceUtil {
         fsaConfig.setAutoUpdateUrl(config.getFsaAutoUpdateUrl());
         fsaConfig.setEnabled(config.getFsaEnabled());
         fsaConfig.setSyncInterval(config.getFsaSynchInterval());
-        fsaConfig.setMaxFileSize(config.getFsaMaxFileSize());
+        fsaConfig.setMaxFileSize(config.getFsaMaxFileSize() * 1024 * 1024);
         fsaConfig.setAllowCachedPassword(config.getFsaAllowCachePwd());
         modelConfig.setFsaConfig(fsaConfig);
 
