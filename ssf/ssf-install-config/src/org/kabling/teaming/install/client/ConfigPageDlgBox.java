@@ -34,6 +34,8 @@ public abstract class ConfigPageDlgBox extends DlgBox implements EditSuccessfulH
 		showHeaderCloseButton(false);
 
 		AppUtil.getInstallService().getConfiguration(getConfigCallback);
+		
+		addStyleName("configPageDlgBox");
 	}
 
 	public ConfigPageDlgBox(DlgButtonMode mode )
@@ -44,6 +46,8 @@ public abstract class ConfigPageDlgBox extends DlgBox implements EditSuccessfulH
 		showHeaderCloseButton(false);
 
 		AppUtil.getInstallService().getConfiguration(getConfigCallback);
+		
+		addStyleName("configPageDlgBox");
 	}
 	
 	/**
