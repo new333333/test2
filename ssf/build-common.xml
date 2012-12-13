@@ -117,6 +117,7 @@
 			srcdir="${source.dir}"
 			source="${javac.source}"
 			target="${javac.target}"
+			encoding="UTF-8"
 		/>
 	</target>
 
@@ -135,6 +136,7 @@
 			srcdir="${source.dir}"
 			source="1.4"
 			target="1.4"
+			encoding="UTF-8"
 		/>
 	</target>
 
@@ -213,7 +215,8 @@
 			fork="${javac.fork}"
 			memoryMaximumSize="${javac.memoryMaximumSize}"
 			nowarn="${javac.nowarn}"
-			srcdir="${test.source.dir}">
+			srcdir="${test.source.dir}"
+			encoding="UTF-8">
 			<classpath location="${test.classes.dir}"/>
 			<classpath refid="project.classpath"/>
 		</javac>
