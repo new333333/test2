@@ -34,40 +34,38 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
- * This class holds the response data for RPC commands that return the
- * management state of the profiles root binder.
+ * This class holds all of the information necessary to execute the
+ * 'save manage users state' command.
  * 
  * @author drfoster@novell.com
  */
-public class ManageUsersStateRpcResponseData implements IsSerializable, VibeRpcResponseData {
+public class SaveManageUsersStateCmd extends VibeRpcCmd {
 	private ManageUsersState	m_manageUsersState;	//
 	
 	/**
-	 * Class constructor.
+	 * Constructor methods.
 	 * 
-	 * For GWT serialization, must have a zero parameter
-	 * constructor.
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public ManageUsersStateRpcResponseData() {
+	public SaveManageUsersStateCmd() {
+		// Initialize the super class.
 		super();
 	}
-
+	
 	/**
-	 * Class constructor.
+	 * Constructor methods.
 	 * 
 	 * @param mus
 	 */
-	public ManageUsersStateRpcResponseData(ManageUsersState mus) {
+	public SaveManageUsersStateCmd(ManageUsersState mus) {
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameters.
+		// ...and store the parameter.
 		setManageUsersState(mus);
 	}
-	
+
 	/**
 	 * Class constructor.
 	 * 
@@ -76,7 +74,7 @@ public class ManageUsersStateRpcResponseData implements IsSerializable, VibeRpcR
 	 * @param showDisabled
 	 * @param showEnabled
 	 */
-	public ManageUsersStateRpcResponseData(boolean showInternal, boolean showExternal, boolean showDisabled, boolean showEnabled) {
+	public SaveManageUsersStateCmd(boolean showInternal, boolean showExternal, boolean showDisabled, boolean showEnabled) {
 		// Initialize this object.
 		this(
 			new ManageUsersState(
@@ -92,11 +90,23 @@ public class ManageUsersStateRpcResponseData implements IsSerializable, VibeRpcR
 	 * @return
 	 */
 	public ManageUsersState getManageUsersState() {return m_manageUsersState;}
-
+	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
 	public void setManageUsersState(ManageUsersState mus) {m_manageUsersState = mus;}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_MANAGE_USERS_STATE.ordinal();
+	}
 }

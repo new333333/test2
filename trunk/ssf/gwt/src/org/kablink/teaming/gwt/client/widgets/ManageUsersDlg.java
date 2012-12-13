@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
 import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspacesView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
@@ -47,6 +48,7 @@ import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserShareSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.ManageUsersFilterEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserDesktopSettingsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserMobileSettingsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserShareRightsEvent;
@@ -57,9 +59,11 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetManageUsersInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveManageUsersStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ImportProfilesDlg.ImportProfilesDlgClient;
 import org.kablink.teaming.gwt.client.widgets.UserShareRightsDlg.UserShareRightsDlgClient;
@@ -85,8 +89,9 @@ public class ManageUsersDlg extends DlgBox
 		AdministrationExitEvent.Handler,
 		CheckManageUsersActiveEvent.Handler,
 		FullUIReloadEvent.Handler,
-		InvokeImportProfilesDlgEvent.Handler,
 		GetManageUsersTitleEvent.Handler,
+		ManageUsersFilterEvent.Handler,
+		InvokeImportProfilesDlgEvent.Handler,
 		SetSelectedUserDesktopSettingsEvent.Handler,
 		SetSelectedUserMobileSettingsEvent.Handler,
 		SetSelectedUserShareRightsEvent.Handler,
@@ -121,8 +126,9 @@ public class ManageUsersDlg extends DlgBox
 		TeamingEvents.ADMINISTRATION_EXIT,
 		TeamingEvents.CHECK_MANAGE_USERS_ACTIVE,
 		TeamingEvents.FULL_UI_RELOAD,
-		TeamingEvents.INVOKE_IMPORT_PROFILES_DLG,
 		TeamingEvents.GET_MANAGE_USERS_TITLE,
+		TeamingEvents.MANAGE_USERS_FILTER,
+		TeamingEvents.INVOKE_IMPORT_PROFILES_DLG,
 		TeamingEvents.SET_SELECTED_USER_DESKTOP_SETTINGS,
 		TeamingEvents.SET_SELECTED_USER_MOBILE_SETTINGS,
 		TeamingEvents.SET_SELECTED_USER_SHARE_RIGHTS,
@@ -314,6 +320,45 @@ public class ManageUsersDlg extends DlgBox
 	@Override
 	public void onGetManageUsersTitle(GetManageUsersTitleEvent event) {
 		event.getManageUsersTitleCallback().manageUsersTitle(m_manageUsersInfo.getAdminActionTitle());
+	}
+
+	/**
+	 * Handles ManageUsersFilterEvent's received by this class.
+	 * 
+	 * Implements the ManageUsersFilterEvent.Handler.onManageUsersFilter() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onManageUsersFilter(ManageUsersFilterEvent event) {
+		// Toggle the appropriate state...
+		EntryMenuPanel		emp = m_pwsView.getEntryMenuPanel();
+		ManageUsersState	mus = emp.getManageUsersState().createCopy();
+		switch (event.getManageUsersFilter()) {
+		case SHOW_DISABLED_USERS:  mus.setShowDisabled(!(mus.isShowDisabled())); break;
+		case SHOW_ENABLED_USERS:   mus.setShowEnabled( !(mus.isShowEnabled()));  break;
+		case SHOW_EXTERNAL_USERS:  mus.setShowExternal(!(mus.isShowExternal())); break;
+		case SHOW_INTERNAL_USERS:  mus.setShowInternal(!(mus.isShowInternal())); break;
+		}
+
+		// ...save it...
+		GwtClientHelper.executeCommand(
+				new SaveManageUsersStateCmd(mus),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				// No!  Tell the user about the problem...
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_SaveManageUsersState());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// ...and force a UI refresh.
+				FullUIReloadEvent.fireOneAsync();
+			}
+		});
 	}
 
 	/**

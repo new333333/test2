@@ -202,6 +202,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.util.MilestoneStats;
 import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
@@ -300,8 +301,6 @@ import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.servlet.StringServletResponse;
-
-import static org.kablink.util.search.Restrictions.in;
 
 /**
  * Helper methods for the GWT UI server code.
@@ -8925,6 +8924,7 @@ public class GwtServerHelper {
 		case SAVE_FOLDER_ENTRY_DLG_POSITION:
 		case SAVE_FOLDER_PINNING_STATE:
 		case SAVE_FOLDER_SORT:
+		case SAVE_MANAGE_USERS_STATE:
 		case SAVE_MOBILE_APPS_CONFIGURATION:
 		case SAVE_PERSONAL_PREFERENCES:
 		case SAVE_SHARED_FILES_STATE:
@@ -9351,6 +9351,32 @@ public class GwtServerHelper {
 		catch (Exception ex) {
 			throw getGwtTeamingException(ex);
 		}
+	}
+
+	/**
+	 * Stores the values from a ManageUsersState object in the session cache.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param mus
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean saveManageUsersState(AllModulesInjected bs, HttpServletRequest request, ManageUsersState mus) throws GwtTeamingException {
+		try {
+			// Store/remove the values from the cache and return true.
+			HttpSession hSession = getCurrentHttpSession();
+			if (mus.isShowDisabled()) hSession.removeAttribute(CACHED_MANAGE_USERS_SHOW_DISABLED); else hSession.setAttribute(CACHED_MANAGE_USERS_SHOW_DISABLED, Boolean.FALSE);
+			if (mus.isShowEnabled())  hSession.removeAttribute(CACHED_MANAGE_USERS_SHOW_ENABLED);  else hSession.setAttribute(CACHED_MANAGE_USERS_SHOW_ENABLED,  Boolean.FALSE);
+			if (mus.isShowExternal()) hSession.removeAttribute(CACHED_MANAGE_USERS_SHOW_EXTERNAL); else hSession.setAttribute(CACHED_MANAGE_USERS_SHOW_EXTERNAL, Boolean.FALSE);
+			if (mus.isShowInternal()) hSession.removeAttribute(CACHED_MANAGE_USERS_SHOW_INTERNAL); else hSession.setAttribute(CACHED_MANAGE_USERS_SHOW_INTERNAL, Boolean.FALSE);
+			return Boolean.TRUE;
+		}
+		catch (Exception ex) {
+			throw getGwtTeamingException(ex);
+		}		
 	}
 
 	/**

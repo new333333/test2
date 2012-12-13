@@ -95,6 +95,7 @@ import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg;
@@ -139,7 +140,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	private List<ToolbarItem>				m_configureToolbarItems;	//
 	private List<ToolbarItem>				m_toolbarItems;				//
 	private ManageUserFilterItems			m_manageUserFilters;		//
-	private ManageUsersStateRpcResponseData	m_manageUsersState;			//
+	private ManageUsersState				m_manageUsersState;			//
 	private VibeFlexTable					m_grid;						//
 	private VibeFlowPanel					m_configPanel;				//
 	private VibeFlowPanel					m_filterOptionsPanel;		//
@@ -311,7 +312,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	}
 
 	/*
-	 * Constructs and returns a manauge users filter item.
+	 * Constructs and returns a manage users filter item.
 	 */
 	private VibeMenuItem constructManageUsersFilterItem(PopupMenu filterDropdownMenu, ManageUsersFilter muf, String mufText, boolean mufChecked) {
 		VibeMenuItem reply = filterDropdownMenu.addMenuItem(
@@ -327,13 +328,13 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * 
 	 * @return
 	 */
-	public ManageUserFilterItems           getManageUserFilters()  {return m_manageUserFilters; }
-	public ManageUsersStateRpcResponseData getManageUsersState()   {return m_manageUsersState;  }
-	public VibeFlowPanel                   getConfigPanel()        {return m_configPanel;       }
-	public VibeFlowPanel                   getFilterOptionsPanel() {return m_filterOptionsPanel;}
-	public VibeFlowPanel                   getFiltersPanel()       {return m_filtersPanel;      }
-	public VibeFlowPanel                   getQuickFilterPanel()   {return m_quickFilterPanel;  }
-	public VibeMenuItem                    getAddFilesMenuItem()   {return m_addFilesMenu;      }
+	public ManageUserFilterItems getManageUserFilters()  {return m_manageUserFilters; }
+	public ManageUsersState      getManageUsersState()   {return m_manageUsersState;  }
+	public VibeFlowPanel         getConfigPanel()        {return m_configPanel;       }
+	public VibeFlowPanel         getFilterOptionsPanel() {return m_filterOptionsPanel;}
+	public VibeFlowPanel         getFiltersPanel()       {return m_filtersPanel;      }
+	public VibeFlowPanel         getQuickFilterPanel()   {return m_quickFilterPanel;  }
+	public VibeMenuItem          getAddFilesMenuItem()   {return m_addFilesMenu;      }
 	
 
 	/**
@@ -465,7 +466,7 @@ public class EntryMenuPanel extends ToolPanelBase
 				public void onSuccess(VibeRpcResponse response) {
 					// Store the state information and continue
 					// loading.
-					m_manageUsersState = ((ManageUsersStateRpcResponseData) response.getResponseData());
+					m_manageUsersState = ((ManageUsersStateRpcResponseData) response.getResponseData()).getManageUsersState();
 					loadPart3Async();
 				}
 			});
@@ -754,21 +755,23 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * current binder.
 	 */
 	private void renderDefinedFiltering() {
-		// If we're rendering the menu for managing users... 
-		if (ManageUsersDlg.SHOW_FILTER_OPTIONS && m_binderInfo.isBinderProfilesRootWSManagement()) {
-			// ...there are predefined filters that are specific to
-			// ...that.  Construct the filter drop down menu...
-			PopupMenu filterDropdownMenu = constructFilterDropdownMenu(true);	// true -> Items may be checked.
-			
-			// ...construct the menu items and store them so they can
-			// ...be easily accessed by the manage users dialog.
-			m_manageUserFilters = new ManageUserFilterItems(
-				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_INTERNAL_USERS, m_messages.vibeEntryMenu_ManageUsers_InternalFilter(), m_manageUsersState.isShowInternal()),
-				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_EXTERNAL_USERS, m_messages.vibeEntryMenu_ManageUsers_ExternalFilter(), m_manageUsersState.isShowExternal()),
-				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_DISABLED_USERS, m_messages.vibeEntryMenu_ManageUsers_DisabledFilter(), m_manageUsersState.isShowDisabled()),
-				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_ENABLED_USERS,  m_messages.vibeEntryMenu_ManageUsers_EnabledFilter(),  m_manageUsersState.isShowEnabled()));
-			
-			return;
+		if (ManageUsersDlg.SHOW_FILTER_OPTIONS) {
+			// If we're rendering the menu for managing users... 
+			if (m_binderInfo.isBinderProfilesRootWSManagement()) {
+				// ...there are predefined filters that are specific to
+				// ...that.  Construct the filter drop down menu...
+				PopupMenu filterDropdownMenu = constructFilterDropdownMenu(true);	// true -> Items may be checked.
+				
+				// ...construct the menu items and store them so they can
+				// ...be easily accessed by the manage users dialog.
+				m_manageUserFilters = new ManageUserFilterItems(
+					constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_INTERNAL_USERS, m_messages.vibeEntryMenu_ManageUsers_InternalFilter(), m_manageUsersState.isShowInternal()),
+					constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_EXTERNAL_USERS, m_messages.vibeEntryMenu_ManageUsers_ExternalFilter(), m_manageUsersState.isShowExternal()),
+					constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_DISABLED_USERS, m_messages.vibeEntryMenu_ManageUsers_DisabledFilter(), m_manageUsersState.isShowDisabled()),
+					constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_ENABLED_USERS,  m_messages.vibeEntryMenu_ManageUsers_EnabledFilter(),  m_manageUsersState.isShowEnabled()));
+				
+				return;
+			}
 		}
 		
 		// If we don't have any binder filter information...

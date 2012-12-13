@@ -30,20 +30,20 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.rpc.shared;
-
-import org.kablink.teaming.gwt.client.util.ManageUsersState;
+package org.kablink.teaming.gwt.client.util;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds the response data for RPC commands that return the
- * management state of the profiles root binder.
+ * This class holds the management state of the profiles root binder.
  * 
  * @author drfoster@novell.com
  */
-public class ManageUsersStateRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private ManageUsersState	m_manageUsersState;	//
+public class ManageUsersState implements IsSerializable {
+	private boolean m_showEnabled;	//
+	private boolean	m_showExternal;	//
+	private boolean	m_showDisabled;	//
+	private boolean	m_showInternal;	//
 	
 	/**
 	 * Class constructor.
@@ -51,23 +51,10 @@ public class ManageUsersStateRpcResponseData implements IsSerializable, VibeRpcR
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public ManageUsersStateRpcResponseData() {
+	public ManageUsersState() {
 		super();
 	}
 
-	/**
-	 * Class constructor.
-	 * 
-	 * @param mus
-	 */
-	public ManageUsersStateRpcResponseData(ManageUsersState mus) {
-		// Initialize this object...
-		this();
-		
-		// ...and store the parameters.
-		setManageUsersState(mus);
-	}
-	
 	/**
 	 * Class constructor.
 	 * 
@@ -76,14 +63,15 @@ public class ManageUsersStateRpcResponseData implements IsSerializable, VibeRpcR
 	 * @param showDisabled
 	 * @param showEnabled
 	 */
-	public ManageUsersStateRpcResponseData(boolean showInternal, boolean showExternal, boolean showDisabled, boolean showEnabled) {
-		// Initialize this object.
-		this(
-			new ManageUsersState(
-				showInternal,
-				showExternal,
-				showDisabled,
-				showEnabled));
+	public ManageUsersState(boolean showInternal, boolean showExternal, boolean showDisabled, boolean showEnabled) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameters.
+		setShowDisabled(showDisabled);
+		setShowEnabled( showEnabled );
+		setShowExternal(showExternal);
+		setShowInternal(showInternal);
 	}
 	
 	/**
@@ -91,12 +79,32 @@ public class ManageUsersStateRpcResponseData implements IsSerializable, VibeRpcR
 	 * 
 	 * @return
 	 */
-	public ManageUsersState getManageUsersState() {return m_manageUsersState;}
+	public boolean isShowDisabled() {return m_showDisabled;}
+	public boolean isShowEnabled()  {return m_showEnabled; }
+	public boolean isShowExternal() {return m_showExternal;}
+	public boolean isShowInternal() {return m_showInternal;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setManageUsersState(ManageUsersState mus) {m_manageUsersState = mus;}
+	public void setShowDisabled(boolean showDisabled) {m_showDisabled = showDisabled;}
+	public void setShowEnabled( boolean showEnabled)  {m_showEnabled  = showEnabled; }
+	public void setShowExternal(boolean showExternal) {m_showExternal = showExternal;}
+	public void setShowInternal(boolean showInternal) {m_showInternal = showInternal;}
+
+	/**
+	 * Returns a copy of this object.
+	 * 
+	 * @return
+	 */
+	public ManageUsersState createCopy() {
+		return
+			new ManageUsersState(
+				isShowInternal(),
+				isShowExternal(),
+				isShowDisabled(),
+				isShowEnabled());
+	}
 }

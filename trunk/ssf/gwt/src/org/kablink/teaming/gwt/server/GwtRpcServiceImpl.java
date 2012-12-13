@@ -2538,6 +2538,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_MANAGE_USERS_STATE:
+		{
+			SaveManageUsersStateCmd smusCmd = ((SaveManageUsersStateCmd) cmd);
+			Boolean result = GwtServerHelper.saveManageUsersState( this, getRequest( ri ), smusCmd.getManageUsersState() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case SAVE_MOBILE_APPS_CONFIGURATION:
 		{
 			SaveMobileAppsConfigurationCmd smacCmd;
