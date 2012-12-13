@@ -946,7 +946,13 @@ public class SearchUtils {
 		return crit;
     }
     
-    public static Criteria getSharedWithMeSearchCriteria(List<String> binderIds, List<String> entryIds) {
+    public static Criteria getSharedWithMeSearchCriteria(List<String> binderIds) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Set<Long> principalIds = getProfileDao().getAllPrincipalIds(user);
+		Set<String> pIds = new HashSet<String>();
+		for (Long pid : principalIds) {
+			pIds.add(String.valueOf(pid));
+		}
 		Criteria crit = new Criteria();
 		crit.add(in(DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER, Constants.DOC_TYPE_ENTRY, 
 				Constants.DOC_TYPE_ATTACHMENT}));
@@ -956,9 +962,7 @@ public class SearchUtils {
 			disjunction.add(in(ENTRY_ANCESTRY, binderIds));
 		}
 		
-		if ((null != entryIds) && (!(entryIds.isEmpty()))) {
-			disjunction.add(in(Constants.DOCID_FIELD, entryIds));
-		}
+		disjunction.add(in(SHARED_IDS, pIds));
 		
 		crit.add(disjunction);
 		return crit;

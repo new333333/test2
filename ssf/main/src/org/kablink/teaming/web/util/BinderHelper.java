@@ -3594,25 +3594,14 @@ public class BinderHelper {
 			// Get the binder hits
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
 			List<String> binderIds = new ArrayList();
-			List<String> entryIds = new ArrayList();
 			for (Map entryMap:  searchEntries) {
 				String docId = (String)entryMap.get(Constants.DOCID_FIELD);
 				String docType = (String)entryMap.get(Constants.DOC_TYPE_FIELD);
 				if (docId != null && Constants.DOC_TYPE_BINDER.equals(docType)) {
 					binderIds.add(docId);
-				} else if (docId != null && Constants.DOC_TYPE_ENTRY.equals(docType)) {
-					entryIds.add(docId);
 				}
 			}
-			if (binderIds.isEmpty()) {
-				//Make sure there is some binderId to search for or the search returns everything
-				binderIds.add("xxx");
-			}
-			if (entryIds.isEmpty()) {
-				//Make sure there is some entryId to search for or the search returns everything
-				entryIds.add("xxx");
-			}
-			crit = SearchUtils.getSharedWithMeSearchCriteria(binderIds, entryIds);
+			crit = SearchUtils.getSharedWithMeSearchCriteria(binderIds);
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		} else if (ObjectKeys.SEARCH_SCOPE_CURRENT.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
 			//Search the current folder (if known)
