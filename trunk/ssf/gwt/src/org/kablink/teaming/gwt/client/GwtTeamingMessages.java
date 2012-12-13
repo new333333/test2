@@ -450,6 +450,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetTree();
 	String rpcFailure_GetUpgradeInfo();
 	String rpcFailure_GetUserAccessInfo();
+	String rpcFailure_GetUserMobileAppsConfiguration();
 	String rpcFailure_GetUserPermalink();
 	String rpcFailure_GetUserSharingRightsInfo();
 	String rpcFailure_GetUserWorkspaceInfo();
@@ -571,6 +572,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ConfigureFileSyncAppDlg();
 	String codeSplitFailure_ConfigureMobileAppsDlg();
 	String codeSplitFailure_ConfigureUserAccessDlg();
+	String codeSplitFailure_ConfigureUserMobileAppsDlg();
 	String codeSplitFailure_ConfirmDlg();
 	String codeSplitFailure_ContentControl();
 	String codeSplitFailure_CreateBlogPageDlg();
@@ -2338,6 +2340,12 @@ public interface GwtTeamingMessages extends Messages
 	String configureMobileAppsDlgOnSaveUnknownException( String err );
 	String configureMobileAppsSyncIntervalLabel();
 	String configureMobileAppsSyncMinutesLabel();
+	
+	// Strings used in the Configure User Mobile Apps dialog
+	String configuerUserMobileAppsDlgErrorHeader();
+	String configureUserMobileAppsDlgHeader( String numUsers );
+	String configureUserMobileAppsDlgOnSaveUnknownException( String err );
+	String configuerUserMobileAppsDlgSaving( String completed, String total );
 
 	// String used by the 'User Access Report' composite.
 	String userAccessReportCaption();
@@ -2362,5 +2370,5 @@ public interface GwtTeamingMessages extends Messages
 	String userActivityReportType_All();
 	String userActivityReportType_Summaries();
 	String userActivityReportWarning_UserAlreadySelected(String name);
-	
+
 }// end GwtTeamingMessages

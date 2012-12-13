@@ -72,6 +72,7 @@ import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
+import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
@@ -1995,6 +1996,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_USER_MOBILE_APPS_CONFIG:
+		{
+			GwtUserMobileAppsConfig config;
+			GetUserMobileAppsConfigCmd gumacCmd;
+
+			gumacCmd = (GetUserMobileAppsConfigCmd) cmd;
+			config = GwtServerHelper.getUserMobileAppsConfig( this, gumacCmd.getUserId() );
+			response = new VibeRpcResponse( config );
+			return response;
+		}
+		
 		case GET_USER_PERMALINK:
 		{
 			GetUserPermalinkCmd gupCmd;
@@ -2671,6 +2683,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = GwtServerHelper.saveUserAccessConfig( this, suacCmd.getConfig() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_USER_MOBILE_APPS_CONFIGURATION:
+		{
+			SaveUserMobileAppsConfigCmd sumacCmd;
+			SaveUserMobileAppsConfigRpcResponseData result;
+			
+			sumacCmd = ((SaveUserMobileAppsConfigCmd) cmd);
+			result = GwtServerHelper.saveUserMobileAppsConfig(
+															this,
+															sumacCmd.getConfig(),
+															sumacCmd.getUserIds() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		

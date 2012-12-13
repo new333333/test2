@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMobileAppsConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveMobileAppsConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -43,6 +44,7 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
@@ -337,9 +339,63 @@ public class ConfigureMobileAppsDlg extends DlgBox
 	}
 	
 	/**
+	 * 
+	 */
+	public void init()
+	{
+		AsyncCallback<VibeRpcResponse> rpcReadCallback;
+		
+		// Create a callback that will be called when we get the mobile apps configuration.
+		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetMobileAppsConfiguration() );
+			}
+	
+			/**
+			 * We successfully retrieved the Mobile Apps configuration.
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				Scheduler.ScheduledCommand cmd;
+				final GwtZoneMobileAppsConfig mobileAppsConfiguration;
+				
+				mobileAppsConfiguration = (GwtZoneMobileAppsConfig) response.getResponseData();
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute() 
+					{
+						init( mobileAppsConfiguration );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		};
+
+		// Issue an ajax request to get the Mobile Apps configuration.
+		{
+			GetMobileAppsConfigCmd cmd;
+			
+			// Issue an ajax request to get the Mobile Apps configuration from the db.
+			cmd = new GetMobileAppsConfigCmd();
+			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
+		}
+	}
+	
+	/**
 	 * Initialize the controls in the dialog with the values from the given values.
 	 */
-	public void init( GwtZoneMobileAppsConfig mobileAppsConfiguration )
+	private void init( GwtZoneMobileAppsConfig mobileAppsConfiguration )
 	{
 		int interval;
 		

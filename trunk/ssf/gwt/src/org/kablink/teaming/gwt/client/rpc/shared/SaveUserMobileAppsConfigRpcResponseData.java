@@ -30,95 +30,47 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
 
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This class is used to hold the Mobile applications Configuration data stored in a user's properties.
+ * This class holds the response data for the "save user mobile apps config" rpc command
  * @author jwootton
  *
  */
-public class GwtUserMobileAppsConfig
+public class SaveUserMobileAppsConfigRpcResponseData
 	implements IsSerializable, VibeRpcResponseData
 {
-	private boolean m_mobileAppsEnabled = false;
-	private boolean m_allowCachePwd = false;
-	private boolean m_allowCacheContent = false;
-	private boolean m_allowPlayWithOtherApps = false;
+	ArrayList<String> m_errors;
 	
 	/**
 	 * 
 	 */
-	public GwtUserMobileAppsConfig()
+	public SaveUserMobileAppsConfigRpcResponseData()
 	{
-	}
-
-	/**
-	 * 
-	 */
-	public boolean getAllowCacheContent()
-	{
-		return m_allowCacheContent;
 	}
 	
 	/**
 	 * 
 	 */
-	public boolean getAllowCachePwd()
+	public void addError( String err )
 	{
-		return m_allowCachePwd;
+		if ( m_errors == null )
+			m_errors = new ArrayList<String>();
+		
+		m_errors.add( err );
 	}
 	
 	/**
 	 * 
 	 */
-	public boolean getAllowPlayWithOtherApps()
+	public ArrayList<String> getErrors()
 	{
-		return m_allowPlayWithOtherApps;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getMobileAppsEnabled()
-	{
-		return m_mobileAppsEnabled;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAllowCacheContent( boolean allow )
-	{
-		m_allowCacheContent = allow;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAllowCachePwd( boolean allow )
-	{
-		m_allowCachePwd = allow;
-	}
-
-	/**
-	 * 
-	 */
-	public void setAllowPlayWithOtherApps( boolean allow )
-	{
-		m_allowPlayWithOtherApps = allow;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setMobileAppsEnabled( boolean enabled )
-	{
-		m_mobileAppsEnabled = enabled;
+		return m_errors;
 	}
 }

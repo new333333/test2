@@ -548,6 +548,10 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_BINDER_SHOW_ACCESSORIES = "userBinderShowAccessories";
     public static final String USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER = "userFolderColumnSortOrder";
     public static final String USER_PROPERTY_FOLDER_COLUMN_TITLES = "userFolderColumnTitles";
+    public static final String USER_PROPERTY_MOBILE_APPS_ACCESS_FILR = "userMobileApps_AccessFilr";
+    public static final String USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT = "userMobileApps_CacheContent";
+    public static final String USER_PROPERTY_MOBILE_APPS_CACHE_PWD = "userMobileApps_CachePwd";
+    public static final String USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS = "userMobileApps_PlayWithOtherApps";
     public static final String USER_PROPERTY_MOBILE_BINDER_IDS = "userMobileBinderIds";
     public static final String USER_PROPERTY_PERMALINK_URL = "userPermalinkUrl";
     public static final String USER_PROPERTY_PINNED_ENTRIES = "userPinnedEntries";
