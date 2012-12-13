@@ -149,6 +149,7 @@ import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails.UserInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.util.ShareAccessInfo;
 import org.kablink.teaming.gwt.client.util.ShareDateInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
@@ -3376,16 +3377,43 @@ public class GwtViewHelper {
 				// administration console?
 				isManageUsers = folderInfo.getWorkspaceType().isProfileRootManagement();
 				if (isManageUsers) {
-					// Yes!  Then we include disabled users.
-					options.put(ObjectKeys.SEARCH_INCLUDE_DISABLED_USERS, Boolean.TRUE);
+					// Yes!  If the filters are such that we wouldn't
+					// get any results...
+					ManageUsersState mus = GwtServerHelper.getManageUsersState(bs, request).getManageUsersState();
+					boolean disabled = mus.isShowDisabled();
+					boolean enabled  = mus.isShowEnabled();
+					boolean external = mus.isShowExternal();
+					boolean internal = mus.isShowInternal();
+					if (((!external) && (!internal)) ||
+						((!enabled)  && (!disabled))) {
+						// ...simply return an empty list.
+						return
+							new FolderRowsRpcResponseData(
+								new ArrayList<FolderRow>(),
+								start,
+								0,
+								new ArrayList<Long>());
+						
+					}
+					
+					// Apply the internal/external filtering...
+					if      (internal && external) /* Default includes both.*/ ;
+					else if (internal)             options.put(ObjectKeys.SEARCH_IS_INTERNAL,       Boolean.TRUE);
+					else if (external)             options.put(ObjectKeys.SEARCH_IS_EXTERNAL,       Boolean.TRUE);
+
+					// ...and apply the enabled/disabled filtering.
+					if      (enabled  && disabled) /* Default includes both. */ ;
+					else if (enabled)              options.put(ObjectKeys.SEARCH_IS_ENABLED_USERS,  Boolean.TRUE);
+					else if (disabled)             options.put(ObjectKeys.SEARCH_IS_DISABLED_USERS, Boolean.TRUE);
 				}
 				
 				else {
-					// No, it isn't for the manage users feature of the administration console!
-					// Eliminate the non-person, external and disabled.
-					options.put(ObjectKeys.SEARCH_IS_PERSON,              Boolean.TRUE);
-					options.put(ObjectKeys.SEARCH_IS_INTERNAL,            Boolean.TRUE);
-					options.put(ObjectKeys.SEARCH_EXCLUDE_DISABLED_USERS, Boolean.TRUE);
+					// No, it isn't for the manage users feature of the
+					// administration console!  Eliminate the
+					// non-person, external and disabled users.
+					options.put(ObjectKeys.SEARCH_IS_PERSON,        Boolean.TRUE);
+					options.put(ObjectKeys.SEARCH_IS_INTERNAL,      Boolean.TRUE);
+					options.put(ObjectKeys.SEARCH_IS_ENABLED_USERS, Boolean.TRUE);
 				}
 			}
 

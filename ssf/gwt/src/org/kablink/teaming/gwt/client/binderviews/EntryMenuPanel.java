@@ -98,7 +98,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg;
 import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -755,23 +754,36 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * current binder.
 	 */
 	private void renderDefinedFiltering() {
-		if (ManageUsersDlg.SHOW_FILTER_OPTIONS) {
-			// If we're rendering the menu for managing users... 
-			if (m_binderInfo.isBinderProfilesRootWSManagement()) {
-				// ...there are predefined filters that are specific to
-				// ...that.  Construct the filter drop down menu...
-				PopupMenu filterDropdownMenu = constructFilterDropdownMenu(true);	// true -> Items may be checked.
-				
-				// ...construct the menu items and store them so they can
-				// ...be easily accessed by the manage users dialog.
-				m_manageUserFilters = new ManageUserFilterItems(
-					constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_INTERNAL_USERS, m_messages.vibeEntryMenu_ManageUsers_InternalFilter(), m_manageUsersState.isShowInternal()),
-					constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_EXTERNAL_USERS, m_messages.vibeEntryMenu_ManageUsers_ExternalFilter(), m_manageUsersState.isShowExternal()),
-					constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_DISABLED_USERS, m_messages.vibeEntryMenu_ManageUsers_DisabledFilter(), m_manageUsersState.isShowDisabled()),
-					constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_ENABLED_USERS,  m_messages.vibeEntryMenu_ManageUsers_EnabledFilter(),  m_manageUsersState.isShowEnabled()));
-				
-				return;
+		// If we're rendering the menu for managing users... 
+		if (m_binderInfo.isBinderProfilesRootWSManagement()) {
+			// ...there are predefined filters that are specific to
+			// ...that.  Construct the filter drop down menu...
+			PopupMenu filterDropdownMenu = constructFilterDropdownMenu(true);	// true -> Items may be checked.
+			
+			// ...construct the menu items and store them so they can
+			// ...be easily accessed by the manage users dialog.
+			boolean disabled = m_manageUsersState.isShowDisabled();
+			boolean enabled  = m_manageUsersState.isShowEnabled();
+			boolean external = m_manageUsersState.isShowExternal();
+			boolean internal = m_manageUsersState.isShowInternal();
+			m_manageUserFilters = new ManageUserFilterItems(
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_INTERNAL_USERS, m_messages.vibeEntryMenu_ManageUsers_InternalFilter(), internal),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_EXTERNAL_USERS, m_messages.vibeEntryMenu_ManageUsers_ExternalFilter(), external),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_DISABLED_USERS, m_messages.vibeEntryMenu_ManageUsers_DisabledFilter(), disabled),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_ENABLED_USERS,  m_messages.vibeEntryMenu_ManageUsers_EnabledFilter(),  enabled));
+
+			// If the filtering that's in affect causes the list to be
+			// empty...
+			String warn;
+			if      ((!disabled) && (!enabled))  warn = m_messages.vibeEntryMenu_ManageUsers_Warning_NoUsers1();
+			else if ((!internal) && (!external)) warn = m_messages.vibeEntryMenu_ManageUsers_Warning_NoUsers2();
+			else                                 warn = null;
+			if (null != warn) {
+				// ...tell the user about it.
+				GwtClientHelper.deferredAlert(warn);
 			}
+			
+			return;
 		}
 		
 		// If we don't have any binder filter information...
