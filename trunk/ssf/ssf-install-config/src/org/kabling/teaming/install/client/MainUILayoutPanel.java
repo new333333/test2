@@ -26,6 +26,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -283,6 +284,7 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 			int width = mainPanel.getOffsetWidth() - 15;
 			int height = mainPanel.getOffsetHeight() - 15;
 			dlg.setSize(width + "px", height + "px");
+			DOM.setStyleAttribute(dlg.getElement(), "overflow", "auto");
 		}
 	}
 }
