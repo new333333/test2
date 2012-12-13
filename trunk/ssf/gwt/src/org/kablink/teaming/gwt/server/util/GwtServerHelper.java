@@ -5620,39 +5620,7 @@ public class GwtServerHelper {
 	 * Returns a List<Long> of the current user's home folder IDs.
 	 */
 	private static List<Long> getHomeFolderIds(AllModulesInjected bs, User user) {
-		// Build a search for the user's binders...
-		Criteria crit = new Criteria();
-		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(user.getWorkspaceId())}));
-		
-		// ...that are file folders...
-		crit.add(in(Constants.FAMILY_FIELD,     new String[]{Definition.FAMILY_FILE}));
-		crit.add(in(Constants.IS_LIBRARY_FIELD, new String[]{Constants.TRUE}));
-
-		// ...that are configured mirrored File Home Folders.
-		crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
-		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
-		crit.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
-
-		// Can we find any?
-		Map			searchResults = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, Integer.MAX_VALUE);
-		List<Map>	searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
-		List<Long>	reply         = new ArrayList<Long>();
-		if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
-			// Yes!  Scan them...
-			for (Map entryMap:  searchEntries) {
-				// ...extracting their IDs from from the search
-				// ...results.
-				String   docIdS   = getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
-				Long     docId    = Long.parseLong(docIdS);
-				reply.add(docId);
-			}
-		}
-		
-		// If we get here, reply refers to a List<Long> of the
-		// configured net folders in a user's workspace that are marked
-		// as being their Home Net Folder.  Return it.
-		return reply;
+		return SearchUtils.getHomeFolderIds(bs, user);
 	}
 	
 	@SuppressWarnings("unused")
@@ -6377,38 +6345,7 @@ public class GwtServerHelper {
 	 * @param user
 	 */
 	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs, User user) {
-		// Build a search for the user's binders...
-		Criteria crit = new Criteria();
-		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(user.getWorkspaceId())}));
-		
-		// ...that are marked as their My Files folder...
-		crit.add(in(Constants.FAMILY_FIELD,         new String[]{Definition.FAMILY_FILE}));
-		crit.add(in(Constants.IS_LIBRARY_FIELD,	    new String[]{Constants.TRUE}));
-		crit.add(in(Constants.IS_MYFILES_DIR_FIELD, new String[]{Constants.TRUE}));
-
-		// ...that are not mirrored File Folders.
-		crit.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
-
-		// Can we find any?
-		Map			searchResults = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, Integer.MAX_VALUE);
-		List<Map>	searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
-		List<Long>	reply         = new ArrayList<Long>();
-		if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
-			// Yes!  Scan them...
-			for (Map entryMap:  searchEntries) {
-				// ...extracting their IDs from from the search
-				// ...results.
-				String   docIdS   = getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
-				Long     docId    = Long.parseLong(docIdS);
-				reply.add(docId);
-			}
-		}
-		
-		// If we get here, reply refers to a List<Long> of the folders
-		// in a user's workspace that are recognized as their My Files
-		// folder.  Return it.
-		return reply;
+		return SearchUtils.getMyFilesFolderIds(bs, user);
 	}
 	
 	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs) {
@@ -10236,22 +10173,7 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static boolean useHomeAsMyFiles(AllModulesInjected bs, User user) {
-		// If we're running Filr...
-		if (Utils.checkIfFilr()) {
-			// ...and the user has been provisioned from ldap...
-			IdentityInfo idInfo = user.getIdentityInfo();
-			if (idInfo.isFromLdap()) {
-				// ...check the user's and/or zone setting.
-				Boolean result = GwtUIHelper.getEffectiveAdhocFolderSetting(bs, user);
-				if ((null != result) && (!(result))) {
-					return true;
-				}
-			}
-		}
-
-		// If we get here, we're not mapping 'Home' to 'My Files.  Return
-		// false.
-		return false;
+		return SearchUtils.useHomeAsMyFiles(bs, user);
 	}
 	
 	public static boolean useHomeAsMyFiles(AllModulesInjected bs) {

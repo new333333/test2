@@ -47,6 +47,7 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
@@ -61,7 +62,6 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.search.*;
 import org.kablink.util.search.Junction.Conjunction;
@@ -587,9 +587,53 @@ public class SearchUtils {
         // By default, just return binders and entries
         return getMyFilesSearchCriteria(bs, true, true, false, false);
     }
+	
+	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		return getMyFilesFolderIds(bs, user);
+	}
+
+	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs, User user) {
+		// Build a search for the user's binders...
+		Criteria crit = new Criteria();
+		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(user.getWorkspaceId())}));
+		
+		// ...that are marked as their My Files folder...
+		crit.add(in(Constants.FAMILY_FIELD,         new String[]{Definition.FAMILY_FILE}));
+		crit.add(in(Constants.IS_LIBRARY_FIELD,	    new String[]{Constants.TRUE}));
+		crit.add(in(Constants.IS_MYFILES_DIR_FIELD, new String[]{Constants.TRUE}));
+
+		// ...that are not mirrored File Folders.
+		crit.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
+
+		// Can we find any?
+		Map			searchResults = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, Integer.MAX_VALUE);
+		List<Map>	searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+		List<Long>	reply         = new ArrayList<Long>();
+		if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
+			// Yes!  Scan them...
+			for (Map entryMap:  searchEntries) {
+				// ...extracting their IDs from from the search
+				// ...results.
+				String docIdS = (String)entryMap.get(Constants.DOCID_FIELD);
+				if (docIdS != null && !docIdS.equals("")) {
+					reply.add(Long.valueOf(docIdS));
+				}
+			}
+		}
+		
+		// If we get here, reply refers to a List<Long> of the folders
+		// in a user's workspace that are recognized as their My Files
+		// folder.  Return it.
+		return reply;
+	}
 
 	//This routine returns a Criteria that will search all folders associated with the My Files collection
 	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs, boolean binders, boolean entries, boolean replies, boolean attachments) {
+		Conjunction conj;
+		Disjunction disj;
+		Criteria crit = new Criteria();
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String userWSId = String.valueOf(user.getWorkspaceId());
 		
@@ -604,73 +648,100 @@ public class SearchUtils {
 
         Long mfContainerId = getMyFilesFolderId(bs, user.getWorkspaceId(), false);	// false -> Don't create it if it doesn't exist.
 
-        Disjunction	root = disjunction();
-        Criteria crit = new Criteria();
-        crit.add(root);
-        if (binders) {
-            Conjunction	rootConj = conjunction();
-            root.add(rootConj);
-            rootConj.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-            rootConj.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{userWSId}));
-            rootConj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
-            rootConj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
+		// Are we supposed to use this user's home folder as the
+		// root of their My Files area?
+		Long	mfRootId;
+		boolean	usingHomeAsMF = useHomeAsMyFiles(bs);
+		if (usingHomeAsMF) {
+			// Yes!  Can we find their home folder?
+			mfRootId      = getHomeFolderId(bs);
+			usingHomeAsMF = (null != mfRootId);
+			if (!usingHomeAsMF) {
+				// No!  Just use the binder we were given.
+				mfRootId = user.getWorkspaceId();
+			}
+		}
+		else {
+			// No, we aren't supposed to use this user's home
+			// folder as the root of their My Files area!  Use
+			// the binder we were given.
+			mfRootId = user.getWorkspaceId();
+		}
+		String myFilesRootIdS = String.valueOf(mfRootId);
 
-            // ...that are non-mirrored...
-            Disjunction disj = disjunction();
-            rootConj.add(disj);
-            Conjunction conj = conjunction();
-            conj.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
-            disj.add(conj);
+		// Do we have a folder to use as a My Files container?
+		String[] mfContainerIdStrings = null;
+		if (usingHomeAsMF) {
+			mfContainerId = mfRootId;
+		}
+		else {
+			List<Long> mfContainerIds = getMyFilesFolderIds(bs);
+			if ((null != mfContainerIds) && (!(mfContainerIds.isEmpty()))) {
+				mfContainerId = mfContainerIds.get(0);
+				
+				int c = mfContainerIds.size();
+				mfContainerIdStrings = new String[c];
+				for (int i = 0; i < c; i += 1) {
+					mfContainerIdStrings[i] = String.valueOf(mfContainerIds.get(i));
+				}
+			}
+			else {
+				mfContainerId = null;
+			}
+		}
+		boolean	hasMFContainerId = (null != mfContainerId);
+		String	mfContainerIdS   = (hasMFContainerId ? String.valueOf(mfContainerId) : null);
+		
+		// Search for file folders within the binder...
+		Disjunction	root     = disjunction(); crit.add(root    );
+		Conjunction	rootConj = conjunction(); root.add(rootConj);
+		rootConj.add(in(Constants.ENTRY_ANCESTRY,          new String[]{myFilesRootIdS}));
+		rootConj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
+		rootConj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
 
-            // ...or configured mirrored File Folders.
-            conj = conjunction();
-            conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
-            conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
-            conj.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
-            disj.add(conj);
+		// ...if we have a non-Home My Files containers...
+		if (hasMFContainerId && (!usingHomeAsMF)) {
+			// ...exclude them from the binder list.
+			Junction noMF = not();
+			rootConj.add(noMF);
+			noMF.add(in(Constants.DOCID_FIELD, mfContainerIdStrings));
+		}
 
-            if (mfContainerId != null) {
-                // ...exclude it from the binder list.
-                Junction noMF = not();
-                rootConj.add(noMF);
-                String mfContStr = mfContainerId.toString();
-                noMF.add(in(Constants.DOCID_FIELD, new String[]{mfContStr}));
+		if (!usingHomeAsMF) {
+			// ...that are non-mirrored...
+    		disj = disjunction();
+			rootConj.add(disj);
+    		conj = conjunction();
+			conj.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
+			disj.add(conj);
 
-                // Also include any folders in there as well.
-                conj = conjunction();
-                conj.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-                conj.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{mfContStr}));
-                conj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
-                conj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
-                root.add(conj);
-            }
-        }
-        if ((entries || attachments || replies) && mfContainerId != null) {
-            if (entries) {
-                // Search for any file entries...
-                Conjunction conj = conjunction();
-                conj.add(in(Constants.DOC_TYPE_FIELD,    new String[]{Constants.DOC_TYPE_ENTRY}));
-                conj.add(in(Constants.ENTRY_TYPE_FIELD,  new String[]{Constants.ENTRY_TYPE_ENTRY}));
-                conj.add(in(Constants.BINDER_ID_FIELD,   new String[]{mfContainerId.toString()}));
-                conj.add(in(Constants.FAMILY_FIELD,      fileFamilies));
-                root.add(conj);
-            }
-            if (replies) {
-                // Search for any file entries...
-                Conjunction conj = conjunction();
-                conj.add(in(Constants.DOC_TYPE_FIELD,    new String[]{Constants.DOC_TYPE_ENTRY}));
-                conj.add(in(Constants.ENTRY_TYPE_FIELD,  new String[]{Constants.ENTRY_TYPE_REPLY}));
-                conj.add(in(Constants.BINDER_ID_FIELD,   new String[]{mfContainerId.toString()}));
-                root.add(conj);
-            }
-            if (attachments) {
-                Conjunction conj = conjunction();
-                conj.add(in(Constants.DOC_TYPE_FIELD,    new String[]{Constants.DOC_TYPE_ATTACHMENT}));
-                conj.add(in(Constants.BINDER_ID_FIELD,   new String[]{mfContainerId.toString()}));
-                conj.add(in(Constants.IS_LIBRARY_FIELD,  new String[]{Constants.TRUE}));
-                root.add(conj);
-            }
-        }
+			// ...or configured mirrored File Home Folders.
+    		conj = conjunction();
+			conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+			conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+			conj.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
+			disj.add(conj);
+		}
+
+		// Do we have a folder to populate as their My Files?
+		if (hasMFContainerId) {
+			// Yes!  Search for any file entries...
+    		disj = disjunction();
+    		root.add(disj);
+			conj = conjunction();
+			conj.add(in(Constants.DOC_TYPE_FIELD,  new String[]{Constants.DOC_TYPE_ENTRY}));
+			conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerIdS}));
+			conj.add(in(Constants.FAMILY_FIELD,    fileFamilies));
+			disj.add(conj);
+
+				// ... or folders in there as well.
+			conj = conjunction();
+			conj.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+			conj.add(in(Constants.ENTRY_ANCESTRY, new String[]{mfContainerIdS}));
+			conj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
+			conj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
+			disj.add(conj);
+		}
 		return crit;
 	}
 	
@@ -722,7 +793,7 @@ public class SearchUtils {
    	 */
    	public static Long getMyFilesFolderId(AllModulesInjected bs, Long userWorkspaceId, boolean createIfNeccessary) {
    		Long reply;
-   		List<Long> mfFolderIds = getMyFilesFolderIds(bs, userWorkspaceId);
+   		List<Long> mfFolderIds = getMyFilesFolderIds(bs);
    		if ((null != mfFolderIds) && (!(mfFolderIds.isEmpty()))) {
    			reply = mfFolderIds.get(0);
    		}
@@ -732,41 +803,6 @@ public class SearchUtils {
    		else {
    			reply = null;
    		}
-   		return reply;
-   	}
-
-    private static List<Long> getMyFilesFolderIds(AllModulesInjected bs, Long userWorkspaceId) {
-   		// Build a search for the user's binders...
-   		Criteria crit = new Criteria();
-   		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-   		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(userWorkspaceId)}));
-
-   		// ...that are marked as their My Files folder...
-   		crit.add(in(Constants.FAMILY_FIELD,         new String[]{Definition.FAMILY_FILE}));
-   		crit.add(in(Constants.IS_LIBRARY_FIELD,	    new String[]{Constants.TRUE}));
-   		crit.add(in(Constants.IS_MYFILES_DIR_FIELD, new String[]{Constants.TRUE}));
-
-   		// ...that are not mirrored File Folders.
-   		crit.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
-
-   		// Can we find any?
-   		Map			searchResults = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, Integer.MAX_VALUE);
-   		List<Map>	searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
-   		List<Long>	reply         = new ArrayList<Long>();
-   		if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
-   			// Yes!  Scan them...
-   			for (Map entryMap:  searchEntries) {
-   				// ...extracting their IDs from from the search
-   				// ...results.
-   				String   docIdS   = (String) entryMap.get(Constants.DOCID_FIELD);
-   				Long     docId    = Long.parseLong(docIdS);
-   				reply.add(docId);
-   			}
-   		}
-
-   		// If we get here, reply refers to a List<Long> of the folders
-   		// in a user's workspace that are recognized as their My Files
-   		// folder.  Return it.
    		return reply;
    	}
 
@@ -878,8 +914,8 @@ public class SearchUtils {
         }
 
         // Add in the sort information...
-        boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
-        String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
+        boolean sortAscend = (!(getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
+        String  sortBy     =    getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
         crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
         crit.addOrder(new Order(sortBy,                 sortAscend));
 
@@ -888,8 +924,8 @@ public class SearchUtils {
             mods.getBinderModule().searchFolderOneLevelWithInferredAccess(
                 crit,
                 Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
-                GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
-                GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+                getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+                getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
                 nfBinderId,
                 nfBinder.getPathName());
 
@@ -927,4 +963,237 @@ public class SearchUtils {
 		crit.add(disjunction);
 		return crit;
     }
+    
+	/*
+	 * Returns a List<Long> of the current user's home folder IDs.
+	 */
+	public static List<Long> getHomeFolderIds(AllModulesInjected bs, User user) {
+		// Build a search for the user's binders...
+		Criteria crit = new Criteria();
+		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(user.getWorkspaceId())}));
+		
+		// ...that are file folders...
+		crit.add(in(Constants.FAMILY_FIELD,     new String[]{Definition.FAMILY_FILE}));
+		crit.add(in(Constants.IS_LIBRARY_FIELD, new String[]{Constants.TRUE}));
+
+		// ...that are configured mirrored File Home Folders.
+		crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+		crit.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
+
+		// Can we find any?
+		Map			searchResults = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, Integer.MAX_VALUE);
+		List<Map>	searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+		List<Long>	reply         = new ArrayList<Long>();
+		if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
+			// Yes!  Scan them...
+			for (Map entryMap:  searchEntries) {
+				// ...extracting their IDs from from the search
+				// ...results.
+				String docIdS = (String)entryMap.get(Constants.DOCID_FIELD);
+				if (docIdS != null && !docIdS.equals("")) {
+					reply.add(Long.valueOf(docIdS));
+				}
+			}
+		}
+		
+		// If we get here, reply refers to a List<Long> of the
+		// configured net folders in a user's workspace that are marked
+		// as being their Home Net Folder.  Return it.
+		return reply;
+	}
+	
+	/**
+	 * Returns the current user's home folder ID.
+	 * 
+	 * @param bs
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static Long getHomeFolderId(AllModulesInjected bs, User user) {
+		List<Long> homeFolderIds = getHomeFolderIds(bs, user);
+		Long reply;
+		if ((null != homeFolderIds) && (!(homeFolderIds.isEmpty())))
+		     reply = homeFolderIds.get(0);
+		else reply = null;
+		return reply;
+	}
+	
+	public static Long getHomeFolderId(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		User user = RequestContextHolder.getRequestContext().getUser();
+		return getHomeFolderId(bs, user);
+	}
+
+	/**
+	 * Returns true if the current user should have their My Files area
+	 * mapped to their home directory and false otherwise.
+	 * 
+	 * @param bs
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static boolean useHomeAsMyFiles(AllModulesInjected bs, User user) {
+		// If we're running Filr...
+		if (Utils.checkIfFilr()) {
+			// ...and the user has been provisioned from ldap...
+			IdentityInfo idInfo = user.getIdentityInfo();
+			if (idInfo.isFromLdap()) {
+				// ...check the user's and/or zone setting.
+				Boolean result = getEffectiveAdhocFolderSetting(bs, user);
+				if ((null != result) && (!(result))) {
+					return true;
+				}
+			}
+		}
+
+		// If we get here, we're not mapping 'Home' to 'My Files.  Return
+		// false.
+		return false;
+	}
+
+	public static boolean useHomeAsMyFiles(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		User user = RequestContextHolder.getRequestContext().getUser();
+		return useHomeAsMyFiles(bs, user);
+	}
+
+	/**
+	 * Return the effective 'AdHoc folder' setting from the given user.
+	 * We will look in the user's properties first for a value.  If one
+	 * is not found we will get the setting from the zone.
+	 * 
+	 * @param ami
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static Boolean getEffectiveAdhocFolderSetting(AllModulesInjected ami, User user) {
+		// Are we running Filr?
+		Boolean result;
+		if (Utils.checkIfFilr()) {
+			// Yes! Check the user's properties.  
+			if (null !=  user)
+			     result = getAdhocFolderSettingFromUser(ami, user.getId());
+			else result = null;
+		
+			// Did we find a setting in the user's properties?
+			if (null == result) {
+				// No!  Read the global setting.
+				result = getAdhocFolderSettingFromZone(ami);
+			}
+		}
+		
+		else {
+			// No, we're not running Filr!  AdHoc folders are always
+			// supported.
+			result = Boolean.TRUE;
+		}
+
+		// If we get here, reply contains true if AdHoc folders are
+		// supported and false otherwise.  Return it.
+		return result;
+	}
+	
+
+	/**
+	 * Return the 'AdHoc folder' setting from the given user's
+	 * properties.
+	 * 
+	 * @param ami
+	 * @param userId
+	 * 
+	 * @return
+	 */
+	public static Boolean getAdhocFolderSettingFromUser(AllModulesInjected ami, Long userId) {
+		// If we're running Filr...
+		if (Utils.checkIfFilr()) {
+			if (null != userId) {
+				// ...read the 'allow AdHoc folder' setting from the
+				// ...user's properties...
+				UserProperties userProperties = ami.getProfileModule().getUserProperties(userId);
+				Object value = userProperties.getProperty(ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS);
+				if ((null != value) && (value instanceof String)) {
+					return new Boolean((String) value);
+				}
+			}
+			return null;
+		}
+		
+		else {
+			// If we're not running Filr, AdHoc folders are always
+			// allowed.
+			return Boolean.TRUE;
+		}
+	}
+
+	/**
+	 * Return the 'AdHoc folder' setting from the zone.
+	 * 
+	 * @param ami,
+	 * 
+	 * @return
+	 */
+	public static Boolean getAdhocFolderSettingFromZone(AllModulesInjected ami) {
+		// If we're running Filr, we check the zone setting.
+		// Otherwise, we simply return true.
+		Boolean reply;
+		if (Utils.checkIfFilr())
+		     reply = new Boolean(ami.getAdminModule().isAdHocFoldersEnabled());
+		else reply = Boolean.TRUE;
+		return reply;
+	}
+	
+	/**
+	 * Returns an Integer based value from an options Map.  If a value
+	 * for key isn't found, defInt is returned.
+	 * 
+	 * @param options
+	 * @param key
+	 * @param defInt
+	 *  
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static int getOptionInt(Map options, String key, int defInt) {
+		Integer obj = ((Integer) options.get(key));
+		return ((null == obj) ? defInt : obj.intValue());
+	}
+	
+	/**
+	 * Returns a Boolean based value from an options Map.  If a value
+	 * for key isn't found, defBool is returned. 
+	 * 
+	 * @param options
+	 * @param key
+	 * @param defBool
+	 *  
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static boolean getOptionBoolean(Map options, String key, boolean defBool) {
+		Boolean obj = ((Boolean) options.get(key));
+		return ((null == obj) ? defBool : obj.booleanValue());
+	}
+
+	/**
+	 * Returns a String based value from an options Map.  If a value
+	 * for key isn't found, defStr is returned. 
+	 * 
+	 * @param options
+	 * @param key
+	 * @param defStr
+	 *  
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String getOptionString(Map options, String key, String defStr) {
+		String obj = ((String) options.get(key));
+		return (((null == obj) || (0 == obj.length())) ? defStr : obj);
+	}
+
+
 }
