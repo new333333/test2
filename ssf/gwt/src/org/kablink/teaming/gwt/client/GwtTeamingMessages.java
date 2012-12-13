@@ -1600,6 +1600,8 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_Comments();
 	String vibeDataTable_Alt_EntryActions();
 	String vibeDataTable_Alt_ExpandDescription();
+	String vibeDataTable_Alt_ExternalUser();
+	String vibeDataTable_Alt_InternalUser();
 	String vibeDataTable_Alt_Unread();
 	String vibeDataTable_Alt_PinEntry();
 	String vibeDataTable_Alt_PinHeader();

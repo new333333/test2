@@ -43,6 +43,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
@@ -79,9 +80,10 @@ public class PersonalWorkspacesView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.put(FolderColumn.COLUMN_FULL_NAME,     new ColumnWidth(30));
-		columnWidths.put(FolderColumn.COLUMN_EMAIL_ADDRESS, new ColumnWidth(50));
-		columnWidths.put(FolderColumn.COLUMN_LOGIN_ID,      new ColumnWidth(20));
+		columnWidths.put(FolderColumn.COLUMN_FULL_NAME,     new ColumnWidth(30)         );
+		columnWidths.put(FolderColumn.COLUMN_USER_TYPE,     new ColumnWidth(60, Unit.PX));	// Manage users only.
+		columnWidths.put(FolderColumn.COLUMN_EMAIL_ADDRESS, new ColumnWidth(50)         );
+		columnWidths.put(FolderColumn.COLUMN_LOGIN_ID,      new ColumnWidth(20)         );
 	}
 
 	/**

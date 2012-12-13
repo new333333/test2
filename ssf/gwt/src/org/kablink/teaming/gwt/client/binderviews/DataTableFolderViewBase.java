@@ -68,6 +68,7 @@ import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg;
 import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg.SizeColumnsDlgClient;
 import org.kablink.teaming.gwt.client.datatable.StringColumn;
 import org.kablink.teaming.gwt.client.datatable.TaskFolderColumn;
+import org.kablink.teaming.gwt.client.datatable.UserTypeColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell;
 import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
@@ -1502,9 +1503,22 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				};
 			}
 			
+			// No, this column isn't a comments count either!  Is it a
+			// user type?
+			else if (FolderColumn.isColumnUserType(cName)) {
+				// Yes!  Create a UserTypeColumn for it.
+				column = new UserTypeColumn<FolderRow>(fc) {
+					@Override
+					public Boolean getValue(FolderRow fr) {
+						String internal = fr.getColumnValueAsString(fc);
+						return ((null == internal) || (!(internal.equalsIgnoreCase("false"))));
+					}
+				};
+			}
+			
 			else {
-				// No, this column isn't a comments count either!
-				// Define a StringColumn for it.
+				// No, this column isn't a user type either!  Define a
+				// StringColumn for it.
 				column = new StringColumn<FolderRow>(fc) {
 					@Override
 					public String getValue(FolderRow fr) {
