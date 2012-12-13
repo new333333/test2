@@ -1407,57 +1407,48 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
 
-           	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_IS_INTERNAL) && 
-           			(Boolean)options.get(ObjectKeys.SEARCH_IS_INTERNAL)) {
+           	// Handle any internal/external user filtering.
+           	Boolean isInternal = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_INTERNAL)) : null);
+           	Boolean isExternal = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_EXTERNAL)) : null);
+           	if ((null != isInternal) && isInternal) {
            		// This term will only include internal users.
            		SearchFilter searchTermFilter = new SearchFilter();
            		searchTermFilter.addAndInternalFilter(true);
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
-
-           	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_IS_EXTERNAL) && 
-           			(Boolean)options.get(ObjectKeys.SEARCH_IS_EXTERNAL)) {
+           	if ((null != isExternal) && isExternal) {
            		// This term will only include non-internal (i.e.,
            		// external) users.
            		SearchFilter searchTermFilter = new SearchFilter();
            		searchTermFilter.addAndInternalFilter(false);
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
-           	
-           	boolean includeDisabledUsers = ((options != null) && options.containsKey(ObjectKeys.SEARCH_INCLUDE_DISABLED_USERS) && ((Boolean) options.get(ObjectKeys.SEARCH_INCLUDE_DISABLED_USERS)));
-           	boolean excludeDisabledUsers = ((options != null) && options.containsKey(ObjectKeys.SEARCH_EXCLUDE_DISABLED_USERS) && ((Boolean) options.get(ObjectKeys.SEARCH_EXCLUDE_DISABLED_USERS)));
-           	if (includeDisabledUsers && excludeDisabledUsers) {
-   				logger.warn("AbstractEntryProcessor.getBinderEntries_doSearch( INVALID OPTIONS ):  Request to both include and exclude disabled users.");
-   				excludeDisabledUsers = false;
+
+           	// Handle any enabled/disabled user filtering.
+           	Boolean isDisabledUsers = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_DISABLED_USERS)) : null);
+           	Boolean isEnabledUsers  = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_ENABLED_USERS))  : null);
+           	if ((null != isDisabledUsers) && isDisabledUsers) {
+           		// This term will only include disabled users.
+           		SearchFilter searchTermFilter = new SearchFilter();
+           		searchTermFilter.addAndDisabledUserFilter(true);
+               	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
-           	
-           	if (includeDisabledUsers) {
-           		// No additional term to include disabled users.
-           	}
-           	
-           	else {
-           		// This term will exclude disabled users.
-//!				DRF (20121030):  ...this needs to be implemented...
-//!				Need to  figure out how to filter for a false flag
-//!				...or no setting.  The false is easy (see the
-//!        		...excludeDisabledUsers check below.)  The no setting,
-//!				...is not.
-           	}
-           	
-           	if (excludeDisabledUsers) {
-           		// No additional term to include disabled users.
+           	if ((null != isEnabledUsers) && isEnabledUsers) {
+           		// This term will only include enabled users.
            		SearchFilter searchTermFilter = new SearchFilter();
            		searchTermFilter.addAndDisabledUserFilter(false);
-           		searchFilter.appendFilter(searchTermFilter.getFilter());
+               	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
 
+           	// Handle any virtual/physical filtering.
         	if ((options != null) && options.containsKey(ObjectKeys.FOLDER_MODE_TYPE)) {
         		ListFolderHelper.ModeType mode = ((ListFolderHelper.ModeType) options.get(ObjectKeys.FOLDER_MODE_TYPE));
         		if ((null != mode) && (ListFolderHelper.ModeType.VIRTUAL == mode)) {
         			searchBinder = null;
         		}
         	}
-        	
+
+        	// Finally, perform the search.
         	getBinderEntries_getSearchDocument(searchBinder, entryTypes, includeNestedBinders, searchFilter);
 	   		queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), null);
         	SearchUtils.getQueryFields(queryTree, options); 

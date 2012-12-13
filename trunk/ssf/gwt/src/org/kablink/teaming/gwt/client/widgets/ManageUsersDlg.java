@@ -97,10 +97,8 @@ public class ManageUsersDlg extends DlgBox
 		SetSelectedUserShareRightsEvent.Handler,
 		SetSelectedUserShareSettingsEvent.Handler
 {
-	public final static boolean	SHOW_FILTER_OPTIONS	= false;	//! DRF:  Leave false on checkin until I get this working.
-	
-	private boolean							m_dlgAttached;				//
-	private boolean							m_viewReady;				//
+	private boolean							m_dlgAttached;				// true when the dialog is attached to the document.        false otherwise.
+	private boolean							m_viewReady;				// true once the embedded PersonalWorkspacesView is ready.  false otherwise.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private ImportProfilesDlg				m_importProfilesDlg;		// An ImportProfilesDlg, once one is created.
 	private int								m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
