@@ -187,6 +187,5 @@
 	<classpathentry exported="true" kind="lib" path="lib/jackson-xc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/lucene-queries.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk15.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/rmiauth.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
