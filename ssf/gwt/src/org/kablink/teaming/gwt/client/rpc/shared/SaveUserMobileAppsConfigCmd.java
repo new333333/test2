@@ -30,95 +30,67 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
+import java.util.List;
 
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
+import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
 
 
 /**
- * This class is used to hold the Mobile applications Configuration data stored in a user's properties.
+ * This class holds all of the information necessary to execute the "Save User Mobile Apps Configuration" command.
+ * 
  * @author jwootton
  *
  */
-public class GwtUserMobileAppsConfig
-	implements IsSerializable, VibeRpcResponseData
+public class SaveUserMobileAppsConfigCmd extends VibeRpcCmd
 {
-	private boolean m_mobileAppsEnabled = false;
-	private boolean m_allowCachePwd = false;
-	private boolean m_allowCacheContent = false;
-	private boolean m_allowPlayWithOtherApps = false;
+	private GwtUserMobileAppsConfig m_config = null;
+	private List<Long> m_userIds;
+	
+	/**
+	 * For GWT serialization, must have a zero param contructor
+	 */
+	public SaveUserMobileAppsConfigCmd()
+	{
+		super();
+	}
 	
 	/**
 	 * 
 	 */
-	public GwtUserMobileAppsConfig()
+	public SaveUserMobileAppsConfigCmd( GwtUserMobileAppsConfig config, List<Long> userIds )
 	{
+		m_config = config;
+		m_userIds = userIds;
+	}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType()
+	{
+		return VibeRpcCmdType.SAVE_USER_MOBILE_APPS_CONFIGURATION.ordinal();
 	}
 
 	/**
 	 * 
 	 */
-	public boolean getAllowCacheContent()
+	public GwtUserMobileAppsConfig getConfig()
 	{
-		return m_allowCacheContent;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getAllowCachePwd()
-	{
-		return m_allowCachePwd;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getAllowPlayWithOtherApps()
-	{
-		return m_allowPlayWithOtherApps;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getMobileAppsEnabled()
-	{
-		return m_mobileAppsEnabled;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAllowCacheContent( boolean allow )
-	{
-		m_allowCacheContent = allow;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAllowCachePwd( boolean allow )
-	{
-		m_allowCachePwd = allow;
+		return m_config;
 	}
 
 	/**
 	 * 
 	 */
-	public void setAllowPlayWithOtherApps( boolean allow )
+	public List<Long> getUserIds()
 	{
-		m_allowPlayWithOtherApps = allow;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setMobileAppsEnabled( boolean enabled )
-	{
-		m_mobileAppsEnabled = enabled;
+		return m_userIds;
 	}
 }

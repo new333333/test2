@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.util.HelpData;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -77,6 +78,7 @@ public abstract class DlgBox extends PopupPanel
 	private Label 					m_caption;					//
 	private FlowPanel				m_captionImagePanel;		//
 	private Panel					m_headerPanel;				//
+	private FlowPanel				m_bodyPanel;
 	private FlowPanel 				m_errorPanel;				//
 	private Panel 					m_contentPanel;				//
 	private FlowPanel				m_footerPanel;				//
@@ -241,6 +243,15 @@ public abstract class DlgBox extends PopupPanel
 	
 	
 	/**
+	 * 
+	 */
+	public void clearErrorPanel()
+	{
+		if ( m_errorPanel != null )
+			m_errorPanel.clear();
+	}
+	
+	/**
 	 * Get the Composite that holds the widgets that make up the content of the dialog box.
 	 */
 	public abstract Panel createContent( Object propertiesObj );
@@ -278,15 +289,19 @@ public abstract class DlgBox extends PopupPanel
 		m_headerPanel = createHeader( caption );
 		panel.add( m_headerPanel );
 		
+		// Create a panel where the error panel and the content panel live.
+		m_bodyPanel = new FlowPanel();
+		panel.add( m_bodyPanel );
+		
 		// Create a panel where errors can be displayed.
 		m_errorPanel = new FlowPanel();
 		m_errorPanel.addStyleName( "dlgErrorPanel" );
 		m_errorPanel.setVisible( false );
-		panel.add( m_errorPanel );
+		m_bodyPanel.add( m_errorPanel );
 
 		// Add the main content of the dialog box.
 		m_contentPanel = createContent( properties );
-		panel.add( m_contentPanel );
+		m_bodyPanel.add( m_contentPanel );
 		
 		// Create the footer.
 		m_footerPanel = createFooter();
@@ -669,7 +684,8 @@ public abstract class DlgBox extends PopupPanel
 					spaceNeeded += 20;
 					
 					contentPanelHeight = m_height - spaceNeeded;
-					m_contentPanel.setHeight( String.valueOf( contentPanelHeight ) + "px" );
+					m_bodyPanel.setHeight( String.valueOf( contentPanelHeight ) + "px" );
+					m_bodyPanel.getElement().getStyle().setOverflow( Overflow.AUTO );
 				}
 			}
 		};

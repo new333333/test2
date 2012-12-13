@@ -133,6 +133,7 @@ import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
+import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
@@ -171,6 +172,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.Sys
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveUserMobileAppsConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersStateRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUserSharingRightsInfoCmd.CombinedPerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
@@ -7617,6 +7619,53 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Return a GwtUserMobileAppsConfig object that holds the mobile apps configuration data
+	 * 
+	 * @return
+	 */
+	public static GwtUserMobileAppsConfig getUserMobileAppsConfig(
+		AllModulesInjected ami,
+		Long userId )
+	{
+		GwtUserMobileAppsConfig gwtUserMobileAppsConfig;
+		UserProperties userProperties;
+		
+		gwtUserMobileAppsConfig = new GwtUserMobileAppsConfig();
+		
+		userProperties = ami.getProfileModule().getUserProperties( userId );
+		if ( userProperties != null )
+		{
+			Object value;
+			
+			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR );
+			if ( value != null && value instanceof String )
+			{
+				gwtUserMobileAppsConfig.setMobileAppsEnabled( Boolean.valueOf( (String) value ) );
+			}
+
+			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD );
+			if ( value != null && value instanceof String )
+			{
+				gwtUserMobileAppsConfig.setAllowCachePwd( Boolean.valueOf( (String) value ) );
+			}
+			
+			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT );
+			if ( value != null && value instanceof String )
+			{
+				gwtUserMobileAppsConfig.setAllowCacheContent( Boolean.valueOf( (String) value ) );
+			}
+			
+			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS );
+			if ( value != null && value instanceof String )
+			{
+				gwtUserMobileAppsConfig.setAllowPlayWithOtherApps( Boolean.valueOf( (String) value ) );
+			}
+		}
+		
+		return gwtUserMobileAppsConfig;
+	}
+	
+	/**
 	 * Returns sharing rights information about the system and a list
 	 * of users, based on their IDs.
 	 * 
@@ -8877,6 +8926,7 @@ public class GwtServerHelper {
 		case GET_TOP_RANKED:
 		case GET_UPGRADE_INFO:
 		case GET_USER_ACCESS_CONFIG:
+		case GET_USER_MOBILE_APPS_CONFIG:
 		case GET_USER_PERMALINK:
 		case GET_USER_SHARING_RIGHTS_INFO:
 		case GET_USER_STATUS:
@@ -8944,6 +8994,7 @@ public class GwtServerHelper {
 		case SET_ENTRIES_PIN_STATE:
 		case SET_SEEN:
 		case SET_UNSEEN:
+		case SAVE_USER_MOBILE_APPS_CONFIGURATION:
 		case SET_USER_SHARING_RIGHTS_INFO:
 		case SHARE_ENTRY:
 		case SYNC_NET_FOLDERS:
@@ -9561,6 +9612,76 @@ public class GwtServerHelper {
 		ami.getAuthenticationModule().setAuthenticationConfig( authConfig );
 		
 		return Boolean.TRUE;
+	}
+	
+	/**
+	 * Save the given GwtUserMobileAppsConfig settings for the given users.
+	 * 
+	 */
+	public static SaveUserMobileAppsConfigRpcResponseData saveUserMobileAppsConfig(
+		AllModulesInjected ami,
+		GwtUserMobileAppsConfig config,
+		List<Long> userIds )
+	{
+		ProfileModule profileModule;
+		SaveUserMobileAppsConfigRpcResponseData responseData;
+		
+		responseData = new SaveUserMobileAppsConfigRpcResponseData();
+		
+		if ( config == null || userIds == null )
+		{
+			responseData.addError( "Invalid parameters passed to saveUserMobileAppsConfig()" );
+			return responseData;
+		}
+		
+		profileModule = ami.getProfileModule();
+		
+		for ( Long userId : userIds )
+		{
+			try
+			{
+				profileModule.setUserProperty(
+											userId,
+											ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR,
+											String.valueOf( config.getMobileAppsEnabled() ) );
+	
+				profileModule.setUserProperty(
+											userId,
+											ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD,
+											String.valueOf( config.getAllowCachePwd() ) );
+	
+				profileModule.setUserProperty(
+											userId,
+											ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT,
+											String.valueOf( config.getAllowCacheContent() ) );
+	
+				profileModule.setUserProperty(
+											userId,
+											ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS,
+											String.valueOf( config.getAllowPlayWithOtherApps() ) );
+			}
+			catch ( Exception ex )
+			{
+				User user;
+				String errMsg;
+				String cause;
+				String[] errorArgs;
+				String errorTag = "save.user.mobile.app.config.error";
+				
+				user = (User) profileModule.getEntry( userId );
+
+				if ( user.isDisabled() == true )
+					cause = NLT.get( "save.user.mobile.app.config.error.disabled.user" );
+				else
+					cause = ex.getLocalizedMessage();
+				errorArgs = new String[] { user.getTitle(), cause };
+				errMsg = NLT.get( errorTag, errorArgs );
+
+				responseData.addError( errMsg );
+			}
+		}
+		
+		return responseData;
 	}
 	
 	/**

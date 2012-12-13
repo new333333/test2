@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.ArrayList;
 
 /**
  * This class holds all of the information necessary to execute the "Get User Mobile Apps Config" command.
@@ -41,7 +40,7 @@ import java.util.ArrayList;
  */
 public class GetUserMobileAppsConfigCmd extends VibeRpcCmd
 {
-	private ArrayList<Long> m_userIds;
+	private Long m_userId;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
@@ -61,28 +60,22 @@ public class GetUserMobileAppsConfigCmd extends VibeRpcCmd
 	@Override
 	public int getCmdType()
 	{
-		return VibeRpcCmdType.GET_MOBILE_APPS_CONFIG.ordinal();
+		return VibeRpcCmdType.GET_USER_MOBILE_APPS_CONFIG.ordinal();
 	}
 	
 	/**
 	 * 
 	 */
-	public ArrayList<Long> getUserIds()
+	public Long getUserId()
 	{
-		return m_userIds;
+		return m_userId;
 	}
 	
 	/**
 	 * 
 	 */
-	@SuppressWarnings("unchecked")
-	public void setUserIds( ArrayList<Long> userIds )
+	public void setUserId( Long userId )
 	{
-		if ( userIds != null )
-		{
-			m_userIds = (ArrayList<Long>) userIds.clone();
-		}
-		else
-			m_userIds = null;
+		m_userId = userId;
 	}
 }

@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -56,7 +57,6 @@ import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtMainPage;
-import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.AdminConsoleHomePage;
@@ -65,7 +65,6 @@ import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetMobileAppsConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -75,6 +74,7 @@ import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.Configure
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureMobileAppsDlg.ConfigureMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUserAccessDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ConfigureUserMobileAppsDlg.ConfigureUserMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFolderRootsDlg.ManageNetFolderRootsDlgClient;
@@ -144,6 +144,7 @@ public class AdminControl extends TeamingPopupPanel
 	private AdminConsoleHomePage m_homePage = null;
 	private ConfigureFileSyncAppDlg m_configureFileSyncAppDlg = null;
 	private ConfigureMobileAppsDlg m_configureMobileAppsDlg = null;
+	private ConfigureUserMobileAppsDlg m_configureUserMobileAppsDlg = null;
 	private ManageGroupsDlg m_manageGroupsDlg = null;
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
@@ -1391,100 +1392,62 @@ public class AdminControl extends TeamingPopupPanel
 	@Override
 	public void onInvokeConfigureMobileAppsDlg( InvokeConfigureMobileAppsDlgEvent event )
 	{
-		AsyncCallback<VibeRpcResponse> rpcReadCallback;
+		int x;
+		int y;
+
+		// Get the position of the content control.
+		x = m_contentControlX;
+		y = m_contentControlY;
 		
-		// Create a callback that will be called when we get the mobile apps configuration.
-		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
+		// Have we already created a "Configure Mobile Apps" dialog?
+		if ( m_configureMobileAppsDlg == null )
 		{
-			/**
-			 * 
-			 */
-			@Override
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetMobileAppsConfiguration() );
-			}
-	
-			/**
-			 * We successfully retrieved the Mobile Apps configuration.  Now invoke the "Configure Mobile Apps" dialog.
-			 */
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				int x;
-				int y;
-				final GwtZoneMobileAppsConfig mobileAppsConfiguration;
-
-
-				mobileAppsConfiguration = (GwtZoneMobileAppsConfig) response.getResponseData();
-				
-				// Get the position of the content control.
-				x = m_contentControlX;
-				y = m_contentControlY;
-				
-				// Have we already created a "Configure Mobile Apps" dialog?
-				if ( m_configureMobileAppsDlg == null )
-				{
-					int width;
-					int height;
-					
-					// No, create one.
-					height = m_dlgHeight;
-					width = m_dlgWidth;
-					ConfigureMobileAppsDlg.createAsync(
-													false, 
-													true,
-													x, 
-													y,
-													width,
-													height,
-													new ConfigureMobileAppsDlgClient()
-					{			
-						@Override
-						public void onUnavailable()
-						{
-							// Nothing to do.  Error handled in asynchronous provider.
-						}
-						
-						@Override
-						public void onSuccess( final ConfigureMobileAppsDlg cmaDlg )
-						{
-							ScheduledCommand cmd;
-							
-							cmd = new ScheduledCommand()
-							{
-								@Override
-								public void execute() 
-								{
-									m_configureMobileAppsDlg = cmaDlg;
-									
-									m_configureMobileAppsDlg.init( mobileAppsConfiguration );
-									m_configureMobileAppsDlg.show();
-								}
-							};
-							Scheduler.get().scheduleDeferred( cmd );
-						}
-					} );
-				}
-				else
-				{
-					m_configureMobileAppsDlg.init( mobileAppsConfiguration );
-					m_configureMobileAppsDlg.setPopupPosition( x, y );
-					m_configureMobileAppsDlg.show();
-				}
-			}
-		};
-
-		// Issue an ajax request to get the Mobile Apps configuration.  When we get the Mobile Apps configuration
-		// we will invoke the "Configure Mobile Apps" dialog.
-		{
-			GetMobileAppsConfigCmd cmd;
+			int width;
+			int height;
 			
-			// Issue an ajax request to get the Mobile Apps configuration from the db.
-			cmd = new GetMobileAppsConfigCmd();
-			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
+			// No, create one.
+			height = m_dlgHeight;
+			width = m_dlgWidth;
+			ConfigureMobileAppsDlg.createAsync(
+											false, 
+											true,
+											x, 
+											y,
+											width,
+											height,
+											new ConfigureMobileAppsDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ConfigureMobileAppsDlg cmaDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_configureMobileAppsDlg = cmaDlg;
+							
+							m_configureMobileAppsDlg.init();
+							m_configureMobileAppsDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_configureMobileAppsDlg.init();
+			m_configureMobileAppsDlg.setPopupPosition( x, y );
+			m_configureMobileAppsDlg.show();
 		}
 	}
 	
@@ -1912,104 +1875,65 @@ public class AdminControl extends TeamingPopupPanel
 	@Override
 	public void onInvokeUserMobileSettingsDlg( InvokeUserMobileSettingsDlgEvent event )
 	{
-		Window.alert( "user mobile settings not yet implemented" );
-		if ( event != null )
-			return;
+		int x;
+		int y;
+		final List<Long> userIds;
+
+		// Get the position of the content control.
+		x = m_contentControlX;
+		y = m_contentControlY;
 		
-		AsyncCallback<VibeRpcResponse> rpcReadCallback;
+		userIds = event.getUserIds();
 		
-		// Create a callback that will be called when we get the mobile apps configuration.
-		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
+		// Have we already created a "Configure User Mobile Apps" dialog?
+		if ( m_configureUserMobileAppsDlg == null )
 		{
-			/**
-			 * 
-			 */
-			@Override
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetMobileAppsConfiguration() );
-			}
-	
-			/**
-			 * We successfully retrieved the Mobile Apps configuration.  Now invoke the "Configure Mobile Apps" dialog.
-			 */
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				int x;
-				int y;
-				final GwtZoneMobileAppsConfig mobileAppsConfiguration;
-
-
-				mobileAppsConfiguration = (GwtZoneMobileAppsConfig) response.getResponseData();
-				
-				// Get the position of the content control.
-				x = m_contentControlX;
-				y = m_contentControlY;
-				
-				// Have we already created a "Configure Mobile Apps" dialog?
-				if ( m_configureMobileAppsDlg == null )
-				{
-					int width;
-					int height;
-					
-					// No, create one.
-					height = m_dlgHeight;
-					width = m_dlgWidth;
-					ConfigureMobileAppsDlg.createAsync(
-													false, 
-													true,
-													x, 
-													y,
-													width,
-													height,
-													new ConfigureMobileAppsDlgClient()
-					{			
-						@Override
-						public void onUnavailable()
-						{
-							// Nothing to do.  Error handled in asynchronous provider.
-						}
-						
-						@Override
-						public void onSuccess( final ConfigureMobileAppsDlg cmaDlg )
-						{
-							ScheduledCommand cmd;
-							
-							cmd = new ScheduledCommand()
-							{
-								@Override
-								public void execute() 
-								{
-									m_configureMobileAppsDlg = cmaDlg;
-									
-									m_configureMobileAppsDlg.init( mobileAppsConfiguration );
-									m_configureMobileAppsDlg.show();
-								}
-							};
-							Scheduler.get().scheduleDeferred( cmd );
-						}
-					} );
-				}
-				else
-				{
-					m_configureMobileAppsDlg.init( mobileAppsConfiguration );
-					m_configureMobileAppsDlg.setPopupPosition( x, y );
-					m_configureMobileAppsDlg.show();
-				}
-			}
-		};
-
-		// Issue an ajax request to get the Mobile Apps configuration.  When we get the Mobile Apps configuration
-		// we will invoke the "Configure Mobile Apps" dialog.
-		{
-			GetMobileAppsConfigCmd cmd;
+			int width;
+			int height;
 			
-			// Issue an ajax request to get the Mobile Apps configuration from the db.
-			cmd = new GetMobileAppsConfigCmd();
-			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
+			// No, create one.
+			height = m_dlgHeight;
+			width = m_dlgWidth;
+			ConfigureUserMobileAppsDlg.createAsync(
+											false, 
+											true,
+											x, 
+											y,
+											width,
+											height,
+											new ConfigureUserMobileAppsDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ConfigureUserMobileAppsDlg cumaDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_configureUserMobileAppsDlg = cumaDlg;
+							
+							m_configureUserMobileAppsDlg.init( userIds );
+							m_configureUserMobileAppsDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_configureUserMobileAppsDlg.init( userIds );
+			m_configureUserMobileAppsDlg.setPopupPosition( x, y );
+			m_configureUserMobileAppsDlg.show();
 		}
 	}
 	
