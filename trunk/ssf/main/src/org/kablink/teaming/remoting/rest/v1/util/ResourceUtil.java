@@ -282,7 +282,7 @@ public class ResourceUtil {
             model.setLastName(u.getLastName());
         }
         model.setLink(LinkUriUtil.getUserLinkUri(model.getId()));
-        LinkUriUtil.populateUserLinks(model);
+        LinkUriUtil.populateUserLinks(model.getId(), model);
         return model;
     }
 
@@ -335,7 +335,7 @@ public class ResourceUtil {
             model.setWorkspace(new LongIdLinkPair(user.getWorkspaceId(), LinkUriUtil.getWorkspaceLinkUri(user.getWorkspaceId())));
         }
 
-        LinkUriUtil.populateUserLinks(model);
+        LinkUriUtil.populateUserLinks(model.getId(), model);
 
         return model;
     }

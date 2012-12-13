@@ -164,10 +164,12 @@ public class LinkUriUtil {
         }
     }
 
-    public static void populateUserLinks(BaseRestObject model) {
+    public static void populateUserLinks(Long id, BaseRestObject model) {
         populateDefinableEntityLinks(model);
         model.addAdditionalLink("favorites", model.getLink() + "/favorites");
         model.addAdditionalLink("teams", model.getLink() + "/teams");
+        model.addAdditionalLink("shares_with", "/shares/with_user/" + id);
+        model.addAdditionalLink("shares_by", "/shares/by_user/" + id);
     }
 
     public static void populateGroupLinks(BaseRestObject model) {

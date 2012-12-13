@@ -61,14 +61,13 @@ public class UserBriefBuilder extends PrincipalBriefBuilder implements SearchRes
         user.setLastName(getString(entry, ObjectKeys.FIELD_USER_LASTNAME));
 
         user.setLink(LinkUriUtil.getUserLinkUri(user.getId()));
-        LinkUriUtil.populateUserLinks(user);
+        LinkUriUtil.populateUserLinks(user.getId(), user);
         return user;
     }
 
     public Object getId(UserBrief obj) {
         return obj.getId();
     }
-
 
     public Object getParentId(UserBrief obj) {
         return obj.getParentBinder().getId();
