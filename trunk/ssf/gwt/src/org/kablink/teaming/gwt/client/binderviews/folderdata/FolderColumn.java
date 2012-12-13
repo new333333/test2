@@ -91,6 +91,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public final static String COLUMN_STATUS			= "status";
 	public final static String COLUMN_TASKS				= "tasks";
 	public final static String COLUMN_TITLE				= "title";
+	public final static String COLUMN_USER_TYPE			= "userType";
 	
 	// The following are the various internal names used for columns.
 	public final static String COLUMN_SELECT			= "--select--";
@@ -260,6 +261,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public static boolean isColumnPresence(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_AUTHOR);           }
 	public static boolean isColumnTaskFolders(     String       columnName) {return columnName.equals(FolderColumn.COLUMN_TASKS);            }
 	public static boolean isColumnTitle(           String       columnName) {return columnName.equals(FolderColumn.COLUMN_TITLE);            }
+	public static boolean isColumnUserType(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_USER_TYPE);        }
 	public static boolean isColumnView(            String       columnName) {return columnName.equals(FolderColumn.COLUMN_HTML);             }
 	public static boolean isColumnSharedBy(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_SHARED_BY);  }
 	public static boolean isColumnSharedWith(      String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_SHARED_WITH);}

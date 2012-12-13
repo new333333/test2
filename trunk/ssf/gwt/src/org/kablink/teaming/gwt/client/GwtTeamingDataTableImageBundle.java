@@ -96,6 +96,10 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource expandDescription();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/externalUser.png")
+	public ImageResource externalUser();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/filterOn.png")
 	public ImageResource filterOn();
 
@@ -119,6 +123,10 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	@Source("org/kablink/teaming/gwt/public/images/help3.gif")
 	public ImageResource help();
 
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/internalUser.png")
+	public ImageResource internalUser();
+	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/lock_20.png")
 	public ImageResource lock();
