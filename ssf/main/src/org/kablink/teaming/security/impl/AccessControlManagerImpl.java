@@ -191,8 +191,25 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 	public boolean testOperation(User user,
 			WorkArea workArea, WorkAreaOperation workAreaOperation) {
 		long begin = System.nanoTime();
+		
+		boolean result = testOperationRecursive(user, workArea, workArea, workAreaOperation);
+
+		if(logger.isDebugEnabled()) {
+			double diff = (System.nanoTime() - begin)/1000000.0; // millisecond
+			logger.debug("testOperation: result=" + result + 
+					" operation=" + workAreaOperation.getName() +
+					" time=" + diff + 
+					" user=" + user.getName() +
+					" wa-type=" + workArea.getClass().getSimpleName() +
+					" wa-id=" + workArea.getWorkAreaId());
+		}
+		
+		return result;
+	}
+	
+	private boolean checkRootFolderAccess(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) {
 		//See if this is a net folder
-		if (workArea.isAclExternallyControlled() && !workAreaOperation.equals(WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER)) {
+		if (workArea.isAclExternallyControlled() && !WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER.equals(workAreaOperation)) {
 			//We must also check that the user has the right to access this net folder
 			Binder topFolder = null;
 			if (workArea instanceof FolderEntry) {
@@ -216,28 +233,13 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			//Now check if the root folder allows access
 			if (topFolder != null) {
 				if (!testOperation(user, topFolder, WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER)) {
-					//TODO This next line was removed temporarially until we can get net folder access to work right - pmh
-					//return false;
+					return false;
 				}
 			} else {
-				//TODO This next line was removed temporarially until we can get net folder access to work right - pmh
-				//return false;
+				return false;
 			}
 		}
-		
-		boolean result = testOperationRecursive(user, workArea, workArea, workAreaOperation);
-
-		if(logger.isDebugEnabled()) {
-			double diff = (System.nanoTime() - begin)/1000000.0; // millisecond
-			logger.debug("testOperation: result=" + result + 
-					" operation=" + workAreaOperation.getName() +
-					" time=" + diff + 
-					" user=" + user.getName() +
-					" wa-type=" + workArea.getClass().getSimpleName() +
-					" wa-id=" + workArea.getWorkAreaId());
-		}
-		
-		return result;
+		return true;
 	}
 	
 	private boolean applicationPlaysNoRoleInAccessControl(Application application) {
@@ -280,7 +282,8 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			if (config.isAnonymousReadOnly()) {
 				//This is the guest account and it is read only. Only allow checks for read rights
 				if (!WorkAreaOperation.READ_ENTRIES.equals(workAreaOperation) &&
-						!WorkAreaOperation.VIEW_BINDER_TITLE.equals(workAreaOperation)) {
+						!WorkAreaOperation.VIEW_BINDER_TITLE.equals(workAreaOperation) &&
+						!WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER.equals(workAreaOperation)) {
 					//Rights other than "read" rights are not permitted by read only guests
 					return false;
 				}
@@ -304,7 +307,13 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			} else {
 				// use the original workArea owner
 				if (testOperationRecursive(user, workAreaStart, parentWorkArea, workAreaOperation)) {
-					return true;
+					if (checkRootFolderAccess(user, workAreaStart, workAreaOperation)) {
+						//OK, this is accessible by this user
+						return true;
+					} else {
+						//See if this was shared. If so, we can ignore the rootFolderAccess check
+						return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
+					}
 				} else {
 					return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
 				}
@@ -393,7 +402,13 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			// place against a container group.
 			if(checkWorkAreaFunctionMembership(user.getZoneId(),
 							workArea, workAreaOperation, userAllMembersToLookup)) {
-				return true;
+				if (checkRootFolderAccess(user, workAreaStart, workAreaOperation)) {
+					//OK, this is accessible by this user
+					return true;
+				} else {
+					//See if this was shared. If so, we can ignore the rootFolderAccess check
+					return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
+				}
 			}
 			else {
 				return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);

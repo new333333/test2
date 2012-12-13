@@ -3543,6 +3543,10 @@ public class BinderHelper {
 				}
 			}
 			//Now, using the binderIds, get the entries that match the search options
+			if (binderIds.isEmpty()) {
+				//Make sure there is some binderId to search for or the search returns everything
+				binderIds.add("xxx");
+			}
 			crit = SearchUtils.getBinderEntriesSearchCriteria(bs, binderIds, false);
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		} else if (ObjectKeys.SEARCH_SCOPE_NET_FOLDERS.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
@@ -3568,6 +3572,10 @@ public class BinderHelper {
 				}
 			}
 			//Now, using the binderIds, get the entries that match the search options
+			if (binderIds.isEmpty()) {
+				//Make sure there is some binderId to search for or the search returns everything
+				binderIds.add("xxx");
+			}
 			crit = SearchUtils.getBinderEntriesSearchCriteria(bs, binderIds, false);
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		} else if (ObjectKeys.SEARCH_SCOPE_SHARED_WITH_ME.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
@@ -3595,6 +3603,14 @@ public class BinderHelper {
 				} else if (docId != null && Constants.DOC_TYPE_ENTRY.equals(docType)) {
 					entryIds.add(docId);
 				}
+			}
+			if (binderIds.isEmpty()) {
+				//Make sure there is some binderId to search for or the search returns everything
+				binderIds.add("xxx");
+			}
+			if (entryIds.isEmpty()) {
+				//Make sure there is some entryId to search for or the search returns everything
+				entryIds.add("xxx");
 			}
 			crit = SearchUtils.getSharedWithMeSearchCriteria(binderIds, entryIds);
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);

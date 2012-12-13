@@ -63,6 +63,7 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -600,25 +601,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean getAdhocFolderSettingFromUser(AllModulesInjected ami, Long userId) {
-		// If we're running Filr...
-		if (Utils.checkIfFilr()) {
-			if (null != userId) {
-				// ...read the 'allow AdHoc folder' setting from the
-				// ...user's properties...
-				UserProperties userProperties = ami.getProfileModule().getUserProperties(userId);
-				Object value = userProperties.getProperty(ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS);
-				if ((null != value) && (value instanceof String)) {
-					return new Boolean((String) value);
-				}
-			}
-			return null;
-		}
-		
-		else {
-			// If we're not running Filr, AdHoc folders are always
-			// allowed.
-			return Boolean.TRUE;
-		}
+		return SearchUtils.getAdhocFolderSettingFromUser(ami, userId);
 	}
 
 	/**
@@ -629,13 +612,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean getAdhocFolderSettingFromZone(AllModulesInjected ami) {
-		// If we're running Filr, we check the zone setting.
-		// Otherwise, we simply return true.
-		Boolean reply;
-		if (Utils.checkIfFilr())
-		     reply = new Boolean(ami.getAdminModule().isAdHocFoldersEnabled());
-		else reply = Boolean.TRUE;
-		return reply;
+		return SearchUtils.getAdhocFolderSettingFromZone(ami);
 	}
 	
 	/**
@@ -649,30 +626,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean getEffectiveAdhocFolderSetting(AllModulesInjected ami, User user) {
-		// Are we running Filr?
-		Boolean result;
-		if (Utils.checkIfFilr()) {
-			// Yes! Check the user's properties.  
-			if (null !=  user)
-			     result = getAdhocFolderSettingFromUser(ami, user.getId());
-			else result = null;
-		
-			// Did we find a setting in the user's properties?
-			if (null == result) {
-				// No!  Read the global setting.
-				result = getAdhocFolderSettingFromZone(ami);
-			}
-		}
-		
-		else {
-			// No, we're not running Filr!  AdHoc folders are always
-			// supported.
-			result = Boolean.TRUE;
-		}
-
-		// If we get here, reply contains true if AdHoc folders are
-		// supported and false otherwise.  Return it.
-		return result;
+		return SearchUtils.getEffectiveAdhocFolderSetting(ami, user);
 	}
 	
 	/**

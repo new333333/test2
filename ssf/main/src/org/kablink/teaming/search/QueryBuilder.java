@@ -91,6 +91,7 @@ public class QueryBuilder {
 	private static final String FOLDER_PREFIX=Constants.FOLDER_ACL_FIELD + ":";
 	private static final String ENTRY_PREFIX=Constants.ENTRY_ACL_FIELD + ":";
 	private static final String ROOT_PREFIX=Constants.ROOT_FOLDER_ACL_FIELD + ":";
+	private static final String SHARED_PREFIX=Constants.SHARED_IDS + ":";
 	private static final String ENTRY_ALL=ENTRY_PREFIX+Constants.READ_ACL_ALL;
 	private static final String ENTRY_ALL_GLOBAL=ENTRY_PREFIX+Constants.READ_ACL_GLOBAL;
 	private static final String FOLDER_ALL_GLOBAL=FOLDER_PREFIX+Constants.READ_ACL_GLOBAL;
@@ -764,7 +765,16 @@ public class QueryBuilder {
 			}
 		}
 		String entryAll = getConditionExp(ENTRY_PREFIX, Constants.READ_ACL_ALL, conditionsMet);
-		
+
+		//Add the shared entries outside of the root folder restrictions
+		String sharedPrincipals = idField(principalIds, SHARED_PREFIX, new ArrayList<Long>());
+		if (user.getIdentityInfo().isInternal() && !user.isShared()) {
+			sharedPrincipals += " OR " + SHARED_PREFIX + String.valueOf(allUsersGroupId);
+		} else if (!user.getIdentityInfo().isInternal() && !user.isShared()) {
+			sharedPrincipals += " OR " + SHARED_PREFIX + String.valueOf(allExtUsersGroupId);
+		}
+		qString.append("(" + sharedPrincipals + ") OR ");
+
 		//Start with the Net Folder Root acl
 		String rootPrincipals = idField(principalIds, ROOT_PREFIX, new ArrayList<Long>());
 		rootPrincipals += " OR " + ROOT_PREFIX + Constants.ROOT_FOLDER_ALL;
@@ -773,8 +783,7 @@ public class QueryBuilder {
 		} else if (!user.getIdentityInfo().isInternal() && !user.isShared()) {
 			rootPrincipals += " OR " + ROOT_PREFIX + String.valueOf(allExtUsersGroupId);
 		}
-		//TODO This next line was removed temporarially until we can get net folder access to work right - pmh
-		//qString.append("(" + rootPrincipals + ") AND ");
+		qString.append("((" + rootPrincipals + ") AND ");
 		
 		// folderAcl:1,2,3...
 		if (widen) {
@@ -823,6 +832,7 @@ public class QueryBuilder {
 					"(" + teamPrincipals + "))");
 			qString.append("))");
 		}
+		qString.append(")");
 		return qString;
 	}
 	
