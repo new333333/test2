@@ -605,7 +605,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	}
 	
 	private Authentication successfulAuthentication(Authentication result) {
-		GangliaMonitoring.addLoggedInUser(getLoginName(result));
+		if(LoginInfo.AUTHENTICATOR_WEB.equals(getAuthenticator()))
+			GangliaMonitoring.addLoggedInUser(getLoginName(result)); // This metric is applicable only with web client (browser)
 		return result;
 	}
 	

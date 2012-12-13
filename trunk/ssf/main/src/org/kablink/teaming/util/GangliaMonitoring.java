@@ -56,37 +56,45 @@ public class GangliaMonitoring {
 	private static final Log logger = LogFactory.getLog(GangliaMonitoring.class);
 	
 	private ConcurrentHashMap<String,String> uniqueLoggedInUsers = new ConcurrentHashMap<String,String>();
+	private ConcurrentHashMap<String,String> uniqueLoggedInUsersSince = new ConcurrentHashMap<String,String>();
+
 
 	private AtomicInteger fileWrites = new AtomicInteger();
+	private AtomicInteger fileWritesSince = new AtomicInteger();
 	private AtomicInteger fileReads = new AtomicInteger();
+	private AtomicInteger fileReadsSince = new AtomicInteger();
 	private AtomicInteger filesShared = new AtomicInteger();
 	private AtomicInteger filesSharedSince = new AtomicInteger();
 	private AtomicInteger foldersShared = new AtomicInteger();
 	private AtomicInteger foldersSharedSince = new AtomicInteger();
 	
 	private AtomicLong restRequests = new AtomicLong();
+	private AtomicInteger restRequestsSince = new AtomicInteger();
 	
 	private Thread task;
 	
 	public GangliaMonitoring() {
 		instance = this;
-		task = new Thread(new GangliaDumpTask(SPropsUtil.getInt("ganglia.dump.interval", 30)));
+		task = new Thread(new GangliaDumpTask(SPropsUtil.getInt("ganglia.dump.interval", 60)));
 		task.setDaemon(true);
 		task.start();
 	}
 	
 	public static int addLoggedInUser(String username) {
 		instance.uniqueLoggedInUsers.put(username, username);
+		instance.uniqueLoggedInUsersSince.put(username, username);
 		return instance.uniqueLoggedInUsers.size();
 	}
 	
 	public static int incrementFileWrites() {
 		if(instance == null) return 0; // not ready
+		instance.fileWritesSince.addAndGet(1);
 		return instance.fileWrites.addAndGet(1);
 	}
 	
 	public static int incrementFileReads() {
 		if(instance == null) return 0; // not ready
+		instance.fileReadsSince.addAndGet(1);
 		return instance.fileReads.addAndGet(1);
 	}
 	
@@ -104,6 +112,7 @@ public class GangliaMonitoring {
 	
 	public static long incrementRestRequests() {
 		if(instance == null) return 0; // not ready
+		instance.restRequestsSince.addAndGet(1);
 		return instance.restRequests.addAndGet(1);
 	}
 	
@@ -133,17 +142,30 @@ public class GangliaMonitoring {
 			 */
 			writeProperty(writer, "uniqueLoggedInUsers", String.valueOf(instance.uniqueLoggedInUsers.size()));
 			/*
+			 * Number of unique users who ever logged into Filr using web client since the last time the information was dumped.
+			 * It doesn't necessarily mean that those users are still logged in.
+			 */
+			writeProperty(writer, "uniqueLoggedInUsersSince", String.valueOf(instance.uniqueLoggedInUsersSince.size()));
+			/*
 			 * Number of file writes to the file repositories including the remote file systems
 			 * exposed through Net Folders and Home Directories, and the local file repository
 			 * exposed through ad-hoc file folders.
 			 */
 			writeProperty(writer, "fileWrites", String.valueOf(instance.fileWrites.get()));
 			/*
+			 * Number of file writes since the last time the information was dumped.
+			 */
+			writeProperty(writer, "fileWritesSince", String.valueOf(instance.fileWritesSince.get()));
+			/*
 			 * Number of file reads from the file repositories including the remote file systems
 			 * exposed through Net Folders and Home Directories, and the local file repository
 			 * exposed through ad-hoc file folders.
 			 */
 			writeProperty(writer, "fileReads", String.valueOf(instance.fileReads.get()));
+			/*
+			 * Number of file reads since the last time the information was dumped.
+			 */
+			writeProperty(writer, "fileReadsSince", String.valueOf(instance.fileReadsSince.get()));
 			/*
 			 * Number of files shared since the server started.
 			 */
@@ -161,14 +183,22 @@ public class GangliaMonitoring {
 			 */
 			writeProperty(writer, "foldersSharedSince", String.valueOf(instance.foldersSharedSince.get()));
 			/*
-			 * Number of REST calls made to this server.
+			 * Number of REST calls made to this server since the server started.
 			 */
 			writeProperty(writer, "restRequests", String.valueOf(instance.restRequests));
+			/*
+			 * Number of REST calls made to this server since the last time the information was dumped.
+			 */
+			writeProperty(writer, "restRequestsSince", String.valueOf(instance.restRequestsSince));
 		}
 		finally {
 			// Reset/clear variables as appropriate.
+			instance.uniqueLoggedInUsersSince.clear();
+			instance.fileWritesSince.set(0);
+			instance.fileReadsSince.set(0);
 			instance.filesSharedSince.set(0);
 			instance.foldersSharedSince.set(0);
+			instance.restRequestsSince.set(0);
 			// Close the output file.
 			writer.close();
 		}
