@@ -450,6 +450,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetTree();
 	String rpcFailure_GetUpgradeInfo();
 	String rpcFailure_GetUserAccessInfo();
+	String rpcFailure_GetUserFileSyncAppConfig();
 	String rpcFailure_GetUserMobileAppsConfiguration();
 	String rpcFailure_GetUserPermalink();
 	String rpcFailure_GetUserSharingRightsInfo();
@@ -572,6 +573,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ConfigureFileSyncAppDlg();
 	String codeSplitFailure_ConfigureMobileAppsDlg();
 	String codeSplitFailure_ConfigureUserAccessDlg();
+	String codeSplitFailure_ConfigureUserFileSyncAppDlg();
 	String codeSplitFailure_ConfigureUserMobileAppsDlg();
 	String codeSplitFailure_ConfirmDlg();
 	String codeSplitFailure_ContentControl();
@@ -1515,12 +1517,19 @@ public interface GwtTeamingMessages extends Messages
 	String fileSyncAppAutoUpdateUrlRequiredPrompt();
 	String fileSyncAppDlgHeader();
 	String fileSyncAppEnableDeployLabel();
+	String fileSyncAppHeader2();
 	String fileSyncAppIntervalLabel();
 	String fileSyncApp_InvalidAutoUpdateUrlText();
 	String fileSyncAppMaxFileSizeLabel();
 	String fileSyncAppMBLabel();
 	String fileSyncAppMinutesLabel();
 	String fileSyncApp_OnSaveUnknownException( String desc );
+	
+	// Strings used in the Configure User File Sync App dialog
+	String configureUserFileSyncAppDlgErrorHeader();
+	String configureUserFileSyncAppDlgHeader( String numUsers );
+	String configureUserFileSyncAppDlgOnSaveUnknownException( String desc );
+	String configureUserFileSyncDlgSaving( String completed, String total );
 
 	// Strings used by the filter bar in the various binder views.
 	String vibeBinderFilter_Alt_Filters();

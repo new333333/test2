@@ -82,6 +82,7 @@ public abstract class DlgBox extends PopupPanel
 	private FlowPanel 				m_errorPanel;				//
 	private Panel 					m_contentPanel;				//
 	private FlowPanel				m_footerPanel;				//
+	private FlowPanel				m_statusPanel;
 	private InlineLabel 			m_statusLabel;				//
 	private Image					m_statusImg;				//
 	private int 					m_id;						//
@@ -332,16 +333,19 @@ public abstract class DlgBox extends PopupPanel
 		{
 			ImageResource imgResource;
 			
+			m_statusPanel = new FlowPanel();
+			m_statusPanel.addStyleName( "dlgBox_statusPanel" );
+			m_statusPanel.setVisible( false );
+			m_footerPanel.add( m_statusPanel );
+			
 			imgResource = GwtTeaming.getImageBundle().spinner16();
 			m_statusImg = new Image( imgResource );
 			m_statusImg.getElement().setAttribute( "align", "absmiddle" );
-			m_statusImg.setVisible( false );
-			m_footerPanel.add( m_statusImg );
+			m_statusPanel.add( m_statusImg );
 
 			m_statusLabel = new InlineLabel();
 			m_statusLabel.addStyleName( "dlgBox_statusMsg" );
-			m_statusLabel.setVisible( false );
-			m_footerPanel.add( m_statusLabel );
+			m_statusPanel.add( m_statusLabel );
 		}
 
 		// Create the appropriate buttons based on the value of m_dlgBtnMode.
@@ -620,8 +624,7 @@ public abstract class DlgBox extends PopupPanel
 	 */
 	public void hideStatusMsg()
 	{
-		m_statusLabel.setVisible( false );
-		m_statusImg.setVisible( false );
+		m_statusPanel.setVisible( false );
 	}
 	
 	/**
@@ -918,8 +921,7 @@ public abstract class DlgBox extends PopupPanel
 	{
 		m_statusLabel.setText( statusMsg );
 		m_statusLabel.setTitle( statusMsg );
-		m_statusLabel.setVisible( true );
-		m_statusImg.setVisible( true );
+		m_statusPanel.setVisible( true );
 	}
 	
 	

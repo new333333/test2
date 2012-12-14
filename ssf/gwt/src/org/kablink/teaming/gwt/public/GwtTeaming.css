@@ -1140,11 +1140,17 @@ body, table td, select
 	cursor: pointer;
 }
 
+.dlgBox_statusPanel
+{
+	left: 10px;
+	position: absolute;
+	top: 12px;
+}
+
 .dlgBox_statusMsg
 {
-	color: #949494;
+	color: #505354;
 	font-style: italic;
-	margin-right: 20px;
 }
 
 
@@ -2905,6 +2911,7 @@ body, table td, select
 	border-top: 1px solid #cccccc;
 	margin-top: 10px;
 	padding: 10px;
+	position: relative;
 	text-align: right;
 	vertical-align: middle;
 	border-bottom-left-radius: 3px;
