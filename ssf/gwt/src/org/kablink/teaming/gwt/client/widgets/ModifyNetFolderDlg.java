@@ -470,6 +470,9 @@ public class ModifyNetFolderDlg extends DlgBox
 				Label label;
 				String errMsg;
 				
+				hideStatusMsg();
+				setOkEnabled( true );
+
 				// Get the panel that holds the errors.
 				errorPanel = getErrorPanel();
 				errorPanel.clear();
@@ -515,6 +518,9 @@ public class ModifyNetFolderDlg extends DlgBox
 				event = new NetFolderCreatedEvent( netFolder );
 				GwtTeaming.fireEvent( event );
 
+				hideStatusMsg();
+				setOkEnabled( true );
+
 				// Close this dialog.
 				hide();
 			}						
@@ -526,6 +532,8 @@ public class ModifyNetFolderDlg extends DlgBox
 			
 			netFolder = getNetFolderFromDlg();
 			
+			showStatusMsg( GwtTeaming.getMessages().modifyNetFolderDlg_CreatingNetFolder() );
+
 			cmd = new CreateNetFolderCmd( netFolder );
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
@@ -541,6 +549,12 @@ public class ModifyNetFolderDlg extends DlgBox
 	@Override
 	public boolean editSuccessful( Object obj )
 	{
+		clearErrorPanel();
+		hideErrorPanel();
+
+		// Disable the Ok button.
+		setOkEnabled( false );
+
 		// Are we editing an existing net folder?
 		if ( m_netFolder != null )
 		{
@@ -781,6 +795,11 @@ public class ModifyNetFolderDlg extends DlgBox
 		
 		m_netFolder = netFolder;
 
+		clearErrorPanel();
+		hideErrorPanel();
+		hideStatusMsg();
+		setOkEnabled( true );
+
 		// Clear existing data in the controls.
 		m_nameTxtBox.setValue( "" );
 		m_relativePathTxtBox.setValue( "" );
@@ -989,6 +1008,9 @@ public class ModifyNetFolderDlg extends DlgBox
 				Label label;
 				String errMsg;
 				
+				hideStatusMsg();
+				setOkEnabled( true );
+
 				// Get the panel that holds the errors.
 				errorPanel = getErrorPanel();
 				errorPanel.clear();
@@ -1031,10 +1053,15 @@ public class ModifyNetFolderDlg extends DlgBox
 				event = new NetFolderModifiedEvent( newNetFolder );
 				GwtTeaming.fireEvent( event );
 
+				hideStatusMsg();
+				setOkEnabled( true );
+
 				// Close this dialog.
 				hide();
 			}						
 		};
+		
+		showStatusMsg( GwtTeaming.getMessages().modifyNetFolderDlg_ModifyingNetFolder() );
 		
 		// Issue an rpc request to update the net folder.
 		cmd = new ModifyNetFolderCmd( newNetFolder ); 
