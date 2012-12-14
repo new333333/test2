@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.NetFolder;
+import org.kablink.teaming.gwt.client.NetFolderDataSyncSettings;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderCreatedEvent;
@@ -74,6 +75,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -107,6 +109,8 @@ public class ModifyNetFolderDlg extends DlgBox
 	private ScheduleWidget m_scheduleWidget;
 	private NetFolderSelectPrincipalsWidget m_selectPrincipalsWidget;
 	private FlowPanel m_inProgressPanel;
+	private CheckBox m_allowDesktopAppToSync;
+	private CheckBox m_allowMobileAppsToSync;
 	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
 	private List<HandlerRegistration> m_registeredEventHandlers;
@@ -206,6 +210,14 @@ public class ModifyNetFolderDlg extends DlgBox
 			
 			schedPanel = createSchedulePanel();
 			m_tabPanel.add( schedPanel, messages.modifyNetFolderDlg_ScheduleTab() );
+		}
+		
+		// Create the panel that will hold the controls for allowing data sync
+		{
+			Panel syncPanel;
+			
+			syncPanel = createDataSyncPanel();
+			m_tabPanel.add( syncPanel, messages.modifyNetFolderDlg_DataSyncTab() );
 		}
 
 		return mainPanel;
@@ -371,6 +383,42 @@ public class ModifyNetFolderDlg extends DlgBox
 
 		return mainPanel;
 		
+	}
+	
+	/**
+	 * Create the panel that holds the controls for allowing data sync
+	 */
+	private Panel createDataSyncPanel()
+	{
+		GwtTeamingMessages messages;
+		FlowPanel mainPanel;
+		FlowPanel ckboxPanel;
+		FlowPanel tmpPanel;
+		Label label;
+		
+		messages = GwtTeaming.getMessages();
+		
+		mainPanel = new FlowPanel();
+
+		label = new Label( messages.modifyNetFolderDlg_AllowDataSyncBy() );
+		mainPanel.add( label );
+
+		ckboxPanel = new FlowPanel();
+		ckboxPanel.addStyleName( "marginleft1" );
+		ckboxPanel.addStyleName( "marginbottom2" );
+		mainPanel.add( ckboxPanel );
+		
+		m_allowDesktopAppToSync = new CheckBox( messages.modifyNetFolderDlg_AllowDesktopAppToSyncLabel() );
+		tmpPanel = new FlowPanel();
+		tmpPanel.add( m_allowDesktopAppToSync );
+		ckboxPanel.add( tmpPanel );
+		
+		m_allowMobileAppsToSync = new CheckBox( messages.modifyNetFolderDlg_AllowMobileAppsToSyncLabel() );
+		tmpPanel = new FlowPanel();
+		tmpPanel.add( m_allowMobileAppsToSync );
+		ckboxPanel.add( tmpPanel );
+
+		return mainPanel;
 	}
 	
 	/**
@@ -584,6 +632,22 @@ public class ModifyNetFolderDlg extends DlgBox
 	}
 	
 	/**
+	 * Get whether the desktop app can sync data from this net folder.
+	 */
+	private boolean getAllowDesktopAppToSyncData()
+	{
+		return m_allowDesktopAppToSync.getValue();
+	}
+	
+	/**
+	 * Get whether mobile apps can sync data from this net folder.
+	 */
+	private boolean getAllowMobileAppsToSyncData()
+	{
+		return m_allowMobileAppsToSync.getValue();
+	}
+	
+	/**
 	 * Get the data from the controls in the dialog box.
 	 */
 	@Override
@@ -591,6 +655,20 @@ public class ModifyNetFolderDlg extends DlgBox
 	{
 		// Return something.  Doesn't matter what because editSuccessful() does the work.
 		return Boolean.TRUE;
+	}
+	
+	/**
+	 * 
+	 */
+	private NetFolderDataSyncSettings getDataSyncSettings()
+	{
+		NetFolderDataSyncSettings settings;
+		
+		settings = new NetFolderDataSyncSettings();
+		settings.setAllowDesktopAppToSyncData( getAllowDesktopAppToSyncData() );
+		settings.setAllowMobileAppsToSyncData( getAllowMobileAppsToSyncData() );
+
+		return settings;
 	}
 	
 	
@@ -698,6 +776,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		netFolder.setNetFolderRootName( getNetFolderRootName() );
 		netFolder.setSyncSchedule( getSyncSchedule() );
 		netFolder.setRoles( getRoles() );
+		netFolder.setDataSyncSettings( getDataSyncSettings() );
 		
 		if ( m_netFolder != null )
 			netFolder.setId( m_netFolder.getId() );
@@ -812,6 +891,9 @@ public class ModifyNetFolderDlg extends DlgBox
 		
 		// Initialize the access rights
 		initShareRights();
+		
+		// Initialize the data sync controls.
+		initDataSync();
 
 		// Are we modifying an existing net folder?
 		if ( m_netFolder != null )
@@ -844,6 +926,27 @@ public class ModifyNetFolderDlg extends DlgBox
 		getListOfNetFolderRoots();
 	}
 
+	/**
+	 * Initialize the controls in the data sync panel
+	 */
+	private void initDataSync()
+	{
+		m_allowDesktopAppToSync.setValue( false );
+		m_allowMobileAppsToSync.setValue( false );
+		
+		if ( m_netFolder != null )
+		{
+			NetFolderDataSyncSettings settings;
+			
+			settings = m_netFolder.getDataSyncSettings();
+			if ( settings != null )
+			{
+				m_allowDesktopAppToSync.setValue( settings.getAllowDesktopAppToSyncData() );
+				m_allowMobileAppsToSync.setValue( settings.getAllowMobileAppsToSyncData() );
+			}
+		}
+	}
+	
 	/**
 	 * 
 	 */
@@ -886,6 +989,7 @@ public class ModifyNetFolderDlg extends DlgBox
 			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
+	
 	/**
 	 * 
 	 */

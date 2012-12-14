@@ -2050,9 +2050,13 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the Modify Net Folder dialog
 	String modifyNetFolderDlg_AddHeader();
+	String modifyNetFolderDlg_AllowDataSyncBy();
+	String modifyNetFolderDlg_AllowDesktopAppToSyncLabel();
+	String modifyNetFolderDlg_AllowMobileAppsToSyncLabel();
 	String modifyNetFolderDlg_ConfigTab();
 	String modifyNetFolderDlg_CreateNetFolderServerLabel();
 	String modifyNetFolderDlg_CreatingNetFolder();
+	String modifyNetFolderDlg_DataSyncTab();
 	String modifyNetFolderDlg_EditHeader( String name );
 	String modifyNetFolderDlg_EnableSyncScheduleLabel();
 	String modifyNetFolderDlg_ErrorCreatingNetFolder( String err );

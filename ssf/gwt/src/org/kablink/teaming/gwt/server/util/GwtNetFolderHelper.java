@@ -66,6 +66,7 @@ import org.kablink.teaming.gwt.client.GwtSchedule.TimeFrequency;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
+import org.kablink.teaming.gwt.client.NetFolderDataSyncSettings;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.NetFolder.NetFolderStatus;
 import org.kablink.teaming.gwt.client.NetFolderRoot.NetFolderRootStatus;
@@ -204,6 +205,9 @@ public class GwtNetFolderHelper
 			
 			// Set the rights on the net folder
 			setNetFolderRights( ami, binder.getId(), netFolder.getRoles() );
+			
+			// Set the data sync settings on the next folder
+			saveDataSyncSettings( ami, binder, netFolder.getDataSyncSettings() );
 
 			newNetFolder = new NetFolder();
 			newNetFolder.setName( netFolder.getName() );
@@ -213,6 +217,7 @@ public class GwtNetFolderHelper
 			newNetFolder.setStatus( NetFolderStatus.READY );
 			newNetFolder.setSyncSchedule( netFolder.getSyncSchedule() );
 			newNetFolder.setRoles( netFolder.getRoles() );
+			newNetFolder.setDataSyncSettings( netFolder.getDataSyncSettings() );
 		}
 		catch ( Exception ex )
 		{
@@ -455,6 +460,22 @@ public class GwtNetFolderHelper
 	private static CoreDao getCoreDao()
 	{
 		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
+	}
+	
+	/**
+	 * Get the data sync settings for the given net folder binder and store them in the
+	 * given NetFolder
+	 */
+	private static NetFolderDataSyncSettings getDataSyncSettings(
+		AllModulesInjected ami,
+		Binder binder )
+	{
+		NetFolderDataSyncSettings settings;
+		
+		//!!! Finish
+		settings = new NetFolderDataSyncSettings();
+		
+		return settings;
 	}
 	
 	/**
@@ -742,6 +763,7 @@ public class GwtNetFolderHelper
 		Binder binder;
 		GwtSchedule gwtSchedule;
 		ArrayList<GwtRole> listOfRoles;
+		NetFolderDataSyncSettings dataSyncSettings;
 		
 		netFolder = new NetFolder();
 		netFolder.setId( id );
@@ -760,6 +782,10 @@ public class GwtNetFolderHelper
 		// Get the rights associated with this net folder.
 		listOfRoles = getNetFolderRights( ami, binder );
 		netFolder.setRoles( listOfRoles );
+		
+		// Get the data sync settings
+		dataSyncSettings = getDataSyncSettings( ami, binder );
+		netFolder.setDataSyncSettings( dataSyncSettings );
 
 		return netFolder;
 	}
@@ -983,6 +1009,9 @@ public class GwtNetFolderHelper
 
 			// Set the rights on the net folder
 			setNetFolderRights( ami, netFolder.getId(), netFolder.getRoles() );
+			
+			// Save the data sync settings.
+			saveDataSyncSettings( ami, netFolder.getId(), netFolder.getDataSyncSettings() );
 		}
 		catch ( Exception ex )
 		{
@@ -1038,6 +1067,38 @@ public class GwtNetFolderHelper
 		}
 		
 		return netFolderRoot;
+	}
+
+	/**
+	 * Save the data sync settings for the given net folder binder
+	 */
+	private static void saveDataSyncSettings(
+		AllModulesInjected ami,
+		Long binderId,
+		NetFolderDataSyncSettings settings )
+	{
+		if ( binderId != null )
+		{
+			Binder binder;
+			
+			// Get the binder's work area
+			binder = ami.getBinderModule().getBinder( binderId );
+			saveDataSyncSettings( ami, binder, settings );
+		}
+	}
+	
+	/**
+	 * Save the data sync settings for the given net folder binder.
+	 */
+	private static void saveDataSyncSettings(
+		AllModulesInjected ami,
+		Binder binder,
+		NetFolderDataSyncSettings settings )
+	{
+		if ( binder != null && settings != null )
+		{
+			//!!! Finish
+		}
 	}
 
 	/**

@@ -58,6 +58,7 @@ public class NetFolder
 	private GwtSchedule m_syncSchedule;
 	private ArrayList<GwtRole> m_roles;
 	private boolean m_isHomeDir;
+	private NetFolderDataSyncSettings m_dataSyncSettings;
 	
 	/**
 	 * The different statuses of a net Folder
@@ -92,6 +93,16 @@ public class NetFolder
 		m_statusTicketId = netFolder.getStatusTicketId();
 		m_syncSchedule = netFolder.getSyncSchedule();
 		m_isHomeDir = netFolder.getIsHomeDir();
+		m_dataSyncSettings = new NetFolderDataSyncSettings();
+		m_dataSyncSettings.copy( netFolder.getDataSyncSettings() );
+	}
+	
+	/**
+	 * 
+	 */
+	public NetFolderDataSyncSettings getDataSyncSettings()
+	{
+		return m_dataSyncSettings;
 	}
 	
 	/**
@@ -164,6 +175,15 @@ public class NetFolder
 	public String getStatusTicketId()
 	{
 		return m_statusTicketId;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setDataSyncSettings( NetFolderDataSyncSettings settings )
+	{
+		m_dataSyncSettings = new NetFolderDataSyncSettings();
+		m_dataSyncSettings.copy( settings );
 	}
 	
 	/**
