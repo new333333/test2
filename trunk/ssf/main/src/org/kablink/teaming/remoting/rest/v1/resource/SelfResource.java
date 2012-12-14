@@ -50,6 +50,8 @@ import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderTree;
+import org.kablink.teaming.rest.v1.model.DefinableEntity;
+import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.ParentBinder;
@@ -77,10 +79,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: david
@@ -222,11 +221,9 @@ public class SelfResource extends AbstractFileResource {
             @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", textDescriptions);
-        Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, true, false, false, false);
+        Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), true, false, false, false);
         SearchResultList<BinderBrief> results = lookUpBinders(crit, textDescriptions, offset, maxCount, "/self/my_files/library_folders", nextParams);
-        for (BinderBrief binder : results.getResults()) {
-            binder.setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
-        }
+        setMyFilesParents(results);
         return results;
     }
 
@@ -309,7 +306,7 @@ public class SelfResource extends AbstractFileResource {
         }
         crit.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
         crit.add(buildLibraryCriterion(true));
-        Criteria myFilesCrit = SearchUtils.getMyFilesSearchCriteria(this, includeBinders, includeFolderEntries, includeReplies, includeFiles);
+        Criteria myFilesCrit = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), includeBinders, includeFolderEntries, includeReplies, includeFiles);
         if (subContextSearch!=null) {
             crit.add(Restrictions.disjunction()
                     .add(myFilesCrit.asJunction())
@@ -333,10 +330,26 @@ public class SelfResource extends AbstractFileResource {
         Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
                 "/self/my_files/library_entities", nextParams, offset);
+        setMyFilesParents(results);
         if (includeParentPaths) {
             populateParentBinderPaths(results);
         }
         return results;
+    }
+
+    private void setMyFilesParents(SearchResultList results) {
+        List<Long> hiddenFolderIds = SearchUtils.getMyFilesFolderIds(this, getLoggedInUser());
+        Set<Long> allParentIds = new HashSet(hiddenFolderIds);
+        allParentIds.add(getLoggedInUser().getWorkspaceId());
+        for (Object obj : results.getResults()) {
+            if (obj instanceof FileProperties && allParentIds.contains(((FileProperties)obj).getBinder().getId())) {
+                ((FileProperties)obj).setBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+            } else if (obj instanceof DefinableEntity && allParentIds.contains(((DefinableEntity)obj).getParentBinder().getId())) {
+                ((DefinableEntity)obj).setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+            } else if (obj instanceof DefinableEntityBrief && allParentIds.contains(((DefinableEntityBrief)obj).getParentBinder().getId())) {
+                ((DefinableEntityBrief)obj).setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+            }
+        }
     }
 
     @GET
@@ -367,7 +380,7 @@ public class SelfResource extends AbstractFileResource {
                 }
             }
         }
-        Criteria myFiles = SearchUtils.getMyFilesSearchCriteria(this, false, false, false, true);
+        Criteria myFiles = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), false, false, false, true);
         if (searchContexts!=null) {
             searchContexts.add(myFiles.asJunction());
             crit.add(searchContexts);
@@ -378,14 +391,7 @@ public class SelfResource extends AbstractFileResource {
             crit.add(buildFileNameCriterion(fileName));
         }
         SearchResultList<FileProperties> resultList = lookUpAttachments(crit, offset, maxCount, "/self/my_files/library_files", nextParams);
-        Long hiddenFolderId = SearchUtils.getMyFilesFolderId(this, getLoggedInUser().getWorkspaceId(), true);
-        if (hiddenFolderId!=null) {
-            for (FileProperties file : resultList.getResults()) {
-                if (file.getBinder().getId().equals(hiddenFolderId)) {
-                    file.setBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
-                }
-            }
-        }
+        setMyFilesParents(resultList);
         if (includeParentPaths) {
             populateParentBinderPaths(resultList);
         }
@@ -460,7 +466,9 @@ public class SelfResource extends AbstractFileResource {
             return new SearchResultList<SearchableObject>();
         }
         Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binders, entries, null, true, Constants.LASTACTIVITY_FIELD);
-        return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, "/net_folders/recent_activity", nextParams);
+        SearchResultList<SearchableObject> resultList = _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, "/net_folders/recent_activity", nextParams);
+        setMyFilesParents(resultList);
+        return resultList;
     }
 
     private BinderBrief getFakeMyWorkspace() {

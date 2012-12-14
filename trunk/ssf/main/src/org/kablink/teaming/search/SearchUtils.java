@@ -584,8 +584,13 @@ public class SearchUtils {
 	}
 	
 	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        return getMyFilesSearchCriteria(bs, user.getWorkspaceId());
+    }
+
+	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs, Long rootBinderId) {
         // By default, just return binders and entries
-        return getMyFilesSearchCriteria(bs, true, true, false, false);
+        return getMyFilesSearchCriteria(bs, rootBinderId, true, true, false, false);
     }
 	
 	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs) {
@@ -630,13 +635,7 @@ public class SearchUtils {
 	}
 
 	//This routine returns a Criteria that will search all folders associated with the My Files collection
-	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs, boolean binders, boolean entries, boolean replies, boolean attachments) {
-		Conjunction conj;
-		Disjunction disj;
-		Criteria crit = new Criteria();
-		User user = RequestContextHolder.getRequestContext().getUser();
-		String userWSId = String.valueOf(user.getWorkspaceId());
-		
+	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs, Long rootBinderId, boolean binders, boolean entries, boolean replies, boolean attachments) {
 		// Based on the installed license, what definition families do
 		// we consider as 'file'?
 		String[] fileFamilies;
@@ -646,102 +645,122 @@ public class SearchUtils {
 			fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
 		}
 
-        Long mfContainerId = getMyFilesFolderId(bs, user.getWorkspaceId(), false);	// false -> Don't create it if it doesn't exist.
+        Long	mfRootId;
+        boolean	usingHomeAsMF = useHomeAsMyFiles(bs);
+        if (usingHomeAsMF) {
+            // Yes!  Can we find their home folder?
+            mfRootId      = getHomeFolderId(bs);
+            usingHomeAsMF = (null != mfRootId);
+            if (!usingHomeAsMF) {
+                // No!  Just use the binder we were given.
+                mfRootId = rootBinderId;
+            }
+        }
+        else {
+            // No, we aren't supposed to use this user's home
+            // folder as the root of their My Files area!  Use
+            // the binder we were given.
+            mfRootId = rootBinderId;
+        }
+        String myFilesRootIdS = String.valueOf(mfRootId);
 
-		// Are we supposed to use this user's home folder as the
-		// root of their My Files area?
-		Long	mfRootId;
-		boolean	usingHomeAsMF = useHomeAsMyFiles(bs);
-		if (usingHomeAsMF) {
-			// Yes!  Can we find their home folder?
-			mfRootId      = getHomeFolderId(bs);
-			usingHomeAsMF = (null != mfRootId);
-			if (!usingHomeAsMF) {
-				// No!  Just use the binder we were given.
-				mfRootId = user.getWorkspaceId();
-			}
-		}
-		else {
-			// No, we aren't supposed to use this user's home
-			// folder as the root of their My Files area!  Use
-			// the binder we were given.
-			mfRootId = user.getWorkspaceId();
-		}
-		String myFilesRootIdS = String.valueOf(mfRootId);
+        // Do we have a folder to use as a My Files container?
+        String[] mfContainerIdStrings = null;
+        Long mfContainerId;
+        if (usingHomeAsMF) {
+            mfContainerId = mfRootId;
+        }
+        else {
+            List<Long> mfContainerIds = getMyFilesFolderIds(bs);
+            if ((null != mfContainerIds) && (!(mfContainerIds.isEmpty()))) {
+                mfContainerId = mfContainerIds.get(0);
 
-		// Do we have a folder to use as a My Files container?
-		String[] mfContainerIdStrings = null;
-		if (usingHomeAsMF) {
-			mfContainerId = mfRootId;
-		}
-		else {
-			List<Long> mfContainerIds = getMyFilesFolderIds(bs);
-			if ((null != mfContainerIds) && (!(mfContainerIds.isEmpty()))) {
-				mfContainerId = mfContainerIds.get(0);
-				
-				int c = mfContainerIds.size();
-				mfContainerIdStrings = new String[c];
-				for (int i = 0; i < c; i += 1) {
-					mfContainerIdStrings[i] = String.valueOf(mfContainerIds.get(i));
-				}
-			}
-			else {
-				mfContainerId = null;
-			}
-		}
-		boolean	hasMFContainerId = (null != mfContainerId);
-		String	mfContainerIdS   = (hasMFContainerId ? String.valueOf(mfContainerId) : null);
-		
-		// Search for file folders within the binder...
-		Disjunction	root     = disjunction(); crit.add(root    );
-		Conjunction	rootConj = conjunction(); root.add(rootConj);
-		rootConj.add(in(Constants.ENTRY_ANCESTRY,          new String[]{myFilesRootIdS}));
-		rootConj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
-		rootConj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
+                int c = mfContainerIds.size();
+                mfContainerIdStrings = new String[c];
+                for (int i = 0; i < c; i += 1) {
+                    mfContainerIdStrings[i] = String.valueOf(mfContainerIds.get(i));
+                }
+            }
+            else {
+                mfContainerId = null;
+            }
+        }
+        boolean	hasMFContainerId = (null != mfContainerId);
+        String	mfContainerIdS   = (hasMFContainerId ? String.valueOf(mfContainerId) : null);
 
-		// ...if we have a non-Home My Files containers...
-		if (hasMFContainerId && (!usingHomeAsMF)) {
-			// ...exclude them from the binder list.
-			Junction noMF = not();
-			rootConj.add(noMF);
-			noMF.add(in(Constants.DOCID_FIELD, mfContainerIdStrings));
-		}
+        // Search for file folders within the binder...
+        Disjunction	root = disjunction();
+        Criteria crit = new Criteria();
+        crit.add(root);
+        if (binders) {
+            Conjunction	rootConj = conjunction();
+            root.add(rootConj);
+            rootConj.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+            rootConj.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{myFilesRootIdS}));
+            rootConj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
+            rootConj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
 
-		if (!usingHomeAsMF) {
-			// ...that are non-mirrored...
-    		disj = disjunction();
-			rootConj.add(disj);
-    		conj = conjunction();
-			conj.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
-			disj.add(conj);
+            // ...if we have a non-Home My Files containers...
+            if (hasMFContainerId && (!usingHomeAsMF)) {
+                // ...exclude them from the binder list.
+                Junction noMF = not();
+                rootConj.add(noMF);
+                noMF.add(in(Constants.DOCID_FIELD, mfContainerIdStrings));
+            }
 
-			// ...or configured mirrored File Home Folders.
-    		conj = conjunction();
-			conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
-			conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
-			conj.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
-			disj.add(conj);
-		}
+            if (!usingHomeAsMF) {
+                // ...that are non-mirrored...
+                Disjunction disj = disjunction();
+                rootConj.add(disj);
+                Conjunction conj = conjunction();
+                conj.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
+                disj.add(conj);
 
-		// Do we have a folder to populate as their My Files?
-		if (hasMFContainerId) {
-			// Yes!  Search for any file entries...
-    		disj = disjunction();
-    		root.add(disj);
-			conj = conjunction();
-			conj.add(in(Constants.DOC_TYPE_FIELD,  new String[]{Constants.DOC_TYPE_ENTRY}));
-			conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerIdS}));
-			conj.add(in(Constants.FAMILY_FIELD,    fileFamilies));
-			disj.add(conj);
-
-				// ... or folders in there as well.
-			conj = conjunction();
-			conj.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-			conj.add(in(Constants.ENTRY_ANCESTRY, new String[]{mfContainerIdS}));
-			conj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
-			conj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
-			disj.add(conj);
-		}
+                // ...or configured mirrored File Home Folders.
+                conj = conjunction();
+                conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+                conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+                conj.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
+                disj.add(conj);
+            }
+            if (hasMFContainerId) {
+                // Yes!  Search for any folders in there as well.
+                Disjunction disj = disjunction();
+                rootConj.add(disj);
+                Conjunction conj = conjunction();
+                conj.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+                conj.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{mfContainerIdS}));
+                conj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
+                conj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
+                root.add(conj);
+            }
+        }
+        if ((entries || attachments || replies) && hasMFContainerId) {
+            if (entries) {
+                // Search for any file entries...
+                Conjunction conj = conjunction();
+                conj.add(in(Constants.DOC_TYPE_FIELD,    new String[]{Constants.DOC_TYPE_ENTRY}));
+                conj.add(in(Constants.ENTRY_TYPE_FIELD,  new String[]{Constants.ENTRY_TYPE_ENTRY}));
+                conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerIdS}));
+                conj.add(in(Constants.FAMILY_FIELD,      fileFamilies));
+                root.add(conj);
+            }
+            if (replies) {
+                // Search for any file entries...
+                Conjunction conj = conjunction();
+                conj.add(in(Constants.DOC_TYPE_FIELD,    new String[]{Constants.DOC_TYPE_ENTRY}));
+                conj.add(in(Constants.ENTRY_TYPE_FIELD,  new String[]{Constants.ENTRY_TYPE_REPLY}));
+                conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerIdS}));
+                root.add(conj);
+            }
+            if (attachments) {
+                Conjunction conj = conjunction();
+                conj.add(in(Constants.DOC_TYPE_FIELD,    new String[]{Constants.DOC_TYPE_ATTACHMENT}));
+                conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerIdS}));
+                conj.add(in(Constants.IS_LIBRARY_FIELD,  new String[]{Constants.TRUE}));
+                root.add(conj);
+            }
+        }
 		return crit;
 	}
 	
