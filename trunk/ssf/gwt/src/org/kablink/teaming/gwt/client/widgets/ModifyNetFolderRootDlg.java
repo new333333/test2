@@ -462,6 +462,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				Label label;
 				String errMsg;
 				
+				hideStatusMsg();
+				setOkEnabled( true );
+
 				// Get the panel that holds the errors.
 				errorPanel = getErrorPanel();
 				errorPanel.clear();
@@ -495,6 +498,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				
 				netFolderRoot = (NetFolderRoot) result.getResponseData();
 				
+				hideStatusMsg();
+				setOkEnabled( true );
+
 				// Fire an event that lets everyone know a net folder root was created.
 				event = new NetFolderRootCreatedEvent( netFolderRoot );
 				GwtTeaming.fireEvent( event );
@@ -510,6 +516,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			
 			netFolderRoot = getNetFolderRootFromDlg();
 			
+			showStatusMsg( GwtTeaming.getMessages().modifyNetFolderServerDlg_CreatingNetFolderServer() );
+
 			cmd = new CreateNetFolderRootCmd( netFolderRoot );
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
@@ -589,6 +597,10 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			}
 		}
 		
+		clearErrorPanel();
+		hideErrorPanel();
+		setOkEnabled( false );
+
 		// Are we editing an existing net folder root?
 		if ( m_netFolderRoot != null )
 		{
@@ -804,6 +816,11 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		
 		m_netFolderRoot = netFolderRoot;
 
+		clearErrorPanel();
+		hideErrorPanel();
+		hideStatusMsg();
+		setOkEnabled( true );
+
 		// Clear existing data in the controls.
 		m_nameTxtBox.setValue( "" );
 		if ( m_rootTypeListbox != null )
@@ -923,6 +940,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				Label label;
 				String errMsg;
 				
+				hideStatusMsg();
+				setOkEnabled( true );
+
 				// Get the panel that holds the errors.
 				errorPanel = getErrorPanel();
 				errorPanel.clear();
@@ -994,6 +1014,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 							}
 						}
 						
+						hideStatusMsg();
+						setOkEnabled( true );
+
 						// Fire an event that lets everyone know this net folder root was modified.
 						event = new NetFolderRootModifiedEvent( newNetFolderRoot );
 						GwtTeaming.fireEvent( event );
@@ -1005,6 +1028,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				Scheduler.get().scheduleDeferred( cmd );
 			}						
 		};
+		
+		showStatusMsg( GwtTeaming.getMessages().modifyNetFolderServerDlg_ModifyingNetFolderServer() );
 		
 		// Issue an rpc request to update the net folder root.
 		cmd = new ModifyNetFolderRootCmd( newNetFolderRoot ); 

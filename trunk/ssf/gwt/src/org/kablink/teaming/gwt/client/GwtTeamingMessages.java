@@ -2003,6 +2003,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the modify Net Folder Server dialog
 	String modifyNetFolderServerDlg_AddHeader();
 	String modifyNetFolderServerDlg_AllowSelfSignedCertsLabel();
+	String modifyNetFolderServerDlg_CreatingNetFolderServer();
 	String modifyNetFolderServerDlg_EditHeader( String name );
 	String modifyNetFolderServerDlg_EnableSyncScheduleLabel();
 	String modifyNetFolderServerDlg_ErrorCreatingNetFolderServer( String err );
@@ -2012,6 +2013,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_HostUrlRequired();
 	String modifyNetFolderServerDlg_InsufficientRights();
 	String modifyNetFolderServerDlg_IsSharePointServerLabel();
+	String modifyNetFolderServerDlg_ModifyingNetFolderServer();
 	String modifyNetFolderServerDlg_NameLabel();
 	String modifyNetFolderServerDlg_NameRequired();
 	String modifyNetFolderServerDlg_NotFullyConfigured();
@@ -2050,11 +2052,13 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_AddHeader();
 	String modifyNetFolderDlg_ConfigTab();
 	String modifyNetFolderDlg_CreateNetFolderServerLabel();
+	String modifyNetFolderDlg_CreatingNetFolder();
 	String modifyNetFolderDlg_EditHeader( String name );
 	String modifyNetFolderDlg_EnableSyncScheduleLabel();
 	String modifyNetFolderDlg_ErrorCreatingNetFolder( String err );
 	String modifyNetFolderDlg_ErrorModifyingNetFolder( String err );
 	String modifyNetFolderDlg_InsufficientRights();
+	String modifyNetFolderDlg_ModifyingNetFolder();
 	String modifyNetFolderDlg_NameLabel();
 	String modifyNetFolderDlg_NameRequired();
 	String modifyNetFolderDlg_NetFolderAlreadyExists();
