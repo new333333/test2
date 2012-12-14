@@ -3369,7 +3369,7 @@ public class GwtViewHelper {
 			if (isFolder)
 			     options = getFolderSearchFilter(bs, folder, userFolderProperties, null);
 			else options = new HashMap();
-			GwtServerHelper.addQuickFilterToSearch(options, quickFilter);
+			GwtServerHelper.addQuickFilterToSearch(options, quickFilter, folderInfo.isBinderProfilesRootWS());
 			options.put(ObjectKeys.SEARCH_OFFSET,   start );
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 
@@ -3378,7 +3378,7 @@ public class GwtViewHelper {
 			if (isProfilesRootWS) {
 				// Yes!  Is it for the manage users feature of the
 				// administration console?
-				isManageUsers = folderInfo.getWorkspaceType().isProfileRootManagement();
+				isManageUsers = folderInfo.isBinderProfilesRootWSManagement();
 				if (isManageUsers) {
 					// Yes!  If the filters are such that we wouldn't
 					// get any results...
@@ -3474,7 +3474,7 @@ public class GwtViewHelper {
 				// Read the entries based on a search.
 				Map searchResults;
 				if      (isTrash)          searchResults = TrashHelper.getTrashEntries(bs, binder, options);
-				else if (isProfilesRootWS) searchResults = bs.getProfileModule().getUsers(         options);
+				else if (isProfilesRootWS) searchResults = getUserEntries(      bs, request, binder, quickFilter, options                            );
 				else if (isCollection)     searchResults = getCollectionEntries(bs, request, binder, quickFilter, options, collectionType, shareItems);
 				else {
 					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
@@ -4902,6 +4902,15 @@ public class GwtViewHelper {
 		// If we get here, reply refers to the List<ShareMessageInfo>
 		// corresponding to the share list.  Return it.
 		return reply;
+	}
+
+	/*
+	 * Returns a Map of the search results for users based on the
+	 * criteria in the options Map.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map getUserEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options) {
+		return bs.getProfileModule().getUsers(options);
 	}
 	
 	/**

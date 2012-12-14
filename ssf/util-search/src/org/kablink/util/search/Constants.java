@@ -273,6 +273,7 @@ public class Constants {
 	public static final String APPLICATION_NAME_FIELD = "_applicationName";
 	public static final String APPLICATION_GROUPNAME_FIELD = "_applicationGroupName";
 	public static final String EMAIL_FIELD = "emailAddress";
+	public static final String EMAIL_DOMAIN_FIELD = "emailAddress_Domain";
 	public static final String DISABLED_USER_FIELD = "disabledUser";
 	public static final String RESERVEDID_FIELD = "_reservedId";
 	public static final String WORKSPACE_ID_FIELD = "_workspaceId";

@@ -872,8 +872,9 @@ public class GwtServerHelper {
 	 * 
 	 * @param options
 	 * @param quickFilter
+	 * @param filterUserList
 	 */
-	public static void addQuickFilterToSearch(Map options, String quickFilter) {
+	public static void addQuickFilterToSearch(Map options, String quickFilter, boolean filterUserList) {
 		// If we weren't given a quick filter to add...
 	    quickFilter = ((null == quickFilter) ? "" : quickFilter.trim());
 		if (0 == quickFilter.length()) {
@@ -898,7 +899,22 @@ public class GwtServerHelper {
 		// ...add in the quick filter...
 		SearchFilter sfQF = new SearchFilter(true);
     	sfQF.newCurrentFilterTermsBlock(true);
-   	    sfQF.addTitleFilter(quickFilter, true);
+    	if (filterUserList) {
+    		SearchFilter sfUserQF = new SearchFilter(false);
+    		if (quickFilter.startsWith("@")) {
+        		sfUserQF.addEmailDomainFilter(quickFilter.substring(1), true);
+    		}
+    		else {
+	    		sfUserQF.addTitleFilter(      quickFilter,              true);
+	    		sfUserQF.addEmailFilter(      quickFilter,              true);
+	    		sfUserQF.addEmailDomainFilter(quickFilter,              true);
+	    		sfUserQF.addLoginNameFilter(  quickFilter,              true);
+    		}
+    		sfQF.appendFilter(sfUserQF.getFilter());
+    	}
+    	else {
+    		sfQF.addTitleFilter(quickFilter, true);
+    	}
     	sf.appendFilter(sfQF.getFilter());
 
 		// ...store the new filter's XML Document in the options Map...
@@ -911,6 +927,11 @@ public class GwtServerHelper {
 			m_logger.debug("GwtServerHelper.addQuickFilterToSearch( '" + quickFilter + "'):  Search Filter:");
 			m_logger.debug("\n" + getXmlString(sfDoc));
 		}
+	}
+	
+	public static void addQuickFilterToSearch(Map options, String quickFilter) {
+		// Always use the initial form of the method.
+		addQuickFilterToSearch(options, quickFilter, false);	// false -> Don't filter for users.
 	}
 	
 	/**

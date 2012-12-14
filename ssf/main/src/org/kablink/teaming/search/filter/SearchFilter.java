@@ -330,12 +330,31 @@ public class SearchFilter {
 		addTitleFilter(searchTerm, false);
 	}
 	
+	public void addLoginNameFilter(String searchTerm, boolean wildcardOnly) {
+		addFieldFilter(Constants.LOGINNAME_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm, wildcardOnly, null);
+	}
+	
 	public void addLoginNameFilter(String searchTerm) {
-		addFieldFilter(Constants.LOGINNAME_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
+		// Always use the initial form of the method.
+		addLoginNameFilter(searchTerm, false);
+	}
+	
+	public void addEmailFilter(String searchTerm, boolean wildcardOnly) {
+		addFieldFilter(Constants.EMAIL_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm, wildcardOnly, null);
 	}
 	
 	public void addEmailFilter(String searchTerm) {
-		addFieldFilter(Constants.EMAIL_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
+		// Always use the initial form of the method.
+		addEmailFilter(searchTerm, false);
+	}
+
+	public void addEmailDomainFilter(String searchTerm, boolean wildcardOnly) {
+		addFieldFilter(Constants.EMAIL_DOMAIN_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm, wildcardOnly, null);
+	}
+	
+	public void addEmailDomainFilter(String searchTerm) {
+		// Always use the initial form of the method.
+		addEmailDomainFilter(searchTerm, false);
 	}
 
 	public void addGroupNameFilter(String searchTerm) {
