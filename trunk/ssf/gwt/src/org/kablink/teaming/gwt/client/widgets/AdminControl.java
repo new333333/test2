@@ -74,6 +74,7 @@ import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.Configure
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureMobileAppsDlg.ConfigureMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUserAccessDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.ConfigureUserFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserMobileAppsDlg.ConfigureUserMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
@@ -145,6 +146,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ConfigureFileSyncAppDlg m_configureFileSyncAppDlg = null;
 	private ConfigureMobileAppsDlg m_configureMobileAppsDlg = null;
 	private ConfigureUserMobileAppsDlg m_configureUserMobileAppsDlg = null;
+	private ConfigureUserFileSyncAppDlg m_configureUserFileSyncAppDlg = null;
 	private ManageGroupsDlg m_manageGroupsDlg = null;
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
@@ -1866,7 +1868,66 @@ public class AdminControl extends TeamingPopupPanel
 	@Override
 	public void onInvokeUserDesktopSettingsDlg( InvokeUserDesktopSettingsDlgEvent event )
 	{
-		Window.alert( "User desktop settings not yet implemented" );
+		int x;
+		int y;
+		final List<Long> userIds;
+
+		// Get the position of the content control.
+		x = m_contentControlX;
+		y = m_contentControlY;
+		
+		userIds = event.getUserIds();
+		
+		// Have we already created a "Configure User Desktop App" dialog?
+		if ( m_configureUserFileSyncAppDlg == null )
+		{
+			int width;
+			int height;
+			
+			// No, create one.
+			height = m_dlgHeight;
+			width = m_dlgWidth;
+			ConfigureUserFileSyncAppDlg.createAsync(
+											false, 
+											true,
+											x, 
+											y,
+											width,
+											height,
+											new ConfigureUserFileSyncAppDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ConfigureUserFileSyncAppDlg cufsaDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_configureUserFileSyncAppDlg = cufsaDlg;
+							
+							m_configureUserFileSyncAppDlg.init( userIds );
+							m_configureUserFileSyncAppDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_configureUserFileSyncAppDlg.init( userIds );
+			m_configureUserFileSyncAppDlg.setPopupPosition( x, y );
+			m_configureUserFileSyncAppDlg.show();
+		}
 	}
 	
 	/**

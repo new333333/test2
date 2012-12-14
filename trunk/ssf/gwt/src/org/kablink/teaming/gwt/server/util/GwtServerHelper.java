@@ -133,6 +133,7 @@ import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
+import org.kablink.teaming.gwt.client.GwtUserFileSyncAppConfig;
 import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
@@ -172,6 +173,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.Sys
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveUserFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserMobileAppsConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersStateRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUserSharingRightsInfoCmd.CombinedPerUserShareRightsInfo;
@@ -7598,6 +7600,41 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Return a GwtUserFileSyncAppConfig object that holds the file sync app configuration data
+	 * 
+	 * @return
+	 */
+	public static GwtUserFileSyncAppConfig getUserFileSyncAppConfig(
+		AllModulesInjected ami,
+		Long userId )
+	{
+		GwtUserFileSyncAppConfig config;
+		UserProperties userProperties;
+		
+		config = new GwtUserFileSyncAppConfig();
+		
+		userProperties = ami.getProfileModule().getUserProperties( userId );
+		if ( userProperties != null )
+		{
+			Object value;
+			
+			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR );
+			if ( value != null && value instanceof String )
+			{
+				config.setIsFileSyncAppEnabled( Boolean.valueOf( (String) value ) );
+			}
+
+			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD );
+			if ( value != null && value instanceof String )
+			{
+				config.setAllowCachePwd( Boolean.valueOf( (String) value ) );
+			}
+		}
+		
+		return config;
+	}
+	
+	/**
 	 * Given a user ID, returns the corresponding User object.
 	 * 
 	 * @param bs
@@ -8926,6 +8963,7 @@ public class GwtServerHelper {
 		case GET_TOP_RANKED:
 		case GET_UPGRADE_INFO:
 		case GET_USER_ACCESS_CONFIG:
+		case GET_USER_FILE_SYNC_APP_CONFIG:
 		case GET_USER_MOBILE_APPS_CONFIG:
 		case GET_USER_PERMALINK:
 		case GET_USER_SHARING_RIGHTS_INFO:
@@ -8989,12 +9027,13 @@ public class GwtServerHelper {
 		case SAVE_SEARCH:
 		case SAVE_TAG_SORT_ORDER:
 		case SAVE_USER_ACCESS_CONFIG:
+		case SAVE_USER_FILE_SYNC_APP_CONFIG:
+		case SAVE_USER_MOBILE_APPS_CONFIGURATION:
 		case SAVE_WHATS_NEW_SETTINGS:
 		case SET_DESKTOP_APP_DOWNLOAD_VISIBILITY:
 		case SET_ENTRIES_PIN_STATE:
 		case SET_SEEN:
 		case SET_UNSEEN:
-		case SAVE_USER_MOBILE_APPS_CONFIGURATION:
 		case SET_USER_SHARING_RIGHTS_INFO:
 		case SHARE_ENTRY:
 		case SYNC_NET_FOLDERS:
@@ -9612,6 +9651,66 @@ public class GwtServerHelper {
 		ami.getAuthenticationModule().setAuthenticationConfig( authConfig );
 		
 		return Boolean.TRUE;
+	}
+	
+	/**
+	 * Save the given GwtUserFileSyncAppConfig settings for the given users.
+	 * 
+	 */
+	public static SaveUserFileSyncAppConfigRpcResponseData saveUserFileSyncAppConfig(
+		AllModulesInjected ami,
+		GwtUserFileSyncAppConfig config,
+		List<Long> userIds )
+	{
+		ProfileModule profileModule;
+		SaveUserFileSyncAppConfigRpcResponseData responseData;
+		
+		responseData = new SaveUserFileSyncAppConfigRpcResponseData();
+		
+		if ( config == null || userIds == null )
+		{
+			responseData.addError( "Invalid parameters passed to saveUserFileSyncAppConfig()" );
+			return responseData;
+		}
+		
+		profileModule = ami.getProfileModule();
+		
+		for ( Long userId : userIds )
+		{
+			try
+			{
+				profileModule.setUserProperty(
+											userId,
+											ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR,
+											String.valueOf( config.getIsFileSyncAppEnabled() ) );
+	
+				profileModule.setUserProperty(
+											userId,
+											ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD,
+											String.valueOf( config.getAllowCachePwd() ) );
+			}
+			catch ( Exception ex )
+			{
+				User user;
+				String errMsg;
+				String cause;
+				String[] errorArgs;
+				String errorTag = "save.user.file.sync.app.config.error";
+				
+				user = (User) profileModule.getEntry( userId );
+
+				if ( user.isDisabled() == true )
+					cause = NLT.get( "save.user.file.sync.app.config.error.disabled.user" );
+				else
+					cause = ex.getLocalizedMessage();
+				errorArgs = new String[] { user.getTitle(), cause };
+				errMsg = NLT.get( errorTag, errorArgs );
+
+				responseData.addError( errMsg );
+			}
+		}
+		
+		return responseData;
 	}
 	
 	/**

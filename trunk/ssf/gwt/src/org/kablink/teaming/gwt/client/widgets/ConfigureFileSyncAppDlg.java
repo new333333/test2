@@ -115,19 +115,22 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	{
 		GwtTeamingMessages messages;
 		FlowPanel mainPanel = null;
-		FlexTable table;
-		int nextRow;
+		FlowPanel tmpPanel;
+		FlowPanel ckboxPanel;
+		Label label;
 
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
+
+		label = new Label( messages.fileSyncAppHeader2() );
+		mainPanel.add( label );
 		
-		table = new FlexTable();
-		table.setCellSpacing( 4 );
-		table.addStyleName( "dlgContent" );
-		
-		nextRow = 0;
+		ckboxPanel = new FlowPanel();
+		ckboxPanel.addStyleName( "marginleft1" );
+		ckboxPanel.addStyleName( "marginbottom2" );
+		mainPanel.add( ckboxPanel );
 		
 		// Add the controls for enable/disable File Sync App
 		{
@@ -138,20 +141,22 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 				productName = "Filr";
 			
 			m_enableFileSyncAccessCB = new CheckBox( messages.fileSyncAppAllowAccess( productName ) );
-			
-			table.setWidget( nextRow, 0, m_enableFileSyncAccessCB );
-			++nextRow;
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_enableFileSyncAccessCB );
+			ckboxPanel.add( tmpPanel );
 		}
-		
-		// Create the "Allow deployment of Desktop application" checkbox
-		m_enableDeployCB = new CheckBox( messages.fileSyncAppEnableDeployLabel() );
-		table.setWidget( nextRow, 0, m_enableDeployCB );
-		++nextRow;
 		
 		// Create the "Allow desktop application to cache password"
 		m_allowPwdCacheCB = new CheckBox( messages.fileSyncAppAllowCachePwd() );
-		table.setWidget( nextRow, 0, m_allowPwdCacheCB );
-		++nextRow;
+		tmpPanel = new FlowPanel();
+		tmpPanel.add( m_allowPwdCacheCB );
+		ckboxPanel.add( tmpPanel );
+		
+		// Create the "Allow deployment of Desktop application" checkbox
+		m_enableDeployCB = new CheckBox( messages.fileSyncAppEnableDeployLabel() );
+		tmpPanel = new FlowPanel();
+		tmpPanel.add( m_enableDeployCB );
+		ckboxPanel.add( tmpPanel );
 		
 		// Create the controls for File Sync interval
 		{
@@ -172,15 +177,13 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			
 			intervalLabel = new Label( messages.fileSyncAppMinutesLabel() );
 			hPanel.add( intervalLabel );
-			
-			table.setWidget( nextRow, 0, hPanel );
-			++nextRow;
+
+			mainPanel.add( hPanel );
 		}
 		
 		// Create the controls for auto-update url.
 		{
 			FlexTable tmpTable;
-			InlineLabel label;
 			
 			tmpTable = new FlexTable();
 			tmpTable.setCellSpacing( 4 );
@@ -192,15 +195,13 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			m_autoUpdateUrlTextBox = new TextBox();
 			m_autoUpdateUrlTextBox.setVisibleLength( 40 );
 			tmpTable.setWidget( 0, 1, m_autoUpdateUrlTextBox );
-			
-			table.setWidget( nextRow, 0, tmpTable );
-			++nextRow;
+
+			mainPanel.add( tmpTable );
 		}
 		
 		// Create the controls for the max file size
 		{
 			FlexTable tmpTable;
-			InlineLabel label;
 			
 			tmpTable = new FlexTable();
 			tmpTable.setCellSpacing( 4 );
@@ -215,12 +216,9 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			
 			label = new InlineLabel( messages.fileSyncAppMBLabel() );
 			tmpTable.setWidget( 0, 2, label );
-			
-			table.setWidget( nextRow, 0, tmpTable );
-			++nextRow;
+
+			mainPanel.add( tmpTable );
 		}
-		
-		mainPanel.add( table );
 		
 		return mainPanel;
 	}
