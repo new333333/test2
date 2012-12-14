@@ -166,7 +166,8 @@ public class RunAReportDlg extends DlgBox
 			autoHide,
 			modal,
 			x, y, cx, cy,
-			DlgButtonMode.Close);
+			DlgButtonMode.Close,
+			false );
 
 		// ...store the parameters...
 		m_showX = x;

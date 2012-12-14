@@ -88,6 +88,7 @@ public abstract class DlgBox extends PopupPanel
 	private int 					m_id;						//
 	private boolean					m_fixedSize;				//
 	private Integer					m_height;					//
+	private boolean					m_useOverflowAutoOnContent = true;
     	
 	protected static int			m_numDlgsVisible = 0;		// Number of dialogs that are currently visible.
 	private   static int			m_uniqueId       = 100;		//
@@ -109,7 +110,7 @@ public abstract class DlgBox extends PopupPanel
 		int xPos,
 		int yPos )
 	{
-		this( autoHide, modal, xPos, yPos, null, null, DlgButtonMode.OkCancel, true );
+		this( autoHide, modal, xPos, yPos, null, null, DlgButtonMode.OkCancel, true, true );
 	}
 	
 	/**
@@ -122,7 +123,7 @@ public abstract class DlgBox extends PopupPanel
 		int yPos,
 		boolean showFooter )
 	{
-		this( autoHide, modal, xPos, yPos, null, null, DlgButtonMode.OkCancel, showFooter );
+		this( autoHide, modal, xPos, yPos, null, null, DlgButtonMode.OkCancel, showFooter, true );
 	}
 	
 	/**
@@ -132,7 +133,7 @@ public abstract class DlgBox extends PopupPanel
 		boolean autoHide,
 		boolean modal )
 	{
-		this( autoHide, modal, 0, 0, null, null, DlgButtonMode.OkCancel, true );
+		this( autoHide, modal, 0, 0, null, null, DlgButtonMode.OkCancel, true, true );
 	}
 	
 	/**
@@ -143,7 +144,7 @@ public abstract class DlgBox extends PopupPanel
 		boolean modal,
 		boolean showFooter )
 	{
-		this( autoHide, modal, 0, 0, null, null, DlgButtonMode.OkCancel, showFooter );
+		this( autoHide, modal, 0, 0, null, null, DlgButtonMode.OkCancel, showFooter, true );
 	}
 	
 	/**
@@ -154,7 +155,7 @@ public abstract class DlgBox extends PopupPanel
 		boolean modal,
 		DlgButtonMode dlgBtnMode )
 	{
-		this( autoHide, modal, 0, 0, null, null, dlgBtnMode, true );
+		this( autoHide, modal, 0, 0, null, null, dlgBtnMode, true, true );
 	}
 	
 	/**
@@ -166,7 +167,7 @@ public abstract class DlgBox extends PopupPanel
 		DlgButtonMode dlgBtnMode,
 		boolean showFooter )
 	{
-		this( autoHide, modal, 0, 0, null, null, dlgBtnMode, showFooter );
+		this( autoHide, modal, 0, 0, null, null, dlgBtnMode, showFooter, true );
 	}
 	
 	/**
@@ -179,7 +180,7 @@ public abstract class DlgBox extends PopupPanel
 		int yPos,
 		DlgButtonMode dlgBtnMode )
 	{
-		this( autoHide, modal, xPos, yPos, null, null, dlgBtnMode, true );
+		this( autoHide, modal, xPos, yPos, null, null, dlgBtnMode, true, true );
 	}
 	
 	/**
@@ -194,7 +195,7 @@ public abstract class DlgBox extends PopupPanel
 		Integer height,
 		DlgButtonMode dlgBtnMode )
 	{
-		this( autoHide, modal, xPos, yPos, width, height, dlgBtnMode, true );
+		this( autoHide, modal, xPos, yPos, width, height, dlgBtnMode, true, true );
 	}
 	
 	/**
@@ -208,11 +209,29 @@ public abstract class DlgBox extends PopupPanel
 		Integer width,
 		Integer height,
 		DlgButtonMode dlgBtnMode,
-		boolean showFooter )
+		boolean useOverflowAutoOnContent )
+	{
+		this( autoHide, modal, xPos, yPos, width, height, dlgBtnMode, true, useOverflowAutoOnContent );
+	}
+	
+	/**
+	 * 
+	 */
+	public DlgBox(
+		boolean autoHide,
+		boolean modal,
+		int xPos,
+		int yPos,
+		Integer width,
+		Integer height,
+		DlgButtonMode dlgBtnMode,
+		boolean showFooter,
+		boolean useOverflowAutoOnContent )
 	{
 		// Since we are providing the modal behavior, always pass false into super()
 		super( autoHide, false );
 		
+		m_useOverflowAutoOnContent = useOverflowAutoOnContent;
 		m_fixedSize = false;
 		if ( width != null && height != null )
 		{
@@ -688,7 +707,8 @@ public abstract class DlgBox extends PopupPanel
 					
 					contentPanelHeight = m_height - spaceNeeded;
 					m_bodyPanel.setHeight( String.valueOf( contentPanelHeight ) + "px" );
-					m_bodyPanel.getElement().getStyle().setOverflow( Overflow.AUTO );
+					if ( m_useOverflowAutoOnContent )
+						m_bodyPanel.getElement().getStyle().setOverflow( Overflow.AUTO );
 				}
 			}
 		};
