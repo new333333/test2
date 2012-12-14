@@ -1469,18 +1469,20 @@ public class GwtMenuHelper {
 			configMenuCreated = true;
 
 			// First, a modify ToolbarItem...
-			url = createActionUrl(request);
-			url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
-			url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
-			url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()           );
-			url.setParameter(WebKeys.URL_OPERATION,   WebKeys.OPERATION_MODIFY    );
-			
-			actionTBI = new ToolbarItem(MODIFY);
-			markTBIPopup(actionTBI                                                                             );
-			markTBITitle(actionTBI, (isFolder ? "toolbar.menu.modify_folder" : "toolbar.menu.modify_workspace"));
-			markTBIUrl(  actionTBI, url                                                                        );
-			
-			configTBI.addNestedItem(actionTBI);
+			if (!isFilr) {
+				url = createActionUrl(request);
+				url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
+				url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
+				url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()           );
+				url.setParameter(WebKeys.URL_OPERATION,   WebKeys.OPERATION_MODIFY    );
+				
+				actionTBI = new ToolbarItem(MODIFY);
+				markTBIPopup(actionTBI                                                                             );
+				markTBITitle(actionTBI, (isFolder ? "toolbar.menu.modify_folder" : "toolbar.menu.modify_workspace"));
+				markTBIUrl(  actionTBI, url                                                                        );
+				
+				configTBI.addNestedItem(actionTBI);
+			}
 
 			// ...then a configure ToolbarItem.
 			url = createActionUrl(request);
@@ -1645,7 +1647,7 @@ public class GwtMenuHelper {
 		}
 		
 		// Does the user have rights to import/export this binder?
-		if ((isFolder || isWorkspace) && bm.testAccess(binder, BinderOperation.export)) {
+		if ((isFolder || isWorkspace) && (!isFilr) && bm.testAccess(binder, BinderOperation.export)) {
 			// Yes!  Add the ToolbarItem for it.
 			adminMenuCreated  =
 			configMenuCreated = true;
@@ -2913,7 +2915,7 @@ public class GwtMenuHelper {
 			}
 			
 			// Can the user modify this entry?
-			if (fm.testAccess(fe, FolderOperation.modifyEntry)) {
+			if ((!isFilr) && fm.testAccess(fe, FolderOperation.modifyEntry)) {
 				// Yes!  Add an edit details toolbar item for it.
 				url = createActionUrl(request);
 				url.setParameter(WebKeys.ACTION,         WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
@@ -3125,7 +3127,7 @@ public class GwtMenuHelper {
 				}
 
 				// Can the user export this entry?
-				if (fe.isTop() && bs.getBinderModule().testAccess(folder, BinderOperation.export)) {
+				if ((!isFilr) && fe.isTop() && bs.getBinderModule().testAccess(folder, BinderOperation.export)) {
 					// Yes!  Add an export toolbar item for it.
 					url = createActionUrl(request);
 					url.setParameter(WebKeys.ACTION,        WebKeys.ACTION_EXPORT_IMPORT);
