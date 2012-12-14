@@ -75,9 +75,23 @@ public class ProfileIndexUtils {
     }      
 
     public static void addEmail(Document doc, User user) {
-        if (user.getEmailAddress()!=null) {
-            Field emailAddressField = FieldFactory.createFieldStoredNotAnalyzed(EMAIL_FIELD, user.getEmailAddress());
+    	// Does the user have an email address?
+    	String ema = user.getEmailAddress();
+        if (ema!=null) {
+        	// Yes!  Add it to the index.
+            Field emailAddressField = FieldFactory.createFieldStoredNotAnalyzed(EMAIL_FIELD, ema);
             doc.add(emailAddressField);
+
+            // Does that email address have a domain part?
+            int atPos = ema.lastIndexOf('@');
+            if (0 < atPos) {
+            	String domain = ema.substring(atPos + 1);
+            	if ((null != domain) && (0 < domain.length())) {
+            		// Yes!  Add that to the index too.
+                    Field domainField = FieldFactory.createFieldStoredNotAnalyzed(EMAIL_DOMAIN_FIELD, domain);
+                    doc.add(domainField);
+            	}
+            }
         }
     }
 
