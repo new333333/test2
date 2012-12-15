@@ -1304,6 +1304,30 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						return fr.getColumnValueAsPrincipalInfo(fc);
 					}
 				};
+				
+				// Is this the full name column for the personal
+				// workspaces view contained in the Manage Users
+				// dialog? 
+				if (FolderColumn.isColumnFullName(cName) && getFolderInfo().isBinderProfilesRootWSManagement()) {
+					// Yes!  Create an ActionMenuColumn for it.
+					supportColumn = new ActionMenuColumn<FolderRow>(fc, getFolderInfo()) {
+						@Override
+						public EntryTitleInfo getValue(FolderRow fr) {
+							// The ActionMenuColumn requires an
+							// EntryTitleInfo.  For the full name
+							// column in the manage users dialog, we
+							// don't have one.  Construct a dummy
+							// one with enough information for the
+							// ActionMenuColumn to work.
+							EntryTitleInfo dummyETI = new EntryTitleInfo();
+							dummyETI.setEntityId(fr.getEntityId());
+							return dummyETI;
+						}
+					};
+					supportColumn.setSortable(false);
+					supportColumnWidth  = m_actionMenuColumnWidth;
+					supportColumnStyles = (STYLE_COL_BASE + " vibe-dataTableActions-column");
+				}
 			}
 
 			// No, this column doesn't show presence either!  Does it
@@ -1354,7 +1378,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// trash folder? 
 				if (!(isTrash())) {
 					// Yes!  Create an ActionMenuColumn for it.
-					supportColumn = new ActionMenuColumn<FolderRow>(fc, getFolderId()) {
+					supportColumn = new ActionMenuColumn<FolderRow>(fc, getFolderInfo()) {
 						@Override
 						public EntryTitleInfo getValue(FolderRow fr) {
 							return fr.getColumnValueAsEntryTitle(fc);

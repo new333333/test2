@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 
 /**
@@ -48,9 +49,9 @@ public abstract class ActionMenuColumn<T> extends VibeColumn<T, EntryTitleInfo> 
    * Constructor method.
    * 
    * @param fc
-   * @param binderId
+   * @param binderInfo
    */
-  public ActionMenuColumn(FolderColumn fc, Long binderId) {
-	  super(fc, new ActionMenuCell(binderId));
+  public ActionMenuColumn(FolderColumn fc, BinderInfo binderInfo) {
+	  super(fc, new ActionMenuCell(binderInfo));
   }
 }

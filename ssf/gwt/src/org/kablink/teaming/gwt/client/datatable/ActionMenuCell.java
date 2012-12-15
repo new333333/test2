@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.event.ChangeFavoriteStateEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeManageUserDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
@@ -64,6 +65,7 @@ import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntityActionToolbarItemsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -92,15 +94,17 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author drfoster@novell.com
  */
 public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
+	private BinderInfo						m_binderInfo;	// The ID of the binder hosting this cell.
 	private GwtTeamingDataTableImageBundle	m_images;	// Access to the Vibe image  resources we need for this cell. 
 	private GwtTeamingMessages				m_messages;	// Access to the Vibe string resources we need for this cell.
-	private Long							m_binderId;	// The ID of the binder hosting this cell.
 	private Map<String, PopupMenu>			m_menuMap;	// Map of entity ID's to PopupMenu.  Added to as the action menus get created for entities in the current data table.
 
 	/**
 	 * Constructor method.
+	 * 
+	 * @param binderInfo
 	 */
-	public ActionMenuCell(Long binderId) {
+	public ActionMenuCell(BinderInfo binderInfo) {
 		// Sink the events we need to process an action menu...
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
@@ -109,7 +113,7 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
 		
 		// ...store the parameter...
-		m_binderId = binderId;
+		m_binderInfo = binderInfo;
 
 		// ...and initialize everything else.
 		m_images   = GwtTeaming.getDataTableImageBundle();
@@ -340,21 +344,22 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 						// No, the toolbar item didn't contain a URL!
 						// The only other option is an event.
 						VibeEventBase<?> event;
+						Long binderId = m_binderInfo.getBinderIdAsLong();
 						switch (simpleEvent) {
 						default:                                  event = EventHelper.createSimpleEvent(          simpleEvent    ); break;
-						case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(m_binderId, eid); break;
-						case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           m_binderId, eid); break;
-						case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         m_binderId, eid); break;
-						case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           m_binderId, eid); break;
-						case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         m_binderId, eid); break;
-						case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       m_binderId, eid); break;
-						case MARK_UNREAD_SELECTED_ENTRIES:        event = new MarkUnreadSelectedEntriesEvent(     m_binderId, eid); break;
-						case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           m_binderId, eid); break;
-						case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          m_binderId, eid); break;
-						case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          m_binderId, eid); break;
-						case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      m_binderId, eid); break;
-						case VIEW_SELECTED_ENTRY:                 event = new ViewSelectedEntryEvent(             m_binderId, eid); break;
-						case VIEW_WHO_HAS_ACCESS:                 event = new ViewWhoHasAccessEvent(              m_binderId, eid); break;
+						case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(binderId, eid); break;
+						case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           binderId, eid); break;
+						case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         binderId, eid); break;
+						case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           binderId, eid); break;
+						case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         binderId, eid); break;
+						case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       binderId, eid); break;
+						case MARK_UNREAD_SELECTED_ENTRIES:        event = new MarkUnreadSelectedEntriesEvent(     binderId, eid); break;
+						case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           binderId, eid); break;
+						case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          binderId, eid); break;
+						case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          binderId, eid); break;
+						case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      binderId, eid); break;
+						case VIEW_SELECTED_ENTRY:                 event = new ViewSelectedEntryEvent(             binderId, eid); break;
+						case VIEW_WHO_HAS_ACCESS:                 event = new ViewWhoHasAccessEvent(              binderId, eid); break;
 						
 						case CHANGE_FAVORITE_STATE:
 							event = new ChangeFavoriteStateEvent(
@@ -362,10 +367,14 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 								Boolean.parseBoolean(simpleTBI.getQualifierValue("makeFavorite")));
 							break;
 						
+						case INVOKE_MANAGE_USER_DLG:
+							event = new InvokeManageUserDlgEvent(eid.getEntityId());
+							break;
+						
 						case INVOKE_SHARE_BINDER:
 							event = new InvokeShareBinderEvent(String.valueOf(eid.getEntityId()));
 							break;
-						
+							
 						case UNDEFINED:
 							GwtClientHelper.deferredAlert(m_messages.eventHandling_NoActionMenuHandler(simpleEvent.name()));
 							event = null;
@@ -396,7 +405,7 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 			// No!  Load the action menu's toolbar items now.
 			final EntityId	eid = EntityId.parseEntityIdString(eidString);
 			GwtClientHelper.executeCommand(
-					new GetEntityActionToolbarItemsCmd(eid),
+					new GetEntityActionToolbarItemsCmd(m_binderInfo, eid),
 					new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {

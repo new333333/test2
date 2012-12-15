@@ -30,45 +30,41 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.event;
 
-package org.kablink.teaming.gwt.client.rpc.shared;
-
-import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.EntityId;
+import com.google.gwt.event.shared.EventHandler;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'get entity action toolbar items' command.
+ * The InvokeManageUserDlgEvent is used to invoke the 'Manage User'
+ * dialog.
  * 
  * @author drfoster@novell.com
  */
-public class GetEntityActionToolbarItemsCmd extends VibeRpcCmd {
-	private BinderInfo	m_binderInfo;	// The binder the entity action toolbar items are being requested for.
-	private EntityId	m_entityId;		// The entity whose actions are being requested.
-	
+public class InvokeManageUserDlgEvent extends VibeEventBase<InvokeManageUserDlgEvent.Handler> {
+    public static Type<Handler> TYPE = new Type<Handler>();
+    
+    private Long	m_userId;	//
+    
 	/**
-	 * Constructor method.
-	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
+	 * Handler interface for this event.
 	 */
-	public GetEntityActionToolbarItemsCmd() {
-		// Initialize the super class.
-		super();
+	public interface Handler extends EventHandler {
+		void onInvokeManageUserDlg(InvokeManageUserDlgEvent event);
 	}
 	
 	/**
-	 * Constructor method.
-	 *
-	 * @param binderInfo
-	 * @param entityId
+	 * Class constructor.
+	 * 
+	 * @param userId
 	 */
-	public GetEntityActionToolbarItemsCmd(BinderInfo binderInfo, EntityId entityId) {
-		// Initialize this object...
-		this();
+	public InvokeManageUserDlgEvent(Long userId) {
+		// Initialize the super class...
+		super();
 		
-		// ...and store the parameters.
-		setBinderInfo(binderInfo);
-		setEntityId(  entityId  );
+		// ...and store the parameter.
+		setUserId(userId);
 	}
 	
 	/**
@@ -76,26 +72,62 @@ public class GetEntityActionToolbarItemsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public BinderInfo getBinderInfo() {return m_binderInfo;}
-	public EntityId   getEntityId()   {return m_entityId;  }
-
+	public Long getUserId() {return m_userId;}
+	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBinderInfo(BinderInfo binderInfo) {m_binderInfo = binderInfo;}
-	public void setEntityId(  EntityId   entityId)   {m_entityId   = entityId;  }
+	public void setUserId(Long userId) {m_userId = userId;}
 	
 	/**
-	 * Returns the command's enumeration value.
+	 * Dispatches this event when one is triggered.
 	 * 
-	 * Implements VibeRpcCmd.getCmdType()
+	 * Implements the VibeEventBase.doDispatch() method.
+	 * 
+	 * @param handler
+	 */
+    @Override
+    protected void doDispatch(Handler handler) {
+        handler.onInvokeManageUserDlg(this);
+    }
+	
+	/**
+	 * Returns the GwtEvent.Type of this event.
+	 *
+	 * Implements GwtEvent.getAssociatedType()
+	 * 
+	 * @return
+	 */
+    @Override
+    public Type<Handler> getAssociatedType() {
+        return TYPE;
+    }
+    
+	/**
+	 * Returns the TeamingEvents enumeration value corresponding to
+	 * this event.
+	 * 
+	 * Implements VibeBaseEvent.getEventEnum()
 	 * 
 	 * @return
 	 */
 	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.GET_ENTITY_ACTION_TOOLBAR_ITEMS.ordinal();
+	public TeamingEvents getEventEnum() {
+		return TeamingEvents.INVOKE_MANAGE_USER_DLG;
+	}
+
+	/**
+	 * Registers this event on the given event bus and returns its
+	 * HandlerRegistration.
+	 * 
+	 * @param eventBus
+	 * @param handler
+	 * 
+	 * @return
+	 */
+	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
+		return eventBus.addHandler(TYPE, handler);
 	}
 }
