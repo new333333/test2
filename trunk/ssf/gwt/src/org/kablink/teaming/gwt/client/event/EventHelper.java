@@ -1029,15 +1029,6 @@ public class EventHelper {
 				}
 				break;
 			
-			case INVOKE_MANAGE_USER_DLG:
-				// An InvokeManageUserDlgEvent!  Can the event handler
-				// we were given handle that?
-				if (eventHandler instanceof InvokeManageUserDlgEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = InvokeManageUserDlgEvent.registerEvent(eventBus, ((InvokeManageUserDlgEvent.Handler) eventHandler));
-				}
-				break;
-			
 			case INVOKE_MANAGE_USERS_DLG:
 				// An InvokeManageUsersDlgEvent!  Can the event handler
 				// we were given handle that?
@@ -1155,6 +1146,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_USER_PROPERTIES_DLG:
+				// An InvokeUserPropertiesDlgEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof InvokeUserPropertiesDlgEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeUserPropertiesDlgEvent.registerEvent(eventBus, ((InvokeUserPropertiesDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case INVOKE_USER_SHARE_SETTINGS_DLG:
 				// An InvokeUserShareSettingsDlgEvent!  Can the event
 				// handler we were given handle that?
@@ -2326,7 +2326,6 @@ public class EventHelper {
 			case INVOKE_MANAGE_NET_FOLDERS_DLG:			       hasHandler = (eventHandler instanceof InvokeManageNetFoldersDlgEvent.Handler); 	           break;
 			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	       hasHandler = (eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler);          break;
 			case INVOKE_MANAGE_GROUPS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		           break;
-			case INVOKE_MANAGE_USER_DLG:				       hasHandler = (eventHandler instanceof InvokeManageUserDlgEvent.Handler);		               break;
 			case INVOKE_MANAGE_USERS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageUsersDlgEvent.Handler);		           break;
 			case INVOKE_REPLY:                      	       hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                            break;
 			case INVOKE_RUN_A_REPORT_DLG:				       hasHandler = (eventHandler instanceof InvokeRunAReportDlgEvent.Handler);		               break;
@@ -2340,6 +2339,7 @@ public class EventHelper {
 			case INVOKE_TAG:                        	       hasHandler = (eventHandler instanceof InvokeTagEvent.Handler);                              break;
 			case INVOKE_USER_DESKTOP_SETTINGS_DLG:             hasHandler = (eventHandler instanceof InvokeUserDesktopSettingsDlgEvent.Handler);           break;
 			case INVOKE_USER_MOBILE_SETTINGS_DLG:              hasHandler = (eventHandler instanceof InvokeUserMobileSettingsDlgEvent.Handler);            break;
+			case INVOKE_USER_PROPERTIES_DLG:				   hasHandler = (eventHandler instanceof InvokeUserPropertiesDlgEvent.Handler);		           break;
 			case INVOKE_USER_SHARE_SETTINGS_DLG:               hasHandler = (eventHandler instanceof InvokeUserShareSettingsDlgEvent.Handler);             break;
 			
 			case JSP_LAYOUT_CHANGED:                   	       hasHandler = (eventHandler instanceof JspLayoutChangedEvent.Handler);                       break;

@@ -729,18 +729,6 @@ public class GwtMenuHelper {
 	}
 	
 	/*
-	 * Constructs a ToolbarItem for running the entry viewer the
-	 * selected entry.
-	 */
-	private static void constructEntryManageUserItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
-		// Add a Manage User item.
-		ToolbarItem manageUserTBI = new ToolbarItem("1_manageUser");
-		markTBITitle(manageUserTBI, "toolbar.details.manageUser");
-		markTBIEvent(manageUserTBI, TeamingEvents.INVOKE_MANAGE_USER_DLG);
-		entryToolbar.addNestedItem(manageUserTBI);
-	}
-
-	/*
 	 * Constructs a ToolbarItem for miscellaneous operations against
 	 * the selected entries.
 	 * 
@@ -1227,6 +1215,18 @@ public class GwtMenuHelper {
 		entryToolbar.addNestedItem(shareTBI);
 	}
 	
+	/*
+	 * Constructs a ToolbarItem for running the user properties dialog
+	 * on a user.
+	 */
+	private static void constructEntryUserPropertiesItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
+		// Add a Manage User item.
+		ToolbarItem manageUserTBI = new ToolbarItem("1_userProperties");
+		markTBITitle(manageUserTBI, "toolbar.details.userProperties");
+		markTBIEvent(manageUserTBI, TeamingEvents.INVOKE_USER_PROPERTIES_DLG);
+		entryToolbar.addNestedItem(manageUserTBI);
+	}
+
 	/*
 	 * Constructs a ToolbarItem for view operations against a calendar
 	 * folder.
@@ -2362,7 +2362,7 @@ public class GwtMenuHelper {
 			// console's manage users dialog?
 			if (binderInfo.isBinderProfilesRootWSManagement()) {
 				// Yes!
-				constructEntryManageUserItem(actionToolbar, bs, request);
+				constructEntryUserPropertiesItem(actionToolbar, bs, request);
 			}
 			
 			else {

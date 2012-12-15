@@ -45,7 +45,7 @@ import org.kablink.teaming.gwt.client.event.CheckManageUsersActiveEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportProfilesDlgEvent;
 import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
-import org.kablink.teaming.gwt.client.event.InvokeManageUserDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeUserPropertiesDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserShareSettingsDlgEvent;
@@ -67,6 +67,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ImportProfilesDlg.ImportProfilesDlgClient;
+import org.kablink.teaming.gwt.client.widgets.UserPropertiesDlg.UserPropertiesDlgClient;
 import org.kablink.teaming.gwt.client.widgets.UserShareRightsDlg.UserShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -93,7 +94,7 @@ public class ManageUsersDlg extends DlgBox
 		GetManageUsersTitleEvent.Handler,
 		ManageUsersFilterEvent.Handler,
 		InvokeImportProfilesDlgEvent.Handler,
-		InvokeManageUserDlgEvent.Handler,
+		InvokeUserPropertiesDlgEvent.Handler,
 		SetSelectedUserDesktopSettingsEvent.Handler,
 		SetSelectedUserMobileSettingsEvent.Handler,
 		SetSelectedUserShareRightsEvent.Handler,
@@ -111,6 +112,7 @@ public class ManageUsersDlg extends DlgBox
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ManageUsersInfoRpcResponseData	m_manageUsersInfo;			// Information necessary to run the manage users dialog.
 	private PersonalWorkspacesView			m_pwsView;					// The personal workspace view.
+	private UserPropertiesDlg				m_userPropertiesDlg;		// An UserPropertiesDlg, once one is created.
 	private UserShareRightsDlg				m_userShareRightsDlg;		// A UserShareRightsDlg, once one is created.
 	private VibeFlowPanel					m_rootPanel;				// The panel that holds the dialog's contents.
 
@@ -129,7 +131,7 @@ public class ManageUsersDlg extends DlgBox
 		TeamingEvents.GET_MANAGE_USERS_TITLE,
 		TeamingEvents.MANAGE_USERS_FILTER,
 		TeamingEvents.INVOKE_IMPORT_PROFILES_DLG,
-		TeamingEvents.INVOKE_MANAGE_USER_DLG,
+		TeamingEvents.INVOKE_USER_PROPERTIES_DLG,
 		TeamingEvents.SET_SELECTED_USER_DESKTOP_SETTINGS,
 		TeamingEvents.SET_SELECTED_USER_MOBILE_SETTINGS,
 		TeamingEvents.SET_SELECTED_USER_SHARE_RIGHTS,
@@ -164,7 +166,7 @@ public class ManageUsersDlg extends DlgBox
 		// ...and create the dialog's content.
 		addStyleName("vibe-manageUsersDlg");
 		createAllDlgContent(
-			m_messages.manageUserDlgCaption(),
+			m_messages.manageUsersDlgCaption(),
 			DlgBox.getSimpleSuccessfulHandler(),
 			DlgBox.getSimpleCanceledHandler(),
 			muDlgClient); 
@@ -402,16 +404,38 @@ public class ManageUsersDlg extends DlgBox
 	}
 	
 	/**
-	 * Handles InvokeManageUserDlgEvent's received by this class.
+	 * Handles InvokeUserPropertiesDlgEvent's received by this class.
 	 * 
-	 * Implements the InvokeManageUserDlgEvent.Handler.onInvokeManageUserDlg() method.
+	 * Implements the InvokeUserPropertiesDlgEvent.Handler.onInvokeUserPropertiesDlg() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onInvokeManageUserDlg(InvokeManageUserDlgEvent event) {
-//!		...this needs to be implemented...
-		GwtClientHelper.deferredAlert("ManageUserDlg.onInvokeManageUserDlg( " + event.getUserId() + " ):  ...this needs to be implemented...");
+	public void onInvokeUserPropertiesDlg(final InvokeUserPropertiesDlgEvent event) {
+		// Have we create an user properties dialog yet?
+		if (null == m_userPropertiesDlg) {
+			// No!  Can we create one now?
+			UserPropertiesDlg.createAsync(new UserPropertiesDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in 
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(UserPropertiesDlg upDlg) {
+					// Yes, we created the user properties dialog!
+					// Show it.
+					m_userPropertiesDlg = upDlg;
+					showUserPropertiesDlgAsync(event.getUserId());
+				}
+			});
+		}
+		
+		else {
+			// Yes, we have an user properties dialog!  Show it.
+			showUserPropertiesDlgAsync(event.getUserId());
+		}
 	}
 	
 	/**
@@ -633,6 +657,26 @@ public class ManageUsersDlg extends DlgBox
 	 */
 	private void showImportProfilesDlgNow() {
 		ImportProfilesDlg.initAndShow(m_importProfilesDlg, m_manageUsersInfo.getProfilesRootWSInfo());
+	}
+
+	/*
+	 * Asynchronously shows the user properties dialog.
+	 */
+	private void showUserPropertiesDlgAsync(final Long userId) {
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					showUserPropertiesDlgNow(userId);
+				}
+			});
+	}
+
+	/*
+	 * Synchronously shows the user properties dialog.
+	 */
+	private void showUserPropertiesDlgNow(Long userId) {
+		UserPropertiesDlg.initAndShow(m_userPropertiesDlg, userId);
 	}
 
 	/*

@@ -4854,6 +4854,19 @@ td.datePickerMonth {
 	.vibe-importProfilesDlg-panel      {}
 /* End:  Import profiles dialog styles. */
 
+/* Start:  User properties dialog styles. */
+	.vibe-userPropertiesDlg-attrCaption {font-weight: bold; padding-right: 3px;}
+	.vibe-userPropertiesDlg-attrValue   {}
+	.vibe-userPropertiesDlg-avatar      {border-width: 1px; border-style: solid; border-color: #ccc; width: 100px; height: 100px;}
+	.vibe-userPropertiesDlg-button      {}
+	.vibe-userPropertiesDlg-buttons     {padding-top: 5px;}
+	.vibe-userPropertiesDlg-delete      {}
+	.vibe-userPropertiesDlg-grid        {padding: 5px;}
+	.vibe-userPropertiesDlg-modify      {}
+	.vibe-userPropertiesDlg-rootPanel   {}
+	.vibe-userPropertiesDlg-title       {font-size: 20px; font-weight: 200; font-family: Arial, Helvetica, sans-serif; color:#5691A6!important;}
+/* End:  User properties dialog styles. */
+
 /* Start:  User share rights dialog styles. */
 	.vibe-userShareRightsDlg-header           {white-space: normal; color: #666;}
 	.vibe-userShareRightsDlg-headerCell       {vertical-align: top;}

@@ -453,6 +453,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetUserFileSyncAppConfig();
 	String rpcFailure_GetUserMobileAppsConfiguration();
 	String rpcFailure_GetUserPermalink();
+	String rpcFailure_GetUserProperties();
 	String rpcFailure_GetUserSharingRightsInfo();
 	String rpcFailure_GetUserWorkspaceInfo();
 	String rpcFailure_GetUserWorkspaceUrl();
@@ -653,6 +654,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_TeamWSView();
 	String codeSplitFailure_TinyMCEDlg();
 	String codeSplitFailure_TrashView();
+	String codeSplitFailure_UserPropertiesDlg();
 	String codeSplitFailure_UserShareRightsDlg();
 	String codeSplitFailure_UserStatusControl();
 	String codeSplitFailure_ViewsMenuPopup();
@@ -2200,7 +2202,7 @@ public interface GwtTeamingMessages extends Messages
 	String selectPrincipalsWidget_TypeCol();
 
 	// Strings used by the 'Manage Users' dialog.
-	String manageUserDlgCaption();
+	String manageUsersDlgCaption();
 	
 	// Strings used by the 'Import Profiles' dialog.
 	String importProfilesDlgErrorBogusJSONData( String msg );
@@ -2388,4 +2390,10 @@ public interface GwtTeamingMessages extends Messages
 	String userActivityReportType_Summaries();
 	String userActivityReportWarning_UserAlreadySelected(String name);
 
+	// Strings used by the 'User Properties' dialog.
+	String userPropertiesDlgDelete();
+	String userPropertiesDlgHeader();
+	String userPropertiesDlgLabelize(String label);
+	String userPropertiesDlgModify();
+	
 }// end GwtTeamingMessages

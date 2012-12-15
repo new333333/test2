@@ -37,12 +37,12 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The InvokeManageUserDlgEvent is used to invoke the 'Manage User'
- * dialog.
+ * The InvokeUserPropertiesDlgEvent is used to invoke the 'User
+ * Properties' dialog.
  * 
  * @author drfoster@novell.com
  */
-public class InvokeManageUserDlgEvent extends VibeEventBase<InvokeManageUserDlgEvent.Handler> {
+public class InvokeUserPropertiesDlgEvent extends VibeEventBase<InvokeUserPropertiesDlgEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
     private Long	m_userId;	//
@@ -51,7 +51,7 @@ public class InvokeManageUserDlgEvent extends VibeEventBase<InvokeManageUserDlgE
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onInvokeManageUserDlg(InvokeManageUserDlgEvent event);
+		void onInvokeUserPropertiesDlg(InvokeUserPropertiesDlgEvent event);
 	}
 	
 	/**
@@ -59,7 +59,7 @@ public class InvokeManageUserDlgEvent extends VibeEventBase<InvokeManageUserDlgE
 	 * 
 	 * @param userId
 	 */
-	public InvokeManageUserDlgEvent(Long userId) {
+	public InvokeUserPropertiesDlgEvent(Long userId) {
 		// Initialize the super class...
 		super();
 		
@@ -90,7 +90,7 @@ public class InvokeManageUserDlgEvent extends VibeEventBase<InvokeManageUserDlgE
 	 */
     @Override
     protected void doDispatch(Handler handler) {
-        handler.onInvokeManageUserDlg(this);
+        handler.onInvokeUserPropertiesDlg(this);
     }
 	
 	/**
@@ -115,7 +115,7 @@ public class InvokeManageUserDlgEvent extends VibeEventBase<InvokeManageUserDlgE
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.INVOKE_MANAGE_USER_DLG;
+		return TeamingEvents.INVOKE_USER_PROPERTIES_DLG;
 	}
 
 	/**
