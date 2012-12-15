@@ -231,17 +231,10 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
-import org.kablink.util.search.Junction;
-import org.kablink.util.search.Junction.Conjunction;
-import org.kablink.util.search.Junction.Disjunction;
 import org.springframework.util.FileCopyUtils;
 
-import static org.kablink.util.search.Restrictions.conjunction;
-import static org.kablink.util.search.Restrictions.disjunction;
 import static org.kablink.util.search.Restrictions.eq;
-import static org.kablink.util.search.Restrictions.in;
 import static org.kablink.util.search.Restrictions.like;
-import static org.kablink.util.search.Restrictions.not;
 
 /**
  * Helper methods for the GWT binder views.
@@ -423,6 +416,23 @@ public class GwtViewHelper {
 		}
 	}
 
+	/*
+	 * Adds a quick filter, if present, to a Criteria object.
+	 */
+	private static void addQuickFilterToCriteria(String quickFilter, Criteria crit) {
+		// Do we have a quick filter?
+		if (null != quickFilter) {
+			quickFilter = quickFilter.trim();
+			if (0 < quickFilter.length()) {
+				// Yes!  Add it to the Criteria.
+				if (!(quickFilter.endsWith("*"))) {
+					quickFilter += "*";
+				}
+				crit.add(like(Constants.TITLE_FIELD, quickFilter));
+			}
+		}
+	}
+	
 	/*
 	 * Returns an entry map that represents no entries available.
 	 */
@@ -2340,47 +2350,34 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Map getCollectionEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, CollectionType ct, List<GwtSharedMeItem> shareItems) {
-		// Based on the installed license, what definition families do
-		// we consider as 'file'?
-		String[] fileFamilies;
-		if (Utils.checkIfFilr())
-		     fileFamilies = new String[]{Definition.FAMILY_FILE                         };
-		else fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
-		
 		// Construct the search Criteria...
-		Conjunction conj;
-		Disjunction disj;
-		Criteria crit = new Criteria();
+		Criteria crit;
 		switch (ct) {
 		default:
 		case MY_FILES:
-            crit = org.kablink.teaming.search.SearchUtils.getMyFilesSearchCriteria(bs, binder.getId());
+			// Use the common criteria builder for My Files.
+            crit = org.kablink.teaming.search.SearchUtils.getMyFilesSearchCriteria(
+            	bs,
+            	binder.getId());
+            
 			break;
 
 		case NET_FOLDERS:
 			// Add the criteria for top level mirrored file folders
-			// that have been configured...
+			// that have been configured.
 			Binder nfBinder = getCoreDao().loadReservedBinder(
 				ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
 				RequestContextHolder.getRequestContext().getZoneId());
 			Long nfBinderId = nfBinder.getId();
 			
+			crit = new Criteria();
 			crit.add(eq(Constants.DOC_TYPE_FIELD,            Constants.DOC_TYPE_BINDER));
 			crit.add(eq(Constants.IS_TOP_FOLDER_FIELD,       Constants.TRUE));
     		crit.add(eq(Constants.HAS_RESOURCE_DRIVER_FIELD, Constants.TRUE));
-			crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD,   nfBinderId.toString()));    		
+			crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD,   String.valueOf(nfBinderId)));    		
 			
-			// Do we have a quick filter?
-			if (null != quickFilter) {
-				quickFilter = quickFilter.trim();
-				if (0 < quickFilter.length()) {
-					// Yes!  Add it to the search criteria.
-					if (!(quickFilter.endsWith("*"))) {
-						quickFilter += "*";
-					}
-					crit.add(like(Constants.TITLE_FIELD, quickFilter));
-				}
-			}
+			// Factor in any quick filter we've got.
+			addQuickFilterToCriteria(quickFilter, crit);
 
 			// Add in the sort information...
 			boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
@@ -2436,17 +2433,8 @@ public class GwtViewHelper {
 					GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD));
 		}
 
-		// Do we have a quick filter?
-		if (null != quickFilter) {
-			quickFilter = quickFilter.trim();
-			if (0 < quickFilter.length()) {
-				// Yes!  Add it to the search criteria.
-				if (!(quickFilter.endsWith("*"))) {
-					quickFilter += "*";
-				}
-				crit.add(like(Constants.TITLE_FIELD, quickFilter));
-			}
-		}
+		// Factor in any quick filter we've got.
+		addQuickFilterToCriteria(quickFilter, crit);
 
 		// Add in the sort information...
 		boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
@@ -2514,6 +2502,13 @@ public class GwtViewHelper {
 		}
 	}
 
+	/*
+	 * Use Spring to access a CoreDao object. 
+	 */
+	private static CoreDao getCoreDao() {
+		return ((CoreDao) SpringContextUtil.getBean("coreDao"));
+	}
+	
 	/**
 	 * Returns the entry description from a search results Map.
 	 * 
@@ -6831,9 +6826,5 @@ public class GwtViewHelper {
 		if (MiscUtil.hasString(value))
 		     return value.contains(quickFilter);
 		else return false;
-	}
-	
-	private static CoreDao getCoreDao() {
-		return (CoreDao) SpringContextUtil.getBean("coreDao");
 	}
 }
