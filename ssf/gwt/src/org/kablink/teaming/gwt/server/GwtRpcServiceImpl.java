@@ -2032,6 +2032,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_USER_PROPERTIES:
+		{
+			GetUserPropertiesCmd gmuiCmd = ((GetUserPropertiesCmd) cmd);
+			UserPropertiesRpcResponseData result = GwtViewHelper.getUserProperties( this, getRequest( ri ), gmuiCmd.getUserId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_USER_SHARING_RIGHTS_INFO:
 		{
 			GetUserSharingRightsInfoCmd gusrCmd = ((GetUserSharingRightsInfoCmd) cmd);

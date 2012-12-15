@@ -120,7 +120,6 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_IMPORT_ICAL_URL,							// Invokes the dialog to import an iCal by specifying a URL.
 	INVOKE_IMPORT_PROFILES_DLG,						// Invokes the "Import Profiles" dialog.
 	INVOKE_MANAGE_GROUPS_DLG,						// Invokes the "Manage groups" dialog.
-	INVOKE_MANAGE_USER_DLG,							// Invokes the "Manage user"  dialog.
 	INVOKE_MANAGE_USERS_DLG,						// Invokes the "Manage users" dialog.
 	INVOKE_EDIT_NET_FOLDER_RIGHTS_DLG,				// Invokes the "edit net folder rights" dialog.
 	INVOKE_EDIT_SHARE_RIGHTS_DLG,					// Invokes the "edit share rights" dialog.
@@ -136,6 +135,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_TAG,										// Invokes the 'tag this entry' UI.
 	INVOKE_USER_DESKTOP_SETTINGS_DLG,				// Invokes the 'user desktop application settings' dialog.
 	INVOKE_USER_MOBILE_SETTINGS_DLG,				// Invokes the 'user mobile  application settings' dialog.
+	INVOKE_USER_PROPERTIES_DLG,						// Invokes the 'user properties'                   dialog.
 	INVOKE_USER_SHARE_SETTINGS_DLG,					// Invokes the 'user share               settings' dialog.
 	
 	JSP_LAYOUT_CHANGED,								// The layout of JSP content has changed.

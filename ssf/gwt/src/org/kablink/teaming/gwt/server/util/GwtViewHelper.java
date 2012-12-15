@@ -127,6 +127,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsCmd.UploadInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseData;
@@ -4053,86 +4054,6 @@ public class GwtViewHelper {
 		return reply;
 	}
 	
-	/**
-	 * Returns a ProfileEntryInfoRpcRequestData containing information
-	 * about a user's profile.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param userId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	@SuppressWarnings("unchecked")
-	public static ProfileEntryInfoRpcResponseData getProfileEntryInfo(AllModulesInjected bs, HttpServletRequest request, Long userId) throws GwtTeamingException {
-		try {
-			// Allocate an profile entry info response we can return.
-			ProfileEntryInfoRpcResponseData reply = new ProfileEntryInfoRpcResponseData();
-
-			// Can we access the user in question?
-			List<String> userIdList = new ArrayList<String>();
-			String userIdS = String.valueOf(userId);
-			userIdList.add(userIdS);
-			List resolvedList = ResolveIds.getPrincipals(userIdList, false);
-			if (MiscUtil.hasItems(resolvedList)) {
-				// Yes!  Extract the profile information we need to
-				// display.
-				User user = ((User) resolvedList.get(0));
-				addProfileAttribute(reply, "title",              user.getTitle());
-				addProfileAttribute(reply, "emailAddress",       user.getEmailAddress());
-				addProfileAttribute(reply, "mobileEmailAddress", user.getMobileEmailAddress());
-				addProfileAttribute(reply, "txtEmailAddress",    user.getTxtEmailAddress());
-				addProfileAttribute(reply, "phone",              user.getPhone());
-				addProfileAttribute(reply, "timeZone",           user.getTimeZone().getDisplayName());
-				addProfileAttribute(reply, "locale",             user.getLocale().getDisplayName());
-				
-				// Store the URL for the user's avatar, if they have
-				// one.
-				reply.setAvatarUrl(GwtServerHelper.getUserAvatarUrl(bs, request, user));
-
-				// Does the current user have rights to modify users?
-				ProfileModule pm = bs.getProfileModule();
-				String profilesWSIdS = String.valueOf(pm.getProfileBinderId());
-				if (pm.testAccess(user, ProfileOperation.modifyEntry)) {
-					// Yes!  Store the modify URL for this user.
-					AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
-					url.setParameter(WebKeys.ACTION,         WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
-					url.setParameter(WebKeys.URL_BINDER_ID,  profilesWSIdS                      );
-					url.setParameter(WebKeys.URL_ENTRY_ID,   userIdS                            );
-					reply.setModifyUrl(url.toString());
-				}
-				
-				// Does the current user have rights to delete users
-				// and is this other than a reserved user?
-				if (pm.testAccess(user, ProfileOperation.deleteEntry) && (!(user.isReserved()))) {
-					// Yes!  Store the delete URL for this user.
-					AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
-					url.setParameter(WebKeys.ACTION,         WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
-					url.setParameter(WebKeys.URL_OPERATION,  WebKeys.OPERATION_DELETE           );
-					url.setParameter(WebKeys.URL_BINDER_ID,  profilesWSIdS                      );
-					url.setParameter(WebKeys.URL_ENTRY_ID,   userIdS                            );
-					reply.setDeleteUrl(url.toString());
-				}
-			}
-
-			// If we get here, reply refers to an
-			// ProfileEntryInfoRpcResponseData containing the user's
-			// profile information.  Return it.
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getProfileEntryInfo( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
-		}
-	}
-	
 	/*
 	 * Returns a map containing the search filter to use to read the
 	 * rows from a folder.
@@ -4465,6 +4386,86 @@ public class GwtViewHelper {
 		return pinnedEntrySearchMaps;
 	}
 
+	/**
+	 * Returns a ProfileEntryInfoRpcRequestData containing information
+	 * about a user's profile.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	@SuppressWarnings("unchecked")
+	public static ProfileEntryInfoRpcResponseData getProfileEntryInfo(AllModulesInjected bs, HttpServletRequest request, Long userId) throws GwtTeamingException {
+		try {
+			// Allocate an profile entry info response we can return.
+			ProfileEntryInfoRpcResponseData reply = new ProfileEntryInfoRpcResponseData();
+
+			// Can we access the user in question?
+			List<String> userIdList = new ArrayList<String>();
+			String userIdS = String.valueOf(userId);
+			userIdList.add(userIdS);
+			List resolvedList = ResolveIds.getPrincipals(userIdList, false);
+			if (MiscUtil.hasItems(resolvedList)) {
+				// Yes!  Extract the profile information we need to
+				// display.
+				User user = ((User) resolvedList.get(0));
+				addProfileAttribute(reply, "title",              user.getTitle());
+				addProfileAttribute(reply, "emailAddress",       user.getEmailAddress());
+				addProfileAttribute(reply, "mobileEmailAddress", user.getMobileEmailAddress());
+				addProfileAttribute(reply, "txtEmailAddress",    user.getTxtEmailAddress());
+				addProfileAttribute(reply, "phone",              user.getPhone());
+				addProfileAttribute(reply, "timeZone",           user.getTimeZone().getDisplayName());
+				addProfileAttribute(reply, "locale",             user.getLocale().getDisplayName());
+				
+				// Store the URL for the user's avatar, if they have
+				// one.
+				reply.setAvatarUrl(GwtServerHelper.getUserAvatarUrl(bs, request, user));
+
+				// Does the current user have rights to modify users?
+				ProfileModule pm = bs.getProfileModule();
+				String profilesWSIdS = String.valueOf(pm.getProfileBinderId());
+				if (pm.testAccess(user, ProfileOperation.modifyEntry)) {
+					// Yes!  Store the modify URL for this user.
+					AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+					url.setParameter(WebKeys.ACTION,         WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+					url.setParameter(WebKeys.URL_BINDER_ID,  profilesWSIdS                      );
+					url.setParameter(WebKeys.URL_ENTRY_ID,   userIdS                            );
+					reply.setModifyUrl(url.toString());
+				}
+				
+				// Does the current user have rights to delete users
+				// and is this other than a reserved user?
+				if (pm.testAccess(user, ProfileOperation.deleteEntry) && (!(user.isReserved()))) {
+					// Yes!  Store the delete URL for this user.
+					AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+					url.setParameter(WebKeys.ACTION,         WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+					url.setParameter(WebKeys.URL_OPERATION,  WebKeys.OPERATION_DELETE           );
+					url.setParameter(WebKeys.URL_BINDER_ID,  profilesWSIdS                      );
+					url.setParameter(WebKeys.URL_ENTRY_ID,   userIdS                            );
+					reply.setDeleteUrl(url.toString());
+				}
+			}
+
+			// If we get here, reply refers to an
+			// ProfileEntryInfoRpcResponseData containing the user's
+			// profile information.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getProfileEntryInfo( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
 	/*
 	 * Returns a Map<String, String> for the query parameters from a
 	 * URL.
@@ -4810,6 +4811,47 @@ public class GwtViewHelper {
 	@SuppressWarnings("unchecked")
 	private static Map getUserEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options) {
 		return bs.getProfileModule().getUsers(options);
+	}
+	
+	/**
+	 * Returns a UserPropertiesRpcRequestData containing information
+	 * managing a user.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static UserPropertiesRpcResponseData getUserProperties(AllModulesInjected bs, HttpServletRequest request, Long userId) throws GwtTeamingException {
+		try {
+			// Allocate a user properties response containing the
+			// user's profile info we can return.
+			UserPropertiesRpcResponseData reply =
+				new UserPropertiesRpcResponseData(
+					getProfileEntryInfo(
+						bs,
+						request,
+						userId));
+
+//!			...this needs to be implemented...
+			
+			// If we get here, reply refers to a
+			// UserPropertiesRpcResponseData containing the properties
+			// for managing the user.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getUserProperties( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
 	}
 	
 	/**

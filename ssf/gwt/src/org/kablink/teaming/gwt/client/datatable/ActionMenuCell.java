@@ -45,8 +45,8 @@ import org.kablink.teaming.gwt.client.event.ChangeFavoriteStateEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.InvokeManageUserDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
+import org.kablink.teaming.gwt.client.event.InvokeUserPropertiesDlgEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
@@ -367,14 +367,14 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 								Boolean.parseBoolean(simpleTBI.getQualifierValue("makeFavorite")));
 							break;
 						
-						case INVOKE_MANAGE_USER_DLG:
-							event = new InvokeManageUserDlgEvent(eid.getEntityId());
-							break;
-						
 						case INVOKE_SHARE_BINDER:
 							event = new InvokeShareBinderEvent(String.valueOf(eid.getEntityId()));
 							break;
 							
+						case INVOKE_USER_PROPERTIES_DLG:
+							event = new InvokeUserPropertiesDlgEvent(eid.getEntityId());
+							break;
+						
 						case UNDEFINED:
 							GwtClientHelper.deferredAlert(m_messages.eventHandling_NoActionMenuHandler(simpleEvent.name()));
 							event = null;
