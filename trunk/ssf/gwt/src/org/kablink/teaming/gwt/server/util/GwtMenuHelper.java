@@ -728,6 +728,17 @@ public class GwtMenuHelper {
 		entryToolbar.addNestedItem(favoriteTBI);
 	}
 	
+	/*
+	 * Constructs a ToolbarItem for running the entry viewer the
+	 * selected entry.
+	 */
+	private static void constructEntryManageUserItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
+		// Add a Manage User item.
+		ToolbarItem manageUserTBI = new ToolbarItem("1_manageUser");
+		markTBITitle(manageUserTBI, "toolbar.details.manageUser");
+		markTBIEvent(manageUserTBI, TeamingEvents.INVOKE_MANAGE_USER_DLG);
+		entryToolbar.addNestedItem(manageUserTBI);
+	}
 
 	/*
 	 * Constructs a ToolbarItem for miscellaneous operations against
@@ -2338,7 +2349,7 @@ public class GwtMenuHelper {
 	 * 
 	 * @return
 	 */
-	public static GetToolbarItemsRpcResponseData getEntityActionToolbarItems(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) {
+	public static GetToolbarItemsRpcResponseData getEntityActionToolbarItems(AllModulesInjected bs, HttpServletRequest request, BinderInfo binderInfo, EntityId entityId) {
 		SimpleProfiler.start("GwtMenuHelper.getEntityToolbarItems()");
 		try {
 			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
@@ -2346,42 +2357,53 @@ public class GwtMenuHelper {
 			ToolbarItem						actionToolbar = new ToolbarItem(WebKeys.ENTITY_ACTION_TOOLBAR);
 			List<ToolbarItem>				toolbarItems  = actionToolbar.getNestedItemsList();
 			GetToolbarItemsRpcResponseData	reply         = new GetToolbarItemsRpcResponseData(toolbarItems);
-			
-			String eidType = entityId.getEntityType();
-			if (eidType.equals(EntityType.folderEntry.name())) {
-				FolderEntry fe= bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
-				
-				if (GwtShareHelper.isEntitySharable(bs, fe)) {
-					constructEntryShareItem(actionToolbar, bs, request);
-				}
-				constructEntryDetailsItem(     actionToolbar, bs, request, "toolbar.details.view");
-				constructEntryViewHtmlItem(    actionToolbar, bs, request, fe                    );
-				constructEntryViewWhoHasAccess(actionToolbar, bs, request                        );
-				constructEntrySubscribeItem(   actionToolbar, bs, request, true                  );
+
+			// Are we working on an entity from the administration
+			// console's manage users dialog?
+			if (binderInfo.isBinderProfilesRootWSManagement()) {
+				// Yes!
+				constructEntryManageUserItem(actionToolbar, bs, request);
 			}
 			
-			else if (eidType.equals(EntityType.folder.name())) {
-				Long	folderId = entityId.getEntityId();
-				Folder	folder   = bs.getFolderModule().getFolder(folderId);
-				
-				boolean addShare = GwtShareHelper.isEntitySharable(bs, folder);
-				if (addShare) {
-					actionToolbar.addNestedItem(constructShareBinderItem(request, folder));
-				}
-				if (!(Utils.checkIfFilr())) {
-					boolean isFavorite = false;
-					List<FavoriteInfo> favorites = GwtServerHelper.getFavorites(bs);
-					for (FavoriteInfo favorite:  favorites) {
-						Long favoriteId = Long.parseLong(favorite.getValue());
-						if (favoriteId.equals(folderId)) {
-							isFavorite = true;
-							break;
-						}
+			else {
+				// No, we aren't working on an entity from the
+				// administration console's manage users dialog!
+				String eidType = entityId.getEntityType();
+				if (eidType.equals(EntityType.folderEntry.name())) {
+					FolderEntry fe= bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
+					
+					if (GwtShareHelper.isEntitySharable(bs, fe)) {
+						constructEntryShareItem(actionToolbar, bs, request);
 					}
-					constructEntryFavoriteItem(actionToolbar, bs, request, isFavorite);
+					constructEntryDetailsItem(     actionToolbar, bs, request, "toolbar.details.view");
+					constructEntryViewHtmlItem(    actionToolbar, bs, request, fe                    );
+					constructEntryViewWhoHasAccess(actionToolbar, bs, request                        );
+					constructEntrySubscribeItem(   actionToolbar, bs, request, true                  );
 				}
-				constructEntryViewWhoHasAccess(actionToolbar, bs, request      );
-				constructEntrySubscribeItem(   actionToolbar, bs, request, true);
+				
+				else if (eidType.equals(EntityType.folder.name())) {
+					Long	folderId = entityId.getEntityId();
+					Folder	folder   = bs.getFolderModule().getFolder(folderId);
+					
+					boolean addShare = GwtShareHelper.isEntitySharable(bs, folder);
+					if (addShare) {
+						actionToolbar.addNestedItem(constructShareBinderItem(request, folder));
+					}
+					if (!(Utils.checkIfFilr())) {
+						boolean isFavorite = false;
+						List<FavoriteInfo> favorites = GwtServerHelper.getFavorites(bs);
+						for (FavoriteInfo favorite:  favorites) {
+							Long favoriteId = Long.parseLong(favorite.getValue());
+							if (favoriteId.equals(folderId)) {
+								isFavorite = true;
+								break;
+							}
+						}
+						constructEntryFavoriteItem(actionToolbar, bs, request, isFavorite);
+					}
+					constructEntryViewWhoHasAccess(actionToolbar, bs, request      );
+					constructEntrySubscribeItem(   actionToolbar, bs, request, true);
+				}
 			}
 			
 			// If we get here, reply refers to the 

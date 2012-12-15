@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.event.CheckManageUsersActiveEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportProfilesDlgEvent;
 import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
+import org.kablink.teaming.gwt.client.event.InvokeManageUserDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserShareSettingsDlgEvent;
@@ -92,6 +93,7 @@ public class ManageUsersDlg extends DlgBox
 		GetManageUsersTitleEvent.Handler,
 		ManageUsersFilterEvent.Handler,
 		InvokeImportProfilesDlgEvent.Handler,
+		InvokeManageUserDlgEvent.Handler,
 		SetSelectedUserDesktopSettingsEvent.Handler,
 		SetSelectedUserMobileSettingsEvent.Handler,
 		SetSelectedUserShareRightsEvent.Handler,
@@ -127,6 +129,7 @@ public class ManageUsersDlg extends DlgBox
 		TeamingEvents.GET_MANAGE_USERS_TITLE,
 		TeamingEvents.MANAGE_USERS_FILTER,
 		TeamingEvents.INVOKE_IMPORT_PROFILES_DLG,
+		TeamingEvents.INVOKE_MANAGE_USER_DLG,
 		TeamingEvents.SET_SELECTED_USER_DESKTOP_SETTINGS,
 		TeamingEvents.SET_SELECTED_USER_MOBILE_SETTINGS,
 		TeamingEvents.SET_SELECTED_USER_SHARE_RIGHTS,
@@ -396,6 +399,19 @@ public class ManageUsersDlg extends DlgBox
 				showImportProfilesDlgAsync();
 			}
 		}
+	}
+	
+	/**
+	 * Handles InvokeManageUserDlgEvent's received by this class.
+	 * 
+	 * Implements the InvokeManageUserDlgEvent.Handler.onInvokeManageUserDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeManageUserDlg(InvokeManageUserDlgEvent event) {
+//!		...this needs to be implemented...
+		GwtClientHelper.deferredAlert("ManageUserDlg.onInvokeManageUserDlg( " + event.getUserId() + " ):  ...this needs to be implemented...");
 	}
 	
 	/**
