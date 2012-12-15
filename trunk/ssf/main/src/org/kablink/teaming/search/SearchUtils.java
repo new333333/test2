@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.document.DateTools;
-import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -53,7 +52,6 @@ import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.runwith.RunWithCallback;
 import org.kablink.teaming.security.runwith.RunWithTemplate;
@@ -62,7 +60,6 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.search.*;
 import org.kablink.util.search.Junction.Conjunction;
 import org.kablink.util.search.Junction.Disjunction;
@@ -70,9 +67,13 @@ import org.kablink.util.search.Junction.Disjunction;
 import static org.kablink.util.search.Constants.*;
 import static org.kablink.util.search.Restrictions.*;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 @SuppressWarnings("unchecked")
-public class SearchUtils {
-	
+public class SearchUtils {	
 	protected static CoreDao getCoreDao() {
 		return (CoreDao)SpringContextUtil.getBean("coreDao");
 	};
@@ -634,16 +635,26 @@ public class SearchUtils {
 		return reply;
 	}
 
-	//This routine returns a Criteria that will search all folders associated with the My Files collection
+	/**
+	 * This routine returns a Criteria that will search all folders
+	 * associated with the My Files collection.
+	 * 
+	 * @param bs
+	 * @param rootBinderId
+	 * @param binders
+	 * @param entries
+	 * @param replies
+	 * @param attachments
+	 * 
+	 * @return
+	 */
 	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs, Long rootBinderId, boolean binders, boolean entries, boolean replies, boolean attachments) {
 		// Based on the installed license, what definition families do
 		// we consider as 'file'?
 		String[] fileFamilies;
-		if (Utils.checkIfFilr()) {
-			fileFamilies = new String[]{Definition.FAMILY_FILE};
-		} else {
-			fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
-		}
+		if (Utils.checkIfFilr())
+		     fileFamilies = new String[]{Definition.FAMILY_FILE};
+		else fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
 
         Long	mfRootId;
         boolean	usingHomeAsMF = useHomeAsMyFiles(bs);
@@ -1180,7 +1191,6 @@ public class SearchUtils {
 	 *  
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static int getOptionInt(Map options, String key, int defInt) {
 		Integer obj = ((Integer) options.get(key));
 		return ((null == obj) ? defInt : obj.intValue());
@@ -1196,7 +1206,6 @@ public class SearchUtils {
 	 *  
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static boolean getOptionBoolean(Map options, String key, boolean defBool) {
 		Boolean obj = ((Boolean) options.get(key));
 		return ((null == obj) ? defBool : obj.booleanValue());
@@ -1212,11 +1221,8 @@ public class SearchUtils {
 	 *  
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static String getOptionString(Map options, String key, String defStr) {
 		String obj = ((String) options.get(key));
 		return (((null == obj) || (0 == obj.length())) ? defStr : obj);
 	}
-
-
 }
