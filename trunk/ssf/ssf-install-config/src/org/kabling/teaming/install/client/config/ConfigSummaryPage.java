@@ -100,7 +100,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		content.add(buildOutboundEmailSection());
 
 		// Inbound
-		content.add(buildInboundEmailSection());
+		//content.add(buildInboundEmailSection());
 
 		// Clustering
 		content.add(buildClusteringSection());
