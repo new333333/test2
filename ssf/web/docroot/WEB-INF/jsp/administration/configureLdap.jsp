@@ -1023,7 +1023,7 @@ ssPage = {
 			return false;
 		});
 		jQuery(".ldapGroupSearches button.addSearch", $container).click(function() {
-			ssPage.createSearchEntry(jQuery(this).prev(), "", ssPage.defaultGroupFilter, "false");
+			ssPage.createSearchEntry(jQuery(this).prev(), "", ssPage.defaultGroupFilter, "true");
 			return false;
 		});
 	},
