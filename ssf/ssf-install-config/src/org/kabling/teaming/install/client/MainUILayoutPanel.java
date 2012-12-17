@@ -91,10 +91,19 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 		headerActionsPanel.addStyleName("masterhead-actions");
 		hPanel.add(headerActionsPanel);
 		hPanel.setCellHorizontalAlignment(headerActionsPanel, HasAlignment.ALIGN_RIGHT);
+		
 		InlineLabel label = new InlineLabel("root");
 		label.addStyleName("username");
 		headerActionsPanel.add(label);
 
+		Anchor homeAnchor = new Anchor("Home");
+		homeAnchor.addStyleName("logout");
+		headerActionsPanel.add(homeAnchor);
+		if (AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
+		{
+			homeAnchor.setHref("/");
+		}
+		
 		Anchor logoutAction = new Anchor("Logout");
 		logoutAction.addStyleName("logout");
 		//For filr, redirect to /logout
