@@ -515,4 +515,19 @@ update SS_Principals set foreignName=LOWER(foreignName);
         </addColumn>
     </changeSet>
 
+    <changeSet author="jay" context="schema" failOnError="true" id="60">
+        <comment>Add allowDesktopAppToSyncData field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="allowDesktopAppToSyncData" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add allowMobileAppsToSyncData field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="allowMobileAppsToSyncData" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
 </databaseChangeLog>

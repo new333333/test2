@@ -33,6 +33,8 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -79,6 +81,7 @@ import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -207,7 +210,7 @@ public class GwtNetFolderHelper
 			setNetFolderRights( ami, binder.getId(), netFolder.getRoles() );
 			
 			// Set the data sync settings on the next folder
-			saveDataSyncSettings( ami, binder, netFolder.getDataSyncSettings() );
+			saveDataSyncSettings( ami, binder.getId(), netFolder.getDataSyncSettings() );
 
 			newNetFolder = new NetFolder();
 			newNetFolder.setName( netFolder.getName() );
@@ -472,8 +475,9 @@ public class GwtNetFolderHelper
 	{
 		NetFolderDataSyncSettings settings;
 		
-		//!!! Finish
 		settings = new NetFolderDataSyncSettings();
+		settings.setAllowDesktopAppToSyncData( binder.getAllowDesktopAppToSyncData() );
+		settings.setAllowMobileAppsToSyncData( binder.getAllowMobileAppsToSyncData() );
 		
 		return settings;
 	}
@@ -1072,32 +1076,38 @@ public class GwtNetFolderHelper
 	/**
 	 * Save the data sync settings for the given net folder binder
 	 */
+	@SuppressWarnings({ "unchecked" })
 	private static void saveDataSyncSettings(
 		AllModulesInjected ami,
 		Long binderId,
 		NetFolderDataSyncSettings settings )
 	{
-		if ( binderId != null )
+		if ( binderId != null && settings != null )
 		{
-			Binder binder;
+			Set deleteAtts;
+			Map fileMap = null;
+			MapInputData mid;
+			Map formData = null;
 			
-			// Get the binder's work area
-			binder = ami.getBinderModule().getBinder( binderId );
-			saveDataSyncSettings( ami, binder, settings );
-		}
-	}
-	
-	/**
-	 * Save the data sync settings for the given net folder binder.
-	 */
-	private static void saveDataSyncSettings(
-		AllModulesInjected ami,
-		Binder binder,
-		NetFolderDataSyncSettings settings )
-	{
-		if ( binder != null && settings != null )
-		{
-			//!!! Finish
+			deleteAtts = new HashSet();
+			fileMap = new HashMap();
+			formData = new HashMap();
+	   		formData.put(
+	   					ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA,
+	   					Boolean.toString( settings.getAllowDesktopAppToSyncData() ) );
+	   		formData.put(
+   					ObjectKeys.FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA,
+   					Boolean.toString( settings.getAllowMobileAppsToSyncData() ) );
+			mid = new MapInputData( formData );
+
+			try
+			{
+				ami.getBinderModule().modifyBinder( binderId, mid, fileMap, deleteAtts, null );
+			}
+			catch ( Exception ex )
+			{
+				m_logger.error( "In saveDataSyncSettings(), call to modifyBinder() failed. " + ex.toString() );
+			}
 		}
 	}
 

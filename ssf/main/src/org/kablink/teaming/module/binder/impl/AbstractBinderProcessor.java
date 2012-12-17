@@ -666,6 +666,24 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    				if ( homeDir != null )
    					entryData.put( ObjectKeys.FIELD_IS_HOME_DIR, homeDir );
    			}
+
+   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA ) && !entryData.containsKey( ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA ) )
+   			{
+   				Boolean allow = null;
+   				
+   				allow = Boolean.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA ) );
+   				if ( allow != null )
+   					entryData.put( ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA, allow );
+   			}
+
+   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA ) && !entryData.containsKey( ObjectKeys.FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA ) )
+   			{
+   				Boolean allow = null;
+   				
+   				allow = Boolean.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA ) );
+   				if ( allow != null )
+   					entryData.put( ObjectKeys.FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA, allow );
+   			}
    		}
    		Boolean library = null;
 		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY))
