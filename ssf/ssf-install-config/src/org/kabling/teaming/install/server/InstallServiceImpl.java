@@ -2235,6 +2235,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 				// Store the properties
 				store(prop, configurationDetailsFile);
+				
+				//For large deployment, we need to disable sql and lucene
+				if (configType.equals("large"))
+				{
+					disableMySqlAndLucene();
+				}
 
 			}
 			catch (Exception e)
@@ -2242,6 +2248,16 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				logger.debug("Error creating /filrinstall/configured file");
 			}
 		}
+	}
+
+	private void disableMySqlAndLucene()
+	{
+		// Disable filrsearch and mysql for large deployment
+		executeCommand( "mv /etc/opt/novell/ganglia/monitor/conf.d/filrsearch.pyconf " +
+				" /etc/opt/novell/ganglia/monitor/conf.d/filrsearch.pyconf.disabled");
+		
+		executeCommand( "mv /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf " +
+				" /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf.disabled");
 	}
 
 	@Override
