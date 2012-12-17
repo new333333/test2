@@ -22,12 +22,9 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 
 	private VibeTextBox accessGatewayAddrTextBox;
 	private VibeTextBox logoutUrlTextBox;
-	private VibeTextBox webDavGatewayAddrTextBox;
-	private CheckBox useAccessGatewayWebDavCheckBox;
 	private CheckBox enableAccessGatewayCheckBox;
 	private ValueRequiredBasedOnBoolValidator accessGatewayAddrValidator;
 	private ValueRequiredBasedOnBoolValidator accessGatewayLogOffValidator;
-	private ValueRequiredBasedOnBoolValidator webDavValidator;
 	private GwValueSpinner httpSpinner;
 	private GwValueSpinner httpSecureSpinner;
 	private CheckBox httpEnabledCheckBox;
@@ -88,31 +85,6 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
-		{
-			row++;
-			// Use Access Gateway for WebDav configuration
-			useAccessGatewayWebDavCheckBox = new CheckBox(RBUNDLE.useAccessGatewayForWebDav());
-			useAccessGatewayWebDavCheckBox.addStyleName("useAccessGatewayWebDavCheckBox");
-			useAccessGatewayWebDavCheckBox.addClickHandler(this);
-			table.setWidget(row, 0, useAccessGatewayWebDavCheckBox);
-			table.getFlexCellFormatter().addStyleName(row, 0, "table-value");
-			table.getFlexCellFormatter().setColSpan(row, 0, 2);
-		}
-
-		{
-			row++;
-			// WebDav access gateway address
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.webDavAccessGatewayAddrColon());
-			table.setWidget(row, 0, keyLabel);
-			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-
-			webDavGatewayAddrTextBox = new VibeTextBox();
-			webDavValidator = new ValueRequiredBasedOnBoolValidator(true, webDavGatewayAddrTextBox);
-			webDavGatewayAddrTextBox.setValidator(webDavValidator);
-			table.setWidget(row, 1, webDavGatewayAddrTextBox);
-			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-		}
-		
 		FlexTable portTable = new FlexTable();
 		portTable.addStyleName("reverProxyPortTable");
 		contentPanel.add(portTable);
@@ -163,13 +135,6 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			}
 		}
 		
-		//If we are using for WebDAV, we need to have the WebDAV Address
-		if (useAccessGatewayWebDavCheckBox.getValue() && !webDavGatewayAddrTextBox.isValid())
-		{
-			setErrorMessage(RBUNDLE.gatewayWebDavEnabledWithInvalidData());
-			return null;
-		}
-
 		//Save the changes
 		SSO sso = config.getSso();
 
@@ -179,8 +144,6 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			sso.setiChainProxyAddr(accessGatewayAddrTextBox.getText());
 			sso.setiChainLogoffUrl(logoutUrlTextBox.getText());
 
-			sso.setiChainWebDAVProxyEnabled(useAccessGatewayWebDavCheckBox.getValue());
-			sso.setiChainWebDAVProxyHost(webDavGatewayAddrTextBox.getText());
 		}
 		
 		//Save HTTP Port info
@@ -215,12 +178,8 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			accessGatewayLogOffValidator.setRequired(enableAccessGatewayCheckBox.getValue());
 			
 			accessGatewayAddrTextBox.setText(sso.getiChainProxyAddr());
-			webDavValidator.setRequired(useAccessGatewayWebDavCheckBox.getValue());
 			
 			logoutUrlTextBox.setText(sso.getiChainLogoffUrl());
-
-			useAccessGatewayWebDavCheckBox.setValue(sso.isiChainWebDAVProxyEnabled());
-			webDavGatewayAddrTextBox.setText(sso.getiChainWebDAVProxyHost());
 		}
 		
 		Network network = config.getNetwork();
@@ -255,15 +214,6 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			{
 				accessGatewayAddrTextBox.clearError();
 				logoutUrlTextBox.clearError();
-			}
-		}
-		
-		else if (event.getSource() == useAccessGatewayWebDavCheckBox)
-		{
-			webDavValidator.setRequired(useAccessGatewayWebDavCheckBox.getValue());
-			if (!useAccessGatewayWebDavCheckBox.getValue())
-			{
-				webDavGatewayAddrTextBox.clearError();
 			}
 		}
 		else if (event.getSource() == httpEnabledCheckBox)
