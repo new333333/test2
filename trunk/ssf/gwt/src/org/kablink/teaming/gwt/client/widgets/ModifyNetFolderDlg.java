@@ -931,8 +931,8 @@ public class ModifyNetFolderDlg extends DlgBox
 	 */
 	private void initDataSync()
 	{
-		m_allowDesktopAppToSync.setValue( false );
-		m_allowMobileAppsToSync.setValue( false );
+		m_allowDesktopAppToSync.setValue( true );
+		m_allowMobileAppsToSync.setValue( true );
 		
 		if ( m_netFolder != null )
 		{

@@ -45,8 +45,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class NetFolderDataSyncSettings 
 	implements IsSerializable
 {
-	private boolean m_allowDesktopAppToSyncData;
-	private boolean m_allowMobileAppsToSyncData;
+	private boolean m_allowDesktopAppToSyncData = true;
+	private boolean m_allowMobileAppsToSyncData = true;
 	
 	/**
 	 * Constructor method. 
