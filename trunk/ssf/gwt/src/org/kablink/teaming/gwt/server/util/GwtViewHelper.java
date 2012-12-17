@@ -48,6 +48,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -93,8 +94,10 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
@@ -104,6 +107,7 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
@@ -128,6 +132,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.AccountInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.HomeInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.QuotaInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsCmd.UploadInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseData;
@@ -177,8 +185,8 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
+import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.FolderUtils;
-import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.portlet.binder.AccessControlController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -187,6 +195,9 @@ import org.kablink.teaming.portletadapter.portlet.RenderResponseImpl;
 import org.kablink.teaming.portletadapter.support.AdaptedPortlets;
 import org.kablink.teaming.portletadapter.support.KeyNames;
 import org.kablink.teaming.portletadapter.support.PortletInfo;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -2357,19 +2368,14 @@ public class GwtViewHelper {
 		default:
 		case MY_FILES:
 			// Use the common criteria builder for My Files.
-            crit = org.kablink.teaming.search.SearchUtils.getMyFilesSearchCriteria(
-            	bs,
-            	binder.getId());
-            
+            crit = SearchUtils.getMyFilesSearchCriteria(bs, binder.getId());
 			break;
 
 		case NET_FOLDERS:
 			// Add the criteria for top level mirrored file folders
 			// that have been configured.
-			Binder nfBinder = getCoreDao().loadReservedBinder(
-				ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
-				RequestContextHolder.getRequestContext().getZoneId());
-			Long nfBinderId = nfBinder.getId();
+			Binder	nfBinder   = getNetFoldersRoot();
+			Long	nfBinderId = nfBinder.getId();
 			
 			crit = new Criteria();
 			crit.add(eq(Constants.DOC_TYPE_FIELD,            Constants.DOC_TYPE_BINDER));
@@ -4323,6 +4329,87 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * Returns a date/time stamp of the last time the user logged in or
+	 * null if it can't be determined.
+	 */
+	private static Date getLastUserLogin(AllModulesInjected bs, Long userId) {
+		Date reply = null;
+		
+		try {
+			// Can we get a login report for this user?
+			Set<Long> memberIds = new HashSet<Long>();
+			memberIds.add(userId);
+			List<Map<String, Object>> loginReport = bs.getReportModule().generateLoginReport(
+				new Date(0),	// Report start.
+				new Date(),		// Report end.
+				WebKeys.URL_REPORT_OPTION_TYPE_SHORT,
+				ReportModule.LAST_LOGIN_SORT,
+				ReportModule.LOGIN_DATE_SORT,
+				memberIds);
+			if (MiscUtil.hasItems(loginReport)) {
+				// Yes!  Does it contain their last login?
+				Map<String, Object> loginMap = loginReport.get(0);
+				String lastLogin = ((String) loginMap.get(ReportModule.LAST_LOGIN));	// Example:  '2012-12-17 02:24:01 PM'
+				if (MiscUtil.hasString(lastLogin)) {
+					// Yes!  Parse and return it.
+					SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aa");
+					reply = fmt.parse(lastLogin);
+				}
+			}
+		}
+		catch (ParseException e) {
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getLastUserLogin( SOURCE EXCEPTION ):  ", e);
+			}
+			reply = null;
+		}
+
+		// If we get here, reply refers to a date/time stamp of the
+		// last time the user logged in or is null if it couldn't be
+		// determined.  Return it.
+		return reply;
+	}
+
+	/*
+	 * Returns the Net Folders root binder.
+	 */
+	private static Binder getNetFoldersRoot() {
+		return
+			getCoreDao().loadReservedBinder(
+				ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
+				RequestContextHolder.getRequestContext().getZoneId());
+	}
+	
+	/*
+	 * Get the parent container's DN.  May be null.
+	 * 
+	 * Copied the logic for this from
+	 * LdapModuleImpl.getParentContainerDn().
+	 */
+	private static String getParentContainerDN(String baseDN) {
+		// If we weren't given a base DN to parse...
+		if (null == baseDN) {
+			// ...return null.
+			return null;
+		}
+		
+		// Find the first ','
+		int index = baseDN.indexOf( ',' );
+		if ((0 < index) && ((index + 1) < baseDN.length())) {
+			// Does the parent DN start with 'ou=' or 'o='?
+			String parentDN = baseDN.substring(index + 1);
+			if (parentDN.startsWith("ou=") || parentDN.startsWith("o=")) {
+				// Yes!  Return it.
+				return parentDN;
+			}
+		}
+
+		// If we get here, we couldn't determine the parent DN.  Return
+		// null.
+		return null;
+	}
+	
+	/*
 	 * Returns a List<Long> of the entity ID's of the entries that are
 	 * pinned in the given folder. 
 	 */
@@ -4376,7 +4463,7 @@ public class GwtViewHelper {
 			if (returnEntries) {
 				// Construct search Map's from the indexDoc's for the
 				// pinned entries.
-				pinnedEntrySearchMaps = SearchUtils.getSearchEntries(pinnedFolderEntriesList);
+				pinnedEntrySearchMaps = org.kablink.teaming.module.shared.SearchUtils.getSearchEntries(pinnedFolderEntriesList);
 				bs.getFolderModule().getEntryPrincipals(pinnedEntrySearchMaps);
 			}
 		}
@@ -4825,18 +4912,147 @@ public class GwtViewHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static UserPropertiesRpcResponseData getUserProperties(AllModulesInjected bs, HttpServletRequest request, Long userId) throws GwtTeamingException {
+	@SuppressWarnings("unchecked")
+	public static UserPropertiesRpcResponseData getUserProperties(final AllModulesInjected bs, final HttpServletRequest request, final Long userId) throws GwtTeamingException {
 		try {
-			// Allocate a user properties response containing the
-			// user's profile info we can return.
-			UserPropertiesRpcResponseData reply =
-				new UserPropertiesRpcResponseData(
-					getProfileEntryInfo(
-						bs,
-						request,
-						userId));
+			// Construct a user properties response containing the
+			// user's profile that we can return...
+			final UserPropertiesRpcResponseData reply = new UserPropertiesRpcResponseData(
+				getProfileEntryInfo(
+					bs,
+					request,
+					userId));
 
-//!			...this needs to be implemented...
+			// ...add information about what the user's account...
+			final User		user   = ((User) bs.getProfileModule().getEntry(userId));
+			IdentityInfo	userII = user.getIdentityInfo();
+			AccountInfo		ai     = new AccountInfo();
+			reply.setAccountInfo(ai);
+			ai.setFromLdap(  userII.isFromLdap()  );
+			ai.setFromLocal( userII.isFromLocal() );
+			ai.setFromOpenId(userII.isFromOpenid());
+			ai.setInternal(  userII.isInternal()  );
+
+			// ...if the user's from LDAP...
+			if (userII.isFromLdap()) {
+				// ...add their LDAP DN and eDirectory container, if
+				// ...available...
+				String ldapDN = user.getForeignName();
+				ai.setLdapDN(                            ldapDN );
+				ai.setEDirContainer(getParentContainerDN(ldapDN));
+			}
+
+			// ...if we can determine the last time the user logged
+			// ...in...
+			Date lastLogin = getLastUserLogin(bs, userId);
+			if (null != lastLogin) {
+				// ...add that to the reply.
+				ai.setLastLogin(GwtServerHelper.getDateTimeString(lastLogin));
+			}
+			
+			// ...add whether the user has adHoc folder access...
+			ai.setHasAdHocFolders(!(GwtServerHelper.useHomeAsMyFiles(bs, user)));
+
+			// ...add the user's current workspace sharing rights...
+			List<Long> userIds = new ArrayList<Long>();
+			userIds.add(userId);
+			UserSharingRightsInfoRpcResponseData sharingRights = GwtServerHelper.getUserSharingRightsInfo(bs, request, userIds);
+			reply.setSharingRights(sharingRights.getUserRights(userId));
+
+			// ...if quotas are enabled...
+			if (bs.getAdminModule().isQuotaEnabled()) {
+				QuotaInfo	qi        = new QuotaInfo();
+				long		userQuota = user.getDiskQuota();
+				if (0 == userQuota) {
+					userQuota = user.getMaxGroupsQuota();
+					if (0 == userQuota) {
+						ZoneConfig zc = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+						userQuota = zc.getDiskQuotaUserDefault();
+						if (0 < userQuota) {
+							qi.setZoneQuota(true);	// true -> The user quota came from the default zone assignment.
+						}
+					}
+					else {
+						qi.setGroupQuota(true);	// true -> The user quota came from a group assignment.
+					}
+				}
+				
+				// ...add information about their quota...
+				qi.setUserQuota(userQuota);
+				reply.setQuotaInfo(qi);
+			}
+
+			// ...some of the information required has to be done as
+			// ...that user...
+			RunasTemplate.runas(
+				new RunasCallback() {
+					@Override
+					public Object doAs() {
+						// ...if the user has a home folder...
+						Long homeId = GwtServerHelper.getHomeFolderId(bs, user);
+						if (null != homeId) {
+							String			rootPath = null;
+							Folder			home     = bs.getFolderModule().getFolder(homeId);
+							ResourceDriver	rd       = home.getResourceDriver();
+							if (null != rd) {
+								String dc = rd.getClass().getName();
+								if (MiscUtil.hasString(dc) && dc.equals("com.novell.teaming.fi.connection.file.FileResourceDriver")) {
+									rootPath = rd.getRootPath();
+								}
+								else {
+									ResourceDriverConfig rdConfig = rd.getConfig();
+									if (null != rdConfig) {
+										rootPath = rdConfig.getRootPath();
+									}
+								}
+							}
+
+							// ...and we can determine the home folder's root
+							// ...path...
+							if (MiscUtil.hasString(rootPath)) {
+								// ...add information about the home folder...
+								HomeInfo hi = new HomeInfo();
+								hi.setId(          homeId                );
+								hi.setRelativePath(home.getResourcePath());
+								hi.setRootPath(    rootPath              );
+								reply.setHomeInfo(hi);
+							}
+						}
+						
+						Map			nfSearch = getCollectionEntries(bs, request, null, null, new HashMap(), CollectionType.NET_FOLDERS, null);
+						List<Map>	nfList   = ((List<Map>) nfSearch.get(ObjectKeys.SEARCH_ENTRIES));
+						if (MiscUtil.hasItems(nfList)) {
+							Long nfBinderId = getNetFoldersRoot().getId();
+							for (Map nfMap:  nfList) {
+								// ...adding an EntryTitleInfo for each
+								// ...to the reply.
+								Long			docId  = Long.parseLong(GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DOCID_FIELD));
+								String			title  = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.TITLE_FIELD);
+								EntryTitleInfo	eti = new EntryTitleInfo();
+								eti.setSeen(true);
+								eti.setTitle(MiscUtil.hasString(title) ? title : ("--" + NLT.get("entry.noTitle") + "--"));
+								eti.setEntityId(new EntityId(nfBinderId, docId, EntityId.FOLDER));
+								String description = getEntryDescriptionFromMap(request, nfMap);
+								if (MiscUtil.hasString(description)) {
+									eti.setDescription(description);
+									String descriptionFormat = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DESC_FORMAT_FIELD);
+									eti.setDescriptionIsHtml(MiscUtil.hasString(descriptionFormat) && descriptionFormat.equals(String.valueOf(Description.FORMAT_HTML)));
+								}
+								else {
+									description = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.ENTITY_PATH);
+									if (MiscUtil.hasString(description)) {
+										eti.setDescription(      description);
+										eti.setDescriptionIsHtml(false      );
+									}
+								}
+								reply.addNetFolder(eti);
+							}
+						}
+						return null;	// Not used.  Doesn't matter what we return.
+					}
+				},
+				WebHelper.getRequiredZoneName(request),
+				userId);
 			
 			// If we get here, reply refers to a
 			// UserPropertiesRpcResponseData containing the properties

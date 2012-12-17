@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -45,7 +46,8 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class InvokeUserPropertiesDlgEvent extends VibeEventBase<InvokeUserPropertiesDlgEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
-    private Long	m_userId;	//
+    private Long		m_userId;			//
+    private UIObject	m_showRelativeTo;	//
     
 	/**
 	 * Handler interface for this event.
@@ -58,13 +60,25 @@ public class InvokeUserPropertiesDlgEvent extends VibeEventBase<InvokeUserProper
 	 * Class constructor.
 	 * 
 	 * @param userId
+	 * @param showRelativeTo
 	 */
-	public InvokeUserPropertiesDlgEvent(Long userId) {
+	public InvokeUserPropertiesDlgEvent(Long userId, UIObject showRelativeTo) {
 		// Initialize the super class...
 		super();
 		
-		// ...and store the parameter.
-		setUserId(userId);
+		// ...and store the parameters.
+		setUserId(        userId        );
+		setShowRelativeTo(showRelativeTo);
+	}
+	
+	/**
+	 * Class constructor.
+	 * 
+	 * @param userId
+	 */
+	public InvokeUserPropertiesDlgEvent(Long userId) {
+		// Initialize this object.
+		this(userId, null);
 	}
 	
 	/**
@@ -72,14 +86,16 @@ public class InvokeUserPropertiesDlgEvent extends VibeEventBase<InvokeUserProper
 	 * 
 	 * @return
 	 */
-	public Long getUserId() {return m_userId;}
+	public Long     getUserId()         {return m_userId;        }
+	public UIObject getShowRelativeTo() {return m_showRelativeTo;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setUserId(Long userId) {m_userId = userId;}
+	public void setUserId(        Long     userId)         {m_userId         = userId;        }
+	public void setShowRelativeTo(UIObject showRelativeTo) {m_showRelativeTo = showRelativeTo;}
 	
 	/**
 	 * Dispatches this event when one is triggered.

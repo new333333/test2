@@ -65,6 +65,7 @@ import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -78,6 +79,7 @@ public class UserPropertiesDlg extends DlgBox {
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private Long							m_userId;					// The user we're dealing with.
+	private UIObject						m_showRelativeTo;			// UIObject to show the dialog relative to.  null -> Center it on the screen.
 	private UserPropertiesRpcResponseData	m_userProperties;			// Information about managing the user, once read from the server.
 	private VibeFlowPanel					m_fp;						// The panel holding the dialog's content.
 
@@ -302,9 +304,8 @@ public class UserPropertiesDlg extends DlgBox {
 		VibeFlowPanel buttonPanel = new VibeFlowPanel();
 		buttonPanel.addStyleName("vibe-userPropertiesDlg-buttons");
 		final String modifyUrl = profile.getModifyUrl();
-		boolean hasModify = GwtClientHelper.hasString(modifyUrl);
-		if (hasModify) {
-			// Yes!  Create a push button so they can.
+		if (GwtClientHelper.hasString(modifyUrl)) {
+			// Yes!  Create a push button so they can...
 			Button button = new Button(m_messages.userPropertiesDlgModify());
 			button.addStyleName("vibe-userPropertiesDlg-button vibe-userPropertiesDlg-modify");
 			buttonPanel.add(button);
@@ -315,35 +316,17 @@ public class UserPropertiesDlg extends DlgBox {
 					GwtClientHelper.jsLaunchToolbarPopupUrl(modifyUrl, 850, 600);
 				}
 			});
-		}
 
-		// Do we have a URL for this user to delete this entry?
-		final String deleteUrl = profile.getDeleteUrl();
-		boolean hasDelete = GwtClientHelper.hasString(deleteUrl);
-		if (hasDelete) {
-			// Yes!  Create a push button so they can.
-			Button button = new Button(m_messages.userPropertiesDlgDelete());
-			button.addStyleName("vibe-userPropertiesDlg-button vibe-userPropertiesDlg-delete");
-			buttonPanel.add(button);
-			button.addClickHandler(new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					hide();
-					GwtClientHelper.jsLaunchToolbarPopupUrl(deleteUrl, 900, 150);
-				}
-			});
-		}
-
-		// If we created any push buttons...
-		if (hasModify || hasDelete) {
-			// ...add the button panel to the grid.
+			// ...and add the button panel to the grid.
 			int row = grid.getRowCount();
 			grid.setWidget(row, 0, buttonPanel);
 			fcm.setColSpan(row, 0, 2);
 		}
 
 		// Finally, show the dialog.
-		show(true);
+		if (null == m_showRelativeTo)
+		     center();
+		else showRelativeTo(m_showRelativeTo);
 	}
 	
 	/*
@@ -372,11 +355,11 @@ public class UserPropertiesDlg extends DlgBox {
 	 * Asynchronously runs the given instance of the user properties
 	 * dialog.
 	 */
-	private static void runDlgAsync(final UserPropertiesDlg upDlg, final Long userId) {
+	private static void runDlgAsync(final UserPropertiesDlg upDlg, final Long userId, final UIObject showRelativeTo) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				upDlg.runDlgNow(userId);
+				upDlg.runDlgNow(userId, showRelativeTo);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -386,9 +369,10 @@ public class UserPropertiesDlg extends DlgBox {
 	 * Synchronously runs the given instance of the user properties
 	 * dialog.
 	 */
-	private void runDlgNow(Long userId) {
-		// Store the parameter and populate the dialog.
-		m_userId = userId;
+	private void runDlgNow(Long userId, UIObject showRelativeTo) {
+		// Store the parameters and populate the dialog.
+		m_userId         = userId;
+		m_showRelativeTo = showRelativeTo;
 		loadPart1Async();
 	}
 
@@ -428,8 +412,9 @@ public class UserPropertiesDlg extends DlgBox {
 			final UserPropertiesDlgClient upDlgClient,
 			
 			// initAndShow parameters,
-			final UserPropertiesDlg upDlg,
-			final Long userId) {
+			final UserPropertiesDlg	upDlg,
+			final Long				userId,
+			final UIObject			showRelativeTo) {
 		GWT.runAsync(UserPropertiesDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -452,7 +437,7 @@ public class UserPropertiesDlg extends DlgBox {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(upDlg, userId);
+					runDlgAsync(upDlg, userId, showRelativeTo);
 				}
 			}
 		});
@@ -465,7 +450,18 @@ public class UserPropertiesDlg extends DlgBox {
 	 * @param upDlgClient
 	 */
 	public static void createAsync(UserPropertiesDlgClient upDlgClient) {
-		doAsyncOperation(upDlgClient, null, null);
+		doAsyncOperation(upDlgClient, null, null, null);
+	}
+	
+	/**
+	 * Initializes and shows the user properties dialog.
+	 * 
+	 * @param upDlg
+	 * @param userId
+	 * @param showRelativeTo
+	 */
+	public static void initAndShow(UserPropertiesDlg upDlg, Long userId, UIObject showRelativeTo) {
+		doAsyncOperation(null, upDlg, userId, showRelativeTo);
 	}
 	
 	/**
@@ -475,6 +471,7 @@ public class UserPropertiesDlg extends DlgBox {
 	 * @param userId
 	 */
 	public static void initAndShow(UserPropertiesDlg upDlg, Long userId) {
-		doAsyncOperation(null, upDlg, userId);
+		// Always use the initial form of the method.
+		initAndShow(upDlg, userId, null);
 	}
 }

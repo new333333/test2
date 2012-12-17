@@ -160,7 +160,7 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 				// ...adding each to the action menu...
 				if      (actionTBI.hasNestedToolbarItems()) GwtClientHelper.deferredAlert(m_messages.vibeDataTable_InternalError_UnsupportedStructuredToolbar());
 				else if (actionTBI.isSeparator())           actionMenu.addSeparator();
-				else                                        renderSimpleTBI(eid, actionMenu, actionTBI);
+				else                                        renderSimpleTBI(eid, actionMenu, actionMenuImg, actionTBI);
 			}
 			
 			// ...and add the action menu to the Map tracking them.
@@ -295,7 +295,7 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 	/*
 	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */
-	private void renderSimpleTBI(final EntityId eid, final PopupMenu actionMenu, final ToolbarItem simpleTBI) {
+	private void renderSimpleTBI(final EntityId eid, final PopupMenu actionMenu, final Element actionMenuImg, final ToolbarItem simpleTBI) {
 		// What do we know about this toolbar item?
 		final String        simpleTitle = simpleTBI.getTitle();
 		final String		simpleUrl   = simpleTBI.getUrl();
@@ -372,7 +372,9 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 							break;
 							
 						case INVOKE_USER_PROPERTIES_DLG:
-							event = new InvokeUserPropertiesDlgEvent(eid.getEntityId());
+							event = new InvokeUserPropertiesDlgEvent(
+								eid.getEntityId(),
+								GwtClientHelper.getUIObjectFromElement(actionMenuImg));
 							break;
 						
 						case UNDEFINED:
