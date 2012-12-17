@@ -78,6 +78,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -427,14 +428,14 @@ public class ManageUsersDlg extends DlgBox
 					// Yes, we created the user properties dialog!
 					// Show it.
 					m_userPropertiesDlg = upDlg;
-					showUserPropertiesDlgAsync(event.getUserId());
+					showUserPropertiesDlgAsync(event.getUserId(), event.getShowRelativeTo());
 				}
 			});
 		}
 		
 		else {
 			// Yes, we have an user properties dialog!  Show it.
-			showUserPropertiesDlgAsync(event.getUserId());
+			showUserPropertiesDlgAsync(event.getUserId(), event.getShowRelativeTo());
 		}
 	}
 	
@@ -662,12 +663,12 @@ public class ManageUsersDlg extends DlgBox
 	/*
 	 * Asynchronously shows the user properties dialog.
 	 */
-	private void showUserPropertiesDlgAsync(final Long userId) {
+	private void showUserPropertiesDlgAsync(final Long userId, final UIObject showRelativeTo) {
 		GwtClientHelper.deferCommand(
 			new ScheduledCommand() {
 				@Override
 				public void execute() {
-					showUserPropertiesDlgNow(userId);
+					showUserPropertiesDlgNow(userId, showRelativeTo);
 				}
 			});
 	}
@@ -675,8 +676,8 @@ public class ManageUsersDlg extends DlgBox
 	/*
 	 * Synchronously shows the user properties dialog.
 	 */
-	private void showUserPropertiesDlgNow(Long userId) {
-		UserPropertiesDlg.initAndShow(m_userPropertiesDlg, userId);
+	private void showUserPropertiesDlgNow(Long userId, UIObject showRelativeTo) {
+		UserPropertiesDlg.initAndShow(m_userPropertiesDlg, userId, showRelativeTo);
 	}
 
 	/*
