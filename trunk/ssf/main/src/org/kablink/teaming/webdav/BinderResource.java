@@ -38,8 +38,6 @@ import java.util.Map;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -56,13 +54,12 @@ import com.bradmcevoy.http.MakeCollectionableResource;
 import com.bradmcevoy.http.MoveableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Request;
-import com.bradmcevoy.http.Resource;
 
 /**
  * @author jong
  *
  */
-public abstract class BinderResource extends WebdavCollectionResource  
+public abstract class BinderResource extends ContainerResource  
 implements PropFindableResource, GetableResource, CollectionResource, MakeCollectionableResource, DeletableResource, CopyableResource, MoveableResource, DeletableCollectionResource {
 
 	// Required properties
@@ -74,13 +71,12 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 	protected Date modifiedDate;
 	protected boolean library;
 	protected boolean mirrored;
-	protected String webdavPath;
 
 	private EntityIdentifier entityIdentifier;
 
 	private BinderResource(WebdavResourceFactory factory, String webdavPath, EntityIdentifier entityIdentifier, String title, String path, Date createdDate, Date modifiedDate,
 			boolean library, boolean mirrored) {
-		super(factory);
+		super(factory, webdavPath);
 		this.webdavPath = webdavPath;
 		this.id = entityIdentifier.getEntityId();
 		this.entityType = entityIdentifier.getEntityType();
@@ -163,65 +159,12 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 	}
 
 	@Override
-	public String getWebdavPath() {
-		/*
-		StringBuilder sb = new StringBuilder(DavResource.WEBDAV_PATH);
-		if(!path.startsWith("/"))
-			sb.append("/");
-		return sb.append(path).toString();
-		*/
-		return webdavPath;
-	}
-
-	@Override
 	public String toString() {
 		return path;
 	}
 	
 	public EntityIdentifier getEntityIdentifier() {
 		return entityIdentifier;
-	}
-	
-	protected Resource makeResourceFromBinder(Binder binder) {
-		if(binder == null)
-			return null;
-		
-		if(binder instanceof Workspace) {
-			Workspace w = (Workspace) binder;
-			if(w.isDeleted() || w.isPreDeleted())
-				return null;
-			else 
-				return new WorkspaceResource(factory, getChildWebdavPath(binder.getTitle()), w);
-		}
-		else if(binder instanceof Folder) {
-			Folder f = (Folder) binder;
-			if(f.isDeleted() || f.isPreDeleted())
-				return null;
-			else 
-				return new FolderResource(factory, getChildWebdavPath(binder.getTitle()), f);
-		}
-		else {
-			return null;
-		}
-	}
-	
-	protected Resource makeResourceFromBinder(BinderIndexData binder) {
-		if(binder == null)
-			return null;
-		
-		EntityType entityType = binder.getEntityType();
-		if(EntityType.workspace == entityType) {
-			return new WorkspaceResource(factory, getChildWebdavPath(binder.getTitle()), binder);
-		}
-		else if(EntityType.profiles == entityType) {
-			return new WorkspaceResource(factory, getChildWebdavPath(binder.getTitle()), binder);
-		}
-		else if(EntityType.folder == entityType) {
-			return new FolderResource(factory, getChildWebdavPath(binder.getTitle()), binder);
-		}
-		else {
-			return null;
-		}
 	}
 	
 	protected void renameBinder(Binder binder, String newTitle) 
@@ -234,10 +177,4 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 		}
 	}
 	
-	private String getChildWebdavPath(String childName) {
-		if(webdavPath.endsWith("/"))
-			return webdavPath + childName;
-		else
-			return webdavPath + "/" + childName;
-	}
 }

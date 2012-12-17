@@ -394,18 +394,4 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 		return folder;
 	}
 	
-	private Resource makeResourceFromFile(FileAttachment fa) {
-		if(fa == null)
-			return null;
-		else
-			return new FileResource(factory, getWebdavPath() + "/" + fa.getFileItem().getName(), fa);
-	}
-	
-	private Resource makeResourceFromFile(FileIndexData file) {
-		if(file == null)
-			return null;
-		else
-			return new FileResource(factory, getWebdavPath() + "/" + file.getName(), file);
-	}
-
 }
