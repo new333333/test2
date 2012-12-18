@@ -67,6 +67,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		private String	m_eDirContainer;	//
 		private String	m_lastLogin;		//
 		private String	m_ldapDN;			//
+		private String	m_loginId;			//
 		
 		/**
 		 * Constructor method.
@@ -92,6 +93,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		public String  getEDirContainer() {return m_eDirContainer;  }
 		public String  getLastLogin()     {return m_lastLogin;      }
 		public String  getLdapDN()        {return m_ldapDN;         }
+		public String  getLoginId()       {return m_loginId;        }
 		
 		/**
 		 * Set'er methods.
@@ -106,6 +108,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		public void setEDirContainer(  String  eDirContainer)   {m_eDirContainer   = eDirContainer;  }
 		public void setLastLogin(      String  lastLogin)       {m_lastLogin       = lastLogin;      }
 		public void setLdapDN(         String  ldapDN)          {m_ldapDN          = ldapDN;         }
+		public void setLoginId(        String  loginId)         {m_loginId         = loginId;        }
 	}
 	
 	/**
@@ -152,9 +155,10 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 	 * settings.
 	 */
 	public static class QuotaInfo implements IsSerializable {
-		private boolean m_groupQuota;	//
-		private boolean m_zoneQuota;	//
-		private long	m_userQuota;	//
+		private boolean m_groupQuota;		//
+		private boolean m_zoneQuota;		//
+		private long	m_userQuota;		//
+		private String	m_manageQuotasUrl;	//
 
 		/**
 		 * Constructor method.
@@ -172,18 +176,20 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		 * 
 		 * @return
 		 */
-		public boolean isGroupQuota() {return m_groupQuota;}
-		public boolean isZoneQuota()  {return m_zoneQuota; }
-		public long    getUserQuota() {return m_userQuota; }
+		public boolean isGroupQuota()       {return m_groupQuota;     }
+		public boolean isZoneQuota()        {return m_zoneQuota;      }
+		public long    getUserQuota()       {return m_userQuota;      }
+		public String  getManageQuotasUrl() {return m_manageQuotasUrl;}
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setGroupQuota(boolean groupQuota) {m_groupQuota = groupQuota;}
-		public void setZoneQuota( boolean zoneQuota)  {m_zoneQuota  = zoneQuota; }
-		public void setUserQuota( long    userQuota)  {m_userQuota  = userQuota; }
+		public void setGroupQuota(     boolean groupQuota)      {m_groupQuota      = groupQuota;     }
+		public void setZoneQuota(      boolean zoneQuota)       {m_zoneQuota       = zoneQuota;      }
+		public void setUserQuota(      long    userQuota)       {m_userQuota       = userQuota;      }
+		public void setManageQuotasUrl(String  manageQuotasUrl) {m_manageQuotasUrl = manageQuotasUrl;}
 	}
 
 	/**
