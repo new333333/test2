@@ -808,20 +808,6 @@ public interface BinderModule {
 	public void deleteFileVersion(Binder binder, DefinableEntity entity, FileAttachment fa);
 	
 	public void setFileVersionStatus(DefinableEntity entity, FileAttachment fa, int status);
-
-	/**
-	 * Returns a map of titles of the sub-binders contained in the specified binder 
-	 * to its <code>BinderIndexData</code> objects encapsulating more detailed information
-	 * about sub-binders obtained from the Lucene index.
-	 * It is important for the efficiency reason that the requested data be obtainable
-	 * entirely from the Lucene index without querying the database.
-	 * 
-	 * @param binderId
-	 * @return
-	 */
-	public Map<String,BinderIndexData> getChildrenBinderDataFromIndex(Long binderId);
-	
-	public List<BinderIndexData> getBinderDataFromIndex(Criteria crit);
 	
 	public void updateModificationTime(Binder binder);
 
