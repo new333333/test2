@@ -992,10 +992,6 @@ public class GwtMenuHelper {
 		addNestedSeparatorIfNeeded(moreTBI, (needSep2 || needSeparator));
 		needSeparator =
 		needSep2      = false;
-		tbi = new ToolbarItem("1_setShareSettings");
-		markTBITitle(tbi, "toolbar.setUserShareSettings");
-		markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_SHARE_SETTINGS);
-		moreTBI.addNestedItem(tbi);
 		tbi = new ToolbarItem("1_setDesktopSettings");
 		markTBITitle(tbi, "toolbar.setUserDesktopSettings");
 		markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_DESKTOP_SETTINGS);

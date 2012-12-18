@@ -136,7 +136,6 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_USER_DESKTOP_SETTINGS_DLG,				// Invokes the 'user desktop application settings' dialog.
 	INVOKE_USER_MOBILE_SETTINGS_DLG,				// Invokes the 'user mobile  application settings' dialog.
 	INVOKE_USER_PROPERTIES_DLG,						// Invokes the 'user properties'                   dialog.
-	INVOKE_USER_SHARE_SETTINGS_DLG,					// Invokes the 'user share               settings' dialog.
 	
 	JSP_LAYOUT_CHANGED,								// The layout of JSP content has changed.
 	
@@ -275,7 +274,6 @@ public enum TeamingEvents implements IsSerializable {
 	SET_SELECTED_USER_DESKTOP_SETTINGS,				// Sets the desktop application settings for the selected users.
 	SET_SELECTED_USER_MOBILE_SETTINGS,				// Sets the mobile  application settings for the selected users.
 	SET_SELECTED_USER_SHARE_RIGHTS,					// Sets the share               rights   for the selected users.
-	SET_SELECTED_USER_SHARE_SETTINGS,				// Sets the share               settings for the selected users.
 	SHARE_SELECTED_ENTRIES,							// Shares the Selected Entries.
 	SUBSCRIBE_SELECTED_ENTRIES,						// Subscribes the Current User to the Selected Entries.
 	TOGGLE_SHARED_VIEW,								// Toggles the 'Shared by/with Me' Views Between Files and All Entries.

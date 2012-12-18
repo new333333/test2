@@ -48,7 +48,6 @@ import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeRunAReportDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokeUserShareSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -129,7 +128,6 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeRunAReportDlgEvent.Handler,
 		InvokeUserDesktopSettingsDlgEvent.Handler,
 		InvokeUserMobileSettingsDlgEvent.Handler,
-		InvokeUserShareSettingsDlgEvent.Handler,
 		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
@@ -171,7 +169,6 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_RUN_A_REPORT_DLG,
 		TeamingEvents.INVOKE_USER_DESKTOP_SETTINGS_DLG,
 		TeamingEvents.INVOKE_USER_MOBILE_SETTINGS_DLG,
-		TeamingEvents.INVOKE_USER_SHARE_SETTINGS_DLG,
 		
 		// Login/out events.
 		TeamingEvents.PRE_LOGOUT,
@@ -1996,15 +1993,6 @@ public class AdminControl extends TeamingPopupPanel
 			m_configureUserMobileAppsDlg.setPopupPosition( x, y );
 			m_configureUserMobileAppsDlg.show();
 		}
-	}
-	
-	/**
-	 * Handles the InvokeUserShareSettingsDlgEvent
-	 */
-	@Override
-	public void onInvokeUserShareSettingsDlg( InvokeUserShareSettingsDlgEvent event )
-	{
-		Window.alert( "user share settings not yet implemented" );
 	}
 	
 	/**

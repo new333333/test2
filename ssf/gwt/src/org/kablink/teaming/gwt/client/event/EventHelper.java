@@ -1155,15 +1155,6 @@ public class EventHelper {
 				}
 				break;
 			
-			case INVOKE_USER_SHARE_SETTINGS_DLG:
-				// An InvokeUserShareSettingsDlgEvent!  Can the event
-				// handler we were given handle that?
-				if (eventHandler instanceof InvokeUserShareSettingsDlgEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = InvokeUserShareSettingsDlgEvent.registerEvent(eventBus, ((InvokeUserShareSettingsDlgEvent.Handler) eventHandler));
-				}
-				break;
-				
 			case JSP_LAYOUT_CHANGED:
 				// An JspLayoutChangedEvent!  Can the event handler we
 				// were given handle that?
@@ -1511,15 +1502,6 @@ public class EventHelper {
 				if (eventHandler instanceof SetSelectedUserShareRightsEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = SetSelectedUserShareRightsEvent.registerEvent(eventBus, ((SetSelectedUserShareRightsEvent.Handler) eventHandler));
-				}
-				break;
-				
-			case SET_SELECTED_USER_SHARE_SETTINGS:
-				// An SetSelectedUserShareSettingsEvent!  Can the
-				// event handler we were given handle that?
-				if (eventHandler instanceof SetSelectedUserShareSettingsEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = SetSelectedUserShareSettingsEvent.registerEvent(eventBus, ((SetSelectedUserShareSettingsEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -2340,7 +2322,6 @@ public class EventHelper {
 			case INVOKE_USER_DESKTOP_SETTINGS_DLG:             hasHandler = (eventHandler instanceof InvokeUserDesktopSettingsDlgEvent.Handler);           break;
 			case INVOKE_USER_MOBILE_SETTINGS_DLG:              hasHandler = (eventHandler instanceof InvokeUserMobileSettingsDlgEvent.Handler);            break;
 			case INVOKE_USER_PROPERTIES_DLG:				   hasHandler = (eventHandler instanceof InvokeUserPropertiesDlgEvent.Handler);		           break;
-			case INVOKE_USER_SHARE_SETTINGS_DLG:               hasHandler = (eventHandler instanceof InvokeUserShareSettingsDlgEvent.Handler);             break;
 			
 			case JSP_LAYOUT_CHANGED:                   	       hasHandler = (eventHandler instanceof JspLayoutChangedEvent.Handler);                       break;
 			
@@ -2470,7 +2451,6 @@ public class EventHelper {
 			case SET_SELECTED_USER_DESKTOP_SETTINGS:           hasHandler = (eventHandler instanceof SetSelectedUserDesktopSettingsEvent.Handler);         break;
 			case SET_SELECTED_USER_MOBILE_SETTINGS:            hasHandler = (eventHandler instanceof SetSelectedUserMobileSettingsEvent.Handler);          break;
 			case SET_SELECTED_USER_SHARE_RIGHTS:               hasHandler = (eventHandler instanceof SetSelectedUserShareRightsEvent.Handler);             break;
-			case SET_SELECTED_USER_SHARE_SETTINGS:             hasHandler = (eventHandler instanceof SetSelectedUserShareSettingsEvent.Handler);           break;
 			case SHARE_SELECTED_ENTRIES:                       hasHandler = (eventHandler instanceof ShareSelectedEntriesEvent.Handler);                   break;
 			case SUBSCRIBE_SELECTED_ENTRIES:                   hasHandler = (eventHandler instanceof SubscribeSelectedEntriesEvent.Handler);               break;
 			case TOGGLE_SHARED_VIEW:                  	       hasHandler = (eventHandler instanceof ToggleSharedViewEvent.Handler);                       break;

@@ -48,12 +48,10 @@ import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserPropertiesDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokeUserShareSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.ManageUsersFilterEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserDesktopSettingsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserMobileSettingsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserShareRightsEvent;
-import org.kablink.teaming.gwt.client.event.SetSelectedUserShareSettingsEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -98,8 +96,7 @@ public class ManageUsersDlg extends DlgBox
 		InvokeUserPropertiesDlgEvent.Handler,
 		SetSelectedUserDesktopSettingsEvent.Handler,
 		SetSelectedUserMobileSettingsEvent.Handler,
-		SetSelectedUserShareRightsEvent.Handler,
-		SetSelectedUserShareSettingsEvent.Handler
+		SetSelectedUserShareRightsEvent.Handler
 {
 	private boolean							m_dlgAttached;				// true when the dialog is attached to the document.        false otherwise.
 	private boolean							m_viewReady;				// true once the embedded PersonalWorkspacesView is ready.  false otherwise.
@@ -136,7 +133,6 @@ public class ManageUsersDlg extends DlgBox
 		TeamingEvents.SET_SELECTED_USER_DESKTOP_SETTINGS,
 		TeamingEvents.SET_SELECTED_USER_MOBILE_SETTINGS,
 		TeamingEvents.SET_SELECTED_USER_SHARE_RIGHTS,
-		TeamingEvents.SET_SELECTED_USER_SHARE_SETTINGS,
 	};
 	
 	/*
@@ -557,40 +553,6 @@ public class ManageUsersDlg extends DlgBox
 					// Yes, we have a user share rights dialog!  Show it.
 					showUserShareRightsDlgAsync(selectedUserList);
 				}
-			}
-		}
-	}
-
-	/**
-	 * Handles SetSelectedUserShareSettingsEvent's received by this class.
-	 * 
-	 * Implements the SetSelectedUserShareSettingsEvent.Handler.onSetSelectedUserShareSettings() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onSetSelectedUserShareSettings(SetSelectedUserShareSettingsEvent event) {
-		// Do we have a personal workspace view?
-		if (null != m_pwsView) {
-			// Yes!  Is the event targeted to this folder?
-			Long eventFolderId = event.getFolderId();
-			if (eventFolderId.equals(m_manageUsersInfo.getProfilesRootWSInfo().getBinderIdAsLong())) {
-				// Yes!  Get the selected EntityId's...
-				List<EntityId> selectedEntityIds = event.getSelectedEntities();
-				if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-					selectedEntityIds = m_pwsView.getSelectedEntityIds();
-				}
-				
-				// ...extract the selected user ID's from that...
-				final List<Long> selectedUserList = new ArrayList<Long>();
-				for (EntityId eid:  selectedEntityIds) {
-					selectedUserList.add(eid.getEntityId());
-				}
-
-				// ...and use them to invoke the settings dialog.
-				GwtTeaming.fireEventAsync(
-					new InvokeUserShareSettingsDlgEvent(
-						selectedUserList));
 			}
 		}
 	}
