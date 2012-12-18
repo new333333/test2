@@ -77,6 +77,7 @@ import org.kablink.teaming.util.GangliaMonitoring;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.util.api.ApiErrorCode;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -119,6 +120,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		if (accessControlManager == null) {
 			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
 		}
+    	Long allUsersId = Utils.getAllUsersGroupId();
+    	Long allExtUsersId = Utils.getAllExtUsersGroupId();
+
 		Principal recipient = null;
 		if (shareItem.getRecipientType().equals(RecipientType.group)) {
 			recipient = getProfileModule().getEntry(shareItem.getRecipientId());
@@ -139,6 +143,12 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		case addShareItem:
 			//Make sure sharing is enabled at the zone level for this type of user
 			if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
+				if (allUsersId.equals(recipient.getId())) {
+					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_ALL_INTERNAL);
+				} else if (allExtUsersId.equals(recipient.getId())) {
+					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_ALL_EXTERNAL);
+				}
+
 				//Distinguish between internal and external groups
 				if (recipient.getIdentityInfo().isInternal()) {
 					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL);
