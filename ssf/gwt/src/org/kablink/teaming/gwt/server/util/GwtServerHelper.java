@@ -3054,7 +3054,7 @@ public class GwtServerHelper {
 			}
 
 			// Does the user have rights to "Configure Role Definitions"?
-			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			if ( isFilr == false && adminModule.testAccess( AdminOperation.manageFunction ) )
 			{
 				// Yes
 				title = NLT.get( "administration.configure_roles" );
