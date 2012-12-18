@@ -1917,6 +1917,32 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_INTERNAL_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_ENABLE_SHARING_ALL_INTERNAL);
+			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
+			function.setInternalId(ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_INTERNAL_INTERNALID);
+			function.addOperation(WorkAreaOperation.ENABLE_SHARING_ALL_INTERNAL);
+			function.setZoneWide(true);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		}
+		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_EXTERNAL_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_ENABLE_SHARING_ALL_EXTERNAL);
+			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
+			function.setInternalId(ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_EXTERNAL_INTERNALID);
+			function.addOperation(WorkAreaOperation.ENABLE_SHARING_ALL_EXTERNAL);
+			function.setZoneWide(true);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		}
+		
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID)) {
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());

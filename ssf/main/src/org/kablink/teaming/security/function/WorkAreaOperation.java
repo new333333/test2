@@ -101,6 +101,8 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation ENABLE_SHARING_EXTERNAL = new WorkAreaOperation("enableSharingExternal", true);
     public final static WorkAreaOperation ENABLE_SHARING_PUBLIC = new WorkAreaOperation("enableSharingPublic", true);
     public final static WorkAreaOperation ENABLE_SHARING_FORWARD = new WorkAreaOperation("enableSharingForward", true);
+    public final static WorkAreaOperation ENABLE_SHARING_ALL_INTERNAL = new WorkAreaOperation("enableSharingAllInternal", true);
+    public final static WorkAreaOperation ENABLE_SHARING_ALL_EXTERNAL = new WorkAreaOperation("enableSharingAllExternal", true);
 
     // Default set of rights controlled by external ACLs.
 	public static final WorkAreaOperation[] EXTERNALLY_CONTROLLED_RIGHTS_DEFAULT = new WorkAreaOperation[] {

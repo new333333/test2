@@ -172,6 +172,10 @@ public interface ObjectKeys {
 	public static final String FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID="402883b90d0de1f3010d0df5582b0039";
 	//reserved id for _allowAccessNetFolder pseudo role
 	public static final String FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID="402883b90d0de1f3010d0df5582b0042";
+	//reserved id for _allowSharingAllInternal pseudo role  
+	public static final String FUNCTION_ENABLE_SHARING_ALL_INTERNAL_INTERNALID="402883b90d0de1f3010d0df5582b0043";
+	//reserved id for _allowSharingAllExternal pseudo role 
+	public static final String FUNCTION_ENABLE_SHARING_ALL_EXTERNAL_INTERNALID="402883b90d0de1f3010d0df5582b0044";
 
 	//reserved id for View Binder Title role
 	public static final String FUNCTION_VIEW_BINDER_TITLE_INTERNALID="402883b90d0de1f3010d0df5582b0033";
@@ -285,6 +289,8 @@ public interface ObjectKeys {
     public static final String ROLE_ENABLE_SHARING_EXTERNAL="__role.enableSharingExternal";
     public static final String ROLE_ENABLE_SHARING_PUBLIC="__role.enableSharingPublic";
     public static final String ROLE_ENABLE_SHARING_FORWARD="__role.enableSharingForward";
+    public static final String ROLE_ENABLE_SHARING_ALL_INTERNAL="__role.enableSharingAllInternal";
+    public static final String ROLE_ENABLE_SHARING_ALL_EXTERNAL="__role.enableSharingAllExternal";
     public static final String ROLE_ALLOW_SHARING_INTERNAL="__role.allowSharing";
     public static final String ROLE_ALLOW_SHARING_EXTERNAL="__role.allowSharingExternal";
     public static final String ROLE_ALLOW_SHARING_PUBLIC="__role.allowSharingPublic";
