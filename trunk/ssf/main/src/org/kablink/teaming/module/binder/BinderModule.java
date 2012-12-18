@@ -821,6 +821,8 @@ public interface BinderModule {
 	 */
 	public Map<String,BinderIndexData> getChildrenBinderDataFromIndex(Long binderId);
 	
+	public List<BinderIndexData> getBinderDataFromIndex(Criteria crit);
+	
 	public void updateModificationTime(Binder binder);
 
 	/**

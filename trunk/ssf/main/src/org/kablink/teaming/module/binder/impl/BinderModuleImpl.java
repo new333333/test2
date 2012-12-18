@@ -1810,6 +1810,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				RequestContextHolder.getRequestContext().getZoneId());
 
 		// only maximum of one matching non-deleted binder
+		Long binderId = null;
 		for (Binder binder : binders) {
 			if (binder.isDeleted())
 				continue;
@@ -1821,19 +1822,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				if(((Workspace) binder).isPreDeleted())
 					continue;						
 			}
-			try {
-				getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
-			} catch(AccessControlException ace) {
-				try {
-					getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
-				} catch(AccessControlException ace2) {
-					throw ace;
-				}
-			}
-			return binder;
+			binderId = binder.getId();
+			break;
 		}
 
-		return null;
+		if(binderId != null)
+			return this.getBinder(binderId); // This will do all the access checking necessary
+		else 
+			return null;
 	}
 
     public Binder getBinderByParentAndTitle(Long parentBinderId, String title) throws AccessControlException {
@@ -3129,6 +3125,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
+	@Override
 	public Map<String,BinderIndexData> getChildrenBinderDataFromIndex(Long binderId) {
     	Criteria crit = new Criteria()
     	    .add(conjunction()	
@@ -3136,6 +3133,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
    				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_BINDER))
      		);
 
+    	List<BinderIndexData> results = getBinderDataFromIndex(crit);
+    	Map<String,BinderIndexData> resultsMap = new HashMap<String,BinderIndexData>();
+    	for(BinderIndexData data : results) {
+    		resultsMap.put(data.getTitle(), data);
+    	}
+    	
+    	return resultsMap;
+	}
+
+	@Override
+	public List<BinderIndexData> getBinderDataFromIndex(Criteria crit) {
 		QueryBuilder qb = new QueryBuilder(true, false);
     	org.dom4j.Document qTree = crit.toQuery();
 		SearchObject so = qb.buildQuery(qTree);   	
@@ -3158,7 +3166,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
             luceneSession.close();
         }
     	
-        Map<String,BinderIndexData> result = new HashMap<String,BinderIndexData>();
+        List<BinderIndexData> result = new ArrayList<BinderIndexData>();
         int count = hits.length();
         org.apache.lucene.document.Document doc;
         String title;
@@ -3167,7 +3175,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         	title = doc.get(Constants.TITLE_FIELD);
         	if(title != null) {
         		try {
-	        		result.put(title, new BinderIndexData(doc));
+	        		result.add(new BinderIndexData(doc));
         		}
         		catch(Exception ignore) {
         			// skip to next doc
@@ -3178,7 +3186,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         
         return result;
 	}
-
+	
 	// No Transaction
 	@Override
 	public void updateModificationTime(final Binder binder) {

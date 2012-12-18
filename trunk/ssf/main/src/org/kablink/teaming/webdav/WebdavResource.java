@@ -37,10 +37,6 @@ import java.util.Date;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.groovy.GroovyScriptService;
-import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.file.FileModule;
-import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.SpringContextUtil;
 

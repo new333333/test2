@@ -34,19 +34,25 @@ package org.kablink.teaming.webdav;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.module.binder.BinderIndexData;
+import org.kablink.teaming.module.file.FileIndexData;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.util.search.Criteria;
 
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
-import com.bradmcevoy.http.CopyableResource;
-import com.bradmcevoy.http.DeletableCollectionResource;
-import com.bradmcevoy.http.DeletableResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.MakeCollectionableResource;
-import com.bradmcevoy.http.MoveableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.PutableResource;
 import com.bradmcevoy.http.Resource;
@@ -69,17 +75,14 @@ public class MyFilesResource extends ContainerResource
 		super(factory, webdavPath);
 	}
 
-	static final String ID = "mf";
-	static final String WEBDAV_PATH = "/mf";
-	
 	@Override
 	public String getUniqueId() {
-		return ID;
+		return SPropsUtil.getString("wd.myfiles.prefix", "my_files");
 	}
 
 	@Override
 	public String getName() {
-		return ID;
+		return getUniqueId();
 	}
 
 	@Override
@@ -99,38 +102,85 @@ public class MyFilesResource extends ContainerResource
 
 	@Override
 	public String getWebdavPath() {
-		return WEBDAV_PATH;
+		return "/" + getUniqueId();
 	}
 
 	@Override
 	public Resource child(String childName) throws NotAuthorizedException,
 			BadRequestException {
-		// TODO
+        // Get folders
+        Criteria myFoldersCrit = SearchUtils.getMyFilesSearchCriteria(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), true, false, false, false);
+        List<BinderIndexData> bidList = getBinderModule().getBinderDataFromIndex(myFoldersCrit);
+        for(BinderIndexData bid : bidList) {
+        	if(bid.getTitle().equals(childName))
+            	return makeResourceFromBinder(bid);
+        }
+		
+		// Get files
+        Criteria myFilesCrit = SearchUtils.getMyFilesSearchCriteria(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), false, false, false, true);
+        List<FileIndexData> fidList = getFileModule().getFileDataFromIndex(myFilesCrit);
+		for(FileIndexData fid : fidList) {
+			if(fid.getName().equals(childName))
+				return makeResourceFromFile(fid);
+		}
+
 		return null;
 	}
 
 	@Override
 	public List<? extends Resource> getChildren()
 			throws NotAuthorizedException, BadRequestException {
-		// TODO
-		return null;
+		List<Resource> childrenResources = new ArrayList<Resource>();
+		Resource resource;
+		
+		// Get folders
+        Criteria myFoldersCrit = SearchUtils.getMyFilesSearchCriteria(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), true, false, false, false);
+        List<BinderIndexData> bidList = getBinderModule().getBinderDataFromIndex(myFoldersCrit);
+        for(BinderIndexData bid : bidList) {
+        	resource = makeResourceFromBinder(bid);
+        	if(resource != null)
+        		childrenResources.add(resource);
+        }
+		
+		// Get files
+        Criteria myFilesCrit = SearchUtils.getMyFilesSearchCriteria(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), false, false, false, true);
+        List<FileIndexData> fidList = getFileModule().getFileDataFromIndex(myFilesCrit);
+		for(FileIndexData fid : fidList) {
+			resource = makeResourceFromFile(fid);
+			if(resource != null)
+				childrenResources.add(resource);
+		}
+		
+		return childrenResources;
 	}
 
 	@Override
 	public CollectionResource createCollection(String newName)
 			throws NotAuthorizedException, ConflictException,
 			BadRequestException {
-		// TODO
-		return null;
+		Binder parent = getBinderModule().getBinder(RequestContextHolder.getRequestContext().getUser().getWorkspaceId());
+		
+		return createChildFolder(parent, newName);
 	}
 
 	@Override
 	public Resource createNew(String newName, InputStream inputStream,
 			Long length, String contentType) throws IOException,
 			ConflictException, NotAuthorizedException, BadRequestException {
-		// TODO
-		return null;
+		Long folderId =  SearchUtils.getMyFilesFolderId(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), true);
+		Folder folder = getFolder(folderId);
+		FolderEntry entry = writeFileWithModDate(folder, newName, inputStream, null);
+		return makeResourceFromFile(entry.getFileAttachment(newName));
 	}
 
+	private Folder getFolder(Long folderId) throws ConflictException {
+		if(folderId == null)
+			throw new ConflictException("No folder id");
+		Binder binder = getBinderModule().getBinder(folderId);
+		if(binder instanceof Folder)
+			return (Folder) binder;
+		else
+			throw new ConflictException("id '" + folderId + "' does not represent a folder");
+	}
 
 }
