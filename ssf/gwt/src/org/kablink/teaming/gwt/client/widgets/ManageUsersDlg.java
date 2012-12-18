@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserPropertiesDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeUserShareRightsDlgEvent;
 import org.kablink.teaming.gwt.client.event.ManageUsersFilterEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserDesktopSettingsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserMobileSettingsEvent;
@@ -94,6 +95,7 @@ public class ManageUsersDlg extends DlgBox
 		ManageUsersFilterEvent.Handler,
 		InvokeImportProfilesDlgEvent.Handler,
 		InvokeUserPropertiesDlgEvent.Handler,
+		InvokeUserShareRightsDlgEvent.Handler,
 		SetSelectedUserDesktopSettingsEvent.Handler,
 		SetSelectedUserMobileSettingsEvent.Handler,
 		SetSelectedUserShareRightsEvent.Handler
@@ -130,6 +132,7 @@ public class ManageUsersDlg extends DlgBox
 		TeamingEvents.MANAGE_USERS_FILTER,
 		TeamingEvents.INVOKE_IMPORT_PROFILES_DLG,
 		TeamingEvents.INVOKE_USER_PROPERTIES_DLG,
+		TeamingEvents.INVOKE_USER_SHARE_RIGHTS_DLG,
 		TeamingEvents.SET_SELECTED_USER_DESKTOP_SETTINGS,
 		TeamingEvents.SET_SELECTED_USER_MOBILE_SETTINGS,
 		TeamingEvents.SET_SELECTED_USER_SHARE_RIGHTS,
@@ -436,6 +439,41 @@ public class ManageUsersDlg extends DlgBox
 	}
 	
 	/**
+	 * Handles InvokeUserShareRightsDlgEvent's received by this class.
+	 * 
+	 * Implements the InvokeUserShareRightsDlgEvent.Handler.onInvokeUserShareRightsDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeUserShareRightsDlg(final InvokeUserShareRightsDlgEvent event) {
+		// Have we create a user share rights dialog yet?
+		if (null == m_userShareRightsDlg) {
+			// No!  Can we create one now?
+			UserShareRightsDlg.createAsync(new UserShareRightsDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in 
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(UserShareRightsDlg usrDlg) {
+					// Yes, we created the user share rights dialog!
+					// Show it.
+					m_userShareRightsDlg = usrDlg;
+					showUserShareRightsDlgAsync(event.getUserIds(), event.getShowRelativeTo());
+				}
+			});
+		}
+		
+		else {
+			// Yes, we have a user share rights dialog!  Show it.
+			showUserShareRightsDlgAsync(event.getUserIds(), event.getShowRelativeTo());
+		}
+	}
+	
+	/**
 	 * Handles SetSelectedUserDesktopSettingsEvent's received by this class.
 	 * 
 	 * Implements the SetSelectedUserDesktopSettingsEvent.Handler.onSetSelectedUserDesktopSettings() method.
@@ -523,36 +561,16 @@ public class ManageUsersDlg extends DlgBox
 					selectedEntityIds = m_pwsView.getSelectedEntityIds();
 				}
 				
-				// ...and extract the selected user ID's from that.
+				// ...extract the selected user ID's from that...
 				final List<Long> selectedUserList = new ArrayList<Long>();
 				for (EntityId eid:  selectedEntityIds) {
 					selectedUserList.add(eid.getEntityId());
 				}
 
-				// Have we create a user share rights dialog yet?
-				if (null == m_userShareRightsDlg) {
-					// No!  Can we create one now?
-					UserShareRightsDlg.createAsync(new UserShareRightsDlgClient() {
-						@Override
-						public void onUnavailable() {
-							// Nothing to do.  Error handled in 
-							// asynchronous provider.
-						}
-						
-						@Override
-						public void onSuccess(UserShareRightsDlg usrDlg) {
-							// Yes, we created the user share rights
-							// dialog!  Show it.
-							m_userShareRightsDlg = usrDlg;
-							showUserShareRightsDlgAsync(selectedUserList);
-						}
-					});
-				}
-				
-				else {
-					// Yes, we have a user share rights dialog!  Show it.
-					showUserShareRightsDlgAsync(selectedUserList);
-				}
+				// ...and invoke the user share rights dialog.
+				GwtTeaming.fireEventAsync(
+					new InvokeUserShareRightsDlgEvent(
+						selectedUserList));
 			}
 		}
 	}
@@ -645,12 +663,12 @@ public class ManageUsersDlg extends DlgBox
 	/*
 	 * Asynchronously shows the user share rights dialog.
 	 */
-	private void showUserShareRightsDlgAsync(final List<Long> selectedUserList) {
+	private void showUserShareRightsDlgAsync(final List<Long> selectedUserList, final UIObject showRelativeTo) {
 		GwtClientHelper.deferCommand(
 			new ScheduledCommand() {
 				@Override
 				public void execute() {
-					showUserShareRightsDlgNow(selectedUserList);
+					showUserShareRightsDlgNow(selectedUserList, showRelativeTo);
 				}
 			});
 	}
@@ -658,10 +676,11 @@ public class ManageUsersDlg extends DlgBox
 	/*
 	 * Synchronously shows the user share rights dialog.
 	 */
-	private void showUserShareRightsDlgNow(List<Long> selectedUserList) {
+	private void showUserShareRightsDlgNow(final List<Long> selectedUserList, final UIObject showRelativeTo) {
 		UserShareRightsDlg.initAndShow(
 			m_userShareRightsDlg,
-			selectedUserList);
+			selectedUserList,
+			showRelativeTo);
 	}
 
 	/**

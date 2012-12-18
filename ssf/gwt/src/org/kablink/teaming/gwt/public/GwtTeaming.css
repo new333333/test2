@@ -4875,12 +4875,11 @@ td.datePickerMonth {
 		-webkit-border-radius: 15px;
 	    text-align: center !important;
 	}
-	.vibe-userPropertiesDlg-buttons       {padding-top: 5px;}
 	.vibe-userPropertiesDlg-delete        {}
 	.vibe-userPropertiesDlg-grid          {padding: 5px;}
 	.vibe-userPropertiesDlg-rootPanel     {}
 	.vibe-userPropertiesDlg-title         {font-size: 20px; font-weight: 200; font-family: Arial, Helvetica, sans-serif; color:#5691A6!important;}
-	.vibe-userPropertiesDlg-sectionRow td {border-top: 1px solid #cccccc;}
+	.vibe-userPropertiesDlg-sectionRow td {border-top: 1px solid #cccccc; padding-top: 5px;}
 /* End:  User properties dialog styles. */
 
 /* Start:  User share rights dialog styles. */

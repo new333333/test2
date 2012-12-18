@@ -41,14 +41,19 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeUserShareRightsDlgEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserPropertiesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData.ProfileAttribute;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.AccountInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.HomeInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.QuotaInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -123,20 +128,21 @@ public class UserPropertiesDlg extends DlgBox {
 	 * Adds information about the user's account to the grid.
 	 */
 	private void addAccountInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, AccountInfo account, boolean newSection) {
-		// If the account information is supposed to be in a new
-		// section...
+		// Add the last login date/time stamp...
 		int row = grid.getRowCount();
 		if (newSection) {
-			// ...add the section style.
+			// If this is supposed to be in a new section, add the
+			// section style to the row.
 			rf.addStyleName(row, "vibe-userPropertiesDlg-sectionRow");
 		}
-		
-		// ...add what we know about the user's account...
 		InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgAccount());
 		il.addStyleName("vibe-userPropertiesDlg-buttonLook");
 		grid.setWidget(           row, 0, il);
 		cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
 		addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_LastLogin(), account.getLastLogin(), true);
+
+		// ...add the type of account...
+		row = grid.getRowCount();
 		boolean internal = account.isInternal();
 		ImageResource ir = (internal ? m_images.internalUser() : m_images.externalUser());
 		Image i = GwtClientHelper.buildImage(
@@ -145,11 +151,13 @@ public class UserPropertiesDlg extends DlgBox {
 				m_messages.vibeDataTable_Alt_InternalUser() :
 				m_messages.vibeDataTable_Alt_ExternalUser()));
 		i.addStyleName("vibe-userPropertiesDlg-attrImage");
-		row = grid.getRowCount();
 		addLabeledWidget(grid, row, m_messages.userPropertiesDlgLabel_Type(), i);
+
+		// ...for internal users...
 		if (internal) {
-			boolean ldap = account.isFromLdap();
+			// ...add how the account got created...
 			row = grid.getRowCount();
+			boolean ldap = account.isFromLdap();
 			addLabeledText(
 				grid, 
 				row,
@@ -157,8 +165,10 @@ public class UserPropertiesDlg extends DlgBox {
 				(ldap                                        ?
 					m_messages.userPropertiesDlgSourceLDAP() :
 					m_messages.userPropertiesDlgSourceLocal()));
-			
+
+			// ...and if from LDAP...
 			if (ldap) {
+				// ...and what we know about the LDAP information.
 				String ldapAttr = account.getLdapDN();
 				if (GwtClientHelper.hasString(ldapAttr)) {
 					row = grid.getRowCount();
@@ -171,8 +181,26 @@ public class UserPropertiesDlg extends DlgBox {
 				}
 			}
 		}
+
+		// ...finally, add whether the user has access to adHoc
+		// ...folders.
+		row = grid.getRowCount();
+		addLabeledText(
+			grid,
+			row,
+			m_messages.userPropertiesDlgLabel_PersonalStorage(),
+			(account.hasAdHocFolders()            ?
+				m_messages.userPropertiesDlgYes() :
+				m_messages.userPropertiesDlgNo()));
 	}
 
+	/*
+	 * Adds information about the user's Home folder to the grid.
+	 */
+	private void addHomeInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, HomeInfo home, boolean newSection) {
+//!		...this needs to be implemented...
+	}
+	
 	/*
 	 * Adds information about the user's identity to the grid.
 	 */
@@ -260,6 +288,13 @@ public class UserPropertiesDlg extends DlgBox {
 		// ...and widget.
 		grid.setWidget(row, 2, w );
 	}
+
+	/*
+	 * Adds information about the user's Net Folders to the grid.
+	 */
+	private void addNetFoldersInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, List<EntryTitleInfo> netFolders, boolean newSection) {
+//!		...this needs to be implemented...
+	}
 	
 	/*
 	 * Adds information about the user's profile to the grid.
@@ -274,32 +309,28 @@ public class UserPropertiesDlg extends DlgBox {
 			return;
 		}
 		
-		// If the profile information is supposed to be in a new
-		// section...
 		int row = grid.getRowCount();
 		if (newSection) {
+			// If this is supposed to be in a new section, add the
+			// section style to the row.
 			rf.addStyleName(row, "vibe-userPropertiesDlg-sectionRow");
 		}
 		
 		// Do we have a URL to edit this user's profile?
-		VibeFlowPanel buttonPanel = new VibeFlowPanel();
-		buttonPanel.addStyleName("vibe-userPropertiesDlg-buttons");
 		final String modifyUrl = profile.getModifyUrl();
 		if (GwtClientHelper.hasString(modifyUrl)) {
 			// Yes!  Create a push button to do so...
-			Button button = new Button(m_messages.userPropertiesDlgModify());
+			Button button = new Button(m_messages.userPropertiesDlgEdit_Profile());
 			button.addStyleName("vibe-userPropertiesDlg-buttonAct vibe-userPropertiesDlg-buttonLook");
-			buttonPanel.add(button);
 			button.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					hide();
 					GwtClientHelper.jsLaunchToolbarPopupUrl(modifyUrl, 850, 600);
 				}
 			});
 
-			// ...and add the button panel to the grid.
-			grid.setWidget(           row, 0, buttonPanel);
+			// ...and add the button to the grid.
+			grid.setWidget(           row, 0, button);
 			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
 		}
 		
@@ -313,6 +344,98 @@ public class UserPropertiesDlg extends DlgBox {
 				labelizeCaption(pa.getAttributeCaption()),
 				pa.getAttributeValue());
 			row = grid.getRowCount();
+		}
+	}
+	
+	/*
+	 * Adds information about the user's disk quota to the grid.
+	 */
+	private void addQuotaInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, QuotaInfo home, boolean newSection) {
+//!		...this needs to be implemented...
+	}
+	
+	/*
+	 * Adds information about the user's sharing rights to the grid.
+	 */
+	private void addSharingInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, PerUserShareRightsInfo share, boolean newSection) {
+		int row = grid.getRowCount();
+		if (newSection) {
+			// If this is supposed to be in a new section, add the
+			// section style to the row.
+			rf.addStyleName(row, "vibe-userPropertiesDlg-sectionRow");
+		}
+		
+		// Does the user have a workspace that we could get the sharing
+		// rights off of?
+		boolean hasWorkspace = (null != share);
+		if (hasWorkspace) {
+			// Yes!  Add a button so that the rights can be set.
+			final Button button = new Button(m_messages.userPropertiesDlgEdit_Sharing());
+			button.addStyleName("vibe-userPropertiesDlg-buttonAct vibe-userPropertiesDlg-buttonLook");
+			button.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					List<Long> userIds = new ArrayList<Long>();
+					userIds.add(m_userId);
+					GwtTeaming.fireEventAsync(
+						new InvokeUserShareRightsDlgEvent(
+							userIds,
+							button));
+				}
+			});
+
+			// ...and add the button to the grid.
+			grid.setWidget(           row, 0, button);
+			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
+
+			// Construct a string with the user's current sharing
+			// rights...
+			StringBuffer	rightsBuf = new StringBuffer();
+			boolean			needJoint = false;
+			if (share.isAllowInternal()) {
+				rightsBuf.append(m_messages.userPropertiesDlgSharing_Internal());
+				needJoint = true;
+			}
+			if (share.isAllowExternal()) {
+				if (needJoint) rightsBuf.append("+");
+				else           needJoint = true;
+				rightsBuf.append(m_messages.userPropertiesDlgSharing_External());
+			}
+			if (share.isAllowPublic()) {
+				if (needJoint) rightsBuf.append("+");
+				else           needJoint = true;
+				rightsBuf.append(m_messages.userPropertiesDlgSharing_Public());
+			}
+			if (share.isAllowForwarding()) {
+				if (needJoint) rightsBuf.append("/");
+				else           needJoint = true;
+				rightsBuf.append(m_messages.userPropertiesDlgSharing_Forwarding());
+			}
+			String rights = rightsBuf.toString();
+			if (!(GwtClientHelper.hasString(rights))) {
+				rights = m_messages.userPropertiesDlgSharing_NoRights();
+			}
+			
+			// ...and add them to the grid.
+			addLabeledText(
+				grid,
+				row,
+				m_messages.userPropertiesDlgLabel_Sharing(),
+				rights);
+		}
+		
+		else {
+			// No, the user doesn't have a workspace.  Their sharing
+			// rights could not be determined.
+			InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgSharing());
+			il.addStyleName("vibe-userPropertiesDlg-buttonLook");
+			grid.setWidget(           row, 0, il);
+			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);			
+			addLabeledText(
+				grid,
+				row,
+				m_messages.userPropertiesDlgLabel_Sharing(),
+				m_messages.userPropertiesDlgNoWS());
 		}
 	}
 	
@@ -460,16 +583,17 @@ public class UserPropertiesDlg extends DlgBox {
 		FlexCellFormatter	cf = grid.getFlexCellFormatter();
 		RowFormatter		rf = grid.getRowFormatter();
 
-		// ...add what we know about the user's identity...
-		addIdentityInfo(grid, cf);
-
-		// ...add what we know about the user's account...
-		addAccountInfo(grid, cf, rf, m_userProperties.getAccountInfo(), false);	// false -> Don't add a section header.
-
-		// ...add what we know about the user's profile...
-		addProfileInfo(grid, cf, rf, m_userProperties.getProfile(), true);	// true -> Add a section header.
-
-		// Finally, show the dialog.
+		// ...add the various components of what we know about the
+		// ...user...
+		addIdentityInfo(  grid, cf                                                );
+		addProfileInfo(   grid, cf, rf, m_userProperties.getProfile(),       false);	// false -> Don't add with a section header.
+		addAccountInfo(   grid, cf, rf, m_userProperties.getAccountInfo(),   true );	// true  ->       Add with a section header.
+		addSharingInfo(   grid, cf, rf, m_userProperties.getSharingRights(), true );	// true  ->       Add with a section header.
+		addQuotaInfo(     grid, cf, rf, m_userProperties.getQuotaInfo(),     true );	// true  ->       Add with a section header.
+		addHomeInfo(      grid, cf, rf, m_userProperties.getHomeInfo(),      true );	// true  ->       Add with a section header.
+		addNetFoldersInfo(grid, cf, rf, m_userProperties.getNetFolders(),    true );	// true  ->       Add with a section header.
+		
+		// ...and finally, show the dialog.
 		if (null == m_showRelativeTo)
 		     center();
 		else showRelativeTo(m_showRelativeTo);

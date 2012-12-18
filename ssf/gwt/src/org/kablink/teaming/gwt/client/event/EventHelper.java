@@ -1155,6 +1155,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case INVOKE_USER_SHARE_RIGHTS_DLG:
+				// An InvokeUserShareRightsDlgEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof InvokeUserShareRightsDlgEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeUserShareRightsDlgEvent.registerEvent(eventBus, ((InvokeUserShareRightsDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case JSP_LAYOUT_CHANGED:
 				// An JspLayoutChangedEvent!  Can the event handler we
 				// were given handle that?
@@ -2322,6 +2331,7 @@ public class EventHelper {
 			case INVOKE_USER_DESKTOP_SETTINGS_DLG:             hasHandler = (eventHandler instanceof InvokeUserDesktopSettingsDlgEvent.Handler);           break;
 			case INVOKE_USER_MOBILE_SETTINGS_DLG:              hasHandler = (eventHandler instanceof InvokeUserMobileSettingsDlgEvent.Handler);            break;
 			case INVOKE_USER_PROPERTIES_DLG:				   hasHandler = (eventHandler instanceof InvokeUserPropertiesDlgEvent.Handler);		           break;
+			case INVOKE_USER_SHARE_RIGHTS_DLG:				   hasHandler = (eventHandler instanceof InvokeUserShareRightsDlgEvent.Handler);		       break;
 			
 			case JSP_LAYOUT_CHANGED:                   	       hasHandler = (eventHandler instanceof JspLayoutChangedEvent.Handler);                       break;
 			

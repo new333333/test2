@@ -65,6 +65,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.UIObject;
 
 /**
  * Implements the user share rights dialog.
@@ -78,6 +79,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	private List<Long>								m_userIds;				// The List<Long> of user IDs whose sharing rights are being set.
 	private PerUserShareRightsInfo					m_singleUserRights;		// If the sharing rights are being set for a single user, this contains their current rights setting when the dialog is invoked. 
 	private ProgressBar								m_progressBar;			// Progress bar displayed while saving the share rights.
+	private UIObject								m_showRelativeTo;		// UIObject to show the dialog relative to.  null -> Center the dialog.
 	private UserSharingRightsInfoRpcResponseData	m_rightsInfo;			// Information about sharing rights available and to be set.
 	private VibeFlowPanel							m_progressPanel;		// Panel containing the progress bar.
 	private VibeVerticalPanel						m_vp;					// The panel holding the dialog's content.
@@ -521,18 +523,20 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 		// ...the dialog.
 		setCancelEnabled(true);
 		setOkEnabled(    true);
-		center();
+		if (null == m_showRelativeTo)
+		     center();
+		else showRelativeTo(m_showRelativeTo);
 	}
 	
 	/*
 	 * Asynchronously runs the given instance of the user share rights
 	 * dialog.
 	 */
-	private static void runDlgAsync(final UserShareRightsDlg usrDlg, final List<Long> userIds) {
+	private static void runDlgAsync(final UserShareRightsDlg usrDlg, final List<Long> userIds, final UIObject showRelativeTo) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				usrDlg.runDlgNow(userIds);
+				usrDlg.runDlgNow(userIds, showRelativeTo);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -542,9 +546,10 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	 * Synchronously runs the given instance of the user share rights
 	 * dialog.
 	 */
-	private void runDlgNow(List<Long> userIds) {
+	private void runDlgNow(List<Long> userIds, UIObject showRelativeTo) {
 		// Store the parameter...
-		m_userIds = userIds;
+		m_userIds        = userIds;
+		m_showRelativeTo = showRelativeTo;
 		
 		// ...update the dialog's caption...
 		setCaption(m_messages.userShareRightsDlgHeader(m_userIds.size()));
@@ -779,7 +784,8 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 			
 			// Parameters to initialize and show the dialog.
 			final UserShareRightsDlg	usrDlg,
-			final List<Long>			userIds) {
+			final List<Long>			userIds,
+			final UIObject				showRelativeTo) {
 		GWT.runAsync(UserShareRightsDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -802,7 +808,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(usrDlg, userIds);
+					runDlgAsync(usrDlg, userIds, showRelativeTo);
 				}
 			}
 		});
@@ -815,7 +821,18 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	 * @param usrDlgClient
 	 */
 	public static void createAsync(UserShareRightsDlgClient usrDlgClient) {
-		doAsyncOperation(usrDlgClient, null, null);
+		doAsyncOperation(usrDlgClient, null, null, null);
+	}
+	
+	/**
+	 * Initializes and shows the user share rights dialog.
+	 * 
+	 * @param usrDlg
+	 * @param userIds
+	 * @param showRelativeTo
+	 */
+	public static void initAndShow(UserShareRightsDlg usrDlg, List<Long> userIds, UIObject showRelativeTo) {
+		doAsyncOperation(null, usrDlg, userIds, showRelativeTo);
 	}
 	
 	/**
@@ -825,6 +842,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	 * @param userIds
 	 */
 	public static void initAndShow(UserShareRightsDlg usrDlg, List<Long> userIds) {
-		doAsyncOperation(null, usrDlg, userIds);
+		// Always use the initial form of the method.
+		initAndShow(usrDlg, userIds, null);
 	}
 }
