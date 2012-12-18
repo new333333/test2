@@ -3125,68 +3125,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
-	@Override
-	public Map<String,BinderIndexData> getChildrenBinderDataFromIndex(Long binderId) {
-    	Criteria crit = new Criteria()
-    	    .add(conjunction()	
-    			.add(eq(Constants.BINDERS_PARENT_ID_FIELD, binderId.toString()))
-   				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_BINDER))
-     		);
-
-    	List<BinderIndexData> results = getBinderDataFromIndex(crit);
-    	Map<String,BinderIndexData> resultsMap = new HashMap<String,BinderIndexData>();
-    	for(BinderIndexData data : results) {
-    		resultsMap.put(data.getTitle(), data);
-    	}
-    	
-    	return resultsMap;
-	}
-
-	@Override
-	public List<BinderIndexData> getBinderDataFromIndex(Criteria crit) {
-		QueryBuilder qb = new QueryBuilder(true, false);
-    	org.dom4j.Document qTree = crit.toQuery();
-		SearchObject so = qb.buildQuery(qTree);   	
-   	
-    	Query soQuery = so.getLuceneQuery();
-    	    	
-    	if(logger.isDebugEnabled()) {
-    		logger.debug("Query is: " + qTree.asXML());
-    		logger.debug("Query is: " + soQuery.toString());
-    	}
-    	
-    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
-        
-    	Hits hits = null;
-        try {
-	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-	        		so.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, soQuery, null, 0, Integer.MAX_VALUE);
-        }
-        finally {
-            luceneSession.close();
-        }
-    	
-        List<BinderIndexData> result = new ArrayList<BinderIndexData>();
-        int count = hits.length();
-        org.apache.lucene.document.Document doc;
-        String title;
-        for(int i = 0; i < count; i++) {
-        	doc = hits.doc(i);
-        	title = doc.get(Constants.TITLE_FIELD);
-        	if(title != null) {
-        		try {
-	        		result.add(new BinderIndexData(doc));
-        		}
-        		catch(Exception ignore) {
-        			// skip to next doc
-        			logger.warn("Skipping file '" + title + "' due to error in index data: " + ignore.toString());
-        		}
-        	}
-        }
-        
-        return result;
-	}
-	
 	// No Transaction
 	@Override
 	public void updateModificationTime(final Binder binder) {

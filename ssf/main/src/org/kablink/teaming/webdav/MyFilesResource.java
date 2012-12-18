@@ -108,15 +108,15 @@ public class MyFilesResource extends ContainerResource
 	@Override
 	public Resource child(String childName) throws NotAuthorizedException,
 			BadRequestException {
-        // Get folders
+        // Get folders contained in My Files view
         Criteria myFoldersCrit = SearchUtils.getMyFilesSearchCriteria(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), true, false, false, false);
-        List<BinderIndexData> bidList = getBinderModule().getBinderDataFromIndex(myFoldersCrit);
+        List<BinderIndexData> bidList = getBinderDataFromIndex(myFoldersCrit, false, null);
         for(BinderIndexData bid : bidList) {
         	if(bid.getTitle().equals(childName))
             	return makeResourceFromBinder(bid);
         }
 		
-		// Get files
+		// Get files contained in My Files view
         Criteria myFilesCrit = SearchUtils.getMyFilesSearchCriteria(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), false, false, false, true);
         List<FileIndexData> fidList = getFileModule().getFileDataFromIndex(myFilesCrit);
 		for(FileIndexData fid : fidList) {
@@ -135,7 +135,7 @@ public class MyFilesResource extends ContainerResource
 		
 		// Get folders
         Criteria myFoldersCrit = SearchUtils.getMyFilesSearchCriteria(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), true, false, false, false);
-        List<BinderIndexData> bidList = getBinderModule().getBinderDataFromIndex(myFoldersCrit);
+        List<BinderIndexData> bidList = getBinderDataFromIndex(myFoldersCrit, false, null);
         for(BinderIndexData bid : bidList) {
         	resource = makeResourceFromBinder(bid);
         	if(resource != null)

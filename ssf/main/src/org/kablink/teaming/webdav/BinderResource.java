@@ -32,10 +32,15 @@
  */
 package org.kablink.teaming.webdav;
 
+import static org.kablink.util.search.Restrictions.conjunction;
+import static org.kablink.util.search.Restrictions.eq;
+
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -44,6 +49,8 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
 
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.CopyableResource;
@@ -177,4 +184,33 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 		}
 	}
 	
+	/**
+	 * Returns a map of titles of the sub-binders contained in the specified binder 
+	 * to its <code>BinderIndexData</code> objects encapsulating more detailed information
+	 * about sub-binders obtained from the Lucene index.
+	 * It is important for the efficiency reason that the requested data be obtainable
+	 * entirely from the Lucene index without querying the database.
+	 * 
+	 * @param binderId
+	 * @return
+	 */
+	protected Map<String,BinderIndexData> getChildrenBinderDataFromIndex(Long binderId) {
+    	Criteria crit = new Criteria()
+    	    .add(conjunction()	
+    			.add(eq(Constants.BINDERS_PARENT_ID_FIELD, binderId.toString()))
+   				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_BINDER))
+     		);
+
+    	List<BinderIndexData> results = getBinderDataFromIndex(crit, true, loadBinder(binderId));
+    	Map<String,BinderIndexData> resultsMap = new HashMap<String,BinderIndexData>();
+    	for(BinderIndexData data : results) {
+    		resultsMap.put(data.getTitle(), data);
+    	}
+    	
+    	return resultsMap;
+	}
+
+	private Binder loadBinder(Long binderId) {
+		return getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
+	}
 }

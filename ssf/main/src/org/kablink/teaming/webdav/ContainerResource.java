@@ -34,9 +34,13 @@ package org.kablink.teaming.webdav;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.apache.lucene.search.Query;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -44,12 +48,20 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.search.LuceneReadSession;
+import org.kablink.teaming.search.LuceneSessionFactory;
+import org.kablink.teaming.search.QueryBuilder;
+import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
 
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.GetableResource;
@@ -194,11 +206,77 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
 
 		return entry;
 	}
+	
+	/**
+	 * Return a list of <code>BinderIndexData</code> that meets the search criteria.
+	 * 
+	 * @param crit
+	 * @param oneLevelWithInferredAccess If <code>true</code>, instructs to use the special
+	 * search method that takes inferred access into account and the search space is
+	 * confined to one level down only.
+	 * @param parentBinder If <code>oneLevelWithInferredAccess</code> is <code>true</code>,
+	 * this value must be supplied.
+	 * @return
+	 */
+	protected List<BinderIndexData> getBinderDataFromIndex(Criteria crit, boolean oneLevelWithInferredAccess, Binder parentBinder) {
+		QueryBuilder qb = new QueryBuilder(true, false);
+    	org.dom4j.Document qTree = crit.toQuery();
+		SearchObject so = qb.buildQuery(qTree);   	
+   	
+    	Query soQuery = so.getLuceneQuery();
+    	    	
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + qTree.asXML());
+    		logger.debug("Query is: " + soQuery.toString());
+    	}
+    	
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
+        
+    	Hits hits = null;
+        try {
+        	if(oneLevelWithInferredAccess) {
+    			hits = luceneSession.searchFolderOneLevelWithInferredAccess(RequestContextHolder.getRequestContext().getUserId(),
+    					so.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, soQuery, null, 0,
+    					Integer.MAX_VALUE, parentBinder.getId(), parentBinder.getPathName());
+        	}
+        	else {
+        		hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
+	        		so.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, soQuery, null, 0, Integer.MAX_VALUE);
+        	}
+        }
+        finally {
+            luceneSession.close();
+        }
+    	
+        List<BinderIndexData> result = new ArrayList<BinderIndexData>();
+        int count = hits.length();
+        org.apache.lucene.document.Document doc;
+        String title;
+        for(int i = 0; i < count; i++) {
+        	doc = hits.doc(i);
+        	title = doc.get(Constants.TITLE_FIELD);
+        	if(title != null) {
+        		try {
+	        		result.add(new BinderIndexData(doc));
+        		}
+        		catch(Exception ignore) {
+        			// skip to next doc
+        			logger.warn("Skipping file '" + title + "' due to error in index data: " + ignore.toString());
+        		}
+        	}
+        }
+        
+        return result;
+	}
 
 	private String getChildWebdavPath(String childName) {
 		if(webdavPath.endsWith("/"))
 			return webdavPath + childName;
 		else
 			return webdavPath + "/" + childName;
+	}
+	
+	private LuceneSessionFactory getLuceneSessionFactory() {
+		return (LuceneSessionFactory) SpringContextUtil.getBean("luceneSessionFactory");
 	}
 }

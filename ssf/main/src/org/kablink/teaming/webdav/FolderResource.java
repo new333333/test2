@@ -131,7 +131,7 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 	public List<? extends Resource> getChildren()
 			throws NotAuthorizedException, BadRequestException {
 		// A folder can have other folders as children. It can also have files as children only if it is a library folder.
-		Map<String,BinderIndexData> binderMap = getBinderModule().getChildrenBinderDataFromIndex(id);
+		Map<String,BinderIndexData> binderMap = getChildrenBinderDataFromIndex(id);
 		
 		Map<String,FileIndexData> fileMap = null;
 		if(library) 

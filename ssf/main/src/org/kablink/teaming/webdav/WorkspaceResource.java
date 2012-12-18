@@ -135,7 +135,7 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 	public List<? extends Resource> getChildren()
 			throws NotAuthorizedException, BadRequestException {
 		// A workspace can have other workspaces and/or folders as children
-		Map<String,BinderIndexData> childrenMap = getBinderModule().getChildrenBinderDataFromIndex(id);
+		Map<String,BinderIndexData> childrenMap = getChildrenBinderDataFromIndex(id);
 		List<Resource> childrenResources = new ArrayList<Resource>(childrenMap.size());
 		Resource resource;
 		for(BinderIndexData bid:childrenMap.values()) {
