@@ -128,7 +128,7 @@ public class UserPropertiesDlg extends DlgBox {
 	 * Adds information about the user's account to the grid.
 	 */
 	private void addAccountInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, AccountInfo account, boolean newSection) {
-		// Add the last login date/time stamp...
+		// Add the user's login ID...
 		int row = grid.getRowCount();
 		if (newSection) {
 			// If this is supposed to be in a new section, add the
@@ -139,6 +139,10 @@ public class UserPropertiesDlg extends DlgBox {
 		il.addStyleName("vibe-userPropertiesDlg-buttonLook");
 		grid.setWidget(           row, 0, il);
 		cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
+		addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_UserId(), account.getLoginId());
+		
+		// ...add the last login date/time stamp...
+		row = grid.getRowCount();
 		addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_LastLogin(), account.getLastLogin(), true);
 
 		// ...add the type of account...
@@ -198,7 +202,56 @@ public class UserPropertiesDlg extends DlgBox {
 	 * Adds information about the user's Home folder to the grid.
 	 */
 	private void addHomeInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, HomeInfo home, boolean newSection) {
-//!		...this needs to be implemented...
+		int row = grid.getRowCount();
+		if (newSection) {
+			// If this is supposed to be in a new section, add the
+			// section style to the row.
+			rf.addStyleName(row, "vibe-userPropertiesDlg-sectionRow");
+		}
+
+		// Add a home section label.
+		InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgHome());
+		il.addStyleName("vibe-userPropertiesDlg-buttonLook");
+		grid.setWidget(           row, 0, il);
+		cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
+		
+		// ...add information to that affect.
+		boolean hasHome = (null != home);
+		addLabeledText(
+			grid,
+			row,
+			m_messages.userPropertiesDlgLabel_Home(),
+			(hasHome                              ?
+				m_messages.userPropertiesDlgYes() :
+				m_messages.userPropertiesDlgNo()));
+		
+		// Does the user doesn't have a Home folder?
+		if (hasHome) {
+			// Yes!  Add information about the path to it to the grid.
+			row = grid.getRowCount();
+			StringBuffer homeBuf = new StringBuffer();
+			boolean needJoin = false;
+			String s = home.getRootPath();
+			if (GwtClientHelper.hasString(s)) {
+				homeBuf.append(s);
+				needJoin = true;
+			}
+			s = home.getRelativePath();
+			if (GwtClientHelper.hasString(s)) {
+				if (needJoin) homeBuf.append("/");
+				else          needJoin = true;
+				homeBuf.append(s);
+			}
+			String homeDisplay = homeBuf.toString();
+			if (!(GwtClientHelper.hasString(homeDisplay))) {
+				homeDisplay = m_messages.userPropertiesDlgNoHome();
+			}
+			addLabeledText(
+				grid,
+				row,
+				m_messages.userPropertiesDlgLabel_HomePath(),
+				homeDisplay);
+		}
 	}
 	
 	/*
@@ -232,7 +285,7 @@ public class UserPropertiesDlg extends DlgBox {
 		avatarImg.addStyleName("vibe-userPropertiesDlg-avatar");
 		String avatarUrl = profile.getAvatarUrl();
 		if (!(GwtClientHelper.hasString(avatarUrl)))
-		     avatarImg.setUrl(GwtTeaming.getDataTableImageBundle().userPhoto().getSafeUri());
+		     avatarImg.setUrl(m_images.userPhoto().getSafeUri());
 		else avatarImg.setUrl(avatarUrl);
 		avatarImg.setTitle(title);
 		grid.setWidget(row, 0, avatarImg);
@@ -350,8 +403,71 @@ public class UserPropertiesDlg extends DlgBox {
 	/*
 	 * Adds information about the user's disk quota to the grid.
 	 */
-	private void addQuotaInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, QuotaInfo home, boolean newSection) {
-//!		...this needs to be implemented...
+	private void addQuotaInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, QuotaInfo quota, boolean newSection) {
+		int row = grid.getRowCount();
+		if (newSection) {
+			// If this is supposed to be in a new section, add the
+			// section style to the row.
+			rf.addStyleName(row, "vibe-userPropertiesDlg-sectionRow");
+		}
+
+		// If quotas are completely disabled...
+		if (null == quota) {
+			// ...add information to that affect.
+			InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgQuota());
+			il.addStyleName("vibe-userPropertiesDlg-buttonLook");
+			grid.setWidget(           row, 0, il);
+			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);			
+			addLabeledText(
+				grid,
+				row,
+				m_messages.userPropertiesDlgLabel_Quota(),
+				m_messages.userPropertiesDlgQuotasDisabled());
+			return;
+		}
+
+		// If the user has rights to manage quotas...
+		final String manageQuotasUrl = quota.getManageQuotasUrl();
+		if (GwtClientHelper.hasString(manageQuotasUrl)) {
+			// ...create a button allowing them to do so...
+			Button button = new Button(m_messages.userPropertiesDlgEdit_Quotas());
+			button.addStyleName("vibe-userPropertiesDlg-buttonAct vibe-userPropertiesDlg-buttonLook");
+			button.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					GwtClientHelper.jsLaunchToolbarPopupUrl(manageQuotasUrl, 850, 600);
+				}
+			});
+
+			// ...and add the button to the grid.
+			grid.setWidget(           row, 0, button);
+			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
+		}
+		else {
+			// ...otherwise, add a simple label for the section.
+			InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgQuota());
+			il.addStyleName("vibe-userPropertiesDlg-buttonLook");
+			grid.setWidget(           row, 0, il);
+			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);			
+		}
+
+		// Finally, add the quota setting to the grid.
+		String	quotaDisplay;
+		long	quotaValue = quota.getUserQuota();
+		boolean quotaSet   = (0 < quotaValue);
+		if (quotaSet) {
+			if      (quota.isGroupQuota()) quotaDisplay = m_messages.userPropertiesDlgQuota_Group(quotaValue);
+			else if (quota.isZoneQuota())  quotaDisplay = m_messages.userPropertiesDlgQuota_Zone( quotaValue);
+			else                           quotaDisplay = m_messages.userPropertiesDlgQuota_User( quotaValue);
+		}
+		else {
+			quotaDisplay = m_messages.userPropertiesDlgNoQuota();
+		}
+		addLabeledText(
+			grid,
+			row,
+			m_messages.userPropertiesDlgLabel_Quota(),
+			quotaDisplay);
 	}
 	
 	/*
@@ -588,9 +704,9 @@ public class UserPropertiesDlg extends DlgBox {
 		addIdentityInfo(  grid, cf                                                );
 		addProfileInfo(   grid, cf, rf, m_userProperties.getProfile(),       false);	// false -> Don't add with a section header.
 		addAccountInfo(   grid, cf, rf, m_userProperties.getAccountInfo(),   true );	// true  ->       Add with a section header.
-		addSharingInfo(   grid, cf, rf, m_userProperties.getSharingRights(), true );	// true  ->       Add with a section header.
-		addQuotaInfo(     grid, cf, rf, m_userProperties.getQuotaInfo(),     true );	// true  ->       Add with a section header.
 		addHomeInfo(      grid, cf, rf, m_userProperties.getHomeInfo(),      true );	// true  ->       Add with a section header.
+		addQuotaInfo(     grid, cf, rf, m_userProperties.getQuotaInfo(),     true );	// true  ->       Add with a section header.
+		addSharingInfo(   grid, cf, rf, m_userProperties.getSharingRights(), true );	// true  ->       Add with a section header.
 		addNetFoldersInfo(grid, cf, rf, m_userProperties.getNetFolders(),    true );	// true  ->       Add with a section header.
 		
 		// ...and finally, show the dialog.

@@ -4957,6 +4957,7 @@ public class GwtViewHelper {
 			IdentityInfo	userII = user.getIdentityInfo();
 			AccountInfo		ai     = new AccountInfo();
 			reply.setAccountInfo(ai);
+			ai.setLoginId(   user.getName()       );
 			ai.setFromLdap(  userII.isFromLdap()  );
 			ai.setFromLocal( userII.isFromLocal() );
 			ai.setFromOpenId(userII.isFromOpenid());
@@ -4993,9 +4994,18 @@ public class GwtViewHelper {
 			reply.setSharingRights(sharingRights.getUserRights(userId));
 
 			// ...if quotas are enabled...
-			if (bs.getAdminModule().isQuotaEnabled()) {
-				QuotaInfo	qi        = new QuotaInfo();
-				long		userQuota = user.getDiskQuota();
+			AdminModule am = bs.getAdminModule();
+			if (am.isQuotaEnabled()) {
+				QuotaInfo qi = new QuotaInfo();
+				if (am.testAccess(AdminOperation.manageFunction)) {
+					// ...add the manage quotas URL if the user has
+					// ...rights to manage them...
+					AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", false);
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_QUOTAS);
+					qi.setManageQuotasUrl(url.toString());
+				}
+				
+				long userQuota = user.getDiskQuota();
 				if (0 == userQuota) {
 					userQuota = user.getMaxGroupsQuota();
 					if (0 == userQuota) {
@@ -5040,16 +5050,12 @@ public class GwtViewHelper {
 								}
 							}
 
-							// ...and we can determine the home folder's root
-							// ...path...
-							if (MiscUtil.hasString(rootPath)) {
-								// ...add information about the home folder...
-								HomeInfo hi = new HomeInfo();
-								hi.setId(          homeId                );
-								hi.setRelativePath(home.getResourcePath());
-								hi.setRootPath(    rootPath              );
-								reply.setHomeInfo(hi);
-							}
+							// ...add information about the home folder...
+							HomeInfo hi = new HomeInfo();
+							hi.setId(          homeId                );
+							hi.setRelativePath(home.getResourcePath());
+							hi.setRootPath(    rootPath              );
+							reply.setHomeInfo(hi);
 						}
 						
 						Map			nfSearch = getCollectionEntries(bs, request, null, null, new HashMap(), CollectionType.NET_FOLDERS, null);
