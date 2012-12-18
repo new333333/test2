@@ -49,14 +49,8 @@ import org.kablink.teaming.util.ReleaseInfo;
 
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
-import com.bradmcevoy.http.CopyableResource;
-import com.bradmcevoy.http.DeletableCollectionResource;
-import com.bradmcevoy.http.DeletableResource;
 import com.bradmcevoy.http.GetableResource;
-import com.bradmcevoy.http.MakeCollectionableResource;
-import com.bradmcevoy.http.MoveableResource;
 import com.bradmcevoy.http.PropFindableResource;
-import com.bradmcevoy.http.PutableResource;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.exceptions.BadRequestException;
 import com.bradmcevoy.http.exceptions.NotAuthorizedException;
@@ -109,8 +103,35 @@ public class SharedWithMeResource extends ContainerResource
 	@Override
 	public Resource child(String childName) throws NotAuthorizedException,
 			BadRequestException {
-		// TODO
-		return null;
+		ShareItemSelectSpec spec = getShareItemSelectSpec();
+		List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+		Resource resource = null;
+		for(ShareItem shareItem:shareItems) {
+            if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+            	FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
+        		// Consider the entry only if it's contained in a library folder
+            	if(entry.getParentBinder().isLibrary()) {
+            		Set<Attachment> attachments = entry.getAttachments();
+            		for(Attachment attachment:attachments) {
+            			if(attachment instanceof FileAttachment) {
+            				FileAttachment fa = (FileAttachment)attachment;
+            				if(fa.getFileItem().getName().equals(childName)) {
+            					resource = makeResourceFromFile(fa);
+            					break;
+            				}
+            			}
+            		}
+            	}
+            }
+            else if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folder) {
+            	Folder folder = (Folder) getSharingModule().getSharedEntity(shareItem);
+            	if(folder.getTitle().equals(childName)) {		
+            		resource = makeResourceFromBinder(folder);
+            		break;
+            	}
+            }
+		}
+		return resource;
 	}
 
 	@Override
