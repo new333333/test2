@@ -4980,7 +4980,11 @@ public class GwtViewHelper {
 			}
 			
 			// ...add whether the user has adHoc folder access...
-			ai.setHasAdHocFolders(!(GwtServerHelper.useHomeAsMyFiles(bs, user)));
+			boolean hasAdHocFolders = ((!user.isShared()) && user.getIdentityInfo().isInternal() && user.isPerson());
+			if (hasAdHocFolders) {
+				hasAdHocFolders = (!(GwtServerHelper.useHomeAsMyFiles(bs, user)));
+			}
+			ai.setHasAdHocFolders(hasAdHocFolders);
 
 			// ...add the user's current workspace sharing rights...
 			List<Long> userIds = new ArrayList<Long>();

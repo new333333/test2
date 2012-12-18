@@ -2392,16 +2392,28 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used by the 'User Properties' dialog.
 	String userPropertiesDlgAccount();
+	String userPropertiesDlgEdit_Profile();
+	String userPropertiesDlgEdit_Sharing();
 	String userPropertiesDlgHeader();
 	String userPropertiesDlgLabelize(String label);
 	String userPropertiesDlgLabel_eDirContainer();
 	String userPropertiesDlgLabel_LastLogin();
 	String userPropertiesDlgLabel_LdapDN();
+	String userPropertiesDlgLabel_PersonalStorage();
+	String userPropertiesDlgLabel_Sharing();
 	String userPropertiesDlgLabel_Source();
 	String userPropertiesDlgLabel_Type();
-	String userPropertiesDlgModify();
+	String userPropertiesDlgNo();
+	String userPropertiesDlgNoWS();
+	String userPropertiesDlgSharing();
+	String userPropertiesDlgSharing_External();
+	String userPropertiesDlgSharing_Forwarding();
+	String userPropertiesDlgSharing_Internal();
+	String userPropertiesDlgSharing_NoRights();
+	String userPropertiesDlgSharing_Public();
 	String userPropertiesDlgSourceLDAP();
 	String userPropertiesDlgSourceLocal();
 	String userPropertiesDlgUnknown();
+	String userPropertiesDlgYes();
 	
 }// end GwtTeamingMessages
