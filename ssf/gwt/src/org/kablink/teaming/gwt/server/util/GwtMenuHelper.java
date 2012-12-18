@@ -746,8 +746,7 @@ public class GwtMenuHelper {
 	 *		Access Control... (Future)
 	 */
 	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long folderId, String viewType, Folder folder, Workspace ws, boolean isMyFilesCollection) {
-		User    user             = GwtServerHelper.getCurrentUser();
-		boolean isGuest          = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+		boolean isGuest          = GwtServerHelper.getCurrentUser().isShared();
 		boolean isFolder         = (null != folder);
 		boolean isEntryContainer = (isFolder || isMyFilesCollection);
 		
@@ -1031,8 +1030,7 @@ public class GwtMenuHelper {
 	 */
 	private static void constructEntryShareItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
 		// For non-guest users...
-		User    user    = GwtServerHelper.getCurrentUser();
-		boolean isGuest = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+		boolean isGuest = GwtServerHelper.getCurrentUser().isShared();
 		if (!isGuest) {
 			// ...add the share item.
 			ToolbarItem shareTBI = new ToolbarItem("1_shareSelected");
@@ -1190,8 +1188,7 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem for subscribing to an item.
 	 */
 	private static void constructEntrySubscribeItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, boolean separatorBefore) {
-		User    user     = GwtServerHelper.getCurrentUser();
-		boolean isGuest  = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+		boolean isGuest = GwtServerHelper.getCurrentUser().isShared();
 		if (!isGuest) {
 			// ...add the subscribe item.
 			if (separatorBefore) {
@@ -2498,7 +2495,7 @@ public class GwtMenuHelper {
 						else homeFolderTargetId = null;
 						constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws, homeFolderTargetId         );
 					}
-					if (isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe) {
+					if ((isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe) && GwtShareHelper.isSharingEnabled(bs)) {
 					    constructEntryShareItem(           entryToolbar, bs, request                                                                                  );
 					}
 					if ((isCollectionMyFiles && (!useHomeAsMyFiles)) && (!isCollectionNetFolders)) {
