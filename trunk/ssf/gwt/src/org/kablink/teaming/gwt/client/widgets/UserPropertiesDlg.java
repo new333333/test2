@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -45,6 +46,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetUserPropertiesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData.ProfileAttribute;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.AccountInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -56,6 +58,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -63,12 +66,14 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HTMLTable.RowFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -77,6 +82,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class UserPropertiesDlg extends DlgBox {
+	private GwtTeamingDataTableImageBundle	m_images;					// Access to the Vibe images resources we need for this cell.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private Long							m_userId;					// The user we're dealing with.
@@ -102,6 +108,7 @@ public class UserPropertiesDlg extends DlgBox {
 		super(false, true, DlgButtonMode.Close);
 
 		// ...initialize everything else...
+		m_images   = GwtTeaming.getDataTableImageBundle();
 		m_messages = GwtTeaming.getMessages();
 	
 		// ...and create the dialog's content.
@@ -112,6 +119,203 @@ public class UserPropertiesDlg extends DlgBox {
 			null);								// Create callback data.  Unused.
 	}
 
+	/*
+	 * Adds information about the user's account to the grid.
+	 */
+	private void addAccountInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, AccountInfo account, boolean newSection) {
+		// If the account information is supposed to be in a new
+		// section...
+		int row = grid.getRowCount();
+		if (newSection) {
+			// ...add the section style.
+			rf.addStyleName(row, "vibe-userPropertiesDlg-sectionRow");
+		}
+		
+		// ...add what we know about the user's account...
+		InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgAccount());
+		il.addStyleName("vibe-userPropertiesDlg-buttonLook");
+		grid.setWidget(           row, 0, il);
+		cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
+		addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_LastLogin(), account.getLastLogin(), true);
+		boolean internal = account.isInternal();
+		ImageResource ir = (internal ? m_images.internalUser() : m_images.externalUser());
+		Image i = GwtClientHelper.buildImage(
+			ir.getSafeUri().asString(),
+			(internal                                       ?
+				m_messages.vibeDataTable_Alt_InternalUser() :
+				m_messages.vibeDataTable_Alt_ExternalUser()));
+		i.addStyleName("vibe-userPropertiesDlg-attrImage");
+		row = grid.getRowCount();
+		addLabeledWidget(grid, row, m_messages.userPropertiesDlgLabel_Type(), i);
+		if (internal) {
+			boolean ldap = account.isFromLdap();
+			row = grid.getRowCount();
+			addLabeledText(
+				grid, 
+				row,
+				m_messages.userPropertiesDlgLabel_Source(),
+				(ldap                                        ?
+					m_messages.userPropertiesDlgSourceLDAP() :
+					m_messages.userPropertiesDlgSourceLocal()));
+			
+			if (ldap) {
+				String ldapAttr = account.getLdapDN();
+				if (GwtClientHelper.hasString(ldapAttr)) {
+					row = grid.getRowCount();
+					addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_LdapDN(), ldapAttr);
+				}
+				ldapAttr = account.getEDirContainer();
+				if (GwtClientHelper.hasString(ldapAttr)) {
+					row = grid.getRowCount();
+					addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_eDirContainer(), ldapAttr);
+				}
+			}
+		}
+	}
+
+	/*
+	 * Adds information about the user's identity to the grid.
+	 */
+	private void addIdentityInfo(FlexTable grid, FlexCellFormatter cf) {
+		int		row;
+		String	title;
+
+		// Add the user's title...
+		ProfileEntryInfoRpcResponseData	profile = m_userProperties.getProfile();
+		Map<String, ProfileAttribute>	attrMap = profile.getProfileEntryInfo();
+		ProfileAttribute				pa      = attrMap.get("title");
+		if (null != pa) {
+			attrMap.remove(pa);
+			row = grid.getRowCount();
+			title = pa.getAttributeValue();
+			InlineLabel il = new InlineLabel(title);
+			il.addStyleName("vibe-userPropertiesDlg-title");
+			il.setWordWrap(false);
+			grid.setWidget(row, 0, il);
+			cf.setColSpan( row, 0, 3);
+		}
+		else {
+			title = "";
+		}
+		
+		// ...add the user's avatar...
+		row = grid.getRowCount();
+		Image avatarImg = new Image();
+		avatarImg.addStyleName("vibe-userPropertiesDlg-avatar");
+		String avatarUrl = profile.getAvatarUrl();
+		if (!(GwtClientHelper.hasString(avatarUrl)))
+		     avatarImg.setUrl(GwtTeaming.getDataTableImageBundle().userPhoto().getSafeUri());
+		else avatarImg.setUrl(avatarUrl);
+		avatarImg.setTitle(title);
+		grid.setWidget(row, 0, avatarImg);
+
+		// ...and add the user's 'About Me' HTML.
+		FlowPanel aboutMe = new FlowPanel();
+		aboutMe.addStyleName("vibe-userPropertiesDlg-aboutMe");
+		String aboutMeHtml = profile.getAboutMeHtml();
+		if (GwtClientHelper.hasString(aboutMeHtml)) {
+			aboutMe.getElement().setInnerHTML(aboutMeHtml);
+		}
+		grid.setWidget(         row, 1, aboutMe);
+		cf.setVerticalAlignment(row, 1, HasVerticalAlignment.ALIGN_TOP);
+		cf.setColSpan(          row, 1, 2);
+	}
+	
+	/*
+	 * Adds a labeled item to the grid.
+	 */
+	private void addLabeledText(FlexTable grid, int row, String label, String text, boolean showUnknown) {
+		// Validate the text...
+		if (null == text) {
+			text = "";
+		}
+		if (showUnknown && (!(GwtClientHelper.hasString(text)))) {
+			text = m_messages.userPropertiesDlgUnknown();
+		}
+		
+		// ...create a widget for it...
+		InlineLabel il = new InlineLabel(text);
+		il.addStyleName("vibe-userPropertiesDlg-attrValue");
+		il.setWordWrap(false);
+
+		// ...and add the labeled widget to the grid.
+		addLabeledWidget(grid, row, label, il);
+	}
+	
+	private void addLabeledText(FlexTable grid, int row, String label, String value) {
+		// Always use the initial form of the method.
+		addLabeledText(grid, row, label, value, false);
+	}
+
+	/*
+	 * Adds a labeled widget to the grid.
+	 */
+	private void addLabeledWidget(FlexTable grid, int row, String label, Widget w) {
+		// Add the items label...
+		InlineLabel il = new InlineLabel(label);
+		il.addStyleName("vibe-userPropertiesDlg-attrCaption");
+		il.setWordWrap(false);
+		grid.setWidget(row, 1, il);
+		
+		// ...and widget.
+		grid.setWidget(row, 2, w );
+	}
+	
+	/*
+	 * Adds information about the user's profile to the grid.
+	 */
+	private void addProfileInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, ProfileEntryInfoRpcResponseData profile, boolean newSection) {
+		// Are there any profile attributes to add?
+		Map<String, ProfileAttribute>	attrMap   = profile.getProfileEntryInfo();
+		Set<String>						attrKeys  = attrMap.keySet();
+		int								attrCount = ((null == attrKeys) ? 0 : attrKeys.size());
+		if (0 == attrCount) {
+			// No!  Bail.
+			return;
+		}
+		
+		// If the profile information is supposed to be in a new
+		// section...
+		int row = grid.getRowCount();
+		if (newSection) {
+			rf.addStyleName(row, "vibe-userPropertiesDlg-sectionRow");
+		}
+		
+		// Do we have a URL to edit this user's profile?
+		VibeFlowPanel buttonPanel = new VibeFlowPanel();
+		buttonPanel.addStyleName("vibe-userPropertiesDlg-buttons");
+		final String modifyUrl = profile.getModifyUrl();
+		if (GwtClientHelper.hasString(modifyUrl)) {
+			// Yes!  Create a push button to do so...
+			Button button = new Button(m_messages.userPropertiesDlgModify());
+			button.addStyleName("vibe-userPropertiesDlg-buttonAct vibe-userPropertiesDlg-buttonLook");
+			buttonPanel.add(button);
+			button.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					hide();
+					GwtClientHelper.jsLaunchToolbarPopupUrl(modifyUrl, 850, 600);
+				}
+			});
+
+			// ...and add the button panel to the grid.
+			grid.setWidget(           row, 0, buttonPanel);
+			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
+		}
+		
+		// Scan the profile attributes we have for the user...
+		for (String attrKey:  attrKeys) {
+			// ...adding each to the grid.
+			ProfileAttribute pa = attrMap.get(attrKey);
+			addLabeledText(
+				grid,
+				row,
+				labelizeCaption(pa.getAttributeCaption()),
+				pa.getAttributeValue());
+			row = grid.getRowCount();
+		}
+	}
+	
 	/**
 	 * Creates all the controls that make up the dialog.
 	 * 
@@ -249,96 +453,21 @@ public class UserPropertiesDlg extends DlgBox {
 		// usage, ...)
 		m_fp.clear();
 		
-		// ...create a grid to hold the dialog's contents...
+		// ...create the grid to hold the dialog's contents...
 		FlexTable grid = new FlexTable();
 		grid.addStyleName("vibe-userPropertiesDlg-grid");
 		m_fp.add(grid);
-		FlexCellFormatter fcf = grid.getFlexCellFormatter();
+		FlexCellFormatter	cf = grid.getFlexCellFormatter();
+		RowFormatter		rf = grid.getRowFormatter();
 
-		// ...add the user's title...
-		ProfileEntryInfoRpcResponseData profile = m_userProperties.getProfile();
-		Map<String, ProfileAttribute> attrMap = profile.getProfileEntryInfo();
-		ProfileAttribute pa = attrMap.get("title");
-		String title = pa.getAttributeValue();
-		InlineLabel il = new InlineLabel(title);
-		il.addStyleName("vibe-userPropertiesDlg-title");
-		il.setWordWrap(false);
-		grid.setWidget(0, 0, il);
-		fcf.setColSpan(0, 0, 3);
-		
-		// ...add the user's avatar...
-		Image avatarImg = new Image();
-		avatarImg.addStyleName("vibe-userPropertiesDlg-avatar");
-		String avatarUrl = profile.getAvatarUrl();
-		if (!(GwtClientHelper.hasString(avatarUrl)))
-		     avatarImg.setUrl(GwtTeaming.getDataTableImageBundle().userPhoto().getSafeUri());
-		else avatarImg.setUrl(avatarUrl);
-		avatarImg.setTitle(title);
-		grid.setWidget(1, 0, avatarImg);
+		// ...add what we know about the user's identity...
+		addIdentityInfo(grid, cf);
 
-		// ...add the user's 'About Me'...
-		FlowPanel aboutMe = new FlowPanel();
-		aboutMe.addStyleName("vibe-userPropertiesDlg-aboutMe");
-		String aboutMeHtml = profile.getAboutMeHtml();
-		if (GwtClientHelper.hasString(aboutMeHtml)) {
-			aboutMe.getElement().setInnerHTML(aboutMeHtml);
-		}
-		grid.setWidget(          1, 1, aboutMe);
-		fcf.setVerticalAlignment(1, 1, HasVerticalAlignment.ALIGN_TOP);
-		fcf.setColSpan(          1, 1, 2);
+		// ...add what we know about the user's account...
+		addAccountInfo(grid, cf, rf, m_userProperties.getAccountInfo(), false);	// false -> Don't add a section header.
 
-		// Scan the profile attributes we have for the user...
-		int			attrIndex = 0;
-		Set<String> attrKeys  = attrMap.keySet();
-		for (String attrKey:  attrKeys) {
-			// ...skipping the title since we handled it above.
-			if (attrKey.equals("title")) {
-				continue;
-			}
-
-			// Is this the first profile attribute?
-			int row = grid.getRowCount();
-			if (0 == attrIndex) {
-				// Yes!  Do we have a URL for this user to modify this
-				// user's profile?
-				VibeFlowPanel buttonPanel = new VibeFlowPanel();
-				buttonPanel.addStyleName("vibe-userPropertiesDlg-buttons");
-				final String modifyUrl = profile.getModifyUrl();
-				if (GwtClientHelper.hasString(modifyUrl)) {
-					// Yes!  Create a push button so they can...
-					Button button = new Button(m_messages.userPropertiesDlgModify());
-					button.addStyleName("vibe-userPropertiesDlg-button vibe-userPropertiesDlg-modify");
-					buttonPanel.add(button);
-					button.addClickHandler(new ClickHandler() {
-						@Override
-						public void onClick(ClickEvent event) {
-							hide();
-							GwtClientHelper.jsLaunchToolbarPopupUrl(modifyUrl, 850, 600);
-						}
-					});
-
-					// ...and add the button panel to the grid.
-					grid.setWidget(            row, 0, buttonPanel);
-					fcf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
-				}
-
-			}
-			attrIndex += 1;
-
-			// Add the attribute's caption...
-			pa = attrMap.get(attrKey);
-			il = new InlineLabel(labelizeCaption(pa.getAttributeCaption()));
-			il.addStyleName("vibe-userPropertiesDlg-attrCaption");
-			il.setWordWrap(false);
-			grid.setWidget(row, 1, il);
-
-			// ...and value.
-			String v = pa.getAttributeValue();
-			il = new InlineLabel((null == v) ? "" : v);
-			il.addStyleName("vibe-userPropertiesDlg-attrValue");
-			il.setWordWrap(false);
-			grid.setWidget(row, 2, il);
-		}
+		// ...add what we know about the user's profile...
+		addProfileInfo(grid, cf, rf, m_userProperties.getProfile(), true);	// true -> Add a section header.
 
 		// Finally, show the dialog.
 		if (null == m_showRelativeTo)
@@ -405,11 +534,11 @@ public class UserPropertiesDlg extends DlgBox {
 		}
 	}
 	
+	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the user properties dialog and perform some operation on it.  */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-	
 	
 	/**
 	 * Callback interface to interact with the user properties dialog
@@ -489,6 +618,6 @@ public class UserPropertiesDlg extends DlgBox {
 	 */
 	public static void initAndShow(UserPropertiesDlg upDlg, Long userId) {
 		// Always use the initial form of the method.
-		initAndShow(upDlg, userId, null);
+		initAndShow(upDlg, userId, null);	// null -> No relative widget, show centered.
 	}
 }

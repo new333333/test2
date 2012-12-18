@@ -2391,8 +2391,17 @@ public interface GwtTeamingMessages extends Messages
 	String userActivityReportWarning_UserAlreadySelected(String name);
 
 	// Strings used by the 'User Properties' dialog.
+	String userPropertiesDlgAccount();
 	String userPropertiesDlgHeader();
 	String userPropertiesDlgLabelize(String label);
+	String userPropertiesDlgLabel_eDirContainer();
+	String userPropertiesDlgLabel_LastLogin();
+	String userPropertiesDlgLabel_LdapDN();
+	String userPropertiesDlgLabel_Source();
+	String userPropertiesDlgLabel_Type();
 	String userPropertiesDlgModify();
+	String userPropertiesDlgSourceLDAP();
+	String userPropertiesDlgSourceLocal();
+	String userPropertiesDlgUnknown();
 	
 }// end GwtTeamingMessages
