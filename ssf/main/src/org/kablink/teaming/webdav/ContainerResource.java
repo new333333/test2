@@ -32,18 +32,32 @@
  */
 package org.kablink.teaming.webdav;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+
+import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderIndexData;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
+import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.security.AccessControlException;
 
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Resource;
+import com.bradmcevoy.http.exceptions.BadRequestException;
+import com.bradmcevoy.http.exceptions.ConflictException;
+import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 
 /**
  * @author jong
@@ -117,6 +131,68 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
 			return null;
 		else
 			return new FileResource(factory, getWebdavPath() + "/" + file.getName(), file);
+	}
+
+	protected CollectionResource createChildFolder(Binder parentBinder, String childFolderName) throws NotAuthorizedException {
+		try {
+	        org.kablink.teaming.domain.Binder binder = FolderUtils.createLibraryFolder(parentBinder, childFolderName);
+	        return new FolderResource(factory,  getWebdavPath() + "/" + childFolderName, (Folder) binder);
+		} catch (ConfigurationException e) {
+			throw e;
+		} catch (AccessControlException e) {
+			throw new NotAuthorizedException(this);
+		} catch (WriteFilesException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		} catch (WriteEntryDataException e) {
+			throw new WebdavException(e.getLocalizedMessage());			
+		}
+	}
+	
+	protected FolderEntry writeFileWithModDate(Folder folder, String newName,
+			InputStream inputStream, Date modDate) throws IOException,
+			ConflictException, NotAuthorizedException, BadRequestException {
+		if (!folder.isLibrary())
+			throw new ConflictException(this,
+					"This folder is not a library folder");
+
+		if (folder.isDeleted())
+			throw new ConflictException(this, "This folder is purged");
+
+		if (folder.isPreDeleted())
+			throw new ConflictException(this, "This folder is deleted");
+
+		FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(
+				folder, newName);
+
+		try {
+			if (entry != null) {
+				// An entry containing a file with this name exists.
+				if (logger.isDebugEnabled())
+					logger.debug("createNew: updating existing file '"
+							+ newName + "' + owned by "
+							+ entry.getEntityIdentifier().toString()
+							+ " in folder " + folder.getId());
+				FolderUtils.modifyLibraryEntry(entry, newName, inputStream,
+						modDate, null, true);
+			} else {
+				// We need to create a new entry
+				if (logger.isDebugEnabled())
+					logger.debug("createNew: creating new file '" + newName
+							+ "' + in folder " + folder.getId());
+				entry = FolderUtils.createLibraryEntry(folder, newName,
+						inputStream, modDate, null, true);
+			}
+		} catch (AccessControlException e) {
+			throw new NotAuthorizedException(this);
+		} catch (ReservedByAnotherUserException e) {
+			throw new ConflictException(this, e.getLocalizedMessage());
+		} catch (WriteFilesException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		} catch (WriteEntryDataException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		}
+
+		return entry;
 	}
 
 	private String getChildWebdavPath(String childName) {

@@ -46,6 +46,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.SPropsUtil;
 
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
@@ -67,17 +68,14 @@ public class SharedWithMeResource extends ContainerResource
 		super(factory, webdavPath);
 	}
 
-	static final String ID = "swm";
-	static final String WEBDAV_PATH = "/swm";
-	
 	@Override
 	public String getUniqueId() {
-		return ID;
+		return SPropsUtil.getString("wd.sharedwithme.prefix", "shared_with_me");
 	}
 
 	@Override
 	public String getName() {
-		return ID;
+		return getUniqueId();
 	}
 
 	@Override
@@ -97,7 +95,7 @@ public class SharedWithMeResource extends ContainerResource
 
 	@Override
 	public String getWebdavPath() {
-		return WEBDAV_PATH;
+		return "/" + getUniqueId();
 	}
 
 	@Override

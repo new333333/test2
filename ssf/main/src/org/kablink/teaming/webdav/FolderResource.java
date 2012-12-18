@@ -43,22 +43,18 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
-import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.TrashHelper;
@@ -166,20 +162,7 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 		// It can never be a workspace or folder of non-file type, except when created indirectly via copy/move functions.
 		Folder parentFolder = resolveFolder();
 		
-		try {
-			Binder folder = FolderUtils.createLibraryFolder(parentFolder, newName);
-			
-			return new FolderResource(factory, getWebdavPath() + "/" + newName, (Folder) folder);
-		} catch (ConfigurationException e) {
-			throw e;
-		} catch (AccessControlException e) {
-			throw new NotAuthorizedException(this);
-		} catch (WriteFilesException e) {
-			throw new WebdavException(e.getLocalizedMessage());
-		} catch (WriteEntryDataException e) {
-			throw new WebdavException(e.getLocalizedMessage());			
-		}
-
+		return createChildFolder(parentFolder, newName);
 	}
 
 	@Override
@@ -226,36 +209,7 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 			ConflictException, NotAuthorizedException, BadRequestException {
 		resolveFolder();
 		
-		if(!folder.isLibrary())
-			throw new ConflictException(this, "This folder is not a library folder");
-		
-		FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, newName);
-		
-		try {
-			if(entry != null) {
-				// An entry containing a file with this name exists.
-				if(logger.isDebugEnabled())
-					logger.debug("createNew: updating existing file '" + newName + "' + owned by " + entry.getEntityIdentifier().toString() + " in folder " + id);
-				FolderUtils.modifyLibraryEntry(entry, newName, inputStream, modDate, null, true);
-			}
-			else {
-				// We need to create a new entry
-				if(logger.isDebugEnabled())
-					logger.debug("createNew: creating new file '" + newName + "' + in folder " + id);
-				entry = FolderUtils.createLibraryEntry(folder, newName, inputStream, modDate, null, true);
-			}
-		}
-		catch (AccessControlException e) {
-			throw new NotAuthorizedException(this);
-		} catch (ReservedByAnotherUserException e) {
-			throw new ConflictException(this, e.getLocalizedMessage());
-		} catch (WriteFilesException e) {
-			throw new WebdavException(e.getLocalizedMessage());
-		} catch (WriteEntryDataException e) {
-			throw new WebdavException(e.getLocalizedMessage());
-		}
-		
-		return entry;
+		return writeFileWithModDate(folder, newName, inputStream, modDate);
 	}
 
 	/* (non-Javadoc)
