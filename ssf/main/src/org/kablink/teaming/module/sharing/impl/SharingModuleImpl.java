@@ -195,32 +195,51 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 						//Check if the binder allows share forward
 						if (tryingToAllowShareForward) {
 							//Test if entry allows sharing forward
-							if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingForward)) {
-								throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
+							if (!accessControlManager.testRightGrantedBySharing(user, 
+									(WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_FORWARD)) {
+								//The entry didn't have the right due to sharing, so now check the parent folder
+								if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingForward)) {
+									throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
+								}
 							}
 						}
 						if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
 							if (recipient.getIdentityInfo().isInternal()) {
-								if (!binderModule.testAccess(topFolder, BinderOperation.allowSharing)) {
-									throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+								if (!accessControlManager.testRightGrantedBySharing(user, 
+										(WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_INTERNAL)) {
+									if (!binderModule.testAccess(topFolder, BinderOperation.allowSharing)) {
+										throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+									}
 								}
 							} else {
-								if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingExternal)) {
-									throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+								if (!accessControlManager.testRightGrantedBySharing(user, 
+										(WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_EXTERNAL)) {
+									if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingExternal)) {
+										throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+									}
 								}
 							}
 						} else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
 							if (((User)recipient).isShared()) {
-								if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingPublic)) {
-									throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+								if (!accessControlManager.testRightGrantedBySharing(user, 
+										(WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_PUBLIC)) {
+									if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingPublic)) {
+										throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+									}
 								}
 							} else if (recipient.getIdentityInfo().isInternal()) {
-								if (!binderModule.testAccess(topFolder, BinderOperation.allowSharing)) {
-									throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+								if (!accessControlManager.testRightGrantedBySharing(user, 
+										(WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_INTERNAL)) {
+									if (!binderModule.testAccess(topFolder, BinderOperation.allowSharing)) {
+										throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+									}
 								}
 							} else {
-								if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingExternal)) {
-									throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+								if (!accessControlManager.testRightGrantedBySharing(user, 
+										(WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_EXTERNAL)) {
+									if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingExternal)) {
+										throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+									}
 								}
 							}
 						} else if (shareItem.getRecipientType().equals(RecipientType.team)) {
@@ -390,6 +409,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     @Override
 	public boolean testAddShareEntity(DefinableEntity de) {
 		boolean reply = false;
+		User user = RequestContextHolder.getRequestContext().getUser();
 
 		try {
 			// Is sharing enabled at the zone level for this type of user.
@@ -425,7 +445,11 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 					// Yes!
 					//In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
 					if (parentBinderToTest != null) {
-						reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharing);
+						//But first check if the entry was shared and is allowing the request
+						reply = accessControlManager.testRightGrantedBySharing(user, (WorkArea)de, WorkAreaOperation.ALLOW_SHARING_INTERNAL);
+						if (!reply) {
+							reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharing);
+						}
 					} else {
 						reply = true;
 					}
@@ -436,7 +460,11 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 					// Yes
 					//In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
 					if (parentBinderToTest != null) {
-						reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharingExternal);
+						//But first check if the entry was shared and is allowing the request
+						reply = accessControlManager.testRightGrantedBySharing(user, (WorkArea)de, WorkAreaOperation.ALLOW_SHARING_EXTERNAL);
+						if (!reply) {
+							reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharingExternal);
+						}
 					} else {
 						reply = true;
 					}
@@ -489,7 +517,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	@Override
 	public boolean testAddShareEntityPublic(DefinableEntity de) {
 		boolean reply = false;
-
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
 		try {
 			// Is sharing enabled at the zone level for this type of user.
 	    	Long					zoneId               = RequestContextHolder.getRequestContext().getZoneId();
@@ -523,7 +552,11 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 					// Yes!
 					//In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
 					if (parentBinderToTest != null) {
-						reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharingPublic);
+						//But first check if the entry was shared and is allowing the request
+						reply = accessControlManager.testRightGrantedBySharing(user, (WorkArea)de, WorkAreaOperation.ALLOW_SHARING_PUBLIC);
+						if (!reply) {
+							reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharingPublic);
+						}
 					} else {
 						reply = true;
 					}
@@ -569,7 +602,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	@Override
 	public boolean testShareEntityForward(DefinableEntity de) {
 		boolean reply = false;
-
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
 		try {
 			// Is sharing enabled at the zone level for this type of user.
 	    	Long					zoneId               = RequestContextHolder.getRequestContext().getZoneId();
@@ -604,7 +638,11 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 					// Yes!
 					//In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
 					if (parentBinderToTest != null) {
-						reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharingForward);
+						//But first check if the entry was shared and is allowing the request
+						reply = accessControlManager.testRightGrantedBySharing(user, (WorkArea)de, WorkAreaOperation.ALLOW_SHARING_FORWARD);
+						if (!reply) {
+							reply = binderModule.testAccess(parentBinderToTest, BinderOperation.allowSharingForward);
+						}
 					} else {
 						reply = true;
 					}
