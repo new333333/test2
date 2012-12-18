@@ -83,6 +83,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -4500,13 +4501,41 @@ public class GwtViewHelper {
 				// Yes!  Extract the profile information we need to
 				// display.
 				User user = ((User) resolvedList.get(0));
-				addProfileAttribute(reply, "title",              user.getTitle());
-				addProfileAttribute(reply, "emailAddress",       user.getEmailAddress());
-				addProfileAttribute(reply, "mobileEmailAddress", user.getMobileEmailAddress());
-				addProfileAttribute(reply, "txtEmailAddress",    user.getTxtEmailAddress());
-				addProfileAttribute(reply, "phone",              user.getPhone());
-				addProfileAttribute(reply, "timeZone",           user.getTimeZone().getDisplayName());
-				addProfileAttribute(reply, "locale",             user.getLocale().getDisplayName());
+				addProfileAttribute(reply, "title",        user.getTitle());
+				addProfileAttribute(reply, "jobTitle",     GwtProfileHelper.getJobTitle(user));
+				addProfileAttribute(reply, "emailAddress", user.getEmailAddress());
+				addProfileAttribute(reply, "phone",        user.getPhone());
+				addProfileAttribute(reply, "timeZone",     user.getTimeZone().getDisplayName());
+				addProfileAttribute(reply, "locale",       user.getLocale().getDisplayName());
+				if (!(Utils.checkIfFilr())) {
+					addProfileAttribute(reply, "mobileEmailAddress", user.getMobileEmailAddress());
+					addProfileAttribute(reply, "txtEmailAddress",    user.getTxtEmailAddress());
+				}
+
+				// Does the user have an 'About Me' defined?
+				CustomAttribute ca = user.getCustomAttribute("aboutMe");
+				if (null != ca) {
+					// Yes!  Does it have a value?
+					Object		aboutMeO = ca.getValue();
+					Description	aboutMeDesc;
+					if      (aboutMeO instanceof String)      aboutMeDesc = new Description((String)aboutMeO);
+					else if (aboutMeO instanceof Description) aboutMeDesc = ((Description) ca.getValue());
+					else                                      aboutMeDesc = null;
+					if (null != aboutMeDesc ) {
+						// Yes!  Replace the mark up...
+						String aboutMeHtml = MarkupUtil.markupStringReplacement(null, null, request, null, user, aboutMeDesc.getText(), WebKeys.MARKUP_VIEW);
+						if (null != aboutMeHtml){
+							// Added a length of one to skip over a
+							// return characters that are in somehow in
+							// the value of the attribute.
+							if (1 < aboutMeHtml.length()){
+								// ...and store anything left in the
+								// ...reply.
+								reply.setAboutMeHtml(aboutMeHtml);
+							}
+						}
+					}
+				}
 				
 				// Store the URL for the user's avatar, if they have
 				// one.

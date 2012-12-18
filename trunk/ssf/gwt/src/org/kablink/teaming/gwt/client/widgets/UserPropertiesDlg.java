@@ -61,7 +61,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
@@ -74,8 +77,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class UserPropertiesDlg extends DlgBox {
-	public static final boolean	SHOW_USER_PROPERTIES_ACTION_MENU	= false;	//! DRF:  Leave this false on checkin until the dialog is complete.
-	
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private Long							m_userId;					// The user we're dealing with.
@@ -252,7 +253,7 @@ public class UserPropertiesDlg extends DlgBox {
 		FlexTable grid = new FlexTable();
 		grid.addStyleName("vibe-userPropertiesDlg-grid");
 		m_fp.add(grid);
-		FlexCellFormatter fcm = grid.getFlexCellFormatter();
+		FlexCellFormatter fcf = grid.getFlexCellFormatter();
 
 		// ...add the user's title...
 		ProfileEntryInfoRpcResponseData profile = m_userProperties.getProfile();
@@ -263,9 +264,9 @@ public class UserPropertiesDlg extends DlgBox {
 		il.addStyleName("vibe-userPropertiesDlg-title");
 		il.setWordWrap(false);
 		grid.setWidget(0, 0, il);
-		fcm.setColSpan(0, 0, 2);
+		fcf.setColSpan(0, 0, 3);
 		
-		// ...and add the user's avatar.
+		// ...add the user's avatar...
 		Image avatarImg = new Image();
 		avatarImg.addStyleName("vibe-userPropertiesDlg-avatar");
 		String avatarUrl = profile.getAvatarUrl();
@@ -274,53 +275,69 @@ public class UserPropertiesDlg extends DlgBox {
 		else avatarImg.setUrl(avatarUrl);
 		avatarImg.setTitle(title);
 		grid.setWidget(1, 0, avatarImg);
-		fcm.setColSpan(1, 0, 2);
 
-		// Scan the attributes we have for the user...
-		Set<String> attrKeys = attrMap.keySet();
+		// ...add the user's 'About Me'...
+		FlowPanel aboutMe = new FlowPanel();
+		aboutMe.addStyleName("vibe-userPropertiesDlg-aboutMe");
+		String aboutMeHtml = profile.getAboutMeHtml();
+		if (GwtClientHelper.hasString(aboutMeHtml)) {
+			aboutMe.getElement().setInnerHTML(aboutMeHtml);
+		}
+		grid.setWidget(          1, 1, aboutMe);
+		fcf.setVerticalAlignment(1, 1, HasVerticalAlignment.ALIGN_TOP);
+		fcf.setColSpan(          1, 1, 2);
+
+		// Scan the profile attributes we have for the user...
+		int			attrIndex = 0;
+		Set<String> attrKeys  = attrMap.keySet();
 		for (String attrKey:  attrKeys) {
-			// ...skipping the title...
+			// ...skipping the title since we handled it above.
 			if (attrKey.equals("title")) {
 				continue;
 			}
 
-			// ...and adding the attribute's caption...
+			// Is this the first profile attribute?
 			int row = grid.getRowCount();
+			if (0 == attrIndex) {
+				// Yes!  Do we have a URL for this user to modify this
+				// user's profile?
+				VibeFlowPanel buttonPanel = new VibeFlowPanel();
+				buttonPanel.addStyleName("vibe-userPropertiesDlg-buttons");
+				final String modifyUrl = profile.getModifyUrl();
+				if (GwtClientHelper.hasString(modifyUrl)) {
+					// Yes!  Create a push button so they can...
+					Button button = new Button(m_messages.userPropertiesDlgModify());
+					button.addStyleName("vibe-userPropertiesDlg-button vibe-userPropertiesDlg-modify");
+					buttonPanel.add(button);
+					button.addClickHandler(new ClickHandler() {
+						@Override
+						public void onClick(ClickEvent event) {
+							hide();
+							GwtClientHelper.jsLaunchToolbarPopupUrl(modifyUrl, 850, 600);
+						}
+					});
+
+					// ...and add the button panel to the grid.
+					grid.setWidget(            row, 0, buttonPanel);
+					fcf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
+				}
+
+			}
+			attrIndex += 1;
+
+			// Add the attribute's caption...
 			pa = attrMap.get(attrKey);
 			il = new InlineLabel(labelizeCaption(pa.getAttributeCaption()));
 			il.addStyleName("vibe-userPropertiesDlg-attrCaption");
 			il.setWordWrap(false);
-			grid.setWidget(row, 0, il);
+			grid.setWidget(row, 1, il);
 
 			// ...and value.
 			String v = pa.getAttributeValue();
 			il = new InlineLabel((null == v) ? "" : v);
 			il.addStyleName("vibe-userPropertiesDlg-attrValue");
 			il.setWordWrap(false);
-			grid.setWidget(row, 1, il);
-		}
-
-		// Do we have a URL for this user to modify this entry?
-		VibeFlowPanel buttonPanel = new VibeFlowPanel();
-		buttonPanel.addStyleName("vibe-userPropertiesDlg-buttons");
-		final String modifyUrl = profile.getModifyUrl();
-		if (GwtClientHelper.hasString(modifyUrl)) {
-			// Yes!  Create a push button so they can...
-			Button button = new Button(m_messages.userPropertiesDlgModify());
-			button.addStyleName("vibe-userPropertiesDlg-button vibe-userPropertiesDlg-modify");
-			buttonPanel.add(button);
-			button.addClickHandler(new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					hide();
-					GwtClientHelper.jsLaunchToolbarPopupUrl(modifyUrl, 850, 600);
-				}
-			});
-
-			// ...and add the button panel to the grid.
-			int row = grid.getRowCount();
-			grid.setWidget(row, 0, buttonPanel);
-			fcm.setColSpan(row, 0, 2);
+			grid.setWidget(row, 2, il);
 		}
 
 		// Finally, show the dialog.

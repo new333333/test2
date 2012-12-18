@@ -771,6 +771,22 @@ public class GwtProfileHelper {
 	    //continue to the next value
 	    return;
 	}
+
+	/**
+	 * Returns a user's Job Title.
+	 * 
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static String getJobTitle(User user) {
+		String			jobTitle;
+		CustomAttribute	ca = user.getCustomAttribute("jobTitle");
+		if (null != ca)
+		     jobTitle = ((String) ca.getValue());
+		else jobTitle = null;
+		return jobTitle;
+	}
 	
 	/**
 	 * Given an avatar URL from a user's profile, patches it so

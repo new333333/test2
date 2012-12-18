@@ -135,7 +135,6 @@ import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
-import org.kablink.teaming.gwt.client.widgets.UserPropertiesDlg;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
@@ -1306,30 +1305,28 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					}
 				};
 
-				if (UserPropertiesDlg.SHOW_USER_PROPERTIES_ACTION_MENU) {
-					// Is this the full name column for the personal
-					// workspaces view contained in the Manage Users
-					// dialog? 
-					if (FolderColumn.isColumnFullName(cName) && getFolderInfo().isBinderProfilesRootWSManagement()) {
-						// Yes!  Create an ActionMenuColumn for it.
-						supportColumn = new ActionMenuColumn<FolderRow>(fc, getFolderInfo()) {
-							@Override
-							public EntryTitleInfo getValue(FolderRow fr) {
-								// The ActionMenuColumn requires an
-								// EntryTitleInfo.  For the full name
-								// column in the manage users dialog, we
-								// don't have one.  Construct a dummy
-								// one with enough information for the
-								// ActionMenuColumn to work.
-								EntryTitleInfo dummyETI = new EntryTitleInfo();
-								dummyETI.setEntityId(fr.getEntityId());
-								return dummyETI;
-							}
-						};
-						supportColumn.setSortable(false);
-						supportColumnWidth  = m_actionMenuColumnWidth;
-						supportColumnStyles = (STYLE_COL_BASE + " vibe-dataTableActions-column");
-					}
+				// Is this the full name column for the personal
+				// workspaces view contained in the Manage Users
+				// dialog? 
+				if (FolderColumn.isColumnFullName(cName) && getFolderInfo().isBinderProfilesRootWSManagement()) {
+					// Yes!  Create an ActionMenuColumn for it.
+					supportColumn = new ActionMenuColumn<FolderRow>(fc, getFolderInfo()) {
+						@Override
+						public EntryTitleInfo getValue(FolderRow fr) {
+							// The ActionMenuColumn requires an
+							// EntryTitleInfo.  For the full name
+							// column in the manage users dialog, we
+							// don't have one.  Construct a dummy
+							// one with enough information for the
+							// ActionMenuColumn to work.
+							EntryTitleInfo dummyETI = new EntryTitleInfo();
+							dummyETI.setEntityId(fr.getEntityId());
+							return dummyETI;
+						}
+					};
+					supportColumn.setSortable(false);
+					supportColumnWidth  = m_actionMenuColumnWidth;
+					supportColumnStyles = (STYLE_COL_BASE + " vibe-dataTableActions-column");
 				}
 			}
 
