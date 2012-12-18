@@ -55,6 +55,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -276,6 +277,12 @@ public class ConfigureLdapController extends  SAbstractController {
 		// Add the default locale to the response.
 		defaultLocaleId = getDefaultLocaleId();
 		model.put( WebKeys.DEFAULT_LOCALE, defaultLocaleId );
+
+		// Add the product name, Vibe or Filr
+		if ( Utils.checkIfFilr() )
+			model.put( "productName", "Filr" );
+		else
+			model.put( "productName", "Vibe" );
 		
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, model);
 		

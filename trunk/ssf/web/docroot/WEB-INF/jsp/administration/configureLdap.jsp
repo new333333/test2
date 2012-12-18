@@ -1272,7 +1272,7 @@ ssPage = {
 		
 		// Tell the user that adding an ldap connection is intended to add a new ldap directory
 		// as a source of users.  It is not intended to be a fallback or failover server.
-		msg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.connection.add.warning"/></ssf:escapeJavaScript>';
+		msg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.connection.add.warning"><ssf:param name="value" value="${productName}" /></ssf:nlt></ssf:escapeJavaScript>';
 		alert( msg );
 
 		var $pane = ssPage.createConnection("", "uid", ssPage.defaultUserMappings, [], [], "", "", "" );
@@ -1436,7 +1436,7 @@ jQuery(document).ready(function() {
 				var msg;
 				
 				// Tell the user we need to sync the ldap guid because the ldap guid attribute name changed.
-				msg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncGuids.Msg"/></ssf:escapeJavaScript>';
+				msg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncGuids.Msg"><ssf:param name="value" value="${productName}" /></ssf:nlt></ssf:escapeJavaScript>';
 				alert( msg );
 			}
 				
@@ -1772,7 +1772,7 @@ jQuery(document).ready(function() {
 
 			<fieldset class="ss_fieldset">
 				<legend class="ss_legend ss_bold"><ssf:nlt tag="ldap.users" /></legend>
-				<label for="ldapUserIdAttribute"><ssf:nlt tag="ldap.user.idmapping" />&nbsp;&nbsp;</label>
+				<label for="ldapUserIdAttribute"><ssf:nlt tag="ldap.user.idmapping"><ssf:param name="value" value="${productName}" /></ssf:nlt>&nbsp;&nbsp;</label>
 				<input class="ldapUserIdAttribute" id="ldapUserIdAttribute" type="text" value="" size="40" />
 				<br />
 				<br />
