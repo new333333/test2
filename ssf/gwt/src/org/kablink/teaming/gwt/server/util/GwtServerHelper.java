@@ -4713,7 +4713,6 @@ public class GwtServerHelper {
 		AllModulesInjected ami,
 		GwtRole role )
 	{
-		Long fnId = null;
 		String fnInternalId = null;
 
 		if ( role == null )
