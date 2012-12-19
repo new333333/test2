@@ -1746,7 +1746,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			// ...throw an appropriate exception.
 			throw new ConfigurationException(NLT.get("errorcode.sendmail.disabled"));
 		}
-
+		
 		// Allocate the error tracking/reply objects.
 		List<SendMailErrorWrapper>	errors = new ArrayList<SendMailErrorWrapper>();
 		Map							result = new HashMap();
@@ -1755,17 +1755,27 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// Allocate the maps of email addresses to locales we'll
 		// use for sending the notifications in the appropriate
 		// locale(s).
-		Map<Locale, List<InternetAddress>> toIAsMap  = new HashMap<Locale, List<InternetAddress>>();
-		Map<Locale, List<InternetAddress>> ccIAsMap  = new HashMap<Locale, List<InternetAddress>>();
-		Map<Locale, List<InternetAddress>> bccIAsMap = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>>	toIAsMap  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>>	ccIAsMap  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>>	bccIAsMap = new HashMap<Locale, List<InternetAddress>>();
+		List<TimeZone>						targetTZs = new ArrayList<TimeZone>();
 
 		// Process the recipient collections we received into the
 		// appropriate email address to locale map.
-		EmailHelper.addPrincipalsToLocaleMap(              MailModule.TO,  toIAsMap,  MiscUtil.validateCL(principalIds  ));
-		EmailHelper.addTeamsToLocaleMap(getBinderModule(), MailModule.TO,  toIAsMap,  MiscUtil.validateCL(teamIds       ));
-		EmailHelper.addEMAsToLocaleMap(                    MailModule.TO,  toIAsMap,  MiscUtil.validateCS(emailAddresses));
-		EmailHelper.addPrincipalsToLocaleMap(              MailModule.CC,  ccIAsMap,  MiscUtil.validateCL(ccIds         ));
-		EmailHelper.addPrincipalsToLocaleMap(              MailModule.BCC, bccIAsMap, MiscUtil.validateCL(bccIds        ));
+		EmailHelper.addPrincipalsToLocaleMap(              MailModule.TO,  toIAsMap,  targetTZs, MiscUtil.validateCL(principalIds  ));
+		EmailHelper.addTeamsToLocaleMap(getBinderModule(), MailModule.TO,  toIAsMap,  targetTZs, MiscUtil.validateCL(teamIds       ));
+		EmailHelper.addEMAsToLocaleMap(                    MailModule.TO,  toIAsMap,  targetTZs, MiscUtil.validateCS(emailAddresses));
+		EmailHelper.addPrincipalsToLocaleMap(              MailModule.CC,  ccIAsMap,  targetTZs, MiscUtil.validateCL(ccIds         ));
+		EmailHelper.addPrincipalsToLocaleMap(              MailModule.BCC, bccIAsMap, targetTZs, MiscUtil.validateCL(bccIds        ));
+
+		// What timezone should we use for date conversions?  If
+		// there's only 1 from all the recipients, use that.
+		// Otherwise, use the senders. 
+		User		sendingUser = RequestContextHolder.getRequestContext().getUser();
+		TimeZone	targetTZ;
+		if (1 == targetTZs.size())
+		     targetTZ = targetTZs.get(0);
+		else targetTZ = sendingUser.getTimeZone();
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
 		// Once we get here, we have maps containing the valid //
@@ -1781,8 +1791,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
 		// Get what we need about the sending user for sending email.
 		Date			now         = new Date();
-		User			sendingUser = RequestContextHolder.getRequestContext().getUser();
-		TimeZone		tz          = sendingUser.getTimeZone();
 		InternetAddress	sendingIA   = new InternetAddress();
 		String			sendersEMA  = sendingUser.getEmailAddress();
 		sendingIA.setAddress(MiscUtil.hasString(sendersEMA) ? sendersEMA : defaultEMA);
@@ -1832,7 +1840,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			
 			// ...generate and add the HTML variant...
 			StringWriter	writer  = new StringWriter();
-			Notify			notify  = new Notify(NotifyType.summary, locale, tz, now);
+			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	NotifyVisitor	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
 		    VelocityContext	ctx     = getShareVelocityContext(visitor, share, sharedEntity);
 			visitor.processTemplate(template, ctx);
@@ -1840,7 +1848,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			
 			// ...generate and add the TEXT variant...
 			writer  = new StringWriter();
-			notify  = new Notify(NotifyType.summary, locale, tz, now);
+			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
 		    ctx     = getShareVelocityContext(visitor, share, sharedEntity);
 			visitor.processTemplate(template, ctx);
@@ -1917,9 +1925,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// Allocate the maps of email addresses to locales we'll
 		// use for sending the notifications in the appropriate
 		// locale(s).
-		Map<Locale, List<InternetAddress>> toIAsMap  = new HashMap<Locale, List<InternetAddress>>();
-		Map<Locale, List<InternetAddress>> ccIAsMap  = new HashMap<Locale, List<InternetAddress>>();
-		Map<Locale, List<InternetAddress>> bccIAsMap = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>>	toIAsMap  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>>	ccIAsMap  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>>	bccIAsMap = new HashMap<Locale, List<InternetAddress>>();
+		List<TimeZone>						targetTZs = new ArrayList<TimeZone>();
 		
 		// Process the external user we received into the appropriate
 		// email address to locale map.
@@ -1927,8 +1936,17 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		externalUserIds.add(externalUserId);
 		boolean notifyAsBCC = SPropsUtil.getBoolean("mail.notifyAsBCC", true);
 		if (notifyAsBCC)
-		     EmailHelper.addPrincipalsToLocaleMap(MailModule.BCC, bccIAsMap, MiscUtil.validateCL(externalUserIds));
-		else EmailHelper.addPrincipalsToLocaleMap(MailModule.TO,  toIAsMap,  MiscUtil.validateCL(externalUserIds));
+		     EmailHelper.addPrincipalsToLocaleMap(MailModule.BCC, bccIAsMap, targetTZs, MiscUtil.validateCL(externalUserIds));
+		else EmailHelper.addPrincipalsToLocaleMap(MailModule.TO,  toIAsMap,  targetTZs, MiscUtil.validateCL(externalUserIds));
+
+		// What timezone should we use for date conversions?  If
+		// there's only 1 from all the recipients, use that.
+		// Otherwise, use the senders. 
+		User		sendingUser = RequestContextHolder.getRequestContext().getUser();
+		TimeZone	targetTZ;
+		if (1 == targetTZs.size())
+		     targetTZ = targetTZs.get(0);
+		else targetTZ = sendingUser.getTimeZone();
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
 		// Once we get here, we have maps containing the valid //
@@ -1944,8 +1962,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
 		// Get what we need about the sending user for sending email.
 		Date			now         = new Date();
-		User			sendingUser = RequestContextHolder.getRequestContext().getUser();
-		TimeZone		tz          = sendingUser.getTimeZone();
 		InternetAddress	sendingIA   = new InternetAddress();
 		String			sendersEMA  = sendingUser.getEmailAddress();
 		sendingIA.setAddress(MiscUtil.hasString(sendersEMA) ? sendersEMA : defaultEMA);
@@ -1976,7 +1992,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			
 			// ...generate and add the HTML variant...
 			StringWriter	writer  = new StringWriter();
-			Notify			notify  = new Notify(NotifyType.summary, locale, tz, now);
+			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	NotifyVisitor	visitor = new NotifyVisitor(null, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
 		    VelocityContext	ctx     = getConfirmationVelocityContext(visitor, entityPermalinkUrl);
 			visitor.processTemplate("externalConfirmation.vm", ctx);
@@ -1984,7 +2000,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			
 			// ...generate and add the TEXT variant...
 			writer  = new StringWriter();
-			notify  = new Notify(NotifyType.summary, locale, tz, now);
+			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	visitor = new NotifyVisitor(null, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
 		    ctx     = getConfirmationVelocityContext(visitor, entityPermalinkUrl);
 			visitor.processTemplate("externalConfirmation.vm", ctx);
@@ -2062,9 +2078,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// Allocate the maps of email addresses to locales we'll
 		// use for sending the notifications in the appropriate
 		// locale(s).
-		Map<Locale, List<InternetAddress>> toIAsMap  = new HashMap<Locale, List<InternetAddress>>();
-		Map<Locale, List<InternetAddress>> ccIAsMap  = new HashMap<Locale, List<InternetAddress>>();
-		Map<Locale, List<InternetAddress>> bccIAsMap = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>>	toIAsMap  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>>	ccIAsMap  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>>	bccIAsMap = new HashMap<Locale, List<InternetAddress>>();
+		List<TimeZone>						targetTZs = new ArrayList<TimeZone>();
 		
 		// Process the external user we received into the appropriate
 		// email address to locale map.
@@ -2072,8 +2089,17 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		externalUserIds.add(externalUserId);
 		boolean notifyAsBCC = SPropsUtil.getBoolean("mail.notifyAsBCC", true);
 		if (notifyAsBCC)
-		     EmailHelper.addPrincipalsToLocaleMap(MailModule.BCC, bccIAsMap, MiscUtil.validateCL(externalUserIds));
-		else EmailHelper.addPrincipalsToLocaleMap(MailModule.TO,  toIAsMap,  MiscUtil.validateCL(externalUserIds));
+		     EmailHelper.addPrincipalsToLocaleMap(MailModule.BCC, bccIAsMap, targetTZs, MiscUtil.validateCL(externalUserIds));
+		else EmailHelper.addPrincipalsToLocaleMap(MailModule.TO,  toIAsMap,  targetTZs, MiscUtil.validateCL(externalUserIds));
+		
+		// What timezone should we use for date conversions?  If
+		// there's only 1 from all the recipients, use that.
+		// Otherwise, use the senders. 
+		User		sendingUser = RequestContextHolder.getRequestContext().getUser();
+		TimeZone	targetTZ;
+		if (1 == targetTZs.size())
+		     targetTZ = targetTZs.get(0);
+		else targetTZ = sendingUser.getTimeZone();
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
 		// Once we get here, we have maps containing the valid //
@@ -2089,8 +2115,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
 		// Get what we need about the sending user for sending email.
 		Date			now         = new Date();
-		User			sendingUser = RequestContextHolder.getRequestContext().getUser();
-		TimeZone		tz          = sendingUser.getTimeZone();
 		InternetAddress	sendingIA   = new InternetAddress();
 		String			sendersEMA  = sendingUser.getEmailAddress();
 		sendingIA.setAddress(MiscUtil.hasString(sendersEMA) ? sendersEMA : defaultEMA);
@@ -2138,7 +2162,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			
 			// ...generate and add the HTML variant...
 			StringWriter	writer  = new StringWriter();
-			Notify			notify  = new Notify(NotifyType.summary, locale, tz, now);
+			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	NotifyVisitor	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
 		    VelocityContext	ctx     = getShareVelocityContext(visitor, share, sharedEntity, encodedExternalUserId);
 			visitor.processTemplate(template, ctx);
@@ -2146,7 +2170,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			
 			// ...generate and add the TEXT variant...
 			writer  = new StringWriter();
-			notify  = new Notify(NotifyType.summary, locale, tz, now);
+			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
 		    ctx     = getShareVelocityContext(visitor, share, sharedEntity, encodedExternalUserId);
 			visitor.processTemplate(template, ctx);
@@ -2221,11 +2245,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	    VelocityContext	reply = NotifyBuilderUtil.getVelocityContext();
 	    
 	    // ...initialize it...
+	    Notify notify = visitor.getNotifyDef();
 	    User user = RequestContextHolder.getRequestContext().getUser();
 		reply.put("ssVisitor",         visitor                                                                                                     );
 		reply.put("ssShare",           share                                                                                                       );
 		reply.put("ssSharedEntity",    sharedEntity                                                                                                );
-		reply.put("ssShareExpiration", EmailHelper.getShareExpiration(visitor.getNotifyDef().getLocale(), share)                                   );
+		reply.put("ssShareExpiration", EmailHelper.getShareExpiration(notify.getLocale(), notify.getTimeZone(), share)                             );
 		reply.put("ssSharer",          NLT.get("share.notify.sharer", new String[]{visitor.getUserTitle(user)}, visitor.getNotifyDef().getLocale()));
 		reply.put("ssProduct",         (Utils.checkIfFilr() ? "Filr" : "Vibe")                                                                     );
 		reply.put("user",              user                                                                                                        );

@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
@@ -80,14 +81,15 @@ public class EmailHelper {
 	 * 
 	 * @param usedAs
 	 * @param localeMap
+	 * @param targetTZs
 	 * @param emas
 	 */
-	public static void addEMAsToLocaleMap(String usedAs, Map<Locale, List<InternetAddress>> localeMap, Collection<String> emas) {
+	public static void addEMAsToLocaleMap(String usedAs, Map<Locale, List<InternetAddress>> localeMap, List<TimeZone> targetTZs, Collection<String> emas) {
 		// Scan the email addresses...
 		User user = RequestContextHolder.getRequestContext().getUser();
 		for (String ema:  emas) {
 			// ...adding them to the current user's locale map.
-			addEMAToUsersLocaleMap(usedAs, localeMap, user, ema);
+			addEMAToUsersLocaleMap(usedAs, localeMap, targetTZs, user, ema);
 		}
 	}
 
@@ -97,10 +99,11 @@ public class EmailHelper {
 	 * 
 	 * @param usedAs
 	 * @param localeMap
+	 * @param targetTZs
 	 * @param principalIds
 	 */
 	@SuppressWarnings("unchecked")
-	public static void addPrincipalsToLocaleMap(String usedAs, Map<Locale, List<InternetAddress>> localeMap, Collection<Long> principalIds) {
+	public static void addPrincipalsToLocaleMap(String usedAs, Map<Locale, List<InternetAddress>> localeMap, List<TimeZone> targetTZs, Collection<Long> principalIds) {
 		// Resolve the principal IDs and scan them.
 		List<Principal> principals = ResolveIds.getPrincipals(principalIds);
 		for (Principal principal:  principals) {
@@ -123,7 +126,7 @@ public class EmailHelper {
 							// Yes!  Add its email address to the
 							// appropriate locale list.
 							User user = ((User) userP);
-							addEMAToUsersLocaleMap(usedAs, localeMap, user, user.getEmailAddress());
+							addEMAToUsersLocaleMap(usedAs, localeMap, targetTZs, user, user.getEmailAddress());
 						}
 					}
 				}
@@ -134,7 +137,7 @@ public class EmailHelper {
 				// Yes!  Add its email address to the appropriate
 				// locale list.
 				User user = ((User) principal);
-				addEMAToUsersLocaleMap(usedAs, localeMap, user, user.getEmailAddress());
+				addEMAToUsersLocaleMap(usedAs, localeMap, targetTZs, user, user.getEmailAddress());
 			}
 		}
 	}
@@ -147,15 +150,16 @@ public class EmailHelper {
 	 * @param bm
 	 * @param usedAs
 	 * @param localeMap
+	 * @param targetTZs
 	 * @param teamIds
 	 */
-	public static void addTeamsToLocaleMap(BinderModule bm, String usedAs, Map<Locale, List<InternetAddress>> localeMap, Collection<Long> teamIds) {
+	public static void addTeamsToLocaleMap(BinderModule bm, String usedAs, Map<Locale, List<InternetAddress>> localeMap, List<TimeZone> targetTZs, Collection<Long> teamIds) {
 		// Scan the team IDs.
 		for (Long teamId:  teamIds) {
 			// Expand each team into a collection of principal IDs and
 			// add them to the appropriate locale map.
 			Collection<Long> userIds = MiscUtil.validateCL(getTeamMemberIds(bm, teamId, true));
-			addPrincipalsToLocaleMap(usedAs, localeMap, userIds);
+			addPrincipalsToLocaleMap(usedAs, localeMap, targetTZs, userIds);
 		}
 	}
 	
@@ -166,10 +170,11 @@ public class EmailHelper {
 	 * 
 	 * @param usedAs
 	 * @param localeMap
+	 * @param targetTZs
 	 * @param user
 	 * @param ema
 	 */
-	public static void addEMAToUsersLocaleMap(String usedAs, Map<Locale, List<InternetAddress>> localeMap, User user, String ema) {
+	public static void addEMAToUsersLocaleMap(String usedAs, Map<Locale, List<InternetAddress>> localeMap, List<TimeZone> targetTZs, User user, String ema) {
 		// If the user doesn't have a Locale defined...
 		Locale locale = user.getLocale();
 		if (null == locale) {
@@ -178,6 +183,16 @@ public class EmailHelper {
 			if (null == locale){
 				// ...use the system's default.
 				locale = Locale.getDefault();
+			}
+		}
+
+		// Does this user have a timezone?
+		TimeZone tz = user.getTimeZone();
+		if (null != tz) {
+			// Yes!  If it's not already in the list...
+			if (!(isTZInList(targetTZs, tz))) {
+				// ...add it.
+				targetTZs.add(tz);
 			}
 		}
 
@@ -295,10 +310,11 @@ public class EmailHelper {
      * 
      * @param locale
      * @param share
+     * @param tz
      * 
      * @return
      */
-    public static String getShareExpiration(Locale locale, ShareItem share) {
+    public static String getShareExpiration(Locale locale, TimeZone tz, ShareItem share) {
     	// Does the share have an expiration date?
     	String reply;
 		Date expiration = share.getEndDate();
@@ -320,6 +336,7 @@ public class EmailHelper {
 				// No, there's no days!  It expires explicitly on the
 				// specified date.
 				DateFormat dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, locale);
+				dateFmt.setTimeZone(tz);
 				String dateText = dateFmt.format(expiration);
 				reply = NLT.get("share.expires.on", new Object[]{dateText}, locale);
 			}
@@ -405,6 +422,27 @@ public class EmailHelper {
 		
 		// If we get here, the List<Locale> did not contain the Locale
 		// in question.  Return false.
+		return false;
+	}
+	
+	/*
+	 * Returns true if a List<TimeZone> contains a given TimeZone and
+	 * false otherwise.
+	 */
+	private static boolean isTZInList(List<TimeZone> iaList, TimeZone tz) {
+		// Scan the List<TimeZone>.
+		String tzId = tz.getID();
+		for (TimeZone tzScan:  iaList) {
+			// Is this the TimeZone in question?
+			String tzScanId = tzScan.getID();
+			if (tzScanId.equals(tzId)) {
+				// Yes!  Return true.
+				return true;
+			}
+		}
+		
+		// If we get here, the List<TimeZone> did not contain
+		// the TimeZone in question.  Return false.
 		return false;
 	}
 	
