@@ -1162,6 +1162,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 */
 	@Override
 	public void updateWorkAreaFunctionMemberships(WorkArea wa, Long functionId, boolean add, Collection<Long> memberIds) {
+		// Ensure that this WorkArea is NOT inheriting membership.
+		setWorkAreaFunctionMembershipInherited(wa, false);
+		
 		// Is there a WorkAreaFunctionMembership on this WorkArea?
 		WorkAreaFunctionMembership wafm = getWorkAreaFunctionMembership(wa, functionId);
 		final boolean finalNewWAFM = (null == wafm);
@@ -1260,6 +1263,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 */
 	@Override
 	public void resetWorkAreaFunctionMemberships(WorkArea wa, Long functionId, Collection<Long> memberIds) {
+		// Ensure that this WorkArea is NOT inheriting membership.
+		setWorkAreaFunctionMembershipInherited(wa, false);
+		
 		// Is there a WorkAreaFunctionMembership on this WorkArea?
 		WorkAreaFunctionMembership wafm = getWorkAreaFunctionMembership(wa, functionId);
 		final boolean finalNewWAFM = (null == wafm);
