@@ -135,6 +135,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.AccountInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.HomeInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.NetFoldersInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.QuotaInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsCmd.UploadInfo;
@@ -184,6 +185,7 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FilesLockedByOtherUsersException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.report.ReportModule;
@@ -4994,7 +4996,7 @@ public class GwtViewHelper {
 			reply.setSharingRights(sharingRights.getUserRights(userId));
 
 			// ...if quotas are enabled...
-			AdminModule am = bs.getAdminModule();
+			final AdminModule am = bs.getAdminModule();
 			if (am.isQuotaEnabled()) {
 				QuotaInfo qi = new QuotaInfo();
 				if (am.testAccess(AdminOperation.manageFunction)) {
@@ -5025,8 +5027,30 @@ public class GwtViewHelper {
 				reply.setQuotaInfo(qi);
 			}
 
+			// ...add a NetFolderInfo...
+			final NetFoldersInfo nfi = new NetFoldersInfo();
+			reply.setNetFoldersInfo(nfi);
+			if (am.testAccess(AdminOperation.manageFunction)) {
+				// ...including whether the user can manage net
+				// ...folders...
+				try {
+					Binder netFoldersParentBinder = getCoreDao().loadReservedBinder(
+						ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
+						RequestContextHolder.getRequestContext().getZoneId());
+					
+					nfi.setCanManageNetFolders(
+						(null != netFoldersParentBinder) &&
+						LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
+						bs.getBinderModule().testAccess(netFoldersParentBinder, BinderOperation.modifyBinder));
+				}
+				catch (Exception ex) {
+					// Ignore.  If we can't access it, the user can't
+					// manage net folders.
+				}
+			}
+
 			// ...some of the information required has to be done as
-			// ...that user...
+			// ...the target user...
 			RunasTemplate.runas(
 				new RunasCallback() {
 					@Override
@@ -5057,7 +5081,7 @@ public class GwtViewHelper {
 							hi.setRootPath(    rootPath              );
 							reply.setHomeInfo(hi);
 						}
-						
+
 						Map			nfSearch = getCollectionEntries(bs, request, null, null, new HashMap(), CollectionType.NET_FOLDERS, null);
 						List<Map>	nfList   = ((List<Map>) nfSearch.get(ObjectKeys.SEARCH_ENTRIES));
 						if (MiscUtil.hasItems(nfList)) {
@@ -5084,7 +5108,7 @@ public class GwtViewHelper {
 										eti.setDescriptionIsHtml(false      );
 									}
 								}
-								reply.addNetFolder(eti);
+								nfi.addNetFolder(eti);
 							}
 						}
 						return null;	// Not used.  Doesn't matter what we return.

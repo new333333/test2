@@ -77,11 +77,19 @@ public class InvokeManageNetFoldersDlgEvent extends VibeEventBase<InvokeManageNe
     }
 	
 	/**
-	 * Fires a new one of these events.
+	 * Synchronously fires a new one of these events.
 	 */
 	public static void fireOne()
 	{
 		GwtTeaming.fireEvent( new InvokeManageNetFoldersDlgEvent() );
+	}
+    
+	/**
+	 * Asynchronously fires a new one of these events.
+	 */
+	public static void fireOneAsync()
+	{
+		GwtTeaming.fireEventAsync( new InvokeManageNetFoldersDlgEvent() );
 	}
     
 	/**
