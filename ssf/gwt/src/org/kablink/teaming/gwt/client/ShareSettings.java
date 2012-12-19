@@ -33,118 +33,48 @@
 package org.kablink.teaming.gwt.client;
 
 
+
 import java.util.ArrayList;
+
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * Class used in GWT RPC calls to represent role membership.
+ * Class used in GWT RPC calls to represent share settings.
  * 
  * @author jwootton@novell.com
  */
-public class GwtRole
-	implements IsSerializable
+public class ShareSettings 
+	implements IsSerializable, VibeRpcResponseData
 {
-	private GwtRoleType m_roleType;
-	private ArrayList<GwtPrincipal> m_listOfMembers;
+	private ArrayList<GwtRole> m_roles;
 	
-	/**
-	 * 
-	 */
-	public enum GwtRoleType implements IsSerializable
-	{
-		ShareExternal,
-		ShareForward,
-		ShareInternal,
-		SharePublic,
-		EnableShareExternal,
-		EnableShareForward,
-		EnableShareInternal,
-		EnableSharePublic,
-		EnableShareWithAllInternal,
-		EnableShareWithAllExternal,
-		AllowAccess,
-		
-		Unknown
-	}
 	
 	/**
 	 * Constructor method. 
 	 * 
 	 * No parameters as per GWT serialization requirements.
 	 */
-	public GwtRole()
+	public ShareSettings()
 	{
-		m_listOfMembers = new ArrayList<GwtPrincipal>();
+		// Nothing to do.
 	}	
-		
-	/**
-	 * 
-	 */
-	public void addMember( GwtPrincipal member )
-	{
-		Long memberId;
-		
-		if ( member == null )
-			return;
-		
-		memberId = member.getIdLong();
-		
-		if ( m_listOfMembers == null )
-			m_listOfMembers = new ArrayList<GwtPrincipal>();
-		
-		// Make sure this member is not already in the list.
-		for ( GwtPrincipal nextPrincipal : m_listOfMembers )
-		{
-			if ( memberId.equals( nextPrincipal.getIdLong() ) )
-				return;
-		}
-		
-		m_listOfMembers.add( member );
-	}
-
-	/**
-	 * 
-	 */
-	public ArrayList<GwtPrincipal> getListOfMembers()
-	{
-		return m_listOfMembers;
-	}
 	
 	/**
 	 * 
 	 */
-	public ArrayList<Long> getMemberIds()
+	public ArrayList<GwtRole> getRoles()
 	{
-		ArrayList<Long> memberIds;
-		
-		memberIds = new ArrayList<Long>();
-		
-		if ( m_listOfMembers != null )
-		{
-			for ( GwtPrincipal nextPrincipal : m_listOfMembers )
-			{
-				memberIds.add( nextPrincipal.getIdLong() );
-			}
-		}
-		
-		return memberIds;
+		return m_roles;
 	}
 	
 	/**
-	 * Returns the role type
+	 * Set the roles
 	 */
-	public GwtRoleType getType() 
+	public void setRoles( ArrayList<GwtRole> roles )
 	{
-		return m_roleType;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setType( GwtRoleType type )
-	{
-		m_roleType = type;
+		m_roles = roles;
 	}
 }

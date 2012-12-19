@@ -56,17 +56,24 @@ import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.User.ExtProvState;
+import org.kablink.teaming.gwt.client.GwtGroup;
+import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
+import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.ShareSettings;
+import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
@@ -76,6 +83,7 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationT
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.SendMailErrorWrapper;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
@@ -86,7 +94,9 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 
@@ -1131,6 +1141,132 @@ public class GwtShareHelper
 		}
 		
 		return shareRights;
+	}
+	
+	/**
+	 * Return the sharing roles that are defined at the zone level.
+	 */
+	@SuppressWarnings("rawtypes")
+	public static ShareSettings getShareSettings( AllModulesInjected ami )
+	{
+		ShareSettings shareSettings;
+		ArrayList<GwtRole> listOfRoles;
+		GwtRole role;
+		AdminModule adminModule;
+		Long zoneId;
+		WorkArea workArea;
+		
+		listOfRoles = new ArrayList<GwtRole>();
+		role = new GwtRole();
+		role.setType( GwtRoleType.EnableShareExternal );
+		listOfRoles.add( role );
+		role = new GwtRole();
+		role.setType( GwtRoleType.EnableShareForward );
+		listOfRoles.add( role );
+		role = new GwtRole();
+		role.setType( GwtRoleType.EnableShareInternal );
+		listOfRoles.add( role );
+		role = new GwtRole();
+		role.setType( GwtRoleType.EnableSharePublic );
+		listOfRoles.add( role );
+		role = new GwtRole();
+		role.setType( GwtRoleType.EnableShareWithAllExternal );
+		listOfRoles.add( role );
+		role = new GwtRole();
+		role.setType( GwtRoleType.EnableShareWithAllInternal );
+		listOfRoles.add( role );
+		
+		shareSettings = new ShareSettings();
+		shareSettings.setRoles( listOfRoles );
+		
+		adminModule = ami.getAdminModule();
+		
+    	zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		workArea = ami.getZoneModule().getZoneConfig( zoneId );
+		
+		for ( GwtRole nextRole : listOfRoles )
+		{
+			Long fnId = null;
+			WorkAreaFunctionMembership membership;
+			Set<Long> memberIds;
+			List principals = null;
+			
+			// Get the Function id for the given role
+			fnId = GwtServerHelper.getFunctionIdFromRole( ami, nextRole );
+
+			// Did we find the function for the given role?
+			if ( fnId == null )
+			{
+				// No
+				continue;
+			}
+
+			// Get the role's membership
+			membership = adminModule.getWorkAreaFunctionMembership( workArea, fnId );
+			if ( membership == null )
+				continue;
+			
+			// Get the member ids
+			memberIds = membership.getMemberIds();
+			if ( memberIds == null )
+				continue;
+			
+			try 
+			{
+				principals = ResolveIds.getPrincipals( memberIds );
+			}
+			catch ( Exception ex )
+			{
+				// Nothing to do
+			}
+			
+			if ( MiscUtil.hasItems( principals ) == false )
+				continue;
+
+			for ( Object nextObj :  principals )
+			{
+				if ( nextObj instanceof Principal )
+				{
+					Principal nextPrincipal;
+					
+					nextPrincipal = (Principal) nextObj;
+
+					if ( nextPrincipal instanceof Group )
+					{
+						Group nextGroup;
+						GwtGroup gwtGroup;
+						
+						nextGroup = (Group) nextPrincipal;
+						
+						gwtGroup = new GwtGroup();
+						gwtGroup.setInternal( nextGroup.getIdentityInfo().isInternal() );
+						gwtGroup.setId( nextGroup.getId().toString() );
+						gwtGroup.setName( nextGroup.getName() );
+						gwtGroup.setTitle( nextGroup.getTitle() );
+						
+						nextRole.addMember( gwtGroup );
+					}
+					else if ( nextPrincipal instanceof User )
+					{
+						User user;
+						GwtUser gwtUser;
+						
+						user = (User) nextPrincipal;
+	
+						gwtUser = new GwtUser();
+						gwtUser.setInternal( user.getIdentityInfo().isInternal() );
+						gwtUser.setUserId( user.getId() );
+						gwtUser.setName( user.getName() );
+						gwtUser.setTitle( Utils.getUserTitle( user ) );
+						gwtUser.setWorkspaceTitle( user.getWSTitle() );
+	
+						nextRole.addMember( gwtUser );
+					}
+				}
+			}
+		}
+		
+		return shareSettings;
 	}
 
 	/**

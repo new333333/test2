@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureAdhocFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureMobileAppsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeConfigureShareSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
@@ -72,6 +73,7 @@ import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.ConfigureAdhocFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureMobileAppsDlg.ConfigureMobileAppsDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ConfigureShareSettingsDlg.ConfigureShareSettingsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUserAccessDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.ConfigureUserFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserMobileAppsDlg.ConfigureUserMobileAppsDlgClient;
@@ -120,6 +122,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeConfigureAdhocFoldersDlgEvent.Handler,
 		InvokeConfigureFileSyncAppDlgEvent.Handler,
 		InvokeConfigureMobileAppsDlgEvent.Handler,
+		InvokeConfigureShareSettingsDlgEvent.Handler,
 		InvokeConfigureUserAccessDlgEvent.Handler,
 		InvokeManageNetFoldersDlgEvent.Handler,
 		InvokeManageNetFolderRootsDlgEvent.Handler,
@@ -152,6 +155,7 @@ public class AdminControl extends TeamingPopupPanel
 	private RunAReportDlg m_runAReportDlg = null;
 	private ConfigureUserAccessDlg m_configureUserAccessDlg = null;
 	private ConfigureAdhocFoldersDlg m_configureAdhocFoldersDlg = null;
+	private ConfigureShareSettingsDlg m_configureShareSettingsDlg = null;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -161,6 +165,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_MOBILE_APPS_DLG,
+		TeamingEvents.INVOKE_CONFIGURE_SHARE_SETTINGS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
@@ -776,6 +781,11 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Fire the event to invoke the "Configure Mobile apps" dialog.
 			InvokeConfigureMobileAppsDlgEvent.fireOne();
+		}
+		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_SHARE_SETTINGS )
+		{
+			// Fire the event to invoke the "Configure Share Settings" dialog.
+			InvokeConfigureShareSettingsDlgEvent.fireOne();
 		}
 		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_USER_ACCESS )
 		{
@@ -1447,6 +1457,76 @@ public class AdminControl extends TeamingPopupPanel
 			m_configureMobileAppsDlg.init();
 			m_configureMobileAppsDlg.setPopupPosition( x, y );
 			m_configureMobileAppsDlg.show();
+		}
+	}
+	
+
+	/**
+	 * Handles InvokeConfigureShareSettingsDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeConfigureShareSettingsDlgEvent.Handler.onInvokeConfigureShareSettingsDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeConfigureShareSettingsDlg( InvokeConfigureShareSettingsDlgEvent event )
+	{
+		int x;
+		int y;
+
+		// Get the position of the content control.
+		x = m_contentControlX;
+		y = m_contentControlY;
+		
+		// Have we already created a "Configure Share Settings" dialog?
+		if ( m_configureShareSettingsDlg == null )
+		{
+			int width;
+			int height;
+			
+			// No, create one.
+			height = m_dlgHeight;
+			width = m_dlgWidth;
+			ConfigureShareSettingsDlg.createAsync(
+											false, 
+											true,
+											x, 
+											y,
+											width,
+											height,
+											new ConfigureShareSettingsDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ConfigureShareSettingsDlg cssDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_configureShareSettingsDlg = cssDlg;
+							
+							m_configureShareSettingsDlg.init();
+							m_configureShareSettingsDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_configureShareSettingsDlg.init();
+			m_configureShareSettingsDlg.setPopupPosition( x, y );
+			m_configureShareSettingsDlg.show();
 		}
 	}
 	

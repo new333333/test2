@@ -92,6 +92,7 @@ import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
+import org.kablink.teaming.gwt.client.ShareSettings;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
@@ -1784,6 +1785,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			url = getSendToFriendUrl( ri, gstfuCmd.getEntryId() );
 			responseData = new StringRpcResponseData( url );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_SHARE_SETTINGS:
+		{
+			ShareSettings shareSettings;
+			
+			shareSettings = GwtShareHelper.getShareSettings( this );
+			response = new VibeRpcResponse( shareSettings );
 			return response;
 		}
 		

@@ -357,6 +357,7 @@ public class WebKeys {
 	public static final String ACTION_CONFIGURE_DEFINITIONS = "configure_definitions";
 	public static final String ACTION_CONFIGURE_HOME_PAGE="configure_home_page";
 	public static final String ACTION_CONFIGURE_MOBILE_ACCESS="configure_mobile_access";
+	public static final String ACTION_CONFIGURE_SHARE_SETTINGS = "configure_share_settings";
 	public static final String ACTION_CONFIGURE_USER_ACCESS="configure_user_access";
 	public static final String ACTION_DEFINITION_BUILDER = "definition_builder";
 	public static final String ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
