@@ -1759,6 +1759,9 @@ public class BinderHelper {
 	static public void buildSimpleUrlBeans(AllModulesInjected bs,  PortletRequest request, Binder binder, Map model) {
 		//Build the simple URL beans
 		String[] s = SPropsUtil.getStringArray("simpleUrl.globalKeywords", ",");
+		if (Utils.checkIfFilr()) {
+			s = SPropsUtil.getStringArray("simpleUrl.globalKeywordsForFilr", ",");
+		}
 		model.put(WebKeys.SIMPLE_URL_GLOBAL_KEYWORDS, s);
 		model.put(WebKeys.SIMPLE_URL_PREFIX, WebUrlUtil.getSimpleURLContextRootURL(request));
 		model.put(WebKeys.SIMPLE_WEBDAV_PREFIX, WebUrlUtil.getSimpleWebdavRootURL(request));
