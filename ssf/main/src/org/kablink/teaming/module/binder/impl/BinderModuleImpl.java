@@ -140,6 +140,7 @@ import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -2607,7 +2608,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     //Get the versionsToKeep setting from the first binder it is set in up the ancestor chain
     public Long getBinderVersionsToKeep(Binder binder) {
     	Boolean versionsEnabled = binder.getVersionsEnabled();
-    	if (versionsEnabled != null && !versionsEnabled) {
+    	if (Utils.checkIfFilr() || (versionsEnabled != null && !versionsEnabled)) {
+    		//Filr systems do not support versions in V1
     		//Versions have been explicitly turned off. Simulate no versions by returning 0
     		return 0L;
     	} else if (versionsEnabled != null && versionsEnabled) {
