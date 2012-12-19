@@ -39,9 +39,8 @@ import org.kablink.teaming.gwt.client.GwtPrincipal;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderRightsDlgEvent;
-import org.kablink.teaming.gwt.client.util.PerUserRightsInfo;
-import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
+import org.kablink.teaming.gwt.client.event.InvokeEditUserZoneShareRightsDlgEvent;
+import org.kablink.teaming.gwt.client.util.PerUserZoneShareRightsInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -50,15 +49,15 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * This widget is used in the "Share Settings" dialog to select users/groups and define
+ * This widget is used in the "Edit Zone Share Rights" dialog to select users/groups and define
  * the share rights they have.
  */
-public class ShareSettingsSelectPrincipalsWidget extends SelectPrincipalsWidget
+public class ZoneShareRightsSelectPrincipalsWidget extends SelectPrincipalsWidget
 {
 	/**
 	 * 
 	 */
-	private ShareSettingsSelectPrincipalsWidget()
+	private ZoneShareRightsSelectPrincipalsWidget()
 	{
 		super();
 	}
@@ -71,9 +70,9 @@ public class ShareSettingsSelectPrincipalsWidget extends SelectPrincipalsWidget
 	{
 		if ( principal != null )
 		{
-			PerUserRightsInfo rightsInfo;
+			PerUserZoneShareRightsInfo rightsInfo;
 			
-			rightsInfo = new PerUserRightsInfo( new PerUserShareRightsInfo(), false );
+			rightsInfo = new PerUserZoneShareRightsInfo();
 			principal.setAdditionalData( rightsInfo );
 		}
 	}
@@ -124,6 +123,25 @@ public class ShareSettingsSelectPrincipalsWidget extends SelectPrincipalsWidget
 	}
 	
 	/**
+	 * Override this method to provide a different fixed height
+	 */
+	@Override
+	protected int getPrincipalsTableFixedHeight()
+	{
+		return 400;
+	}
+	
+	/**
+	 * Override this method to provide a different style name
+	 */
+	@Override
+	protected String getPrincipalsTablePanelStyle()
+	{
+		return "zoneShareRightsSelectPrincipalsWidget_PrincipalsTablePanelHeight";
+	}
+	
+
+	/**
 	 * Return the list of roles (rights) the user has given out.
 	 */
 	public ArrayList<GwtRole> getRoles()
@@ -150,19 +168,19 @@ public class ShareSettingsSelectPrincipalsWidget extends SelectPrincipalsWidget
 			roles.add( shareWithAllInternalRole );
 
 			shareExternalRole = new GwtRole();
-			shareExternalRole.setType( GwtRoleType.ShareExternal );
+			shareExternalRole.setType( GwtRoleType.EnableShareExternal );
 			roles.add( shareExternalRole );
 
 			reshareRole = new GwtRole();
-			reshareRole.setType( GwtRoleType.ShareForward );
+			reshareRole.setType( GwtRoleType.EnableShareForward );
 			roles.add( reshareRole );
 
 			shareInternalRole = new GwtRole();
-			shareInternalRole.setType( GwtRoleType.ShareInternal );
+			shareInternalRole.setType( GwtRoleType.EnableShareInternal );
 			roles.add( shareInternalRole );
 			
 			sharePublicRole = new GwtRole();
-			sharePublicRole.setType( GwtRoleType.SharePublic );
+			sharePublicRole.setType( GwtRoleType.EnableSharePublic );
 			roles.add( sharePublicRole );
 		}
 		
@@ -175,23 +193,29 @@ public class ShareSettingsSelectPrincipalsWidget extends SelectPrincipalsWidget
 				Object obj;
 				
 				obj = nextPrincipal.getAdditionalData();
-				if ( obj != null && obj instanceof PerUserRightsInfo )
+				if ( obj != null && obj instanceof PerUserZoneShareRightsInfo )
 				{
-					PerUserRightsInfo rightsInfo;
+					PerUserZoneShareRightsInfo rightsInfo;
 					
-					rightsInfo = (PerUserRightsInfo) obj;
+					rightsInfo = (PerUserZoneShareRightsInfo) obj;
 					
-					if ( rightsInfo.canReshare() )
+					if ( rightsInfo.getIsEnableShareForwarding() )
 						reshareRole.addMember( nextPrincipal );
 						
-					if ( rightsInfo.canShareExternal() )
+					if ( rightsInfo.getIsEnableShareExternal() )
 						shareExternalRole.addMember( nextPrincipal );
 					
-					if ( rightsInfo.canShareInternal() )
+					if ( rightsInfo.getIsEnableShareInternal() )
 						shareInternalRole.addMember( nextPrincipal );
 					
-					if ( rightsInfo.canSharePublic() )
+					if ( rightsInfo.getIsEnableSharePublic() )
 						sharePublicRole.addMember( nextPrincipal );
+					
+					if ( rightsInfo.getIsEnableShareWithAllExternal() )
+						shareWithAllExternalRole.addMember( nextPrincipal );
+					
+					if ( rightsInfo.getIsEnableShareWithAllInternal() )
+						shareWithAllInternalRole.addMember( nextPrincipal );
 				}
 			}
 		}
@@ -216,17 +240,17 @@ public class ShareSettingsSelectPrincipalsWidget extends SelectPrincipalsWidget
 		
 		if ( col == 1 )
 		{
-			if ( principal.getAdditionalData() instanceof PerUserRightsInfo )
+			if ( principal.getAdditionalData() instanceof PerUserZoneShareRightsInfo )
 			{
-				NetFolderRightsWidget widget;
-				PerUserRightsInfo rightsInfo;
+				ZoneShareRightsWidget widget;
+				PerUserZoneShareRightsInfo rightsInfo;
 				
-				rightsInfo = (PerUserRightsInfo) principal.getAdditionalData();
-				widget = new NetFolderRightsWidget( rightsInfo, principal.getIdLong() );
+				rightsInfo = (PerUserZoneShareRightsInfo) principal.getAdditionalData();
+				widget = new ZoneShareRightsWidget( rightsInfo, principal.getIdLong() );
 				return widget;
 			}
 			
-			return new InlineLabel( "Could not get PerUserRightsInfo" );
+			return new InlineLabel( "Could not get PerUserZoneShareRightsInfo" );
 		}
 		
 		if ( col == 2 )
@@ -271,33 +295,41 @@ public class ShareSettingsSelectPrincipalsWidget extends SelectPrincipalsWidget
 						// No, add them.
 						listOfPrincipals.put( nextMember.getIdLong(), nextMember );
 						principal = nextMember;
-						principal.setAdditionalData( new PerUserRightsInfo() );
+						principal.setAdditionalData( new PerUserZoneShareRightsInfo() );
 					}
 					
 					// Initialize the rights this user has
 					obj = principal.getAdditionalData();
-					if ( obj != null && obj instanceof PerUserRightsInfo )
+					if ( obj != null && obj instanceof PerUserZoneShareRightsInfo )
 					{
-						PerUserRightsInfo rightsInfo;
+						PerUserZoneShareRightsInfo rightsInfo;
 
-						rightsInfo = (PerUserRightsInfo) obj;
+						rightsInfo = (PerUserZoneShareRightsInfo) obj;
 						
 						switch ( nextRole.getType() )
 						{
-						case ShareExternal:
-							rightsInfo.setCanShareExternal( true );
+						case EnableShareExternal:
+							rightsInfo.setEnableShareExternal( true );
 							break;
 						
-						case ShareForward:
-							rightsInfo.setCanReshare( true );
+						case EnableShareForward:
+							rightsInfo.setEnableShareForwarding( true );
 							break;
 							
-						case ShareInternal:
-							rightsInfo.setCanShareInternal( true );
+						case EnableShareInternal:
+							rightsInfo.setEnableShareInternal( true );
 							break;
 							
-						case SharePublic:
-							rightsInfo.setCanSharePublic( true );
+						case EnableSharePublic:
+							rightsInfo.setEnableSharePublic( true );
+							break;
+						
+						case EnableShareWithAllExternal:
+							rightsInfo.setEnableShareWithAllExternal( true );
+							break;
+							
+						case EnableShareWithAllInternal:
+							rightsInfo.setEnableShareWithAllInternal( true );
 							break;
 						}
 					}
@@ -310,17 +342,17 @@ public class ShareSettingsSelectPrincipalsWidget extends SelectPrincipalsWidget
 
 	/**
 	 * This method gets called when the user adds a principal to the list.  We will add a
-	 * PerUserRightsInfo object to the principal
+	 * PerUserEnableShareRightsInfo object to the principal
 	 */
 	@Override
 	protected void principalAdded( GwtPrincipal principal )
 	{
 		if ( principal != null )
 		{
-			InvokeEditNetFolderRightsDlgEvent event;
+			InvokeEditUserZoneShareRightsDlgEvent event;
 			
-			// Fire an event to invoke the "edit net folder rights" dialog.
-			event = new InvokeEditNetFolderRightsDlgEvent( principal.getIdLong() );
+			// Fire an event to invoke the "edit share rights" dialog.
+			event = new InvokeEditUserZoneShareRightsDlgEvent( principal.getIdLong() );
 			GwtTeaming.fireEvent( event );
 		}
 	}
@@ -328,29 +360,29 @@ public class ShareSettingsSelectPrincipalsWidget extends SelectPrincipalsWidget
 	
 	
 	/**
-	 * Callback interface to interact with the "ShareSettingsSelectPrincipalsWidget"
+	 * Callback interface to interact with the "ZoneShareRightsSelectPrincipalsWidget"
 	 * asynchronously after it loads. 
 	 */
-	public interface ShareSettingsSelectPrincipalsWidgetClient
+	public interface ZoneShareRightsSelectPrincipalsWidgetClient
 	{
-		void onSuccess( ShareSettingsSelectPrincipalsWidget widget );
+		void onSuccess( ZoneShareRightsSelectPrincipalsWidget widget );
 		void onUnavailable();
 	}
 	
 	/**
-	 * Loads the ShareSettingsSelectPrincipalsWidget split point and returns an instance
+	 * Loads the ZoneShareRightsSelectPrincipalsWidget split point and returns an instance
 	 * of it via the callback.
 	 * 
 	 */
 	public static void createAsync(
-		final ShareSettingsSelectPrincipalsWidgetClient client )
+		final ZoneShareRightsSelectPrincipalsWidgetClient client )
 	{
-		GWT.runAsync( NetFolderSelectPrincipalsWidget.class, new RunAsyncCallback()
+		GWT.runAsync( ZoneShareRightsSelectPrincipalsWidget.class, new RunAsyncCallback()
 		{
 			@Override
 			public void onFailure( Throwable reason )
 			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ShareSettingsSelectPrincipalsWidget() );
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ZoneShareRightsSelectPrincipalsWidget() );
 				if ( client != null )
 				{
 					client.onUnavailable();
@@ -360,9 +392,9 @@ public class ShareSettingsSelectPrincipalsWidget extends SelectPrincipalsWidget
 			@Override
 			public void onSuccess()
 			{
-				ShareSettingsSelectPrincipalsWidget widget;
+				ZoneShareRightsSelectPrincipalsWidget widget;
 				
-				widget= new ShareSettingsSelectPrincipalsWidget();
+				widget= new ZoneShareRightsSelectPrincipalsWidget();
 				client.onSuccess( widget );
 			}
 		});

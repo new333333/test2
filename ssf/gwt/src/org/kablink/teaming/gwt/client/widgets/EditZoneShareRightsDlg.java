@@ -40,18 +40,17 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.NetFolder;
-import org.kablink.teaming.gwt.client.ShareSettings;
+import org.kablink.teaming.gwt.client.ZoneShareRights;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.NetFolderCreatedEvent;
+import org.kablink.teaming.gwt.client.event.NetFolderModifiedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.rpc.shared.CreateNetFolderCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetShareSettingsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetZoneShareRightsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveZoneShareRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.ShareSettingsSelectPrincipalsWidget.ShareSettingsSelectPrincipalsWidgetClient;
+import org.kablink.teaming.gwt.client.widgets.ZoneShareRightsSelectPrincipalsWidget.ZoneShareRightsSelectPrincipalsWidgetClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -71,16 +70,16 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
- * This dialog is used to set the share settings, ie who can share internal/external/public etc
+ * This dialog is used to set the zone share rights, ie who can share internal/external/public etc
  * @author jwootton
  *
  */
-public class ConfigureShareSettingsDlg extends DlgBox
+public class EditZoneShareRightsDlg extends DlgBox
 	implements
 		EditSuccessfulHandler
 {
-	private ShareSettings m_shareSettings;
-	private ShareSettingsSelectPrincipalsWidget m_selectPrincipalsWidget;
+	private ZoneShareRights m_zoneShareRights;
+	private ZoneShareRightsSelectPrincipalsWidget m_selectPrincipalsWidget;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	
 	// The following defines the TeamingEvents that are handled by
@@ -92,19 +91,19 @@ public class ConfigureShareSettingsDlg extends DlgBox
 
 	
 	/**
-	 * Callback interface to interact with the "configure share settings" dialog
+	 * Callback interface to interact with the "edit zone share rights" dialog
 	 * asynchronously after it loads. 
 	 */
-	public interface ConfigureShareSettingsDlgClient
+	public interface EditZoneShareRightsDlgClient
 	{
-		void onSuccess( ConfigureShareSettingsDlg cssDlg );
+		void onSuccess( EditZoneShareRightsDlg cssDlg );
 		void onUnavailable();
 	}
 
 	/**
 	 * 
 	 */
-	private ConfigureShareSettingsDlg(
+	private EditZoneShareRightsDlg(
 		boolean autoHide,
 		boolean modal,
 		int xPos,
@@ -115,7 +114,7 @@ public class ConfigureShareSettingsDlg extends DlgBox
 		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.OkCancel );
 
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().configureShareSettingsDlg_Header(), this, null, null ); 
+		createAllDlgContent( GwtTeaming.getMessages().editZoneShareRightsDlg_Header(), this, null, null ); 
 	}
 
 	
@@ -132,19 +131,19 @@ public class ConfigureShareSettingsDlg extends DlgBox
 		
 		// Create the panel that will hold the controls for access rights
 		{
-			Panel settingsPanel;
+			Panel rightsPanel;
 			
-			settingsPanel = createSettingsPanel();
-			mainPanel.add( settingsPanel );
+			rightsPanel = createRightsPanel();
+			mainPanel.add( rightsPanel );
 		}
 		
 		return mainPanel;
 	}
 
 	/**
-	 * Create the panel that holds all of the controls for the share settings
+	 * Create the panel that holds all of the controls for the share rights
 	 */
-	private Panel createSettingsPanel()
+	private Panel createRightsPanel()
 	{
 		FlowPanel mainPanel;
 		final FlexTable table;
@@ -162,8 +161,8 @@ public class ConfigureShareSettingsDlg extends DlgBox
 		// Add a hint
 		cellFormatter.setColSpan( nextRow, 0, 2 );
 		cellFormatter.setWordWrap( nextRow, 0, false );
-		cellFormatter.addStyleName( nextRow, 0, "configureShareSettingsDlg_SelectPrincipalsHint" );
-		label = new InlineLabel( GwtTeaming.getMessages().configureShareSettingsDlg_SelectPrincipalsHint() );
+		cellFormatter.addStyleName( nextRow, 0, "editZoneShareRightsDlg_SelectPrincipalsHint" );
+		label = new InlineLabel( GwtTeaming.getMessages().editZoneShareRightsDlg_SelectPrincipalsHint() );
 		table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 		++nextRow;
 		
@@ -172,7 +171,7 @@ public class ConfigureShareSettingsDlg extends DlgBox
 		++nextRow;
 		
 		// Create a widget that lets the user select users and groups.
-		ShareSettingsSelectPrincipalsWidget.createAsync( new ShareSettingsSelectPrincipalsWidgetClient() 
+		ZoneShareRightsSelectPrincipalsWidget.createAsync( new ZoneShareRightsSelectPrincipalsWidgetClient() 
 		{
 			@Override
 			public void onUnavailable() 
@@ -181,7 +180,7 @@ public class ConfigureShareSettingsDlg extends DlgBox
 			}
 			
 			@Override
-			public void onSuccess( ShareSettingsSelectPrincipalsWidget widget )
+			public void onSuccess( ZoneShareRightsSelectPrincipalsWidget widget )
 			{
 				m_selectPrincipalsWidget = widget;
 				table.setWidget( selectPrincipalsWidgetRow, 0, m_selectPrincipalsWidget );
@@ -207,9 +206,9 @@ public class ConfigureShareSettingsDlg extends DlgBox
 		// Disable the Ok button.
 		setOkEnabled( false );
 
-		// Issue an rpc request to save the share settings.  If the rpc request is successful,
+		// Issue an rpc request to save the share rights.  If the rpc request is successful,
 		// close this dialog.
-		saveShareSettingsAndClose();
+		saveShareRightsAndClose();
 		
 		// Returning false will prevent the dialog from closing.  We will close the dialog
 		// after we successfully create/modify a net folder.
@@ -244,9 +243,9 @@ public class ConfigureShareSettingsDlg extends DlgBox
 	}
 
 	/**
-	 * Issue an rpc request to get the share settings from the server.
+	 * Issue an rpc request to get the zone share rights from the server.
 	 */
-	private void getShareSettingsFromServer()
+	private void getShareRightsFromServer()
 	{
 		AsyncCallback<VibeRpcResponse> rpcCallback;
 
@@ -259,7 +258,7 @@ public class ConfigureShareSettingsDlg extends DlgBox
 				
 				GwtClientHelper.handleGwtRPCFailure(
 												caught,
-												GwtTeaming.getMessages().rpcFailure_GetShareSettings() );
+												GwtTeaming.getMessages().rpcFailure_GetZoneShareRights() );
 			}
 
 			@Override
@@ -269,9 +268,9 @@ public class ConfigureShareSettingsDlg extends DlgBox
 				Scheduler.ScheduledCommand cmd;
 				
 				obj = result.getResponseData();
-				if ( obj != null && obj instanceof ShareSettings )
+				if ( obj != null && obj instanceof ZoneShareRights )
 				{
-					m_shareSettings = (ShareSettings) obj;
+					m_zoneShareRights = (ZoneShareRights) obj;
 				}
 
 				cmd = new Scheduler.ScheduledCommand()
@@ -279,8 +278,8 @@ public class ConfigureShareSettingsDlg extends DlgBox
 					@Override
 					public void execute()
 					{
-						// Initialize the share settings controls
-						initShareSettings();
+						// Initialize the share rights controls
+						initShareRights();
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -290,14 +289,14 @@ public class ConfigureShareSettingsDlg extends DlgBox
 			}						
 		};
 		
-		// Issue an rpc request to read the share settings
+		// Issue an rpc request to read the zone share rights
 		{
-			GetShareSettingsCmd cmd;
+			GetZoneShareRightsCmd cmd;
 
-			showStatusMsg( GwtTeaming.getMessages().configureShareSettingsDlg_ReadingSettings() );
+			showStatusMsg( GwtTeaming.getMessages().editZoneShareRightsDlg_ReadingRights() );
 			setOkEnabled( false );
 
-			cmd = new GetShareSettingsCmd();
+			cmd = new GetZoneShareRightsCmd();
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
 	}
@@ -314,21 +313,21 @@ public class ConfigureShareSettingsDlg extends DlgBox
 		hideStatusMsg();
 		setOkEnabled( true );
 		
-		m_shareSettings = null;
+		m_zoneShareRights = null;
 		
-		// Issue an rpc request to get the share settings.
-		getShareSettingsFromServer();
+		// Issue an rpc request to get the zone share rights.
+		getShareRightsFromServer();
 	}
 
 	/**
 	 * 
 	 */
-	private void initShareSettings()
+	private void initShareRights()
 	{
 		if ( m_selectPrincipalsWidget != null && m_selectPrincipalsWidget.isReady() )
 		{
-			if ( m_shareSettings != null )
-				m_selectPrincipalsWidget.initWidget( m_shareSettings.getRoles() );
+			if ( m_zoneShareRights != null )
+				m_selectPrincipalsWidget.initWidget( m_zoneShareRights.getRoles() );
 			else
 				m_selectPrincipalsWidget.initWidget( null );
 
@@ -351,7 +350,7 @@ public class ConfigureShareSettingsDlg extends DlgBox
 						@Override
 						public void run()
 						{
-							initShareSettings();
+							initShareRights();
 						}
 					};
 					
@@ -413,11 +412,54 @@ public class ConfigureShareSettingsDlg extends DlgBox
 	}
 	
 	/**
-	 * Issue an rpc request to save the share settings.  If the save was successful, close the dialog
+	 * Issue an rpc request to save the share rights.  If the save was successful, close the dialog
 	 */
-	private void saveShareSettingsAndClose()
+	private void saveShareRightsAndClose()
 	{
+		AsyncCallback<VibeRpcResponse> rpcCallback;
 		
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				hideStatusMsg();
+				setOkEnabled( true );
+				
+				GwtClientHelper.handleGwtRPCFailure(
+												caught,
+												GwtTeaming.getMessages().rpcFailure_SaveZoneShareRights() );
+			}
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				hideStatusMsg();
+				setOkEnabled( true );
+				
+				// Close this dialog
+				hide();
+			}						
+		};
+		
+		// Issue an rpc request to save the zone share rights
+		{
+			SaveZoneShareRightsCmd cmd;
+			ArrayList<GwtRole> roles;
+			ZoneShareRights zoneShareRights;
+
+			showStatusMsg( GwtTeaming.getMessages().editZoneShareRightsDlg_SavingRights() );
+			setOkEnabled( false );
+
+			// Get the share rights the user entered.
+			roles = getRoles();
+			zoneShareRights = new ZoneShareRights();
+			zoneShareRights.setRoles( roles );
+			
+			cmd = new SaveZoneShareRightsCmd();
+			cmd.setRights( zoneShareRights );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
 	}
 
 	/*
@@ -434,7 +476,7 @@ public class ConfigureShareSettingsDlg extends DlgBox
 	}
 
 	/**
-	 * Loads the ConfigureShareSettingsDlg split point and returns an instance
+	 * Loads the EditZoneShareRightsDlg split point and returns an instance
 	 * of it via the callback.
 	 * 
 	 */
@@ -445,33 +487,33 @@ public class ConfigureShareSettingsDlg extends DlgBox
 							final int top,
 							final int width,
 							final int height,
-							final ConfigureShareSettingsDlgClient cssDlgClient )
+							final EditZoneShareRightsDlgClient ezsrDlgClient )
 	{
-		GWT.runAsync( ConfigureShareSettingsDlg.class, new RunAsyncCallback()
+		GWT.runAsync( EditZoneShareRightsDlg.class, new RunAsyncCallback()
 		{
 			@Override
 			public void onFailure(Throwable reason)
 			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ConfigureShareSettingsDlg() );
-				if ( cssDlgClient != null )
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_EditZoneShareRightsDlg() );
+				if ( ezsrDlgClient != null )
 				{
-					cssDlgClient.onUnavailable();
+					ezsrDlgClient.onUnavailable();
 				}
 			}
 
 			@Override
 			public void onSuccess()
 			{
-				ConfigureShareSettingsDlg cssDlg;
+				EditZoneShareRightsDlg cssDlg;
 				
-				cssDlg = new ConfigureShareSettingsDlg(
+				cssDlg = new EditZoneShareRightsDlg(
 													autoHide,
 													modal,
 													left,
 													top,
 													width,
 													height );
-				cssDlgClient.onSuccess( cssDlg );
+				ezsrDlgClient.onSuccess( cssDlg );
 			}
 		});
 	}

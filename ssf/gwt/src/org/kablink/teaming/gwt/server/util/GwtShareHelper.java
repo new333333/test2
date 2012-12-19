@@ -72,7 +72,7 @@ import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtUser;
-import org.kablink.teaming.gwt.client.ShareSettings;
+import org.kablink.teaming.gwt.client.ZoneShareRights;
 import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
@@ -1147,9 +1147,9 @@ public class GwtShareHelper
 	 * Return the sharing roles that are defined at the zone level.
 	 */
 	@SuppressWarnings("rawtypes")
-	public static ShareSettings getShareSettings( AllModulesInjected ami )
+	public static ZoneShareRights getZoneShareRights( AllModulesInjected ami )
 	{
-		ShareSettings shareSettings;
+		ZoneShareRights shareSettings;
 		ArrayList<GwtRole> listOfRoles;
 		GwtRole role;
 		AdminModule adminModule;
@@ -1176,7 +1176,7 @@ public class GwtShareHelper
 		role.setType( GwtRoleType.EnableShareWithAllInternal );
 		listOfRoles.add( role );
 		
-		shareSettings = new ShareSettings();
+		shareSettings = new ZoneShareRights();
 		shareSettings.setRoles( listOfRoles );
 		
 		adminModule = ami.getAdminModule();
@@ -1677,5 +1677,53 @@ public class GwtShareHelper
 	{
 		return bs.getSharingModule().isSharingEnabled();
 	}
+
+	/**
+	 * 
+	 */
+	public static Boolean saveZoneShareRights( AllModulesInjected ami, ZoneShareRights rights )
+	{
+		ArrayList<GwtRole> roles;
+
+		if ( ami == null || rights == null )
+		{
+			m_logger.error( "In GwtShareHelper.saveZoneShareRights(), invalid parameters" );
+		}
+		
+		// Get the roles
+		roles = rights.getRoles();
+		
+		if ( roles != null )
+		{
+			AdminModule adminModule;
+			Long zoneId;
+			WorkArea workArea;
+
+			adminModule = ami.getAdminModule();
+			
+	    	zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			workArea = ami.getZoneModule().getZoneConfig( zoneId );
+
+			for ( GwtRole nextRole : roles )
+			{
+				Long fnId = null;
+				
+				// Get the Function id for the given role
+				fnId = GwtServerHelper.getFunctionIdFromRole( ami, nextRole );
 	
+				// Did we find the function for the given role?
+				if ( fnId == null )
+				{
+					// No
+					m_logger.error( "In GwtShareHelper.saveZoneShareRights(), could not find function for role: " + nextRole.getType() );
+					continue;
+				}
+	
+				// Reset the function's membership.
+				adminModule.resetWorkAreaFunctionMemberships( workArea, fnId, nextRole.getMemberIds() );
+			}
+		}
+		
+		return Boolean.TRUE;
+	}
 }

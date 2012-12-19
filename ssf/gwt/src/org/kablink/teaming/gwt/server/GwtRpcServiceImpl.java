@@ -92,7 +92,7 @@ import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
-import org.kablink.teaming.gwt.client.ShareSettings;
+import org.kablink.teaming.gwt.client.ZoneShareRights;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
@@ -1788,11 +1788,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_SHARE_SETTINGS:
+		case GET_ZONE_SHARE_RIGHTS:
 		{
-			ShareSettings shareSettings;
+			ZoneShareRights shareSettings;
 			
-			shareSettings = GwtShareHelper.getShareSettings( this );
+			shareSettings = GwtShareHelper.getZoneShareRights( this );
 			response = new VibeRpcResponse( shareSettings );
 			return response;
 		}
@@ -2763,6 +2763,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = saveWhatsNewShowSetting( ri, ((SaveWhatsNewSettingsCmd) cmd).getSettings() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_ZONE_SHARE_RIGHTS:
+		{
+			SaveZoneShareRightsCmd szsrCmd;
+			Boolean result;
+			
+			szsrCmd = (SaveZoneShareRightsCmd) cmd;
+			result = GwtShareHelper.saveZoneShareRights( this, szsrCmd.getRights() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
 
