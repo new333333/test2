@@ -2248,14 +2248,17 @@ public Map getUsers() {
 public void changePassword(Long userId, String oldPassword, String newPassword) {
 	  if(newPassword == null || newPassword.equals(""))
 		  throw new PasswordMismatchException("errorcode.password.cannotBeNull");
-	  
+	  User currentUser = RequestContextHolder.getRequestContext().getUser();
 	  User user = getUser(userId, true);
 	  ProfileBinder profileBinder = loadProfileBinder();
 	  
-      if (!testAccess(profileBinder, ProfileOperation.manageEntries)) {
+      if (!testAccess(profileBinder, ProfileOperation.manageEntries) || currentUser.getName().equals(user.getName()) ||
+    		  user.isSuper() ) {
     	  // The user making the call does not have the right to manage profile entries. 
     	  // In this case, we require that the old password be specified. 
     	  // Note: This code needs to be kept in synch with the similar check in ModifyEntryController.java.
+    	  // We require users changing their own password to know the old one
+    	  // We also require that anyone changing the admin password know the old one
     	  if(oldPassword == null || 
     			  oldPassword.equals("") || 
     			  !EncryptUtil.checkPassword(oldPassword, user))

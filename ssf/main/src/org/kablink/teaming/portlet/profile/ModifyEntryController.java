@@ -140,12 +140,14 @@ public class ModifyEntryController extends SAbstractController {
 		        		binder = getProfileModule().getProfileBinder();
 		        	} catch(AccessControlException ex) {}
 		        	
-		            if (binder == null || !getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
+		            Principal p = getProfileModule().getEntry(entryId);
+		            if (binder == null || !getProfileModule().testAccess(binder, ProfileOperation.manageEntries) ||
+		            		!(p instanceof User) || user.getName().equals(p.getName()) || ((User)p).isSuper()) {
 		            	String passwordOriginal = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD_ORIGINAL);
 
 		            	//Check that the user knows the current password
-		            	Principal p = getProfileModule().getEntry(entryId);
-		            	if ( p instanceof User && !password.equals("") && !password.equals(password3) )
+		            	if ( p instanceof User && ((!password.equals("") && !password.equals(password3)) ||
+		            			(user.getName().equals(p.getName()) || ((User)p).isSuper()) ))
 		            	{
 		            		// If the user didn't enter the current password or they entered it incorrectly, tell them about it.
 		            		if ( passwordOriginal.equals("") || 
