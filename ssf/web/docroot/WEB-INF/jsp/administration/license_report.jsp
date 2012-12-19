@@ -176,7 +176,7 @@
 				
 				
 						<div class="roundcornerSM margintop2" style="border: 1px solid #cccccc; padding: 5px;">
-							<span class="ss_bold"><%= org.kablink.teaming.util.ReleaseInfo.getName() + " " + org.kablink.teaming.util.ReleaseInfo.getVersion() %>
+							<span class="ss_bold"><%= org.kablink.teaming.util.ReleaseInfo.getName() + " " + org.kablink.teaming.util.ReleaseInfo.getVersion() %>&nbsp;&nbsp;
 								<ssf:nlt tag="administration.report.title.license"/>:&nbsp;&nbsp;
 								<fmt:formatDate value="${ssCurrentDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="medium"/>
 							</span><br/>
