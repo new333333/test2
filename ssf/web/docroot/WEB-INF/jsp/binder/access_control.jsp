@@ -238,6 +238,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	%>
 </c:forEach>
 
+<c:if test="${ssWorkArea.workAreaType != 'zone'}">
 <ssf:box style="rounded">
   <div style="padding:4px 8px;">
     <div>
@@ -274,7 +275,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     </c:if>
   </div>
 </ssf:box>
-
+</c:if>
 
 <ssf:box style="rounded">
 <div style="padding:4px 8px;">
