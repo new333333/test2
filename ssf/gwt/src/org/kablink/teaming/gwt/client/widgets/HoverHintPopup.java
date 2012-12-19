@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Class used to implement a hover hint.  
@@ -95,5 +96,10 @@ public class HoverHintPopup extends TeamingPopupPanel {
 			(element.getAbsoluteBottom() + BOTTOM_OFFSET));
 		
 		show();
+	}
+	
+	public void showHintRelativeTo(Widget w) {
+		// Always use the initial form of the method.
+		showHintRelativeTo(w.getElement());
 	}
 }

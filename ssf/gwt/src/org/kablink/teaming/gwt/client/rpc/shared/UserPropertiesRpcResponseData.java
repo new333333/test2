@@ -49,7 +49,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcResponseData {
 	private AccountInfo						m_accountInfo;		//
 	private HomeInfo						m_homeInfo;			//
-	private List<EntryTitleInfo>			m_netFolders;		//
+	private NetFoldersInfo					m_netFoldersInfo;	//
 	private PerUserShareRightsInfo			m_sharingRights;	//
 	private ProfileEntryInfoRpcResponseData	m_profile;			//
 	private QuotaInfo						m_quotaInfo;		//
@@ -151,6 +151,55 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 	}
 
 	/**
+	 * Inner class used to encapsulate information about the user's net
+	 * folders.
+	 */
+	public static class NetFoldersInfo implements IsSerializable {
+		private boolean					m_canManageNetFolders;	//
+		private List<EntryTitleInfo>	m_netFolders;			//
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * Zero parameter constructor as per GWT serialization
+		 * requirements.
+		 */
+		public NetFoldersInfo() {
+			// Initialize the super class...
+			super();
+			
+			// ...and initialize anything else that requires it.
+			setNetFolders(new ArrayList<EntryTitleInfo>());
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean              canManageNetFolders() {return m_canManageNetFolders;}
+		public List<EntryTitleInfo> getNetFolders()       {return m_netFolders;         }
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setCanManageNetFolders(boolean              canManageNetFolders) {m_canManageNetFolders = canManageNetFolders;}
+		public void setNetFolders(         List<EntryTitleInfo> netFolders)          {m_netFolders          = netFolders;         }
+
+		/**
+		 * Adds an EntryTitleInfo for a Net Folder to the list of those
+		 * being tracked.
+		 * 
+		 * @param netFolder
+		 */
+		public void addNetFolder(EntryTitleInfo netFolder) {
+			m_netFolders.add(netFolder);
+		}
+	}
+	
+	/**
 	 * Inner class used to encapsulate information about a user's quota
 	 * settings.
 	 */
@@ -199,11 +248,8 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 	 * requirements.
 	 */
 	public UserPropertiesRpcResponseData() {
-		// Initialize the super class...
+		// Initialize the super class.
 		super();
-		
-		// ...and initialize anything else that requires it.
-		setNetFolders(new ArrayList<EntryTitleInfo>());
 	}
 	
 	/**
@@ -224,34 +270,24 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 	 * 
 	 * @return
 	 */
-	public AccountInfo                     getAccountInfo()   {return m_accountInfo;        }
-	public boolean                         hasHome()          {return (null != m_homeInfo); }
-	public boolean                         hasQuota()         {return (null != m_quotaInfo);}
-	public HomeInfo                        getHomeInfo()      {return m_homeInfo;           }
-	public List<EntryTitleInfo>            getNetFolders()    {return m_netFolders;         }
-	public PerUserShareRightsInfo          getSharingRights() {return m_sharingRights;      }
-	public ProfileEntryInfoRpcResponseData getProfile()       {return m_profile;            }
-	public QuotaInfo                       getQuotaInfo()     {return m_quotaInfo;          }
+	public AccountInfo                     getAccountInfo()    {return m_accountInfo;        }
+	public boolean                         hasHome()           {return (null != m_homeInfo); }
+	public boolean                         hasQuota()          {return (null != m_quotaInfo);}
+	public HomeInfo                        getHomeInfo()       {return m_homeInfo;           }
+	public NetFoldersInfo                  getNetFoldersInfo() {return m_netFoldersInfo;     }
+	public PerUserShareRightsInfo          getSharingRights()  {return m_sharingRights;      }
+	public ProfileEntryInfoRpcResponseData getProfile()        {return m_profile;            }
+	public QuotaInfo                       getQuotaInfo()      {return m_quotaInfo;          }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setAccountInfo(    AccountInfo                     accountInfo)   {m_accountInfo   = accountInfo;  }
-	public void setHomeInfo(       HomeInfo                        homeInfo)      {m_homeInfo      = homeInfo;     }
-	public void setNetFolders(     List<EntryTitleInfo>            netFolders)    {m_netFolders    = netFolders;   }
-	public void setSharingRights(  PerUserShareRightsInfo          sharingRights) {m_sharingRights = sharingRights;}
-	public void setProfile(        ProfileEntryInfoRpcResponseData profile)       {m_profile       = profile;      }
-	public void setQuotaInfo(      QuotaInfo                       quotaInfo)     {m_quotaInfo     = quotaInfo;    }
-
-	/**
-	 * Adds an EntryTitleInfo for a Net Folder to the list of those
-	 * being tracked.
-	 * 
-	 * @param netFolder
-	 */
-	public void addNetFolder(EntryTitleInfo netFolder) {
-		m_netFolders.add(netFolder);
-	}
+	public void setAccountInfo(    AccountInfo                     accountInfo)    {m_accountInfo    = accountInfo;   }
+	public void setHomeInfo(       HomeInfo                        homeInfo)       {m_homeInfo       = homeInfo;      }
+	public void setNetFoldersInfo( NetFoldersInfo                  netFoldersInfo) {m_netFoldersInfo = netFoldersInfo;}
+	public void setSharingRights(  PerUserShareRightsInfo          sharingRights)  {m_sharingRights  = sharingRights; }
+	public void setProfile(        ProfileEntryInfoRpcResponseData profile)        {m_profile        = profile;       }
+	public void setQuotaInfo(      QuotaInfo                       quotaInfo)      {m_quotaInfo      = quotaInfo;     }
 }
