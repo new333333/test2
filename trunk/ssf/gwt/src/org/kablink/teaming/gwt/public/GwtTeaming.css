@@ -5035,4 +5035,22 @@ td.datePickerMonth {
 /* End */
 
 
+/**
+ * Styles used in the "Configure Share Settings" dialog
+ */
+
+.configureShareSettingsDlg_SelectPrincipalsHint
+{
+	color: #4D6D8B;
+	font-size: 1em;
+	margin-bottom: 0.5em;
+}
+
+.configureShareSettingsDlg_PrivilegedPrincipalsTable
+{
+	table-layout: fixed;
+}
+
+
+
 /* End */

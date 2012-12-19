@@ -133,6 +133,7 @@ import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
+import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtUserFileSyncAppConfig;
 import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
@@ -3156,6 +3157,22 @@ public class GwtServerHelper {
 				systemCategory.addAdminOption( adminAction );
 			}
 			
+			// Does the user have rights to "Share settings"?
+			if ( adminModule.testAccess( AdminOperation.manageFunctionMembership ) )
+			{
+				title = NLT.get( "administration.configure_shareSettings" );
+
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_SHARE_SETTINGS );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.CONFIGURE_SHARE_SETTINGS );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+
 			// Yes, are we running the Enterprise version of Teaming?
 			if ( ReleaseInfo.isLicenseRequiredEdition() == true )
 			{
@@ -4643,6 +4660,126 @@ public class GwtServerHelper {
 		return new EmailAddressInfo(userEMA, userHasWS, userWSInTrash);
 	}
 	
+	/**
+	 * For the given role, find the corresponding function id
+	 */
+	public static Long getFunctionIdFromRole(
+		AllModulesInjected ami,
+		GwtRole role )
+	{
+		Long fnId = null;
+		String fnInternalId = null;
+		List<Function> listOfFunctions;
+
+		if ( role == null )
+		{
+			m_logger.error( "In GwtNetFolderHelper.getFunctionIdFromRole(), invalid parameter" );
+			return null;
+		}
+		
+		fnInternalId = getFunctionInternalIdFromRole( ami, role );
+		
+		// Did we find the function's internal id?
+		if ( fnInternalId == null )
+		{
+			// No
+			m_logger.error( "In GwtServerHelper.getFunctionIdFromRole(), could not find internal function id for role: " + role.getType() );
+			return null;
+		}
+
+		// Get a list of all the functions;
+		listOfFunctions = ami.getAdminModule().getFunctions();
+		
+		// For the given internal function id, get the function's real id.
+		for ( Function nextFunction : listOfFunctions )
+		{
+			String nextInternalId;
+			
+			nextInternalId = nextFunction.getInternalId();
+			if ( fnInternalId.equalsIgnoreCase( nextInternalId ) )
+			{
+				fnId = nextFunction.getId();
+				break;
+			}
+		}
+		
+		return fnId;
+	}
+
+	/**
+	 * For the given role, find the corresponding function internal id
+	 */
+	public static String getFunctionInternalIdFromRole(
+		AllModulesInjected ami,
+		GwtRole role )
+	{
+		Long fnId = null;
+		String fnInternalId = null;
+
+		if ( role == null )
+		{
+			m_logger.error( "In GwtNetFolderHelper.getFunctionInternalIdFromRole(), invalid parameter" );
+			return null;
+		}
+		
+		// Get the internal id of the appropriate function
+		switch ( role.getType() )
+		{
+		case ShareExternal:
+			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID;
+			break;
+			
+		case ShareForward:
+			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID;
+			break;
+			
+		case ShareInternal:
+			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID;
+			break;
+			
+		case SharePublic:
+			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID;
+			break;
+			
+		case AllowAccess:
+			fnInternalId = ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID;
+			break;
+			
+		case EnableShareExternal:
+			fnInternalId = ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID;
+			break;
+		
+		case EnableShareForward:
+			fnInternalId = ObjectKeys.FUNCTION_ENABLE_FORWARD_SHARING_INTERNALID;
+			break;
+			
+		case EnableShareInternal:
+			fnInternalId = ObjectKeys.FUNCTION_ENABLE_INTERNAL_SHARING_INTERNALID;
+			break;
+		
+		case EnableSharePublic:
+			fnInternalId = ObjectKeys.FUNCTION_ENABLE_PUBLIC_SHARING_INTERNALID;
+			break;
+			
+		case EnableShareWithAllExternal:
+			fnInternalId = ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_EXTERNAL_INTERNALID;
+			break;
+		
+		case EnableShareWithAllInternal:
+			fnInternalId = ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_INTERNAL_INTERNALID;
+			break;
+		}
+		
+		// Did we find the function's internal id?
+		if ( fnInternalId == null )
+		{
+			// No
+			m_logger.error( "In GwtServerHelper.getFunctionInternalIdFromRole(), could not find internal function id for role: " + role.getType() );
+		}
+
+		return fnInternalId;
+	}
+
 	/**
 	 * Returns a string that can be used as an binder's title in an
 	 * error message.
@@ -8963,6 +9100,7 @@ public class GwtServerHelper {
 		case GET_ROOT_WORKSPACE_ID:
 		case GET_SAVED_SEARCHES:
 		case GET_SEND_TO_FRIEND_URL:
+		case GET_SHARE_SETTINGS:
 		case GET_SHARING_INFO:
 		case GET_SIGN_GUESTBOOK_URL:
 		case GET_SITE_ADMIN_URL:

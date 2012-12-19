@@ -429,6 +429,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetSendToFriendUrl();
 	String rpcFailure_GetShareBinderPageUrl();
 	String rpcFailure_GetSharingInfo();
+	String rpcFailure_GetShareSettings();
 	String rpcFailure_GetSignGuestbookUrl();
 	String rpcFailure_GetSiteAdminUrl();
 	String rpcFailure_GetStatus();
@@ -573,6 +574,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ConfigureAdhocFoldersDlg();
 	String codeSplitFailure_ConfigureFileSyncAppDlg();
 	String codeSplitFailure_ConfigureMobileAppsDlg();
+	String codeSplitFailure_ConfigureShareSettingsDlg();
 	String codeSplitFailure_ConfigureUserAccessDlg();
 	String codeSplitFailure_ConfigureUserFileSyncAppDlg();
 	String codeSplitFailure_ConfigureUserMobileAppsDlg();
@@ -644,6 +646,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_SelectPrincipalsWidget();
 	String codeSplitFailure_SurveyFolderView();
 	String codeSplitFailure_ShareExpirationDlg();
+	String codeSplitFailure_ShareSettingsSelectPrincipalsWidget();
 	String codeSplitFailure_ShareThisDlg();
 	String codeSplitFailure_ShareWithTeamsDlg();
 	String codeSplitFailure_SizeColumnsDlg();
@@ -2428,5 +2431,10 @@ public interface GwtTeamingMessages extends Messages
 	String userPropertiesDlgSourceLocal();
 	String userPropertiesDlgUnknown();
 	String userPropertiesDlgYes();
+
+	// Strings used in the "Configure Share Settings" dialog.
+	String configureShareSettingsDlg_Header();
+	String configureShareSettingsDlg_ReadingSettings();
+	String configureShareSettingsDlg_SelectPrincipalsHint();
 	
 }// end GwtTeamingMessages

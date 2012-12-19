@@ -500,74 +500,6 @@ public class GwtNetFolderHelper
 	}
 
 	/**
-	 * For the given role, find the corresponding function id
-	 */
-	private static Long getFunctionIdFromRole(
-		AllModulesInjected ami,
-		GwtRole role )
-	{
-		Long fnId = null;
-		String fnInternalId = null;
-		List<Function> listOfFunctions;
-
-		if ( role == null )
-		{
-			m_logger.error( "In GwtNetFolderHelper.getFunctionIdFromRole(), invalid parameter" );
-			return null;
-		}
-		
-		// Get the internal id of the appropriate function
-		switch ( role.getType() )
-		{
-		case ShareExternal:
-			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID;
-			break;
-			
-		case ShareForward:
-			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID;
-			break;
-			
-		case ShareInternal:
-			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID;
-			break;
-			
-		case SharePublic:
-			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID;
-			break;
-			
-		case AllowAccess:
-			fnInternalId = ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID;
-			break;
-		}
-		
-		// Did we find the function's internal id?
-		if ( fnInternalId == null )
-		{
-			// No
-			m_logger.error( "In GwtNetFolderHelper.getFunctionIdFromRole(), could not find internal function id for role: " + role.getType() );
-			return null;
-		}
-
-		// Get a list of all the functions;
-		listOfFunctions = ami.getAdminModule().getFunctions();
-		
-		// For the given internal function id, get the function's real id.
-		for ( Function nextFunction : listOfFunctions )
-		{
-			String nextInternalId;
-			
-			nextInternalId = nextFunction.getInternalId();
-			if ( fnInternalId.equalsIgnoreCase( nextInternalId ) )
-			{
-				fnId = nextFunction.getId();
-				break;
-			}
-		}
-		
-		return fnId;
-	}
-
-	/**
 	 * For the given ScheduleInfo object return a a GwtSchedule object that represents the data in
 	 * the ScheduleInfo object.
 	 */
@@ -833,7 +765,7 @@ public class GwtNetFolderHelper
 			List principals = null;
 			
 			// Get the Function id for the given role
-			fnId = getFunctionIdFromRole( ami, nextRole );
+			fnId = GwtServerHelper.getFunctionIdFromRole( ami, nextRole );
 
 			// Did we find the function for the given role?
 			if ( fnId == null )
@@ -1137,7 +1069,7 @@ public class GwtNetFolderHelper
 			Long fnId = null;
 			
 			// Get the Function id for the given role
-			fnId = getFunctionIdFromRole( ami, nextRole );
+			fnId = GwtServerHelper.getFunctionIdFromRole( ami, nextRole );
 
 			// Did we find the function for the given role?
 			if ( fnId == null )
