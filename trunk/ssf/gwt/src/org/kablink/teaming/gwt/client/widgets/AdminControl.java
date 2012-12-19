@@ -73,7 +73,7 @@ import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.ConfigureAdhocFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureMobileAppsDlg.ConfigureMobileAppsDlgClient;
-import org.kablink.teaming.gwt.client.widgets.ConfigureShareSettingsDlg.ConfigureShareSettingsDlgClient;
+import org.kablink.teaming.gwt.client.widgets.EditZoneShareRightsDlg.EditZoneShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUserAccessDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.ConfigureUserFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserMobileAppsDlg.ConfigureUserMobileAppsDlgClient;
@@ -155,7 +155,7 @@ public class AdminControl extends TeamingPopupPanel
 	private RunAReportDlg m_runAReportDlg = null;
 	private ConfigureUserAccessDlg m_configureUserAccessDlg = null;
 	private ConfigureAdhocFoldersDlg m_configureAdhocFoldersDlg = null;
-	private ConfigureShareSettingsDlg m_configureShareSettingsDlg = null;
+	private EditZoneShareRightsDlg m_editZoneShareRightsDlg = null;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -1479,7 +1479,7 @@ public class AdminControl extends TeamingPopupPanel
 		y = m_contentControlY;
 		
 		// Have we already created a "Configure Share Settings" dialog?
-		if ( m_configureShareSettingsDlg == null )
+		if ( m_editZoneShareRightsDlg == null )
 		{
 			int width;
 			int height;
@@ -1487,14 +1487,14 @@ public class AdminControl extends TeamingPopupPanel
 			// No, create one.
 			height = m_dlgHeight;
 			width = m_dlgWidth;
-			ConfigureShareSettingsDlg.createAsync(
+			EditZoneShareRightsDlg.createAsync(
 											false, 
 											true,
 											x, 
 											y,
 											width,
 											height,
-											new ConfigureShareSettingsDlgClient()
+											new EditZoneShareRightsDlgClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -1503,7 +1503,7 @@ public class AdminControl extends TeamingPopupPanel
 				}
 				
 				@Override
-				public void onSuccess( final ConfigureShareSettingsDlg cssDlg )
+				public void onSuccess( final EditZoneShareRightsDlg ezsrDlg )
 				{
 					ScheduledCommand cmd;
 					
@@ -1512,10 +1512,10 @@ public class AdminControl extends TeamingPopupPanel
 						@Override
 						public void execute() 
 						{
-							m_configureShareSettingsDlg = cssDlg;
+							m_editZoneShareRightsDlg = ezsrDlg;
 							
-							m_configureShareSettingsDlg.init();
-							m_configureShareSettingsDlg.show();
+							m_editZoneShareRightsDlg.init();
+							m_editZoneShareRightsDlg.show();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1524,9 +1524,9 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_configureShareSettingsDlg.init();
-			m_configureShareSettingsDlg.setPopupPosition( x, y );
-			m_configureShareSettingsDlg.show();
+			m_editZoneShareRightsDlg.init();
+			m_editZoneShareRightsDlg.setPopupPosition( x, y );
+			m_editZoneShareRightsDlg.show();
 		}
 	}
 	

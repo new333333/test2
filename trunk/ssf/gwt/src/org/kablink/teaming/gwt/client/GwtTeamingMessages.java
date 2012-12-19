@@ -429,7 +429,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetSendToFriendUrl();
 	String rpcFailure_GetShareBinderPageUrl();
 	String rpcFailure_GetSharingInfo();
-	String rpcFailure_GetShareSettings();
 	String rpcFailure_GetSignGuestbookUrl();
 	String rpcFailure_GetSiteAdminUrl();
 	String rpcFailure_GetStatus();
@@ -464,6 +463,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetWhoHasAccess();
 	String rpcFailure_GetWorkspaceContributorIds();
 	String rpcFailure_GetXssHtml();
+	String rpcFailure_GetZoneShareRights();
 	String rpcFailure_ImportIcalByUrl();
 	String rpcFailure_IsAllUsersGroup();
 	String rpcFailure_IsPersonTracked();
@@ -515,6 +515,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveTaskStatus();
 	String rpcFailure_SaveUserAccessConfig();
 	String rpcFailure_SaveWhatsNewShowSetting();
+	String rpcFailure_SaveZoneShareRights();
 	String rpcFailure_Search();
 	String rpcFailure_SetDesktopAppDownloadVisibility();
 	String rpcFailure_SetEntriesPinState();
@@ -574,7 +575,6 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ConfigureAdhocFoldersDlg();
 	String codeSplitFailure_ConfigureFileSyncAppDlg();
 	String codeSplitFailure_ConfigureMobileAppsDlg();
-	String codeSplitFailure_ConfigureShareSettingsDlg();
 	String codeSplitFailure_ConfigureUserAccessDlg();
 	String codeSplitFailure_ConfigureUserFileSyncAppDlg();
 	String codeSplitFailure_ConfigureUserMobileAppsDlg();
@@ -591,6 +591,8 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_EditNetFolderRightsDlg();
 	String codeSplitFailure_EditShareNoteDlg();
 	String codeSplitFailure_EditShareRightsDlg();
+	String codeSplitFailure_EditUserZoneShareRightsDlg();
+	String codeSplitFailure_EditZoneShareRightsDlg();
 	String codeSplitFailure_EmailNotificationDlg();
 	String codeSplitFailure_EntryMenuPanel();
 	String codeSplitFailure_ExtensionsConfig();
@@ -646,7 +648,6 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_SelectPrincipalsWidget();
 	String codeSplitFailure_SurveyFolderView();
 	String codeSplitFailure_ShareExpirationDlg();
-	String codeSplitFailure_ShareSettingsSelectPrincipalsWidget();
 	String codeSplitFailure_ShareThisDlg();
 	String codeSplitFailure_ShareWithTeamsDlg();
 	String codeSplitFailure_SizeColumnsDlg();
@@ -663,6 +664,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ViewsMenuPopup();
 	String codeSplitFailure_WhoHasAccessDlg();
 	String codeSplitFailure_WorkspaceTreeControl();
+	String codeSplitFailure_ZoneShareRightsSelectPrincipalsWidget();
 	
 	// Strings used to describe various event handling errors.
 	String eventHandling_NoActionMenuHandler(         String eventName                  );
@@ -2237,6 +2239,8 @@ public interface GwtTeamingMessages extends Messages
 	String internalRights();
 	String noRights();
 	String publicRights();
+	String shareWithAllExternalRights();
+	String shareWithAllInternalRights();
 
 	// Strings used in the Edit Net Folder Rights dialog
 	String editNetFolderRightsDlg_AllowAccessLabel();
@@ -2438,9 +2442,20 @@ public interface GwtTeamingMessages extends Messages
 	String userPropertiesDlgUnknown();
 	String userPropertiesDlgYes();
 
-	// Strings used in the "Configure Share Settings" dialog.
-	String configureShareSettingsDlg_Header();
-	String configureShareSettingsDlg_ReadingSettings();
-	String configureShareSettingsDlg_SelectPrincipalsHint();
+	// Strings used in the "Edit Zone Share Rights" dialog.
+	String editZoneShareRightsDlg_Header();
+	String editZoneShareRightsDlg_ReadingRights();
+	String editZoneShareRightsDlg_SavingRights();
+	String editZoneShareRightsDlg_SelectPrincipalsHint();
+
+	// Strings used in the "Edit Zone Share Rights" dialog
+	String editUserZoneShareRightsDlg_Caption();
+	String editUserZoneShareRightsDlg_Instructions();
+	String editUserZoneShareRightsDlg_ReShareLabel();
+	String editUserZoneShareRightsDlg_ShareExternalLabel();
+	String editUserZoneShareRightsDlg_ShareInternalLabel();
+	String editUserZoneShareRightsDlg_SharePublicLabel();
+	String editUserZoneShareRightsDlg_ShareWithAllExternalUsersLabel();
+	String editUserZoneShareRightsDlg_ShareWithAllInternalUsersLabel();
 	
 }// end GwtTeamingMessages

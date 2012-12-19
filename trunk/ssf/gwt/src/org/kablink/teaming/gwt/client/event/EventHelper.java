@@ -962,6 +962,17 @@ public class EventHelper {
 				}
 				break;
 			
+			case INVOKE_EDIT_USER_ZONE_SHARE_RIGHTS_DLG:
+				// An InvokeEditUserZoneShareRightsDlgEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeEditUserZoneShareRightsDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeEditUserZoneShareRightsDlgEvent.registerEvent(
+																					eventBus,
+																					((InvokeEditUserZoneShareRightsDlgEvent.Handler) eventHandler));
+				}
+				break;
+		
 			case INVOKE_EMAIL_NOTIFICATION:
 				// An InvokeEmailNotificationEvent!  Can the event
 				// handler we were given handle that?
@@ -2320,6 +2331,7 @@ public class EventHelper {
 			case INVOKE_EDIT_IN_PLACE:					       hasHandler = (eventHandler instanceof InvokeEditInPlaceEvent.Handler);                      break;
 			case INVOKE_EDIT_NET_FOLDER_RIGHTS_DLG:			   hasHandler = (eventHandler instanceof InvokeEditNetFolderRightsDlgEvent.Handler); 	       break;
 			case INVOKE_EDIT_SHARE_RIGHTS_DLG:			   	   hasHandler = (eventHandler instanceof InvokeEditShareRightsDlgEvent.Handler); 	       	   break;
+			case INVOKE_EDIT_USER_ZONE_SHARE_RIGHTS_DLG:	   hasHandler = (eventHandler instanceof InvokeEditUserZoneShareRightsDlgEvent.Handler); 	   break;
 			case INVOKE_EMAIL_NOTIFICATION:         	       hasHandler = (eventHandler instanceof InvokeEmailNotificationEvent.Handler);                break;
 			case INVOKE_HELP:                       	       hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                             break;
 			case INVOKE_IMPORT_ICAL_FILE:           	       hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);                   break;

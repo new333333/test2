@@ -5041,21 +5041,57 @@ td.datePickerMonth {
 
 
 /**
- * Styles used in the "Configure Share Settings" dialog
+ * Styles used in the "Edit Zone Share Rights" dialog
  */
 
-.configureShareSettingsDlg_SelectPrincipalsHint
+.editZoneShareRightsDlg_SelectPrincipalsHint
 {
 	color: #4D6D8B;
 	font-size: 1em;
 	margin-bottom: 0.5em;
 }
 
-.configureShareSettingsDlg_PrivilegedPrincipalsTable
+.zoneShareRightsSelectPrincipalsWidget_PrincipalsTablePanelHeight
 {
-	table-layout: fixed;
+	height: 400px;
+	overflow: auto;
 }
 
+.zoneShareRightsWidget_RightsLabel
+{
+	color: #5691A6;
+	padding-left: 4px;
+}
 
+.zoneShareRightsWidget_RightsLabel:hover
+{
+	cursor: pointer;
+	background: url(images/blends/teal_slice.png) repeat-x;
+	background-position:center;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+/* End */
+
+
+/**
+ * Styles used in the Edit User Zone Share Rights dialog
+ */
+.editUserZoneShareRightsDlg_MainPanel
+{
+}
+
+.editUserZoneShareRightsDlg_RightsCkbox
+{
+}
+
+.editUserZoneShareRightsDlg_Instructions
+{
+	margin-bottom: 6px;
+	margin-left: 4px;
+}
+/* End */
 
 /* End */
