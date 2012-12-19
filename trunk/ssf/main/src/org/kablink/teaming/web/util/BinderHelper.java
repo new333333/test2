@@ -5131,7 +5131,20 @@ public class BinderHelper {
 		// user's workspace and false otherwise.  Return it.
 		return reply;
 	}
-    
+
+	/**
+	 * Returns true if the specified binder is a My Files Storage
+	 * folder and false otherwise.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static boolean isBinderMyFilesStorage(Binder binder) {
+    	Boolean isMyFilesDir = ((Boolean) binder.getProperty(ObjectKeys.BINDER_PROPERTY_MYFILES_DIR));
+    	return ((null != isMyFilesDir) && isMyFilesDir);
+	}
+	
 	/**
 	 * Returns true if a binder is a system user's workspace and false
 	 * otherwise.
