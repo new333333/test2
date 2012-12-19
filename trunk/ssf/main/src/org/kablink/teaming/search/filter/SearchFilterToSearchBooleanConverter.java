@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.DateTools.Resolution;
@@ -358,7 +359,16 @@ public class SearchFilterToSearchBooleanConverter {
 				d = date.toDate();
 				return DateTools.dateToString(d, DateTools.Resolution.SECOND);
 			} catch (Exception e1) {
-				// no correct value ignore
+				try {
+					DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
+					DateTime date = fmt.parseDateTime(dateOrDateTimeAsString);
+					date = date.withMillisOfDay(0).withZone(DateTimeZone.UTC);
+					d = date.toDate();
+					return DateTools.dateToString(d, DateTools.Resolution.DAY) + "*";
+				} catch (Exception e2) {
+					//No correct value, ignore
+				}
+				
 			}
 		}
 		
@@ -380,10 +390,17 @@ public class SearchFilterToSearchBooleanConverter {
 				date = date.withZone(DateTimeZone.UTC);
 				d = date.toDate();
 			} catch (Exception e1) {
-				// this is old date format, try it, maybe there are old saved searches
-				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMdd");
-				DateTime date = fmt.parseDateTime(dateAsString);
-				d = date.toDate();
+				try {
+					DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
+					DateTime date = fmt.parseDateTime(dateAsString);
+					date = date.withZone(DateTimeZone.UTC);
+					d = date.toDate();
+				} catch (Exception e2) {
+					// this is old date format, try it, maybe there are old saved searches
+					DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMdd");
+					DateTime date = fmt.parseDateTime(dateAsString);
+					d = date.toDate();
+				}
 			}
 		}
 		
@@ -401,15 +418,22 @@ public class SearchFilterToSearchBooleanConverter {
 			d = date.toDate();
 		} catch (Exception e) {
 			try {
-				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
 				DateTime date = fmt.parseDateTime(dateAsString);
-				date = date.withZone(DateTimeZone.UTC);
+				date = date.withMillisOfDay(DateHelper.MILIS_IN_THE_DAY).withZone(DateTimeZone.UTC);
 				d = date.toDate();
-			} catch (Exception e1) {
-				// this is old date format, try it, maybe there are old saved searches
-				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMdd");
-				DateTime date = fmt.parseDateTime(dateAsString);
-				d = date.toDate();
+			} catch (Exception e2) {
+				try {
+					DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
+					DateTime date = fmt.parseDateTime(dateAsString);
+					date = date.withZone(DateTimeZone.UTC);
+					d = date.toDate();
+				} catch (Exception e1) {
+					// this is old date format, try it, maybe there are old saved searches
+					DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMdd");
+					DateTime date = fmt.parseDateTime(dateAsString);
+					d = date.toDate();
+				}
 			}
 		}
 		
