@@ -13,7 +13,7 @@
   <property name="uniqueTitle">false</property>
   <property name="inheritFunctionMembership">false</property>
   <property name="inheritDefinitions">false</property>
-  <property name="inheritTeamMembers">true</property>
+  <property name="inheritTeamMembers">false</property>
   <workAreaFunctionMembership>
     <property name="functionName">__role.binderAdmin</property>
     <property name="members"></property>
