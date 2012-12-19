@@ -2524,17 +2524,26 @@ public class GwtViewHelper {
 	 * 
 	 * @param httpReq
 	 * @param entryMap
+	 * @param de
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static String getEntryDescriptionFromMap(HttpServletRequest httpReq, Map entryMap) {
+	public static String getEntryDescriptionFromMap(HttpServletRequest httpReq, Map entryMap, DefinableEntity de) {
 		String reply = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DESC_FIELD);
 		if (MiscUtil.hasString(reply)) {
-			reply = MarkupUtil.markupStringReplacement(null, null, httpReq, null, entryMap, reply, WebKeys.MARKUP_VIEW, false);
+			if (null == de)
+			     reply = MarkupUtil.markupStringReplacement(null, null, httpReq, null, entryMap, reply, WebKeys.MARKUP_VIEW, false);
+			else reply = MarkupUtil.markupStringReplacement(null, null, httpReq, null, de,       reply, WebKeys.MARKUP_VIEW       );
 			reply = MarkupUtil.markupSectionsReplacement(reply);
 		}
 		return reply;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static String getEntryDescriptionFromMap(HttpServletRequest httpReq, Map entryMap) {
+		// Always use the initial form of the method.
+		return getEntryDescriptionFromMap(httpReq, entryMap, null);	// null -> No DefinableEntity.
 	}
 
 	/**
@@ -3452,9 +3461,10 @@ public class GwtViewHelper {
 						
 						// Are we working on a 'Shared by/with Me'
 						// collection?
+						GwtSharedMeItem smItem;
 						if (isCollectionSharedByMe || isCollectionSharedWithMe) {
 							// Yes!  Find the GwtSharedMeItem for this row.
-							GwtSharedMeItem si = GwtSharedMeItem.findShareMeInList(
+							smItem = GwtSharedMeItem.findShareMeInList(
 								docId,
 								entityType,
 								shareItems);
@@ -3465,13 +3475,13 @@ public class GwtViewHelper {
 								// Yes!  Build a
 								// List<AssignmentInfo> for this row...
 								List<AssignmentInfo> aiList;
-								if (null == si) {
+								if (null == smItem) {
 									aiList = new ArrayList<AssignmentInfo>();
 								}
 								else {
 									if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_BY))
-									     aiList = getAIListFromSharers(   si.getPerShareInfos());
-									else aiList = getAIListFromRecipients(si.getPerShareInfos());
+									     aiList = getAIListFromSharers(   smItem.getPerShareInfos());
+									else aiList = getAIListFromRecipients(smItem.getPerShareInfos());
 								}
 								addedAssignments = (!(aiList.isEmpty()));
 								fr.setColumnValue_AssignmentInfos(fc, aiList);
@@ -3488,9 +3498,9 @@ public class GwtViewHelper {
 								// List<ShareMessageInfo> for this
 								// row...
 								List<ShareMessageInfo> smiList;
-								if (null == si)
+								if (null == smItem)
 								     smiList = new ArrayList<ShareMessageInfo>();
-								else smiList = getShareMessageListFromShares(si.getPerShareInfos());
+								else smiList = getShareMessageListFromShares(smItem.getPerShareInfos());
 								fr.setColumnValue_ShareMessageInfos(fc, smiList);
 								
 								// ...and continue with the next
@@ -3504,9 +3514,9 @@ public class GwtViewHelper {
 								// Yes!  Build a
 								// List<ShareDateInfo> for this row...
 								List<ShareDateInfo> sdiList;
-								if (null == si)
+								if (null == smItem)
 								     sdiList = new ArrayList<ShareDateInfo>();
-								else sdiList = getShareDateListFromShares(si.getPerShareInfos());
+								else sdiList = getShareDateListFromShares(smItem.getPerShareInfos());
 								fr.setColumnValue_ShareDateInfos(fc, sdiList);
 								
 								// ...and continue with the next
@@ -3522,9 +3532,9 @@ public class GwtViewHelper {
 								// List<ShareExpirationInfo> for this
 								// row...
 								List<ShareExpirationInfo> seiList;
-								if (null == si)
+								if (null == smItem)
 								     seiList = new ArrayList<ShareExpirationInfo>();
-								else seiList = getShareExpirationListFromShares(si.getPerShareInfos());
+								else seiList = getShareExpirationListFromShares(smItem.getPerShareInfos());
 								fr.setColumnValue_ShareExpirationInfos(fc, seiList);
 								
 								// ...and continue with the next
@@ -3540,15 +3550,21 @@ public class GwtViewHelper {
 								// List<ShareAccessInfo> for this
 								// row...
 								List<ShareAccessInfo> saiList;
-								if (null == si)
+								if (null == smItem)
 								     saiList = new ArrayList<ShareAccessInfo>();
-								else saiList = getShareAccessListFromShares(si.getPerShareInfos());
+								else saiList = getShareAccessListFromShares(smItem.getPerShareInfos());
 								fr.setColumnValue_ShareAccessInfos(fc, saiList);
 								
 								// ...and continue with the next
 								// ...column.
 								continue;
 							}
+						}
+						
+						else {
+							// No, we aren't working on a
+							// 'Shared by/with Me' collection!
+							smItem = null;
 						}
 						
 						GuestInfo     gi = null;
@@ -3651,7 +3667,7 @@ public class GwtViewHelper {
 									eti.setTrash(isTrash);
 									eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
 									eti.setEntityId(entityId);
-									String description = getEntryDescriptionFromMap(request, entryMap);
+									String description = getEntryDescriptionFromMap(request, entryMap, ((null == smItem) ? null : smItem.getEntity()));
 									if (MiscUtil.hasString(description)) {
 										eti.setDescription(description);
 										String descriptionFormat = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DESC_FORMAT_FIELD);

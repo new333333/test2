@@ -90,6 +90,7 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.StringUtil;
@@ -701,8 +702,10 @@ public class EntityIndexUtils {
     	}
     	List<Long> sharingIds = new ArrayList<Long>();
     	List<Long> sharingTeamIds = new ArrayList<Long>();
-    	Long allUsersId = Utils.getAllUsersGroupId();
-    	boolean personal = Utils.isWorkareaInProfilesTree((WorkArea)entity);
+    	@SuppressWarnings("unused")
+		Long allUsersId = Utils.getAllUsersGroupId();
+    	@SuppressWarnings("unused")
+		boolean personal = Utils.isWorkareaInProfilesTree((WorkArea)entity);
      	Map<RecipientType, Set<Long>> idMap = profileDao.getRecipientIdsWithGrantedRightToSharedEntities(
      			entityIdentifiers, WorkAreaOperation.READ_ENTRIES.getName());
      	for (Long id : idMap.get(RecipientType.user)) {
@@ -1330,10 +1333,7 @@ public class EntityIndexUtils {
     }
 
     public static void addBinderIsMyFilesDir(Document doc, Binder binder, boolean fieldsOnly) {
-    	Boolean isMyFilesDir = ((Boolean) binder.getProperty(ObjectKeys.BINDER_PROPERTY_MYFILES_DIR));
-    	if (null == isMyFilesDir) {
-    		isMyFilesDir = Boolean.FALSE;
-    	}
+    	boolean isMyFilesDir = BinderHelper.isBinderMyFilesStorage(binder);
 		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_MYFILES_DIR_FIELD, (isMyFilesDir ? Constants.TRUE : Constants.FALSE));
 		doc.add(path);
     }

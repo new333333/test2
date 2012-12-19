@@ -93,6 +93,7 @@ import org.kablink.teaming.util.FileIconsHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MarkupUtil;
@@ -1155,17 +1156,21 @@ public class GwtActivityStreamHelper {
 				String	id     = ctFolderId;
 				Binder	binder = td.getBinder(id);
 				if (null != binder) {
-					// Yes!  Add an appropriate TreeInfo for it.
-					asIdsList.add(id);					
-					TreeInfo asTIChild = buildASTI(
-						request,
-						bs,
-						true,
-						id,
-						binder.getTitle(),
-						binder.getPathName(),
-						ctFolderAS);					
-					asTIChildren.add(asTIChild);
+					// Yes!  If this is other than a My Files Storage
+					// folder...
+			    	if (!(BinderHelper.isBinderMyFilesStorage(binder))) {
+						// ...add an appropriate TreeInfo for it.
+						asIdsList.add(id);					
+						TreeInfo asTIChild = buildASTI(
+							request,
+							bs,
+							true,
+							id,
+							binder.getTitle(),
+							binder.getPathName(),
+							ctFolderAS);					
+						asTIChildren.add(asTIChild);
+			    	}
 				}
 			}
 			
