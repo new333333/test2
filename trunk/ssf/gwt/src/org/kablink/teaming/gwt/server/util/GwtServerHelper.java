@@ -10550,6 +10550,13 @@ public class GwtServerHelper {
 	
 	/**
 	 * Update the tags for the given binder.
+	 * 
+	 * @param bs
+	 * @param entryId
+	 * @param tagsToBeDeleted (may be null)
+	 * @param tagsToBeAdded   (may be null)
+	 * 
+	 * @return (always returns true)
 	 */
 	public static Boolean updateBinderTags( AllModulesInjected bs, String binderId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
 	{
@@ -10560,15 +10567,21 @@ public class GwtServerHelper {
 		binder = bm.getBinder( Long.parseLong( binderId ) );
 		
 		// Go through the list of tags to be deleted and delete them.
-		for ( TagInfo nextTag : tagsToBeDeleted )
+		if ( MiscUtil.hasItems( tagsToBeDeleted ))
 		{
-			deleteBinderTag( bm, binder, nextTag );
+			for ( TagInfo nextTag : tagsToBeDeleted )
+			{
+				deleteBinderTag( bm, binder, nextTag );
+			}
 		}
 		
 		// Go through the list of tags to be added and add them.
-		for ( TagInfo nextTag : tagsToBeAdded )
+		if ( MiscUtil.hasItems( tagsToBeAdded ) )
 		{
-			addBinderTag( bm, binder, nextTag );
+			for ( TagInfo nextTag : tagsToBeAdded )
+			{
+				addBinderTag( bm, binder, nextTag );
+			}
 		}
 		
 		// If we get here, everything worked.
@@ -10577,6 +10590,13 @@ public class GwtServerHelper {
 	
 	/**
 	 * Update the tags for the given entry.
+	 * 
+	 * @param bs
+	 * @param entryId
+	 * @param tagsToBeDeleted (may be null)
+	 * @param tagsToBeAdded   (may be null)
+	 * 
+	 * @return (always returns true)
 	 */
 	public static Boolean updateEntryTags( AllModulesInjected bs, String entryId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
 	{
@@ -10587,15 +10607,21 @@ public class GwtServerHelper {
 		entryIdL = Long.parseLong( entryId );
 		
 		// Go through the list of tags to be deleted and delete them.
-		for ( TagInfo nextTag : tagsToBeDeleted )
+		if ( MiscUtil.hasItems( tagsToBeDeleted ) )
 		{
-			deleteEntryTag( fm, entryIdL, nextTag );
+			for ( TagInfo nextTag : tagsToBeDeleted )
+			{
+				deleteEntryTag( fm, entryIdL, nextTag );
+			}
 		}
 		
 		// Go through the list of tags to be added and add them.
-		for ( TagInfo nextTag : tagsToBeAdded )
+		if ( MiscUtil.hasItems( tagsToBeAdded ) )
 		{
-			addEntryTag( fm, entryIdL, nextTag );
+			for ( TagInfo nextTag : tagsToBeAdded )
+			{
+				addEntryTag( fm, entryIdL, nextTag );
+			}
 		}
 
 		// If we get here, everything worked.
