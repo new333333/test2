@@ -1225,11 +1225,13 @@ public class GwtServerHelper {
 					long sbi = subBinderId.longValue();
 					for (Binder subBinder:  binders) {
 						if (subBinder.getId().longValue() == sbi) {
-							try {
-								TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, subBinder, expandedBindersList, false, depth);
-								childTIList.add(subWsTI);
-							} catch(AccessControlException ace) {
-							} catch(NoBinderByTheIdException nbe) {}
+							if (!(BinderHelper.isBinderMyFilesStorage(subBinder))) {	// Drop 'My Files Storage' folders.
+								try {
+									TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, subBinder, expandedBindersList, false, depth);
+									childTIList.add(subWsTI);
+								} catch(AccessControlException ace) {
+								} catch(NoBinderByTheIdException nbe) {}
+							}
 							
 							break;
 						}
