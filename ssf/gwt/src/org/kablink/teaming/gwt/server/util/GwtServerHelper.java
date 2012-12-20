@@ -2800,9 +2800,7 @@ public class GwtServerHelper {
 				
 				try
 				{
-					netFoldersParentBinder = getCoreDao().loadReservedBinder(
-															ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
-															RequestContextHolder.getRequestContext().getZoneId() );
+					netFoldersParentBinder = SearchUtils.getNetFoldersRootBinder();
 				}
 				catch ( Exception ex )
 				{
