@@ -525,6 +525,22 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the id of the "all external users" group
+	 */
+	public final native String getAllExternalUsersGroupId()
+	/*-{
+		return this.allExternalUsersGroupId;
+	}-*/;
+	
+	/**
+	 * Return the id of the "all internal users" group
+	 */
+	public final native String getAllInternalUsersGroupId()
+	/*-{
+		return this.allInternalUsersGroupId;
+	}-*/;
+	
+	/**
 	 * Return the flag that tells us if the login dialog can have a cancel button.
 	 */
 	public final native boolean getLoginCanCancel()

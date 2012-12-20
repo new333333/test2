@@ -57,6 +57,8 @@ public class GwtSharingInfo
 	private boolean m_canShareWithExternalUsers;
 	private boolean m_canShareWithInternalUsers;
 	private boolean m_canShareWithPublic;
+	private boolean m_canShareWithAllExternalUsersGroup;
+	private boolean m_canShareWithAllInternalUsersGroup;
 	
 	/**
 	 * 
@@ -71,6 +73,8 @@ public class GwtSharingInfo
 		m_canShareWithExternalUsers = false;
 		m_canShareWithInternalUsers = false;
 		m_canShareWithPublic = false;
+		m_canShareWithAllExternalUsersGroup = false;
+		m_canShareWithAllInternalUsersGroup = false;
 		m_sendToValue = SendToValue.ALL_RECIPIENTS;
 	}
 	
@@ -131,6 +135,22 @@ public class GwtSharingInfo
 		
 		// If we get here we did not find the entityId
 		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getCanShareWithAllExternalUsersGroup()
+	{
+		return m_canShareWithAllExternalUsersGroup;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getCanShareWithAllInternalUsersGroup()
+	{
+		return m_canShareWithAllInternalUsersGroup;
 	}
 	
 	/**
@@ -250,6 +270,22 @@ public class GwtSharingInfo
 		return m_sendToValue;
 	}
 
+	/**
+	 * 
+	 */
+	public void setCanShareWithAllExternalUsersGroup( boolean canShare )
+	{
+		m_canShareWithAllExternalUsersGroup = canShare;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCanShareWithAllInternalUsersGroup( boolean canShare )
+	{
+		m_canShareWithAllInternalUsersGroup = canShare;
+	}
+	
 	/**
 	 * 
 	 */

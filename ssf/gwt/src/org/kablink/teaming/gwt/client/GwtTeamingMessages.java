@@ -1252,6 +1252,8 @@ public interface GwtTeamingMessages extends Messages
 	String shareAccess();
 	String shareCaption();
 	String shareDlg_alreadySharedWithSelectedRecipient( String recipientName );
+	String shareDlg_cantShareWithAllExternalUsersGroup();
+	String shareDlg_cantShareWithAllInternalUsersGroup();
 	String shareDlg_cantShareWithExternalUser();
 	String shareDlg_cantShareWithYourself();
 	String shareDlg_clickToAddNote();

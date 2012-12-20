@@ -165,7 +165,7 @@ public class ZoneShareRightsSelectPrincipalsWidget extends SelectPrincipalsWidge
 
 			shareWithAllExternalRole = new GwtRole();
 			shareWithAllExternalRole.setType( GwtRoleType.EnableShareWithAllExternal );
-			roles.add( shareWithAllInternalRole );
+			roles.add( shareWithAllExternalRole );
 
 			shareExternalRole = new GwtRole();
 			shareExternalRole.setType( GwtRoleType.EnableShareExternal );

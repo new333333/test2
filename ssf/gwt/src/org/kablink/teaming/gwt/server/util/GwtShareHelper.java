@@ -138,6 +138,70 @@ public class GwtShareHelper
 	}
 	
 	/**
+	 * See if the user has rights to share with the "all external users" group.
+	 */
+	public static boolean canShareWithAllExternalUsersGroup( AllModulesInjected ami )
+	{
+		Long zoneId;
+		ZoneConfig zoneConfig;
+		
+		m_accessControlManager = getAccessControlManager();
+		if ( m_accessControlManager == null )
+		{
+			m_logger.error( "In GwtShareHelper.canShareWithAllExternalUsersGroup(), unable to get the access control manager" );
+			return false;
+		}
+
+    	zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		zoneConfig = ami.getZoneModule().getZoneConfig( zoneId );
+
+		try
+		{
+			// Can the user share with the "all external users" group?
+			m_accessControlManager.checkOperation( zoneConfig, WorkAreaOperation.ENABLE_SHARING_ALL_EXTERNAL );
+		}
+		catch ( AccessControlException acEx )
+		{
+			return false;
+		}
+		
+		// If we get here, the user has rights to share with the "all external users" group.
+		return true;
+	}
+	
+	/**
+	 * See if the user has rights to share with the "all internal users" group.
+	 */
+	public static boolean canShareWithAllInternalUsersGroup( AllModulesInjected ami )
+	{
+		Long zoneId;
+		ZoneConfig zoneConfig;
+		
+		m_accessControlManager = getAccessControlManager();
+		if ( m_accessControlManager == null )
+		{
+			m_logger.error( "In GwtShareHelper.canShareWithAllInternalUsersGroup(), unable to get the access control manager" );
+			return false;
+		}
+
+    	zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		zoneConfig = ami.getZoneModule().getZoneConfig( zoneId );
+
+		try
+		{
+			// Can the user share with the "all internal users" group?
+			m_accessControlManager.checkOperation( zoneConfig, WorkAreaOperation.ENABLE_SHARING_ALL_INTERNAL );
+		}
+		catch ( AccessControlException acEx )
+		{
+			return false;
+		}
+		
+		// If we get here, the user has rights to share with the "all internal users" group.
+		return true;
+	}
+	
+	/**
 	 * See if the user can share the given entity
 	 */
 	public static boolean canShareWith(
@@ -155,9 +219,7 @@ public class GwtShareHelper
 		folderModule = ami.getFolderModule();
 		currentUser = GwtServerHelper.getCurrentUser();
 		
-		if ( m_accessControlManager == null )
-			m_accessControlManager = (AccessControlManager) SpringContextUtil.getBean( "accessControlManager" );
-		
+		m_accessControlManager = getAccessControlManager();
 		if ( m_accessControlManager == null )
 		{
 			m_logger.error( "In GwtShareHelper.canShareWith(), unable to get the access control manager" );
@@ -165,7 +227,7 @@ public class GwtShareHelper
 		}
 
     	zoneId = RequestContextHolder.getRequestContext().getZoneId();
-    	zoneConfig = getCoreDao().loadZoneConfig( zoneId );
+		zoneConfig = ami.getZoneModule().getZoneConfig( zoneId );
 
 		try
 		{
@@ -424,6 +486,17 @@ public class GwtShareHelper
 	}
 	
 	/**
+	 * 
+	 */
+	public static AccessControlManager getAccessControlManager()
+	{
+		if ( m_accessControlManager == null )
+			m_accessControlManager = (AccessControlManager) SpringContextUtil.getBean( "accessControlManager" );
+
+		return m_accessControlManager;
+	}
+	
+	/**
 	 * Get AccessRights that corresponds to the given RightSet
 	 */
 	public static AccessRights getAccessRightsFromRightSet( RightSet rightSet )
@@ -498,14 +571,6 @@ public class GwtShareHelper
 		rightSet = new RightSet( operations.toArray( new WorkAreaOperation[ operations.size() ] ) );
 
 		return rightSet;
-	}
-	
-	/**
-	 * 
-	 */
-	private static CoreDao getCoreDao()
-	{
-		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
 	}
 	
 	/**
@@ -1287,6 +1352,12 @@ public class GwtShareHelper
 		
 		// See if the user has rights to share the given entities with the public.
 		sharingInfo.setCanShareWithPublic( canShareWithPublic( ami, listOfEntityIds ) );
+		
+		// See if the user has rights to share with the "all external users" group.
+		sharingInfo.setCanShareWithAllExternalUsersGroup( canShareWithAllExternalUsersGroup( ami ) );
+		
+		// See if the user has rights to share with the "all internal users" group.
+		sharingInfo.setCanShareWithAllInternalUsersGroup( canShareWithAllInternalUsersGroup( ami ) );
 
 		currentUser = GwtServerHelper.getCurrentUser();
 

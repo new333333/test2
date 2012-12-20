@@ -759,6 +759,28 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Returns true if the given group is belongs to the "all external users" group.
+	 */
+	public static boolean isAllExternalUsersGroup( String groupId )
+	{
+		if ( groupId == null )
+			return false;
+
+		return groupId.equalsIgnoreCase( getRequestInfo().getAllExternalUsersGroupId() );
+	}
+	
+	/**
+	 * Returns true if the given group is belongs to the "all internal users" group.
+	 */
+	public static boolean isAllInternalUsersGroup( String groupId )
+	{
+		if ( groupId == null )
+			return false;
+		
+		return groupId.equalsIgnoreCase( getRequestInfo().getAllInternalUsersGroupId() );
+	}
+	
+	/**
 	 * Returns true if the control key is currently pressed and false
 	 * otherwise.
 	 * 
