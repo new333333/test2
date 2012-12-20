@@ -4122,47 +4122,66 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Returns a List<TagInfo> describing the tags defined on a binder.
+	 * Return a list of tags associated with the given binder.
 	 * 
 	 * @param bs
-	 * @param binderId
+	 * @param binder
+	 * @param includeCommunity
+	 * @param includePersonal
 	 * 
 	 * @return
 	 */
-	public static ArrayList<TagInfo> getBinderTags(AllModulesInjected bs, String binderId) {
-		BinderModule bm = bs.getBinderModule();
-		return getBinderTags(bm, bm.getBinder(Long.parseLong(binderId)));
-	}
-	
-	public static ArrayList<TagInfo> getBinderTags(BinderModule bm, Binder binder) {
-		// Allocate an ArrayList to return the TagInfo's in...
+	public static ArrayList<TagInfo> getBinderTags(AllModulesInjected bs, Binder binder, boolean includeCommunity, boolean includePersonal) {
+		// Allocate an ArrayList to return the TagInfo's in.
 		ArrayList<TagInfo> reply = new ArrayList<TagInfo>();
 
-		// ...read the Tag's from the Binder...
-		Map<String, SortedSet<Tag>> tagsMap = TagUtil.uniqueTags(bm.getTags(binder));
-		Set<Tag> communityTagsSet = ((null == tagsMap) ? null : tagsMap.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
-		Set<Tag> personalTagsSet  = ((null == tagsMap) ? null : tagsMap.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
+		// Are there any Tags defined on the Binder?
+		Map<String, SortedSet<Tag>> tagsMap = TagUtil.uniqueTags(bs.getBinderModule().getTags(binder));
+		if (null != tagsMap) {
+			// Yes!  Extract the community and personal tags, as
+			// requested.
+			Set<Tag> communityTagsSet = (includeCommunity ? tagsMap.get(ObjectKeys.COMMUNITY_ENTITY_TAGS) : null);
+			Set<Tag> personalTagsSet  = (includePersonal  ? tagsMap.get(ObjectKeys.PERSONAL_ENTITY_TAGS ) : null);
 
-		// ...iterate through the community tags...
-		Iterator<Tag> tagsIT;
-		if (null != communityTagsSet) {
-			for (tagsIT = communityTagsSet.iterator(); tagsIT.hasNext(); ) {
-				// ...adding each to the reply list...
-				reply.add(buildTIFromTag(TagType.COMMUNITY, tagsIT.next()));
+			// If we have any community tags...
+			if (MiscUtil.hasItems(communityTagsSet)) {
+				// ...iterate through them...
+				for (Tag tag:  communityTagsSet) {
+					// ...adding each to the reply list.
+					reply.add(buildTIFromTag(TagType.COMMUNITY, tag));
+				}
 			}
-		}
-		
-		// ...iterate through the personal tags...
-		if (null != personalTagsSet) {
-			for (tagsIT = personalTagsSet.iterator(); tagsIT.hasNext(); ) {
-				// ...adding each to the reply list...
-				reply.add(buildTIFromTag(TagType.PERSONAL, tagsIT.next()));
+			
+			// If we have any personal tags...
+			if (MiscUtil.hasItems(personalTagsSet)) {
+				// ...iterate through them...
+				for (Tag tag:  personalTagsSet) {
+					// ...adding each to the reply list.
+					reply.add(buildTIFromTag(TagType.PERSONAL, tag));
+				}
 			}
 		}
 
 		// ...and finally, return the List<TagInfo> of the tags defined
 		// ...on the Binder.
 		return reply;
+	}
+	
+	public static ArrayList<TagInfo> getBinderTags(AllModulesInjected bs, Binder binder) {
+		// Always use the previous form of the method.
+		return getBinderTags(bs, binder, true, true);	// true, true -> Include both community and personal tags.
+	}
+	
+	public static ArrayList<TagInfo> getBinderTags(AllModulesInjected bs, Long binderId) {
+		// Always use the previous form of the method.
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		return getBinderTags(bs, binder);
+	}
+
+	public static ArrayList<TagInfo> getBinderTags(AllModulesInjected bs, String binderId) {
+		// Always use the previous form of the method.
+		Long binderIdL = Long.parseLong(binderId);
+		return getBinderTags(bs, binderIdL);
 	}
 
 	/**
@@ -4910,51 +4929,65 @@ public class GwtServerHelper {
 	
 	/**
 	 * Return a list of tags associated with the given entry.
+	 * 
+	 * @param bs
+	 * @param entry
+	 * @param includeCommunity
+	 * @param includePersonal
+	 * 
+	 * @return
 	 */
-	public static ArrayList<TagInfo> getEntryTags( AllModulesInjected bs, String entryId )
-	{
-		FolderEntry entry;
-		Long entryIdL;
-		Map<String, SortedSet<Tag>> tagsMap;
-		ArrayList<TagInfo> tags;
+	public static ArrayList<TagInfo> getEntryTags(AllModulesInjected bs, FolderEntry entry, boolean includeCommunity, boolean includePersonal) {
+		// Allocate an ArrayList to return the TagInfo's in.
+		ArrayList<TagInfo> reply = new ArrayList<TagInfo>();
 		
-		tags = new ArrayList<TagInfo>();
-		
-		entryIdL = new Long( entryId );
-		entry = bs.getFolderModule().getEntry( null, entryIdL );
-		tagsMap = TagUtil.uniqueTags( bs.getFolderModule().getTags( entry ) );
-		
-		if ( tagsMap != null )
-		{
-			Set<Tag> communityTagsSet;
-			Set<Tag> personalTagsSet;
-			Iterator<Tag> tagsIT;
+		// Are there any Tags defined on the entry?
+		Map<String, SortedSet<Tag>>	tagsMap = TagUtil.uniqueTags(bs.getFolderModule().getTags(entry));
+		if (null != tagsMap) {
+			// Yes!  Extract the community and personal tags, as
+			// requested.
+			Set<Tag> communityTagsSet = (includeCommunity ? tagsMap.get(ObjectKeys.COMMUNITY_ENTITY_TAGS) : null);
+			Set<Tag> personalTagsSet  = (includePersonal  ? tagsMap.get(ObjectKeys.PERSONAL_ENTITY_TAGS ) : null);
 
-			communityTagsSet = tagsMap.get( ObjectKeys.COMMUNITY_ENTITY_TAGS );
-			personalTagsSet  = tagsMap.get( ObjectKeys.PERSONAL_ENTITY_TAGS );
-
-			// ...iterate through the community tags...
-			if ( communityTagsSet != null )
-			{
-				for ( tagsIT = communityTagsSet.iterator(); tagsIT.hasNext(); )
-				{
-					// ...adding each to the reply list...
-					tags.add( buildTIFromTag( TagType.COMMUNITY, tagsIT.next() ) );
+			// If we have any community tags...
+			if (MiscUtil.hasItems(communityTagsSet)) {
+				// ...iterate through them...
+				for (Tag tag:  communityTagsSet) {
+					// ...adding each to the reply list.
+					reply.add(buildTIFromTag(TagType.COMMUNITY, tag));
 				}
 			}
 
-			// ...iterate through the personal tags...
-			if ( personalTagsSet != null )
-			{
-				for ( tagsIT = personalTagsSet.iterator(); tagsIT.hasNext(); )
-				{
+			// If we have any personal tags...
+			if (MiscUtil.hasItems(personalTagsSet)) {
+				// ...iterate through them...
+				for (Tag tag:  personalTagsSet) {
 					// ...adding each to the reply list...
-					tags.add( buildTIFromTag( TagType.PERSONAL, tagsIT.next() ) );
+					reply.add(buildTIFromTag(TagType.PERSONAL, tag));
 				}
 			}
 		}
-		
-		return tags;
+
+		// ...and finally, return the List<TagInfo> of the tags defined
+		// ...on the entry.
+		return reply;
+	}
+	
+	public static ArrayList<TagInfo> getEntryTags(AllModulesInjected bs, FolderEntry entry) {
+		// Always use the previous form of the method.
+		return getEntryTags(bs, entry, true, true);	// true, true -> Include both community and personal tags.
+	}
+	
+	public static ArrayList<TagInfo> getEntryTags(AllModulesInjected bs, Long entryId) {
+		// Always use the previous form of the method.
+		FolderEntry entry = bs.getFolderModule().getEntry(null, entryId);
+		return getEntryTags(bs, entry);
+	}
+	
+	public static ArrayList<TagInfo> getEntryTags( AllModulesInjected bs, String entryId ) {
+		// Always use the previous form of the method.
+		Long entryIdL = Long.parseLong(entryId);
+		return getEntryTags(bs, entryIdL);
 	}
 	
 	
