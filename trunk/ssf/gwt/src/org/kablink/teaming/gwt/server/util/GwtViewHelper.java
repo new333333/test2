@@ -5797,6 +5797,42 @@ public class GwtViewHelper {
 					user.getWorkspaceId());
 			}
 		}
+
+		// No, the binder isn't a workspace!  Is it a folder?
+		else if (bi.isBinderFolder()) {
+			// Yes!  Is it a 'My Files Storage' folder?
+			Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(binderId);
+			if ((null != binder) && BinderHelper.isBinderMyFilesStorage(binder)) {
+				// Yes!  Is it the current user's?
+				Binder userWS          = binder.getParentBinder();
+				Long   currentUserWSId = GwtServerHelper.getCurrentUser().getWorkspaceId();
+				if (currentUserWSId.equals(userWS.getId())) {
+					// Yes!  Are we supposed to redirect requests by
+					// the owner of a 'My Files Storage' folder to
+					// their 'My Files' collection instead?
+					if (SPropsUtil.getBoolean("redirect.owner.myFilesStorage", true)) {
+						// Yes!  Redirect.
+						bi = GwtServerHelper.buildCollectionBI(
+							CollectionType.MY_FILES,
+							currentUserWSId);
+					}
+				}
+				else  {
+					// No, this isn't the current user's workspace!  It
+					// must be somebody else's.  Are we supposed to
+					// redirect requests to somebody else's 'My Files
+					// Storage' folder to their profile instead?
+					if (SPropsUtil.getBoolean("redirect.other.myFilesStorage", true)) {
+						// Yes!  Redirect.
+						vi.setViewType(ViewType.BINDER);
+						vi.setOverrideUrl(GwtProfileHelper.getUserProfileUrl(request, userWS));
+						bi = GwtServerHelper.getBinderInfo(bs, request, userWS.getId());
+					}
+				}
+			}
+		}
+		
+		// Store any BinderInfo change we made in the ViewInfo.
 		vi.setBinderInfo(bi);
 
 		// Are we showing the trash on a this binder?

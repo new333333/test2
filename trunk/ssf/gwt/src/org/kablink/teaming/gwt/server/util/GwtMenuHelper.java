@@ -464,9 +464,10 @@ public class GwtMenuHelper {
 		BinderModule   bm = bs.getBinderModule();
 		TemplateModule tm = bs.getTemplateModule();
 		if ((!(folder.isMirrored())) || isFolderWritableMirrored(folder)) {
-			// Yes!  Is this a non-blog folder that user has rights add
-			// a new sub-folder to?
-			if ((!(isViewBlog(viewType))) && bm.testAccess(folder, BinderOperation.addFolder)) {
+			// Yes!  Can we create a nested folder in this folder?
+			if ((!(isViewBlog(viewType))) &&							// If not a blog folder and...
+					(!(BinderHelper.isBinderMyFilesStorage(folder))) &&	// ...not a 'My Files Storage' folder and...
+					bm.testAccess(folder, BinderOperation.addFolder)) {	// ...the user has rights.
 				// Yes!  Can we access any folder templates?
 				List<TemplateBinder> folderTemplates = tm.getTemplates(Definition.FOLDER_VIEW);
 				folderTemplates.addAll(tm.getTemplates(Definition.FOLDER_VIEW, folder, true));
@@ -1381,7 +1382,7 @@ public class GwtMenuHelper {
 		if ((isFolder || isWorkspace) && (!isWorkspaceRoot)) {
 			// Yes!  Does the user have rights add a new folder to this
 			// binder?
-			if (bm.testAccess(binder, BinderOperation.addFolder)) {
+			if (bm.testAccess(binder, BinderOperation.addFolder) && (!(BinderHelper.isBinderMyFilesStorage(binder)))) {
 				// Yes!  Add a ToolbarItem for it.
 				addMenuCreated   =
 				adminMenuCreated = true;

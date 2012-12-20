@@ -47,6 +47,7 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	private boolean				m_invokeShare;		// true -> Invoke the sharing   dialog on the entity after the view initiates.
 	private boolean				m_invokeSubscribe;	// true -> Invoke the subscribe dialog on the entity after the view initiates.
 	private String				m_entryViewUrl;		// If m_viewType is BINDER_WITH_ENTRY_VIEW, the URL to use to view the entry AFTER loading the binder.
+	private String				m_overrideUrl;		// If supplied, is a URL that should override the want that initially let to this ViewInfo being constructed.
 	private Long				m_baseBinderId;		// For all m_viewTypes, any binderId found in the URL.
 	private ViewFolderEntryInfo	m_vfei;				// If m_viewType is FOLDER_ENTRY, a ViewFolderEntryInfo object that describes it.
 	private ViewType			m_viewType;			// The type of the view.
@@ -89,6 +90,7 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	public BinderInfo          getBinderInfo()        {return m_binderInfo;                                                                                       }
 	public Long                getBaseBinderId()      {return m_baseBinderId;                                                                                     }
 	public String              getEntryViewUrl()      {return m_entryViewUrl;                                                                                     }
+	public String              getOverrideUrl()       {return m_overrideUrl;                                                                                      }
 	public ViewFolderEntryInfo getFolderEntryInfo()   {return m_vfei;                                                                                             }
 	public ViewType            getViewType()          {return m_viewType;                                                                                         }
 	
@@ -102,6 +104,7 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	public void setInvokeSubscribe(    boolean             invokeSubscribe) {m_invokeSubscribe = invokeSubscribe;}
 	public void setBaseBinderId(       Long                baseBinderId)    {m_baseBinderId    = baseBinderId;   }
 	public void setEntryViewUrl(       String              entryViewUrl)    {m_entryViewUrl    = entryViewUrl;   }
+	public void setOverrideUrl(        String              overrideUrl)     {m_overrideUrl     = overrideUrl;    }
 	public void setViewFolderEntryInfo(ViewFolderEntryInfo vfei)            {m_vfei            = vfei;           }
 	public void setViewType(           ViewType            viewType)        {m_viewType        = viewType;       }	
 }

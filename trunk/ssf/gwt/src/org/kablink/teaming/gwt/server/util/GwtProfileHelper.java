@@ -67,6 +67,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
@@ -76,6 +77,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.SearchUtils;
@@ -1116,7 +1118,29 @@ public class GwtProfileHelper {
 		}
 	}
 
-
+	/**
+	 * Returns a URL to viewing a user's profile.
+	 *  
+	 * @param request
+	 * @param userWSId
+	 * 
+	 * @return
+	 */
+	public static String getUserProfileUrl(HttpServletRequest request, Long userWSId) {
+		String userWSUrl = PermaLinkUtil.getPermalink(request, userWSId, EntityType.workspace);
+		userWSUrl = GwtClientHelper.appendUrlParam(userWSUrl, WebKeys.URL_OPERATION, WebKeys.ACTION_SHOW_PROFILE);
+		return userWSUrl;
+	}
+	
+	public static String getUserProfileUrl(HttpServletRequest request, Binder userWS) {
+		// Always use the initial form of the method.
+		return getUserProfileUrl(request, userWS.getId());
+	}
+	
+	public static String getUserProfileUrl(HttpServletRequest request, User user) {
+		// Always use the initial form of the method.
+		return getUserProfileUrl(request, user.getWorkspaceId());
+	}
     
 //    public static int getEntriesByAudit(AllModulesInjected bs, String binderId) {
 //		int count = 0;
