@@ -1478,6 +1478,24 @@ public class GwtUIHelper {
 		Boolean loginDisallowed;
 		loginDisallowed = SPropsUtil.getBoolean("form.login.auth.disallowed", false);
 		model.put(WebKeys.IS_FORM_LOGIN_ALLOWED, (!loginDisallowed));
+		
+		// Add the id of the "all external users" group.
+		{
+			Long id;
+			
+			id = Utils.getAllExtUsersGroupId();
+			if ( id != null )
+				model.put( "allExternalUsersGroupId", id.toString() );
+		}
+		
+		// Add the id of the "all users" or "all internal users" group.
+		{
+			Long id;
+			
+			id = Utils.getAllUsersGroupId();
+			if ( id != null )
+				model.put( "allInternalUsersGroupId", id.toString() );
+		}
 	}
 	
 	/**

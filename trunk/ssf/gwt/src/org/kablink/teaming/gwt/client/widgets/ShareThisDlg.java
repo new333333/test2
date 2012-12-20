@@ -686,6 +686,31 @@ public class ShareThisDlg extends DlgBox
 				// Yes
 				group = (GwtGroup) gwtTeamingItem;
 				
+				// Is this group the "all external users" group?
+				if ( GwtClientHelper.isAllExternalUsersGroup( group.getId() ) )
+				{
+					// Yes
+					// Does the user have rights to share with the "all external users" group?
+					if ( m_sharingInfo.getCanShareWithAllExternalUsersGroup() == false )
+					{
+						// No, tell they user they can't do this.
+						Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithAllExternalUsersGroup() );
+						return null;
+					}
+				}
+				// Is this group the "all internal users" group?
+				else if ( GwtClientHelper.isAllInternalUsersGroup( group.getId() ) )
+				{
+					// Yes
+					// Does the user have rights to share with the "all internal users" group?
+					if ( m_sharingInfo.getCanShareWithAllInternalUsersGroup() == false )
+					{
+						// No, tell they user they can't do this.
+						Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithAllInternalUsersGroup() );
+						return null;
+					}
+				}
+				
 				shareItem = new GwtShareItem();
 				shareItem.setRecipientName( group.getShortDisplayName() );
 				shareItem.setRecipientType( GwtRecipientType.GROUP );
