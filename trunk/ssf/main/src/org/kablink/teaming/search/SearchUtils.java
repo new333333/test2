@@ -346,7 +346,7 @@ public class SearchUtils {
 	 *        admin which may not be what's really wanted.
 	 * 
 	 * @param bs
-	 * @param userId
+	 * @param userWorkspace
 	 * 
 	 * @return
 	 */
@@ -412,7 +412,7 @@ public class SearchUtils {
 	 *        admin which may not be what's really wanted.
 	 * 
 	 * @param bs
-	 * @param userId
+	 * @param binder
 	 * 
 	 * @return
 	 */
@@ -584,26 +584,20 @@ public class SearchUtils {
 		return getUserProperties(bs, userId, null);
 	}
 	
-	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        return getMyFilesSearchCriteria(bs, user.getWorkspaceId());
-    }
-
-	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs, Long rootBinderId) {
-        // By default, just return binders and entries
-        return getMyFilesSearchCriteria(bs, rootBinderId, true, true, false, false);
-    }
-	
-	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		return getMyFilesFolderIds(bs, user);
-	}
-
-	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs, User user) {
+	/**
+	 * Returns a List<Long> of the IDs of the 'My Files Storage'
+	 * folders contained in a user workspace, given its ID.
+	 * 
+	 * @param bs
+	 * @param userWSId
+	 * 
+	 * @return
+	 */
+	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs, Long userWSId) {
 		// Build a search for the user's binders...
 		Criteria crit = new Criteria();
 		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(user.getWorkspaceId())}));
+		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(userWSId)}));
 		
 		// ...that are marked as their My Files folder...
 		crit.add(in(Constants.FAMILY_FIELD,         new String[]{Definition.FAMILY_FILE}));
@@ -634,7 +628,20 @@ public class SearchUtils {
 		// folder.  Return it.
 		return reply;
 	}
+	
+	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		User user     = RequestContextHolder.getRequestContext().getUser();
+		Long userWSId = user.getWorkspaceId();
+		return getMyFilesFolderIds(bs, userWSId);
+	}
 
+	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs, User user) {
+		// Always use the initial form of the method.
+		Long userWSId = user.getWorkspaceId();
+		return getMyFilesFolderIds(bs, userWSId);
+	}
+	
 	/**
 	 * This routine returns a Criteria that will search all folders
 	 * associated with the My Files collection.
@@ -775,33 +782,94 @@ public class SearchUtils {
 		return crit;
 	}
 	
-	public static Criteria getNetFoldersSearchCriteria(AllModulesInjected bs) {
-		Long nfBinderId = bs.getWorkspaceModule().getTopWorkspaceId();
-		Binder nfBinder = getCoreDao().loadReservedBinder(
+	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+        User user = RequestContextHolder.getRequestContext().getUser();
+        return getMyFilesSearchCriteria(bs, user.getWorkspaceId());
+    }
+
+	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs, Long rootBinderId) {
+		// Always use the initial form of the method.  By default, just
+		// return binders and entries
+        return getMyFilesSearchCriteria(bs, rootBinderId, true, true, false, false);
+    }
+
+	/**
+	 * Returns the Net Folders root binder.
+	 * 
+	 * @return
+	 */
+	public static Binder getNetFoldersRootBinder() {
+		return
+			getCoreDao().loadReservedBinder(
 				ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
 				RequestContextHolder.getRequestContext().getZoneId());
-		if (nfBinder != null) {
-			//The default is to look in the Net Folders binder. If that doesn't exist, use the top workspace
-			nfBinderId = nfBinder.getId();
-		}
-
-		// Add the criteria for top level mirrored file folders
-		// that have been configured.
-		Criteria crit = new Criteria();
-		crit.add(eq(Constants.DOC_TYPE_FIELD,            Constants.DOC_TYPE_BINDER));
-		crit.add(eq(Constants.IS_TOP_FOLDER_FIELD,       Constants.TRUE));
-		crit.add(eq(Constants.HAS_RESOURCE_DRIVER_FIELD, Constants.TRUE));
-		crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD,   nfBinderId.toString()));    		
-
-		return crit;
 	}
 	
-	public static Criteria getBinderEntriesSearchCriteria(AllModulesInjected bs, List binderIds, boolean entriesOnly) {
-		return getBinderEntriesSearchCriteria(bs, binderIds, entriesOnly, Boolean.TRUE);
+	/**
+	 * Returns the ID of the Net Folders root binder, optionally
+	 * defaulting to the top workspace if that binder doesn't exist.
+	 * 
+	 * @param bs
+	 * @param defaultToTop
+	 * 
+	 * @return
+	 */
+	public static Long getNetFoldersRootBinderId(AllModulesInjected bs, boolean defaultToTop) {
+		Binder nfBinder = getNetFoldersRootBinder();
+		Long   reply;
+		if      (null != nfBinder) reply = nfBinder.getId();
+		else if (defaultToTop)     reply = bs.getWorkspaceModule().getTopWorkspaceId();
+		else                       reply = null;
+		return reply;
 	}
 	
+	public static Long getNetFoldersRootBinderId(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		return getNetFoldersRootBinderId(bs, false);	// false -> Don't default to the top workspace.
+	}
+	
+	/**
+	 * This routine returns a Criteria that will search all the net
+	 * folders a user has access to.
+	 * 
+	 * @param bs
+	 * @param defaultToTop
+	 * 
+	 * @return
+	 */
+	public static Criteria getNetFoldersSearchCriteria(AllModulesInjected bs, boolean defaultToTop) {
+		// Look in the Net Folders root binder.
+		Long nfBinderId = getNetFoldersRootBinderId(bs, defaultToTop);
+
+		// Add the criteria for top level mirrored file folders that
+		// have been configured.
+		Criteria reply = new Criteria();
+		reply.add(eq(Constants.DOC_TYPE_FIELD,            Constants.DOC_TYPE_BINDER));
+		reply.add(eq(Constants.IS_TOP_FOLDER_FIELD,       Constants.TRUE));
+		reply.add(eq(Constants.HAS_RESOURCE_DRIVER_FIELD, Constants.TRUE));
+		reply.add(eq(Constants.BINDERS_PARENT_ID_FIELD,   nfBinderId.toString()));
+		return reply;
+	}
+	
+	public static Criteria getNetFoldersSearchCriteria(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		return getNetFoldersSearchCriteria(bs, true);	// true -> Default to the top workspace.
+	}
+
+	/**
+	 * Returns the search criteria used to find all the entries in a
+	 * binder.
+	 *  
+	 * @param bs
+	 * @param binderIds
+	 * @param entriesOnly
+	 * @param searchSubFolders
+	 * 
+	 * @return
+	 */
 	public static Criteria getBinderEntriesSearchCriteria(AllModulesInjected bs, List binderIds, boolean entriesOnly, boolean searchSubFolders) {
-		Criteria crit =
+		Criteria reply =
 			SearchUtils.entriesForTrackedPlacesEntriesAndPeople(
 				bs,
 				binderIds,
@@ -810,14 +878,22 @@ public class SearchUtils {
 				entriesOnly,	// true -> Entries only (no replies.)
 				Constants.LASTACTIVITY_FIELD,
 				searchSubFolders);
-		return crit;
+		
+		return reply;
 	}
+	
+	public static Criteria getBinderEntriesSearchCriteria(AllModulesInjected bs, List binderIds, boolean entriesOnly) {
+		// Always use the initial form of the method.
+		return getBinderEntriesSearchCriteria(bs, binderIds, entriesOnly, true);
+	}	
 
     /**
    	 * If the user has a folder that's recognized as their My Files
    	 * folder, it's ID is returned.  Otherwise, null is returned.
    	 *
    	 * @param bs
+   	 * @param userWorkspaceId
+   	 * @param createIfNecessary
    	 *
    	 * @return
    	 */
@@ -842,7 +918,7 @@ public class SearchUtils {
 	private static Long createMyFilesFolder(AllModulesInjected bs, Long userWorkspaceId) {
 		// Can we determine the template to use for the My Files
 		// folder?
-		TemplateBinder mfFolderTemplate   = bs.getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY);
+		TemplateBinder	mfFolderTemplate   = bs.getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY);
 		Long			mfFolderTemplateId = ((null == mfFolderTemplate) ? null : mfFolderTemplate.getId());
 		if (null == mfFolderTemplateId) {
 			// No!  Then we can't create it.
@@ -852,7 +928,7 @@ public class SearchUtils {
 		// Generate a unique name for the folder.
 		Long				reply       = null;
 		final String		mfTitleBase = NLT.get("collection.myFiles.folder");
-		final BinderModule bm          = bs.getBinderModule();
+		final BinderModule	bm          = bs.getBinderModule();
 		for (int tries = 0; true; tries += 1) {
 			try {
 				// For tries beyond the first, we simply bump a counter
@@ -905,8 +981,9 @@ public class SearchUtils {
     /**
      * Adds a quick filter to the search filter in the options map.
      *
-     * @param options
      * @param quickFilter
+     * 
+     * @return
      */
     public static String modifyQuickFilter(String quickFilter) {
         // If we weren't given a quick filter to add...
@@ -924,21 +1001,19 @@ public class SearchUtils {
         return quickFilter;
     }
 
+    /**
+     * Returns the results of a net folders search.
+     *   
+     * @param mods
+     * @param quickFilter
+     * @param options
+     * 
+     * @return
+     */
     public static Map searchForNetFolders(AllModulesInjected mods, String quickFilter, Map options) {
-        Binder nfBinder = getCoreDao().loadReservedBinder(
-                ObjectKeys.NET_FOLDERS_ROOT_INTERNALID,
-                RequestContextHolder.getRequestContext().getZoneId());
-        Long nfBinderId = nfBinder.getId();
-
-        Criteria crit = new Criteria();
-        crit.add(eq(Constants.DOC_TYPE_FIELD,            Constants.DOC_TYPE_BINDER));
-        crit.add(eq(Constants.IS_TOP_FOLDER_FIELD,       Constants.TRUE));
-        crit.add(eq(Constants.HAS_RESOURCE_DRIVER_FIELD, Constants.TRUE));
-        crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD,   nfBinderId.toString()));
-
-        quickFilter = modifyQuickFilter(quickFilter);
-
         // Do we have a quick filter?
+        Criteria crit = getNetFoldersSearchCriteria(mods, false);
+        quickFilter   = modifyQuickFilter(quickFilter);
         if (null != quickFilter) {
             crit.add(like(Constants.TITLE_FIELD, quickFilter));
         }
@@ -950,18 +1025,22 @@ public class SearchUtils {
         crit.addOrder(new Order(sortBy,                 sortAscend));
 
         // ...and issue the query and return the entries.
+        Binder nfBinder = getNetFoldersRootBinder();
         return
             mods.getBinderModule().searchFolderOneLevelWithInferredAccess(
                 crit,
                 Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
                 getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
                 getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
-                nfBinderId,
+                nfBinder.getId(),
                 nfBinder.getPathName());
-
-
     }
-    
+
+    /**
+     * ?
+     * 
+     * @return
+     */
     public static Criteria getSharedWithMePrincipalsCriteria() {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Set<Long> principalIds = getProfileDao().getAllPrincipalIds(user);
@@ -975,7 +1054,14 @@ public class SearchUtils {
 		crit.add(in(SHARED_IDS, pIds));
 		return crit;
     }
-    
+
+    /**
+     * ?
+     * 
+     * @param binderIds
+     * 
+     * @return
+     */
     public static Criteria getSharedWithMeSearchCriteria(List<String> binderIds) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Set<Long> principalIds = getProfileDao().getAllPrincipalIds(user);
@@ -983,29 +1069,33 @@ public class SearchUtils {
 		for (Long pid : principalIds) {
 			pIds.add(String.valueOf(pid));
 		}
-		Criteria crit = new Criteria();
-		crit.add(in(DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER, Constants.DOC_TYPE_ENTRY, 
-				Constants.DOC_TYPE_ATTACHMENT}));
+		
+		Criteria reply = new Criteria();
+		reply.add(in(DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER, Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_ATTACHMENT}));
 		
 		Disjunction disjunction = disjunction();
 		if ((null != binderIds) && (!(binderIds.isEmpty()))) {
 			disjunction.add(in(ENTRY_ANCESTRY, binderIds));
 		}
+		disjunction.add(in(SHARED_IDS, pIds));		
+		reply.add(disjunction);
 		
-		disjunction.add(in(SHARED_IDS, pIds));
-		
-		crit.add(disjunction);
-		return crit;
+		return reply;
     }
     
-	/*
+	/**
 	 * Returns a List<Long> of the current user's home folder IDs.
+	 * 
+	 * @param bs
+	 * @param userWSId
+	 * 
+	 * @return
 	 */
-	public static List<Long> getHomeFolderIds(AllModulesInjected bs, User user) {
+	public static List<Long> getHomeFolderIds(AllModulesInjected bs, Long userWSId) {
 		// Build a search for the user's binders...
 		Criteria crit = new Criteria();
 		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(user.getWorkspaceId())}));
+		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(userWSId)}));
 		
 		// ...that are file folders...
 		crit.add(in(Constants.FAMILY_FIELD,     new String[]{Definition.FAMILY_FILE}));
@@ -1038,16 +1128,22 @@ public class SearchUtils {
 		return reply;
 	}
 	
+	public static List<Long> getHomeFolderIds(AllModulesInjected bs, User user) {
+		// Always use the initial form of the method.
+		Long userWSId = user.getWorkspaceId();
+		return getHomeFolderIds(bs, userWSId);
+	}
+	
 	/**
 	 * Returns the current user's home folder ID.
 	 * 
 	 * @param bs
-	 * @param user
+	 * @param userWSId
 	 * 
 	 * @return
 	 */
-	public static Long getHomeFolderId(AllModulesInjected bs, User user) {
-		List<Long> homeFolderIds = getHomeFolderIds(bs, user);
+	public static Long getHomeFolderId(AllModulesInjected bs, Long userWSId) {
+		List<Long> homeFolderIds = getHomeFolderIds(bs, userWSId);
 		Long reply;
 		if ((null != homeFolderIds) && (!(homeFolderIds.isEmpty())))
 		     reply = homeFolderIds.get(0);
@@ -1055,10 +1151,17 @@ public class SearchUtils {
 		return reply;
 	}
 	
+	public static Long getHomeFolderId(AllModulesInjected bs, User user) {
+		// Always use the initial form of the method.
+		Long userWSIds = user.getWorkspaceId();
+		return getHomeFolderId(bs, userWSIds);
+	}
+	
 	public static Long getHomeFolderId(AllModulesInjected bs) {
 		// Always use the initial form of the method.
 		User user = RequestContextHolder.getRequestContext().getUser();
-		return getHomeFolderId(bs, user);
+		Long userWSId = user.getWorkspaceId();
+		return getHomeFolderId(bs, userWSId);
 	}
 
 	/**
@@ -1132,7 +1235,6 @@ public class SearchUtils {
 		return result;
 	}
 	
-
 	/**
 	 * Return the 'AdHoc folder' setting from the given user's
 	 * properties.

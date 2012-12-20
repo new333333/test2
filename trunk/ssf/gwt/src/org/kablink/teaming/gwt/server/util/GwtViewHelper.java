@@ -248,7 +248,6 @@ import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
 import org.springframework.util.FileCopyUtils;
 
-import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.like;
 
 /**
@@ -302,6 +301,77 @@ public class GwtViewHelper {
 		}
 	}
 
+	/*
+	 * Inner class used to track the target binder's for entries and
+	 * binders given the ID of an initial target binder.
+	 * 
+	 * The logic here is appropriate for copy/move operations where
+	 * folder and/or entries are binder copied/moved to a target.  If
+	 * that target is a user's 'My Files Storage' folder, the entries
+	 * should be targeted there, but folders should be targeted to the
+	 * containing workspace.  Conversely, if the target is a user's
+	 * workspace, the folders should be targeted there, but entries
+	 * should be targeted to the contained 'My Files Storage' folder.
+	 */
+	private static class TargetIds {
+		private Long	m_binderTargetId;	// Target binder ID for binders being copied/moved.
+		private Long	m_entryTargetId;	// Target binder ID for entries being copied/moved.
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param bs
+		 * @param targetBinderId
+		 */
+		public TargetIds(AllModulesInjected bs, Long targetBinderId) {
+			// Initialize the super class...
+			super();
+
+			// ...and store the initial target binder as both the
+			// ...binder and entry target.
+			setBinderTargetId(targetBinderId);
+			setEntryTargetId( targetBinderId);
+			
+			// Is the initial target binder a 'My Files Storage'
+			// folder?
+			Binder targetBinder = bs.getBinderModule().getBinderWithoutAccessCheck(targetBinderId);
+			if (BinderHelper.isBinderMyFilesStorage(targetBinder)) {
+				// Yes! Then the binder target should be that folder's
+				// parent workspace.
+				setBinderTargetId(targetBinder.getParentBinder().getId());
+			}
+			
+			// No, the initial target binder isn't a 'My FIles Storage'
+			// folder.  Is it a user's workspace?
+			else if (BinderHelper.isBinderUserWorkspace(targetBinder)) {
+				// Yes!  Can we find any 'My Files Storage' folders
+				// within that?
+				List<Long> mfIDs = SearchUtils.getMyFilesFolderIds(bs, targetBinderId);
+				if (MiscUtil.hasItems(mfIDs)) {
+					// Yes!  Use the first one as the target for
+					// entries.
+					setEntryTargetId(mfIDs.get(0));
+				}
+			}
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public Long getBinderTargetId() {return m_binderTargetId;}
+		public Long getEntryTargetId()  {return m_entryTargetId; }
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setBinderTargetId(Long binderTargetId) {m_binderTargetId = binderTargetId;}
+		public void setEntryTargetId( Long entryTargetId)  {m_entryTargetId  = entryTargetId; }
+	}
+	
 	/*
 	 * Class constructor that prevents this class from being
 	 * instantiated.
@@ -1163,16 +1233,21 @@ public class GwtViewHelper {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
-
+			
 			// Were we given the IDs of any entries to copy?
 			if (MiscUtil.hasItems(entityIds)) {
-				// Yes!  Scan them.
+				// Yes!  Decide on the actual target for the copy...
+				TargetIds tis = new TargetIds(bs, targetFolderId);
+				
+				// ...and scan the entries to be copied.
+				BinderModule bm = bs.getBinderModule();
+				FolderModule fm = bs.getFolderModule();
 				for (EntityId entityId:  entityIds) {
 					try {
 						// Can we copy this entity?
 						if (entityId.isBinder())
-						     bs.getBinderModule().copyBinder(                        entityId.getEntityId(), targetFolderId, true, null);
-						else bs.getFolderModule().copyEntry( entityId.getBinderId(), entityId.getEntityId(), targetFolderId, null, null);
+						     bm.copyBinder(                        entityId.getEntityId(), tis.getBinderTargetId(), true, null);
+						else fm.copyEntry( entityId.getBinderId(), entityId.getEntityId(), tis.getEntryTargetId(),  null, null);
 					}
 
 					catch (Exception e) {
@@ -2375,16 +2450,9 @@ public class GwtViewHelper {
 			break;
 
 		case NET_FOLDERS:
-			// Add the criteria for top level mirrored file folders
+			// Create the criteria for top level mirrored file folders
 			// that have been configured.
-			Binder	nfBinder   = getNetFoldersRoot();
-			Long	nfBinderId = nfBinder.getId();
-			
-			crit = new Criteria();
-			crit.add(eq(Constants.DOC_TYPE_FIELD,            Constants.DOC_TYPE_BINDER));
-			crit.add(eq(Constants.IS_TOP_FOLDER_FIELD,       Constants.TRUE));
-    		crit.add(eq(Constants.HAS_RESOURCE_DRIVER_FIELD, Constants.TRUE));
-			crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD,   String.valueOf(nfBinderId)));    		
+			crit = SearchUtils.getNetFoldersSearchCriteria(bs, false);	// false -> Don't default to the top workspace.
 			
 			// Factor in any quick filter we've got.
 			addQuickFilterToCriteria(quickFilter, crit);
@@ -2396,13 +2464,14 @@ public class GwtViewHelper {
 			crit.addOrder(new Order(sortBy,                 sortAscend));
 			
 			// ...and issue the query and return the entries.
+			Binder nfBinder = SearchUtils.getNetFoldersRootBinder();
 			return
 				bs.getBinderModule().searchFolderOneLevelWithInferredAccess(
 					crit,
 					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
 					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
 					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
-					nfBinderId,
+					nfBinder.getId(),
 					nfBinder.getPathName());
 			
 		case SHARED_BY_ME:
@@ -4390,16 +4459,6 @@ public class GwtViewHelper {
 	}
 
 	/*
-	 * Returns the Net Folders root binder.
-	 */
-	private static Binder getNetFoldersRoot() {
-		return
-			getCoreDao().loadReservedBinder(
-				ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
-				RequestContextHolder.getRequestContext().getZoneId());
-	}
-	
-	/*
 	 * Get the parent container's DN.  May be null.
 	 * 
 	 * Copied the logic for this from
@@ -5050,10 +5109,7 @@ public class GwtViewHelper {
 				// ...including whether the user can manage net
 				// ...folders...
 				try {
-					Binder netFoldersParentBinder = getCoreDao().loadReservedBinder(
-						ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
-						RequestContextHolder.getRequestContext().getZoneId());
-					
+					Binder netFoldersParentBinder = SearchUtils.getNetFoldersRootBinder();
 					nfi.setCanManageNetFolders(
 						(null != netFoldersParentBinder) &&
 						LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
@@ -5101,7 +5157,7 @@ public class GwtViewHelper {
 						Map			nfSearch = getCollectionEntries(bs, request, null, null, new HashMap(), CollectionType.NET_FOLDERS, null);
 						List<Map>	nfList   = ((List<Map>) nfSearch.get(ObjectKeys.SEARCH_ENTRIES));
 						if (MiscUtil.hasItems(nfList)) {
-							Long nfBinderId = getNetFoldersRoot().getId();
+							Long nfBinderId = SearchUtils.getNetFoldersRootBinder().getId();
 							for (Map nfMap:  nfList) {
 								// ...adding an EntryTitleInfo for each
 								// ...to the reply.
@@ -5923,13 +5979,18 @@ public class GwtViewHelper {
 
 			// Were we given the IDs of any entries to move?
 			if (MiscUtil.hasItems(entityIds)) {
-				// Yes!  Scan them.
+				// Yes!  Decide on the actual target for the move...
+				TargetIds tis = new TargetIds(bs, targetFolderId);
+				
+				// ...and scan the entries to be moved.
+				BinderModule bm = bs.getBinderModule();
+				FolderModule fm = bs.getFolderModule();
 				for (EntityId entityId:  entityIds) {
 					try {
 						// Can we move this entity?
 						if (entityId.isBinder())
-						     bs.getBinderModule().moveBinder(                       entityId.getEntityId(), targetFolderId,       null);
-						else bs.getFolderModule().moveEntry(entityId.getBinderId(), entityId.getEntityId(), targetFolderId, null, null);
+						     bm.moveBinder(                       entityId.getEntityId(), tis.getBinderTargetId(),      null);
+						else fm.moveEntry(entityId.getBinderId(), entityId.getEntityId(), tis.getEntryTargetId(), null, null);
 					}
 
 					catch (Exception e) {
