@@ -707,7 +707,12 @@ public class ContentControl extends Composite
 					// Show the context asynchronously so that we can
 					// release the AJAX request ASAP.
 					ViewInfo vi = ((ViewInfo) response.getResponseData());
-					setViewAsync( vi, url, instigator );
+					String overrideUrl = vi.getOverrideUrl();
+					String targetUrl;
+					if ( GwtClientHelper.hasString( overrideUrl ) )
+					     targetUrl = overrideUrl;
+					else targetUrl = url;
+					setViewAsync( vi, targetUrl, instigator );
 				}//end onSuccess()
 			});
 		}
