@@ -167,7 +167,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private static final String NETWORK_ADDRESS_ATTRIBUTE = "networkAddress";
 	private static final String HOME_DRIVE_ATTRIBUTE = "homeDrive";
 	private static final String AD_HOME_DIR_ATTRIBUTE = "homeDirectory";
+	private static final String LOGIN_DISABLED_ATTRIBUTE = "loginDisabled";
+	private static final String USER_ACCOUNT_CONTROL_ATTRIBUTE = "userAccountControl"; 
+
 	private static int ADDR_TYPE_TCP = 9;
+	private static int AD_DISABLED_BIT = 0x02;
 
 	private static Pattern m_pattern_uncPath = Pattern.compile( "^\\\\\\\\(.*?)\\\\(.*?)\\\\", Pattern.CASE_INSENSITIVE );
 
@@ -3864,10 +3868,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			String attrName;
 			
 			// Create an array large enough to hold all the ldap attribute names found
-			// in the mapping plus the name of the attribute that uniquely identifies
-			// a user plus the ldap attribute that identifies a user plus the objectSid,
-			// plus sAMAccountName.
-			attributeNames = new String[userAttributeNames.length + 4];
+			// in the mapping plus the following:
+			// 1. name of the attribute that uniquely identifies a user
+			// 2. the ldap attribute that identifies a user
+			// 3. the objectSid
+			// 4. sAMAccountName.
+			// 5. the attribute that holds whether a user is disabled.
+			attributeNames = new String[userAttributeNames.length + 5];
 			
 			for (i = 0; i < userAttributeNames.length; ++i)
 			{
@@ -3900,6 +3907,18 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Add "sAMAccountName" to the list of ldap attributes to read.
 					attributeNames[i] = SAM_ACCOUNT_NAME_ATTRIBUTE;
 					++i;
+					
+					// Add the "userAccountControl" attribute
+					attributeNames[i] = USER_ACCOUNT_CONTROL_ATTRIBUTE;
+					++i;
+				}
+				// Is the ldap directory eDir?
+				else if ( attrName.equalsIgnoreCase( GUID_ATTRIBUTE ) )
+				{
+					// Yes
+					// Add "loginDisabled" to the list of ldap attributes to read.
+					attributeNames[i] = LOGIN_DISABLED_ATTRIBUTE;
+					++i;
 				}
 			}
 		}
@@ -3916,6 +3935,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @param ldapGuidAttribute
 	 * @throws NamingException
 	 */
+	@SuppressWarnings("unchecked")
 	protected static void getUpdates(String []ldapAttrNames, Map mapping, Attributes attrs, Map mods, String ldapGuidAttribute )  throws NamingException
 	{
 		if ( ldapAttrNames != null )
@@ -3967,6 +3987,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				String objectSid;
 				String samAccountName;
+				Boolean disabled;
 				
 				// Yes
 				// Add the value of the "objectSid" attribute
@@ -3976,11 +3997,116 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				// Add the value of the "sAMAccountName" attribute.
 				samAccountName = getSamAccountName( attrs );
 				mods.put( ObjectKeys.FIELD_PRINCIPAL_SAM_ACCOUNT_NAME, samAccountName );
+
+				disabled = getIsDisabledInActiveDirectory( attrs );
+				if ( disabled != null )
+				{
+					mods.put( ObjectKeys.FIELD_PRINCIPAL_DISABLED, disabled.toString() );
+				}
+			}
+			// Is the ldap directory eDir?
+			else if ( ldapGuidAttribute.equalsIgnoreCase( GUID_ATTRIBUTE ) )
+			{
+				Boolean disabled;
+				
+				// Yes
+				disabled = getIsDisabledInEdir( attrs );
+				if ( disabled != null )
+				{
+					mods.put( ObjectKeys.FIELD_PRINCIPAL_DISABLED, disabled.toString() );
+				}
 			}
 		}
 	}
 	
 	
+	/**
+	 * Get whether the user is disabled in Active Directory.
+	 */
+	private static Boolean getIsDisabledInActiveDirectory( Attributes attrs )
+	{
+		Attribute attrib;
+
+		// Get the userAccountControl attribute.
+		attrib = attrs.get( USER_ACCOUNT_CONTROL_ATTRIBUTE );
+		if ( attrib != null )
+		{
+			try
+			{
+				Object value;
+				
+				value = attrib.get();
+				if ( value != null && value instanceof String )
+				{
+					String strValue;
+					Long lValue;
+						
+					strValue = (String) value;
+					lValue = Long.valueOf( strValue );
+					
+					// Is the disabled bit set?
+					if ( (lValue & AD_DISABLED_BIT) > 0 )
+					{
+						// Yes
+						return Boolean.TRUE;
+					}
+						
+					return Boolean.FALSE;
+				}
+			}
+			catch ( Exception ex )
+			{
+				// Nothing to do.
+			}
+		}
+
+		// If we get here, something did not work.
+		return null;
+	}
+
+	/**
+	 * Get whether the user is disabled in eDirectory.
+	 */
+	private static Boolean getIsDisabledInEdir( Attributes attrs )
+	{
+		Attribute attrib;
+
+		// Get the loginDisabled attribute.
+		attrib = attrs.get( LOGIN_DISABLED_ATTRIBUTE );
+		if ( attrib != null )
+		{
+			try
+			{
+				Object value;
+				
+				value = attrib.get();
+				if ( value != null && value instanceof String )
+				{
+					String disabled;
+						
+					disabled = (String) value;
+					if ( disabled.equalsIgnoreCase( "true" ) )
+						return Boolean.TRUE;
+						
+					return Boolean.FALSE;
+				}
+			}
+			catch ( NamingException ex )
+			{
+				// Nothing to do.
+			}
+		}
+		else
+		{
+			// If the user does not have a loginDisabled attribute it means
+			// they are NOT disabled.
+			return Boolean.FALSE;
+		}
+
+		// If we get here, something did not work.
+		return null;
+	}
+
 	/**
 	 * Get the guid we read from the ldap directory.  Convert the guid byte array into a string where each
 	 * byte in the array is represented by hex characters.
