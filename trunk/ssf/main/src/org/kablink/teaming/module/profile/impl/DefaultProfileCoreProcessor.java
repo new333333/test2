@@ -378,6 +378,15 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
      */
     protected void doProfileEntryFillin(Entry entry, InputDataAccessor inputData, Map entryData) {
     	if (entry instanceof User) {
+           	// Handle the disabled attribute
+       		if ( inputData.exists( ObjectKeys.FIELD_PRINCIPAL_DISABLED ) && !entryData.containsKey( ObjectKeys.FIELD_PRINCIPAL_DISABLED ) )
+       		{
+        		String disabled;
+        		
+        		disabled = inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_DISABLED );
+    			entryData.put( ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.valueOf( disabled ) );
+        	} 
+
     		if (inputData.exists(ObjectKeys.FIELD_USER_DISPLAYSTYLE) && !entryData.containsKey(ObjectKeys.FIELD_USER_DISPLAYSTYLE)) {
     			entryData.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, inputData.getSingleValue(ObjectKeys.FIELD_USER_DISPLAYSTYLE));
     		}
