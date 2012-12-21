@@ -35,69 +35,64 @@ package org.kablink.teaming.gwt.client.util;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Enumeration used to communicate the type of a collection between the
- * client and the server as part of a GWT RPC command.
+ * This class holds the shared view state of Shared By/With Me view.
  * 
  * @author drfoster@novell.com
  */
-public enum CollectionType implements IsSerializable {
-	// *** WARNING *** WARNING *** WARNING *** WARNING ***
-	// ***
-	// *** The ordinal values (i.e., MY_FILES = 0) are hard coded in
-	// *** PermaLinkUtil.getUserPermalink().  If the ordinal value
-	// *** of that enumeration changes, PermaLinkUtil.java MUST be
-	// *** changed accordingly.
-	// ***
-	// *** WARNING *** WARNING *** WARNING *** WARNING ***
-	MY_FILES,
-	NET_FOLDERS,
-	SHARED_BY_ME,
-	SHARED_WITH_ME,
+public class SharedViewState implements IsSerializable {
+	private boolean m_showHidden;		//
+	private boolean	m_showNonHidden;	//
 	
-	OTHER,
-	NOT_A_COLLECTION;
+	/**
+	 * Class constructor.
+	 * 
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
+	 */
+	public SharedViewState() {
+		super();
+	}
 
 	/**
-	 * Converts the ordinal value of a CollectionType to its
-	 * enumeration equivalent.
+	 * Class constructor.
 	 * 
-	 * @param ordinal
-	 * 
-	 * @return
+	 * @param showNonHidden
+	 * @param showHidden
 	 */
-	public static CollectionType getEnum(int ordinal) {
-		CollectionType reply;
-		try {
-			reply = CollectionType.values()[ordinal];
-		}
-		catch (ArrayIndexOutOfBoundsException e) {
-			reply = CollectionType.OTHER;
-		}
-		return reply;
-	}
-	
-	public static CollectionType getEnum(String ordinal) {
-		// Always use the initial form of the method.
-		return getEnum(Integer.parseInt(ordinal));
+	public SharedViewState(boolean showNonHidden, boolean showHidden) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameters.
+		setShowHidden(   showHidden   );
+		setShowNonHidden(showNonHidden);
 	}
 	
 	/**
-	 * Returns true if this CollectionType value represents a
-	 * collection and false otherwise.
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public boolean isCollection() {
-		return (!(this.equals(NOT_A_COLLECTION)));
-	}
-	
+	public boolean isShowHidden()    {return m_showHidden;   }
+	public boolean isShowNonHidden() {return m_showNonHidden;}
+
 	/**
-	 * Returns true if this CollectionType value represents a
-	 * shared collection and false otherwise.
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setShowHidden(   boolean showHidden)    {m_showHidden    = showHidden;   }
+	public void setShowNonHidden(boolean showNonHidden) {m_showNonHidden = showNonHidden;}
+
+	/**
+	 * Returns a copy of this object.
 	 * 
 	 * @return
 	 */
-	public boolean isSharedCollection() {
-		return (this.equals(SHARED_BY_ME) || this.equals(SHARED_WITH_ME));
+	public SharedViewState createCopy() {
+		return
+			new SharedViewState(
+				isShowNonHidden(),
+				isShowHidden());
 	}
 }

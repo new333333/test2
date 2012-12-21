@@ -428,6 +428,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetSelfRegInfo();
 	String rpcFailure_GetSendToFriendUrl();
 	String rpcFailure_GetShareBinderPageUrl();
+	String rpcFailure_GetSharedViewState();
 	String rpcFailure_GetSharingInfo();
 	String rpcFailure_GetSignGuestbookUrl();
 	String rpcFailure_GetSiteAdminUrl();
@@ -464,6 +465,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetWorkspaceContributorIds();
 	String rpcFailure_GetXssHtml();
 	String rpcFailure_GetZoneShareRights();
+	String rpcFailure_HideShares();
 	String rpcFailure_ImportIcalByUrl();
 	String rpcFailure_IsAllUsersGroup();
 	String rpcFailure_IsPersonTracked();
@@ -503,6 +505,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
 	String rpcFailure_SaveSharedFilesState();
+	String rpcFailure_SaveSharedViewState();
 	String rpcFailure_SaveSubscriptionData();
 	String rpcFailure_SaveTags();
 	String rpcFailure_SaveTagSortOrder();
@@ -523,6 +526,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SetStatus();
 	String rpcFailure_SetUnseen();
 	String rpcFailure_ShareEntry();
+	String rpcFailure_ShowShares();
 	String rpcFailure_SyncNetFolders();
 	String rpcFailure_SyncNetFolderServer();
 	String rpcFailure_SyncNetFolderRoots();
@@ -1600,6 +1604,9 @@ public interface GwtTeamingMessages extends Messages
 	String vibeEntryMenu_ManageUsers_Warning_NoUsers1();
 	String vibeEntryMenu_ManageUsers_Warning_NoUsers2(); 
 	String vibeEntryMenu_PersonalizeFilter(String filterName);
+	String vibeEntryMenu_SharedView_HiddenFilter();
+	String vibeEntryMenu_SharedView_NonHiddenFilter();
+	String vibeEntryMenu_SharedView_Warning_NoShares();
 	String vibeEntryMenu_Warning_FoldersIgnored();
 	String vibeEntryMenu_Warning_OnlyFolders();
 		

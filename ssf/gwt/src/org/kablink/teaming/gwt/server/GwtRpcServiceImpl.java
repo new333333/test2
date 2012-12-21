@@ -1797,6 +1797,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_SHARED_VIEW_STATE:
+		{
+			GetSharedViewStateCmd gsvsCmd = ((GetSharedViewStateCmd) cmd);
+			SharedViewStateRpcResponseData result = GwtViewHelper.getSharedViewState( this, getRequest( ri ), gsvsCmd.getCollectionType() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_SHARING_INFO:
 		{
 			GetSharingInfoCmd gsiCmd;
@@ -2167,6 +2175,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case HIDE_SHARES:
+		{
+			HideSharesCmd hsCmd = ((HideSharesCmd) cmd);
+			Boolean result = GwtViewHelper.hideShares( this, getRequest( ri ), hsCmd.getCollectionType(), hsCmd.getEntityIds() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case IMPORT_ICAL_BY_URL:
 		{
 			ImportIcalByUrlCmd iiUrlCmd = ((ImportIcalByUrlCmd) cmd);
@@ -2607,6 +2623,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_SHARED_VIEW_STATE:
+		{
+			SaveSharedViewStateCmd ssvsCmd = ((SaveSharedViewStateCmd) cmd);
+			Boolean result = GwtViewHelper.saveSharedViewState( this, getRequest( ri ), ssvsCmd.getCollectionType(), ssvsCmd.getSharedViewState() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case SAVE_SUBSCRIPTION_DATA:
 		{
 			SaveSubscriptionDataCmd ssdCmd = ((SaveSubscriptionDataCmd) cmd);
@@ -2826,6 +2850,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			results = GwtShareHelper.shareEntry( this, seCmd.getSharingInfo() );
 			ShareEntryResultsRpcResponseData responseData = new ShareEntryResultsRpcResponseData( results );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SHOW_SHARES:
+		{
+			ShowSharesCmd ssCmd = ((ShowSharesCmd) cmd);
+			Boolean result = GwtViewHelper.showShares( this, getRequest( ri ), ssCmd.getCollectionType(), ssCmd.getEntityIds() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
 		

@@ -368,6 +368,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		String			entityType   = eti.getEntityId().getEntityType();
 		boolean			entryUnseen  = (!(eti.isSeen()));
 		boolean			hasBinderImg = (null != binderImg);
+		boolean			isHidden     = eti.isHidden();
 		boolean			isTrash      = eti.isTrash();
 		boolean			isEntry      = entityType.equals("folderEntry");
 		boolean			titleIsLink  = ((!isTrash) || ((null != entityType) && entityType.equals("folderEntry")));
@@ -447,14 +448,18 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			titleElement.appendChild(titleImg.getElement());
 		}
 		else {
-			titleWidget   = null;
+			titleWidget  = null;
 			titleElement = null;
 		}
 		InlineLabel titleLabel = new InlineLabel(eti.getTitle());
-		titleLabel.addStyleName(titleIsLink ? "vibe-dataTableEntry-title" : "vibe-dataTableEntry-titleNoLink");
+		String titleStyles;
+		if (isHidden)
+		     titleStyles = (titleIsLink ? "vibe-dataTableEntry-titleHidden" : "vibe-dataTableEntry-titleNoLinkHidden");
+		else titleStyles = (titleIsLink ? "vibe-dataTableEntry-title"       : "vibe-dataTableEntry-titleNoLink"      );
 		if ((!isTrash) && entryUnseen) {
-			titleLabel.addStyleName("bold");
+			titleStyles += " bold";
 		}
+		titleLabel.addStyleName(titleStyles);
 		Element elE = ((null == titleElement) ? titleLabel.getElement() : titleElement); 
 		String widgetAttr = (titleIsLink ? VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL : VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL_NOLINK);
 		elE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, widgetAttr);

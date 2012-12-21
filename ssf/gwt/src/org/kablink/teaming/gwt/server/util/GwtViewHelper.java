@@ -131,6 +131,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SharedViewStateRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.AccountInfo;
@@ -157,6 +158,8 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
+import org.kablink.teaming.gwt.client.util.SharedViewState;
+import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails.UserInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -267,6 +270,11 @@ public class GwtViewHelper {
 	private static final String CACHED_UPLOAD_FILE				= "uploadFile";
 	private static final String CACHED_VIEW_PINNED_ENTRIES_BASE = "viewPinnedEntries_";
 	private static final String CACHED_VIEW_SHARED_FILES_BASE	= "viewSharedFiles_";
+	
+	// Base for the keys used to store shared view state in the session
+	// cache.
+	private static final String CACHED_SHARED_VIEW_SHOW_HIDDEN_BASE		= "sharedViewShowHidden_";
+	private static final String CACHED_SHARED_VIEW_SHOW_NON_HIDDEN_BASE	= "sharedViewShowNonHidden_";
 
 	// Used in various file size calculations, ...
 	private final static long MEGABYTES = (1024l * 1024l);
@@ -1047,6 +1055,11 @@ public class GwtViewHelper {
 			return reply;
 		}
 		
+		// Get the state of the shared view.
+		SharedViewState svs;
+		try                  {svs = getSharedViewState(bs, request, CollectionType.SHARED_BY_ME).getSharedViewState();}
+		catch (Exception ex) {svs = new SharedViewState(true, false);                                                 }
+
 		// Scan the share items.
 		boolean			sharedFiles = getUserViewSharedFiles(request, CollectionType.SHARED_BY_ME);
 		SharingModule	sm          = bs.getSharingModule();
@@ -1088,6 +1101,20 @@ public class GwtViewHelper {
 				continue;
 			}
 			
+			// Are we showing everything?
+			boolean showHidden     = svs.isShowHidden();
+			boolean showNonHidden  = svs.isShowNonHidden();
+			boolean isEntityHidden = isSharedEntityHidden(bs, CollectionType.SHARED_BY_ME, siEntity);
+			if ((!showHidden) || (!showNonHidden)) {
+				// No!  Are we supposed to show entities in this hide
+				// state?
+				boolean showIt = ((isEntityHidden && showHidden) || ((!isEntityHidden) && showNonHidden));
+				if (!showIt) {
+					// Yes!  Skip it.
+					continue;
+				}
+			}
+
 			// Is this entity other than a file entity while we're only
 			// showing files in the collection?
 			String siEntityFamily = GwtServerHelper.getFolderEntityFamily(bs, siEntity);
@@ -1102,13 +1129,14 @@ public class GwtViewHelper {
 			if (null == meItem) {
 				// No!  Create a new GwtSharedMeItem for it...
 				meItem = new GwtSharedMeItem(
+					isEntityHidden,		// true -> The entity is hidden.  false -> It isn't.
 					siEntity,			// The entity being shared.
 					siEntityFamily);	// The family of the entity.
 				
 				// ...and add it to the reply list.
 				reply.add(meItem);
 			}
-			
+
 			// Add information about this share item as a 
 			meItem.addPerShareInfo(
 				si,
@@ -1140,6 +1168,11 @@ public class GwtViewHelper {
 			return reply;
 		}
 
+		// Get the state of the shared view.
+		SharedViewState svs;
+		try                  {svs = getSharedViewState(bs, request, CollectionType.SHARED_WITH_ME).getSharedViewState();}
+		catch (Exception ex) {svs = new SharedViewState(true, false);                                                   }
+
 		// Scan the share items.
 		boolean			sharedFiles = getUserViewSharedFiles(request, CollectionType.SHARED_WITH_ME);
 		SharingModule	sm          = bs.getSharingModule();
@@ -1164,6 +1197,20 @@ public class GwtViewHelper {
 				continue;
 			}
 
+			// Are we showing everything?
+			boolean showHidden     = svs.isShowHidden();
+			boolean showNonHidden  = svs.isShowNonHidden();
+			boolean isEntityHidden = isSharedEntityHidden(bs, CollectionType.SHARED_WITH_ME, siEntity);
+			if ((!showHidden) || (!showNonHidden)) {
+				// No!  Are we supposed to show entities in this hide
+				// state?
+				boolean showIt = ((isEntityHidden && showHidden) || ((!isEntityHidden) && showNonHidden));
+				if (!showIt) {
+					// Yes!  Skip it.
+					continue;
+				}
+			}
+
 			// Is this entity other than a file entity while we're only
 			// showing files in the collection?
 			String siEntityFamily = GwtServerHelper.getFolderEntityFamily(bs, siEntity);
@@ -1177,6 +1224,7 @@ public class GwtViewHelper {
 			boolean newMeItem = (null == meItem);
 			if (newMeItem) {
 				meItem = new GwtSharedMeItem(
+					isEntityHidden,		// true -> The entity is hidden.  false -> It isn't.
 					siEntity,			// The entity being shared.
 					siEntityFamily);	// The family of the entity.
 			}
@@ -3731,7 +3779,8 @@ public class GwtViewHelper {
 								if (csk.equals(Constants.TITLE_FIELD)) {
 									// Yes!  Construct an
 									// EntryTitleInfo for it.
-									EntryTitleInfo eti = new EntryTitleInfo();
+									EntryTitleInfo  eti = new EntryTitleInfo();
+									eti.setHidden((null != smItem) && smItem.isHidden());
 									eti.setSeen(isEntityFolderEntry ? seenMap.checkIfSeen(entryMap) : true);
 									eti.setTrash(isTrash);
 									eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
@@ -4978,6 +5027,48 @@ public class GwtViewHelper {
 		return reply;
 	}
 	
+	/**
+	 * Returns a SharedViewStateRpcResponseData object
+	 * containing the information for shared views.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param ct
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static SharedViewStateRpcResponseData getSharedViewState(AllModulesInjected bs, HttpServletRequest request, CollectionType ct) throws GwtTeamingException {
+		try {
+			HttpSession hSession = GwtServerHelper.getCurrentHttpSession();
+			Boolean showHidden    = ((Boolean) hSession.getAttribute(CACHED_SHARED_VIEW_SHOW_HIDDEN_BASE     + ct.name()));
+			Boolean showNonHidden = ((Boolean) hSession.getAttribute(CACHED_SHARED_VIEW_SHOW_NON_HIDDEN_BASE + ct.name()));
+
+			// Construct the SharedViewStateRpcResponseData
+			// object to return.
+			SharedViewStateRpcResponseData reply =
+				new SharedViewStateRpcResponseData(
+					((null == showNonHidden) || showNonHidden),	// Default is true.
+					((null != showHidden)    && showHidden));	// Default is false.
+
+			// If we get here, reply refers to the
+			// SharedViewStateRpcResponseData object
+			// containing the information about shared views.  Return
+			// it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getSharedViewState( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+
 	/*
 	 * Returns a non-null List<ShareMessageInfo> build from a share
 	 * list.
@@ -5770,6 +5861,51 @@ public class GwtViewHelper {
 		}
 	}
 	
+	/**
+	 * Marks the selected shared entities as being hidden.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param ct
+	 * @param entityIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean hideShares(AllModulesInjected bs, HttpServletRequest request, CollectionType ct, List<EntityId> entityIds) throws GwtTeamingException {
+		try {
+			// Are there any entities to hide?
+			if (MiscUtil.hasItems(entityIds)) {
+				// Yes!  Scan them...
+				BinderModule bm = bs.getBinderModule();
+				FolderModule fm = bs.getFolderModule();
+				for (EntityId eid:  entityIds) {
+					// ...adding a hidden share tag to each entity.
+					TagInfo ti;
+					if (ct.equals(CollectionType.SHARED_BY_ME))
+					     ti = TagInfo.buildHiddenSharedByTag();
+					else ti = TagInfo.buildHiddenSharedWithTag();
+					if (eid.isBinder())
+					     GwtServerHelper.addBinderTag(bm, bm.getBinder(eid.getEntityId()), ti);
+					else GwtServerHelper.addEntryTag( fm,              eid.getEntityId(),  ti);
+				}
+			}
+			
+			// If we get here, the hide was successful.  Return true.
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.hideShares( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
 	/*
 	 * Initializes a ViewInfo based on a binder ID.
 	 * 
@@ -5917,6 +6053,37 @@ public class GwtViewHelper {
 		return (MiscUtil.hasString(qp) && qp.trim().equalsIgnoreCase(value.trim()));
 	}
 
+	/*
+	 * Returns true if a DefinableEnity is tagged as a hidden share and
+	 * false otherwise.
+	 */
+	private static boolean isSharedEntityHidden(AllModulesInjected bs, CollectionType ct, DefinableEntity siEntity) {
+		// Does the entity have any personal tags defined on it?
+		boolean isEntry = siEntity.getEntityType().equals(EntityType.folderEntry);
+		ArrayList<TagInfo> entityTags;
+		if (isEntry)
+		     entityTags = GwtServerHelper.getEntryTags( bs, ((FolderEntry) siEntity), false, true);
+		else entityTags = GwtServerHelper.getBinderTags(bs, ((Binder)      siEntity), false, true);
+		if (MiscUtil.hasItems(entityTags)) {
+			// Yes!  Scan them.
+			for (TagInfo ti:  entityTags) {
+				// Is this tag marking this entry as being hidden?
+				boolean isHidden;
+				if (ct.equals(CollectionType.SHARED_BY_ME))
+				     isHidden = ti.isHiddenSharedByTag();
+				else isHidden = ti.isHiddenSharedWithTag();
+				if (isHidden) {
+					// Yes!  Return true, that's all we're looking for.
+					return true;
+				}
+			}
+		}
+		
+		// If we get here, the entity is not marked as being hidden.
+		// Return false.
+		return false;
+	}
+	
 	/**
 	 * Locks the entries.
 	 * 
@@ -6725,6 +6892,37 @@ public class GwtViewHelper {
 	}
 
 	/**
+	 * Stores the values from a SharedViewState object in the session
+	 * cache.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param ct
+	 * @param svs
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean saveSharedViewState(AllModulesInjected bs, HttpServletRequest request, CollectionType ct, SharedViewState svs) throws GwtTeamingException {
+		try {
+			// Store/remove the values from the cache and return true.
+			HttpSession hSession = GwtServerHelper.getCurrentHttpSession();
+			if (svs.isShowHidden())    hSession.setAttribute(   CACHED_SHARED_VIEW_SHOW_HIDDEN_BASE     + ct.name(), Boolean.TRUE); else hSession.removeAttribute(CACHED_SHARED_VIEW_SHOW_HIDDEN_BASE     + ct.name()               );
+			if (svs.isShowNonHidden()) hSession.removeAttribute(CACHED_SHARED_VIEW_SHOW_NON_HIDDEN_BASE + ct.name()              ); else hSession.setAttribute(   CACHED_SHARED_VIEW_SHOW_NON_HIDDEN_BASE + ct.name(), Boolean.FALSE);
+			return Boolean.TRUE;
+		}
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.saveSharedViewState( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}		
+	}
+
+	/**
 	 * Stores whether the user is viewing pinned entries on a given
 	 * folder.
 	 * 
@@ -6748,6 +6946,76 @@ public class GwtViewHelper {
 	public static void saveUserViewSharedFiles(HttpServletRequest request, CollectionType collectionType, boolean viewingSharedFiles) {
 		HttpSession session = WebHelper.getRequiredSession(request);
 		session.setAttribute((CACHED_VIEW_SHARED_FILES_BASE + collectionType.ordinal()), new Boolean(viewingSharedFiles));
+	}
+	
+	/**
+	 * Marks the selected shared entities as no longer being hidden.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param ct
+	 * @param entityIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean showShares(AllModulesInjected bs, HttpServletRequest request, CollectionType ct, List<EntityId> entityIds) throws GwtTeamingException {
+		try {
+			// Are there any entities to show?
+			if (MiscUtil.hasItems(entityIds)) {
+				// Yes!  Scan them.
+				BinderModule bm = bs.getBinderModule();
+				FolderModule fm = bs.getFolderModule();
+				ArrayList<TagInfo> deleteTags = new ArrayList<TagInfo>();
+				boolean isSharedByMe = ct.equals(CollectionType.SHARED_BY_ME);
+				for (EntityId eid:  entityIds) {
+					// Are there any personal tags on this entity?
+					ArrayList<TagInfo> entityTags;
+					if (eid.isBinder())
+					     entityTags = GwtServerHelper.getBinderTags(bs, bm.getBinder(                  eid.getEntityId()), false, true);
+					else entityTags = GwtServerHelper.getEntryTags( bs, fm.getEntry(eid.getBinderId(), eid.getEntityId()), false, true);
+					
+					if (MiscUtil.hasItems(entityTags)) {
+						// Yes!  Scan them.
+						deleteTags.clear();
+						for (TagInfo ti:  entityTags) {
+							// Is this a tag marking the share as being
+							// hidden?
+							boolean isHidden;
+							if (isSharedByMe)
+							     isHidden = ti.isHiddenSharedByTag();
+							else isHidden = ti.isHiddenSharedWithTag();
+							if (isHidden) {
+								// Yes!  Then we'll need to delete it.
+								deleteTags.add(ti);
+							}
+						}
+						
+						// Do we have any tags that need to be deleted?
+						if (MiscUtil.hasItems(deleteTags)) {
+							// Yes!  Delete them.
+							String eidS = String.valueOf(eid.getEntityId());
+							if (eid.isBinder())
+							     GwtServerHelper.updateBinderTags(bs, eidS, deleteTags, null);
+							else GwtServerHelper.updateEntryTags( bs, eidS, deleteTags, null);
+						}
+					}
+				}
+			}
+			
+			// If we get here, the show was successful.  Return true.
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.showShares( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
 	}
 	
 	/**

@@ -159,6 +159,7 @@ public enum TeamingEvents implements IsSerializable {
 	MANAGE_USERS_FILTER,							// Set or clears a filter in the manage users dialog.
 	MENU_HIDE,										// Hides the main menu
 	MENU_SHOW,										// Shows the main menu
+	SHARED_VIEW_FILTER,								// Set or clears a filter in a Shared By/With Me view.
 
 	NET_FOLDER_CREATED,								// Notification that a net folder was created.
 	NET_FOLDER_MODIFIED,							// Notification that a net folder was modified.
@@ -264,6 +265,7 @@ public enum TeamingEvents implements IsSerializable {
 	ENABLE_SELECTED_USERS,							// Enables the Selected Users.
 	FOLDER_ENTRY_ACTION_COMPLETE,					// An action on a folder entry has completed.
 	GET_MANAGE_USERS_TITLE,							// Event to request the manage users title.
+	HIDE_SELECTED_SHARES,							// Marks the selected shares as being hidden.
 	LOCK_SELECTED_ENTRIES,							// Locks the Selected Entries.
 	MARK_READ_SELECTED_ENTRIES,						// Marks the Selected Entries as     Having Been Read.
 	MARK_UNREAD_SELECTED_ENTRIES,					// Marks the Selected Entries as Not Having Been Read.
@@ -278,6 +280,7 @@ public enum TeamingEvents implements IsSerializable {
 	SET_SELECTED_USER_MOBILE_SETTINGS,				// Sets the mobile  application settings for the selected users.
 	SET_SELECTED_USER_SHARE_RIGHTS,					// Sets the share               rights   for the selected users.
 	SHARE_SELECTED_ENTRIES,							// Shares the Selected Entries.
+	SHOW_SELECTED_SHARES,							// Marks the selected shares as no longer being hidden.
 	SUBSCRIBE_SELECTED_ENTRIES,						// Subscribes the Current User to the Selected Entries.
 	TOGGLE_SHARED_VIEW,								// Toggles the 'Shared by/with Me' Views Between Files and All Entries.
 	UNLOCK_SELECTED_ENTRIES,						// Unlocks the Selected Entries.
