@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,14 +34,11 @@ package org.kablink.teaming.gwt.client.util;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
- * Class used to communicate information about a tag between the
- * client (i.e., the MainMenuControl) and the server (i.e.,
- * GwtRpcServiceImpl.getBinderTags().)
+ * Class used to communicate information about a tag via a GWT RPC
+ * command.
  * 
  * @author drfoster@novell.com
- *
  */
 public class TagInfo implements IsSerializable {
 	private String  m_tagEntity;					//
@@ -52,9 +49,14 @@ public class TagInfo implements IsSerializable {
 	
 	// The following data members are only valid when the TagInfo object was created via
 	// a request to get archive information.
-	private int		m_searchResultsCnt;
-	private int		m_searchResultsRating;
-	private String	m_searchText;
+	private int		m_searchResultsCnt;		//
+	private int		m_searchResultsRating;	//
+	private String	m_searchText;			//
+	
+	// The following are used as the names of the personal tags added
+	// to a shared entity to indicate that the user has it hidden.
+	private final static String	HIDDEN_SHARED_BY_TAG	= "sharedByHidden";
+	private final static String	HIDDEN_SHARED_WITH_TAG	= "sharedWithHidden";
 	
 	/**
 	 * Constructor method.
@@ -62,10 +64,8 @@ public class TagInfo implements IsSerializable {
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public TagInfo() {
-		// Nothing to do.
-		m_searchResultsCnt = 0;
-		m_searchResultsRating = 0;
-		m_searchText = null;
+		// Initialize the super class.
+		super();
 	}
 
 	/**
@@ -73,122 +73,74 @@ public class TagInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public String  getTagEntity()      {return m_tagEntity;     }
-	public String  getTagId()          {return m_tagId;         }
-	public String  getTagName()        {return m_tagName;       }
-	public String  getTagOwnerEntity() {return m_tagOwnerEntity;}
-	public TagType getTagType()        {return m_tagType;       }
+	public boolean isCommunityTag()            {return (TagType.COMMUNITY == m_tagType);}
+	public boolean isPersonalTag()             {return (TagType.PERSONAL  == m_tagType);}
+	public int     getTagSearchResultsCount()  {return m_searchResultsCnt;              }
+	public int     getTagSearchResultsRating() {return m_searchResultsRating;           }
+	public String  getTagSearchText()          {return m_searchText;                    }
+	public String  getTagEntity()              {return m_tagEntity;                     }
+	public String  getTagId()                  {return m_tagId;                         }
+	public String  getTagName()                {return m_tagName;                       }
+	public String  getTagOwnerEntity()         {return m_tagOwnerEntity;                }
+	public TagType getTagType()                {return m_tagType;                       }
 	
 	/**
+	 * Set'er methods.
 	 * 
+	 * @param
 	 */
-	public int getTagSearchResultsCount()
-	{
-		return m_searchResultsCnt;
-	}
-	
+	public void setTagSearchResultsCount( int     cnt)            {m_searchResultsCnt    = cnt;           }
+	public void setTagSearchResultsRating(int     rating)         {m_searchResultsRating = rating;        }
+	public void setTagSearchText(         String  text)           {m_searchText          = text;          }
+	public void setTagEntity(             String  tagEntity)      {m_tagEntity           = tagEntity;     }
+	public void setTagId(                 String  tagId)          {m_tagId               = tagId;         }
+	public void setTagName(               String  tagName)        {m_tagName             = tagName;       }
+	public void setTagOwnerEntity(        String  tagOwnerEntity) {m_tagOwnerEntity      = tagOwnerEntity;}
+	public void setTagType(               TagType tagType)        {m_tagType             = tagType;       }
+
 	/**
-	 * 
-	 */
-	public int getTagSearchResultsRating()
-	{
-		return m_searchResultsRating;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getTagSearchText()
-	{
-		return m_searchText;
-	}
-	
-	/**
-	 * Returns true of this tag defines a community tag and false
-	 * otherwise.
+	 * Constructs and returns a TagInfo used as the tag to indicate a
+	 * hidden Shared By Me share.
 	 * 
 	 * @return
 	 */
-	public boolean isCommunityTag() {
-		return (TagType.COMMUNITY == m_tagType);
+	public static TagInfo buildHiddenSharedByTag() {
+		TagInfo reply = new TagInfo();
+		reply.setTagName(TagInfo.HIDDEN_SHARED_BY_TAG);
+		reply.setTagType(TagType.PERSONAL            );
+		return reply;
 	}
-
+	
 	/**
-	 * Returns true of this tag defines a personal tag and false
-	 * otherwise.
+	 * Constructs and returns a TagInfo used as the tag to indicate a
+	 * hidden Shared By Me share.
 	 * 
 	 * @return
 	 */
-	public boolean isPersonalTag() {
-		return (TagType.PERSONAL == m_tagType);
-	}
-
-	/**
-	 * Stores the entity of a tag.
-	 * 
-	 * @param tagEntity
-	 */
-	public void setTagEntity(String tagEntity) {
-		m_tagEntity = tagEntity;
+	public static TagInfo buildHiddenSharedWithTag() {
+		TagInfo reply = new TagInfo();
+		reply.setTagName(TagInfo.HIDDEN_SHARED_WITH_TAG);
+		reply.setTagType(TagType.PERSONAL              );
+		return reply;
 	}
 	
 	/**
-	 * Stores the ID of a tag.
+	 * Returns true if this is a tag used to indicate a hidden Shared
+	 * By Me share and false otherwise.
 	 * 
-	 * @param tagId
+	 * @return
 	 */
-	public void setTagId(String tagId) {
-		m_tagId = tagId;
+	public boolean isHiddenSharedByTag() {
+		return (isPersonalTag() && TagInfo.HIDDEN_SHARED_BY_TAG.equals(getTagName()));
 	}
 	
 	/**
-	 * Stores the name of a tag.
+	 * Returns true if this is a tag used to indicate a hidden Shared
+	 * With Me share and false otherwise.
 	 * 
-	 * @param tagName
+	 * @return
 	 */
-	public void setTagName(String tagName) {
-		m_tagName = tagName;
-	}
-	
-	/**
-	 * Stores the owner entity of a tag.
-	 * 
-	 * @param tagOwnerEntity
-	 */
-	public void setTagOwnerEntity(String tagOwnerEntity) {
-		m_tagOwnerEntity = tagOwnerEntity;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setTagSearchResultsCount( int cnt )
-	{
-		m_searchResultsCnt = cnt;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setTagSearchResultsRating( int rating )
-	{
-		m_searchResultsRating = rating;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setTagSearchText( String text )
-	{
-		m_searchText = text;
-	}
-	
-	/**
-	 * Stores the type of the tag.
-	 * 
-	 * @param tagType
-	 */
-	public void setTagType(TagType tagType) {
-		m_tagType = tagType;
+	public boolean isHiddenSharedWithTag() {
+		return (isPersonalTag() && TagInfo.HIDDEN_SHARED_WITH_TAG.equals(getTagName()));
 	}
 }

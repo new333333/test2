@@ -30,74 +30,67 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.util;
+package org.kablink.teaming.gwt.client.rpc.shared;
+
+import org.kablink.teaming.gwt.client.util.SharedViewState;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Enumeration used to communicate the type of a collection between the
- * client and the server as part of a GWT RPC command.
+ * This class holds the response data for RPC commands that return the
+ * shared view state of a Shared By/With Me view.
  * 
  * @author drfoster@novell.com
  */
-public enum CollectionType implements IsSerializable {
-	// *** WARNING *** WARNING *** WARNING *** WARNING ***
-	// ***
-	// *** The ordinal values (i.e., MY_FILES = 0) are hard coded in
-	// *** PermaLinkUtil.getUserPermalink().  If the ordinal value
-	// *** of that enumeration changes, PermaLinkUtil.java MUST be
-	// *** changed accordingly.
-	// ***
-	// *** WARNING *** WARNING *** WARNING *** WARNING ***
-	MY_FILES,
-	NET_FOLDERS,
-	SHARED_BY_ME,
-	SHARED_WITH_ME,
+public class SharedViewStateRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private SharedViewState	m_sharedViewsState;	//
 	
-	OTHER,
-	NOT_A_COLLECTION;
+	/**
+	 * Class constructor.
+	 * 
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
+	 */
+	public SharedViewStateRpcResponseData() {
+		// Initialize the super class.
+		super();
+	}
 
 	/**
-	 * Converts the ordinal value of a CollectionType to its
-	 * enumeration equivalent.
+	 * Class constructor.
 	 * 
-	 * @param ordinal
-	 * 
-	 * @return
+	 * @param mus
 	 */
-	public static CollectionType getEnum(int ordinal) {
-		CollectionType reply;
-		try {
-			reply = CollectionType.values()[ordinal];
-		}
-		catch (ArrayIndexOutOfBoundsException e) {
-			reply = CollectionType.OTHER;
-		}
-		return reply;
-	}
-	
-	public static CollectionType getEnum(String ordinal) {
-		// Always use the initial form of the method.
-		return getEnum(Integer.parseInt(ordinal));
+	public SharedViewStateRpcResponseData(SharedViewState mus) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameters.
+		setSharedViewState(mus);
 	}
 	
 	/**
-	 * Returns true if this CollectionType value represents a
-	 * collection and false otherwise.
+	 * Class constructor.
 	 * 
-	 * @return
+	 * @param showNonHidden
+	 * @param showHidden
 	 */
-	public boolean isCollection() {
-		return (!(this.equals(NOT_A_COLLECTION)));
+	public SharedViewStateRpcResponseData(boolean showNonHidden, boolean showHidden) {
+		// Initialize this object.
+		this(new SharedViewState(showNonHidden, showHidden));
 	}
 	
 	/**
-	 * Returns true if this CollectionType value represents a
-	 * shared collection and false otherwise.
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public boolean isSharedCollection() {
-		return (this.equals(SHARED_BY_ME) || this.equals(SHARED_WITH_ME));
-	}
+	public SharedViewState getSharedViewState() {return m_sharedViewsState;}
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setSharedViewState(SharedViewState mus) {m_sharedViewsState = mus;}
 }

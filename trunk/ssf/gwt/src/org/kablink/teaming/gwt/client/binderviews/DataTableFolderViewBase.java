@@ -85,6 +85,7 @@ import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
@@ -96,7 +97,9 @@ import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedUserWorkspacesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
+import org.kablink.teaming.gwt.client.event.SharedViewFilterEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ShowSelectedSharesEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.ToggleSharedViewEvent;
@@ -116,6 +119,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetMyFilesContainerInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderPinningStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveSharedFilesStateCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveSharedViewStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetEntriesPinStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
@@ -130,6 +134,7 @@ import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
+import org.kablink.teaming.gwt.client.util.SharedViewState;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
@@ -195,6 +200,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		DeleteSelectedUserWorkspacesEvent.Handler,
 		DisableSelectedUsersEvent.Handler,
 		EnableSelectedUsersEvent.Handler,
+		HideSelectedSharesEvent.Handler,
 		InvokeColumnResizerEvent.Handler,
 		InvokeDropBoxEvent.Handler,
 		InvokeSignGuestbookEvent.Handler,
@@ -206,7 +212,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		PurgeSelectedUserWorkspacesEvent.Handler,
 		PurgeSelectedUsersEvent.Handler,
 		QuickFilterEvent.Handler,
+		SharedViewFilterEvent.Handler,
 		ShareSelectedEntriesEvent.Handler,
+		ShowSelectedSharesEvent.Handler,
 		SubscribeSelectedEntriesEvent.Handler,
 		ToggleSharedViewEvent.Handler,
 		TrashPurgeAllEvent.Handler,
@@ -268,6 +276,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.DELETE_SELECTED_USER_WORKSPACES,
 		TeamingEvents.DISABLE_SELECTED_USERS,
 		TeamingEvents.ENABLE_SELECTED_USERS,
+		TeamingEvents.HIDE_SELECTED_SHARES,
 		TeamingEvents.INVOKE_COLUMN_RESIZER,
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.INVOKE_SIGN_GUESTBOOK,
@@ -279,7 +288,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.PURGE_SELECTED_USER_WORKSPACES,
 		TeamingEvents.PURGE_SELECTED_USERS,
 		TeamingEvents.QUICK_FILTER,
+		TeamingEvents.SHARED_VIEW_FILTER,
 		TeamingEvents.SHARE_SELECTED_ENTRIES,
+		TeamingEvents.SHOW_SELECTED_SHARES,
 		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
 		TeamingEvents.TOGGLE_SHARED_VIEW,
 		TeamingEvents.TRASH_PURGE_ALL,
@@ -1860,6 +1871,29 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
+	 * Handles HideSelectedSharesEvent's received by this class.
+	 * 
+	 * Implements the HideSelectedSharesEvent.Handler.onHideSelectedShares() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onHideSelectedShares(HideSelectedSharesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Invoke the show selected shares.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
+			BinderViewsHelper.hideSelectedShares(
+				getFolderInfo().getCollectionType(),
+				selectedEntityIds);
+		}
+	}
+	
+	/**
 	 * Handles InvokeColumnResizerEvent's received by this class.
 	 * 
 	 * Implements the InvokeColumnResizerEvent.Handler.onInvokeColumnResizer() method.
@@ -2266,6 +2300,43 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/**
+	 * Handles SharedViewFilterEvent's received by this class.
+	 * 
+	 * Implements the SharedViewFilterEvent.Handler.onSharedViewFilter() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSharedViewFilter(SharedViewFilterEvent event) {
+		// Toggle the appropriate state...
+		EntryMenuPanel	emp = getEntryMenuPanel();
+		SharedViewState	svs = emp.getSharedViewState().createCopy();
+		switch (event.getSharedViewFilter()) {
+		case SHOW_HIDDEN:     svs.setShowHidden(   !(svs.isShowHidden()   ));  break;
+		case SHOW_NON_HIDDEN: svs.setShowNonHidden(!(svs.isShowNonHidden()));  break;
+		}
+
+		// ...save it...
+		GwtClientHelper.executeCommand(
+				new SaveSharedViewStateCmd(getFolderInfo().getCollectionType(), svs),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				// No!  Tell the user about the problem...
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_SaveSharedViewState());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// ...and force a UI refresh.
+				FullUIReloadEvent.fireOneAsync();
+			}
+		});
+	}
+
+	/**
 	 * Handles ShareSelectedEntriesEvent's received by this class.
 	 * 
 	 * Implements the ShareSelectedEntriesEvent.Handler.onShareSelectedEntries() method.
@@ -2339,6 +2410,29 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					}
 				});
 			}
+		}
+	}
+	
+	/**
+	 * Handles ShowSelectedSharesEvent's received by this class.
+	 * 
+	 * Implements the ShowSelectedSharesEvent.Handler.onShowSelectedShares() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowSelectedShares(ShowSelectedSharesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Invoke the hide selected shares.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
+			BinderViewsHelper.showSelectedShares(
+				getFolderInfo().getCollectionType(),
+				selectedEntityIds);
 		}
 	}
 	

@@ -30,74 +30,65 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.util;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 
 /**
- * Enumeration used to communicate the type of a collection between the
- * client and the server as part of a GWT RPC command.
+ * This class holds all of the information necessary to execute the
+ * 'get shared view state' command.
  * 
  * @author drfoster@novell.com
  */
-public enum CollectionType implements IsSerializable {
-	// *** WARNING *** WARNING *** WARNING *** WARNING ***
-	// ***
-	// *** The ordinal values (i.e., MY_FILES = 0) are hard coded in
-	// *** PermaLinkUtil.getUserPermalink().  If the ordinal value
-	// *** of that enumeration changes, PermaLinkUtil.java MUST be
-	// *** changed accordingly.
-	// ***
-	// *** WARNING *** WARNING *** WARNING *** WARNING ***
-	MY_FILES,
-	NET_FOLDERS,
-	SHARED_BY_ME,
-	SHARED_WITH_ME,
+public class GetSharedViewStateCmd extends VibeRpcCmd {
+	private CollectionType	m_ct;	// The view whose state is being retrieved.
 	
-	OTHER,
-	NOT_A_COLLECTION;
+	/**
+	 * Constructor methods.
+	 * 
+	 * For GWT serialization, must have a zero parameter constructor.
+	 */
+	public GetSharedViewStateCmd() {
+		// Initialize the super class.
+		super();
+	}
 
 	/**
-	 * Converts the ordinal value of a CollectionType to its
-	 * enumeration equivalent.
+	 * Constructor methods.
 	 * 
-	 * @param ordinal
+	 * @param ct
+	 */
+	public GetSharedViewStateCmd(CollectionType ct) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameter.
+		setCollectionType(ct);
+	}
+
+	/**
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public static CollectionType getEnum(int ordinal) {
-		CollectionType reply;
-		try {
-			reply = CollectionType.values()[ordinal];
-		}
-		catch (ArrayIndexOutOfBoundsException e) {
-			reply = CollectionType.OTHER;
-		}
-		return reply;
-	}
-	
-	public static CollectionType getEnum(String ordinal) {
-		// Always use the initial form of the method.
-		return getEnum(Integer.parseInt(ordinal));
-	}
+	public CollectionType getCollectionType() {return m_ct;}
 	
 	/**
-	 * Returns true if this CollectionType value represents a
-	 * collection and false otherwise.
+	 * Set'er methods.
 	 * 
-	 * @return
+	 * @param
 	 */
-	public boolean isCollection() {
-		return (!(this.equals(NOT_A_COLLECTION)));
-	}
+	public void setCollectionType(CollectionType ct) {m_ct = ct;}
 	
 	/**
-	 * Returns true if this CollectionType value represents a
-	 * shared collection and false otherwise.
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
 	 * 
 	 * @return
 	 */
-	public boolean isSharedCollection() {
-		return (this.equals(SHARED_BY_ME) || this.equals(SHARED_WITH_ME));
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_SHARED_VIEW_STATE.ordinal();
 	}
 }

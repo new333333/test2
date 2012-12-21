@@ -43,8 +43,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class EntryTitleInfo implements IsSerializable {
 	private boolean		m_descriptionIsHtml;	//
 	private boolean		m_file;					//
-	private boolean 	m_trash;				//
+	private boolean     m_hidden;				//
 	private boolean		m_seen;					//
+	private boolean 	m_trash;				//
 	private EntityId	m_entityId;				//
 	private String		m_description;			//
 	private String		m_fileDownloadUrl;		//
@@ -71,6 +72,7 @@ public class EntryTitleInfo implements IsSerializable {
 	 */
 	public boolean  isDescriptionHtml()  {return m_descriptionIsHtml;}
 	public boolean  isFile()             {return m_file;             }
+	public boolean  isHidden()           {return m_hidden;           }
 	public boolean  isSeen()             {return m_seen;             }
 	public boolean  isTrash()            {return m_trash;            }
 	public EntityId getEntityId()        {return m_entityId;         }
@@ -86,6 +88,7 @@ public class EntryTitleInfo implements IsSerializable {
 	 * @param
 	 */
 	public void setFile(             boolean  file)              {m_file              = file;             }
+	public void setHidden(           boolean  hidden)            {m_hidden            = hidden;           }
 	public void setSeen(             boolean  seen)              {m_seen              = seen;             }
 	public void setTrash(            boolean  trash)             {m_trash             = trash;            }
 	public void setEntityId(         EntityId entityId)          {m_entityId          = entityId;         }
@@ -95,28 +98,4 @@ public class EntryTitleInfo implements IsSerializable {
 	public void setDescriptionIsHtml(boolean  descriptionIsHtml) {m_descriptionIsHtml = descriptionIsHtml;}
 	public void setTitle(            String   title)             {m_title             = title;            }
 	public void setClientItemImage(  Object   clientItemImage)   {m_clientItemImage   = clientItemImage;  }
-	
-	/**
-	 * Constructs an EntryTitleInfo from the parameters.
-	 *
-	 * @param seen
-	 * @param trash
-	 * @param title
-	 * @param description
-	 * @param descriptionIsHtml
-	 * 
-	 * @return
-	 */
-	public static EntryTitleInfo construct(EntityId entityId, boolean seen, boolean trash, String title, String description, boolean descriptionIsHtml) {
-		EntryTitleInfo reply = new EntryTitleInfo();
-		
-		reply.setEntityId(         entityId         );
-		reply.setSeen(             seen             );
-		reply.setTrash(            trash            );
-		reply.setTitle(            title            );
-		reply.setDescription(      description      );
-		reply.setDescriptionIsHtml(descriptionIsHtml);
-		
-		return reply;
-	}
 }

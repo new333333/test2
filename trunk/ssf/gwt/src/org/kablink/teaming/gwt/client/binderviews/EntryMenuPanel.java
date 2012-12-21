@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.HideAccessoriesEvent;
+import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
 import org.kablink.teaming.gwt.client.event.InvokeAddNewFolderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
@@ -66,8 +67,11 @@ import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserDesktopSettingsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserMobileSettingsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserShareRightsEvent;
+import org.kablink.teaming.gwt.client.event.SharedViewFilterEvent;
+import org.kablink.teaming.gwt.client.event.SharedViewFilterEvent.SharedViewFilter;
 import org.kablink.teaming.gwt.client.event.ShowAccessoriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ShowSelectedSharesEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.ToggleSharedViewEvent;
@@ -88,7 +92,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetBinderFiltersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetManageUsersStateCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSharedViewStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersStateRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SharedViewStateRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -97,6 +103,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.util.SharedViewState;
 import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -139,6 +146,8 @@ public class EntryMenuPanel extends ToolPanelBase
 	private List<ToolbarItem>				m_toolbarItems;				//
 	private ManageUserFilterItems			m_manageUserFilters;		//
 	private ManageUsersState				m_manageUsersState;			//
+	private SharedViewFilterItems			m_sharedViewFilters;		//
+	private SharedViewState					m_sharedViewState;			//
 	private VibeFlexTable					m_grid;						//
 	private VibeFlowPanel					m_configPanel;				//
 	private VibeFlowPanel					m_filterOptionsPanel;		//
@@ -202,6 +211,45 @@ public class EntryMenuPanel extends ToolPanelBase
 		public void setExternalFilter(VibeMenuItem external) {m_externalFilter = external;}
 		public void setDisabledFilter(VibeMenuItem disabled) {m_disabledFilter = disabled;}
 		public void setInternalFilter(VibeMenuItem internal) {m_internalFilter = internal;}
+	}
+	
+	/**
+	 * Inner class used to encapsulate the shared view filter items.
+	 */
+	public static class SharedViewFilterItems {
+		private VibeMenuItem	m_hiddenFilter;		//
+		private VibeMenuItem	m_nonHiddenFilter;	//
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param nonHidden
+		 * @param hidden
+		 */
+		public SharedViewFilterItems(VibeMenuItem nonHidden, VibeMenuItem hidden) {
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameters.
+			setNonHiddenFilter(nonHidden);
+			setHiddenFilter(   hidden   );
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public VibeMenuItem getHiddenFilter()    {return m_hiddenFilter;   }
+		public VibeMenuItem getNonHiddenFilter() {return m_nonHiddenFilter;}
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setHiddenFilter(   VibeMenuItem hidden)    {m_hiddenFilter    = hidden;   }
+		public void setNonHiddenFilter(VibeMenuItem nonHidden) {m_nonHiddenFilter = nonHidden;}
 	}
 	
 	// The following defines the TeamingEvents that are handled by
@@ -321,6 +369,18 @@ public class EntryMenuPanel extends ToolPanelBase
 		return reply;
 	}
 	
+	/*
+	 * Constructs and returns a shared view filter item.
+	 */
+	private VibeMenuItem constructSharedViewFilterItem(PopupMenu filterDropdownMenu, SharedViewFilter svf, String svfText, boolean svfChecked) {
+		VibeMenuItem reply = filterDropdownMenu.addMenuItem(
+			new SharedViewFilterEvent(svf),
+			null,
+			svfText);
+		reply.setCheckedState(svfChecked);
+		return reply;
+	}
+	
 	/**
 	 * Get'er methods.
 	 * 
@@ -328,6 +388,8 @@ public class EntryMenuPanel extends ToolPanelBase
 	 */
 	public ManageUserFilterItems getManageUserFilters()  {return m_manageUserFilters; }
 	public ManageUsersState      getManageUsersState()   {return m_manageUsersState;  }
+	public SharedViewFilterItems getSharedViewFilters()  {return m_sharedViewFilters; }
+	public SharedViewState       getSharedViewState()    {return m_sharedViewState;   }
 	public VibeFlowPanel         getConfigPanel()        {return m_configPanel;       }
 	public VibeFlowPanel         getFilterOptionsPanel() {return m_filterOptionsPanel;}
 	public VibeFlowPanel         getFiltersPanel()       {return m_filtersPanel;      }
@@ -449,7 +511,10 @@ public class EntryMenuPanel extends ToolPanelBase
 			});
 		}
 
+		// No, we aren't working with a non-trash folder!  Are we
+		// managing the root profiles binder?
 		else if (m_binderInfo.isBinderProfilesRootWSManagement()) {
+			// Yes!  Get its current state.
 			GwtClientHelper.executeCommand(
 					new GetManageUsersStateCmd(),
 					new AsyncCallback<VibeRpcResponse>() {
@@ -469,10 +534,34 @@ public class EntryMenuPanel extends ToolPanelBase
 				}
 			});
 		}
+
+		// No, we aren't managing the root profiles binder either!
+		// Are we showing a 'Shared By/With Me' collection?
+		else if (m_binderInfo.getCollectionType().isSharedCollection()) {
+			// Yes!  Get its current state.
+			GwtClientHelper.executeCommand(
+					new GetSharedViewStateCmd(m_binderInfo.getCollectionType()),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetSharedViewState());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Store the state information and continue
+					// loading.
+					m_sharedViewState = ((SharedViewStateRpcResponseData) response.getResponseData()).getSharedViewState();
+					loadPart3Async();
+				}
+			});
+		}
 		
 		else {
-			// No, we either working with another workspace or trash
-			// folder!  No filtering.  Simply proceed with the next
+			// No, we aren't showing a 'Shared With Me' collection
+			// either!  No filtering.  Simply proceed with the next
 			// stop of loading.
 			loadPart3Async();
 		}
@@ -761,10 +850,10 @@ public class EntryMenuPanel extends ToolPanelBase
 			
 			// ...construct the menu items and store them so they can
 			// ...be easily accessed by the manage users dialog.
-			boolean disabled = m_manageUsersState.isShowDisabled();
-			boolean enabled  = m_manageUsersState.isShowEnabled();
-			boolean external = m_manageUsersState.isShowExternal();
-			boolean internal = m_manageUsersState.isShowInternal();
+			boolean disabled    = m_manageUsersState.isShowDisabled();
+			boolean enabled     = m_manageUsersState.isShowEnabled();
+			boolean external    = m_manageUsersState.isShowExternal();
+			boolean internal    = m_manageUsersState.isShowInternal();
 			m_manageUserFilters = new ManageUserFilterItems(
 				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_INTERNAL_USERS, m_messages.vibeEntryMenu_ManageUsers_InternalFilter(), internal),
 				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_EXTERNAL_USERS, m_messages.vibeEntryMenu_ManageUsers_ExternalFilter(), external),
@@ -780,6 +869,30 @@ public class EntryMenuPanel extends ToolPanelBase
 			if (null != warn) {
 				// ...tell the user about it.
 				GwtClientHelper.deferredAlert(warn);
+			}
+			
+			return;
+		}
+		
+		// If we're rendering the menu for a Shared By/With Me view... 
+		if (m_binderInfo.getCollectionType().isSharedCollection()) {
+			// ...there are predefined filters that are specific to
+			// ...that.  Construct the filter drop down menu...
+			PopupMenu filterDropdownMenu = constructFilterDropdownMenu(true);	// true -> Items may be checked.
+
+			// ...construct the menu items and store them so they can
+			// ...be easily accessed by the view.
+			boolean nonHidden   = m_sharedViewState.isShowNonHidden();
+			boolean hidden      = m_sharedViewState.isShowHidden();
+			m_sharedViewFilters = new SharedViewFilterItems(
+				constructSharedViewFilterItem(filterDropdownMenu, SharedViewFilter.SHOW_NON_HIDDEN, m_messages.vibeEntryMenu_SharedView_NonHiddenFilter(), nonHidden),
+				constructSharedViewFilterItem(filterDropdownMenu, SharedViewFilter.SHOW_HIDDEN,     m_messages.vibeEntryMenu_SharedView_HiddenFilter(),    hidden)  );
+			
+			// If the filtering that's in affect causes the list to be
+			// empty...
+			if ((!nonHidden) && (!hidden)) {
+				// ...tell the user about it.
+				GwtClientHelper.deferredAlert(m_messages.vibeEntryMenu_SharedView_Warning_NoShares());
 			}
 			
 			return;
@@ -1039,6 +1152,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case DISABLE_SELECTED_USERS:              event = new DisableSelectedUsersEvent(          folderId   ); break;
 					case ENABLE_SELECTED_USERS:               event = new EnableSelectedUsersEvent(           folderId   ); break;
 					case HIDE_ACCESSORIES:                    event = new HideAccessoriesEvent(               folderId   ); break;
+					case HIDE_SELECTED_SHARES:                event = new HideSelectedSharesEvent(            folderId   ); break;
 					case INVOKE_COLUMN_RESIZER:               event = new InvokeColumnResizerEvent(           folderId   ); break;
 					case INVOKE_DROPBOX:                      event = new InvokeDropBoxEvent(                 folderId   ); break;
 					case INVOKE_SIGN_GUESTBOOK:               event = new InvokeSignGuestbookEvent(           folderId   ); break;
@@ -1055,6 +1169,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case SET_SELECTED_USER_SHARE_RIGHTS:      event = new SetSelectedUserShareRightsEvent(    folderId   ); break;
 					case SHOW_ACCESSORIES:                    event = new ShowAccessoriesEvent(               folderId   ); break;
 					case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          folderId   ); break;
+					case SHOW_SELECTED_SHARES:                event = new ShowSelectedSharesEvent(            folderId   ); break;
 					case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      folderId   ); break;
 					case TRASH_PURGE_ALL:                     event = new TrashPurgeAllEvent(                 folderId   ); break;
 					case TRASH_PURGE_SELECTED_ENTRIES:        event = new TrashPurgeSelectedEntriesEvent(     folderId   ); break;

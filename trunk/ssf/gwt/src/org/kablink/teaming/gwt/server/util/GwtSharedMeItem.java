@@ -52,6 +52,7 @@ import org.kablink.util.search.Constants;
  * @author drfoster@novell.com
  */
 public class GwtSharedMeItem {
+	private boolean					m_hidden;			//
 	private DefinableEntity			m_entity;			//
 	private List<GwtPerShareInfo>	m_perShareInfos;	//
 	private String					m_entityFamily;		//
@@ -194,14 +195,16 @@ public class GwtSharedMeItem {
 	/**
 	 * Constructor method.
 	 * 
+	 * @param hidden
 	 * @param entity
 	 * @param entityFamily
 	 */
-	public GwtSharedMeItem(DefinableEntity entity, String entityFamily) {
+	public GwtSharedMeItem(boolean hidden, DefinableEntity entity, String entityFamily) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
+		setHidden(      hidden      );
 		setEntity(      entity      );
 		setEntityFamily(entityFamily);
 		
@@ -214,6 +217,7 @@ public class GwtSharedMeItem {
 	 * 
 	 * @return
 	 */
+	public boolean               isHidden()          {return m_hidden;       }
 	public DefinableEntity       getEntity()         {return m_entity;       }
 	public List<GwtPerShareInfo> getPerShareInfos()  {return m_perShareInfos;}
 	public String                getEntityFamily()   {return m_entityFamily; }
@@ -223,6 +227,7 @@ public class GwtSharedMeItem {
 	 * 
 	 * @param
 	 */
+	public void setHidden(      boolean         hidden)       {m_hidden       = hidden;      }
 	public void setEntity(      DefinableEntity entity)       {m_entity       = entity;      }
 	public void setEntityFamily(String          entityFamily) {m_entityFamily = entityFamily;}
 	

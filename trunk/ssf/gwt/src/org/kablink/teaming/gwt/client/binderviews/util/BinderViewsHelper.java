@@ -58,13 +58,16 @@ import org.kablink.teaming.gwt.client.rpc.shared.EnableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.HideSharesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ShowSharesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UnlockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
@@ -442,6 +445,52 @@ public class BinderViewsHelper {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Marks the shares hidden based on a List<Long> of their entity
+	 * IDs.
+	 *
+	 * @param ct
+	 * @param entityIds
+	 * @param reloadEvent
+	 */
+	public static void hideSelectedShares(CollectionType ct, List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
+		// If we weren't given any entity IDs to be hidden...
+		if (!(GwtClientHelper.hasItems(entityIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we hide shares.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send a request to hide the shares.
+		HideSharesCmd cmd = new HideSharesCmd(ct, entityIds);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_HideShares());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Simply force the content to refresh.
+				busy.hide();
+				if (null == reloadEvent)
+				     FullUIReloadEvent.fireOneAsync();
+				else GwtTeaming.fireEventAsync(reloadEvent);
+			}
+		});
+	}
+	
+	public static void hideSelectedShares(CollectionType ct, List<EntityId> entityIds) {
+		// Always use the initial form of the method.
+		hideSelectedShares(ct, entityIds, null);
 	}
 
 	/**
@@ -1053,6 +1102,52 @@ public class BinderViewsHelper {
 	private static void showShareDlgNow(List<EntityId> entityIds) {
 		String caption = GwtClientHelper.patchMessage(m_messages.shareTheseItems(), String.valueOf(entityIds.size()));
 		ShareThisDlg.initAndShow(m_shareDlg, null, caption, null, entityIds);
+	}
+
+	/**
+	 * Marks the shares as not being hidden based on a List<Long> of
+	 * their entity IDs.
+	 *
+	 * @param ct
+	 * @param entityIds
+	 * @param reloadEvent
+	 */
+	public static void showSelectedShares(CollectionType ct, List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
+		// If we weren't given any entity IDs to be hidden...
+		if (!(GwtClientHelper.hasItems(entityIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we show shares.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send a request to show the shares.
+		ShowSharesCmd cmd = new ShowSharesCmd(ct, entityIds);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_ShowShares());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Simply force the content to refresh.
+				busy.hide();
+				if (null == reloadEvent)
+				     FullUIReloadEvent.fireOneAsync();
+				else GwtTeaming.fireEventAsync(reloadEvent);
+			}
+		});
+	}
+	
+	public static void showSelectedShares(CollectionType ct, List<EntityId> entityIds) {
+		// Always use the initial form of the method.
+		showSelectedShares(ct, entityIds, null);
 	}
 
 	/*

@@ -732,24 +732,13 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for miscellaneous operations against
 	 * the selected entries.
-	 * 
-	 * Menu Items (as per Lynn's prototype):
-	 *		Copy...
-	 *		Tag... (Future)
-	 *		Move...
-	 *		Purge
-	 *		Lock
-	 *		Unlock
-	 *		Mark Read
-	 *		-------------------
-	 *		Change Entry Type...
-	 *		Subscribe...
-	 *		Access Control... (Future)
 	 */
-	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long folderId, String viewType, Folder folder, Workspace ws, boolean isMyFilesCollection) {
-		boolean isGuest          = GwtServerHelper.getCurrentUser().isShared();
-		boolean isFolder         = (null != folder);
-		boolean isEntryContainer = (isFolder || isMyFilesCollection);
+	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long folderId, String viewType, Folder folder, Workspace ws, CollectionType ct) {
+		boolean isGuest             = GwtServerHelper.getCurrentUser().isShared();
+		boolean isFolder            = (null != folder);
+		boolean isMyFilesCollection = CollectionType.MY_FILES.equals(ct);
+		boolean isSharedCollection  = ct.isSharedCollection();
+		boolean isEntryContainer    = (isFolder || isMyFilesCollection || isSharedCollection);
 		
 		// Create the more toolbar item...
 		ToolbarItem moreTBI = new ToolbarItem("1_more");
@@ -816,6 +805,20 @@ public class GwtMenuHelper {
 				markTBIEvent(tbi, TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES);
 				moreTBI.addNestedItem(tbi);
 			}
+		}
+
+		// ...for a 'Shared By/With Me' collection...
+		if (isSharedCollection) {
+			// ...we allow shares to be hidden or shown...
+			tbi = new ToolbarItem("1_hideSelected");
+			markTBITitle(tbi, "toolbar.hideShares");
+			markTBIEvent(tbi, TeamingEvents.HIDE_SELECTED_SHARES);
+			moreTBI.addNestedItem(tbi);
+			
+			tbi = new ToolbarItem("1_showSelected");
+			markTBITitle(tbi, "toolbar.showShares");
+			markTBIEvent(tbi, TeamingEvents.SHOW_SELECTED_SHARES);
+			moreTBI.addNestedItem(tbi);
 		}
 		
 		// ...add a separator item...
@@ -2501,7 +2504,7 @@ public class GwtMenuHelper {
 					if (isCollectionMyFiles && supportsApplets && (null != GwtServerHelper.getMyFilesContainerId(bs))) {
 						constructEntryDropBoxItem(         entryToolbar                                                                                               );
 					}
-					constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
+					constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null), ct                 );
 				}
 			}
 			
@@ -2573,7 +2576,7 @@ public class GwtMenuHelper {
 							viewType,
 							folder,
 							null,	// null  -> Not a Workspace.
-							false);	// false -> Not a My Files collection.
+							CollectionType.NOT_A_COLLECTION);
 					}
 					
 					// Are we working on a calendar folder?

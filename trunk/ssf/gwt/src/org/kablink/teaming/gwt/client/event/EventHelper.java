@@ -823,6 +823,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case HIDE_SELECTED_SHARES:
+				// A HideSelectedSharesEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof HideSelectedSharesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = HideSelectedSharesEvent.registerEvent(eventBus, ((HideSelectedSharesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case INVOKE_ABOUT:
 				// An InvokeAboutEvent!  Can the event handler we were
 				// given handle that?
@@ -1553,6 +1562,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHARED_VIEW_FILTER:
+				// An SharedViewFilterEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof SharedViewFilterEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SharedViewFilterEvent.registerEvent(eventBus, ((SharedViewFilterEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case SHOW_ACCESSORIES:
 				// A ShowAccessoriesEvent!  Can the event handler we
 				// were given handle that?
@@ -1743,6 +1761,15 @@ public class EventHelper {
 				{
 					handlerNotDefined = false;
 					registrationHandler = ShowProjectManagementWSEvent.registerEvent( eventBus, ((ShowProjectManagementWSEvent.Handler) eventHandler) );
+				}
+				break;
+			
+			case SHOW_SELECTED_SHARES:
+				// A ShowSelectedSharesEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ShowSelectedSharesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowSelectedSharesEvent.registerEvent(eventBus, ((ShowSelectedSharesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2300,6 +2327,7 @@ public class EventHelper {
 			case MANAGE_USERS_FILTER:                     	   hasHandler = (eventHandler instanceof ManageUsersFilterEvent.Handler);                 	   break;
 			case MENU_HIDE:                     		       hasHandler = (eventHandler instanceof MenuHideEvent.Handler);                 	           break;
 			case MENU_SHOW:                     		       hasHandler = (eventHandler instanceof MenuShowEvent.Handler);                               break;
+			case SHARED_VIEW_FILTER:                     	   hasHandler = (eventHandler instanceof SharedViewFilterEvent.Handler);                 	   break;
 
 			case FILES_DROPPED:                    	           hasHandler = (eventHandler instanceof FilesDroppedEvent.Handler);                           break;
 			case FULL_UI_RELOAD:                    	       hasHandler = (eventHandler instanceof FullUIReloadEvent.Handler);                           break;
@@ -2472,6 +2500,7 @@ public class EventHelper {
 			case ENABLE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);                    break;
 			case FOLDER_ENTRY_ACTION_COMPLETE:                 hasHandler = (eventHandler instanceof FolderEntryActionCompleteEvent.Handler);              break;
 			case GET_MANAGE_USERS_TITLE:                       hasHandler = (eventHandler instanceof GetManageUsersTitleEvent.Handler);                    break;
+			case HIDE_SELECTED_SHARES:                         hasHandler = (eventHandler instanceof HideSelectedSharesEvent.Handler);                     break;
 			case LOCK_SELECTED_ENTRIES:                        hasHandler = (eventHandler instanceof LockSelectedEntriesEvent.Handler);                    break;
 			case MARK_READ_SELECTED_ENTRIES:                   hasHandler = (eventHandler instanceof MarkReadSelectedEntriesEvent.Handler);                break;
 			case MARK_UNREAD_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof MarkUnreadSelectedEntriesEvent.Handler);              break;
@@ -2485,6 +2514,7 @@ public class EventHelper {
 			case SET_SELECTED_USER_MOBILE_SETTINGS:            hasHandler = (eventHandler instanceof SetSelectedUserMobileSettingsEvent.Handler);          break;
 			case SET_SELECTED_USER_SHARE_RIGHTS:               hasHandler = (eventHandler instanceof SetSelectedUserShareRightsEvent.Handler);             break;
 			case SHARE_SELECTED_ENTRIES:                       hasHandler = (eventHandler instanceof ShareSelectedEntriesEvent.Handler);                   break;
+			case SHOW_SELECTED_SHARES:                         hasHandler = (eventHandler instanceof ShowSelectedSharesEvent.Handler);                     break;
 			case SUBSCRIBE_SELECTED_ENTRIES:                   hasHandler = (eventHandler instanceof SubscribeSelectedEntriesEvent.Handler);               break;
 			case TOGGLE_SHARED_VIEW:                  	       hasHandler = (eventHandler instanceof ToggleSharedViewEvent.Handler);                       break;
 			case UNLOCK_SELECTED_ENTRIES:                      hasHandler = (eventHandler instanceof UnlockSelectedEntriesEvent.Handler);                  break;
