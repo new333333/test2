@@ -894,6 +894,12 @@ public interface ObjectKeys {
     public static final String MOBILE_WHATS_NEW_VIEW_SITE = "site";
     public static final String MOBILE_WHATS_NEW_VIEW_MICROBLOG = "microblog";
     
+    //UI Styles
+    public static final String LICENSE_TYPE_KABLINK = "kablink";
+    public static final String LICENSE_TYPE_VIBE = "vibe";
+    public static final String LICENSE_TYPE_FILR = "filr";
+    public static final String LICENSE_TYPE_IPRINT = "iprint";
+    
     //License options
     public static final String LICENSE_OPTION_GUEST_ACCESS = "com.novell.teaming.GuestAccess";
     public static final String LICENSE_OPTION_VIBE = "com.novell.teaming.Vibe";
