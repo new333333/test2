@@ -2325,21 +2325,28 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			List dates = (List) getHibernateTemplate().execute(
 		            new HibernateCallback() {
 		                public Object doInHibernate(Session session) throws HibernateException {
-		                 	return session.createCriteria(FolderEntry.class)
-	                 		.setProjection(Projections.projectionList()
-									.add(Projections.min("creation.date"))
-									.add(Projections.max("lastActivity")))
+		                 	return session.createCriteria(Binder.class)
+		                 		.add(Restrictions.isNull("resourceDriverName"))
+	                 			.setProjection(Projections.projectionList()
+								.add(Projections.min("creation.date"))
+								.add(Projections.max("creation.date")))
 	 	                 	.list();
 		                }
 		            }
 		        );
-			
-			Object[] row = (Object[]) dates.get(0);
-			Date earliest = (Date) row[0];
-			Date latest = (Date) row[1];
-			if(earliest != null && latest != null) {
-				long millis = latest.getTime() - earliest.getTime();
-				return (int) ((millis + MILLIS_PER_DAY + 1)/MILLIS_PER_DAY);
+			if (!dates.isEmpty()) {
+				Object[] row = (Object[]) dates.get(0);
+				Date earliest = (Date) row[0];
+				Date latest = (Date) row[1];
+				Date now = new Date();
+				if (latest == null || latest.before(now)) {
+					//If the max creation date is in the future, then use it; otherwise use today's date
+					latest = now;
+				}
+				if(earliest != null && latest != null) {
+					long millis = latest.getTime() - earliest.getTime();
+					return (int) ((millis + MILLIS_PER_DAY + 1)/MILLIS_PER_DAY);
+				}
 			}
 			
 			return 0;

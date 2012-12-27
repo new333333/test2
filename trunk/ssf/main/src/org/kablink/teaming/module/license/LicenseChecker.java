@@ -74,6 +74,10 @@ public class LicenseChecker {
 		return getInstance().getLicenseManager().isAuthorizedByLicense(featureName);
 	}
 	
+	public static String getLicenseType() {
+		return getInstance().getLicenseManager().getLicenseType();
+	}
+	
 	public static boolean inCompliance()
 	{
 		return getInstance().getLicenseManager().inCompliance();

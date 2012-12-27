@@ -644,8 +644,7 @@ public class Utils {
 		}
 		
 		// No ssf*.properties override!  Check the license.
-		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Filr") &&
-				!LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Vibe")) {
+		if (ObjectKeys.LICENSE_TYPE_FILR.equals(LicenseChecker.getLicenseType())) {
 			return true;
 		} else {
 			return false;
@@ -689,7 +688,7 @@ public class Utils {
 		}
 		
 		// No ssf*.properties override!  Check the license. 
-		if (!checkIfFilrAndVibe() && LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Vibe")) {
+		if (!checkIfFilrAndVibe() && ObjectKeys.LICENSE_TYPE_VIBE.equals(LicenseChecker.getLicenseType())) {
 			return true;
 		} else {
 			return false;
@@ -710,7 +709,7 @@ public class Utils {
 		}
 		
 		// No ssf*.properties override!  Check the license.
-		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.iPrint")) {
+		if (ObjectKeys.LICENSE_TYPE_IPRINT.equals(LicenseChecker.getLicenseType())) {
 			return true;
 		} else {
 			return false;
@@ -724,8 +723,11 @@ public class Utils {
 	 */
 	public static boolean checkIfKablink() {
 		//See if no product licenses exist (vibe or filr)
-		if (!checkIfVibe() && !checkIfFilr() && !checkIfIPrint()) return true;
-		return false;
+		if (ObjectKeys.LICENSE_TYPE_KABLINK.equals(LicenseChecker.getLicenseType())) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/**
