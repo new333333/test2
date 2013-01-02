@@ -107,6 +107,16 @@ public class GwValueSpinner extends Composite
 			content.add(valSpinnerLabel);
 		}
 
+		getValueSpinner().getSpinner().addSpinnerListener(new SpinnerListener()
+		{
+			
+			@Override
+			public void onSpinning(double value)
+			{
+				getValueSpinner().getTextBox().setValue(String.valueOf((long)value));
+			}
+		});
+		valSpinner.setValue(value);
 		initWidget(content);
 	}
 
@@ -127,13 +137,14 @@ public class GwValueSpinner extends Composite
 	 */
 	public long getValue()
 	{
-		return valSpinner.getValue();
+		return (long)valSpinner.getValue();
 	}
 
 	public int getValueAsInt()
 	{
 		return (int)valSpinner.getValue();
 	}
+	
 	public void setValue(long value)
 	{
 		valSpinner.setValue(value);

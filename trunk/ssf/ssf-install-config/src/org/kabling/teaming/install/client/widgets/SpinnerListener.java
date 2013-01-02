@@ -29,5 +29,5 @@ public interface SpinnerListener
 	 * @param value
 	 *            the current spinner value
 	 */
-	void onSpinning(long value);
+	void onSpinning(double value);
 }
