@@ -648,6 +648,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ProjectStatsWidget();
 	String codeSplitFailure_ProjectManagementWSView();
 	String codeSplitFailure_QuickViewDlg();
+	String codeSplitFailure_RenameEntityDlg();
 	String codeSplitFailure_RunAReportDlg();
 	String codeSplitFailure_SearchOptionsComposite();
 	String codeSplitFailure_SelectPrincipalsWidget();
@@ -874,6 +875,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuMyTeamsNoTeams();
 	String mainMenuMyGroupsNoGroups();
 	String mainMenuRecentPlacesNoPlaces();
+	String mainMenuRenameBinderDlgErrorBogusBinder(String binderType);
 	String mainMenuSearchEmpty();
 	String mainMenuSearchImageAlt();
 	String mainMenuSearchOptionsAdvancedSearch();
@@ -2469,4 +2471,11 @@ public interface GwtTeamingMessages extends Messages
 	String editUserZoneShareRightsDlg_ShareWithAllExternalUsersLabel();
 	String editUserZoneShareRightsDlg_ShareWithAllInternalUsersLabel();
 	
+	// Strings used by the 'Rename an Entity' dialog.
+	String renameEntityDlgErrorBogusEntity(String entityType);
+	String renameEntityDlgHeader_File();
+	String renameEntityDlgHeader_Folder();
+	String renameEntityDlgHeader_Workspace();
+	String renameEntityDlgName();
+
 }// end GwtTeamingMessages

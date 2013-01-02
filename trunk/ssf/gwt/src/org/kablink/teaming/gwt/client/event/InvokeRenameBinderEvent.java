@@ -39,45 +39,27 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The InvokeAddNewFolderEvent is used to invoke Vibe's add new folder
- * dialog.
+ * The InvokeRenameBinderEvent is used to invoke Vibe's rename
+ * dialog to rename the current folder or workspace.
  * 
  * @author drfoster@novell.com
  */
-public class InvokeAddNewFolderEvent extends VibeEventBase<InvokeAddNewFolderEvent.Handler> {
+public class InvokeRenameBinderEvent extends VibeEventBase<InvokeRenameBinderEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
-    
-    public Long	m_binderId;			// The ID of the binder to create the new folder in.
-    public Long	m_folderTemplateId;	// The ID of the folder template to use to create the folder.
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onInvokeAddNewFolder(InvokeAddNewFolderEvent event);
+		void onInvokeRenameBinder(InvokeRenameBinderEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public InvokeAddNewFolderEvent() {
+	public InvokeRenameBinderEvent() {
 		// Initialize the super class.
 		super();
-	}
-
-	/**
-	 * Class constructor.
-	 * 
-	 * @param binderId
-	 * @param folderTemplateId
-	 */
-	public InvokeAddNewFolderEvent(Long binderId, Long folderTemplateId) {
-		// Initialize this object...
-		this();
-		
-		// ...and store the parameters.
-		setBinderId(        binderId        );
-		setFolderTemplateId(folderTemplateId);
 	}
 
 	/**
@@ -89,14 +71,21 @@ public class InvokeAddNewFolderEvent extends VibeEventBase<InvokeAddNewFolderEve
 	 */
     @Override
     protected void doDispatch(Handler handler) {
-        handler.onInvokeAddNewFolder(this);
+        handler.onInvokeRenameBinder(this);
     }
 	
 	/**
-	 * Fires a new one of these events.
+	 * Synchronously fires a new one of these events.
 	 */
 	public static void fireOne() {
-		GwtTeaming.fireEvent(new InvokeAddNewFolderEvent());
+		GwtTeaming.fireEvent(new InvokeRenameBinderEvent());
+	}
+    
+	/**
+	 * Asynchronously fires a new one of these events.
+	 */
+	public static void fireOneAsync() {
+		GwtTeaming.fireEventAsync(new InvokeRenameBinderEvent());
 	}
     
 	/**
@@ -121,7 +110,7 @@ public class InvokeAddNewFolderEvent extends VibeEventBase<InvokeAddNewFolderEve
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.INVOKE_ADD_NEW_FOLDER;
+		return TeamingEvents.INVOKE_RENAME_BINDER;
 	}
 		
 	/**
@@ -136,20 +125,4 @@ public class InvokeAddNewFolderEvent extends VibeEventBase<InvokeAddNewFolderEve
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
 	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public Long getBinderId()         {return m_binderId;        }
-	public Long getFolderTemplateId() {return m_folderTemplateId;}
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setBinderId(        Long binderId)         {m_binderId         = binderId;        }
-	public void setFolderTemplateId(Long folderTemplateId) {m_folderTemplateId = folderTemplateId;}
 }

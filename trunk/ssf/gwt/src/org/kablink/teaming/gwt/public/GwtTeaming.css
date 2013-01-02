@@ -3947,6 +3947,14 @@ td.datePickerMonth {
 	.vibe-importIcalDlg_Panel   {}
 /* End:  Import iCal dialogs styles. */
 
+/* Start:  Rename entity dialog styles. */
+	.vibe-renameEntityDlg_Label     {}
+	.vibe-renameEntityDlg_NameInput {width: 250px;}
+	.vibe-renameEntityDlg_NameLabel {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-renameEntityDlg_NamePanel {}
+	.vibe-renameEntityDlg_Panel     {padding: 10px;}
+/* End:  Rename entity dialog styles. */
+
 /* The following styles are used with an object list table. */
 .oltHeader
 {
