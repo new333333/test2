@@ -32,83 +32,44 @@
  */
 package org.kablink.teaming.remoting.rest.v1.util;
 
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
+import org.kablink.teaming.rest.v1.model.NetFolderBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
-import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.util.search.Constants;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 
-/**
- * User: david
- * Date: 5/18/12
- * Time: 1:07 PM
- */
-public class BinderBriefBuilder extends BaseBinderBriefBuilder implements ContainerSearchResultBuilder<BinderBrief> {
-    public BinderBriefBuilder() {
+public class NetFolderBriefBuilder extends BaseBinderBriefBuilder implements SearchResultBuilder<NetFolderBrief>{
+    public NetFolderBriefBuilder() {
+        super();
     }
 
-    public BinderBriefBuilder(boolean textDescriptions) {
+    public NetFolderBriefBuilder(boolean textDescriptions) {
         super(textDescriptions);
     }
 
-    public BinderBrief[] factoryArray(int length) {
-        return new BinderBrief[length];
+    @Override
+    public NetFolderBrief build(Map entry) {
+        NetFolderBrief folder = new NetFolderBrief();
+        populateBinderBrief(folder, entry);
+        folder.setAllowDesktopSync(getBoolean(entry, Constants.ALLOW_DESKTOP_SYNC_FIELD, Boolean.TRUE));
+        folder.setAllowMobileSync(getBoolean(entry, Constants.ALLOW_MOBILE_SYNC_FIELD, Boolean.TRUE));
+        return folder;
     }
 
-    public BinderBrief build(Map entry) {
-        BinderBrief binder = new BinderBrief();
-        populateBinderBrief(binder, entry);
-        return binder;
-    }
-
-    public EntityIdentifier.EntityType getType(BinderBrief obj) {
-        try {
-            return EntityIdentifier.EntityType.valueOf(obj.getEntityType());
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
-
-    public BinderBrief lookup(AllModulesInjected ami, Object id) {
-        BinderBrief bb = null;
-        try {
-            Binder binder = ami.getBinderModule().getBinder((Long) id, false, true);
-            bb = ResourceUtil.buildBinderBrief(binder);
-        } catch (NoBinderByTheIdException e) {
-            // Ignore
-        } catch (AccessControlException e) {
-            // Ignore
-        }
-        return bb;
-    }
-
-    public void sort(List<BinderBrief> objs) {
-        Collections.sort(objs, new Comparator<BinderBrief>() {
-            public int compare(BinderBrief o1, BinderBrief o2) {
-                return o1.getPath().compareTo(o2.getPath());
-            }
-        });
-    }
-
-    public Object getId(BinderBrief obj) {
+    @Override
+    public Object getId(NetFolderBrief obj) {
         return obj.getId();
     }
 
-    public Object getParentId(BinderBrief obj) {
+    @Override
+    public Object getParentId(NetFolderBrief obj) {
         LongIdLinkPair parent = obj.getParentBinder();
         return parent==null ? null : parent.getId();
     }
 
-    public SearchResultTreeNode<BinderBrief> factoryTreeNode(BinderBrief binder) {
-        return new SearchResultTreeNode<BinderBrief>(binder);
+    @Override
+    public SearchResultTreeNode<NetFolderBrief> factoryTreeNode(NetFolderBrief obj) {
+        return new SearchResultTreeNode<NetFolderBrief>(obj);
     }
 }

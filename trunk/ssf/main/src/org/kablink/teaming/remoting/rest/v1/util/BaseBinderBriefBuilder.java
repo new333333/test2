@@ -52,63 +52,25 @@ import java.util.Map;
  * Date: 5/18/12
  * Time: 1:07 PM
  */
-public class BinderBriefBuilder extends BaseBinderBriefBuilder implements ContainerSearchResultBuilder<BinderBrief> {
-    public BinderBriefBuilder() {
+public class BaseBinderBriefBuilder extends DefinableEntityBriefBuilder {
+    public BaseBinderBriefBuilder() {
     }
 
-    public BinderBriefBuilder(boolean textDescriptions) {
+    public BaseBinderBriefBuilder(boolean textDescriptions) {
         super(textDescriptions);
     }
 
-    public BinderBrief[] factoryArray(int length) {
-        return new BinderBrief[length];
-    }
-
-    public BinderBrief build(Map entry) {
-        BinderBrief binder = new BinderBrief();
-        populateBinderBrief(binder, entry);
-        return binder;
-    }
-
-    public EntityIdentifier.EntityType getType(BinderBrief obj) {
-        try {
-            return EntityIdentifier.EntityType.valueOf(obj.getEntityType());
-        } catch (IllegalArgumentException e) {
-            return null;
+    public void populateBinderBrief(BinderBrief binder, Map entry) {
+        populateDefinableEntityBrief(binder, entry, Constants.BINDERS_PARENT_ID_FIELD);
+        binder.setPath((String) entry.get(Constants.ENTITY_PATH));
+        binder.setLibrary(getBoolean(entry, Constants.IS_LIBRARY_FIELD));
+        binder.setMirrored(getBoolean(entry, Constants.IS_MIRRORED_FIELD));
+        binder.setHomeDir(getBoolean(entry, Constants.IS_HOME_DIR_FIELD));
+        binder.setLink(LinkUriUtil.getBinderLinkUri(binder));
+        if (binder.isFolder()) {
+            LinkUriUtil.populateFolderLinks(binder);
+        } else if (binder.isWorkspace()) {
+            LinkUriUtil.populateWorkspaceLinks(binder);
         }
-    }
-
-    public BinderBrief lookup(AllModulesInjected ami, Object id) {
-        BinderBrief bb = null;
-        try {
-            Binder binder = ami.getBinderModule().getBinder((Long) id, false, true);
-            bb = ResourceUtil.buildBinderBrief(binder);
-        } catch (NoBinderByTheIdException e) {
-            // Ignore
-        } catch (AccessControlException e) {
-            // Ignore
-        }
-        return bb;
-    }
-
-    public void sort(List<BinderBrief> objs) {
-        Collections.sort(objs, new Comparator<BinderBrief>() {
-            public int compare(BinderBrief o1, BinderBrief o2) {
-                return o1.getPath().compareTo(o2.getPath());
-            }
-        });
-    }
-
-    public Object getId(BinderBrief obj) {
-        return obj.getId();
-    }
-
-    public Object getParentId(BinderBrief obj) {
-        LongIdLinkPair parent = obj.getParentBinder();
-        return parent==null ? null : parent.getId();
-    }
-
-    public SearchResultTreeNode<BinderBrief> factoryTreeNode(BinderBrief binder) {
-        return new SearchResultTreeNode<BinderBrief>(binder);
     }
 }
