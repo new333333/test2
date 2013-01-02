@@ -1393,6 +1393,12 @@ public class EntityIndexUtils {
     		
     		Field path = FieldFactory.createFieldStoredNotAnalyzed(HAS_RESOURCE_DRIVER_FIELD, (hasResourceDriver ? Constants.TRUE : Constants.FALSE));
     		doc.add(path);
+            if (hasResourceDriver) {
+                path = FieldFactory.createFieldStoredNotIndexed(ALLOW_DESKTOP_SYNC_FIELD, (binder.getAllowDesktopAppToSyncData() ? Constants.TRUE : Constants.FALSE));
+                doc.add(path);
+                path = FieldFactory.createFieldStoredNotIndexed(ALLOW_MOBILE_SYNC_FIELD, (binder.getAllowMobileAppsToSyncData() ? Constants.TRUE : Constants.FALSE));
+                doc.add(path);
+            }
     	}
     }
 

@@ -99,7 +99,11 @@ abstract public class DefinableEntityBriefBuilder {
     }
 
     public static Boolean getBoolean(Map entry, String fieldName) {
-        Boolean value = null;
+        return getBoolean(entry, fieldName, null);
+    }
+
+    public static Boolean getBoolean(Map entry, String fieldName, Boolean defaultValue) {
+        Boolean value = defaultValue;
         String libraryStr = (String) entry.get(fieldName);
         if(Constants.TRUE.equals(libraryStr))
             value = Boolean.TRUE;

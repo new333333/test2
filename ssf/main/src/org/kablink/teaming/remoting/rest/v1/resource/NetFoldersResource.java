@@ -39,12 +39,10 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.NetFolderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
-import org.kablink.teaming.rest.v1.model.BinderBrief;
-import org.kablink.teaming.rest.v1.model.ParentBinder;
-import org.kablink.teaming.rest.v1.model.SearchResultList;
-import org.kablink.teaming.rest.v1.model.SearchableObject;
+import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.search.Constants;
@@ -79,7 +77,7 @@ import static org.kablink.util.search.Restrictions.like;
 public class NetFoldersResource extends AbstractResource {
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<BinderBrief> getNetFolders(@QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+    public SearchResultList<NetFolderBrief> getNetFolders(@QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                            @QueryParam("first") @DefaultValue("0") Integer offset,
                                                            @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
@@ -101,7 +99,7 @@ public class NetFoldersResource extends AbstractResource {
                                                                  @QueryParam("first") @DefaultValue("0") Integer offset,
                                                                  @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
-        SearchResultList<BinderBrief> netFolders = getNetFolders(textDescriptions, 0, -1);
+        SearchResultList<NetFolderBrief> netFolders = getNetFolders(textDescriptions, 0, -1);
         if (netFolders.getCount()>0) {
             Junction criterion = Restrictions.conjunction();
             Junction searchContext = Restrictions.disjunction();
@@ -155,7 +153,7 @@ public class NetFoldersResource extends AbstractResource {
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
 
-        SearchResultList<BinderBrief> folders = getNetFolders(true, 0, -1);
+        SearchResultList<NetFolderBrief> folders = getNetFolders(true, 0, -1);
         if (folders.getCount()==0) {
             return new SearchResultList<SearchableObject>();
         }
@@ -167,15 +165,14 @@ public class NetFoldersResource extends AbstractResource {
         return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, "/net_folders/recent_activity", nextParams);
     }
 
-    protected SearchResultList<BinderBrief> _getNetFolders(boolean textDescriptions, int offset, int maxCount, String nextUrl, Map<String, Object> nextParams) {
+    protected SearchResultList<NetFolderBrief> _getNetFolders(boolean textDescriptions, int offset, int maxCount, String nextUrl, Map<String, Object> nextParams) {
         Map map = SearchUtils.searchForNetFolders(this, null, new HashMap());
-        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), map, nextUrl, nextParams, offset);
-        for (BinderBrief binder : results.getResults()) {
+        SearchResultList<NetFolderBrief> results = new SearchResultList<NetFolderBrief>();
+        SearchResultBuilderUtil.buildSearchResults(results, new NetFolderBriefBuilder(textDescriptions), map, nextUrl, nextParams, offset);
+        for (NetFolderBrief binder : results.getResults()) {
             binder.setParentBinder(new ParentBinder(ObjectKeys.NET_FOLDERS_ID, "/self/net_folders"));
         }
         return results;
-
     }
 
     private static CoreDao getCoreDao() {

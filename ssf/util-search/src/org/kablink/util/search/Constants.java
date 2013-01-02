@@ -292,7 +292,9 @@ public class Constants {
 	public static final String IDENTITY_INTERNAL_FIELD = "_iInternal";
 	public static final String IS_HOME_DIR_FIELD = "_isHomeDir";
 	public static final String IS_MYFILES_DIR_FIELD = "_isMyFilesDir";
-	public static final String RESOURCE_DRIVER_NAME_FIELD = "_resourceDriverName";
+    public static final String RESOURCE_DRIVER_NAME_FIELD = "_resourceDriverName";
+    public static final String ALLOW_MOBILE_SYNC_FIELD = "_allowMobileSync";
+    public static final String ALLOW_DESKTOP_SYNC_FIELD = "_allowDesktopSync";
 
 	/**
 	 * Constructor method.
