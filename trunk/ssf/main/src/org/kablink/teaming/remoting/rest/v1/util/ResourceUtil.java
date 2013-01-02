@@ -366,15 +366,23 @@ public class ResourceUtil {
         modelConfig.setFileSizeLimitUserDefault(config.getFileSizeLimitUserDefault());
         modelConfig.setFileVersionsMaxAge(config.getFileVersionsMaxAge());
 
-        FsaConfig fsaConfig = new FsaConfig();
-        fsaConfig.setAutoUpdateUrl(config.getFsaAutoUpdateUrl());
-        fsaConfig.setEnabled(config.getFsaEnabled());
-        fsaConfig.setSyncInterval(config.getFsaSynchInterval());
-        fsaConfig.setMaxFileSize(config.getFsaMaxFileSize() * 1024 * 1024);
-        fsaConfig.setAllowCachedPassword(config.getFsaAllowCachePwd());
-        modelConfig.setFsaConfig(fsaConfig);
+        DesktopAppConfig desktopAppConfig = new DesktopAppConfig();
+        desktopAppConfig.setAutoUpdateUrl(config.getFsaAutoUpdateUrl());
+        desktopAppConfig.setEnabled(config.getFsaEnabled());
+        desktopAppConfig.setSyncInterval(config.getFsaSynchInterval());
+        desktopAppConfig.setMaxFileSize(config.getFsaMaxFileSize() * 1024 * 1024);
+        desktopAppConfig.setAllowCachedPassword(config.getFsaAllowCachePwd());
+        modelConfig.setDesktopAppConfig(desktopAppConfig);
 
-        modelConfig.setMobileAccessEnabled(config.isMobileAccessEnabled());
+        MobileAppConfig mobileAppConfig = new MobileAppConfig();
+        MobileAppsConfig mac = config.getMobileAppsConfig();
+        mobileAppConfig.setAllowCachedContent(mac.getMobileAppsAllowCacheContent());
+        mobileAppConfig.setAllowCachedPassword(mac.getMobileAppsAllowCachePwd());
+        mobileAppConfig.setAllowPlayWithOtherApps(mac.getMobileAppsAllowPlayWithOtherApps());
+        mobileAppConfig.setEnabled(mac.getMobileAppsEnabled());
+        mobileAppConfig.setSyncInterval(mac.getMobileAppsSyncInterval());
+        modelConfig.setMobileAppConfig(mobileAppConfig);
+
         return modelConfig;
     }
 
