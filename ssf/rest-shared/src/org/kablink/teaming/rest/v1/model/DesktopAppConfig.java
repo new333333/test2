@@ -40,8 +40,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Date: 5/16/12
  * Time: 2:48 PM
  */
-@XmlRootElement(name = "fsa_config")
-public class FsaConfig {
+@XmlRootElement(name = "desktop_app_config")
+public class DesktopAppConfig {
     private Boolean enabled;
     private Boolean allowCachedPassword;
    	private Integer syncInterval;

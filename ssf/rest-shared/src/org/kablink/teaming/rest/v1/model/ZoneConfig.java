@@ -44,8 +44,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ZoneConfig extends BaseRestObject {
     private BinderQuotasConfig binderQuotasConfig;
     private DiskQuotasConfig diskQuotasConfig;
-    private FsaConfig fsaConfig;
-   	private Boolean mobileAccessEnabled;
+    private DesktopAppConfig desktopAppConfig;
+    private MobileAppConfig mobileAppConfig;
    	private Long fileSizeLimitUserDefault;
    	private Long fileVersionsMaxAge;
 
@@ -67,13 +67,31 @@ public class ZoneConfig extends BaseRestObject {
         this.diskQuotasConfig = diskQuotasConfig;
     }
 
-    @XmlElement(name="fsa")
-    public FsaConfig getFsaConfig() {
-        return fsaConfig;
+    @XmlElement(name="desktop_app_config")
+    public DesktopAppConfig getDesktopAppConfig() {
+        return desktopAppConfig;
     }
 
-    public void setFsaConfig(FsaConfig fsaConfig) {
-        this.fsaConfig = fsaConfig;
+    public void setDesktopAppConfig(DesktopAppConfig desktopAppConfig) {
+        this.desktopAppConfig = desktopAppConfig;
+    }
+
+    @XmlElement(name="fsa")
+    public DesktopAppConfig getFsaConfig() {
+        return desktopAppConfig;
+    }
+
+    public void setFsaConfig(DesktopAppConfig desktopAppConfig) {
+        this.desktopAppConfig = desktopAppConfig;
+    }
+
+    @XmlElement(name="mobile_app_config")
+    public MobileAppConfig getMobileAppConfig() {
+        return mobileAppConfig;
+    }
+
+    public void setMobileAppConfig(MobileAppConfig mobileAppConfig) {
+        this.mobileAppConfig = mobileAppConfig;
     }
 
     public Long getFileSizeLimitUserDefault() {
@@ -90,13 +108,5 @@ public class ZoneConfig extends BaseRestObject {
 
     public void setFileVersionsMaxAge(Long fileVersionsMaxAge) {
         this.fileVersionsMaxAge = fileVersionsMaxAge;
-    }
-
-    public Boolean isMobileAccessEnabled() {
-        return mobileAccessEnabled;
-    }
-
-    public void setMobileAccessEnabled(Boolean mobileAccessEnabled) {
-        this.mobileAccessEnabled = mobileAccessEnabled;
     }
 }
