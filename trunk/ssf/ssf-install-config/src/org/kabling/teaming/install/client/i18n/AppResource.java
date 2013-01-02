@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.client.i18n;
 
 import com.google.gwt.i18n.client.Messages;
+import com.google.gwt.safehtml.shared.SafeHtml;
 
 public interface AppResource extends Messages
 {
@@ -275,4 +276,19 @@ public interface AppResource extends Messages
 	String connectionTimeOutColon();
 
 	String seconds();
+
+	String currentLicenseInformation();
+	
+	String license();
+	String issuedByColon();
+	String expirationDateColon();
+	String productTitleColon();
+	String issuedOnColon();
+	String productVersionColon();
+
+	String updateLicense();
+
+	String uploadNewLicenseDesc();
+
+	String expirationDaysColon();
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 import org.kabling.teaming.install.shared.ConfigurationSaveException;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.InstallerConfig;
+import org.kabling.teaming.install.shared.LicenseInformation;
 import org.kabling.teaming.install.shared.LoginException;
 import org.kabling.teaming.install.shared.LoginInfo;
 import org.kabling.teaming.install.shared.ProductInfo;
@@ -44,4 +45,6 @@ public interface InstallServiceAsync
 	void isUnsavedConfigurationExists(AsyncCallback<Boolean> callback);
 
 	void setupLocalMySqlUserPassword(Database db, AsyncCallback<Void> callback);
+
+	void getLicenseInformation(AsyncCallback<LicenseInformation> callback);
 }

@@ -58,7 +58,7 @@ public class ConfigImportExportServlet extends HttpServlet
 	Logger logger = Logger.getLogger("org.kabling.teaming.install.server.ConfigImportExportServlet");
 	private static final long serialVersionUID = 1L;
 	private static Map<String, String> filesToZipMap = new HashMap<String, String>();
-	
+
 	private static final String CONFIG_ZIP_NAME = "filrconfig.zip";
 	private static final String ZIP_MIME_TYPE = "application/zip";
 
@@ -67,7 +67,7 @@ public class ConfigImportExportServlet extends HttpServlet
 	{
 		super.init(config);
 
-		//Add the files that need to be zipped part of export
+		// Add the files that need to be zipped part of export
 		if (TimeZoneHelper.isUnix())
 		{
 			filesToZipMap.put("installer.xml", "/filrinstall/installer.xml");
@@ -75,7 +75,7 @@ public class ConfigImportExportServlet extends HttpServlet
 		}
 		else
 			filesToZipMap.put("installer.xml", "c:/test/installer.xml");
-			
+
 	}
 
 	@Override
@@ -83,12 +83,12 @@ public class ConfigImportExportServlet extends HttpServlet
 	{
 		try
 		{
-			//return the current configurations settings as a zip file
+			// return the current configurations settings as a zip file
 			getFilrConfigurationSettings(resp);
 		}
 		catch (Exception e)
 		{
-			logger.error("Error trying to get filr configuation as a zip file "+e.getMessage());
+			logger.error("Error trying to get filr configuation as a zip file " + e.getMessage());
 		}
 	}
 
@@ -110,10 +110,17 @@ public class ConfigImportExportServlet extends HttpServlet
 			List<?> items = upload.parseRequest(res);
 			Iterator<?> iter = items.iterator();
 
+			boolean licenseKey = false;
 			while (iter.hasNext())
 			{
 				// Get the current item in the iteration
 				FileItem item = (FileItem) iter.next();
+
+				if (item.isFormField() && item.getFieldName().equals("licenseKey"))
+				{
+					licenseKey = Boolean.valueOf(item.getString());
+					continue;
+				}
 
 				// Specify where on disk to write the file
 				// Write the file data to disk
@@ -121,44 +128,55 @@ public class ConfigImportExportServlet extends HttpServlet
 
 				byte[] data = item.get();
 
-				ZipInputStream zipStream = new ZipInputStream(new ByteArrayInputStream(data));
-				ZipEntry entry = null;
-				
-				//Go through each file entry
-				while ((entry = zipStream.getNextEntry()) != null)
+				if (licenseKey)
 				{
-					String entryName = entry.getName();
-					String filePath = filesToZipMap.get(entryName);
+					FileOutputStream outStream = new FileOutputStream("/filrinstall/license-key.xml");
 
-					//If it is a file we know, we can save it to the file system
-					if (filePath != null)
-					{
-						FileOutputStream outStream = new FileOutputStream(filePath);
-
-						byte[] buf = new byte[4096];
-						int bytesRead = 0;
-						while ((bytesRead = zipStream.read(buf)) != -1)
-						{
-							outStream.write(buf, 0, bytesRead);
-						}
-						outStream.close();
-						zipStream.closeEntry();
-					}
+					outStream.write(item.get());
+					outStream.close();
 				}
-				zipStream.close();
+				//Zip file
+				else
+				{
+					ZipInputStream zipStream = new ZipInputStream(new ByteArrayInputStream(data));
+					ZipEntry entry = null;
+
+					// Go through each file entry
+					while ((entry = zipStream.getNextEntry()) != null)
+					{
+						String entryName = entry.getName();
+						String filePath = filesToZipMap.get(entryName);
+
+						// If it is a file we know, we can save it to the file system
+						if (filePath != null)
+						{
+							FileOutputStream outStream = new FileOutputStream(filePath);
+
+							byte[] buf = new byte[4096];
+							int bytesRead = 0;
+							while ((bytesRead = zipStream.read(buf)) != -1)
+							{
+								outStream.write(buf, 0, bytesRead);
+							}
+							outStream.close();
+							zipStream.closeEntry();
+						}
+					}
+					zipStream.close();
+				}
 			}
 		}
 		catch (FileUploadException fue)
 		{
-			logger.error("File Upload exception "+fue.getMessage());
+			logger.error("File Upload exception " + fue.getMessage());
 		}
 		catch (IOException ioe)
 		{
-			logger.error("IO exception "+ioe.getMessage());
+			logger.error("IO exception " + ioe.getMessage());
 		}
 		catch (Exception e)
 		{
-			logger.error("Exception "+e.getMessage());
+			logger.error("Exception " + e.getMessage());
 		}
 		finally
 		{
@@ -173,13 +191,13 @@ public class ConfigImportExportServlet extends HttpServlet
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(baos);
 
-		//Zip all the files that we need to send as part of export configuration
+		// Zip all the files that we need to send as part of export configuration
 		for (Entry<String, String> entry : filesToZipMap.entrySet())
 		{
-			//If the file does not exist, ignore and continue
+			// If the file does not exist, ignore and continue
 			if (!(new File(entry.getValue()).exists()))
 				continue;
-			
+
 			zos.putNextEntry(new ZipEntry(entry.getKey()));
 			byte[] b = new byte[1024];
 			int len;

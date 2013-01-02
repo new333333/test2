@@ -5,6 +5,7 @@ import org.kabling.teaming.install.client.config.DatabasePage;
 import org.kabling.teaming.install.client.config.ExportConfigurationPage;
 import org.kabling.teaming.install.client.config.InboundEmailPage;
 import org.kabling.teaming.install.client.config.JavaJDKPage;
+import org.kabling.teaming.install.client.config.LicenseInformationPage;
 import org.kabling.teaming.install.client.config.LucenePage;
 import org.kabling.teaming.install.client.config.NetworkInformationPage;
 import org.kabling.teaming.install.client.config.OutboundEmailPage;
@@ -16,6 +17,7 @@ import org.kabling.teaming.install.client.leftnav.LeftNavContentPanel;
 import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.client.leftnav.LeftNavSelectionEvent;
 import org.kabling.teaming.install.client.leftnav.LeftNavSelectionEvent.LeftNavSelectEventHandler;
+import org.kabling.teaming.install.client.widgets.DlgBox;
 import org.kabling.teaming.install.client.wizard.ConfigWizard;
 import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.ProductInfo.ProductType;
@@ -46,6 +48,7 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 {
 	private MainContentPanel mainPanel;
 	private ConfigPageDlgBox dlg;
+	private LicenseInformationPage licensePage;
 
 	public MainUILayoutPanel()
 	{
@@ -236,27 +239,39 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 			dlg.createAllDlgContent(AppUtil.getAppResource().lucene(), dlg, null, null);
 			break;
 
+		case LICENSE_INFORMATION:
+			licensePage = new LicenseInformationPage();
+			licensePage.createAllDlgContent(AppUtil.getAppResource().license(), licensePage, null, null);
+			break;
+			
 		default:
 			return;
 		}
 
-		// Set up the initial pop up position
-		dlg.setPopupPosition(mainPanel.getAbsoluteLeft(), mainPanel.getAbsoluteTop());
-
-		// Show the footer buttons on the left side
-		Panel footerPanel = dlg.getFooterPanel();
-		if (footerPanel != null)
-			footerPanel.addStyleName("leftAlignFooter");
-
-		// Default size, fill up the whole main panel
-		int width = mainPanel.getOffsetWidth() - 15;
-		int height = mainPanel.getOffsetHeight() - 15;
-		dlg.setSize(width + "px", height + "px");
-
-		// Show the dialog
-		dlg.show();
+		if (dlg != null)
+			showDialog(dlg);
+		else
+			showDialog(licensePage);
 	}
 
+	private void showDialog(DlgBox dlg)
+	{
+			// Set up the initial pop up position
+			dlg.setPopupPosition(mainPanel.getAbsoluteLeft(), mainPanel.getAbsoluteTop());
+	
+			// Show the footer buttons on the left side
+			Panel footerPanel = dlg.getFooterPanel();
+			if (footerPanel != null)
+				footerPanel.addStyleName("leftAlignFooter");
+	
+			// Default size, fill up the whole main panel
+			int width = mainPanel.getOffsetWidth() - 15;
+			int height = mainPanel.getOffsetHeight() - 15;
+			dlg.setSize(width + "px", height + "px");
+	
+			// Show the dialog
+			dlg.show();
+	}
 	/**
 	 * Get the configuration - installer.xml data
 	 *
@@ -288,12 +303,20 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 		// If we ae showing the config page, it fills up the right content
 		// If user's resizes the page, we want to resize the dialog so that,
 		// it stays locked up on hte right side
-		if (dlg != null)
+		if (dlg != null || licensePage != null)
 		{
 			int width = mainPanel.getOffsetWidth() - 15;
 			int height = mainPanel.getOffsetHeight() - 15;
-			dlg.setSize(width + "px", height + "px");
-			DOM.setStyleAttribute(dlg.getElement(), "overflow", "auto");
+			if (dlg != null)
+			{
+				dlg.setSize(width + "px", height + "px");
+				DOM.setStyleAttribute(dlg.getElement(), "overflow", "auto");
+			}
+			else
+			{
+				licensePage.setSize(width + "px", height + "px");
+				DOM.setStyleAttribute(licensePage.getElement(), "overflow", "auto");
+			}
 		}
 	}
 }
