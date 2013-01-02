@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -101,6 +101,7 @@ public class EventHelper {
 		case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	reply = new InvokeManageNetFolderRootsDlgEvent(); break;
 		case INVOKE_MANAGE_GROUPS_DLG:				reply = new InvokeManageGroupsDlgEvent();		  break;
 		case INVOKE_MANAGE_USERS_DLG:				reply = new InvokeManageUsersDlgEvent();		  break;
+		case INVOKE_RENAME_BINDER:				    reply = new InvokeRenameBinderEvent();		      break;
 		case INVOKE_RUN_A_REPORT_DLG:				reply = new InvokeRunAReportDlgEvent();		      break;
 		case LOGIN:                             	reply = new LoginEvent();                         break;
 		case PRE_LOGOUT:                        	reply = new PreLogoutEvent();                     break;
@@ -1068,6 +1069,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case INVOKE_RENAME_BINDER:
+				// An InvokeRenameBinderEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof InvokeRenameBinderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeRenameBinderEvent.registerEvent(eventBus, ((InvokeRenameBinderEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case INVOKE_REPLY:
 				// An InvokeReplyEvent!  Can the event handler we were
 				// given handle that?
@@ -2369,6 +2379,7 @@ public class EventHelper {
 			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	       hasHandler = (eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler);          break;
 			case INVOKE_MANAGE_GROUPS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		           break;
 			case INVOKE_MANAGE_USERS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageUsersDlgEvent.Handler);		           break;
+			case INVOKE_RENAME_BINDER:					       hasHandler = (eventHandler instanceof InvokeRenameBinderEvent.Handler);                     break;
 			case INVOKE_REPLY:                      	       hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                            break;
 			case INVOKE_RUN_A_REPORT_DLG:				       hasHandler = (eventHandler instanceof InvokeRunAReportDlgEvent.Handler);		               break;
 			case INVOKE_SEND_EMAIL_TO_TEAM:                    hasHandler = (eventHandler instanceof InvokeSendEmailToTeamEvent.Handler);                  break;

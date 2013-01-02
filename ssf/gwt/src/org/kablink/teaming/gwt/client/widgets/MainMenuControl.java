@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureColumnsEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEmailNotificationEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportIcalFileEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportIcalUrlEvent;
+import org.kablink.teaming.gwt.client.event.InvokeRenameBinderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
@@ -98,13 +99,14 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.widgets.RenameEntityDlg.RenameEntityDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.AttachEvent.Handler;
@@ -134,6 +136,7 @@ public class MainMenuControl extends Composite
 		InvokeEmailNotificationEvent.Handler,
 		InvokeImportIcalFileEvent.Handler,
 		InvokeImportIcalUrlEvent.Handler,
+		InvokeRenameBinderEvent.Handler,
 		InvokeSendEmailToTeamEvent.Handler,
 		MastheadHideEvent.Handler,
 		MastheadShowEvent.Handler,
@@ -168,6 +171,7 @@ public class MainMenuControl extends Composite
 	private MenuBarToggle					m_mastHeadSlider;
 	private MyFavoritesMenuPopup			m_myFavoritesMenuPopup;
 	private MyTeamsMenuPopup				m_myTeamsMenuPopup;
+	private RenameEntityDlg					m_renameBinderDlg;
 	private TeamingPopupPanel               m_aboutPopup;
 	private TeamManagementInfo				m_contextTMI;
 	private VibeMenuBar						m_mainMenu;
@@ -187,6 +191,7 @@ public class MainMenuControl extends Composite
 		TeamingEvents.INVOKE_EMAIL_NOTIFICATION,
 		TeamingEvents.INVOKE_IMPORT_ICAL_FILE,
 		TeamingEvents.INVOKE_IMPORT_ICAL_URL,
+		TeamingEvents.INVOKE_RENAME_BINDER,
 		TeamingEvents.INVOKE_SEND_EMAIL_TO_TEAM,
 		
 		// Masthead events.
@@ -649,13 +654,12 @@ public class MainMenuControl extends Composite
 	 * binder.
 	 */
 	private void doWhatsNewAsync(final ActivityStreamDataType ss) {
-		ScheduledCommand doShow = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				doWhatsNewNow(ss);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doShow);
+		});
 	}
 	
 	/*
@@ -789,13 +793,12 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onInvokeAbout(InvokeAboutEvent event) {
-		ScheduledCommand doShow = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onInvokeAboutNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doShow);
+		});
 	}
 
 	/*
@@ -843,13 +846,12 @@ public class MainMenuControl extends Composite
 	@Override
 	public void onInvokeClipboard(InvokeClipboardEvent event) {
 		// Asynchronously invoke the clipboard dialog.
-		ScheduledCommand doLoadCBDlg = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onInvokeClipboardNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoadCBDlg);
+		});
 	}
 
 	/*
@@ -870,13 +872,12 @@ public class MainMenuControl extends Composite
 				public void onSuccess(final ClipboardDlg cpDlg) {
 					// ...and show it.
 					m_clipboardDlg = cpDlg;
-					ScheduledCommand doShow = new ScheduledCommand() {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
 						public void execute() {
 							showClipboardDlgNow();
 						}
-					};
-					Scheduler.get().scheduleDeferred(doShow);
+					});
 				}
 			});
 		}
@@ -907,14 +908,13 @@ public class MainMenuControl extends Composite
 			
 			@Override
 			public void onSuccess(final FolderColumnsConfigDlg fcDlg) {
-				ScheduledCommand doShow = new ScheduledCommand() {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
 					@Override
 					public void execute() {
 						// ..and initialize and show it.
 						FolderColumnsConfigDlg.initAndShow(fcDlg, m_contextBinder);
 					}
-				};
-				Scheduler.get().scheduleDeferred(doShow);
+				});
 			}
 		});
 	}
@@ -929,13 +929,12 @@ public class MainMenuControl extends Composite
 	@Override
 	public void onInvokeEmailNotification(InvokeEmailNotificationEvent event) {
 		// Asynchronously invoke the email notification dialog.
-		ScheduledCommand doLoadENDlg = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onInvokeEmailNotificationNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoadENDlg);
+		});
 	}
 
 	/*
@@ -956,13 +955,12 @@ public class MainMenuControl extends Composite
 				public void onSuccess(final EmailNotificationDlg enDlg) {
 					// ...and show it.
 					m_emailNotificationDlg = enDlg;
-					ScheduledCommand doShow = new ScheduledCommand() {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
 						public void execute() {
 							showEmailNotificationDlgNow();
 						}
-					};
-					Scheduler.get().scheduleDeferred(doShow);
+					});
 				}
 			});
 		}
@@ -998,13 +996,12 @@ public class MainMenuControl extends Composite
 				public void onSuccess(final ImportIcalByFileDlg iiFileDlg) {
 					// ...and show it.
 					m_iiFileDlg = iiFileDlg;
-					ScheduledCommand doShow = new ScheduledCommand() {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
 						public void execute() {
 							showImportIcalByFileDlgNow();
 						}
-					};
-					Scheduler.get().scheduleDeferred(doShow);
+					});
 				}
 			});
 		}
@@ -1039,13 +1036,12 @@ public class MainMenuControl extends Composite
 				public void onSuccess(final ImportIcalByUrlDlg iiUrlDlg) {
 					// ...and show it.
 					m_iiUrlDlg = iiUrlDlg;
-					ScheduledCommand doShow = new ScheduledCommand() {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
 						public void execute() {
 							showImportIcalByUrlDlgNow();
 						}
-					};
-					Scheduler.get().scheduleDeferred(doShow);
+					});
 				}
 			});
 		}
@@ -1054,6 +1050,46 @@ public class MainMenuControl extends Composite
 			// Yes, we've instantiated an import iCal by URL dialog
 			// already!  Simply show it.
 			showImportIcalByUrlDlgNow();
+		}
+	}
+	
+	/**
+	 * Handles InvokeRenameBinderEvent's received by this class.
+	 * 
+	 * Implements the InvokeRenameBinderEvent.Handler.onInvokeRenameBinder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeRenameBinder(InvokeRenameBinderEvent event) {
+		// Have we instantiated a rename binder dialog yet?
+		if (null == m_renameBinderDlg) {
+			// No!  Instantiate one now.
+			RenameEntityDlg.createAsync(new RenameEntityDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(final RenameEntityDlg renameBinderDlg) {
+					// ...and show it.
+					m_renameBinderDlg = renameBinderDlg;
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							showRenameBinderDlgNow();
+						}
+					});
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've instantiated a rename binder dialog already!
+			// Simply show it.
+			showRenameBinderDlgNow();
 		}
 	}
 	
@@ -1238,13 +1274,12 @@ public class MainMenuControl extends Composite
 	 * Asynchronously shows the context that was loaded.
 	 */
 	private void showContextAsync(final BinderInfo binderInfo, final boolean isSearch, final String searchTabId) {
-		ScheduledCommand doShow = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showContextNow(binderInfo, isSearch, searchTabId);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doShow);
+		});
 	}
 	
 	/*
@@ -1271,7 +1306,7 @@ public class MainMenuControl extends Composite
 				// Run the 'Get Team Management' RPC request as a
 				// scheduled command so the RPC request that got us
 				// here can be terminated.
-				ScheduledCommand doGet = new ScheduledCommand() {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
 					@Override
 					public void execute() {
 						GetTeamManagementInfoCmd cmd = new GetTeamManagementInfoCmd(binderInfo.getBinderId());
@@ -1295,8 +1330,7 @@ public class MainMenuControl extends Composite
 							}
 						});
 					}
-				};
-				Scheduler.get().scheduleDeferred(doGet);
+				});
 			}
 		});
 	}
@@ -1323,16 +1357,31 @@ public class MainMenuControl extends Composite
 	}
 	
 	/*
+	 * Synchronously shows the rename binder dialog.
+	 */
+	private void showRenameBinderDlgNow() {
+		String eidType;
+		switch (m_contextBinder.getBinderType()) {
+		case FOLDER:     eidType = EntityId.FOLDER;    break;
+		case WORKSPACE:  eidType = EntityId.WORKSPACE; break;
+		default:
+			GwtClientHelper.deferredAlert(m_messages.mainMenuRenameBinderDlgErrorBogusBinder(m_contextBinder.getBinderType().name()));
+			return;
+		}
+		EntityId eid = new EntityId(m_contextBinder.getParentBinderIdAsLong(), m_contextBinder.getBinderIdAsLong(), eidType);
+		RenameEntityDlg.initAndShow(m_renameBinderDlg, eid, m_contextBinder.getBinderTitle());
+	}
+	
+	/*
 	 * Asynchronously shows the toolbar items.
 	 */
 	private void showToolbarItemsAsync(final boolean isSearch, final String searchTabId) {
-		ScheduledCommand doShow = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showToolbarItemsNow(isSearch, searchTabId);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doShow);
+		});
 	}
 	
 	/*
