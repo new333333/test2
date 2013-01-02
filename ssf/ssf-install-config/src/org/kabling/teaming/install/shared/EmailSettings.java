@@ -39,7 +39,7 @@ public class EmailSettings implements Serializable
 	private String defaultTZ;
 	private boolean allowSendToAllUsers;
 	private EmailProtocol transportProtocol;
-	private int connectionTimeout;
+	
 
 	// SMTP
 	private String smtpHost;
@@ -48,6 +48,7 @@ public class EmailSettings implements Serializable
 	private String smtpPassword;
 	private boolean smtpSendPartial;
 	private boolean smtpAuthEnabled;
+	private int smtpConnectionTimeout;
 
 	// SMTPS
 
@@ -57,6 +58,7 @@ public class EmailSettings implements Serializable
 	private String smtpsPassword;
 	private boolean smtpsSendPartial;
 	private boolean smtpsAuthEnabled;
+	private int smtpsConnectionTimeout;
 
 	// Inbound is not done as it has been deprecated with Boulder
 
@@ -250,16 +252,25 @@ public class EmailSettings implements Serializable
 		this.smtpsPassword = smtpsPassword;
 	}
 
-	public int getConnectionTimeout()
+	public int getSmtpConnectionTimeout()
 	{
-		return connectionTimeout;
+		return smtpConnectionTimeout;
 	}
 
-	public void setConnectionTimeout(int connectionTimeout)
+	public void setSmtpConnectionTimeout(int smtpConnectionTimeout)
 	{
-		this.connectionTimeout = connectionTimeout;
+		this.smtpConnectionTimeout = smtpConnectionTimeout;
 	}
-	
+
+	public int getSmtpsConnectionTimeout()
+	{
+		return smtpsConnectionTimeout;
+	}
+
+	public void setSmtpsConnectionTimeout(int smtpsConnectionTimeout)
+	{
+		this.smtpsConnectionTimeout = smtpsConnectionTimeout;
+	}
 	
 	
 }

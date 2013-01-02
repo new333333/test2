@@ -785,7 +785,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			// TimeZone and AllowSendTo all users
 			emailSettings.setDefaultTZ(currentElement.getAttribute("defaultTZ"));
 			emailSettings.setAllowSendToAllUsers(getBooleanValue(currentElement.getAttribute("allowSendToAllUsers")));
-			emailSettings.setConnectionTimeout(getIntegerValue(currentElement.getAttribute("connectionTimeOut")));
+			
 			currentElement = getElement(currentElement, "Resource");
 
 			// Outbound
@@ -805,6 +805,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				emailSettings.setSmtpPort(getIntegerValue(currentElement.getAttribute("mail.smtp.port")));
 				emailSettings.setSmtpPassword(currentElement.getAttribute("mail.smtp.password"));
 				emailSettings.setSmtpSendPartial(getBooleanValue(currentElement.getAttribute("mail.smtp.sendpartial")));
+				
+				emailSettings.setSmtpConnectionTimeout(getIntegerValue(currentElement.getAttribute("mail.smtp.connectiontimeout")));
 
 				// Resource SMTPS Settings
 				emailSettings.setSmtpsHost(currentElement.getAttribute("mail.smtps.host"));
@@ -813,6 +815,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				emailSettings.setSmtpsPort(getIntegerValue(currentElement.getAttribute("mail.smtps.port")));
 				emailSettings.setSmtpsPassword(currentElement.getAttribute("mail.smtps.password"));
 				emailSettings.setSmtpsSendPartial(getBooleanValue(currentElement.getAttribute("mail.smtps.sendpartial")));
+				emailSettings.setSmtpsConnectionTimeout(getIntegerValue(currentElement.getAttribute("mail.smtps.connectiontimeout")));
 
 			}
 
@@ -1477,9 +1480,6 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		// Save allowSendToAllUsers
 		outboundElement.setAttribute("allowSendToAllUsers", String.valueOf(emailSettings.isAllowSendToAllUsers()));
 		
-		if (emailSettings.getConnectionTimeout() >= 0)
-			outboundElement.setAttribute("connectionTimeOut", String.valueOf(emailSettings.getConnectionTimeout()));
-
 		// Resource Element
 		Element resourceElement = getElement(outboundElement, "Resource");
 		if (resourceElement == null)
@@ -1501,6 +1501,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			resourceElement.setAttribute("mail.smtp.port", String.valueOf(emailSettings.getSmtpPort()));
 			resourceElement.setAttribute("mail.smtp.sendpartial", String.valueOf(emailSettings.isSmtpSendPartial()));
 			resourceElement.setAttribute("mail.smtp.user", emailSettings.getSmtpUser());
+			resourceElement.setAttribute("mail.smtp.connectiontimeout", String.valueOf(emailSettings.getSmtpConnectionTimeout()));
 
 			if (emailSettings.getSmtpPassword() != null && !emailSettings.getSmtpPassword().isEmpty())
 			{
@@ -1514,6 +1515,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			resourceElement.setAttribute("mail.smtps.port", String.valueOf(emailSettings.getSmtpsPort()));
 			resourceElement.setAttribute("mail.smtps.sendpartial", String.valueOf(emailSettings.isSmtpsSendPartial()));
 			resourceElement.setAttribute("mail.smtps.user", emailSettings.getSmtpsUser());
+			resourceElement.setAttribute("mail.smtps.connectiontimeout", String.valueOf(emailSettings.getSmtpsConnectionTimeout()));
 
 			if (emailSettings.getSmtpsPassword() != null && !emailSettings.getSmtpsPassword().isEmpty())
 			{
