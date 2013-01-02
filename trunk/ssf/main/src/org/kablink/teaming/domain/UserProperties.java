@@ -119,5 +119,21 @@ public class UserProperties extends ZonedObject {
 	    		if (value != null) userProperties.put(key, value);
 	    	}
     	}
-    }    
+    }
+
+    public String getStringProperty(String key) {
+        Object value = getProperty(key);
+        if (value!=null && value instanceof String) {
+            return (String) value;
+        }
+        return null;
+    }
+
+    public Boolean getBooleanProperty(String key) {
+        String value = getStringProperty(key);
+        if (value!=null) {
+            return Boolean.valueOf(value);
+        }
+        return null;
+    }
 }
