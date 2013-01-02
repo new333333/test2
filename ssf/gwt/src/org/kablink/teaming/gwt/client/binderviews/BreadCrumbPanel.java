@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
 import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
 import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent.ManageUsersTitleCallback;
+import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
@@ -48,6 +49,9 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTrashUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
@@ -68,6 +72,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -82,7 +87,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public class BreadCrumbPanel extends ToolPanelBase
 	implements
-	// Event handlers implemented by this class.
+		// Event handlers implemented by this class.
 		TreeNodeCollapsedEvent.Handler,
 		TreeNodeExpandedEvent.Handler
 {
@@ -119,10 +124,11 @@ public class BreadCrumbPanel extends ToolPanelBase
 		rootContainer.add(m_fp);
 
 		// ...if required...
+		VibeFlowPanel rightPanel;
 		if (needsWhatsNewLink()) {
 			// ...construct the What's New link...
-			VibeFlowPanel whatsNewPanel = new VibeFlowPanel();
-			whatsNewPanel.addStyleName("vibe-breadCrumbWhatsNewPanel");
+			rightPanel = new VibeFlowPanel();
+			rightPanel.addStyleName("vibe-breadCrumbRightPanel");
 			InlineLabel whatsNewLabel = new InlineLabel(m_messages.vibeDataTable_WhatsNew());
 			whatsNewLabel.addStyleName("vibe-breadCrumbWhatsNewLink");
 			whatsNewLabel.addClickHandler(new ClickHandler() {
@@ -131,8 +137,33 @@ public class BreadCrumbPanel extends ToolPanelBase
 					showWhatsNewAsync();
 				}
 			});
-			whatsNewPanel.add(whatsNewLabel);
-			rootContainer.add(whatsNewPanel);
+			rightPanel.add(whatsNewLabel);
+			rootContainer.add(rightPanel);
+		}
+		else {
+			rightPanel = null;
+		}
+		
+		// ...if required...
+		if (needsTrashLink()) {
+			// ...construct the Trash link...
+			if (null == rightPanel) {
+				rightPanel = new VibeFlowPanel();
+				rightPanel.addStyleName("vibe-breadCrumbRightPanel");
+			}
+			Image i = GwtClientHelper.buildImage(m_images.trashButton().getSafeUri());
+			i.addStyleName("vibe-breadCrumbTrashImg");
+			Anchor trashAnchor= new Anchor();
+			trashAnchor.getElement().setInnerHTML(GwtClientHelper.getWidgetHTML(i));
+			trashAnchor.addStyleName("vibe-breadCrumbTrashAnchor");
+			trashAnchor.setTitle(m_messages.vibeDataTable_ViewTrash());
+			rightPanel.add(trashAnchor);
+			trashAnchor.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					viewTrashAsync();
+				}
+			});
 		}
 
 		// ...and tie it all together.
@@ -416,15 +447,30 @@ public class BreadCrumbPanel extends ToolPanelBase
 	}
 	
 	/*
+	 * Return true if the binder being viewed requires a Trash link and
+	 * false otherwise.
+	 */
+	private boolean needsTrashLink() {
+		boolean reply = (!(m_binderInfo.isBinderTrash()));
+		if (reply) {
+			if (m_binderInfo.isBinderCollection()) {
+				switch (m_binderInfo.getCollectionType()) {
+				default:        reply = false; break;
+				case MY_FILES:  reply = true;  break;
+				}
+			}
+		}
+		return reply;
+	}
+	
+	/*
 	 * Return true if the binder being viewed requires a What's New
 	 * link and false otherwise.
 	 */
 	private boolean needsWhatsNewLink() {
 		boolean reply = (!(m_binderInfo.isBinderTrash()));
 		if (reply) {
-			reply = (
-				(!(m_binderInfo.isBinderProfilesRootWS())) ||
-				(!(m_binderInfo.getWorkspaceType().isProfileRootManagement())));
+			reply = (!(m_binderInfo.isBinderProfilesRootWS()));
 		}
 		return reply;
 	}
@@ -604,5 +650,40 @@ public class BreadCrumbPanel extends ToolPanelBase
 			// ...list.)
 			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
 		}
+	}
+
+	/*
+	 * Asynchronously runs the trash viewer on the current BinderInfo.
+	 */
+	private void viewTrashAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				viewTrashNow();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously runs the trash viewer on the current BinderInfo.
+	 */
+	private void viewTrashNow() {
+		// Get the URL to view the trash on the curent BinderInfo...
+		GwtClientHelper.executeCommand(new GetTrashUrlCmd(m_binderInfo), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetTrashUrl(),
+					m_binderInfo.getBinderId());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// ...and navigate to that URL.
+				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+				GwtTeaming.fireEventAsync(new GotoContentUrlEvent(responseData.getStringValue()));
+			}
+		});
 	}
 }
