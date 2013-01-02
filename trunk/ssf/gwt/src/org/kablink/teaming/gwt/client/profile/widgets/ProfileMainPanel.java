@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -195,8 +195,10 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		actionsPanel.addStyleName("profile-actions");
 		titlePanel.add(actionsPanel);
 		
-		//create the following action
-		followingAnchor = createFollowingAction(actionsPanel);
+		if (!(GwtClientHelper.isLicenseFilr())) {
+			//create the following action
+			followingAnchor = createFollowingAction(actionsPanel);
+		}
 		
 		//create the edit action
 		edit = createEditAction(actionsPanel);
@@ -608,10 +610,12 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 					GwtClientHelper.jsLaunchUrlInWindow(url, "_blank", 800, 800);
 				}
 			} else if(handlerId.equals("FollowId")) {
-				if(followingAnchor.isChecked()) {
-					unfollowPerson();
-				} else {
-					followPerson();
+				if (null != followingAnchor) {
+					if(followingAnchor.isChecked()) {
+						unfollowPerson();
+					} else {
+						followPerson();
+					}
 				}
 			} else if (handlerId.equals("DeleteId")) {
 				String url = profileRequestInfo.getDeleteUserUrl();
@@ -637,14 +641,16 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	 * @param isFollowing
 	 */
 	private void updateFollowingButton(boolean isFollowing) {
-		if(isFollowing) {
-			followingAnchor.setText(GwtTeaming.getMessages().qViewFollowing());
-			followingAnchor.setTitle(GwtTeaming.getMessages().qViewFollowingTitle());
-			followingAnchor.setChecked(true);
-		} else {
-			followingAnchor.setText(GwtTeaming.getMessages().qViewFollow());
-			followingAnchor.setTitle(GwtTeaming.getMessages().qViewFollowTitle());
-			followingAnchor.setChecked(false);
+		if (null != followingAnchor) {
+			if(isFollowing) {
+				followingAnchor.setText(GwtTeaming.getMessages().qViewFollowing());
+				followingAnchor.setTitle(GwtTeaming.getMessages().qViewFollowingTitle());
+				followingAnchor.setChecked(true);
+			} else {
+				followingAnchor.setText(GwtTeaming.getMessages().qViewFollow());
+				followingAnchor.setTitle(GwtTeaming.getMessages().qViewFollowTitle());
+				followingAnchor.setChecked(false);
+			}
 		}
 	}
 	
