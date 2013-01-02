@@ -232,6 +232,7 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			if (!passwordTextBox.getText().trim().equals(""))
 				emailSettings.setSmtpPassword(passwordTextBox.getText());
 			emailSettings.setSmtpPort(portSpinner.getValueAsInt());
+			emailSettings.setSmtpConnectionTimeout(connectionTimeOutSpinner.getValueAsInt() * 1000);
 			//emailSettings.setSmtpSendPartial(allowSendEmailUsersCheckBox.getValue());
 		}
 		// SMPTS
@@ -243,6 +244,7 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			if (!passwordTextBox.getText().trim().equals(""))
 				emailSettings.setSmtpsPassword(passwordTextBox.getText());
 			emailSettings.setSmtpsPort(portSpinner.getValueAsInt());
+			emailSettings.setSmtpsConnectionTimeout(connectionTimeOutSpinner.getValueAsInt() * 1000);
 			//emailSettings.setSmtpsSendPartial(allowSendEmailUsersCheckBox.getValue());
 		}
 
@@ -252,7 +254,7 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 		
 		// Time Zone
 		emailSettings.setAllowSendToAllUsers(allowSendEmailUsersCheckBox.getValue());
-		emailSettings.setConnectionTimeout(connectionTimeOutSpinner.getValueAsInt());
+		
 		return config;
 	}
 
@@ -282,6 +284,7 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 				usernameTextBox.setText(emailSettings.getSmtpUser());
 				authRequiredCheckBox.setValue(emailSettings.isSmtpAuthEnabled());
 				portSpinner.setValue(emailSettings.getSmtpPort());
+				connectionTimeOutSpinner.setValue(emailSettings.getSmtpConnectionTimeout() /1000);
 			}
 			else
 			{
@@ -289,6 +292,7 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 				usernameTextBox.setText(emailSettings.getSmtpsUser());
 				authRequiredCheckBox.setValue(emailSettings.isSmtpsAuthEnabled());
 				portSpinner.setValue(emailSettings.getSmtpsPort());
+				connectionTimeOutSpinner.setValue(emailSettings.getSmtpsConnectionTimeout() / 1000);
 			}
 
 			String tzString = emailSettings.getDefaultTZ();
@@ -298,8 +302,7 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			}
 			
 			allowSendEmailUsersCheckBox.setValue(emailSettings.isAllowSendToAllUsers());
-			if (emailSettings.getConnectionTimeout() > 0)
-				connectionTimeOutSpinner.setValue(emailSettings.getConnectionTimeout());
+			
 		}
 	}
 
