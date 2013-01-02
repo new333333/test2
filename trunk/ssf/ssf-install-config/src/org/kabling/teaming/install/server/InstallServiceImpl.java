@@ -788,7 +788,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			// TimeZone and AllowSendTo all users
 			emailSettings.setDefaultTZ(currentElement.getAttribute("defaultTZ"));
 			emailSettings.setAllowSendToAllUsers(getBooleanValue(currentElement.getAttribute("allowSendToAllUsers")));
-
+			emailSettings.setConnectionTimeout(getIntegerValue(currentElement.getAttribute("connectionTimeOut")));
 			currentElement = getElement(currentElement, "Resource");
 
 			// Outbound
@@ -1479,6 +1479,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 		// Save allowSendToAllUsers
 		outboundElement.setAttribute("allowSendToAllUsers", String.valueOf(emailSettings.isAllowSendToAllUsers()));
+		
+		if (emailSettings.getConnectionTimeout() >= 0)
+			outboundElement.setAttribute("connectionTimeOut", String.valueOf(emailSettings.getConnectionTimeout()));
 
 		// Resource Element
 		Element resourceElement = getElement(outboundElement, "Resource");

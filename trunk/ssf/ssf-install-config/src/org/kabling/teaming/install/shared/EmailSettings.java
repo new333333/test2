@@ -39,6 +39,7 @@ public class EmailSettings implements Serializable
 	private String defaultTZ;
 	private boolean allowSendToAllUsers;
 	private EmailProtocol transportProtocol;
+	private int connectionTimeout;
 
 	// SMTP
 	private String smtpHost;
@@ -248,6 +249,17 @@ public class EmailSettings implements Serializable
 	public void setSmtpsPassword(String smtpsPassword) {
 		this.smtpsPassword = smtpsPassword;
 	}
+
+	public int getConnectionTimeout()
+	{
+		return connectionTimeout;
+	}
+
+	public void setConnectionTimeout(int connectionTimeout)
+	{
+		this.connectionTimeout = connectionTimeout;
+	}
+	
 	
 	
 }
