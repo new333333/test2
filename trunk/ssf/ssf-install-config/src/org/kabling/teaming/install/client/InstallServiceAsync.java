@@ -42,4 +42,6 @@ public interface InstallServiceAsync
 	void reverConfiguration(AsyncCallback<Void> callback);
 
 	void isUnsavedConfigurationExists(AsyncCallback<Boolean> callback);
+
+	void setupLocalMySqlUserPassword(Database db, AsyncCallback<Void> callback);
 }

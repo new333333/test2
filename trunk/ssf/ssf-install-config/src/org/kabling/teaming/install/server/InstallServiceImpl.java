@@ -2276,4 +2276,16 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		File srcFile = new File("/filrinstall/installer.xml.orig");
 		return srcFile.exists();
 	}
+
+	@Override
+	public void setupLocalMySqlUserPassword(Database db)
+	{
+		DatabaseConfig config = db.getDatabaseConfig("Installed");
+		ShellCommandInfo info = executeCommand( "mysqladmin -uroot -proot password "+config.getResourcePassword());
+		if (info.getExitValue() != 0)
+		{
+			logger.debug("Error setting up admin password" + info.getExitValue());
+			throw new ConfigurationSaveException();
+		}
+	}
 }

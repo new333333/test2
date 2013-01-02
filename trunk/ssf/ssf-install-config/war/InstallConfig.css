@@ -393,6 +393,10 @@ a.logout {
 	-webkit-border-radius: 5px;
 }
 
+.teamingDlgBox .popupContent:first-child {
+    overflow: auto;
+}
+
 /* Styles for the content of a dialog box. */
 .teamingDlgBoxContent {
 	margin: 10px;

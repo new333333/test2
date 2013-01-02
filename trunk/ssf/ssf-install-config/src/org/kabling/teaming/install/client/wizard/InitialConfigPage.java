@@ -104,15 +104,13 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 		if (event.getSource() == useDefaultsRB) 
 		{
 			config.setAdvancedConfiguration(false);
-			wizard.getFinishButton().setEnabled(true);
-			wizard.getNextButton().setEnabled(false);
 		}
 		else if (event.getSource() == customRB || event.getSource() == upgradeRB) 
 		{
 			config.setAdvancedConfiguration(true);
-			wizard.getFinishButton().setEnabled(false);
-			wizard.getNextButton().setEnabled(true);
 		}
+		wizard.getFinishButton().setEnabled(false);
+		wizard.getNextButton().setEnabled(true);
 	}
 
 	@Override
@@ -135,7 +133,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	@Override
 	public IWizardPage<InstallerConfig> getNextPage() {
 		if (useDefaultsRB.getValue())
-			return null;
+			return wizard.dbLocalPage;
 		else if (customRB.getValue())
 			return wizard.dbPage;
 		
