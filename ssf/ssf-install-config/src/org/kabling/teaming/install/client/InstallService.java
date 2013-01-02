@@ -6,6 +6,7 @@ import java.util.Map;
 import org.kabling.teaming.install.shared.ConfigurationSaveException;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.InstallerConfig;
+import org.kabling.teaming.install.shared.LicenseInformation;
 import org.kabling.teaming.install.shared.LoginException;
 import org.kabling.teaming.install.shared.LoginInfo;
 import org.kabling.teaming.install.shared.LuceneConnectException;
@@ -102,4 +103,6 @@ public interface InstallService extends RemoteService
 	boolean isUnsavedConfigurationExists();
 	
 	void setupLocalMySqlUserPassword(Database db);
+	
+	LicenseInformation getLicenseInformation();
 }

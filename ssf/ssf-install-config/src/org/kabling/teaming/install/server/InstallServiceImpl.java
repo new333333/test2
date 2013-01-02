@@ -51,6 +51,7 @@ import org.kabling.teaming.install.shared.FileSystem;
 import org.kabling.teaming.install.shared.HASearchNode;
 import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.InstallerConfig.WebDAV;
+import org.kabling.teaming.install.shared.LicenseInformation;
 import org.kabling.teaming.install.shared.LoginException;
 import org.kabling.teaming.install.shared.LoginInfo;
 import org.kabling.teaming.install.shared.Lucene;
@@ -129,7 +130,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		Document document = null;
 		try
 		{
-			document = getDocument();
+			document = getDocument("/filrinstall/installer.xml");
 		}
 		catch (IOException e)
 		{
@@ -144,7 +145,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		return config;
 	}
 
-	private Document getDocument() throws IOException
+	private Document getDocument(String filePath) throws IOException
 	{
 		InputStream is = null;
 		try
@@ -157,18 +158,14 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 			if (isUnix() && productType.equals(ProductType.NOVELL_FILR))
 			{
-				file = new File("/filrinstall/installer.xml");
+				file = new File(filePath);
 			}
 
 			if (file != null && file.exists())
 			{
 				is = new FileInputStream(file);
 			}
-			// For Now, we will read it locally
-			else
-			{
-				is = getServletContext().getResourceAsStream("/WEB-INF/installer.xml");
-			}
+			
 
 			// parse the document
 			parser.parse(new InputSource(is));
@@ -1059,7 +1056,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		Document document = null;
 		try
 		{
-			document = getDocument();
+			document = getDocument("/filrinstall/installer.xml");
 		}
 		catch (IOException e)
 		{
@@ -2290,5 +2287,44 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			logger.debug("Error setting up admin password" + info.getExitValue());
 			throw new ConfigurationSaveException();
 		}
+	}
+
+	@Override
+	public LicenseInformation getLicenseInformation()
+	{
+		LicenseInformation licenseInfo = new LicenseInformation();
+		try
+		{
+			Document document = getDocument("/filrinstall/license-key.xml");
+			
+			Element keyInfoElement = getElement(document.getDocumentElement(), "KeyInfo");
+			
+			if (keyInfoElement != null)
+			{
+				licenseInfo.setKeyVersion(keyInfoElement.getAttribute("keyversion"));
+				licenseInfo.setIssuedBy(keyInfoElement.getAttribute("by"));
+				licenseInfo.setIssuedDate(keyInfoElement.getAttribute("issued"));
+			}
+			
+			Element datesElement = getElement(document.getDocumentElement(), "Dates");
+			if (datesElement != null)
+			{
+				licenseInfo.setExpirationDate(datesElement.getAttribute("expiration"));
+			}
+			
+			Element productElement = getElement(document.getDocumentElement(), "Product");
+			if (productElement != null)
+			{
+				licenseInfo.setProductId(productElement.getAttribute("id"));
+				licenseInfo.setProductVersion(productElement.getAttribute("version"));
+				licenseInfo.setProductTitle(productElement.getAttribute("title"));
+			}
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return licenseInfo;
 	}
 }
