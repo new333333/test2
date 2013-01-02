@@ -32,6 +32,7 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 	private VibePasswordTextBox passwordTextBox;
 	private CheckBox authRequiredCheckBox;
 	private CheckBox allowSendEmailUsersCheckBox;
+	private GwValueSpinner connectionTimeOutSpinner;
 	private static Map<String, String> timezones;
 
 	@Override
@@ -148,6 +149,18 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			table.setWidget(row, 1, allowSendEmailUsersCheckBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
+		
+		{
+			row++;
+			// Connection Timeout
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.connectionTimeOutColon());
+			table.setWidget(row, 0, keyLabel);
+			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			connectionTimeOutSpinner = new GwValueSpinner(15, 1, 60, RBUNDLE.seconds());
+			table.setWidget(row, 1, connectionTimeOutSpinner);
+			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
 
 		if (timezones == null)
 		{
@@ -239,6 +252,7 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 		
 		// Time Zone
 		emailSettings.setAllowSendToAllUsers(allowSendEmailUsersCheckBox.getValue());
+		emailSettings.setConnectionTimeout(connectionTimeOutSpinner.getValueAsInt());
 		return config;
 	}
 
@@ -284,6 +298,8 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			}
 			
 			allowSendEmailUsersCheckBox.setValue(emailSettings.isAllowSendToAllUsers());
+			if (emailSettings.getConnectionTimeout() > 0)
+				connectionTimeOutSpinner.setValue(emailSettings.getConnectionTimeout());
 		}
 	}
 

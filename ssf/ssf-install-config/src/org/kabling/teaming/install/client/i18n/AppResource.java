@@ -271,4 +271,8 @@ public interface AppResource extends Messages
 	String confirmPasswordColon();
 
 	String passwordNotMatching();
+
+	String connectionTimeOutColon();
+
+	String seconds();
 }
