@@ -100,4 +100,6 @@ public interface InstallService extends RemoteService
 	void reverConfiguration() throws IOException;
 	
 	boolean isUnsavedConfigurationExists();
+	
+	void setupLocalMySqlUserPassword(Database db);
 }

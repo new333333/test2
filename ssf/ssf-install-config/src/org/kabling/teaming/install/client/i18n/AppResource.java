@@ -265,4 +265,10 @@ public interface AppResource extends Messages
 	String reverseProxyHttpPortColon();
 
 	String enabled();
+
+	String wizLocalDbPageTitleDesc();
+
+	String confirmPasswordColon();
+
+	String passwordNotMatching();
 }

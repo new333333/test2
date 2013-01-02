@@ -42,6 +42,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 	// StoragePage storagePage;
 	ImportConfigPage importPage;
 	//PasswordPage pwdPage;
+	LocalDatabaseConfigPage dbLocalPage;
 
 	public ConfigWizard(InstallerConfig config)
 	{
@@ -72,6 +73,9 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		// Initial Page
 		configPage = new InitialConfigPage(this, config);
 
+		// Local Db Page
+		dbLocalPage = new LocalDatabaseConfigPage(this, config);
+				
 		// Database Page
 		dbPage = new DatabaseConfigPage(this, config);
 
@@ -271,11 +275,38 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		@Override
 		public void onSuccess(Void coid)
 		{
+			if (configPage.getDeploymentType().equals("local"))
+			{
+				loadingWidget.setText(AppUtil.getAppResource().creatingDatabase());
+				AppUtil.getInstallService().setupLocalMySqlUserPassword(config.getDatabase(), new SetupMySqlUserPasswordCallback());
+			}
+			else
+			{
+				loadingWidget.setText(AppUtil.getAppResource().creatingDatabase());
+				AppUtil.getInstallService().createDatabase(config.getDatabase(), new CreateDatabaseCallback());
+			}
+		}
+	}
+
+	class SetupMySqlUserPasswordCallback implements AsyncCallback<Void>
+	{
+
+		@Override
+		public void onFailure(Throwable caught)
+		{
+			finishButton.setEnabled(true);
+			hideStatusIndicator();
+			setErrorMessage("Unable to set up admin password");
+		}
+
+		@Override
+		public void onSuccess(Void coid)
+		{
 			loadingWidget.setText(AppUtil.getAppResource().creatingDatabase());
 			AppUtil.getInstallService().createDatabase(config.getDatabase(), new CreateDatabaseCallback());
 		}
 	}
-
+	
 	class CreateDatabaseCallback implements AsyncCallback<Void>
 	{
 
