@@ -55,6 +55,8 @@ public class User extends Principal {
     private Long diskSpaceQuota;
     private LongIdLinkPair hiddenFilesFolder;
    	private LongIdLinkPair workspace;
+    private MobileAppConfig mobileAppConfig;
+    private DesktopAppConfig desktopAppConfig;
 
     public User() {
         super();
@@ -227,5 +229,23 @@ public class User extends Principal {
 
     public void setWorkspace(LongIdLinkPair workspace) {
         this.workspace = workspace;
+    }
+
+    @XmlElement(name="mobile_app_config")
+    public MobileAppConfig getMobileAppConfig() {
+        return mobileAppConfig;
+    }
+
+    public void setMobileAppConfig(MobileAppConfig mobileAppConfig) {
+        this.mobileAppConfig = mobileAppConfig;
+    }
+
+    @XmlElement(name="desktop_app_config")
+    public DesktopAppConfig getDesktopAppConfig() {
+        return desktopAppConfig;
+    }
+
+    public void setDesktopAppConfig(DesktopAppConfig desktopAppConfig) {
+        this.desktopAppConfig = desktopAppConfig;
     }
 }

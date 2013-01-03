@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.remoting.rest.v1.util;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
@@ -349,7 +350,7 @@ public class ResourceUtil {
         return model;
     }
 
-    public static ZoneConfig buildZoneConfig(org.kablink.teaming.domain.ZoneConfig config) {
+    public static ZoneConfig buildZoneConfig(org.kablink.teaming.domain.ZoneConfig config, UserProperties userProperties) {
         ZoneConfig modelConfig = new ZoneConfig();
         BinderQuotasConfig binderQuotasConfig = new BinderQuotasConfig();
         binderQuotasConfig.setAllowOwner(config.isBinderQuotaAllowBinderOwnerEnabled());
@@ -383,6 +384,31 @@ public class ResourceUtil {
         mobileAppConfig.setSyncInterval(mac.getMobileAppsSyncInterval());
         modelConfig.setMobileAppConfig(mobileAppConfig);
 
+        Boolean value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR );
+        if (value != null) {
+            modelConfig.getMobileAppConfig().setEnabled(value);
+        }
+        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT);
+        if (value != null) {
+            modelConfig.getMobileAppConfig().setAllowCachedContent(value);
+        }
+        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD);
+        if (value != null) {
+            modelConfig.getMobileAppConfig().setAllowCachedPassword(value);
+        }
+        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS);
+        if (value != null) {
+            modelConfig.getMobileAppConfig().setAllowPlayWithOtherApps(value);
+        }
+
+        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR );
+        if (value != null) {
+            modelConfig.getDesktopAppConfig().setEnabled(value);
+        }
+        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD );
+        if (value != null) {
+            modelConfig.getDesktopAppConfig().setAllowCachedPassword(value);
+        }
         return modelConfig;
     }
 
