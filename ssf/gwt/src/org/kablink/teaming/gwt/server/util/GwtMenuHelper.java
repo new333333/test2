@@ -1028,6 +1028,28 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem to rename a file.
+	 */
+	private static void constructEntryRenameFile(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
+		// Does the user have rights to rename this entry?
+		if (bs.getFolderModule().testAccess(fe, FolderOperation.modifyEntry)) {
+			// Yes!  Is it a file entry?
+			String feFamily = GwtServerHelper.getFolderEntityFamily(bs, fe);
+			if (GwtServerHelper.isFamilyFile(feFamily)) {
+				// Yes!  Does it have a file attached?
+				FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, false);
+				if (null != fa) {
+					// Yes!  Add a Rename ToolbarItem.
+					ToolbarItem renameTBI = new ToolbarItem(RENAME);
+					markTBITitle(renameTBI, "toolbar.menu.rename_file"        );
+					markTBIEvent(renameTBI, TeamingEvents.INVOKE_RENAME_ENTITY);
+					entryToolbar.addNestedItem(renameTBI);
+				}
+			}
+		}
+	}
+	
+	/*
 	 * Constructs a ToolbarItem for sharing the selected entries.
 	 */
 	private static void constructEntryShareItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
@@ -2396,6 +2418,7 @@ public class GwtMenuHelper {
 					constructEntryDetailsItem(     actionToolbar, bs, request, "toolbar.details.view");
 					constructEntryViewHtmlItem(    actionToolbar, bs, request, fe                    );
 					constructEntryViewWhoHasAccess(actionToolbar, bs, request                        );
+					constructEntryRenameFile(      actionToolbar, bs, request, fe                    );
 					constructEntrySubscribeItem(   actionToolbar, bs, request, true                  );
 				}
 				
