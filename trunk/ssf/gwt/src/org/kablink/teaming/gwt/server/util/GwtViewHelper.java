@@ -193,6 +193,7 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.portlet.binder.AccessControlController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -6518,6 +6519,77 @@ public class GwtViewHelper {
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
 			     m_logger.debug("GwtViewHelper.purgeUserWorkspaces( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+
+	/**
+	 * Renames an entity.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param eid
+	 * @param entityName
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	@SuppressWarnings("unchecked")
+	public static StringRpcResponseData renameEntity(AllModulesInjected bs, HttpServletRequest request, EntityId eid, String entityName) throws GwtTeamingException {
+		try {
+			// Allocate a string response we can return any error in.
+			StringRpcResponseData reply = new StringRpcResponseData();
+
+			// Are we renaming a binder?
+			if (eid.isBinder()) {
+				// Yes!  Can we perform the rename?
+				HashMap rdMap = new HashMap();
+				rdMap.put(ObjectKeys.FIELD_ENTITY_TITLE, entityName);
+				MapInputData mid = new MapInputData(rdMap);
+				try {
+					bs.getBinderModule().modifyBinder(
+						eid.getEntityId(),
+						mid,			// Input data.
+						new HashMap(),	// No file items.
+						new HashSet(),	// No delete attachments.
+						null);			// No options.
+				}
+				
+				catch (Exception e) {
+					// No!  Return the reason why in the string response.
+					String messageKey;
+					if      (e instanceof AccessControlException)          messageKey = "renameEntityError.AccssControlException";
+					else if (e instanceof IllegalCharacterInNameException) messageKey = "renameEntityError.IllegalCharacterInNameException";
+					else if (e instanceof WriteFilesException)             messageKey = "renameEntityError.WriteFilesException";
+					else if (e instanceof TitleException)		           messageKey = "renameEntityError.TitleException";
+					else                                                   messageKey = "renameEntityError.OtherException";
+					if (eid.isFolder())
+					     messageKey += ".folder";
+					else messageKey += ".workspace";
+					reply.setStringValue(NLT.get(messageKey, new String[]{entityName}));
+				}
+			}
+			
+			else {
+				// No, we aren't renaming a binder!  Whatever it is, we
+				// don't support this yet.
+//!				...this needs to be implemented...
+				reply.setStringValue(NLT.get("renameEntityError.InternalError.NotSupported", new String[]{eid.getEntityType()}));
+			}
+
+			// If we get here, reply refers to a
+			// StringRpcResponseData containing any error we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.renameEntity( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}

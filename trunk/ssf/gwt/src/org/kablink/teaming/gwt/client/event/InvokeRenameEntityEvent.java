@@ -33,34 +33,69 @@
 package org.kablink.teaming.gwt.client.event;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The InvokeRenameBinderEvent is used to invoke Vibe's rename
+ * The InvokeRenameEntityEvent is used to invoke Vibe's rename
  * dialog to rename the current folder or workspace.
  * 
  * @author drfoster@novell.com
  */
-public class InvokeRenameBinderEvent extends VibeEventBase<InvokeRenameBinderEvent.Handler> {
+public class InvokeRenameEntityEvent extends VibeEventBase<InvokeRenameEntityEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
+    
+    public EntityId	m_entityId;		// The entity to rename, if supplied.  If not supplied, will use the binder from the current context.
+    public String	m_originalName;	//
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onInvokeRenameBinder(InvokeRenameBinderEvent event);
+		void onInvokeRenameEntity(InvokeRenameEntityEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public InvokeRenameBinderEvent() {
+	public InvokeRenameEntityEvent() {
 		// Initialize the super class.
 		super();
 	}
+
+	/**
+	 * Class constructor.
+	 * 
+	 * @param entityId
+	 * @param originalName
+	 */
+	public InvokeRenameEntityEvent(EntityId entityId, String originalName) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameters.
+		setEntityId(    entityId    );
+		setOriginalName(originalName);
+	}
+
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public EntityId getEntityId()     {return m_entityId;    }
+	public String   getOriginalName() {return m_originalName;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setEntityId(    EntityId entityId)     {m_entityId     = entityId;    }
+	public void setOriginalName(String   originalName) {m_originalName = originalName;}
 
 	/**
 	 * Dispatches this event when one is triggered.
@@ -71,21 +106,21 @@ public class InvokeRenameBinderEvent extends VibeEventBase<InvokeRenameBinderEve
 	 */
     @Override
     protected void doDispatch(Handler handler) {
-        handler.onInvokeRenameBinder(this);
+        handler.onInvokeRenameEntity(this);
     }
 	
 	/**
 	 * Synchronously fires a new one of these events.
 	 */
 	public static void fireOne() {
-		GwtTeaming.fireEvent(new InvokeRenameBinderEvent());
+		GwtTeaming.fireEvent(new InvokeRenameEntityEvent());
 	}
     
 	/**
 	 * Asynchronously fires a new one of these events.
 	 */
 	public static void fireOneAsync() {
-		GwtTeaming.fireEventAsync(new InvokeRenameBinderEvent());
+		GwtTeaming.fireEventAsync(new InvokeRenameEntityEvent());
 	}
     
 	/**
@@ -110,7 +145,7 @@ public class InvokeRenameBinderEvent extends VibeEventBase<InvokeRenameBinderEve
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.INVOKE_RENAME_BINDER;
+		return TeamingEvents.INVOKE_RENAME_ENTITY;
 	}
 		
 	/**

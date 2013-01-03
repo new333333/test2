@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.event.ChangeFavoriteStateEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeRenameEntityEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserPropertiesDlgEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
@@ -125,11 +126,11 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 	 * Asynchronously builds and shows the action menu for this cell's
 	 * entity.
 	 */
-	private void buildAndShowActionMenuAsync(final Element actionMenuImg, final EntityId eid, final List<ToolbarItem> tbiList) {
+	private void buildAndShowActionMenuAsync(final Element actionMenuImg, final EntityId eid, final String entityTitle, final List<ToolbarItem> tbiList) {
 		ScheduledCommand doBuildAndShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				buildAndShowActionMenuNow(actionMenuImg, eid, tbiList);
+				buildAndShowActionMenuNow(actionMenuImg, eid, entityTitle, tbiList);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doBuildAndShow);
@@ -139,7 +140,7 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 	 * Synchronously builds and shows the action menu for this cell's
 	 * entity.
 	 */
-	private void buildAndShowActionMenuNow(final Element actionMenuImg, final EntityId eid, final List<ToolbarItem> tbiList) {
+	private void buildAndShowActionMenuNow(final Element actionMenuImg, final EntityId eid, final String entityTitle, final List<ToolbarItem> tbiList) {
 		// If we don't have any items for the action menu...
 		if (tbiList.isEmpty()) {
 			// ...tell the user and bail.
@@ -160,7 +161,7 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 				// ...adding each to the action menu...
 				if      (actionTBI.hasNestedToolbarItems()) GwtClientHelper.deferredAlert(m_messages.vibeDataTable_InternalError_UnsupportedStructuredToolbar());
 				else if (actionTBI.isSeparator())           actionMenu.addSeparator();
-				else                                        renderSimpleTBI(eid, actionMenu, actionMenuImg, actionTBI);
+				else                                        renderSimpleTBI(eid, entityTitle, actionMenu, actionMenuImg, actionTBI);
 			}
 			
 			// ...and add the action menu to the Map tracking them.
@@ -283,8 +284,9 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 		actionMenuImg.addStyleName("vibe-dataTableActions-img");
 		actionMenuImg.setTitle(m_messages.vibeDataTable_Alt_EntryActions());
 		Element amiE = actionMenuImg.getElement();
-		amiE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_ENTRY_ACTION_MENU_IMAGE);
-		amiE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ENTITY_ID, eti.getEntityId().getEntityIdString()                     );
+		amiE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE,    VibeDataTableConstants.CELL_WIDGET_ENTRY_ACTION_MENU_IMAGE);
+		amiE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ENTITY_ID,    eti.getEntityId().getEntityIdString()                     );
+		amiE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ENTITY_TITLE, eti.getTitle()                                            );
 		fp.add(actionMenuImg);
 		
 		// ...and render that into the cell.
@@ -295,7 +297,7 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 	/*
 	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */
-	private void renderSimpleTBI(final EntityId eid, final PopupMenu actionMenu, final Element actionMenuImg, final ToolbarItem simpleTBI) {
+	private void renderSimpleTBI(final EntityId eid, final String entryTitle, final PopupMenu actionMenu, final Element actionMenuImg, final ToolbarItem simpleTBI) {
 		// What do we know about this toolbar item?
 		final String        simpleTitle = simpleTBI.getTitle();
 		final String		simpleUrl   = simpleTBI.getUrl();
@@ -346,7 +348,7 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 						VibeEventBase<?> event;
 						Long binderId = m_binderInfo.getBinderIdAsLong();
 						switch (simpleEvent) {
-						default:                                  event = EventHelper.createSimpleEvent(          simpleEvent    ); break;
+						default:                                  event = EventHelper.createSimpleEvent(          simpleEvent  ); break;
 						case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(binderId, eid); break;
 						case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           binderId, eid); break;
 						case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         binderId, eid); break;
@@ -369,6 +371,10 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 						
 						case INVOKE_SHARE_BINDER:
 							event = new InvokeShareBinderEvent(String.valueOf(eid.getEntityId()));
+							break;
+							
+						case INVOKE_RENAME_ENTITY:
+							event = new InvokeRenameEntityEvent(eid, entryTitle);
 							break;
 							
 						case INVOKE_USER_PROPERTIES_DLG:
@@ -401,8 +407,9 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 	 */
 	private void showActionMenu(final Element actionMenuImg) {
 		// Have we already built the action menu for this entity?
-		String		eidString  = actionMenuImg.getAttribute(VibeDataTableConstants.CELL_WIDGET_ENTITY_ID);
-		PopupMenu	actionMenu = m_menuMap.get(eidString);
+		final String eidString  = actionMenuImg.getAttribute(VibeDataTableConstants.CELL_WIDGET_ENTITY_ID   );
+		final String entryTitle = actionMenuImg.getAttribute(VibeDataTableConstants.CELL_WIDGET_ENTITY_TITLE);
+		PopupMenu	 actionMenu = m_menuMap.get(eidString);
 		if (null == actionMenu) {
 			// No!  Load the action menu's toolbar items now.
 			final EntityId	eid = EntityId.parseEntityIdString(eidString);
@@ -424,7 +431,7 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 					
 					// ...and use them to build and show the action
 					// ...menu. 
-					buildAndShowActionMenuAsync(actionMenuImg, eid, tbiList);
+					buildAndShowActionMenuAsync(actionMenuImg, eid, entryTitle, tbiList);
 				}
 			});
 		}

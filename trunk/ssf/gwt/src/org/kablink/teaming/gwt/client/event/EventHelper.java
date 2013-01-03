@@ -101,7 +101,7 @@ public class EventHelper {
 		case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	reply = new InvokeManageNetFolderRootsDlgEvent(); break;
 		case INVOKE_MANAGE_GROUPS_DLG:				reply = new InvokeManageGroupsDlgEvent();		  break;
 		case INVOKE_MANAGE_USERS_DLG:				reply = new InvokeManageUsersDlgEvent();		  break;
-		case INVOKE_RENAME_BINDER:				    reply = new InvokeRenameBinderEvent();		      break;
+		case INVOKE_RENAME_ENTITY:				    reply = new InvokeRenameEntityEvent();		      break;
 		case INVOKE_RUN_A_REPORT_DLG:				reply = new InvokeRunAReportDlgEvent();		      break;
 		case LOGIN:                             	reply = new LoginEvent();                         break;
 		case PRE_LOGOUT:                        	reply = new PreLogoutEvent();                     break;
@@ -1069,12 +1069,12 @@ public class EventHelper {
 				}
 				break;
 			
-			case INVOKE_RENAME_BINDER:
-				// An InvokeRenameBinderEvent!  Can the event handler
+			case INVOKE_RENAME_ENTITY:
+				// An InvokeRenameEntityEvent!  Can the event handler
 				// we were given handle that?
-				if (eventHandler instanceof InvokeRenameBinderEvent.Handler) {
+				if (eventHandler instanceof InvokeRenameEntityEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = InvokeRenameBinderEvent.registerEvent(eventBus, ((InvokeRenameBinderEvent.Handler) eventHandler));
+					registrationHandler = InvokeRenameEntityEvent.registerEvent(eventBus, ((InvokeRenameEntityEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -2379,7 +2379,7 @@ public class EventHelper {
 			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	       hasHandler = (eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler);          break;
 			case INVOKE_MANAGE_GROUPS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		           break;
 			case INVOKE_MANAGE_USERS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageUsersDlgEvent.Handler);		           break;
-			case INVOKE_RENAME_BINDER:					       hasHandler = (eventHandler instanceof InvokeRenameBinderEvent.Handler);                     break;
+			case INVOKE_RENAME_ENTITY:					       hasHandler = (eventHandler instanceof InvokeRenameEntityEvent.Handler);                     break;
 			case INVOKE_REPLY:                      	       hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                            break;
 			case INVOKE_RUN_A_REPORT_DLG:				       hasHandler = (eventHandler instanceof InvokeRunAReportDlgEvent.Handler);		               break;
 			case INVOKE_SEND_EMAIL_TO_TEAM:                    hasHandler = (eventHandler instanceof InvokeSendEmailToTeamEvent.Handler);                  break;

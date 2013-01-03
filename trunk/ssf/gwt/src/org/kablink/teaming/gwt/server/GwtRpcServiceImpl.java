@@ -2427,6 +2427,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case RENAME_ENTITY:
+		{
+			RenameEntityCmd reCmd = ((RenameEntityCmd) cmd);
+			StringRpcResponseData responseData = GwtViewHelper.renameEntity( this, getRequest( ri ), reCmd.getEntityId(), reCmd.getEntityName() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case REPLY_TO_ENTRY:
 		{
 			ReplyToEntryCmd reCmd = ((ReplyToEntryCmd) cmd);

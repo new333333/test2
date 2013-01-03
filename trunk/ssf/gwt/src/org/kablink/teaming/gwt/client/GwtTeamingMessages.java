@@ -486,6 +486,10 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_RemoveBinderTag();
 	String rpcFailure_RemoveFavorite();
 	String rpcFailure_RemoveSavedSearch();
+	String rpcFailure_RenameEntity_File();
+	String rpcFailure_RenameEntity_Folder();
+	String rpcFailure_RenameEntity_Unknown();
+	String rpcFailure_RenameEntity_Workspace();
 	String rpcFailure_ReplyToEntry();
 	String rpcFailure_SaveAccessoryStatus();
 	String rpcFailure_SaveAdhocFolderSetting();
@@ -2472,9 +2476,14 @@ public interface GwtTeamingMessages extends Messages
 	String editUserZoneShareRightsDlg_ShareWithAllInternalUsersLabel();
 	
 	// Strings used by the 'Rename an Entity' dialog.
-	String renameEntityDlgErrorBogusEntity(String entityType);
+	String renameEntityDlgError_BogusEntity(String entityType);
+	String renameEntityDlgError_NoName_File();
+	String renameEntityDlgError_NoName_Folder();
+	String renameEntityDlgError_NoName_Unknown();
+	String renameEntityDlgError_NoName_Workspace();
 	String renameEntityDlgHeader_File();
 	String renameEntityDlgHeader_Folder();
+	String renameEntityDlgHeader_Unknown();
 	String renameEntityDlgHeader_Workspace();
 	String renameEntityDlgName();
 
