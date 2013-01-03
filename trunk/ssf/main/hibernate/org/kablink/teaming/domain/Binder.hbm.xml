@@ -24,6 +24,7 @@
     <property name="homeDir" access="field"/>
     <property name="allowDesktopAppToSyncData" access="field"/>
     <property name="allowMobileAppsToSyncData" access="field"/>
+    <property name="indexContent" access="field"/>
     <many-to-one name="parentBinder">
           <column name="parentBinder" index="owningBinder_Binder"/>
     </many-to-one>

@@ -110,6 +110,8 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean homeDir = Boolean.FALSE;
     protected Boolean allowDesktopAppToSyncData = Boolean.TRUE;
     protected Boolean allowMobileAppsToSyncData = Boolean.TRUE;
+    protected Boolean indexContent = Boolean.TRUE;
+    
     public Binder() {
     }
     /**
@@ -142,6 +144,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 entryDef = source.entryDef;
 		 allowDesktopAppToSyncData = source.allowDesktopAppToSyncData;
 		 allowMobileAppsToSyncData = source.allowMobileAppsToSyncData;
+		 indexContent = source.indexContent;
      }
     /**
      * Return the zone id
@@ -762,6 +765,23 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     public void setAllowMobileAppsToSyncData( boolean allow )
     {
    		allowMobileAppsToSyncData = new Boolean( allow );
+    }
+    
+    /**
+     * Return whether the contents of this binder should be indexed.
+     * @return
+     */
+    public boolean getIndexContent()
+    {
+    	if ( indexContent == null )
+    		return true;
+    	else
+    		return indexContent .booleanValue();
+    }
+    
+    public void setIndexContent( boolean index )
+    {
+   		indexContent = new Boolean( index );
     }
     
     /**

@@ -58,6 +58,7 @@ public class NetFolder
 	private GwtSchedule m_syncSchedule;
 	private ArrayList<GwtRole> m_roles;
 	private boolean m_isHomeDir;
+	private boolean m_indexContent;
 	private NetFolderDataSyncSettings m_dataSyncSettings;
 	
 	/**
@@ -79,6 +80,7 @@ public class NetFolder
 	{
 		// Nothing to do.
 		m_isHomeDir = false;
+		m_indexContent = true;
 	}	
 	
 	/**
@@ -93,6 +95,7 @@ public class NetFolder
 		m_statusTicketId = netFolder.getStatusTicketId();
 		m_syncSchedule = netFolder.getSyncSchedule();
 		m_isHomeDir = netFolder.getIsHomeDir();
+		m_indexContent = netFolder.getIndexContent();
 		m_dataSyncSettings = new NetFolderDataSyncSettings();
 		m_dataSyncSettings.copy( netFolder.getDataSyncSettings() );
 	}
@@ -111,6 +114,14 @@ public class NetFolder
 	public Long getId()
 	{
 		return m_id;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getIndexContent()
+	{
+		return m_indexContent;
 	}
 	
 	/**
@@ -192,6 +203,14 @@ public class NetFolder
 	public void setId( Long id )
 	{
 		m_id = id;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIndexContent( boolean index )
+	{
+		m_indexContent = index;
 	}
 	
 	/**

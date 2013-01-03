@@ -204,7 +204,8 @@ public class GwtNetFolderHelper
 												netFolder.getRelativePath(),
 												scheduleInfo,
 												parentBinder.getId(),
-												false );
+												false,
+												netFolder.getIndexContent() );
 			
 			// Set the rights on the net folder
 			setNetFolderRights( ami, binder.getId(), netFolder.getRoles() );
@@ -710,6 +711,7 @@ public class GwtNetFolderHelper
 		netFolder.setRelativePath( binder.getResourcePath() );
 		netFolder.setStatus( NetFolderStatus.READY );
 		netFolder.setIsHomeDir( binder.isHomeDir() );
+		netFolder.setIndexContent( binder.getIndexContent() );
 		
 		// Get the net folder's sync schedule.
 		gwtSchedule = getGwtSyncSchedule( ami, binder );
@@ -941,7 +943,8 @@ public class GwtNetFolderHelper
 										netFolder.getId(),
 										netFolder.getNetFolderRootName(),
 										netFolder.getRelativePath(),
-										scheduleInfo );
+										scheduleInfo,
+										netFolder.getIndexContent() );
 
 			// Set the rights on the net folder
 			setNetFolderRights( ami, netFolder.getId(), netFolder.getRoles() );

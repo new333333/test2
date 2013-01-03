@@ -660,6 +660,7 @@ public interface ObjectKeys {
     public static final String FIELD_APPLICATION_SAME_ADDR_POLICY="sameAddrPolicy";
     public static final String FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA = "allowDesktopAppToSyncData";
     public static final String FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA = "allowMobileAppsToSyncData";
+    public static final String FIELD_BINDER_INDEX_CONTENT = "indexContent";
     public static final String FIELD_BINDER_LIBRARY="library";
     public static final String FIELD_BINDER_NAME="name";
     public static final String FIELD_BINDER_UNIQUETITLES="uniqueTitles";
