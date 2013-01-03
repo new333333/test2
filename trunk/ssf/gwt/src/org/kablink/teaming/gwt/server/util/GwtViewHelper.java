@@ -184,6 +184,7 @@ import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FilesLockedByOtherUsersException;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -192,7 +193,9 @@ import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.report.ReportModule;
+import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.portlet.binder.AccessControlController;
@@ -6560,23 +6563,88 @@ public class GwtViewHelper {
 				catch (Exception e) {
 					// No!  Return the reason why in the string response.
 					String messageKey;
-					if      (e instanceof AccessControlException)          messageKey = "renameEntityError.AccssControlException";
-					else if (e instanceof IllegalCharacterInNameException) messageKey = "renameEntityError.IllegalCharacterInNameException";
-					else if (e instanceof WriteFilesException)             messageKey = "renameEntityError.WriteFilesException";
-					else if (e instanceof TitleException)		           messageKey = "renameEntityError.TitleException";
-					else                                                   messageKey = "renameEntityError.OtherException";
+					if      (e instanceof AccessControlException)          messageKey = "renameEntityError.AccssControlException.";
+					else if (e instanceof IllegalCharacterInNameException) messageKey = "renameEntityError.IllegalCharacterInNameException.";
+					else if (e instanceof WriteFilesException)             messageKey = "renameEntityError.WriteFilesException.";
+					else if (e instanceof TitleException)		           messageKey = "renameEntityError.TitleException.";
+					else                                                   messageKey = "renameEntityError.OtherException.";
 					if (eid.isFolder())
-					     messageKey += ".folder";
-					else messageKey += ".workspace";
+					     messageKey += "folder";
+					else messageKey += "workspace";
 					reply.setStringValue(NLT.get(messageKey, new String[]{entityName}));
 				}
 			}
 			
 			else {
-				// No, we aren't renaming a binder!  Whatever it is, we
-				// don't support this yet.
-//!				...this needs to be implemented...
-				reply.setStringValue(NLT.get("renameEntityError.InternalError.NotSupported", new String[]{eid.getEntityType()}));
+				// No, we aren't renaming a binder!
+				//
+				// Note:  The logic I use here to rename the file
+				//        and/or entry was copied from
+				//        org.kablink.teaming.webdav.FileResource.renameFile()
+				// 
+				// Access the entry and attachment we're renaming.
+				FolderModule   fm = bs.getFolderModule();
+				FolderEntry    fe = fm.getEntry(eid.getBinderId(), eid.getEntityId());
+				FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true);
+				
+				// If the current entry title is identical to the name
+				// of the file, it's reasonable to change the title to
+				// match the new name as well.  Do we have to rename
+				// the entry?
+				InputDataAccessor inputData;				
+				if ((null == fa) || fa.getFileItem().getName().equals(fe.getTitle())) {
+					// Yes!  Setup the appropriate input data.
+					Map data = new HashMap();
+					data.put(ObjectKeys.FIELD_ENTITY_TITLE, entityName);
+					inputData = new MapInputData(data);
+				}
+				else {
+					// No, we don't have to rename the entry!
+					inputData = new EmptyInputData();
+				}
+
+				// Setup the appropriate  file rename.
+				Map<FileAttachment,String> renamesTo;
+				if (null == fa) {
+					renamesTo = null;
+				}
+				else {
+					renamesTo = new HashMap<FileAttachment,String>();
+					renamesTo.put(fa, entityName);
+				}
+
+				// Has the user already seen this entry?
+				SeenMap seenMap = bs.getProfileModule().getUserSeenMap(null);
+				boolean feSeen  = seenMap.checkIfSeen(fe);
+				
+				// Can we perform the rename of the entry and/or file?
+				try {
+					fm.modifyEntry(
+						fe.getParentBinder().getId(),	//
+						fe.getId(),						//
+						inputData,						//
+						null,							// null -> No file items.
+						null,							// null -> No delete attachments.
+						renamesTo,						//
+						null);							// null -> No options.
+					
+					// If the user saw the entry before we modified it...
+					if (feSeen) {
+						// ...retain that seen state.
+						bs.getProfileModule().setSeen(null, fe);
+					}
+				}
+				
+				catch (Exception e) {
+					// No!  Return the reason why in the string response.
+					String messageKey;
+					if      (e instanceof AccessControlException)         messageKey = "renameEntityError.AccssControlException.file";
+					else if (e instanceof ReservedByAnotherUserException) messageKey = "renameEntityError.ReservedByAnotherUserException.file";
+					else if (e instanceof WriteFilesException)            messageKey = "renameEntityError.WriteFilesException.file";
+					else if (e instanceof WriteEntryDataException)        messageKey = "renameEntityError.WriteEntryDataException.file";
+					else                                                  messageKey = "renameEntityError.OtherException.file";
+					reply.setStringValue(NLT.get(messageKey, new String[]{entityName}));
+				}
 			}
 
 			// If we get here, reply refers to a
