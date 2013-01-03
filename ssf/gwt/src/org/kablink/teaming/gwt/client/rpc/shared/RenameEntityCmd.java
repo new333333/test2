@@ -33,15 +33,17 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import org.kablink.teaming.gwt.client.util.EntityId;
+
 /**
  * This class holds all of the information necessary to execute the
- * 'rename binder' command.
+ * 'rename entity' command.
  * 
  * @author drfoster@novell.com
  */
-public class RenameBinderCmd extends VibeRpcCmd {
-	private Long	m_binderId;		//
-	private String	m_binderName;	//
+public class RenameEntityCmd extends VibeRpcCmd {
+	private EntityId	m_entityId;		//
+	private String		m_entityName;	//
 	
 	/**
 	 * Constructor method.
@@ -49,7 +51,7 @@ public class RenameBinderCmd extends VibeRpcCmd {
 	 * For GWT serialization requirements, must have a zero parameter
 	 * constructor.
 	 */
-	public RenameBinderCmd() {
+	public RenameEntityCmd() {
 		// Initialize the super class.
 		super();
 	}
@@ -57,16 +59,16 @@ public class RenameBinderCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param binderId
-	 * @param binderName
+	 * @param entityId
+	 * @param entityName
 	 */
-	public RenameBinderCmd(Long binderId, String binderName) {
+	public RenameEntityCmd(EntityId entityId, String entityName) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setBinderId(  binderId  );
-		setBinderName(binderName);
+		setEntityId(  entityId  );
+		setEntityName(entityName);
 	}
 	
 	/**
@@ -74,16 +76,16 @@ public class RenameBinderCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public Long   getBinderId()   {return m_binderId;  }
-	public String getBinderName() {return m_binderName;}
+	public EntityId getEntityId()   {return m_entityId;  }
+	public String   getEntityName() {return m_entityName;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBinderId(  Long   binderId)   {m_binderId   = binderId;  }
-	public void setBinderName(String binderName) {m_binderName = binderName;}
+	public void setEntityId(  EntityId entityId)   {m_entityId   = entityId;  }
+	public void setEntityName(String   entityName) {m_entityName = entityName;}
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -94,6 +96,6 @@ public class RenameBinderCmd extends VibeRpcCmd {
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.RENAME_BINDER.ordinal();
+		return VibeRpcCmdType.RENAME_ENTITY.ordinal();
 	}
 }

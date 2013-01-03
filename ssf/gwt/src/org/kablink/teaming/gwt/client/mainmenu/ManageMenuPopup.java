@@ -41,13 +41,11 @@ import org.kablink.teaming.gwt.client.mainmenu.FolderOptionsDlg.FolderOptionsDlg
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.RenameEntityDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
@@ -117,9 +115,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			if (event.equals(nestedTBI.getTeamingEvent())) {
 				// Yes!  Add it to the bucket and return true.
 				tbiList.remove(nestedTBI);
-				if ((!(event.equals(TeamingEvents.INVOKE_RENAME_BINDER)) || RenameEntityDlg.SHOW_RENAME_BINDER)) {
-					bucket.add(nestedTBI);
-				}
+				bucket.add(nestedTBI);
 				return true;
 			}
 		}
@@ -222,7 +218,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_subFolder"     );
 		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_workspace"     );
 		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "modify_binder", "modify"            );
-		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.INVOKE_RENAME_BINDER   );
+		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.INVOKE_RENAME_ENTITY   );
 		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.DELETE_SELECTED_ENTRIES);
 		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.PURGE_SELECTED_ENTRIES );
 		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.COPY_SELECTED_ENTRIES  );
@@ -460,13 +456,12 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		MenuPopupAnchor mtA = new MenuPopupAnchor(foId, m_messages.mainMenuManageFolderOptions(), null, new Command() {
 			@Override
 			public void execute() {
-				ScheduledCommand showDlg = new ScheduledCommand() {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
 					@Override
 					public void execute() {
 						showFolderOptionsAsync(foId, folderViewsTBI, calendarImportTBI);
 					}
-				};
-				Scheduler.get().scheduleDeferred(showDlg);
+				});
 			}
 		});
 		addContentMenuItem(mtA);
@@ -607,13 +602,12 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		MenuPopupAnchor mtA = new MenuPopupAnchor(menuId, menuText, null, new Command() {
 			@Override
 			public void execute() {
-				ScheduledCommand showDlg = new ScheduledCommand() {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
 					@Override
 					public void execute() {
 						showTagThisAsync(menuId, dlgCaption);
 					}
-				};
-				Scheduler.get().scheduleDeferred(showDlg);
+				});
 			}
 		});
 		addContentMenuItem(mtA);
@@ -675,8 +669,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 * @param mmpClient
 	 */
 	public static void createAsync(final ContextBinderProvider binderProvider, final ManageMenuPopupClient mmpClient) {
-		GWT.runAsync(ManageMenuPopup.class, new RunAsyncCallback()
-		{			
+		GWT.runAsync(ManageMenuPopup.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
 				ManageMenuPopup mmp = new ManageMenuPopup(binderProvider);

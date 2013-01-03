@@ -50,7 +50,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureColumnsEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEmailNotificationEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportIcalFileEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportIcalUrlEvent;
-import org.kablink.teaming.gwt.client.event.InvokeRenameBinderEvent;
+import org.kablink.teaming.gwt.client.event.InvokeRenameEntityEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
@@ -136,7 +136,7 @@ public class MainMenuControl extends Composite
 		InvokeEmailNotificationEvent.Handler,
 		InvokeImportIcalFileEvent.Handler,
 		InvokeImportIcalUrlEvent.Handler,
-		InvokeRenameBinderEvent.Handler,
+		InvokeRenameEntityEvent.Handler,
 		InvokeSendEmailToTeamEvent.Handler,
 		MastheadHideEvent.Handler,
 		MastheadShowEvent.Handler,
@@ -171,7 +171,7 @@ public class MainMenuControl extends Composite
 	private MenuBarToggle					m_mastHeadSlider;
 	private MyFavoritesMenuPopup			m_myFavoritesMenuPopup;
 	private MyTeamsMenuPopup				m_myTeamsMenuPopup;
-	private RenameEntityDlg					m_renameBinderDlg;
+	private RenameEntityDlg					m_renameEntityDlg;
 	private TeamingPopupPanel               m_aboutPopup;
 	private TeamManagementInfo				m_contextTMI;
 	private VibeMenuBar						m_mainMenu;
@@ -191,7 +191,7 @@ public class MainMenuControl extends Composite
 		TeamingEvents.INVOKE_EMAIL_NOTIFICATION,
 		TeamingEvents.INVOKE_IMPORT_ICAL_FILE,
 		TeamingEvents.INVOKE_IMPORT_ICAL_URL,
-		TeamingEvents.INVOKE_RENAME_BINDER,
+		TeamingEvents.INVOKE_RENAME_ENTITY,
 		TeamingEvents.INVOKE_SEND_EMAIL_TO_TEAM,
 		
 		// Masthead events.
@@ -1054,16 +1054,35 @@ public class MainMenuControl extends Composite
 	}
 	
 	/**
-	 * Handles InvokeRenameBinderEvent's received by this class.
+	 * Handles InvokeRenameEntityEvent's received by this class.
 	 * 
-	 * Implements the InvokeRenameBinderEvent.Handler.onInvokeRenameBinder() method.
+	 * Implements the InvokeRenameEntityEvent.Handler.onInvokeRenameEntity() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onInvokeRenameBinder(InvokeRenameBinderEvent event) {
-		// Have we instantiated a rename binder dialog yet?
-		if (null == m_renameBinderDlg) {
+	public void onInvokeRenameEntity(InvokeRenameEntityEvent event) {
+		// Does the event contain the entity to rename?
+		EntityId eid          = event.getEntityId();
+		String   originalName = event.getOriginalName(); 
+		if (null == eid) {
+			// No!  Construct one using the currently loaded binder.
+			String eidType;
+			switch (m_contextBinder.getBinderType()) {
+			case FOLDER:     eidType = EntityId.FOLDER;    break;
+			case WORKSPACE:  eidType = EntityId.WORKSPACE; break;
+			default:
+				GwtClientHelper.deferredAlert(m_messages.mainMenuRenameBinderDlgErrorBogusBinder(m_contextBinder.getBinderType().name()));
+				return;
+			}
+			eid          = new EntityId(m_contextBinder.getParentBinderIdAsLong(), m_contextBinder.getBinderIdAsLong(), eidType);
+			originalName = m_contextBinder.getBinderTitle();
+		}
+		final EntityId finalEid          = eid;
+		final String   finalOriginalName = originalName;
+		
+		// Have we instantiated a rename entity dialog yet?
+		if (null == m_renameEntityDlg) {
 			// No!  Instantiate one now.
 			RenameEntityDlg.createAsync(new RenameEntityDlgClient() {			
 				@Override
@@ -1075,11 +1094,11 @@ public class MainMenuControl extends Composite
 				@Override
 				public void onSuccess(final RenameEntityDlg renameBinderDlg) {
 					// ...and show it.
-					m_renameBinderDlg = renameBinderDlg;
+					m_renameEntityDlg = renameBinderDlg;
 					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
 						public void execute() {
-							showRenameBinderDlgNow();
+							showRenameEntityDlgNow(finalEid, finalOriginalName);
 						}
 					});
 				}
@@ -1087,9 +1106,9 @@ public class MainMenuControl extends Composite
 		}
 		
 		else {
-			// Yes, we've instantiated a rename binder dialog already!
+			// Yes, we've instantiated a rename entity dialog already!
 			// Simply show it.
-			showRenameBinderDlgNow();
+			showRenameEntityDlgNow(finalEid, finalOriginalName);
 		}
 	}
 	
@@ -1357,19 +1376,10 @@ public class MainMenuControl extends Composite
 	}
 	
 	/*
-	 * Synchronously shows the rename binder dialog.
+	 * Synchronously shows the rename entity dialog.
 	 */
-	private void showRenameBinderDlgNow() {
-		String eidType;
-		switch (m_contextBinder.getBinderType()) {
-		case FOLDER:     eidType = EntityId.FOLDER;    break;
-		case WORKSPACE:  eidType = EntityId.WORKSPACE; break;
-		default:
-			GwtClientHelper.deferredAlert(m_messages.mainMenuRenameBinderDlgErrorBogusBinder(m_contextBinder.getBinderType().name()));
-			return;
-		}
-		EntityId eid = new EntityId(m_contextBinder.getParentBinderIdAsLong(), m_contextBinder.getBinderIdAsLong(), eidType);
-		RenameEntityDlg.initAndShow(m_renameBinderDlg, eid, m_contextBinder.getBinderTitle());
+	private void showRenameEntityDlgNow(EntityId eid, String originalName) {
+		RenameEntityDlg.initAndShow(m_renameEntityDlg, eid, originalName);
 	}
 	
 	/*

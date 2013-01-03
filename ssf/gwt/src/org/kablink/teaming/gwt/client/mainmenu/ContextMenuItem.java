@@ -269,7 +269,7 @@ public class ContextMenuItem extends VibeMenuItem {
 				case INVOKE_CLIPBOARD:
 				case INVOKE_CONFIGURE_COLUMNS:
 				case INVOKE_EMAIL_NOTIFICATION:
-				case INVOKE_RENAME_BINDER:
+				case INVOKE_RENAME_ENTITY:
 				case TRACK_CURRENT_BINDER:
 				case UNTRACK_CURRENT_BINDER:
 				case UNTRACK_CURRENT_PERSON:

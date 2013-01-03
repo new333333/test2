@@ -1014,6 +1014,20 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem to rename a folder.
+	 */
+	private static void constructEntryRenameFolder(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
+		// Does the user have rights to rename this folder?
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.modifyBinder)) {
+			// Yes!  Add a Rename ToolbarItem.
+			ToolbarItem renameTBI = new ToolbarItem(RENAME);
+			markTBITitle(renameTBI, "toolbar.menu.rename_folder"      );
+			markTBIEvent(renameTBI, TeamingEvents.INVOKE_RENAME_ENTITY);
+			entryToolbar.addNestedItem(renameTBI);
+		}
+	}
+	
+	/*
 	 * Constructs a ToolbarItem for sharing the selected entries.
 	 */
 	private static void constructEntryShareItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
@@ -1480,7 +1494,7 @@ public class GwtMenuHelper {
 			// First, a rename ToolbarItem...
 			actionTBI = new ToolbarItem(RENAME);
 			markTBITitle(actionTBI, (isFolder ? "toolbar.menu.rename_folder" : "toolbar.menu.rename_workspace"));
-			markTBIEvent(actionTBI, TeamingEvents.INVOKE_RENAME_BINDER                                         );
+			markTBIEvent(actionTBI, TeamingEvents.INVOKE_RENAME_ENTITY                                         );
 			configTBI.addNestedItem(actionTBI);
 			
 			// ...then a modify ToolbarItem...
@@ -2405,8 +2419,9 @@ public class GwtMenuHelper {
 						}
 						constructEntryFavoriteItem(actionToolbar, bs, request, isFavorite);
 					}
-					constructEntryViewWhoHasAccess(actionToolbar, bs, request      );
-					constructEntrySubscribeItem(   actionToolbar, bs, request, true);
+					constructEntryViewWhoHasAccess(actionToolbar, bs, request         );
+					constructEntryRenameFolder(    actionToolbar, bs, request, folder );
+					constructEntrySubscribeItem(   actionToolbar, bs, request, true   );
 				}
 			}
 			

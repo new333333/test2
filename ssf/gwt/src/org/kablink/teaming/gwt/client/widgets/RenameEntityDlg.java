@@ -35,6 +35,10 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.RenameEntityCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -46,6 +50,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -60,15 +65,17 @@ import com.google.gwt.user.client.ui.TextBox;
  * @author drfoster@novell.com
  */
 public class RenameEntityDlg extends DlgBox implements EditSuccessfulHandler {
-	public final static boolean SHOW_RENAME_BINDER	= false;	// DRF (20130102:  Leave false on checking until I get this working.
-	
 	private EntityId			m_entityId;			// The entity to be renamed.
 	private FlowPanel			m_dlgPanel;			// The panel holding the dialog's content.
 	private GwtTeamingMessages	m_messages;			// Access to Vibe's messages.
-	private RenameEntity		m_renameEntity;		//
-	private String				m_originalName;		//
-	private TextBox 			m_entityNameInput;	//
+	private RenameEntity		m_renameEntity;		// Set to the type of entity being renamed when the dialog is in operation.
+	private String				m_originalName;		// The original name of the entity being renamed.
+	private TextBox 			m_entityNameInput;	// The <INPUT> widget the user enters the new name into.
 
+	/*
+	 * Enumeration used to easily work with the type of entity being
+	 * renamed.
+	 */
 	private enum RenameEntity {
 		FILE,
 		FOLDER,
@@ -132,7 +139,7 @@ public class RenameEntityDlg extends DlgBox implements EditSuccessfulHandler {
 		setButtonsEnabled(false);
 		
 		// ...start the entity rename process...
-//!		...this needs to be implemented...
+		renameEntityAsync();
 		
 		// ...and always return false to leave the dialog open.  If its
 		// ...contents validate and the entity gets renamed, the dialog
@@ -198,14 +205,14 @@ public class RenameEntityDlg extends DlgBox implements EditSuccessfulHandler {
 		else if (EntityId.FOLDER.equals(      eidType)) m_renameEntity = RenameEntity.FOLDER;
 		else if (EntityId.WORKSPACE.equals(   eidType)) m_renameEntity = RenameEntity.WORKSPACE;
 		else {
-			GwtClientHelper.deferredAlert(m_messages.renameEntityDlgErrorBogusEntity(eidType));
+			GwtClientHelper.deferredAlert(m_messages.renameEntityDlgError_BogusEntity(eidType));
 			return;
 		}
 
 		// Set an appropriate caption for the dialog.
 		String dlgCaption;
 		switch (m_renameEntity) {
-		default:
+		default:         dlgCaption = m_messages.renameEntityDlgHeader_Unknown();   break;
 		case FILE:       dlgCaption = m_messages.renameEntityDlgHeader_File();      break;
 		case FOLDER:     dlgCaption = m_messages.renameEntityDlgHeader_Folder();    break;
 		case WORKSPACE:  dlgCaption = m_messages.renameEntityDlgHeader_Workspace(); break;
@@ -254,6 +261,83 @@ public class RenameEntityDlg extends DlgBox implements EditSuccessfulHandler {
 		// Finally, show the dialog centered on the screen.
 		setButtonsEnabled(true);
 		center();
+	}
+	
+	/*
+	 * Asynchronously runs the rename process.
+	 */
+	private void renameEntityAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				renameEntityNow();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously runs the rename process.
+	 */
+	private void renameEntityNow() {
+		// Did the user supply the new name for the entity?
+		String fn = m_entityNameInput.getValue();
+		final String entityName = ((null == fn) ? "" : fn.trim());
+		if (0 == entityName.length()) {
+			// No!  Tell them about the error and bail.
+			String errorMsg;
+			switch (m_renameEntity) {
+			default:         errorMsg = m_messages.renameEntityDlgError_NoName_Unknown();   break;
+			case FILE:       errorMsg = m_messages.renameEntityDlgError_NoName_File();      break;
+			case FOLDER:     errorMsg = m_messages.renameEntityDlgError_NoName_Folder();    break;
+			case WORKSPACE:  errorMsg = m_messages.renameEntityDlgError_NoName_Workspace(); break;
+			}
+			GwtClientHelper.deferredAlert(errorMsg);
+			setButtonsEnabled(true);
+			return;
+		}
+
+		// Can we rename the entity?
+		RenameEntityCmd cmd = new RenameEntityCmd(m_entityId, entityName);
+		GwtClientHelper.executeCommand(
+				cmd,
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				String errorMsg;
+				switch (m_renameEntity) {
+				default:         errorMsg = m_messages.rpcFailure_RenameEntity_Unknown();   break;
+				case FILE:       errorMsg = m_messages.rpcFailure_RenameEntity_File();      break;
+				case FOLDER:     errorMsg = m_messages.rpcFailure_RenameEntity_Folder();    break;
+				case WORKSPACE:  errorMsg = m_messages.rpcFailure_RenameEntity_Workspace(); break;
+				}
+				GwtClientHelper.handleGwtRPCFailure(t, errorMsg);
+				setButtonsEnabled(true);
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Perhaps!  Was there an error returned from the
+				// rename?
+				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+				String errorMsg = responseData.getStringValue();
+				if (GwtClientHelper.hasString(errorMsg)) {
+					// Yes!  Display it.
+					GwtClientHelper.deferredAlert(errorMsg);
+					setButtonsEnabled(true);
+				}
+				
+				else {
+					// No, there wasn't an error!  Force things to
+					// refresh...
+					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+					GwtTeaming.fireEvent(new FullUIReloadEvent());
+					
+					// ...and close the dialog.
+					setButtonsEnabled(true);
+					hide();
+				}
+			}
+		});
 	}
 	
 	/*
