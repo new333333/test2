@@ -615,6 +615,8 @@ public interface ObjectKeys {
 	public static final String INPUT_OPTION_PRESERVE_DOCNUMBER="org.kablink.teaming.options.preserve.docnum";
 	//Default=Boolean.FALSE; When deleteing a profile entry, delete the associated workspace and all source/sub binders
 	public static final String INPUT_OPTION_DELETE_USER_WORKSPACE="org.kablink.teaming.options.delete.userworkspace";
+	//Default=Boolean.TRUE; When deleting a user's personal workspace, should we delete the content of a mirrored folder.
+	public static final String INPUT_OPTION_DELETE_MIRRORED_FOLDER_SOURCE = "org.kablink.teaming.options.delete.userworkspace.mirrored.folder.source";
 	//migration flags
 	public static final String INPUT_OPTION_NO_INDEX="org.kablink.teaming.options.no_indexing";
     public static final String INPUT_OPTION_NO_WORKFLOW="org.kablink.teaming.options.no_workflow_processing";

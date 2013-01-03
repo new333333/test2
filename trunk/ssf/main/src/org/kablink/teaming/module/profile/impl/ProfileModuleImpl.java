@@ -1506,6 +1506,8 @@ public void deleteEntry(Long principalId, Map options) {
    //RW transaction
    @Override
 public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
+	   boolean delMirroredFolderSource = Boolean.TRUE;
+	   
         Principal entry = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);
         checkAccess(entry, ProfileOperation.deleteEntry);
        	if (entry.isReserved()) 
@@ -1514,16 +1516,22 @@ public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
         ProfileCoreProcessor processor=loadProcessor(binder);
        	processor.deleteEntry(binder, entry, true, options); 
        	boolean delWs = Boolean.FALSE;
-       	if (options != null && options.containsKey(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE)) {
-       		delWs = (Boolean)options.get(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE);
+       	if (options != null )
+       	{
+       		if ( options.containsKey(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE) )
+       			delWs = (Boolean)options.get(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE);
+       		
+       		if ( options.containsKey( ObjectKeys.INPUT_OPTION_DELETE_MIRRORED_FOLDER_SOURCE ) )
+       			delMirroredFolderSource = (Boolean) options.get( ObjectKeys.INPUT_OPTION_DELETE_MIRRORED_FOLDER_SOURCE );
        	}
+       	
        	if (Boolean.TRUE.equals(delWs) && (entry instanceof User)) {
         	//delete workspace
         	User u = (User)entry;
         	Long wsId = u.getWorkspaceId();
         	if (wsId != null) {
         		try {
-        			getBinderModule().deleteBinder(wsId, true, options, phase1Only);
+        			getBinderModule().deleteBinder(wsId, delMirroredFolderSource, options, phase1Only);
         			u.setWorkspaceId(null);       		
         		} catch (Exception ue) {}    
         	}
