@@ -2085,6 +2085,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_EnableSyncScheduleLabel();
 	String modifyNetFolderDlg_ErrorCreatingNetFolder( String err );
 	String modifyNetFolderDlg_ErrorModifyingNetFolder( String err );
+	String modifyNetFolderDlg_IndexContentLabel();
 	String modifyNetFolderDlg_InsufficientRights();
 	String modifyNetFolderDlg_ModifyingNetFolder();
 	String modifyNetFolderDlg_NameLabel();

@@ -248,7 +248,8 @@ public class NetFolderHelper
 															path,
 															null,
 															workspaceId,
-															true );
+															true,
+															false );
 				
 				syncNeeded = true;
 			}
@@ -313,7 +314,8 @@ public class NetFolderHelper
 		String path,
 		ScheduleInfo scheduleInfo,
 		Long parentBinderId,
-		boolean isHomeDir ) throws WriteFilesException, WriteEntryDataException
+		boolean isHomeDir,
+		boolean indexContent ) throws WriteFilesException, WriteEntryDataException
 	{
 		Binder binder = null;
 		Long templateId = null;
@@ -379,6 +381,7 @@ public class NetFolderHelper
 		   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rootName );
 		   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, path );
 		   		formData.put( ObjectKeys.FIELD_IS_HOME_DIR, Boolean.toString( isHomeDir ) );
+		   		formData.put( ObjectKeys.FIELD_BINDER_INDEX_CONTENT, Boolean.toString( indexContent ) );
    				mid = new MapInputData( formData );
 
 	   			binderModule.modifyBinder( binder.getId(), mid, fileMap, deleteAtts, null );				
@@ -668,7 +671,8 @@ public class NetFolderHelper
 		Long id,
 		String netFolderRootName,
 		String relativePath,
-		ScheduleInfo scheduleInfo ) throws AccessControlException, WriteFilesException, WriteEntryDataException
+		ScheduleInfo scheduleInfo,
+		boolean indexContent ) throws AccessControlException, WriteFilesException, WriteEntryDataException
 	{
 		Set deleteAtts;
 		Map fileMap = null;
@@ -682,6 +686,7 @@ public class NetFolderHelper
    		formData.put( ObjectKeys.FIELD_BINDER_MIRRORED, "true" );
    		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, netFolderRootName );
    		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, relativePath );
+   		formData.put( ObjectKeys.FIELD_BINDER_INDEX_CONTENT, Boolean.toString( indexContent ) ); 
 		mid = new MapInputData( formData );
 
 		// Modify the binder with the net folder information.

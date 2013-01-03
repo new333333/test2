@@ -105,6 +105,7 @@ public class ModifyNetFolderDlg extends DlgBox
 	private TextBox m_nameTxtBox;
 	private TextBox m_relativePathTxtBox;
 	private ListBox m_netFolderRootsListbox;
+	private CheckBox m_indexContentCkbox;
 	private InlineLabel m_noNetFolderRootsLabel;
 	private ScheduleWidget m_scheduleWidget;
 	private NetFolderSelectPrincipalsWidget m_selectPrincipalsWidget;
@@ -376,6 +377,20 @@ public class ModifyNetFolderDlg extends DlgBox
 				table.setWidget( nextRow, 1, m_inProgressPanel );
 			}
 			
+			++nextRow;
+		}
+		
+		// Add a "Index the content of this net folder" checkbox
+		{
+			FlowPanel tmpPanel;
+			FlexCellFormatter cellFormatter;
+
+			cellFormatter = table.getFlexCellFormatter();
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+			m_indexContentCkbox = new CheckBox( messages.modifyNetFolderDlg_IndexContentLabel() );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_indexContentCkbox );
+			table.setWidget( nextRow, 0, tmpPanel );
 			++nextRow;
 		}
 		
@@ -685,6 +700,14 @@ public class ModifyNetFolderDlg extends DlgBox
 	}
 	
 	/**
+	 * 
+	 */
+	private boolean getIndexContent()
+	{
+		return m_indexContentCkbox.getValue();
+	}
+	
+	/**
 	 * Issue an ajax request to get the list of net folder roots the user has
 	 * permission to use. 
 	 */
@@ -774,6 +797,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		netFolder.setName( getName() );
 		netFolder.setRelativePath( getRelativePath() );
 		netFolder.setNetFolderRootName( getNetFolderRootName() );
+		netFolder.setIndexContent( getIndexContent() );
 		netFolder.setSyncSchedule( getSyncSchedule() );
 		netFolder.setRoles( getRoles() );
 		netFolder.setDataSyncSettings( getDataSyncSettings() );
@@ -882,6 +906,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		// Clear existing data in the controls.
 		m_nameTxtBox.setValue( "" );
 		m_relativePathTxtBox.setValue( "" );
+		m_indexContentCkbox.setValue( true );
 		m_netFolderRootsListbox.clear();
 		m_netFolderRootsListbox.setVisible( false );
 		m_noNetFolderRootsLabel.setVisible( false );
@@ -907,6 +932,8 @@ public class ModifyNetFolderDlg extends DlgBox
 			m_nameTxtBox.setEnabled( false );
 			
 			m_relativePathTxtBox.setValue( netFolder.getRelativePath() );
+			
+			m_indexContentCkbox.setValue( netFolder.getIndexContent() );
 		}
 		else
 		{
