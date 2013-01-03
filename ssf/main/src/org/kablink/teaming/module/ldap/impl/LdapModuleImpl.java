@@ -4938,6 +4938,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      public void deletePrincipals(Long zoneId, Collection ids, boolean deleteWS, PartialLdapSyncResults syncResults ) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, Boolean.valueOf(deleteWS));
+		
+		if ( Utils.checkIfFilr() )
+			options.put( ObjectKeys.INPUT_OPTION_DELETE_MIRRORED_FOLDER_SOURCE, Boolean.FALSE );
+		else
+			options.put( ObjectKeys.INPUT_OPTION_DELETE_MIRRORED_FOLDER_SOURCE, Boolean.TRUE );
 
 		int count = 0;
 		for (Iterator iter=ids.iterator(); iter.hasNext();) {
