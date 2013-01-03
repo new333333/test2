@@ -60,6 +60,7 @@ import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
+import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.api.ApiErrorCode;
@@ -122,6 +123,12 @@ public class SelfResource extends AbstractFileResource {
         if (myFilesFolderId!=null) {
             user.setHiddenFilesFolder(new LongIdLinkPair(myFilesFolderId, LinkUriUtil.getFolderLinkUri(myFilesFolderId)));
         }
+        ZoneConfig zoneConfig = ResourceUtil.buildZoneConfig(
+                getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId()),
+                getProfileModule().getUserProperties(getLoggedInUserId()));
+
+        user.setDesktopAppConfig(zoneConfig.getDesktopAppConfig());
+        user.setMobileAppConfig(zoneConfig.getMobileAppConfig());
         return user;
     }
 
