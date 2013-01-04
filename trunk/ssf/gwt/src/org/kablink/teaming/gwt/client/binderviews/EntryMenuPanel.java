@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,7 +43,9 @@ import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedUserWorkspacesEvent;
+import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
+import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
@@ -1144,39 +1146,41 @@ public class EntryMenuPanel extends ToolPanelBase
 					
 					VibeEventBase<?> event;
 					switch (simpleEvent) {
-					default:                                  event = EventHelper.createSimpleEvent(          simpleEvent); break;
-					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(folderId   ); break;
-					case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           folderId   ); break;
-					case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         folderId   ); break;
-					case DELETE_SELECTED_USER_WORKSPACES:     event = new DeleteSelectedUserWorkspacesEvent(  folderId   ); break;
-					case DISABLE_SELECTED_USERS:              event = new DisableSelectedUsersEvent(          folderId   ); break;
-					case ENABLE_SELECTED_USERS:               event = new EnableSelectedUsersEvent(           folderId   ); break;
-					case HIDE_ACCESSORIES:                    event = new HideAccessoriesEvent(               folderId   ); break;
-					case HIDE_SELECTED_SHARES:                event = new HideSelectedSharesEvent(            folderId   ); break;
-					case INVOKE_COLUMN_RESIZER:               event = new InvokeColumnResizerEvent(           folderId   ); break;
-					case INVOKE_DROPBOX:                      event = new InvokeDropBoxEvent(                 folderId   ); break;
-					case INVOKE_SIGN_GUESTBOOK:               event = new InvokeSignGuestbookEvent(           folderId   ); break;
-					case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           folderId   ); break;
-					case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         folderId   ); break;
-					case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       folderId   ); break;
-					case MARK_UNREAD_SELECTED_ENTRIES:        event = new MarkUnreadSelectedEntriesEvent(     folderId   ); break;
-					case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           folderId   ); break;
-					case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          folderId   ); break;
-					case PURGE_SELECTED_USER_WORKSPACES:      event = new PurgeSelectedUserWorkspacesEvent(   folderId   ); break;
-					case PURGE_SELECTED_USERS:                event = new PurgeSelectedUsersEvent(            folderId   ); break;
-					case SET_SELECTED_USER_DESKTOP_SETTINGS:  event = new SetSelectedUserDesktopSettingsEvent(folderId   ); break;
-					case SET_SELECTED_USER_MOBILE_SETTINGS:   event = new SetSelectedUserMobileSettingsEvent( folderId   ); break;
-					case SET_SELECTED_USER_SHARE_RIGHTS:      event = new SetSelectedUserShareRightsEvent(    folderId   ); break;
-					case SHOW_ACCESSORIES:                    event = new ShowAccessoriesEvent(               folderId   ); break;
-					case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          folderId   ); break;
-					case SHOW_SELECTED_SHARES:                event = new ShowSelectedSharesEvent(            folderId   ); break;
-					case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      folderId   ); break;
-					case TRASH_PURGE_ALL:                     event = new TrashPurgeAllEvent(                 folderId   ); break;
-					case TRASH_PURGE_SELECTED_ENTRIES:        event = new TrashPurgeSelectedEntriesEvent(     folderId   ); break;
-					case TRASH_RESTORE_ALL:                   event = new TrashRestoreAllEvent(               folderId   ); break;
-					case TRASH_RESTORE_SELECTED_ENTRIES:      event = new TrashRestoreSelectedEntriesEvent(   folderId   ); break;
-					case VIEW_PINNED_ENTRIES:                 event = new ViewPinnedEntriesEvent(             folderId   ); break;
-					case VIEW_SELECTED_ENTRY:                 event = new ViewSelectedEntryEvent(             folderId   ); break;
+					default:                                    event = EventHelper.createSimpleEvent(            simpleEvent); break;
+					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:    event = new ChangeEntryTypeSelectedEntriesEvent(  folderId   ); break;
+					case COPY_SELECTED_ENTRIES:                 event = new CopySelectedEntriesEvent(             folderId   ); break;
+					case DELETE_SELECTED_ENTRIES:               event = new DeleteSelectedEntriesEvent(           folderId   ); break;
+					case DELETE_SELECTED_USER_WORKSPACES:       event = new DeleteSelectedUserWorkspacesEvent(    folderId   ); break;
+					case DISABLE_SELECTED_USERS:                event = new DisableSelectedUsersEvent(            folderId   ); break;
+					case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:  event = new DisableSelectedUsersAdHocFoldersEvent(folderId   ); break;
+					case ENABLE_SELECTED_USERS:                 event = new EnableSelectedUsersEvent(             folderId   ); break;
+					case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:   event = new EnableSelectedUsersAdHocFoldersEvent( folderId   ); break;
+					case HIDE_ACCESSORIES:                      event = new HideAccessoriesEvent(                 folderId   ); break;
+					case HIDE_SELECTED_SHARES:                  event = new HideSelectedSharesEvent(              folderId   ); break;
+					case INVOKE_COLUMN_RESIZER:                 event = new InvokeColumnResizerEvent(             folderId   ); break;
+					case INVOKE_DROPBOX:                        event = new InvokeDropBoxEvent(                   folderId   ); break;
+					case INVOKE_SIGN_GUESTBOOK:                 event = new InvokeSignGuestbookEvent(             folderId   ); break;
+					case LOCK_SELECTED_ENTRIES:                 event = new LockSelectedEntriesEvent(             folderId   ); break;
+					case UNLOCK_SELECTED_ENTRIES:               event = new UnlockSelectedEntriesEvent(           folderId   ); break;
+					case MARK_READ_SELECTED_ENTRIES:            event = new MarkReadSelectedEntriesEvent(         folderId   ); break;
+					case MARK_UNREAD_SELECTED_ENTRIES:          event = new MarkUnreadSelectedEntriesEvent(       folderId   ); break;
+					case MOVE_SELECTED_ENTRIES:                 event = new MoveSelectedEntriesEvent(             folderId   ); break;
+					case PURGE_SELECTED_ENTRIES:                event = new PurgeSelectedEntriesEvent(            folderId   ); break;
+					case PURGE_SELECTED_USER_WORKSPACES:        event = new PurgeSelectedUserWorkspacesEvent(     folderId   ); break;
+					case PURGE_SELECTED_USERS:                  event = new PurgeSelectedUsersEvent(              folderId   ); break;
+					case SET_SELECTED_USER_DESKTOP_SETTINGS:    event = new SetSelectedUserDesktopSettingsEvent(  folderId   ); break;
+					case SET_SELECTED_USER_MOBILE_SETTINGS:     event = new SetSelectedUserMobileSettingsEvent(   folderId   ); break;
+					case SET_SELECTED_USER_SHARE_RIGHTS:        event = new SetSelectedUserShareRightsEvent(      folderId   ); break;
+					case SHOW_ACCESSORIES:                      event = new ShowAccessoriesEvent(                 folderId   ); break;
+					case SHARE_SELECTED_ENTRIES:                event = new ShareSelectedEntriesEvent(            folderId   ); break;
+					case SHOW_SELECTED_SHARES:                  event = new ShowSelectedSharesEvent(              folderId   ); break;
+					case SUBSCRIBE_SELECTED_ENTRIES:            event = new SubscribeSelectedEntriesEvent(        folderId   ); break;
+					case TRASH_PURGE_ALL:                       event = new TrashPurgeAllEvent(                   folderId   ); break;
+					case TRASH_PURGE_SELECTED_ENTRIES:          event = new TrashPurgeSelectedEntriesEvent(       folderId   ); break;
+					case TRASH_RESTORE_ALL:                     event = new TrashRestoreAllEvent(                 folderId   ); break;
+					case TRASH_RESTORE_SELECTED_ENTRIES:        event = new TrashRestoreSelectedEntriesEvent(     folderId   ); break;
+					case VIEW_PINNED_ENTRIES:                   event = new ViewPinnedEntriesEvent(               folderId   ); break;
+					case VIEW_SELECTED_ENTRY:                   event = new ViewSelectedEntryEvent(               folderId   ); break;
 					
 					case CALENDAR_SHOW:
 						int calendarShow = Integer.parseInt(simpleTBI.getQualifierValue("calendarShow"));

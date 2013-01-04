@@ -263,7 +263,9 @@ public enum TeamingEvents implements IsSerializable {
 	DELETE_SELECTED_ENTRIES,						// Deletes the Selected Entries.
 	DELETE_SELECTED_USER_WORKSPACES,				// Deletes the Selected User Workspaces.
 	DISABLE_SELECTED_USERS,							// Disables the Selected Users.
+	DISABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Disables adHoc folders for the Selected Users.
 	ENABLE_SELECTED_USERS,							// Enables the Selected Users.
+	ENABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Enables adHoc folders for the the Selected Users.
 	FOLDER_ENTRY_ACTION_COMPLETE,					// An action on a folder entry has completed.
 	GET_MANAGE_USERS_TITLE,							// Event to request the manage users title.
 	HIDE_SELECTED_SHARES,							// Marks the selected shares as being hidden.

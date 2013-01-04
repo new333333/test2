@@ -923,17 +923,33 @@ public class GwtMenuHelper {
 		boolean needSeparator     = false;
 		boolean canManageProfiles = pm.testAccess(((ProfileBinder) ws), ProfileOperation.manageEntries);
 		if (canManageProfiles) {
-			// ...add the disable item...
+			// ...add the disable users item...
 			tbi = new ToolbarItem("1_disableSelected");
-			markTBITitle(tbi, "toolbar.disable");
+			markTBITitle(tbi, "toolbar.disable.user");
 			markTBIEvent(tbi, TeamingEvents.DISABLE_SELECTED_USERS);
 			moreTBI.addNestedItem(tbi);
 			
-			// ...and add the enable item.
+			// ...add the enable users item...
 			tbi = new ToolbarItem("1_enableSelected");
-			markTBITitle(tbi, "toolbar.enable");
+			markTBITitle(tbi, "toolbar.enable.user");
 			markTBIEvent(tbi, TeamingEvents.ENABLE_SELECTED_USERS);
 			moreTBI.addNestedItem(tbi);
+
+			// ...if we're in filr mode...
+			if (Utils.checkIfFilr()) {
+				// ...add the disable users adHoc folders item...
+				moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+				tbi = new ToolbarItem("1_disableSelectedAdHoc");
+				markTBITitle(tbi, "toolbar.disable.user.adHoc");
+				markTBIEvent(tbi, TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS);
+				moreTBI.addNestedItem(tbi);
+				
+				// ...and add the enable users adHoc folders item.
+				tbi = new ToolbarItem("1_enableSelectedAdHoc");
+				markTBITitle(tbi, "toolbar.enable.user.adHoc");
+				markTBIEvent(tbi, TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS);
+				moreTBI.addNestedItem(tbi);
+			}
 			
 			needSeparator = true;
 		}
