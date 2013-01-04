@@ -37,12 +37,13 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The EnableSelectedUsersEvent is used to enable the currently
- * selected users in the personal workspace binder.
+ * The EnableSelectedUsersAdHocFoldersEvent is used to enable adHoc
+ * folders on the currently selected users in the personal workspace
+ * binder.
  * 
  * @author drfoster@novell.com
  */
-public class EnableSelectedUsersEvent extends VibeEventBase<EnableSelectedUsersEvent.Handler> {
+public class EnableSelectedUsersAdHocFoldersEvent extends VibeEventBase<EnableSelectedUsersAdHocFoldersEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
     public Long m_workspaceId;	// The ID of the personal workspaces binder.
@@ -51,13 +52,13 @@ public class EnableSelectedUsersEvent extends VibeEventBase<EnableSelectedUsersE
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onEnableSelectedUsers(EnableSelectedUsersEvent event);
+		void onEnableSelectedUsersAdHocFolders(EnableSelectedUsersAdHocFoldersEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public EnableSelectedUsersEvent() {
+	public EnableSelectedUsersAdHocFoldersEvent() {
 		super();
 	}
 	
@@ -66,7 +67,7 @@ public class EnableSelectedUsersEvent extends VibeEventBase<EnableSelectedUsersE
 	 * 
 	 * @param workspaceId
 	 */
-	public EnableSelectedUsersEvent(Long workspaceId) {
+	public EnableSelectedUsersAdHocFoldersEvent(Long workspaceId) {
 		super();
 		m_workspaceId = workspaceId;
 	}
@@ -94,7 +95,7 @@ public class EnableSelectedUsersEvent extends VibeEventBase<EnableSelectedUsersE
 	 */
     @Override
     protected void doDispatch(Handler handler) {
-        handler.onEnableSelectedUsers(this);
+        handler.onEnableSelectedUsersAdHocFolders(this);
     }    
 	
 	/**
@@ -119,7 +120,7 @@ public class EnableSelectedUsersEvent extends VibeEventBase<EnableSelectedUsersE
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.ENABLE_SELECTED_USERS;
+		return TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS;
 	}
 		
 	/**

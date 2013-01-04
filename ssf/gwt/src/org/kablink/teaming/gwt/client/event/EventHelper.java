@@ -598,6 +598,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:
+				// A DisableSelectedUsersAdHocFoldersEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof DisableSelectedUsersAdHocFoldersEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = DisableSelectedUsersAdHocFoldersEvent.registerEvent(eventBus, ((DisableSelectedUsersAdHocFoldersEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case EDIT_CURRENT_BINDER_BRANDING:
 				// A EditCurrentBinderBrandingEvent!  Can the event
 				// handler we were given handle that?
@@ -640,6 +649,15 @@ public class EventHelper {
 				if (eventHandler instanceof EnableSelectedUsersEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = EnableSelectedUsersEvent.registerEvent(eventBus, ((EnableSelectedUsersEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:
+				// A EnableSelectedUsersAdHocFoldersEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof EnableSelectedUsersAdHocFoldersEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = EnableSelectedUsersAdHocFoldersEvent.registerEvent(eventBus, ((EnableSelectedUsersAdHocFoldersEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2508,7 +2526,9 @@ public class EventHelper {
 			case DELETE_SELECTED_ENTRIES:                      hasHandler = (eventHandler instanceof DeleteSelectedEntriesEvent.Handler);                  break;
 			case DELETE_SELECTED_USER_WORKSPACES:              hasHandler = (eventHandler instanceof DeleteSelectedUserWorkspacesEvent.Handler);           break;
 			case DISABLE_SELECTED_USERS:                       hasHandler = (eventHandler instanceof DisableSelectedUsersEvent.Handler);                   break;
+			case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:         hasHandler = (eventHandler instanceof DisableSelectedUsersAdHocFoldersEvent.Handler);       break;
 			case ENABLE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);                    break;
+			case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:          hasHandler = (eventHandler instanceof EnableSelectedUsersAdHocFoldersEvent.Handler);        break;
 			case FOLDER_ENTRY_ACTION_COMPLETE:                 hasHandler = (eventHandler instanceof FolderEntryActionCompleteEvent.Handler);              break;
 			case GET_MANAGE_USERS_TITLE:                       hasHandler = (eventHandler instanceof GetManageUsersTitleEvent.Handler);                    break;
 			case HIDE_SELECTED_SHARES:                         hasHandler = (eventHandler instanceof HideSelectedSharesEvent.Handler);                     break;

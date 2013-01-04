@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -82,7 +82,9 @@ import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedUserWorkspacesEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
+import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
+import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
@@ -199,7 +201,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		DeleteSelectedEntriesEvent.Handler,
 		DeleteSelectedUserWorkspacesEvent.Handler,
 		DisableSelectedUsersEvent.Handler,
+		DisableSelectedUsersAdHocFoldersEvent.Handler,
 		EnableSelectedUsersEvent.Handler,
+		EnableSelectedUsersAdHocFoldersEvent.Handler,
 		HideSelectedSharesEvent.Handler,
 		InvokeColumnResizerEvent.Handler,
 		InvokeDropBoxEvent.Handler,
@@ -275,7 +279,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.DELETE_SELECTED_ENTRIES,
 		TeamingEvents.DELETE_SELECTED_USER_WORKSPACES,
 		TeamingEvents.DISABLE_SELECTED_USERS,
+		TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS,
 		TeamingEvents.ENABLE_SELECTED_USERS,
+		TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS,
 		TeamingEvents.HIDE_SELECTED_SHARES,
 		TeamingEvents.INVOKE_COLUMN_RESIZER,
 		TeamingEvents.INVOKE_DROPBOX,
@@ -1852,6 +1858,25 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
+	 * Handles DisableSelectedUsersAdHocFoldersAdHocFoldersEvent's received by this class.
+	 * 
+	 * Implements the DisableSelectedUsersAdHocFoldersAdHocFoldersEvent.Handler.onDisableSelectedUsersAdHocFolders() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDisableSelectedUsersAdHocFolders(DisableSelectedUsersAdHocFoldersEvent event) {
+		// Is the event targeted to this folder?
+		Long eventWorkspaceId = event.getWorkspaceId();
+		if (eventWorkspaceId.equals(getFolderId())) {
+			// Yes!  Invoke the disable.
+			BinderViewsHelper.disableUsersAdHocFolders(
+				EntityId.getLongsFromEntityIds(
+					getSelectedEntityIds()));
+		}
+	}
+	
+	/**
 	 * Handles EnableSelectedUsersEvent's received by this class.
 	 * 
 	 * Implements the EnableSelectedUsersEvent.Handler.onEnableSelectedUsers() method.
@@ -1865,6 +1890,25 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the enable.
 			BinderViewsHelper.enableUsers(
+				EntityId.getLongsFromEntityIds(
+					getSelectedEntityIds()));
+		}
+	}
+	
+	/**
+	 * Handles EnableSelectedUsersAdHocFoldersEvent's received by this class.
+	 * 
+	 * Implements the EnableSelectedUsersAdHocFoldersEvent.Handler.onEnableSelectedUsersAdHocFolders() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onEnableSelectedUsersAdHocFolders(EnableSelectedUsersAdHocFoldersEvent event) {
+		// Is the event targeted to this folder?
+		Long eventWorkspaceId = event.getWorkspaceId();
+		if (eventWorkspaceId.equals(getFolderId())) {
+			// Yes!  Invoke the enable.
+			BinderViewsHelper.enableUsersAdHocFolders(
 				EntityId.getLongsFromEntityIds(
 					getSelectedEntityIds()));
 		}

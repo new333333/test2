@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -55,7 +55,6 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -1341,6 +1340,28 @@ public class GwtUIHelper {
 			// No, we aren't running with a user!  Save as a zone
 			// setting.
 			ami.getAdminModule().setAdHocFoldersEnabled(allow);
+		}
+		
+		return Boolean.TRUE;
+	}
+	
+	/**
+	 * Saves the 'AdHoc folder' settings for multiple users.
+	 * 
+	 * @param bs
+	 * @param userIds
+	 * @param allow
+	 * 
+	 * @return
+	 */
+	public static Boolean saveMultipleAdHocFolderSettings(AllModulesInjected bs, List<Long> userIds, Boolean allow) {
+		// Do we have any user IDs to save from?
+		if (MiscUtil.hasItems(userIds)) {
+			// Yes!  Scan them...
+			for (Long userId:  userIds) {
+				// ...saving the allow flag for each.
+				saveAdhocFolderSetting(bs, userId, allow);
+			}
 		}
 		
 		return Boolean.TRUE;

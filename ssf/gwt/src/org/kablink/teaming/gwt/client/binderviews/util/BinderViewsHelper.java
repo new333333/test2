@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -60,6 +60,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorI
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HideSharesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveMultipleAdhocFolderSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShowSharesCmd;
@@ -399,6 +400,41 @@ public class BinderViewsHelper {
 	}
 
 	/**
+	 * Disables the users based on a List<Long> of their user IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void disableUsersAdHocFolders(final List<Long> userIds) {
+		// If we weren't given any user IDs to be disabled...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we disable adHoc folders.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request to disable the adHoc folders.
+		SaveMultipleAdhocFolderSettingsCmd cmd = new SaveMultipleAdhocFolderSettingsCmd(userIds, false);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_DisableUsersAdHocFolders());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  Simply hide the busy spinner.
+				busy.hide();
+			}
+		});
+	}
+
+	/**
 	 * Enables the users based on a List<Long> of their user IDs.
 	 *
 	 * @param userIds
@@ -443,6 +479,43 @@ public class BinderViewsHelper {
 					// ...got something displayed that depends on it.
 					FullUIReloadEvent.fireOne();
 				}
+			}
+		});
+	}
+
+	/**
+	 * Enables adHoc folders for the users based on a List<Long> of
+	 * their user IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void enableUsersAdHocFolders(final List<Long> userIds) {
+		// If we weren't given any user IDs to be enable adHoc folders
+		// on...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we enable adHoc folders.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request to enable the adHoc folders.
+		SaveMultipleAdhocFolderSettingsCmd cmd = new SaveMultipleAdhocFolderSettingsCmd(userIds, true);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_EnableUsersAdHocFolders());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  Simply hide the busy spinner.
+				busy.hide();
 			}
 		});
 	}

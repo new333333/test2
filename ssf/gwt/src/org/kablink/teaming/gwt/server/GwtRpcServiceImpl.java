@@ -2631,6 +2631,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_MULTIPLE_ADHOC_FOLDER_SETTINGS:
+		{
+			SaveMultipleAdhocFolderSettingsCmd smafsCmd = ((SaveMultipleAdhocFolderSettingsCmd) cmd);
+			Boolean result = GwtUIHelper.saveMultipleAdHocFolderSettings( this, smafsCmd.getUserIds(), smafsCmd.isAllowAdHocFolders() );
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case SAVE_SHARED_FILES_STATE:
 		{
 			SaveSharedFilesStateCmd ssfsCmd = ((SaveSharedFilesStateCmd) cmd);

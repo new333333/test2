@@ -326,7 +326,9 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_DeleteUserWorkspaces();
 	String rpcFailure_DeleteTasks();
 	String rpcFailure_DisableUsers();
+	String rpcFailure_DisableUsersAdHocFolders();
 	String rpcFailure_EnableUsers();
+	String rpcFailure_EnableUsersAdHocFolders();
 	String rpcFailure_EntryDoesNotExist();
 	String rpcFailure_executeCustomJsp();
 	String rpcFailure_executeEnhancedViewJsp();
