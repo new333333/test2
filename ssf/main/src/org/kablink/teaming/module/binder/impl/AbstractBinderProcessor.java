@@ -108,6 +108,7 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.rss.RssModule;
+import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.EntryBuilder;
@@ -126,6 +127,7 @@ import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.FileUploadItem;
@@ -2356,16 +2358,25 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void buildIndexDocumentFromFile
     	(org.apache.lucene.document.Document indexDoc, Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui, Collection tags, boolean isLibraryFile) {
 
-		// Get the Text converter from manager
 		String text = "";
-    	TextConverter converter = textConverterManager.getConverter();
-		try {
-			text = converter.convert(binder, entity, fa);
-		}
-		catch (Exception e) {
-			// Most likely conversion did not succeed, nothing client
-			// can do about this limitation of software.
-			logger.error("AbstractBinderProcessor.buildIndexDocumentFromFile( EXCEPTION:1 ):  ", e);
+		//See if the file contents are supposed to be indexed
+		//The root folder of a folder chain dictates if file contents are to be indexed
+		Binder rootFolder = AccessUtils.getRootFolder(entity);
+		if (rootFolder == null || rootFolder.getIndexContent()) {
+			//The file contents of files in this folder are to be added to the index
+			// Get the Text converter from manager
+	    	TextConverter converter = textConverterManager.getConverter();
+			try {
+				text = converter.convert(binder, entity, fa);
+			}
+			catch (Exception e) {
+				// Most likely conversion did not succeed, nothing client
+				// can do about this limitation of software.
+				logger.error("AbstractBinderProcessor.buildIndexDocumentFromFile( EXCEPTION:1 ):  ", e);
+			}
+		} else {
+			//The text contents are not added
+			rootFolder.getIndexContent();
 		}
 			
 		// Is there a relevance engine engine enabled?

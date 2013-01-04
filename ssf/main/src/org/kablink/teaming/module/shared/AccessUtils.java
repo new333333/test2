@@ -448,6 +448,33 @@ public class AccessUtils  {
         }
         return readEntries;
 	}
+
+	//Routine to get the top folder in a folder chain
+	//Returns null if this is not in a folder
+	public static Binder getRootFolder(DefinableEntity entity) {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		
+	    WorkArea workArea = (WorkArea) entity;
+	    Binder topFolder = null;
+		if (workArea instanceof FolderEntry) {
+			topFolder = ((FolderEntry)workArea).getParentBinder();
+		} else if (workArea instanceof Folder) {
+			topFolder = (Folder)workArea;
+		} else {
+			//This is some other type of entity. Return null
+			return null;
+		}
+		while (topFolder != null) {
+			if (topFolder.getParentBinder() != null &&
+					!topFolder.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
+				//We have found the top folder (i.e., the net folder root)
+				break;
+			}
+			//Go up a level looking for the root
+			topFolder = topFolder.getParentBinder();
+		}
+		return topFolder;
+	}
 	
 	//Routine to get the expanded list of ids who can read an entity (including function conditions)
 	public static Set<String> getRootIds(DefinableEntity entity) {
