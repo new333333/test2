@@ -291,4 +291,7 @@ public interface AppResource extends Messages
 	String uploadNewLicenseDesc();
 
 	String expirationDaysColon();
+
+	String luceneUserNameColon();
+	String luceneUserPasswordColon();
 }

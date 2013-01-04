@@ -683,6 +683,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		lucene.setHighAvailabilitySearchNodes(getIntegerValue(resourceElement.getAttribute("lucene.max.ha.search.nodes")));
 		lucene.setMergeFactor(getIntegerValue(resourceElement.getAttribute("lucene.merge.factor")));
 
+		lucene.setServerLogin(resourceElement.getAttribute("lucene.server.login"));
+		lucene.setServerPassword(resourceElement.getAttribute("lucene.server.password"));
+		
 		// Get the HASearchNodes
 		NodeList configNodeLists = resourceElement.getElementsByTagName("HASearchNode");
 
@@ -1250,6 +1253,16 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		if (!lucene.getIndexHostName().isEmpty())
 		{
 			resourceElement.setAttribute("lucene.index.hostname", lucene.getIndexHostName());
+		}
+		
+		if (!lucene.getServerLogin().isEmpty())
+		{
+			resourceElement.setAttribute("lucene.server.login", lucene.getServerLogin());
+		}
+		
+		if (!lucene.getServerPassword().isEmpty())
+		{
+			resourceElement.setAttribute("lucene.server.password", lucene.getServerPassword());
 		}
 
 		if (lucene.getLocation().equals("ha"))

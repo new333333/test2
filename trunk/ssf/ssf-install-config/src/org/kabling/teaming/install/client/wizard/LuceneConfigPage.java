@@ -3,6 +3,7 @@ package org.kabling.teaming.install.client.wizard;
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
+import org.kabling.teaming.install.client.widgets.VibePasswordTextBox;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.Lucene;
@@ -24,6 +25,8 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 	private boolean validatedCredentials;
 	private FlowPanel content;
 	private AppResource RBUNDLE = AppUtil.getAppResource();
+	private VibeTextBox luceneUserNameTextBox;
+	private VibePasswordTextBox luceneUserPasswordTextBox;
 
 	public LuceneConfigPage(ConfigWizard wizard, InstallerConfig config)
 	{
@@ -75,6 +78,30 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 				hostTable.setWidget(row, 1, rmiPortSpinner);
 				hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 			}
+			
+			{
+				row++;
+				// Server Name
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.luceneUserNameColon());
+				hostTable.setWidget(row, 0, keyLabel);
+				hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+				luceneUserNameTextBox = new VibeTextBox();
+				hostTable.setWidget(row, 1, luceneUserNameTextBox);
+				hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			}
+			
+			{
+				row++;
+				// Server Password
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.luceneUserPasswordColon());
+				hostTable.setWidget(row, 0, keyLabel);
+				hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+				luceneUserPasswordTextBox = new VibePasswordTextBox();
+				hostTable.setWidget(row, 1, luceneUserPasswordTextBox);
+				hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			}
 
 			HTML footerLabel = new HTML(
 					"The Lucene search server can be<br> - The integrated search server in the Filr virtual appliance (local)<br>"
@@ -104,8 +131,10 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 	{
 		String host = luceneAddrTextBox.getText();
 		long port = rmiPortSpinner.getValueAsInt();
+		String serverLogin = luceneUserNameTextBox.getText();
+		String serverPassword = luceneUserPasswordTextBox.getText();
 
-		if (host.isEmpty() || port < 1024)
+		if (host.isEmpty() || port < 1024 || serverLogin.isEmpty() || serverPassword.isEmpty())
 		{
 			wizard.setErrorMessage(RBUNDLE.allFieldsRequired());
 			return false;
@@ -135,6 +164,8 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 			lucene.setLocation("server");
 			lucene.setIndexHostName(luceneAddrTextBox.getText());
 			lucene.setRmiPort((int) rmiPortSpinner.getValue());
+			lucene.setServerLogin(luceneUserNameTextBox.getText());
+			lucene.setServerPassword(luceneUserPasswordTextBox.getText());
 		}
 	}
 

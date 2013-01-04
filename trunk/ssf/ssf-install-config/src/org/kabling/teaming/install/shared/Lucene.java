@@ -32,6 +32,10 @@ public class Lucene implements Serializable
 	private int highAvailabilitySearchNodes;
 	private int mergeFactor;
 	private int rmiPort;
+	
+	private String serverPassword;
+	private String serverLogin;
+	
 	private List<HASearchNode> searchNodesList;
 
 	public Lucene()
@@ -111,4 +115,25 @@ public class Lucene implements Serializable
 	{
 		this.searchNodesList = searchNodesList;
 	}
+
+	public String getServerPassword()
+	{
+		return serverPassword;
+	}
+
+	public void setServerPassword(String serverPassword)
+	{
+		this.serverPassword = serverPassword;
+	}
+
+	public String getServerLogin()
+	{
+		return serverLogin;
+	}
+
+	public void setServerLogin(String serverLogin)
+	{
+		this.serverLogin = serverLogin;
+	}
+	
 }
