@@ -213,6 +213,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected static String MEMBER_ATTRIBUTES="memberAttributes";
 	protected static String SYNC_JOB="ldap.job"; //properties in xml file need a unique name
 	private ContainerCoordinator m_containerCoordinator;
+
+	// As we create net folder servers, we will put the server and vol information in
+	// m_server_vol_map.
+	// Key: server name / volume name
+	// Value: ResourceDriverConfig object
+	Map<String, ResourceDriverConfig> m_server_vol_map = new HashMap<String, ResourceDriverConfig>();
+	
 	
 
 	/**
@@ -1948,6 +1955,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		try
 		{
+			m_server_vol_map.clear();
 			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.TRUE );
 			
 			// Sync guids if called for.
@@ -4766,11 +4774,32 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		try
 		{
-			NetFolderHelper.createHomeDirNetFolderServer(
-											getProfileModule(),
-											getAdminModule(),
-											getResourceDriverModule(),
-											homeDirInfo );
+			String server;
+			String vol;
+			
+			// Have we already created a net folder server for this server/vol?
+			server = homeDirInfo.getServerAddr();
+			vol = homeDirInfo.getVolume();
+			if ( server != null && vol != null )
+			{
+				String key;
+				
+				key = server + "/" + vol;
+				if ( m_server_vol_map.get( key ) == null )
+				{
+					ResourceDriverConfig rdConfig;
+					
+					// No, create it.
+					rdConfig = NetFolderHelper.createHomeDirNetFolderServer(
+																		getProfileModule(),
+																		getAdminModule(),
+																		getResourceDriverModule(),
+																		homeDirInfo );
+					
+					m_server_vol_map.put( key, rdConfig );
+				}
+			}
+			
 		}
 		catch ( Exception ex )
 		{

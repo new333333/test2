@@ -131,6 +131,7 @@ public class NetFolderHelper
 		if ( rdConfig != null )
 		{
 			// Yes
+			m_logger.info( "In NetFolderHelper.createHomeDirNetFolderServer(), net folder server already exists" );
 			return rdConfig;
 		}
 
