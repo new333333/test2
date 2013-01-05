@@ -575,6 +575,10 @@
 			<property name="profileModule"><ref bean="profileModule"/></property>						
 			<property name="reportModule"><ref bean="reportModule"/></property>						
 			<property name="ldapModule"><ref bean="ldapModule"/></property>		
+			<property name="templateModule"><ref bean="templateModule"/></property>
+			<property name="binderModule"><ref bean="binderModule"/></property>
+			<property name="folderModule"><ref bean="folderModule"/></property>
+			<property name="resourceDriverModule"><ref bean="resourceDriverModule"/></property>
 			<property name="processorManager"><ref bean="modelProcessorManager"/></property>				
 	</bean>	
 	

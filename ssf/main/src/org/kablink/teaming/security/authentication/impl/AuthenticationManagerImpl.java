@@ -38,7 +38,6 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -52,18 +51,20 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
 import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.modelprocessor.ProcessorManager;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ldap.LdapModule;
+import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.report.ReportModule;
+import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.zone.ZoneException;
-import org.kablink.teaming.security.authentication.AuthenticationException;
 import org.kablink.teaming.security.authentication.AuthenticationManager;
 import org.kablink.teaming.security.authentication.DigestDoesNotMatchException;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
@@ -74,9 +75,11 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.NetFolderHelper;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.liferay.util.Validator;
@@ -92,6 +95,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	private String[] userModify;
 	private ReportModule reportModule;
 	private LdapModule ldapModule;
+	private TemplateModule templateModule;
+	private BinderModule binderModule;
+	private FolderModule folderModule;
+	private ResourceDriverModule resourceDriverModule;
 	private ProcessorManager processorManager;
 
 	protected CoreDao getCoreDao() {
@@ -132,6 +139,42 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	 * 
 	 * @return
 	 */
+	protected BinderModule getBinderModule()
+	{
+		return binderModule;
+	}
+	
+	/**
+	 * 
+	 * @param binderModule
+	 */
+	public void setBinderModule( BinderModule binderModule )
+	{
+		this.binderModule = binderModule;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	protected FolderModule getFolderModule()
+	{
+		return folderModule;
+	}
+	
+	/**
+	 * 
+	 * @param folderModule
+	 */
+	public void setFolderModule( FolderModule folderModule )
+	{
+		this.folderModule = folderModule;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
 	protected LdapModule getLdapModule()
 	{
 		return ldapModule;
@@ -144,6 +187,42 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	public void setLdapModule( LdapModule ldapModule )
 	{
 		this.ldapModule = ldapModule;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	protected ResourceDriverModule getResourceDriverModule()
+	{
+		return resourceDriverModule;
+	}
+	
+	/**
+	 * 
+	 * @param resourceDriverModule
+	 */
+	public void setResourceDriverModule( ResourceDriverModule resourceDriverModule )
+	{
+		this.resourceDriverModule = resourceDriverModule;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	protected TemplateModule getTemplateModule()
+	{
+		return templateModule;
+	}
+	
+	/**
+	 * 
+	 * @param templateModule
+	 */
+	public void setTemplateModule( TemplateModule templateModule )
+	{
+		this.templateModule = templateModule;
 	}
 
 	protected ProcessorManager getProcessorManager() {
@@ -246,6 +325,44 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			}
 			if (user.getWorkspaceId() == null)
 				getProfileModule().addUserWorkspace(user, null);
+			
+			// Are we running Filr?
+			if ( Utils.checkIfFilr() )
+			{
+				HomeDirInfo homeDirInfo;
+				
+				// Yes
+				try
+				{
+					// Does this user have a home directory attribute in ldap?
+					homeDirInfo = ldapModule.readHomeDirInfoFromDirectory( user.getName(), userName );
+					if ( homeDirInfo != null )
+					{
+						// Yes
+						// Create/update the home directory net folder for this user.
+						try
+						{
+							NetFolderHelper.createHomeDirNetFolder(
+																getProfileModule(),
+																getTemplateModule(),
+																getBinderModule(),
+																getFolderModule(),
+																getAdminModule(),
+																getResourceDriverModule(),
+																homeDirInfo,
+																user );
+						}
+						catch ( Exception ex )
+						{
+							logger.error( "Unable to create home directory net folder, server: " + homeDirInfo.getServerAddr() + " error: " + ex.toString() );
+						}
+					}
+				}
+				catch ( NamingException ex )
+				{
+					logger.error( "Unable to read home directory information for user: " + user.getName() );
+				}
+			}
 			
 			if(authenticatorName != null)
 				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));

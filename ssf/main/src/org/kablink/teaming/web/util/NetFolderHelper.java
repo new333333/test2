@@ -86,6 +86,116 @@ public class NetFolderHelper
 	protected static Log m_logger = LogFactory.getLog( NetFolderHelper.class );
 
 	/**
+	 * Create a net folder server for the given home dir info
+	 */
+	public static ResourceDriverConfig createHomeDirNetFolderServer(
+		ProfileModule profileModule,
+		AdminModule adminModule,
+		ResourceDriverModule resourceDriverModule,
+		HomeDirInfo homeDirInfo )
+	{
+		String serverAddr = null;
+		String volume = null;
+		String serverUNC;
+		ResourceDriverConfig rdConfig;
+		String rootName;
+		ScheduleInfo scheduleInfo;
+		Schedule schedule;
+		Long zoneId;
+		
+		// Are we running Filr?
+		if ( Utils.checkIfFilr() == false )
+		{
+			// No
+			return null;
+		}
+
+		if ( homeDirInfo != null )
+		{
+			serverAddr = homeDirInfo.getServerAddr();
+			volume = homeDirInfo.getVolume();
+		}
+		
+		// Do we have all the information we need?
+		if ( serverAddr == null || serverAddr.length() == 0 ||
+			 volume == null || volume.length() == 0 )
+		{
+			// No
+			m_logger.error( "In NetFolderHelper.createHomeDirNetFolderServer(), invalid server information" );
+			return null;
+		}
+
+		// Does a net folder server already exist with this unc?
+		serverUNC = "\\\\" + serverAddr + "\\" + volume;
+		rdConfig = findNetFolderRootByUNC( adminModule, resourceDriverModule, serverUNC );
+		if ( rdConfig != null )
+		{
+			// Yes
+			return rdConfig;
+		}
+
+		// Create a net folder root.  The administrator will need to fill in credentials.
+		rootName = serverAddr + "-" + volume;
+		m_logger.info( "About to create a net folder server called: " + rootName  );
+		
+		// Create a default schedule for syncing the net folders associated with this net folder server
+		// The schedule is configured to run every day at 11:00pm
+		zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		scheduleInfo = new ScheduleInfo( zoneId );
+		scheduleInfo.setEnabled( true );
+		schedule = new Schedule( "" );
+		schedule.setDaily( true );
+		schedule.setHours( "23" );
+		schedule.setMinutes( "0" );
+		scheduleInfo.setSchedule( schedule );
+		
+		rdConfig = NetFolderHelper.createNetFolderRoot(
+													adminModule,
+													resourceDriverModule,
+													rootName,
+													serverUNC,
+													DriverType.famt,
+													null,
+													null,
+													null,
+													null,
+													false,
+													false,
+													scheduleInfo );
+		
+		// Add a task for the administrator to enter the proxy credentials for this server.
+		{
+			UserProperties userProperties;
+			FilrAdminTasks filrAdminTasks;
+			String xmlStr;
+			User adminUser;
+			String adminUserName;
+			String zoneName;
+
+			// Get the admin user so we can add an administrative task to his user properties.
+			zoneName = RequestContextHolder.getRequestContext().getZoneName();
+			adminUserName = SZoneConfig.getAdminUserName( zoneName );
+			adminUser = profileModule.getUser( adminUserName );
+			
+			// Get the FilrAdminTasks from the administrator's user properties
+			userProperties = profileModule.getUserProperties( adminUser.getId() );
+			xmlStr = (String)userProperties.getProperty( ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS );
+			filrAdminTasks = new FilrAdminTasks( xmlStr );
+			
+			// Add a task for the administrator to enter the proxy credentials for this net folder server.
+			filrAdminTasks.addEnterNetFolderServerProxyCredentialsTask( rdConfig.getId() );
+			
+			// Save the FilrAdminTasks to the administrator's user properties
+			profileModule.setUserProperty(
+										adminUser.getId(),
+										ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS,
+										filrAdminTasks.toString() );
+		}
+
+		return rdConfig;
+	}
+	
+	/**
 	 * Create a net folder and if needed a net folder root for the given home directory information
 	 */
 	@SuppressWarnings("unchecked")
@@ -147,69 +257,11 @@ public class NetFolderHelper
 		rdConfig = findNetFolderRootByUNC( adminModule, resourceDriverModule, serverUNC );
 		if ( rdConfig == null )
 		{
-			String rootName;
-			ScheduleInfo scheduleInfo;
-			Schedule schedule;
-			Long zoneId;
-			
-			// No
-			// Create a net folder root.  The administrator will need to fill in credentials.
-			rootName = serverAddr + "-" + volume;
-			m_logger.info( "About to create a net folder server called: " + rootName  );
-			
-			// Create a default schedule for syncing the net folders associated with this net folder server
-			// The schedule is configured to run every day at 11:00pm
-			zoneId = RequestContextHolder.getRequestContext().getZoneId();
-			scheduleInfo = new ScheduleInfo( zoneId );
-			scheduleInfo.setEnabled( true );
-			schedule = new Schedule( "" );
-			schedule.setDaily( true );
-			schedule.setHours( "23" );
-			schedule.setMinutes( "0" );
-			scheduleInfo.setSchedule( schedule );
-			
-			rdConfig = NetFolderHelper.createNetFolderRoot(
-														adminModule,
-														resourceDriverModule,
-														rootName,
-														serverUNC,
-														DriverType.famt,
-														null,
-														null,
-														null,
-														null,
-														false,
-														false,
-														scheduleInfo );
-			
-			// Add a task for the administrator to enter the proxy credentials for this server.
-			{
-				UserProperties userProperties;
-				FilrAdminTasks filrAdminTasks;
-				String xmlStr;
-				User adminUser;
-				String adminUserName;
-				String zoneName;
-
-				// Get the admin user so we can add an administrative task to his user properties.
-				zoneName = RequestContextHolder.getRequestContext().getZoneName();
-				adminUserName = SZoneConfig.getAdminUserName( zoneName );
-				adminUser = profileModule.getUser( adminUserName );
-				
-				// Get the FilrAdminTasks from the administrator's user properties
-				userProperties = profileModule.getUserProperties( adminUser.getId() );
-				xmlStr = (String)userProperties.getProperty( ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS );
-				filrAdminTasks = new FilrAdminTasks( xmlStr );
-				
-				// Add a task for the administrator to enter the proxy credentials for this net folder server.
-				filrAdminTasks.addEnterNetFolderServerProxyCredentialsTask( rdConfig.getId() );
-				
-				// Save the FilrAdminTasks to the administrator's user properties
-				profileModule.setUserProperty(
-											adminUser.getId(),
-											ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS,
-											filrAdminTasks.toString() );
-			}
+			rdConfig = NetFolderHelper.createHomeDirNetFolderServer(
+																profileModule,
+																adminModule,
+																resourceDriverModule,
+																homeDirInfo );
 		}
 		else
 		{
