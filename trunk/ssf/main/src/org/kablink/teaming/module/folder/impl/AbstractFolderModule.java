@@ -1686,21 +1686,26 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     	}    	
     }
     
-	public void clearStatistics() {
+    @Override
+	public void resetCounts() {
 		aeCount.set(0);
 		meCount.set(0);
 		deCount.set(0);
 		arCount.set(0);
 	}
+    @Override
 	public int getAddEntryCount() {
 		return aeCount.get();
 	}
+    @Override
 	public int getDeleteEntryCount() {
 		return deCount.get();
 	}
+    @Override
 	public int getModifyEntryCount() {
 		return meCount.get();
 	}
+    @Override
 	public int getAddReplyCount() {
 		return arCount.get();
 	}
