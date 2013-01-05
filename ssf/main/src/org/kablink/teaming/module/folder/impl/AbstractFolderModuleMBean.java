@@ -34,7 +34,7 @@ package org.kablink.teaming.module.folder.impl;
 
 public interface AbstractFolderModuleMBean {
 
-	public void clearStatistics();
+	public void resetCounts();
 	
 	public int getAddEntryCount();
 	public int getModifyEntryCount();
