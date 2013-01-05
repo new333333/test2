@@ -86,6 +86,7 @@ import org.kablink.teaming.domain.NoPrincipalByTheNameException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.Workspace;
@@ -817,45 +818,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		
 		return homeDirInfo;
-	}
-
-	/**
-	 * Create a Net folder and if needed a net folder server that represents the
-	 * user's home directory.
-	 */
-	private void createHomeDirNetFolder(
-		HomeDirInfo homeDirInfo,
-		UserPrincipal userPrincipal ) throws AccessControlException
-	{
-		User user;
-		String userName;
-
-		// Are we running Filr?
-		if ( homeDirInfo == null || userPrincipal == null || Utils.checkIfFilr() == false )
-		{
-			// No,
-			return;
-		}
-
-		userName = userPrincipal.getName();
-		user = profileModule.getUser( userName );
-
-		try
-		{
-			NetFolderHelper.createHomeDirNetFolder(
-											getProfileModule(),
-											getTemplateModule(),
-											getBinderModule(),
-											getFolderModule(),
-											getAdminModule(),
-											getResourceDriverModule(),
-											homeDirInfo,
-											user);
-		}
-		catch ( Exception ex )
-		{
-			logger.info( "Unable to create the home directory net folder for user: " + user.getTitle() + " " + ex.toString() );
-		}
 	}
 
 	/**
@@ -1598,6 +1560,113 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     }// end syncGuidAttributeForAllUsersAndGroups()
     
     
+	/**
+	 * Read the "home directory" attribute from the directory for the given user.
+	 * @throws NamingException 
+	 */
+    @Override
+	public HomeDirInfo readHomeDirInfoFromDirectory( String teamingUserName, String ldapUserName ) throws NamingException 
+	{
+		Workspace zone;
+
+		logger.info( "Reading home directory attribute for user: " + teamingUserName );
+		
+		zone = RequestContextHolder.getRequestContext().getZone();
+
+		for( LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs( zone.getZoneId() ) )
+		{
+			LdapContext ctx;
+			String dn=null;
+			Map userAttributes;
+			String [] userAttributeNames;
+	
+			ctx = getUserContext( zone.getId(), config );
+			dn = null;
+			userAttributes = config.getMappings();
+			userAttributeNames = (String[])(userAttributes.keySet().toArray(sample));
+
+			for ( LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches() ) 
+			{
+				HomeDirInfo homeDirInfo = null;
+
+				try
+				{
+					int scope;
+					SearchControls sch;
+					String search;
+					String filter;
+					NamingEnumeration ctxSearch;
+					Binding bd;
+					LdapDirType dirType;
+					
+					scope = (searchInfo.isSearchSubtree() ? SearchControls.SUBTREE_SCOPE : SearchControls.ONELEVEL_SCOPE);
+					sch = new SearchControls( scope, 1, 0, userAttributeNames, false, false );
+		
+					search = "(" + config.getUserIdAttribute() + "=" + ldapUserName + ")";
+					filter = searchInfo.getFilterWithoutCRLF();
+					if ( !Validator.isNull( filter ) )
+					{
+						search = "(&"+search+filter+")";
+					}
+					
+					ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
+					if ( !ctxSearch.hasMore() ) 
+					{
+						continue;
+					}
+					
+					bd = (Binding)ctxSearch.next();
+
+					if ( bd.isRelative() && Validator.isNotNull( ctx.getNameInNamespace() ) ) 
+					{
+						dn = bd.getNameInNamespace() + "," + ctx.getNameInNamespace();
+					}
+					else
+					{
+						dn = bd.getNameInNamespace();
+					}
+
+					// Get the home directory info for this user
+					dirType = getLdapDirType( config.getLdapGuidAttribute() );
+					homeDirInfo = readHomeDirInfoFromLdap( ctx, dirType, dn );
+				}
+				finally
+				{
+					// Nothing to do.
+				}
+
+				if ( ctx != null )
+				{
+					try
+					{
+						ctx.close();
+					}
+					catch ( NamingException ex )
+					{
+						// Nothing to do
+					}
+				}
+
+				return homeDirInfo;
+			}
+			
+			if ( ctx != null )
+			{
+				try
+				{
+					ctx.close();
+				}
+				catch ( NamingException ex )
+				{
+					// Nothing to do
+				}
+			}
+		}
+		
+		// If we get here we did not find the user.
+		return null;
+	}
+	
     /**
      * If the ldap configuration has the name of the ldap attribute that holds the guid then
      * read the ldap guid from the ldap directory.
@@ -4374,17 +4443,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
  		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	            	profile.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
 		processor.syncEntry(profile, new MapInputData(StringCheckUtil.check(mods)), null);
-
-		// Are we running Filr?
-		if ( Utils.checkIfFilr() && homeDirInfo != null )
-		{
-			User user;
-			
-			// Yes
-			// Update the "home dir" net folder for this user.
-			user = profileModule.getUser( loginName );
-			updateHomeDirNetFolder( homeDirInfo, user );
-		}
 	}	
 	/**
 	 * Update users with their own map of updates
@@ -4415,12 +4473,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   	{
 	   		User u = (User)foundEntries.get(i);
 	   		entries.put( u, new MapInputData( StringCheckUtil.check( (Map)users.get( u.getId() ) ) ) );
-	   		
-	   		// Update the user's home directory
-	   		if ( Utils.checkIfFilr() )
-	   		{
-		   		updateHomeDirNetFolder( homeDirInfoMap, u );
-	   		}
 	   	}
 
    		processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
@@ -4460,14 +4512,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			   		changedEntries = processor.syncEntries( entries, null, syncResults );
 			   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
 
-					// Are we running Filr?
-					if ( Utils.checkIfFilr() )
-					{
-						// Yes
-						// Update the "home dir" net folder for the users we just updated
-				   		updateHomeDirNetFolder( homeDirInfoMap, user );
-					}
-
 			   		getCoreDao().evict( user );
 		   		}
 		   		catch ( Exception ex2 )
@@ -4476,51 +4520,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   		}
 		   	}
 	   	}
-	}
-	
-	/**
-	 * Update or create a "home dir" net folder for each of the given users.
-	 */
-	private void updateHomeDirNetFolder(
-    	Map<Long, HomeDirInfo> homeDirInfoMap,
-    	User user )
-	{
-		if ( user == null || homeDirInfoMap == null || Utils.checkIfFilr() == false )
-			return;
-		
-		try 
-		{
-			HomeDirInfo homeDirInfo = null;
-			
-			// Get the HomeDirInfo for this user.
-			if ( homeDirInfoMap != null )
-				homeDirInfo = homeDirInfoMap.get( user.getId() );
-			
-			if ( homeDirInfo != null )
-			{
-				String userName;
-				
-				userName = user.getName();
-
-				// createHomeDirNetFolder() will update an existing "home directory" net folder
-				// if needed.
-				updateHomeDirNetFolder( homeDirInfo, user );
-			}
-		} 
-		catch ( AccessControlException acEx )
-		{
-			logger.error( "Unable to update home dir net folder for user: " + user.getName() );
-		}
-	}
-	
-	/**
-	 * 
-	 */
-	private void updateHomeDirNetFolder(
-		HomeDirInfo homeDirInfo,
-		User user )
-	{
-		createHomeDirNetFolder( homeDirInfo, user );
 	}
 	
 	/**
@@ -4752,10 +4751,37 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         }
     }
 
+	/**
+	 * Create a Net folder server needed by the user's home directory
+	 */
+	private void createHomeDirNetFolderServer(
+		HomeDirInfo homeDirInfo ) throws AccessControlException
+	{
+		// Are we running Filr?
+		if ( homeDirInfo == null || Utils.checkIfFilr() == false )
+		{
+			// No,
+			return;
+		}
+
+		try
+		{
+			NetFolderHelper.createHomeDirNetFolderServer(
+											getProfileModule(),
+											getAdminModule(),
+											getResourceDriverModule(),
+											homeDirInfo );
+		}
+		catch ( Exception ex )
+		{
+			logger.info( "Unable to create the home directory net folder server for: " + homeDirInfo.getServerAddr() + " " + ex.toString() );
+		}
+	}
+	
     /**
-     * For each user in the list, create a net folder for the user's home directory
+     * For each user in the list, create a net folder server for the user's home directory
      */
-    private void createHomeDirNetFolder(
+    private void createHomeDirNetFolderServers(
     	List listOfUsers,
     	Map<String, HomeDirInfo> homeDirInfoMap )
     {
@@ -4779,11 +4805,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						homeDirInfo = homeDirInfoMap.get( nextUser.getName() );
 					
 					if ( homeDirInfo != null )
-						createHomeDirNetFolder( homeDirInfo, nextUser );
+						createHomeDirNetFolderServer( homeDirInfo );
 				} 
 				catch ( AccessControlException acEx )
 				{
-					logger.error( "Unable to create home dir net folder for user: " + nextUser.getName());
+					logger.error( "Unable to create home dir net folder server for user: " + nextUser.getName());
 				}
 			}
 		}
@@ -4831,9 +4857,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			if ( newUsers != null && Utils.checkIfFilr() )
 			{
 				// Yes
-				// For each user we just created, create a net folder for the
+				// For each user we just created, create a net folder server for the
 				// user's home directory
-				createHomeDirNetFolder( newUsers, homeDirInfoMap );
+				createHomeDirNetFolderServers( newUsers, homeDirInfoMap );
 			}
 
 			if(logger.isDebugEnabled())
@@ -4888,9 +4914,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			if ( newUsers != null && Utils.checkIfFilr() )
 			{
 				// Yes
-				// For each user we just created, create a net folder for the
+				// For each user we just created, create a net folder serverfor the
 				// user's home directory
-				createHomeDirNetFolder( newUsers, homeDirInfoMap );
+				createHomeDirNetFolderServers( newUsers, homeDirInfoMap );
 			}
 
 			if ( newUsers.size() > 0 )
