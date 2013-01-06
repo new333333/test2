@@ -55,7 +55,6 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.DocumentException;
 import org.dom4j.io.DocumentSource;
 import org.dom4j.io.SAXReader;
-import org.kablink.teaming.docconverter.impl.TextOpenOfficeConverter;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
@@ -90,6 +89,8 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 	public String convert(Binder binder, DefinableEntity entry, FileAttachment fa)
 		throws IOException
 	{
+		long startTime = System.nanoTime();
+
 		String result = "";
 		String tmp = "," + excludedExtensions + ",";
 		if(! tmp.contains("," + EntityIndexUtils.getFileExtension(fa.getFileItem().getName()).toLowerCase() + ",")) {
@@ -100,6 +101,9 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 			result = textWriter.toString();
 			SimpleProfiler.stop("TextConverter.convert");
 		}
+		
+		end(startTime, fa.getFileItem().getName());
+		
 		return result;
 		
 	}
