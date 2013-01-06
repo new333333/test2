@@ -233,7 +233,7 @@ public abstract class Converter<T>
 		}
 	}
 
-	private void end(long begin, String fileName) {
+	protected void end(long begin, String fileName) {
 		if(logger.isDebugEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0;
 			logger.debug(diff + " ms, converting " + fileName);
