@@ -43,7 +43,7 @@ import java.util.List;
  */
 public class SaveMultipleAdhocFolderSettingsCmd extends VibeRpcCmd {
 	private List<Long>	m_userIds;				//
-	private boolean		m_allowAdHocFolders;	//
+	private Boolean		m_allowAdHocFolders;	//
 	
 	/**
 	 * Constructor method.
@@ -64,7 +64,7 @@ public class SaveMultipleAdhocFolderSettingsCmd extends VibeRpcCmd {
 	 * @param userId
 	 * @param allow
 	 */
-	public SaveMultipleAdhocFolderSettingsCmd(Long userId, boolean allow) {
+	public SaveMultipleAdhocFolderSettingsCmd(Long userId, Boolean allow) {
 		// Initialize this object...
 		this();
 		
@@ -79,7 +79,7 @@ public class SaveMultipleAdhocFolderSettingsCmd extends VibeRpcCmd {
 	 * @param userIds
 	 * @param allow
 	 */
-	public SaveMultipleAdhocFolderSettingsCmd(List<Long> userIds, boolean allow) {
+	public SaveMultipleAdhocFolderSettingsCmd(List<Long> userIds, Boolean allow) {
 		// Initialize the super class...
 		super();
 		
@@ -93,15 +93,15 @@ public class SaveMultipleAdhocFolderSettingsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public boolean    isAllowAdHocFolders() {return m_allowAdHocFolders;}
-	public List<Long> getUserIds()          {return m_userIds;          }
+	public Boolean    getAllowAdHocFolders() {return m_allowAdHocFolders;}
+	public List<Long> getUserIds()           {return m_userIds;          }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setAllowAdHocFolders(boolean    allow)   {m_allowAdHocFolders = allow;  }
+	public void setAllowAdHocFolders(Boolean    allow)   {m_allowAdHocFolders = allow;  }
 	public void setUserIds(          List<Long> userIds) {m_userIds           = userIds;}
 
 	/**
