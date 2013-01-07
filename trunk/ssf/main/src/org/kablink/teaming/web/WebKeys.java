@@ -689,6 +689,10 @@ public class WebKeys {
 	public static final String MRS_OPERATION_DUMP_TO_LOG = "dump_to_log";
 	public static final String MRS_OPERATION_ENABLE_SIMPLE_PROFILER = "enable_simple_profiler";
 	public static final String MRS_OPERATION_DISABLE_SIMPLE_PROFILER = "disable_simple_profiler";
+	public static final String MRS_OPERATION_DUMP_FILE_SYNC_STATS = "dump_file_sync_stats";
+	public static final String MRS_OPERATION_DUMP_FILE_SYNC_STATS_TO_LOG = "dump_file_sync_stats_to_log";
+	public static final String MRS_OPERATION_ENABLE_FILE_SYNC_STATS = "enable_file_sync_stats";
+	public static final String MRS_OPERATION_DISABLE_FILE_SYNC_STATS = "disable_file_sync_stats";
 	public static final String MRS_OPERATION_SEARCH = "search";
 
 	public static final String AUTO_NOTIFY_TAIL			= "_notify";

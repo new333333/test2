@@ -90,6 +90,22 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 					PortletRequestUtils.getIntParameter(request, "offset", 0),
 					PortletRequestUtils.getIntParameter(request, "max", 25));
 		}
+		else if(WebKeys.MRS_OPERATION_DUMP_FILE_SYNC_STATS.equals(op)) {
+			String data = getAdminModule().dumpFileSyncStatsAsString();
+			reportData(response, data);
+		}
+		else if(WebKeys.MRS_OPERATION_DUMP_FILE_SYNC_STATS_TO_LOG.equals(op)) {
+			getAdminModule().dumpFileSyncStatsToLog();
+			reportSuccess(response);
+		}
+		else if(WebKeys.MRS_OPERATION_ENABLE_FILE_SYNC_STATS.equals(op)) {
+			getAdminModule().enableFileSyncStats();
+			reportSuccess(response);
+		}
+		else if(WebKeys.MRS_OPERATION_DISABLE_FILE_SYNC_STATS.equals(op)) {
+			getAdminModule().disableFileSyncStats();
+			reportSuccess(response);
+		}
 		else if(op.equals("")) {
 			reportNoop(response);
 		}

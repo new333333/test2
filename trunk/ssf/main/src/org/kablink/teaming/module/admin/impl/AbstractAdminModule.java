@@ -110,6 +110,7 @@ import org.kablink.teaming.module.definition.notify.Notify.NotifyType;
 import org.kablink.teaming.module.definition.notify.NotifyBuilderUtil;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.impl.AbstractFolderModuleMBean;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.mail.EmailUtil;
@@ -2673,6 +2674,36 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 		checkAccess(AdminOperation.manageRuntime);
 		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");
 		rs.setSimpleProfilerEnabled(false);
+	}
+
+	@Override
+	public String dumpFileSyncStatsAsString() {
+		checkAccess(AdminOperation.manageRuntime);
+		if(getFolderModule() instanceof AbstractFolderModuleMBean)
+			return ((AbstractFolderModuleMBean)getFolderModule()).dumpSyncStatsAsString();
+		else
+			return "";
+	}
+	
+	@Override
+	public void dumpFileSyncStatsToLog() {
+		checkAccess(AdminOperation.manageRuntime);
+		if(getFolderModule() instanceof AbstractFolderModuleMBean)
+			((AbstractFolderModuleMBean)getFolderModule()).dumpSyncStatsToLog();
+	}
+	
+	@Override
+	public void enableFileSyncStats() {
+		checkAccess(AdminOperation.manageRuntime);
+		if(getFolderModule() instanceof AbstractFolderModuleMBean)
+			((AbstractFolderModuleMBean)getFolderModule()).setSyncStatsEnabled(true);
+	}
+	
+	@Override
+	public void disableFileSyncStats() {
+		checkAccess(AdminOperation.manageRuntime);
+		if(getFolderModule() instanceof AbstractFolderModuleMBean)
+			((AbstractFolderModuleMBean)getFolderModule()).setSyncStatsEnabled(false);
 	}
 
 	private boolean dealingWithExternalAcl(boolean justThisScope, String scope) {
