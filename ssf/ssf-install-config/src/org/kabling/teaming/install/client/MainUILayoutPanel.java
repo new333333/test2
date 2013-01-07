@@ -191,7 +191,7 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 
 		case DATABASE:
 			dlg = new DatabasePage();
-			dlg.createAllDlgContent(AppUtil.getAppResource().database(), dlg, null, null);
+			dlg.createAllDlgContent(AppUtil.getAppResource().dbConnection(), dlg, null, null);
 			break;
 			
 		case NETWORK:

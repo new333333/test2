@@ -38,7 +38,7 @@ public class DatabasePage extends ConfigPageDlgBox
 		content = new FlowPanel();
 		content.addStyleName("configPage");
 
-		Label descLabel = new Label(RBUNDLE.wizDbPageTitleDesc());
+		Label descLabel = new Label(RBUNDLE.dbConfigPageTitleDesc());
 		descLabel.addStyleName("configPageTitleDescLabel");
 		content.add(descLabel);
 
