@@ -32,15 +32,9 @@
  */
 package org.kablink.teaming.module.folder.impl;
 
-import java.util.Map;
-import java.util.HashMap;
-
 import org.kablink.teaming.UncheckedIOException;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.jobs.ScheduleInfo;
-import org.kablink.teaming.module.shared.InputDataAccessor;
-import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.StatusTicket;
 
 
@@ -56,7 +50,29 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	
 	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId) {
 		throw new UnsupportedOperationException("setSynchronizationSchedule operation is not supported in the base edition");
-    }  
+    }
+
+	@Override
+	public boolean isSyncStatsEnabled() {
+		return false;
+	}
+
+	@Override
+	public void setSyncStatsEnabled(boolean syncStatsEnabled) {
+	}
+
+	@Override
+	public void clearSyncStats() {
+	}
+
+	@Override
+	public void dumpSyncStatsToLog() {
+	}
+
+	@Override
+	public String dumpSyncStatsAsString() {
+		return "";
+	}  
 
 
 }

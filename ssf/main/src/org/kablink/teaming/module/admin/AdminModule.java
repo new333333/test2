@@ -398,6 +398,14 @@ public interface AdminModule {
 	
 	public void disableSimpleProfiler();
 	
+	public String dumpFileSyncStatsAsString();
+	
+	public void dumpFileSyncStatsToLog();
+	
+	public void enableFileSyncStats();
+	
+	public void disableFileSyncStats();
+	
 	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled, Boolean allowCachePwd, Integer maxFileSize );
 	
 	public void addOpenIDProvider(OpenIDProvider openIDProvider);

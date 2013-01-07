@@ -42,4 +42,10 @@ public interface AbstractFolderModuleMBean {
 	
 	public int getAddReplyCount();
 	
+	public boolean isSyncStatsEnabled();
+	public void setSyncStatsEnabled(boolean syncStatsEnabled);
+	public void clearSyncStats();
+	public void dumpSyncStatsToLog();
+	public String dumpSyncStatsAsString();
+	
 }
