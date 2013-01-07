@@ -498,7 +498,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	     			
 	     			// Get default settings first
 	     			boolean createUser = SPropsUtil.getBoolean("portal.user.auto.create", true);
-	     			boolean passwordAutoSynch = SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
+	     			boolean passwordAutoSynch = SPropsUtil.getBoolean("portal.password.auto.synchronize", true);
 	     			boolean ignorePassword = SPropsUtil.getBoolean("portal.password.ignore", true);
 	     			boolean updateUser = true; // No config setting exists for this
 	     			
