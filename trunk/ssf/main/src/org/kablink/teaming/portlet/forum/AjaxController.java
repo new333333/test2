@@ -901,14 +901,18 @@ public class AjaxController  extends SAbstractControllerRetry {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 		} catch(Exception ex) {}
 		if (binderId != null) {
-			binder = getBinderModule().getBinder(binderId);
+			try {
+				binder = getBinderModule().getBinder(binderId);
+			} catch(Exception ex) {}
 		}
 		Long entryId = null;
 		try {
 			entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);				
 		} catch(Exception ex) {}
 		if (entryId != null) {
-			entry = getFolderModule().getEntry(binderId, entryId);
+			try {
+				entry = getFolderModule().getEntry(binderId, entryId);
+			} catch(Exception ex) {}
 		}
 		String fileNames = PortletRequestUtils.getStringParameter(request, "fileNames", "");
 		List fileNameList = new ArrayList<String>();
