@@ -327,7 +327,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				getProfileModule().addUserWorkspace(user, null);
 			
 			// Are we running Filr?
-			if ( Utils.checkIfFilr() )
+			if ( createUser && Utils.checkIfFilr() )
 			{
 				HomeDirInfo homeDirInfo;
 				
