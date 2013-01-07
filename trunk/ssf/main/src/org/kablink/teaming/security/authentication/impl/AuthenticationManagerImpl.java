@@ -65,6 +65,7 @@ import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.zone.ZoneException;
+import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.security.authentication.AuthenticationManager;
 import org.kablink.teaming.security.authentication.DigestDoesNotMatchException;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
@@ -100,6 +101,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	private FolderModule folderModule;
 	private ResourceDriverModule resourceDriverModule;
 	private ProcessorManager processorManager;
+	private RunAsyncManager runAsyncManager;
 
 	protected CoreDao getCoreDao() {
 		return coreDao;
@@ -234,6 +236,22 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	}
 
 	/**
+	 * 
+	 */
+	protected RunAsyncManager getRunAsyncManager()
+	{
+		return runAsyncManager;
+	}
+
+	/**
+	 * 
+	 */
+	public void setRunAsyncManager( RunAsyncManager runAsyncManager )
+	{
+		this.runAsyncManager = runAsyncManager;
+	}
+
+	/**
      * Called after bean is initialized.  
      */
  	public void afterPropertiesSet() {
@@ -326,8 +344,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			if (user.getWorkspaceId() == null)
 				getProfileModule().addUserWorkspace(user, null);
 			
-			// Are we running Filr?
-			if ( createUser && Utils.checkIfFilr() )
+			// Are we running Filr and are we dealing with a user imported from ldap?
+			if ( createUser && Utils.checkIfFilr() && user.getIdentityInfo().isFromLdap() )
 			{
 				HomeDirInfo homeDirInfo;
 				
@@ -349,6 +367,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 																getFolderModule(),
 																getAdminModule(),
 																getResourceDriverModule(),
+																getRunAsyncManager(),
 																homeDirInfo,
 																user );
 						}
