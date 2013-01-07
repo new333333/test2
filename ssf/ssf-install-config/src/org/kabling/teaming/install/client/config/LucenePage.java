@@ -4,6 +4,7 @@ import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.ValueRequiredValidator;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
+import org.kabling.teaming.install.client.widgets.VibePasswordTextBox;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.shared.Lucene;
 import org.kabling.teaming.install.shared.ProductInfo.ProductType;
@@ -32,6 +33,11 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 	private GwValueSpinner mergeFactorSpinner;
 	private ListBox configTypeListBox;
 	private LuceneHighAvailabilityPanel haPanel;
+	private VibeTextBox luceneUserNameTextBox;
+	private VibePasswordTextBox luceneUserPasswordTextBox;
+	private int luceneServerPasswordRow;
+	private int luceneServerNameRow;
+	private FlexTable hostTable;
 
 	private static final String LOCAL = "local";
 	private static final String SERVER = "server";
@@ -53,7 +59,7 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 		contentPanel.addStyleName("lucenePageContent");
 
 		int row = 0;
-		FlexTable hostTable = new FlexTable();
+		hostTable = new FlexTable();
 		contentPanel.add(hostTable);
 
 		if (!AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
@@ -124,6 +130,35 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 			hostTable.setWidget(row, 1, rmiPortSpinner);
 			hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
+		
+		{
+			row++;
+			// Server Name
+			luceneServerNameRow = row;
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.luceneUserNameColon());
+			hostTable.setWidget(row, 0, keyLabel);
+			hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			luceneUserNameTextBox = new VibeTextBox();
+			luceneUserNameTextBox.setValidator(new ValueRequiredValidator(luceneUserNameTextBox));
+			hostTable.setWidget(row, 1, luceneUserNameTextBox);
+			hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
+		
+		{
+			row++;
+			luceneServerPasswordRow = row;
+			// Server Password
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.luceneUserPasswordColon());
+			hostTable.setWidget(row, 0, keyLabel);
+			hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			luceneUserPasswordTextBox = new VibePasswordTextBox();
+			luceneUserPasswordTextBox.setValidator(new ValueRequiredValidator(luceneUserPasswordTextBox));
+			hostTable.setWidget(row, 1, luceneUserPasswordTextBox);
+			hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
+		
 
 		{
 			row++;
@@ -149,6 +184,13 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 
 		if (configTypeListBox.getSelectedIndex() == 1)
 		{
+			// Make sure the server name and server password is not empty
+			if (!(luceneUserNameTextBox.isValid() || luceneUserPasswordTextBox.isValid()))
+			{
+				setErrorMessage(RBUNDLE.allFieldsRequired());
+				return false;
+			}
+			
 			// Remote lucene server cannot point to the local box
 			if (AppUtil.isLocalIpAddr(hostAddrTextBox.getText()))
 			{
@@ -190,7 +232,11 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 		if (configTypeListBox.getSelectedIndex() == 0)
 			lucene.setLocation(LOCAL);
 		else if (configTypeListBox.getSelectedIndex() == 1)
+		{
 			lucene.setLocation(SERVER);
+			lucene.setServerLogin(luceneUserNameTextBox.getText());
+			lucene.setServerPassword(luceneUserPasswordTextBox.getText());
+		}
 		else
 			lucene.setLocation(HIGH_AVAILABILITY);
 
@@ -235,6 +281,7 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 				configTypeListBox.setSelectedIndex(1);
 				hostAddrTextBox.setText(lucene.getIndexHostName());
 				rmiPortSpinner.setValue(lucene.getRmiPort());
+				luceneUserNameTextBox.setText(lucene.getServerLogin());
 				showUIForServerMode();
 			}
 			else
@@ -279,6 +326,12 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 
 		rmiPortSpinner.setValue(1199);
 		rmiPortSpinner.setEnabled(false);
+		
+		hostTable.getWidget(luceneServerNameRow, 0).setVisible(false);
+		hostTable.getWidget(luceneServerNameRow, 1).setVisible(false);
+		
+		hostTable.getWidget(luceneServerPasswordRow, 0).setVisible(false);
+		hostTable.getWidget(luceneServerPasswordRow, 1).setVisible(false);
 
 		haPanel.setVisible(false);
 	}
@@ -293,6 +346,12 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 
 		hostAddrTextBox.setEnabled(true);
 		rmiPortSpinner.setEnabled(true);
+		
+		hostTable.getWidget(luceneServerNameRow, 0).setVisible(true);
+		hostTable.getWidget(luceneServerNameRow, 1).setVisible(true);
+		
+		hostTable.getWidget(luceneServerPasswordRow, 0).setVisible(true);
+		hostTable.getWidget(luceneServerPasswordRow, 1).setVisible(true);
 
 		haPanel.setVisible(false);
 	}
@@ -305,6 +364,12 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 		hostAddrTextBox.setText(config.getLucene().getIndexHostName());
 		rmiPortSpinner.setValue(config.getLucene().getRmiPort());
 
+		hostTable.getWidget(luceneServerNameRow, 0).setVisible(false);
+		hostTable.getWidget(luceneServerNameRow, 1).setVisible(false);
+		
+		hostTable.getWidget(luceneServerPasswordRow, 0).setVisible(false);
+		hostTable.getWidget(luceneServerPasswordRow, 1).setVisible(false);
+		
 		haPanel.setVisible(true);
 		haPanel.updateUI(config);
 	}

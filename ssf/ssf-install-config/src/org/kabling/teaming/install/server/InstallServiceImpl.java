@@ -708,6 +708,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				config.setHostName(hsaElement.getAttribute("ha.service.hostname"));
 				config.setTitle(hsaElement.getAttribute("ha.service.title"));
 				config.setRmiPort(getIntegerValue(hsaElement.getAttribute("ha.service.rmi.port")));
+				
+				config.setServerLogin(hsaElement.getAttribute("lucene.server.login"));
+				config.setServerPassword(hsaElement.getAttribute("lucene.server.password"));
 
 			}
 		}
@@ -1290,6 +1293,16 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				node.setAttribute("ha.service.hostname", searchNode.getHostName());
 				node.setAttribute("ha.service.rmi.port", String.valueOf(searchNode.getRmiPort()));
 
+				if (!searchNode.getServerLogin().isEmpty())
+				{
+					node.setAttribute("lucene.server.login", searchNode.getServerLogin());
+				}
+				
+				if (!searchNode.getServerPassword().isEmpty())
+				{
+					node.setAttribute("lucene.server.password", searchNode.getServerPassword());
+				}
+				
 				resourceElement.appendChild(node);
 			}
 		}
