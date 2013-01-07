@@ -67,6 +67,8 @@ import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
+import org.kablink.teaming.runasync.RunAsyncCallback;
+import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
@@ -204,9 +206,10 @@ public class NetFolderHelper
 		ProfileModule profileModule,
 		TemplateModule templateModule,
 		BinderModule binderModule,
-		FolderModule folderModule,
+		final FolderModule folderModule,
 		AdminModule adminModule,
 		ResourceDriverModule resourceDriverModule,
+		RunAsyncManager asyncManager,
 		HomeDirInfo homeDirInfo,
 		User user ) throws WriteFilesException, WriteEntryDataException
 	{
@@ -342,7 +345,26 @@ public class NetFolderHelper
 					// Yes, sync it.
 					try
 					{
-						folderModule.synchronize( netFolderBinder.getId(), null );
+						final Long binderId;
+						
+						binderId = netFolderBinder.getId();
+						
+						asyncManager.execute( new RunAsyncCallback()
+						{
+							@Override
+							public Object doAsynchronously() throws Exception 
+							{
+								m_logger.info( "About to sync home directory net folder: " + binderId );
+								folderModule.synchronize( binderId, null );
+						    	return null;
+							}
+
+							@Override
+							public String toString()
+							{
+								return "folderModule.synchronize()";
+							}
+						});
 					}
 					catch ( Exception e )
 					{

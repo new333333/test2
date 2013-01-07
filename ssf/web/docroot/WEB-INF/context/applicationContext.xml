@@ -580,6 +580,7 @@
 			<property name="folderModule"><ref bean="folderModule"/></property>
 			<property name="resourceDriverModule"><ref bean="resourceDriverModule"/></property>
 			<property name="processorManager"><ref bean="modelProcessorManager"/></property>				
+			<property name="runAsyncManager"><ref bean="runAsyncManager"/></property>
 	</bean>	
 	
 	<bean id="stringCheckUtil" class = "org.kablink.teaming.util.stringcheck.StringCheckUtil" depends-on="sPropsUtil">
