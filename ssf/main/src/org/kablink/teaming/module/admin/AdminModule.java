@@ -398,6 +398,8 @@ public interface AdminModule {
 	
 	public void disableSimpleProfiler();
 	
+	public void clearSimpleProfiler();
+	
 	public String dumpFileSyncStatsAsString();
 	
 	public void dumpFileSyncStatsToLog();

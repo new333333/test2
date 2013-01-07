@@ -580,6 +580,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		}
 		else if (op.equals(WebKeys.OPERATION_VALIDATE_BINDER_QUOTAS)) {
 			return ajaxValidateBinderQuotas(request, response);
+			
+		} else if (op.equals(WebKeys.OPERATION_CHECK_EXISTS_FILES_FROM_APPLET)) {
+			return ajaxCheckIfFilesExist(request, response);
 		}
 		return ajaxReturn(request, response);
 	} 
@@ -879,6 +882,71 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.ERROR_COUNT, String.valueOf(errors.size()));
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/validate_binder_quotas", model);
+	}
+
+	/**
+	 * ?
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	private ModelAndView ajaxCheckIfFilesExist(RenderRequest request, RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		Binder binder = null;
+		Entry entry = null;
+		Long binderId = null;
+		try {
+			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
+		} catch(Exception ex) {}
+		if (binderId != null) {
+			binder = getBinderModule().getBinder(binderId);
+		}
+		Long entryId = null;
+		try {
+			entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);				
+		} catch(Exception ex) {}
+		if (entryId != null) {
+			entry = getFolderModule().getEntry(binderId, entryId);
+		}
+		String fileNames = PortletRequestUtils.getStringParameter(request, "fileNames", "");
+		List fileNameList = new ArrayList<String>();
+		String[] fns = fileNames.split(",");
+		for (int i = 0; i < fns.length; i++) {
+			if (!fns[i].trim().equals("")) {
+				//See if this file exists
+				if (entry != null) {
+					//This is an entry. Look at the entry's attached files for a match
+					for (FileAttachment fa : entry.getFileAttachments()) {
+						if (fa.getFileExists() && fa.getFileItem().getName().equals(fns[i])) {
+							fileNameList.add(fns[i]);
+							break;
+						}
+					}
+				} else if (binder!= null) {
+					//Now look for an entry in the binder with this name
+					if (binder instanceof Folder) {
+						FolderEntry fe = getFolderModule().getLibraryFolderEntryByFileName((Folder) binder, fns[i]);
+						if (fe != null) {
+							fileNameList.add(fns[i]);
+							continue;
+						}
+					}
+					//This is a binder. Look at the binder's attached files for a match
+					for (FileAttachment fa : binder.getFileAttachments()) {
+						if (fa.getFileExists() && fa.getFileItem().getName().equals(fns[i])) {
+							fileNameList.add(fns[i]);
+							break;
+						}
+					}
+				}
+			}
+		}
+		model.put("fileNames", fileNameList);
+
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/return_file_names", model);
 	}
 
 	/**
@@ -2147,11 +2215,22 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String strURL = adapterUrl.toString();
 		strURL = strURL.replaceAll("&", "&amp;");
 		
+		AdaptedPortletURL adapterUrl2 = new AdaptedPortletURL(request, "ss_forum", Boolean.parseBoolean("true"));
+		adapterUrl2.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
+		adapterUrl2.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		adapterUrl2.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+		adapterUrl2.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_CHECK_EXISTS_FILES_FROM_APPLET);
+
+		//This replace has been done AJAX does not allow "&"
+		String strURL2 = adapterUrl2.toString();
+		strURL2 = strURL2.replaceAll("&", "&amp;");
+		
 		Map model = new HashMap();
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.BINDER_ID, binderId);
 		model.put(WebKeys.ENTRY_ID, entryId);
 		model.put(WebKeys.ENTRY_ATTACHMENT_FILE_RECEIVER_URL, strURL);
+		model.put(WebKeys.ENTRY_ATTACHMENT_FILE_CHECK_EXISTS_URL, strURL2);
 		if (binder != null) {
 			Long maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
 			Long maxUserFileSize = getAdminModule().getUserFileSizeLimit();
@@ -2216,6 +2295,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.ENTRY_ATTACHMENT_EDITOR_TYPE, strOpenInEditor);
 		model.put(WebKeys.URL_OS_INFO, strOSInfo);
         model.put(WebKeys.IS_LICENSE_REQUIRED_EDITION, Boolean.toString(ReleaseInfo.isLicenseRequiredEdition()));
+        model.put(WebKeys.IS_OFFICE_ADD_IN_ALLOWED, (!Utils.checkIfFilr() && !Utils.checkIfIPrint()));
         model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 
 		return new ModelAndView("definition_elements/view_entry_openfile", model);
@@ -2243,6 +2323,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.ENTRY_ATTACHMENT_EDITOR_TYPE, strOpenInEditor);
 		model.put(WebKeys.URL_OS_INFO, strOSInfo);
         model.put(WebKeys.IS_LICENSE_REQUIRED_EDITION, Boolean.toString(ReleaseInfo.isLicenseRequiredEdition()));
+        model.put(WebKeys.IS_OFFICE_ADD_IN_ALLOWED, (!Utils.checkIfFilr() && !Utils.checkIfIPrint()));
         model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 
 		return new ModelAndView("definition_elements/view_entry_openfile", model);
@@ -2273,6 +2354,15 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String strURL = adapterUrl.toString();
 		strURL = strURL.replaceAll("&", "&amp;");
 		
+		AdaptedPortletURL adapterUrl2 = new AdaptedPortletURL(request, "ss_forum", Boolean.parseBoolean("true"));
+		adapterUrl2.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
+		adapterUrl2.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		adapterUrl2.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_CHECK_EXISTS_FILES_FROM_APPLET);
+
+		//This replace has been done AJAX does not allow "&"
+		String strURL2 = adapterUrl2.toString();
+		strURL2 = strURL2.replaceAll("&", "&amp;");
+		
 		//This replace has been done AJAX does not allow "&"
 		String strRefreshURL = adapterFolderRefreshUrl.toString();
 		//strRefreshURL = strRefreshURL.replaceAll("&", "&amp;");
@@ -2282,6 +2372,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.BINDER_IS_LIBRARY, library);
 		model.put(WebKeys.BINDER_ID, binderId);
 		model.put(WebKeys.FOLDER_ATTACHMENT_FILE_RECEIVER_URL, strURL);
+		model.put(WebKeys.FOLDER_ATTACHMENT_FILE_CHECK_EXISTS_URL, strURL2);
 		model.put(WebKeys.FOLDER_ATTACHMENT_APPLET_REFRESH_URL, strRefreshURL);
 		if (binder != null) {
 			Long maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
