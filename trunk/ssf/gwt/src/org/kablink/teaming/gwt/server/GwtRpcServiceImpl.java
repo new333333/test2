@@ -2634,7 +2634,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_MULTIPLE_ADHOC_FOLDER_SETTINGS:
 		{
 			SaveMultipleAdhocFolderSettingsCmd smafsCmd = ((SaveMultipleAdhocFolderSettingsCmd) cmd);
-			Boolean result = GwtUIHelper.saveMultipleAdHocFolderSettings( this, smafsCmd.getUserIds(), smafsCmd.isAllowAdHocFolders() );
+			Boolean result = GwtUIHelper.saveMultipleAdHocFolderSettings( this, smafsCmd.getUserIds(), smafsCmd.getAllowAdHocFolders() );
 			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;

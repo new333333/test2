@@ -944,10 +944,16 @@ public class GwtMenuHelper {
 				markTBIEvent(tbi, TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS);
 				moreTBI.addNestedItem(tbi);
 				
-				// ...and add the enable users adHoc folders item.
+				// ...add the enable users adHoc folders item...
 				tbi = new ToolbarItem("1_enableSelectedAdHoc");
 				markTBITitle(tbi, "toolbar.enable.user.adHoc");
 				markTBIEvent(tbi, TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS);
+				moreTBI.addNestedItem(tbi);
+				
+				// ...and add the clear users adHoc folders item.
+				tbi = new ToolbarItem("1_clearSelectedAdHoc");
+				markTBITitle(tbi, "toolbar.clear.user.adHoc");
+				markTBIEvent(tbi, TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS);
 				moreTBI.addNestedItem(tbi);
 			}
 			

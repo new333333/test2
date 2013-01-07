@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ClearSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedUserWorkspacesEvent;
@@ -1148,6 +1149,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					switch (simpleEvent) {
 					default:                                    event = EventHelper.createSimpleEvent(            simpleEvent); break;
 					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:    event = new ChangeEntryTypeSelectedEntriesEvent(  folderId   ); break;
+					case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:    event = new ClearSelectedUsersAdHocFoldersEvent(  folderId   ); break;
 					case COPY_SELECTED_ENTRIES:                 event = new CopySelectedEntriesEvent(             folderId   ); break;
 					case DELETE_SELECTED_ENTRIES:               event = new DeleteSelectedEntriesEvent(           folderId   ); break;
 					case DELETE_SELECTED_USER_WORKSPACES:       event = new DeleteSelectedUserWorkspacesEvent(    folderId   ); break;

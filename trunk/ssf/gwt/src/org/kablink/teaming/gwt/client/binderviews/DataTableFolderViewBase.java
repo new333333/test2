@@ -74,6 +74,7 @@ import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ClearSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
@@ -195,6 +196,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	implements ApplyColumnWidths,
 	// Event handlers implemented by this class.
 		ChangeEntryTypeSelectedEntriesEvent.Handler,
+		ClearSelectedUsersAdHocFoldersEvent.Handler,
 		ContentChangedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
 		CopySelectedEntriesEvent.Handler,
@@ -273,6 +275,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,
+		TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS,
 		TeamingEvents.CONTENT_CHANGED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.COPY_SELECTED_ENTRIES,
@@ -1682,6 +1685,25 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.changeEntryTypes(selectedEntityIds);
+		}
+	}
+	
+	/**
+	 * Handles ClearSelectedUsersAdHocFoldersAdHocFoldersEvent's received by this class.
+	 * 
+	 * Implements the ClearSelectedUsersAdHocFoldersAdHocFoldersEvent.Handler.onClearSelectedUsersAdHocFolders() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onClearSelectedUsersAdHocFolders(ClearSelectedUsersAdHocFoldersEvent event) {
+		// Is the event targeted to this folder?
+		Long eventWorkspaceId = event.getWorkspaceId();
+		if (eventWorkspaceId.equals(getFolderId())) {
+			// Yes!  Invoke the clear.
+			BinderViewsHelper.clearUsersAdHocFolders(
+				EntityId.getLongsFromEntityIds(
+					getSelectedEntityIds()));
 		}
 	}
 	

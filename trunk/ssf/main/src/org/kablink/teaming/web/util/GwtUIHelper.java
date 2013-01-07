@@ -1327,19 +1327,23 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean saveAdhocFolderSetting(AllModulesInjected ami, Long userId, Boolean allow) {
-		if (null == allow) {
-			return Boolean.FALSE;
-		}
-		
 		// Are we dealing with a user?
 		if (null != userId) {
 			// Yes!  Save the setting to their properties.
-			ami.getProfileModule().setUserProperty(userId, ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS, allow.toString());
+			ami.getProfileModule().setUserProperty(
+				userId,
+				ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS,
+				((null == allow) ?
+					null         :				//     null -> Remove the setting and revert to the zone's setting.
+					String.valueOf(allow)));	// non-null -> Specific value to set.
 		}
 		else {
 			// No, we aren't running with a user!  Save as a zone
 			// setting.
-			ami.getAdminModule().setAdHocFoldersEnabled(allow);
+			ami.getAdminModule().setAdHocFoldersEnabled(
+				((null == allow) ?
+					Boolean.FALSE :	//     null -> Default to false.
+					allow));		// non-null -> Store value directly.
 		}
 		
 		return Boolean.TRUE;

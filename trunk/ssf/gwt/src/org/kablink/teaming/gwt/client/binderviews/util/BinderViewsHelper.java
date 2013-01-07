@@ -194,6 +194,43 @@ public class BinderViewsHelper {
 	}
 	
 	/**
+	 * Clears the user's adHoc folders setting based on a List<Long> of
+	 * their user IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void clearUsersAdHocFolders(final List<Long> userIds) {
+		// If we weren't given any user IDs to be cleared...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we clear the adHoc folder
+		// settings.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request to clear the adHoc folders.
+		SaveMultipleAdhocFolderSettingsCmd cmd = new SaveMultipleAdhocFolderSettingsCmd(userIds, null);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_DisableUsersAdHocFolders());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  Simply hide the busy spinner.
+				busy.hide();
+			}
+		});
+	}
+
+	/**
 	 * Invokes the appropriate UI to copy the entries based on a
 	 * List<EntityId> of the entries.
 	 *
