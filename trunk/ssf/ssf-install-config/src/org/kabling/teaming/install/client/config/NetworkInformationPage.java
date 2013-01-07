@@ -2,9 +2,8 @@ package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
-import org.kabling.teaming.install.client.ValueRequiredValidator;
-import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
+import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.shared.Network;
 import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
@@ -20,7 +19,6 @@ import com.google.gwt.user.client.ui.Panel;
 
 public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHandler
 {
-	private VibeTextBox hostTextBox;
 	private GwValueSpinner listenSpinner;
 	private GwValueSpinner secureListenSpinner;
 	private GwValueSpinner shutDownPortSpinner;
@@ -53,21 +51,8 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 		contentPanel.add(table);
 
 		int row = 0;
-		{
-
-			// Host Name
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.hostColon());
-			table.setWidget(row, 0, keyLabel);
-			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-
-			hostTextBox = new VibeTextBox();
-			hostTextBox.setValidator(new ValueRequiredValidator(hostTextBox));
-			table.setWidget(row, 1, hostTextBox);
-			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-		}
 
 		{
-			row++;
 			// Listen Port
 			InlineLabel keyLabel = new InlineLabel(RBUNDLE.httpPortColon());
 			table.setWidget(row, 0, keyLabel);
@@ -154,16 +139,8 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 	@Override
 	public Object getDataFromDlg()
 	{
-		//Host Name is required
-		if (!hostTextBox.isValid())
-		{
-			setErrorMessage(RBUNDLE.requiredField());
-			return null;
-		}
-
 		//Save the configuration
 		Network network = config.getNetwork();
-		network.setHost(hostTextBox.getText());
 		network.setSecureListenPort(secureListenSpinner.getValueAsInt());
 		
 		if (shutDownPortSpinner != null)
@@ -185,7 +162,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 	@Override
 	public FocusWidget getFocusWidget()
 	{
-		return hostTextBox;
+		return null;
 	}
 
 	@Override
@@ -196,7 +173,6 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 		//Initialize the UI with the data
 		if (network != null)
 		{
-			hostTextBox.setText(network.getHost());
 			secureListenSpinner.setValue(network.getSecureListenPort());
 			
 			if (shutDownPortSpinner != null)

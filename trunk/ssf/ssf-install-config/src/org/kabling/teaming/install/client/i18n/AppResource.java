@@ -294,4 +294,6 @@ public interface AppResource extends Messages
 
 	String luceneUserNameColon();
 	String luceneUserPasswordColon();
+
+	String systemHostNameColon();
 }

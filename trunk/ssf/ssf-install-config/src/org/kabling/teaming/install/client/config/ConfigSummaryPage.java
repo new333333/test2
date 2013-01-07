@@ -9,15 +9,15 @@ import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.shared.Clustered;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.DatabaseConfig;
-import org.kabling.teaming.install.shared.Lucene;
-import org.kabling.teaming.install.shared.SSO;
 import org.kabling.teaming.install.shared.DatabaseConfig.DatabaseType;
-import org.kabling.teaming.install.shared.EmailSettings.EmailProtocol;
 import org.kabling.teaming.install.shared.EmailSettings;
+import org.kabling.teaming.install.shared.EmailSettings.EmailProtocol;
 import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.InstallerConfig.WebDAV;
+import org.kabling.teaming.install.shared.Lucene;
 import org.kabling.teaming.install.shared.Network;
 import org.kabling.teaming.install.shared.RequestsAndConnections;
+import org.kabling.teaming.install.shared.SSO;
 import org.kabling.teaming.install.shared.WebService;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -127,16 +127,17 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		{
 			int row = 0;
 			{
-				// Host Name
-				InlineLabel keyLabel = new InlineLabel(RBUNDLE.hostColon());
+				
+				// KeyStore
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.keyStoreFileColon());
 				table.setWidget(row, 0, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-				// Host Name Value
-				InlineLabel valueLabel = new InlineLabel(network.getHost());
-				table.setWidget(row, 1, valueLabel);
+				// KeyStore Value
+				InlineLabel valueLabel = new InlineLabel(network.getKeystoreFile());
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-
+				table.setWidget(row, 1, valueLabel);
+				
 				// Listen Port
 				keyLabel = new InlineLabel(RBUNDLE.httpPortColon());
 				table.setWidget(row, 2, keyLabel);
@@ -171,19 +172,6 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				valueLabel = new InlineLabel(String.valueOf(network.getSessionTimeoutMinutes()));
 				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
 				table.setWidget(row, 3, valueLabel);
-			}
-
-			row++;
-			{
-				// KeyStore
-				InlineLabel keyLabel = new InlineLabel(RBUNDLE.keyStoreFileColon());
-				table.setWidget(row, 0, keyLabel);
-				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-
-				// KeyStore Value
-				InlineLabel valueLabel = new InlineLabel(network.getKeystoreFile());
-				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-				table.setWidget(row, 1, valueLabel);
 			}
 		}
 		return sectionPanel;
@@ -734,6 +722,20 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				valueLabel = new InlineLabel(String.valueOf(clustered.getCacheGroupPort()));
 				table.setWidget(row, 3, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
+			}
+			
+			if (config.getNetwork() != null)
+			{
+				row++;
+				// Host Name
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.systemHostNameColon());
+				table.setWidget(row, 0, keyLabel);
+				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+				// Host Name Value
+				InlineLabel valueLabel = new InlineLabel(config.getNetwork().getHost());
+				table.setWidget(row, 1, valueLabel);
+				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 			}
 
 		}
