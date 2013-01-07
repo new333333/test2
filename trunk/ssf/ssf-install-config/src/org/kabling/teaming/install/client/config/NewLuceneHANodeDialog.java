@@ -7,6 +7,7 @@ import org.kabling.teaming.install.client.ValueRequiredValidator;
 import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.client.widgets.DlgBox;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
+import org.kabling.teaming.install.client.widgets.VibePasswordTextBox;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.shared.HASearchNode;
 
@@ -28,6 +29,8 @@ public class NewLuceneHANodeDialog extends DlgBox
 	private Label errorLabel;
 	private List<HASearchNode> currentNodes;
 	private HASearchNode searchNode;
+	private VibePasswordTextBox luceneUserPasswordTextBox;
+	private VibeTextBox luceneUserNameTextBox;
 
 	public NewLuceneHANodeDialog(HASearchNode node,List<HASearchNode> currentNodes)
 	{
@@ -49,7 +52,7 @@ public class NewLuceneHANodeDialog extends DlgBox
 		}
 		
 		//We need to have the name and host name
-		if (!(nameTextBox.isValid() & hostTextBox.isValid()))
+		if (!(nameTextBox.isValid() & hostTextBox.isValid() & luceneUserNameTextBox.isValid()))
 		{
 			errorLabel.setText(RBUNDLE.requiredField());
 			getErrorPanel().setVisible(true);
@@ -133,12 +136,39 @@ public class NewLuceneHANodeDialog extends DlgBox
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 		
+		{
+			row++;
+			// Server Name
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.luceneUserNameColon());
+			table.setWidget(row, 0, keyLabel);
+			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			luceneUserNameTextBox = new VibeTextBox();
+			luceneUserNameTextBox.setValidator(new ValueRequiredValidator(luceneUserNameTextBox));
+			table.setWidget(row, 1, luceneUserNameTextBox);
+			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
+		
+		{
+			row++;
+			// Server Password
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.luceneUserPasswordColon());
+			table.setWidget(row, 0, keyLabel);
+			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			luceneUserPasswordTextBox = new VibePasswordTextBox();
+			luceneUserPasswordTextBox.setValidator(new ValueRequiredValidator(luceneUserPasswordTextBox));
+			table.setWidget(row, 1, luceneUserPasswordTextBox);
+			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
+		
 		if (searchNode != null)
 		{
 			hostTextBox.setText(searchNode.getHostName());
 			nameTextBox.setText(searchNode.getName());
 			rmiPortSpinner.setValue(searchNode.getRmiPort());
 			descriptionTextArea.setText(searchNode.getTitle());
+			luceneUserNameTextBox.setText(searchNode.getServerLogin());
 		}
 		
 		return content;
@@ -159,6 +189,8 @@ public class NewLuceneHANodeDialog extends DlgBox
 		searchNode.setHostName(hostTextBox.getText());
 		searchNode.setTitle(descriptionTextArea.getText());
 		searchNode.setRmiPort(rmiPortSpinner.getValueAsInt());
+		searchNode.setServerLogin(luceneUserNameTextBox.getText());
+		searchNode.setServerPassword(luceneUserPasswordTextBox.getText());
 
 		return searchNode;
 	}
