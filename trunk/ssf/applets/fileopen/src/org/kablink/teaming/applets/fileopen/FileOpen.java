@@ -38,7 +38,6 @@ import java.net.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 //import javax.net.*;
-import javax.swing.JApplet;
 import javax.swing.*;
 
 import netscape.javascript.JSObject;
@@ -72,6 +71,7 @@ public class FileOpen extends JApplet implements Runnable {
     String uploadErrorMessage = "";
     String editorErrorMessage = "";
     boolean isLicenseRequiredEdition = false;
+    boolean isOfficeAddInAllowed = true;
 
     ////////////////////////////////////////////////////////////////////////
     //
@@ -91,6 +91,7 @@ public class FileOpen extends JApplet implements Runnable {
 		editorErrorMessage = getParameter("EditorErrorMessage");
 		if (editorErrorMessage == null || editorErrorMessage.equals("")) editorErrorMessage = "Error from command";
         isLicenseRequiredEdition = Boolean.parseBoolean(getParameter("isLicenseRequiredEdition"));
+        isOfficeAddInAllowed = Boolean.parseBoolean(getParameter("isOfficeAddInAllowed"));
 		try {
 			boolean ifEditIsClicked = checkEditClicked();
 			resetEditClicked();
@@ -209,7 +210,8 @@ public class FileOpen extends JApplet implements Runnable {
     //
     ////////////////////////////////////////////////////////////////////////
     protected String[] getWindowsEditorAndUrl(String strEditor, String strUrl){
-        if(isLicenseRequiredEdition){
+    	System.out.println("Is Office Add-in allowed: " + String.valueOf(isOfficeAddInAllowed));
+        if(isLicenseRequiredEdition && isOfficeAddInAllowed){
             Pattern p = Pattern.compile("((?:winword)|(?:excel)|(?:powerpnt))(?:\\.exe)?", Pattern.CASE_INSENSITIVE);
             Matcher m = p.matcher(strEditor);
             if(m.matches() && isAddinInstalled()){
