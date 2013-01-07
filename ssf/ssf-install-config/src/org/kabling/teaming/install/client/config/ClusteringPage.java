@@ -2,9 +2,11 @@ package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.ValueRequiredBasedOnBoolValidator;
+import org.kabling.teaming.install.client.ValueRequiredValidator;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.shared.Clustered;
+import org.kabling.teaming.install.shared.Network;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -38,6 +40,7 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 	private FlexTable ehcacheTable;
 	private FlexTable memcacheTable;
 	private ValueRequiredBasedOnBoolValidator memcachedAddrValidator;
+	private VibeTextBox hostTextBox;
 
 	@Override
 	public Panel createContent(Object propertiesObj)
@@ -65,8 +68,22 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 		contentPanel.add(table);
 
 		int row = 0;
+		
 		{
 
+			// Host Name
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.hostColon());
+			table.setWidget(row, 0, keyLabel);
+			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			hostTextBox = new VibeTextBox();
+			hostTextBox.setValidator(new ValueRequiredValidator(hostTextBox));
+			table.setWidget(row, 1, hostTextBox);
+			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
+		
+		{
+			row++;
 			// JVM Route
 			InlineLabel keyLabel = new InlineLabel(RBUNDLE.jvmRouteColon());
 			table.setWidget(row, 0, keyLabel);
@@ -102,6 +119,13 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 	{
 		if (enableClusteredCheckBox.getValue())
 		{
+			//Host Name is required
+			if (!(hostTextBox.isValid() & jvmRouteTextBox.isValid()))
+			{
+				setErrorMessage(RBUNDLE.requiredField());
+				return null;
+			}
+			
 			if (cacheProviderListBox.getSelectedIndex() <= 0 && !(hostNameTextBox.isValid() & multicastGroupAddrTextBox.isValid()))
 			{
 				setErrorMessage(RBUNDLE.allFieldsRequired());
@@ -136,6 +160,9 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 			clustered.setCachingProvider("memcache");
 			clustered.setMemCachedAddress(memcachedAddressesTextBox.getText());
 		}
+		
+		Network network = config.getNetwork();
+		network.setHost(hostTextBox.getText());
 		
 		return config;
 	}
@@ -176,6 +203,10 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 				memcachedAddrValidator.setRequired(enableClusteredCheckBox.getValue());
 			}
 		}
+		
+		Network network = config.getNetwork();
+		if (network != null)
+			hostTextBox.setText(network.getHost());
 	}
 
 	@Override
