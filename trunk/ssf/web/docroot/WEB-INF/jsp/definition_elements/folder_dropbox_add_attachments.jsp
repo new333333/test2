@@ -173,6 +173,7 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			    <PARAM NAME = "reloadFunctionName" value="ss_hideFolderDropTarget${ssBinderId}${ss_namespace}"/>
 			    <PARAM NAME = "savePreviousVersions" value="yes"/>
 			    <PARAM NAME = "fileReceiverURL" value="${ssFolderAttachmentFileReceiverURL}" />
+			    <PARAM NAME = "fileCheckExistsURL" value="${ssFolderAttachmentFileCheckExistsURL}" />
 			    <PARAM NAME = "deactivationUrl" value=""/>
 			    <PARAM NAME = "displayUrl" value="0"/>
 				<c:if test="${ssBinderIsLibrary == 'false'}">
@@ -197,6 +198,10 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			    <PARAM NAME = "fileUploadMaxSize" value="${ss_binder_file_max_file_size}" />
 			    <PARAM NAME = "fileUploadSizeExceeded" value="<ssf:escapeQuotes><ssf:nlt tag="file.maxSizeExceeded" /></ssf:escapeQuotes>" />
 			    <PARAM NAME = "appletFileName" value="<ssf:appletFileName />" />
+			    <PARAM NAME = "strYes" value="<ssf:escapeQuotes><ssf:nlt tag="button.Yes" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "strNo" value="<ssf:escapeQuotes><ssf:nlt tag="button.No" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "strFilesExist" value="<ssf:escapeQuotes><ssf:nlt tag="applet.filesExist" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "strFilesExistConfirm" value="<ssf:escapeQuotes><ssf:nlt tag="applet.filesExistConfirm" /></ssf:escapeQuotes>" />
 			<c:if test="<%= !isIE %>">
 			</applet>
 			</c:if>

@@ -84,6 +84,10 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 			getAdminModule().disableSimpleProfiler();
 			reportSuccess(response);
 		}
+		else if(WebKeys.MRS_OPERATION_CLEAR.equals(op)) {
+			getAdminModule().clearSimpleProfiler();
+			reportSuccess(response);
+		}
 		else if(WebKeys.MRS_OPERATION_SEARCH.equals(op)) {
 			doSearch(response,
 					PortletRequestUtils.getStringParameter(request, "query", ""),

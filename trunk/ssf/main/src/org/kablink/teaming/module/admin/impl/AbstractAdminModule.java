@@ -2677,6 +2677,13 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	}
 
 	@Override
+	public void clearSimpleProfiler() {
+		checkAccess(AdminOperation.manageRuntime);
+		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");
+		rs.clearSimpleProfiler();
+	}
+
+	@Override
 	public String dumpFileSyncStatsAsString() {
 		checkAccess(AdminOperation.manageRuntime);
 		if(getFolderModule() instanceof AbstractFolderModuleMBean)

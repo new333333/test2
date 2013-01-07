@@ -83,6 +83,7 @@ OpenFile Applet
 	    <PARAM NAME = "fileToOpen" value="${ssEntryAttachmentURL}"/>
 	    <PARAM NAME = "editorType" value="${ssEntryAttachmentEditorType}"/>
         <PARAM NAME = "isLicenseRequiredEdition" value="${ssIsLicenseRequiredEdition}"/>
+        <PARAM NAME = "isOfficeAddInAllowed" value="${ssIsOfficeAddInAllowed}"/>
         <PARAM NAME = "userName" value="${ssUser.name}"/>
 	    <PARAM NAME = "checkEditClicked" value="ss_checkEditClickLocal${ssEntryId}${ss_namespace}"/>
 	    <PARAM NAME = "resetEditClicked" value="ss_resetEditClickLocal${ssEntryId}${ss_namespace}"/>

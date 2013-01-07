@@ -472,6 +472,7 @@ public class WebKeys {
     public static final String OPERATION_UNLOCK="unlock";
     public static final String OPERATION_MODIFY_TEMPLATE="modify_template";
     public static final String OPERATION_ADD_FILES_FROM_APPLET="add_files_from_applet";
+    public static final String OPERATION_CHECK_EXISTS_FILES_FROM_APPLET="check_exists_files_from_applet";
     public static final String OPERATION_ADD_FOLDER_FILES_FROM_APPLET="add_folder_files_from_applet";
     public static final String OPERATION_ADD_FILES_BY_BROWSE_FOR_ENTRY="add_files_by_browse_for_entry";
     public static final String OPERATION_MODIFY_ALIAS="modify_alias";
@@ -694,6 +695,7 @@ public class WebKeys {
 	public static final String MRS_OPERATION_ENABLE_FILE_SYNC_STATS = "enable_file_sync_stats";
 	public static final String MRS_OPERATION_DISABLE_FILE_SYNC_STATS = "disable_file_sync_stats";
 	public static final String MRS_OPERATION_SEARCH = "search";
+	public static final String MRS_OPERATION_CLEAR = "clear";
 
 	public static final String AUTO_NOTIFY_TAIL			= "_notify";
 	public static final String AUTO_NOTIFY_GROUPS_TAIL	= "_groups";
@@ -958,12 +960,14 @@ public class WebKeys {
     public static final String FOLDER_ACTIONS_TOOLBAR="ssFolderActionsToolbar";
     public static final String EMAIL_SUBSCRIPTION_TOOLBAR = "ssEmailSubscriptionToolbar";
     public static final String ENTRY_ATTACHMENT_FILE_RECEIVER_URL = "ssAttachmentFileReceiverURL";
+    public static final String ENTRY_ATTACHMENT_FILE_CHECK_EXISTS_URL = "ssAttachmentFileCheckExistsURL";
     public static final String ERROR_COUNT = "ss_errorCount";
     public static final String ERROR_MESSAGE = "ss_errorMessage";
     public static final String ERROR_MESSAGE_FORMAT = "ss_errorMessageFormat";
     public static final String ERROR_MESSAGE_FORMAT_PRE = "pre";
     public static final String ERROR_MESSAGE_FORMAT_NORMAL = "normal";
     public static final String FOLDER_ATTACHMENT_FILE_RECEIVER_URL = "ssFolderAttachmentFileReceiverURL";
+    public static final String FOLDER_ATTACHMENT_FILE_CHECK_EXISTS_URL = "ssFolderAttachmentFileCheckExistsURL";
     public static final String FOLDER_ATTACHMENT_APPLET_REFRESH_URL = "ssFolderAttachmentAppletRefereshURL";
 	public static final String FOLDER_CONFIGS="ssFolderConfigs";
     public static final String ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION = "ssCloseDivFunctionName";
@@ -1079,6 +1083,7 @@ public class WebKeys {
     public static final String LICENSE_OPTIONS_LIST="ssLicenseOptionsList";
     public static final String LICENSE_EXTERNAL_ACCESS_LIST="ssLicenseExternalAccessList";
     public static final String IS_LICENSE_REQUIRED_EDITION="ssIsLicenseRequiredEdition";
+    public static final String IS_OFFICE_ADD_IN_ALLOWED="ssIsOfficeAddInAllowed";
 
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String LIST_UNSEEN_COUNTS_BINDER_IDS="ss_unseenCountsBinderIds";
