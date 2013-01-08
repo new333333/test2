@@ -184,6 +184,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 												ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME,
 												ObjectKeys.FIELD_PRINCIPAL_LDAPGUID};
 
+	protected String [] groupAttrs = new String[]{
+												ObjectKeys.FIELD_PRINCIPAL_NAME,
+												ObjectKeys.FIELD_ID,
+												ObjectKeys.FIELD_PRINCIPAL_DISABLED, 
+												ObjectKeys.FIELD_INTERNALID,
+												ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME,
+												ObjectKeys.FIELD_PRINCIPAL_LDAPGUID,
+												ObjectKeys.FIELD_GROUP_LDAP_CONTAINER };
+	
 	// The following constants are indexes into the array of Teaming attribute values
 	// that are returned from the loadObjects() call.  The value of these constants
 	// match the order of the attribute names found in principalAttrs.
@@ -193,6 +202,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private static final int PRINCIPAL_INTERNALID = 3;
 	private static final int PRINCIPAL_FOREIGN_NAME = 4;
 	private static final int PRINCIPAL_LDAP_GUID = 5;
+	private static final int GROUP_LDAP_CONTAINER = 6;
 	
 	// An ldap sync for a zone should not be started while another ldap sync is running.
 	private static Hashtable<Long, Boolean> m_zoneSyncInProgressMap = new Hashtable(); 
@@ -3389,7 +3399,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			modifySyncSize = GetterUtil.getLong(getLdapProperty(zone.getName(), "modify.flush.threshhold"), 100);
 
 			// get list of existing groups in Teaming.
-			objControls = new ObjectControls( Group.class, principalAttrs );
+			objControls = new ObjectControls( Group.class, groupAttrs );
 			filterControls = new FilterControls( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE );
 			List attrs = coreDao.loadObjects( objControls, filterControls, zone.getId() );
 			
@@ -3399,8 +3409,17 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				String ldapGuid;
 				String ssName;
 				Object[] row;
+				Object value;
 				
 				row = (Object [])attrs.get(i);
+				
+				// Is this an "ldap container" group?
+				value = row[GROUP_LDAP_CONTAINER];
+				if ( value != null )
+				{
+					// Yes, skip it.
+					continue;
+				}
 				
 				ssName = (String)row[PRINCIPAL_NAME];
 				ssGroups.put(ssName, row);
@@ -3416,7 +3435,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					m_listOfGroupsByLdapGuid.put( ldapGuid, row );
 				
 				//initialize all groups as not found unless already disabled or reserved
-				if (((Boolean)row[PRINCIPAL_DISABLED] == Boolean.FALSE) && (Validator.isNull((String)row[PRINCIPAL_INTERNALID])))
+				if ( ((Boolean)row[PRINCIPAL_DISABLED] == Boolean.FALSE) &&
+					 (Validator.isNull((String)row[PRINCIPAL_INTERNALID])) )
 				{
 					notInLdap.put((Long)row[PRINCIPAL_ID], ssName);
 				}
