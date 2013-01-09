@@ -168,6 +168,7 @@ public interface CoreDao {
 	public Object saveNewSessionWithoutUpdate(Object obj);
 	public Object updateNewSessionWithoutUpdate(Object obj);
 	public void update(Object obj);
+	public void updateWithoutUsingHibernateTemplate(Object obj);
 	public double averageColumn(Class clazz, String column, FilterControls filter, Long zoneId);
 	public long sumColumn(Class clazz, String column, FilterControls filter, Long zoneId);
 
@@ -262,4 +263,5 @@ public interface CoreDao {
 	
 	public int purgeChangeLogs(Long zoneId, Date purgeBeforeDate);
 
+	public boolean contains(Object obj);
 }
