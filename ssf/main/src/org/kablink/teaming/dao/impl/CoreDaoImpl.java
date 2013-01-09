@@ -175,6 +175,15 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "clear()");
     	}	        
 	}
+	public boolean contains(Object obj) {
+		long begin = System.nanoTime();
+		try {
+			return getSession().contains(obj);
+    	}
+    	finally {
+    		end(begin, "contains(Object)");
+    	}	        
+	}
 	public void evict(Object obj) {
 		long begin = System.nanoTime();
 		try {
@@ -250,6 +259,24 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "update(Object)");
     	}	        
 	}
+	
+	/*
+	 * This method differs from update(Object) in that this does not go through the
+	 * Spring's HibernateTemplate class which performs additional checking on the flush
+	 * mode. This allows us to work around the issue with OpenSessionInViewFilter where 
+	 * its flush mode is set to NEVER/MANUAL when not in a transaction which prevents
+	 * us from re-attaching an object to the session when not in an update transaction. 
+	 */
+	public void updateWithoutUsingHibernateTemplate(Object obj) {
+		long begin = System.nanoTime();
+		try {
+			getSession().update(obj);
+    	}
+    	finally {
+    		end(begin, "update(Object)");
+    	}	        
+	}
+	
 	public Object merge(Object obj) {
 		long begin = System.nanoTime();
 		try {
