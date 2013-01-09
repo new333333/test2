@@ -26,6 +26,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 	private GwValueSpinner sessionTimeOutSpinner;
 	private VibeTextBox keyStoreFileTextBox;
 	private CheckBox httpEnabledCheckBox;
+	private CheckBox portRedirectCheckBox;
 
 	@Override
 	public Panel createContent(Object propertiesObj)
@@ -52,7 +53,16 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 
 		int row = 0;
 
+//		{
+//			// Port Redirection 
+//			portRedirectCheckBox = new CheckBox("Port Redirection");
+//			table.setWidget(row, 0, portRedirectCheckBox);
+//			table.getFlexCellFormatter().setColSpan(row, 0, 2);
+//			table.getFlexCellFormatter().addStyleName(row, 0, "table-value");
+//		}
+		
 		{
+			row++;
 			// Listen Port
 			InlineLabel keyLabel = new InlineLabel(RBUNDLE.httpPortColon());
 			table.setWidget(row, 0, keyLabel);
@@ -142,6 +152,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 		//Save the configuration
 		Network network = config.getNetwork();
 		network.setSecureListenPort(secureListenSpinner.getValueAsInt());
+		//network.setPortRedirect(portRedirectCheckBox.getValue());
 		
 		if (shutDownPortSpinner != null)
 			network.setShutdownPort(shutDownPortSpinner.getValueAsInt());
@@ -173,6 +184,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 		//Initialize the UI with the data
 		if (network != null)
 		{
+			//portRedirectCheckBox.setValue(network.isPortRedirect());
 			secureListenSpinner.setValue(network.getSecureListenPort());
 			
 			if (shutDownPortSpinner != null)

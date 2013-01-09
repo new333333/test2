@@ -173,10 +173,14 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 	@Override
 	public void onEvent(LeftNavSelectionEvent event)
 	{
+		
+		dlg = null;
+		licensePage = null;
+		
 		// Left navigation item has been clicked, we will show the item related
 		// information to be configured in a custom dialog
 		LeftNavItemType itemType = event.getType();
-
+		
 		switch (itemType)
 		{
 		case WEBDAV_AUTHENTICATION:
