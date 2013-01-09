@@ -43,6 +43,7 @@ public class Network implements Serializable
 
 	private WebService webService;
 	private int sessionTimeoutMinutes;
+	private boolean portRedirect;
 
 	public Network()
 	{
@@ -144,6 +145,16 @@ public class Network implements Serializable
 
 	public void setSessionTimeoutMinutes(int sessionTimeoutMinutes) {
 		this.sessionTimeoutMinutes = sessionTimeoutMinutes;
+	}
+
+	public boolean isPortRedirect()
+	{
+		return portRedirect;
+	}
+
+	public void setPortRedirect(boolean portRedirect)
+	{
+		this.portRedirect = portRedirect;
 	}
 	
 }

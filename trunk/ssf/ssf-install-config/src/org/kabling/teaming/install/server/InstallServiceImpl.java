@@ -302,6 +302,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			network.setShutdownPort(getIntegerValue(hostNode.getAttribute("shutdownPort")));
 			network.setAjpPort(getIntegerValue(hostNode.getAttribute("ajpPort")));
 			network.setKeystoreFile(hostNode.getAttribute("keystoreFile"));
+			network.setPortRedirect(getBooleanValue(hostNode.getAttribute("portRedirect")));
 
 		}
 
@@ -1353,6 +1354,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			hostElement.setAttribute("shutdownPort", String.valueOf(network.getShutdownPort()));
 			hostElement.setAttribute("ajpPort", String.valueOf(network.getAjpPort()));
 			hostElement.setAttribute("keystoreFile", network.getKeystoreFile());
+			hostElement.setAttribute("portRedirect", String.valueOf(network.isPortRedirect()));
 		}
 	}
 
@@ -1810,7 +1812,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				resourceDatabase = dbConfig.getResourceDatabase();
 
 			if (checkDBExists(resourceDatabase, dbConfig.getResourceUrl(), resourceName, resourcePassword))
-				return;
+			{
+				logger.info("Database exists, but still updating mysql-liquibase.properties" );
+			}
 
 			logger.info("Database does not exist, updating mysql-liquibase.properties");
 			// Create database
@@ -2091,6 +2095,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	{
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
+			//Update security constraints based on network page settings
+			//updateSecurityBasedOnNetworkPageSettings();
+			
 			executeCommand("/sbin/rcfilr restart");
 
 			int tries = 2;
@@ -2123,6 +2130,38 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				}
 				tries--;
 			}
+		}
+	}
+
+	private void updateSecurityBasedOnNetworkPageSettings()
+	{
+		InstallerConfig config = getConfiguration();
+		Network network = config.getNetwork();
+		
+		String WEB_XML1 = "/opt/novell/filr/apache-tomcat/webapps/ROOT/WEB-INF/web.xml";
+		String WEB_XML2 = "/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/web.xml";
+		String WEB_XML3 = "/opt/novell/filr/apache-tomcat/webapps/ssr/WEB-INF/web.xml";
+		String WEB_XML4 = "/opt/novell/filr/apache-tomcat/webapps/rest/WEB-INF/web.xml";
+		
+		//Disabled
+		if (network.getListenPort() == 0)
+		{
+			//Call addSecurityConstraint.py pointing to web.xml, we need to update all the 4 web.xml
+			executeCommand("python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML1);
+			executeCommand("python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML2);
+			executeCommand("python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML3);
+			executeCommand("python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML4);
+		}
+		else
+		{
+			//Call addSecurityConstraint.py pointing to web.xml, we need to update all the 4 web.xml
+			executeCommand("python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML1);
+			executeCommand("python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML2);
+			executeCommand("python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML3);
+			executeCommand("python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML4);
+			
+			//Enable the firewall
+			//TODO:
 		}
 	}
 
