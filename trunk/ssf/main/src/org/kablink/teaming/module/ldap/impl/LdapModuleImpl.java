@@ -3090,7 +3090,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						
 						dirType = getLdapDirType( m_ldapConfig.getLdapGuidAttribute() );
 						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, dirType, dn );
-						ldap_new_homeDirInfo.put( ssName, homeDirInfo );
+						ldap_new_homeDirInfo.put( ssName.toLowerCase(), homeDirInfo );
 					}
 				}
 			}
@@ -4848,10 +4848,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				try 
 				{
 					HomeDirInfo homeDirInfo = null;
+					String userName;
 					
 					// Get the HomeDirInfo for this user.
-					if ( homeDirInfoMap != null )
-						homeDirInfo = homeDirInfoMap.get( nextUser.getName() );
+					userName = nextUser.getName().toLowerCase();
+					homeDirInfo = homeDirInfoMap.get( userName );
 					
 					if ( homeDirInfo != null )
 						createHomeDirNetFolderServer( homeDirInfo );
