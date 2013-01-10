@@ -220,6 +220,9 @@ public interface ObjectKeys {
 	public static final String SESSION_SAVE_LOCATION_ID="saveLocationId";
 	public static final String SESSION_TEAMING_LIVE_TRACKED_BINDER_IDS="teamingLiveTrackedBinderIds";
 	public static final String SESSION_TEAMING_LIVE_TRACKED_TYPE="teamingLiveTrackedType";
+	public static final String SESSION_ACL_CACHE="aclCache";
+	public static final String SESSION_ACL_CACHE_USER_ID="aclCacheUserId";
+	public static final int SESSION_ACL_CACHE_TIMEOUT=60*1000; //Only use cache if time is within 1 minute
 
     //map keys returned from modules
     public static final String BINDER="binder";
@@ -914,4 +917,10 @@ public interface ObjectKeys {
     public static final int LOGIN_ACTIVITY_YEARS = 1;
 	
     public static final String SEARCH_MODE = "searchMode";
+    
+    //Converter directories
+    public static final String CONVERTER_DIR_TEXT = "";		//Content text files go where they used to go (i.e., in cachefilestore)
+    public static final String CONVERTER_DIR_HTML = "converted_html_files";
+    public static final String CONVERTER_DIR_IMAGE = "converted_images";
+    
 }

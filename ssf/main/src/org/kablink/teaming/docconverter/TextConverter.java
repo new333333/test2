@@ -55,6 +55,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.DocumentException;
 import org.dom4j.io.DocumentSource;
 import org.dom4j.io.SAXReader;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
@@ -77,6 +78,10 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 	protected String excludedExtensions = "";
 	protected static final String TEXT_SUBDIR = "text",
 		   TEXT_FILE_SUFFIX = ".txt";
+
+	public TextConverter() {
+		super(ObjectKeys.CONVERTER_DIR_TEXT);
+	}
 
 	private String[] m_additionalExclusions = null;
 	

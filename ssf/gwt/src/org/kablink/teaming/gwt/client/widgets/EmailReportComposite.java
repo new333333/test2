@@ -176,7 +176,9 @@ public class EmailReportComposite extends ReportCompositeBase {
 		dates.add(il);
 		
 		// ...and an ending date selector...
-		m_endDateBox = new DateBox(new DatePicker(), new Date(), dateFormatter);
+		Date endDate = new Date();
+		CalendarUtil.addDaysToDate(endDate, 1);		//Go through the next day so it picks up today's email messages
+		m_endDateBox = new DateBox(new DatePicker(), endDate, dateFormatter);
 		dates.add(m_endDateBox);
 
 		// ...add a horizontal panel for the types radio buttons...

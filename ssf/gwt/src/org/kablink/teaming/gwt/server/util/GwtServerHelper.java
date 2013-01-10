@@ -10846,4 +10846,13 @@ public class GwtServerHelper {
 		}
 		return reply;
 	}
+	
+	/*
+	 * Get the number of days since the installation
+	 * This is used with trial licenses
+	 */
+	public static int getDaysSinceInstallation() {
+		return getCoreDao().daysSinceInstallation();
+	}
+
 }

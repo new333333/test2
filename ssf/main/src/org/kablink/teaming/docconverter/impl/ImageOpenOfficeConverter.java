@@ -45,6 +45,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.docconverter.IImageConverterManager;
 import org.kablink.teaming.docconverter.ImageConverter;
@@ -87,7 +88,7 @@ public class ImageOpenOfficeConverter
 	{
 		super();
 		_defaultImage = DirPath.getThumbnailDirPath() + File.separator + "NoImage.jpeg";
-		_cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
+		_cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"), ObjectKeys.CONVERTER_DIR_IMAGE);
 	}
 	
 	public void afterPropertiesSet() throws Exception {

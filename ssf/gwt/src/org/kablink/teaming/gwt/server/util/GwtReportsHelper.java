@@ -313,51 +313,69 @@ public class GwtReportsHelper {
 				
 				// Get the date issued from the license XML and convert
 				// it to a Date object.
-				Date	tmpDate    = null;
-				String	tmpDateStr = getLicenseValue(doc, "//KeyInfo/@issued");
+				Date	tmpIssuedDate    = null;
+				Date	tmpEffectiveDate    = null;
+				Date	tmpExpirationDate   = null;
+				String	tmpIssuedDateStr = getLicenseValue(doc, "//KeyInfo/@issued");
+				String	tmpEffectiveDateStr = getLicenseValue(doc, "//KeyInfo/@issued");
 				try {
-					tmpDate = dtf.parseDateTime(tmpDateStr).toDate();
+					tmpIssuedDate = dtf.parseDateTime(tmpIssuedDateStr).toDate();
 				}
 				catch (Exception ex) {
 					// This should never happen.
 				}
-				if (null == tmpDate) {
+				if (null == tmpIssuedDate) {
 					// This should never happen.
-					tmpDate = new Date();
+					tmpIssuedDate = new Date();
 				}
-				li.setIssued(GwtServerHelper.getDateString(tmpDate, DateFormat.MEDIUM, gmt));
+				li.setIssued(GwtServerHelper.getDateString(tmpIssuedDate, DateFormat.MEDIUM, gmt));
 				
 				// Get the license start date.
 				dtf     = DateTimeFormat.forPattern("MM/dd/yyyy");
 				dtf     = dtf.withOffsetParsed();
-				tmpDate = null;
-				tmpDateStr = getLicenseValue(doc, "//Dates/@effective");
+				tmpEffectiveDate = null;
+				tmpEffectiveDateStr = getLicenseValue(doc, "//Dates/@effective");
 				try {
-					tmpDate = dtf.parseDateTime(tmpDateStr).toDate();
+					if (tmpEffectiveDateStr.equalsIgnoreCase("trial")) {
+						String days = getLicenseValue(doc, "//Dates/@expiration");
+						int daysSinceInstallation = GwtServerHelper.getDaysSinceInstallation();
+						Calendar c = Calendar.getInstance();
+						c.add(Calendar.DAY_OF_MONTH, -daysSinceInstallation);
+						tmpEffectiveDate = c.getTime();
+					} else {
+						tmpEffectiveDate = dtf.parseDateTime(tmpEffectiveDateStr).toDate();
+					}
 				}
 				catch (Exception ex) {
 					// This should never happen.
 				}
-				if (null == tmpDate) {
+				if (null == tmpEffectiveDate) {
 					// This should never happen.
-					tmpDate = new Date();
+					tmpEffectiveDate = new Date();
 				}
-				li.setEffectiveStart(GwtServerHelper.getDateString(tmpDate, DateFormat.MEDIUM, gmt));
+				li.setEffectiveStart(GwtServerHelper.getDateString(tmpEffectiveDate, DateFormat.MEDIUM, gmt));
 
 				// Get the license end date.
-				tmpDate    = null;
-				tmpDateStr = getLicenseValue(doc, "//Dates/@expiration");
+				String tmpExpirationDateStr = getLicenseValue(doc, "//Dates/@expiration");
 				try {
-					tmpDate = dtf.parseDateTime(tmpDateStr).toDate();
+					if (tmpEffectiveDateStr.equalsIgnoreCase("trial")) {
+						//For trial licenses, the expiration value is a number of days
+						Calendar c = Calendar.getInstance();
+						c.setTime(tmpEffectiveDate);
+						c.add(Calendar.DAY_OF_MONTH, Integer.valueOf(tmpExpirationDateStr));
+						tmpExpirationDate = c.getTime();
+					} else {
+						tmpExpirationDate = dtf.parseDateTime(tmpExpirationDateStr).toDate();
+					}
 				}
 				catch (Exception ex) {
 					// This should never happen.
 				}
-				if (null == tmpDate) {
+				if (null == tmpExpirationDate) {
 					// This should never happen.
-					tmpDate = new Date();
+					tmpExpirationDate = new Date();
 				}
-				li.setEffectiveEnd(GwtServerHelper.getDateString(tmpDate, DateFormat.MEDIUM, gmt));
+				li.setEffectiveEnd(GwtServerHelper.getDateString(tmpExpirationDate, DateFormat.MEDIUM, gmt));
 
 				li.setContact(getLicenseValue(       doc, "//AuditPolicy/ReportContact"));
 				li.setProductTitle(getLicenseValue(  doc, "//Product/@title")           );

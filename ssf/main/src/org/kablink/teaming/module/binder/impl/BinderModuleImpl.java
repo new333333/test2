@@ -42,11 +42,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.servlet.http.HttpSession;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
@@ -137,6 +140,7 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
@@ -148,6 +152,7 @@ import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.TrashHelper;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -387,11 +392,55 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				} catch(AccessControlException e) {
 					if (!thisLevelOnly) {
 						//This check failed, so try to see if there is a sub-folder down the line the you can access
-						if(!getBinderModule().testInferredAccessToBinder(user, binder)) {
-							//There are no sub-binders to see, so return no access
-							throw e;
+						SimpleProfiler.start("BinderModule.CheckAccess.LookForSubFolders");
+						//First, see if we have cached this result from a previous call
+						HttpSession session = WebHelper.getCurrentHttpSession();
+						if (session != null) {
+							Long cacheUserId = (Long)session.getAttribute(ObjectKeys.SESSION_ACL_CACHE_USER_ID);
+							Map aclCache = (Map)session.getAttribute(ObjectKeys.SESSION_ACL_CACHE);
+							if (cacheUserId == null || aclCache == null || !user.getId().equals(cacheUserId)) {
+								cacheUserId = user.getId();
+								aclCache = new HashMap();
+								session.setAttribute(ObjectKeys.SESSION_ACL_CACHE_USER_ID, cacheUserId);
+								session.setAttribute(ObjectKeys.SESSION_ACL_CACHE, aclCache);
+							}
+							Date now = new Date();
+							if (user.getId().equals(cacheUserId) && aclCache.containsKey(binder.getId())) {
+								//If aclCache has an entry for a binder, it means the user had access to some sub-folder in it
+								Long time = (Long)aclCache.get(binder.getId());
+								if (now.getTime() < time + ObjectKeys.SESSION_ACL_CACHE_TIMEOUT) {
+									//There is a folder down below this and the acl check is within the cache time window
+									SimpleProfiler.start("BinderModule.CheckAccess.LookForSubFolders.Cached");
+									fullAccess = false;
+									SimpleProfiler.stop("BinderModule.CheckAccess.LookForSubFolders.Cached");
+								} else {
+									//This has aged too long, remove it cached value
+									aclCache.remove(binder.getId());
+									if (!getBinderModule().testInferredAccessToBinder(user, binder)) {
+										//There are no sub-binders to see, so return no access
+										throw e;
+									}
+			                        fullAccess = false;
+			                        //Add this into the cache
+			                        aclCache.put(binder.getId(), Long.valueOf(now.getTime()));
+								}
+							} else {
+								if (!getBinderModule().testInferredAccessToBinder(user, binder)) {
+									//There are no sub-binders to see, so return no access
+									throw e;
+								}
+		                        fullAccess = false;
+		                        //Add this into the cache
+		                        aclCache.put(binder.getId(), Long.valueOf(now.getTime()));
+							}
+						} else {
+							if(!getBinderModule().testInferredAccessToBinder(user, binder)) {
+								//There are no sub-binders to see, so return no access
+								throw e;
+							}
+	                        fullAccess = false;
 						}
-                        fullAccess = false;
+						SimpleProfiler.stop("BinderModule.CheckAccess.LookForSubFolders");
 					} else {
 						//We aren't looking for any potential sub-binders. So, just throw the access control error
 						throw e;

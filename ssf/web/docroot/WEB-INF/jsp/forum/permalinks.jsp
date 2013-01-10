@@ -60,7 +60,7 @@
   </tr>
 
   <c:if test="${!empty ssBinder && ssBinder.entityType == 'folder'}">
-   <c:if test="${!empty ssSimpleUrlNames}">
+   <c:if test="${!empty ssSimpleUrlNames && ssBinder.postingEnabled}">
     <tr>
     <td valign="top" nowrap>
         <span><ssf:nlt tag="permalink.emailAddresses"/></span>

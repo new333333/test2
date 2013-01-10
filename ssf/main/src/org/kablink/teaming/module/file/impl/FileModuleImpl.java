@@ -190,7 +190,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private String failedFilterFile;
 	private String failedFilterTransaction;
 	private int lockExpirationAllowance; // number of seconds
-	private FileStore cacheFileStore;
+	private FileStore cacheFileStoreText;
+	private FileStore cacheFileStoreImage;
+	private FileStore cacheFileStoreHtml;
 	private String[] ooNonzerolengthExts;
 		
 	protected TransactionTemplate getTransactionTemplate() {
@@ -300,7 +302,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	public void afterPropertiesSet() throws Exception {
-		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
+		cacheFileStoreText = new FileStore(SPropsUtil.getString("cache.file.store.dir"), ObjectKeys.CONVERTER_DIR_TEXT);
+		cacheFileStoreHtml = new FileStore(SPropsUtil.getString("cache.file.store.dir"), ObjectKeys.CONVERTER_DIR_HTML);
+		cacheFileStoreImage = new FileStore(SPropsUtil.getString("cache.file.store.dir"), ObjectKeys.CONVERTER_DIR_IMAGE);
 		
 		ooNonzerolengthExts = SPropsUtil.getStringArray("openoffice.nonzerolength.extensions", ",");
 		
@@ -338,11 +342,25 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		String entityPath = FilePathUtil.getEntityDirPath(binder, entry);
 		try {
-			cacheFileStore.deleteDirectory(entityPath);
+			cacheFileStoreText.deleteDirectory(entityPath);
 		}
 		catch(Exception e) {
 			logger.error("Error deleting the entry's cache directory [" +
-					cacheFileStore.getAbsolutePath(entityPath) + "]", e);
+					cacheFileStoreText.getAbsolutePath(entityPath) + "]", e);
+		}
+		try {
+			cacheFileStoreHtml.deleteDirectory(entityPath);
+		}
+		catch(Exception e) {
+			logger.error("Error deleting the entry's cache directory [" +
+					cacheFileStoreHtml.getAbsolutePath(entityPath) + "]", e);
+		}
+		try {
+			cacheFileStoreImage.deleteDirectory(entityPath);
+		}
+		catch(Exception e) {
+			logger.error("Error deleting the entry's cache directory [" +
+					cacheFileStoreImage.getAbsolutePath(entityPath) + "]", e);
 		}
 		
 		if(!updateMetadata) {
@@ -360,11 +378,25 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	public void deleteCachedFiles(Binder binder, DefinableEntity entry) {
 		String entityPath = FilePathUtil.getEntityDirPath(binder, entry);
 		try {
-			cacheFileStore.deleteDirectory(entityPath);
+			cacheFileStoreText.deleteDirectory(entityPath);
 		}
 		catch(Exception e) {
 			logger.error("Error deleting the entry's cache directory [" +
-					cacheFileStore.getAbsolutePath(entityPath) + "]", e);
+					cacheFileStoreText.getAbsolutePath(entityPath) + "]", e);
+		}
+		try {
+			cacheFileStoreHtml.deleteDirectory(entityPath);
+		}
+		catch(Exception e) {
+			logger.error("Error deleting the entry's cache directory [" +
+					cacheFileStoreHtml.getAbsolutePath(entityPath) + "]", e);
+		}
+		try {
+			cacheFileStoreImage.deleteDirectory(entityPath);
+		}
+		catch(Exception e) {
+			logger.error("Error deleting the entry's cache directory [" +
+					cacheFileStoreImage.getAbsolutePath(entityPath) + "]", e);
 		}
 	}
 	
@@ -387,11 +419,25 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				
 		String faPath = FilePathUtil.getFileAttachmentDirPath(binder, entry, fAtt);
 		try {
-			cacheFileStore.deleteDirectory(faPath);
+			cacheFileStoreText.deleteDirectory(faPath);
 		}
 		catch(Exception e) {
 			logger.error("Error deleting the file attachment's cache directory [" +
-					cacheFileStore.getAbsolutePath(faPath) + "]", e);
+					cacheFileStoreText.getAbsolutePath(faPath) + "]", e);
+		}
+		try {
+			cacheFileStoreHtml.deleteDirectory(faPath);
+		}
+		catch(Exception e) {
+			logger.error("Error deleting the file attachment's cache directory [" +
+					cacheFileStoreHtml.getAbsolutePath(faPath) + "]", e);
+		}
+		try {
+			cacheFileStoreImage.deleteDirectory(faPath);
+		}
+		catch(Exception e) {
+			logger.error("Error deleting the file attachment's cache directory [" +
+					cacheFileStoreImage.getAbsolutePath(faPath) + "]", e);
 		}
 		//Mark that this entity was modified
 		setEntityModification(entry);
