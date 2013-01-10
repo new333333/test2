@@ -50,6 +50,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.mail.Address;
 import javax.mail.AuthenticationFailedException;
 import javax.mail.Message;
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.SendFailedException;
 import javax.mail.Session;
@@ -962,10 +963,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());
 		//Use spring callback to wrap exceptions into something more useful than javas 
     	//Add an entry into the email log for this request
-  		EmailLog emailLog = new EmailLog(EmailLogType.sendMail, EmailLogStatus.sent);
  		MimeMessage msg = mailSender.createMimeMessage();
+   		EmailLog emailLog = new EmailLog(EmailLogType.sendMail, EmailLogStatus.sent);
 		try {
 			mHelper.prepare(msg);
+			emailLog = new EmailLog(EmailLogType.sendMail, new Date(), msg.getRecipients(RecipientType.TO),
+					mailSender.getDefaultFrom(), EmailLogStatus.sent);
 	   	} catch (Exception ex) {
 	   		//message gets thrown away here
        		logger.error("EXCEPTION:  " + getMessage(ex));

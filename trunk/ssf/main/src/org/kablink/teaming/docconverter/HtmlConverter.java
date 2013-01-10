@@ -44,6 +44,7 @@ import java.net.URLEncoder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -62,6 +63,10 @@ public abstract class HtmlConverter extends Converter<String>
 {
 	protected static final String HTML_SUBDIR = "html";
 	protected static final String HTML_FILE_SUFFIX = ".html";
+	
+	public HtmlConverter() {
+		super(ObjectKeys.CONVERTER_DIR_HTML);
+	}
     
     /**
      * Alter tag data held in HTML file. We need to alter Image and Url file path information to reflect were

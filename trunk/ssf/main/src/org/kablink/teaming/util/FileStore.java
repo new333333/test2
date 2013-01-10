@@ -53,6 +53,14 @@ public class FileStore {
 		this.rootPath = rootPath;
 	}
 	
+	public FileStore(String rootPath, String subDir) { 
+		String postFix = "";
+		if (!subDir.equals("")) {
+			postFix = "/" + subDir;
+		}
+		this.rootPath = rootPath + postFix;
+	}
+	
 	public String getRootPath() {
 		return rootPath;
 	}

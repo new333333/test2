@@ -65,8 +65,8 @@ public abstract class Converter<T>
 	
 	private static final String TEXT_FILE_SUFFIX = ".txt";
 	
-	public Converter() {
-		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
+	public Converter(String subDir) {
+		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"), subDir);
 		maxTextLength = SPropsUtil.getLong("doc.max.text.extraction.size.threshold", 1048576);
 		
 		String to = SPropsUtil.getString("conversion.timeout.ms");
