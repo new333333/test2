@@ -672,7 +672,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  			   logger.error("Cannot instantiate EmailPosting custom class", ex);
  		   }
        	}
-       	return (EmailPosting)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultEmailPosting.class);
+       	String className = SPropsUtil.getString("job.email.posting.class", "org.kablink.teaming.jobs.DefaultEmailPosting");
+       	return (EmailPosting)ReflectHelper.getInstance(className);
      }
 
 	/**
@@ -695,7 +696,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			   logger.error("Cannot instantiate EmailNotification custom class", ex);
 		   }
    		}
-   		return (EmailNotification)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultEmailNotification.class);
+    	String className = SPropsUtil.getString("job.email.notification.class", "org.kablink.teaming.jobs.DefaultEmailNotification");
+   		return (EmailNotification)ReflectHelper.getInstance(className);
      }    
 
     /**
@@ -2641,7 +2643,8 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 				logger.error("Cannot instantiate IndexOptimization custom class", e);
 			}
 		}
-		return (IndexOptimization) ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultIndexOptimization.class);
+		String className = SPropsUtil.getString("job.index.optimization.class", "org.kablink.teaming.jobs.DefaultIndexOptimization");
+		return (IndexOptimization) ReflectHelper.getInstance(className);
 	}
 	
 	protected String getIndexProperty(String zoneName, String name) {

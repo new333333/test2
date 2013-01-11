@@ -1085,7 +1085,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
  			   logError("Cannot instantiate LdapSynchronization custom class", e);
     		}
     	}
-    	return (LdapSynchronization)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultLdapSynchronization.class);		   		
+       	String className = SPropsUtil.getString("job.ldap.synchronization.class", "org.kablink.teaming.jobs.DefaultLdapSynchronization");
+    	return (LdapSynchronization)ReflectHelper.getInstance(className);		   		
  
     }// end getSyncObject()	
 	

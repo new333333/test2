@@ -139,7 +139,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
  			   logger.error("Cannot instantiate WorkflowTimeout custom class", e);
     		}
     	}
-    	return (WorkflowTimeout)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultWorkflowTimeout.class);		   		
+    	String className = SPropsUtil.getString("job.workflow.timeout.class", "org.kablink.teaming.jobs.DefaultWorkflowTimeout");
+    	return (WorkflowTimeout)ReflectHelper.getInstance(className);		   		
 	}
 	//called on zone delete
 	public void stopScheduledJobs(Workspace zone) {
