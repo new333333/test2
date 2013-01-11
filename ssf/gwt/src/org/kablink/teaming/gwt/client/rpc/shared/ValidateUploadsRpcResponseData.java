@@ -30,84 +30,71 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.UploadInfo;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
- * This class holds all of the information necessary to execute the
- * 'validate uploads' command.
+ * This class holds the response data for RPC commands that return a
+ * validation information for file uploads.
  * 
  * @author drfoster@novell.com
  */
-public class ValidateUploadsCmd extends VibeRpcCmd {
-	private BinderInfo			m_folderInfo;	// The folder to be uploaded into.
-	private List<UploadInfo>	m_uploads;		// Information about what's to be uploaded.
-
-	/**
-	 * Constructor method.
-	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
-	 */
-	public ValidateUploadsCmd() {
-		// Initialize the super class...
-		super();
-		
-		// ...and initialize anything else that requires it.
-		m_uploads = new ArrayList<UploadInfo>();
-	}
+public class ValidateUploadsRpcResponseData extends ErrorListRpcResponseData implements IsSerializable {
+	private List<UploadInfo>	m_duplicateList;	//
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * @param folderInfo
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
 	 */
-	public ValidateUploadsCmd(BinderInfo folderInfo) {
+	public ValidateUploadsRpcResponseData() {
+		// Initialize the super class...
+		super();
+		
+		// ...and initialize anything else that requires it.
+		m_duplicateList = new ArrayList<UploadInfo>();
+	}
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param errorList
+	 */
+	public ValidateUploadsRpcResponseData(List<ErrorInfo> errorList) {
 		// Initialize this object...
 		this();
-		
+
 		// ...and store the parameter.
-		setFolderInfo(folderInfo);
+		setErrorList(errorList);
 	}
+
+	/**
+	 * Add'er methods.
+	 * 
+	 * @param
+	 */
+	public void addDuplicate(UploadInfo duplicate) {m_duplicateList.add(duplicate);}
 	
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public BinderInfo       getFolderInfo() {return m_folderInfo;}
-	public List<UploadInfo> getUploads()    {return m_uploads;   }
-
+	public boolean          hasDuplicates()     {return (0 < getDuplicateCount());                               }
+	public int              getDuplicateCount() {return ((null == m_duplicateList) ? 0 : m_duplicateList.size());}
+	public List<UploadInfo> getDuplicateList()  {return m_duplicateList;                                         }
+	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
-
-	/**
-	 * Add'er methods.
-	 * 
-	 * @param name
-	 * @param size
-	 */
-	public void addFile(  String name, long size) {m_uploads.add(new UploadInfo(name, size, true ));}
-	public void addFolder(String name)            {m_uploads.add(new UploadInfo(name, (-1), false));}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.VALIDATE_UPLOADS.ordinal();
-	}
+	public void setDuplicateList(List<UploadInfo> duplicateList) {m_duplicateList = duplicateList;}
 }

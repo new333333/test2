@@ -31,83 +31,63 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.rpc.shared;
+package org.kablink.teaming.gwt.client.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.UploadInfo;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'validate uploads' command.
+ * Class used to transfer information about what's to be uploaded to
+ * the server.
  * 
  * @author drfoster@novell.com
  */
-public class ValidateUploadsCmd extends VibeRpcCmd {
-	private BinderInfo			m_folderInfo;	// The folder to be uploaded into.
-	private List<UploadInfo>	m_uploads;		// Information about what's to be uploaded.
+public class UploadInfo implements IsSerializable {
+	private boolean	m_file;	// true -> This upload item is a file.  false -> It's a folder.
+	private long	m_size;	// Size of the entity being uploaded.  Ignored for folders.
+	private String	m_name;	// Name of the entity being uploaded.
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * GWT serialization requires a zero parameter constructor.
+	 */
+	public UploadInfo() {
+		// Initialize the super class.
+		super();
+	}
 
 	/**
 	 * Constructor method.
 	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
+	 * @param name
+	 * @param size
+	 * @param file
 	 */
-	public ValidateUploadsCmd() {
-		// Initialize the super class...
-		super();
-		
-		// ...and initialize anything else that requires it.
-		m_uploads = new ArrayList<UploadInfo>();
-	}
-	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param folderInfo
-	 */
-	public ValidateUploadsCmd(BinderInfo folderInfo) {
+	public UploadInfo(String name, long size, boolean file) {
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameter.
-		setFolderInfo(folderInfo);
+		// ...and store the parameters.
+		setName(name);
+		setSize(size);
+		setFile(file);
 	}
-	
+
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public BinderInfo       getFolderInfo() {return m_folderInfo;}
-	public List<UploadInfo> getUploads()    {return m_uploads;   }
-
+	public boolean isFile()  {return m_file;}
+	public long    getSize() {return m_size;}
+	public String  getName() {return m_name;}
+	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
-
-	/**
-	 * Add'er methods.
-	 * 
-	 * @param name
-	 * @param size
-	 */
-	public void addFile(  String name, long size) {m_uploads.add(new UploadInfo(name, size, true ));}
-	public void addFolder(String name)            {m_uploads.add(new UploadInfo(name, (-1), false));}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.VALIDATE_UPLOADS.ordinal();
-	}
+	public void setFile(boolean file) {m_file = file;}
+	public void setSize(long    size) {m_size = size;}
+	public void setName(String  name) {m_name = name;}
 }

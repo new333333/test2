@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.binderviews.folderdata;
 
 import java.util.HashMap;
@@ -221,6 +220,37 @@ public class ColumnWidth {
 	}
 
 	/**
+	 * Returns a count of the columns that use a percentage width.
+	 * 
+	 * @param folderColumns
+	 * @param columnWidths
+	 * @param defaultColumnWidth
+	 * 
+	 * @return
+	 */
+	public static int pctColumns(List<FolderColumn> folderColumns, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth) {
+		// Were we given a column list and a column widths map?
+		int pctTotal = 0;
+		if ((null != folderColumns) && (null != columnWidths)) {
+			// Yes!  Scan the columns.
+			for (FolderColumn fc:  folderColumns) {
+				// Is this column percent based?
+				ColumnWidth cw = columnWidths.get(fc.getColumnName());
+				if (null == cw) {
+					cw = defaultColumnWidth;
+				}
+				if ((null != cw) && cw.isPCT()) {
+					// Yes!  Add its width to the total.
+					pctTotal += 1;
+				}
+			}
+		}
+		
+		// If we get here, pctTotal contains a count of all the percent
+		// based columns.  Return it.
+		return pctTotal;
+	}
+	/**
 	 * Returns a double value with pctWidth scaled based on a
 	 * percentage total of pctTotal.
 	 * 
@@ -263,5 +293,37 @@ public class ColumnWidth {
 		// If we get here, pctTotal contains the total value of all the
 		// percent based columns.  Return it.
 		return pctTotal;
+	}
+	
+	/**
+	 * Returns the sum of the pixel widths in a column widths Map.
+	 * 
+	 * @param folderColumns
+	 * @param columnWidths
+	 * @param defaultColumnWidth
+	 * 
+	 * @return
+	 */
+	public static int sumPXWidths(List<FolderColumn> folderColumns, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth) {
+		// Were we given a column list and a column widths map?
+		int pxTotal = 0;
+		if ((null != folderColumns) && (null != columnWidths)) {
+			// Yes!  Scan the columns.
+			for (FolderColumn fc:  folderColumns) {
+				// Is this column pixel based?
+				ColumnWidth cw = columnWidths.get(fc.getColumnName());
+				if (null == cw) {
+					cw = defaultColumnWidth;
+				}
+				if ((null != cw) && cw.isPX()) {
+					// Yes!  Add its width to the total.
+					pxTotal += cw.getWidth();
+				}
+			}
+		}
+		
+		// If we get here, pctTotal contains the total value of all the
+		// pixel based columns.  Return it.
+		return pxTotal;
 	}
 }

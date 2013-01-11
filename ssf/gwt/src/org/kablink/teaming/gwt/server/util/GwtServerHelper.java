@@ -9080,6 +9080,7 @@ public class GwtServerHelper {
 		case GET_EXTENSION_INFO:
 		case GET_FAVORITES:
 		case GET_FILE_ATTACHMENTS:
+		case GET_FILE_CONFLICTS_INFO:
 		case GET_FILE_SYNC_APP_CONFIGURATION:
 		case GET_FILE_URL:
 		case GET_FOLDER:

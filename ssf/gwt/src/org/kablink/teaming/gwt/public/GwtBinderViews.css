@@ -351,8 +351,6 @@
 	}
 /* End:  GWT workspace view styles. */
 
-
-
 /* Start:  Add files dialog styles. */
 	.vibe-addFilesDlgBox .popupContent {background-color: white !important;}
 	.vibe-addFilesDlg_HelpImg          {margin-left: 10px;}
@@ -370,6 +368,8 @@
 	.vibe-addFilesHtml5Popup-hover                       {border: 3px solid #ebaf1b !important; -moz-border-radius: 15px !important; border-radius: 15px !important; -webkit-border-radius: 15px !important; opacity: 0.7; filter: alpha(opacity=70); background: #f2ef91 url("images/trans_yellow_stripes.png") repeat !important;}
 	.vibe-addFilesHtml5Popup-dndPanel                    {position: relative;}
 	.vibe-addFilesHtml5Popup-dndPanelHover               {}
+	.vibe-addFilesHtml5Popup-dupsList                    {}
+	.vibe-addFilesHtml5Popup-dupsName                    {}
 	.vibe-addFilesHtml5Popup-innerHintBrowseButton       {font-size: 14px !important;}
 	.vibe-addFilesHtml5Popup-innerHintBrowseButton:hover {font-size: 14px !important;}
 	.vibe-addFilesHtml5Popup-innerHintBrowsePanel        {display: block; margin-top: 1em;}
@@ -384,6 +384,24 @@
 	.vibe-addFilesHtml5Popup-progressBar-total-bar       {margin-bottom: 3px; width: 250px !important;}
 	.vibe-addFilesHtml5Popup-progressBar-total-label     {padding-right: 5px;}
 /* Start:  Add files via HTML5 styles. */
+
+/* Start:  File conflicts dialog styles. */
+	.vibe-fileConflictsDlg                 {}
+	.vibe-fileConflictsDlg-banner          {width: 500px; padding-bottom: 10px; font-size: 1.2em;}
+	.vibe-fileConflictsDlg-conflictImg     {}
+	.vibe-fileConflictsDlg-conflictName    {font-size: 1.1em;}
+	.vibe-fileConflictsDlg-conflicts       {padding: 4px;}
+	.vibe-fileConflictsDlg-folderImg       {}
+	.vibe-fileConflictsDlg-folderName      {font-wieght: bold; font-size: 1.2em;}
+	.vibe-fileConflictsDlg-folderNamePanel {margin-left: 5px;}
+	.vibe-fileConflictsDlg-folderNamePath  {font-size: 14px; color: #888;}
+	.vibe-fileConflictsDlg-folderPanel     {padding-bottom: 10px;}
+	.vibe-fileConflictsDlg-ok              {margin-right: 75px !important;}
+	.vibe-fileConflictsDlg-panel           {padding: 10px;}
+	.vibe-fileConflictsDlg-scroll          {overflow-y: auto !important; overflow-x: hidden !important; border: 1px solid #C4C4C4;}
+	.vibe-fileConflictsDlg-scrollHeader    {font-size: .9em; color: #666;}
+	.vibe-fileConflictsDlg-scrollLimit     {height: 175px;}
+/* End:  Add File conflicts dialog styles. */
 
 /* Start:  Manage comments composite styles. */
 	.vibe-manageCommentsComposite                        {background-color: white !important;}

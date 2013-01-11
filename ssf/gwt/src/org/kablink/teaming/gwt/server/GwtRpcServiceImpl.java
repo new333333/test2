@@ -1207,6 +1207,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 
 
+		case GET_FILE_CONFLICTS_INFO:
+		{
+			GetFileConflictsInfoCmd gfciCmd = ((GetFileConflictsInfoCmd) cmd);
+			FileConflictsInfoRpcResponseData responseData = GwtViewHelper.getFileConflictsInfo( this, getRequest( ri ), gfciCmd.getFolderInfo(), gfciCmd.getFileConflicts() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+
+
 		case GET_FILE_SYNC_APP_CONFIGURATION:
 		{
 			GwtFileSyncAppConfiguration fileSyncAppConfiguration; 
@@ -3135,7 +3144,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case VALIDATE_UPLOADS:
 		{
 			ValidateUploadsCmd veaCmd  = ((ValidateUploadsCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.validateUploads( this, getRequest( ri ), veaCmd.getFolderInfo(), veaCmd.getUploads() );
+			ValidateUploadsRpcResponseData responseData = GwtViewHelper.validateUploads( this, getRequest( ri ), veaCmd.getFolderInfo(), veaCmd.getUploads() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

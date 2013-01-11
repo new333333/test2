@@ -30,10 +30,8 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -41,38 +39,35 @@ import org.kablink.teaming.gwt.client.util.UploadInfo;
 
 /**
  * This class holds all of the information necessary to execute the
- * 'validate uploads' command.
+ * 'get file conflicts info' command.
  * 
  * @author drfoster@novell.com
  */
-public class ValidateUploadsCmd extends VibeRpcCmd {
-	private BinderInfo			m_folderInfo;	// The folder to be uploaded into.
-	private List<UploadInfo>	m_uploads;		// Information about what's to be uploaded.
-
-	/**
-	 * Constructor method.
-	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
-	 */
-	public ValidateUploadsCmd() {
-		// Initialize the super class...
-		super();
-		
-		// ...and initialize anything else that requires it.
-		m_uploads = new ArrayList<UploadInfo>();
-	}
+public class GetFileConflictsInfoCmd extends VibeRpcCmd {
+	private BinderInfo			m_folderInfo;		//
+	private List<UploadInfo>	m_fileConflicts;	//
 	
 	/**
-	 * Constructor method.
+	 * Class constructor.
+	 * 
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
+	 */
+	public GetFileConflictsInfoCmd() {
+		super();		
+	}
+
+	/**
+	 * Class constructor.
 	 * 
 	 * @param folderInfo
+	 * @param fileConflicts
 	 */
-	public ValidateUploadsCmd(BinderInfo folderInfo) {
-		// Initialize this object...
+	public GetFileConflictsInfoCmd(BinderInfo fi, List<UploadInfo> fc) {
 		this();
-		
-		// ...and store the parameter.
-		setFolderInfo(folderInfo);
+
+		setFolderInfo(   fi);
+		setFileConflicts(fc);
 	}
 	
 	/**
@@ -80,24 +75,16 @@ public class ValidateUploadsCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public BinderInfo       getFolderInfo() {return m_folderInfo;}
-	public List<UploadInfo> getUploads()    {return m_uploads;   }
-
+	public BinderInfo       getFolderInfo()    {return m_folderInfo;   }
+	public List<UploadInfo> getFileConflicts() {return m_fileConflicts;}
+	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
-
-	/**
-	 * Add'er methods.
-	 * 
-	 * @param name
-	 * @param size
-	 */
-	public void addFile(  String name, long size) {m_uploads.add(new UploadInfo(name, size, true ));}
-	public void addFolder(String name)            {m_uploads.add(new UploadInfo(name, (-1), false));}
+	public void setFolderInfo(   BinderInfo       fi) {m_folderInfo    = fi;}
+	public void setFileConflicts(List<UploadInfo> fc) {m_fileConflicts = fc;}
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -108,6 +95,6 @@ public class ValidateUploadsCmd extends VibeRpcCmd {
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.VALIDATE_UPLOADS.ordinal();
+		return VibeRpcCmdType.GET_FILE_CONFLICTS_INFO.ordinal();
 	}
 }

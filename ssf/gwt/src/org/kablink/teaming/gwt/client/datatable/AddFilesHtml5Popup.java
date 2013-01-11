@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
+import org.kablink.teaming.gwt.client.datatable.FileConflictsDlg.FileConflictsDlgClient;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -43,16 +44,18 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.AbortFileUploadCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UploadFileBlobCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.UploadInfo;
 import org.kablink.teaming.gwt.client.widgets.ProgressBar;
 import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
+import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 
 import org.vectomatic.dnd.DataTransferExt;
 import org.vectomatic.dnd.DropPanel;
@@ -75,7 +78,6 @@ import com.googlecode.gwt.crypto.bouncycastle.digests.MD5Digest;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsDate;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -714,13 +716,12 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * Asynchronously populates the contents of the popup.
 	 */
 	private void populatePopupAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populatePopupNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -749,13 +750,12 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * Asynchronously processes the next blob read from a file.
 	 */
 	private void processBlobAsync() {
-		Scheduler.ScheduledCommand doProcessBlob = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				processBlobNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doProcessBlob);
+		});
 	}
 	
 	/*
@@ -872,13 +872,12 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * Asynchronously initiates the reading of the given blob.
 	 */
 	private void readNextBlobAsync(final Blob readBlob) {
-		Scheduler.ScheduledCommand doRead = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				readNextBlobNow(readBlob);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRead);
+		});
 	}
 	
 	/*
@@ -924,13 +923,12 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * Asynchronously runs the given instance of the add files popup.
 	 */
 	private static void runPopupAsync(final AddFilesHtml5Popup afPopup, final BinderInfo fi) {
-		ScheduledCommand doRun = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				afPopup.runPopupNow(fi);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		});
 	}
 	
 	/*
@@ -1006,13 +1004,12 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * Asynchronously uploads the next file.
 	 */
 	private void uploadNextAsync() {
-		Scheduler.ScheduledCommand doRead = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				uploadNextNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRead);
+		});
 	}
 	
 	/*
@@ -1071,13 +1068,12 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * the upload if everything is valid.
 	 */
 	private void validateFileListAsync() {
-		Scheduler.ScheduledCommand doValidate = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				validateFileListNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doValidate);
+		});
 	}
 	
 	/*
@@ -1103,10 +1099,10 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			@Override
 			public void onSuccess(VibeRpcResponse result) {
 				// Did we get any messages back from the validation?
-				ErrorListRpcResponseData	responseData = ((ErrorListRpcResponseData) result.getResponseData());
-				List<ErrorInfo>				errors       = responseData.getErrorList();
-				int							errorCount   = responseData.getErrorCount();
-				int							totalCount   = responseData.getTotalMessageCount();
+				ValidateUploadsRpcResponseData	responseData = ((ValidateUploadsRpcResponseData) result.getResponseData());
+				List<ErrorInfo>					errors       = responseData.getErrorList();
+				int								errorCount   = responseData.getErrorCount();
+				int								totalCount   = responseData.getTotalMessageCount();
 				if (0 < totalCount) {
 					// Yes!  Display them to the user...
 					GwtClientHelper.displayMultipleErrors(m_messages.addFilesHtml5PopupUploadValidationError(), errors);
@@ -1122,10 +1118,64 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 					}
 				}
 
-				// If we didn't get any errors (warnings are fine)...
+				// Did we get any errors (warnings are fine)?
 				if (0 == errorCount) {
-					// ...start the upload.
-					uploadNextAsync();
+					// No!  We're any of the files duplicates that we
+					// need to get confirmation from the user about?
+					final List<UploadInfo>	duplicates     = responseData.getDuplicateList();
+					final int					duplicateCount = responseData.getDuplicateCount();
+					if (0 < duplicateCount) {
+						// Yes!  Does the user want to overwrite the duplicates?
+						FileConflictsDlg.createAsync(new FileConflictsDlgClient() {
+							@Override
+							public void onUnavailable() {
+								// Nothing to do.  Error handled in
+								// asynchronous provider.
+							}
+							
+							@Override
+							public void onSuccess(FileConflictsDlg cDlg) {
+								FileConflictsDlg.initAndShow(
+									cDlg,
+									new ConfirmCallback() {
+										@Override
+										public void dialogReady() {
+											// Ignored.  We don't
+											// really care when the
+											// dialog is ready.
+										}
+
+										@Override
+										public void accepted() {
+											// The user has accepted
+											// the duplicates.  We can
+											// start the override.
+											uploadNextAsync();
+										}
+
+										@Override
+										public void rejected() {
+											// No, they're not sure!
+											// Abort the uploads that
+											// were requested.  We call
+											// uploadNext to clean up
+											// the display from the
+											// failed uploads.
+											abortUpload();
+											uploadNextNow();
+										}
+									},
+									m_folderInfo,
+									duplicates);
+							}
+						});
+					}
+					
+					else {
+						// No, there were no duplicates!  We can start
+						// the upload.
+						uploadNextAsync();
+					}
 				}
 			}
 		});

@@ -30,84 +30,52 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.widgets;
 
-package org.kablink.teaming.gwt.client.rpc.shared;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.UploadInfo;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'validate uploads' command.
+ * Provides a <LI> widget for Vibe's VibeUnorderedList widget.
+ * 
+ * See:  https://turbomanage.wordpress.com/2010/02/11/writing-plain-html-in-gwt/
  * 
  * @author drfoster@novell.com
  */
-public class ValidateUploadsCmd extends VibeRpcCmd {
-	private BinderInfo			m_folderInfo;	// The folder to be uploaded into.
-	private List<UploadInfo>	m_uploads;		// Information about what's to be uploaded.
-
+public class VibeListItem extends SimplePanel {
 	/**
 	 * Constructor method.
-	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public ValidateUploadsCmd() {
-		// Initialize the super class...
-		super();
-		
-		// ...and initialize anything else that requires it.
-		m_uploads = new ArrayList<UploadInfo>();
+	public VibeListItem() {
+		// Initialize the super class.
+		super((Element) Document.get().createLIElement().cast());
 	}
-	
+	 
 	/**
 	 * Constructor method.
 	 * 
-	 * @param folderInfo
+	 * @param s
 	 */
-	public ValidateUploadsCmd(BinderInfo folderInfo) {
+	public VibeListItem(String s) {
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameter.
-		setFolderInfo(folderInfo);
+		// ...and set the string as the item's inner text.
+		getElement().setInnerText(s);
 	}
-	
+	 
 	/**
-	 * Get'er methods.
+	 * Constructor method.
 	 * 
-	 * @return
+	 * @param w
 	 */
-	public BinderInfo       getFolderInfo() {return m_folderInfo;}
-	public List<UploadInfo> getUploads()    {return m_uploads;   }
-
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
-
-	/**
-	 * Add'er methods.
-	 * 
-	 * @param name
-	 * @param size
-	 */
-	public void addFile(  String name, long size) {m_uploads.add(new UploadInfo(name, size, true ));}
-	public void addFolder(String name)            {m_uploads.add(new UploadInfo(name, (-1), false));}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.VALIDATE_UPLOADS.ordinal();
+	public VibeListItem(Widget w) {
+		// Initialize this object...
+		this();
+		
+		// ...and add the widget to the panel.
+		add(w);
 	}
 }
