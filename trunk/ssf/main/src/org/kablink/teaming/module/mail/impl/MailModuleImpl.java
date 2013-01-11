@@ -969,7 +969,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
    		EmailLog emailLog = new EmailLog(EmailLogType.sendMail, EmailLogStatus.sent);
 		try {
 			mHelper.prepare(msg);
-			emailLog = new EmailLog(EmailLogType.sendMail, new Date(), msg.getRecipients(RecipientType.TO),
+			emailLog = new EmailLog(EmailLogType.sendMail, new Date(), getMessageRecipients(msg),
 					mailSender.getDefaultFrom(), EmailLogStatus.sent);
 	   	} catch (Exception ex) {
 	   		//message gets thrown away here
@@ -982,6 +982,20 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		mailSender.send(msg);
 		getReportModule().addEmailLog(emailLog);
 	}
+    
+    private Address[] getMessageRecipients(MimeMessage msg) throws Exception {
+    	Address[] reply = msg.getRecipients(RecipientType.TO);
+    	if ((null == reply) || (0 == reply.length)) {
+        	reply = msg.getRecipients(RecipientType.CC);
+        	if ((null == reply) || (0 == reply.length)) {
+            	reply = msg.getRecipients(RecipientType.BCC);
+            	if (null == reply) {
+            		reply = new Address[0];
+            	}
+        	}
+    	}
+    	return reply;
+    }
     
     //used to send prepared mail now.
     @Override
