@@ -32,10 +32,13 @@
  */
 package org.kablink.teaming.remoting.rest.v1.util;
 
+import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
+import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.util.search.Constants;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -111,6 +114,16 @@ public class UniversalBuilder implements SearchResultBuilder<SearchableObject> {
     }
 
     public SearchResultTreeNode<SearchableObject> factoryTreeNode(SearchableObject obj) {
+        return null;
+    }
+
+    @Override
+    public Date getLastModified(SearchableObject obj) {
+        if (obj instanceof DefinableEntityBrief) {
+            return ((DefinableEntityBrief)obj).getModificationDate();
+        } else if (obj instanceof FileProperties) {
+            return ((FileProperties)obj).getModificationDate();
+        }
         return null;
     }
 }

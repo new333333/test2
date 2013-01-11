@@ -34,6 +34,9 @@ package org.kablink.teaming.domain;
 
 import org.kablink.teaming.domain.HistoryStamp;
 
+import javax.persistence.Transient;
+import java.util.Date;
+
 /**
  * @author janet
  *
@@ -68,6 +71,11 @@ public abstract class PersistentLongIdTimestampObject extends PersistentLongIdOb
     }
     public void setModification(HistoryStamp stamp) {
         this.modification = stamp;
+    }
+
+    @Transient
+    public Date getModificationDate() {
+        return this.modification==null ? null : this.modification.getDate();
     }
     public int compareTo(Object o) {
     	int result;

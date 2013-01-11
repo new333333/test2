@@ -109,4 +109,9 @@ public class FilePropertiesBuilder implements SearchResultBuilder<FileProperties
     public SearchResultTreeNode<FileProperties> factoryTreeNode(FileProperties obj) {
         return null;
     }
+
+    @Override
+    public Date getLastModified(FileProperties obj) {
+        return obj.getModificationDate();
+    }
 }

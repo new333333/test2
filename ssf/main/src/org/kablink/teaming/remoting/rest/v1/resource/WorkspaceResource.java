@@ -70,11 +70,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.ws.rs.core.Response;
+import java.util.*;
 
 @Path("/workspaces")
 @Singleton
@@ -132,13 +129,16 @@ public class WorkspaceResource extends AbstractBinderResource {
     @GET
     @Path("{id}/binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public SearchResultList<BinderBrief> getSubBinders(@PathParam("id") long id,
+    public Response getSubBinders(@PathParam("id") long id,
                                                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                        @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                                       @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        return getSubBinders(id, null, offset, maxCount, "/workspaces/" + id + "/binders", nextParams, textDescriptions);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, offset, maxCount, "/workspaces/" + id + "/binders", nextParams, textDescriptions, ifModifiedSince);
+        return Response.ok(subBinders).lastModified(subBinders.getLastModified()).build();
     }
 
     @GET
@@ -156,14 +156,17 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@GET
 	@Path("{id}/workspaces")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResultList<BinderBrief> getSubWorkspaces(@PathParam("id") long id,
+	public Response getSubWorkspaces(@PathParam("id") long id,
                                                           @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
 			@QueryParam("first") @DefaultValue("0") Integer offset,
-			@QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+			@QueryParam("count") @DefaultValue("-1") Integer maxCount,
+            @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        return getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_WORKSPACE),
-                offset, maxCount, "/workspaces/" + id + "/workspaces", nextParams, textDescriptions);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        SearchResultList<BinderBrief> subBinders = getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_WORKSPACE),
+                offset, maxCount, "/workspaces/" + id + "/workspaces", nextParams, textDescriptions, ifModifiedSince);
+        return Response.ok(subBinders).lastModified(subBinders.getLastModified()).build();
 	}
 
     @POST
@@ -187,14 +190,17 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@GET
 	@Path("{id}/folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResultList<BinderBrief> getSubFolders(@PathParam("id") long id,
+	public Response getSubFolders(@PathParam("id") long id,
                                                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
 			@QueryParam("first") @DefaultValue("0") int offset,
-			@QueryParam("count") @DefaultValue("-1") int maxCount) {
+			@QueryParam("count") @DefaultValue("-1") int maxCount,
+            @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        return getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
-                offset, maxCount, "/workspaces/" + id + "/folders", nextParams, textDescriptions);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        SearchResultList<BinderBrief> subBinders = getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
+                offset, maxCount, "/workspaces/" + id + "/folders", nextParams, textDescriptions, ifModifiedSince);
+        return Response.ok(subBinders).lastModified(subBinders.getLastModified()).build();
 	}
 
     @POST

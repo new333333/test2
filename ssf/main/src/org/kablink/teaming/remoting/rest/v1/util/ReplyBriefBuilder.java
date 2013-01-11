@@ -6,6 +6,7 @@ import org.kablink.teaming.rest.v1.model.ReplyBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.util.search.Constants;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -52,5 +53,10 @@ public class ReplyBriefBuilder extends BaseFolderEntryBriefBuilder implements Se
 
     public SearchResultTreeNode<ReplyBrief> factoryTreeNode(ReplyBrief obj) {
         return null;
+    }
+
+    @Override
+    public Date getLastModified(ReplyBrief obj) {
+        return obj.getModificationDate();
     }
 }

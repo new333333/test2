@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -30,65 +30,24 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.v1.model;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+package org.kablink.teaming.remoting.rest.v1.exc;
 
-@XmlRootElement
-public class Tag extends BaseRestObject {
-    // The following are used as the names of the personal tags added
-    // to a shared entity to indicate that the user has it hidden.
-    private final static String	HIDDEN_SHARED_BY_TAG	= "sharedByHidden";
-    private final static String	HIDDEN_SHARED_WITH_TAG	= "sharedWithHidden";
+import org.kablink.teaming.rest.v1.model.ErrorInfo;
+import org.kablink.util.api.ApiErrorCode;
 
-	protected String id;
-	protected String name="";
-	protected Boolean isPublic=false;
-	private EntityId entity;
-	
-   public String getId() {
-        return id;
-    }
-    public void setId(String id) {
-        this.id = id;
-    }
-	
-	public EntityId getEntity() {
-		return entity;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+
+/**
+ * @author jong
+ *
+ */
+public class NotModifiedException extends WebApplicationException {
+
+	private static final long serialVersionUID = 1L;
+
+	public NotModifiedException() {
+		super(Response.status(Response.Status.NOT_MODIFIED).build());
 	}
-	public void setEntity(EntityId entity) {
-		this.entity = entity;
-	}
-
-	public String getName() {
-	    return name;
-	}
-	public void setName(String name) {
-	    this.name = name;
-	}	
-
-    @XmlElement(name="public")
-	public Boolean isPublic() {
-		return isPublic;
-	}
-	public void setPublic(Boolean isPublic) {
-		this.isPublic = isPublic;
-	}
-
-    @XmlTransient
-    public boolean isHidden() {
-        return isHiddenInSharedByMe() || isHiddenInSharedWithMe();
-    }
-
-    @XmlTransient
-    public boolean isHiddenInSharedByMe() {
-        return HIDDEN_SHARED_BY_TAG.equals(name);
-    }
-
-    @XmlTransient
-    public boolean isHiddenInSharedWithMe() {
-        return HIDDEN_SHARED_WITH_TAG.equals(name);
-    }
 }

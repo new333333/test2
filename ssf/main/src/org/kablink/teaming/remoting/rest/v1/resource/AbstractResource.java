@@ -64,12 +64,13 @@ import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
-import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
+import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.util.HttpHeaders;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.*;
 
@@ -94,6 +95,14 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected Long getLoggedInUserId() {
         return RequestContextHolder.getRequestContext().getUserId();
+    }
+
+    protected Date getIfModifiedSinceDate(HttpServletRequest request) {
+        Date date = null;
+        long longDate = request.getDateHeader(HttpHeaders.IF_MODIFIED_SINCE);
+        if (longDate != -1)
+            date = new Date(longDate);
+        return date;
     }
 
     protected org.kablink.teaming.domain.User getLoggedInUser() {
@@ -253,22 +262,23 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             spec.setRecipients(null, null, recipientId);
         }
 
-        List<ShareItem> shares = getShareItems(spec);
+        List<ShareItem> shares = getShareItems(spec, true);
         if (shares.size()==0) {
             return null;
         }
         return shares.get(0);
     }
 
-    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec) {
-        return getShareItems(spec, null);
+    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, boolean includeExpired) {
+        return getShareItems(spec, null, includeExpired);
     }
 
-    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer) {
+    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired) {
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
         List<ShareItem> filteredItems = new ArrayList<ShareItem>(shareItems.size());
         for (ShareItem item : shareItems) {
-            if (!item.isExpired() && item.isLatest() && (excludedSharer==null || !excludedSharer.equals(item.getSharerId()))) {
+            if ((!item.isExpired() || includeExpired) && item.isLatest() &&
+                    (excludedSharer==null || !excludedSharer.equals(item.getSharerId()))) {
                 filteredItems.add(item);
             }
         }
@@ -506,7 +516,9 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             rights.setAllowSharing(true);
         }
         ShareItem shareItem = new ShareItem(getLoggedInUserId(), entity, share.getComment(), share.getEndDate(), recType, recipient.getId(), rights);
-        shareItem.setDaysToExpire(share.getDaysToExpire());
+        if (share.getDaysToExpire()!=null) {
+            shareItem.setDaysToExpire(share.getDaysToExpire());
+        }
         return shareItem;
     }
 
@@ -638,6 +650,30 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 binderPaths.put(binderId, path);
             }
         }
+    }
+
+    protected SearchResultList<Tag> getBinderTags(org.kablink.teaming.domain.Binder binder, boolean hidden) {
+        Collection<org.kablink.teaming.domain.Tag> tags = getBinderModule().getTags(binder);
+        SearchResultList<Tag> results = new SearchResultList<Tag>();
+        for (org.kablink.teaming.domain.Tag tag : tags) {
+            Tag obj = ResourceUtil.buildTag(tag);
+            if (hidden==obj.isHidden()) {
+                results.append(obj);
+            }
+        }
+        return results;
+    }
+
+    protected SearchResultList<Tag> getEntryTags(org.kablink.teaming.domain.FolderEntry entry, boolean hidden) {
+        Collection<org.kablink.teaming.domain.Tag> tags = getFolderModule().getTags(entry);
+        SearchResultList<Tag> results = new SearchResultList<Tag>();
+        for (org.kablink.teaming.domain.Tag tag : tags) {
+            Tag obj = ResourceUtil.buildTag(tag);
+            if (hidden==obj.isHidden()) {
+                results.append(obj);
+            }
+        }
+        return results;
     }
 
 }

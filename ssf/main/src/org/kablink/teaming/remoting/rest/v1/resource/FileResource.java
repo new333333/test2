@@ -34,18 +34,10 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.module.shared.EmptyInputData;
-import org.kablink.teaming.module.shared.FileUtils;
-import org.kablink.teaming.module.shared.InputDataAccessor;
-import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.module.shared.*;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
@@ -234,10 +226,16 @@ public class FileResource extends AbstractFileResource {
 
     @DELETE
     @Path("{id}")
-    public void deleteFileContent(@PathParam("id") String fileId) throws WriteFilesException, WriteEntryDataException {
+    public void deleteFileContent(@PathParam("id") String fileId, @QueryParam("purge") @DefaultValue("false") boolean purge) throws WriteFilesException, WriteEntryDataException {
         FileAttachment fa = findFileAttachment(fileId);
         DefinableEntity entity = fa.getOwner().getEntity();
-        deleteFile(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName());
+        if (entity instanceof FolderEntry) {
+            FolderUtils.deleteFileInFolderEntry((FolderEntry)entity, fa, !purge);
+        } else if (entity instanceof Binder) {
+            deleteFile(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName());
+        } else {
+            deleteFile(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName());
+        }
     }
 
     @POST

@@ -16,6 +16,7 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
+import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
@@ -42,8 +43,11 @@ import org.kablink.util.search.Criterion;
 import org.kablink.util.search.Junction;
 import org.kablink.util.search.Restrictions;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.*;
 
 /**
@@ -182,13 +186,16 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @GET
    	@Path("{id}/library_folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-   	public SearchResultList<BinderBrief> getLibraryFolders(@PathParam("id") long id,
-                                                           @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
-                                                           @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                           @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+   	public Response getLibraryFolders(@PathParam("id") long id,
+                                         @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                         @QueryParam("first") @DefaultValue("0") Integer offset,
+                                         @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                         @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        return getSubBinders(id, SearchUtils.libraryFolders(), offset, maxCount, getBasePath() + id + "/library_folders", nextParams, textDescriptions);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        SearchResultList<BinderBrief> subBinders = getSubBinders(id, SearchUtils.libraryFolders(), offset, maxCount, getBasePath() + id + "/library_folders", nextParams, textDescriptions, ifModifiedSince);
+        return Response.ok(subBinders).lastModified(subBinders.getLastModified()).build();
    	}
 
     @POST
@@ -267,7 +274,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         spec.setLatest(true);
         spec.setSharedEntityIdentifier(new EntityIdentifier(id, binder.getEntityType()));
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<ShareItem> shareItems = getShareItems(spec);
+        List<ShareItem> shareItems = getShareItems(spec, true);
         for (ShareItem shareItem : shareItems) {
             results.append(ResourceUtil.buildShare(shareItem));
         }
@@ -334,12 +341,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @Path("{id}/tags")
     public SearchResultList<Tag> getTags(@PathParam("id") Long id) {
         org.kablink.teaming.domain.Binder entry = _getBinder(id);
-        Collection<org.kablink.teaming.domain.Tag> tags = getBinderModule().getTags(entry);
-        SearchResultList<Tag> results = new SearchResultList<Tag>();
-        for (org.kablink.teaming.domain.Tag tag : tags) {
-            results.append(ResourceUtil.buildTag(tag));
-        }
-        return results;
+        return getBinderTags(entry, false);
     }
 
     @POST
@@ -417,7 +419,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                                                 boolean includeReplies,
                                                                 boolean onlyLibrary, boolean includeParentPaths, String keyword,
                                                                 Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams, boolean textDescriptions) {
-        _getBinder(id);
+        org.kablink.teaming.domain.Binder binder = _getBinder(id);
         Junction criterion = Restrictions.conjunction();
 
         criterion.add(buildSearchBinderCriterion(id, recursive));
@@ -431,7 +433,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         Criteria crit = new Criteria();
         crit.add(criterion);
         Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
+        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset, binder.getModificationDate());
         SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap, nextUrl, nextParams, offset);
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -441,7 +443,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
     protected SearchResultList<FileProperties> getSubFiles(long id, String fileName, boolean recursive, boolean onlyLibraryFiles, boolean includeParentPaths,
                                                            Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams) {
-        _getBinder(id);
+        org.kablink.teaming.domain.Binder binder = _getBinder(id);
         Junction criterion = Restrictions.conjunction()
             .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT));
 
@@ -453,7 +455,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
             criterion.add(buildFileNameCriterion(fileName));
         }
         List<FileIndexData> files = getFileModule().getFileDataFromIndex(new Criteria().add(criterion));
-        SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
+        SearchResultList<FileProperties> results = new SearchResultList<FileProperties>(0, binder.getModificationDate());
         results.setFirst(0);
         results.setCount(files.size());
         results.setTotal(files.size());
@@ -469,7 +471,8 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     protected SearchResultList<BinderBrief> getSubBinders(long id, Criterion filter, Integer offset, Integer maxCount,
-                                                          String nextUrl, Map<String, Object> nextParams, boolean textDescriptions) {
+                                                          String nextUrl, Map<String, Object> nextParams, boolean textDescriptions,
+                                                          Date modifiedSince) {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
         if (offset==null) {
             offset = 0;
@@ -484,8 +487,11 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
         crit.add(Restrictions.eq(Constants.BINDERS_PARENT_ID_FIELD, ((Long) id).toString()));
         Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount, binder.getId(), binder.getPathName());
-        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset, binder.getModificationDate());
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultMap, nextUrl, nextParams, offset);
+        if (modifiedSince!=null && !modifiedSince.before(results.getLastModified())) {
+            throw new NotModifiedException();
+        }
         return results;
     }
 

@@ -2,18 +2,7 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.Group;
-import org.kablink.teaming.domain.NoFileByTheIdException;
-import org.kablink.teaming.domain.NoFileByTheNameException;
-import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.EmptyInputData;
@@ -196,8 +185,22 @@ abstract public class AbstractFileResource extends AbstractResource {
             throw new NoFileByTheIdException(fileId);
         else if (fa instanceof VersionAttachment)
             throw new NoFileByTheIdException(fileId, "The specified file ID represents a file version rather than a file");
-        else
+        else {
+            DefinableEntity entity = fa.getOwner().getEntity();
+            if (entity instanceof FolderEntry) {
+                if (((FolderEntry)entity).isPreDeleted()) {
+                    throw new NoFileByTheIdException(fileId);
+                }
+            } else if (entity instanceof Binder) {
+                if (entity instanceof Folder && ((Folder)entity).isPreDeleted()) {
+                    throw new NoFileByTheIdException(fileId);
+                }
+                if (entity instanceof Workspace && ((Workspace)entity).isPreDeleted()) {
+                    throw new NoFileByTheIdException(fileId);
+                }
+            }
             return fa;
+        }
     }
 
     protected FileAttachment getFileAttachment(DefinableEntity entity, String filename)
@@ -283,14 +286,6 @@ abstract public class AbstractFileResource extends AbstractResource {
         } else {
             throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entity.getClass().getName() + "' is unknown or not supported by this method");
         }
-    }
-
-    protected Date getIfModifiedSinceDate(HttpServletRequest request) {
-        Date date = null;
-        long longDate = request.getDateHeader(HttpHeaders.IF_MODIFIED_SINCE);
-        if (longDate != -1)
-            date = new Date(longDate);
-        return date;
     }
 
     protected DefinableEntity findDefinableEntity(String entityType, long entityId)
