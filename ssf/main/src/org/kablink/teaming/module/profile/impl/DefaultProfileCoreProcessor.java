@@ -88,6 +88,7 @@ import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.Validator;
@@ -366,7 +367,10 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 				   logger.error("Cannot instantiate UserTitleChange custom class", ex);
 			   }
 	   		}
-	   		if (job == null) job = (UserTitleChange)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultUserTitleChange.class);
+	   		if (job == null) { 
+	   			String className = SPropsUtil.getString("job.user.title.change.class", "org.kablink.teaming.jobs.DefaultUserTitleChange");
+	   			job = (UserTitleChange)ReflectHelper.getInstance(className);
+	   		}
 			job.schedule(user, binderIds, entryIds); 	
 	   }	   
    }

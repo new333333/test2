@@ -249,7 +249,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
  			   logger.error("EXCEPTION:  Cannot instantiate FillEmailSubscription custom class", e);
     		}
     	}
-    	return (FillEmailSubscription)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultFillEmailSubscription.class);
+    	String className = SPropsUtil.getString("job.fill.email.subscription.class", "org.kablink.teaming.jobs.DefaultFillEmailSubscription");
+    	return (FillEmailSubscription)ReflectHelper.getInstance(className);
  	}
 	
 	protected SendEmail getEmailJob(Workspace zone) {
@@ -261,7 +262,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
  			   logger.error("EXCEPTION:  Cannot instantiate SendEmail custom class", e);
     		}
     	}
-    	return (SendEmail)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultSendEmail.class);
+    	String className = SPropsUtil.getString("job.send.email.class", "org.kablink.teaming.jobs.DefaultSendEmail");
+    	return (SendEmail)ReflectHelper.getInstance(className);
 	}
 	
 	//called on zone delete

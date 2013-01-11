@@ -57,6 +57,7 @@ import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
@@ -75,7 +76,8 @@ implements LicenseModule, ZoneSchedule {
  			   logger.error("Cannot instantiate LicenseMonitor custom class", e);
     		}
     	}
-    	return (LicenseMonitor)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultLicenseMonitor.class);
+    	String className = SPropsUtil.getString("job.license.monitor.class", "org.kablink.teaming.jobs.DefaultLicenseMonitor");
+    	return (LicenseMonitor)ReflectHelper.getInstance(className);
 	}
 	//called on zone startup
     public void startScheduledJobs(Workspace zone) {

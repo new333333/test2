@@ -103,6 +103,7 @@ import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TextToHtml;
@@ -245,7 +246,10 @@ public class EnterExitEvent extends AbstractActionHandler {
 								logger.error("Cannot instantiate WorkflowProcess custom class", e);
 							}
 						}
-						if (schedJob == null) schedJob = (WorkflowProcess)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultWorkflowProcess.class);
+						if (schedJob == null) {
+							String className = SPropsUtil.getString("job.workflow.process.class", "org.kablink.teaming.jobs.DefaultWorkflowProcess");
+							schedJob = (WorkflowProcess)ReflectHelper.getInstance(className);
+						}
 						String secsString = (String)SZoneConfig.getString(RequestContextHolder.getRequestContext().getZoneName(), "workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_SECONDS + "']");
 						int seconds = 300;
 						try {
@@ -289,7 +293,10 @@ public class EnterExitEvent extends AbstractActionHandler {
 							logger.error("Cannot instantiate WorkflowProcess custom class", e);
 						}
 					}
-					if (schedJob == null) schedJob = (WorkflowProcess)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultWorkflowProcess.class);
+					if (schedJob == null) {
+						String className = SPropsUtil.getString("job.workflow.process.class", "org.kablink.teaming.jobs.DefaultWorkflowProcess");
+						schedJob = (WorkflowProcess)ReflectHelper.getInstance(className);
+					}
 					String secsString = (String)SZoneConfig.getString(RequestContextHolder.getRequestContext().getZoneName(), "workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_SECONDS + "']");
 					int seconds = 300;
 					try {

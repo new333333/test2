@@ -126,6 +126,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.encrypt.EncryptUtil;
@@ -499,8 +500,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	
     	// Create background job to reindex the list of binders
     	User user = RequestContextHolder.getRequestContext().getUser();
-		BinderReindex job=null;
-		if (job == null) job = (BinderReindex)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultBinderReindex.class);
+    	String className = SPropsUtil.getString("job.binder.reindex.class", "org.kablink.teaming.jobs.DefaultBinderReindex");
+		BinderReindex job = (BinderReindex)ReflectHelper.getInstance(className);
 		job.schedule(binderIds, user, false); 
     	return binderIds;
     }

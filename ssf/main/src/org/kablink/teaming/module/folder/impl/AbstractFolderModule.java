@@ -138,6 +138,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -226,7 +227,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			   logger.error("Cannot instantiate FolderDelete custom class", ex);
 		   }
    		}
-   		return (FolderDelete)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultFolderDelete.class);
+ 	   String className = SPropsUtil.getString("job.folder.delete.class", "org.kablink.teaming.jobs.DefaultFolderDelete");
+ 	   return (FolderDelete)ReflectHelper.getInstance(className);
   	}
 
 	public ScheduleInfo getNotificationSchedule(Long zoneId, Long folderId) {
