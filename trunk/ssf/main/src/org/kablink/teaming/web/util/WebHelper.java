@@ -85,6 +85,10 @@ import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.util.Html;
 import org.kablink.util.PortalDetector;
 import org.kablink.util.Validator;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -632,5 +636,15 @@ public class WebHelper {
 			}
 		}
 		return reply;
+	}
+	
+	public static boolean isUserAuthenticatedViaOpenid() {
+		SecurityContext securityContext = SecurityContextHolder.getContext(); 
+		if(securityContext == null)
+			return false;
+		Authentication auth = securityContext.getAuthentication();
+		if(auth == null)
+			return false;
+		return (auth instanceof OpenIDAuthenticationToken);
 	}
 }
