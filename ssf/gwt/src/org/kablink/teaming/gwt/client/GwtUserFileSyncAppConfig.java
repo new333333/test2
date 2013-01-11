@@ -46,6 +46,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtUserFileSyncAppConfig
 	implements IsSerializable, VibeRpcResponseData
 {
+	private boolean m_useGlobalSettings;
 	private boolean m_isFileSyncAppEnabled = false;
 	private boolean m_allowCachePwd = false;
 	
@@ -71,6 +72,14 @@ public class GwtUserFileSyncAppConfig
 	{
 		return m_isFileSyncAppEnabled;
 	}
+	
+	/**
+	 * 
+	 */
+	public boolean getUseGlobalSettings()
+	{
+		return m_useGlobalSettings;
+	}
 
 	/**
 	 * 
@@ -86,5 +95,13 @@ public class GwtUserFileSyncAppConfig
 	public void setIsFileSyncAppEnabled( boolean enabled )
 	{
 		m_isFileSyncAppEnabled = enabled;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setUseGlobalSettings( boolean useGlobal )
+	{
+		m_useGlobalSettings = useGlobal;
 	}
 }

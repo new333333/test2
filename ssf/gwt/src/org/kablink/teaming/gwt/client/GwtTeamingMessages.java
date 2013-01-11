@@ -1548,6 +1548,8 @@ public interface GwtTeamingMessages extends Messages
 	String fileSyncAppMBLabel();
 	String fileSyncAppMinutesLabel();
 	String fileSyncApp_OnSaveUnknownException( String desc );
+	String fileSyncAppUseGlobalSettings();
+	String fileSyncAppUseUserSettings();
 	
 	// Strings used in the Configure User File Sync App dialog
 	String configureUserFileSyncAppDlgErrorHeader();
@@ -2386,6 +2388,8 @@ public interface GwtTeamingMessages extends Messages
 	String configureMobileAppsDlgHeader();
 	String configureMobileAppsDlgHeader2();
 	String configureMobileAppsDlgOnSaveUnknownException( String err );
+	String configureMobileAppsDlgUseGlobalSettings();
+	String configureMobileAppsDlgUseUserSettings();
 	String configureMobileAppsSyncIntervalLabel();
 	String configureMobileAppsSyncMinutesLabel();
 	

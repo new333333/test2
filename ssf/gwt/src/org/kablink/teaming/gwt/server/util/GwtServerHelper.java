@@ -3472,12 +3472,18 @@ public class GwtServerHelper {
 				field = orElement.addElement( Constants.FIELD_ELEMENT );
 		    	field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.GROUPNAME_FIELD );
 		    	child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
-		    	child.setText( "allUsers" );
+		    	child.setText( "allusers" );
 		    	
 		    	field = orElement.addElement( Constants.FIELD_ELEMENT );
 		    	field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.GROUPNAME_FIELD );
 		    	child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
-		    	child.setText( "allExtUsers" );
+		    	child.setText( "allextusers" );
+		    	
+		    	// Don't include "ldap container" groups.
+		    	field = orElement.addElement( Constants.FIELD_ELEMENT );
+		    	field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.IS_LDAP_CONTAINER_FIELD );
+		    	child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
+		    	child.setText( Constants.TRUE );
 		    	
 		    	options.put( ObjectKeys.SEARCH_FILTER_AND, searchFilter );
 			}
@@ -7802,23 +7808,28 @@ public class GwtServerHelper {
 		UserProperties userProperties;
 		
 		config = new GwtUserFileSyncAppConfig();
+		config.setUseGlobalSettings( true );
 		
 		userProperties = ami.getProfileModule().getUserProperties( userId );
 		if ( userProperties != null )
 		{
-			Object value;
+			Object accessValue;
+			Object pwdValue;
 			
-			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR );
-			if ( value != null && value instanceof String )
+			accessValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR );
+			if ( accessValue != null && accessValue instanceof String )
 			{
-				config.setIsFileSyncAppEnabled( Boolean.valueOf( (String) value ) );
+				config.setIsFileSyncAppEnabled( Boolean.valueOf( (String) accessValue ) );
 			}
 
-			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD );
-			if ( value != null && value instanceof String )
+			pwdValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD );
+			if ( pwdValue != null && pwdValue instanceof String )
 			{
-				config.setAllowCachePwd( Boolean.valueOf( (String) value ) );
+				config.setAllowCachePwd( Boolean.valueOf( (String) pwdValue ) );
 			}
+			
+			if ( accessValue != null || pwdValue != null )
+				config.setUseGlobalSettings( false );
 		}
 		
 		return config;
@@ -7858,35 +7869,42 @@ public class GwtServerHelper {
 		UserProperties userProperties;
 		
 		gwtUserMobileAppsConfig = new GwtUserMobileAppsConfig();
+		gwtUserMobileAppsConfig.setUseGlobalSettings( true );
 		
 		userProperties = ami.getProfileModule().getUserProperties( userId );
 		if ( userProperties != null )
 		{
-			Object value;
+			Object accessValue;
+			Object pwdValue;
+			Object contentValue;
+			Object playValue;
 			
-			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR );
-			if ( value != null && value instanceof String )
+			accessValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR );
+			if ( accessValue != null && accessValue instanceof String )
 			{
-				gwtUserMobileAppsConfig.setMobileAppsEnabled( Boolean.valueOf( (String) value ) );
+				gwtUserMobileAppsConfig.setMobileAppsEnabled( Boolean.valueOf( (String) accessValue ) );
 			}
 
-			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD );
-			if ( value != null && value instanceof String )
+			pwdValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD );
+			if ( pwdValue != null && pwdValue instanceof String )
 			{
-				gwtUserMobileAppsConfig.setAllowCachePwd( Boolean.valueOf( (String) value ) );
+				gwtUserMobileAppsConfig.setAllowCachePwd( Boolean.valueOf( (String) pwdValue ) );
 			}
 			
-			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT );
-			if ( value != null && value instanceof String )
+			contentValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT );
+			if ( contentValue != null && contentValue instanceof String )
 			{
-				gwtUserMobileAppsConfig.setAllowCacheContent( Boolean.valueOf( (String) value ) );
+				gwtUserMobileAppsConfig.setAllowCacheContent( Boolean.valueOf( (String) contentValue ) );
 			}
 			
-			value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS );
-			if ( value != null && value instanceof String )
+			playValue = userProperties.getProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS );
+			if ( playValue != null && playValue instanceof String )
 			{
-				gwtUserMobileAppsConfig.setAllowPlayWithOtherApps( Boolean.valueOf( (String) value ) );
+				gwtUserMobileAppsConfig.setAllowPlayWithOtherApps( Boolean.valueOf( (String) playValue ) );
 			}
+
+			if ( accessValue != null || pwdValue != null || contentValue != null || playValue != null )
+				gwtUserMobileAppsConfig.setUseGlobalSettings( false );
 		}
 		
 		return gwtUserMobileAppsConfig;
@@ -9880,15 +9898,26 @@ public class GwtServerHelper {
 		{
 			try
 			{
+				String accessValue;
+				String pwdValue;
+				
+				accessValue = null;
+				pwdValue = null;
+				if ( config.getUseGlobalSettings() == false )
+				{
+					accessValue = String.valueOf( config.getIsFileSyncAppEnabled() );
+					pwdValue = String.valueOf( config.getAllowCachePwd() );
+				}
+				
 				profileModule.setUserProperty(
 											userId,
 											ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR,
-											String.valueOf( config.getIsFileSyncAppEnabled() ) );
-	
+											accessValue );
+
 				profileModule.setUserProperty(
 											userId,
 											ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD,
-											String.valueOf( config.getAllowCachePwd() ) );
+											pwdValue );
 			}
 			catch ( Exception ex )
 			{
@@ -9940,25 +9969,42 @@ public class GwtServerHelper {
 		{
 			try
 			{
+				String accessValue;
+				String pwdValue;
+				String contentValue;
+				String playValue;
+				
+				accessValue = null;
+				pwdValue = null;
+				contentValue = null;
+				playValue = null;
+				if ( config.getUseGlobalSettings() == false )
+				{
+					accessValue = String.valueOf( config.getMobileAppsEnabled() );
+					pwdValue = String.valueOf( config.getAllowCachePwd() );
+					contentValue = String.valueOf( config.getAllowCacheContent() );
+					playValue = String.valueOf( config.getAllowPlayWithOtherApps() );
+				}
+
 				profileModule.setUserProperty(
 											userId,
 											ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR,
-											String.valueOf( config.getMobileAppsEnabled() ) );
+											accessValue );
 	
 				profileModule.setUserProperty(
 											userId,
 											ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD,
-											String.valueOf( config.getAllowCachePwd() ) );
+											pwdValue );
 	
 				profileModule.setUserProperty(
 											userId,
 											ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT,
-											String.valueOf( config.getAllowCacheContent() ) );
+											contentValue );
 	
 				profileModule.setUserProperty(
 											userId,
 											ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS,
-											String.valueOf( config.getAllowPlayWithOtherApps() ) );
+											playValue );
 			}
 			catch ( Exception ex )
 			{

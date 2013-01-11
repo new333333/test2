@@ -126,4 +126,22 @@ public class ProfileIndexUtils {
     	Field dynamicField = FieldFactory.createFieldStoredNotAnalyzed(IS_GROUP_DYNAMIC_FIELD, (group.isDynamic() ? Constants.TRUE : Constants.FALSE));
     	doc.add(dynamicField);
     }
+
+    /**
+     * 
+     */
+    public static void addIsLdapContainer( Document doc, User user )
+    {
+		Field path = FieldFactory.createFieldStoredNotAnalyzed( IS_LDAP_CONTAINER_FIELD, Constants.FALSE );
+		doc.add( path );
+    }
+
+    /**
+     * 
+     */
+    public static void addIsLdapContainer( Document doc, Group group )
+    {
+		Field path = FieldFactory.createFieldStoredNotAnalyzed( IS_LDAP_CONTAINER_FIELD, (group.isLdapContainer() ? Constants.TRUE : Constants.FALSE) );
+		doc.add( path );
+    }
 }

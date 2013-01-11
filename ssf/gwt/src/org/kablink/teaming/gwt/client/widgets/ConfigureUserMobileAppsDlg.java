@@ -50,6 +50,8 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -57,6 +59,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RadioButton;
 
 
 /**
@@ -67,6 +70,8 @@ import com.google.gwt.user.client.ui.Panel;
 public class ConfigureUserMobileAppsDlg extends DlgBox
 	implements EditSuccessfulHandler
 {
+	private RadioButton m_useGlobalSettingsRB;
+	private RadioButton m_useUserSettingsRB;
 	private CheckBox m_enableMobileAppsAccessCB;
 	private CheckBox m_allowPwdCacheCB;
 	private CheckBox m_allowOfflineContentCB;
@@ -116,22 +121,46 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	{
 		GwtTeamingMessages messages;
 		FlowPanel mainPanel = null;
+		FlowPanel userPanel;
 		FlowPanel ckboxPanel;
 		FlowPanel tmpPanel;
-		Label label;
+		ClickHandler clickHandler;
 
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 		
-		label = new Label( messages.configureMobileAppsDlgHeader2() );
-		mainPanel.add( label );
+		m_useGlobalSettingsRB = new RadioButton( "settingScope", messages.configureMobileAppsDlgUseGlobalSettings() );
+		tmpPanel = new FlowPanel();
+		tmpPanel.addStyleName( "marginbottom1" );
+		tmpPanel.add( m_useGlobalSettingsRB );
+		mainPanel.add( tmpPanel );
 		
+		m_useUserSettingsRB = new RadioButton( "settingScope", messages.configureMobileAppsDlgUseUserSettings() );
+		tmpPanel = new FlowPanel();
+		tmpPanel.addStyleName( "marginbottom1" );
+		tmpPanel.add( m_useUserSettingsRB );
+		mainPanel.add( tmpPanel );
+		
+		userPanel = new FlowPanel();
+		userPanel.addStyleName( "marginleft1" );
+		mainPanel.add( userPanel );
+
 		ckboxPanel = new FlowPanel();
 		ckboxPanel.addStyleName( "marginleft1" );
 		ckboxPanel.addStyleName( "marginbottom2" );
-		mainPanel.add( ckboxPanel );
+		userPanel.add( ckboxPanel );
+		
+		clickHandler = new ClickHandler()
+		{
+			@Override
+			public void onClick( ClickEvent event )
+			{
+				m_useGlobalSettingsRB.setValue( false );
+				m_useUserSettingsRB.setValue( true );
+			}
+		};
 		
 		// Add the controls for the "allow mobile applications to access Filr"
 		{
@@ -142,6 +171,7 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 				productName = "Filr";
 			
 			m_enableMobileAppsAccessCB = new CheckBox( messages.configureMobileAppsDlgAllowAccess( productName ) );
+			m_enableMobileAppsAccessCB.addClickHandler( clickHandler );
 			tmpPanel = new FlowPanel();
 			tmpPanel.add( m_enableMobileAppsAccessCB );
 			ckboxPanel.add( tmpPanel );
@@ -149,18 +179,21 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 		
 		// Create the "Allow mobile applications to cache password"
 		m_allowPwdCacheCB = new CheckBox( messages.configureMobileAppsDlgAllowCachePwd() );
+		m_allowPwdCacheCB.addClickHandler( clickHandler );
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_allowPwdCacheCB );
 		ckboxPanel.add( tmpPanel );
 		
 		// Create the "Allow mobile applications to cache content offline"
 		m_allowOfflineContentCB = new CheckBox( messages.configureMobileAppsDlgAllowCacheContent() );
+		m_allowOfflineContentCB.addClickHandler( clickHandler );
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_allowOfflineContentCB );
 		ckboxPanel.add( tmpPanel );
 		
 		// Create the "Allow mobile applications to interact with other applications"
 		m_allowPlayWithOtherAppsCB = new CheckBox( messages.configureMobileAppsDlgAllowPlayWithOtherApps() );
+		m_allowPlayWithOtherAppsCB.addClickHandler( clickHandler );
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_allowPlayWithOtherAppsCB );
 		ckboxPanel.add( tmpPanel );
@@ -249,6 +282,9 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 		
 		mobileAppsConfig = new GwtUserMobileAppsConfig();
 
+		// Get whether to use the global settings
+		mobileAppsConfig.setUseGlobalSettings( getUseGlobalSettings() );
+
 		// Get whether mobile apps can access Filr
 		mobileAppsConfig.setMobileAppsEnabled( getMobileAppsEnabled() );
 		
@@ -311,6 +347,14 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	private boolean getUseGlobalSettings()
+	{
+		return m_useGlobalSettingsRB.getValue();
 	}
 	
 	/**
@@ -395,6 +439,9 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	{
 		if ( mobileAppsConfig != null )
 		{
+			m_useGlobalSettingsRB.setValue( mobileAppsConfig.getUseGlobalSettings() );
+			m_useUserSettingsRB.setValue( !mobileAppsConfig.getUseGlobalSettings() );
+			
 			// Initialize whether mobile apps can access Filr
 			m_enableMobileAppsAccessCB.setValue( mobileAppsConfig.getMobileAppsEnabled() );
 				
@@ -409,6 +456,8 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 		}
 		else
 		{
+			m_useGlobalSettingsRB.setValue( true );
+			m_useUserSettingsRB.setValue( false );
 			m_enableMobileAppsAccessCB.setValue( false );
 			m_allowPwdCacheCB.setValue( false );
 			m_allowOfflineContentCB.setValue( false );
