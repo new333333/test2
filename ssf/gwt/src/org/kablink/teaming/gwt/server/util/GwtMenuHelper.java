@@ -111,6 +111,7 @@ import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.GwtUIHelper.TrackInfo;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
@@ -735,6 +736,7 @@ public class GwtMenuHelper {
 	 * the selected entries.
 	 */
 	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long folderId, String viewType, Folder folder, Workspace ws, CollectionType ct) {
+		boolean isFilr              = Utils.checkIfFilr();
 		boolean isGuest             = GwtServerHelper.getCurrentUser().isShared();
 		boolean isFolder            = (null != folder);
 		boolean isMyFilesCollection = CollectionType.MY_FILES.equals(ct);
@@ -780,17 +782,20 @@ public class GwtMenuHelper {
 
 		// ...for views that can contain entries...
 		if (isEntryContainer) {
-			// ...add the lock item....
-			tbi = new ToolbarItem("1_lockSelected");
-			markTBITitle(tbi, "toolbar.lock");
-			markTBIEvent(tbi, TeamingEvents.LOCK_SELECTED_ENTRIES);
-			moreTBI.addNestedItem(tbi);
-			
-			// ...add the unlock item....
-			tbi = new ToolbarItem("1_unlockSelected");
-			markTBITitle(tbi, "toolbar.unlock");
-			markTBIEvent(tbi, TeamingEvents.UNLOCK_SELECTED_ENTRIES);
-			moreTBI.addNestedItem(tbi);
+			// ...if we're not in Filr mode...
+			if (!isFilr) {
+				// ...add the lock item....
+				tbi = new ToolbarItem("1_lockSelected");
+				markTBITitle(tbi, "toolbar.lock");
+				markTBIEvent(tbi, TeamingEvents.LOCK_SELECTED_ENTRIES);
+				moreTBI.addNestedItem(tbi);
+				
+				// ...add the unlock item....
+				tbi = new ToolbarItem("1_unlockSelected");
+				markTBITitle(tbi, "toolbar.unlock");
+				markTBIEvent(tbi, TeamingEvents.UNLOCK_SELECTED_ENTRIES);
+				moreTBI.addNestedItem(tbi);
+			}
 			
 			// ...if the user is not the Guest user...
 			if (!isGuest) {
@@ -827,7 +832,7 @@ public class GwtMenuHelper {
 			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
 		}
 		
-		if (isEntryContainer && (!(Utils.checkIfFilr()))) {
+		if (isEntryContainer && (!isFilr)) {
 			// ...add the change entry type item when not Filr....
 			tbi = new ToolbarItem("1_changeEntryTypeSelected");
 			markTBITitle(tbi, "toolbar.changeEntryType");
@@ -3017,36 +3022,42 @@ public class GwtMenuHelper {
 			}
 			
 
-			// Can the user run the edit-in-place editor on this item's
-			// file?
+			// Is the entry unlock and does the user have rights to
+			// modify it?
 			HistoryStamp	lStamp = fe.getReservation();
-			boolean			locked = (null != lStamp); 
+			boolean			locked = ((!isFilr) && (null != lStamp));	// We ignore locking in filr. 
 			if ((!locked) && fm.testAccess(fe, FolderOperation.modifyEntry)) {
+				// Yes!  Is it a file entry with a file attached?
 				FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
 				if (null != fa) {
-					String operatingSystem  = BrowserSniffer.getOSInfo(request);
-					String relativeFilePath = fa.getFileItem().getName();
-					String strOpenInEditor  = SsfsUtil.openInEditor(relativeFilePath, operatingSystem);
-					if (MiscUtil.hasString(strOpenInEditor)) {
-						String strEditorType;
-						if (BrowserSniffer.is_ie(request))
-						     strEditorType = SsfsUtil.attachmentEditTypeForIE();
-						else strEditorType = SsfsUtil.attachmentEditTypeForNonIE();
-						if (MiscUtil.hasString(strEditorType)) {
-							// Yes!  Add an edit-in-place toolbar item
-							// for it.
-							actionTBI = new ToolbarItem(EDIT_IN_PLACE);
-							markTBITitle(   actionTBI, "file.editFile"                   );
-							markTBIEvent(   actionTBI, TeamingEvents.INVOKE_EDIT_IN_PLACE);
-							markTBIEntryIds(actionTBI, fe                                );
-							markTBIEditInPlace(
-								actionTBI,
-								operatingSystem,
-								strOpenInEditor,
-								strEditorType,
-								fa.getId(),
-								SsfsUtil.getInternalAttachmentUrl(request, folder, fe, fa));
-							reply.add(actionTBI);
+					// Yes!  Did this user log in using OpenID?
+					if (!(WebHelper.isUserAuthenticatedViaOpenid())) {
+						// No!  Are there any applications defined to
+						// edit the file?
+						String operatingSystem  = BrowserSniffer.getOSInfo(request);
+						String relativeFilePath = fa.getFileItem().getName();
+						String strOpenInEditor  = SsfsUtil.openInEditor(relativeFilePath, operatingSystem);
+						if (MiscUtil.hasString(strOpenInEditor)) {
+							String strEditorType;
+							if (BrowserSniffer.is_ie(request))
+							     strEditorType = SsfsUtil.attachmentEditTypeForIE();
+							else strEditorType = SsfsUtil.attachmentEditTypeForNonIE();
+							if (MiscUtil.hasString(strEditorType)) {
+								// Yes!  Add an edit-in-place toolbar
+								// item for it.
+								actionTBI = new ToolbarItem(EDIT_IN_PLACE);
+								markTBITitle(   actionTBI, "file.editFile"                   );
+								markTBIEvent(   actionTBI, TeamingEvents.INVOKE_EDIT_IN_PLACE);
+								markTBIEntryIds(actionTBI, fe                                );
+								markTBIEditInPlace(
+									actionTBI,
+									operatingSystem,
+									strOpenInEditor,
+									strEditorType,
+									fa.getId(),
+									SsfsUtil.getInternalAttachmentUrl(request, folder, fe, fa));
+								reply.add(actionTBI);
+							}
 						}
 					}
 				}
@@ -3102,31 +3113,34 @@ public class GwtMenuHelper {
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 			
-			// Can the user lock this entry?
-			if (fm.testAccess(fe, FolderOperation.reserveEntry)) {
-				// Yes!  Is the entry currently locked?
-				if (!locked) {
-					// No!  Add a lock toolbar item for it.
-					actionTBI = new ToolbarItem(LOCK);
-					markTBITitle(   actionTBI, "toolbar.lock.entry");
-					markTBIEvent(   actionTBI, TeamingEvents.LOCK_SELECTED_ENTRIES);
-					markTBIEntryIds(actionTBI, fe                                 );
-					dropdownTBI.addNestedItem(actionTBI);
-				}
-				
-				else {
-					// Yes, the entry is currently locked!  If the
-				    // person who has locked the entry and the logged
-					// in user are the same or the person who is logged
-					// in is the binder administrator we allow an
-					// unlock.
-					boolean	isBinderAdmin = fm.testAccess(fe, FolderOperation.overrideReserveEntry);
-					if (isBinderAdmin || isLockedByLoggedInUser) {
-						actionTBI = new ToolbarItem(UNLOCK);
-						markTBITitle(   actionTBI, "toolbar.unlock.entry");
-						markTBIEvent(   actionTBI, TeamingEvents.UNLOCK_SELECTED_ENTRIES);
-						markTBIEntryIds(actionTBI, fe                                   );
+			// Are we in Filr mode?
+			if (!isFilr) {
+				// No!  Can the user lock this entry?
+				if (fm.testAccess(fe, FolderOperation.reserveEntry)) {
+					// Yes!  Is the entry currently locked?
+					if (!locked) {
+						// No!  Add a lock toolbar item for it.
+						actionTBI = new ToolbarItem(LOCK);
+						markTBITitle(   actionTBI, "toolbar.lock.entry");
+						markTBIEvent(   actionTBI, TeamingEvents.LOCK_SELECTED_ENTRIES);
+						markTBIEntryIds(actionTBI, fe                                 );
 						dropdownTBI.addNestedItem(actionTBI);
+					}
+					
+					else {
+						// Yes, the entry is currently locked!  If the
+					    // person who has locked the entry and the
+						// logged in user are the same or the person
+						// who is logged in is the binder administrator
+						// we allow an unlock.
+						boolean	isBinderAdmin = fm.testAccess(fe, FolderOperation.overrideReserveEntry);
+						if (isBinderAdmin || isLockedByLoggedInUser) {
+							actionTBI = new ToolbarItem(UNLOCK);
+							markTBITitle(   actionTBI, "toolbar.unlock.entry");
+							markTBIEvent(   actionTBI, TeamingEvents.UNLOCK_SELECTED_ENTRIES);
+							markTBIEntryIds(actionTBI, fe                                   );
+							dropdownTBI.addNestedItem(actionTBI);
+						}
 					}
 				}
 			}
