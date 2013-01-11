@@ -659,6 +659,12 @@ public class FolderUtils {
 	}
 	
 	public static void deleteFileInFolderEntry(FolderEntry entry, FileAttachment fa) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {
+        // By default, entry is simply moved into trash rather than permanently deleted.
+        boolean predelete = SPropsUtil.getBoolean("folderutils.deleteentry.predelete", true);
+        deleteFileInFolderEntry(entry, fa);
+    }
+
+	public static void deleteFileInFolderEntry(FolderEntry entry, FileAttachment fa, boolean predelete) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {
 		Binder parentBinder = entry.getParentBinder();
 		if(parentBinder.isMirrored() && fa.getRepositoryName().equals(ObjectKeys.FI_ADAPTER)) {
 			// The file being deleted is a mirrored file.
@@ -681,8 +687,6 @@ public class FolderUtils {
 				// This file being deleted is the only file associated with the entry.
 				// Delete the entire entry, instead of leaving an empty/dangling entry with no file.
 				// This will honor the Bug #554284.
-				// By default, entry is simply moved into trash rather than permanently deleted.
-				boolean predelete = SPropsUtil.getBoolean("folderutils.deleteentry.predelete", true);
 				if(predelete)
 					getFolderModule().preDeleteEntry(parentBinder.getId(), entry.getId(), RequestContextHolder.getRequestContext().getUserId());
 				else

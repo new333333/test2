@@ -80,12 +80,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Path("/folders")
 @Singleton
@@ -198,27 +196,33 @@ public class FolderResource extends AbstractBinderResource {
     @GET
     @Path("{id}/binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public SearchResultList<BinderBrief> getSubBinders(@PathParam("id") long id,
+    public Response getSubBinders(@PathParam("id") long id,
                                                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                        @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                                       @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        return getSubBinders(id, null, offset, maxCount, "/folders/" + id + "/binders", nextParams, textDescriptions);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, offset, maxCount, "/folders/" + id + "/binders", nextParams, textDescriptions, ifModifiedSince);
+        return Response.ok(subBinders).lastModified(subBinders.getLastModified()).build();
     }
 
     // Read sub-folders
 	@GET
 	@Path("{id}/folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResultList<BinderBrief> getSubFolders(@PathParam("id") long id,
+	public Response getSubFolders(@PathParam("id") long id,
                                                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
 			@QueryParam("first") @DefaultValue("0") Integer offset,
-			@QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+			@QueryParam("count") @DefaultValue("-1") Integer maxCount,
+            @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        return getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
-                offset, maxCount, "/folders/" + id + "/folders", nextParams, textDescriptions);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        SearchResultList<BinderBrief> subBinders = getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
+                offset, maxCount, "/folders/" + id + "/folders", nextParams, textDescriptions, ifModifiedSince);
+        return Response.ok(subBinders).lastModified(subBinders.getLastModified()).build();
 	}
 
     @POST
@@ -248,8 +252,8 @@ public class FolderResource extends AbstractBinderResource {
                                                             @QueryParam("first") Integer offset,
                                                             @QueryParam("count") Integer maxCount,
                                                             @QueryParam("file_name") String fileName) {
-        SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>();
         Folder folder = _getFolder(id);
+        SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(0, folder.getModificationDate());
         if (fileName!=null) {
             if (folder.isLibrary()) {
                 org.kablink.teaming.domain.FolderEntry folderEntry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);

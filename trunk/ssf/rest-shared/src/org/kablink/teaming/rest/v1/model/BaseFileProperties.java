@@ -36,6 +36,8 @@ package org.kablink.teaming.rest.v1.model;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import java.util.Date;
 
 /**
  * @author jong
@@ -93,7 +95,12 @@ public abstract class BaseFileProperties extends SearchableObject {
 		return modification;
 	}
 
-	public void setModification(HistoryStamp modification) {
+    @XmlTransient
+    public Date getModificationDate() {
+        return this.modification==null ? null : this.modification.getDate().getTime();
+    }
+
+    public void setModification(HistoryStamp modification) {
 		this.modification = modification;
 	}
 

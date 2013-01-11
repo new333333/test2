@@ -42,10 +42,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.util.search.Constants;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: david
@@ -110,5 +107,10 @@ public class BinderBriefBuilder extends BaseBinderBriefBuilder implements Contai
 
     public SearchResultTreeNode<BinderBrief> factoryTreeNode(BinderBrief binder) {
         return new SearchResultTreeNode<BinderBrief>(binder);
+    }
+
+    @Override
+    public Date getLastModified(BinderBrief obj) {
+        return obj.getModificationDate();
     }
 }

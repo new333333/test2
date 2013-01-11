@@ -16,14 +16,7 @@ import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Junction;
 import org.kablink.util.search.Restrictions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * User: david
@@ -142,6 +135,10 @@ public class SearchResultBuilderUtil {
                 T obj = builder.build(entry);
                 if (obj!=null) {
                     results.append(obj);
+                    Date lastModified = builder.getLastModified(obj);
+                    if (lastModified!=null) {
+                        results.updateLastModified(lastModified);
+                    }
                 }
             }
         }

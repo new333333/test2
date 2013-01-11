@@ -35,13 +35,10 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: david
@@ -54,6 +51,7 @@ public class SearchResultList<T> {
     private Integer count = 0;
     private Integer total = 0;
     private String next;
+    private Date lastModified;
     private List<T> results = new ArrayList<T>();
 
     public SearchResultList() {
@@ -62,6 +60,26 @@ public class SearchResultList<T> {
 
     public SearchResultList(Integer first) {
         this.first = first;
+    }
+
+    public SearchResultList(Integer first, Date lastModified) {
+        this.first = first;
+        this.lastModified = lastModified;
+    }
+
+    @XmlTransient
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    public void updateLastModified(Date lastModified) {
+        if (this.lastModified==null || this.lastModified.before(lastModified)) {
+            this.lastModified = lastModified;
+        }
     }
 
     public Integer getFirst() {

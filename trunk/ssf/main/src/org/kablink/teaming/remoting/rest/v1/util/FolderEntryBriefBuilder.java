@@ -5,6 +5,7 @@ import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.util.search.Constants;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -37,5 +38,10 @@ public class FolderEntryBriefBuilder extends BaseFolderEntryBriefBuilder impleme
 
     public SearchResultTreeNode<FolderEntryBrief> factoryTreeNode(FolderEntryBrief obj) {
         return null;
+    }
+
+    @Override
+    public Date getLastModified(FolderEntryBrief obj) {
+        return obj.getModificationDate();
     }
 }

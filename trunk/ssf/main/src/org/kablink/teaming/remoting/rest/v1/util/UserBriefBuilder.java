@@ -37,6 +37,7 @@ import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.UserBrief;
 import org.kablink.util.search.Constants;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -75,5 +76,10 @@ public class UserBriefBuilder extends PrincipalBriefBuilder implements SearchRes
 
     public SearchResultTreeNode<UserBrief> factoryTreeNode(UserBrief obj) {
         return null;
+    }
+
+    @Override
+    public Date getLastModified(UserBrief obj) {
+        return obj.getModificationDate();
     }
 }

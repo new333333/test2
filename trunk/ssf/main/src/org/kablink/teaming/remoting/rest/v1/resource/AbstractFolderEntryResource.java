@@ -129,12 +129,7 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
     @Path("{id}/tags")
     public SearchResultList<Tag> getTags(@PathParam("id") Long id) {
         org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
-        Collection<org.kablink.teaming.domain.Tag> tags = getFolderModule().getTags(entry);
-        SearchResultList<Tag> results = new SearchResultList<Tag>();
-        for (org.kablink.teaming.domain.Tag tag : tags) {
-            results.append(ResourceUtil.buildTag(tag));
-        }
-        return results;
+        return getEntryTags(entry, false);
     }
 
     @POST

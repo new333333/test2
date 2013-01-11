@@ -36,6 +36,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.util.AllModulesInjected;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -50,4 +51,5 @@ public interface SearchResultBuilder<T> {
     public Object getId(T obj);
     public Object getParentId(T obj);
     public SearchResultTreeNode<T> factoryTreeNode(T obj);
+    public Date getLastModified(T obj);
 }

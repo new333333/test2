@@ -37,6 +37,7 @@ import org.kablink.teaming.rest.v1.model.NetFolderBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.util.search.Constants;
 
+import java.util.Date;
 import java.util.Map;
 
 public class NetFolderBriefBuilder extends BaseBinderBriefBuilder implements SearchResultBuilder<NetFolderBrief>{
@@ -71,5 +72,10 @@ public class NetFolderBriefBuilder extends BaseBinderBriefBuilder implements Sea
     @Override
     public SearchResultTreeNode<NetFolderBrief> factoryTreeNode(NetFolderBrief obj) {
         return new SearchResultTreeNode<NetFolderBrief>(obj);
+    }
+
+    @Override
+    public Date getLastModified(NetFolderBrief obj) {
+        return obj.getModificationDate();
     }
 }

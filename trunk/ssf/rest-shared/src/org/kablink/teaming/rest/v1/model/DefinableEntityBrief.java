@@ -2,7 +2,9 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -93,6 +95,11 @@ public abstract class DefinableEntityBrief extends SearchableObject {
 
     public HistoryStamp getModification() {
         return modification;
+    }
+
+    @XmlTransient
+    public Date getModificationDate() {
+        return this.modification==null ? null : this.modification.getDate().getTime();
     }
 
     public void setModification(HistoryStamp modification) {

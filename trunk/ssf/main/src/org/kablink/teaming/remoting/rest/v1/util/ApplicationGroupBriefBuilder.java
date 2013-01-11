@@ -35,6 +35,7 @@ package org.kablink.teaming.remoting.rest.v1.util;
 import org.kablink.teaming.rest.v1.model.ApplicationGroupBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -67,5 +68,10 @@ public class ApplicationGroupBriefBuilder extends PrincipalBriefBuilder implemen
 
     public SearchResultTreeNode<ApplicationGroupBrief> factoryTreeNode(ApplicationGroupBrief obj) {
         return null;
+    }
+
+    @Override
+    public Date getLastModified(ApplicationGroupBrief obj) {
+        return obj.getModificationDate();
     }
 }
