@@ -125,6 +125,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.EntryType;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.FileConflictsInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.FileConflictsInfoRpcResponseData.DisplayInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
@@ -139,7 +141,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.H
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.NetFoldersInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.QuotaInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsCmd.UploadInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData;
@@ -175,6 +177,7 @@ import org.kablink.teaming.gwt.server.util.GwtSharedMeItem.SharedMeEntriesMapCom
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
+import org.kablink.teaming.gwt.client.util.UploadInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
@@ -2734,6 +2737,69 @@ public class GwtViewHelper {
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
+	}
+
+	/**
+	 * Returns a FileConflictsInfoRpcResponseData object containing
+	 * information for rendering conflicts information in a dialog.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderInfo
+	 * @param fileConflicts
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static FileConflictsInfoRpcResponseData getFileConflictsInfo(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<UploadInfo> fileConflicts) throws GwtTeamingException {
+		try {
+			// Allocate a FileConflictsInfoRpcResponseData to return
+			// the information in.
+			FileConflictsInfoRpcResponseData reply = new FileConflictsInfoRpcResponseData();
+
+			// Add a DisplayInfo for the folder to the reply.
+			Folder folder = bs.getFolderModule().getFolder(folderInfo.getBinderIdAsLong());
+			String name = folder.getTitle();
+			DisplayInfo di = new DisplayInfo(
+				(MiscUtil.hasString(name) ? name : ("--" + NLT.get("entry.noTitle") + "--")),
+				folder.getPathName(),
+				folder.getIconName(IconSize.MEDIUM));
+			reply.setFolderDisplay(di);
+
+			// If we have some file conflicts...
+			if (MiscUtil.hasItems(fileConflicts)) {
+				// ...scan them...
+				for (UploadInfo fileConflict:  fileConflicts) {
+					// ...for for those that represent a file...
+					if (fileConflict.isFile()) {
+						// ...add a DisplayInfo for them to the reply.
+						di = new DisplayInfo(
+							fileConflict.getName(),
+							"",	// Don't need a path for files.
+							FileIconsHelper.getFileIconFromFileName(
+								fileConflict.getName(),
+								IconSize.SMALL));
+						reply.addFileConflictDisplay(di);
+					}
+				}
+			}
+			
+			// If we get here, reply refers to the
+			// FileConflictsInfoRpcResponseData with the information
+			// for running the conflicts dialog.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getFileConflictsInfo( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+		
 	}
 
 	/*
@@ -7570,10 +7636,10 @@ public class GwtViewHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData validateUploads(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<UploadInfo> uploads) throws GwtTeamingException {
+	public static ValidateUploadsRpcResponseData validateUploads(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<UploadInfo> uploads) throws GwtTeamingException {
 		try {
-			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+			// Allocate validation response we can return.
+			ValidateUploadsRpcResponseData reply = new ValidateUploadsRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// We're we given anything to validate?
 			if (MiscUtil.hasItems(uploads)) {
@@ -7671,11 +7737,39 @@ public class GwtViewHelper {
 						}
 					}
 				}
+				
+				// Scan the UploadInfo's again.
+				for (UploadInfo upload:  uploads) {
+					// Is this upload a file?
+					if (!(upload.isFile())) {
+						// No!  Skip it.
+						continue;
+					}
+					
+					// Does the folder contain an entry with this name?
+					String uploadFName = upload.getName();
+					FolderEntry fe = fm.getLibraryFolderEntryByFileName((Folder) folder, uploadFName);
+					if (null != fe) {
+						// Yes!  Track it as a duplicate.
+						reply.addDuplicate(upload);
+						continue;
+					}
+					
+					// Scan the files attached to the folder.
+					for (FileAttachment fa:  folder.getFileAttachments()) {
+						// Does this attachment's file exist and is it a match?
+						if (fa.getFileExists() && fa.getFileItem().getName().equals(uploadFName)) {
+							// Yes!  Track it as a duplicate.
+							reply.addDuplicate(upload);
+							break;
+						}
+					}
+				}
 			}
 			
 			// If we get here, reply refers to an
-			// ErrorListRpcResponseData containing any errors we
-			// encountered.  Return it.
+			// ValidateUploadsRpcResponseData containing any errors and
+			// information duplicates that we encountered.  Return it.
 			return reply;
 		}
 		

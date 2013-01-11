@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,7 +50,6 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -197,13 +196,12 @@ public class FooterPanel extends ToolPanelBase {
 	 * Asynchronously construct's the contents of the footer panel.
 	 */
 	private void loadPart1Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart1Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
@@ -251,13 +249,12 @@ public class FooterPanel extends ToolPanelBase {
 	 * Asynchronously construct's the contents of the footer panel.
 	 */
 	private void loadPart2Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart2Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
@@ -280,7 +277,7 @@ public class FooterPanel extends ToolPanelBase {
 				return;
 			}
 	
-			// Create an Anchor for the foot link...
+			// Create an Anchor for the footer link...
 			VibeFlowPanel ap = new VibeFlowPanel();
 			ap.addStyleName("vibe-footerAnchorPanel");
 			final Anchor a = new Anchor();
@@ -349,13 +346,12 @@ public class FooterPanel extends ToolPanelBase {
 	 * Asynchronously creates and renders the permalink information.
 	 */
 	private void renderPermalinksAsync() {
-		ScheduledCommand renderPermalinks = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				renderPermalinksNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(renderPermalinks);
+		});
 	}
 
 	/*
@@ -416,25 +412,28 @@ public class FooterPanel extends ToolPanelBase {
 		VibeFlowPanel rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_PERMALINK));
 		renderRowLink(rowDataPanel, permalinkTBI.getUrl());
 
-		// ...if there are simple names defined on a binder...
-		ToolbarItem simpleNamesTBI = m_footerTBI.getNestedToolbarItem("simpleNames");
-		if (null != simpleNamesTBI) {
-			// ...scan them...
-			int c = Integer.parseInt(simpleNamesTBI.getQualifierValue("simple.count"));
-			String simplePrefix = simpleNamesTBI.getQualifierValue("simple.prefix");
-			for (int i = 0; i < c; i += 1) {
-				// ...adding a link for each to the table...
-				String simpleName = simpleNamesTBI.getQualifierValue("simple." + i + ".name");
-				renderRowLink(rowDataPanel, (simplePrefix + simpleName));
-			}
-
-			// ...scan them again...
-			String hostName = simpleNamesTBI.getQualifierValue("simple.host");
-			rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_EMAIL_ADDRESSES));
-			for (int i = 0; i < c; i += 1) {
-				// ...adding an email for each to the table...
-				String emailAddress = simpleNamesTBI.getQualifierValue("simple." + i + ".email");
-				renderRowText(rowDataPanel, (emailAddress + "@" + hostName));
+		// ...if we're not in Filr mode...
+		if (!m_isFilr) {
+			// ...and if there are simple names defined on a binder...
+			ToolbarItem simpleNamesTBI = m_footerTBI.getNestedToolbarItem("simpleNames");
+			if (null != simpleNamesTBI) {
+				// ...scan them...
+				int c = Integer.parseInt(simpleNamesTBI.getQualifierValue("simple.count"));
+				String simplePrefix = simpleNamesTBI.getQualifierValue("simple.prefix");
+				for (int i = 0; i < c; i += 1) {
+					// ...adding a link for each to the table...
+					String simpleName = simpleNamesTBI.getQualifierValue("simple." + i + ".name");
+					renderRowLink(rowDataPanel, (simplePrefix + simpleName));
+				}
+	
+				// ...scan them again...
+				String hostName = simpleNamesTBI.getQualifierValue("simple.host");
+				rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_EMAIL_ADDRESSES));
+				for (int i = 0; i < c; i += 1) {
+					// ...adding an email for each to the table...
+					String emailAddress = simpleNamesTBI.getQualifierValue("simple." + i + ".email");
+					renderRowText(rowDataPanel, (emailAddress + "@" + hostName));
+				}
 			}
 		}
 

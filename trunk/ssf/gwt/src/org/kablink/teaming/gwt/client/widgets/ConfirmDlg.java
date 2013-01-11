@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,11 +36,11 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -53,7 +53,7 @@ import com.google.gwt.user.client.ui.Widget;
  *  
  * @author drfoster@novell.com
  */
-public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler{
+public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
 	private boolean					m_dialogReady;			// Set true once the dialog is ready for display.
 	private ConfirmCallback			m_confirmCallback;		// Callback interface to let the caller know what's going on.
 	private GwtTeamingMessages		m_messages;				// Access to Vibe's messages.
@@ -69,16 +69,6 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	// choice when calling ConfirmDlg.initAndShow().
 	private final static boolean USE_SIMPLE_CONFIRM_WHEN_POSSIBLE	= false;
 
-	/**
-	 * Interface used by the dialog to inform the caller about what's
-	 * going on. 
-	 */
-	public interface ConfirmCallback {
-		public void dialogReady();
-		public void accepted();
-		public void rejected();
-	}
-	
 	/*
 	 * Class constructor.
 	 * 
@@ -86,9 +76,9 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ConfirmDlg() {
+	private ConfirmDlg(DlgButtonMode buttons) {
 		// Initialize the superclass...
-		super(false, true, DlgButtonMode.YesNo);
+		super(false, true, buttons);
 
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
@@ -124,13 +114,12 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	private void doDialogReady() {
 		m_dialogReady = true;
 		show(true);
-		ScheduledCommand doReady = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				m_confirmCallback.dialogReady();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doReady);
+		});
 	}
 	
 	/**
@@ -139,13 +128,12 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	@Override
 	public boolean editCanceled() {
 		// Tell the caller the confirmation was rejected...
-		ScheduledCommand doRejected = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				m_confirmCallback.rejected();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRejected);
+		});
 		
 		// ...and return true to close the dialog.
 		return true;
@@ -159,13 +147,12 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	@Override
 	public boolean editSuccessful(Object callbackData) {
 		// Tell the caller the confirmation was accepted...
-		ScheduledCommand doAccepted = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				m_confirmCallback.accepted();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doAccepted);
+		});
 		
 		// ...and return true to close the dialog.
 		return true;
@@ -200,13 +187,12 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -241,13 +227,12 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * dialog.
 	 */
 	private static void runDlgAsync(final ConfirmDlg cDlg, final ConfirmCallback cCB, final String confirmationMsg, final Widget additionalWidgets, final boolean useSimpleConfirmWhenPossible) {
-		ScheduledCommand doRun = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				cDlg.runDlgNow(cCB, confirmationMsg, additionalWidgets, useSimpleConfirmWhenPossible);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		});
 	}
 	
 	/*
@@ -290,12 +275,12 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 			super.show();
 		}
 	}
+
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the confirmation dialog and perform some operation on it.     */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-	
 	
 	/**
 	 * Callback interface to interact with the confirmation dialog
@@ -312,7 +297,8 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 */
 	private static void doAsyncOperation(
 			// Required creation parameters.
-			final ConfirmDlgClient cDlgClient,
+			final ConfirmDlgClient	cDlgClient,
+			final DlgButtonMode		buttons,
 			
 			// initAndShow parameters,
 			final ConfirmDlg		cDlg,
@@ -334,7 +320,7 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 				// Is this a request to create a dialog?
 				if (null != cDlgClient) {
 					// Yes!  Create it and return it via the callback.
-					ConfirmDlg cDlg = new ConfirmDlg();
+					ConfirmDlg cDlg = new ConfirmDlg(buttons);
 					cDlgClient.onSuccess(cDlg);
 				}
 				
@@ -353,9 +339,16 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * via the callback.
 	 * 
 	 * @param cDlgClient
+	 * @param buttons
 	 */
+	public static void createAsync(ConfirmDlgClient cDlgClient, DlgButtonMode buttons) {
+		// Invoke the appropriate asynchronous operation.
+		doAsyncOperation(cDlgClient, buttons, null, null, null, null, false);
+	}
+	
 	public static void createAsync(ConfirmDlgClient cDlgClient) {
-		doAsyncOperation(cDlgClient, null, null, null, null, false);
+		// Always use the initial form of the method.
+		createAsync(cDlgClient, DlgButtonMode.YesNo);
 	}
 	
 	/**
@@ -368,7 +361,8 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * @param useSimpleConfirmWhenPossible
 	 */
 	public static void initAndShow(ConfirmDlg cDlg, ConfirmCallback cCB, String confirmationMsg, Widget additionalWidgets, boolean useSimpleConfirmWhenPossible) {
-		doAsyncOperation(null, cDlg, cCB, confirmationMsg, additionalWidgets, useSimpleConfirmWhenPossible);
+		// Invoke the appropriate asynchronous operation.
+		doAsyncOperation(null, null, cDlg, cCB, confirmationMsg, additionalWidgets, useSimpleConfirmWhenPossible);
 	}
 	
 	public static void initAndShow(ConfirmDlg cDlg, ConfirmCallback cCB, String confirmationMsg, Widget additionalWidgets) {

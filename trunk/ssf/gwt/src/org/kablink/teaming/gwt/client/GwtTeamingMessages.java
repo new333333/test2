@@ -365,6 +365,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetEntryComments();
 	String rpcFailure_GetEntryTypes();
 	String rpcFailure_getExecuteJspUrl();
+	String rpcFailure_GetFileConflictsInfo();
 	String rpcFailure_GetFileFolderEntries();
 	String rpcFailure_GetFileUrl();
 	String rpcFailure_GetFolderColumns();
@@ -608,6 +609,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_EntryMenuPanel();
 	String codeSplitFailure_ExtensionsConfig();
 	String codeSplitFailure_FilterPanel();
+	String codeSplitFailure_FileConflictsDlg();
 	String codeSplitFailure_FileFolderView();
 	String codeSplitFailure_FindCtrl();
 	String codeSplitFailure_FolderEntryComposite();
@@ -2489,5 +2491,14 @@ public interface GwtTeamingMessages extends Messages
 	String renameEntityDlgHeader_Unknown();
 	String renameEntityDlgHeader_Workspace();
 	String renameEntityDlgName();
+	
+	// Strings used by the 'File Conflicts' dialog.
+	String fileConflictsDlgBtnCancel();
+	String fileConflictsDlgBtnOverwrite();
+	String fileConflictsDlgBtnVersion();
+	String fileConflictsDlgConfirmOverwrite();
+	String fileConflictsDlgConfirmVersion();
+	String fileConflictsDlgConflictingFiles();
+	String fileConflictsDlgHeader();
 
 }// end GwtTeamingMessages

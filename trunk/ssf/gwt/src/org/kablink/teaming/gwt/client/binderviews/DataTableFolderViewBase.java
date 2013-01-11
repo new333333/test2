@@ -140,8 +140,8 @@ import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
+import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
-import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
@@ -151,7 +151,6 @@ import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -176,7 +175,6 @@ import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -235,6 +233,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private boolean						m_fixedLayout;				//
 	private Column<FolderRow, Boolean>	m_selectColumn;				//
 	private ColumnWidth					m_actionMenuColumnWidth;	//
+	private ColumnWidth					m_100PctColumnWidth;		//
 	private ColumnWidth					m_defaultColumnWidth;		//
 	private FolderRowPager 				m_dataTablePager;			// Pager widgets at the bottom of the data table.
 	private List<FolderColumn>			m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
@@ -1202,7 +1201,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (m_fixedLayout)
 		     initDataMembersFixed();
 		else initDataMembersFloat();
-		m_actionMenuColumnWidth = new ColumnWidth(ACTION_MENU_WIDTH_PX, Unit.PX);
+		m_actionMenuColumnWidth = new ColumnWidth(ACTION_MENU_WIDTH_PX, Unit.PX );
+		m_100PctColumnWidth     = new ColumnWidth(100,                  Unit.PCT);
 		
 		// ...and store the initial columns widths as the defaults.
 		m_defaultColumnWidths = ColumnWidth.copyColumnWidths(m_columnWidths);
@@ -1224,7 +1224,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Add the widths for predefined column names...
 		m_columnWidths.put(     FolderColumn.COLUMN_AUTHOR,   new ColumnWidth( 24         ));	// Unless otherwise specified...
 		m_columnWidths.put(     FolderColumn.COLUMN_COMMENTS, new ColumnWidth( 70, Unit.PX));	// ...the widths default to...
-		m_columnWidths.put(     FolderColumn.COLUMN_DOWNLOAD, new ColumnWidth(  8         ));	// ...be a percentage value.
+		m_columnWidths.put(     FolderColumn.COLUMN_DATE,     new ColumnWidth(160, Unit.PX));	// ...be a percentage value.
+		m_columnWidths.put(     FolderColumn.COLUMN_DOWNLOAD, new ColumnWidth(  8         ));	
 		m_columnWidths.put(     FolderColumn.COLUMN_HTML,     new ColumnWidth( 10         ));
 		m_columnWidths.put(     FolderColumn.COLUMN_LOCATION, new ColumnWidth( 30         ));
 		m_columnWidths.put(     FolderColumn.COLUMN_NUMBER,   new ColumnWidth( 60, Unit.PX));
@@ -1270,6 +1271,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		ColumnSortList csl = m_dataTable.getColumnSortList();
 		csl.clear();
 
+		// If all the columns being displayed use pixel widths...
+		if (GwtClientHelper.hasItems(m_folderColumnsList) && (0 == ColumnWidth.pctColumns(m_folderColumnsList, m_columnWidths, m_defaultColumnWidth))) {
+			// ...force the last one to 100%.
+			FolderColumn lastCol = m_folderColumnsList.get(m_folderColumnsList.size() - 1);
+			m_columnWidths.put(lastCol.getColumnName(), m_100PctColumnWidth);
+		}
+		
 		// If this folder supports entry selections...
 		double pctTotal = ColumnWidth.sumPCTWidths(m_folderColumnsList, m_columnWidths, m_defaultColumnWidth);
 		int colIndex = 0;
@@ -1621,13 +1629,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Asynchronously loads the column information for the folder.
 	 */
 	private void loadFolderColumnsAsync() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadFolderColumnsNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 
 	/*
@@ -1737,7 +1744,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventBinderId.equals(getFolderId())) {
 			// Yes!  Asynchronously fire the corresponding reply event
 			// with the contributor IDs.
-			ScheduledCommand doReply = new ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					GwtTeaming.fireEvent(
@@ -1745,8 +1752,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 							eventBinderId,
 							m_contributorIds));
 				}
-			};
-			Scheduler.get().scheduleDeferred(doReply);
+			});
 		}
 	}
 	
@@ -1986,13 +1992,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					public void onSuccess(final SizeColumnsDlg scDlg) {
 						// ...and show it.
 						m_sizeColumnsDlg = scDlg;
-						ScheduledCommand doShow = new ScheduledCommand() {
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
 							@Override
 							public void execute() {
 								showSizeColumnsDlgNow();
 							}
-						};
-						Scheduler.get().scheduleDeferred(doShow);
+						});
 					}
 				});
 			}
@@ -2045,13 +2050,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Asynchronously invokes the drop box on the given folder.
 	 */
 	private void onInvokeDropBoxAsync(final BinderInfo dropTarget) {
-		Scheduler.ScheduledCommand doDrop = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onInvokeDropBoxNow(dropTarget);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doDrop);
+		});
 	}
 	
 	/*
@@ -2076,13 +2080,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Asynchronously invoke the guest book signing UI.
-			Scheduler.ScheduledCommand doSignGuestbook = new Scheduler.ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					signGuestbook();
 				}
-			};
-			Scheduler.get().scheduleDeferred(doSignGuestbook);
+			});
 		}
 	}
 	
@@ -2270,25 +2273,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * position in the view.
 	 */
 	private void onResizeAsync(int delay) {
-		if (0 == delay) {
-			ScheduledCommand doResize = new ScheduledCommand() {
-				@Override
-				public void execute() {
-					onResize();
-				}
-			};
-			Scheduler.get().scheduleDeferred(doResize);
-		}
-		
-		else {
-			Timer timer = new Timer() {
-				@Override
-				public void run() {
-					onResize();
-				}
-			};
-			timer.schedule(delay);
-		}
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onResize();
+			}
+		},
+		delay);
 	}
 
 	/*
@@ -2569,13 +2560,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Asynchronously purge all the entries from the
 			// trash.
-			Scheduler.ScheduledCommand doPurge = new Scheduler.ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					trashPurgeAll();
 				}
-			};
-			Scheduler.get().scheduleDeferred(doPurge);
+			});
 		}
 	}
 
@@ -2593,13 +2583,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Asynchronously purge the selected entries from the
 			// trash.
-			Scheduler.ScheduledCommand doPurge = new Scheduler.ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					trashPurgeSelectedEntries();
 				}
-			};
-			Scheduler.get().scheduleDeferred(doPurge);
+			});
 		}
 	}
 
@@ -2617,13 +2606,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Asynchronously restore all the entries in the
 			// trash.
-			Scheduler.ScheduledCommand doRestore = new Scheduler.ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					trashRestoreAll();
 				}
-			};
-			Scheduler.get().scheduleDeferred(doRestore);
+			});
 		}
 	}
 
@@ -2641,14 +2629,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Asynchronously restore the selected entries in the
 			// trash.
-			Scheduler.ScheduledCommand doRestore = new Scheduler.ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					trashRestoreSelectedEntries();
 				}
-			};
-			Scheduler.get().scheduleDeferred(doRestore);
-			
+			});
 		}
 	}
 	
@@ -2788,13 +2774,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * data.
 	 */
 	private void populateViewAsync() {
-		Scheduler.ScheduledCommand doPopulate = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateView();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -2880,13 +2865,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * they need to do once a collection of rows have been rendered.
 	 */
 	private void postProcessRowDataAsync(final List<FolderRow> folderRows) {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				postProcessRowData(folderRows, m_folderColumnsList);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/**
@@ -2981,13 +2965,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Asynchronously resets the view.
 	 */
 	private void resetViewAsync() {
-		ScheduledCommand doResetView = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				resetView();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doResetView);
+		});
 	}
 	
 	/*
@@ -3068,13 +3051,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Asynchronously runs the share dialog on the selected entities.
 	 */
 	private void shareSelectedEntitiesAsync(final List<EntityId> selectedEntities) {
-		Scheduler.ScheduledCommand doShare = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				shareSelectedEntitiesNow(selectedEntities);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doShare);
+		});
 	}
 	
 	/*

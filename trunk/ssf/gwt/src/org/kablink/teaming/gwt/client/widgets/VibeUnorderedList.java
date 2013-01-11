@@ -30,84 +30,58 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.widgets;
 
-package org.kablink.teaming.gwt.client.rpc.shared;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.UploadInfo;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.UListElement;
+import com.google.gwt.user.client.ui.ComplexPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'validate uploads' command.
+ * Provides a <UL> widget for Vibe.  Use Vibe's VibeListItem for <LI>'s
+ * within the list.
+ * 
+ * See:  https://turbomanage.wordpress.com/2010/02/11/writing-plain-html-in-gwt/
  * 
  * @author drfoster@novell.com
  */
-public class ValidateUploadsCmd extends VibeRpcCmd {
-	private BinderInfo			m_folderInfo;	// The folder to be uploaded into.
-	private List<UploadInfo>	m_uploads;		// Information about what's to be uploaded.
-
+public class VibeUnorderedList extends ComplexPanel {
 	/**
 	 * Constructor method.
-	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public ValidateUploadsCmd() {
+	public VibeUnorderedList() {
 		// Initialize the super class...
 		super();
 		
-		// ...and initialize anything else that requires it.
-		m_uploads = new ArrayList<UploadInfo>();
+		// ...and create a <UL> Element for the widget.
+		setElement(Document.get().createULElement());
 	}
-	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param folderInfo
-	 */
-	public ValidateUploadsCmd(BinderInfo folderInfo) {
-		// Initialize this object...
-		this();
-		
-		// ...and store the parameter.
-		setFolderInfo(folderInfo);
-	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public BinderInfo       getFolderInfo() {return m_folderInfo;}
-	public List<UploadInfo> getUploads()    {return m_uploads;   }
 
 	/**
-	 * Set'er methods.
-	 * 
-	 * @param
+	 * Set an attribute common to all tags.
+	 *  
+	 * @param id
 	 */
-	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
+	public void setId(String id) {
+		getElement().setId(id);
+	}
 
 	/**
-	 * Add'er methods.
+	 * Set an attribute specific to this tag
 	 * 
-	 * @param name
-	 * @param size
+	 * @param dir
 	 */
-	public void addFile(  String name, long size) {m_uploads.add(new UploadInfo(name, size, true ));}
-	public void addFolder(String name)            {m_uploads.add(new UploadInfo(name, (-1), false));}
-	
+	public void setDir(String dir) {
+		((UListElement) getElement().cast()).setDir(dir);
+	}
+
 	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
+	 * Adds a widget to the unordered list.
+	 * @param w
 	 */
 	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.VALIDATE_UPLOADS.ordinal();
+	public void add(Widget w) {
+		// ComplexPanel requires the two argument add() method.
+		super.add(w, getElement());
 	}
 }
