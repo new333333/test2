@@ -311,6 +311,29 @@ public class SearchFilter {
 	}
 	
 	/**
+	 * Add a filter for the "ldap container" field
+	 */
+	public void addAndLdapContainerFilter( boolean ldapContainer )
+	{
+		newCurrentFilterTermsBlock();
+		currentFilterTerms.addAttribute( SearchFilterKeys.FilterAnd, "true" );
+		
+		addLdapContainerFilter( ldapContainer );
+	}
+	
+	/**
+	 * Add a filter for the "ldap container" field
+	 */
+	public void addLdapContainerFilter( boolean ldapContainer )
+	{
+		addFieldFilter(
+					Constants.IS_LDAP_CONTAINER_FIELD,
+					SearchFilterKeys.FilterTypeEntryDefinition,
+					String.valueOf( ldapContainer ),
+					SearchFilterKeys.FilterValueTypeBoolean );
+	}
+	
+	/**
 	 * Add a filter for the "internal" field
 	 */
 	public void addAndInternalFilter( boolean internalOnly )

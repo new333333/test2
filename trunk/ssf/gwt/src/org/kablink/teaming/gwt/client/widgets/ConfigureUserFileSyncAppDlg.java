@@ -50,6 +50,8 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -57,6 +59,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RadioButton;
 
 
 /**
@@ -67,6 +70,8 @@ import com.google.gwt.user.client.ui.Panel;
 public class ConfigureUserFileSyncAppDlg extends DlgBox
 	implements EditSuccessfulHandler
 {
+	private RadioButton m_useGlobalSettingsRB;
+	private RadioButton m_useUserSettingsRB;
 	private CheckBox m_enableFileSyncAccessCB;
 	private CheckBox m_allowPwdCacheCB;
 
@@ -114,22 +119,46 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 	{
 		GwtTeamingMessages messages;
 		FlowPanel mainPanel = null;
+		FlowPanel userPanel;
 		FlowPanel tmpPanel;
 		FlowPanel ckboxPanel;
-		Label label;
+		ClickHandler clickHandler;
 
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		label = new Label( messages.fileSyncAppHeader2() );
-		mainPanel.add( label );
+		m_useGlobalSettingsRB = new RadioButton( "settingScope", messages.fileSyncAppUseGlobalSettings() );
+		tmpPanel = new FlowPanel();
+		tmpPanel.addStyleName( "marginbottom1" );
+		tmpPanel.add( m_useGlobalSettingsRB );
+		mainPanel.add( tmpPanel );
 		
+		m_useUserSettingsRB = new RadioButton( "settingScope", messages.fileSyncAppUseUserSettings() );
+		tmpPanel = new FlowPanel();
+		tmpPanel.addStyleName( "marginbottom1" );
+		tmpPanel.add( m_useUserSettingsRB );
+		mainPanel.add( tmpPanel );
+		
+		userPanel = new FlowPanel();
+		userPanel.addStyleName( "marginleft1" );
+		mainPanel.add( userPanel );
+
 		ckboxPanel = new FlowPanel();
 		ckboxPanel.addStyleName( "marginleft1" );
 		ckboxPanel.addStyleName( "marginbottom2" );
-		mainPanel.add( ckboxPanel );
+		userPanel.add( ckboxPanel );
+
+		clickHandler = new ClickHandler()
+		{
+			@Override
+			public void onClick( ClickEvent event )
+			{
+				m_useGlobalSettingsRB.setValue( false );
+				m_useUserSettingsRB.setValue( true );
+			}
+		};
 		
 		// Add the controls for enable/disable File Sync App
 		{
@@ -140,6 +169,7 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 				productName = "Filr";
 			
 			m_enableFileSyncAccessCB = new CheckBox( messages.fileSyncAppAllowAccess( productName ) );
+			m_enableFileSyncAccessCB.addClickHandler( clickHandler );
 			tmpPanel = new FlowPanel();
 			tmpPanel.add( m_enableFileSyncAccessCB );
 			ckboxPanel.add( tmpPanel );
@@ -147,6 +177,7 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 		
 		// Create the "Allow desktop application to cache password"
 		m_allowPwdCacheCB = new CheckBox( messages.fileSyncAppAllowCachePwd() );
+		m_allowPwdCacheCB.addClickHandler( clickHandler );
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_allowPwdCacheCB );
 		ckboxPanel.add( tmpPanel );
@@ -218,6 +249,9 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 		GwtUserFileSyncAppConfig config;
 		
 		config = new GwtUserFileSyncAppConfig();
+		
+		// Get whether to use the global settings
+		config.setUseGlobalSettings( getUseGlobalSettings() );
 
 		// Get whether the File Sync App is enabled.
 		config.setIsFileSyncAppEnabled( getIsFileSyncAppEnabled() );
@@ -275,6 +309,14 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	private boolean getUseGlobalSettings()
+	{
+		return m_useGlobalSettingsRB.getValue();
 	}
 	
 	/**
@@ -359,14 +401,19 @@ public class ConfigureUserFileSyncAppDlg extends DlgBox
 	{
 		if ( config != null )
 		{
-			// Initialize the on/off radio buttons.
+			m_useGlobalSettingsRB.setValue( config.getUseGlobalSettings() );
+			m_useUserSettingsRB.setValue( !config.getUseGlobalSettings() );
+			
+			// Initialize the access Filr checkbox.
 			m_enableFileSyncAccessCB.setValue( config.getIsFileSyncAppEnabled() );
 				
-			// Initialize the allow pwd  cache checkbox
+			// Initialize the allow pwd cache checkbox
 			m_allowPwdCacheCB.setValue( config.getAllowCachePwd() );
 		}
 		else
 		{
+			m_useGlobalSettingsRB.setValue( true );
+			m_useUserSettingsRB.setValue( false );
 			m_enableFileSyncAccessCB.setValue( false );
 			m_allowPwdCacheCB.setValue( false );
 		}

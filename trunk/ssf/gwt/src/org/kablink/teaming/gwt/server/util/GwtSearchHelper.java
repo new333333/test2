@@ -294,6 +294,8 @@ public class GwtSearchHelper
 				searchTermFilter.addAndInternalFilter( false );
 			}
 				
+			// Don't ever return "ldap container" groups.
+			searchTermFilter.addAndLdapContainerFilter( false );
 			break;
 
 		case GROUP:
@@ -312,6 +314,9 @@ public class GwtSearchHelper
 				// Yes
 				searchTermFilter.addAndInternalFilter( false );
 			}
+			
+			// Don't ever return "ldap container" groups.
+			searchTermFilter.addAndLdapContainerFilter( false );
 			break;
 			
 		default:

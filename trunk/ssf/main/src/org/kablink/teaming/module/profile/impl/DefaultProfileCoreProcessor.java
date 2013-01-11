@@ -647,10 +647,12 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 			ProfileIndexUtils.addIdentityInfo(indexDoc, user);
 			ProfileIndexUtils.addEmail(indexDoc, user);
 			ProfileIndexUtils.addDisabled(indexDoc, user);
+			ProfileIndexUtils.addIsLdapContainer( indexDoc, (User)entry );
 		} else if(entry instanceof Group) {
 	        ProfileIndexUtils.addName(indexDoc, (Group)entry, false);	
 	        ProfileIndexUtils.addDynamic(indexDoc, (Group)entry, false);	
 			ProfileIndexUtils.addIdentityInfo( indexDoc, (UserPrincipal)entry );
+			ProfileIndexUtils.addIsLdapContainer( indexDoc, (Group)entry );
 		} else if(entry instanceof Application) {
 	        ProfileIndexUtils.addName(indexDoc, (Application)entry, false);	
 		} else if(entry instanceof ApplicationGroup) {

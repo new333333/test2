@@ -46,6 +46,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtUserMobileAppsConfig
 	implements IsSerializable, VibeRpcResponseData
 {
+	private boolean m_useGlobalSettings;
 	private boolean m_mobileAppsEnabled = false;
 	private boolean m_allowCachePwd = false;
 	private boolean m_allowCacheContent = false;
@@ -93,6 +94,14 @@ public class GwtUserMobileAppsConfig
 	/**
 	 * 
 	 */
+	public boolean getUseGlobalSettings()
+	{
+		return m_useGlobalSettings;
+	}
+
+	/**
+	 * 
+	 */
 	public void setAllowCacheContent( boolean allow )
 	{
 		m_allowCacheContent = allow;
@@ -120,5 +129,13 @@ public class GwtUserMobileAppsConfig
 	public void setMobileAppsEnabled( boolean enabled )
 	{
 		m_mobileAppsEnabled = enabled;
+	}
+
+	/**
+	 * 
+	 */
+	public void setUseGlobalSettings( boolean useGlobal )
+	{
+		m_useGlobalSettings = useGlobal;
 	}
 }

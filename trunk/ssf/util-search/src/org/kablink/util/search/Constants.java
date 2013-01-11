@@ -295,6 +295,7 @@ public class Constants {
     public static final String RESOURCE_DRIVER_NAME_FIELD = "_resourceDriverName";
     public static final String ALLOW_MOBILE_SYNC_FIELD = "_allowMobileSync";
     public static final String ALLOW_DESKTOP_SYNC_FIELD = "_allowDesktopSync";
+    public static final String IS_LDAP_CONTAINER_FIELD = "_isLdapContainer";
 
 	/**
 	 * Constructor method.
