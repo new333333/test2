@@ -61,6 +61,7 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
@@ -491,12 +492,21 @@ public class NetFolderHelper
 		String hostUrl,
 		boolean allowSelfSignedCerts,
 		boolean isSharePointServer,
-		ScheduleInfo scheduleInfo )
+		ScheduleInfo scheduleInfo ) throws RDException
 	{
 		Map options;
 		ResourceDriverConfig rdConfig = null;
 		
 		adminModule.checkAccess( AdminOperation.manageResourceDrivers );
+		
+		// Does a net folder root already exist with the give name?
+		if ( findNetFolderRootByName( adminModule, resourceDriverModule, name ) != null )
+		{
+			// Yes, do not allow this.
+			throw new RDException(
+								NLT.get( RDException.DUPLICATE_RESOURCE_DRIVER_NAME, new String[] {name}),
+								name );
+		}
 
 		options = new HashMap();
 		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
@@ -620,6 +630,31 @@ public class NetFolderHelper
 		}
 		
 		// If we get here we did not find a net folder root with the given unc.
+		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	public static ResourceDriverConfig findNetFolderRootByName(
+		AdminModule adminModule,
+		ResourceDriverModule resourceDriverModule,
+		String name )
+	{
+		List<ResourceDriverConfig> drivers;
+
+		if ( name == null )
+			return null;
+		
+		// Get a list of the currently defined Net Folder Roots
+		drivers = resourceDriverModule.getAllResourceDriverConfigs();
+		for ( ResourceDriverConfig driver : drivers )
+		{
+			if ( name.equalsIgnoreCase( driver.getName() ) )
+				return driver;
+		}
+		
+		// If we get here we did not find a net folder root with the given name.
 		return null;
 	}
 	

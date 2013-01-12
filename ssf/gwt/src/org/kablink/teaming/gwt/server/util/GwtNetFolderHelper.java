@@ -80,6 +80,7 @@ import org.kablink.teaming.jobs.Schedule;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
+import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.function.Function;
@@ -249,19 +250,29 @@ public class GwtNetFolderHelper
 		
 		driverType = getDriverType( netFolderRoot.getRootType() );
 		scheduleInfo = getScheduleInfoFromGwtSchedule( netFolderRoot.getSyncSchedule() );
-		rdConfig = NetFolderHelper.createNetFolderRoot(
-												ami.getAdminModule(),
-												ami.getResourceDriverModule(),
-												netFolderRoot.getName(),
-												netFolderRoot.getRootPath(),
-												driverType,
-												netFolderRoot.getProxyName(),
-												netFolderRoot.getProxyPwd(),
-												netFolderRoot.getListOfPrincipalIds(),
-												netFolderRoot.getHostUrl(),
-												netFolderRoot.getAllowSelfSignedCerts(),
-												netFolderRoot.getIsSharePointServer(),
-												scheduleInfo );
+		try
+		{
+			rdConfig = NetFolderHelper.createNetFolderRoot(
+													ami.getAdminModule(),
+													ami.getResourceDriverModule(),
+													netFolderRoot.getName(),
+													netFolderRoot.getRootPath(),
+													driverType,
+													netFolderRoot.getProxyName(),
+													netFolderRoot.getProxyPwd(),
+													netFolderRoot.getListOfPrincipalIds(),
+													netFolderRoot.getHostUrl(),
+													netFolderRoot.getAllowSelfSignedCerts(),
+													netFolderRoot.getIsSharePointServer(),
+													scheduleInfo );
+		}
+		catch ( RDException ex )
+		{
+			GwtTeamingException gwtEx;
+			
+			gwtEx = GwtServerHelper.getGwtTeamingException( ex );
+			throw gwtEx;
+		}
 
 		if ( rdConfig != null )
 		{
