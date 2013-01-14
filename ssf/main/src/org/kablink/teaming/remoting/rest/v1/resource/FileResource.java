@@ -285,7 +285,11 @@ public class FileResource extends AbstractFileResource {
         Long finalParentId = null;
         if (newFolderId.equals(ObjectKeys.MY_FILES_ID)) {
             finalParentId = newFolderId;
-            newFolderId = SearchUtils.getMyFilesFolderId(this, this.getLoggedInUser().getWorkspaceId(), true);
+            if (SearchUtils.useHomeAsMyFiles(this)) {
+                newFolderId = SearchUtils.getHomeFolderId(this);
+            } else {
+                newFolderId = SearchUtils.getMyFilesFolderId(this, this.getLoggedInUser().getWorkspaceId(), true);
+            }
         }
         Binder binder = getBinderModule().getBinder(newFolderId, false, true);
         if (!(binder instanceof Folder)) {

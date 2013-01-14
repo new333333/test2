@@ -135,10 +135,14 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         Long finalParentId = null;
         if (newBinderId.equals(ObjectKeys.MY_FILES_ID)) {
             finalParentId = newBinderId;
-            newBinderId = getLoggedInUser().getWorkspaceId();
+            if (SearchUtils.useHomeAsMyFiles(this)) {
+                newBinderId = SearchUtils.getHomeFolderId(this);
+            } else {
+                newBinderId = getLoggedInUser().getWorkspaceId();
+            }
         }
 
-        org.kablink.teaming.domain.Binder parentBinder = _getBinder(newBinderId);
+        org.kablink.teaming.domain.Binder parentBinder = _getBinderImpl(newBinderId);
         getBinderModule().moveBinder(binder.getId(), parentBinder.getId(), null);
 
         Binder modifiedBinder = ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
@@ -388,7 +392,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     protected Binder _createLibraryFolder(long parentId, BinderBrief newBinder, boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
-        org.kablink.teaming.domain.Binder parent = _getBinder(parentId);
+        org.kablink.teaming.domain.Binder parent = _getBinderImpl(parentId);
         if (newBinder.getTitle()==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No folder title was supplied in the POST data.");
         }
@@ -397,7 +401,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     protected Binder createBinder(long parentId, Binder newBinder, Long templateId, boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
-        _getBinder(parentId);
+        _getBinderImpl(parentId);
         if (newBinder.getTitle()==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No binder title was supplied in the POST data.");
         }
@@ -511,6 +515,10 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     protected org.kablink.teaming.domain.Binder _getBinder(long id) {
+        return _getBinderImpl(id);
+    }
+
+    private org.kablink.teaming.domain.Binder _getBinderImpl(long id) {
         try{
             return getBinderModule().getBinder(id, false, true);
         } catch (NoBinderByTheIdException e) {
