@@ -217,38 +217,46 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 	@GET
 	@Path("{id}/library_files")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResultList<FileProperties> getLibraryFiles(@PathParam("id") long id,
+	public Response getLibraryFiles(@PathParam("id") long id,
                                                   @QueryParam("file_name") String fileName,
                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                   @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                   @QueryParam("first") Integer offset,
-                                                  @QueryParam("count") Integer maxCount) {
+                                                  @QueryParam("count") Integer maxCount,
+                                                  @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         if (fileName!=null) {
             nextParams.put("recursive", fileName);
         }
         nextParams.put("recursive", Boolean.toString(recursive));
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        return getSubFiles(id, fileName, recursive, true, includeParentPaths, offset, maxCount, getBasePath() + id + "/library_files", nextParams);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        SearchResultList<FileProperties> subFiles = getSubFiles(id, fileName, recursive, true, includeParentPaths,
+                offset, maxCount, getBasePath() + id + "/library_files", nextParams, ifModifiedSince);
+        return Response.ok(subFiles).lastModified(subFiles.getLastModified()).build();
 	}
 
     // Read entries
 	@GET
 	@Path("{id}/files")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResultList<FileProperties> getFiles(@PathParam("id") long id,
+	public Response getFiles(@PathParam("id") long id,
                                                      @QueryParam("file_name") String fileName,
                                                      @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                   @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                   @QueryParam("first") Integer offset,
-                                                  @QueryParam("count") Integer maxCount) {
+                                                  @QueryParam("count") Integer maxCount,
+                                                  @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         if (fileName!=null) {
             nextParams.put("recursive", fileName);
         }
         nextParams.put("recursive", Boolean.toString(recursive));
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        return getSubFiles(id, fileName, recursive, false, includeParentPaths, offset, maxCount, getBasePath() + id + "/files", nextParams);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        SearchResultList<FileProperties> subFiles = getSubFiles(id, fileName, recursive, false, includeParentPaths,
+                offset, maxCount, getBasePath() + id + "/files", nextParams, ifModifiedSince);
+        return Response.ok(subFiles).lastModified(subFiles.getLastModified()).build();
 	}
 
     @GET
@@ -446,7 +454,8 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     protected SearchResultList<FileProperties> getSubFiles(long id, String fileName, boolean recursive, boolean onlyLibraryFiles, boolean includeParentPaths,
-                                                           Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams) {
+                                                           Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams,
+                                                           Date modifiedSince) {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
         Junction criterion = Restrictions.conjunction()
             .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT));
@@ -465,6 +474,11 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         results.setTotal(files.size());
         for (FileIndexData file : files) {
             results.append(ResourceUtil.buildFileProperties(file));
+            results.updateLastModified(file.getModifiedDate());
+        }
+
+        if (modifiedSince!=null && !modifiedSince.before(results.getLastModified())) {
+            throw new NotModifiedException();
         }
 
         if (includeParentPaths) {
