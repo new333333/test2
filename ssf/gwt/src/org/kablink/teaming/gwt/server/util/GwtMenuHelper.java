@@ -1545,9 +1545,10 @@ public class GwtMenuHelper {
 			markTBITitle(actionTBI, (isFolder ? "toolbar.menu.rename_folder" : "toolbar.menu.rename_workspace"));
 			markTBIEvent(actionTBI, TeamingEvents.INVOKE_RENAME_ENTITY                                         );
 			configTBI.addNestedItem(actionTBI);
-			
-			// ...then a modify ToolbarItem...
+
+			// ...if we're not in Filr mode...
 			if (!isFilr) {
+				// ...then a modify ToolbarItem...
 				url = createActionUrl(request);
 				url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
 				url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
@@ -1560,49 +1561,50 @@ public class GwtMenuHelper {
 				markTBIUrl(  actionTBI, url                                                                        );
 				
 				configTBI.addNestedItem(actionTBI);
+
+				// ...then a configure ToolbarItem.
+				url = createActionUrl(request);
+				url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_CONFIGURE_DEFINITIONS);
+				url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                           );
+				url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()                   );
+				
+				actionTBI = new ToolbarItem(CONFIGURE_DEFINITIONS);
+				markTBIPopup(actionTBI                              );
+				markTBITitle(actionTBI, "toolbar.menu.configuration");
+				markTBIUrl(  actionTBI, url                         );
+				
+				configTBI.addNestedItem(actionTBI);
 			}
-
-			// ...then a configure ToolbarItem.
-			url = createActionUrl(request);
-			url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_CONFIGURE_DEFINITIONS);
-			url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                           );
-			url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()                   );
-			
-			actionTBI = new ToolbarItem(CONFIGURE_DEFINITIONS);
-			markTBIPopup(actionTBI                              );
-			markTBITitle(actionTBI, "toolbar.menu.configuration");
-			markTBIUrl(  actionTBI, url                         );
-			
-			configTBI.addNestedItem(actionTBI);
-		}
-
-		// Does the user have rights to generate a report on this binder?
-		if ((isFolder || isWorkspace) && bm.testAccess(binder, BinderOperation.report)) {
-			// Yes!  Add the ToolBarItem for it.
-			adminMenuCreated = true;
-			if (isFolder)
-			     configMenuCreated  = true;
-			else reportsMenuCreated = true;
-			
-			url = createActionUrl(request);
-			url.setParameter(WebKeys.ACTION,          (isFolder ? WebKeys.ACTION_BINDER_REPORTS : WebKeys.ACTION_ACTIVITY_REPORT));
-			url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                                                                  );
-			url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()                                                          );
-			
-			actionTBI = new ToolbarItem(REPORTS);
-			markTBIPopup(actionTBI                        );
-			markTBITitle(actionTBI, "toolbar.menu.reports");
-			markTBIUrl(  actionTBI, url                   );
-
-			if (isFolder)
-			      configTBI.addNestedItem(actionTBI);
-			else reportsTBI.addNestedItem(actionTBI);
 		}
 
 		// Are we in other than simple Filr mode?
 		if (!isFilr) {
-			// Yes!  Does the user have rights to manage the
-			// definitions on this binder?
+			// Yes!  Does the user have rights to generate a report on
+			// this binder?
+			if ((isFolder || isWorkspace) && bm.testAccess(binder, BinderOperation.report)) {
+				// Yes!  Add the ToolBarItem for it.
+				adminMenuCreated = true;
+				if (isFolder)
+				     configMenuCreated  = true;
+				else reportsMenuCreated = true;
+				
+				url = createActionUrl(request);
+				url.setParameter(WebKeys.ACTION,          (isFolder ? WebKeys.ACTION_BINDER_REPORTS : WebKeys.ACTION_ACTIVITY_REPORT));
+				url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                                                                  );
+				url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()                                                          );
+				
+				actionTBI = new ToolbarItem(REPORTS);
+				markTBIPopup(actionTBI                        );
+				markTBITitle(actionTBI, "toolbar.menu.reports");
+				markTBIUrl(  actionTBI, url                   );
+	
+				if (isFolder)
+				      configTBI.addNestedItem(actionTBI);
+				else reportsTBI.addNestedItem(actionTBI);
+			}
+
+			// Does the user have rights to manage the definitions on
+			// this binder?
 			if ((isFolder || isWorkspace) && bm.testAccess(binder, BinderOperation.manageConfiguration)) {
 				// Yes!  Add the ToolbarItem for it.
 				adminMenuCreated  =
@@ -1764,25 +1766,28 @@ public class GwtMenuHelper {
 				configTBI.addNestedItem(actionTBI);
 			}
 		}
-		
-		// Dose the user have rights to manage access controls on this
-		// binder?
-		if (am.testAccess(binder, AdminOperation.manageFunctionMembership)) {
-			// Yes!  Add the ToolbarItem for it.
-			adminMenuCreated  =
-			configMenuCreated = true;
 
-			url = createActionUrl(request);
-			url.setParameter(WebKeys.ACTION,            WebKeys.ACTION_ACCESS_CONTROL         );
-			url.setParameter(WebKeys.URL_WORKAREA_ID,   String.valueOf(binder.getWorkAreaId()));
-			url.setParameter(WebKeys.URL_WORKAREA_TYPE, binder.getWorkAreaType()              );
-			
-			actionTBI = new ToolbarItem(ACCESS_CONTROL);
-			markTBIPopup(actionTBI                              );
-			markTBITitle(actionTBI, "toolbar.menu.accessControl");
-			markTBIUrl(  actionTBI, url                         );
-			
-			configTBI.addNestedItem(actionTBI);
+		// Are we in Filr mode?
+		if (!isFilr) {
+			// No!  Does the user have rights to manage access controls
+			// on this binder?
+			if (am.testAccess(binder, AdminOperation.manageFunctionMembership)) {
+				// Yes!  Add the ToolbarItem for it.
+				adminMenuCreated  =
+				configMenuCreated = true;
+	
+				url = createActionUrl(request);
+				url.setParameter(WebKeys.ACTION,            WebKeys.ACTION_ACCESS_CONTROL         );
+				url.setParameter(WebKeys.URL_WORKAREA_ID,   String.valueOf(binder.getWorkAreaId()));
+				url.setParameter(WebKeys.URL_WORKAREA_TYPE, binder.getWorkAreaType()              );
+				
+				actionTBI = new ToolbarItem(ACCESS_CONTROL);
+				markTBIPopup(actionTBI                              );
+				markTBITitle(actionTBI, "toolbar.menu.accessControl");
+				markTBIUrl(  actionTBI, url                         );
+				
+				configTBI.addNestedItem(actionTBI);
+			}
 		}
 		
 		// Does the user have rights to view who has access to this
@@ -3165,35 +3170,41 @@ public class GwtMenuHelper {
 
 			boolean needSeparator = dropdownTBI.hasNestedToolbarItems();
 
-			// Can the user manage access controls on this entry?
-			if (fm.testAccess(fe, FolderOperation.readEntry) && fe.isTop()) {
-				// Yes!  Add a separator if necessary...
-				needSeparator = addNestedSeparatorIfNeeded(dropdownTBI, needSeparator);
-				
-				// ...and add an access control toolbar item for it.
-				url = createActionUrl(request);
-				url.setParameter(WebKeys.ACTION,            WebKeys.ACTION_ACCESS_CONTROL);
-				url.setParameter(WebKeys.URL_WORKAREA_ID,   feId                         );
-				url.setParameter(WebKeys.URL_WORKAREA_TYPE, fe.getWorkAreaType()         );
-				
-				actionTBI = new ToolbarItem(ACCESS_CONTROL);
-				markTBIPopup(actionTBI                              );
-				markTBITitle(actionTBI, "toolbar.menu.accessControl");
-				markTBIUrl(  actionTBI, url                         );
-				dropdownTBI.addNestedItem(actionTBI);
-			}
+			// Are we in Filr mode?
+			if (!isFilr) {
+				// No!  Can the user manage access controls on this
+				// entry?
+				if (fm.testAccess(fe, FolderOperation.readEntry) && fe.isTop()) {
+					// Yes!  Add a separator if necessary...
+					needSeparator = addNestedSeparatorIfNeeded(dropdownTBI, needSeparator);
+					
+					// ...and add an access control toolbar item for
+					// ...it.
+					url = createActionUrl(request);
+					url.setParameter(WebKeys.ACTION,            WebKeys.ACTION_ACCESS_CONTROL);
+					url.setParameter(WebKeys.URL_WORKAREA_ID,   feId                         );
+					url.setParameter(WebKeys.URL_WORKAREA_TYPE, fe.getWorkAreaType()         );
+					
+					actionTBI = new ToolbarItem(ACCESS_CONTROL);
+					markTBIPopup(actionTBI                              );
+					markTBITitle(actionTBI, "toolbar.menu.accessControl");
+					markTBIUrl(  actionTBI, url                         );
+					dropdownTBI.addNestedItem(actionTBI);
+				}
 
-			// Can the user change entry types of this entry?
-			if ((!isFilr) && fm.testAccess(fe, FolderOperation.changeEntryType)) {
-				// Yes!  Add a separator if necessary...
-				needSeparator = addNestedSeparatorIfNeeded(dropdownTBI, needSeparator);
-				
-				// ...and add a change entry type toolbar item for it.
-				actionTBI = new ToolbarItem(CHANGE_ENTRY_TYPE);
-				markTBITitle(   actionTBI, "toolbar.changeEntryType"                       );
-				markTBIEvent(   actionTBI, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
-				markTBIEntryIds(actionTBI, fe                                              );
-				dropdownTBI.addNestedItem(actionTBI);
+				// Can the user change entry types of this entry?
+				if (fm.testAccess(fe, FolderOperation.changeEntryType)) {
+					// Yes!  Add a separator if necessary...
+					needSeparator = addNestedSeparatorIfNeeded(dropdownTBI, needSeparator);
+					
+					// ...and add a change entry type toolbar item for
+					// ...it.
+					actionTBI = new ToolbarItem(CHANGE_ENTRY_TYPE);
+					markTBITitle(   actionTBI, "toolbar.changeEntryType"                       );
+					markTBIEvent(   actionTBI, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
+					markTBIEntryIds(actionTBI, fe                                              );
+					dropdownTBI.addNestedItem(actionTBI);
+				}
 			}
 
 			// Is this the guest user?
