@@ -30,57 +30,76 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.fi.connection.acl;
 
-import java.util.Set;
-
-import org.kablink.teaming.fi.connection.ResourceSession;
-
 /**
- * A resource session interface that supports access control list (ACL).
- * 
- * @author jong
- *
+ * This class represents core metadata associated with a file or directory
+ * as retrieved from the file system.
  */
-public interface AclResourceSession extends ResourceSession {
+public class FileItem {
 
-	/**
-	 * Reads the access control list. 
-	 * <p>
-	 * If there is no ACL item, it must return an empty set, not <code>null</code>.
-	 * 
-	 * @return a set of items representing the ACL. 
-	 */
-	public Set<AclItem> getAcl();
-
-	/**
-	 * Return the ACL resource driver that allocated this session. 
-	 * Convenience method.
-	 * 
-	 * @return
-	 */
-	public AclResourceDriver getAclResourceDriver();
-
-	/**
-	 * Returns the ID of the principal that owns the resource, or <code>null</code>
-	 * if no such information is available.
-	 * 
-	 * @return
-	 */
-	public String getOwnerPrincipalId();
+	private String name;
+	private long lastModified;
+	private boolean directory;
+	private long contentLength;
+	private boolean inheritAcl;
 	
 	/**
-	 * Returns the representation type of the principal ID for the owner of the resource.
-	 * 
-	 * @return
+	 * Returns the name of the file or directory.
 	 */
-	public String getOwnerPrincipalIdType();
-
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	/**
-	 * Returns whether the resource inherits its ACL from the parent folder or not.
+	 * Returns last modified time of the file, or <code>0</code> if directory.
 	 * 
 	 * @return
 	 */
-	//public boolean isAclInherited();
+	public long getLastModified() {
+		return lastModified;
+	}
+	public void setLastModified(long lastModified) {
+		this.lastModified = lastModified;
+	}
+	
+	/**
+	 * Returns <code>true</code> if directory, <code>false</code> if file.
+	 * 
+	 * @return
+	 */
+	public boolean isDirectory() {
+		return directory;
+	}
+	public void setDirectory(boolean directory) {
+		this.directory = directory;
+	}
+	
+	/**
+	 * Returns content length (in byte) of the file, or <code>0</code> if directory.
+	 * 
+	 * @return
+	 */
+	public long getContentLength() {
+		return contentLength;
+	}
+	public void setContentLength(long contentLength) {
+		this.contentLength = contentLength;
+	}
+	
+	/**
+	 * Returns whether this file or directory inherits its ACL from the parent directory or not.
+	 * 
+	 * @return
+	 */
+	public boolean isInheritAcl() {
+		return inheritAcl;
+	}
+	public void setInheritAcl(boolean inheritAcl) {
+		this.inheritAcl = inheritAcl;
+	}
+	
 }

@@ -30,57 +30,21 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.fi.connection.acl;
 
-import java.util.Set;
-
-import org.kablink.teaming.fi.connection.ResourceSession;
+import java.util.List;
 
 /**
- * A resource session interface that supports access control list (ACL).
+ * This interface defines a <code>AclResourceSession</code> where core metadata associated
+ * with the children of a folder can be retrieved in a single method invocation.
+ * <p>
+ * The file content and the actual ACL must still be retrieved individually via the
+ * regular interface.
  * 
- * @author jong
+ * @author Jong
  *
  */
-public interface AclResourceSession extends ResourceSession {
+public interface BatchableChildrenAclResourceSession extends AclResourceSession {
 
-	/**
-	 * Reads the access control list. 
-	 * <p>
-	 * If there is no ACL item, it must return an empty set, not <code>null</code>.
-	 * 
-	 * @return a set of items representing the ACL. 
-	 */
-	public Set<AclItem> getAcl();
-
-	/**
-	 * Return the ACL resource driver that allocated this session. 
-	 * Convenience method.
-	 * 
-	 * @return
-	 */
-	public AclResourceDriver getAclResourceDriver();
-
-	/**
-	 * Returns the ID of the principal that owns the resource, or <code>null</code>
-	 * if no such information is available.
-	 * 
-	 * @return
-	 */
-	public String getOwnerPrincipalId();
-	
-	/**
-	 * Returns the representation type of the principal ID for the owner of the resource.
-	 * 
-	 * @return
-	 */
-	public String getOwnerPrincipalIdType();
-
-	/**
-	 * Returns whether the resource inherits its ACL from the parent folder or not.
-	 * 
-	 * @return
-	 */
-	//public boolean isAclInherited();
+	public List<FileItem> getChildren();
 }
