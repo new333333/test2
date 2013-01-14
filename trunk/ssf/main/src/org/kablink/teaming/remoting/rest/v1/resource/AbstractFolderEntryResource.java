@@ -73,7 +73,7 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
     @Path("{id}")
 	public void deleteFolderEntry(@PathParam("id") long id, @QueryParam("purge") @DefaultValue("false") boolean purge) {
         org.kablink.teaming.domain.FolderEntry folderEntry = _getFolderEntry(id);
-        if (purge) {
+        if (purge || folderEntry.getParentBinder().isMirrored()) {
             getFolderModule().deleteEntry(folderEntry.getParentBinder().getId(), id);
         } else {
             getFolderModule().preDeleteEntry(folderEntry.getParentBinder().getId(), id, getLoggedInUserId());

@@ -406,8 +406,8 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     protected void _deleteBinder(long id, boolean purge) {
-        _getBinder(id);
-        if (purge) {
+        org.kablink.teaming.domain.Binder binder = _getBinder(id);
+        if (purge || binder.isMirrored()) {
             getBinderModule().deleteBinder(id);
         } else {
             getBinderModule().preDeleteBinder(id, getLoggedInUserId());
