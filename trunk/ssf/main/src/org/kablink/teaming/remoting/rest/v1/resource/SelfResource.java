@@ -345,7 +345,7 @@ public class SelfResource extends AbstractFileResource {
     }
 
     private void setMyFilesParents(SearchResultList results) {
-        List<Long> hiddenFolderIds = SearchUtils.getMyFilesFolderIds(this, getLoggedInUser());
+        List<Long> hiddenFolderIds = getEffectiveMyFilesFolderIds();
         Set<Long> allParentIds = new HashSet(hiddenFolderIds);
         allParentIds.add(getLoggedInUser().getWorkspaceId());
         for (Object obj : results.getResults()) {
@@ -356,6 +356,15 @@ public class SelfResource extends AbstractFileResource {
             } else if (obj instanceof DefinableEntityBrief && allParentIds.contains(((DefinableEntityBrief)obj).getParentBinder().getId())) {
                 ((DefinableEntityBrief)obj).setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
             }
+        }
+    }
+
+    private List<Long> getEffectiveMyFilesFolderIds() {
+        org.kablink.teaming.domain.User user = getLoggedInUser();
+        if (SearchUtils.useHomeAsMyFiles(this, user)) {
+            return SearchUtils.getHomeFolderIds(this, user);
+        } else {
+            return SearchUtils.getMyFilesFolderIds(this, user);
         }
     }
 
