@@ -32,18 +32,58 @@
  */
 package org.kablink.teaming.fi.connection.acl;
 
+import org.kablink.teaming.util.Constants;
+
 /**
  * This class represents core metadata associated with a file or directory
  * as retrieved from the file system.
  */
-public class FileItem {
+public class ResourceItem {
 
+	/* The following set of properties come from the file system */
+	private String parentPath;
 	private String name;
 	private long lastModified;
 	private boolean directory;
 	private long contentLength;
 	private boolean inheritAcl;
+	private String ownerId;
+	private String ownerIdType;
 	
+	/* The following set of properties are computed on the Filr side */
+	private Long filr
+	
+	public static ResourceItem file(String parentPath, String name, long lastModified, long contentLength, boolean inheritAcl, String ownerId, String ownerIdType) {
+		return new ResourceItem(parentPath, name, lastModified, false, contentLength, inheritAcl, ownerId, ownerIdType);
+	}
+	
+	public static ResourceItem directory(String parentPath, String name, boolean inheritAcl, String ownerId, String ownerIdType) {
+		return new ResourceItem(parentPath, name, 0, true, 0, inheritAcl, ownerId, ownerIdType);
+	}
+	
+	private ResourceItem(String parentPath, String name, long lastModified, boolean directory, long contentLength, boolean inheritAcl, String ownerId, String ownerIdType) {
+		this.parentPath = parentPath;
+		this.name = name;
+		this.lastModified = lastModified;
+		this.directory = directory;
+		this.contentLength = contentLength;
+		this.inheritAcl = inheritAcl;
+		this.ownerId = ownerId;
+		this.ownerIdType = ownerIdType;
+	}
+	
+	/**
+	 * Returns the full path of the parent.
+	 * 
+	 * @return
+	 */
+	public String getParentPath() {
+		return parentPath;
+	}
+	public void setParentPath(String parentPath) {
+		this.parentPath = parentPath;
+	}
+
 	/**
 	 * Returns the name of the file or directory.
 	 */
@@ -64,6 +104,20 @@ public class FileItem {
 	}
 	public void setLastModified(long lastModified) {
 		this.lastModified = lastModified;
+	}
+	
+	/** 
+	 * Return last modified time in milliseconds, but adjusted to second precision.
+	 * This method is necessary because our database stores time values only up
+	 * to second precision. If we don't consistently use this method, we can end
+	 * up with a situation where endless attempts are made to update/synchronize 
+	 * the same file unnecessarily even when there's been no changes since the
+	 * last synchronization.
+	 * 
+	 * @return
+	 */
+	public long getLastModifiedSecondAdjusted() {
+		return (lastModified / 1000) * 1000;
 	}
 	
 	/**
@@ -102,4 +156,39 @@ public class FileItem {
 		this.inheritAcl = inheritAcl;
 	}
 	
+	/**
+	 * Returns the ID of the principal that owns the resource.
+	 * 
+	 * @return
+	 */
+	public String getOwnerId() {
+		return ownerId;
+	}
+	public void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
+	}
+
+	/**
+	 * Returns the type of the owner id for the resource.
+	 * 
+	 * @return
+	 */
+	public String getOwnerIdType() {
+		return ownerIdType;
+	}
+
+	public void setOwnerIdType(String ownerIdType) {
+		this.ownerIdType = ownerIdType;
+	}
+
+	/**
+	 * Returns String representation of the object.
+	 */
+	public String toString() {
+		// Note: This is NOT a normalized path, but merely a string representation of the object
+		// useful for display purpose only. So it must NOT be treated as a valid path to the resource.
+		// A normalized path can only be obtained from the respective resource driver implementing
+		// class.
+		return parentPath + Constants.SLASH + name;
+	}
 }
