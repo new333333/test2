@@ -541,6 +541,14 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
+	 * Return the id of the "guest" user
+	 */
+	public final native String getGuestId()
+	/*-{
+		return this.guestId;
+	}-*/;
+	
+	/**
 	 * Return the flag that tells us if the login dialog can have a cancel button.
 	 */
 	public final native boolean getLoginCanCancel()

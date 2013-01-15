@@ -1521,6 +1521,15 @@ public class GwtUIHelper {
 			if ( id != null )
 				model.put( "allInternalUsersGroupId", id.toString() );
 		}
+		
+		// Add the id of the "guest" user.
+		{
+			Long id;
+			
+			id = Utils.getGuestId( bs );
+			if ( id != null )
+				model.put( "guestId", id.toString() );
+		}
 	}
 	
 	/**

@@ -821,6 +821,17 @@ public class GwtClientHelper {
 	}
 	
 	/**
+	 * Returns true if the given id is belongs to the "guest" user.
+	 */
+	public static boolean isGuest( String id )
+	{
+		if ( id == null )
+			return false;
+
+		return id.equalsIgnoreCase( getRequestInfo().getGuestId() );
+	}
+	
+	/**
 	 * Returns true if we're running in Filr mode and false
 	 * otherwise.
 	 * 

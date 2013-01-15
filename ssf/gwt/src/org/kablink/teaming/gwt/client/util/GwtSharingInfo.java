@@ -104,6 +104,27 @@ public class GwtSharingInfo
 			shareItem.setToBeDeleted( true );
 			m_listOfToBeDeletedShareItems.add( shareItem );
 		}
+		else
+		{
+			// No
+			// Is this a public share?
+			if ( shareItem instanceof GwtPublicShareItem )
+			{
+				GwtPublicShareItem publicShareItem;
+				
+				publicShareItem = (GwtPublicShareItem) shareItem;
+
+				// Is this an existing public share?
+				if ( publicShareItem.getAllExternalShareItem() != null &&
+					 publicShareItem.getAllInternalShareItem() != null &&
+					 publicShareItem.getGuestShareItem() != null )
+				{
+					// Yes
+					shareItem.setToBeDeleted( true );
+					m_listOfToBeDeletedShareItems.add( shareItem );
+				}
+			}
+		}
 	}
 	
 	/**

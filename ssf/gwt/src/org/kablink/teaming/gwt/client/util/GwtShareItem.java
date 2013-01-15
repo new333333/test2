@@ -247,6 +247,9 @@ public class GwtShareItem
 		if ( m_recipientType == GwtRecipientType.TEAM )
 			return GwtTeaming.getMessages().shareRecipientTypeTeam();
 		
+		if ( m_recipientType == GwtRecipientType.PUBLIC_TYPE )
+			return GwtTeaming.getMessages().shareRecipientTypePublic();
+		
 		return GwtTeaming.getMessages().unknownShareType();
 	}
 	

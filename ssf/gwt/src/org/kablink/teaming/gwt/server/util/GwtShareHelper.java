@@ -45,7 +45,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -69,12 +68,14 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.User.ExtProvState;
 import org.kablink.teaming.gwt.client.GwtGroup;
+import org.kablink.teaming.gwt.client.GwtPublic;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.ZoneShareRights;
 import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.GwtPublicShareItem;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
@@ -937,6 +938,9 @@ public class GwtShareHelper
 		if ( listOfShareItems != null )
 		{
 			Date today;
+			GwtShareItem allInternalUsersShareItem = null;
+			GwtShareItem allExternalUsersShareItem = null;
+			GwtShareItem guestShareItem = null;
 
 			// Yes
 			today = new Date();
@@ -944,14 +948,34 @@ public class GwtShareHelper
 			for ( ShareItem nextShareItem : listOfShareItems )
 			{
 				GwtShareItem gwtShareItem;
+				Long recipientId;
+				
+				recipientId = nextShareItem.getRecipientId();
 				
 				gwtShareItem = new GwtShareItem();
 				gwtShareItem.setEntityId( entityId );
 				gwtShareItem.setEntityName( getEntityName( ami, entityId ) );
 				gwtShareItem.setId( nextShareItem.getId() );
 				gwtShareItem.setIsExpired( nextShareItem.isExpired() );
-				gwtShareItem.setRecipientId( nextShareItem.getRecipientId() );
+				gwtShareItem.setRecipientId( recipientId );
 				gwtShareItem.setComments( nextShareItem.getComment() );
+				
+				
+				// Is the recipient the "all internal users" group?
+				if ( recipientId.equals( Utils.getAllUsersGroupId() ) )
+				{
+					allInternalUsersShareItem = gwtShareItem;
+				}
+				// Is the recipient the "all external users" group?
+				else if ( recipientId.equals( Utils.getAllExtUsersGroupId() ) )
+				{
+					allExternalUsersShareItem = gwtShareItem;
+				}
+				// Is the recipient the "guest" user?
+				else if ( recipientId.equals( Utils.getGuestId( ami ) ) )
+				{
+					guestShareItem = gwtShareItem;
+				}
 
 				// Set the recipient type and name.
 				{
@@ -1052,6 +1076,47 @@ public class GwtShareHelper
 				}
 
 				listOfGwtShareItems.add( gwtShareItem );
+			}
+			
+			// Did we find a share with the "all internal users" group and the
+			// "all external users" group and the "guest" user?
+			if ( allInternalUsersShareItem != null && allExternalUsersShareItem != null &&
+				 guestShareItem != null )
+			{
+				GwtPublicShareItem	publicShareItem;
+				GwtPublic gwtPublic;
+				
+				// Yes
+				// This means we are sharing with the public.
+				// Replace these 3 shares with one share public item.
+				publicShareItem = new GwtPublicShareItem();
+				gwtPublic = new GwtPublic();
+				gwtPublic.setName( NLT.get( "share.recipientType.title.public" ) );
+				publicShareItem.setRecipientName( gwtPublic.getName() );
+				publicShareItem.setRecipientType( GwtRecipientType.PUBLIC_TYPE );
+				publicShareItem.setRecipientId( gwtPublic.getIdLong() );
+
+				// Remember the 3 share items that make up "share public"
+				publicShareItem.setAllExternalShareItem( allExternalUsersShareItem );
+				publicShareItem.setAllInternalShareItem( allInternalUsersShareItem );
+				publicShareItem.setGuestShareItem( guestShareItem );
+				
+				// Get the various share values from the "all external users" group share.
+				// All 3 shares will have the same values so it doesn't matter which one
+				// we copy from.
+				publicShareItem.setEntityId( allExternalUsersShareItem.getEntityId() );
+				publicShareItem.setEntityName( allExternalUsersShareItem.getEntityName() );
+				publicShareItem.setIsExpired( allExternalUsersShareItem.isExpired() );
+				publicShareItem.setComments( allExternalUsersShareItem.getComments() );
+				publicShareItem.setShareExpirationValue( allExternalUsersShareItem.getShareExpirationValue() );
+				publicShareItem.setShareRights( allExternalUsersShareItem.getShareRights() );
+				
+				// Add the "share public" item.
+				listOfGwtShareItems.add( publicShareItem );
+				
+				listOfGwtShareItems.remove( allExternalUsersShareItem );
+				listOfGwtShareItems.remove( allInternalUsersShareItem );
+				listOfGwtShareItems.remove( guestShareItem );
 			}
 		}
 
@@ -1607,12 +1672,61 @@ public class GwtShareHelper
 		{
 			for ( GwtShareItem nextShareItem : listOfGwtShareItemsToDelete )
 			{
-				Long shareItemId;
-				
-				shareItemId = nextShareItem.getId();
-				if ( shareItemId != null )
+				if ( nextShareItem instanceof GwtPublicShareItem )
 				{
-					sharingModule.deleteShareItem( shareItemId );
+					GwtShareItem gwtShareItem;
+					GwtPublicShareItem gwtPublicShareItem;
+					
+					gwtPublicShareItem = (GwtPublicShareItem) nextShareItem;
+					
+					// Delete the share with the "all internal users" group.
+					gwtShareItem = gwtPublicShareItem.getAllInternalShareItem();
+					if ( gwtShareItem != null )
+					{
+						Long shareItemId;
+						
+						shareItemId = gwtShareItem.getId();
+						if ( shareItemId != null )
+						{
+							sharingModule.deleteShareItem( shareItemId );
+						}
+					}
+
+					// Delete the share with the "all external users" group.
+					gwtShareItem = gwtPublicShareItem.getAllExternalShareItem();
+					if ( gwtShareItem != null )
+					{
+						Long shareItemId;
+						
+						shareItemId = gwtShareItem.getId();
+						if ( shareItemId != null )
+						{
+							sharingModule.deleteShareItem( shareItemId );
+						}
+					}
+
+					// Delete the share with the guest.
+					gwtShareItem = gwtPublicShareItem.getGuestShareItem();
+					if ( gwtShareItem != null )
+					{
+						Long shareItemId;
+						
+						shareItemId = gwtShareItem.getId();
+						if ( shareItemId != null )
+						{
+							sharingModule.deleteShareItem( shareItemId );
+						}
+					}
+				}
+				else
+				{
+					Long shareItemId;
+					
+					shareItemId = nextShareItem.getId();
+					if ( shareItemId != null )
+					{
+						sharingModule.deleteShareItem( shareItemId );
+					}
 				}
 			}
 		}
@@ -1620,94 +1734,226 @@ public class GwtShareHelper
 		// For each GwtShareItem, make the necessary updates to the database.
 		for (GwtShareItem nextGwtShareItem : listOfGwtShareItems)
 		{
-			ShareItem shareItem;
-			Long shareItemId;
-			boolean sendEmail;
-			
-			shareItem = null;
-			sendEmail = false;
-			
-			if ( sharingData.getNotifyRecipients() && sharingData.getSendToValue() == SendToValue.ALL_RECIPIENTS )
-				sendEmail = true;
-			
-			// Does this ShareItem exists?
-			shareItemId = nextGwtShareItem.getId();
-			if ( shareItemId == null )
+			// Are we dealing with a public share?
+			if ( nextGwtShareItem instanceof GwtPublicShareItem )
 			{
-				// No, create a ShareItem object
-				try
-				{
-					shareItem = createShareItem( ami, currentUser, nextGwtShareItem );
+				GwtPublicShareItem publicShareItem;
 				
-					// createShareItem() may have created an external user.  Get the
-					// recipient id just in case.
-					nextGwtShareItem.setRecipientId( shareItem.getRecipientId() );
-	
-					if ( sharingData.getNotifyRecipients() && (sharingData.getSendToValue() == SendToValue.ONLY_NEW_RECIPIENTS || sharingData.getSendToValue() == SendToValue.ONLY_MODIFIED_RECIPIENTS) )
-						sendEmail = true;
-				}
-				catch ( Exception ex )
+				// Yes
+				publicShareItem = (GwtPublicShareItem) nextGwtShareItem;
+				
+				// Does this share public already exist.
+				if ( publicShareItem.isExisting() )
 				{
-					String error;
-					String[] args;
+					// Yes
+					// Has the share been modified?
+					if ( publicShareItem.isDirty() )
+					{
+						// Yes
+						// Update the share item used for the "all internal users" group
+						{
+							GwtShareItem gwtShareItem;
+							
+							gwtShareItem = publicShareItem.getAllInternalShareItem();
+							if ( gwtShareItem != null )
+							{
+								ShareItem shareItem;
+
+								gwtShareItem.setShareRights( publicShareItem.getShareRights() );
+								gwtShareItem.setShareExpirationValue( publicShareItem.getShareExpirationValue() );
+								gwtShareItem.setComments( publicShareItem.getComments() );
+								
+								shareItem = buildShareItem( ami, currentUser, gwtShareItem );
+
+								// Modify the share by marking existing snapshot as not being the latest
+								// and persisting the new snapshot. 
+								sharingModule.modifyShareItem( shareItem, gwtShareItem.getId() );
+							}
+						}
+
+						// Update the share item used for the "all external users" group
+						{
+							GwtShareItem gwtShareItem;
+							
+							gwtShareItem = publicShareItem.getAllExternalShareItem();
+							if ( gwtShareItem != null )
+							{
+								ShareItem shareItem;
+
+								gwtShareItem.setShareRights( publicShareItem.getShareRights() );
+								gwtShareItem.setShareExpirationValue( publicShareItem.getShareExpirationValue() );
+								gwtShareItem.setComments( publicShareItem.getComments() );
+								
+								shareItem = buildShareItem( ami, currentUser, gwtShareItem );
+
+								// Modify the share by marking existing snapshot as not being the latest
+								// and persisting the new snapshot. 
+								sharingModule.modifyShareItem( shareItem, gwtShareItem.getId() );
+							}
+						}
+
+						// Update the share item used for the guest
+						{
+							GwtShareItem gwtShareItem;
+							
+							gwtShareItem = publicShareItem.getGuestShareItem();
+							if ( gwtShareItem != null )
+							{
+								ShareItem shareItem;
+
+								gwtShareItem.setShareRights( publicShareItem.getShareRights() );
+								gwtShareItem.setShareExpirationValue( publicShareItem.getShareExpirationValue() );
+								gwtShareItem.setComments( publicShareItem.getComments() );
+								
+								shareItem = buildShareItem( ami, currentUser, gwtShareItem );
+
+								// Modify the share by marking existing snapshot as not being the latest
+								// and persisting the new snapshot. 
+								sharingModule.modifyShareItem( shareItem, gwtShareItem.getId() );
+							}
+						}
+					}
+				}
+				else
+				{
+					GwtShareItem gwtShareItem;
 					
-					args = new String[3];
-					args[0] = nextGwtShareItem.getEntityName();
-					args[1] = nextGwtShareItem.getRecipientName();
-					args[2] = ex.toString();
-					error = NLT.get( "errorcode.sharing.entity", args );
-					results.addError( error );
-					m_logger.error( "Error creating share item: " + ex.toString() );
-					continue;
+					// No
+					// Create a share item for "all external users"
+					{
+						gwtShareItem = new GwtShareItem();
+						gwtShareItem.setEntityId( publicShareItem.getEntityId() );
+						gwtShareItem.setEntityName( publicShareItem.getEntityName() );
+						gwtShareItem.setComments( publicShareItem.getComments() );
+						gwtShareItem.setRecipientId( Utils.getAllExtUsersGroupId() );
+						gwtShareItem.setRecipientType( GwtRecipientType.GROUP );
+						gwtShareItem.setShareRights( publicShareItem.getShareRights() );
+						gwtShareItem.setShareExpirationValue( publicShareItem.getShareExpirationValue() );
+						
+						createShareItem( ami, currentUser, gwtShareItem );
+					}
+
+					// Create a share item for "all internal users"
+					{
+						gwtShareItem = new GwtShareItem();
+						gwtShareItem.setEntityId( publicShareItem.getEntityId() );
+						gwtShareItem.setEntityName( publicShareItem.getEntityName() );
+						gwtShareItem.setComments( publicShareItem.getComments() );
+						gwtShareItem.setRecipientId( Utils.getAllUsersGroupId() );
+						gwtShareItem.setRecipientType( GwtRecipientType.GROUP );
+						gwtShareItem.setShareRights( publicShareItem.getShareRights() );
+						gwtShareItem.setShareExpirationValue( publicShareItem.getShareExpirationValue() );
+						
+						createShareItem( ami, currentUser, gwtShareItem );
+					}
+
+
+					// Create a share item for "guest"
+					{
+						gwtShareItem = new GwtShareItem();
+						gwtShareItem.setEntityId( publicShareItem.getEntityId() );
+						gwtShareItem.setEntityName( publicShareItem.getEntityName() );
+						gwtShareItem.setComments( publicShareItem.getComments() );
+						gwtShareItem.setRecipientId( Utils.getGuestId( ami ) );
+						gwtShareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
+						gwtShareItem.setShareRights( publicShareItem.getShareRights() );
+						gwtShareItem.setShareExpirationValue( publicShareItem.getShareExpirationValue() );
+						
+						createShareItem( ami, currentUser, gwtShareItem );
+					}
 				}
 			}
 			else
 			{
-				// The ShareItem exists.
-				// Build a new ShareItem with the new information.
-				shareItem = buildShareItem( ami, currentUser, nextGwtShareItem );
+				ShareItem shareItem;
+				Long shareItemId;
+				boolean sendEmail;
 				
-				// Was it modified?
-				if ( nextGwtShareItem.isDirty() )
-				{
-					// Yes
-					// Modify the share by marking existing snapshot as not being the latest
-					// and persisting the new snapshot. 
-					sharingModule.modifyShareItem(shareItem, shareItemId);
+				shareItem = null;
+				sendEmail = false;
+				
+				if ( sharingData.getNotifyRecipients() && sharingData.getSendToValue() == SendToValue.ALL_RECIPIENTS )
+					sendEmail = true;
 
-					if ( sharingData.getNotifyRecipients() && sharingData.getSendToValue() == SendToValue.ONLY_MODIFIED_RECIPIENTS )
-						sendEmail = true;
-				}
-			}
-			
-			// Is the recipient a newly created external user
-			if ( getExternalUserAccountState( ami, shareItem.getRecipientId() ) == ExtProvState.initial )
-			{
-				// Yes, always send them an email.
-				sendEmail = true;
-			}
-			
-			// Send an email to this recipient
-			if ( sendEmail )
-			{
-				List<SendMailErrorWrapper> entityEmailErrors = null;
-				
-				// Send an email to each of the recipients
-				entityEmailErrors = sendEmailToRecipient(
-														ami,
-														shareItem,
-														nextGwtShareItem,
-														currentUser );
-				
-				if ( emailErrors == null )
+				// Does this ShareItem exists?
+				shareItemId = nextGwtShareItem.getId();
+				if ( shareItemId == null )
 				{
-					emailErrors = entityEmailErrors;
+					// No, create a ShareItem object
+					try
+					{
+						shareItem = createShareItem( ami, currentUser, nextGwtShareItem );
+						
+						// createShareItem() may have created an external user.  Get the
+						// recipient id just in case.
+						nextGwtShareItem.setRecipientId( shareItem.getRecipientId() );
+		
+						if ( sharingData.getNotifyRecipients() && (sharingData.getSendToValue() == SendToValue.ONLY_NEW_RECIPIENTS || sharingData.getSendToValue() == SendToValue.ONLY_MODIFIED_RECIPIENTS) )
+							sendEmail = true;
+					}
+					catch ( Exception ex )
+					{
+						String error;
+						String[] args;
+						
+						args = new String[3];
+						args[0] = nextGwtShareItem.getEntityName();
+						args[1] = nextGwtShareItem.getRecipientName();
+						args[2] = ex.toString();
+						error = NLT.get( "errorcode.sharing.entity", args );
+						results.addError( error );
+						m_logger.error( "Error creating share item: " + ex.toString() );
+						continue;
+					}
 				}
 				else
 				{
-					if ( entityEmailErrors != null )
+					// The ShareItem exists.
+					// Build a new ShareItem with the new information.
+					shareItem = buildShareItem( ami, currentUser, nextGwtShareItem );
+					
+					// Was it modified?
+					if ( nextGwtShareItem.isDirty() )
 					{
-						emailErrors.addAll( entityEmailErrors );
+						// Yes
+						// Modify the share by marking existing snapshot as not being the latest
+						// and persisting the new snapshot. 
+						sharingModule.modifyShareItem(shareItem, shareItemId);
+
+						if ( sharingData.getNotifyRecipients() && sharingData.getSendToValue() == SendToValue.ONLY_MODIFIED_RECIPIENTS )
+							sendEmail = true;
+					}
+				}
+				
+				// Is the recipient a newly created external user
+				if ( getExternalUserAccountState( ami, shareItem.getRecipientId() ) == ExtProvState.initial )
+				{
+					// Yes, always send them an email.
+					sendEmail = true;
+				}
+				
+				// Send an email to this recipient
+				if ( sendEmail )
+				{
+					List<SendMailErrorWrapper> entityEmailErrors = null;
+					
+					// Send an email to each of the recipients
+					entityEmailErrors = sendEmailToRecipient(
+															ami,
+															shareItem,
+															nextGwtShareItem,
+															currentUser );
+					
+					if ( emailErrors == null )
+					{
+						emailErrors = entityEmailErrors;
+					}
+					else
+					{
+						if ( entityEmailErrors != null )
+						{
+							emailErrors.addAll( entityEmailErrors );
+						}
 					}
 				}
 			}
