@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -170,7 +170,6 @@ import org.kablink.teaming.gwt.client.workspacetree.BreadcrumbTreePopup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.NativeEvent;
@@ -394,12 +393,10 @@ public class GwtMainPage extends ResizeComposite
 	{
 		// Execute a GWT RPC command asking the server for our initial
 		// data requirements.
-		GetMainPageInfoCmd cmd = new GetMainPageInfoCmd( binderId );
+		GetMainPageInfoCmd cmd = new GetMainPageInfoCmd(
+			binderId,
+			( GwtClientHelper.getTimeZoneOffsetMillis( new Date() ) * -1 ) );
 		
-		// Set the time zone information
-		{
-			cmd.setTimeZoneOffset( GwtClientHelper.getTimeZoneOffsetMillis(new Date()) * -1 );
-		}
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -433,14 +430,13 @@ public class GwtMainPage extends ResizeComposite
 				}
 				
 				// ...and continue the load process.
-				ScheduledCommand loadNextControl = new ScheduledCommand() {
+				GwtClientHelper.deferCommand( new ScheduledCommand() {
 					@Override
 					public void execute()
 					{
 						loadMainMenuControl();
 					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( loadNextControl );
+				} );
 			}// end onSuccess()
 		});
 	}// end loadInitialData()
@@ -467,14 +463,13 @@ public class GwtMainPage extends ResizeComposite
 			public void onSuccess( MainMenuControl mainMenuCtrl )
 			{
 				m_mainMenuCtrl = mainMenuCtrl;				
-				ScheduledCommand loadNextControl = new ScheduledCommand() {
+				GwtClientHelper.deferCommand( new ScheduledCommand() {
 					@Override
 					public void execute()
 					{
 						loadWorkspaceTreeControl();
 					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( loadNextControl );
+				} );
 			}// end onSuccess()
 		} );
 	}// end loadMainMenuControl()
@@ -498,14 +493,13 @@ public class GwtMainPage extends ResizeComposite
 			public void onSuccess( WorkspaceTreeControl wsTreeCtrl )
 			{
 				m_wsTreeCtrl = wsTreeCtrl;				
-				ScheduledCommand loadNextControl = new ScheduledCommand() {
+				GwtClientHelper.deferCommand( new ScheduledCommand() {
 					@Override
 					public void execute()
 					{
 						loadContentControl();
 					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( loadNextControl );
+				} );
 			}// end onSuccess()
 		} );
 	}// end loadWorkspaceTreeControl()
@@ -529,14 +523,13 @@ public class GwtMainPage extends ResizeComposite
 			public void onSuccess( ContentControl contentCtrl )
 			{
 				m_contentCtrl = contentCtrl;				
-				ScheduledCommand loadNextControl = new ScheduledCommand() {
+				GwtClientHelper.deferCommand( new ScheduledCommand() {
 					@Override
 					public void execute()
 					{
 						loadActivityStreamCtrl();
 					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( loadNextControl );
+				} );
 			}// end onSuccess()
 		} );
 	}// end loadContentControl()
@@ -574,7 +567,7 @@ public class GwtMainPage extends ResizeComposite
 			public void onSuccess( ActivityStreamCtrl asCtrl )
 			{
 				m_activityStreamCtrl = asCtrl;
-				ScheduledCommand loadNextControl = new ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -583,8 +576,7 @@ public class GwtMainPage extends ResizeComposite
 						     loadDesktopAppDownloadCtrl();
 						else constructMainPage_Finish();
 					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( loadNextControl );
+				} );
 			}// end onSuccess()
 		} );
 	}// end ActivityStreamCtrl()
@@ -608,15 +600,14 @@ public class GwtMainPage extends ResizeComposite
 			public void onSuccess( DesktopAppDownloadControl dadCtrl )
 			{
 				m_dadCtrl = dadCtrl;
-				ScheduledCommand loadNextControl = new ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
 					{
 						constructMainPage_Finish();
 					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( loadNextControl );
+				} );
 			}// end onSuccess()
 		} );
 	}// end loadDesktopAppDownloadCtrl()
@@ -712,7 +703,7 @@ public class GwtMainPage extends ResizeComposite
 		{
 			// Yes
 			// Execute a deferred command the will display it.
-			ScheduledCommand cmd = new ScheduledCommand()
+			GwtClientHelper.deferCommand( new ScheduledCommand()
 			{
 				@Override
 				public void execute()
@@ -730,8 +721,7 @@ public class GwtMainPage extends ResizeComposite
 					// message box is displayed.
 					Window.alert( errMsg );
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			} );
 		}
 		
 		// Add the main menu to the page.
@@ -789,15 +779,14 @@ public class GwtMainPage extends ResizeComposite
 				m_mainMenuCtrl.setVisible( false );
 				
 				// invoke the login dialog.
-				ScheduledCommand cmd = new ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
 					{
 						invokeLoginDlg( getLoginCanCancel() );
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				} );
 			}
 		}
 				
@@ -866,9 +855,7 @@ public class GwtMainPage extends ResizeComposite
 
 				if ( url != null && url.length() > 0 )
 				{
-					Scheduler.ScheduledCommand cmd;
-
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
@@ -876,8 +863,7 @@ public class GwtMainPage extends ResizeComposite
 							// Show the collection point.
 							gotoUrlAsync( url );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			}
 		};
@@ -1256,14 +1242,13 @@ public class GwtMainPage extends ResizeComposite
 				public void onSuccess( final BinderInfo binderInfo )
 				{
 					// ...and load the context from that.
-					ScheduledCommand loadNextControl = new ScheduledCommand() {
+					GwtClientHelper.deferCommand( new ScheduledCommand() {
 						@Override
 						public void execute()
 						{
 							contextLoaded( binderInfo, instigator, inSearch, searchTabId );
 						}// end execute()
-					};
-					Scheduler.get().scheduleDeferred( loadNextControl );
+					} );
 				}// end onSuccess()
 			});
 		}
@@ -1709,10 +1694,8 @@ public class GwtMainPage extends ResizeComposite
 						result = responseData.getBooleanValue();
 						if ( result == Boolean.FALSE )
 						{
-							Scheduler.ScheduledCommand scCmd;
-							
 							// No, go ahead and hide the main menu
-							scCmd = new Scheduler.ScheduledCommand()
+							GwtClientHelper.deferCommand( new ScheduledCommand()
 							{
 								/**
 								 * 
@@ -1722,8 +1705,7 @@ public class GwtMainPage extends ResizeComposite
 								{
 									MenuHideEvent.fireOne();
 								}
-							};
-							Scheduler.get().scheduleDeferred( scCmd );
+							} );
 						}
 					}
 				});
@@ -2054,14 +2036,13 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void gotoUrlAsync( final String url )
 	{
-		ScheduledCommand gotoUrl = new ScheduledCommand() {
+		GwtClientHelper.deferCommand( new ScheduledCommand() {
 			@Override
 			public void execute()
 			{
 				gotoUrlNow( url );
 			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred( gotoUrl );
+		} );
 	}// end gotoUrlAsync()
 	
 	private void gotoUrlAsync_FromJSP( final String url )
@@ -2247,7 +2228,7 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onAdministrationExit( AdministrationExitEvent event )
 	{
-		ScheduledCommand cmd = new ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
@@ -2272,8 +2253,7 @@ public class GwtMainPage extends ResizeComposite
 				// the site administration.
 				restoreUIState();
 			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		} );
 	}
 	
 	/**
@@ -2676,17 +2656,14 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onLogin( LoginEvent event )
 	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute() 
 			{
 				invokeLoginDlg( true );
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		} );
 	}// end onLogin()
 	
 	/**
@@ -2717,15 +2694,14 @@ public class GwtMainPage extends ResizeComposite
 				{
 					// ...and show it.
 					m_addNewFolderDlg = anfDlg;
-					ScheduledCommand doShow = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
 						{
 							showAddNewFolderDlgNow( event.getBinderId(), event.getFolderTemplateId() );
 						}// end execute()
-					};
-					Scheduler.get().scheduleDeferred( doShow );
+					} );
 				}// end onSuccess()
 			});
 		}
@@ -2758,14 +2734,13 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void runDesktopAppDownloadDlgAsync()
 	{
-		ScheduledCommand doDesktopAppDownload = new ScheduledCommand() {
+		GwtClientHelper.deferCommand( new ScheduledCommand() {
 			@Override
 			public void execute()
 			{
 				runDesktopAppDownloadDlgNow();
 			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred( doDesktopAppDownload );
+		} );
 	}
 	
 	/*
@@ -2788,15 +2763,14 @@ public class GwtMainPage extends ResizeComposite
 			public void onSuccess( final DesktopAppDownloadDlg dadDlg )
 			{
 				// ...and show it.
-				ScheduledCommand doShow = new ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
 					{
 						DesktopAppDownloadDlg.initAndShow( dadDlg );
 					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( doShow );
+				} );
 			}
 		});
 	}
@@ -2876,14 +2850,13 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void runProfileEntryDlgAsync( final Long userId )
 	{
-		ScheduledCommand doProfileEntry = new ScheduledCommand() {
+		GwtClientHelper.deferCommand( new ScheduledCommand() {
 			@Override
 			public void execute()
 			{
 				runProfileEntryDlgNow( userId );
 			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred( doProfileEntry );
+		} );
 	}
 	
 	/*
@@ -2906,15 +2879,14 @@ public class GwtMainPage extends ResizeComposite
 			public void onSuccess( final ProfileEntryDlg peDlg )
 			{
 				// ...and show it.
-				ScheduledCommand doShow = new ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
 					{
 						ProfileEntryDlg.initAndShow( peDlg, userId );
 					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( doShow );
+				} );
 			}
 		});
 	}
@@ -2925,14 +2897,13 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void runQuickViewDlgAsync( final String binderId, final String userName, final Element element )
 	{
-		ScheduledCommand doQuickView = new ScheduledCommand() {
+		GwtClientHelper.deferCommand( new ScheduledCommand() {
 			@Override
 			public void execute()
 			{
 				runQuickViewDlgNow( binderId, userName, element );
 			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred( doQuickView );
+		} );
 	}
 	
 	/*
@@ -3052,13 +3023,11 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onMenuHide( MenuHideEvent event )
 	{
-		Scheduler.ScheduledCommand cmd;
-		
 		// Hide the main menu
 		m_mainMenuCtrl.setVisible( false );
 
 		// Because the main menu is hidden we need to relayout the page.
-		cmd = new Scheduler.ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			/**
 			 * 
@@ -3068,8 +3037,7 @@ public class GwtMainPage extends ResizeComposite
 			{
 				relayoutPage( true );
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		} );
 	}
 	
 	/**
@@ -3082,13 +3050,11 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onMenuShow( MenuShowEvent event )
 	{
-		Scheduler.ScheduledCommand cmd;
-		
 		// Show the main menu
 		m_mainMenuCtrl.setVisible( true );
 
 		// Because the main menu is now visible we need to relayout the page.
-		cmd = new Scheduler.ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			/**
 			 * 
@@ -3098,8 +3064,7 @@ public class GwtMainPage extends ResizeComposite
 			{
 				relayoutPage( true );
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		} );
 	}
 	
 	/**
@@ -3293,7 +3258,7 @@ public class GwtMainPage extends ResizeComposite
 			@Override
 			public void onSuccess( final BinderInfo binderInfo )
 			{
-				ScheduledCommand doShare = new ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -3311,8 +3276,7 @@ public class GwtMainPage extends ResizeComposite
 								binderInfo.getBinderIdAsLong(),
 								eidType ) );
 					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( doShare );		
+				} );
 			}// end onSuccess()
 		} );
 	}
@@ -3651,15 +3615,14 @@ public class GwtMainPage extends ResizeComposite
 		}
 		else
 		{
-			ScheduledCommand cmd = new ScheduledCommand()
+			GwtClientHelper.deferCommand( new ScheduledCommand()
 			{
 				@Override
 				public void execute()
 				{
 					relayoutPage( true );
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			} );
 		}
 	}// end relayoutPage()
 	
@@ -3778,7 +3741,7 @@ public class GwtMainPage extends ResizeComposite
 				{
 					m_adminControl = adminCtrl;
 					
-					ScheduledCommand showAdminControl = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
@@ -3786,8 +3749,7 @@ public class GwtMainPage extends ResizeComposite
 							// ...and then show it.
 							showAdminControlImpl();
 						}// end execute()
-					};
-					Scheduler.get().scheduleDeferred( showAdminControl );
+					} );
 				}// end onSuccess()
 			} );
 		}

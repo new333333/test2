@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,6 +45,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
 	private boolean		m_desktopAppEnabled;		//
 	private boolean		m_showDesktopAppDownloader;	//
+	private boolean		m_useHomeForMyFiles;		// true -> As user's Home folder serves as their My Files repository.  false -> It doesn't.
 	private BinderInfo	m_binderInfo;				//
 	private String		m_userAvatarUrl;			//
 	
@@ -65,8 +66,9 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 * @param userAvatarUrl
 	 * @param desktopAppEnabled
 	 * @param showDesktopAppDownloader
+	 * @param useHomeAsMyFiles
 	 */
-	public MainPageInfoRpcResponseData(BinderInfo binderInfo, String userAvatarUrl, boolean desktopAppEnabled, boolean showDesktopAppDownloader) {
+	public MainPageInfoRpcResponseData(BinderInfo binderInfo, String userAvatarUrl, boolean desktopAppEnabled, boolean showDesktopAppDownloader, boolean useHomeAsMyFiles) {
 		// Initialize this object...
 		this();
 
@@ -75,6 +77,7 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 		setUserAvatarUrl(           userAvatarUrl           );
 		setDesktopAppEnabled(       desktopAppEnabled       );
 		setShowDesktopAppDownloader(showDesktopAppDownloader);
+		setUseHomeAsMyFiles(        useHomeAsMyFiles        );
 	}
 	
 	/**
@@ -84,6 +87,7 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 */
 	public boolean    isDesktopAppEnabled()        {return m_desktopAppEnabled;       }
 	public boolean    isShowDesktopAppDownloader() {return m_showDesktopAppDownloader;}
+	public boolean    isUseHomeAsMyFiles()         {return m_useHomeForMyFiles;       }
 	public BinderInfo getBinderInfo()              {return m_binderInfo;              }
 	public String     getUserAvatarUrl()           {return m_userAvatarUrl;           }
 	
@@ -94,6 +98,7 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 */
 	public void setDesktopAppEnabled(       boolean    desktopAppEnabled)        {m_desktopAppEnabled        = desktopAppEnabled;       }
 	public void setShowDesktopAppDownloader(boolean    showDesktopAppDownloader) {m_showDesktopAppDownloader = showDesktopAppDownloader;}
+	public void setUseHomeAsMyFiles(        boolean    useHomeAsMyFiles)         {m_useHomeForMyFiles        = useHomeAsMyFiles;        }
 	public void setBinderInfo(              BinderInfo binderInfo)               {m_binderInfo               = binderInfo;              }
 	public void setUserAvatarUrl(           String     userAvatarUrl)            {m_userAvatarUrl            = userAvatarUrl;           }
 }

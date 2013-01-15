@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -116,6 +116,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -132,7 +133,6 @@ import org.kablink.teaming.gwt.client.RequestInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -663,15 +663,14 @@ public class ContentControl extends Composite
 	 */
 	private void setViewAsync( final ViewInfo vi, final String url, final Instigator instigator )
 	{
-		ScheduledCommand doSetView = new ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
 				setViewNow( vi, url, instigator );
 			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred( doSetView );
+		} );
 	}// end setViewAsync()
 
 	/*
@@ -772,15 +771,36 @@ public class ContentControl extends Composite
 						public void viewReady()
 						{
 							GwtClientHelper.jsSetMainTitle(bi.getBinderTitle());
-							ScheduledCommand doViewReady = new ScheduledCommand()
+							GwtClientHelper.deferCommand( new ScheduledCommand()
 							{
 								@Override
 								public void execute()
 								{
+									// If we're navigating to a user's
+									// Home folder that's serving as
+									// their My Files repository...
+									BinderInfo biForChange;
+									if ( vt.isBinderView() && bi.isFolderHome() && m_mainPage.getMainPageInfo().isUseHomeAsMyFiles() )
+									{
+										// ...we notify everybody that
+										// ...we actually changed to their My Files view...
+										biForChange = new BinderInfo();
+										biForChange.setBinderType( BinderType.COLLECTION );
+										biForChange.setCollectionType( CollectionType.MY_FILES );
+										biForChange.setBinderId( GwtClientHelper.getRequestInfo().getCurrentUserWorkspaceId() );
+										biForChange.setBinderTitle( GwtTeaming.getMessages().myFiles() );
+									}
+									else
+									{
+										// ...otherwise, we just notify
+										// ...them about where ever we
+										// ...went.
+										biForChange = bi;
+									}
 									GwtTeaming.fireEvent(
 										new ContextChangedEvent(
 											new OnSelectBinderInfo(
-												bi,
+												biForChange,
 												url,
 												instigator )));
 									
@@ -805,8 +825,7 @@ public class ContentControl extends Composite
 										}
 									}
 								}// end execute()
-							};
-							Scheduler.get().scheduleDeferred( doViewReady );
+							} );
 						}//end viewReady()
 					};
 					
@@ -1240,7 +1259,7 @@ public class ContentControl extends Composite
 		// If we get here, the IFRAME contained a list of contributor
 		// ID's targeted to the requested binder.  Asynchronously fire
 		// a contributor ID's reply event with the contributor IDs.
-		ScheduledCommand doReply = new ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
@@ -1250,8 +1269,7 @@ public class ContentControl extends Composite
 						eventBinderId,
 						contributorIds ) );
 			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred( doReply );
+		} );
 	}// end onContributorIdsRequest()
 	
 	
@@ -1358,15 +1376,14 @@ public class ContentControl extends Composite
 	 */
 	private void onDeleteSelectedEntriesAsync( final List<EntityId> selectedEntityIds, final String targetBinderPermalink )
 	{
-		ScheduledCommand doDelete = new ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
 				onDeleteSelectedEntriesNow( selectedEntityIds, targetBinderPermalink );
 			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred( doDelete );
+		} );
 	}// end onDeleteSelectedEntriesAsync()
 	
 	/*
@@ -1539,15 +1556,14 @@ public class ContentControl extends Composite
 	 */
 	private void onPurgeSelectedEntriesAsync( final List<EntityId> selectedEntityIds, final String targetBinderPermalink )
 	{
-		ScheduledCommand doPurge = new ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
 				onPurgeSelectedEntriesNow( selectedEntityIds, targetBinderPermalink );
 			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred( doPurge );
+		} );
 	}// end onPurgeSelectedEntriesAsync()
 	
 	
@@ -2355,15 +2371,14 @@ public class ContentControl extends Composite
 	 * been deleted or purged.
 	 */
 	private void postDeletePurgeReloadAsync( final String targetBinderPermalink ) {
-		ScheduledCommand doReload = new ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
 				postDeletePurgeReloadNow( targetBinderPermalink );
 			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred( doReload );
+		} );
 	}// end postDeletePurgeReloadAsync();
 	
 	
@@ -2399,15 +2414,14 @@ public class ContentControl extends Composite
 	 */
 	private void showFolderEntryDlgAsync( final ViewFolderEntryInfo vfei, final ViewReady viewReady )
 	{
-		ScheduledCommand doShow = new ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
 				showFolderEntryDlgNow( vfei, viewReady );
 			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred( doShow );
+		} );
 	}// end showFolderEntryDlgAsync()
 	
 	/*

@@ -62,7 +62,6 @@ import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.widgets.EventButton;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -140,13 +139,12 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		 * Asynchronously expands the current node.
 		 */
 		private void doExpandNodeAsync(final TreeInfo expandedTI) {
-			ScheduledCommand expander = new ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					doExpandNodeNow(expandedTI);
 				}
-			};
-			Scheduler.get().scheduleDeferred(expander);
+			});
 		}
 		
 		/*
@@ -409,13 +407,12 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * Asynchronously builds and runs the selector configuration menu.
 	 */
 	private void buildAndRunSelectorConfigMenuAsync(final Anchor selectorConfigA) {
-		ScheduledCommand doBuildAndRunMenu = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				buildAndRunSelectorConfigMenuNow(selectorConfigA);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doBuildAndRunMenu);
+		});
 	}
 	
 	/*
@@ -874,28 +871,35 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 									// Did we get a collection type we
 									// can generate an up arrow for?
 									if (CollectionType.NOT_A_COLLECTION != collectionType) {
-										// Yes!  Add an up button to
-										// navigate to it.
-										addUpButton(
-											fp,
-											getMessages().treePreviousCollection(),
-											new Command() {
-												/**
-												 * The following is
-												 * called when the up
-												 * is clicked.
-												 */
-												@Override
-												public void execute() {
-													// If we can change contexts...
-													if (canChangeContext()) {
-														// ...fire the event to do so.
-														GwtTeaming.fireEventAsync(
-															new ShowCollectionEvent(
-																collectionType));
+										// Perhaps, is it other that
+										// the My Files above a Home
+										// that servers as the My Files
+										// repository?
+										boolean isTIMyFilesHome = (ti.getBinderInfo().isFolderHome() && GwtTeaming.getMainPage().getMainPageInfo().isUseHomeAsMyFiles());
+										if (!isTIMyFilesHome) {
+											// Yes!  Add an up button
+											// to navigate to it.
+											addUpButton(
+												fp,
+												getMessages().treePreviousCollection(),
+												new Command() {
+													/**
+													 * The following is
+													 * called when the up
+													 * is clicked.
+													 */
+													@Override
+													public void execute() {
+														// If we can change contexts...
+														if (canChangeContext()) {
+															// ...fire the event to do so.
+															GwtTeaming.fireEventAsync(
+																new ShowCollectionEvent(
+																	collectionType));
+														}
 													}
-												}
-											});
+												});
+										}
 									}
 									
 									// ...add the image and anchor for
@@ -960,13 +964,12 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * Asynchronously runs the selector configuration menu.
 	 */
 	private void runSelectorConfigMenuAsync(final Anchor selectorConfigA) {
-		ScheduledCommand doRunMenu = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				runSelectorConfigMenuNow(selectorConfigA);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRunMenu);
+		});
 	}
 	
 	/*
