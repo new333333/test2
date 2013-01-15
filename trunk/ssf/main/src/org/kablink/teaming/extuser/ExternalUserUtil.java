@@ -79,6 +79,15 @@ public class ExternalUserUtil {
 	
 	private static final String DELIM = ".";
 	
+	public static String encodeUserToken(User user) {
+		// Re-seed only if it hasn't been seeded before. This allows a token to be generated without affecting the state of the user account.
+		if(user.getExtProvSeed() == null) {
+			user.reseedExtProvSeed();
+			updateUser(user);			
+		}
+		return Long.toHexString(user.getId().longValue()) + DELIM + user.computeExtProvHash();
+	}
+	
 	public static String encodeUserTokenWithNewSeed(User user) {
 		user.reseedExtProvSeed();
 		updateUser(user);
