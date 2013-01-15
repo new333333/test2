@@ -51,7 +51,7 @@ public class ResourceItem {
 	private String ownerIdType;
 	
 	/* The following set of properties are computed on the Filr side */
-	private Long filr
+	private Long ownerFilrId;
 	
 	public static ResourceItem file(String parentPath, String name, long lastModified, long contentLength, boolean inheritAcl, String ownerId, String ownerIdType) {
 		return new ResourceItem(parentPath, name, lastModified, false, contentLength, inheritAcl, ownerId, ownerIdType);
@@ -179,6 +179,19 @@ public class ResourceItem {
 
 	public void setOwnerIdType(String ownerIdType) {
 		this.ownerIdType = ownerIdType;
+	}
+
+	/**
+	 * Returns the Filr principal ID that the original owner ID from the file system maps to. 
+	 * 
+	 * @return
+	 */
+	public Long getOwnerFilrId() {
+		return ownerFilrId;
+	}
+
+	public void setOwnerFilrId(Long ownerFilrId) {
+		this.ownerFilrId = ownerFilrId;
 	}
 
 	/**
