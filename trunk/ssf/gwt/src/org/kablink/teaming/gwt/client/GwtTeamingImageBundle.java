@@ -469,6 +469,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource previousMouseOver16();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/public16.png")
+	public ImageResource public16();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/refresh.png")
 	public ImageResource refresh();
 

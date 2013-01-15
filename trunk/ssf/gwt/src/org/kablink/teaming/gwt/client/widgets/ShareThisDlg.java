@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.event.InvokeEditShareRightsDlgEvent;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtGroup;
+import org.kablink.teaming.gwt.client.GwtPublic;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.GwtFolder;
@@ -68,6 +69,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.GwtPublicShareItem;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
@@ -86,6 +88,7 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.dom.client.Style.VerticalAlign;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -99,6 +102,7 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -141,6 +145,7 @@ public class ShareThisDlg extends DlgBox
 	private InlineLabel m_shareWithTeamsLabel;
 	private FlowPanel m_shareTablePanel;
 	private ShareSendToWidget m_sendToWidget;
+	private FlowPanel m_makePulicPanel;
 	private FlexCellFormatter m_shareCellFormatter;
 	private HTMLTable.RowFormatter m_shareRowFormatter;
 	private List<EntityId> m_entityIds;
@@ -262,6 +267,65 @@ public class ShareThisDlg extends DlgBox
 		public void onMouseOver( MouseOverEvent event )
 		{
 			m_nameLabel.addStyleName( "shareThisDlg_NameHover" );
+		}
+	}
+	
+	/**
+	 * This widget is used to display a recipient's type.  If the recipient is Public
+	 * then the user can click on the name and see the url they can pass out for people
+	 * to access the given entity.
+	 */
+	private class RecipientTypeWidget extends Composite
+		implements ClickHandler
+	{
+		private GwtShareItem m_shareItem;
+		private InlineLabel m_typeLabel;
+		
+		/**
+		 * 
+		 */
+		public RecipientTypeWidget( GwtShareItem shareItem )
+		{
+			FlowPanel panel;
+			
+			m_shareItem = shareItem;
+			
+			panel = new FlowPanel();
+			
+			m_typeLabel = new InlineLabel( shareItem.getRecipientTypeAsString() );
+			m_typeLabel.setTitle( shareItem.getRecipientTypeAsString() );
+			m_typeLabel.addStyleName( "shareThisDlg_RecipientTypeLabel" );
+			panel.add( m_typeLabel );
+			
+			// If we are dealing with a share with public, let the user click on the group.
+			if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
+			{
+				m_typeLabel.addStyleName( "shareThisDlg_PublicRecipientTypeLabel" );
+				m_typeLabel.addClickHandler( this );
+			}
+			
+			// All composites must call initWidget() in their constructors.
+			initWidget( panel );
+		}
+		
+		/**
+		 * This gets called when the user clicks on the recipient's type.  This will only
+		 * be called if the recipient is public.
+		 */
+		@Override
+		public void onClick( ClickEvent event )
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					Window.alert( "Not yet implemented" );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 	
@@ -487,6 +551,13 @@ public class ShareThisDlg extends DlgBox
 		 */
 		private void invokeEditNoteDlg()
 		{
+			// Is the recipient "Public"?
+			if ( m_shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
+			{
+				// Yes, can't add a note.
+				return;
+			}
+			
 			if ( m_editShareNoteDlg != null )
 			{
 				if ( m_editNoteHandler == null )
@@ -716,6 +787,27 @@ public class ShareThisDlg extends DlgBox
 				shareItem.setRecipientType( GwtRecipientType.GROUP );
 				shareItem.setRecipientId( Long.valueOf( group.getId() ) );
 			}
+			// Are we dealing with the "Public" entity?
+			else if ( gwtTeamingItem instanceof GwtPublic )
+			{
+				GwtPublic publicEntity;
+				
+				// Yes
+				publicEntity = (GwtPublic) gwtTeamingItem;
+				
+				// Does the user have rights to share with the public?
+				if ( m_sharingInfo.getCanShareWithPublic() == false )
+				{
+					// No, tell the user they can't do this.
+					Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithPublic() );
+					return null;
+				}
+				
+				shareItem = new GwtPublicShareItem();
+				shareItem.setRecipientName( publicEntity.getName() );
+				shareItem.setRecipientType( GwtRecipientType.PUBLIC_TYPE );
+				shareItem.setRecipientId( publicEntity.getIdLong() );
+			}
 
 			// Do we have an object to add to our list of shares?
 			if ( shareItem != null )
@@ -752,13 +844,12 @@ public class ShareThisDlg extends DlgBox
 	 */
 	private void addShare( GwtShareItem shareItem, boolean highlight )
 	{
-		String type;
 		int row;
 		int col;
 		int i;
-		InlineLabel typeLabel;
 		RemoveShareWidget removeWidget;
 		RecipientNameWidget recipientNameWidget;
+		RecipientTypeWidget recipientTypeWidget;
 		
 		row = m_shareTable.getRowCount();
 		
@@ -807,10 +898,8 @@ public class ShareThisDlg extends DlgBox
 		// Add the recipient type
 		m_shareCellFormatter.setWordWrap( row, col, false );
 		m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
-		type = shareItem.getRecipientTypeAsString();
-		typeLabel = new InlineLabel( type );
-		typeLabel.setTitle( type );
-		m_shareTable.setHTML( row, col, typeLabel.getElement().getString() );
+		recipientTypeWidget = new RecipientTypeWidget( shareItem );
+		m_shareTable.setWidget( row, col, recipientTypeWidget );
 		++col;
 		
 		// Are we sharing more than 1 entity?
@@ -893,6 +982,23 @@ public class ShareThisDlg extends DlgBox
 		adjustShareTablePanelHeight();
 	}
 	
+	/**
+	 * Add "Public" as a recipient.  Remove "all internal users", "all external users" and "guest"
+	 * if they have already been added as recipients.
+	 */
+	private void addShareWithPublic()
+	{
+		GwtPublic publicEntity;
+		
+		publicEntity = new GwtPublic();
+		publicEntity.setName( GwtTeaming.getMessages().publicName() );
+		addShare( publicEntity );
+		
+		// Remove the "all internal users" group and the "all external users" group and
+		// the "guest" as recipients
+		removeAllInternalAllExternalAndGuest();
+	}
+	
 	
 	/**
 	 * 
@@ -923,6 +1029,36 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
+	 * Determine if the user has rights to share the entities with the public.
+	 */
+	private boolean canShareWithPublic()
+	{
+		// Is sharing with the public turned on at the global level for this user?
+		if ( m_sharingInfo.getCanShareWithPublic() == false )
+		{
+			// No
+			return false;
+		}
+
+		// See if the user has the rights to share each entity with the public.
+		for ( EntityId nextEntityId : m_entityIds )
+		{
+			ShareRights shareRights;
+			
+			// Can the user share this entity with the public?
+			shareRights = m_sharingInfo.getShareRights( nextEntityId );
+			if ( shareRights.getCanShareWithPublic() == false )
+			{
+				// No
+				return false;
+			}
+		}
+		
+		// If we get here the user has rights to share each entity with the public.
+		return true;
+	}
+	
+	/**
 	 * Create all the controls that make up the dialog.
 	 */
 	@Override
@@ -945,6 +1081,49 @@ public class ShareThisDlg extends DlgBox
 		HTMLTable.RowFormatter mainRowFormatter;
 		FlexCellFormatter mainCellFormatter;
 		int row;
+		
+		// Add a "Make Public" button
+		{
+			Anchor anchor;
+			ClickHandler clickHandler;
+			ImageResource imgResource;
+			Image img;
+			
+			m_makePulicPanel = new FlowPanel();
+			m_makePulicPanel.addStyleName( "shareThisDlg_MakePublicDiv" );
+			m_mainPanel.add( m_makePulicPanel );
+			
+			clickHandler = new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							addShareWithPublic();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			anchor = new Anchor( GwtTeaming.getMessages().shareDlg_makePublic() );
+			anchor.addStyleName( "gwt-Button" );
+			anchor.addStyleName( "teamingButton" );
+			anchor.addClickHandler( clickHandler );
+			anchor.setTitle( GwtTeaming.getMessages().shareDlg_makePublic() );
+			m_makePulicPanel.add( anchor );
+			
+			imgResource = GwtTeaming.getImageBundle().public16();
+			img = new Image( imgResource );
+			img.getElement().getStyle().setVerticalAlign( VerticalAlign.MIDDLE );
+			img.getElement().getStyle().setPaddingRight( 3, Unit.PX );
+			anchor.getElement().insertFirst( img.getElement() );
+		}
 		
 		mainTable = new FlexTable();
 		mainTable.setCellSpacing( 6 );
@@ -1648,16 +1827,29 @@ public class ShareThisDlg extends DlgBox
 
 								if ( shareItem != null )
 								{
-									InvokeEditShareRightsDlgEvent event;
+									final Long recipientId;
+									final Long entityId;
+									Scheduler.ScheduledCommand cmd;
+									
+									recipientId = shareItem.getRecipientId();
+									entityId = shareItem.getEntityId().getEntityId();
+									cmd = new Scheduler.ScheduledCommand()
+									{
+										@Override
+										public void execute()
+										{
+											InvokeEditShareRightsDlgEvent event;
 
-									// Fire an event to invoke the "edit share rights" dialog.
-									event = new InvokeEditShareRightsDlgEvent(
-																			shareItem.getRecipientId(),
-																			shareItem.getEntityId().getEntityId() );
-									GwtTeaming.fireEvent( event );
+											// Fire an event to invoke the "edit share rights" dialog.
+											event = new InvokeEditShareRightsDlgEvent(
+																					recipientId,
+																					entityId );
+											GwtTeaming.fireEvent( event );
+										}
+									};
+									Scheduler.get().scheduleDeferred( cmd );
 								}
 							}
-								
 							else
 							{
 								// No
@@ -1932,6 +2124,72 @@ public class ShareThisDlg extends DlgBox
 	}
 
 	/**
+	 * Remove the "all internal" group, the "all external" group and "guest" from the list
+	 * of recipients
+	 */
+	private void removeAllInternalAllExternalAndGuest()
+	{
+		int i;
+		ArrayList<GwtShareItem> toBeDeleted;
+
+		toBeDeleted = new ArrayList<GwtShareItem>();
+
+		// Look through the table that holds all the recipients.
+		// Recipients start in row 1.
+		for (i = 1; i < m_shareTable.getRowCount() && m_shareTable.getCellCount( i ) == m_numCols; ++i)
+		{
+			Widget widget;
+			
+			// Get the RemoveRecipientWidget from the last column.
+			widget = m_shareTable.getWidget( i, m_numCols-1 );
+			if ( widget != null && widget instanceof RemoveShareWidget )
+			{
+				GwtShareItem nextShareItem;
+				
+				nextShareItem = ((RemoveShareWidget) widget).getShareItem();
+				if ( nextShareItem != null )
+				{
+					if ( nextShareItem.getRecipientType() == GwtRecipientType.GROUP )
+					{
+						Long recipientId;
+						
+						recipientId = nextShareItem.getRecipientId();
+						if ( recipientId != null )
+						{
+							String id;
+							
+							id = recipientId.toString();
+							if ( GwtClientHelper.isAllExternalUsersGroup( id ) )
+								toBeDeleted.add( nextShareItem );
+							else if ( GwtClientHelper.isAllInternalUsersGroup( id ) )
+								toBeDeleted.add( nextShareItem );
+						}
+					}
+					else if ( nextShareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
+					{
+						Long recipientId;
+						
+						recipientId = nextShareItem.getRecipientId();
+						if ( recipientId != null )
+						{
+							String id;
+							
+							id = recipientId.toString();
+							if ( GwtClientHelper.isGuest( id ) )
+								toBeDeleted.add( nextShareItem );
+						}
+					}
+				}
+			}
+		}
+		
+		for ( GwtShareItem nextShareItem : toBeDeleted )
+		{
+			removeShare( nextShareItem );
+		}
+	}
+
+	/**
 	 * Remove the given share from the table
 	 */
 	public void removeShare( GwtShareItem shareItem )
@@ -1962,7 +2220,6 @@ public class ShareThisDlg extends DlgBox
 			adjustShareTablePanelHeight();
 		}
 	}
-	
 	
 	/*
 	 * 
@@ -2066,6 +2323,10 @@ public class ShareThisDlg extends DlgBox
 				m_addExternalUserImg.setVisible( true );
 			}
 
+			// Show/hide the "Make public" button depending on whether the user has rights to
+			// share with the public.
+			m_makePulicPanel.setVisible( canShareWithPublic() );
+			
 			// We never want external users to be included in the name completion.
 			m_findCtrl.setSearchForExternalPrincipals( false );
 
@@ -2153,13 +2414,27 @@ public class ShareThisDlg extends DlgBox
 				
 				if ( shareItem != null )
 				{
-					InvokeEditShareRightsDlgEvent event;
+					final Long recipientId;
+					final Long entityId;
+					Scheduler.ScheduledCommand cmd;
 					
-					// Fire an event to invoke the "edit share rights" dialog.
-					event = new InvokeEditShareRightsDlgEvent(
-															shareItem.getRecipientId(),
-															shareItem.getEntityId().getEntityId() );
-					GwtTeaming.fireEvent( event );
+					recipientId = shareItem.getRecipientId();
+					entityId = shareItem.getEntityId().getEntityId();
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							InvokeEditShareRightsDlgEvent event;
+
+							// Fire an event to invoke the "edit share rights" dialog.
+							event = new InvokeEditShareRightsDlgEvent(
+																	recipientId,
+																	entityId );
+							GwtTeaming.fireEvent( event );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			}
 		};

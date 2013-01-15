@@ -373,6 +373,20 @@ public class Utils {
 		}
 	}
 	
+	/**
+	 * 
+	 */
+	public static Long getGuestId( AllModulesInjected ami )
+	{
+		Long id;
+		User guestUser;
+		
+		guestUser = ami.getProfileModule().getGuestUser();
+		id = guestUser.getId();
+		
+		return id;
+	}
+	
 	public static void end(Log logger, long startTimeInNanoseconds, String methodName) {
 		if(logger.isDebugEnabled()) {
 			logger.debug((System.nanoTime()-startTimeInNanoseconds)/1000000.0 + " ms, " + methodName);

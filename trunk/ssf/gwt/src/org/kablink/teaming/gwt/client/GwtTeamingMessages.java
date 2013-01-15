@@ -236,6 +236,7 @@ public interface GwtTeamingMessages extends Messages
 	String oneMomentPlease();
 	String overflowLabel();
 	String percent();
+	String publicName();
 	String send();
 	String shareExternal();
 	String shareInternal();
@@ -1270,6 +1271,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_cantShareWithAllExternalUsersGroup();
 	String shareDlg_cantShareWithAllInternalUsersGroup();
 	String shareDlg_cantShareWithExternalUser();
+	String shareDlg_cantShareWithPublic();
 	String shareDlg_cantShareWithYourself();
 	String shareDlg_clickToAddNote();
 	String shareDlg_contributor();
@@ -1279,6 +1281,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_expiresLabel();
 	String shareDlg_expiresNever();
 	String shareDlg_expiresOn( String on );
+	String shareDlg_makePublic();
 	String shareDlg_noNote();
 	String shareDlg_noTeamsToShareWith();
 	String shareDlg_noteLabel();
@@ -1298,6 +1301,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareRecipientType();
 	String shareRecipientTypeExternalUser();
 	String shareRecipientTypeGroup();
+	String shareRecipientTypePublic();
 	String shareRecipientTypeTeam();
 	String shareRecipientTypeUser();
 	String shareTheseItems();

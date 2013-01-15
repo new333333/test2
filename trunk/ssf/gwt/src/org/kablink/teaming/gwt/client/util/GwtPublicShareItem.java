@@ -35,17 +35,88 @@ package org.kablink.teaming.gwt.client.util;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class represents the different types of recipients.
+ * This class is used to hold information about a GwtSharePublicItem.
+ * When an entity is shared with the public, we share it with the "all internal user" group,
+ * the "all external users" group and with the "guest" user.
  */
-public enum GwtRecipientType implements IsSerializable
+public class GwtPublicShareItem extends GwtShareItem
+	implements IsSerializable
 {
-	USER,
-	GROUP,
-	EXTERNAL_USER,
-	TEAM,
-	PUBLIC_TYPE,
+	GwtShareItem m_allInternalShareItem;
+	GwtShareItem m_allExternalShareItem;
+	GwtShareItem m_guestShareItem;
 	
-	UNKNOWN,
-}
+	/**
+	 * 
+	 */
+	public GwtPublicShareItem()
+	{
+		m_allInternalShareItem = null;
+		m_allExternalShareItem = null;
+		m_guestShareItem = null;
+	}
 
+	/**
+	 * 
+	 */
+	public GwtShareItem getAllExternalShareItem()
+	{
+		return m_allExternalShareItem;
+	}
+
+	/**
+	 * 
+	 */
+	public GwtShareItem getAllInternalShareItem()
+	{
+		return m_allInternalShareItem;
+	}
+
+	/**
+	 * 
+	 */
+	public GwtShareItem getGuestShareItem()
+	{
+		return m_guestShareItem;
+	}
+	
+	/**
+	 * Return whether this share already exists
+	 */
+	public boolean isExisting()
+	{
+		if ( m_allExternalShareItem != null && m_allExternalShareItem.getId() != null &&
+			 m_allInternalShareItem != null && m_allInternalShareItem.getId() != null &&
+			 m_guestShareItem != null && m_guestShareItem.getId() != null )
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAllExternalShareItem( GwtShareItem item )
+	{
+		m_allExternalShareItem = item;
+	}
+
+	/**
+	 * 
+	 */
+	public void setAllInternalShareItem( GwtShareItem item )
+	{
+		m_allInternalShareItem = item;
+	}
+
+	/**
+	 * 
+	 */
+	public void setGuestShareItem( GwtShareItem item )
+	{
+		m_guestShareItem = item;
+	}
+}
 

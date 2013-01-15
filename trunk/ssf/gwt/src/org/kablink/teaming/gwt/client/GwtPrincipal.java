@@ -52,6 +52,7 @@ public abstract class GwtPrincipal extends GwtTeamingItem
 	{
 		USER,
 		GROUP,
+		PUBLIC_TYPE,
 		UNKNOWN
 	}
 

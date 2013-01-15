@@ -65,6 +65,7 @@
 		debugLP:							'${vibeLPDebug}',
 		deleteUserUrl:						'${ss_deleteEntryAdapter}',
 		errMsg:								'<ssf:escapeJavaScript>${errMsg}</ssf:escapeJavaScript>',
+		guestId:							'${guestId}',
 		helpUrl:							'<ssf:escapeJavaScript>${ss_helpUrl}</ssf:escapeJavaScript>',
 		imagesPath:							'<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
 		isBinderAdmin:						'${ss_isBinderAdmin}',

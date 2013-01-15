@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.ShareRights;
+import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.widgets.EditShareRightsDlg.EditShareRightsDlgClient;
 
 import com.google.gwt.core.client.Scheduler;
@@ -102,6 +103,18 @@ public class ShareRightsWidget extends Composite
 			m_highestRightsPossible.setCanShareWithInternalUsers( false );
 			m_highestRightsPossible.setCanShareWithPublic( false );
 		}
+		// Are we dealing with the "Public"?
+		else if ( m_shareInfo.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
+		{
+			// Yes, the public can only have "Viewer" rights.
+			m_highestRightsPossible = new ShareRights();
+			m_highestRightsPossible.setAccessRights( AccessRights.VIEWER );
+			m_highestRightsPossible.setCanShareForward( false );
+			m_highestRightsPossible.setCanShareWithExternalUsers( false );
+			m_highestRightsPossible.setCanShareWithInternalUsers( false );
+			m_highestRightsPossible.setCanShareWithPublic( false );
+		}
+
 
 		m_rightsLabel = new InlineLabel( shareInfo.getShareRightsAsString() );
 		m_rightsLabel.addStyleName( "shareThisDlg_RightsLabel" );
