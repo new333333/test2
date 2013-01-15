@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.fi.connection.acl;
 
+import java.util.List;
 import java.util.Set;
 
 import org.kablink.teaming.fi.connection.ResourceSession;
@@ -83,4 +84,17 @@ public interface AclResourceSession extends ResourceSession {
 	 * @return
 	 */
 	//public boolean isAclInherited();
+	
+	/**
+	 * Returns the children of the directory as a list of <code>ResourceItem</code> objects.
+	 * This differs from <code>listNames</code> method in that all core metadata associated
+	 * with each child is returned in a single invocation of the method for improved efficiency.
+	 * The file content and the actual ACL of individual child must be retrieved separately if needed.
+	 * <p>
+	 * Returns an empty list if the directory is empty.
+	 * Returns null if the resource does not denote a directory or an error occurs. 
+	 * 
+	 * @return
+	 */
+	//public List<ResourceItem> getChildren();
 }
