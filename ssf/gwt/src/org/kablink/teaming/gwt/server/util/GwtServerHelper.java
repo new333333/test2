@@ -6370,6 +6370,11 @@ public class GwtServerHelper {
 				m_logger.debug("GwtServerHelper.getMainPageInfo():  The file synchronization application auto update URL is not available.");
 			}
 			
+			// Does the current user's Home folder serve as their My Files repository?
+			boolean useHomeAsMyFiles =
+				(SearchUtils.useHomeAsMyFiles(bs) &&
+				(null != SearchUtils.getHomeFolderId(bs)));
+			
 			// ...and use this all to construct a
 			// ...MainPageInfoRpcResponseData to return.
 			return
@@ -6377,7 +6382,8 @@ public class GwtServerHelper {
 					bi,
 					userAvatarUrl,
 					desktopAppEnabled,
-					showDesktopAppDownloader);
+					showDesktopAppDownloader,
+					useHomeAsMyFiles);
 		}
 		
 		catch (Exception ex) {

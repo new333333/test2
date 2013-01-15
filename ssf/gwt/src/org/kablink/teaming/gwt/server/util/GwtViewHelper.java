@@ -6035,10 +6035,18 @@ public class GwtViewHelper {
 			// Yes!  Does it have the showCollection parameter?
 			String showCollection = getQueryParameterString(nvMap, WebKeys.URL_SHOW_COLLECTION);
 			if (MiscUtil.hasString(showCollection)) {
-				// Yes!  Return a BinderInfo for the collection.
-				bi = GwtServerHelper.buildCollectionBI(
-					CollectionType.getEnum(showCollection),
-					user.getWorkspaceId());
+				// Yes!  If it's other than My Files or it's My Files
+				// and we aren't mapping it to their Home, setup a
+				// BinderInfo for the collection.  Otherwise, setup a
+				// BinderInfo for their Home. 
+				Long homeId;
+				CollectionType ct = CollectionType.getEnum(showCollection);
+				if (CollectionType.MY_FILES.equals(ct) && SearchUtils.useHomeAsMyFiles(bs))
+				     homeId = SearchUtils.getHomeFolderId(bs);
+				else homeId = null;
+				if (null == homeId)
+				     bi = GwtServerHelper.buildCollectionBI(ct, user.getWorkspaceId());
+				else bi = GwtServerHelper.getBinderInfo(bs, request, String.valueOf(homeId));
 			}
 		}
 
