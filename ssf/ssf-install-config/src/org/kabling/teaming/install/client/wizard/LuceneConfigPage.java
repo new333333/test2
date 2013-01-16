@@ -145,12 +145,12 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 //			return true;
 //		}
 		
-		if (!validatedCredentials)
-		{
-			wizard.showStatusIndicator(RBUNDLE.validatingLuceneServer());
-			AppUtil.getInstallService().isLuceneServerValid(host, port, new LuceneAuthCallback());
-			return false;
-		}
+//		if (!validatedCredentials)
+//		{
+//			wizard.showStatusIndicator(RBUNDLE.validatingLuceneServer());
+//			AppUtil.getInstallService().isLuceneServerValid(host, port, new LuceneAuthCallback());
+//			return false;
+//		}
 		return true;
 	}
 
