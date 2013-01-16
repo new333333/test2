@@ -104,7 +104,7 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 			}
 
 			HTML footerLabel = new HTML(
-					"The Lucene search server can be<br> - The integrated search server in the Filr virtual appliance (local)<br>"
+					"The Lucene search server can be:<br> - The integrated search server in the Filr virtual appliance (local)<br>"
 							+ "-The Lucene virtual appliance that is included with Filr, running separately.");
 			footerLabel.addStyleName("configWizFooterLabel");
 			content.add(footerLabel);

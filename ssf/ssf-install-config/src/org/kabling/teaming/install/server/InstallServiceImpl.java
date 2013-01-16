@@ -2049,8 +2049,14 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		// Delete the backup copy
 		File srcFile = new File("/filrinstall/installer.xml.orig");
 		if (srcFile.exists())
-			srcFile.delete();
-
+		{
+			boolean deleteOrigStatus = srcFile.delete();
+			logger.debug("Deleted Backup /filrinstall/installer.xml.orig "+deleteOrigStatus);
+		}
+		else
+		{
+			logger.debug("Does not exists for deletion /filrinstall/installer.xml.orig ");
+		}
 		if (restartServer)
 			startFilrServer();
 	}
@@ -2096,7 +2102,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
 			//Update security constraints based on network page settings
-			//updateSecurityBasedOnNetworkPageSettings();
+			updateSecurityBasedOnNetworkPageSettings();
 			
 			executeCommand("/sbin/rcfilr restart");
 

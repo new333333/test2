@@ -48,7 +48,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			fPanel.addStyleName("wizardPage");
 
 			HTML descLabel = new HTML(
-					"Pick an option");
+					"Pick an option.");
 			descLabel.addStyleName("wizardPageDesc");
 			fPanel.add(descLabel);
 
@@ -62,7 +62,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			radioPanel.add(useDefaultsRB);
 
 			HTML defaultConfigDescLabel = new HTML(
-					"Set up an evaluation environment or small network infrastructure.<br> The Lucene search service and MySQL database will on this Filr virtual appliance.");
+					"Set up an evaluation environment or small network infrastructure.<br> The Lucene search service and MySQL database will be on this Filr virtual appliance.");
 			defaultConfigDescLabel.addStyleName("configDescLabel");
 			radioPanel.add(defaultConfigDescLabel);
 
@@ -82,7 +82,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			radioPanel.add(upgradeRB);
 
 			HTML upgradeConfigDescLabel = new HTML(
-					"Upgrade from an older Filr appliance. <br> Select this option if you have already exported the configuration details from the appliance and would like to use those settings.");
+					"Upgrade from an older Filr appliance. <br> Select this option if you have already exported the configuration details from the appliance and you want to use those settings.");
 			upgradeConfigDescLabel.addStyleName("configDescLabel");
 			radioPanel.add(upgradeConfigDescLabel);
 		

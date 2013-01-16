@@ -157,7 +157,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 			}
 
 			HTML footerLabel = new HTML(
-					"The MySQL database can be<br> - The integrated database running in the Filr virtual appliance (localhost)<br>"
+					"The MySQL database can be:<br> - The integrated database running in the Filr virtual appliance (localhost)<br>"
 							+ "- The MySQL virtual appliance that is included with Filr, running separately.<br>"
 							+ "- A MySQL database server running in a virtual or physical machine on your network.");
 			footerLabel.addStyleName("configWizFooterLabel");

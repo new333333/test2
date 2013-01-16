@@ -40,11 +40,11 @@ public class LicenseInformationPage extends LicensePageDlgBox
 
 		FlowPanel sectionPanel = createSection(RBUNDLE.currentLicenseInformation());
 		fPanel.add(sectionPanel);
-		
+
 		FlexTable table = new FlexTable();
 		table.addStyleName("configSummary");
 		sectionPanel.add(table);
-		
+
 		int row = 0;
 		{
 			// Product Title
@@ -56,7 +56,7 @@ public class LicenseInformationPage extends LicensePageDlgBox
 			table.setWidget(row, 1, productTitleLabel);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
-		
+
 		{
 			row++;
 			// Product Version
@@ -68,7 +68,7 @@ public class LicenseInformationPage extends LicensePageDlgBox
 			table.setWidget(row, 1, productVersionLabel);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
-		
+
 		{
 			row++;
 			// Issued On
@@ -80,7 +80,7 @@ public class LicenseInformationPage extends LicensePageDlgBox
 			table.setWidget(row, 1, issuedOnLabel);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
-		
+
 		{
 			row++;
 			// Issued By
@@ -92,7 +92,7 @@ public class LicenseInformationPage extends LicensePageDlgBox
 			table.setWidget(row, 1, issuedByLabel);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
-		
+
 		{
 			row++;
 			// Expiration Date
@@ -104,13 +104,12 @@ public class LicenseInformationPage extends LicensePageDlgBox
 			table.setWidget(row, 1, expirationDateLabel);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
-		
-		
+
 		FlowPanel newLicenseSectionPanel = createSection(RBUNDLE.updateLicense());
 		fPanel.add(newLicenseSectionPanel);
-		
+
 		newLicenseSectionPanel.add(createUploadPanel());
-		
+
 		return fPanel;
 	}
 
@@ -136,13 +135,12 @@ public class LicenseInformationPage extends LicensePageDlgBox
 			issuedByLabel.setText(config.getIssuedBy());
 			issuedOnLabel.setText(config.getIssuedDate());
 			expirationDateLabel.setText(config.getExpirationDate());
-			
+
 			if (!config.getExpirationDate().contains("-"))
 				expirationDatekeyLabel.setText(RBUNDLE.expirationDaysColon());
 		}
 	}
 
-	
 	private FlowPanel createSection(String header)
 	{
 		FlowPanel flowPanel = new FlowPanel();
@@ -156,79 +154,84 @@ public class LicenseInformationPage extends LicensePageDlgBox
 		}
 		return flowPanel;
 	}
-	
+
 	private FlowPanel createUploadPanel()
 	{
-			FlowPanel fPanel = new FlowPanel();
-			fPanel.addStyleName("configPage");
+		FlowPanel fPanel = new FlowPanel();
+		fPanel.addStyleName("configPage");
 
-			// Import/Export Title
-			HTML titleDescLabel = new HTML(RBUNDLE.uploadNewLicenseDesc());
-			titleDescLabel.addStyleName("configPageTitleDescLabel");
-			fPanel.add(titleDescLabel);
+		// Import/Export Title
+		HTML titleDescLabel = new HTML(RBUNDLE.uploadNewLicenseDesc());
+		titleDescLabel.addStyleName("configPageTitleDescLabel");
+		fPanel.add(titleDescLabel);
 
-			FlowPanel importContent = new FlowPanel();
-			fPanel.add(importContent);
-			importContent.addStyleName("importPageContent");
+		FlowPanel importContent = new FlowPanel();
+		fPanel.add(importContent);
+		importContent.addStyleName("importPageContent");
 
-			form = new FormPanel();
-			importContent.add(form);
+		form = new FormPanel();
+		importContent.add(form);
 
-			FlowPanel panel = new FlowPanel();
-			form.setWidget(panel);
+		FlowPanel panel = new FlowPanel();
+		form.setWidget(panel);
 
-			if (GWT.isProdMode() && !AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
+		if (GWT.isProdMode() && !AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
+		{
+			form.setAction("/filrconfig/InstallConfig/fileUpload");
+		}
+		else
+		{
+			form.setAction("/filrconfig/InstallConfig/fileUpload");
+		}
+
+		// Because we're going to add a FileUpload widget, we'll need to set
+		// the
+		// form to use the POST method, and multipart MIME encoding.
+		form.setEncoding(FormPanel.ENCODING_MULTIPART);
+		form.setMethod(FormPanel.METHOD_POST);
+
+		// Set the value to let the back end know that we are uploading license
+		panel.add(new Hidden("licenseKey", String.valueOf("true")));
+
+		// Create a FileUpload widget.
+		upload = new FileUpload();
+		upload.setName("uploadFormElement");
+		panel.add(upload);
+
+		form.addSubmitHandler(new SubmitHandler()
+		{
+
+			@Override
+			public void onSubmit(SubmitEvent event)
 			{
-				form.setAction("/filrconfig/InstallConfig/fileUpload");
 			}
-			else
+		});
+
+		form.addSubmitCompleteHandler(new SubmitCompleteHandler()
+		{
+
+			@Override
+			public void onSubmitComplete(SubmitCompleteEvent event)
 			{
-				form.setAction("/filrconfig/InstallConfig/fileUpload");
+				hide(true);
 			}
+		});
 
-			// Because we're going to add a FileUpload widget, we'll need to set
-			// the
-			// form to use the POST method, and multipart MIME encoding.
-			form.setEncoding(FormPanel.ENCODING_MULTIPART);
-			form.setMethod(FormPanel.METHOD_POST);
-			
-			//Set the value to let the back end know that we are uploading license
-			panel.add(new Hidden("licenseKey", String.valueOf("true")));
-
-			// Create a FileUpload widget.
-			upload = new FileUpload();
-			upload.setName("uploadFormElement");
-			panel.add(upload);
-
-			form.addSubmitHandler(new SubmitHandler()
-			{
-
-				@Override
-				public void onSubmit(SubmitEvent event)
-				{
-				}
-			});
-			
-			form.addSubmitCompleteHandler(new SubmitCompleteHandler()
-			{
-				
-				@Override
-				public void onSubmitComplete(SubmitCompleteEvent event)
-				{
-					hide(true);					
-				}
-			});
-			
-			return fPanel;
+		return fPanel;
 	}
-	
+
 	@Override
 	public boolean editSuccessful(Object obj)
 	{
 		// Save the configuration
-		form.submit();
+		//If there is no file, nothing to do.
+		if (upload.getFilename() != null && !upload.getFilename().equals(""))
+		{
+			form.submit();
 
-		// Return false, we will close if the save is successful
-		return false;
+			// Return false, we will close if the save is successful
+			return false;
+		}
+		return true;
 	}
 }
