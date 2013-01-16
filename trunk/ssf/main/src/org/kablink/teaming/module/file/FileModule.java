@@ -478,13 +478,26 @@ public interface FileModule {
 
     /**
 	 * Returns a map of names of the files contained in the specified binder
-	 * to its enclosing entry ids.
+	 * to its enclosing entry ids using the information in the search index.
 	 * 
 	 * @param binder
 	 * @return
 	 */
-	public Map<String,Long> getChildrenFileNames(Binder binder);
+	public Map<String,Long> getChildrenFileNamesUsingSearchIndex(Binder binder);
 
+	/**
+	 * Returns a map of names of the files contained in the specified binder
+	 * to its enclosing entry ids using the information in the database.
+	 * <p>
+	 * CAUTION: This method does NOT filter out the result based on the access right of
+	 * the user making the call, so must be used only in the runtime context of admin 
+	 * or other privileged user. 
+	 * 
+	 * @param binderId
+	 * @return
+	 */
+	public Map<String,Long> getChildrenFileNamesUsingDatabaseWithoutAccessCheck(Long binderId);
+	
 	/**
 	 * Get a file attachment from the fileId.
 	 *  

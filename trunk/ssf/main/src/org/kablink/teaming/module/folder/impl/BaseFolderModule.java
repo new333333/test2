@@ -32,9 +32,17 @@
  */
 package org.kablink.teaming.module.folder.impl;
 
+import java.util.List;
+import java.util.Map;
+
 import org.kablink.teaming.UncheckedIOException;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.StatusTicket;
 
 
@@ -74,5 +82,11 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 		return "";
 	}  
 
+	@Override
+    public List<FolderEntry> _addNetFolderEntries(Long folderId, String definitionId, List<InputDataAccessor> inputDataList, 
+    		List<Map> fileItemsList, List<Map> optionsList) 
+    	throws AccessControlException, WriteFilesException, WriteEntryDataException {
+		throw new UnsupportedOperationException("addNetFolderEntries operation is not supported in the base edition");
+	}
 
 }

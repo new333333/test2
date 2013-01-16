@@ -541,7 +541,7 @@ public class FolderUtils {
 		return item; // This may be null
 	}
 
-	private static String[] getDefinitionElementNameForMirroredFile(Definition definition) 
+	public static String[] getDefinitionElementNameForMirroredFile(Definition definition) 
 	throws ConfigurationException {
 		SimpleProfiler.start("FolderUtils.getDefinitionElementNameForMirroredFile");
 		Document defDoc = definition.getDefinition();
@@ -610,7 +610,7 @@ public class FolderUtils {
 		return value;
 	}
 	
-	private static Definition getFolderEntryDefinition(Folder folder) {
+	public static Definition getFolderEntryDefinition(Folder folder) {
 		Definition def = folder.getDefaultEntryDef();
 		if(def == null) {
 			def = folder.getDefaultFileEntryDef();

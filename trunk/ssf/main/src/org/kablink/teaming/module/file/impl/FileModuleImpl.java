@@ -70,6 +70,8 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.UserQuotaException;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.util.FilterControls;
+import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
@@ -1410,7 +1412,18 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         return result;
     }
 
-	public Map<String,Long> getChildrenFileNames(Binder binder) {
+	public Map<String,Long> getChildrenFileNamesUsingDatabaseWithoutAccessCheck(Long binderId) {
+		List<Object[]> objs = getCoreDao().loadObjects(
+				new ObjectControls(FileAttachment.class, new String[]{"fileItem.name", "owner.ownerId"}),
+				new FilterControls("owner.owningBinderId", binderId),
+				RequestContextHolder.getRequestContext().getZoneId());
+		Map<String,Long> result = new HashMap<String,Long>();
+		for(Object[] obj:objs)
+			result.put((String)obj[0], (Long)obj[1]);
+		return result;
+	}
+
+	public Map<String,Long> getChildrenFileNamesUsingSearchIndex(Binder binder) {
 		// look for the specific binder id
     	// look only for attachments
     	Criteria crit = new Criteria()

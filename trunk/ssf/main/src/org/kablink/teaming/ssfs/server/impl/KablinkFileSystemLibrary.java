@@ -984,7 +984,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	}
 	
 	private Set<String> getChildFolderNames(Folder folder) {
-		return bs.getFolderModule().getSubfoldersTitles(folder);
+		return bs.getFolderModule().getSubfoldersTitles(folder, true);
 	}
 	
 	private Set<String> getLibraryFolderChildrenFileNames(Folder libraryFolder) {

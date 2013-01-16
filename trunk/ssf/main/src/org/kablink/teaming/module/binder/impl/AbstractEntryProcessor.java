@@ -61,6 +61,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TitleException;
@@ -267,6 +268,19 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
             SimpleProfiler.stop("addEntry");
         }
     }
+
+	
+	@Override
+	public List<FolderEntry> _addNetFolderEntries(final Binder binder, Definition def, 
+			final List<InputDataAccessor> inputDataList, List<Map> fileItemsList, List<Map> optionsList) 
+    	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException {
+		// $$$$$$$$$$$$$ TODO 
+		ArrayList<FolderEntry> result = new ArrayList<FolderEntry>(inputDataList.size());
+		for(int i = 0; i < inputDataList.size(); i++) {
+			result.set(i, (FolderEntry) this.addEntry(binder, def, FolderEntry.class, inputDataList.get(i), fileItemsList.get(i), optionsList.get(i)));
+		}
+		return result;
+	}
 
     protected void addEntry_setCtx(Binder binder, Map ctx) {
     }

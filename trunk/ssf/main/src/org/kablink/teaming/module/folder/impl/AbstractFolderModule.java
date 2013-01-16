@@ -167,10 +167,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     protected FileModule fileModule;
     protected BinderModule binderModule;
     
-    AtomicInteger aeCount = new AtomicInteger();
-    AtomicInteger meCount = new AtomicInteger();
-    AtomicInteger deCount = new AtomicInteger();
-    AtomicInteger arCount = new AtomicInteger();
+    protected AtomicInteger aeCount = new AtomicInteger();
+    protected AtomicInteger meCount = new AtomicInteger();
+    protected AtomicInteger deCount = new AtomicInteger();
+    protected AtomicInteger arCount = new AtomicInteger();
 
 
 	protected DefinitionModule getDefinitionModule() {
@@ -1441,15 +1441,15 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
    		}
    		return views;
     }
-    public SortedSet<String> getSubfoldersTitles(Folder folder) {
+    public SortedSet<String> getSubfoldersTitles(Folder folder, boolean checkAccess) {
     	//already have access to folder
     	TreeSet<String> titles = new TreeSet<String>();
    		
     	for(Object o : folder.getFolders()) {
     		Folder f = (Folder) o;
     		if (f.isDeleted() || f.isPreDeleted()) continue;
-    		if (getBinderModule().testAccess(f, BinderOperation.readEntries) ||
-    				getBinderModule().testAccess(f, BinderOperation.viewBinderTitle)) {
+    		if(!checkAccess || (getBinderModule().testAccess(f, BinderOperation.readEntries) ||
+    				getBinderModule().testAccess(f, BinderOperation.viewBinderTitle))) {
     			titles.add(f.getTitle());
     		}
     	}
