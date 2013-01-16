@@ -130,6 +130,7 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 			passwordTextBox = new VibePasswordTextBox();
+			passwordTextBox.setValidator(new ValueRequiredValidator(passwordTextBox));
 			table.setWidget(row, 1, passwordTextBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -218,6 +219,13 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			setErrorMessage(RBUNDLE.allFieldsRequired());
 			return null;
 		}
+		
+		if (authRequiredCheckBox.getValue() && !passwordTextBox.isValid())
+		{
+			setErrorMessage(RBUNDLE.allFieldsRequired());
+			return null;
+		}
+		setErrorMessage(null);
 
 		EmailProtocol protocol = protocolListBox.getSelectedIndex() == 0 ? EmailProtocol.SMTP : EmailProtocol.SMTPS;
 		EmailSettings emailSettings = config.getEmailSettings();
