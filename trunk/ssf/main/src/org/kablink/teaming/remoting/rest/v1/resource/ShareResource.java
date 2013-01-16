@@ -217,7 +217,7 @@ public class ShareResource extends AbstractResource {
     @GET
     @Path("/by_user/{id}/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<SearchableObject> getRecentActivityInSharedByUser(
+    public SearchResultList<RecentActivityEntry> getRecentActivityInSharedByUser(
             @PathParam("id") Long userId,
             @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
             @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
@@ -376,7 +376,7 @@ public class ShareResource extends AbstractResource {
     @GET
     @Path("/with_user/{id}/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<SearchableObject> getRecentActivityInSharedWithUser(
+    public SearchResultList<RecentActivityEntry> getRecentActivityInSharedWithUser(
             @PathParam("id") Long userId,
             @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
             @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
@@ -393,7 +393,7 @@ public class ShareResource extends AbstractResource {
                 spec, userId, "/shares/with_user/" + userId + "/recent_activity", nextParams, showHidden, showUnhidden);
     }
 
-    private SearchResultList<SearchableObject> _getRecentActivity(Long topId, boolean includeParentPaths, boolean textDescriptions,
+    private SearchResultList<RecentActivityEntry> _getRecentActivity(Long topId, boolean includeParentPaths, boolean textDescriptions,
                                                                   Integer offset, Integer maxCount, ShareItemSelectSpec spec,
                                                                   Long excludedSharerId, String nextUrl, Map<String, Object> nextParams,
                                                                   boolean showHidden, boolean showUnhidden) {
@@ -401,7 +401,7 @@ public class ShareResource extends AbstractResource {
         List<String> entryIds = new ArrayList<String>();
         List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID);
         if (shareItems.size()==0) {
-            return new SearchResultList<SearchableObject>();
+            return new SearchResultList<RecentActivityEntry>();
         }
         for (ShareItem shareItem : shareItems) {
             EntityIdentifier entityId = shareItem.getSharedEntityIdentifier();
@@ -453,7 +453,7 @@ public class ShareResource extends AbstractResource {
 
     private SearchResultList<SharedFolderEntryBrief> _getSharedEntries(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean includeParentPaths, boolean showHidden, boolean showUnhidden) {
         Map<Long, SharedFolderEntryBrief> resultMap = new LinkedHashMap<Long, SharedFolderEntryBrief>();
-        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID);
+        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId == ObjectKeys.SHARED_BY_ME_ID);
         for (ShareItem shareItem : shareItems) {
             if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
                 try {
@@ -483,7 +483,7 @@ public class ShareResource extends AbstractResource {
 
     protected SharedBinderBrief [] _getSharedBinders(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
         Map<Long, SharedBinderBrief> resultMap = new LinkedHashMap<Long, SharedBinderBrief>();
-        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID);
+        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId == ObjectKeys.SHARED_BY_ME_ID);
         for (ShareItem shareItem : shareItems) {
             if (shareItem.getSharedEntityIdentifier().getEntityType().isBinder()) {
                 try {

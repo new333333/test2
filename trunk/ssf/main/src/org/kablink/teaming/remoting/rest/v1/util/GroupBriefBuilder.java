@@ -72,7 +72,6 @@ public class GroupBriefBuilder extends PrincipalBriefBuilder implements SearchRe
         return null;
     }
 
-    @Override
     public Date getLastModified(GroupBrief obj) {
         return obj.getModificationDate();
     }

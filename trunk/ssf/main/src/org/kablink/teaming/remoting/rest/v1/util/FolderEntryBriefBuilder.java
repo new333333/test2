@@ -40,7 +40,6 @@ public class FolderEntryBriefBuilder extends BaseFolderEntryBriefBuilder impleme
         return null;
     }
 
-    @Override
     public Date getLastModified(FolderEntryBrief obj) {
         return obj.getModificationDate();
     }

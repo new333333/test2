@@ -34,11 +34,7 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.NetFolderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
@@ -48,7 +44,6 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Junction;
-import org.kablink.util.search.Order;
 import org.kablink.util.search.Restrictions;
 
 import javax.ws.rs.DefaultValue;
@@ -62,9 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.in;
-import static org.kablink.util.search.Restrictions.like;
 
 /**
  * User: david
@@ -144,7 +137,7 @@ public class NetFoldersResource extends AbstractResource {
     @GET
     @Path("/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<SearchableObject> getRecentActivity(
+    public SearchResultList<RecentActivityEntry> getRecentActivity(
             @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
             @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -155,7 +148,7 @@ public class NetFoldersResource extends AbstractResource {
 
         SearchResultList<NetFolderBrief> folders = getNetFolders(true, 0, -1);
         if (folders.getCount()==0) {
-            return new SearchResultList<SearchableObject>();
+            return new SearchResultList<RecentActivityEntry>();
         }
         List<String> binders = new ArrayList<String>();
         for (BinderBrief binder : folders.getResults()) {

@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Date: 5/16/12
  * Time: 12:44 PM
  */
-@XmlRootElement (name = "vibe_rest_api")
+@XmlRootElement (name = "rest_api_root")
 public class RootRestObject extends BaseRestObject {
 
 }

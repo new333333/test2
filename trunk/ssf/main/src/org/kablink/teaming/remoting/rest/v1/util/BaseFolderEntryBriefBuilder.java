@@ -35,7 +35,7 @@ abstract public class BaseFolderEntryBriefBuilder extends DefinableEntityBriefBu
         }
         model.setFileNames(getValueAsStringArray(entry.get(Constants.FILENAME_FIELD)));
 
-        model.setTotalReplyCount(getInt(entry, Constants.TOTALREPLYCOUNT_FIELD));
+        model.setTotalReplyCount(SearchResultBuilderUtil.getInt(entry, Constants.TOTALREPLYCOUNT_FIELD));
     }
 
     private String[] getValueAsStringArray(Object value) {

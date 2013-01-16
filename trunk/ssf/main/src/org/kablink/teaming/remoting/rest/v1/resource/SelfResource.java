@@ -55,6 +55,7 @@ import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.ParentBinder;
+import org.kablink.teaming.rest.v1.model.RecentActivityEntry;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
@@ -449,7 +450,7 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/my_files/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<SearchableObject> getMyFileRecentActivity(
+    public SearchResultList<RecentActivityEntry> getMyFileRecentActivity(
             @QueryParam("file_name") String fileName,
             @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
@@ -479,10 +480,10 @@ public class SelfResource extends AbstractFileResource {
             }
         }
         if (entries==null && binders==null) {
-            return new SearchResultList<SearchableObject>();
+            return new SearchResultList<RecentActivityEntry>();
         }
         Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binders, entries, null, true, Constants.LASTACTIVITY_FIELD);
-        SearchResultList<SearchableObject> resultList = _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, "/net_folders/recent_activity", nextParams);
+        SearchResultList<RecentActivityEntry> resultList = _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, "/net_folders/recent_activity", nextParams);
         setMyFilesParents(resultList);
         return resultList;
     }

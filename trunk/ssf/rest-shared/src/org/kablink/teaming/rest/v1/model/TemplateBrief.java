@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "template_brief")
 public class TemplateBrief extends DefinableEntityBrief {
 
 	private String internalId;

@@ -70,7 +70,6 @@ public class ApplicationGroupBriefBuilder extends PrincipalBriefBuilder implemen
         return null;
     }
 
-    @Override
     public Date getLastModified(ApplicationGroupBrief obj) {
         return obj.getModificationDate();
     }

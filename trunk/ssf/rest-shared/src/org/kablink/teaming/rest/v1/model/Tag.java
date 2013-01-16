@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-@XmlRootElement
+@XmlRootElement(name="tag")
 public class Tag extends BaseRestObject {
     // The following are used as the names of the personal tags added
     // to a shared entity to indicate that the user has it hidden.

@@ -56,12 +56,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
-import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
-import org.kablink.teaming.remoting.rest.v1.util.FilePropertiesBuilder;
-import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
-import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
-import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
-import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.*;
 import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
@@ -146,19 +141,75 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return (org.kablink.teaming.domain.User) entry;
     }
 
-    protected SearchResultList<SearchableObject> _getRecentActivity(boolean includeParentPaths, boolean textDescriptions,
+    protected SearchResultList<RecentActivityEntry> _getRecentActivity(boolean includeParentPaths, boolean textDescriptions,
                                                                     Integer offset, Integer maxCount, Criteria criteria,
                                                                     String nextUrl, Map<String, Object> nextParams) {
         Map resultsMap = getBinderModule().executeSearchQuery(criteria, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
+        SearchResultList<RecentActivityEntry> results = new SearchResultList<RecentActivityEntry>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new RecentActivityFolderEntryBuilder(textDescriptions), resultsMap,
                 nextUrl, nextParams, offset);
+
+        populateComments(results.getResults(), textDescriptions);
 
         if (includeParentPaths) {
             populateParentBinderPaths(results);
         }
 
         return results;
+    }
+
+    protected void populateComments(List<RecentActivityEntry> entries, boolean textDescriptions) {
+        String[] topEntryIds = new String[entries.size()];
+        int i = 0;
+        for (RecentActivityEntry entry:  entries) {
+            // ...tracking each ASEntryData's entry ID.
+            Long topEntryId = entry.getId();
+            topEntryIds[i++] = String.valueOf(topEntryId);
+        }
+
+        // Are there any comments posted to any of these entries?
+        Criteria searchCriteria = SearchUtils.entryReplies(topEntryIds, true);	// true -> All replies, at any level.
+        Map       searchResults = getBinderModule().executeSearchQuery(searchCriteria, Constants.SEARCH_MODE_NORMAL, 0, (Integer.MAX_VALUE - 1));
+        List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
+        int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+        if ((0 >= totalRecords) || (null == searchEntries) || searchEntries.isEmpty()) {
+            // No!  Then there's no comment data to complete.
+            return;
+        }
+
+        ReplyBriefBuilder replyBuilder = new ReplyBriefBuilder(textDescriptions);
+
+        // Scan the comment entry search results Map's
+        for (Map commentEntryMap:  searchEntries) {
+            // Can we find the FolderEntry for the top level entry
+            // for this comment?
+            Long entryId = SearchResultBuilderUtil.getLong(commentEntryMap, Constants.ENTRY_TOP_ENTRY_ID_FIELD);
+            RecentActivityEntry entry = findEntry(entries, entryId);
+            if (null == entry) {
+                // No!  Skip it.
+                continue;
+            }
+
+            // Does this comment Map contain both a binder and
+            // entry ID?
+            Long commentBinderId = SearchResultBuilderUtil.getLong(commentEntryMap, Constants.BINDER_ID_FIELD);
+            Long commentEntryId = SearchResultBuilderUtil.getLong(commentEntryMap, Constants.DOCID_FIELD);
+            if (commentBinderId==null || commentEntryId==null) {
+                // No!  Skip it.
+                continue;
+            }
+
+            entry.addReply(replyBuilder.build(commentEntryMap), 2);
+        }
+    }
+
+    private RecentActivityEntry findEntry(List<RecentActivityEntry> entries, Long entryId) {
+        for (RecentActivityEntry entry : entries) {
+            if (entry.getId()==entryId) {
+                return entry;
+            }
+        }
+        return null;
     }
 
     protected boolean isBinderPreDeleted(Binder binder) {

@@ -92,6 +92,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
     		ParentBinder.class,
     		Permission.class,
     		PrincipalBrief.class,
+            RecentActivityEntry.class,
             ReleaseInfo.class,
             Reply.class,
             ReplyBrief.class,

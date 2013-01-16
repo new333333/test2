@@ -1,5 +1,6 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
+import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -11,6 +12,7 @@ import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Junction;
@@ -205,4 +207,52 @@ public class SearchResultBuilderUtil {
         return binders;
     }
 
+    public static Boolean getBoolean(Map entry, String fieldName) {
+        return getBoolean(entry, fieldName, null);
+    }
+
+    public static Boolean getBoolean(Map entry, String fieldName, Boolean defaultValue) {
+        Boolean value = defaultValue;
+        String libraryStr = (String) entry.get(fieldName);
+        if(Constants.TRUE.equals(libraryStr))
+            value = Boolean.TRUE;
+        else if(Constants.FALSE.equals(libraryStr))
+            value = Boolean.FALSE;
+        return value;
+    }
+
+    public static Integer getInt(Map entry, String fieldName) {
+        Integer parentBinderId = null;
+        String parentBinderIdStr = (String) entry.get(fieldName);
+        if(Validator.isNotNull(parentBinderIdStr))
+            parentBinderId = Integer.valueOf(parentBinderIdStr);
+        return parentBinderId;
+    }
+
+    public static Long getLong(Map entry, String fieldName) {
+        Long parentBinderId = null;
+        String parentBinderIdStr = (String) entry.get(fieldName);
+        if(Validator.isNotNull(parentBinderIdStr))
+            parentBinderId = Long.valueOf(parentBinderIdStr);
+        return parentBinderId;
+    }
+
+    public static Long getLong(Element entry, String fieldName) {
+        Long parentBinderId = null;
+        String parentBinderIdStr = entry.attributeValue(fieldName);
+        if(Validator.isNotNull(parentBinderIdStr))
+            parentBinderId = Long.valueOf(parentBinderIdStr);
+        return parentBinderId;
+    }
+
+    public static String getString(Map entry, String fieldName) {
+        Object field = entry.get(fieldName);
+        String value = null;
+        if (field instanceof SearchFieldResult) {
+            value = ((SearchFieldResult)field).getValueSet().iterator().next();
+        } else if (field instanceof String) {
+            value = (String) field;
+        }
+        return value;
+    }
 }

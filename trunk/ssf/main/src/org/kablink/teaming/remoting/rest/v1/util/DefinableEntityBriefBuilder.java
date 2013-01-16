@@ -82,7 +82,7 @@ abstract public class DefinableEntityBriefBuilder {
                     LinkUriUtil.getDefinitionLinkUri(defid)));
         }
 
-        Long parentBinderId = getLong(entry, parentBinderField);
+        Long parentBinderId = SearchResultBuilderUtil.getLong(entry, parentBinderField);
         if (parentBinderId!=null) {
             model.setParentBinder(new ParentBinder(parentBinderId, LinkUriUtil.getBinderLinkUri(parentBinderId)));
         }
@@ -96,54 +96,5 @@ abstract public class DefinableEntityBriefBuilder {
         model.setModification(
                 new HistoryStamp(new LongIdLinkPair(modifier, LinkUriUtil.getUserLinkUri(modifier)),
                         (Date) entry.get(Constants.MODIFICATION_DATE_FIELD)));
-    }
-
-    public static Boolean getBoolean(Map entry, String fieldName) {
-        return getBoolean(entry, fieldName, null);
-    }
-
-    public static Boolean getBoolean(Map entry, String fieldName, Boolean defaultValue) {
-        Boolean value = defaultValue;
-        String libraryStr = (String) entry.get(fieldName);
-        if(Constants.TRUE.equals(libraryStr))
-            value = Boolean.TRUE;
-        else if(Constants.FALSE.equals(libraryStr))
-            value = Boolean.FALSE;
-        return value;
-    }
-
-    public static Integer getInt(Map entry, String fieldName) {
-        Integer parentBinderId = null;
-        String parentBinderIdStr = (String) entry.get(fieldName);
-        if(Validator.isNotNull(parentBinderIdStr))
-            parentBinderId = Integer.valueOf(parentBinderIdStr);
-        return parentBinderId;
-    }
-
-    public static Long getLong(Map entry, String fieldName) {
-        Long parentBinderId = null;
-        String parentBinderIdStr = (String) entry.get(fieldName);
-        if(Validator.isNotNull(parentBinderIdStr))
-            parentBinderId = Long.valueOf(parentBinderIdStr);
-        return parentBinderId;
-    }
-
-    public static Long getLong(Element entry, String fieldName) {
-        Long parentBinderId = null;
-        String parentBinderIdStr = entry.attributeValue(fieldName);
-        if(Validator.isNotNull(parentBinderIdStr))
-            parentBinderId = Long.valueOf(parentBinderIdStr);
-        return parentBinderId;
-    }
-
-    public static String getString(Map entry, String fieldName) {
-        Object field = entry.get(fieldName);
-        String value = null;
-        if (field instanceof SearchFieldResult) {
-            value = ((SearchFieldResult)field).getValueSet().iterator().next();
-        } else if (field instanceof String) {
-            value = (String) field;
-        }
-        return value;
     }
 }
