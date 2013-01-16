@@ -40,34 +40,35 @@ import org.kablink.teaming.util.Constants;
  */
 public class ResourceItem {
 
-	/* The following set of properties come from the file system */
+	/* The following set of properties come from the file system and are used to convey metadata to Filr side */
 	private String parentPath;
 	private String name;
 	private long lastModified;
 	private boolean directory;
 	private long contentLength;
-	private boolean inheritAcl;
+	private boolean aclInherited;
 	private String ownerId;
 	private String ownerIdType;
 	
-	/* The following set of properties are computed on the Filr side */
+	/* The following set of properties are computed or managed on the Filr side and used solely to help with sync process without having to resort to another data structure */
+	private Long creatorFilrId;
 	private Long ownerFilrId;
 	
-	public static ResourceItem file(String parentPath, String name, long lastModified, long contentLength, boolean inheritAcl, String ownerId, String ownerIdType) {
-		return new ResourceItem(parentPath, name, lastModified, false, contentLength, inheritAcl, ownerId, ownerIdType);
+	public static ResourceItem file(String parentPath, String name, long lastModified, long contentLength, boolean aclInherited, String ownerId, String ownerIdType) {
+		return new ResourceItem(parentPath, name, lastModified, false, contentLength, aclInherited, ownerId, ownerIdType);
 	}
 	
-	public static ResourceItem directory(String parentPath, String name, boolean inheritAcl, String ownerId, String ownerIdType) {
-		return new ResourceItem(parentPath, name, 0, true, 0, inheritAcl, ownerId, ownerIdType);
+	public static ResourceItem directory(String parentPath, String name, boolean aclInherited, String ownerId, String ownerIdType) {
+		return new ResourceItem(parentPath, name, 0, true, 0, aclInherited, ownerId, ownerIdType);
 	}
 	
-	private ResourceItem(String parentPath, String name, long lastModified, boolean directory, long contentLength, boolean inheritAcl, String ownerId, String ownerIdType) {
+	private ResourceItem(String parentPath, String name, long lastModified, boolean directory, long contentLength, boolean aclInherited, String ownerId, String ownerIdType) {
 		this.parentPath = parentPath;
 		this.name = name;
 		this.lastModified = lastModified;
 		this.directory = directory;
 		this.contentLength = contentLength;
-		this.inheritAcl = inheritAcl;
+		this.aclInherited = aclInherited;
 		this.ownerId = ownerId;
 		this.ownerIdType = ownerIdType;
 	}
@@ -149,11 +150,11 @@ public class ResourceItem {
 	 * 
 	 * @return
 	 */
-	public boolean isInheritAcl() {
-		return inheritAcl;
+	public boolean isAclInherited() {
+		return aclInherited;
 	}
-	public void setInheritAcl(boolean inheritAcl) {
-		this.inheritAcl = inheritAcl;
+	public void setAclInherited(boolean aclInherited) {
+		this.aclInherited = aclInherited;
 	}
 	
 	/**
@@ -183,6 +184,19 @@ public class ResourceItem {
 
 	/**
 	 * Returns the Filr principal ID that the original owner ID from the file system maps to. 
+	 * 
+	 * @return
+	 */
+	public Long getCreatorFilrId() {
+		return creatorFilrId;
+	}
+
+	public void setCreatorFilrId(Long creatorFilrId) {
+		this.creatorFilrId = creatorFilrId;
+	}
+
+	/**
+	 * Returns optionally the Filr principal ID designated as the owner or <code>null</code>. 
 	 * 
 	 * @return
 	 */
