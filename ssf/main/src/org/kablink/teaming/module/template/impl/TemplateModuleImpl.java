@@ -948,4 +948,17 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		}
    		return true;
    	}
+   	
+	@Override
+	public List<Binder> _addNetFolderBinders(Long templateId,
+			Long parentBinderId, List<String> titleList, List<String> nameList,
+			List<Map> overrideInputDataList, List<Map> optionsList)
+			throws AccessControlException, WriteFilesException {
+		// $$$$$$$$$$$$ TODO
+		ArrayList<Binder> result = new ArrayList<Binder>(titleList.size());
+		for(int i = 0; i < titleList.size(); i++) {
+			result.set(i, this.addBinder(templateId, parentBinderId, titleList.get(i), nameList.get(i), overrideInputDataList.get(i), optionsList.get(i)));
+		}
+		return result;
+	}
 }

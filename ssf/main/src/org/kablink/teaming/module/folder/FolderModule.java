@@ -443,9 +443,10 @@ public interface FolderModule {
     /**
      * Return the sorted titles of this folders sub-folders (1-level)
      * @param folder
+     * @param checkAccess
      * @return
      */
-    public SortedSet<String> getSubfoldersTitles(Folder folder);
+    public SortedSet<String> getSubfoldersTitles(Folder folder, boolean checkAccess);
     /**
      * Return the current users subscription the the folderEntry
      * @param entry
@@ -692,4 +693,9 @@ public interface FolderModule {
 	public void setNotificationSchedule(ScheduleInfo config, Long folderId);
 	
 	public Long getZoneEntryId(Long entryId, String zoneUUID);
+	
+    public List<FolderEntry> _addNetFolderEntries(Long folderId, String definitionId, List<InputDataAccessor> inputDataList, 
+    		List<Map> fileItemsList, List<Map> optionsList) 
+    	throws AccessControlException, WriteFilesException, WriteEntryDataException;
+
 }
