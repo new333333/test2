@@ -46,6 +46,7 @@ public class UserBrief extends PrincipalBrief {
 	private String firstName;
 	private String lastName;
 	private String middleName;
+    private StringIdLinkPair avatar;
 
     public UserBrief() {
         super();
@@ -93,5 +94,14 @@ public class UserBrief extends PrincipalBrief {
 	public void setMiddleName(String middleName) {
 		this.middleName = middleName;
 	}
-	
+
+    @XmlElement(name="avatar")
+    public StringIdLinkPair getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(StringIdLinkPair avatar) {
+        this.avatar = avatar;
+    }
+
 }

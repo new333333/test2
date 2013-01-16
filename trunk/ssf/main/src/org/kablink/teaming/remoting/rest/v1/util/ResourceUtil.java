@@ -281,6 +281,7 @@ public class ResourceUtil {
             model.setFirstName(u.getFirstName());
             model.setMiddleName(u.getMiddleName());
             model.setLastName(u.getLastName());
+            model.setAvatar(buildAvatar(u.getAvatarAttachmentId()));
         }
         model.setLink(LinkUriUtil.getUserLinkUri(model.getId()));
         LinkUriUtil.populateUserLinks(model.getId(), model);
@@ -318,13 +319,7 @@ public class ResourceUtil {
         model.setSkypeId(user.getSkypeId());
         model.setTwitterId(user.getTwitterId());
 
-        CustomAttribute attribute = user.getCustomAttribute("picture");
-        if (attribute!=null) {
-            Attachment attachment = (Attachment) attribute.getValueSet().iterator().next();
-            if (attachment!=null) {
-                model.setAvatarAttachmentId(attachment.getId());
-            }
-        }
+        model.setAvatar(buildAvatar(user.getAvatarAttachmentId()));
 
         if (user.getMiniBlogId()!=null) {
             model.setMiniBlog(new LongIdLinkPair(user.getMiniBlogId(), LinkUriUtil.getFolderLinkUri(user.getMiniBlogId())));
@@ -803,6 +798,16 @@ public class ResourceUtil {
         SharedFolderEntryBrief model = new SharedFolderEntryBrief();
         populateEntryBrief(model, entry);
         model.addShare(buildShare(shareItem));
+        return model;
+    }
+
+    public static StringIdLinkPair buildAvatar(String fileId) {
+        if (fileId==null) {
+            return null;
+        }
+        StringIdLinkPair model = new StringIdLinkPair();
+        model.setId(fileId);
+        LinkUriUtil.populateAvatarLinks(model);
         return model;
     }
 }

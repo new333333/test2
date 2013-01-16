@@ -643,6 +643,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 			User user = (User)entry;
 			ProfileIndexUtils.addName(indexDoc, user, false);
 			ProfileIndexUtils.addWorkspaceId(indexDoc, user);
+			ProfileIndexUtils.addAvatarId(indexDoc, user);
 			ProfileIndexUtils.addPersonFlag(indexDoc, user);
 			ProfileIndexUtils.addIdentityInfo(indexDoc, user);
 			ProfileIndexUtils.addEmail(indexDoc, user);

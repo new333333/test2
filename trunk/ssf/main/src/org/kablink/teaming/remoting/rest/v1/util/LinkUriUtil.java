@@ -117,12 +117,12 @@ public class LinkUriUtil {
         return getDefinableEntityLinkUri(EntityIdentifier.EntityType.group, id);
     }
 
-    public static String getFilePropertiesLinkUri(FileProperties fp) {
-        return getFileBaseLinkUri(fp) + "/metadata";
+    public static String getFilePropertiesLinkUri(String fileId) {
+        return getFileBaseLinkUri(fileId) + "/metadata";
     }
 
-    public static String getFileBaseLinkUri(FileProperties fp) {
-        return "/files/" + fp.getId();
+    public static String getFileBaseLinkUri(String fileId) {
+        return "/files/" + fileId;
     }
 
     public static String getShareLinkUri(Long id) {
@@ -223,8 +223,8 @@ public class LinkUriUtil {
     }
 
     public static void populateFileLinks(FileProperties fp, Long owningEntityId, EntityIdentifier.EntityType owningEntityType) {
-        fp.setLink(getFilePropertiesLinkUri(fp));
-        String baseUrl = getFileBaseLinkUri(fp);
+        fp.setLink(getFilePropertiesLinkUri(fp.getId()));
+        String baseUrl = getFileBaseLinkUri(fp.getId());
         fp.addAdditionalLink("content", baseUrl);
         fp.addAdditionalLink("ancestry", fp.getOwningEntity().getLink() + "/ancestry");
         fp.addAdditionalLink("major_version", baseUrl + "/major_version");
@@ -241,6 +241,14 @@ public class LinkUriUtil {
             fp.addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(owningEntityId, owningEntityType, null));
             fp.addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(owningEntityId, owningEntityType, null));
         }
+    }
+
+    public static void populateAvatarLinks(StringIdLinkPair model) {
+        model.setLink(getFilePropertiesLinkUri(model.getId()));
+        String baseUrl = getFileBaseLinkUri(model.getId());
+        model.addAdditionalLink("content", baseUrl);
+        model.addAdditionalLink("thumbnail", baseUrl + "/thumbnail");
+        model.addAdditionalLink("scaled_image", baseUrl + "/scaled");
     }
 
     public static void populateFileVersionLinks(FileVersionProperties fp) {
