@@ -4773,8 +4773,13 @@ td.datePickerMonth {
 
 .userActionsPopup_ActionLabel:hover
 {
-	background-image: -moz-linear-gradient(center bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); 
-	bordr-radius: 2px 2px 2px 2px;
+	background: -moz-linear-gradient(center bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left bottom, left top, color-stop(47%,#a8d4dd), color-stop(53%,#d5edf1), color-stop(100%,#c8e4e9)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
+	border-radius: 2px 2px 2px 2px;
 	color: #135c8f;
 }
 
@@ -4844,7 +4849,12 @@ td.datePickerMonth {
 
 .userActionsPopup_SignOutLabel:hover
 {
-	background-image: -moz-linear-gradient(center bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); 
+	background: -moz-linear-gradient(center bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left bottom, left top, color-stop(47%,#a8d4dd), color-stop(53%,#d5edf1), color-stop(100%,#c8e4e9)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
 	border: 1px solid #81B2BD;
 	color: #135C8F;
 	cursor: pointer;
