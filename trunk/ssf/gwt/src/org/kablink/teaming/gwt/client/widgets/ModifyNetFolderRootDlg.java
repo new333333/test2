@@ -831,6 +831,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_hostUrlTxtBox.setValue( "" );
 		m_allowSelfSignedCertsCkbox.setValue( false );
 		m_isSharePointServerCkbox.setValue( false );
+		m_inProgressPanel.setVisible( false );
 
 		if ( m_showPrivilegedUsersUI && m_selectPrincipalsWidget != null )
 			m_selectPrincipalsWidget.init( null );//!!! Finish
