@@ -363,6 +363,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetDownloadFileUrl();
 	String rpcFailure_GetEmailNotificationInfo();
 	String rpcFailure_GetEntityActionToolbarItems();
+	String rpcFailure_GetEntityPermalink();
 	String rpcFailure_GetEntryComments();
 	String rpcFailure_GetEntryTypes();
 	String rpcFailure_getExecuteJspUrl();
@@ -664,6 +665,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_SurveyFolderView();
 	String codeSplitFailure_ShareExpirationDlg();
 	String codeSplitFailure_ShareThisDlg();
+	String codeSplitFailure_ShareWithPublicInfoDlg();
 	String codeSplitFailure_ShareWithTeamsDlg();
 	String codeSplitFailure_SizeColumnsDlg();
 	String codeSplitFailure_TagThisDlg();
@@ -1267,6 +1269,7 @@ public interface GwtTeamingMessages extends Messages
 	String removeShareHint();
 	String shareAccess();
 	String shareCaption();
+	String shareDlg_addExternalUserTitle();
 	String shareDlg_alreadySharedWithSelectedRecipient( String recipientName );
 	String shareDlg_cantShareWithAllExternalUsersGroup();
 	String shareDlg_cantShareWithAllInternalUsersGroup();
@@ -1290,7 +1293,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_savingShareInfo();
 	String shareDlg_shareLabel();
 	String shareDlg_sharingLabel();
-	String shareDlg_addExternalUserTitle();
+	String shareDlg_sharePublicTitle();
 	String shareDlg_viewer();
 	String shareEntityName();
 	String shareErrors();
@@ -2509,4 +2512,8 @@ public interface GwtTeamingMessages extends Messages
 	String fileConflictsDlgConflictingFiles();
 	String fileConflictsDlgHeader();
 
+	// Strings used in the Share with public info dialog
+	String shareWithPublicInfoDlg_Header();
+	String shareWithPublicInfoDlg_Instructions( String itemName );
+	
 }// end GwtTeamingMessages

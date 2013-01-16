@@ -1101,6 +1101,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_ENTITY_PERMALINK:
+		{
+			GetEntityPermalinkCmd gepCmd;
+			String permalink;
+			StringRpcResponseData responseData;
+			
+			gepCmd = (GetEntityPermalinkCmd) cmd;
+			permalink = GwtServerHelper.getEntityPermalink( this, getRequest( ri ), gepCmd.getEntityId() );
+			responseData = new StringRpcResponseData( permalink );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_ENTRY:
 		{
 			GetEntryCmd geCmd;

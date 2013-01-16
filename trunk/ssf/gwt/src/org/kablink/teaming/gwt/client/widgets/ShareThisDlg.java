@@ -58,11 +58,13 @@ import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntityPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSharingInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
@@ -81,6 +83,7 @@ import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ShareExpirationDlg.ShareExpirationDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
+import org.kablink.teaming.gwt.client.widgets.ShareWithPublicInfoDlg.ShareWithPublicInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareWithTeamsDlg.ShareWithTeamsDlgClient;
 
 import com.google.gwt.core.client.GWT;
@@ -160,6 +163,7 @@ public class ShareThisDlg extends DlgBox
 	private ShareExpirationDlg m_shareExpirationDlg;
 	private EditShareNoteDlg m_editShareNoteDlg;
 	private ShareWithTeamsDlg m_shareWithTeamsDlg;
+	private ShareWithPublicInfoDlg m_shareWithPublicInfoDlg=null;
 	private EditSuccessfulHandler m_editShareWithTeamsHandler;
 	
 
@@ -280,6 +284,7 @@ public class ShareThisDlg extends DlgBox
 	{
 		private GwtShareItem m_shareItem;
 		private InlineLabel m_typeLabel;
+		private String m_entityPermalink;
 		
 		/**
 		 * 
@@ -289,6 +294,7 @@ public class ShareThisDlg extends DlgBox
 			FlowPanel panel;
 			
 			m_shareItem = shareItem;
+			m_entityPermalink = null;
 			
 			panel = new FlowPanel();
 			
@@ -301,6 +307,7 @@ public class ShareThisDlg extends DlgBox
 			if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
 			{
 				m_typeLabel.addStyleName( "shareThisDlg_PublicRecipientTypeLabel" );
+				m_typeLabel.setTitle( GwtTeaming.getMessages().shareDlg_sharePublicTitle() );
 				m_typeLabel.addClickHandler( this );
 			}
 			
@@ -322,10 +329,97 @@ public class ShareThisDlg extends DlgBox
 				@Override
 				public void execute()
 				{
-					Window.alert( "Not yet implemented" );
+					invokeShareWithPublicInfoDlg();
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
+		}
+		
+		/**
+		 * 
+		 */
+		private void invokeShareWithPublicInfoDlg()
+		{
+			// Do we have the entity's permalink?
+			if ( m_entityPermalink == null )
+			{
+				GetEntityPermalinkCmd cmd;
+				AsyncCallback<VibeRpcResponse> callback;
+
+				// No
+				// Issue an rpc request to get the entity's permalink
+				callback = new AsyncCallback<VibeRpcResponse>()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void onFailure( Throwable t )
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+														t,
+														GwtTeaming.getMessages().rpcFailure_GetEntityPermalink(),
+														m_shareItem.getEntityId().getEntityId() );
+					}
+			
+					/**
+					 * 
+					 * @param result
+					 */
+					@Override
+					public void onSuccess( VibeRpcResponse response )
+					{
+						final StringRpcResponseData responseData;
+						
+						responseData = (StringRpcResponseData) response.getResponseData();
+						m_entityPermalink = responseData.getStringValue();
+						
+						if ( m_entityPermalink != null )
+						{
+							Scheduler.ScheduledCommand cmd;
+							
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									invokeShareWithPublicInfoDlg();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					}
+				};
+
+				cmd = new GetEntityPermalinkCmd( m_shareItem.getEntityId() );
+				GwtClientHelper.executeCommand( cmd, callback );
+			}
+			else
+			{
+				if ( m_shareWithPublicInfoDlg == null )
+				{
+					ShareWithPublicInfoDlg.createAsync( new ShareWithPublicInfoDlgClient()
+					{
+						@Override
+						public void onUnavailable() 
+						{
+							// Nothing to do.  Error handled in asynchronous provider.
+						}
+						
+						@Override
+						public void onSuccess( ShareWithPublicInfoDlg swpiDlg )
+						{
+							m_shareWithPublicInfoDlg = swpiDlg;
+							invokeShareWithPublicInfoDlg();
+						}
+					} );
+				}
+				else
+				{
+					m_shareWithPublicInfoDlg.init( m_shareItem.getEntityId(), m_entityPermalink );
+					m_shareWithPublicInfoDlg.showRelativeToTarget( m_typeLabel );
+				}
+			}
 		}
 	}
 	
