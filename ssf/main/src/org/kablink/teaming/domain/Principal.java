@@ -437,6 +437,17 @@ public abstract class Principal extends Entry implements IPrincipal {
     	this.iEmailAddresses = iEmailAddresses;
     }
 
+    public String getAvatarAttachmentId() {
+        CustomAttribute attribute = getCustomAttribute("picture");
+        if (attribute!=null) {
+            Attachment attachment = (Attachment) attribute.getValueSet().iterator().next();
+            if (attachment!=null) {
+                return attachment.getId();
+            }
+        }
+        return null;
+    }
+
 	public IdentityInfo getIdentityInfo() {
 		return identityInfo;
 	}

@@ -277,6 +277,7 @@ public class Constants {
 	public static final String DISABLED_USER_FIELD = "disabledUser";
 	public static final String RESERVEDID_FIELD = "_reservedId";
 	public static final String WORKSPACE_ID_FIELD = "_workspaceId";
+	public static final String AVATAR_ID_FIELD = "_avatarId";
 	public static final String UNIQUE_PREFIX = "X_Z_YY_Z";
 	public static final String PERSONFLAG_FIELD = "_isPerson";
 	public static final String IS_LIBRARY_FIELD = "_isLibrary";

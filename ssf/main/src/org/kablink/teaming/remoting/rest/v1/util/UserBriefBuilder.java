@@ -60,6 +60,7 @@ public class UserBriefBuilder extends PrincipalBriefBuilder implements SearchRes
         user.setFirstName(SearchResultBuilderUtil.getString(entry, ObjectKeys.FIELD_USER_FIRSTNAME));
         user.setMiddleName(SearchResultBuilderUtil.getString(entry, ObjectKeys.FIELD_USER_MIDDLENAME));
         user.setLastName(SearchResultBuilderUtil.getString(entry, ObjectKeys.FIELD_USER_LASTNAME));
+        user.setAvatar(ResourceUtil.buildAvatar(SearchResultBuilderUtil.getString(entry, Constants.AVATAR_ID_FIELD)));
 
         user.setLink(LinkUriUtil.getUserLinkUri(user.getId()));
         LinkUriUtil.populateUserLinks(user.getId(), user);

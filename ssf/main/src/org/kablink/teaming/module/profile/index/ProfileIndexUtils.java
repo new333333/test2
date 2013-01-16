@@ -100,12 +100,19 @@ public class ProfileIndexUtils {
         doc.add(disabledUserField);
     }
 
+    public static void addAvatarId(Document doc, User user) {
+        String attachmentId = user.getAvatarAttachmentId();
+        if (attachmentId != null) {
+    		Field attachmentIdField = FieldFactory.createFieldStoredNotAnalyzed(AVATAR_ID_FIELD, attachmentId);
+    		doc.add(attachmentIdField);
+    	}
+    }      
     public static void addWorkspaceId(Document doc, User user) {
     	if (user.getWorkspaceId() != null) {
     		Field workspaceIdField = FieldFactory.createFieldStoredNotAnalyzed(WORKSPACE_ID_FIELD, user.getWorkspaceId().toString());
     		doc.add(workspaceIdField);
     	}
-    }      
+    }
     public static void addReservedId(Document doc, Principal principal, boolean fieldsOnly) {
     	if (Validator.isNotNull(principal.getInternalId())) {
     		Field resIdField =  FieldFactory.createFieldStoredNotAnalyzed(RESERVEDID_FIELD, principal.getInternalId());
