@@ -4848,6 +4848,34 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Return the "entity permalink" URL.
+	 */
+	public static String getEntityPermalink(
+		AllModulesInjected ami,
+		HttpServletRequest req,
+		EntityId entityId )
+	{
+		String reply = "";
+		
+		if ( entityId != null )
+		{
+			DefinableEntity de;
+			
+			if ( entityId.isBinder() )
+				de = ami.getBinderModule().getBinder( entityId.getEntityId() );
+			else
+				de = ami.getFolderModule().getEntry( entityId.getBinderId(), entityId.getEntityId() );
+			
+			if ( de != null )
+			{
+				reply = PermaLinkUtil.getPermalink( req, de );
+			}
+		}
+		
+		return reply;
+	}
+	
+	/**
 	 * Returns a string that can be used as an entity's title in an
 	 * error message.
 	 * 
@@ -9095,6 +9123,7 @@ public class GwtServerHelper {
 		case GET_DYNAMIC_MEMBERSHIP_CRITERIA:
 		case GET_EMAIL_NOTIFICATION_INFORMATION:
 		case GET_ENTITY_ACTION_TOOLBAR_ITEMS:
+		case GET_ENTITY_PERMALINK:
 		case GET_ENTRY:
 		case GET_ENTRY_COMMENTS:
 		case GET_ENTRY_TAGS:
