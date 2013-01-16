@@ -96,7 +96,7 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			portTable.setWidget(row, 0, keyLabel);
 			portTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			httpSpinner = new GwValueSpinner(8080, 1024, 9999, null);
+			httpSpinner = new GwValueSpinner(8080, 80, 9999, null);
 			portTable.setWidget(row, 1, httpSpinner);
 			portTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 			
@@ -113,7 +113,7 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			portTable.setWidget(row, 0, keyLabel);
 			portTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			httpSecureSpinner = new GwValueSpinner(8443, 1024, 9999, null);
+			httpSecureSpinner = new GwValueSpinner(8443, 80, 9999, null);
 			portTable.setWidget(row, 1, httpSecureSpinner);
 			portTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -148,7 +148,6 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 		
 		//Save HTTP Port info
 		Network network = config.getNetwork();
-		network.setPort(httpSpinner.getValueAsInt());
 		network.setSecurePort(httpSecureSpinner.getValueAsInt());
 		if (httpEnabledCheckBox.getValue())
 			network.setPort(httpSpinner.getValueAsInt());
