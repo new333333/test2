@@ -110,7 +110,6 @@ public class FilePropertiesBuilder implements SearchResultBuilder<FileProperties
         return null;
     }
 
-    @Override
     public Date getLastModified(FileProperties obj) {
         return obj.getModificationDate();
     }

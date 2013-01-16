@@ -109,7 +109,6 @@ public class BinderBriefBuilder extends BaseBinderBriefBuilder implements Contai
         return new SearchResultTreeNode<BinderBrief>(binder);
     }
 
-    @Override
     public Date getLastModified(BinderBrief obj) {
         return obj.getModificationDate();
     }

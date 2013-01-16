@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Date: 5/23/12
  * Time: 4:45 PM
  */
-@XmlRootElement
+@XmlRootElement(name = "ids_link")
 public class StringIdLinkPair extends BaseRestObject {
     private String id;
 

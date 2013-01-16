@@ -117,7 +117,6 @@ public class UniversalBuilder implements SearchResultBuilder<SearchableObject> {
         return null;
     }
 
-    @Override
     public Date getLastModified(SearchableObject obj) {
         if (obj instanceof DefinableEntityBrief) {
             return ((DefinableEntityBrief)obj).getModificationDate();

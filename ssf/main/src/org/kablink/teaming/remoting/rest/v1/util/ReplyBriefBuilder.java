@@ -26,10 +26,10 @@ public class ReplyBriefBuilder extends BaseFolderEntryBriefBuilder implements Se
         ReplyBrief model = new ReplyBrief();
         populateBaseFolderEntryBrief(model, entry, Constants.BINDER_ID_FIELD);
 
-        Long topEntryId = getLong(entry, Constants.ENTRY_TOP_ENTRY_ID_FIELD);
+        Long topEntryId = SearchResultBuilderUtil.getLong(entry, Constants.ENTRY_TOP_ENTRY_ID_FIELD);
         if (topEntryId!=null) {
             model.setTopEntry(new LongIdLinkPair(topEntryId, LinkUriUtil.getFolderEntryLinkUri(topEntryId)));
-            Long parentEntryId = getLong(entry, Constants.ENTRY_PARENT_ID_FIELD);
+            Long parentEntryId = SearchResultBuilderUtil.getLong(entry, Constants.ENTRY_PARENT_ID_FIELD);
             if (parentEntryId!=null) {
                 if (parentEntryId.equals(topEntryId)) {
                     model.setParentEntry(model.getTopEntry());
@@ -55,7 +55,6 @@ public class ReplyBriefBuilder extends BaseFolderEntryBriefBuilder implements Se
         return null;
     }
 
-    @Override
     public Date getLastModified(ReplyBrief obj) {
         return obj.getModificationDate();
     }

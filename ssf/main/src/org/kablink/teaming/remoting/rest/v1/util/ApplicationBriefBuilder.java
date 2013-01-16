@@ -70,7 +70,6 @@ public class ApplicationBriefBuilder extends PrincipalBriefBuilder implements Se
         return null;
     }
 
-    @Override
     public Date getLastModified(ApplicationBrief obj) {
         return obj.getModificationDate();
     }

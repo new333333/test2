@@ -15,7 +15,7 @@
  *
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  *
  * Attribution Information:
  * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
@@ -30,47 +30,41 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.v1.util;
+package org.kablink.teaming.rest.v1.model;
 
-import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
-import org.kablink.teaming.rest.v1.model.NetFolderBrief;
-import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
-import org.kablink.util.search.Constants;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import java.util.Date;
-import java.util.Map;
+/**
+ * User: david
+ * Date: 1/16/13
+ * Time: 1:53 PM
+ */
+@XmlRootElement(name = "recent_activity_entry")
+public class RecentActivityEntry extends FolderEntryBrief {
+    private ReplyBrief [] replies;
 
-public class NetFolderBriefBuilder extends BaseBinderBriefBuilder implements SearchResultBuilder<NetFolderBrief>{
-    public NetFolderBriefBuilder() {
-        super();
+    @XmlElementWrapper(name="replies")
+    @XmlElement(name="reply")
+    public ReplyBrief[] getReplies() {
+        return replies;
     }
 
-    public NetFolderBriefBuilder(boolean textDescriptions) {
-        super(textDescriptions);
+    public void setReplies(ReplyBrief[] replies) {
+        this.replies = replies;
     }
 
-    public NetFolderBrief build(Map entry) {
-        NetFolderBrief folder = new NetFolderBrief();
-        populateBinderBrief(folder, entry);
-        folder.setAllowDesktopSync(SearchResultBuilderUtil.getBoolean(entry, Constants.ALLOW_DESKTOP_SYNC_FIELD, Boolean.TRUE));
-        folder.setAllowMobileSync(SearchResultBuilderUtil.getBoolean(entry, Constants.ALLOW_MOBILE_SYNC_FIELD, Boolean.TRUE));
-        return folder;
-    }
-
-    public Object getId(NetFolderBrief obj) {
-        return obj.getId();
-    }
-
-    public Object getParentId(NetFolderBrief obj) {
-        LongIdLinkPair parent = obj.getParentBinder();
-        return parent==null ? null : parent.getId();
-    }
-
-    public SearchResultTreeNode<NetFolderBrief> factoryTreeNode(NetFolderBrief obj) {
-        return new SearchResultTreeNode<NetFolderBrief>(obj);
-    }
-
-    public Date getLastModified(NetFolderBrief obj) {
-        return obj.getModificationDate();
+    public void addReply(ReplyBrief reply, int maxReplies) {
+        if (this.replies==null || maxReplies==1) {
+            this.replies = new ReplyBrief[] {reply};
+        } else {
+            ReplyBrief [] newReplies = new ReplyBrief[Math.min(maxReplies, this.replies.length + 1)];
+            if (this.replies.length>1) {
+                System.arraycopy(this.replies, 1, newReplies, 0, Math.min(maxReplies - 1, this.replies.length));
+            }
+            newReplies[newReplies.length - 1] = reply;
+            this.replies = newReplies;
+        }
     }
 }

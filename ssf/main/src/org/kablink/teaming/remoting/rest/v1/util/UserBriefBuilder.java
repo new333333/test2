@@ -56,10 +56,10 @@ public class UserBriefBuilder extends PrincipalBriefBuilder implements SearchRes
     public UserBrief build(Map entry) {
         UserBrief user = new UserBrief();
         populatePrincipalBrief(user, entry);
-        user.setPerson(getBoolean(entry, Constants.PERSONFLAG_FIELD));
-        user.setFirstName(getString(entry, ObjectKeys.FIELD_USER_FIRSTNAME));
-        user.setMiddleName(getString(entry, ObjectKeys.FIELD_USER_MIDDLENAME));
-        user.setLastName(getString(entry, ObjectKeys.FIELD_USER_LASTNAME));
+        user.setPerson(SearchResultBuilderUtil.getBoolean(entry, Constants.PERSONFLAG_FIELD));
+        user.setFirstName(SearchResultBuilderUtil.getString(entry, ObjectKeys.FIELD_USER_FIRSTNAME));
+        user.setMiddleName(SearchResultBuilderUtil.getString(entry, ObjectKeys.FIELD_USER_MIDDLENAME));
+        user.setLastName(SearchResultBuilderUtil.getString(entry, ObjectKeys.FIELD_USER_LASTNAME));
 
         user.setLink(LinkUriUtil.getUserLinkUri(user.getId()));
         LinkUriUtil.populateUserLinks(user.getId(), user);
@@ -78,7 +78,6 @@ public class UserBriefBuilder extends PrincipalBriefBuilder implements SearchRes
         return null;
     }
 
-    @Override
     public Date getLastModified(UserBrief obj) {
         return obj.getModificationDate();
     }

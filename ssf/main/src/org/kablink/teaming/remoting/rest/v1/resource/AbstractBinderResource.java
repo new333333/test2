@@ -22,19 +22,7 @@ import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
-import org.kablink.teaming.rest.v1.model.Binder;
-import org.kablink.teaming.rest.v1.model.BinderBrief;
-import org.kablink.teaming.rest.v1.model.BinderTree;
-import org.kablink.teaming.rest.v1.model.EntityId;
-import org.kablink.teaming.rest.v1.model.FileProperties;
-import org.kablink.teaming.rest.v1.model.Folder;
-import org.kablink.teaming.rest.v1.model.ParentBinder;
-import org.kablink.teaming.rest.v1.model.PrincipalBrief;
-import org.kablink.teaming.rest.v1.model.SearchResultList;
-import org.kablink.teaming.rest.v1.model.SearchableObject;
-import org.kablink.teaming.rest.v1.model.Share;
-import org.kablink.teaming.rest.v1.model.Tag;
-import org.kablink.teaming.rest.v1.model.TeamMember;
+import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
@@ -262,7 +250,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @GET
     @Path("{id}/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<SearchableObject> getRecentActivity(@PathParam("id") Long id,
+    public SearchResultList<RecentActivityEntry> getRecentActivity(@PathParam("id") Long id,
                                                                 @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                 @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                 @QueryParam("first") @DefaultValue("0") Integer offset,
