@@ -1890,6 +1890,12 @@ public class GwtShareHelper
 		
 						if ( sharingData.getNotifyRecipients() && (sharingData.getSendToValue() == SendToValue.ONLY_NEW_RECIPIENTS || sharingData.getSendToValue() == SendToValue.ONLY_MODIFIED_RECIPIENTS) )
 							sendEmail = true;
+
+						if ( getExternalUserAccountState( ami, shareItem.getRecipientId() ) == ExtProvState.initial )
+						{
+							// Yes, always send them an email.
+							sendEmail = true;
+						}
 					}
 					catch ( Exception ex )
 					{
@@ -1923,13 +1929,6 @@ public class GwtShareHelper
 						if ( sharingData.getNotifyRecipients() && sharingData.getSendToValue() == SendToValue.ONLY_MODIFIED_RECIPIENTS )
 							sendEmail = true;
 					}
-				}
-				
-				// Is the recipient a newly created external user
-				if ( getExternalUserAccountState( ami, shareItem.getRecipientId() ) == ExtProvState.initial )
-				{
-					// Yes, always send them an email.
-					sendEmail = true;
 				}
 				
 				// Send an email to this recipient
