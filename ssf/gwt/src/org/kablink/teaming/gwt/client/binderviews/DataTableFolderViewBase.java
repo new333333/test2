@@ -807,6 +807,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	@Override
 	public void applyColumnWidths(List<FolderColumn> folderColumns, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth) {
+		// If all the columns being applied use pixel widths, force the
+		// last one to 100%.
+		fixupPixelColumns(columnWidths, defaultColumnWidth);
+		
 		double pctTotal = ColumnWidth.sumPCTWidths(folderColumns, columnWidths, defaultColumnWidth);
 		for (FolderColumn fc:  folderColumns) {
 			String      cName = fc.getColumnName();
@@ -929,6 +933,20 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		}
 	}
 
+	/*
+	 * If all the column widths use pixels, forces the last one to
+	 * 100%.
+	 */
+	private void fixupPixelColumns(Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth) {
+		// If all the columns being displayed use pixel widths...
+		if (GwtClientHelper.hasItems(m_folderColumnsList) && (0 == ColumnWidth.pctColumns(m_folderColumnsList, columnWidths, defaultColumnWidth))) {
+			// ...force the last one to 100%.
+			FolderColumn lastCol = m_folderColumnsList.get(m_folderColumnsList.size() - 1);
+			columnWidths.put(lastCol.getColumnName(), m_100PctColumnWidth);
+		}
+		
+	}
+	
 	/*
 	 * Returns a List<EntityIds> of the EntityId's of all the entries
 	 * (excluding binders) from the data table whose pinned state
@@ -1269,12 +1287,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		ColumnSortList csl = m_dataTable.getColumnSortList();
 		csl.clear();
 
-		// If all the columns being displayed use pixel widths...
-		if (GwtClientHelper.hasItems(m_folderColumnsList) && (0 == ColumnWidth.pctColumns(m_folderColumnsList, m_columnWidths, m_defaultColumnWidth))) {
-			// ...force the last one to 100%.
-			FolderColumn lastCol = m_folderColumnsList.get(m_folderColumnsList.size() - 1);
-			m_columnWidths.put(lastCol.getColumnName(), m_100PctColumnWidth);
-		}
+		// If all the columns being displayed use pixel widths, force
+		// the last one to 100%.
+		fixupPixelColumns(m_columnWidths, m_defaultColumnWidth);
 		
 		// If this folder supports entry selections...
 		double pctTotal = ColumnWidth.sumPCTWidths(m_folderColumnsList, m_columnWidths, m_defaultColumnWidth);
