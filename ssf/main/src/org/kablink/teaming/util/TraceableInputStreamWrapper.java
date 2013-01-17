@@ -62,7 +62,7 @@ public class TraceableInputStreamWrapper extends InputStream {
 	@Override
     public int read(byte b[]) throws IOException {
 		if(logger.isDebugEnabled())
-			logger.debug("read(byte[]) on [" + path + "]");
+			logger.debug("read(byte[" + b.length + "]) on [" + path + "]");
 		
 		return original.read(b);
     }
@@ -70,7 +70,7 @@ public class TraceableInputStreamWrapper extends InputStream {
 	@Override
     public int read(byte b[], int off, int len) throws IOException {
 		if(logger.isDebugEnabled())
-			logger.debug("read(byte[]," + off + "," + len + ") on [" + path + "]");
+			logger.debug("read(byte[" + b.length + "]," + off + "," + len + ") on [" + path + "]");
 		
 		return original.read(b, off, len);
     }
