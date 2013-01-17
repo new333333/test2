@@ -38,7 +38,6 @@ import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -86,48 +85,18 @@ public class CollectionView extends DataTableFolderViewBase {
 			break;
 			
 		case NET_FOLDERS:
-			if (GwtClientHelper.isLicenseFilr()) {
-				columnWidths.put(FolderColumn.COLUMN_NETFOLDER_ACCESS, new ColumnWidth(10));	// = 10
-				columnWidths.put(FolderColumn.COLUMN_DESCRIPTION_HTML, new ColumnWidth(90));	// = 100%
-			}
-			
-			else {
-				columnWidths.put(FolderColumn.COLUMN_TITLE,            new ColumnWidth(35));	// = 35
-				columnWidths.put(FolderColumn.COLUMN_NETFOLDER_ACCESS, new ColumnWidth(10));	// = 45
-				columnWidths.put(FolderColumn.COLUMN_DESCRIPTION_HTML, new ColumnWidth(55));	// = 100%
-			}
-			
+			columnWidths.put(FolderColumn.COLUMN_NETFOLDER_ACCESS, new ColumnWidth(10));	// = 10
+			columnWidths.put(FolderColumn.COLUMN_DESCRIPTION_HTML, new ColumnWidth(90));	// = 100%			
 			break;
 			
 		case SHARED_BY_ME:
 		case SHARED_WITH_ME:
-			columnWidths.put(FolderColumn.COLUMN_SHARE_DATE,       new ColumnWidth(160, Unit.PX));
-			columnWidths.put(FolderColumn.COLUMN_SHARE_EXPIRATION, new ColumnWidth(160, Unit.PX));
-			
-			if (GwtClientHelper.isLicenseFilr()) {
-				columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_BY,   new ColumnWidth(180, Unit.PX));
-				columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_WITH, new ColumnWidth(180, Unit.PX));
-				columnWidths.put(FolderColumn.COLUMN_SHARE_ACCESS,      new ColumnWidth(180, Unit.PX));
-				columnWidths.put(FolderColumn.COLUMN_SHARE_MESSAGE,     new ColumnWidth(100         ));
-			}
-			
-			else {
-				if (FolderColumn.SHOW_SHARE_MESSAGES_COLUMN) {
-					columnWidths.put(FolderColumn.COLUMN_TITLE,             new ColumnWidth(20          ));	// = 20
-					columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_BY,   new ColumnWidth(10          ));	// = 30
-					columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_WITH, new ColumnWidth(10          ));	//     (By or with, never both.)
-					columnWidths.put(FolderColumn.COLUMN_SHARE_ACCESS,      new ColumnWidth(10          ));	// = 40
-					columnWidths.put(FolderColumn.COLUMN_SHARE_MESSAGE,     new ColumnWidth(60          ));	// = 100%
-				}
-				
-				else {
-					columnWidths.put(FolderColumn.COLUMN_TITLE,             new ColumnWidth(77          ));	// = 77
-					columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_BY,   new ColumnWidth(13          ));	// = 90
-					columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_WITH, new ColumnWidth(13          ));	//     (By or with, never both.)
-					columnWidths.put(FolderColumn.COLUMN_SHARE_ACCESS,      new ColumnWidth(10          ));	// = 100%
-				}
-			}
-			
+			columnWidths.put(FolderColumn.COLUMN_SHARE_DATE,        new ColumnWidth(160, Unit.PX));
+			columnWidths.put(FolderColumn.COLUMN_SHARE_EXPIRATION,  new ColumnWidth(160, Unit.PX));
+			columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_BY,   new ColumnWidth(180, Unit.PX));
+			columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_WITH, new ColumnWidth(180, Unit.PX));
+			columnWidths.put(FolderColumn.COLUMN_SHARE_ACCESS,      new ColumnWidth(180, Unit.PX));
+			columnWidths.put(FolderColumn.COLUMN_SHARE_MESSAGE,     new ColumnWidth(100         ));			
 			break;
 		
 		default:

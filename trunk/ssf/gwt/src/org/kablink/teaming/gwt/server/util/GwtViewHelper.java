@@ -6370,24 +6370,10 @@ public class GwtViewHelper {
 	 * Given a list of column names, return those columns applicable to
 	 * the collection type for the current license mode, ...
 	 */
-	@SuppressWarnings("unused")
 	private static String[] pruneColumnNames(CollectionType collection, String ... columnList) {
 		// Scan the columns.
 		List<String> columns = new ArrayList<String>();
 		for (String column:  columnList) {
-			// What type of collection are we working on?
-			switch (collection) {
-			case SHARED_BY_ME:
-			case SHARED_WITH_ME:
-				if ((!FolderColumn.SHOW_SHARE_MESSAGES_COLUMN) && column.equals("share_message")) {
-					continue;
-				}
-				break;
-			default:
-				// For all others, we show all the columns.
-				break;
-			}
-			
 			// Add the column to the list we'll return.
 			columns.add(column);
 		}

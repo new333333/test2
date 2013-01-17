@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -57,10 +57,6 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	private String			m_columnEleName;		// The element name from the definition (if custom attribute), otherwise, it is the column name.
 	private String			m_columnType;			// The type for this column (only used for custom columns.)
 
-	// Controls whether the 'Message' column appears in the
-	// 'Shared By/With Me' views.
-	public final static boolean SHOW_SHARE_MESSAGES_COLUMN	= true;
-	
 	// The following are the various predefined names used for columns.
 	public final static String COLUMN_AUTHOR			= "author";
 	public final static String COLUMN_COMMENTS			= "comments";
