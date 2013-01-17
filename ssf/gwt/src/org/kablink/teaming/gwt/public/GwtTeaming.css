@@ -2738,6 +2738,16 @@ body, table td, select
 	z-index: 0;
 }
 
+.guestLabel
+{
+	font-size: 1em;
+	letter-spacing: 0.03em;
+	padding: 2px 8px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
 /* Style used to add padding-top: 2px; */
 .paddingTop2px
 {

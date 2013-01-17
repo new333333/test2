@@ -284,8 +284,20 @@ public class MastHead extends Composite
 				
 				m_userNamePanel = new FlowPanel();
 				m_userNamePanel.setStylePrimaryName( "mastheadUserName" );
-				m_userNamePanel.addStyleName( "brandingLink" );
-				m_userNamePanel.addDomHandler( this, ClickEvent.getType() );
+				
+				// Are we dealing with the guest user?
+				if ( GwtClientHelper.isCurrentUserGuest() == false )
+				{
+					// No
+					m_userNamePanel.addStyleName( "brandingLink" );
+					m_userNamePanel.addDomHandler( this, ClickEvent.getType() );
+				}
+				else
+				{
+					// Yes
+					m_userNamePanel.addStyleName( "guestLabel" );
+				}
+				
 				m_globalActionsPanel.add( m_userNamePanel );
 
 				String userName = requestInfo.getUserName();
@@ -297,9 +309,12 @@ public class MastHead extends Composite
 				m_userName.getElement().setId( "mhUserName" );
 				m_userNamePanel.add( m_userName );
 
-				img = new Image( GwtTeaming.getImageBundle().mastheadActions2() );
-				img.getElement().setAttribute( "align", "absmiddle" );
-				m_userNamePanel.add( img );
+				if ( GwtClientHelper.isCurrentUserGuest() == false )
+				{
+					img = new Image( GwtTeaming.getImageBundle().mastheadActions2() );
+					img.getElement().setAttribute( "align", "absmiddle" );
+					m_userNamePanel.add( img );
+				}
 			}
 			
 			// Add login to the masthead.
