@@ -655,6 +655,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
         for(int i = 0; i < fileUploadItems.size();) {
             FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
+            if(fui.clientSpecifiedContentLengthWithoutSupplyingContent()) {
+            	if(logger.isDebugEnabled())
+            		logger.debug("Skipping checksum verification on file " + fui.getOriginalFilename());
+            	i++;
+            	continue;
+            }
+            
             try {
                 SimpleProfiler.start("verifyCheckSums_makeReentrant");
                 fui.makeReentrant();
@@ -707,6 +714,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
     	for(int i = 0; i < fileUploadItems.size();) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
+            if(fui.clientSpecifiedContentLengthWithoutSupplyingContent()) {
+            	if(logger.isDebugEnabled())
+            		logger.debug("Skipping filters on file " + fui.getOriginalFilename());
+            	i++;
+            	continue;
+            }
     		try {
     			SimpleProfiler.start("filterFiles_makeReentrant");
         		fui.makeReentrant();
@@ -2009,12 +2022,23 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
     	boolean isNew = false;
     	
-		RepositorySession session;
+		RepositorySession session = null;
 		
-		if(fAtt == null) // New file
-			session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.CREATE_FILE, binder);
-		else // Existing file
+		if(fAtt == null) { // New file
+			// If we're dealing with a mirrored folder (net folder), and we're creating a new mirrored
+			// file entry in the database as part of file sync process, and the caller (i.e. file sync
+			// process) specified the content legnth of the file, then we have all the metadata 
+			// information necessary to create the file attachment object in the database WITHOUT
+			// ever having to further interact with the back-end file system. Therefore, we do NOT
+			// need to incur the overhead of opening a session for that file.
+			if(!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName()) || 
+					fui.isSynchToRepository() ||
+					fui.getClientSpecifiedContentLength() == null)
+				session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.CREATE_FILE, binder);
+		}
+		else { // Existing file
 			session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.UPDATE, entry);
+		}
 
     	try {
     		boolean versionCreated = false;
@@ -2075,7 +2099,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	return true;
     	}
     	finally {
-    		session.close();
+    		if(session != null)
+    			session.close();
     	}
     }
     

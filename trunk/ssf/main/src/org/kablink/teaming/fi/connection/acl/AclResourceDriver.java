@@ -75,6 +75,9 @@ public interface AclResourceDriver extends ResourceDriver {
 		public String getMessage() {
 			return message;
 		}
+		public String toString() {
+			return "[" + code.name() + "]" + ((message != null) ? message : "");
+		}
 	}
 	
 	/**
