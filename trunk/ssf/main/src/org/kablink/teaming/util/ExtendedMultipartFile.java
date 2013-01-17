@@ -50,6 +50,10 @@ public class ExtendedMultipartFile extends SimpleMultipartFile implements FileEx
 		super(fileName, content);
 	}
 	
+	public ExtendedMultipartFile(String fileName, InputStream content, Long contentLength) {
+		super(fileName, content, contentLength);
+	}
+	
 	public ExtendedMultipartFile(String fileName, InputStream content, Date modificationDate) {
 		super(fileName, content);
 		this.modDate = modificationDate;
@@ -57,6 +61,12 @@ public class ExtendedMultipartFile extends SimpleMultipartFile implements FileEx
 	
 	public ExtendedMultipartFile(String fileName, InputStream content, Date modificationDate, String expectedMd5) {
 		super(fileName, content);
+		this.modDate = modificationDate;
+        this.expectedMd5 = expectedMd5;
+	}
+
+	public ExtendedMultipartFile(String fileName, InputStream content, Long contentLength, Date modificationDate, String expectedMd5) {
+		super(fileName, content, contentLength);
 		this.modDate = modificationDate;
         this.expectedMd5 = expectedMd5;
 	}

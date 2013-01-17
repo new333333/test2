@@ -381,4 +381,10 @@ public class FileUploadItem {
 		this.synchToRepository = synchToRepository;
 	}
 
+	public Long getClientSpecifiedContentLength() {
+		if(mf instanceof SimpleMultipartFile)
+			return ((SimpleMultipartFile)mf).getClientSpecifiedContentLength();
+		else
+			return null;
+	}
 }

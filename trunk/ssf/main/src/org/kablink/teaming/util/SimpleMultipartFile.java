@@ -57,6 +57,7 @@ public class SimpleMultipartFile implements MultipartFile {
 
 	protected String fileName;
     protected String md5;
+    protected Long contentLength; // optional
 	
 	// Only one of the following two is set per instance.
 	protected InputStream content;
@@ -67,6 +68,12 @@ public class SimpleMultipartFile implements MultipartFile {
 	public SimpleMultipartFile(String fileName, InputStream content) {
 		this.fileName = fileName;
 		this.content = content;
+	}
+	
+	public SimpleMultipartFile(String fileName, InputStream content, Long contentLength) {
+		this.fileName = fileName;
+		this.content = content;
+		this.contentLength = contentLength;
 	}
 	
 	public SimpleMultipartFile(String fileName, File file, boolean deleteOnClose) {
@@ -184,4 +191,9 @@ public class SimpleMultipartFile implements MultipartFile {
 			file.delete();
 		}
 	}
+
+	public Long getClientSpecifiedContentLength() {
+		return contentLength;
+	}
+
 }
