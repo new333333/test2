@@ -5229,7 +5229,8 @@ public class GwtViewHelper {
 					userId));
 
 			// ...add information about what the user's account...
-			final User		user   = ((User) bs.getProfileModule().getEntry(userId));
+			ProfileModule	pm     = bs.getProfileModule();
+			final User		user   = ((User) pm.getEntry(userId));
 			IdentityInfo	userII = user.getIdentityInfo();
 			AccountInfo		ai     = new AccountInfo();
 			reply.setAccountInfo(ai);
@@ -5258,10 +5259,13 @@ public class GwtViewHelper {
 			
 			// ...add whether the user has adHoc folder access...
 			boolean hasAdHocFolders = ((!user.isShared()) && user.getIdentityInfo().isInternal() && user.isPerson());
+			boolean perUserAdHoc    = false;
 			if (hasAdHocFolders) {
 				hasAdHocFolders = (!(GwtServerHelper.useHomeAsMyFiles(bs, user)));
+				perUserAdHoc    = (null != pm.getUserProperties(userId).getProperty(ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS));
 			}
 			ai.setHasAdHocFolders(hasAdHocFolders);
+			ai.setPerUserAdHoc(   perUserAdHoc   );
 
 			// ...add the user's current workspace sharing rights...
 			List<Long> userIds = new ArrayList<Long>();

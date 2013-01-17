@@ -41,10 +41,13 @@ import java.util.Map;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserShareRightsDlgEvent;
+import org.kablink.teaming.gwt.client.event.ReloadDialogContentEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserPropertiesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData.ProfileAttribute;
@@ -71,6 +74,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -95,7 +99,11 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  *  
  * @author drfoster@novell.com
  */
-public class UserPropertiesDlg extends DlgBox {
+public class UserPropertiesDlg extends DlgBox
+	implements
+		// Event handlers implemented by this class.
+		ReloadDialogContentEvent.Handler
+{
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to the Vibe images resources we need for this cell.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
@@ -110,6 +118,7 @@ public class UserPropertiesDlg extends DlgBox {
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+		TeamingEvents.RELOAD_DIALOG_CONTENT,
 	};
 	
 	/*
@@ -191,17 +200,6 @@ public class UserPropertiesDlg extends DlgBox {
 				}
 			}
 		}
-
-		// ...finally, add whether the user has access to adHoc
-		// ...folders.
-		row = grid.getRowCount();
-		addLabeledText(
-			grid,
-			row,
-			m_messages.userPropertiesDlgLabel_PersonalStorage(),
-			(account.hasAdHocFolders()            ?
-				m_messages.userPropertiesDlgYes() :
-				m_messages.userPropertiesDlgNo()));
 	}
 
 	/*
@@ -452,6 +450,95 @@ public class UserPropertiesDlg extends DlgBox {
 	}
 	
 	/*
+	 * Adds information about the user's access to personal storage to
+	 * the grid.
+	 */
+	private void addPersonalStorageInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, AccountInfo account, boolean addSectionHeader) {
+		// If we're not in Filr mode...
+		if (!(GwtClientHelper.isLicenseFilr())) {
+			// ...the personal storage stuff is not available.
+			return;
+		}
+
+		// Can the user's personal storage setting be changed?
+		int row = getSectionRow(grid, rf, addSectionHeader);
+		if (!(account.isInternal())) {
+			// No!  Add a simple label for the section.
+			InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgLabel_PersonalStorage());
+			il.addStyleName("vibe-userPropertiesDlg-buttonLook");
+			grid.setWidget(           row, 0, il);
+			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);			
+		}
+		
+		else {		
+			// Yes, the user's personal storage setting be changed!
+			// Create a push button to edit the user's personal storage
+			// setting...
+			final Button button = new Button(m_messages.userPropertiesDlgEdit_PersonalStorage());
+			button.addStyleName("vibe-userPropertiesDlg-buttonAct vibe-userPropertiesDlg-buttonLook");
+			
+			// ...that pops up a menu when clicked with options to modify
+			// ...a user's personal storage settings...
+			final PopupMenu psMenu = new PopupMenu(true, false, false);
+			psMenu.addStyleName("vibe-filterMenuBarDropDown");
+			button.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					psMenu.showRelativeToTarget(button);
+				}
+			});
+			psMenu.addMenuItem(
+				new Command() {
+					@Override
+					public void execute() {
+						BinderViewsHelper.disableUsersAdHocFolders(
+							m_userId,
+							new ReloadDialogContentEvent(UserPropertiesDlg.this));
+					}
+				},
+				null,
+				m_messages.userPropertiesDlgPersonalStorage_Disable());
+			psMenu.addMenuItem(
+				new Command() {
+					@Override
+					public void execute() {
+						BinderViewsHelper.enableUsersAdHocFolders(
+							m_userId,
+							new ReloadDialogContentEvent(UserPropertiesDlg.this));
+					}
+				},
+				null,
+				m_messages.userPropertiesDlgPersonalStorage_Enable());
+			psMenu.addMenuItem(
+				new Command() {
+					@Override
+					public void execute() {
+						BinderViewsHelper.clearUsersAdHocFolders(
+							m_userId,
+							new ReloadDialogContentEvent(UserPropertiesDlg.this));
+					}
+				},
+				null,
+				m_messages.userPropertiesDlgPersonalStorage_Clear());
+	
+			// ...and add the button to the grid.
+			grid.setWidget(           row, 0, button);
+			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
+		}
+		
+		// Add information about the user's current personal
+		// storage setting.
+		boolean perUserAdHoc = account.isPerUserAdHoc();
+		addLabeledText(
+			grid,
+			row,
+			m_messages.userPropertiesDlgLabel_PersonalStorage(),
+			(account.hasAdHocFolders() ?
+				(perUserAdHoc ? m_messages.userPropertiesDlgPersonalStorage_YesPerUser() : m_messages.userPropertiesDlgPersonalStorage_YesGlobal()) :
+				(perUserAdHoc ? m_messages.userPropertiesDlgPersonalStorage_NoPerUser()  : m_messages.userPropertiesDlgPersonalStorage_NoGlobal())));
+	}
+	
+	/*
 	 * Adds information about the user's profile to the grid.
 	 */
 	private void addProfileInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, ProfileEntryInfoRpcResponseData profile, boolean addSectionHeader) {
@@ -503,7 +590,7 @@ public class UserPropertiesDlg extends DlgBox {
 			row = grid.getRowCount();
 		}
 	}
-	
+
 	/*
 	 * Adds information about the user's disk quota to the grid.
 	 */
@@ -777,6 +864,22 @@ public class UserPropertiesDlg extends DlgBox {
 		unregisterEvents();
 	}
 
+	/**
+	 * Handles ReloadDialogContentEvent's received by this class.
+	 * 
+	 * Implements the ReloadDialogContentEvent.Handler.onReloadDialogContent() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onReloadDialogContent(ReloadDialogContentEvent event) {
+		// Is the event targeted to this dialog?
+		if (event.getDialog().equals(this)) {
+			// Yes!  Force the dialog to reload.
+			runDlgAsync(this, m_userId, m_showRelativeTo);
+		}
+	}
+
 	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
@@ -807,13 +910,14 @@ public class UserPropertiesDlg extends DlgBox {
 
 		// ...add the various components of what we know about the
 		// ...user...
-		addIdentityInfo(  grid, cf                                                 );
-		addProfileInfo(   grid, cf, rf, m_userProperties.getProfile(),        false);	// false -> Don't add with a section header.
-		addAccountInfo(   grid, cf, rf, m_userProperties.getAccountInfo(),    true );	// true  ->       Add with a section header.
-		addHomeInfo(      grid, cf, rf, m_userProperties.getHomeInfo(),       true );	// true  ->       Add with a section header.
-		addQuotaInfo(     grid, cf, rf, m_userProperties.getQuotaInfo(),      true );	// true  ->       Add with a section header.
-		addSharingInfo(   grid, cf, rf, m_userProperties.getSharingRights(),  true );	// true  ->       Add with a section header.
-		addNetFoldersInfo(grid, cf, rf, m_userProperties.getNetFoldersInfo(), true );	// true  ->       Add with a section header.
+		addIdentityInfo(       grid, cf                                                 );
+		addProfileInfo(        grid, cf, rf, m_userProperties.getProfile(),        false);	// false -> Don't add with a section header.
+		addAccountInfo(        grid, cf, rf, m_userProperties.getAccountInfo(),    true );	// true  ->       Add with a section header.
+		addPersonalStorageInfo(grid, cf, rf, m_userProperties.getAccountInfo(),    true );	// true  ->       Add with a section header.
+		addHomeInfo(           grid, cf, rf, m_userProperties.getHomeInfo(),       true );	// true  ->       Add with a section header.
+		addQuotaInfo(          grid, cf, rf, m_userProperties.getQuotaInfo(),      true );	// true  ->       Add with a section header.
+		addSharingInfo(        grid, cf, rf, m_userProperties.getSharingRights(),  true );	// true  ->       Add with a section header.
+		addNetFoldersInfo(     grid, cf, rf, m_userProperties.getNetFoldersInfo(), true );	// true  ->       Add with a section header.
 		
 		// ...and finally, show the dialog.
 		if (null == m_showRelativeTo)
