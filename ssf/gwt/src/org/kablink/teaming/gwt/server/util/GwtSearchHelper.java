@@ -656,9 +656,7 @@ public class GwtSearchHelper
 				
 				retMap = ami.getProfileModule().getPrincipals( options );
 
-				// Add the search results to the GwtSearchResults object.
 				count = (Integer) retMap.get( ObjectKeys.SEARCH_COUNT_TOTAL );
-				searchResults.setCountTotal( count.intValue() );
 				
 				// Create a list of principal ids from the search results.
 				principalEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
@@ -695,8 +693,25 @@ public class GwtSearchHelper
 							Principal principal;
 							EntityType entityType;
 							String principalId;
+							String internalId;
 							
 							principal = (Principal) it.next();
+							
+							// Are we dealing with the _postingagent, _jobprocessingagent,
+							// _synchronizationagent, or _filesyncagent?
+							internalId = principal.getInternalId();
+							if ( internalId != null &&
+								 (internalId.equalsIgnoreCase( ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID ) ||
+								  internalId.equalsIgnoreCase( ObjectKeys.JOB_PROCESSOR_INTERNALID ) ||
+								  internalId.equalsIgnoreCase( ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID ) ||
+								  internalId.equalsIgnoreCase( ObjectKeys.FILE_SYNC_AGENT_INTERNALID ) ) )
+							{
+								// Yes
+								if ( count != null )
+									--count;
+								continue;
+							}
+							
 							principalId = principal.getId().toString();
 							
 							entityType = principal.getEntityType();
@@ -728,6 +743,9 @@ public class GwtSearchHelper
 					}
 				}
 				
+				// Add the search results to the GwtSearchResults object.
+				searchResults.setCountTotal( count.intValue() );
+
 				searchResults.setResults( results );
 				break;
 			}
