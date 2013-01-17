@@ -1098,7 +1098,7 @@ public class GwtNetFolderHelper
 		}
 		
 		// Re-index this binder.
-		ami.getBinderModule().indexBinder( binderId, true );
+		ami.getBinderModule().indexBinder( binderId, false );
 	}
 	
 	/**
