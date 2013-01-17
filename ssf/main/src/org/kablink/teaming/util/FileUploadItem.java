@@ -381,10 +381,24 @@ public class FileUploadItem {
 		this.synchToRepository = synchToRepository;
 	}
 
+	/*
+	 * Return the content length, if any, that the caller of this facility specified.
+	 */
 	public Long getClientSpecifiedContentLength() {
 		if(mf instanceof SimpleMultipartFile)
 			return ((SimpleMultipartFile)mf).getClientSpecifiedContentLength();
 		else
 			return null;
+	}
+	
+	/*
+	 * Return whether the caller of this facility specified explicit content length without supplying content as input stream.
+	 */
+	public boolean clientSpecifiedContentLengthWithoutSupplyingContent() {
+		if(mf instanceof SimpleMultipartFile) {
+			SimpleMultipartFile smf = (SimpleMultipartFile) mf;
+			return (smf.getClientSpecifiedContentLength() != null && smf.getClientSpecifiedContent() == null);
+		}
+		return false;
 	}
 }

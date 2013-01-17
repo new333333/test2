@@ -192,8 +192,17 @@ public class SimpleMultipartFile implements MultipartFile {
 		}
 	}
 
+	/*
+	 * Return the content length, if any, that the caller of this facility specified.
+	 */
 	public Long getClientSpecifiedContentLength() {
 		return contentLength;
 	}
 
+	/*
+	 * Return the input stream, if any, that the caller of this facility supplied.
+	 */
+	public InputStream getClientSpecifiedContent() {
+		return content;
+	}
 }
