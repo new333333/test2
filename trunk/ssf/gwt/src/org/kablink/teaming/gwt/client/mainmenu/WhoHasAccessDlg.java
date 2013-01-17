@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.GroupMembershipPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
@@ -54,6 +55,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -91,6 +94,8 @@ public class WhoHasAccessDlg extends DlgBox {
 	 * Inner class that wraps items displayed in the dialog's content.
 	 */
 	private class DlgLabel extends InlineLabel {
+		private GroupMembershipPopup	m_gmp;
+		
 		/**
 		 * Constructor method.
 		 * 
@@ -129,6 +134,20 @@ public class WhoHasAccessDlg extends DlgBox {
 			// Always use the initial form of the method.
 			this(label, style, null);
 		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public GroupMembershipPopup getGroupMembershipPopup() {return m_gmp;}
+		
+		/**
+		 * Set'er method.
+		 * 
+		 * @param gmp
+		 */
+		public void setGroupMembershipPopup(GroupMembershipPopup gmp) {m_gmp = gmp;}
 	}
 
 	/*
@@ -427,10 +446,10 @@ public class WhoHasAccessDlg extends DlgBox {
 
 			// ...scan them...
 			boolean showAvatars = (isUserList || AccessInfo.listContainsAvatars(accessList));
-			for (AccessInfo ai:  accessList) {
+			for (final AccessInfo ai:  accessList) {
 				// ...and add items for them to the ScrollPanel.
-				DlgLabel aiLabel = new DlgLabel(ai.getName(), "gwtUI_nowrap", ai.getHover());
-				Widget   aiWidget;
+				final DlgLabel	aiLabel = new DlgLabel(ai.getName(), "gwtUI_nowrap", ai.getHover());
+				final Widget	aiWidget;
 				if (showAvatars) {
 					FlowPanel fp = new VibeFlowPanel();
 					fp.addStyleName("vibe-whoHasAccessDlg-scrollPanelWithImg");
@@ -446,6 +465,29 @@ public class WhoHasAccessDlg extends DlgBox {
 				}
 				
 				vp.add(aiWidget);
+				
+				// Are we populating the group list?
+				if (!isUserList) {
+					// Yes!  Groups can be expanded to show their
+					// membership.  Add styles and a click handler to
+					// do so.
+					aiLabel.addStyleName("vibe-whoHasAccessDlg-group");
+					aiLabel.addClickHandler(new ClickHandler() {
+						@Override
+						public void onClick(ClickEvent event) {
+							GroupMembershipPopup gmp = aiLabel.getGroupMembershipPopup();
+							if (null == gmp) {
+								gmp = new GroupMembershipPopup(
+									true,	// true  -> Auto hide.
+									false,	// false -> Not modal.
+									ai.getName(),
+									String.valueOf(ai.getId()));
+								aiLabel.setGroupMembershipPopup(gmp);
+							}
+							gmp.showRelativeTo(aiWidget);
+						}
+					});
+				}
 			}
 		}
 		
