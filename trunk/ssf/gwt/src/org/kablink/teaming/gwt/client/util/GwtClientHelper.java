@@ -832,6 +832,19 @@ public class GwtClientHelper {
 	}
 	
 	/**
+	 * Returns true if the current user is guest
+	 */
+	public static boolean isCurrentUserGuest()
+	{
+		String currentUserId;
+		
+		// Get the id if the current user.
+		currentUserId = getRequestInfo().getUserId();
+		
+		return isGuest( currentUserId );
+	}
+	
+	/**
 	 * Returns true if we're running in Filr mode and false
 	 * otherwise.
 	 * 
