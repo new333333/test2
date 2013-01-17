@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -63,6 +63,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		private boolean	m_fromLocal;		//
 		private boolean	m_fromOpenId;		//
 		private boolean	m_hasAdHocFolders;	//
+		private boolean	m_perUserAdHoc;		//
 		private boolean	m_internal;			//
 		private String	m_eDirContainer;	//
 		private String	m_lastLogin;		//
@@ -89,6 +90,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		public boolean isFromLocal()      {return m_fromLocal;      }
 		public boolean isFromOpenId()     {return m_fromOpenId;     }
 		public boolean hasAdHocFolders()  {return m_hasAdHocFolders;}
+		public boolean isPerUserAdHoc()   {return m_perUserAdHoc;   }
 		public boolean isInternal()       {return m_internal;       }
 		public String  getEDirContainer() {return m_eDirContainer;  }
 		public String  getLastLogin()     {return m_lastLogin;      }
@@ -104,6 +106,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		public void setFromLocal(      boolean fromLocal)       {m_fromLocal       = fromLocal;      }
 		public void setFromOpenId(     boolean fromOpenId)      {m_fromOpenId      = fromOpenId;     }
 		public void setHasAdHocFolders(boolean hasAdHocFolders) {m_hasAdHocFolders = hasAdHocFolders;}
+		public void setPerUserAdHoc(   boolean perUserAdHoc)    {m_perUserAdHoc    = perUserAdHoc;   }
 		public void setInternal(       boolean internal)        {m_internal        = internal;       }
 		public void setEDirContainer(  String  eDirContainer)   {m_eDirContainer   = eDirContainer;  }
 		public void setLastLogin(      String  lastLogin)       {m_lastLogin       = lastLogin;      }

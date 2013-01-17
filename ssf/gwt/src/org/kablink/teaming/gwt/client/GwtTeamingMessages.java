@@ -2433,6 +2433,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used by the 'User Properties' dialog.
 	String userPropertiesDlgAccount();
 	String userPropertiesDlgEdit_NetFolders();
+	String userPropertiesDlgEdit_PersonalStorage();
 	String userPropertiesDlgEdit_Profile();
 	String userPropertiesDlgEdit_Quotas();
 	String userPropertiesDlgEdit_Sharing();
@@ -2458,6 +2459,13 @@ public interface GwtTeamingMessages extends Messages
 	String userPropertiesDlgNoNF();
 	String userPropertiesDlgNoQuota();
 	String userPropertiesDlgNoWS();
+	String userPropertiesDlgPersonalStorage_Clear();
+	String userPropertiesDlgPersonalStorage_Disable();
+	String userPropertiesDlgPersonalStorage_Enable();
+	String userPropertiesDlgPersonalStorage_NoGlobal();
+	String userPropertiesDlgPersonalStorage_NoPerUser();
+	String userPropertiesDlgPersonalStorage_YesGlobal();
+	String userPropertiesDlgPersonalStorage_YesPerUser();
 	String userPropertiesDlgProfile();
 	String userPropertiesDlgQuota();
 	String userPropertiesDlgQuota_Group(long quota);

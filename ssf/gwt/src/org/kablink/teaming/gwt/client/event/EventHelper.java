@@ -1356,6 +1356,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case RELOAD_DIALOG_CONTENT:
+				// A ReloadDialogContentEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof ReloadDialogContentEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ReloadDialogContentEvent.registerEvent(eventBus, ((ReloadDialogContentEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case RESET_ENTRY_MENU:
 				// A ResetEntryMenuEvent!  Can the event handler we
 				// were given handle that?
@@ -2440,6 +2449,7 @@ public class EventHelper {
 
 			case QUICK_FILTER:                 	               hasHandler = (eventHandler instanceof QuickFilterEvent.Handler);                            break;
 			
+			case RELOAD_DIALOG_CONTENT:                   	   hasHandler = (eventHandler instanceof ReloadDialogContentEvent.Handler);                    break;
 			case RESET_ENTRY_MENU:                   	       hasHandler = (eventHandler instanceof ResetEntryMenuEvent.Handler);                         break;
 			
 			case SEARCH_ADVANCED:						       hasHandler = (eventHandler instanceof SearchAdvancedEvent.Handler);                         break;

@@ -199,7 +199,7 @@ public class BinderViewsHelper {
 	 *
 	 * @param userIds
 	 */
-	public static void clearUsersAdHocFolders(final List<Long> userIds) {
+	public static void clearUsersAdHocFolders(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
 		// If we weren't given any user IDs to be cleared...
 		if (!(GwtClientHelper.hasItems(userIds))) {
 			// ...bail.
@@ -226,8 +226,28 @@ public class BinderViewsHelper {
 			public void onSuccess(VibeRpcResponse response) {
 				// We're done.  Simply hide the busy spinner.
 				busy.hide();
+				if (null != reloadEvent) {
+					GwtTeaming.fireEventAsync(reloadEvent);
+				}
 			}
 		});
+	}
+	
+	public static void clearUsersAdHocFolders(final List<Long> userIds) {
+		// Always use the initial form of the method.
+		clearUsersAdHocFolders(userIds, null);
+	}
+	
+	public static void clearUsersAdHocFolders(final Long userId, final VibeEventBase<?> reloadEvent) {
+		// Always use the initial form of the method.
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		clearUsersAdHocFolders(userIds, reloadEvent);
+	}
+
+	public static void clearUsersAdHocFolders(final Long userId) {
+		// Always use the previous form of the method.
+		clearUsersAdHocFolders(userId, null);
 	}
 
 	/**
@@ -441,7 +461,7 @@ public class BinderViewsHelper {
 	 *
 	 * @param userIds
 	 */
-	public static void disableUsersAdHocFolders(final List<Long> userIds) {
+	public static void disableUsersAdHocFolders(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
 		// If we weren't given any user IDs to be disabled...
 		if (!(GwtClientHelper.hasItems(userIds))) {
 			// ...bail.
@@ -467,8 +487,28 @@ public class BinderViewsHelper {
 			public void onSuccess(VibeRpcResponse response) {
 				// We're done.  Simply hide the busy spinner.
 				busy.hide();
+				if (null != reloadEvent) {
+					GwtTeaming.fireEventAsync(reloadEvent);
+				}
 			}
 		});
+	}
+	
+	public static void disableUsersAdHocFolders(final List<Long> userIds) {
+		// Always use the initial form of the method.
+		disableUsersAdHocFolders(userIds, null);
+	}
+	
+	public static void disableUsersAdHocFolders(final Long userId, final VibeEventBase<?> reloadEvent) {
+		// Always use the initial form of the method.
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		disableUsersAdHocFolders(userIds, reloadEvent);
+	}
+
+	public static void disableUsersAdHocFolders(final Long userId) {
+		// Always use the previous form of the method.
+		disableUsersAdHocFolders(userId, null);
 	}
 
 	/**
@@ -526,7 +566,7 @@ public class BinderViewsHelper {
 	 *
 	 * @param userIds
 	 */
-	public static void enableUsersAdHocFolders(final List<Long> userIds) {
+	public static void enableUsersAdHocFolders(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
 		// If we weren't given any user IDs to be enable adHoc folders
 		// on...
 		if (!(GwtClientHelper.hasItems(userIds))) {
@@ -553,8 +593,28 @@ public class BinderViewsHelper {
 			public void onSuccess(VibeRpcResponse response) {
 				// We're done.  Simply hide the busy spinner.
 				busy.hide();
+				if (null != reloadEvent) {
+					GwtTeaming.fireEventAsync(reloadEvent);
+				}
 			}
 		});
+	}
+	
+	public static void enableUsersAdHocFolders(final List<Long> userIds) {
+		// Always use the initial form of the method.
+		enableUsersAdHocFolders(userIds, null);
+	}
+	
+	public static void enableUsersAdHocFolders(final Long userId, final VibeEventBase<?> reloadEvent) {
+		// Always use the initial form of the method.
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		enableUsersAdHocFolders(userIds, reloadEvent);
+	}
+	
+	public static void enableUsersAdHocFolders(final Long userId) {
+		// Always use the previous form of the method.
+		enableUsersAdHocFolders(userId, null);
 	}
 
 	/**

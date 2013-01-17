@@ -277,6 +277,7 @@ public enum TeamingEvents implements IsSerializable {
 	PURGE_SELECTED_ENTRIES,							// Deletes and Immediately Purges the Selected Entries.
 	PURGE_SELECTED_USER_WORKSPACES,					// Purges the Selected User Workspaces.
 	PURGE_SELECTED_USERS,							// Purges the Selected User Workspaces and User Objects.
+	RELOAD_DIALOG_CONTENT,							// Tells a dialog to reload its content.
 	RESET_ENTRY_MENU,								// Resets the Entry Menu on the Given Folder.
 	SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY,	// Sets the visibility of the desktop application download control. 
 	SET_FOLDER_SORT,								// Sets a folder sort options.
