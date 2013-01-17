@@ -2168,7 +2168,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// This is the special scenario captured in Bug #632279. 
 			// This part adds special logic to work around the issue.
     		versionName = createVersionedFile(session, binder, entry, fui);
-    		long fsize = session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName);
+    		long fsize;
+    		if(fui.getClientSpecifiedContentLength() != null)
+    			fsize = fui.getClientSpecifiedContentLength().longValue();
+    		else
+    			fsize = session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName);
 			fAtt.getFileItem().setLength(fsize);
             fAtt.getFileItem().setMd5(fui.getMd5());
 			fAtt.setEncrypted(fui.getIsEncrypted());
@@ -2205,7 +2209,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				// this kind of situation appears to be the one that is more
 				// forgiving or self-curing. This part of code implements that.
 	    		versionName = createVersionedFile(session, binder, entry, fui);
-	    		fileSize = Long.valueOf(session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName));
+	    		long fsize;
+	    		if(fui.getClientSpecifiedContentLength() != null)
+	    			fsize = fui.getClientSpecifiedContentLength().longValue();
+	    		else
+	    			fsize = session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName);
+	    		fileSize = Long.valueOf(fsize);
     			fAtt.setEncrypted(fui.getIsEncrypted());
     			fAtt.setEncryptionKey(fui.getEncryptionKey());
 	    	}
@@ -2316,7 +2325,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			// checkout with, we must checkin the file here. 
     			// sort of like auto-commit = true
     			updateInfo.versionName = session.checkin(binder, entity, relativeFilePath);
-    			updateInfo.fileLength = Long.valueOf(session.getContentLengthVersioned(binder, entity, relativeFilePath, updateInfo.versionName));
+    			long fsize;
+    			if(fui.getClientSpecifiedContentLength() != null)
+    				fsize = fui.getClientSpecifiedContentLength().longValue();
+    			else
+    				fsize = session.getContentLengthVersioned(binder, entity, relativeFilePath, updateInfo.versionName);
+    			updateInfo.fileLength = Long.valueOf(fsize);
                 updateInfo.fileMd5 = sizeMd5Pair.getMd5();
     		}
     		else {
@@ -2389,7 +2403,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// caused by extraneous versions created from empty contents.
 			String versionName = createVersionedFile(session, binder, entry, fui);
 							
-			long fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
+			long fileSize;
+			
+			if(fui.getClientSpecifiedContentLength() != null)
+				fileSize = fui.getClientSpecifiedContentLength().longValue();
+			else
+				fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
 					
 			fAtt.getFileItem().setLength(fileSize);
             fAtt.getFileItem().setMd5(fui.getMd5());

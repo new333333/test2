@@ -104,7 +104,7 @@ public class FolderUtils {
 	public static FolderEntry createLibraryEntry(Folder folder, String fileName,
 			InputStream content, Date modDate, String expectedMd5, boolean synchToSourceIfMirrored)
 					throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
-		return createLibraryEntry(folder, fileName, content, null, modDate, expectedMd5, synchToSourceIfMirrored, null);
+		return createLibraryEntry(folder, fileName, content, null, null, modDate, expectedMd5, synchToSourceIfMirrored, null);
 	}
 	
 	/**
@@ -122,14 +122,14 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	public static FolderEntry createLibraryEntry(Folder folder, String fileName,
-			InputStream content, Long creatorId, Date modDate, String expectedMd5, boolean synchToSourceIfMirrored, Boolean skipParentModtimeUpdate)
+			InputStream content, Long contentLength, Long creatorId, Date modDate, String expectedMd5, boolean synchToSourceIfMirrored, Boolean skipParentModtimeUpdate)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		if(folder.isLibrary()) {
 			if(folder.isMirrored()) {
-				return createMirroredEntry(folder, fileName, content, creatorId, modDate, expectedMd5, synchToSourceIfMirrored, skipParentModtimeUpdate);
+				return createMirroredEntry(folder, fileName, content, contentLength, creatorId, modDate, expectedMd5, synchToSourceIfMirrored, skipParentModtimeUpdate);
 			}
 			else {
-				return createNonMirroredEntry(folder, fileName, content, modDate, expectedMd5, skipParentModtimeUpdate);
+				return createNonMirroredEntry(folder, fileName, content, contentLength, modDate, expectedMd5, skipParentModtimeUpdate);
 			}
 		}
 		else {
@@ -150,15 +150,15 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	public static void modifyLibraryEntry(FolderEntry entry, String fileName,
-			InputStream content, Date modDate, String expectedMd5, boolean synchToSourceIfMirrored)
+			InputStream content, Long contentLength, Date modDate, String expectedMd5, boolean synchToSourceIfMirrored)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Folder folder = entry.getParentFolder();
 		if(folder.isLibrary()) {
 			if(folder.isMirrored()) {
-				modifyMirroredEntry(entry, fileName, content, modDate, expectedMd5, synchToSourceIfMirrored);
+				modifyMirroredEntry(entry, fileName, content, contentLength, modDate, expectedMd5, synchToSourceIfMirrored);
 			}
 			else {
-				modifyNonMirroredEntry(entry, fileName, content, modDate, expectedMd5);
+				modifyNonMirroredEntry(entry, fileName, content, contentLength, modDate, expectedMd5);
 			}
 		}
 		else {
@@ -346,7 +346,7 @@ public class FolderUtils {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	private static FolderEntry createNonMirroredEntry(Folder folder, String fileName, InputStream content, Date modDate, String expectedMd5, Boolean skipParentModtimeUpdate)
+	private static FolderEntry createNonMirroredEntry(Folder folder, String fileName, InputStream content, Long contentLength, Date modDate, String expectedMd5, Boolean skipParentModtimeUpdate)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
@@ -357,9 +357,9 @@ public class FolderUtils {
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
 		if(modDate != null || expectedMd5 != null)
-			mf = new ExtendedMultipartFile(fileName, content, modDate, expectedMd5);
+			mf = new ExtendedMultipartFile(fileName, content, contentLength, modDate, expectedMd5);
 		else
-			mf = new SimpleMultipartFile(fileName, content); 
+			mf = new SimpleMultipartFile(fileName, content, contentLength); 
 		
 		Map fileItems = new HashMap(); // Map of element names to file items	
 		fileItems.put(elementName, mf); // single file item
@@ -375,7 +375,7 @@ public class FolderUtils {
 	}
 	
 	private static FolderEntry createMirroredEntry(Folder folder, String fileName, 
-			InputStream content, Long creatorId, Date modDate, String expectedMd5, boolean synchToSource, Boolean skipParentModtimeUpdate)
+			InputStream content, Long contentLength, Long creatorId, Date modDate, String expectedMd5, boolean synchToSource, Boolean skipParentModtimeUpdate)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
@@ -387,7 +387,7 @@ public class FolderUtils {
 		MultipartFile mf;
 		Map options = new HashMap();
 		if(modDate != null || creatorId != null || expectedMd5!=null) {
-			ExtendedMultipartFile dmf = new ExtendedMultipartFile(fileName, content);
+			ExtendedMultipartFile dmf = new ExtendedMultipartFile(fileName, content, contentLength);
 			if(modDate != null) {
 				dmf.setModDate(modDate);
 				Calendar modCal = Calendar.getInstance();
@@ -407,7 +407,7 @@ public class FolderUtils {
 			mf = dmf;
 		}
 		else {
-			mf = new SimpleMultipartFile(fileName, content); 
+			mf = new SimpleMultipartFile(fileName, content, contentLength); 
 		}
 		if(skipParentModtimeUpdate != null)
 			options.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, skipParentModtimeUpdate);
@@ -437,7 +437,7 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	private static void modifyNonMirroredEntry(FolderEntry entry, String fileName, 
-			InputStream content, Date modDate, String expectedMd5)
+			InputStream content, Long contentLength, Date modDate, String expectedMd5)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Folder folder = entry.getParentFolder();
 		
@@ -450,9 +450,9 @@ public class FolderUtils {
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
 		if(modDate != null || expectedMd5!=null)
-			mf = new ExtendedMultipartFile(fileName, content, modDate, expectedMd5);
+			mf = new ExtendedMultipartFile(fileName, content, contentLength, modDate, expectedMd5);
 		else
-			mf = new SimpleMultipartFile(fileName, content); 
+			mf = new SimpleMultipartFile(fileName, content, contentLength); 
 		
 		Map fileItems = new HashMap(); // Map of names to file items	
 		fileItems.put(elementName, mf); // single file item
@@ -464,7 +464,7 @@ public class FolderUtils {
 	}
 	
 	private static void modifyMirroredEntry(FolderEntry entry, String fileName, 
-			InputStream content, Date modDate, String expectedMd5, boolean synchToSource)
+			InputStream content, Long contentLength, Date modDate, String expectedMd5, boolean synchToSource)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Folder folder = entry.getParentFolder();
 		
@@ -477,9 +477,9 @@ public class FolderUtils {
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
 		if(modDate != null || expectedMd5 != null)
-			mf = new ExtendedMultipartFile(fileName, content, modDate, expectedMd5);
+			mf = new ExtendedMultipartFile(fileName, content, contentLength, modDate, expectedMd5);
 		else
-			mf = new SimpleMultipartFile(fileName, content); 
+			mf = new SimpleMultipartFile(fileName, content, contentLength); 
 		
 		Map fileItems = new HashMap(); // Map of names to file items	
 		fileItems.put(elementNameAndRepository[0], mf); // single file item

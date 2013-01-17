@@ -184,7 +184,7 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
 							+ newName + "' + owned by "
 							+ entry.getEntityIdentifier().toString()
 							+ " in folder " + folder.getId());
-				FolderUtils.modifyLibraryEntry(entry, newName, inputStream,
+				FolderUtils.modifyLibraryEntry(entry, newName, inputStream, null,
 						modDate, null, true);
 			} else {
 				// We need to create a new entry
