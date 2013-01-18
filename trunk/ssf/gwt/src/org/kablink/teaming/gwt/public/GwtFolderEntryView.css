@@ -114,7 +114,7 @@
 		    font-family: Arial, sans-serif !important;
 		    text-align: center !important;
 		  	white-space: nowrap !important;
-			border: 0px;
+			border: 1px solid transparent;
 		  	background: #949494 none repeat scroll 0 0;
 			margin-right:3px;
 			margin-bottom: 6px;
@@ -130,7 +130,7 @@
 			font-size: 14px !important;
 		    white-space: nowrap !important;
 		    text-decoration: none !important;
-			border: 0px;
+			border: 1px solid #81b2bd;
 			background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 			background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 			background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);

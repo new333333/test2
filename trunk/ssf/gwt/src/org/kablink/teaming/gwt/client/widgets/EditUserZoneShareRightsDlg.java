@@ -156,7 +156,7 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 		// Add the "can share with all internal users" checkbox.
 		m_canShareWithAllInternalCkbox = new CheckBox( messages.editUserZoneShareRightsDlg_ShareWithAllInternalUsersLabel() );
 		m_canShareWithAllInternalCkbox.addStyleName( "editZoneShareRightsDlg_RightsCkbox" );
-		m_canShareWithAllInternalCkbox.addStyleName( "marginleft1" );
+		m_canShareWithAllInternalCkbox.addStyleName( "marginleft2" );
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_canShareWithAllInternalCkbox );
 		mainPanel.add( tmpPanel );
@@ -189,7 +189,7 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 		// Add the "can share with all external users" checkbox.
 		m_canShareWithAllExternalCkbox = new CheckBox( messages.editUserZoneShareRightsDlg_ShareWithAllExternalUsersLabel() );
 		m_canShareWithAllExternalCkbox.addStyleName( "editZoneShareRightsDlg_RightsCkbox" );
-		m_canShareWithAllExternalCkbox.addStyleName( "marginleft1" );
+		m_canShareWithAllExternalCkbox.addStyleName( "marginleft2" );
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_canShareWithAllExternalCkbox );
 		mainPanel.add( tmpPanel );
