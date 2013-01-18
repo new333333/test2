@@ -92,7 +92,7 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	protected Long sharerId;
 	protected EntityIdentifier sharedEntityIdentifier;
 	protected String comment;
-	protected int daysToExpire;
+	protected int daysToExpire = -1;
 	protected Date startDate;
 	protected Date endDate;
 	protected short recipientType;
@@ -207,6 +207,9 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	}
 
 	public void setDaysToExpire(int daysToExpire) {
+        if (daysToExpire<=0) {
+            daysToExpire = -1;
+        }
 		this.daysToExpire = daysToExpire;
 	}
 
