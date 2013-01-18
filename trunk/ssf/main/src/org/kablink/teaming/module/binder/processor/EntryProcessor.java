@@ -42,6 +42,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
@@ -80,7 +81,7 @@ public interface EntryProcessor extends BinderProcessor {
   	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags);
     public void moveEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options);
 	public ChangeLog processChangeLog(DefinableEntity entity, String operation);
-	public List<FolderEntry> _addNetFolderEntries(final Binder binder, Definition def, 
-			final List<InputDataAccessor> inputDataList, List<Map> fileItemsList, List<Map> optionsList) 
+	public List<FolderEntry> _addNetFolderEntries(Folder folder, Definition def, 
+			List<InputDataAccessor> inputDataList, List<Map> fileItemsList, List<Map> optionsList) 
     	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException;
  }
