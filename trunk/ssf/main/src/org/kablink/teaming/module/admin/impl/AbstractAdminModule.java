@@ -2232,10 +2232,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	    VelocityContext	reply = NotifyBuilderUtil.getVelocityContext();
 	    
 	    // ...initialize it...
-		reply.put("ssVisitor",            	visitor                                           );
-		reply.put("user",                 	RequestContextHolder.getRequestContext().getUser());
-		reply.put("ssEntityPermalinkurl", 	entityPermalinkUrl                                );
-		reply.put("ssSignin",				NLT.get("share.notify.signin")						);
+		reply.put("ssVisitor",            	visitor                                           	);
+		reply.put("user",                 	RequestContextHolder.getRequestContext().getUser()	);
+		reply.put("ssEntityPermalinkurl", 	entityPermalinkUrl                                	);
+		reply.put("ssSignin",				NLT.get("share.notify.signin")				   		);
+		reply.put("ssConfirmNotify",		NLT.get("share.notify.confirm")			   			);
+		reply.put("ssProduct",         		(Utils.checkIfFilr() ? "Filr" : "Vibe")           	);
 		
 		// ...and return it.
 		return reply;
@@ -2251,14 +2253,15 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	    // ...initialize it...
 	    Notify notify = visitor.getNotifyDef();
 	    User user = RequestContextHolder.getRequestContext().getUser();
-		reply.put("ssVisitor",         visitor                                                                                                     );
-		reply.put("ssShare",           share                                                                                                       );
-		reply.put("ssSharedEntity",    sharedEntity                                                                                                );
-		reply.put("ssShareExpiration", EmailHelper.getShareExpiration(notify.getLocale(), notify.getTimeZone(), share)                             );
-		reply.put("ssSharer",          NLT.get("share.notify.sharer", new String[]{visitor.getUserTitle(user)}, visitor.getNotifyDef().getLocale()));
-		reply.put("ssProduct",         (Utils.checkIfFilr() ? "Filr" : "Vibe")                                                                     );
-		reply.put("user",              user                                                                                                        );
-		reply.put("ssSignin",          NLT.get("share.notify.signin")																				);
+		reply.put("ssVisitor",   	 	visitor                                                                                                     );
+		reply.put("ssShare",        	share                                                                                                       );
+		reply.put("ssSharedEntity",		sharedEntity                                                                                                );
+		reply.put("ssShareExpiration",	EmailHelper.getShareExpiration(notify.getLocale(), notify.getTimeZone(), share)                             );
+		reply.put("ssSharer",        	NLT.get("share.notify.sharer", new String[]{visitor.getUserTitle(user)}, visitor.getNotifyDef().getLocale()));
+		reply.put("ssProduct",       	(Utils.checkIfFilr() ? "Filr" : "Vibe")                                                                     );
+		reply.put("user",           	user                                                                                                        );
+		reply.put("ssSignin",			NLT.get("share.notify.signin")				   		);
+		reply.put("ssConfirmNotify",	NLT.get("share.notify.confirm")			   			);
 		if (MiscUtil.hasString(encodedExternalUserId)) {
 			reply.put("ssShareEncodedExternalUserId", encodedExternalUserId);
 		}
