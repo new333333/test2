@@ -39,8 +39,11 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDownloadFileUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntityPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -67,8 +70,10 @@ import com.google.gwt.user.client.ui.TextBox;
  */
 public class ShareWithPublicInfoDlg extends DlgBox
 {
-	private TextBox m_permalinkTextBox;
-	private Label m_instructions;
+	private TextBox m_viewEntryPermalinkTextBox;
+	private TextBox m_downloadFilePermalinkTextBox;
+	private Label m_instructions1;
+	private Label m_instructions2;
 	private Image m_headerImg;
 	private Label m_headerNameLabel;
 	private Label m_headerPathLabel;
@@ -152,13 +157,28 @@ public class ShareWithPublicInfoDlg extends DlgBox
 			mainPanel.add( headerPanel );
 		}
 		
-		m_instructions = new Label( messages.shareWithPublicInfoDlg_Instructions( "" ) );
-		m_instructions.addStyleName( "shareWithPublicDlg_instructionsLabel" );
-		mainPanel.add( m_instructions );
+		// Add controls for the view entry permalink
+		{
+			m_instructions1 = new Label( messages.shareWithPublicInfoDlg_Instructions( "" ) );
+			m_instructions1.addStyleName( "shareWithPublicDlg_instructionsLabel" );
+			mainPanel.add( m_instructions1 );
+			
+			m_viewEntryPermalinkTextBox = new TextBox();
+			m_viewEntryPermalinkTextBox.setVisibleLength( 60 );
+			mainPanel.add( m_viewEntryPermalinkTextBox );
+		}
 		
-		m_permalinkTextBox = new TextBox();
-		m_permalinkTextBox.setVisibleLength( 60 );
-		mainPanel.add( m_permalinkTextBox );
+		// Add controls for the download file permalink
+		{
+			m_instructions2 = new Label( messages.shareWithPublicInfoDlg_Instructions2( "" ) );
+			m_instructions2.addStyleName( "margintop2" );
+			m_instructions2.addStyleName( "shareWithPublicDlg_instructionsLabel" );
+			mainPanel.add( m_instructions2 );
+			
+			m_downloadFilePermalinkTextBox = new TextBox();
+			m_downloadFilePermalinkTextBox.setVisibleLength( 60 );
+			mainPanel.add( m_downloadFilePermalinkTextBox );
+		}
 		
 		return mainPanel;
 	}
@@ -171,6 +191,51 @@ public class ShareWithPublicInfoDlg extends DlgBox
 	{
 		// We can return anything.
 		return Boolean.TRUE;
+	}
+	
+	/**
+	 * Issue an rpc request to get the download file permalink.
+	 */
+	private void getDownloadFilePermalink( final EntityId entityId )
+	{
+		GetDownloadFileUrlCmd cmd;
+		AsyncCallback<VibeRpcResponse> callback;
+		
+		callback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+												t,
+												GwtTeaming.getMessages().rpcFailure_GetDownloadFileUrl(),
+												String.valueOf( entityId.getEntityId() ) );
+			}
+			
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				final String downloadFileUrl;
+				StringRpcResponseData responseData;
+				Scheduler.ScheduledCommand cmd;
+
+				responseData = (StringRpcResponseData) response.getResponseData();
+				downloadFileUrl = responseData.getStringValue();
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						updateDownloadFilePermalink( downloadFileUrl );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		};
+		
+		cmd = new GetDownloadFileUrlCmd( null, entityId.getEntityId() );
+		GwtClientHelper.executeCommand( cmd, callback );
 	}
 	
 	/**
@@ -299,28 +364,102 @@ public class ShareWithPublicInfoDlg extends DlgBox
 	@Override
 	public FocusWidget getFocusWidget()
 	{
-		return m_permalinkTextBox;
+		return m_viewEntryPermalinkTextBox;
+	}
+	
+	/**
+	 * Issue an rpc request to get the view entry permalink.
+	 */
+	private void getViewEntryPermalink( final EntityId entityId )
+	{
+		GetEntityPermalinkCmd cmd;
+		AsyncCallback<VibeRpcResponse> callback;
+
+		// Issue an rpc request to get the entity's permalink
+		callback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+												t,
+												GwtTeaming.getMessages().rpcFailure_GetEntityPermalink(),
+												entityId.getEntityId() );
+			}
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				StringRpcResponseData responseData;
+				final String permalink;
+				
+				responseData = (StringRpcResponseData) response.getResponseData();
+				permalink = responseData.getStringValue();
+				
+				if ( permalink != null )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							updateViewEntryPermalink( permalink );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			}
+		};
+
+		cmd = new GetEntityPermalinkCmd( entityId );
+		GwtClientHelper.executeCommand( cmd, callback );
 	}
 	
 	/**
 	 * 
 	 */
-	public void init( EntityId entityId, String permalink )
+	public void init( final EntityId entityId )
 	{
 		Scheduler.ScheduledCommand cmd;
 		
 		// Update the header with info about the item.
 		updateHeader( entityId );
 		
-		m_permalinkTextBox.setValue( permalink );
-		
 		cmd = new Scheduler.ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
-				m_permalinkTextBox.setFocus( true );
-				m_permalinkTextBox.setCursorPos( 0 );
+				getViewEntryPermalink( entityId );
+				getDownloadFilePermalink( entityId );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+	/**
+	 * 
+	 */
+	private void updateDownloadFilePermalink( String permalink )
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		m_downloadFilePermalinkTextBox.setValue( permalink );
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				m_downloadFilePermalinkTextBox.setCursorPos( 0 );
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
@@ -360,9 +499,29 @@ public class ShareWithPublicInfoDlg extends DlgBox
 	 */
 	private void updateInstructions( String itemName )
 	{
-		m_instructions.setText( GwtTeaming.getMessages().shareWithPublicInfoDlg_Instructions( itemName ) );
+		m_instructions1.setText( GwtTeaming.getMessages().shareWithPublicInfoDlg_Instructions( itemName ) );
+		m_instructions2.setText( GwtTeaming.getMessages().shareWithPublicInfoDlg_Instructions2( itemName ) );
 	}
 	
+	/**
+	 * 
+	 */
+	private void updateViewEntryPermalink( String permalink )
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		m_viewEntryPermalinkTextBox.setValue( permalink );
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				m_viewEntryPermalinkTextBox.setFocus( true );
+				m_viewEntryPermalinkTextBox.setCursorPos( 0 );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
 	
 	/**
 	 * Loads the ShareWithPublicInfoDlg split point and returns an instance
