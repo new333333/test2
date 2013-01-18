@@ -25,6 +25,7 @@
     <property name="recipientType" column="recipient_type" access="field" type="short" index="recipient_shareitem"/>
     <property name="recipientId" column="recipient_id" index="recipient_shareitem"/>
     <property name="expirationHandled" access="field"/> 
+    <property name="partOfPublicShare" access="field"/> 
     <component name="rightSet" class="org.kablink.teaming.security.function.WorkAreaOperation$RightSet">
     	<property name="createEntries" column="right_createEntries" access="field"/>
     	<property name="modifyEntries" column="right_modifyEntries" access="field"/>

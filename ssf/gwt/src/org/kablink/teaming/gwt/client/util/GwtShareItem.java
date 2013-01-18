@@ -58,6 +58,7 @@ public class GwtShareItem
 	private boolean m_isDirty;
 	private boolean m_isExpired;
 	private boolean m_toBeDeleted;
+	private boolean m_partOfPublicShare;
 
 	/**
 	 * Inner class used to compare two GwtShareItem objects
@@ -108,6 +109,7 @@ public class GwtShareItem
 		m_isDirty = false;
 		m_isExpired = false;
 		m_toBeDeleted = false;
+		m_partOfPublicShare = false;
 	}
 
 	/**
@@ -204,6 +206,14 @@ public class GwtShareItem
 	public Long getId()
 	{
 		return m_id;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getIsPartOfPublicShare()
+	{
+		return m_partOfPublicShare;
 	}
 
 	/**
@@ -361,6 +371,14 @@ public class GwtShareItem
 	public void setIsExpired( boolean isExpired )
 	{
 		m_isExpired = isExpired;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIsPartOfPublicShare( boolean isPartOfPublicShare )
+	{
+		m_partOfPublicShare = isPartOfPublicShare;
 	}
 	
 	/**

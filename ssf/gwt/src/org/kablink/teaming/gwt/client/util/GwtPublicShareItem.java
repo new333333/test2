@@ -43,7 +43,6 @@ public class GwtPublicShareItem extends GwtShareItem
 	implements IsSerializable
 {
 	GwtShareItem m_allInternalShareItem;
-	GwtShareItem m_allExternalShareItem;
 	GwtShareItem m_guestShareItem;
 	
 	/**
@@ -52,16 +51,7 @@ public class GwtPublicShareItem extends GwtShareItem
 	public GwtPublicShareItem()
 	{
 		m_allInternalShareItem = null;
-		m_allExternalShareItem = null;
 		m_guestShareItem = null;
-	}
-
-	/**
-	 * 
-	 */
-	public GwtShareItem getAllExternalShareItem()
-	{
-		return m_allExternalShareItem;
 	}
 
 	/**
@@ -85,8 +75,7 @@ public class GwtPublicShareItem extends GwtShareItem
 	 */
 	public boolean isExisting()
 	{
-		if ( m_allExternalShareItem != null && m_allExternalShareItem.getId() != null &&
-			 m_allInternalShareItem != null && m_allInternalShareItem.getId() != null &&
+		if ( m_allInternalShareItem != null && m_allInternalShareItem.getId() != null &&
 			 m_guestShareItem != null && m_guestShareItem.getId() != null )
 		{
 			return true;
@@ -95,14 +84,6 @@ public class GwtPublicShareItem extends GwtShareItem
 		return false;
 	}
 	
-	/**
-	 * 
-	 */
-	public void setAllExternalShareItem( GwtShareItem item )
-	{
-		m_allExternalShareItem = item;
-	}
-
 	/**
 	 * 
 	 */

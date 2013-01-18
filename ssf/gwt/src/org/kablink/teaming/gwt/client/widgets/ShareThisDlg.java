@@ -1087,10 +1087,6 @@ public class ShareThisDlg extends DlgBox
 		publicEntity = new GwtPublic();
 		publicEntity.setName( GwtTeaming.getMessages().publicName() );
 		addShare( publicEntity );
-		
-		// Remove the "all internal users" group and the "all external users" group and
-		// the "guest" as recipients
-		removeAllInternalAllExternalAndGuest();
 	}
 	
 	
@@ -2214,72 +2210,6 @@ public class ShareThisDlg extends DlgBox
 				m_shareWithTeamsDlg.init( listOfTeams );
 				m_shareWithTeamsDlg.show( true );
 			}
-		}
-	}
-
-	/**
-	 * Remove the "all internal" group, the "all external" group and "guest" from the list
-	 * of recipients
-	 */
-	private void removeAllInternalAllExternalAndGuest()
-	{
-		int i;
-		ArrayList<GwtShareItem> toBeDeleted;
-
-		toBeDeleted = new ArrayList<GwtShareItem>();
-
-		// Look through the table that holds all the recipients.
-		// Recipients start in row 1.
-		for (i = 1; i < m_shareTable.getRowCount() && m_shareTable.getCellCount( i ) == m_numCols; ++i)
-		{
-			Widget widget;
-			
-			// Get the RemoveRecipientWidget from the last column.
-			widget = m_shareTable.getWidget( i, m_numCols-1 );
-			if ( widget != null && widget instanceof RemoveShareWidget )
-			{
-				GwtShareItem nextShareItem;
-				
-				nextShareItem = ((RemoveShareWidget) widget).getShareItem();
-				if ( nextShareItem != null )
-				{
-					if ( nextShareItem.getRecipientType() == GwtRecipientType.GROUP )
-					{
-						Long recipientId;
-						
-						recipientId = nextShareItem.getRecipientId();
-						if ( recipientId != null )
-						{
-							String id;
-							
-							id = recipientId.toString();
-							if ( GwtClientHelper.isAllExternalUsersGroup( id ) )
-								toBeDeleted.add( nextShareItem );
-							else if ( GwtClientHelper.isAllInternalUsersGroup( id ) )
-								toBeDeleted.add( nextShareItem );
-						}
-					}
-					else if ( nextShareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
-					{
-						Long recipientId;
-						
-						recipientId = nextShareItem.getRecipientId();
-						if ( recipientId != null )
-						{
-							String id;
-							
-							id = recipientId.toString();
-							if ( GwtClientHelper.isGuest( id ) )
-								toBeDeleted.add( nextShareItem );
-						}
-					}
-				}
-			}
-		}
-		
-		for ( GwtShareItem nextShareItem : toBeDeleted )
-		{
-			removeShare( nextShareItem );
 		}
 	}
 

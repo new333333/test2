@@ -64,7 +64,6 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 	private CheckBox m_canShareExternalCkbox;
 	private CheckBox m_canShareInternalCkbox;
 	private CheckBox m_canSharePublicCkbox;
-	private CheckBox m_canShareWithAllExternalCkbox;
 	private CheckBox m_canShareWithAllInternalCkbox;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private PerUserZoneShareRightsInfo m_rightsInfo;
@@ -164,7 +163,16 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 		// Add the "can share external" checkbox.
 		m_canShareExternalCkbox = new CheckBox( messages.editUserZoneShareRightsDlg_ShareExternalLabel() );
 		m_canShareExternalCkbox.addStyleName( "editZoneShareRightsDlg_RightsCkbox" );
-		m_canShareExternalCkbox.addClickHandler( new ClickHandler()
+		tmpPanel = new FlowPanel();
+		tmpPanel.add( m_canShareExternalCkbox );
+		mainPanel.add( tmpPanel );
+
+		mainPanel.add( tmpPanel );
+
+		// Add the "can share public" checkbox.
+		m_canSharePublicCkbox = new CheckBox( messages.editUserZoneShareRightsDlg_SharePublicLabel() );
+		m_canSharePublicCkbox.addStyleName( "editZoneShareRightsDlg_RightsCkbox" );
+		m_canSharePublicCkbox.addClickHandler( new ClickHandler()
 		{
 			@Override
 			public void onClick( ClickEvent event )
@@ -186,14 +194,6 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 		tmpPanel.add( m_canShareExternalCkbox );
 		mainPanel.add( tmpPanel );
 
-		// Add the "can share with all external users" checkbox.
-		m_canShareWithAllExternalCkbox = new CheckBox( messages.editUserZoneShareRightsDlg_ShareWithAllExternalUsersLabel() );
-		m_canShareWithAllExternalCkbox.addStyleName( "editZoneShareRightsDlg_RightsCkbox" );
-		m_canShareWithAllExternalCkbox.addStyleName( "marginleft2" );
-		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_canShareWithAllExternalCkbox );
-		mainPanel.add( tmpPanel );
-
 		// Add the "can share public" checkbox.
 		m_canSharePublicCkbox = new CheckBox( messages.editUserZoneShareRightsDlg_SharePublicLabel() );
 		m_canSharePublicCkbox.addStyleName( "editZoneShareRightsDlg_RightsCkbox" );
@@ -209,17 +209,30 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 	 */
 	private void danceDlg()
 	{
-		boolean enable;
-		
-		enable = m_canShareInternalCkbox.getValue();
-		if ( enable == false )
-			m_canShareWithAllInternalCkbox.setValue( false );
-		m_canShareWithAllInternalCkbox.setEnabled( enable );
-		
-		enable = m_canShareExternalCkbox.getValue();
-		if ( enable == false )
-			m_canShareWithAllExternalCkbox.setValue( false );
-		m_canShareWithAllExternalCkbox.setEnabled( enable );
+		// Is the "share with public" checkbox checked?
+		if ( m_canSharePublicCkbox.getValue() == true )
+		{
+			// Yes,
+			// Check and disable "share with internal", "share with all internal users group" and "share with external users"
+			m_canShareInternalCkbox.setValue( true );
+			m_canShareInternalCkbox.setEnabled( false );
+			m_canShareWithAllInternalCkbox.setValue( true );
+			m_canShareWithAllInternalCkbox.setEnabled( false );
+			m_canShareExternalCkbox.setValue( true );
+			m_canShareExternalCkbox.setEnabled( false );
+		}
+		else
+		{
+			boolean enable;
+			
+			enable = m_canShareInternalCkbox.getValue();
+			if ( enable == false )
+				m_canShareWithAllInternalCkbox.setValue( false );
+			m_canShareWithAllInternalCkbox.setEnabled( enable );
+			
+			m_canShareInternalCkbox.setEnabled( true );
+			m_canShareExternalCkbox.setEnabled( true );
+		}
 	}
 
 	/**
@@ -236,7 +249,6 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 			m_rightsInfo.setEnableShareExternal( m_canShareExternalCkbox.getValue() );
 			m_rightsInfo.setEnableShareInternal( m_canShareInternalCkbox.getValue() );
 			m_rightsInfo.setEnableSharePublic( m_canSharePublicCkbox.getValue() );
-			m_rightsInfo.setEnableShareWithAllExternal( m_canShareWithAllExternalCkbox.getValue() );
 			m_rightsInfo.setEnableShareWithAllInternal( m_canShareWithAllInternalCkbox.getValue() );
 
 			// Do we have a handler we should call?
@@ -279,7 +291,6 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 		m_canShareForwardCkbox.setValue( false );
 		m_canShareInternalCkbox.setValue( false );
 		m_canSharePublicCkbox.setValue( false );
-		m_canShareWithAllExternalCkbox.setValue( false );
 		m_canShareWithAllInternalCkbox.setValue( false );
 
 		if ( m_rightsInfo != null )
@@ -288,7 +299,6 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 			m_canShareForwardCkbox.setValue( m_rightsInfo.getIsEnableShareForwarding() );
 			m_canShareInternalCkbox.setValue( m_rightsInfo.getIsEnableShareInternal() );
 			m_canSharePublicCkbox.setValue( m_rightsInfo.getIsEnableSharePublic() );
-			m_canShareWithAllExternalCkbox.setValue( m_rightsInfo.getIsEnableShareWithAllExternal() );
 			m_canShareWithAllInternalCkbox.setValue( m_rightsInfo.getIsEnableShareWithAllInternal() );
 		}
 

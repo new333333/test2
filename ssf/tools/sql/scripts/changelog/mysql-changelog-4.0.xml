@@ -569,4 +569,13 @@ update SS_Principals set foreignName=LOWER(foreignName);
         </addColumn>
     </changeSet>
 
+    <changeSet author="jay" context="schema" failOnError="true" id="68">
+        <comment>Add partOfPublicShare field to SS_ShareItem table</comment>
+        <addColumn tableName="SS_ShareItem">
+            <column name="partOfPublicShare" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
