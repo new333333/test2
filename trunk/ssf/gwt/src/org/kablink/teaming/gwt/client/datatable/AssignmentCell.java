@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
+import org.kablink.teaming.gwt.client.widgets.GroupMembershipPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -168,6 +169,22 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 	}
 	
 	/*
+	 * Called to invoke the group membership popup on the principal.
+	 */
+	private void invokeGroupMembership(AssignmentInfo ai, Element pElement) {
+		GroupMembershipPopup gmp = ((GroupMembershipPopup) ai.getMembershipPopup());
+		if (null == gmp) {
+			gmp = new GroupMembershipPopup(
+				true,	// true  -> Auto hide.
+				false,	// false -> Not modal.
+				ai.getTitle(),
+				String.valueOf(ai.getId()));
+			ai.setMembershipPopup(gmp);
+		}
+		gmp.showRelativeTo(GwtClientHelper.getUIObjectFromElement(pElement));
+	}
+	
+	/*
 	 * Called to invoke the simple profile dialog on the principal's
 	 * presence.
 	 */
@@ -211,7 +228,10 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 	    		// A click!  Strip off any hover style and invoke the
     			// simple profile dialog.
     			eventTarget.removeClassName(ei.isPresenceControl() ? "cursorPointer" : "vibe-dataTableLink-hover");
-    			invokeSimpleProfile(aiList.get(ei.getAssignmentIndex()), eventTarget);
+    			AssignmentInfo ai = aiList.get(ei.getAssignmentIndex());
+    			if (AssigneeType.GROUP.equals(ai.getAssigneeType()))
+    			     invokeGroupMembership(ai, eventTarget);
+    			else invokeSimpleProfile(  ai, eventTarget);
 	    	}
 	    	
 	    	else if (VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
@@ -237,9 +257,11 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
     protected void onEnterKeyDown(Context context, Element parent, List<AssignmentInfo> aiList, NativeEvent event, ValueUpdater<List<AssignmentInfo>> valueUpdater) {
     	// Simply invoke the simple profile dialog on the appropriate
     	// assignment.
-    	invokeSimpleProfile(
-    		aiList.get(new EventInfo(parent, event).getAssignmentIndex()),
-    		Element.as(event.getEventTarget()));
+    	Element eventTarget = Element.as(event.getEventTarget());
+    	AssignmentInfo ai = aiList.get(new EventInfo(parent, event).getAssignmentIndex());
+		if (AssigneeType.GROUP.equals(ai.getAssigneeType()))
+		     invokeGroupMembership(ai, eventTarget);
+		else invokeSimpleProfile(  ai, eventTarget);
     }
     
 	/**
@@ -287,10 +309,10 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 			}
 			renderPanel.add(fp);
 
+			String assignmentIndexTail = ("." + (assignmentIndex++));
 			switch (ait) {
 			case INDIVIDUAL:
 				// Individual assignee!  Generate a presence control...
-				String assignmentIndexTail = ("." + (assignmentIndex++));
 				GwtPresenceInfo presence = ai.getPresence();
 				PresenceControl presenceControl = new PresenceControl(String.valueOf(ai.getPresenceUserWSId()), false, false, false, presence);
 				presenceControl.setImageAlignment("top");
@@ -318,7 +340,6 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 			case TEAM:
 				// Group or team assignee!  Generate an appropriate
 				// image...
-				assignmentIndex += 1;
 				VibeFlowPanel imgPanel = new VibeFlowPanel();
 				imgPanel.addStyleName("vibe-dataTableAssignment-control displayInline verticalAlignMiddle");
 				Image assigneeImg = new Image();
@@ -336,6 +357,9 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				assignee.addStyleName("vibe-dataTableAssignment-label vibe-dataTableAssignment-enabled");
 				if (m_isIE) {
 					assignee.addStyleName("vibe-dataTableAssignment-labelIE");
+				}
+				if (AssigneeType.GROUP.equals(ait)) {
+					assignee.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, (VibeDataTableConstants.CELL_WIDGET_PRESENCE_LABEL + assignmentIndexTail));
 				}
 				if (hasHover) {
 					assignee.setTitle(hover);
