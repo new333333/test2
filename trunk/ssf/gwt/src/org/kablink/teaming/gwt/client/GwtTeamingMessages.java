@@ -2260,6 +2260,7 @@ public interface GwtTeamingMessages extends Messages
 	String userShareRightsDlgLabel_ExternalUsers();
 	String userShareRightsDlgLabel_InternalUsers();
 	String userShareRightsDlgLabel_NoChange();
+	String userShareRightsDlgLabel_NoZoneSettings();
 	String userShareRightsDlgLabel_Public();
 	String userShareRightsDlgProgress( int done, int total );
 

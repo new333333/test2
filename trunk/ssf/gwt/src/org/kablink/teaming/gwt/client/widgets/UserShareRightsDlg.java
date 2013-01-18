@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -63,6 +63,7 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.UIObject;
@@ -180,6 +181,18 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	}
 	
 	/*
+	 * Returns the string to use in a header cell for a rights
+	 * assignment.
+	 */
+	private String buildHeaderCellString(String baseHeader, boolean isZoneEnabled) {
+		String header = baseHeader;
+		if (!isZoneEnabled) {
+			header = ("* " + header);
+		}
+		return header;
+	}
+	
+	/*
 	 * Constructs and returns an Image with a spinner in it.
 	 */
 	private Image buildSpinnerImage(String style) {
@@ -210,47 +223,34 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 		PerUserShareRightsInfo setFlags   = new PerUserShareRightsInfo();
 		PerUserShareRightsInfo valueFlags = new PerUserShareRightsInfo();
 
-		// Do we have an external column?
+		// Initialize the external set and value flags.
 		boolean hasUnchanged = (null == m_singleUserRights);
-		boolean isRBChecked;
-		if (m_rightsInfo.isExternalEnabled()) {
-			// Yes!  Initialize its set and value flags.
-			isRBChecked = isRBChecked(ROW_EXTERNAL, COLUMN_ALLOW);
-			valueFlags.setAllowExternal(isRBChecked);
-			if (hasUnchanged)
-			     setFlags.setAllowExternal(!(isRBChecked(ROW_EXTERNAL, COLUMN_NO_CHANGE)));
-			else setFlags.setAllowExternal(isRBChecked != m_singleUserRights.isAllowExternal());
-		}
+		boolean isRBChecked  = isRBChecked(ROW_EXTERNAL, COLUMN_ALLOW);
+		valueFlags.setAllowExternal(isRBChecked);
+		if (hasUnchanged)
+		     setFlags.setAllowExternal(!(isRBChecked(ROW_EXTERNAL, COLUMN_NO_CHANGE)));
+		else setFlags.setAllowExternal(isRBChecked != m_singleUserRights.isAllowExternal());
 		
-		// Do we have a forwarding column?
-		if (m_rightsInfo.isForwardingEnabled()) {
-			// Yes!  Initialize its set and value flags.
-			isRBChecked = isRBChecked(ROW_FORWARDING, COLUMN_ALLOW);
-			valueFlags.setAllowForwarding(isRBChecked);
-			if (hasUnchanged)
-			     setFlags.setAllowForwarding(!(isRBChecked(ROW_FORWARDING, COLUMN_NO_CHANGE)));
-			else setFlags.setAllowForwarding(isRBChecked != m_singleUserRights.isAllowForwarding());
-		}
+		// Initialize the forwarding set and value flags.
+		isRBChecked = isRBChecked(ROW_FORWARDING, COLUMN_ALLOW);
+		valueFlags.setAllowForwarding(isRBChecked);
+		if (hasUnchanged)
+		     setFlags.setAllowForwarding(!(isRBChecked(ROW_FORWARDING, COLUMN_NO_CHANGE)));
+		else setFlags.setAllowForwarding(isRBChecked != m_singleUserRights.isAllowForwarding());
 		
-		// Do we have an internal column?
-		if (m_rightsInfo.isInternalEnabled()) {
-			// Yes!  Initialize its set and value flags.
-			isRBChecked = isRBChecked(ROW_INTERNAL, COLUMN_ALLOW);
-			valueFlags.setAllowInternal(isRBChecked);
-			if (hasUnchanged)
-			     setFlags.setAllowInternal(!(isRBChecked(ROW_INTERNAL, COLUMN_NO_CHANGE)));
-			else setFlags.setAllowInternal(isRBChecked != m_singleUserRights.isAllowInternal());
-		}
+		// Initialize the internal set and value flags.
+		isRBChecked = isRBChecked(ROW_INTERNAL, COLUMN_ALLOW);
+		valueFlags.setAllowInternal(isRBChecked);
+		if (hasUnchanged)
+		     setFlags.setAllowInternal(!(isRBChecked(ROW_INTERNAL, COLUMN_NO_CHANGE)));
+		else setFlags.setAllowInternal(isRBChecked != m_singleUserRights.isAllowInternal());
 		
-		// Do we have a public column?
-		if (m_rightsInfo.isPublicEnabled()) {
-			// Yes!  Initialize its set and value flags.
-			isRBChecked = isRBChecked(ROW_PUBLIC, COLUMN_ALLOW);
-			valueFlags.setAllowPublic(isRBChecked);
-			if (hasUnchanged)
-			     setFlags.setAllowPublic(!(isRBChecked(ROW_PUBLIC, COLUMN_NO_CHANGE)));
-			else setFlags.setAllowPublic(isRBChecked != m_singleUserRights.isAllowPublic());
-		}
+		// Initialize the public set and value flags.
+		isRBChecked = isRBChecked(ROW_PUBLIC, COLUMN_ALLOW);
+		valueFlags.setAllowPublic(isRBChecked);
+		if (hasUnchanged)
+		     setFlags.setAllowPublic(!(isRBChecked(ROW_PUBLIC, COLUMN_NO_CHANGE)));
+		else setFlags.setAllowPublic(isRBChecked != m_singleUserRights.isAllowPublic());
 
 		// Finally, return a CombinderPerUserShareRightsInfo object
 		// with the set and value flags.
@@ -438,70 +438,77 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 			addColumnHeaderCell(ft, fcf, ROW_HEADER_1, COLUMN_NO_CHANGE, m_messages.userShareRightsDlgLabel_NoChange()        );
 		}
 
-		// ...if sharing with internal users is enabled...
-		int upperParts = 0;
-		if (m_rightsInfo.isInternalEnabled()) {
-			// ...define the share internal cells...
-			addRowHeaderCell(ft, fcf, ROW_INTERNAL, COLUMN_HEADER, m_messages.userShareRightsDlgLabel_InternalUsers());
-			addRadioCell(    ft, fcf, ROW_INTERNAL, COLUMN_ALLOW, ((null != m_singleUserRights) &&    m_singleUserRights.isAllowInternal()));
-			addRadioCell(    ft, fcf, ROW_INTERNAL, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowInternal()))));
-			if (null == m_singleUserRights) {
-				addRadioCell(ft, fcf, ROW_INTERNAL, COLUMN_NO_CHANGE, true);
-			}
-			upperParts += 1;
+		// ...define the share internal cells...
+		int noZoneSettings = 0;
+		boolean hasZoneSetting = m_rightsInfo.isInternalEnabled(); 
+		if (!hasZoneSetting) {
+			noZoneSettings += 1;
+		}
+		addRowHeaderCell(ft, fcf, ROW_INTERNAL, COLUMN_HEADER, buildHeaderCellString(m_messages.userShareRightsDlgLabel_InternalUsers(), hasZoneSetting));
+		addRadioCell(    ft, fcf, ROW_INTERNAL, COLUMN_ALLOW, ((null != m_singleUserRights) &&    m_singleUserRights.isAllowInternal()));
+		addRadioCell(    ft, fcf, ROW_INTERNAL, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowInternal()))));
+		if (null == m_singleUserRights) {
+			addRadioCell(ft, fcf, ROW_INTERNAL, COLUMN_NO_CHANGE, true);
 		}
 		
-		// ...if sharing with external users is enabled...
-		if (m_rightsInfo.isExternalEnabled()) {
-			// ...define the share external cells...
-			addRowHeaderCell(ft, fcf, ROW_EXTERNAL, COLUMN_HEADER, m_messages.userShareRightsDlgLabel_ExternalUsers());
-			addRadioCell(    ft, fcf, ROW_EXTERNAL, COLUMN_ALLOW, ((null != m_singleUserRights) &&    m_singleUserRights.isAllowExternal())  );
-			addRadioCell(    ft, fcf, ROW_EXTERNAL, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowExternal()))));
-			if (null == m_singleUserRights) {
-				addRadioCell(ft, fcf, ROW_EXTERNAL, COLUMN_NO_CHANGE, true);
-			}
-			upperParts += 1;
+		// ...define the share external cells...
+		hasZoneSetting = m_rightsInfo.isExternalEnabled(); 
+		if (!hasZoneSetting) {
+			noZoneSettings += 1;
+		}
+		addRowHeaderCell(ft, fcf, ROW_EXTERNAL, COLUMN_HEADER, buildHeaderCellString(m_messages.userShareRightsDlgLabel_ExternalUsers(), hasZoneSetting));
+		addRadioCell(    ft, fcf, ROW_EXTERNAL, COLUMN_ALLOW, ((null != m_singleUserRights) &&    m_singleUserRights.isAllowExternal())  );
+		addRadioCell(    ft, fcf, ROW_EXTERNAL, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowExternal()))));
+		if (null == m_singleUserRights) {
+			addRadioCell(ft, fcf, ROW_EXTERNAL, COLUMN_NO_CHANGE, true);
 		}
 		
-		// ...if sharing with the public is enabled...
-		if (m_rightsInfo.isPublicEnabled()) {
-			// ...define the share public cells...
-			addRowHeaderCell(ft, fcf, ROW_PUBLIC, COLUMN_HEADER, m_messages.userShareRightsDlgLabel_Public());
-			addRadioCell(    ft, fcf, ROW_PUBLIC, COLUMN_ALLOW, ((null != m_singleUserRights) &&    m_singleUserRights.isAllowPublic())  );
-			addRadioCell(    ft, fcf, ROW_PUBLIC, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowPublic()))));
-			if (null == m_singleUserRights) {
-				addRadioCell(ft, fcf, ROW_PUBLIC, COLUMN_NO_CHANGE, true);
-			}
-			upperParts += 1;
+		// ...define the share public cells...
+		hasZoneSetting = m_rightsInfo.isPublicEnabled(); 
+		if (!hasZoneSetting) {
+			noZoneSettings += 1;
+		}
+		addRowHeaderCell(ft, fcf, ROW_PUBLIC, COLUMN_HEADER, buildHeaderCellString(m_messages.userShareRightsDlgLabel_Public(), hasZoneSetting));
+		addRadioCell(    ft, fcf, ROW_PUBLIC, COLUMN_ALLOW, ((null != m_singleUserRights) &&    m_singleUserRights.isAllowPublic())  );
+		addRadioCell(    ft, fcf, ROW_PUBLIC, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowPublic()))));
+		if (null == m_singleUserRights) {
+			addRadioCell(ft, fcf, ROW_PUBLIC, COLUMN_NO_CHANGE, true);
 		}
 
-		// ...if share forwarding is enabled...
-		if (m_rightsInfo.isForwardingEnabled()) {
-			if (0 < upperParts) {
-				// ...define the spacer above the share forwarding
-				// ...cells...
-				addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_HEADER   );
-				addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_ALLOW    );
-				addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_CLEAR    );
-				if (null == m_singleUserRights) {
-					addColumnHeaderCell(ft, fcf, ROW_SPACER, COLUMN_NO_CHANGE);
-				}
-			
-				// ...define the share forwarding header cells...
-				addColumnHeaderCell(    ft, fcf, ROW_HEADER_2, COLUMN_ALLOW,     m_messages.userShareRightsDlgLabel_Allow());
-				addColumnHeaderCell(    ft, fcf, ROW_HEADER_2, COLUMN_CLEAR,     m_messages.userShareRightsDlgLabel_Clear());
-				if (null == m_singleUserRights) {
-					addColumnHeaderCell(ft, fcf, ROW_HEADER_2, COLUMN_NO_CHANGE, m_messages.userShareRightsDlgLabel_NoChange());
-				}
-			}
-			
-			// ...define the share forwarding cells...
-			addRowHeaderCell(   ft, fcf, ROW_FORWARDING, COLUMN_HEADER, m_messages.userShareRightsDlgLabel_AllowForwarding());
-			addRadioCell(       ft, fcf, ROW_FORWARDING, COLUMN_ALLOW, ((null != m_singleUserRights) &&    m_singleUserRights.isAllowForwarding())  );
-			addRadioCell(       ft, fcf, ROW_FORWARDING, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowForwarding()))));
-			if (null == m_singleUserRights) {
-				addRadioCell(   ft, fcf, ROW_FORWARDING, COLUMN_NO_CHANGE, true);
-			}
+		// ...define the spacer above the share forwarding cells...
+		addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_HEADER   );
+		addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_ALLOW    );
+		addColumnHeaderCell(    ft, fcf, ROW_SPACER, COLUMN_CLEAR    );
+		if (null == m_singleUserRights) {
+			addColumnHeaderCell(ft, fcf, ROW_SPACER, COLUMN_NO_CHANGE);
+		}
+	
+		// ...define the share forwarding header cells...
+		addColumnHeaderCell(    ft, fcf, ROW_HEADER_2, COLUMN_ALLOW,     m_messages.userShareRightsDlgLabel_Allow());
+		addColumnHeaderCell(    ft, fcf, ROW_HEADER_2, COLUMN_CLEAR,     m_messages.userShareRightsDlgLabel_Clear());
+		if (null == m_singleUserRights) {
+			addColumnHeaderCell(ft, fcf, ROW_HEADER_2, COLUMN_NO_CHANGE, m_messages.userShareRightsDlgLabel_NoChange());
+		}
+		
+		// ...define the share forwarding cells...
+		hasZoneSetting = m_rightsInfo.isForwardingEnabled(); 
+		if (!hasZoneSetting) {
+			noZoneSettings += 1;
+		}
+		addRowHeaderCell(   ft, fcf, ROW_FORWARDING, COLUMN_HEADER, buildHeaderCellString(m_messages.userShareRightsDlgLabel_AllowForwarding(), hasZoneSetting));
+		addRadioCell(       ft, fcf, ROW_FORWARDING, COLUMN_ALLOW, ((null != m_singleUserRights) &&    m_singleUserRights.isAllowForwarding())  );
+		addRadioCell(       ft, fcf, ROW_FORWARDING, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowForwarding()))));
+		if (null == m_singleUserRights) {
+			addRadioCell(   ft, fcf, ROW_FORWARDING, COLUMN_NO_CHANGE, true);
+		}
+		
+		// ...if some of the rights do not have settings at the zone
+		// ...level...
+		if (0 < noZoneSettings) {
+			// ...add a note telling the user.
+			Label l = new Label("* " + m_messages.userShareRightsDlgLabel_NoZoneSettings());
+			l.addStyleName("vibe-userShareRightsDlg-noZoneSettings");
+			m_vp.add(l);
 		}
 		
 		// ...define a progress bar...
