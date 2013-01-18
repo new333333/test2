@@ -98,6 +98,7 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	protected short recipientType;
 	protected Long recipientId;
 	protected RightSet rightSet;
+	protected Boolean partOfPublicShare = Boolean.FALSE;
 	// This field is meaningful only for expired shares.
 	protected Boolean expirationHandled;
 
@@ -112,7 +113,7 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 			Date endDate, 
 			RecipientType recipientType, 
 			Long recipientId, 
-			RightSet rightSet) {
+			RightSet rightSet ) {
 		if (sharerId == null) throw new IllegalArgumentException("Sharer ID must be specified");
 		if (sharedEntityIdentifier == null) throw new IllegalArgumentException("Shared entity identifier must be specified");
 		if(recipientType == null) throw new IllegalArgumentException("Recipient type must be specified");
@@ -145,6 +146,7 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		this.recipientType = si.recipientType;
 		this.recipientId = si.recipientId;
 		this.rightSet = (RightSet) si.rightSet.clone();
+		this.partOfPublicShare = si.partOfPublicShare;
 	}
 	
 	@Override
@@ -162,6 +164,25 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		return EntityIdentifier.EntityType.shareWith;
 	}
 
+	/**
+	 * 
+	 */
+	public boolean getIsPartOfPublicShare()
+	{
+    	if ( partOfPublicShare == null )
+    		return false;
+
+    	return partOfPublicShare.booleanValue();
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIsPartOfPublicShare( boolean partOfPublicShare )
+	{
+		this.partOfPublicShare = partOfPublicShare;
+	}
+	
 	public Long getId() {
 		return id;
 	}

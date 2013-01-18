@@ -543,4 +543,13 @@ update SS_PRINCIPALS set FOREIGNNAME=LOWER(FOREIGNNAME);
         </addColumn>
 	</changeSet>
 	    
+    <changeSet author="jay" context="schema" failOnError="true" id="63">
+        <comment>Add partOfPublicShare field to SS_ShareItem table</comment>
+        <addColumn tableName="SS_SHAREITEM">
+            <column name="PARTOFPUBLICSHARE" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+	    
 </databaseChangeLog>

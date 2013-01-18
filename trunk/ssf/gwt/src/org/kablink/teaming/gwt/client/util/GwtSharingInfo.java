@@ -115,8 +115,7 @@ public class GwtSharingInfo
 				publicShareItem = (GwtPublicShareItem) shareItem;
 
 				// Is this an existing public share?
-				if ( publicShareItem.getAllExternalShareItem() != null &&
-					 publicShareItem.getAllInternalShareItem() != null &&
+				if ( publicShareItem.getAllInternalShareItem() != null &&
 					 publicShareItem.getGuestShareItem() != null )
 				{
 					// Yes
