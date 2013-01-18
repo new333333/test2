@@ -284,7 +284,6 @@ public class ShareThisDlg extends DlgBox
 	{
 		private GwtShareItem m_shareItem;
 		private InlineLabel m_typeLabel;
-		private String m_entityPermalink;
 		
 		/**
 		 * 
@@ -294,7 +293,6 @@ public class ShareThisDlg extends DlgBox
 			FlowPanel panel;
 			
 			m_shareItem = shareItem;
-			m_entityPermalink = null;
 			
 			panel = new FlowPanel();
 			
@@ -340,85 +338,28 @@ public class ShareThisDlg extends DlgBox
 		 */
 		private void invokeShareWithPublicInfoDlg()
 		{
-			// Do we have the entity's permalink?
-			if ( m_entityPermalink == null )
+			if ( m_shareWithPublicInfoDlg == null )
 			{
-				GetEntityPermalinkCmd cmd;
-				AsyncCallback<VibeRpcResponse> callback;
-
-				// No
-				// Issue an rpc request to get the entity's permalink
-				callback = new AsyncCallback<VibeRpcResponse>()
+				ShareWithPublicInfoDlg.createAsync( new ShareWithPublicInfoDlgClient()
 				{
-					/**
-					 * 
-					 */
 					@Override
-					public void onFailure( Throwable t )
+					public void onUnavailable() 
 					{
-						GwtClientHelper.handleGwtRPCFailure(
-														t,
-														GwtTeaming.getMessages().rpcFailure_GetEntityPermalink(),
-														m_shareItem.getEntityId().getEntityId() );
+						// Nothing to do.  Error handled in asynchronous provider.
 					}
-			
-					/**
-					 * 
-					 * @param result
-					 */
+					
 					@Override
-					public void onSuccess( VibeRpcResponse response )
+					public void onSuccess( ShareWithPublicInfoDlg swpiDlg )
 					{
-						final StringRpcResponseData responseData;
-						
-						responseData = (StringRpcResponseData) response.getResponseData();
-						m_entityPermalink = responseData.getStringValue();
-						
-						if ( m_entityPermalink != null )
-						{
-							Scheduler.ScheduledCommand cmd;
-							
-							cmd = new Scheduler.ScheduledCommand()
-							{
-								@Override
-								public void execute()
-								{
-									invokeShareWithPublicInfoDlg();
-								}
-							};
-							Scheduler.get().scheduleDeferred( cmd );
-						}
+						m_shareWithPublicInfoDlg = swpiDlg;
+						invokeShareWithPublicInfoDlg();
 					}
-				};
-
-				cmd = new GetEntityPermalinkCmd( m_shareItem.getEntityId() );
-				GwtClientHelper.executeCommand( cmd, callback );
+				} );
 			}
 			else
 			{
-				if ( m_shareWithPublicInfoDlg == null )
-				{
-					ShareWithPublicInfoDlg.createAsync( new ShareWithPublicInfoDlgClient()
-					{
-						@Override
-						public void onUnavailable() 
-						{
-							// Nothing to do.  Error handled in asynchronous provider.
-						}
-						
-						@Override
-						public void onSuccess( ShareWithPublicInfoDlg swpiDlg )
-						{
-							m_shareWithPublicInfoDlg = swpiDlg;
-							invokeShareWithPublicInfoDlg();
-						}
-					} );
-				}
-				else
-				{
-					m_shareWithPublicInfoDlg.init( m_shareItem.getEntityId(), m_entityPermalink );
-					m_shareWithPublicInfoDlg.showRelativeToTarget( m_typeLabel );
-				}
+				m_shareWithPublicInfoDlg.init( m_shareItem.getEntityId() );
+				m_shareWithPublicInfoDlg.showRelativeToTarget( m_typeLabel );
 			}
 		}
 	}
@@ -645,13 +586,6 @@ public class ShareThisDlg extends DlgBox
 		 */
 		private void invokeEditNoteDlg()
 		{
-			// Is the recipient "Public"?
-			if ( m_shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
-			{
-				// Yes, can't add a note.
-				return;
-			}
-			
 			if ( m_editShareNoteDlg != null )
 			{
 				if ( m_editNoteHandler == null )
