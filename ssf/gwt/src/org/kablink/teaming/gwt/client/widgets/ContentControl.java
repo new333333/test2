@@ -776,31 +776,12 @@ public class ContentControl extends Composite
 								@Override
 								public void execute()
 								{
-									// If we're navigating to a user's
-									// Home folder that's serving as
-									// their My Files repository...
-									BinderInfo biForChange;
-									if ( vt.isBinderView() && bi.isFolderHome() && m_mainPage.getMainPageInfo().isUseHomeAsMyFiles() )
-									{
-										// ...we notify everybody that
-										// ...we actually changed to their My Files view...
-										biForChange = new BinderInfo();
-										biForChange.setBinderType( BinderType.COLLECTION );
-										biForChange.setCollectionType( CollectionType.MY_FILES );
-										biForChange.setBinderId( GwtClientHelper.getRequestInfo().getCurrentUserWorkspaceId() );
-										biForChange.setBinderTitle( GwtTeaming.getMessages().myFiles() );
-									}
-									else
-									{
-										// ...otherwise, we just notify
-										// ...them about where ever we
-										// ...went.
-										biForChange = bi;
-									}
+									// Notify those who care about the
+									// change in context.
 									GwtTeaming.fireEvent(
 										new ContextChangedEvent(
 											new OnSelectBinderInfo(
-												biForChange,
+												bi,
 												url,
 												instigator )));
 									
