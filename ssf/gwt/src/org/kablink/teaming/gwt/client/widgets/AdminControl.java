@@ -325,7 +325,7 @@ public class AdminControl extends TeamingPopupPanel
 				categoryName = new InlineLabel( category.getLocalizedName() );
 				categoryName.addStyleName( "adminCategoryName" );
 				m_mainTable.setWidget( row, 2, categoryName );
-				cellFormatter.setWidth( row, 2, "100%" );
+				cellFormatter.setWidth( row, 2, "" );
 				
 				imgResource = GwtTeaming.getImageBundle().spacer1px();
 				img = new Image( imgResource );

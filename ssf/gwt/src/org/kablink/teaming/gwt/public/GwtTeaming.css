@@ -922,18 +922,29 @@ a, a:visited, a:hover {
 /* Style used for the AdminActionControl. */
 .adminActionControl
 {
-	margin: 5px;
-	padding: 2px;
+	display: inline-block;
+	font-size: 15px;
+	margin: 0px;
+	padding: 3px;
+	padding-left: 2px;
 	white-space: nowrap;
 }
 
 .adminActionControlMouseOver
 {
-	background: #E6F2F7;
 	color: #3E6978;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
 	-webkit-border-radius: 3px;
+
+/*	background: #E6F2F7; */
+
+	background: -moz-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left bottom, left top, color-stop(47%,#a8d4dd), color-stop(53%,#d5edf1), color-stop(100%,#c8e4e9)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
+	background: linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
 }
 
 /* Style used for the AdminActionsTreeControl found in Teaming's administration page. */
@@ -984,6 +995,7 @@ a, a:visited, a:hover {
 /* Style used with the category name. */
 .adminCategoryName
 {
+	font-size: 15px;
 	font-weight: bold;
 }
 
@@ -1008,21 +1020,35 @@ a, a:visited, a:hover {
 {
     border-radius: 15px 15px 15px 15px;
     color: #FFFFFF !important;
-    font-size: .85em;
+    background: #505354;
+    font-size: 12px;
 	margin-right: 10px;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
     text-decoration: none;
 }
 
 .adminControl_CloseLabel:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	border-radius: 15px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.47, #A8D4DD),
+		color-stop(0.53, #D5EDF1),
+		color-stop(1, #C8E4E9));
 }
 
 body, table td, select
@@ -2820,7 +2846,7 @@ body, table td, select
 	text-decoration:none;
   	cursor: pointer;
   	white-space: nowrap;
-	border: 0px;
+	border: 1px solid transparent;
 	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
@@ -2831,8 +2857,8 @@ body, table td, select
 	color: #135c8f !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-	font-size: 12px;
-	border: 0px;
+	font-size: 12px important;
+	border: 1px solid #81b2bd;
 	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
@@ -2846,8 +2872,8 @@ body, table td, select
 		color-stop(0.47, #A8D4DD),
 		color-stop(0.53, #D5EDF1),
 		color-stop(1, #C8E4E9));
-	-moz-border-radius: 15px;
 	border-radius: 15px;
+	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
 
@@ -2855,9 +2881,9 @@ body, table td, select
 	color: #1f1f1f;
 	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
 	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background: linear-gradient(top , #ffffff, #E0E0E0) repeat scroll 0 0;
 	background-color: transparent;
-	border: 1px solid #B8B8B8;
+	border: 1px solid #b8b8b8;
 	font-weight: normal !important;
 	font-size: 12px;
 	padding: 2px 10px  !important;
@@ -2871,6 +2897,7 @@ body, table td, select
 }
 .gwt-Button:hover {
 	border: 1px solid #81b2bd;
+	font-size: 12px important;
 	}
 .gwt-Button:active {
   border: 0px inset #ccc;
@@ -4147,7 +4174,7 @@ td.datePickerMonth {
 		background: -webkit-linear-gradient(bottom,  #1e5799 0%,#207cca 50%,#7db9e8 100%); /* Chrome10+,Safari5.1+ */
 		background: -o-linear-gradient(bottom,  #1e5799 0%,#207cca 50%,#7db9e8 100%); /* Opera 11.10+ */
 		background: -ms-linear-gradient(bottom,  #1e5799 0%,#207cca 50%,#7db9e8 100%); /* IE10+ */
-		background: linear-gradient(to bottom,  #1e5799 0%,#207cca 50%,#7db9e8 100%); /* W3C */
+		background: linear-gradient(bottom,  #1e5799 0%,#207cca 50%,#7db9e8 100%); /* W3C */
 		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#7db9e8',GradientType=0 ); /* IE6-9 */
 		border-radius: 15px;
 	}
@@ -4201,22 +4228,39 @@ td.datePickerMonth {
 
 .groupManagementBtn, .manageNetFolderRootsDlg_Btn, .manageNetFoldersDlg_Btn
 {
-    border-radius: 15px 15px 15px 15px;
-    color: #666666 !important;
 	cursor: pointer;
-    font-size: 11px;
-    padding-left: 5px;
-    padding-right: 5px;
-    text-decoration: none;
+    text-decoration: none;    
+   	display: inline-block;
+	color: #1F1F1F;
+	font-size: 12px;
+	margin-right: 5px;
+	padding: 2px 10px;
+	text-align: center;
+	border: 1px solid #b8b8b8;
+    border-radius: 15px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	background: -moz-linear-gradient(top,  #ffffff, #E0E0E0); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(100%,#ffffff), color-stop(0%,#E0E0E0)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #ffffff, #E0E0E0); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #ffffff 47%, #E0E0E0); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #ffffff 47%, #E0E0E0); /* IE10+ */
+	background: linear-gradient(top,  #ffffff, #E0E0E0); /* W3C */
+
+    
 }
 
 .groupManagementBtn:hover, .manageNetFolderRootsDlg_Btn:hover, .manageNetFoldersDlg_Btn:hover
 {
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	color: #135c8f;
+	border: 1px solid #81b2bd;
+	background: -moz-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left bottom, left top, color-stop(47%,#a8d4dd), color-stop(53%,#d5edf1), color-stop(100%,#c8e4e9)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
+	background: linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
+
 }
 
 .groupManagementMenuPanel, .modifyStaticMembershipMenuPanel, .manageNetFolderRootsDlg_MenuPanel, .manageNetFoldersDlg_MenuPanel
@@ -4797,7 +4841,7 @@ td.datePickerMonth {
 	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
 	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
 	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
-	background: linear-gradient(to bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
+	background: linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
 	border-radius: 2px 2px 2px 2px;
 	color: #135c8f;
 }
@@ -4857,7 +4901,7 @@ td.datePickerMonth {
 .userActionsPopup_SignOutLabel
 {
 	display: inline-block;
-	border: 1px solid #B8B8B8;
+	border: 1px solid #b8b8b8;
 	border-radius: 15px 15px 15px 15px;
 	color: #1F1F1F;
 	font-size: 14px;
@@ -4865,6 +4909,12 @@ td.datePickerMonth {
 	padding: 2px 10px;
 	text-align: center;
 	width: 80px;
+	background: -moz-linear-gradient(top,  #ffffff, #E0E0E0); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(110%,#E0E0E0)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #ffffff, #E0E0E0); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #ffffff 0%, #E0E0E0 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #ffffff 0%, #E0E0E0 100%); /* IE10+ */
+	background: linear-gradient(top,  #ffffff 0%, #E0E0E0 100%); /* W3C */
 }
 
 .userActionsPopup_SignOutLabel:hover
@@ -4872,12 +4922,12 @@ td.datePickerMonth {
 	border: 1px solid #81B2BD;
 	color: #135C8F;
 	cursor: pointer;
-	background: -moz-linear-gradient(center bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
+	background: -moz-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left bottom, left top, color-stop(47%,#a8d4dd), color-stop(53%,#d5edf1), color-stop(100%,#c8e4e9)); /* Chrome,Safari4+ */
 	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
 	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
 	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
-	background: linear-gradient(to bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
+	background: linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
 }
 
 .userActionsPopup_TopImgPanel
@@ -4987,18 +5037,16 @@ td.datePickerMonth {
 /**
  * Styles used in the Edit Net Folder Rights dialog
  */
-.editNetFolderRightsDlg_MainPanel
-{
-}
 
-.editNetFolderRightsDlg_RightsCkbox
-{
-}
-
+.editNetFolderRightsDlg_MainPanel		{}
+.editNetFolderRightsDlg_RightsCkbox		{display: inline-block; padding-top: 3px;}	
 .editNetFolderRightsDlg_Instructions
 {
-	margin-bottom: 6px;
+	color: #353838; 
+	font-size: 14px; 
+	padding-bottom: 10px;
 	margin-left: 4px;
+	
 }
 /* End */
 
@@ -5036,7 +5084,7 @@ td.datePickerMonth {
 
 .AdminConsoleInfoWidget_headImage
 {
-	background: linear-gradient(to bottom ,#505354 0%,#1f1f1f 100%);
+	background: linear-gradient(top ,#505354 0%,#1f1f1f 100%);
 	background: -webkit-linear-gradient(top, #505354, #1f1f1f);
 	background: -moz-linear-gradient(top, #505354, #1f1f1f);
 	border-bottom-left-radius: 10px;
@@ -5101,6 +5149,9 @@ td.datePickerMonth {
 /**
  * Styles used in the "Edit Zone Share Rights" dialog
  */
+
+.editZoneShareRightsDlg_Instructions 	{color: 353838; font-size: 14px; padding-bottom: 10px;}
+.editZoneShareRightsDlg_RightsCkbox		{display: inline-block; padding-top: 3px;}
 
 .editZoneShareRightsDlg_SelectPrincipalsHint
 {

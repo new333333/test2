@@ -677,7 +677,7 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
 button, input[type="reset"], input[type="button"], input[type="submit"] {	
 	color:#fff;
  	font-family: ${ss_style_folder_view_font_family};
- 	font-size: 11px;
+ 	font-size: 12px;
 	background: #949494 none repeat scroll 0 0;
 	margin-right:3px;
 	padding: 2px 10px;
@@ -698,7 +698,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
 	color: #135c8f !important;
     text-align: center !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
