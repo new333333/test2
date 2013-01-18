@@ -1995,7 +1995,7 @@ public class GwtServerHelper {
 		// Always use the initial form of the method.
 		return createMyFilesFolder(bs, getCurrentUser());
 	}
-	
+
 	/**
 	 * Delete the given tag from the given entry.
 	 */
@@ -7437,6 +7437,36 @@ public class GwtServerHelper {
 		return getTeamMemberIds(bs, binderId, false);
 	}
 	
+	/*
+	 * If the user has a workspace, their ID is returned.  If they
+	 * don't have a workspace, once is created for them and its ID is
+	 * returned.
+	 */
+	private static Long getUserWorkspaceId(AllModulesInjected bs, HttpServletRequest request, User user) {
+		// Does the user have a workspace?
+		Long reply = user.getWorkspaceId();
+		if (null == reply) {
+			try {
+				// No!  Can we create one for them?
+				Workspace ws = bs.getProfileModule().addUserWorkspace(user, null);	// null -> No add options.
+				if (null != ws) {
+					// Yes!  Return its ID.
+					reply = ws.getId();
+				}
+			}
+			
+			catch (Exception ex) {
+				// No, we couldn't create their workspace!  Log the
+				// exception.
+				m_logger.debug("GwtServerHelper.getUserWorkspaceId( SOURCE EXCEPTION ):  ", ex);
+			}
+		}
+		
+		// If we get here, reply refers the the user's workspace ID or
+		// is null.  Return it.
+		return reply;
+	}
+	
     /**
      * 
 	 * @param ri
@@ -8001,10 +8031,20 @@ public class GwtServerHelper {
 						// Yes!  Does that user have a workspace ID?
 						User user = ((User) p);
 						wsId = user.getWorkspaceId();
-						if (null != wsId) {
-							// Yes!  Are there any work area function
-							// memberships configured on that
-							// workspace?
+						if (null == wsId) {
+							// No!  By default, everybody will have all
+							// the rights set from the create user
+							// template.
+							psri.setAllowExternal(  true);
+							psri.setAllowForwarding(true);
+							psri.setAllowInternal(  true);
+							psri.setAllowPublic(    true);
+						}
+						
+						else {
+							// Yes, that user has a workspace ID!  Are
+							// there any work area function memberships
+							// configured on that workspace?
 							wafmList = am.getWorkAreaFunctionMemberships(bs.getWorkspaceModule().getWorkspace(wsId));
 							if (MiscUtil.hasItems(wafmList)) {
 								// Yes!  Scan them.
@@ -8033,12 +8073,8 @@ public class GwtServerHelper {
 					}
 				}
 
-				// If this user has a user workspace...
-				if (null != wsId) {
-					// ...add their per user sharing rights to the
-					// ...reply.
-					reply.addUserRights(userIds.get(0), psri);
-				}
+				// Add the per user sharing rights to the reply.
+				reply.addUserRights(userIds.get(0), psri);
 			}
 
 			// If we get here, reply refers to the
@@ -10286,10 +10322,11 @@ public class GwtServerHelper {
 						try {
 							// Can we access this Principal as a User?
 							if (p instanceof UserPrincipal) {
-								// Yes!  Does this user have a
-								// workspace ID?
+								// Yes!  Can we get the ID of this
+								// user's workspace, creating it if
+								// necessary?
 								user = ((User) p);
-								Long wsId = user.getWorkspaceId();
+								Long wsId = getUserWorkspaceId(bs, request, user);
 								if (null == wsId) {
 									// No!  Add a warning that this
 									// user's sharing rights could not
