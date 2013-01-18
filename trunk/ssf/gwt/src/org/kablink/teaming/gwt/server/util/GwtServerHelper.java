@@ -10322,10 +10322,20 @@ public class GwtServerHelper {
 						try {
 							// Can we access this Principal as a User?
 							if (p instanceof UserPrincipal) {
-								// Yes!  Can we get the ID of this
-								// user's workspace, creating it if
-								// necessary?
+								// Yes!  Is this user a person?
 								user = ((User) p);
+								if (!(user.isPerson())) {
+									// No!  Then we don't allow their
+									// workspace sharing rights to be
+									// set.
+									String userTitle = ((null == user) ? NLT.get("setUserSharingRightsError.NoUser") : Utils.getUserTitle(user));
+									reply.addWarning(NLT.get("setUserSharingRightsError.NotAPerson", new String[]{userTitle}));
+									continue;
+								}
+								
+								// Can we get the ID of this user's
+								// s workspace, creating it if
+								// necessary?
 								Long wsId = getUserWorkspaceId(bs, request, user);
 								if (null == wsId) {
 									// No!  Add a warning that this
