@@ -167,8 +167,6 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 		tmpPanel.add( m_canShareExternalCkbox );
 		mainPanel.add( tmpPanel );
 
-		mainPanel.add( tmpPanel );
-
 		// Add the "can share public" checkbox.
 		m_canSharePublicCkbox = new CheckBox( messages.editUserZoneShareRightsDlg_SharePublicLabel() );
 		m_canSharePublicCkbox.addStyleName( "editZoneShareRightsDlg_RightsCkbox" );
@@ -190,13 +188,6 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 				Scheduler.get().scheduleDeferred( cmd );
 			}
 		} );
-		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_canShareExternalCkbox );
-		mainPanel.add( tmpPanel );
-
-		// Add the "can share public" checkbox.
-		m_canSharePublicCkbox = new CheckBox( messages.editUserZoneShareRightsDlg_SharePublicLabel() );
-		m_canSharePublicCkbox.addStyleName( "editZoneShareRightsDlg_RightsCkbox" );
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_canSharePublicCkbox );
 		mainPanel.add( tmpPanel );
