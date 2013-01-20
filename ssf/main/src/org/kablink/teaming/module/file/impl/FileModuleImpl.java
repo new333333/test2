@@ -559,6 +559,29 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return errors;
     }
 	
+	// No transaction - The caller will manage transaction demarcation
+	@Override
+    public FileAttachment _addNetFolderFileInSync(Folder folder, FolderEntry entry, FileUploadItem fui) 
+    throws UncheckedIOException {
+    	FileAttachment fAtt = createFileAttachment(entry, fui);
+    	String versionName;
+		try {
+			versionName = createVersionedFile(null, folder, entry, fui);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+    	long fileSize = fui.getClientSpecifiedContentLength();
+    	fAtt.getFileItem().setLength(fileSize);
+    	createVersionAttachment(fAtt, versionName);
+    	getCoreDao().save(fAtt);
+    	
+    	writeFileMetadataNonTransactional(folder, entry, fui, fAtt, true, true);
+    	
+    	GangliaMonitoring.incrementFileWrites();
+    	
+    	return fAtt;
+    }
+    
 	public FilesErrors writeFilesValidationOnly(Binder binder, DefinableEntity entry, 
     		List fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException {
@@ -1817,87 +1840,91 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated) {	
 		getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
-        		//Copy the "description" into the file attachment
-        		fAtt.getFileItem().setDescription(fui.getDescription());
-        		if(isNew) {
-            		// Important: Since file attachment is stored into custom 
-        			// attribute using its id value rather than association, 
-        			// this new object must be persisted here just in case it 
-        			// is to be put into custom attribute down below. This 
-        			// piece of code makes it impossible for the caller to 
-        			// utilize the usual tactic of delaying update db 
-        			// transaction to the very end of the operation.  
-            		getCoreDao().save(fAtt);    		
-        		}
-            	if (fui.getType() == FileUploadItem.TYPE_FILE) {
-            		setCustomAttribute(entry, fui, fAtt, true);
-        		} else if (fui.getType() == FileUploadItem.TYPE_ATTACHMENT) {
-        			// Add the file attachment to the entry only if new file. 
-            		setCustomAttribute(entry, fui, fAtt, false);
-        			if(isNew) {
-        				entry.addAttachment(fAtt);
-        			}
-        			
-        			String contentId = fui.getContentId();
-        			if (contentId != null && !"".equals(contentId)) {
-	        			String description = entry.getDescription().getText();
-	        			if (description != null && description.indexOf(contentId) > -1) {
-	        				description = description.replaceAll("\"cid:[\\s]*" + Pattern.quote(contentId) + "\"", "\"{{attachmentUrl: " + fAtt.getFileItem().getName() + "}}\"");
-	        				entry.getDescription().setText(description);
-	        			}
-        			}
-        			
-        		}  else if (fui.getType() == FileUploadItem.TYPE_TITLE) {
-        			String title = fui.getOriginalFilename();
-        			CustomAttribute ca = entry.getCustomAttribute(fui.getName());
-        			if (ca != null) {
-        				//exists - only allow 1 file, move to attachments
-        				Set fAtts = (Set) ca.getValueSet();
-        				for (Iterator iter=fAtts.iterator(); iter.hasNext(); ) {
-        					FileAttachment fa = (FileAttachment)iter.next();
-        					//if not the same - move it
-        					if (!fAtt.equals(fa)) {
-        						fa.setName(null);
-        						for (Iterator iter2=fa.getFileVersions().iterator(); iter2.hasNext();) {
-        							FileAttachment a = (FileAttachment)iter2.next();
-        							a.setName(null);
-        						}
-        					}
-        				}
-           				fAtts = new HashSet();
-        				fAtts.add(fAtt); 
-    			    	ca.setValue(fAtts);
-        			} else {
-        				Set fAtts = new HashSet();
-        				fAtts.add(fAtt);
-        				entry.addCustomAttribute(fui.getName(), fAtts);
-        			}
-                	//if tracking unique titles, remove old title and add new
-                 	String oldTitle = entry.getNormalTitle();
-           			entry.setTitle(title);
-           		   	if ((entry.getParentBinder() != null) && entry.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, oldTitle, entry.getNormalTitle());
-        		} 
-           		//add file name so not null
-            	if (Validator.isNull(entry.getTitle())) entry.setTitle(fAtt.getFileItem().getName());
-        		ChangeLog changes = null;
-            	if (isNew)
-            		changes = new ChangeLog(entry, ChangeLog.FILEADD);
-            	else if(versionCreated)
-            		changes = new ChangeLog(entry, ChangeLog.FILEMODIFY);
-            	
-            	if(versionCreated) {
-            		// The content was committed creating a new version. Increment disk usage for the user.
-            		incrementDiskSpaceUsed(fAtt);
-            	}
-            	
-            	if(changes != null) {
-	            	ChangeLogUtils.buildLog(changes, fAtt);
-	        		getCoreDao().save(changes);
-            	}
-        		
-                 return null;
-        	}
-        });
+        		writeFileMetadataNonTransactional(binder, entry, fui, fAtt, isNew, versionCreated);
+                return null;
+       	}
+       });
+	}
+	
+	private void writeFileMetadataNonTransactional(final Binder binder, final DefinableEntity entry, 
+    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated) {	
+		//Copy the "description" into the file attachment
+		fAtt.getFileItem().setDescription(fui.getDescription());
+		if(isNew) {
+    		// Important: Since file attachment is stored into custom 
+			// attribute using its id value rather than association, 
+			// this new object must be persisted here just in case it 
+			// is to be put into custom attribute down below. This 
+			// piece of code makes it impossible for the caller to 
+			// utilize the usual tactic of delaying update db 
+			// transaction to the very end of the operation.  
+    		getCoreDao().save(fAtt);    		
+		}
+    	if (fui.getType() == FileUploadItem.TYPE_FILE) {
+    		setCustomAttribute(entry, fui, fAtt, true);
+		} else if (fui.getType() == FileUploadItem.TYPE_ATTACHMENT) {
+			// Add the file attachment to the entry only if new file. 
+    		setCustomAttribute(entry, fui, fAtt, false);
+			if(isNew) {
+				entry.addAttachment(fAtt);
+			}
+			
+			String contentId = fui.getContentId();
+			if (contentId != null && !"".equals(contentId)) {
+    			String description = entry.getDescription().getText();
+    			if (description != null && description.indexOf(contentId) > -1) {
+    				description = description.replaceAll("\"cid:[\\s]*" + Pattern.quote(contentId) + "\"", "\"{{attachmentUrl: " + fAtt.getFileItem().getName() + "}}\"");
+    				entry.getDescription().setText(description);
+    			}
+			}
+			
+		}  else if (fui.getType() == FileUploadItem.TYPE_TITLE) {
+			String title = fui.getOriginalFilename();
+			CustomAttribute ca = entry.getCustomAttribute(fui.getName());
+			if (ca != null) {
+				//exists - only allow 1 file, move to attachments
+				Set fAtts = (Set) ca.getValueSet();
+				for (Iterator iter=fAtts.iterator(); iter.hasNext(); ) {
+					FileAttachment fa = (FileAttachment)iter.next();
+					//if not the same - move it
+					if (!fAtt.equals(fa)) {
+						fa.setName(null);
+						for (Iterator iter2=fa.getFileVersions().iterator(); iter2.hasNext();) {
+							FileAttachment a = (FileAttachment)iter2.next();
+							a.setName(null);
+						}
+					}
+				}
+   				fAtts = new HashSet();
+				fAtts.add(fAtt); 
+		    	ca.setValue(fAtts);
+			} else {
+				Set fAtts = new HashSet();
+				fAtts.add(fAtt);
+				entry.addCustomAttribute(fui.getName(), fAtts);
+			}
+        	//if tracking unique titles, remove old title and add new
+         	String oldTitle = entry.getNormalTitle();
+   			entry.setTitle(title);
+   		   	if ((entry.getParentBinder() != null) && entry.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, oldTitle, entry.getNormalTitle());
+		} 
+   		//add file name so not null
+    	if (Validator.isNull(entry.getTitle())) entry.setTitle(fAtt.getFileItem().getName());
+		ChangeLog changes = null;
+    	if (isNew)
+    		changes = new ChangeLog(entry, ChangeLog.FILEADD);
+    	else if(versionCreated)
+    		changes = new ChangeLog(entry, ChangeLog.FILEMODIFY);
+    	
+    	if(versionCreated) {
+    		// The content was committed creating a new version. Increment disk usage for the user.
+    		incrementDiskSpaceUsed(fAtt);
+    	}
+    	
+    	if(changes != null) {
+        	ChangeLogUtils.buildLog(changes, fAtt);
+    		getCoreDao().save(changes);
+    	}
     }
 
 	/*

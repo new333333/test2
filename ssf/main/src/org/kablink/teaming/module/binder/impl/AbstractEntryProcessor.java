@@ -36,6 +36,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -272,27 +273,28 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
     }
 
-	
+	/*
 	@Override
 	public List<FolderEntry> _addNetFolderEntries(final Folder folder, Definition def, 
 			final List<InputDataAccessor> inputDataList, List<Map> fileItemsList, List<Map> optionsList) 
     	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException {
-		// $$$$$$$$$$$$$ TODO 
+		// OLD ONE $$$$$ TBR
 		ArrayList<FolderEntry> result = new ArrayList<FolderEntry>(inputDataList.size());
 		for(int i = 0; i < inputDataList.size(); i++) {
 			result.set(i, (FolderEntry) this.addEntry(folder, def, FolderEntry.class, inputDataList.get(i), fileItemsList.get(i), optionsList.get(i)));
 		}
 		return result;
 	}
+	*/
 
     protected void addEntry_setCtx(Binder binder, Map ctx) {
     }
 
-	public List<FolderEntry> _foo(final Folder folder, final Definition def, 
+    @Override
+	public List<FolderEntry> _addNetFolderEntriesInSync(final Folder folder, final Definition def, 
 			final List<InputDataAccessor> inputDataList, final List<Map> fileItemsList, final List<Map> optionsList) 
     	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException {
-
-		final ArrayList<FolderEntry> result = new ArrayList<FolderEntry>(inputDataList.size());
+		final ArrayList<FolderEntry> entries = new ArrayList<FolderEntry>(inputDataList.size());
 				
 		// Start a transaction
     	getTransactionTemplate().execute(new TransactionCallback() {
@@ -304,6 +306,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     			String title;
     			FileUploadItem fui;
     			FolderEntry entry;
+    			FileAttachment fAtt;
 	            getCoreDao().lock(folder);
     			for(int i = 0; i < inputDataList.size(); i++) {
     				inputData = inputDataList.get(i);
@@ -366,15 +369,35 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     				processChangeLog(entry, ChangeLog.ADDENTRY);
     		    	getReportModule().addAuditTrail(AuditType.add, entry);
+    		    	
+    		    	
+    		    	
+	    			getCoreDao().registerFileName(folder, entry, fui.getOriginalFilename());
+	    			fui.setRegistered(true);
 
-    		    	result.set(i, entry);
 
+	    			// Create file metadata
+	    			fAtt = getFileModule()._addNetFolderFileInSync(folder, entry, fui);
+
+	    			// Since we are not indexing file content (which also implies that we are not reading
+	    			// file content) and the entry is initially tiny (it only has a title), we can afford
+	    			// performing indexing within the database transaction.
+	    			
+	    			// Index the entry
+	    	        IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntry(folder, entry, Collections.EMPTY_LIST));
+	    	        // Index the file
+	    			IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntryFile(folder, entry, fAtt, fui, Collections.EMPTY_LIST));
+
+    		    	entries.set(i, entry);
     			}    			
    			return null;
     		}
     	}); // End the transaction
 				
-		return result;
+    	
+    	// Do this outside of database transaction
+    	
+		return entries;
 	}
 
     
@@ -1721,7 +1744,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
          }
         return errors;
  	}
-
+	
     @Override
 	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
     	SimpleProfiler.start("buildIndexDocumentFromEntry");

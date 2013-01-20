@@ -43,6 +43,8 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
@@ -539,4 +541,7 @@ public interface FileModule {
 	 */
 	public int checkQuotaAndFileSizeLimit(Long userId, Binder binder, long fileSize, String fileName);
 
+    public FileAttachment _addNetFolderFileInSync(Folder folder, FolderEntry entry, FileUploadItem fui)
+    throws UncheckedIOException;
+    
 }	
