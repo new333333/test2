@@ -950,7 +950,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
    	}
    	
 	@Override
-	public List<Binder> _addNetFolderBinders(Long templateId,
+	public List<Binder> _addNetFolderBindersInSync(Long templateId,
 			Long parentBinderId, List<String> titleList, List<String> nameList,
 			List<Map> overrideInputDataList, List<Map> optionsList)
 			throws AccessControlException, WriteFilesException {

@@ -694,7 +694,7 @@ public interface FolderModule {
 	
 	public Long getZoneEntryId(Long entryId, String zoneUUID);
 	
-    public List<FolderEntry> _addNetFolderEntries(Long folderId, String definitionId, List<InputDataAccessor> inputDataList, 
+    public List<FolderEntry> _addNetFolderEntriesInSync(Long folderId, String definitionId, List<InputDataAccessor> inputDataList, 
     		List<Map> fileItemsList, List<Map> optionsList) 
     	throws AccessControlException, WriteFilesException, WriteEntryDataException;
 

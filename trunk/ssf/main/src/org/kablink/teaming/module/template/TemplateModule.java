@@ -149,6 +149,6 @@ public interface TemplateModule {
 	
 	public boolean checkIfBinderValidForTemplate(Binder binder, String[] errors);
 	
-    public List<Binder> _addNetFolderBinders(Long templateId, Long parentBinderId, List<String> titleList, List<String> nameList, List<Map> overrideInputDataList, List<Map> optionsList) throws AccessControlException, WriteFilesException;
+    public List<Binder> _addNetFolderBindersInSync(Long templateId, Long parentBinderId, List<String> titleList, List<String> nameList, List<Map> overrideInputDataList, List<Map> optionsList) throws AccessControlException, WriteFilesException;
 
 }
