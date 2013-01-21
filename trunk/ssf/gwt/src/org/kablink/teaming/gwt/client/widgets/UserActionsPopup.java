@@ -41,6 +41,8 @@ import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDiskUsageInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -55,6 +57,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 
 /**
@@ -64,6 +67,8 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  */
 public class UserActionsPopup extends TeamingPopupPanel
 {
+	private FlowPanel m_namePanel;
+	private FlexTable m_quotaTable;
 	private FlowPanel m_footerPanel;
 	private FlowPanel m_contentPanel;
 
@@ -138,13 +143,20 @@ public class UserActionsPopup extends TeamingPopupPanel
 			
 			// Create a panel for the name to live in.
 			{
-				FlowPanel namePanel;
+				m_namePanel = new FlowPanel();
+				m_namePanel.addStyleName( "userActionsPopup_NamePanel" );
+				m_namePanel.getElement().setInnerText( userName );
 
-				namePanel = new FlowPanel();
-				namePanel.addStyleName( "userActionsPopup_NamePanel" );
-				namePanel.getElement().setInnerText( userName );
+				// Add a table that will be used to hold quota information.
+				// When this popup is shown we will issue an rpc request to get the quota info
+				m_quotaTable = new FlexTable();
+				m_quotaTable.setCellPadding( 0 );
+				m_quotaTable.setCellSpacing( 0 );
+				m_quotaTable.addStyleName( "statsTable" );
+				m_quotaTable.setVisible( false );
+				m_namePanel.add( m_quotaTable );
 				
-				table.setHTML( 0, 1, namePanel.toString() );
+				table.setWidget( 0, 1, m_namePanel );
 			}
 
 			topPanel.add( table );
@@ -410,6 +422,42 @@ public class UserActionsPopup extends TeamingPopupPanel
 	}
 	
 	/**
+	 * Issue an rpc request to get the quota data for the logged in user.
+	 */
+	private void getDiskQuotaDataFromServer()
+	{
+		GetDiskUsageInfoCmd cmd;
+		AsyncCallback<VibeRpcResponse> callback;
+		
+		callback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable t )
+			{
+				// display error
+				GwtClientHelper.handleGwtRPCFailure(
+												t,
+												GwtTeaming.getMessages().rpcFailure_GetProfileAvatars(),
+												GwtTeaming.m_requestInfo.getBinderId() );
+			}
+
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				DiskUsageInfo info = null;
+				
+				if ( response.getResponseData() != null )
+					info = (DiskUsageInfo) response.getResponseData();
+				
+				initQuotaDataUI( info );
+			}
+		};
+		
+		cmd = new GetDiskUsageInfoCmd( GwtTeaming.m_requestInfo.getBinderId() );
+		GwtClientHelper.executeCommand( cmd, callback );
+	}
+	
+	/**
 	 * Hide the logout link.  We will do this if we are running in captive mode.
 	 */
 	public void hideLogoutLink()
@@ -428,6 +476,58 @@ public class UserActionsPopup extends TeamingPopupPanel
 	}
 	
 	/**
+	 * Initialize the ui with the given quota data
+	 */
+	private void initQuotaDataUI( DiskUsageInfo quotaInfo )
+	{
+		if ( quotaInfo == null )
+		{
+			m_quotaTable.setVisible( false );
+			return;
+		}
+		
+		// Are quotas enabled for this user?
+		if ( quotaInfo.isEnabled() )
+		{
+			String quotaTitle;
+			String end = " MB";
+			String usedTitle;
+			Label quotaTitleLabel;
+			Label quotaUsedLabel;
+			InlineLabel quotaValueLabel;
+			InlineLabel quotaUsedValueLabel;
+			InlineLabel endLabel2;
+
+			// Yes, display the quota and how much has been used.
+			// Add the Data quota in the first row.
+			quotaTitle = GwtTeaming.getMessages().profileDataQuota();
+			quotaTitleLabel = new Label( quotaTitle );
+			quotaValueLabel = new InlineLabel( quotaInfo.getMaxQuota() );
+			quotaValueLabel.addStyleName( "bold" );
+			InlineLabel endLabel = new InlineLabel( end );
+			quotaValueLabel.getElement().appendChild( endLabel.getElement() );
+			m_quotaTable.setHTML( 0, 0, quotaTitleLabel.toString() );
+			m_quotaTable.setHTML( 0, 1, quotaValueLabel.toString() );
+			
+			// Add the Quota used in the 2nd row.
+			usedTitle = GwtTeaming.getMessages().profileQuotaUsed();
+			quotaUsedLabel = new Label( usedTitle );
+			quotaUsedValueLabel = new InlineLabel( quotaInfo.getUsedQuota() );
+			quotaUsedValueLabel.addStyleName( "bold" );
+			endLabel2 = new InlineLabel( end );
+			quotaUsedValueLabel.getElement().appendChild(endLabel2.getElement());
+			m_quotaTable.setHTML( 1, 0, quotaUsedLabel.toString() );
+			m_quotaTable.setHTML( 1, 1, quotaUsedValueLabel.toString() );
+			
+			m_quotaTable.setVisible( true );
+		}
+		else
+		{
+			m_quotaTable.setVisible( false );
+		}
+	}
+	
+	/**
 	 * Shows this popup.
 	 */
 	@Override
@@ -438,6 +538,21 @@ public class UserActionsPopup extends TeamingPopupPanel
 		// ...and add vertical scrolling to the main frame for the
 		// ...duration of the popup.
 		GwtClientHelper.scrollUIForPopup( this );
+		
+		// Issue an rpc request to get the quota information
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					getDiskQuotaDataFromServer();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
 	}	
 }
 
