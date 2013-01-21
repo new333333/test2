@@ -1444,7 +1444,7 @@ public class GwtMenuHelper {
 		if ((isFolder || isWorkspace) && (!isWorkspaceRoot)) {
 			// Yes!  Does the user have rights add a new folder to this
 			// binder?
-			if (bm.testAccess(binder, BinderOperation.addFolder) && (!(BinderHelper.isBinderMyFilesStorage(binder)))) {
+			if ((!isFilr) && bm.testAccess(binder, BinderOperation.addFolder) && (!(BinderHelper.isBinderMyFilesStorage(binder)))) {
 				// Yes!  Add a ToolbarItem for it.
 				addMenuCreated   =
 				adminMenuCreated = true;
