@@ -129,6 +129,12 @@ public class GwtUIHelper {
 	private static       int     TREE_TITLE_FORMAT         = (-1);
 	private static final int     TREE_TITLE_FORMAT_DEFAULT = 0;
 	private static final String  TREE_TITLE_FORMAT_KEY     = "wsTree.titleFormat";
+	
+	// The following is used as a 'hard coded' unknown activity stream.
+	// We need that within this modules since we can't refer to
+	// anything on the org.kabalink.teaming.gwt side of the fence from
+	// here.
+	private final static int	UNKNOWN_ACTIVITY_STREAM	= 0;	// ActivityStream.UNKNOWN.
 
 	/**
 	 * Inner class used by addTrackBinderToToolbar() to assist in
@@ -1463,12 +1469,52 @@ public class GwtUIHelper {
 		// Put out the ID of the top Vibe workspace.
 		String topWSId = getTopWSIdSafely(bs);
 		model.put("topWSId", topWSId);
-		
-		// Put out a true/false indicator as to the state of the
-		// activity streams based user interface.
-		boolean showWhatsNew;
+
+		// Is the request to activate an activity stream? 
+		String	showWhatsNewS        = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
+		boolean	showWhatsNew         = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
+		boolean	showSpecificWhatsNew = false;
+		if (showWhatsNew) {
+			// Yes!  Does it contain a specific activity stream to
+			// activate?
+			String	asS                  = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SPECIFIC, "");
+			if (MiscUtil.hasString(asS)) {
+				// Yes!  Is it valid?
+				int		as       = UNKNOWN_ACTIVITY_STREAM;
+				Long	asItemId = null;
+				try                  {as = Integer.parseInt(asS);  }
+				catch (Exception ex) {as = UNKNOWN_ACTIVITY_STREAM;}
+				if (UNKNOWN_ACTIVITY_STREAM != as) {
+					// Yes!  Is there an ID parameter?
+					String asItemIdS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SPECIFIC_ID, "");
+					if (MiscUtil.hasString(asItemIdS)) {
+						try                  {asItemId = Long.parseLong(asItemIdS);         }
+						catch (Exception ex) {asItemId = null; as = UNKNOWN_ACTIVITY_STREAM;}
+					}
+				}
+	
+				// If we need to activate a specific activity stream...
+				showSpecificWhatsNew = (UNKNOWN_ACTIVITY_STREAM != as);
+				if (showSpecificWhatsNew) {
+					// ...put that information into the model.
+					model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SPECIFIC,    String.valueOf(as));
+					model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SPECIFIC_ID, String.valueOf((null == asItemId) ? (-1) : asItemId.longValue()));
+				}
+			}
+			
+			// If we don't need to activate a specific activity stream...
+			if (!showSpecificWhatsNew) {
+				// ...put that information into the model as well.
+				model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SPECIFIC,    String.valueOf(UNKNOWN_ACTIVITY_STREAM));
+				model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SPECIFIC_ID, String.valueOf(-1)                     );
+			}
+		}
+
+		// Are we in Filr mode?
 		if (isLicenseFilr) {
-			showWhatsNew = false;
+			// Yes!  In Filr mode, we only show what's new if a
+			// specific activity stream was requested.
+			showWhatsNew = showSpecificWhatsNew;
 			
 			// Does the user have rights to see other users?
 			{
@@ -1484,17 +1530,19 @@ public class GwtUIHelper {
 				model.put( "canSeeOtherUsers", String.valueOf( canSeeOtherUsers ) );
 			}
 		}
-		else {
-			String showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
-			showWhatsNew         = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
-		}
+		
+		// Put out a true/false indicator as to the state of the
+		// activity streams based user interface.
 		model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));
 
-		// If there's a show collection setting...
-		String showCollection = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SHOW_COLLECTION, "");
-		if (MiscUtil.hasString(showCollection)) {
-			// ...put that out.
-			model.put(WebKeys.URL_SHOW_COLLECTION, showCollection);
+		// Are we activating an activity stream?
+		if (!showWhatsNew) {
+			// No!  If there's a show collection setting...
+			String showCollection = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SHOW_COLLECTION, "");
+			if (MiscUtil.hasString(showCollection)) {
+				// ...put that out.
+				model.put(WebKeys.URL_SHOW_COLLECTION, showCollection);
+			}
 		}
 
 		// Put out the flag indicating whether login is allowed via our standard login dialog.

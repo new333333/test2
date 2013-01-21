@@ -1014,11 +1014,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		{
-			ActivityStreamInfo asi;
-			String binderId;
-			
-			binderId = ((GetDefaultActivityStreamCmd) cmd).getBinderId();
-			asi = getDefaultActivityStream( ri, binderId );
+			GetDefaultActivityStreamCmd gdasCmd = ((GetDefaultActivityStreamCmd) cmd);
+			ActivityStreamInfo asi = GwtActivityStreamHelper.getDefaultActivityStream( getRequest( ri ), this, gdasCmd.getBinderId(), gdasCmd.getOverrideActivityStream(), gdasCmd.getOverrideActivityStreamId() );
 			response = new VibeRpcResponse( asi );
 			return response;
 		}
@@ -3327,20 +3324,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return GwtActivityStreamHelper.getActivityStreamParams(this);
 	}// end getActivityStreamParams()
 	
-	
-	/**
-	 * Returns the current user's default activity stream.  If they
-	 * don't have one set in their user profile, null is returned.
-	 * 
-	 * @param ri
-	 * @param currentBinderId
-	 * 
-	 * @return
-	 */
-	private ActivityStreamInfo getDefaultActivityStream( HttpRequestInfo ri, String currentBinderId )
-	{
-		return GwtActivityStreamHelper.getDefaultActivityStream( getRequest( ri ), this, currentBinderId );
-	}// end getDefaultActivityStream()
 	
 	/**
 	 * Return a list of contributor ids for the given workspace.

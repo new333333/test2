@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client;
 
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.VibeProduct;
 
@@ -272,7 +273,7 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
-	 * Return the abreviation of the user's time zone.
+	 * Return the abbreviation of the user's time zone.
 	 * 
 	 * @return
 	 */
@@ -726,6 +727,57 @@ public class RequestInfo extends JavaScriptObject
 	/*-{
 		this.showWhatsNewOnLogin = 'false';
 	}-*/;
+
+	/**
+	 * Returns information about a specific ActivityStream that's
+	 * supposed to navigated to.
+	 * 
+	 * @return
+	 */
+	private final native String getShowSpecificWhatsNewS()
+	/*-{
+		return this.specificWhatsNew;
+	}-*/;
+	public final ActivityStream getShowSpecificWhatsNew()
+	{
+		ActivityStream reply;
+		try
+		{
+			String asS = getShowSpecificWhatsNewS();
+			reply = ActivityStream.valueOf(Integer.parseInt(asS));
+		}
+		catch ( Exception ex )
+		{
+			reply = ActivityStream.UNKNOWN;
+		}
+		return reply;
+	}
+	private final native void setShowSpecificWhatsNew(String asS)
+	/*-{
+		this.specificWhatsNew = asS;
+	}-*/;
+	public final void clearShowSpecificWhatsOnLogin()
+	{
+		setShowSpecificWhatsNew( String.valueOf( ActivityStream.UNKNOWN.getValue() ) );
+	}
+	private final native String getShowSpecificWhatsNewIdS()
+	/*-{
+		return this.specificWhatsNewId;
+	}-*/;
+	public final Long getShowSpecificWhatsNewId()
+	{
+		Long reply;
+		try
+		{
+			String asItemIdS = getShowSpecificWhatsNewIdS();
+			reply = Long.parseLong( asItemIdS );
+		}
+		catch ( Exception ex )
+		{
+			reply = (-1L);
+		}
+		return reply;
+	}
 	
 	public final native boolean isBinderAdmin()
 	/*-{
