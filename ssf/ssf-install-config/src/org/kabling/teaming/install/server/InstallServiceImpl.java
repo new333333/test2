@@ -1889,7 +1889,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			
 			// Create the database if needed
 			int result = executeCommand(
-					"mysql -h " + resourceHost + " -u" + resourceName + " -p" + resourcePassword
+					"sudo mysql -h " + resourceHost + " -u" + resourceName + " -p" + resourcePassword
 							+ " < /filrinstall/db/scripts/sql/mysql-create-empty-database.sql").getExitValue();
 
 			// We got an error ( 0 for success, 1 for database exists)
@@ -1961,7 +1961,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
 			// Update the database
-			int result = executeCommand("cd /filrinstall/db; pwd; sh manage-database.sh mysql updateDatabase").getExitValue();
+			int result = executeCommand("cd /filrinstall/db; pwd; sudo sh manage-database.sh mysql updateDatabase").getExitValue();
 
 			// We got an error ( 0 for success, 107 for database exists)
 			if (result != 0)
@@ -1984,7 +1984,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
 			// Run the reconfigure
-			ShellCommandInfo info = executeCommand("cd /filrinstall;./installer-filr.linux --silent --reconfigure");
+			ShellCommandInfo info = executeCommand("cd /filrinstall;sudo ./installer-filr.linux --silent --reconfigure");
 
 			if (info.getExitValue() != 0)
 			{
@@ -2000,12 +2000,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			}
 
 			// Setup Encoding on hostname information in installer.xml
-			info = executeCommand("hostname -f");
+			info = executeCommand("sudo hostname -f");
 			List<String> outputList = info.getOutput();
 			if (info.getExitValue() == 0 && outputList != null && outputList.get(0) != null)
 			{
 				String hostName = info.getOutput().get(0);
-				info = executeCommand("sed -i -e's/@@HOSTNAME@@/" + hostName + "/' /filrinstall/installer.xml");
+				info = executeCommand("sudo sed -i -e's/@@HOSTNAME@@/" + hostName + "/' /filrinstall/installer.xml");
 				if (info.getExitValue() != 0)
 				{
 					logger.debug("Unable to set hostName " + info.getExitValue());
@@ -2013,7 +2013,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			}
 
 			// Setup Encoding on /etc/init.d/teaming file
-			info = executeCommand("sed -i -e's/ISO8859-1/UTF-8/' /etc/init.d/teaming");
+			info = executeCommand("sudo sed -i -e's/ISO8859-1/UTF-8/' /etc/init.d/teaming");
 			if (info.getExitValue() != 0)
 			{
 				logger.debug("Error setting up UTF-8 Encoding " + info.getExitValue());
@@ -2021,7 +2021,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			}
 
 			// Replace Novell Vibe with Novell Filr on ssf-ext.properties
-			info = executeCommand("sed -i \"s/Novell Vibe/Novell Filr/g\" /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties");
+			info = executeCommand("sudo sed -i \"s/Novell Vibe/Novell Filr/g\" /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties");
 			if (info.getExitValue() != 0)
 			{
 				logger.debug("Error setting up Novell Filr string on ssf-ext.properties" + info.getExitValue());
@@ -2029,7 +2029,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			}
 
 			// Setup luceneindex.root.dir on ssf-ext.properties
-			info = executeCommand("sed -i  -e 's|data.luceneindex.root.dir=/vastorage/filr|data.luceneindex.root.dir=/vastorage/search|' /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties");
+			info = executeCommand("sudo sed -i  -e 's|data.luceneindex.root.dir=/vastorage/filr|data.luceneindex.root.dir=/vastorage/search|' /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties");
 			if (info.getExitValue() != 0)
 			{
 				logger.debug("Error setting up data.luceneindex.root.dir=/vastorage/search" + info.getExitValue());
@@ -2037,12 +2037,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			}
 
 			// If the configuration is not done, add this to restart filr after reboot
-			File file = new File("/filrinstall/configured");
+			File file = new File("sudo /filrinstall/configured");
 			// If it exists, ignore
 			if (!file.exists())
 			{
 				// Setup chkconfig so that teaming starts always
-				info = executeCommand("chkconfig teaming on");
+				info = executeCommand("sudo chkconfig teaming on");
 			}
 		}
 
@@ -2065,7 +2065,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	{
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
-			executeCommand("/sbin/rcfilr stop");
+			executeCommand("sudo /sbin/rcfilr stop");
 
 			int tries = 30;
 
@@ -2104,7 +2104,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			//Update security constraints based on network page settings
 			updateSecurityBasedOnNetworkPageSettings();
 			
-			executeCommand("/sbin/rcfilr restart");
+			executeCommand("sudo /sbin/rcfilr restart");
 
 			int tries = 2;
 
@@ -2153,18 +2153,18 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		if (network.getListenPort() == 0)
 		{
 			//Call addSecurityConstraint.py pointing to web.xml, we need to update all the 4 web.xml
-			executeCommand("python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML1);
-			executeCommand("python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML2);
-			executeCommand("python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML3);
-			executeCommand("python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML4);
+			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML1);
+			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML2);
+			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML3);
+			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML4);
 		}
 		else
 		{
 			//Call addSecurityConstraint.py pointing to web.xml, we need to update all the 4 web.xml
-			executeCommand("python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML1);
-			executeCommand("python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML2);
-			executeCommand("python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML3);
-			executeCommand("python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML4);
+			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML1);
+			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML2);
+			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML3);
+			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML4);
 			
 			//Enable the firewall
 			//TODO:
@@ -2326,10 +2326,10 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	private void disableMySqlAndLucene()
 	{
 		// Disable filrsearch and mysql for large deployment
-		executeCommand( "mv /etc/opt/novell/ganglia/monitor/conf.d/filrsearch.pyconf " +
+		executeCommand( "sudo mv /etc/opt/novell/ganglia/monitor/conf.d/filrsearch.pyconf " +
 				" /etc/opt/novell/ganglia/monitor/conf.d/filrsearch.pyconf.disabled");
 		
-		executeCommand( "mv /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf " +
+		executeCommand( "sudo mv /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf " +
 				" /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf.disabled");
 	}
 
