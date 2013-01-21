@@ -191,4 +191,11 @@ public abstract class CommonDependencyInjection {
 		}	
 	}
 
+	protected void end(long beginInNanoseconds, String methodName, String extra) {
+		if(debugEnabled) {
+			double diff = (System.nanoTime() - beginInNanoseconds)/1000000.0;
+			logger.debug(diff + " ms, " + ((extra == null)? methodName : methodName + "/" + extra));
+		}	
+	}
+
 }

@@ -36,6 +36,7 @@ package org.kablink.teaming.fi.connection.acl;
 import java.util.List;
 import java.util.Set;
 
+import org.kablink.teaming.fi.connection.ResourceItem;
 import org.kablink.teaming.fi.connection.ResourceSession;
 
 /**
