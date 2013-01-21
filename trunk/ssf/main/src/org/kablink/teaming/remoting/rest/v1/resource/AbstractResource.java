@@ -641,7 +641,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return binderPaths;
     }
 
-    protected SearchResultList<BinderBrief> lookUpBinders(Criteria crit, boolean textDescriptions, Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams) {
+    protected SearchResultList<BinderBrief> lookUpBinders(Criteria crit, boolean textDescriptions, Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams, Date lastModified) {
         if (offset==null) {
             offset = 0;
         }
@@ -651,6 +651,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         crit.add(buildBindersCriterion());
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
+        results.setLastModified(lastModified);
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultMap, nextUrl, nextParams, offset);
         return results;
     }
@@ -669,7 +670,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return results;
     }
 
-    protected SearchResultList<FileProperties> lookUpAttachments(Criteria crit, Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams) {
+    protected SearchResultList<FileProperties> lookUpAttachments(Criteria crit, Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams, Date lastModified) {
         if (offset==null) {
             offset = 0;
         }
@@ -679,6 +680,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         //crit.add(buildAttachmentsCriterion());
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>(offset);
+        results.setLastModified(lastModified);
         SearchResultBuilderUtil.buildSearchResults(results, new FilePropertiesBuilder(), resultMap, nextUrl, nextParams, offset);
         return results;
     }
