@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -497,7 +497,7 @@ public class GwtActivityStreamHelper {
 			}
 
 			// Scan the comment entry search results Map's
-			boolean isAll = (ActivityStreamDataType.ALL == asdt);
+			boolean isAll = ActivityStreamDataType.ALL.equals(asdt);
 			int activeComments = (isAll ? asp.getActiveComments() : Integer.MAX_VALUE);
 			for (Map commentEntryMap:  searchEntries) {
 				// Can we find the ASEntryData for the top level entry
@@ -910,7 +910,11 @@ public class GwtActivityStreamHelper {
 			case FOLLOWED_PEOPLE:
 			case FOLLOWED_PLACES:
 			case MY_FAVORITES:
+			case MY_FILES:
 			case MY_TEAMS:
+			case NET_FOLDERS:
+			case SHARED_BY_ME:
+			case SHARED_WITH_ME:
 				// These are valid so long as they both refer to a
 				// non-empty binder ID list.
 				reply = ((0 < bc1) && (0 < bc2));
@@ -925,7 +929,11 @@ public class GwtActivityStreamHelper {
 			case FOLLOWED_PERSON:
 			case FOLLOWED_PLACE:
 			case MY_FAVORITE:
+			case MY_FILE:
 			case MY_TEAM:
+			case NET_FOLDER:
+			case SHARED_BY_ME_FOLDER:
+			case SHARED_WITH_ME_FOLDER:
 			case SPECIFIC_BINDER:
 			case SPECIFIC_FOLDER:
 				// These are valid so long as they both refer to the
@@ -1727,7 +1735,7 @@ public class GwtActivityStreamHelper {
 				// Yes!  Does that event's activity stream match that
 				// we were given?
 				ActivityStreamInfo tiASI = ti.getActivityStreamInfo();
-				if (tiASI.getActivityStream() == as) {
+				if (tiASI.getActivityStream().equals(as)) {
 					// Yes!  Are the to ASI's compatible and can the
 					// one from the tree information object be selected?
 					if (areASIsCompatible(asi, tiASI) && isASISelectable(tiASI)) {
@@ -1976,31 +1984,45 @@ public class GwtActivityStreamHelper {
 	 * @param request
 	 * @param bs
 	 * @param currentBinderId
+	 * @param overrideAS
+	 * @param overrideASId
 	 * 
 	 * @return
 	 */
-	public static ActivityStreamInfo getDefaultActivityStream(HttpServletRequest request, AllModulesInjected bs, String currentBinderId) {
+	public static ActivityStreamInfo getDefaultActivityStream(HttpServletRequest request, AllModulesInjected bs, Long currentBinderId, ActivityStream overrideAS, Long overrideASId) {
 		// By default, we'll return null if the user doesn't have an
 		// activity stream that can be selected.
 		ActivityStreamInfo reply = null;
 
-		// Does the user have an activity stream information string stored
-		// in their user profile?
-		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
-		String asiProp = ((String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DEFAULT_ACTIVITY_STREAM));
+		String asiProp;
+		if (overrideAS.equals(ActivityStream.UNKNOWN)) {
+			// Does the user have an activity stream information string stored
+			// in their user profile?
+			UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
+			asiProp = ((String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DEFAULT_ACTIVITY_STREAM));
+		}
+		else {
+			ActivityStreamInfo overrideASI = new ActivityStreamInfo();
+			overrideASI.setActivityStream(overrideAS);
+			if (((-1L) == overrideASId) && (!(overrideAS.equals(ActivityStream.SITE_WIDE)))) {
+				overrideASId = currentBinderId;
+			}
+			overrideASI.setBinderId(String.valueOf(overrideASId));
+			asiProp = overrideASI.getStringValue();
+		}
 		if (MiscUtil.hasString(asiProp)) {
 			// Yes!  Can we parse it as a valid activity stream?
 			reply = ActivityStreamInfo.parse(asiProp);
 			if (null != reply) {
 				// Yes!  Does it refer to a known activity stream?
 				ActivityStream as = reply.getActivityStream();
-				if (ActivityStream.UNKNOWN != as) {
+				if (!(ActivityStream.UNKNOWN.equals(as))) {
 					// Yes!  Build a TreeInfo for the current binder.
 					// (This will provide everything we need to match
 					// what's stored in the user's profile with what's
 					// currently available.)  Then search it for the
 					// activity stream information object to return.
-					TreeInfo ti = getVerticalActivityStreamsTree(request, bs, currentBinderId);
+					TreeInfo ti = getVerticalActivityStreamsTree(request, bs, String.valueOf(currentBinderId));
 					reply = findASIInTIList(reply, ti.getChildBindersList());
 				}
 			}
@@ -2258,9 +2280,19 @@ public class GwtActivityStreamHelper {
 		case FOLLOWED_PLACE:
 		case MY_FAVORITES:
 		case MY_FAVORITE:
+		case MY_FILES:
+		case MY_FILE:
 		case MY_TEAMS:
 		case MY_TEAM:
-			// These
+		case NET_FOLDERS:
+		case NET_FOLDER:
+		case SHARED_BY_ME:
+		case SHARED_BY_ME_FOLDER:
+		case SHARED_WITH_ME:
+		case SHARED_WITH_ME_FOLDER:
+		case SPECIFIC_BINDER:
+		case SPECIFIC_FOLDER:
+			// These require 1 or more binders.
 			String[] binderIds = asi.getBinderIds();
 			int binders = ((null == binderIds) ? 0 : binderIds.length);
 			reply = (0 < binders);
