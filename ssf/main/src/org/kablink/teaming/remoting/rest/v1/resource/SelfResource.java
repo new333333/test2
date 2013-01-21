@@ -43,6 +43,7 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
@@ -80,6 +81,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.util.*;
 
@@ -223,14 +225,36 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/my_files/library_folders")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<BinderBrief> getMyFileLibraryFolders(
+    public Response getMyFileLibraryFolders(
             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
             @QueryParam("first") @DefaultValue("0") Integer offset,
-            @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+            @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+            @Context HttpServletRequest request) {
+        Date lastModified = null;
+        if (getLoggedInUser().getWorkspaceId()!=null) {
+            try {
+                Workspace ws = getWorkspaceModule().getWorkspace(getLoggedInUser().getWorkspaceId());
+                lastModified = ws.getModificationDate();
+            } catch (Exception e) {
+            }
+        }
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        SearchResultList<BinderBrief> results = _getMyFilesLibraryFolders(textDescriptions, offset, maxCount, lastModified);
+        if (lastModified!=null) {
+            if (ifModifiedSince!=null && !ifModifiedSince.before(results.getLastModified())) {
+                throw new NotModifiedException();
+            }
+            return Response.ok(results).lastModified(results.getLastModified()).build();
+        } else {
+            return Response.ok(results).build();
+        }
+    }
+
+    private SearchResultList<BinderBrief> _getMyFilesLibraryFolders(boolean textDescriptions, Integer offset, Integer maxCount, Date parentModTime) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", textDescriptions);
         Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), true, false, false, false);
-        SearchResultList<BinderBrief> results = lookUpBinders(crit, textDescriptions, offset, maxCount, "/self/my_files/library_folders", nextParams);
+        SearchResultList<BinderBrief> results = lookUpBinders(crit, textDescriptions, offset, maxCount, "/self/my_files/library_folders", nextParams, parentModTime);
         setMyFilesParents(results);
         return results;
     }
@@ -259,7 +283,7 @@ public class SelfResource extends AbstractFileResource {
     public BinderTree getMyFileLibraryTree(
             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
         BinderTree results = new BinderTree();
-        SearchResultList<BinderBrief> folders = getMyFileLibraryFolders(false, 0, -1);
+        SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(false, 0, -1, null);
         if (folders.getCount()>0) {
             Criteria crit = new Criteria();
             crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
@@ -296,7 +320,7 @@ public class SelfResource extends AbstractFileResource {
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         Criteria subContextSearch = null;
         if (recursive) {
-            SearchResultList<BinderBrief> folders = getMyFileLibraryFolders(false, 0, -1);
+            SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(false, 0, -1, null);
             if (folders.getCount()>0) {
                 subContextSearch = new Criteria();
                 Junction searchContext = Restrictions.disjunction();
@@ -360,6 +384,25 @@ public class SelfResource extends AbstractFileResource {
         }
     }
 
+
+    public Date getMyFilesFoldersModifiedTime() {
+        List<Long> myFilesFolderIds = getEffectiveMyFilesFolderIds();
+        if (myFilesFolderIds.size()==0) {
+            return null;
+        }
+        Criteria root = new Criteria();
+        root.add(super.buildBindersCriterion());
+        Junction ids = Restrictions.disjunction();
+        for (Long id : myFilesFolderIds) {
+            ids.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
+        }
+        root.add(ids);
+        Map map = getBinderModule().executeSearchQuery(root, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), map);
+        return results.getLastModified();
+    }
+
     private List<Long> getEffectiveMyFilesFolderIds() {
         org.kablink.teaming.domain.User user = getLoggedInUser();
         if (SearchUtils.useHomeAsMyFiles(this, user)) {
@@ -372,12 +415,24 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/my_files/library_files")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<FileProperties> getMyFileLibraryFiles(
+    public Response getMyFileLibraryFiles(
             @QueryParam("file_name") String fileName,
             @QueryParam("recursive") @DefaultValue("false") boolean recursive,
             @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
             @QueryParam("first") Integer offset,
-            @QueryParam("count") Integer maxCount) {
+            @QueryParam("count") Integer maxCount,
+            @Context HttpServletRequest request) {
+        SearchResultList<FileProperties> resultList = _getMyFilesLibraryFiles(fileName, recursive, includeParentPaths, offset, maxCount);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(resultList.getLastModified())) {
+            throw new NotModifiedException();
+        }
+        return Response.ok(resultList).lastModified(resultList.getLastModified()).build();
+    }
+
+    private SearchResultList<FileProperties> _getMyFilesLibraryFiles(String fileName, boolean recursive,
+                                                                     boolean includeParentPaths, Integer offset,
+                                                                     Integer maxCount) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         if (fileName!=null) {
             nextParams.put("recursive", fileName);
@@ -389,7 +444,7 @@ public class SelfResource extends AbstractFileResource {
         crit.add(buildLibraryCriterion(true));
         Junction searchContexts = null;
         if (recursive) {
-            SearchResultList<BinderBrief> folders = getMyFileLibraryFolders(false, 0, -1);
+            SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(false, 0, -1, null);
             if (folders.getCount()>0) {
                 searchContexts = Restrictions.disjunction();
                 for (BinderBrief folder : folders.getResults()) {
@@ -407,7 +462,7 @@ public class SelfResource extends AbstractFileResource {
         if (fileName!=null) {
             crit.add(buildFileNameCriterion(fileName));
         }
-        SearchResultList<FileProperties> resultList = lookUpAttachments(crit, offset, maxCount, "/self/my_files/library_files", nextParams);
+        SearchResultList<FileProperties> resultList = lookUpAttachments(crit, offset, maxCount, "/self/my_files/library_files", nextParams, getMyFilesFoldersModifiedTime());
         setMyFilesParents(resultList);
         if (includeParentPaths) {
             populateParentBinderPaths(resultList);
@@ -465,14 +520,14 @@ public class SelfResource extends AbstractFileResource {
 
         List<String> binders = null;
         List<String> entries = null;
-        SearchResultList<BinderBrief> folders = getMyFileLibraryFolders(true, 0, -1);
+        SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(false, 0, -1, null);
         if (folders.getCount()>0) {
             binders = new ArrayList<String>();
             for (BinderBrief binder : folders.getResults()) {
                 binders.add(binder.getId().toString());
             }
         }
-        SearchResultList<FileProperties> files = getMyFileLibraryFiles(fileName, false, false, 0, -1);
+        SearchResultList<FileProperties> files = _getMyFilesLibraryFiles(fileName, false, false, 0, -1);
         if (files.getCount()>0) {
             entries = new ArrayList<String>();
             for (FileProperties file : files.getResults()) {
