@@ -451,7 +451,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * false otherwise.
 	 */
 	private boolean needsTrashLink() {
-		boolean reply = (!(m_binderInfo.isBinderTrash()));
+		boolean reply = ((!(m_binderInfo.isBinderTrash())) && (!(m_binderInfo.isBinderMirroredFolder())));
 		if (reply) {
 			if (m_binderInfo.isBinderCollection()) {
 				switch (m_binderInfo.getCollectionType()) {
