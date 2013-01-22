@@ -140,11 +140,11 @@ public interface ResourceSession {
 	 * current directory. Each string represents only the name part rather than
 	 * a complete path for the resource. The array will be empty if the directory 
 	 * is empty. 
-	 * Returns null if this does not denote a directory, or an I/O error occurs. 
+	 * Returns null if the path does not denote a directory, or an I/O error occurs. 
 	 * 
 	 * @return
 	 * @throws FIException
-	 * @throws IllegalStateException
+	 * @throws IllegalStateException If the path is not set, etc.
 	 */
 	public String[] listNames() throws FIException, IllegalStateException;
 

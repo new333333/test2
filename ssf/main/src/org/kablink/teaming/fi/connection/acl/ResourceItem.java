@@ -46,7 +46,8 @@ public class ResourceItem {
 	private long lastModified;
 	private boolean directory;
 	private long contentLength;
-	private boolean aclInherited;
+	
+	private boolean aclInherited = false;
 	private String ownerId;
 	private String ownerIdType;
 	
@@ -62,15 +63,27 @@ public class ResourceItem {
 		return new ResourceItem(parentPath, name, 0, true, 0, aclInherited, ownerId, ownerIdType);
 	}
 	
+	public static ResourceItem file(String parentPath, String name, long lastModified, long contentLength) {
+		return new ResourceItem(parentPath, name, lastModified, false, contentLength);
+	}
+	
+	public static ResourceItem directory(String parentPath, String name) {
+		return new ResourceItem(parentPath, name, 0, true, 0);
+	}
+	
 	private ResourceItem(String parentPath, String name, long lastModified, boolean directory, long contentLength, boolean aclInherited, String ownerId, String ownerIdType) {
+		this(parentPath, name, lastModified, directory, contentLength);
+		this.aclInherited = aclInherited;
+		this.ownerId = ownerId;
+		this.ownerIdType = ownerIdType;
+	}
+	
+	private ResourceItem(String parentPath, String name, long lastModified, boolean directory, long contentLength) {
 		this.parentPath = parentPath;
 		this.name = name;
 		this.lastModified = lastModified;
 		this.directory = directory;
 		this.contentLength = contentLength;
-		this.aclInherited = aclInherited;
-		this.ownerId = ownerId;
-		this.ownerIdType = ownerIdType;
 	}
 	
 	/**

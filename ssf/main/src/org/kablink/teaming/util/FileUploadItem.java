@@ -384,20 +384,20 @@ public class FileUploadItem {
 	/*
 	 * Return the content length, if any, that the caller of this facility specified.
 	 */
-	public Long getClientSpecifiedContentLength() {
+	public Long getCallerSpecifiedContentLength() {
 		if(mf instanceof SimpleMultipartFile)
-			return ((SimpleMultipartFile)mf).getClientSpecifiedContentLength();
+			return ((SimpleMultipartFile)mf).getCallerSpecifiedContentLength();
 		else
 			return null;
 	}
 	
 	/*
-	 * Return whether the caller of this facility specified explicit content length without supplying content as input stream.
+	 * Return whether or not the caller of this facility is the file sync process
 	 */
-	public boolean clientSpecifiedContentLengthWithoutSupplyingContent() {
+	public boolean calledByFileSync() {
 		if(mf instanceof SimpleMultipartFile) {
 			SimpleMultipartFile smf = (SimpleMultipartFile) mf;
-			return (smf.getClientSpecifiedContentLength() != null && smf.getClientSpecifiedContent() == null);
+			return (smf.getCallerSpecifiedContentLength() != null && !isSynchToRepository());
 		}
 		return false;
 	}

@@ -36,6 +36,7 @@ package org.kablink.teaming.fi.connection.acl;
 import java.util.List;
 import java.util.Set;
 
+import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceSession;
 
 /**
@@ -92,9 +93,11 @@ public interface AclResourceSession extends ResourceSession {
 	 * The file content and the actual ACL of individual child must be retrieved separately if needed.
 	 * <p>
 	 * Returns an empty list if the directory is empty.
-	 * Returns null if the resource does not denote a directory or an error occurs. 
+	 * Returns null if the path does not denote a directory, or an I/O error occurs. 
 	 * 
 	 * @return
+	 * @throws FIException
+	 * @throws IllegalStateException If the path is not set, etc.
 	 */
-	public List<ResourceItem> getChildren();
+	public List<ResourceItem> getChildren() throws FIException, IllegalStateException;
 }
