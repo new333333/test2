@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -1269,6 +1269,26 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// Ensure that this WorkArea is NOT inheriting membership.
 		setWorkAreaFunctionMembershipInherited(wa, false);
 		
+		// Get the lists of current readers to compare with after the
+		// reset to determine whether we'll need to re-index.
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		List<WorkAreaFunctionMembership>wfmsRead = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, wa, WorkAreaOperation.READ_ENTRIES);
+       	TreeSet<Long> originalRead = new TreeSet();
+        for (WorkAreaFunctionMembership wfm:wfmsRead) {
+        	originalRead.addAll(wfm.getMemberIds());
+    	}
+		List<WorkAreaFunctionMembership> wfmsVBT = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, wa, WorkAreaOperation.VIEW_BINDER_TITLE);
+		TreeSet<Long> originalVBT = new TreeSet();
+	    for (WorkAreaFunctionMembership wfm:wfmsVBT) {
+	    	originalVBT.addAll(wfm.getMemberIds());
+		}
+	    List<WorkAreaFunctionMembership> wfmsNFA = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, wa, WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER);
+		TreeSet<Long> originalNFA = new TreeSet();
+		for (WorkAreaFunctionMembership wfm:wfmsNFA) {
+			originalNFA.addAll(wfm.getMemberIds());
+		}
+      	boolean conditionsExistInOriginal = checkIfConditionsExist(wa);
+		
 		// Is there a WorkAreaFunctionMembership on this WorkArea?
 		WorkAreaFunctionMembership wafm = getWorkAreaFunctionMembership(wa, functionId);
 		final boolean finalNewWAFM = (null == wafm);
@@ -1284,7 +1304,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			wafm.setFunctionId(functionId);
 			wafm.setWorkAreaId(wa.getWorkAreaId());
 			wafm.setWorkAreaType(wa.getWorkAreaType());
-			wafm.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+			wafm.setZoneId(zoneId);
 		}
 		
 		// Ensure we have a non-null collection of member IDs.
@@ -1308,7 +1328,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			wafmMemberIds.addAll(memberIds);
 		}
 		
-		// Finally, reset the membership on the WorkArea Function.
+		// Reset the membership on the WorkArea Function.
 		final boolean						finalHasMembers = MiscUtil.hasItems(wafmMemberIds);
 		final WorkAreaFunctionMembership	finalWAFM       = wafm;
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
@@ -1320,6 +1340,49 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				return null;
 			}
 		});
+		
+		
+		// Get the current lists of readers now that the reset is
+		// complete.
+      	wfmsRead = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, wa, WorkAreaOperation.READ_ENTRIES);
+      	TreeSet<Long> currentRead = new TreeSet();
+      	for (WorkAreaFunctionMembership wfm:wfmsRead) {
+      		currentRead.addAll(wfm.getMemberIds());
+      	}
+      	wfmsVBT = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, wa, WorkAreaOperation.VIEW_BINDER_TITLE);
+      	TreeSet<Long> currentVBT = new TreeSet();
+      	for (WorkAreaFunctionMembership wfm:wfmsVBT) {
+      		currentVBT.addAll(wfm.getMemberIds());
+      	}
+      	wfmsNFA = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, wa, WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER);
+      	TreeSet<Long> currentNFA = new TreeSet();
+      	for (WorkAreaFunctionMembership wfm:wfmsNFA) {
+      		currentNFA.addAll(wfm.getMemberIds());
+      	}
+      	
+      	// Re-index if readers were affected.  Do outside transaction.
+      	// Do we need to re-index a binder?
+      	boolean conditionsExistInCurrent = checkIfConditionsExist(wa);
+		if (((!(originalRead.equals(currentRead))) || (!(originalVBT.equals(currentVBT))) || (!(originalNFA.equals(currentNFA))) ||
+				conditionsExistInCurrent || conditionsExistInOriginal) && (wa instanceof Binder)) {
+			// Yes!  Re-index it.
+			Binder binder = ((Binder) wa);
+			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null, true);
+		}
+		
+      	// No, we don't we need to re-index a WorkArea binder!  Do we
+		// need to re-index an entry?
+		else if ((!(originalRead.equals(currentRead))) && wa instanceof Entry) {
+			// Yes!  Re-index it.
+			List	entries = new ArrayList();
+			Entry	entry   = ((Entry) wa);
+			entries.add(entry);
+			Set<Entry> children = entry.getChildWorkAreas();
+			for (Entry e:  children) {
+				entries.add(e);
+			}
+			loadEntryProcessor(entry).indexEntries(entries);
+		}
 	}
 
 	@Override
