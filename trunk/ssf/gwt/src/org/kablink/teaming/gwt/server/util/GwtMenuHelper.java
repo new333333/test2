@@ -752,11 +752,14 @@ public class GwtMenuHelper {
 		markTBIEvent(tbi, TeamingEvents.COPY_SELECTED_ENTRIES);
 		moreTBI.addNestedItem(tbi);
 
-		// ...add the move item....
-		tbi = new ToolbarItem("1_moveSelected");
-		markTBITitle(tbi, "toolbar.move");
-		markTBIEvent(tbi, TeamingEvents.MOVE_SELECTED_ENTRIES);
-		moreTBI.addNestedItem(tbi);
+		// ...for non-shared collections...
+		if (!isSharedCollection) {
+			// ...add the move item....
+			tbi = new ToolbarItem("1_moveSelected");
+			markTBITitle(tbi, "toolbar.move");
+			markTBIEvent(tbi, TeamingEvents.MOVE_SELECTED_ENTRIES);
+			moreTBI.addNestedItem(tbi);
+		}
 		
 		BinderModule bm = bs.getBinderModule();
 		if (isFolder) {
