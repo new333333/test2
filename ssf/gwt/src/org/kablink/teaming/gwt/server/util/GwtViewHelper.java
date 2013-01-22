@@ -833,13 +833,13 @@ public class GwtViewHelper {
 			// Scan this FolderRow's individual assignees tracking each
 			// unique ID.
 			for (AssignmentInfo ai:  getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME)) {
-				ListUtil.addLongToListLongIfUnique(((AssigneeType.TEAM == ai.getAssigneeType()) ? teamIds : principalIds), ai.getId());
+				ListUtil.addLongToListLongIfUnique((ai.getAssigneeType().isTeam() ? teamIds : principalIds), ai.getId());
 			}
 			for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
-				ListUtil.addLongToListLongIfUnique(((AssigneeType.TEAM == ai.getAssigneeType()) ? teamIds : principalIds), ai.getId());
+				ListUtil.addLongToListLongIfUnique((ai.getAssigneeType().isTeam() ? teamIds : principalIds), ai.getId());
 			}
 			for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
-				ListUtil.addLongToListLongIfUnique(((AssigneeType.TEAM == ai.getAssigneeType()) ? teamIds : principalIds), ai.getId());
+				ListUtil.addLongToListLongIfUnique((ai.getAssigneeType().isTeam() ? teamIds : principalIds), ai.getId());
 			}
 			
 			// Scan this FolderRow's group assignees tracking each
@@ -934,10 +934,12 @@ public class GwtViewHelper {
 			fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                                 );
 			fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            teamTitles,      teamCounts                                 );
 			
-			fixupAIs(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                         principalTitles, userPresence, presenceUserWSIds, avatarUrls);
-			fixupAIs(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       principalTitles, userPresence, presenceUserWSIds, avatarUrls);
-			fixupAIGroups(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       principalTitles, groupCounts                                );
-			fixupAITeams( getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       teamTitles,      teamCounts                                 );
+			fixupAIs(      getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                         principalTitles, userPresence, presenceUserWSIds, avatarUrls);
+			fixupAIs(      getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       principalTitles, userPresence, presenceUserWSIds, avatarUrls);
+			fixupAIGroups( getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       principalTitles, groupCounts                                );
+			fixupAIPublics(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)                                                                                      );
+			fixupAIPublics(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)                                                                                    );
+			fixupAITeams(  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       teamTitles,      teamCounts                                 );
 		}		
 
 		// Finally, one last scan through the List<FolderRow>'s...
@@ -1144,11 +1146,15 @@ public class GwtViewHelper {
 				reply.add(meItem);
 			}
 
-			// Add information about this share item as a 
+			// Add information about this share item as a
+			String recipientTitle;
+			if (si.getIsPartOfPublicShare())
+			     recipientTitle = NLT.get("share.recipientType.title.public");
+			else recipientTitle = getRecipientTitle(bs, si.getRecipientType(), si.getRecipientId());
 			meItem.addPerShareInfo(
 				si,
-				getRecipientTitle(bs, si.getRecipientType(), si.getRecipientId()),
-				getRecipientTitle(bs, RecipientType.user,    si.getSharerId()));
+				recipientTitle,
+				getRecipientTitle(bs, RecipientType.user, si.getSharerId()));
 		}
 
 		// Sort the GwtPerShareInfo's attached to the
@@ -1249,10 +1255,14 @@ public class GwtViewHelper {
 					
 			// The share recipient belongs with this user!  Add the
 			// information about it to the GwtSharedMeItem.
+			String recipientTitle;
+			if (si.getIsPartOfPublicShare())
+			     recipientTitle = NLT.get("share.recipientType.title.public");
+			else recipientTitle = getRecipientTitle(bs, si.getRecipientType(), si.getRecipientId());
 			meItem.addPerShareInfo(
 				si,
-				getRecipientTitle(bs, si.getRecipientType(), si.getRecipientId()),
-				getRecipientTitle(bs, RecipientType.user,    si.getSharerId()));
+				recipientTitle,
+				getRecipientTitle(bs, RecipientType.user, si.getSharerId()));
 
 			// Has the GwtSharedMeItem actually been shared with
 			// the current user?
@@ -1891,7 +1901,7 @@ public class GwtViewHelper {
 		// Scan this AssignmentInfo's group assignees...
 		for (AssignmentInfo ai:  aiGroupsList) {
 			// ...skipping those that aren't really groups...
-			if (AssigneeType.GROUP != ai.getAssigneeType()) {
+			if (!(ai.getAssigneeType().isGroup())) {
 				continue;
 			}
 			
@@ -1925,7 +1935,7 @@ public class GwtViewHelper {
 		// Scan this AssignmentInfo's team assignees...
 		for (AssignmentInfo ai:  aiTeamsList) {
 			// ...skipping those that aren't really teams...
-			if (AssigneeType.TEAM != ai.getAssigneeType()) {
+			if (!(ai.getAssigneeType().isTeam())) {
 				continue;
 			}
 			
@@ -1939,6 +1949,29 @@ public class GwtViewHelper {
 			}
 		}
 		GwtServerHelper.removeUnresolvedAssignees(aiTeamsList, removeList);
+	}
+	
+	/*
+	 * Fixes up the public assignees in an List<AssignmentInfo>'s.
+	 */
+	private static void fixupAIPublics(List<AssignmentInfo> aiTeamsList) {
+		// If don't have a list to fixup...
+		if (!(MiscUtil.hasItems(aiTeamsList))) {
+			// ...bail.
+			return;
+		}
+		
+		// Scan this AssignmentInfo's team assignees...
+		for (AssignmentInfo ai:  aiTeamsList) {
+			// ...skipping those that aren't really public...
+			if (!(ai.getAssigneeType().isPublic())) {
+				continue;
+			}
+			
+			// ...and setting each one's title and hover.
+			ai.setTitle(NLT.get("share.recipientType.title.public"));
+			ai.setHover(NLT.get("share.recipientType.hover.public"));
+		}
 	}
 	
 	/*
@@ -1959,7 +1992,7 @@ public class GwtViewHelper {
 		// Scan this AssignmentInfo's individual assignees...
 		for (AssignmentInfo ai:  aiList) {
 			// ...skipping those that aren't really individuals...
-			if (AssigneeType.INDIVIDUAL != ai.getAssigneeType()) {
+			if (!(ai.getAssigneeType().isIndividual())) {
 				continue;
 			}
 			
@@ -2200,17 +2233,22 @@ public class GwtViewHelper {
 		List<AssignmentInfo> reply = new ArrayList<AssignmentInfo>();
 
 		// Scan the shares...
-		for (GwtPerShareInfo si:  perShareInfos) {
+		for (GwtPerShareInfo psi:  perShareInfos) {
 			// ...creating an AssignmentInfo for each recipient.
 			AssigneeType assigneeType;
-			switch (si.getRecipientType()) {
-			default:     assigneeType = null;                    continue;
-			case user:   assigneeType = AssigneeType.INDIVIDUAL; break;
-			case group:  assigneeType = AssigneeType.GROUP;      break;
-			case team:   assigneeType = AssigneeType.TEAM;       break;
+			if (psi.isRecipientPublic()) {
+				assigneeType = AssigneeType.PUBLIC;
+			}
+			else {
+				switch (psi.getRecipientType()) {
+				default:     assigneeType = null;                    continue;
+				case user:   assigneeType = AssigneeType.INDIVIDUAL; break;
+				case group:  assigneeType = AssigneeType.GROUP;      break;
+				case team:   assigneeType = AssigneeType.TEAM;       break;
+				}
 			}
 			AssignmentInfo ai = AssignmentInfo.construct(
-				si.getRecipientId(),
+				psi.getRecipientId(),
 				assigneeType);
 			reply.add(ai);
 		}
@@ -2230,10 +2268,10 @@ public class GwtViewHelper {
 		List<AssignmentInfo> reply = new ArrayList<AssignmentInfo>();
 
 		// Scan the shares...
-		for (GwtPerShareInfo si:  perShareInfos) {
+		for (GwtPerShareInfo psi:  perShareInfos) {
 			// ...creating an AssignmentInfo for each sharer.
 			AssignmentInfo ai = AssignmentInfo.construct(
-				si.getSharerId(),
+				psi.getSharerId(),
 				AssigneeType.INDIVIDUAL);
 			reply.add(ai);
 		}
@@ -3802,7 +3840,7 @@ public class GwtViewHelper {
 								
 								// Is this column for an individual
 								// assignee?
-								if (AssigneeType.INDIVIDUAL == ait) {
+								if (ait.isIndividual()) {
 									// Yes!  If we don't have columns
 									// for group or team assignments,
 									// factor those in as well.
@@ -5020,10 +5058,10 @@ public class GwtViewHelper {
 		List<ShareAccessInfo> reply = new ArrayList<ShareAccessInfo>();
 
 		// Scan the shares...
-		for (GwtPerShareInfo si:  perShareInfos) {
+		for (GwtPerShareInfo psi:  perShareInfos) {
 			// ...creating a ShareAccessInfo for each share.
 			String access;
-			ShareRights	rights = si.getRights();
+			ShareRights	rights = psi.getRights();
 			if (null == rights) {
 				access = "";
 			}
@@ -5059,9 +5097,9 @@ public class GwtViewHelper {
 		List<ShareDateInfo> reply = new ArrayList<ShareDateInfo>();
 
 		// Scan the shares...
-		for (GwtPerShareInfo si:  perShareInfos) {
+		for (GwtPerShareInfo psi:  perShareInfos) {
 			// ...creating an ShareDateInfo for each share.
-			Date	shareDate  = si.getShareDate();
+			Date	shareDate  = psi.getShareDate();
 			String	dateString = ((null == shareDate) ? "" : GwtServerHelper.getDateTimeString(shareDate, DateFormat.MEDIUM, DateFormat.SHORT));
 			reply.add(new ShareDateInfo(shareDate, dateString));
 		}
@@ -5080,10 +5118,10 @@ public class GwtViewHelper {
 		List<ShareExpirationInfo> reply = new ArrayList<ShareExpirationInfo>();
 
 		// Scan the shares...
-		for (GwtPerShareInfo si:  perShareInfos) {
+		for (GwtPerShareInfo psi:  perShareInfos) {
 			// ...creating an ShareExpirationInfo for each share.
-			boolean	isExpired        = si.isRightsExpired();
-			Date	expirationDate   = si.getRightsExpire();
+			boolean	isExpired        = psi.isRightsExpired();
+			Date	expirationDate   = psi.getRightsExpire();
 			String	expirationString = ((null == expirationDate) ? "" : GwtServerHelper.getDateTimeString(expirationDate, DateFormat.MEDIUM, DateFormat.SHORT));
 			ShareExpirationInfo	sei = new ShareExpirationInfo(expirationDate, isExpired, expirationString);
 			if (isExpired) {
@@ -5148,9 +5186,9 @@ public class GwtViewHelper {
 		List<ShareMessageInfo> reply = new ArrayList<ShareMessageInfo>();
 
 		// Scan the shares...
-		for (GwtPerShareInfo si:  perShareInfos) {
+		for (GwtPerShareInfo psi:  perShareInfos) {
 			// ...creating an ShareMessageInfo for each share.
-			reply.add(new ShareMessageInfo(si.getComment()));
+			reply.add(new ShareMessageInfo(psi.getComment()));
 		}
 
 		// If we get here, reply refers to the List<ShareMessageInfo>

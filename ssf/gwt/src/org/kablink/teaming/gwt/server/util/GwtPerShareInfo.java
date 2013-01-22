@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -51,6 +51,7 @@ import org.kablink.teaming.web.util.MiscUtil;
  * @author drfoster@novell.com
  */
 public class GwtPerShareInfo {
+	private boolean			m_recipientPublic;	// true -> Shared with Public (m_recipientId and m_recipientType will be ignored.)  false -> Not shared with Public.
 	private boolean			m_rightsExpired;	//
 	private Date			m_rightsExpire;		//
 	private Date			m_shareDate;		//
@@ -298,6 +299,7 @@ public class GwtPerShareInfo {
 	 * @param sharerTitle		Sharer title.
 	 * @param recipientId		Recipient ID.
 	 * @param recipientType		Recipient type (user, group or team.)
+	 * @param recipientPublic	true -> Shared with Public (recipientId and recipientType will be ignored.)  false -> Not a public share.
 	 * @param recipientTitle	Recipient title.
 	 * @param shareDate			Time/date stamp the share was created.
 	 * @param rights			The rights granted by the share.
@@ -305,22 +307,23 @@ public class GwtPerShareInfo {
 	 * @param rightsExpired		true -> The share is expired.  false -> It's not.
 	 * @param comment			Comment associated with the share.
 	 */
-	public GwtPerShareInfo(Long shareId, Long sharerId, String sharerTitle, Long recipientId, RecipientType recipientType, String recipientTitle, Date shareDate, ShareRights rights, Date rightsExpire, boolean rightsExpired, String comment) {
+	public GwtPerShareInfo(Long shareId, Long sharerId, String sharerTitle, Long recipientId, RecipientType recipientType, boolean recipientPublic, String recipientTitle, Date shareDate, ShareRights rights, Date rightsExpire, boolean rightsExpired, String comment) {
 		// Initialize the super class...
 		super();
 		
 		// ...and store the parameters.
-		setShareId(       shareId       );
-		setSharerId(      sharerId      );
-		setSharerTitle(   sharerTitle   );
-		setRecipientId(   recipientId   );
-		setRecipientType( recipientType );
-		setRecipientTitle(recipientTitle);
-		setShareDate(     shareDate     );
-		setRights(        rights        );
-		setRightsExpire(  rightsExpire  );
-		setRightsExpired( rightsExpired );
-		setComment(       comment       );
+		setShareId(        shareId        );
+		setSharerId(       sharerId       );
+		setSharerTitle(    sharerTitle    );
+		setRecipientId(    recipientId    );
+		setRecipientType(  recipientType  );
+		setRecipientPublic(recipientPublic);
+		setRecipientTitle( recipientTitle );
+		setShareDate(      shareDate      );
+		setRights(         rights         );
+		setRightsExpire(   rightsExpire   );
+		setRightsExpired(  rightsExpired  );
+		setComment(        comment        );
 	}
 	
 	/**
@@ -328,32 +331,34 @@ public class GwtPerShareInfo {
 	 * 
 	 * @return
 	 */
-	public boolean       isRightsExpired()   {return m_rightsExpired; }
-	public Date          getRightsExpire()   {return m_rightsExpire;  }
-	public Date          getShareDate()      {return m_shareDate;     }
-	public Long          getRecipientId()    {return m_recipientId;   }
-	public Long          getShareId()        {return m_shareId;       }
-	public Long          getSharerId()       {return m_sharerId;      }
-	public RecipientType getRecipientType()  {return m_recipientType; }
-	public ShareRights   getRights()         {return m_rights;        }
-	public String        getComment()        {return m_comment;       }
-	public String        getSharerTitle()    {return m_sharerTitle;   }
-	public String        getRecipientTitle() {return m_recipientTitle;}
+	public boolean       isRecipientPublic() {return m_recipientPublic;}
+	public boolean       isRightsExpired()   {return m_rightsExpired;  }
+	public Date          getRightsExpire()   {return m_rightsExpire;   }
+	public Date          getShareDate()      {return m_shareDate;      }
+	public Long          getRecipientId()    {return m_recipientId;    }
+	public Long          getShareId()        {return m_shareId;        }
+	public Long          getSharerId()       {return m_sharerId;       }
+	public RecipientType getRecipientType()  {return m_recipientType;  }
+	public ShareRights   getRights()         {return m_rights;         }
+	public String        getComment()        {return m_comment;        }
+	public String        getSharerTitle()    {return m_sharerTitle;    }
+	public String        getRecipientTitle() {return m_recipientTitle; }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setRightsExpired( boolean       rightsExpired)  {m_rightsExpired  = rightsExpired; }
-	public void setRightsExpire(  Date          rightsExpire)   {m_rightsExpire   = rightsExpire;  }
-	public void setShareDate(     Date          shareDate)      {m_shareDate      = shareDate;     }
-	public void setRecipientId(   Long          recipientId)    {m_recipientId    = recipientId;   }
-	public void setShareId(       Long          shareId)        {m_shareId        = shareId;       }
-	public void setSharerId(      Long          sharerId)       {m_sharerId       = sharerId;      }
-	public void setRecipientType( RecipientType recipientType)  {m_recipientType  = recipientType; }
-	public void setRights(        ShareRights   rights)         {m_rights         = rights;        }
-	public void setComment(       String        comment)        {m_comment        = comment;       }
-	public void setSharerTitle(   String        sharerTitle)    {m_sharerTitle    = sharerTitle;   }
-	public void setRecipientTitle(String        recipientTitle) {m_recipientTitle = recipientTitle;}
+	public void setRecipientPublic(boolean       recipientPublic) {m_recipientPublic = recipientPublic;}
+	public void setRightsExpired(  boolean       rightsExpired)   {m_rightsExpired   = rightsExpired;  }
+	public void setRightsExpire(   Date          rightsExpire)    {m_rightsExpire    = rightsExpire;   }
+	public void setShareDate(      Date          shareDate)       {m_shareDate       = shareDate;      }
+	public void setRecipientId(    Long          recipientId)     {m_recipientId     = recipientId;    }
+	public void setShareId(        Long          shareId)         {m_shareId         = shareId;        }
+	public void setSharerId(       Long          sharerId)        {m_sharerId        = sharerId;       }
+	public void setRecipientType(  RecipientType recipientType)   {m_recipientType   = recipientType;  }
+	public void setRights(         ShareRights   rights)          {m_rights          = rights;         }
+	public void setComment(        String        comment)         {m_comment         = comment;        }
+	public void setSharerTitle(    String        sharerTitle)     {m_sharerTitle     = sharerTitle;    }
+	public void setRecipientTitle( String        recipientTitle)  {m_recipientTitle  = recipientTitle; }
 }

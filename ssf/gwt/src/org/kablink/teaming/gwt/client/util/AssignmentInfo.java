@@ -59,6 +59,17 @@ public class AssignmentInfo extends PrincipalInfo implements IsSerializable {
 		INDIVIDUAL,
 		GROUP,
 		TEAM,
+		PUBLIC;
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isIndividual() {return INDIVIDUAL.equals(this);}
+		public boolean isGroup()      {return GROUP.equals(     this);}
+		public boolean isTeam()       {return TEAM.equals(      this);}
+		public boolean isPublic()     {return PUBLIC.equals(    this);}
 	}
 	
 	/**
@@ -66,11 +77,12 @@ public class AssignmentInfo extends PrincipalInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public AssigneeType         getAssigneeType()    {return m_assigneeType;   }
-	public List<AssignmentInfo> getMembership()      {return m_membership;     }
-	public int                  getMembersShown()    {return m_membersShown;   }
-	public Object               getMembershipPopup() {return m_membershipPopup;}
-	public String               getHover()           {return m_hover;          }
+	public boolean              isAssigneePublic()   {return m_assigneeType.isPublic();}
+	public AssigneeType         getAssigneeType()    {return m_assigneeType;           }
+	public List<AssignmentInfo> getMembership()      {return m_membership;             }
+	public int                  getMembersShown()    {return m_membersShown;           }
+	public Object               getMembershipPopup() {return m_membershipPopup;        }
+	public String               getHover()           {return m_hover;                  }
 	
 	/**
 	 * Set'er methods.
@@ -119,7 +131,7 @@ public class AssignmentInfo extends PrincipalInfo implements IsSerializable {
 		if      (isColumnAssignee(     csk)) reply = AssigneeType.INDIVIDUAL;
 		else if (isColumnAssigneeGroup(csk)) reply = AssigneeType.GROUP;
 		else if (isColumnAssigneeTeam( csk)) reply = AssigneeType.TEAM;
-		else                                        reply = null;
+		else                                 reply = null;
 		return reply;
 	}
 	
