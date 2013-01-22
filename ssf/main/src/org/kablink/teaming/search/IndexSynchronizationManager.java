@@ -177,7 +177,7 @@ public class IndexSynchronizationManager {
     	if (getRequests().size() >= threshold) applyChanges();
     }
 
-    public static void applyChanges() {
+    public static int applyChanges() {
     	if(logger.isTraceEnabled())
     		logger.trace("applyChanges()");
     	
@@ -186,11 +186,14 @@ public class IndexSynchronizationManager {
 		        LuceneWriteSession luceneSession = getInstance().getLuceneSessionFactory().openWriteSession((String[]) nodeNamesTL.get());
 		        
 		        try {
-		            doCommit(luceneSession);
+		            return doCommit(luceneSession);
 		        }
 		        finally {
 		            luceneSession.close();
 		        }
+            }
+            else {
+            	return 0;
             }
         }
         finally {
@@ -228,13 +231,14 @@ public class IndexSynchronizationManager {
     	}
      }
     
-    private static void doCommit(LuceneWriteSession luceneSession) {   	        
+    private static int doCommit(LuceneWriteSession luceneSession) {   	        
         ArrayList objs = getRequests().getList();
         if(objs.size() > 0) {
         	luceneSession.addDeleteDocuments(objs);
         }        
 		if(logger.isDebugEnabled())
 			logger.debug("Update to index: add [" + getRequests().getAddsCount() + "], delete [" + getRequests().getDeletesCount() + "] docs");
+		return objs.size();
     }
     
     private static void clear() {
