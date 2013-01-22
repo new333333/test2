@@ -613,6 +613,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 	private void showWhatsNewNow() {
 		// Are we viewing a collection?
 		ActivityStreamInfo asi = new ActivityStreamInfo();
+		asi.setTitle(m_binderInfo.getBinderTitle());
 		if (m_binderInfo.isBinderCollection()) {
 			// Yes!  Determine the appropriate collection
 			// ActivityStream to view.
