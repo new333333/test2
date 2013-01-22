@@ -6683,6 +6683,12 @@ public class GwtViewHelper {
 				
 				// Can we perform the rename of the entry and/or file?
 				try {
+					// If the name is bogus...
+					if (Validator.containsPathCharacters(entityName)) {
+						// ...throw an appropriate exception.
+						throw new IllegalCharacterInNameException("errorcode.title.pathCharacters", new Object[]{entityName});
+					}
+
 					fm.modifyEntry(
 						fe.getParentBinder().getId(),	//
 						fe.getId(),						//
@@ -6702,11 +6708,12 @@ public class GwtViewHelper {
 				catch (Exception e) {
 					// No!  Return the reason why in the string response.
 					String messageKey;
-					if      (e instanceof AccessControlException)         messageKey = "renameEntityError.AccssControlException.file";
-					else if (e instanceof ReservedByAnotherUserException) messageKey = "renameEntityError.ReservedByAnotherUserException.file";
-					else if (e instanceof WriteFilesException)            messageKey = "renameEntityError.WriteFilesException.file";
-					else if (e instanceof WriteEntryDataException)        messageKey = "renameEntityError.WriteEntryDataException.file";
-					else                                                  messageKey = "renameEntityError.OtherException.file";
+					if      (e instanceof AccessControlException)          messageKey = "renameEntityError.AccssControlException.file";
+					else if (e instanceof IllegalCharacterInNameException) messageKey = "renameEntityError.IllegalCharacterInNameException.file";
+					else if (e instanceof ReservedByAnotherUserException)  messageKey = "renameEntityError.ReservedByAnotherUserException.file";
+					else if (e instanceof WriteFilesException)             messageKey = "renameEntityError.WriteFilesException.file";
+					else if (e instanceof WriteEntryDataException)         messageKey = "renameEntityError.WriteEntryDataException.file";
+					else                                                   messageKey = "renameEntityError.OtherException.file";
 					reply.setStringValue(NLT.get(messageKey, new String[]{entityName}));
 				}
 			}
