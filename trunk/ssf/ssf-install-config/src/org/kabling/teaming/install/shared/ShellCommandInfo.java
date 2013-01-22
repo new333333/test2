@@ -27,5 +27,20 @@ public class ShellCommandInfo {
 		this.output = output;
 	}
 	
+	public String getOutputAsString()
+	{
+		
+		if (output != null)
+		{
+			StringBuilder builder = new StringBuilder();
+			for (String str: output)
+			{
+				builder.append(str);
+				builder.append(" ");
+			}
+			return builder.toString();
+		}
+		return null;
+	}
 	
 }

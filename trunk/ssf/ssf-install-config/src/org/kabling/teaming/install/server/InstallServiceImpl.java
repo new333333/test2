@@ -7,17 +7,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
@@ -30,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -88,6 +87,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	Logger logger = Logger.getLogger("org.kabling.teaming.install.server.InstallServiceImpl");
 	private final int MAX_TRIES = 2;
 	private final String FILR_SERVER_URL = "http://localhost:8080";
+	static final Pattern IPv4_ADDR = Pattern.compile("\\binet addr:\\s*([\\d\\.]+)\\b", Pattern.MULTILINE);
 
 	@Override
 	public LoginInfo login(String userName, String password) throws LoginException
@@ -165,7 +165,6 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			{
 				is = new FileInputStream(file);
 			}
-			
 
 			// parse the document
 			parser.parse(new InputSource(is));
@@ -686,7 +685,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 		lucene.setServerLogin(resourceElement.getAttribute("lucene.server.login"));
 		lucene.setServerPassword(resourceElement.getAttribute("lucene.server.password"));
-		
+
 		// Get the HASearchNodes
 		NodeList configNodeLists = resourceElement.getElementsByTagName("HASearchNode");
 
@@ -709,7 +708,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				config.setHostName(hsaElement.getAttribute("ha.service.hostname"));
 				config.setTitle(hsaElement.getAttribute("ha.service.title"));
 				config.setRmiPort(getIntegerValue(hsaElement.getAttribute("ha.service.rmi.port")));
-				
+
 				config.setServerLogin(hsaElement.getAttribute("lucene.server.login"));
 				config.setServerPassword(hsaElement.getAttribute("lucene.server.password"));
 
@@ -792,7 +791,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			// TimeZone and AllowSendTo all users
 			emailSettings.setDefaultTZ(currentElement.getAttribute("defaultTZ"));
 			emailSettings.setAllowSendToAllUsers(getBooleanValue(currentElement.getAttribute("allowSendToAllUsers")));
-			
+
 			currentElement = getElement(currentElement, "Resource");
 
 			// Outbound
@@ -812,7 +811,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				emailSettings.setSmtpPort(getIntegerValue(currentElement.getAttribute("mail.smtp.port")));
 				emailSettings.setSmtpPassword(currentElement.getAttribute("mail.smtp.password"));
 				emailSettings.setSmtpSendPartial(getBooleanValue(currentElement.getAttribute("mail.smtp.sendpartial")));
-				
+
 				emailSettings.setSmtpConnectionTimeout(getIntegerValue(currentElement.getAttribute("mail.smtp.connectiontimeout")));
 
 				// Resource SMTPS Settings
@@ -1258,12 +1257,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		{
 			resourceElement.setAttribute("lucene.index.hostname", lucene.getIndexHostName());
 		}
-		
+
 		if (!lucene.getServerLogin().isEmpty())
 		{
 			resourceElement.setAttribute("lucene.server.login", lucene.getServerLogin());
 		}
-		
+
 		if (!lucene.getServerPassword().isEmpty())
 		{
 			resourceElement.setAttribute("lucene.server.password", lucene.getServerPassword());
@@ -1298,12 +1297,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				{
 					node.setAttribute("lucene.server.login", searchNode.getServerLogin());
 				}
-				
+
 				if (!searchNode.getServerPassword().isEmpty())
 				{
 					node.setAttribute("lucene.server.password", searchNode.getServerPassword());
 				}
-				
+
 				resourceElement.appendChild(node);
 			}
 		}
@@ -1507,7 +1506,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 		// Save allowSendToAllUsers
 		outboundElement.setAttribute("allowSendToAllUsers", String.valueOf(emailSettings.isAllowSendToAllUsers()));
-		
+
 		// Resource Element
 		Element resourceElement = getElement(outboundElement, "Resource");
 		if (resourceElement == null)
@@ -1630,14 +1629,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		String ipAddr = null;
 		if (isUnix())
 		{
-			try
-			{
-				ipAddr = getLocalIpAddr();
-			}
-			catch (IOException e)
-			{
-				// Ignore..
-			}
+			ipAddr = getLocalIpAddr();
+			logger.debug("Local IP Adress " + ipAddr);
 		}
 		if (ipAddr != null)
 			productInfo.setLocalIpAddress(ipAddr);
@@ -1659,46 +1652,26 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		return productInfo;
 	}
 
-	private String getLocalIpAddr() throws IOException
+	private String getLocalIpAddr()
 	{
-		String ipAddr = null;
-		BufferedReader reader = null;
-		try
+
+		ShellCommandInfo status = executeCommand("/sbin/ifconfig eth0");
+
+		if (status.getExitValue() == 0)
 		{
-			reader = new BufferedReader(new FileReader("/proc/net/route"));
-			String line;
-			while ((line = reader.readLine()) != null)
+			String outputStr = status.getOutputAsString();
+
+			if (outputStr != null)
 			{
-				line = line.trim();
-				String[] tokens = line.split("\\t");
-				if (tokens.length > 1 && tokens[1].equals("00000000"))
+				Matcher m = IPv4_ADDR.matcher(outputStr);
+				if (m.find() && m.groupCount() > 0)
 				{
-					String iface = tokens[0];
-					NetworkInterface nif = NetworkInterface.getByName(iface);
-					Enumeration<?> addrs = nif.getInetAddresses();
-					while (addrs.hasMoreElements())
-					{
-						Object obj = addrs.nextElement();
-						if (obj instanceof Inet4Address)
-						{
-							ipAddr = obj.toString();
-							if (ipAddr.startsWith("/"))
-								ipAddr = ipAddr.substring(1);
-							return ipAddr;
-						}
-					}
+					return m.group(1);
 				}
+
 			}
 		}
-		catch (IOException e)
-		{
-			System.err.println(e);
-			e.printStackTrace();
-		}
-		finally
-		{
-			reader.close();
-		}
+
 		return null;
 	}
 
@@ -1813,7 +1786,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 			if (checkDBExists(resourceDatabase, dbConfig.getResourceUrl(), resourceName, resourcePassword))
 			{
-				logger.info("Database exists, but still updating mysql-liquibase.properties" );
+				logger.info("Database exists, but still updating mysql-liquibase.properties");
 			}
 
 			logger.info("Database does not exist, updating mysql-liquibase.properties");
@@ -1886,7 +1859,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 			// Update mysql-create-empty-database.sql with the database name
 			updateCreateScriptWithDatabaseName(databaseName);
-			
+
 			// Create the database if needed
 			int result = executeCommand(
 					"sudo mysql -h " + resourceHost + " -u" + resourceName + " -p" + resourcePassword
@@ -1908,15 +1881,15 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		{
 			FileInputStream fstream = new FileInputStream("/filrinstall/db/scripts/sql/mysql-create-empty-database.sql");
 			DataInputStream in = new DataInputStream(fstream);
-			
+
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String strLine;
 			StringBuilder updatedLine = new StringBuilder();
 
 			while ((strLine = br.readLine()) != null)
 			{
-				//If it starts with create database, we will update the database name
-				//3rd token is the database name
+				// If it starts with create database, we will update the database name
+				// 3rd token is the database name
 				if (strLine.startsWith("create database"))
 				{
 					String tokens[] = strLine.split(" ");
@@ -1940,8 +1913,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				}
 			}
 			in.close();
-			
-			//Put the changes back
+
+			// Put the changes back
 			FileWriter fileWriter = new FileWriter("/filrinstall/db/scripts/sql/mysql-create-empty-database.sql");
 			BufferedWriter out = new BufferedWriter(fileWriter);
 			out.write(updatedLine.toString());
@@ -2037,7 +2010,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			}
 
 			// If the configuration is not done, add this to restart filr after reboot
-			File file = new File("sudo /filrinstall/configured");
+			File file = new File("/filrinstall/configured");
 			// If it exists, ignore
 			if (!file.exists())
 			{
@@ -2051,7 +2024,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		if (srcFile.exists())
 		{
 			boolean deleteOrigStatus = srcFile.delete();
-			logger.debug("Deleted Backup /filrinstall/installer.xml.orig "+deleteOrigStatus);
+			logger.debug("Deleted Backup /filrinstall/installer.xml.orig " + deleteOrigStatus);
 		}
 		else
 		{
@@ -2101,9 +2074,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	{
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
-			//Update security constraints based on network page settings
+			// Update security constraints based on network page settings
 			updateSecurityBasedOnNetworkPageSettings();
-			
+
 			executeCommand("sudo /sbin/rcfilr restart");
 
 			int tries = 2;
@@ -2143,31 +2116,50 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	{
 		InstallerConfig config = getConfiguration();
 		Network network = config.getNetwork();
-		
+
 		String WEB_XML1 = "/opt/novell/filr/apache-tomcat/webapps/ROOT/WEB-INF/web.xml";
 		String WEB_XML2 = "/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/web.xml";
 		String WEB_XML3 = "/opt/novell/filr/apache-tomcat/webapps/ssr/WEB-INF/web.xml";
 		String WEB_XML4 = "/opt/novell/filr/apache-tomcat/webapps/rest/WEB-INF/web.xml";
-		
-		//Disabled
+
+		String ipAddr = getLocalIpAddr();
+
+		// Http 8080 disabled
 		if (network.getListenPort() == 0)
 		{
-			//Call addSecurityConstraint.py pointing to web.xml, we need to update all the 4 web.xml
-			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML1);
-			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML2);
-			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML3);
-			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py "+WEB_XML4);
+			// Call addSecurityConstraint.py pointing to web.xml, we need to update all the 4 web.xml
+			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py " + WEB_XML1);
+			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py " + WEB_XML2);
+			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py " + WEB_XML3);
+			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py " + WEB_XML4);
+
 		}
 		else
 		{
-			//Call addSecurityConstraint.py pointing to web.xml, we need to update all the 4 web.xml
-			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML1);
-			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML2);
-			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML3);
-			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py "+WEB_XML4);
+			// Call addSecurityConstraint.py pointing to web.xml, we need to update all the 4 web.xml
+			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py " + WEB_XML1);
+			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py " + WEB_XML2);
+			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py " + WEB_XML3);
+			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py " + WEB_XML4);
 			
-			//Enable the firewall
-			//TODO:
+			//Enable the firewall for this port
+			executeCommand("sudo SuSEfirewall2 open EXT TCP " +network.getListenPort());
+		}
+
+		if (network.isPortRedirect())
+		{
+			executeCommand("sudo python /opt/novell/filr_config/updateFirewallRedirect.py " + ipAddr + " " + network.getSecureListenPort()
+					+ " " + network.getListenPort());
+			
+			//Enable the firewall for this port 80 443
+			executeCommand("sudo SuSEfirewall2 open EXT TCP 80 443");
+		}
+		else
+		{
+			executeCommand("sudo python /opt/novell/filr_config/updateFirewallRedirect.py " + ipAddr + " 443 80");
+			
+			//Enable the firewall for this port 80 443
+			executeCommand("sudo SuSEfirewall2 close EXT TCP 80 443");
 		}
 	}
 
@@ -2308,8 +2300,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 				// Store the properties
 				store(prop, configurationDetailsFile);
-				
-				//For large deployment, we need to disable sql and lucene
+
+				// For large deployment, we need to disable sql and lucene
 				if (configType.equals("large"))
 				{
 					disableMySqlAndLucene();
@@ -2326,11 +2318,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	private void disableMySqlAndLucene()
 	{
 		// Disable filrsearch and mysql for large deployment
-		executeCommand( "sudo mv /etc/opt/novell/ganglia/monitor/conf.d/filrsearch.pyconf " +
-				" /etc/opt/novell/ganglia/monitor/conf.d/filrsearch.pyconf.disabled");
-		
-		executeCommand( "sudo mv /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf " +
-				" /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf.disabled");
+		executeCommand("sudo mv /etc/opt/novell/ganglia/monitor/conf.d/filrsearch.pyconf "
+				+ " /etc/opt/novell/ganglia/monitor/conf.d/filrsearch.pyconf.disabled");
+
+		executeCommand("sudo mv /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf "
+				+ " /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf.disabled");
 	}
 
 	@Override
@@ -2354,7 +2346,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	public void setupLocalMySqlUserPassword(Database db)
 	{
 		DatabaseConfig config = db.getDatabaseConfig("Installed");
-		ShellCommandInfo info = executeCommand( "mysqladmin -uroot -proot password "+config.getResourcePassword());
+		ShellCommandInfo info = executeCommand("mysqladmin -uroot -proot password " + config.getResourcePassword());
 		if (info.getExitValue() != 0)
 		{
 			logger.debug("Error setting up admin password" + info.getExitValue());
@@ -2369,22 +2361,22 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		try
 		{
 			Document document = getDocument("/filrinstall/license-key.xml");
-			
+
 			Element keyInfoElement = getElement(document.getDocumentElement(), "KeyInfo");
-			
+
 			if (keyInfoElement != null)
 			{
 				licenseInfo.setKeyVersion(keyInfoElement.getAttribute("keyversion"));
 				licenseInfo.setIssuedBy(keyInfoElement.getAttribute("by"));
 				licenseInfo.setIssuedDate(keyInfoElement.getAttribute("issued"));
 			}
-			
+
 			Element datesElement = getElement(document.getDocumentElement(), "Dates");
 			if (datesElement != null)
 			{
 				licenseInfo.setExpirationDate(datesElement.getAttribute("expiration"));
 			}
-			
+
 			Element productElement = getElement(document.getDocumentElement(), "Product");
 			if (productElement != null)
 			{

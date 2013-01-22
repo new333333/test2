@@ -27,6 +27,8 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 	private VibeTextBox keyStoreFileTextBox;
 	private CheckBox httpEnabledCheckBox;
 	private CheckBox portRedirectCheckBox;
+	private InlineLabel port80RedirectLabel;
+	private InlineLabel port443RedirectLabel;
 
 	@Override
 	public Panel createContent(Object propertiesObj)
@@ -54,30 +56,38 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 		int row = 0;
 
 		{
-			// Port Redirection 
+			// Port Redirection
 			portRedirectCheckBox = new CheckBox("Port Redirection");
+			portRedirectCheckBox.addClickHandler(this);
 			table.setWidget(row, 0, portRedirectCheckBox);
 			table.getFlexCellFormatter().setColSpan(row, 0, 2);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-value");
 		}
-		
+
 		{
 			row++;
 			// Listen Port
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.httpPortColon());
-			table.setWidget(row, 0, keyLabel);
+			FlowPanel labelWrapper = new FlowPanel();
+
+			port80RedirectLabel = new InlineLabel("Port 80 -> ");
+			labelWrapper.add(port80RedirectLabel);
+
+			InlineLabel keyLabel1 = new InlineLabel(RBUNDLE.httpPortColon());
+			labelWrapper.add(keyLabel1);
+
+			table.setWidget(row, 0, labelWrapper);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 			FlowPanel portEnablePanel = new FlowPanel();
-			
+
 			listenSpinner = new GwValueSpinner(8080, 1024, 9999, null);
 			table.setWidget(row, 1, portEnablePanel);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-			
+
 			httpEnabledCheckBox = new CheckBox(RBUNDLE.enabled());
 			httpEnabledCheckBox.addStyleName("networkPageHttpEnabledCheckBox");
 			httpEnabledCheckBox.addClickHandler(this);
-			
+
 			portEnablePanel.add(listenSpinner);
 			portEnablePanel.add(httpEnabledCheckBox);
 		}
@@ -85,8 +95,16 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 		{
 			row++;
 			// Secure Listen Port
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.secureHttpPortColon());
-			table.setWidget(row, 0, keyLabel);
+
+			FlowPanel labelWrapper = new FlowPanel();
+
+			port443RedirectLabel = new InlineLabel("Port 443 -> ");
+			labelWrapper.add(port443RedirectLabel);
+
+			InlineLabel keyLabel1 = new InlineLabel(RBUNDLE.secureHttpPortColon());
+			labelWrapper.add(keyLabel1);
+
+			table.setWidget(row, 0, labelWrapper);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 			secureListenSpinner = new GwValueSpinner(8443, 1024, 9999, null);
@@ -149,14 +167,14 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 	@Override
 	public Object getDataFromDlg()
 	{
-		//Save the configuration
+		// Save the configuration
 		Network network = config.getNetwork();
 		network.setSecureListenPort(secureListenSpinner.getValueAsInt());
 		network.setPortRedirect(portRedirectCheckBox.getValue());
-		
+
 		if (shutDownPortSpinner != null)
 			network.setShutdownPort(shutDownPortSpinner.getValueAsInt());
-		
+
 		if (ajpPortSpinner != null)
 			network.setAjpPort(ajpPortSpinner.getValueAsInt());
 		network.setSessionTimeoutMinutes(sessionTimeOutSpinner.getValueAsInt());
@@ -166,7 +184,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 			network.setListenPort(listenSpinner.getValueAsInt());
 		else
 			network.setListenPort(0);
-		
+
 		return config;
 	}
 
@@ -181,20 +199,25 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 	{
 		Network network = config.getNetwork();
 
-		//Initialize the UI with the data
+		// Initialize the UI with the data
 		if (network != null)
 		{
-			portRedirectCheckBox.setValue(network.isPortRedirect());
+			boolean portRedirect = network.isPortRedirect();
+			portRedirectCheckBox.setValue(portRedirect);
+
+			port443RedirectLabel.setVisible(portRedirect);
+			port80RedirectLabel.setVisible(portRedirect);
+
 			secureListenSpinner.setValue(network.getSecureListenPort());
-			
+
 			if (shutDownPortSpinner != null)
 				shutDownPortSpinner.setValue(network.getShutdownPort());
-			
+
 			if (ajpPortSpinner != null)
 				ajpPortSpinner.setValue(network.getAjpPort());
 			sessionTimeOutSpinner.setValue(network.getSessionTimeoutMinutes());
 			keyStoreFileTextBox.setText(network.getKeystoreFile());
-			
+
 			if (network.getListenPort() != 0)
 			{
 				listenSpinner.setValue(network.getListenPort());
@@ -206,7 +229,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 			httpEnabledCheckBox.setValue(network.getListenPort() != 0);
 		}
 	}
-	
+
 	@Override
 	public void onClick(ClickEvent event)
 	{
@@ -215,6 +238,11 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 		if (event.getSource() == httpEnabledCheckBox)
 		{
 			listenSpinner.setEnabled(httpEnabledCheckBox.getValue());
+		}
+		else if (event.getSource() == portRedirectCheckBox)
+		{
+			port443RedirectLabel.setVisible(portRedirectCheckBox.getValue());
+			port80RedirectLabel.setVisible(portRedirectCheckBox.getValue());
 		}
 	}
 }
