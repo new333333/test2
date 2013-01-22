@@ -570,7 +570,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
-    	long fileSize = fui.getClientSpecifiedContentLength();
+    	long fileSize = fui.getCallerSpecifiedContentLength();
     	fAtt.getFileItem().setLength(fileSize);
     	createVersionAttachment(fAtt, versionName);
     	getCoreDao().save(fAtt);
@@ -678,7 +678,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
         for(int i = 0; i < fileUploadItems.size();) {
             FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
-            if(fui.clientSpecifiedContentLengthWithoutSupplyingContent()) {
+            if(fui.calledByFileSync()) {
             	if(logger.isDebugEnabled())
             		logger.debug("Skipping checksum verification on file " + fui.getOriginalFilename());
             	i++;
@@ -737,7 +737,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
     	for(int i = 0; i < fileUploadItems.size();) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
-            if(fui.clientSpecifiedContentLengthWithoutSupplyingContent()) {
+            if(fui.calledByFileSync()) {
             	if(logger.isDebugEnabled())
             		logger.debug("Skipping filters on file " + fui.getOriginalFilename());
             	i++;
@@ -2060,7 +2060,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// need to incur the overhead of opening a session for that file.
 			if(!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName()) || 
 					fui.isSynchToRepository() ||
-					fui.getClientSpecifiedContentLength() == null)
+					fui.getCallerSpecifiedContentLength() == null)
 				session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.CREATE_FILE, binder);
 		}
 		else { // Existing file
@@ -2221,8 +2221,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// This part adds special logic to work around the issue.
     		versionName = createVersionedFile(session, binder, entry, fui);
     		long fsize;
-    		if(fui.getClientSpecifiedContentLength() != null)
-    			fsize = fui.getClientSpecifiedContentLength().longValue();
+    		if(fui.getCallerSpecifiedContentLength() != null)
+    			fsize = fui.getCallerSpecifiedContentLength().longValue();
     		else
     			fsize = session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName);
 			fAtt.getFileItem().setLength(fsize);
@@ -2262,8 +2262,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				// forgiving or self-curing. This part of code implements that.
 	    		versionName = createVersionedFile(session, binder, entry, fui);
 	    		long fsize;
-	    		if(fui.getClientSpecifiedContentLength() != null)
-	    			fsize = fui.getClientSpecifiedContentLength().longValue();
+	    		if(fui.getCallerSpecifiedContentLength() != null)
+	    			fsize = fui.getCallerSpecifiedContentLength().longValue();
 	    		else
 	    			fsize = session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName);
 	    		fileSize = Long.valueOf(fsize);
@@ -2378,8 +2378,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			// sort of like auto-commit = true
     			updateInfo.versionName = session.checkin(binder, entity, relativeFilePath);
     			long fsize;
-    			if(fui.getClientSpecifiedContentLength() != null)
-    				fsize = fui.getClientSpecifiedContentLength().longValue();
+    			if(fui.getCallerSpecifiedContentLength() != null)
+    				fsize = fui.getCallerSpecifiedContentLength().longValue();
     			else
     				fsize = session.getContentLengthVersioned(binder, entity, relativeFilePath, updateInfo.versionName);
     			updateInfo.fileLength = Long.valueOf(fsize);
@@ -2457,8 +2457,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 							
 			long fileSize;
 			
-			if(fui.getClientSpecifiedContentLength() != null)
-				fileSize = fui.getClientSpecifiedContentLength().longValue();
+			if(fui.getCallerSpecifiedContentLength() != null)
+				fileSize = fui.getCallerSpecifiedContentLength().longValue();
 			else
 				fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
 					

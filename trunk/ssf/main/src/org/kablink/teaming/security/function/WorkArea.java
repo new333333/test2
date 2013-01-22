@@ -109,7 +109,7 @@ public interface WorkArea {
     public boolean isAclExternallyControlled();
     
     /**
-     * Return a list of the rights being controlled by the external device
+     * Return an immutable list of the rights being controlled by the external device
      * @return
      */
     public List<WorkAreaOperation> getExternallyControlledRights();

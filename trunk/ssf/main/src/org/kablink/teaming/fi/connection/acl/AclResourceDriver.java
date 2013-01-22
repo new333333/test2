@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.fi.connection.acl;
 
+import java.util.List;
+
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
@@ -101,14 +103,14 @@ public interface AclResourceDriver extends ResourceDriver {
 	public AclItemPrincipalMapper getAclItemPrincipalMapper();
 
 	/**
-	 * Returns an array of <code>WorkAreaOperation</code> objects indicating which Vibe
-	 * rights should be controlled by the external ACLs.
+	 * Returns an immutable list of <code>WorkAreaOperation</code> objects indicating which
+	 * Vibe/Filr rights should be controlled by the external ACLs.
 	 * <p>
-	 * The caller must not modify the array returned from this method.
+	 * The caller must not and can not modify the array returned from this method.
 	 * 
 	 * @return an array of <code>WorkAreaOperation</code> objects
 	 */
-	public WorkAreaOperation[] getExternallyControlledlRights();
+	public List<WorkAreaOperation> getExternallyControlledlRights();
 	
 	/**
 	 * Returns the name of the role type (aka scope) registered with the Vibe system.

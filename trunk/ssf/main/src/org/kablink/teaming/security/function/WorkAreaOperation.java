@@ -35,6 +35,7 @@ package org.kablink.teaming.security.function;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -119,6 +120,9 @@ public class WorkAreaOperation {
 		WorkAreaOperation.CREATOR_MODIFY, 
 		WorkAreaOperation.CREATOR_DELETE,
 		WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS };
+	
+	// This list is immutable
+	public static List<WorkAreaOperation> EXTERNALLY_CONTROLLED_RIGHTS_DEFAULT_AS_LIST = Collections.unmodifiableList(Arrays.asList(EXTERNALLY_CONTROLLED_RIGHTS_DEFAULT));
 	
 	public static List<WorkAreaOperation> getDefaultExternallyControlledRights() {
 		return Arrays.asList(EXTERNALLY_CONTROLLED_RIGHTS_DEFAULT);

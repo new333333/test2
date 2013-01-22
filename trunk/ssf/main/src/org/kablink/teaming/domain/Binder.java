@@ -34,6 +34,7 @@ package org.kablink.teaming.domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -865,9 +866,9 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     }
     public List<WorkAreaOperation> getExternallyControlledRights() {
     	if (this.getResourceDriver() instanceof AclResourceDriver) {
-    		return Arrays.asList(((AclResourceDriver)this.getResourceDriver()).getExternallyControlledlRights());
+    		return ((AclResourceDriver)this.getResourceDriver()).getExternallyControlledlRights();
     	} else {
-    		return new ArrayList<WorkAreaOperation>();
+    		return Collections.EMPTY_LIST; // return empty immutable list
     	}
     }
     public String getRegisteredRoleType() {
