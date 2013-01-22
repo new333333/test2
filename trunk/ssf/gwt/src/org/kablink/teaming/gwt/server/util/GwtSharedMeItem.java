@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -237,6 +237,16 @@ public class GwtSharedMeItem {
 	 * @param si
 	 */
 	public void addPerShareInfo(ShareItem si, String recipientTitle, String sharerTitle) {
+		// Is this part of a public share?
+		boolean sharePublic = si.getIsPartOfPublicShare();
+		if (sharePublic) {
+			// Yes!  Are we already tracking a public share?
+			if (isSharedWithPublic()) {
+				// Yes!  Then we don't need to return another.
+				return;
+			}
+		}
+		
 		// Construct a new per share info for the share item...
 		GwtPerShareInfo psi = new GwtPerShareInfo(
 			si.getId(),														// Share  ID.
@@ -244,6 +254,7 @@ public class GwtSharedMeItem {
 			sharerTitle,													// Sharer title.
 			si.getRecipientId(),											// Recipient ID.
 			si.getRecipientType(),											// Recipient type (user, group or team.)
+			sharePublic,													// true -> Shared with Public (recipient ID and recipient type will be ignored.)  false -> Not shared with Public. 
 			recipientTitle,													// Recipient title.
 			si.getStartDate(),												// Time/date stamp the share was created.
 			GwtShareHelper.getShareRightsFromRightSet(si.getRightSet()),	// The rights granted by the share.
@@ -346,6 +357,23 @@ public class GwtSharedMeItem {
 	 * @return
 	 */
 	public boolean isShared() {
-		return (!(m_perShareInfos.isEmpty()));
+		return ((null != m_perShareInfos) && (!(m_perShareInfos.isEmpty())));
+	}
+
+	/**
+	 * Returns true if this share contains a share public item and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isSharedWithPublic() {
+		if (isShared()) {
+			for (GwtPerShareInfo psi:  m_perShareInfos) {
+				if (psi.isRecipientPublic()) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

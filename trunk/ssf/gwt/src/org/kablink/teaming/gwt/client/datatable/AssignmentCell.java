@@ -311,7 +311,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 
 			String assignmentIndexTail = ("." + (assignmentIndex++));
 			switch (ait) {
-			case INDIVIDUAL:
+			case INDIVIDUAL: {
 				// Individual assignee!  Generate a presence control...
 				GwtPresenceInfo presence = ai.getPresence();
 				PresenceControl presenceControl = new PresenceControl(String.valueOf(ai.getPresenceUserWSId()), false, false, false, presence);
@@ -335,9 +335,10 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				}
 				fp.add(presenceLabel);
 				break;
+			}
 				
 			case GROUP:
-			case TEAM:
+			case TEAM: {
 				// Group or team assignee!  Generate an appropriate
 				// image...
 				VibeFlowPanel imgPanel = new VibeFlowPanel();
@@ -367,6 +368,31 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				fp.add(assignee);
 				
 				break;
+			}
+				
+			case PUBLIC: {
+				// Public assignee!  Generate an appropriate image...
+				VibeFlowPanel imgPanel = new VibeFlowPanel();
+				imgPanel.addStyleName("vibe-dataTableAssignment-control displayInline verticalAlignMiddle");
+				Image assigneeImg = new Image();
+				assigneeImg.addStyleName("vibe-dataTableAssignment-image");
+				assigneeImg.setUrl(m_images.groupAssignee().getSafeUri().asString());
+				assigneeImg.getElement().setAttribute("align", "absmiddle");
+				imgPanel.add(assigneeImg);
+				fp.add(imgPanel);
+
+				// ...and add a label.
+				Label assignee = new Label(ai.getTitle());
+				assignee.addStyleName("vibe-dataTableAssignment-label vibe-dataTableAssignment-enabled");
+				if (m_isIE) {
+					assignee.addStyleName("vibe-dataTableAssignment-labelIE");
+				}
+				if (hasHover) {
+					assignee.setTitle(hover);
+				}
+				fp.add(assignee);
+				break;
+			}
 			}
 		}
 		
