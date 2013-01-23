@@ -269,46 +269,48 @@ function ss_checkForAllUsersGroup() {
 		  onClick="return handleCloseBtn();"/>
 	</div>
 		
-	<fieldset class="ss_fieldset">
-	  <legend class="ss_legend">
-	    <input type="checkbox" name="enableBinderQuotas" 
-		  <c:if test="${ss_binderQuotasEnabled}">checked=checked</c:if>
-		  <c:if test="${!ss_binderQuotasInitialized}">disabled=disabled</c:if>
-		/>
-		<span class="ss_bold"><ssf:nlt tag="administration.quotas.binder.enable" /></span></legend>
-		
-		<div style="margin: 10px">
-		  <c:if test="${ss_binderQuotasInitialized}">
-		    <input type="checkbox" name="allowBinderQuotasByOwner" 
-		    <c:if test="${ss_binderQuotasAllowBinderOwnerEnabled}">checked=checked</c:if>
-		    /><ssf:nlt tag="administration.quotas.binder.allowBinderOwners"/>
-		  </c:if>
-		  <c:if test="${!ss_binderQuotasInitialized}">
-		    <span class="ss_bold"><ssf:nlt tag="administration.quotas.binder.mustInitialize"/></span>
-		  </c:if>
-		</div>
-	    <div style="margin: 10px; padding-top:16px;">
-	      <a class="ss_button ss_bold" href="javascript: ;" onClick="ss_validateBinderQuotas();return false;"
-	        title="<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.binder.validateHint"/></ssf:escapeQuotes>"
-	      >
-	        <c:if test="${ss_binderQuotasInitialized}">
-	          <span><ssf:nlt tag="administration.quotas.binder.validate"/></span>
-	        </c:if>
-	        <c:if test="${!ss_binderQuotasInitialized}">
-	          <span><ssf:nlt tag="administration.quotas.binder.initialize"/></span>
-	        </c:if>
-	      </a>
-	    </div>
-	    <div style="padding-left:100px;">
-	      <div id="ss_operation_status">
-	      </div>
-	    </div>
-
-	  <div style="padding: 10px 0px;">
-		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
-	  </div>
-	</fieldset>
+	<c:if test="${!isFilr}">
+		<fieldset class="ss_fieldset">
+		  <legend class="ss_legend">
+		    <input type="checkbox" name="enableBinderQuotas" 
+			  <c:if test="${ss_binderQuotasEnabled}">checked=checked</c:if>
+			  <c:if test="${!ss_binderQuotasInitialized}">disabled=disabled</c:if>
+			/>
+			<span class="ss_bold"><ssf:nlt tag="administration.quotas.binder.enable" /></span></legend>
+			
+			<div style="margin: 10px">
+			  <c:if test="${ss_binderQuotasInitialized}">
+			    <input type="checkbox" name="allowBinderQuotasByOwner" 
+			    <c:if test="${ss_binderQuotasAllowBinderOwnerEnabled}">checked=checked</c:if>
+			    /><ssf:nlt tag="administration.quotas.binder.allowBinderOwners"/>
+			  </c:if>
+			  <c:if test="${!ss_binderQuotasInitialized}">
+			    <span class="ss_bold"><ssf:nlt tag="administration.quotas.binder.mustInitialize"/></span>
+			  </c:if>
+			</div>
+		    <div style="margin: 10px; padding-top:16px;">
+		      <a class="ss_button ss_bold" href="javascript: ;" onClick="ss_validateBinderQuotas();return false;"
+		        title="<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.binder.validateHint"/></ssf:escapeQuotes>"
+		      >
+		        <c:if test="${ss_binderQuotasInitialized}">
+		          <span><ssf:nlt tag="administration.quotas.binder.validate"/></span>
+		        </c:if>
+		        <c:if test="${!ss_binderQuotasInitialized}">
+		          <span><ssf:nlt tag="administration.quotas.binder.initialize"/></span>
+		        </c:if>
+		      </a>
+		    </div>
+		    <div style="padding-left:100px;">
+		      <div id="ss_operation_status">
+		      </div>
+		    </div>
 	
+		  <div style="padding: 10px 0px;">
+			<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
+		  </div>
+		</fieldset>
+	</c:if>
+		
 	<br/>
 	<br/>
 			
