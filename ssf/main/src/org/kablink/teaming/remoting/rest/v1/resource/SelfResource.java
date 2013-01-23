@@ -113,7 +113,6 @@ public class SelfResource extends AbstractFileResource {
         user.setDiskSpaceQuota(getProfileModule().getMaxUserQuota(entry.getId()));
         user.setLink("/self");
         user.addAdditionalLink("roots", "/self/roots");
-        user.addAdditionalLink("file_folders", "/self/file_folders");
         if (SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             user.addAdditionalLink("my_files", "/self/my_files");
         }
@@ -187,13 +186,6 @@ public class SelfResource extends AbstractFileResource {
                 ResourceUtil.buildBinderBrief(getBinderModule().getBinder(getWorkspaceModule().getTopWorkspaceId()))
         });
         return results;
-    }
-
-    @GET
-    @Path("/file_folders")
-   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public BinderBrief getFileFolders() {
-        return getFakeMyFileFolders();
     }
 
     @GET
