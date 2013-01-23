@@ -30,23 +30,59 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.datatable;
+package org.kablink.teaming.gwt.client.util;
 
-import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-import org.kablink.teaming.gwt.client.util.UserType;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * A column that displays a user type image.
- *
- * @param <T> is a FolderRow.
+ * Enumeration used to communicate the type of a user between the
+ * client and the server as part of a GWT RPC request.
  * 
  * @author drfoster@novell.com
  */
-public abstract class UserTypeColumn<T> extends VibeColumn<T, UserType> {
-  /**
-   * Constructor method.
-   */
-  public UserTypeColumn(FolderColumn fc) {
-	  super(fc, new UserTypeCell());
-  }
+public enum UserType implements IsSerializable {
+	EXTERNAL_GUEST,			// Guest.
+	EXTERNAL_OTHERS,		// All other externals except guest.
+							//
+	INTERNAL_LDAP,			// Users imported from LDAP.
+	INTERNAL_PERSON_ADMIN,	// System defined admin.
+	INTERNAL_PERSON_OTHERS,	// All other non-LDAP person users.
+	INTERNAL_SYSTEM,		// All systems users (e.g., File Sync Agent, ...)
+							//
+	UNKNOWN;				// Could not be classified.
+
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public boolean isExternal() {
+		boolean reply;
+		switch (this) {
+		case EXTERNAL_GUEST:
+		case EXTERNAL_OTHERS:  reply = true;  break;
+		default:               reply = false; break;
+		}
+		return reply;
+	}
+	
+	public boolean isInternal() {
+		boolean reply;
+		switch (this) {
+		case INTERNAL_LDAP:
+		case INTERNAL_PERSON_ADMIN:
+		case INTERNAL_PERSON_OTHERS:
+		case INTERNAL_SYSTEM:  reply = true;  break;
+		default:               reply = false; break;
+		}
+		return reply;
+	}
+	
+	public boolean isInternalLdap() {
+		return INTERNAL_LDAP.equals(this);
+	}
+	
+	public boolean isLocal() {
+		return (!(INTERNAL_LDAP.equals(this)));
+	}
 }

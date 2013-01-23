@@ -139,6 +139,7 @@ import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
+import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
@@ -1574,9 +1575,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Yes!  Create a UserTypeColumn for it.
 				column = new UserTypeColumn<FolderRow>(fc) {
 					@Override
-					public Boolean getValue(FolderRow fr) {
-						String internal = fr.getColumnValueAsString(fc);
-						return ((null == internal) || (!(internal.equalsIgnoreCase("false"))));
+					public UserType getValue(FolderRow fr) {
+						return fr.getColumnValueAsUserType(fc);
 					}
 				};
 			}
