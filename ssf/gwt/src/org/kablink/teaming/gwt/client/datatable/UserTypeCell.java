@@ -91,7 +91,17 @@ public class UserTypeCell extends AbstractCell<UserType> {
 	 */
 	public static ImageResource getUserTypeImage(UserType userType) {
 		GwtTeamingDataTableImageBundle images = GwtTeaming.getDataTableImageBundle();
-		return (userType.isInternal() ? images.internalUser() : images.externalUser());		
+		ImageResource reply;
+		switch (userType) {
+		case EXTERNAL_GUEST:          reply = images.externalUser_Guest();        break;
+		case EXTERNAL_OTHERS:         reply = images.externalUser_Others();       break;
+		case INTERNAL_LDAP:           reply = images.internalUser_LDAP();         break;
+		case INTERNAL_PERSON_ADMIN:   reply = images.internalUser_PersonAdmin();  break;
+		case INTERNAL_PERSON_OTHERS:  reply = images.internalUser_PersonOthers(); break;
+		case INTERNAL_SYSTEM:         reply = images.internalUser_System();       break;
+		default:                      reply = images.unknownUser();               break;
+		}
+		return reply;		
 	}
 	
 	/**
