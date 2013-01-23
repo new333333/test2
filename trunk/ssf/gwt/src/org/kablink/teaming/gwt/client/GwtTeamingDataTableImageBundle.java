@@ -96,8 +96,12 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource expandDescription();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/guestUser.png")
+	public ImageResource externalUser_Guest();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/externalUser.png")
-	public ImageResource externalUser();
+	public ImageResource externalUser_Others();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/filterOn.png")
@@ -128,8 +132,20 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource help();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/internalUser_LDAP.png")
+	public ImageResource internalUser_LDAP();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/adminUser.png")
+	public ImageResource internalUser_PersonAdmin();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/internalUser.png")
-	public ImageResource internalUser();
+	public ImageResource internalUser_PersonOthers();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/systemUser.png")
+	public ImageResource internalUser_System();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/lock_20.png")
@@ -166,6 +182,10 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/unknown_128.png")
 	public ImageResource unknown();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/internalUser.png")
+	public ImageResource unknownUser();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/sunburst.png")
