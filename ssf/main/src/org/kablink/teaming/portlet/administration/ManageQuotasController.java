@@ -338,6 +338,8 @@ public class ManageQuotasController extends SAbstractController {
 		group_principals = getProfileModule().getPrincipals(groups);
 		model.put(WebKeys.FILE_SIZE_LIMITS_GROUPS, group_principals);
 		
+		model.put( "isFilr", Utils.checkIfFilr() );
+		
 		return new ModelAndView(WebKeys.VIEW_ADMIN_MANAGE_QUOTAS, model);
 
 	}
