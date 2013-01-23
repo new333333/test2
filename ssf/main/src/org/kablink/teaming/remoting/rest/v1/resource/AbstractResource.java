@@ -110,12 +110,28 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return (org.kablink.teaming.domain.User)entry;
     }
 
+    protected org.kablink.teaming.domain.Workspace _getUserWorkspace() {
+        Long workspaceId = getLoggedInUser().getWorkspaceId();
+        if (workspaceId!=null) {
+            return _getWorkspace(workspaceId);
+        }
+        throw new NotFoundException(ApiErrorCode.FOLDER_NOT_FOUND, "NOT FOUND");
+    }
+
     protected org.kablink.teaming.domain.Folder _getHiddenFilesFolder() {
         Long folderId = SearchUtils.getMyFilesFolderId(this, getLoggedInUser().getWorkspaceId(), true);
         if (folderId!=null) {
             return _getFolder(folderId);
         }
         throw new NotFoundException(ApiErrorCode.FOLDER_NOT_FOUND, "NOT FOUND");
+    }
+
+    protected org.kablink.teaming.domain.Folder _getHomeFolder() {
+        Long folderId = SearchUtils.getHomeFolderId(this, getLoggedInUser().getWorkspaceId());
+        if (folderId!=null) {
+            return _getFolder(folderId);
+        }
+        throw new NotFoundException(ApiErrorCode.FOLDER_NOT_FOUND, "User has no home folder");
     }
 
     protected org.kablink.teaming.domain.Folder _getFolder(long id) {
@@ -131,6 +147,21 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             // Throw exception below.
         }
         throw new NotFoundException(ApiErrorCode.FOLDER_NOT_FOUND, "NOT FOUND");
+    }
+
+    protected Workspace _getWorkspace(long id) {
+        try{
+            org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(id, false, true);
+            if (binder instanceof Workspace) {
+                Workspace workspace = (Workspace) binder;
+                if (!workspace.isPreDeleted()) {
+                    return workspace;
+                }
+            }
+        } catch (NoBinderByTheIdException e) {
+            // Throw exception below.
+        }
+        throw new NotFoundException(ApiErrorCode.WORKSPACE_NOT_FOUND, "NOT FOUND");
     }
 
     protected org.kablink.teaming.domain.User _getUser(long userId) {

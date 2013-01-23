@@ -268,21 +268,6 @@ public class WorkspaceResource extends AbstractBinderResource {
         return _getWorkspace(id);
     }
 
-    private org.kablink.teaming.domain.Workspace _getWorkspace(long id) {
-        try{
-            org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(id, false, true);
-            if (binder instanceof org.kablink.teaming.domain.Workspace) {
-                org.kablink.teaming.domain.Workspace workspace = (org.kablink.teaming.domain.Workspace) binder;
-                if (!workspace.isPreDeleted()) {
-                    return workspace;
-                }
-            }
-        } catch (NoBinderByTheIdException e) {
-            // Throw exception below.
-        }
-        throw new NotFoundException(ApiErrorCode.WORKSPACE_NOT_FOUND, "NOT FOUND");
-    }
-
     @Override
     EntityIdentifier.EntityType _getEntityType() {
         return EntityIdentifier.EntityType.workspace;

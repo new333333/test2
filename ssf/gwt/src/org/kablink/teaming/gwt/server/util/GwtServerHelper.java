@@ -1580,29 +1580,18 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static boolean canUserAccessCollection(AllModulesInjected bs, User user, CollectionType ct) {		
-		boolean isGuestOrExternal = (user.isShared() || (!(user.getIdentityInfo().isInternal())));
 		boolean reply             = true;
 		switch (ct) {
 		default:
 			break;
 			
 		case MY_FILES:
-			// For Filr, we don't support My Files for the guest or
-			// external users. 
-			if (Utils.checkIfFilr() && isGuestOrExternal) {
-				reply = false;
-			}
-			else {
-				// The user can access My Files if adHoc folders are
-				// not allowed and the user doesn't have a home folder.
-				if (useHomeAsMyFiles(bs, user) && (!(userHasHomeFolder(bs, user)))) {
-					reply = false;
-				}
-			}
+            reply = SearchUtils.userCanAccessMyFiles(bs, user);
 			break;
 			
 		case NET_FOLDERS:
 		case SHARED_BY_ME:
+            boolean isGuestOrExternal = (user.isShared() || (!(user.getIdentityInfo().isInternal())));
 			// We never support Net Folders or Shared By Me for the
 			// guest or external users.
 			if (isGuestOrExternal) {
