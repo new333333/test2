@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -150,10 +150,6 @@ public class UserPropertiesDlg extends DlgBox
 	private void addAccountInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, AccountInfo account, boolean addSectionHeader) {
 		// Add the user's login ID...
 		int row = getSectionRow(grid, rf, addSectionHeader);
-		InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgAccount());
-		il.addStyleName("vibe-userPropertiesDlg-buttonLook");
-		grid.setWidget(           row, 0, il);
-		cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
 		addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_UserId(), account.getLoginId());
 		
 		// ...add the last login date/time stamp...
@@ -206,14 +202,8 @@ public class UserPropertiesDlg extends DlgBox
 	 * Adds information about the user's Home folder to the grid.
 	 */
 	private void addHomeInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, HomeInfo home, boolean addSectionHeader) {
-		// Add a home section label.
+		// Add a home section.
 		int row = getSectionRow(grid, rf, addSectionHeader);
-		InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgHome());
-		il.addStyleName("vibe-userPropertiesDlg-buttonLook");
-		grid.setWidget(           row, 0, il);
-		cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
-		
-		// ...add information to that affect.
 		boolean hasHome = (null != home);
 		addLabeledText(
 			grid,
@@ -370,7 +360,7 @@ public class UserPropertiesDlg extends DlgBox
 		else {
 			// ...otherwise, add a simple label for the section.
 			InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgNetFolders());
-			il.addStyleName("vibe-userPropertiesDlg-buttonLook");
+			il.addStyleName("vibe-userPropertiesDlg-buttonNoAct vibe-userPropertiesDlg-buttonLook");
 			grid.setWidget(           row, 0, il);
 			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);			
 		}
@@ -465,7 +455,7 @@ public class UserPropertiesDlg extends DlgBox
 		if (!(account.isInternal())) {
 			// No!  Add a simple label for the section.
 			InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgLabel_PersonalStorage());
-			il.addStyleName("vibe-userPropertiesDlg-buttonLook");
+			il.addStyleName("vibe-userPropertiesDlg-buttonNoAct vibe-userPropertiesDlg-buttonLook");
 			grid.setWidget(           row, 0, il);
 			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);			
 		}
@@ -573,7 +563,7 @@ public class UserPropertiesDlg extends DlgBox
 		else {
 			// ...otherwise, add a simple label for the section.
 			InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgProfile());
-			il.addStyleName("vibe-userPropertiesDlg-buttonLook");
+			il.addStyleName("vibe-userPropertiesDlg-buttonNoAct vibe-userPropertiesDlg-buttonLook");
 			grid.setWidget(           row, 0, il);
 			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);			
 		}
@@ -600,7 +590,7 @@ public class UserPropertiesDlg extends DlgBox
 		if (null == quota) {
 			// ...add information to that affect.
 			InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgQuota());
-			il.addStyleName("vibe-userPropertiesDlg-buttonLook");
+			il.addStyleName("vibe-userPropertiesDlg-buttonNoAct vibe-userPropertiesDlg-buttonLook");
 			grid.setWidget(           row, 0, il);
 			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);			
 			addLabeledText(
@@ -631,7 +621,7 @@ public class UserPropertiesDlg extends DlgBox
 		else {
 			// ...otherwise, add a simple label for the section.
 			InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgQuota());
-			il.addStyleName("vibe-userPropertiesDlg-buttonLook");
+			il.addStyleName("vibe-userPropertiesDlg-buttonNoAct vibe-userPropertiesDlg-buttonLook");
 			grid.setWidget(           row, 0, il);
 			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);			
 		}
@@ -723,7 +713,7 @@ public class UserPropertiesDlg extends DlgBox
 			// No, the user doesn't have a workspace.  Their sharing
 			// rights could not be determined.
 			InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgSharing());
-			il.addStyleName("vibe-userPropertiesDlg-buttonLook");
+			il.addStyleName("vibe-userPropertiesDlg-buttonNoAct vibe-userPropertiesDlg-buttonLook");
 			grid.setWidget(           row, 0, il);
 			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);			
 			addLabeledText(
@@ -913,8 +903,8 @@ public class UserPropertiesDlg extends DlgBox
 		addIdentityInfo(       grid, cf                                                 );
 		addProfileInfo(        grid, cf, rf, m_userProperties.getProfile(),        false);	// false -> Don't add with a section header.
 		addAccountInfo(        grid, cf, rf, m_userProperties.getAccountInfo(),    true );	// true  ->       Add with a section header.
-		addPersonalStorageInfo(grid, cf, rf, m_userProperties.getAccountInfo(),    true );	// true  ->       Add with a section header.
 		addHomeInfo(           grid, cf, rf, m_userProperties.getHomeInfo(),       true );	// true  ->       Add with a section header.
+		addPersonalStorageInfo(grid, cf, rf, m_userProperties.getAccountInfo(),    true );	// true  ->       Add with a section header.
 		addQuotaInfo(          grid, cf, rf, m_userProperties.getQuotaInfo(),      true );	// true  ->       Add with a section header.
 		addSharingInfo(        grid, cf, rf, m_userProperties.getSharingRights(),  true );	// true  ->       Add with a section header.
 		addNetFoldersInfo(     grid, cf, rf, m_userProperties.getNetFoldersInfo(), true );	// true  ->       Add with a section header.
