@@ -80,7 +80,7 @@ public class NetFolder
 	{
 		// Nothing to do.
 		m_isHomeDir = false;
-		m_indexContent = true;
+		m_indexContent = false;
 	}	
 	
 	/**
