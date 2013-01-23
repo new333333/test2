@@ -2154,7 +2154,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 					+ " " + network.getListenPort());
 			
 			//Enable the firewall for this port 80 443
-			executeCommand("sudo SuSEfirewall2 open EXT TCP 80 443");
+			executeCommand("sudo SuSEfirewall2 open EXT TCP 80 443 8080");
 			executeCommand("sudo SuSEfirewall2 stop");
 			executeCommand("sudo SuSEfirewall2 start");
 		}
