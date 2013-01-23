@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
+import org.kablink.teaming.gwt.client.util.UserType;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -59,16 +60,14 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 	 * account.
 	 */
 	public static class AccountInfo implements IsSerializable {
-		private boolean	m_fromLdap;			//
-		private boolean	m_fromLocal;		//
-		private boolean	m_fromOpenId;		//
-		private boolean	m_hasAdHocFolders;	//
-		private boolean	m_perUserAdHoc;		//
-		private boolean	m_internal;			//
-		private String	m_eDirContainer;	//
-		private String	m_lastLogin;		//
-		private String	m_ldapDN;			//
-		private String	m_loginId;			//
+		private boolean		m_fromOpenId;		//
+		private boolean		m_hasAdHocFolders;	//
+		private boolean		m_perUserAdHoc;		//
+		private String		m_eDirContainer;	//
+		private String		m_lastLogin;		//
+		private String		m_ldapDN;			//
+		private String		m_loginId;			//
+		private UserType	m_userType;			//
 		
 		/**
 		 * Constructor method.
@@ -86,32 +85,31 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		 * 
 		 * @return
 		 */
-		public boolean isFromLdap()       {return m_fromLdap;       }
-		public boolean isFromLocal()      {return m_fromLocal;      }
-		public boolean isFromOpenId()     {return m_fromOpenId;     }
-		public boolean hasAdHocFolders()  {return m_hasAdHocFolders;}
-		public boolean isPerUserAdHoc()   {return m_perUserAdHoc;   }
-		public boolean isInternal()       {return m_internal;       }
-		public String  getEDirContainer() {return m_eDirContainer;  }
-		public String  getLastLogin()     {return m_lastLogin;      }
-		public String  getLdapDN()        {return m_ldapDN;         }
-		public String  getLoginId()       {return m_loginId;        }
+		public boolean  isFromLdap()       {return m_userType.isInternalLdap();}
+		public boolean  isFromLocal()      {return m_userType.isLocal();       }
+		public boolean  isFromOpenId()     {return m_fromOpenId;               }
+		public boolean  hasAdHocFolders()  {return m_hasAdHocFolders;          }
+		public boolean  isPerUserAdHoc()   {return m_perUserAdHoc;             }
+		public boolean  isInternal()       {return m_userType.isInternal();    }
+		public String   getEDirContainer() {return m_eDirContainer;            }
+		public String   getLastLogin()     {return m_lastLogin;                }
+		public String   getLdapDN()        {return m_ldapDN;                   }
+		public String   getLoginId()       {return m_loginId;                  }
+		public UserType getUserType()      {return m_userType;                 }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setFromLdap(       boolean fromLdap)        {m_fromLdap        = fromLdap;       }
-		public void setFromLocal(      boolean fromLocal)       {m_fromLocal       = fromLocal;      }
-		public void setFromOpenId(     boolean fromOpenId)      {m_fromOpenId      = fromOpenId;     }
-		public void setHasAdHocFolders(boolean hasAdHocFolders) {m_hasAdHocFolders = hasAdHocFolders;}
-		public void setPerUserAdHoc(   boolean perUserAdHoc)    {m_perUserAdHoc    = perUserAdHoc;   }
-		public void setInternal(       boolean internal)        {m_internal        = internal;       }
-		public void setEDirContainer(  String  eDirContainer)   {m_eDirContainer   = eDirContainer;  }
-		public void setLastLogin(      String  lastLogin)       {m_lastLogin       = lastLogin;      }
-		public void setLdapDN(         String  ldapDN)          {m_ldapDN          = ldapDN;         }
-		public void setLoginId(        String  loginId)         {m_loginId         = loginId;        }
+		public void setFromOpenId(     boolean  fromOpenId)      {m_fromOpenId      = fromOpenId;     }
+		public void setHasAdHocFolders(boolean  hasAdHocFolders) {m_hasAdHocFolders = hasAdHocFolders;}
+		public void setPerUserAdHoc(   boolean  perUserAdHoc)    {m_perUserAdHoc    = perUserAdHoc;   }
+		public void setEDirContainer(  String   eDirContainer)   {m_eDirContainer   = eDirContainer;  }
+		public void setLastLogin(      String   lastLogin)       {m_lastLogin       = lastLogin;      }
+		public void setLdapDN(         String   ldapDN)          {m_ldapDN          = ldapDN;         }
+		public void setLoginId(        String   loginId)         {m_loginId         = loginId;        }
+		public void setUserType(       UserType userType)        {m_userType        = userType;       }
 	}
 	
 	/**

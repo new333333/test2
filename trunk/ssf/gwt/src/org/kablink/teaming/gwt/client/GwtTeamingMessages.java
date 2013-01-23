@@ -1647,8 +1647,13 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_Comments();
 	String vibeDataTable_Alt_EntryActions();
 	String vibeDataTable_Alt_ExpandDescription();
-	String vibeDataTable_Alt_ExternalUser();
-	String vibeDataTable_Alt_InternalUser();
+	String vibeDataTable_Alt_ExternalUser_Guest();
+	String vibeDataTable_Alt_ExternalUser_Others();
+	String vibeDataTable_Alt_InternalUser_LDAP();
+	String vibeDataTable_Alt_InternalUser_PersonAdmin();
+	String vibeDataTable_Alt_InternalUser_PersonOthers();
+	String vibeDataTable_Alt_InternalUser_System();
+	String vibeDataTable_Alt_UnknownUser();
 	String vibeDataTable_Alt_Unread();
 	String vibeDataTable_Alt_PinEntry();
 	String vibeDataTable_Alt_PinHeader();
@@ -2458,6 +2463,7 @@ public interface GwtTeamingMessages extends Messages
 	String userPropertiesDlgNoNF();
 	String userPropertiesDlgNoQuota();
 	String userPropertiesDlgNoWS();
+	String userPropertiesDlgPersonalStorage();
 	String userPropertiesDlgPersonalStorage_Clear();
 	String userPropertiesDlgPersonalStorage_Disable();
 	String userPropertiesDlgPersonalStorage_Enable();

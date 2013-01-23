@@ -162,6 +162,7 @@ import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
 import org.kablink.teaming.gwt.client.util.TagInfo;
+import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails.UserInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -4017,6 +4018,15 @@ public class GwtViewHelper {
 											Integer.parseInt(commentCount)));
 								}
 								
+								// No, we aren't working a comments
+								// count field either!  Are we working
+								// on the internal/external flag of a
+								// user?
+								else if (csk.equals(Constants.IDENTITY_INTERNAL_FIELD)) {
+									// Yes!  Store a user type for it.
+									fr.setColumnValue(fc, getUserType(bs, request, entityId));
+								}
+								
 								else {
 									// No, we aren't working on a
 									// comments count field either!
@@ -5272,11 +5282,9 @@ public class GwtViewHelper {
 			IdentityInfo	userII = user.getIdentityInfo();
 			AccountInfo		ai     = new AccountInfo();
 			reply.setAccountInfo(ai);
-			ai.setLoginId(   user.getName()       );
-			ai.setFromLdap(  userII.isFromLdap()  );
-			ai.setFromLocal( userII.isFromLocal() );
+			ai.setLoginId(user.getName());
 			ai.setFromOpenId(userII.isFromOpenid());
-			ai.setInternal(  userII.isInternal()  );
+			ai.setUserType(getUserType(user));
 
 			// ...if the user's from LDAP...
 			if (userII.isFromLdap()) {
@@ -5444,6 +5452,73 @@ public class GwtViewHelper {
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
+	}
+
+	/*
+	 * Given a User, returns the type of that user.
+	 */
+	private static UserType getUserType(User user) {
+		// Are they an internal user?
+		UserType reply;
+		IdentityInfo ui = user.getIdentityInfo();
+		if (ui.isInternal()) {
+			// Yes!  Are they from LDAP?
+			if (ui.isFromLdap()) {
+				// Yes!
+				reply = UserType.INTERNAL_LDAP;
+			}
+			else {
+				// No, they're not from LDAP!  Is it a person?
+				if (user.isPerson()) {
+					// Yes!
+					if (user.isReserved() && user.getInternalId().equalsIgnoreCase(ObjectKeys.SUPER_USER_INTERNALID))
+					     reply = UserType.INTERNAL_PERSON_ADMIN;
+					else reply = UserType.INTERNAL_PERSON_OTHERS;
+				}
+				else {
+					// No, it's not a person!
+					reply = UserType.INTERNAL_SYSTEM;
+				}
+			}
+		}
+		else {
+			// No, it's not an internal user!  Is it the Guest user?
+			if (user.isShared())
+			     reply = UserType.EXTERNAL_GUEST;
+			else reply = UserType.EXTERNAL_OTHERS;
+		}
+		
+		// If we get here, reply refers to the UserType of the User.
+		// Return it.
+		return reply;
+	}
+	
+	/*
+	 * Given an EntityId that describes a user, returns the type of
+	 * user.
+	 */
+	private static UserType getUserType(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) {
+		UserType reply = UserType.UNKNOWN;
+		
+		try {
+			// Can we access the User?
+			Principal p = bs.getProfileModule().getEntry(entityId.getEntityId());
+			if ((null != p) && (p instanceof User)) {
+				// Yes!  What type are they?
+				reply = getUserType(((User) p));
+			}
+		}
+		
+		catch (Exception ex) {
+			// Log the exception.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getUserType( SOURCE EXCEPTION ):  ", ex);
+			}
+		}
+		
+		// If we get here, reply refers to the UserType of the
+		// EntityId.  Return it.
+		return reply;
 	}
 	
 	/**

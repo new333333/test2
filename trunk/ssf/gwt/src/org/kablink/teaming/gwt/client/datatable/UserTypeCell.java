@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -50,35 +51,62 @@ import com.google.gwt.user.client.ui.Image;
  * 
  * @author drfoster@novell.com
  */
-public class UserTypeCell extends AbstractCell<Boolean> {
-	private GwtTeamingDataTableImageBundle	m_images;	// Access to the Vibe images resources we need for this cell.
-	private GwtTeamingMessages				m_messages;	// Access to the Vibe string resources we need for this cell.
-	
+public class UserTypeCell extends AbstractCell<UserType> {
 	/**
 	 * Constructor method.
 	 */
 	public UserTypeCell() {
-		// Initialize the super class...
+		// Initialize the super class.
 		super();
-		
-		// ...and initialize everything else.
-		m_images   = GwtTeaming.getDataTableImageBundle();
-		m_messages = GwtTeaming.getMessages();
 	}
 
+	/**
+	 * Returns the title string to add to a user type <IMG>.
+	 * 
+	 * @param userType
+	 * 
+	 * @return
+	 */
+	public static String getUserTypeAlt(UserType userType) {
+		GwtTeamingMessages messages = GwtTeaming.getMessages();
+		String reply;
+		switch (userType) {
+		case EXTERNAL_GUEST:          reply = messages.vibeDataTable_Alt_ExternalUser_Guest();        break;
+		case EXTERNAL_OTHERS:         reply = messages.vibeDataTable_Alt_ExternalUser_Others();       break;
+		case INTERNAL_LDAP:           reply = messages.vibeDataTable_Alt_InternalUser_LDAP();         break;
+		case INTERNAL_PERSON_ADMIN:   reply = messages.vibeDataTable_Alt_InternalUser_PersonAdmin();  break;
+		case INTERNAL_PERSON_OTHERS:  reply = messages.vibeDataTable_Alt_InternalUser_PersonOthers(); break;
+		case INTERNAL_SYSTEM:         reply = messages.vibeDataTable_Alt_InternalUser_System();       break;
+		default:                      reply = messages.vibeDataTable_Alt_UnknownUser();               break;
+		}
+		return reply;
+	}
+	
+	/**
+	 * Returns the ImageResource to use for a user type <IMG>.
+	 * 
+	 * @param userType
+	 * 
+	 * @return
+	 */
+	public static ImageResource getUserTypeImage(UserType userType) {
+		GwtTeamingDataTableImageBundle images = GwtTeaming.getDataTableImageBundle();
+		return (userType.isInternal() ? images.internalUser() : images.externalUser());		
+	}
+	
 	/**
 	 * Called to render an instance of this cell.
 	 * 
 	 * @param context
-	 * @param internalUser
+	 * @param userType
 	 * @param sb
 	 * 
 	 * Overrides AbstractCell.render()
 	 */
 	@Override
-	public void render(Context context, Boolean internalUser, SafeHtmlBuilder sb) {
-		// If we weren't given a CommentsInfo...
-		if (null == internalUser) {
+	public void render(Context context, UserType userType, SafeHtmlBuilder sb) {
+		// If we weren't given a UserType...
+		if (null == userType) {
 			// ...bail.  Cell widgets can pass null to cells if the
 			// ...underlying data contains a null, or if the data
 			// ...arrives out of order.
@@ -87,12 +115,8 @@ public class UserTypeCell extends AbstractCell<Boolean> {
 		}
 
 		// Create the HTML for the user type image...
-		ImageResource ir = (internalUser ? m_images.internalUser() : m_images.externalUser());
-		Image i = GwtClientHelper.buildImage(
-			ir.getSafeUri().asString(),
-			(internalUser                                   ?
-				m_messages.vibeDataTable_Alt_InternalUser() :
-				m_messages.vibeDataTable_Alt_ExternalUser()));
+		ImageResource ir = getUserTypeImage(userType);
+		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString(), getUserTypeAlt(userType));
 		i.addStyleName("vibe-dataTableUserType-image");
 		VibeFlowPanel userTypePanel = new VibeFlowPanel();
 		userTypePanel.addStyleName("vibe-dataTableUserType-panel");
@@ -105,4 +129,3 @@ public class UserTypeCell extends AbstractCell<Boolean> {
 		sb.append(rendered);
 	}
 }
-	

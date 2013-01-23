@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
 import org.kablink.teaming.gwt.client.util.ShareMessageInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
+import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -91,6 +92,7 @@ public class FolderRow implements IsSerializable {
 	private Map<String, List<ShareExpirationInfo>>	m_rowShareExpirationInfos;	// A map of column names to List<ShareExpirationInfo>'s           possibly stored for a column.
 	private Map<String, List<ShareMessageInfo>>		m_rowShareMessageInfos;		// A map of column names to List<ShareMessageInfo>'s              possibly stored for a column.
 	private Map<String, String>						m_rowStrings;				// A map of column names to String values                         possibly stored for a column.
+	private Map<String, UserType>					m_rowUserTypes;				// A map of column names to UserType values                       possibly stored for a column.
 	
 	/**
 	 * Constructor method.
@@ -146,6 +148,7 @@ public class FolderRow implements IsSerializable {
 	public Map<String, List<TaskFolderInfo>>       getRowTaskFolderInfoListsMap()         {validateMapTaskFolders();      return m_rowTaskFolderInfos; } 
 	public Map<String, ViewFileInfo>               getRowViewFilesMap()                   {validateMapViews();            return m_rowViewFiles;       } 
 	public Map<String, String>                     getRowStringsMap()                     {validateMapStrings();          return m_rowStrings;         }
+	public Map<String, UserType>                   getRowUserTypesMap()                   {validateMapUserTypes();        return m_rowUserTypes;       }
 	public String                                  getBinderIcon(BinderIconSize iconSize) {return m_binderIcons.getBinderIcon(iconSize);               }
 
 	/**
@@ -187,6 +190,7 @@ public class FolderRow implements IsSerializable {
 		else if (v instanceof EntryTitleInfo)      {validateMapTitles();           m_rowEntryTitles.put(     vk, ((EntryTitleInfo)      v));}
 		else if (v instanceof GuestInfo)           {validateMapGuests();           m_rowGuests.put(          vk, ((GuestInfo)           v));}
 		else if (v instanceof PrincipalInfo)       {validateMapPrincipals();       m_rowPrincipals.put(      vk, ((PrincipalInfo)       v));}
+		else if (v instanceof UserType)            {validateMapUserTypes();        m_rowUserTypes.put(       vk, ((UserType)            v));}
 		else if (v instanceof ViewFileInfo)        {validateMapViews();            m_rowViewFiles.put(       vk, ((ViewFileInfo)        v));}
 		else                                       {validateMapStrings();          m_rowStrings.put(         vk, v.toString());             }
 	}
@@ -420,6 +424,17 @@ public class FolderRow implements IsSerializable {
 	}
 
 	/**
+	 * Returns the UserType value for a specific column.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public UserType getColumnValueAsUserType(FolderColumn fc) {
+		return ((null == m_rowUserTypes) ? null : m_rowUserTypes.get(getValueKey(fc)));
+	}
+
+	/**
 	 * Returns the ViewFileInfo value for a specific column.
 	 * 
 	 * @param fc
@@ -603,24 +618,37 @@ public class FolderRow implements IsSerializable {
 		return ((null != m_rowStrings) && (null != m_rowStrings.get(getValueKey(fc))));
 	}
 	
+	/**
+	 * Returns true if a column's value is a UserType and false
+	 * otherwise.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public boolean isColumnValueUserType(FolderColumn fc) {
+		return ((null != m_rowUserTypes) && (null != m_rowUserTypes.get(getValueKey(fc))));
+	}
+
 	/*
 	 * Validates that the various Maps have been defined.
 	 */
-	private void validateMapAssignees()        {if (null == m_rowAssigneeInfos)			m_rowAssigneeInfos			= new HashMap<String, List<AssignmentInfo>>();      }
-	private void validateMapOverdueDates()     {if (null == m_rowOverdueDates)  		m_rowOverdueDates			= new HashMap<String, Boolean>();                   }
-	private void validateMapComments()         {if (null == m_rowComments)				m_rowComments				= new HashMap<String, CommentsInfo>();              }
-	private void validateMapDescriptionHtmls() {if (null == m_rowDescriptionHtmls)		m_rowDescriptionHtmls		= new HashMap<String, DescriptionHtml>();           }
-	private void validateMapEmailAddresses()   {if (null == m_rowEmailAddresses)		m_rowEmailAddresses			= new HashMap<String, EmailAddressInfo>();          }
-	private void validateMapEvents()           {if (null == m_rowEntryEvents)			m_rowEntryEvents			= new HashMap<String, EntryEventInfo>();            }
-	private void validateMapGuests()           {if (null == m_rowGuests)		    	m_rowGuests			    	= new HashMap<String, GuestInfo>();                 }
-	private void validateMapLinks()            {if (null == m_rowEntryLinks)			m_rowEntryLinks				= new HashMap<String, EntryLinkInfo>();             }
-	private void validateMapPrincipals()       {if (null == m_rowPrincipals)			m_rowPrincipals				= new HashMap<String, PrincipalInfo>();             }
-	private void validateMapTaskFolders()      {if (null == m_rowTaskFolderInfos)		m_rowTaskFolderInfos		= new HashMap<String, List<TaskFolderInfo>>();      }
-	private void validateMapTitles()           {if (null == m_rowEntryTitles)			m_rowEntryTitles			= new HashMap<String, EntryTitleInfo>();            }
-	private void validateMapShareAccesses()    {if (null == m_rowShareAccessInfos)		m_rowShareAccessInfos		= new HashMap<String, List<ShareAccessInfo>>();     }
-	private void validateMapShareDates()       {if (null == m_rowShareDateInfos)		m_rowShareDateInfos			= new HashMap<String, List<ShareDateInfo>>();       }
-	private void validateMapShareExpirations() {if (null == m_rowShareExpirationInfos)	m_rowShareExpirationInfos	= new HashMap<String, List<ShareExpirationInfo>>(); }
-	private void validateMapShareMessages()    {if (null == m_rowShareMessageInfos)		m_rowShareMessageInfos		= new HashMap<String, List<ShareMessageInfo>>();    }
-	private void validateMapStrings()          {if (null == m_rowStrings)				m_rowStrings				= new HashMap<String, String>();                    }
-	private void validateMapViews()            {if (null == m_rowViewFiles)				m_rowViewFiles				= new HashMap<String, ViewFileInfo>();              }
+	private void validateMapAssignees()        {if (null == m_rowAssigneeInfos)			m_rowAssigneeInfos			= new HashMap<String, List<AssignmentInfo>>();     }
+	private void validateMapOverdueDates()     {if (null == m_rowOverdueDates)  		m_rowOverdueDates			= new HashMap<String, Boolean>();                  }
+	private void validateMapComments()         {if (null == m_rowComments)				m_rowComments				= new HashMap<String, CommentsInfo>();             }
+	private void validateMapDescriptionHtmls() {if (null == m_rowDescriptionHtmls)		m_rowDescriptionHtmls		= new HashMap<String, DescriptionHtml>();          }
+	private void validateMapEmailAddresses()   {if (null == m_rowEmailAddresses)		m_rowEmailAddresses			= new HashMap<String, EmailAddressInfo>();         }
+	private void validateMapEvents()           {if (null == m_rowEntryEvents)			m_rowEntryEvents			= new HashMap<String, EntryEventInfo>();           }
+	private void validateMapGuests()           {if (null == m_rowGuests)		    	m_rowGuests			    	= new HashMap<String, GuestInfo>();                }
+	private void validateMapLinks()            {if (null == m_rowEntryLinks)			m_rowEntryLinks				= new HashMap<String, EntryLinkInfo>();            }
+	private void validateMapPrincipals()       {if (null == m_rowPrincipals)			m_rowPrincipals				= new HashMap<String, PrincipalInfo>();            }
+	private void validateMapTaskFolders()      {if (null == m_rowTaskFolderInfos)		m_rowTaskFolderInfos		= new HashMap<String, List<TaskFolderInfo>>();     }
+	private void validateMapTitles()           {if (null == m_rowEntryTitles)			m_rowEntryTitles			= new HashMap<String, EntryTitleInfo>();           }
+	private void validateMapShareAccesses()    {if (null == m_rowShareAccessInfos)		m_rowShareAccessInfos		= new HashMap<String, List<ShareAccessInfo>>();    }
+	private void validateMapShareDates()       {if (null == m_rowShareDateInfos)		m_rowShareDateInfos			= new HashMap<String, List<ShareDateInfo>>();      }
+	private void validateMapShareExpirations() {if (null == m_rowShareExpirationInfos)	m_rowShareExpirationInfos	= new HashMap<String, List<ShareExpirationInfo>>();}
+	private void validateMapShareMessages()    {if (null == m_rowShareMessageInfos)		m_rowShareMessageInfos		= new HashMap<String, List<ShareMessageInfo>>();   }
+	private void validateMapStrings()          {if (null == m_rowStrings)				m_rowStrings				= new HashMap<String, String>();                   }
+	private void validateMapUserTypes()        {if (null == m_rowUserTypes)				m_rowUserTypes				= new HashMap<String, UserType>();                 }
+	private void validateMapViews()            {if (null == m_rowViewFiles)				m_rowViewFiles				= new HashMap<String, ViewFileInfo>();             }
 }

@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
+import org.kablink.teaming.gwt.client.datatable.UserTypeCell;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserShareRightsDlgEvent;
@@ -60,6 +61,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
+import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -158,18 +160,14 @@ public class UserPropertiesDlg extends DlgBox
 
 		// ...add the type of account...
 		row = grid.getRowCount();
-		boolean internal = account.isInternal();
-		ImageResource ir = (internal ? m_images.internalUser() : m_images.externalUser());
-		Image i = GwtClientHelper.buildImage(
-			ir.getSafeUri().asString(),
-			(internal                                       ?
-				m_messages.vibeDataTable_Alt_InternalUser() :
-				m_messages.vibeDataTable_Alt_ExternalUser()));
+		UserType userType = account.getUserType();
+		ImageResource ir = UserTypeCell.getUserTypeImage(userType);
+		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString(), UserTypeCell.getUserTypeAlt(userType));
 		i.addStyleName("vibe-userPropertiesDlg-attrImage");
 		addLabeledWidget(grid, row, m_messages.userPropertiesDlgLabel_Type(), i);
 
 		// ...for internal users...
-		if (internal) {
+		if (account.isInternal()) {
 			// ...add how the account got created...
 			row = grid.getRowCount();
 			boolean ldap = account.isFromLdap();
@@ -454,7 +452,7 @@ public class UserPropertiesDlg extends DlgBox
 		int row = getSectionRow(grid, rf, addSectionHeader);
 		if (!(account.isInternal())) {
 			// No!  Add a simple label for the section.
-			InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgLabel_PersonalStorage());
+			InlineLabel il = new InlineLabel(m_messages.userPropertiesDlgPersonalStorage());
 			il.addStyleName("vibe-userPropertiesDlg-buttonNoAct vibe-userPropertiesDlg-buttonLook");
 			grid.setWidget(           row, 0, il);
 			cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);			
