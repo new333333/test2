@@ -642,7 +642,24 @@ public class SearchUtils {
 		Long userWSId = user.getWorkspaceId();
 		return getMyFilesFolderIds(bs, userWSId);
 	}
-	
+
+    public static boolean userCanAccessMyFiles(AllModulesInjected bs, User user) {
+        // For Filr, we don't support My Files for the guest or
+        // external users.
+        boolean reply = true;
+        boolean isGuestOrExternal = (user.isShared() || (!(user.getIdentityInfo().isInternal())));
+        if (Utils.checkIfFilr() && isGuestOrExternal) {
+            reply = false;
+        }
+        else {
+            // The user can access My Files if adHoc folders are
+            // not allowed and the user doesn't have a home folder.
+            if (SearchUtils.useHomeAsMyFiles(bs, user) && (null == SearchUtils.getHomeFolderId(bs, user))) {
+                reply = false;
+            }
+        }
+        return reply;
+    }
 	/**
 	 * This routine returns a Criteria that will search all folders
 	 * associated with the My Files collection.

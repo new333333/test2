@@ -43,6 +43,7 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
@@ -64,6 +65,8 @@ import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
@@ -110,11 +113,10 @@ public class SelfResource extends AbstractFileResource {
         user.setDiskSpaceQuota(getProfileModule().getMaxUserQuota(entry.getId()));
         user.setLink("/self");
         user.addAdditionalLink("roots", "/self/roots");
-        if (user.getWorkspace()!=null) {
-            user.addAdditionalLink("my_file_folders", user.getWorkspace().getLink() + "/library_folders");
-        }
         user.addAdditionalLink("file_folders", "/self/file_folders");
-        user.addAdditionalLink("my_files", "/self/my_files");
+        if (SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            user.addAdditionalLink("my_files", "/self/my_files");
+        }
         user.addAdditionalLink("net_folders", "/self/net_folders");
         user.addAdditionalLink("shared_with_me", "/self/shared_with_me");
         user.addAdditionalLink("shared_by_me", "/self/shared_by_me");
@@ -219,6 +221,9 @@ public class SelfResource extends AbstractFileResource {
     @Path("/my_files")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public BinderBrief getMyFiles() {
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
         return getFakeMyFileFolders();
     }
 
@@ -230,6 +235,10 @@ public class SelfResource extends AbstractFileResource {
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("-1") Integer maxCount,
             @Context HttpServletRequest request) {
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
+
         Date lastModified = null;
         if (getLoggedInUser().getWorkspaceId()!=null) {
             try {
@@ -267,7 +276,10 @@ public class SelfResource extends AbstractFileResource {
                                       org.kablink.teaming.rest.v1.model.BinderBrief newBinder,
                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
             throws WriteFilesException, WriteEntryDataException {
-        org.kablink.teaming.domain.Binder parent = getBinderModule().getBinder(getLoggedInUser().getWorkspaceId());
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
+        org.kablink.teaming.domain.Binder parent = getMyFilesFolderParent();
         if (newBinder.getTitle()==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No folder title was supplied in the POST data.");
         }
@@ -282,6 +294,9 @@ public class SelfResource extends AbstractFileResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public BinderTree getMyFileLibraryTree(
             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
         BinderTree results = new BinderTree();
         SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(false, 0, -1, null);
         if (folders.getCount()>0) {
@@ -317,6 +332,9 @@ public class SelfResource extends AbstractFileResource {
               @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
               @QueryParam("first") @DefaultValue("0") Integer offset,
               @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         Criteria subContextSearch = null;
         if (recursive) {
@@ -369,6 +387,109 @@ public class SelfResource extends AbstractFileResource {
         return results;
     }
 
+    @GET
+    @Path("/my_files/library_files")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public Response getMyFileLibraryFiles(
+            @QueryParam("file_name") String fileName,
+            @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
+            @QueryParam("first") Integer offset,
+            @QueryParam("count") Integer maxCount,
+            @Context HttpServletRequest request) {
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
+        SearchResultList<FileProperties> resultList = _getMyFilesLibraryFiles(fileName, recursive, includeParentPaths, offset, maxCount);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(resultList.getLastModified())) {
+            throw new NotModifiedException();
+        }
+        return Response.ok(resultList).lastModified(resultList.getLastModified()).build();
+    }
+
+    @POST
+    @Path("/my_files/library_files")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public FileProperties addLibraryFileFromMultipart(@QueryParam("file_name") String fileName,
+                                         @QueryParam("mod_date") String modDateISO8601,
+                                         @QueryParam("md5") String expectedMd5,
+                                         @QueryParam("overwrite_existing") @DefaultValue("false") Boolean overwriteExisting,
+                                         @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
+        Folder folder = getMyFilesFileParent();
+        InputStream is = getInputStreamFromMultipartFormdata(request);
+        FileProperties file = createEntryWithAttachment(folder, fileName, modDateISO8601, expectedMd5, overwriteExisting, is);
+        file.setBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+        return file;
+    }
+
+    @POST
+    @Path("/my_files/library_files")
+    @Consumes("*/*")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public FileProperties addLibraryFile(@QueryParam("file_name") String fileName,
+                                         @QueryParam("mod_date") String modDateISO8601,
+                                         @QueryParam("md5") String expectedMd5,
+                                         @QueryParam("overwrite_existing") @DefaultValue("false") Boolean overwriteExisting,
+                                         @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
+        Folder folder = getMyFilesFileParent();
+        InputStream is = getRawInputStream(request);
+        FileProperties file = createEntryWithAttachment(folder, fileName, modDateISO8601, expectedMd5, overwriteExisting, is);
+        file.setBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+        return file;
+    }
+
+    @GET
+    @Path("/my_files/recent_activity")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<RecentActivityEntry> getMyFileRecentActivity(
+            @QueryParam("file_name") String fileName,
+            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
+            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+            @QueryParam("first") @DefaultValue("0") Integer offset,
+            @QueryParam("count") @DefaultValue("20") Integer maxCount) {
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        if (fileName!=null) {
+            nextParams.put("recursive", fileName);
+        }
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+
+        List<String> binders = null;
+        List<String> entries = null;
+        SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(false, 0, -1, null);
+        if (folders.getCount()>0) {
+            binders = new ArrayList<String>();
+            for (BinderBrief binder : folders.getResults()) {
+                binders.add(binder.getId().toString());
+            }
+        }
+        SearchResultList<FileProperties> files = _getMyFilesLibraryFiles(fileName, false, false, 0, -1);
+        if (files.getCount()>0) {
+            entries = new ArrayList<String>();
+            for (FileProperties file : files.getResults()) {
+                entries.add(file.getOwningEntity().getId().toString());
+            }
+        }
+        if (entries==null && binders==null) {
+            return new SearchResultList<RecentActivityEntry>();
+        }
+        Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binders, entries, null, true, Constants.LASTACTIVITY_FIELD);
+        SearchResultList<RecentActivityEntry> resultList = _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, "/net_folders/recent_activity", nextParams);
+        setMyFilesParents(resultList);
+        return resultList;
+    }
+
     private void setMyFilesParents(SearchResultList results) {
         List<Long> hiddenFolderIds = getEffectiveMyFilesFolderIds();
         Set<Long> allParentIds = new HashSet(hiddenFolderIds);
@@ -384,8 +505,25 @@ public class SelfResource extends AbstractFileResource {
         }
     }
 
+    private Folder getMyFilesFileParent() {
+        org.kablink.teaming.domain.User loggedInUser = getLoggedInUser();
+        if (SearchUtils.useHomeAsMyFiles(this, loggedInUser)) {
+            return _getHomeFolder();
+        } else {
+            return _getHiddenFilesFolder();
+        }
+    }
 
-    public Date getMyFilesFoldersModifiedTime() {
+    private Binder getMyFilesFolderParent() {
+        org.kablink.teaming.domain.User loggedInUser = getLoggedInUser();
+        if (SearchUtils.useHomeAsMyFiles(this, loggedInUser)) {
+            return _getHomeFolder();
+        } else {
+            return _getUserWorkspace();
+        }
+    }
+
+    private Date getMyFilesFoldersModifiedTime() {
         List<Long> myFilesFolderIds = getEffectiveMyFilesFolderIds();
         if (myFilesFolderIds.size()==0) {
             return null;
@@ -410,24 +548,6 @@ public class SelfResource extends AbstractFileResource {
         } else {
             return SearchUtils.getMyFilesFolderIds(this, user);
         }
-    }
-
-    @GET
-    @Path("/my_files/library_files")
-   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public Response getMyFileLibraryFiles(
-            @QueryParam("file_name") String fileName,
-            @QueryParam("recursive") @DefaultValue("false") boolean recursive,
-            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
-            @QueryParam("first") Integer offset,
-            @QueryParam("count") Integer maxCount,
-            @Context HttpServletRequest request) {
-        SearchResultList<FileProperties> resultList = _getMyFilesLibraryFiles(fileName, recursive, includeParentPaths, offset, maxCount);
-        Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(resultList.getLastModified())) {
-            throw new NotModifiedException();
-        }
-        return Response.ok(resultList).lastModified(resultList.getLastModified()).build();
     }
 
     private SearchResultList<FileProperties> _getMyFilesLibraryFiles(String fileName, boolean recursive,
@@ -470,79 +590,6 @@ public class SelfResource extends AbstractFileResource {
         return resultList;
     }
 
-    @POST
-    @Path("/my_files/library_files")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public FileProperties addLibraryFileFromMultipart(@QueryParam("file_name") String fileName,
-                                         @QueryParam("mod_date") String modDateISO8601,
-                                         @QueryParam("md5") String expectedMd5,
-                                         @QueryParam("overwrite_existing") @DefaultValue("false") Boolean overwriteExisting,
-                                         @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
-        Folder folder = _getHiddenFilesFolder();
-        InputStream is = getInputStreamFromMultipartFormdata(request);
-        FileProperties file = createEntryWithAttachment(folder, fileName, modDateISO8601, expectedMd5, overwriteExisting, is);
-        file.setBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
-        return file;
-    }
-
-    @POST
-    @Path("/my_files/library_files")
-    @Consumes("*/*")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public FileProperties addLibraryFile(@QueryParam("file_name") String fileName,
-                                         @QueryParam("mod_date") String modDateISO8601,
-                                         @QueryParam("md5") String expectedMd5,
-                                         @QueryParam("overwrite_existing") @DefaultValue("false") Boolean overwriteExisting,
-                                         @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
-        Folder folder = _getHiddenFilesFolder();
-        InputStream is = getRawInputStream(request);
-        FileProperties file = createEntryWithAttachment(folder, fileName, modDateISO8601, expectedMd5, overwriteExisting, is);
-        file.setBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
-        return file;
-    }
-
-    @GET
-    @Path("/my_files/recent_activity")
-   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<RecentActivityEntry> getMyFileRecentActivity(
-            @QueryParam("file_name") String fileName,
-            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
-            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
-            @QueryParam("first") @DefaultValue("0") Integer offset,
-            @QueryParam("count") @DefaultValue("20") Integer maxCount) {
-        Map<String, Object> nextParams = new HashMap<String, Object>();
-        if (fileName!=null) {
-            nextParams.put("recursive", fileName);
-        }
-        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-
-        List<String> binders = null;
-        List<String> entries = null;
-        SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(false, 0, -1, null);
-        if (folders.getCount()>0) {
-            binders = new ArrayList<String>();
-            for (BinderBrief binder : folders.getResults()) {
-                binders.add(binder.getId().toString());
-            }
-        }
-        SearchResultList<FileProperties> files = _getMyFilesLibraryFiles(fileName, false, false, 0, -1);
-        if (files.getCount()>0) {
-            entries = new ArrayList<String>();
-            for (FileProperties file : files.getResults()) {
-                entries.add(file.getOwningEntity().getId().toString());
-            }
-        }
-        if (entries==null && binders==null) {
-            return new SearchResultList<RecentActivityEntry>();
-        }
-        Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binders, entries, null, true, Constants.LASTACTIVITY_FIELD);
-        SearchResultList<RecentActivityEntry> resultList = _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, "/net_folders/recent_activity", nextParams);
-        setMyFilesParents(resultList);
-        return resultList;
-    }
-
     private BinderBrief getFakeMyWorkspace() {
         org.kablink.teaming.domain.User loggedInUser = RequestContextHolder.getRequestContext().getUser();
         Binder myWorkspace = getBinderModule().getBinder(loggedInUser.getWorkspaceId());
@@ -567,22 +614,6 @@ public class SelfResource extends AbstractFileResource {
         binder.setTitle("My Favorites");
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace_star.png"));
         binder.addAdditionalLink("child_binders", "/self/favorites");
-        return binder;
-    }
-
-    private BinderBrief getFakeFileFolders() {
-        org.kablink.teaming.domain.User user = getLoggedInUser();
-        BinderBrief binder = new BinderBrief();
-        //TODO: localize
-        binder.setTitle("File Folders");
-        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
-        String baseUri = "/workspaces/" + user.getWorkspaceId();
-        binder.addAdditionalLink("child_binders", baseUri + "/library_folders");
-        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
-        binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
-        binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
-        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
-        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }
 
