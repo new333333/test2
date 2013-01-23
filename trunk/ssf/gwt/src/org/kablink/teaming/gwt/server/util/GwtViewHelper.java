@@ -1311,17 +1311,24 @@ public class GwtViewHelper {
 				for (EntityId entityId:  entityIds) {
 					try {
 						// Can we copy this entity?
-						if (entityId.isBinder())
-						     bm.copyBinder(                        entityId.getEntityId(), tis.getBinderTargetId(), true, null);
-						else fm.copyEntry( entityId.getBinderId(), entityId.getEntityId(), tis.getEntryTargetId(),  null, null);
+						if (entityId.isBinder()) {
+							bm.copyBinder(entityId.getEntityId(), tis.getBinderTargetId(), true, null);
+						}
+						else {
+							FolderEntry copiedFE = fm.copyEntry( entityId.getBinderId(), entityId.getEntityId(), tis.getEntryTargetId(),  null, null);
+							if (null == copiedFE) {
+								throw new TitleException("");
+							}
+						}
 					}
 
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
 						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
-						if (e instanceof AccessControlException) messageKey = "copyEntryError.AccssControlException";
-						else                                     messageKey = "copyEntryError.OtherException";
+						if      (e instanceof AccessControlException) messageKey = "copyEntryError.AccssControlException";
+						else if (e instanceof TitleException)         messageKey = "copyEntryError.TitleException";
+						else                                          messageKey = "copyEntryError.OtherException";
 						reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
 					}
 				}
@@ -6433,8 +6440,9 @@ public class GwtViewHelper {
 						// No!  Add an error  to the error list.
 						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
-						if (e instanceof AccessControlException) messageKey = "moveEntryError.AccssControlException";
-						else                                     messageKey = "moveEntryError.OtherException";
+						if      (e instanceof AccessControlException) messageKey = "moveEntryError.AccssControlException";
+						else if (e instanceof TitleException)         messageKey = "moveEntryError.TitleException";
+						else                                          messageKey = "moveEntryError.OtherException";
 						reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
 					}
 				}
