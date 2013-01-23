@@ -4963,7 +4963,7 @@ td.datePickerMonth {
 /* End:  Import profiles dialog styles. */
 
 /* Start:  User properties dialog styles. */
-	.vibe-userPropertiesDlg-aboutMe          {}
+	.vibe-userPropertiesDlg-aboutMe          {width: 330px;}
 	.vibe-userPropertiesDlg-attrCaption      {font-weight: bold; padding-right: 3px;}
 	.vibe-userPropertiesDlg-attrImage        {}	
 	.vibe-userPropertiesDlg-attrValue        {}
