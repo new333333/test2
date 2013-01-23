@@ -2432,14 +2432,12 @@ public interface GwtTeamingMessages extends Messages
 	String userActivityReportWarning_UserAlreadySelected(String name);
 
 	// Strings used by the 'User Properties' dialog.
-	String userPropertiesDlgAccount();
 	String userPropertiesDlgEdit_NetFolders();
 	String userPropertiesDlgEdit_PersonalStorage();
 	String userPropertiesDlgEdit_Profile();
 	String userPropertiesDlgEdit_Quotas();
 	String userPropertiesDlgEdit_Sharing();
 	String userPropertiesDlgHeader();
-	String userPropertiesDlgHome();
 	String userPropertiesDlgLabelize(String label);
 	String userPropertiesDlgLabel_eDirContainer();
 	String userPropertiesDlgLabel_Home();

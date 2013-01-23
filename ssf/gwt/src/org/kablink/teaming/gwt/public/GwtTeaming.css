@@ -4969,6 +4969,7 @@ td.datePickerMonth {
 	.vibe-userPropertiesDlg-attrValue        {}
 	.vibe-userPropertiesDlg-avatar           {border-width: 1px; border-style: solid; border-color: #ccc; width: 75px; height: 75px; margin-right: 5px; margin-bottom: 10px; margin-left: 35px;}
 	.vibe-userPropertiesDlg-buttonAct        {cursor: pointer;}
+	.vibe-userPropertiesDlg-buttonNoAct      {}
 	.vibe-userPropertiesDlg-buttonLook       {
 		border: 1px solid #B8B8B8;
 		font-weight: normal !important;
