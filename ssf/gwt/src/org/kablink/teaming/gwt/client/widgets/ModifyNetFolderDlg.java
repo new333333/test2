@@ -906,7 +906,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		// Clear existing data in the controls.
 		m_nameTxtBox.setValue( "" );
 		m_relativePathTxtBox.setValue( "" );
-		m_indexContentCkbox.setValue( true );
+		m_indexContentCkbox.setValue( false );
 		m_netFolderRootsListbox.clear();
 		m_netFolderRootsListbox.setVisible( false );
 		m_noNetFolderRootsLabel.setVisible( false );

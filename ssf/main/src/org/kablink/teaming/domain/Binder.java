@@ -775,7 +775,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     public boolean getIndexContent()
     {
     	if ( indexContent == null )
-    		return true;
+    		return false;
     	else
     		return indexContent .booleanValue();
     }
