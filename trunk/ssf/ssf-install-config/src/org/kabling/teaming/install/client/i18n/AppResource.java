@@ -65,6 +65,8 @@ public interface AppResource extends Messages
 	
 	String dbTypeColon();
 
+	String hostNameOrIpAddrColon();
+	
 	String hostNameColon();
 
 	String portColon();

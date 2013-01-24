@@ -107,7 +107,7 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 		{
 			row++;
 			// Host Name or IP Address
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.hostNameColon());
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.hostNameOrIpAddrColon());
 			hostTable.setWidget(row, 0, keyLabel);
 			hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
