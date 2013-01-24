@@ -58,6 +58,7 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
+import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FolderEntry;
@@ -1413,7 +1414,22 @@ public class GwtShareHelper
 		sharingInfo.setCanShareWithInternalUsers( canShareWithInternalUsers( ami, listOfEntityIds ) );
 		
 		// See if the user has rights to share the given entities with the public.
-		sharingInfo.setCanShareWithPublic( canShareWithPublic( ami, listOfEntityIds ) );
+		{
+			AuthenticationConfig authConfig;
+			boolean canShareWithPublic;
+
+			canShareWithPublic = false;
+			
+			// Is guest access turned on?
+			authConfig = ami.getAuthenticationModule().getAuthenticationConfig();
+			if ( authConfig.isAllowAnonymousAccess() )
+			{
+				// Yes
+				// See if the user has the "can share with public" right
+				canShareWithPublic = canShareWithPublic( ami, listOfEntityIds );
+			}
+			sharingInfo.setCanShareWithPublic( canShareWithPublic );
+		}
 		
 		// See if the user has rights to share with the "all external users" group.
 		sharingInfo.setCanShareWithAllExternalUsersGroup( canShareWithAllExternalUsersGroup( ami ) );
