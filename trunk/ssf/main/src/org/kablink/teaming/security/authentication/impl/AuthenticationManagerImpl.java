@@ -458,9 +458,24 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		}
 		
 		// If still here, it means that authentication was successful.
-		// If this is the user's first time logging in, let's capture the date/time.
-		if(user.getFirstLoginDate() == null)
-			getProfileModule().setFirstLoginDate(user.getId());
+		// Has the user logged in before?
+		if( user.getFirstLoginDate() == null )
+		{
+			boolean setFirstLoginDate = true;
+			
+			// No
+			// Are we dealing with the admin user?
+			if ( Utils.checkIfFilr() && ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) )
+			{
+				// Yes
+				// Don't set the first login date.  We will set it after the admin has
+				// changed the default password.
+				setFirstLoginDate = false;
+			}
+			
+			if ( setFirstLoginDate )
+				getProfileModule().setFirstLoginDate(user.getId());
+		}
 		
 		SimpleProfiler.stop( "3x-AuthenticationManagerImpl.authenticate()" );
 		return user;

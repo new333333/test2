@@ -878,6 +878,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_CHANGE_PASSWORD_DLG:
+				// An InvokeChangePasswordDlgEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeChangePasswordDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeChangePasswordDlgEvent.registerEvent( eventBus, ((InvokeChangePasswordDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case INVOKE_CLIPBOARD:
 				// An InvokeClipboardEvent!  Can the event handler we
 				// were given handle that?
@@ -2392,6 +2401,7 @@ public class EventHelper {
 
 			case INVOKE_ABOUT:							       hasHandler = (eventHandler instanceof InvokeAboutEvent.Handler);                            break;
 			case INVOKE_ADD_NEW_FOLDER:					       hasHandler = (eventHandler instanceof InvokeAddNewFolderEvent.Handler);                     break;
+			case INVOKE_CHANGE_PASSWORD_DLG:			       hasHandler = (eventHandler instanceof InvokeChangePasswordDlgEvent.Handler);                break;
 			case INVOKE_CLIPBOARD:						       hasHandler = (eventHandler instanceof InvokeClipboardEvent.Handler);                        break;
 			case INVOKE_COLUMN_RESIZER:				           hasHandler = (eventHandler instanceof InvokeColumnResizerEvent.Handler);                    break;
 			case INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG:	       hasHandler = (eventHandler instanceof InvokeConfigureAdhocFoldersDlgEvent.Handler);         break;

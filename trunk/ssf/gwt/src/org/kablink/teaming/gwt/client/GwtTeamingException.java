@@ -52,6 +52,7 @@ public class GwtTeamingException extends SerializationException
 	public enum ExceptionType implements IsSerializable
 	{
 		ACCESS_CONTROL_EXCEPTION,
+		CHANGE_PASSWORD_EXCEPTION,
 		EXTENSION_DEFINITION_IN_USE,
 		FAVORITES_LIMIT_EXCEEDED,
 		GROUP_ALREADY_EXISTS,

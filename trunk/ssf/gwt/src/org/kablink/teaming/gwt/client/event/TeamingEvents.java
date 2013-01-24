@@ -102,6 +102,7 @@ public enum TeamingEvents implements IsSerializable {
 
 	INVOKE_ABOUT,									// Invokes the About dialog.
 	INVOKE_ADD_NEW_FOLDER,							// Invokes the Add New Folder dialog.
+	INVOKE_CHANGE_PASSWORD_DLG,						// Invoke the Change Password dialog.
 	INVOKE_CLIPBOARD,								// Invokes the Clipboard dialog.
 	INVOKE_COLUMN_RESIZER,							// Invokes the column resizing dialog.
 	INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG,				// Invokes the Configure Adhoc Folders dialog

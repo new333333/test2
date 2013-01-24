@@ -81,6 +81,7 @@ import org.dom4j.io.OutputFormat;
 
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
@@ -1700,6 +1701,47 @@ public class GwtServerHelper {
 		
 		catch (Exception ex) {
 			throw getGwtTeamingException(ex);
+		}
+	}
+	
+	/**
+	 * Change the current user's password
+	 */
+	public static BooleanRpcResponseData changePassword(
+		AllModulesInjected ami,
+		String oldPwd,
+		String newPwd ) throws GwtTeamingException
+	{
+		try
+		{
+			User user;
+			
+			// Change the user's password.
+			user = getCurrentUser();
+			ami.getProfileModule().changePassword( user.getId(), oldPwd, newPwd );
+			
+			// Are we dealing with the built in admin user?
+			if ( Utils.checkIfFilr() && ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) )
+			{
+				// Yes
+				// Is this the admin's first time logging in?
+				if ( user.getFirstLoginDate() == null )
+				{
+					// Remember the login date.
+					ami.getProfileModule().setFirstLoginDate(user.getId());
+				}
+			}
+
+			return new BooleanRpcResponseData( Boolean.TRUE );
+		}
+		catch ( PasswordMismatchException ex )
+		{
+			GwtTeamingException gwtEx;
+			
+			gwtEx = getGwtTeamingException( ex );
+			gwtEx.setAdditionalDetails( ex.getLocalizedMessage() );
+			
+			throw gwtEx;
 		}
 	}
 	
@@ -5787,6 +5829,10 @@ public class GwtServerHelper {
 				{
 					exType = ExceptionType.NET_FOLDER_ROOT_ALREADY_EXISTS;
 				}
+				else if ( ex instanceof PasswordMismatchException )
+				{
+					exType = ExceptionType.CHANGE_PASSWORD_EXCEPTION;
+				}
 				else                                                          exType = ExceptionType.UNKNOWN;
 				
 				reply.setExceptionType(exType);
@@ -6391,6 +6437,25 @@ public class GwtServerHelper {
 			boolean useHomeAsMyFiles =
 				(SearchUtils.useHomeAsMyFiles(bs) &&
 				(null != SearchUtils.getHomeFolderId(bs)));
+
+			User user;
+			boolean firstLogin = false;
+			boolean superUser = false;
+			
+			user = getCurrentUser();
+			if ( user != null )
+			{
+				// Is this the super user (admin)?
+				if ( ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) )
+					superUser = true;
+				
+				// Is this the first time the admin has logged in?
+				if ( user.getFirstLoginDate() == null )
+				{
+					// Yes
+					firstLogin = true;
+				}
+			}
 			
 			// ...and use this all to construct a
 			// ...MainPageInfoRpcResponseData to return.
@@ -6400,7 +6465,9 @@ public class GwtServerHelper {
 					userAvatarUrl,
 					desktopAppEnabled,
 					showDesktopAppDownloader,
-					useHomeAsMyFiles);
+					useHomeAsMyFiles,
+					firstLogin,
+					superUser );
 		}
 		
 		catch (Exception ex) {
@@ -9083,6 +9150,7 @@ public class GwtServerHelper {
 		case CAN_MODIFY_BINDER:
 		case CHANGE_ENTRY_TYPES:
 		case CHANGE_FAVORITE_STATE:
+		case CHANGE_PASSWORD:
 		case CHECK_NET_FOLDERS_STATUS:
 		case CHECK_NET_FOLDER_SERVERS_STATUS:
 		case COLLAPSE_SUBTASKS:
