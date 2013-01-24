@@ -294,6 +294,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case CHANGE_PASSWORD:
+		{
+			ChangePasswordCmd cpCmd;
+			BooleanRpcResponseData result;
+			
+			cpCmd = (ChangePasswordCmd) cmd;
+			result = GwtServerHelper.changePassword( this, cpCmd.getOldPassword(), cpCmd.getNewPassword() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case CHECK_NET_FOLDERS_STATUS:
 		{
 			CheckNetFoldersStatusCmd csCmd;

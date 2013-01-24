@@ -583,6 +583,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_CalendarNavigationPanel();
 	String codeSplitFailure_CalendarSettingsDlg();
 	String codeSplitFailure_ChangeEntryTypesDlg();
+	String codeSplitFailure_ChangePasswordDlg();
 	String codeSplitFailure_ChildBindersWidget();
 	String codeSplitFailure_ClipboardDlg();
 	String codeSplitFailure_CollectionView();
@@ -2529,5 +2530,18 @@ public interface GwtTeamingMessages extends Messages
 	String shareWithPublicInfoDlg_Header();
 	String shareWithPublicInfoDlg_Instructions( String itemName );
 	String shareWithPublicInfoDlg_Instructions2( String itemName );
+
+	// Strings used in the Change Password dialog
+	String changePasswordDlg_ChangeDefaultPasswordHint();
+	String changePasswordDlg_ChangingPassword();
+	String changePasswordDlg_ConfirmPasswordLabel();
+	String changePasswordDlg_CurrentPasswordLabel();
+	String changePasswordDlg_EnterCurrentPwd();
+	String changePasswordDlg_ErrorChangingPassword( String desc );
+	String changePasswordDlg_ChangeDefaultPasswordHeader();
+	String changePasswordDlg_NewPasswordLabel();
+	String changePasswordDlg_PasswordCannotBeEmpty();
+	String changePasswordDlg_PasswordsDoNotMatch();
+	
 	
 }// end GwtTeamingMessages

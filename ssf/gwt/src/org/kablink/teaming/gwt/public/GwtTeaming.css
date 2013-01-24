@@ -5212,4 +5212,26 @@ td.datePickerMonth {
 }
 /* End */
 
+
+
+/**
+ * Style used in the Change Password dialog
+ */
+.changePasswordDlg_Hint
+{
+	color: #4D6D8B;
+	font-size: 1em;
+	margin-bottom: 0.5em;
+	width: 400px;
+}
+
+.changePasswordDlg_Label
+{
+	font-size: .8em;
+	margin-top: 0.7em;
+}
+
+/* End */
+
+
 /* End */

@@ -66,6 +66,7 @@ import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeAddNewFolderEvent;
+import org.kablink.teaming.gwt.client.event.InvokeChangePasswordDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDownloadDesktopAppEvent;
 import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
@@ -143,6 +144,8 @@ import org.kablink.teaming.gwt.client.widgets.AddNewFolderDlg;
 import org.kablink.teaming.gwt.client.widgets.AddNewFolderDlg.AddNewFolderDlgClient;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
 import org.kablink.teaming.gwt.client.widgets.AdminControl.AdminControlClient;
+import org.kablink.teaming.gwt.client.widgets.ChangePasswordDlg;
+import org.kablink.teaming.gwt.client.widgets.ChangePasswordDlg.ChangePasswordDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadControl;
@@ -170,6 +173,7 @@ import org.kablink.teaming.gwt.client.workspacetree.BreadcrumbTreePopup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.NativeEvent;
@@ -214,6 +218,7 @@ public class GwtMainPage extends ResizeComposite
 		GotoMyWorkspaceEvent.Handler,
 		GotoPermalinkUrlEvent.Handler,
 		InvokeAddNewFolderEvent.Handler,
+		InvokeChangePasswordDlgEvent.Handler,
 		InvokeDownloadDesktopAppEvent.Handler,
 		InvokeHelpEvent.Handler,
 		InvokeSimpleProfileEvent.Handler,
@@ -259,6 +264,7 @@ public class GwtMainPage extends ResizeComposite
 	private PersonalPreferencesDlg m_personalPrefsDlg = null;
 	private LoginDlg m_loginDlg = null;
 	private TagThisDlg m_tagThisDlg = null;
+	private ChangePasswordDlg m_changePwdDlg = null;
 	private EditCanceledHandler m_editBrandingCancelHandler = null;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private EditSuccessfulHandler m_editPersonalPrefsSuccessHandler = null;
@@ -312,6 +318,7 @@ public class GwtMainPage extends ResizeComposite
 
 		// Invoke events.
 		TeamingEvents.INVOKE_ADD_NEW_FOLDER,
+		TeamingEvents.INVOKE_CHANGE_PASSWORD_DLG,
 		TeamingEvents.INVOKE_DOWNLOAD_DESKTOP_APP,
 		TeamingEvents.INVOKE_HELP,
 		TeamingEvents.INVOKE_SIMPLE_PROFILE,
@@ -808,6 +815,19 @@ public class GwtMainPage extends ResizeComposite
 			// Yes
 			GwtTeaming.fireEvent( new MenuHideEvent() );	// false -> Don't resize the content now...
 			GwtTeaming.fireEvent( new SidebarHideEvent(  false ) );	// ...will happen when the frame has loaded.
+			
+			// Is this the first time the user logged in?
+			if ( m_mainPageInfo.isFirstLogin() )
+			{
+				// Yes
+				// Are we dealing wit the admin user?
+				if ( m_mainPageInfo.isSuperUser() )
+				{
+					// Yes
+					// Invoke the change password dialog.
+					GwtTeaming.fireEvent( new InvokeChangePasswordDlgEvent() );
+				}
+			}
 		}
 	}// end constructMainPage_Finish()
 
@@ -1765,6 +1785,51 @@ public class GwtMainPage extends ResizeComposite
 	}
 	
 	/**
+	 * Invoke the change password dialog
+	 */
+	private void invokeChangePasswordDlg()
+	{
+		// Have we instantiated the change password dialog before?
+		if ( null == m_changePwdDlg )
+		{
+			// No!  Instantiate one now.
+			ChangePasswordDlg.createAsync( new ChangePasswordDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ChangePasswordDlg cpDlg )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					m_changePwdDlg = cpDlg;
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							invokeChangePasswordDlg();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			});
+		}
+		else
+		{
+			// Yes, we've instantiated change password dialog already!
+			// Simply show it.
+			m_changePwdDlg.init();
+			m_changePwdDlg.show( true );
+		}
+	
+	}
+	
+	/**
 	 * Invoke the "login" dialog.
 	 */
 	private void invokeLoginDlg( final boolean allowCancel )
@@ -2713,6 +2778,27 @@ public class GwtMainPage extends ResizeComposite
 			showAddNewFolderDlgNow( event.getBinderId(), event.getFolderTemplateId() );
 		}
 	}// end onInvokeAddNewFolder()
+	
+	/**
+	 * Handle the InvokeChangePasswordDlgEvent received by this class
+	 * 
+	 * Implements the InvokeChangePasswordDlgEvent.Handler.onInvokeChangePasswordDlgEvent() method
+	 */
+	@Override
+	public void onInvokeChangePasswordDlgEvent( InvokeChangePasswordDlgEvent event )
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				invokeChangePasswordDlg();
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
 	
 	/**
 	 * Handles InvokeDownloadDesktopAppEvent's received by this class.

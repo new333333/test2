@@ -46,6 +46,8 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	private boolean		m_desktopAppEnabled;		//
 	private boolean		m_showDesktopAppDownloader;	//
 	private boolean		m_useHomeForMyFiles;		// true -> As user's Home folder serves as their My Files repository.  false -> It doesn't.
+	private boolean		m_firstLogin;				// true if it is the user's first login
+	private boolean		m_isSuperUser;				// true if we are dealing with the super user (admin)
 	private BinderInfo	m_binderInfo;				//
 	private String		m_userAvatarUrl;			//
 	
@@ -68,7 +70,7 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 * @param showDesktopAppDownloader
 	 * @param useHomeAsMyFiles
 	 */
-	public MainPageInfoRpcResponseData(BinderInfo binderInfo, String userAvatarUrl, boolean desktopAppEnabled, boolean showDesktopAppDownloader, boolean useHomeAsMyFiles) {
+	public MainPageInfoRpcResponseData(BinderInfo binderInfo, String userAvatarUrl, boolean desktopAppEnabled, boolean showDesktopAppDownloader, boolean useHomeAsMyFiles, boolean firstLogin, boolean superUser) {
 		// Initialize this object...
 		this();
 
@@ -78,6 +80,8 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 		setDesktopAppEnabled(       desktopAppEnabled       );
 		setShowDesktopAppDownloader(showDesktopAppDownloader);
 		setUseHomeAsMyFiles(        useHomeAsMyFiles        );
+		setIsFirstLogin(			firstLogin				);
+		setIsSuperUser(				superUser				);
 	}
 	
 	/**
@@ -86,7 +90,9 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 * @return
 	 */
 	public boolean    isDesktopAppEnabled()        {return m_desktopAppEnabled;       }
+	public boolean	  isFirstLogin()			   {return m_firstLogin;			  }
 	public boolean    isShowDesktopAppDownloader() {return m_showDesktopAppDownloader;}
+	public boolean	  isSuperUser()				   {return m_isSuperUser;			  }
 	public boolean    isUseHomeAsMyFiles()         {return m_useHomeForMyFiles;       }
 	public BinderInfo getBinderInfo()              {return m_binderInfo;              }
 	public String     getUserAvatarUrl()           {return m_userAvatarUrl;           }
@@ -97,6 +103,8 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 * @param
 	 */
 	public void setDesktopAppEnabled(       boolean    desktopAppEnabled)        {m_desktopAppEnabled        = desktopAppEnabled;       }
+	public void setIsFirstLogin(			boolean	   firstLogin )				 {m_firstLogin				 = firstLogin;				}
+	public void setIsSuperUser(				boolean	   superUser )				 {m_isSuperUser				 = superUser;				}
 	public void setShowDesktopAppDownloader(boolean    showDesktopAppDownloader) {m_showDesktopAppDownloader = showDesktopAppDownloader;}
 	public void setUseHomeAsMyFiles(        boolean    useHomeAsMyFiles)         {m_useHomeForMyFiles        = useHomeAsMyFiles;        }
 	public void setBinderInfo(              BinderInfo binderInfo)               {m_binderInfo               = binderInfo;              }
