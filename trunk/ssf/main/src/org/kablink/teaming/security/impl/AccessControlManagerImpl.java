@@ -529,18 +529,18 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 
     private boolean testRightGrantedBySharing(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation, Set<Long> userMembers) {
     	// Unlike regular ACL checking, share right checking is not implemented using recursive invocation.
-    	if (workAreaStart != workArea) {
-    		//Check for this being a reply. We allow recursion of replies up to the parent entry.
-    		if (!(workAreaStart instanceof FolderEntry) || ((FolderEntry)workAreaStart).getTopEntry() != workArea) {
-    			//This is not a reply to an entry, so recursion is not being used
-    			return false;
-    		}
-    	} else {
-    		if (workAreaStart instanceof FolderEntry && ((FolderEntry)workAreaStart).getTopEntry() != workAreaStart) {
-    			//This is a reply. So we must check the top entry instead
-    			return testRightGrantedBySharing(user, workAreaStart, ((FolderEntry)workAreaStart).getTopEntry(), 
-    					workAreaOperation, userMembers);
-    		}
+		FolderEntry topEntry = null;
+		if (workAreaStart instanceof FolderEntry) {
+			topEntry = ((FolderEntry)workAreaStart).getTopEntry();
+		}
+
+		//Check for this being a reply. We allow recursion of replies up to the parent entry.
+    	if (workAreaStart != workArea && topEntry == null) {
+    		//This is not a reply to an entry, so recursion is not being used
+    		return false;
+    	} else if (workAreaStart == workArea && topEntry != null && topEntry != workAreaStart) {
+			//This is a reply. So we must check the top entry instead
+			return testRightGrantedBySharing(user, workAreaStart, topEntry, workAreaOperation, userMembers);
     	}
     	
     	return testRightGrantedBySharing(user, workArea, workAreaOperation, userMembers);
