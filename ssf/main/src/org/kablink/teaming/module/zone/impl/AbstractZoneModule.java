@@ -871,11 +871,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		if (guest.getWorkspaceId() == null) {
 			Workspace guestWs = addGuestWorkspace(guest);
 			getAdminModule().setWorkAreaOwner(guestWs, superU.getId(), true);
-    		List members = new ArrayList();
-    		members.add(guest.getId());
-    		//Let guest be a visitor to the guest workspace
-    		Function visitorsRole = addVisitorsRole(guestWs);
-    		addMembership(guestWs, visitorsRole, guestWs, members);
+			addVisitorRoleToGuestWorkspace(guestWs, zone.getId());
+		} else {
+			Workspace guestWs = (Workspace)getBinderModule().getBinder(guest.getWorkspaceId());
+			addVisitorRoleToGuestWorkspace(guestWs, zone.getId());
 		}
 		//make sure allUsers exists
 		try {
@@ -1164,6 +1163,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		    			Workspace guestWs = addGuestWorkspace(guest);
 		        		//now change owner to admin
 		        		getAdminModule().setWorkAreaOwner(guestWs, zone.getOwnerId() ,true);
+		        		addVisitorRoleToGuestWorkspace(guestWs, zone.getId());
 		        		//do now, with request context set - won't have one if here on zone startup
 		        		IndexSynchronizationManager.applyChanges();
 		    		
@@ -2034,6 +2034,25 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		finally {
 			AccessControlManagerImpl.bringAccessCheckBackToNormalForThisThread();
 		}
+	}
+	
+	private void addVisitorRoleToGuestWorkspace(Workspace guestWs, Long zoneId) {
+		User g = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zoneId);
+		//Let guest be a visitor to the guest workspace
+		Set<Long> members = new HashSet<Long>();
+		members.add(g.getId());
+		//Let guest be a visitor to the guest workspace
+		Function visitorsRole = getFunctionManager().findFunctionByName(zoneId, ObjectKeys.ROLE_TITLE_VISITOR);
+		WorkAreaFunctionMembership wafm = getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership(zoneId, guestWs, visitorsRole.getId());
+		if (wafm == null) {
+			wafm = new WorkAreaFunctionMembership();
+		}
+		wafm.setFunctionId(visitorsRole.getId());
+		wafm.setWorkAreaId(guestWs.getWorkAreaId());
+		wafm.setWorkAreaType(guestWs.getWorkAreaType());
+		wafm.setZoneId(zoneId);
+		wafm.setMemberIds(members);
+		getCoreDao().save(wafm);
 	}
 
 	/*
