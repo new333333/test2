@@ -476,7 +476,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// that's busy!  In that case, we'll have stuck the
 				// spinner on the tree's root node.  Restore that.
 				Image binderImg = ((Image) getRootTreeInfo().getBinderUIImage());
-				binderImg.setUrl(getImages().spacer_1px().getSafeUri());
+				if (null != binderImg) {
+					binderImg.setUrl(getImages().spacer_1px().getSafeUri());
+				}
 			}
 		}
 		/*
@@ -1859,7 +1861,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// No!  Set the busy animation image on the tree's
 				// root.
 				binderImg = ((Image) rootTI.getBinderUIImage());
-				binderImg.setUrl(getImages().busyAnimation_small().getSafeUri());
+				if (null != binderImg) {
+					binderImg.setUrl(getImages().busyAnimation_small().getSafeUri());
+				}
 			}
 			else {
 				// Yes!  Set the busy animation image for this
