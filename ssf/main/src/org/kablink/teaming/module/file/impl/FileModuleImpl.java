@@ -2392,10 +2392,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		}
 		}
 		else { // This condition can occur only for mirrored folder when synching inbound from the source 
-            SizeMd5Pair sizeMd5Pair = fui.makeReentrant();
 			updateInfo.versionName = RepositoryUtil.generateRandomVersionName();
-			updateInfo.fileLength = sizeMd5Pair.getSize();
-            updateInfo.fileMd5 = sizeMd5Pair.getMd5();
+			if(fui.calledByFileSync()) {
+				updateInfo.fileLength = fui.getCallerSpecifiedContentLength();
+				updateInfo.fileMd5 = fui.getMd5();
+			}
+			else {
+	            SizeMd5Pair sizeMd5Pair = fui.makeReentrant();
+				updateInfo.fileLength = sizeMd5Pair.getSize();
+	            updateInfo.fileMd5 = sizeMd5Pair.getMd5();
+			}
 		}
 
 		return updateInfo;
