@@ -38,7 +38,7 @@ import org.kablink.teaming.util.SPropsUtil;
 public class AuthenticationConfig  {
 
 	private boolean allowLocalLogin = true;
-	private boolean allowAnonymousAccess = true;
+	private boolean allowAnonymousAccess = false;
 	private boolean anonymousReadOnly = false;
 	private boolean allowSelfRegistration = false;
 	private Long lastUpdate;
