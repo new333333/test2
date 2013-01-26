@@ -227,6 +227,83 @@ public abstract class ActivityStreamUIEntry extends Composite
 	}
 	
 	/**
+	 * Add the Actions menu to the given panel.
+	 */
+	private void addActionsMenu( FlowPanel panel )
+	{
+		FlexTable table;
+		FlowPanel actionsPanel;
+		FlowPanel numCommentsPanel;
+		ImageResource imageResource;
+		ClickHandler clickHandler;
+
+		// Add an image the user can click on to invoke the Actions menu.  Image 1 will
+		// be visible when the mouse is not over the entry.  Image 2 will be visible
+		// when the mouse is over the entry.
+		table = new FlexTable();
+		table.addStyleName( "activityStreamActionsTable" );
+		panel.add( table );
+		
+		// Get the panel that will hold the number of comments.
+		numCommentsPanel = getNumCommentsPanel();
+		if ( numCommentsPanel != null )
+			table.setWidget( 0, 0, numCommentsPanel );
+		
+		actionsPanel = new FlowPanel();
+		actionsPanel.addStyleName( "activityStreamActionsPanel" );
+		table.setWidget( 0, 1, actionsPanel );
+		
+		m_actionsLabel = new InlineLabel( GwtTeaming.getMessages().actionsLabel() );
+		m_actionsLabel.addStyleName( "activityStreamActionsLabel" );
+		actionsPanel.add( m_actionsLabel );
+		
+		imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
+		m_actionsImg1 = new Image( imageResource );
+		m_actionsImg1.addStyleName( "activityStreamActionsImg1" );
+		m_actionsImg1.getElement().setId( "activityStreamActionsImg1" );
+		actionsPanel.add( m_actionsImg1 );
+		imageResource = GwtTeaming.getImageBundle().activityStreamActions2();
+		m_actionsImg2 = new Image( imageResource );
+		m_actionsImg2.addStyleName( "activityStreamActionsImg2" );
+		m_actionsImg2.getElement().setId( "activityStreamActionsImg2" );
+		m_actionsImg2.setVisible( false );
+		actionsPanel.add( m_actionsImg2 );
+
+		// Add a click handler for the Actions image.
+		clickHandler = new ClickHandler()
+		{
+			@Override
+			public void onClick( ClickEvent clickEvent )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void execute()
+					{
+						// Hide the actions2 image.
+						m_actionsImg2.setVisible( false );
+						m_actionsImg1.setVisible( true );
+
+						m_actionsLabel.removeStyleName( "activityStreamActionsLabelBold" );
+						
+						// Invoke the Actions menu.
+						invokeActionsMenu( m_actionsImg1 );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		};
+		m_actionsImg1.addClickHandler( clickHandler );
+		m_actionsImg2.addClickHandler( clickHandler );
+		m_actionsLabel.addClickHandler( clickHandler );
+	}
+	
+	/**
 	 * This abstract method gives classes that extend this class an opportunity to add
 	 * addition ui to the header.
 	 */
@@ -350,77 +427,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 		headerPanel = new FlowPanel();
 		headerPanel.addStyleName( getEntryHeaderStyleName() );
 		
-		// Add an image the user can click on to invoke the Actions menu.  Image 1 will
-		// be visible when the mouse is not over the entry.  Image 2 will be visible
-		// when the mouse is over the entry.
-		{
-			FlexTable table;
-			FlowPanel actionsPanel;
-			FlowPanel numCommentsPanel;
-			ClickHandler clickHandler;
-
-			table = new FlexTable();
-			table.addStyleName( "activityStreamActionsTable" );
-			headerPanel.add( table );
-			
-			// Get the panel that will hold the number of comments.
-			numCommentsPanel = getNumCommentsPanel();
-			if ( numCommentsPanel != null )
-				table.setWidget( 0, 0, numCommentsPanel );
-			
-			actionsPanel = new FlowPanel();
-			actionsPanel.addStyleName( "activityStreamActionsPanel" );
-			table.setWidget( 0, 1, actionsPanel );
-			
-			m_actionsLabel = new InlineLabel( GwtTeaming.getMessages().actionsLabel() );
-			m_actionsLabel.addStyleName( "activityStreamActionsLabel" );
-			actionsPanel.add( m_actionsLabel );
-			
-			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
-			m_actionsImg1 = new Image( imageResource );
-			m_actionsImg1.addStyleName( "activityStreamActionsImg1" );
-			m_actionsImg1.getElement().setId( "activityStreamActionsImg1" );
-			actionsPanel.add( m_actionsImg1 );
-			imageResource = GwtTeaming.getImageBundle().activityStreamActions2();
-			m_actionsImg2 = new Image( imageResource );
-			m_actionsImg2.addStyleName( "activityStreamActionsImg2" );
-			m_actionsImg2.getElement().setId( "activityStreamActionsImg2" );
-			m_actionsImg2.setVisible( false );
-			actionsPanel.add( m_actionsImg2 );
-
-			// Add a click handler for the Actions image.
-			clickHandler = new ClickHandler()
-			{
-				@Override
-				public void onClick( ClickEvent clickEvent )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						/**
-						 * 
-						 */
-						@Override
-						public void execute()
-						{
-							// Hide the actions2 image.
-							m_actionsImg2.setVisible( false );
-							m_actionsImg1.setVisible( true );
-
-							m_actionsLabel.removeStyleName( "activityStreamActionsLabelBold" );
-							
-							// Invoke the Actions menu.
-							invokeActionsMenu( m_actionsImg1 );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			};
-			m_actionsImg1.addClickHandler( clickHandler );
-			m_actionsImg2.addClickHandler( clickHandler );
-			m_actionsLabel.addClickHandler( clickHandler );
-		}
+		// Add the actions menu to the header.
+		addActionsMenu( headerPanel );
 		
 		// Are we supposed to show the title?
 		if ( m_showTitle )
@@ -783,6 +791,14 @@ public abstract class ActivityStreamUIEntry extends Composite
 		return "activityStreamPresencePanel";
 	}
 	
+	
+	/**
+	 * 
+	 */
+	public boolean getShowTitle()
+	{
+		return m_showTitle;
+	}
 	
 	/**
 	 * Return the name of the style used with the panel that holds the title.

@@ -65,7 +65,7 @@ import com.google.gwt.user.client.ui.Composite;
  * @author jwootton@novell.com
  */
 public class CommentsWidget extends Composite
-	implements ActivityStreamCommentsContainer
+	implements ActivityStreamCommentsContainer, CommentAddedCallback
 {
 	private CommentAddedCallback m_commentAddedCallback;
 	private CommentsInfo m_commentsInfo;
@@ -99,10 +99,6 @@ public class CommentsWidget extends Composite
 	 */
 	public void addComment( ActivityStreamEntry activityStreamEntry, boolean scrollIntoView )
 	{
-//!		Note:  Dennis -> Jay:
-//!		...Jay, you need to do whatever you need to reflect the
-//!		...animation Lynn wanted when fromCommentManager is true.
-		
 		ActivityStreamComment commentUI = null;
 		
 		commentUI = new ActivityStreamComment(
@@ -118,6 +114,68 @@ public class CommentsWidget extends Composite
 		{
 			showNewComment( commentUI );
 		}
+	}
+	
+	/**
+	 * Add the list of comments to out list of comments.
+	 */
+	private void addComments( List<ActivityStreamEntry> listOfComments )
+	{
+		if ( listOfComments != null )
+		{
+			ArrayList<ActivityStreamEntry> topLevelComments;
+			String baseDocNum;
+			
+			// Get the base doc number
+			baseDocNum = getBaseDocNum( listOfComments.get( 0 ) );
+			
+			if ( baseDocNum != null )
+			{
+				// Get a list of all the top-level comments.
+				topLevelComments = getListOfChildComments( baseDocNum, listOfComments );
+				
+				// For each top-level comment get all of it's children.
+				getChildComments( topLevelComments, listOfComments );
+
+				for ( ActivityStreamEntry nextComment: topLevelComments )
+				{
+					// Add this comment to our ui
+					addComment( nextComment, false );
+				}
+			}
+		}
+	}
+	
+	/**
+	 * This method gets called when a reply is added to one of our sub comments
+	 */
+	@Override
+	public void commentAdded( Object callbackData )
+	{
+		if ( m_commentAddedCallback != null )
+			m_commentAddedCallback.commentAdded( m_commentsInfo );
+	}
+
+	/**
+	 * Return the base doc number.  For example, if the given ActivityStreamEntry has a
+	 * doc number of "4.1.x", we will return "4"
+	 */
+	private String getBaseDocNum( ActivityStreamEntry activityStreamEntry )
+	{
+		String baseDocNum = null;
+		
+		if ( activityStreamEntry != null && activityStreamEntry.getEntryDocNum() != null )
+		{
+			String entryDocNum;
+			int index;
+			
+			entryDocNum = activityStreamEntry.getEntryDocNum();
+			index = entryDocNum.indexOf( '.' );
+			if ( index > 0 )
+				baseDocNum = entryDocNum.substring( 0, index );
+		}
+		
+		return baseDocNum;
 	}
 	
 	/**
@@ -173,11 +231,8 @@ public class CommentsWidget extends Composite
 								// Do we have a list of comments?
 								if ( listOfComments != null )
 								{
-									// Yes
-									for (ActivityStreamEntry nextComment: listOfComments)
-									{
-										addComment( nextComment, false );
-									}
+									// Add the comments to the widget
+									addComments( listOfComments );
 								}
 							}
 						};
@@ -214,6 +269,86 @@ public class CommentsWidget extends Composite
 		}
 		
 		return entityIdS;
+	}
+	
+	/**
+	 * Return a list of all the child sub comments for the given doc number.
+	 * For example, if we are passed "4" as the doc number we would return "4.1", "4.2" but not "4.1.1"
+	 * if we are passed "4.1" we would "4.1.1", "4.1.2" but not "4.1.1.1"
+	 */
+	private ArrayList<ActivityStreamEntry> getListOfChildComments(
+		String baseDocNum,
+		List<ActivityStreamEntry> listOfComments )
+	{
+		ArrayList<ActivityStreamEntry> listOfChildComments;
+		
+		listOfChildComments = new ArrayList<ActivityStreamEntry>();
+		
+		if ( listOfComments != null && baseDocNum != null )
+		{
+			int baseDocNumLen;
+			int i;
+			
+			baseDocNum += ".";
+			baseDocNumLen = baseDocNum.length();
+			
+			for ( i = 0; i < listOfComments.size(); ++i )
+			{
+				ActivityStreamEntry nextComment;
+				String docNum;
+				
+				nextComment = listOfComments.get( i );
+				
+				// Does the doc number have a '.' in it after the base doc number?
+				docNum = nextComment.getEntryDocNum();
+				if ( docNum != null &&
+					 docNum.startsWith( baseDocNum ) &&
+					 docNum.indexOf( '.', baseDocNumLen ) < 0 )
+				{
+					// No, comment is a child comment
+					listOfChildComments.add( nextComment );
+					
+					// Remove the comment from the list of comments so we don't include it when
+					// we are searching for sub comments.
+					listOfComments.remove( i );
+					--i;
+				}
+			}
+		}
+		
+		return listOfChildComments;
+	}
+	
+	/**
+	 * For each parent comment, find it's child comments from the listOfAllComments.
+	 */
+	private void getChildComments(
+		ArrayList<ActivityStreamEntry> listOfParentComments,
+		List<ActivityStreamEntry> listOfAllComments )
+	{
+		if ( listOfParentComments != null && listOfAllComments != null )
+		{
+			for ( ActivityStreamEntry nextComment: listOfParentComments )
+			{
+				String baseDocNum;
+				
+				// Get the list of child comments
+				baseDocNum = nextComment.getEntryDocNum();
+				if ( baseDocNum != null )
+				{
+					ArrayList<ActivityStreamEntry> childComments;
+					
+					childComments = getListOfChildComments( baseDocNum, listOfAllComments );
+					nextComment.setComments( childComments );
+					
+					// For each child comment, get its child comments.
+					if ( childComments != null )
+					{
+						getChildComments( childComments, listOfAllComments );
+					}
+				}
+			}
+		}
 	}
 	
 	/**

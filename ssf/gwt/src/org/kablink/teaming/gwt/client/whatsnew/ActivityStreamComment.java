@@ -33,9 +33,12 @@
 
 package org.kablink.teaming.gwt.client.whatsnew;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
+import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
 import com.google.gwt.user.client.Element;
@@ -45,21 +48,22 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * 
  */
 public class ActivityStreamComment extends ActivityStreamUIEntry
+	implements ActivityStreamCommentsContainer
 {
-	private ActivityStreamCommentsContainer m_commentsContainer;
+	private CommentAddedCallback m_commentAddedCallback;
 	
 	/**
 	 * 
 	 */
 	public ActivityStreamComment(
 				ActivityStreamCtrl activityStreamCtrl,
-				ActivityStreamCommentsContainer commentsContainer,
+				CommentAddedCallback commentAddedCallback,
 				DescViewFormat descViewFormat,
 				boolean showTitle )
 	{
 		super( activityStreamCtrl, descViewFormat, showTitle );
 		
-		m_commentsContainer = commentsContainer;
+		m_commentAddedCallback = commentAddedCallback;
 	}
 	
 	/**
@@ -70,7 +74,7 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 			ActivityStreamTopEntry topEntry,
 			DescViewFormat descViewFormat )
 	{
-		this( activityStreamCtrl, topEntry, descViewFormat, !GwtTeaming.m_requestInfo.isLicenseFilr() );
+		this( activityStreamCtrl, null, descViewFormat, !GwtTeaming.m_requestInfo.isLicenseFilr() );
 	}
 
 	/**
@@ -82,6 +86,43 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 		// Nothing to do.
 	}
 
+	
+	/**
+	 * 
+	 */
+	private void addChildComment( ActivityStreamEntry activityStreamEntry )
+	{
+		FlowPanel commentsPanel;
+		ActivityStreamComment commentUI;
+
+		// Get an ActivityStreamComment object.
+		commentUI = new ActivityStreamComment(
+											getActivityStreamCtrl(),
+											m_commentAddedCallback,
+											DescViewFormat.FULL,
+											getShowTitle() );
+		commentUI.setData( activityStreamEntry );
+		
+		// Add this ui widget to panel that holds all comments
+		commentsPanel = getCommentsPanel();
+		if ( commentsPanel != null )
+			commentsPanel.add( commentUI );
+	}
+	
+	
+	/**
+	 * Create the panel that all comments will live in.
+	 */
+	@Override
+	public FlowPanel createCommentsPanel()
+	{
+		FlowPanel commentsPanel;
+		
+		commentsPanel = new FlowPanel();
+		commentsPanel.addStyleName( "activityStreamComment_CommentsPanel" );
+		
+		return commentsPanel;
+	}
 	
 	/**
 	 * 
@@ -210,7 +251,32 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	public void insertReply( ActivityStreamEntry reply )
 	{
 		// Add this reply to the container that holds the comments.
-		if ( m_commentsContainer != null )
-			m_commentsContainer.insertReply( reply );
+		addChildComment( reply );
+		
+		if ( m_commentAddedCallback != null )
+			m_commentAddedCallback.commentAdded( reply );
+	}
+	
+	/**
+	 * Set the data this we should display from the given ActivityStreamEntry
+	 */
+	@Override
+	public void setData( ActivityStreamEntry entryItem )
+	{
+		List<ActivityStreamEntry> listOfChildComments;
+		
+		super.setData( entryItem );
+		
+		// Does this comment have any sub comments?
+		listOfChildComments = entryItem.getComments();
+		if ( listOfChildComments != null && listOfChildComments.size() > 0 )
+		{
+			// Yes
+			for ( ActivityStreamEntry nextComment: listOfChildComments )
+			{
+				// Add this comment to the panel that holds all comments.
+				addChildComment( nextComment );
+			}
+		}
 	}
 }
