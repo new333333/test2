@@ -151,7 +151,8 @@ public class FilesErrors implements Serializable {
 		
 		public Problem(String repositoryName, String fileName, 
 				int type) {
-			this.repositoryName = repositoryName;
+			// Don't include repository name in the error any longer. It has no meaning to end users.
+			//this.repositoryName = repositoryName;
 			this.fileName = fileName;
 			this.type = type;
 		}
