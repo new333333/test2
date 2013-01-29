@@ -121,11 +121,22 @@ public class EntityIndexUtils {
             	// For the built-in title field, avoid indexing the same text twice. So don't add it in the catch-all field.
             	// Bug 740533 - Store original title rather than trimmed one in the title field
             	Field titleField = FieldFactory.createFullTextFieldIndexed(Constants.TITLE_FIELD, entry.getTitle(), true);
-    	        Field sortTitleField = FieldFactory.createFieldStoredNotAnalyzed(Constants.SORT_TITLE_FIELD, title.toLowerCase());
+            	// This field is used only for sorting, so needs not be stored.
+    	        Field sortTitleField = FieldFactory.createFieldNotStoredNotAnalyzed(Constants.SORT_TITLE_FIELD, title.toLowerCase());
     	        Field title1Field = FieldFactory.createFieldStoredNotAnalyzed(Constants.TITLE1_FIELD, title.substring(0, 1));
+    	        // Create another field instance with the same name as the primary title field, and put the lower-cased
+    	        // version of the title value as a single term, so as to allow accurate wild care matches using * or ?
+    	        // An alternate approach would be to use SORT_TITLE_FIELD field since it already has the single token
+    	        // value indexed. However, that would require changing the default search code to include that additional
+    	        // field by default, which makes things more complicated. Besides, this literal string match on title
+    	        // is useful primarily for file entries where the title happens to represent the file name in the entry.
+    	        // For all other entry types, this isn't useful, so the extra field isn't generic enough to be included
+    	        // in all queries by default.
+    	        Field lowercasedSingleTermTitleField = FieldFactory.createFieldNotStoredNotAnalyzed(Constants.TITLE_FIELD, title.toLowerCase());
     	        doc.add(titleField);
     	        doc.add(sortTitleField);
                 doc.add(title1Field);
+                doc.add(lowercasedSingleTermTitleField);
                 if (entry instanceof Binder) {
                 	Binder binder = (Binder)entry;
                 	//Special case: user workspaces and top workspace don't show parent folder 
@@ -1214,10 +1225,10 @@ public class EntityIndexUtils {
         	doc.add(fileMinorVersionField);
         	Field fileTimeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
         	doc.add(fileTimeField); 
-        	Field fileNameFieldStored = FieldFactory.createFieldStoredNotIndexed(FILENAME_FIELD, fa.getFileItem().getName());
-        	doc.add(fileNameFieldStored);
-        	Field fileNameFieldIndexed = FieldFactory.createFullTextFieldIndexed(FILENAME_FIELD, fa.getFileItem().getName(), false);
-        	doc.add(fileNameFieldIndexed);
+        	Field fileNameFieldStoredIndexed = FieldFactory.createFullTextFieldIndexed(FILENAME_FIELD, fa.getFileItem().getName(), true);
+        	doc.add(fileNameFieldStoredIndexed);
+        	Field fileNameFieldLowerCasedSingleTerm = FieldFactory.createFieldNotStoredNotAnalyzed(FILENAME_FIELD, fa.getFileItem().getName().trim().toLowerCase());
+        	doc.add(fileNameFieldLowerCasedSingleTerm);
         	//create names that groups all the related values together for parsing in displays
         	//doc.add(new Field(FILE_SIZE_AND_ID_FIELD, fa.getId()+fileSizeField.stringValue()));
         	doc.add(FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fileTimeField.stringValue()));
@@ -1248,10 +1259,10 @@ public class EntityIndexUtils {
         doc.add(fileMinorVersionField);
         Field fileTimeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
     	doc.add(fileTimeField);
-    	Field fileNameFieldStored = FieldFactory.createFieldStoredNotIndexed(FILENAME_FIELD, fa.getFileItem().getName());
-    	doc.add(fileNameFieldStored);
-    	Field fileNameFieldIndexed = FieldFactory.createFullTextFieldIndexed(FILENAME_FIELD, fa.getFileItem().getName(), false);
-    	doc.add(fileNameFieldIndexed);    	
+    	Field fileNameFieldStoredIndexed = FieldFactory.createFullTextFieldIndexed(FILENAME_FIELD, fa.getFileItem().getName(), true);
+    	doc.add(fileNameFieldStoredIndexed); 
+    	Field fileNameFieldLowerCasedSingleTerm = FieldFactory.createFieldNotStoredNotAnalyzed(FILENAME_FIELD, fa.getFileItem().getName().trim().toLowerCase());
+    	doc.add(fileNameFieldLowerCasedSingleTerm);    	
       	Field fileDescField = FieldFactory.createFieldStoredNotAnalyzed(FILE_DESCRIPTION_FIELD, fa.getFileItem().getDescription().getText());
        	doc.add(fileDescField);
       	Field fileStatusField = FieldFactory.createFieldStoredNotAnalyzed(FILE_STATUS_FIELD, String.valueOf(fa.getFileStatus()));
