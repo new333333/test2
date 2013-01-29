@@ -89,7 +89,7 @@ public class Spinner {
 
 	private List<SpinnerListener> spinnerListeners = new ArrayList<SpinnerListener>();
 	private int step, minStep, maxStep, initialSpeed = 7;
-	private double value, min, max;
+	private double value, min, max,initialValue;
 	private boolean increment;
 	private boolean constrained;
 	private boolean enabled = true;
@@ -264,6 +264,7 @@ public class Spinner {
 		spinnerListeners.add(spinner);
 		this.images = images;
 		this.value = value;
+		this.initialValue = value;
 		this.constrained = constrained;
 		this.step = minStep;
 		this.minStep = minStep;
@@ -325,6 +326,13 @@ public class Spinner {
 	 */
 	public double getMin() {
 		return min;
+	}
+	
+	/**
+	 * @return the minimum value
+	 */
+	public double getInitialValue() {
+		return initialValue;
 	}
 
 	/**
