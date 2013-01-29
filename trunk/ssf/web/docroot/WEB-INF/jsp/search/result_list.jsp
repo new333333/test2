@@ -309,8 +309,12 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 										      %>
 										      <%= docNum %>&nbsp;&nbsp;
 										    </c:if>
-										    <c:if test="${empty entry.title}">
-										    	(<ssf:nlt tag="entry.noTitle"/>)
+										    <c:if test="${empty entry.title && !empty entry._entryTopEntryTitle}">
+										        <ssf:nlt tag="reply.re.title"><ssf:param
+										    	  name="value" useBody="true">${entry._entryTopEntryTitle}</ssf:param></ssf:nlt>
+										    </c:if>
+										    <c:if test="${empty entry.title && empty entry._entryTopEntryTitle}">
+										        (<ssf:nlt tag="entry.noTitle"/>)
 										    </c:if>
 									    	<c:out value="${entry.title}"/>
 									    	
