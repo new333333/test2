@@ -368,7 +368,10 @@ public class ActionsPopupMenu extends PopupMenu
 			InvokeShareEvent share = ((InvokeShareEvent) m_shareMenuItem.getEvent());
 			share.setUIEntry( entry );
 
-			m_shareMenuItem.setVisible( true );
+			if ( entry instanceof ActivityStreamTopEntry )
+				m_shareMenuItem.setVisible( true );
+			else
+				m_shareMenuItem.setVisible( false );
 		}
 		
 		if ( m_subscribeMenuItem != null )
@@ -400,7 +403,10 @@ public class ActionsPopupMenu extends PopupMenu
 			MarkEntryReadEvent markRead = ((MarkEntryReadEvent) m_markReadMenuItem.getEvent());
 			markRead.setUIEntry( entry );
 
-			m_markReadMenuItem.setVisible( true );
+			if ( entry instanceof ActivityStreamTopEntry )
+				m_markReadMenuItem.setVisible( true );
+			else
+				m_markReadMenuItem.setVisible( false );
 		}
 		
 		if ( m_markUnreadMenuItem != null )
@@ -408,7 +414,10 @@ public class ActionsPopupMenu extends PopupMenu
 			MarkEntryUnreadEvent markUnread = ((MarkEntryUnreadEvent) m_markUnreadMenuItem.getEvent());
 			markUnread.setUIEntry( entry );
 
-			m_markUnreadMenuItem.setVisible( true );
+			if ( entry instanceof ActivityStreamTopEntry )
+				m_markUnreadMenuItem.setVisible( true );
+			else
+				m_markUnreadMenuItem.setVisible( false );
 		}
 		
 		// Hide "Mark read" or "Mark unread" depending on whether or not the entry has been read.

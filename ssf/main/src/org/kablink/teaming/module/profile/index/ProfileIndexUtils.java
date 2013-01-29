@@ -37,6 +37,7 @@ import org.apache.lucene.document.Field;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -150,5 +151,23 @@ public class ProfileIndexUtils {
     {
 		Field path = FieldFactory.createFieldStoredNotAnalyzed( IS_LDAP_CONTAINER_FIELD, (group.isLdapContainer() ? Constants.TRUE : Constants.FALSE) );
 		doc.add( path );
+    }
+
+    /**
+     * 
+     */
+    public static void addIsFromLdap( Document doc, Group group )
+    {
+    	IdentityInfo idInfo;
+    	Field fromLdapField;
+    	boolean fromLdap;
+
+    	fromLdap = false;
+    	idInfo = group.getIdentityInfo();
+    	if ( idInfo != null )
+    		fromLdap = idInfo.isFromLdap();
+    	
+    	fromLdapField = FieldFactory.createFieldStoredNotAnalyzed( IS_GROUP_FROM_LDAP_FIELD, (fromLdap ? Constants.TRUE : Constants.FALSE) );
+    	doc.add( fromLdapField );
     }
 }

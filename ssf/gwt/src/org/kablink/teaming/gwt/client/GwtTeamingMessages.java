@@ -1654,6 +1654,9 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_InternalUser_PersonAdmin();
 	String vibeDataTable_Alt_InternalUser_PersonOthers();
 	String vibeDataTable_Alt_InternalUser_System();
+	String vibeDataTable_Alt_Ldap_Group();
+	String vibeDataTable_Alt_Local_Group();
+	String vibeDataTable_Alt_UnknownGroupType();
 	String vibeDataTable_Alt_UnknownUser();
 	String vibeDataTable_Alt_Unread();
 	String vibeDataTable_Alt_PinEntry();
@@ -1662,6 +1665,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_PinHeader_UnpinAll();
 	String vibeDataTable_Alt_StarGold();
 	String vibeDataTable_Alt_StarGray();
+	String vibeDataTable_Alt_System_Group();
 	String vibeDataTable_Alt_UnpinEntry();
 	String vibeDataTable_Alt_View();
 	String vibeDataTable_ColumnResizer();
@@ -1950,6 +1954,7 @@ public interface GwtTeamingMessages extends Messages
 	String manageGroupsDlgSelectGroupToDelete();
 	String manageGroupsDlgSelect1GroupToEdit();
 	String manageGroupsDlgTitleCol();
+	String manageGroupsDlgTypeCol();
 	String manageGroupsDlgUnknownStatus();
 	
 	// Strings used in the Modify Group dialog
@@ -1964,6 +1969,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyGroupDlgNameTooLong();
 	String modifyGroupDlgStaticLabel();
 	String modifyGroupDlgTitleLabel();
+	String modifyGroupDlgViewGroupMembershipLabel();
 
 	// Strings used in the Modify static membership dialog
 	String modifyStaticMembershipDlgDeleteLabel();

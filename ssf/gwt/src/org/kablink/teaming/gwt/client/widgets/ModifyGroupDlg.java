@@ -98,8 +98,11 @@ public class ModifyGroupDlg extends DlgBox
 	private TextBox m_nameTxtBox;
 	private TextBox m_titleTxtBox;
 	private TextArea m_descTextArea;
+	private FlexTable m_rbTable;
 	private RadioButton m_staticRb;
 	private RadioButton m_dynamicRb;
+	private Button m_editMembershipBtn;
+	private Button m_viewMembershipBtn;
 	private ModifyStaticMembershipDlg m_staticMembershipDlg;
 	private ModifyDynamicMembershipDlg m_dynamicMembershipDlg;
 	private GwtDynamicGroupMembershipCriteria m_dynamicMembershipCriteria;
@@ -196,56 +199,96 @@ public class ModifyGroupDlg extends DlgBox
 		
 		// Create the controls for static and dynamic group membership
 		{
-			FlexTable table2;
 			FlexCellFormatter cellFormatter2;
-			ClickHandler clickHandler;
-			Button editMembershipBtn;
 
-			table2 = new FlexTable();
-			cellFormatter2 = table2.getFlexCellFormatter();
+			m_rbTable = new FlexTable();
+			cellFormatter2 = m_rbTable.getFlexCellFormatter();
 
 			// Add the radio buttons
 			m_staticRb = new RadioButton( "membershipType", messages.modifyGroupDlgStaticLabel() );
-			table2.setWidget( 0, 0, m_staticRb );
+			m_rbTable.setWidget( 0, 0, m_staticRb );
 			m_dynamicRb = new RadioButton( "membershipType", messages.modifyGroupDlgDynamicLabel() );
-			table2.setWidget( 1, 0, m_dynamicRb );
+			m_rbTable.setWidget( 1, 0, m_dynamicRb );
 			
 			// Add "Edit group membership" button
-			editMembershipBtn = new Button( messages.modifyGroupDlgEditGroupMembershipLabel() );
-			editMembershipBtn.addStyleName( "teamingButton" );
-			editMembershipBtn.getElement().getStyle().setMarginLeft( 10, Unit.PX );
-			table2.setWidget( 0, 1, editMembershipBtn );
-			cellFormatter2.setRowSpan( 0, 1, 2 );
-			
-			clickHandler = new ClickHandler()
 			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onClick( ClickEvent event )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						/**
-						 * 
-						 */
-						@Override
-						public void execute()
-						{
-							// Invoke the "edit group membership" dialog.
-							invokeEditGroupMembershipDlg();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
+				ClickHandler clickHandler;
+
+				m_editMembershipBtn = new Button( messages.modifyGroupDlgEditGroupMembershipLabel() );
+				m_editMembershipBtn.addStyleName( "teamingButton" );
+				m_editMembershipBtn.getElement().getStyle().setMarginLeft( 10, Unit.PX );
+				m_rbTable.setWidget( 0, 1, m_editMembershipBtn );
+				cellFormatter2.setRowSpan( 0, 1, 2 );
 				
-			};
-			editMembershipBtn.addClickHandler( clickHandler );
+				clickHandler = new ClickHandler()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void onClick( ClickEvent event )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							/**
+							 * 
+							 */
+							@Override
+							public void execute()
+							{
+								// Invoke the "edit group membership" dialog.
+								invokeEditGroupMembershipDlg();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+					
+				};
+				m_editMembershipBtn.addClickHandler( clickHandler );
+			}
 			
-			table.setWidget( nextRow, 0, table2 );
+			// Add "View group membership" button
+			{
+				ClickHandler clickHandler;
+
+				m_viewMembershipBtn = new Button( messages.modifyGroupDlgViewGroupMembershipLabel() );
+				m_viewMembershipBtn.addStyleName( "teamingButton" );
+				m_viewMembershipBtn.getElement().getStyle().setMarginLeft( 10, Unit.PX );
+				m_rbTable.setWidget( 0, 1, m_viewMembershipBtn );
+				cellFormatter2.setRowSpan( 0, 1, 2 );
+				
+				clickHandler = new ClickHandler()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void onClick( ClickEvent event )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							/**
+							 * 
+							 */
+							@Override
+							public void execute()
+							{
+								// Invoke the "view group membership" dialog.
+								invokeViewGroupMembershipDlg();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+					
+				};
+				m_viewMembershipBtn.addClickHandler( clickHandler );
+			}
+			
+			table.setWidget( nextRow, 0, m_rbTable );
 			cellFormatter.setColSpan( nextRow, 0, 2 );
 			
 			++nextRow;
@@ -655,7 +698,9 @@ public class ModifyGroupDlg extends DlgBox
 		// Clear existing data in the controls.
 		m_nameTxtBox.setText( "" );
 		m_titleTxtBox.setText( "" );
+		m_titleTxtBox.setEnabled( true );
 		m_descTextArea.setText( "" );
+		m_descTextArea.setEnabled( true );
 		
 		// Are we modifying an existing group?
 		if ( m_groupInfo != null )
@@ -690,6 +735,29 @@ public class ModifyGroupDlg extends DlgBox
 			
 			m_titleTxtBox.setText( groupInfo.getTitle() );
 			m_descTextArea.setText( groupInfo.getDesc() );
+			
+			// Enable/disable controls depending on whether this group was provisioned from ldap
+			{
+				// Are we dealing with a group provisioned from ldap?
+				if ( m_groupInfo.getIsFromLdap() )
+				{
+					// Replace the "edit membership" button with "view membership" button
+					m_rbTable.setWidget( 0, 1, m_viewMembershipBtn );
+					m_titleTxtBox.setEnabled( false );
+					m_descTextArea.setEnabled( false );
+					m_staticRb.setEnabled( false );
+					m_dynamicRb.setEnabled( false );
+				}
+				else
+				{
+					// Replace the "view membership" button with the "edit membership" button.
+					m_rbTable.setWidget( 0, 1, m_editMembershipBtn );
+					m_titleTxtBox.setEnabled( true );
+					m_descTextArea.setEnabled( true );
+					m_staticRb.setEnabled( true );
+					m_dynamicRb.setEnabled( true );
+				}
+			}
 		}
 		else
 		{
@@ -706,6 +774,12 @@ public class ModifyGroupDlg extends DlgBox
 			m_nameLabel.setVisible( true );
 			m_nameTxtBox.setVisible( true );
 			
+			// Replace the "view membership" button with the "edit membership" button.
+			m_rbTable.setWidget( 0, 1, m_editMembershipBtn );
+
+			m_staticRb.setEnabled( true );
+			m_dynamicRb.setEnabled( true );
+
 			// Default the membership to "static"
 			m_staticRb.setValue( true );
 			m_dynamicRb.setValue( false );
@@ -754,17 +828,19 @@ public class ModifyGroupDlg extends DlgBox
 						return true;
 					}
 				};
-				m_staticMembershipDlg = new ModifyStaticMembershipDlg( false, true, handler, null, x, y );
+				m_staticMembershipDlg = new ModifyStaticMembershipDlg( true, false, handler, null, x, y );
 			}
 			
-			groupExistsInDb = false;
 			if ( m_groupInfo != null )
 			{
 				groupExistsInDb = true;
 				externalAllowed = m_groupInfo.getIsExternalAllowed();
 			}
 			else
+			{
+				groupExistsInDb = false;
 				externalAllowed = m_externalMembersAllowed;
+			}
 			
 			m_staticMembershipDlg.init( getGroupName(), m_groupMembership, externalAllowed, groupExistsInDb );
 			m_staticMembershipDlg.setPopupPosition( x, y );
@@ -815,6 +891,26 @@ public class ModifyGroupDlg extends DlgBox
 			m_dynamicMembershipDlg.init( m_dynamicMembershipCriteria, m_numDynamicMembers, groupId );
 			m_dynamicMembershipDlg.setPopupPosition( x, y );
 			m_dynamicMembershipDlg.show();
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void invokeViewGroupMembershipDlg()
+	{
+		// Create a popup that will display the membership of this group.
+		if ( m_groupInfo != null )
+		{
+			GroupMembershipPopup popup;
+			
+			popup = new GroupMembershipPopup(
+											true,
+											false,
+											m_groupInfo.getName(),
+											m_groupInfo.getId().toString() );
+
+			popup.showRelativeTo( m_viewMembershipBtn );
 		}
 	}
 	
