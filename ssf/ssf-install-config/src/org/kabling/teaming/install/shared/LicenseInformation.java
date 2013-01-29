@@ -16,6 +16,7 @@ public class LicenseInformation implements Serializable
 	private String productVersion;
 	
 	private String expirationDate;
+	private String datesEffective;
 	
 	public LicenseInformation()
 	{
@@ -89,6 +90,16 @@ public class LicenseInformation implements Serializable
 	public void setExpirationDate(String expirationDate)
 	{
 		this.expirationDate = expirationDate;
+	}
+
+	public String getDatesEffective()
+	{
+		return datesEffective;
+	}
+
+	public void setDatesEffective(String datesEffective)
+	{
+		this.datesEffective = datesEffective;
 	}
 	
 	

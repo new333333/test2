@@ -2,6 +2,7 @@ package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
+import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
 import com.google.gwt.core.client.GWT;
@@ -81,7 +82,7 @@ public class ExportConfigurationPage extends ConfigPageDlgBox implements ClickHa
 			if (GWT.isProdMode() && !AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 				Window.Location.replace("/filrconfig/InstallConfig/fileUpload");
 			else
-				Window.Location.replace("/InstallConfig/fileUpload");
+				Window.Location.replace("/filrconfig/InstallConfig/fileUpload");
 		}
 	}
 
@@ -97,6 +98,15 @@ public class ExportConfigurationPage extends ConfigPageDlgBox implements ClickHa
 			flowPanel.add(label);
 		}
 		return flowPanel;
+	}
+
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData =  new HelpData();
+		helpData.setPageId("update");
+		
+		return helpData;
 	}
 
 }

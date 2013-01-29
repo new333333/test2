@@ -146,6 +146,6 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			return "local";
 		else if (customRB.getValue())
 			return "large";
-		return null;
+		return "upgrade";
 	}
 }

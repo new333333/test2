@@ -3,6 +3,7 @@ package org.kabling.teaming.install.client.wizard;
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigWizardSucessEvent;
 import org.kabling.teaming.install.client.GwtClientHelper;
+import org.kabling.teaming.install.client.ConfigWizardSucessEvent.WizardFinishType;
 import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.client.widgets.StatusIndicator;
 import org.kabling.teaming.install.shared.InstallerConfig;
@@ -40,7 +41,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 	DatabaseConfigPage dbPage;
 	LuceneConfigPage lucenePage;
 	// StoragePage storagePage;
-	ImportConfigPage importPage;
+	UpgradeAppliancePage importPage;
 	//PasswordPage pwdPage;
 	LocalDatabaseConfigPage dbLocalPage;
 
@@ -83,7 +84,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		lucenePage = new LuceneConfigPage(this, config);
 
 		// Import Page
-		importPage = new ImportConfigPage(this);
+		importPage = new UpgradeAppliancePage(this);
 
 		// Password Page
 		//pwdPage = new PasswordPage(this, config);
@@ -144,10 +145,17 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 			return;
 		
 		currentPage.save();
-
+		
 		showStatusIndicator(AppUtil.getAppResource().pleaseWait());
 		finishButton.setEnabled(false);
-		AppUtil.getInstallService().saveConfiguration(config, new SaveConfigCallback());
+		
+		if (configPage.getDeploymentType().equals("upgrade"))
+		{
+			showStatusIndicator(AppUtil.getAppResource().upgradePleaseWait());
+			importPage.upgrade();
+		}
+		else
+			AppUtil.getInstallService().saveConfiguration(config, new SaveConfigCallback());
 	}
 
 	private void updateButtons()
@@ -385,7 +393,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 			// Set the flag that we have configured
 			AppUtil.getProductInfo().setConfigured(true);
 
-			AppUtil.getEventBus().fireEvent(new ConfigWizardSucessEvent(true));
+			AppUtil.getEventBus().fireEvent(new ConfigWizardSucessEvent(WizardFinishType.LOCAL_SUCESS));
 
 			ConfigWizard.this.hide(true);
 		}

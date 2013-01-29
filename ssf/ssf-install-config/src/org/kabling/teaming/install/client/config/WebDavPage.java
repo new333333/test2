@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
+import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.shared.InstallerConfig.WebDAV;
 
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -68,6 +69,15 @@ public class WebDavPage extends ConfigPageDlgBox
 			authListBox.setSelectedIndex(0);
 		else
 			authListBox.setSelectedIndex(1);
+	}
+
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData =  new HelpData();
+		helpData.setPageId("webdav");
+		
+		return helpData;
 	}
 
 }

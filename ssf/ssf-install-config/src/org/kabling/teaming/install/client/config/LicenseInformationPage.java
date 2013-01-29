@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.AppUtil;
+import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.LicensePageDlgBox;
 import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
@@ -233,5 +234,12 @@ public class LicenseInformationPage extends LicensePageDlgBox
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public HelpData getHelpData()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

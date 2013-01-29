@@ -300,4 +300,17 @@ public interface AppResource extends Messages
 	String systemHostNameColon();
 	String dbConfigPageTitleDesc();
 	String dbConnection();
+
+	String upgradeFinishedMsg(String ipAddr);
+
+	String upgradePleaseWait();
+
+	String hostNameNoMatch();
+	String dataDriveNotFound();
+
+	String problemUpgrading();
+	
+	String wishToContinueUpgrade();
+
+	String warning();
 }

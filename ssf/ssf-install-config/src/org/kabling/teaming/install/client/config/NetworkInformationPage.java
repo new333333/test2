@@ -2,6 +2,7 @@ package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
+import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.shared.Network;
@@ -244,5 +245,14 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 			port443RedirectLabel.setVisible(portRedirectCheckBox.getValue());
 			port80RedirectLabel.setVisible(portRedirectCheckBox.getValue());
 		}
+	}
+
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData =  new HelpData();
+		helpData.setPageId("network");
+		
+		return helpData;
 	}
 }

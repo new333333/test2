@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
+import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.ValueRequiredBasedOnBoolValidator;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
@@ -220,6 +221,15 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			httpSpinner.setEnabled(httpEnabledCheckBox.getValue());
 		}
 
+	}
+
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData =  new HelpData();
+		helpData.setPageId("access_manager");
+		
+		return helpData;
 	}
 
 }

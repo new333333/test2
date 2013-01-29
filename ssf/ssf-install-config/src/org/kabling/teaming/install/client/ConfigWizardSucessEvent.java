@@ -12,24 +12,24 @@ public class ConfigWizardSucessEvent extends Event<ConfigWizardSucessEvent.Confi
 {
 
 	public static final Type<ConfigWizardSuccessEventHandler> TYPE = new Type<ConfigWizardSuccessEventHandler>();
-	private boolean sucess;
+	public WizardFinishType wizFinishType;
 	public interface ConfigWizardSuccessEventHandler
 	{
 		void onEvent(ConfigWizardSucessEvent event);
 	}
 
-	/**
-	 * Get the installer.xml modification state
-	 * @return - true if it in dirty state
-	 */
-	public boolean isSucess()
+	public enum WizardFinishType
 	{
-		return sucess;
+		LOCAL_SUCESS,
+		REMOTE_SUCESS,
+		FAILURE,
+		UPGRADE
 	}
+	
 
-	public ConfigWizardSucessEvent(boolean sucess)
+	public ConfigWizardSucessEvent(WizardFinishType wizFinishType)
 	{
-		this.sucess = sucess;
+		this.wizFinishType = wizFinishType;
 	}
 
 	@Override
@@ -44,4 +44,8 @@ public class ConfigWizardSucessEvent extends Event<ConfigWizardSucessEvent.Confi
 		return TYPE;
 	}
 
+	public WizardFinishType getWizFinishType()
+	{
+		return wizFinishType;
+	}
 }

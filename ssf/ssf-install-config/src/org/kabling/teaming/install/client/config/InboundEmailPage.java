@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
+import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.ValueRequiredValidator;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
@@ -117,6 +118,13 @@ public class InboundEmailPage extends ConfigPageDlgBox
 			smtpBindAddrTextBox.setText(emailSettings.getInternalInboundSMTPBindAddress());
 			smtpPortSpinner.setValue(emailSettings.getInternalInboundSMTPPort());
 		}
+	}
+
+	@Override
+	public HelpData getHelpData()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
