@@ -385,7 +385,7 @@ public class SearchFilterRequestParser {
 		} catch(Exception e) {}
 		if (searchCaseSensitive == null) searchCaseSensitive = false;
 		
-		if (!searchText.equals("")) {
+		if (!searchText.trim().equals("") && !searchText.trim().equals("*")) {
 			searchFilter.addText(searchText, searchCaseSensitive);
 		}
 	}
