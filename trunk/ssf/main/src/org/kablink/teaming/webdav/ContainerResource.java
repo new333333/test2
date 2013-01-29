@@ -236,12 +236,23 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
         try {
         	if(oneLevelWithInferredAccess) {
     			hits = luceneSession.searchFolderOneLevelWithInferredAccess(RequestContextHolder.getRequestContext().getUserId(),
-    					so.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, soQuery, null, 0,
-    					Integer.MAX_VALUE, parentBinder.getId(), parentBinder.getPathName());
+    					so.getAclQueryStr(), 
+    					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
+    					soQuery, 
+    					null, 
+    					0,
+    					Integer.MAX_VALUE, 
+    					parentBinder.getId(), 
+    					parentBinder.getPathName());
         	}
         	else {
         		hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-	        		so.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, soQuery, null, 0, Integer.MAX_VALUE);
+	        		so.getAclQueryStr(), 
+	        		Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
+	        		soQuery, 
+	        		null, 
+	        		0, 
+	        		Integer.MAX_VALUE);
         	}
         }
         finally {

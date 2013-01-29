@@ -37,7 +37,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.webdav.util.WebdavUtils;
 
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
@@ -130,6 +133,12 @@ public class RootResource extends WebdavCollectionResource implements PropFindab
 	public Resource child(String childName) {
 		if(DavResource.ID.equals(childName))
 			return new DavResource(factory);
+		else if(this.factory.getMyFilesPrefix().equals(childName) && WebdavUtils.userCanAccessMyFiles(this))
+			return new MyFilesResource(factory);
+		else if(this.factory.getNetFoldersPrefix().equals(childName) && WebdavUtils.userCanAccessNetFolders())
+			return new NetFoldersResource(factory);
+		else if(this.factory.getSharedWithMePrefix().equals(childName))
+			return new SharedWithMeResource(factory);
 		else
 			return null;
 	}
@@ -141,6 +150,11 @@ public class RootResource extends WebdavCollectionResource implements PropFindab
 	public List<? extends Resource> getChildren() {
 		List<Resource> list = new ArrayList<Resource>();
 		list.add(new DavResource(factory));
+		if(WebdavUtils.userCanAccessMyFiles(this))
+			list.add(new MyFilesResource(factory));
+		if(WebdavUtils.userCanAccessNetFolders())
+			list.add(new NetFoldersResource(factory));
+		list.add(new SharedWithMeResource(factory));
 		return list;
 	}
 

@@ -170,6 +170,11 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 		return path;
 	}
 	
+	// Return Vibe path
+	public String getPath() {
+		return path;
+	}
+	
 	public EntityIdentifier getEntityIdentifier() {
 		return entityIdentifier;
 	}

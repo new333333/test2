@@ -38,9 +38,13 @@ import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SpringContextUtil;
 
 import com.bradmcevoy.common.ContentTypeUtils;
@@ -89,6 +93,16 @@ public class WebdavUtils {
 		if(logger.isTraceEnabled())
 			logger.trace("getContentType: preferred: " + accepts + " mime: " + mime + " selected: " + s);
 		return s;
+	}
+	
+	public static boolean userCanAccessMyFiles(AllModulesInjected bs) {
+		return SearchUtils.userCanAccessMyFiles(bs, RequestContextHolder.getRequestContext().getUser());
+	}
+	
+	public static boolean userCanAccessNetFolders() {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		// We do not support Net Folders for the guest or external users.
+		return !user.isShared() && user.getIdentityInfo().isInternal();
 	}
 	
 	private static FileModule getFileModule() {
