@@ -43,6 +43,7 @@
 <%@ page import="org.dom4j.Element" %>
 <%@ page import="org.kablink.teaming.domain.DefinitionInvalidOperation" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.domain.IdentityInfo" %>
 
 <jsp:useBean id="definitionTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="data" type="java.util.Map" scope="request" />
@@ -706,10 +707,10 @@ function ss_saveUserGroupResults(s) {
 				request.setAttribute("definitionEntry", new FolderEntry());
 			} else if (configElementProfile != null) {
 				configElement = configElementProfile;
-				request.setAttribute("definitionEntry", new User(User.IDENTITY_SOURCE_LOCAL));
+				request.setAttribute("definitionEntry", new User(new IdentityInfo()));
 			} else if (configElementProfiles != null) {
 				configElement = configElementProfiles;
-				request.setAttribute("definitionEntry", new User(User.IDENTITY_SOURCE_LOCAL));
+				request.setAttribute("definitionEntry", new User(new IdentityInfo()));
 			} else if (configElementFolder != null) {
 				configElement = configElementFolder;
 				request.setAttribute("definitionEntry", new Folder());
