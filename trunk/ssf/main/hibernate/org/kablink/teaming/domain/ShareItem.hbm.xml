@@ -22,6 +22,7 @@
     <property name="daysToExpire" type="int"/>
     <property name="startDate" index="startDate_shareitem"/>
     <property name="endDate" index="endDate_shareitem"/>
+    <property name="deletedDate"/>
     <property name="recipientType" column="recipient_type" access="field" type="short" index="recipient_shareitem"/>
     <property name="recipientId" column="recipient_id" index="recipient_shareitem"/>
     <property name="expirationHandled" access="field"/> 

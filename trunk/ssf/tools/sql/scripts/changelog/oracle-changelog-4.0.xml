@@ -551,5 +551,14 @@ update SS_PRINCIPALS set FOREIGNNAME=LOWER(FOREIGNNAME);
             </column>
         </addColumn>
 	</changeSet>
-	    
+
+    <changeSet author="david" context="schema" failOnError="true" id="64">
+        <comment>Add deletedDate field to SS_ShareItem table</comment>
+        <addColumn tableName="SS_SHAREITEM">
+            <column name="DELETEDDATE" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -34,6 +34,7 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
 import org.dom4j.Document;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
@@ -58,9 +59,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Path("/binders")
 @Singleton
@@ -68,15 +67,21 @@ import java.util.Set;
 public class BinderResource extends AbstractResource {
     @GET
     public SearchResultList<BinderBrief> getBinders(@QueryParam("id") Set<Long> ids,
+                                                    @QueryParam("library_mod_times") @DefaultValue("false") boolean libraryModTimes,
                                                     @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
                                                     @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        List<Long> specialIds = new ArrayList<Long>();
         Junction criterion = Restrictions.conjunction();
         criterion.add(buildBindersCriterion());
         if (ids!=null) {
             Junction or = Restrictions.disjunction();
             for (Long id : ids) {
-                or.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
+                if (id>0) {
+                    or.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
+                } else {
+                    specialIds.add(id);
+                }
             }
             criterion.add(or);
         }
@@ -84,6 +89,20 @@ public class BinderResource extends AbstractResource {
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/binders", null, offset);
+        for (Long id : specialIds) {
+            if (id.equals(ObjectKeys.SHARED_BY_ME_ID)) {
+                results.append(getFakeSharedByMe());
+            } else if (id.equals(ObjectKeys.SHARED_WITH_ME_ID)) {
+                results.append(getFakeSharedWithMe());
+            } else if (id.equals(ObjectKeys.MY_FILES_ID)) {
+                results.append(getFakeMyFileFolders());
+            } else if (id.equals(ObjectKeys.NET_FOLDERS_ID)) {
+                results.append(getFakeNetFolders());
+            }
+        }
+        if (libraryModTimes) {
+            populateLibraryModTimes(results);
+        }
         return results;
     }
 
@@ -128,5 +147,18 @@ public class BinderResource extends AbstractResource {
             // Throw exception below.
         }
         throw new NotFoundException(ApiErrorCode.BINDER_NOT_FOUND, "NOT FOUND");
+    }
+
+    protected void populateLibraryModTimes(SearchResultList<BinderBrief> results) {
+        for (BinderBrief binder : results.getResults()) {
+            Long id = binder.getId();
+            if (id.equals(ObjectKeys.SHARED_WITH_ME_ID)) {
+                binder.setLibraryModificationDate(getSharedWithLibraryModifiedDate(getLoggedInUserId(), true));
+            } else if (id.equals(ObjectKeys.MY_FILES_ID)) {
+                binder.setLibraryModificationDate(getMyFilesLibraryModifiedDate(true));
+            } else if (id>0) {
+                binder.setLibraryModificationDate(getLibraryModifiedDate(new Long[]{id}, true));
+            }
+        }
     }
 }

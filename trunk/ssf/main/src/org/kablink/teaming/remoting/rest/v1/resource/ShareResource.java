@@ -34,6 +34,7 @@ import org.kablink.util.search.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.*;
 
 /**
@@ -49,12 +50,7 @@ public class ShareResource extends AbstractResource {
     @GET
     @Path("/{id}")
     public Share getShare(@PathParam("id") Long id) {
-        ShareItem share = getSharingModule().getShareItem(id);
-        if (!share.isLatest() || !share.getSharerId().equals(getLoggedInUserId())) {
-            // Don't allow the user to modify a share that is not the latest version of the share, or that was shared
-            // by someone else.
-            throw new NoShareItemByTheIdException(id);
-        }
+        ShareItem share = _getShareItem(id);
         return ResourceUtil.buildShare(share);
     }
 
@@ -62,12 +58,7 @@ public class ShareResource extends AbstractResource {
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Share updateShare(@PathParam("id") Long id, Share share) {
-        ShareItem origItem = getSharingModule().getShareItem(id);
-        if (!origItem.isLatest() || !origItem.getSharerId().equals(getLoggedInUserId())) {
-            // Don't allow the user to modify a share that is not the latest version of the share, or that was shared
-            // by someone else.
-            throw new NoShareItemByTheIdException(id);
-        }
+        ShareItem origItem = _getShareItem(id);
         // You can't change the shared entity or the recipient via this API.  Perhaps I should fail if the client supplies
         // these values and they don't match?
         share.setSharedEntity(new EntityId(origItem.getSharedEntityIdentifier().getEntityId(), origItem.getSharedEntityIdentifier().getEntityType().name(), null));
@@ -81,7 +72,7 @@ public class ShareResource extends AbstractResource {
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public void deleteShare(@PathParam("id") Long id) {
-        getShare(id);
+        _getShareItem(id);
         getSharingModule().deleteShareItem(id);
     }
 
@@ -265,6 +256,15 @@ public class ShareResource extends AbstractResource {
                                                   @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
         SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, false, false, showHidden, showUnhidden);
         return getSubBinderTree(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", sharedBinders, null, textDescriptions);
+    }
+
+    @GET
+    @Path("/with_user/{id}/library_mod_time")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getLibraryModTime(@PathParam("id") Long userId,
+                                      @QueryParam("recursive") @DefaultValue("false") boolean recursive) {
+        Date maxDate = getSharedWithLibraryModifiedDate(userId, recursive);
+        return Response.ok().lastModified(maxDate).build();
     }
 
     @GET
@@ -685,11 +685,13 @@ public class ShareResource extends AbstractResource {
         return results;
     }
 
-    private ShareItemSelectSpec getSharedWithSpec(Long userId) {
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setRecipientsFromUserMembership(userId);
-        spec.setLatest(true);
-        return spec;
+    private ShareItem _getShareItem(Long id) {
+        ShareItem share = getSharingModule().getShareItem(id);
+        if (share.isDeleted() || !share.isLatest() || !share.getSharerId().equals(getLoggedInUserId())) {
+            // Don't allow the user to modify a share that is not the latest version of the share, or that was shared
+            // by someone else.
+            throw new NoShareItemByTheIdException(id);
+        }
+        return share;
     }
-
 }

@@ -96,6 +96,8 @@ public class ShareItemSelectSpec {
 	public boolean onRightsDisjunctive = true;
 	
 	public boolean accountForInheritance = false;
+
+    public Boolean deleted = Boolean.FALSE;
 	
 	/**
 	 * Defines selection criterion with a specific value of "latest" attribute.

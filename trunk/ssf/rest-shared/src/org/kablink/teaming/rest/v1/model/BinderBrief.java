@@ -35,6 +35,7 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.Date;
 
 /**
  * User: david
@@ -47,6 +48,7 @@ public class BinderBrief extends DefinableEntityBrief {
    	private String path;
    	private Boolean mirrored;
    	private Boolean homeDir;
+    private Date libraryModificationDate;
 
     public BinderBrief() {
         setDocType("binder");
@@ -87,6 +89,15 @@ public class BinderBrief extends DefinableEntityBrief {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    @XmlElement(name = "library_mod_time")
+    public Date getLibraryModificationDate() {
+        return libraryModificationDate;
+    }
+
+    public void setLibraryModificationDate(Date libraryModificationDate) {
+        this.libraryModificationDate = libraryModificationDate;
     }
 
     @XmlTransient

@@ -101,6 +101,7 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	protected Boolean partOfPublicShare = Boolean.FALSE;
 	// This field is meaningful only for expired shares.
 	protected Boolean expirationHandled;
+    protected Date deletedDate;
 
 	// For use by Hibernate only
 	protected ShareItem() {
@@ -147,6 +148,7 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		this.recipientId = si.recipientId;
 		this.rightSet = (RightSet) si.rightSet.clone();
 		this.partOfPublicShare = si.partOfPublicShare;
+        this.deletedDate = si.deletedDate;
 	}
 	
 	@Override
@@ -242,7 +244,15 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		this.endDate = endDate;
 	}
 
-	public Long getRecipientId() {
+    public Date getDeletedDate() {
+        return deletedDate;
+    }
+
+    public void setDeletedDate(Date deletedDate) {
+        this.deletedDate = deletedDate;
+    }
+
+    public Long getRecipientId() {
 		return recipientId;
 	}
 
@@ -272,8 +282,12 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		else
 			return endDate.before(new Date());
 	}
-	
-	//Routine to get the Role that best matches the RightSet for this ShareItem
+
+    public boolean isDeleted() {
+        return deletedDate != null;
+    }
+
+    //Routine to get the Role that best matches the RightSet for this ShareItem
 	public Role getRole() {
         RightSet testSet = (RightSet) this.getRightSet().clone();
         testSet.setAllowSharing(false);

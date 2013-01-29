@@ -51,6 +51,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
@@ -65,6 +66,7 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.HttpHeaders;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.*;
@@ -250,6 +252,19 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             return ((Workspace)binder).isPreDeleted();
         }
         return false;
+    }
+
+    protected Date getPreDeletedDate(Binder binder) {
+        Long when = null;
+        if (binder instanceof org.kablink.teaming.domain.Folder) {
+            when = ((org.kablink.teaming.domain.Folder)binder).getPreDeletedWhen();
+        } else if (binder instanceof Workspace) {
+            when = ((Workspace)binder).getPreDeletedWhen();
+        }
+        if (when!=null) {
+            return new Date(when);
+        }
+        return null;
     }
 
     protected Document getDocument(String xml) {
@@ -760,4 +775,214 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return results;
     }
 
+    protected ShareItemSelectSpec getSharedWithSpec(Long userId) {
+        ShareItemSelectSpec spec = new ShareItemSelectSpec();
+        spec.setRecipientsFromUserMembership(userId);
+        spec.setLatest(true);
+        return spec;
+    }
+
+    protected Date max(Date d1, Date d2) {
+        if (d1==null) {
+            return d2;
+        }
+        if (d2==null) {
+            return d1;
+        }
+        if (d1.compareTo(d2)>=0) {
+            return d1;
+        } else {
+            return d2;
+        }
+    }
+
+    protected Date getSharedWithLibraryModifiedDate(Long userId, boolean recursive) {
+        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+        // Include deleted entries as well.
+        spec.deleted = null;
+        List<ShareItem> shareItems = getShareItems(spec, userId, true);
+        return getLibraryModifiedDateForShareItems(recursive, shareItems);
+    }
+
+    protected Date getLibraryModifiedDateForShareItems(boolean recursive, List<ShareItem> shareItems) {
+        Date maxDate = null;
+        List<Long> binderList = new ArrayList<Long>();
+        for (ShareItem item : shareItems) {
+            if (item.isExpired()) {
+                maxDate = max(maxDate, item.getEndDate());
+            } else if (item.isDeleted()) {
+                maxDate = max(maxDate, item.getDeletedDate());
+            } else {
+                maxDate = max(maxDate, item.getStartDate());
+                EntityIdentifier entityId = item.getSharedEntityIdentifier();
+                if (entityId.getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+                    FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(item);
+                    if (entry.isPreDeleted()) {
+                        maxDate = max(maxDate, new Date(entry.getPreDeletedWhen()));
+                    } else {
+                        maxDate = max(maxDate, entry.getModificationDate());
+                    }
+                } else if (entityId.getEntityType()== EntityIdentifier.EntityType.folder || entityId.getEntityType()== EntityIdentifier.EntityType.workspace) {
+                    Binder binder = (Binder) getSharingModule().getSharedEntity(item);
+                    if (isBinderPreDeleted(binder)) {
+                        maxDate = max(maxDate, getPreDeletedDate(binder));
+                    } else if (recursive) {
+                        binderList.add(binder.getId());
+                    }
+                }
+            }
+        }
+        maxDate = max(maxDate, getLibraryModifiedDate(binderList.toArray(new Long[binderList.size()]), recursive));
+        return maxDate;
+    }
+
+    protected Date getLibraryModifiedDate(Long [] binderIds, boolean recursive) {
+        if (binderIds.length==0) {
+            return null;
+        }
+        Criteria crit = new Criteria();
+        if (recursive) {
+            Junction or = Restrictions.disjunction();
+            for (Long binderId : binderIds) {
+                or.add(buildAncentryCriterion(binderId));
+            }
+            crit.add(or);
+            or = Restrictions.disjunction();
+            or.add(buildWorkspacesCriterion());
+            crit.add(or);
+
+            Junction and = Restrictions.conjunction();
+            or.add(and);
+            and.add(buildLibraryCriterion(Boolean.TRUE));
+            or = Restrictions.disjunction();
+            or.add(buildFoldersCriterion());
+            or.add(buildEntriesCriterion());
+            and.add(or);
+        } else {
+            Junction or = Restrictions.disjunction();
+            crit.add(or);
+            for (Long binderId : binderIds) {
+                or.add(buildBinderCriterion(binderId));
+                Junction entryAnd = Restrictions.conjunction();
+                entryAnd.add(buildEntriesCriterion());
+                entryAnd.add(buildParentBinderCriterion(binderId));
+                or.add(entryAnd);
+            }
+        }
+
+        crit.addOrder(new Order(Constants.MODIFICATION_DATE_FIELD, false));
+
+        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1);
+        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(false), resultsMap, null, null, 0);
+        return results.getLastModified();
+    }
+
+    protected Date getMyFilesLibraryModifiedDate(boolean recursive) {
+        Long [] ids;
+        if (recursive) {
+            ids = new Long[] {getMyFilesFolderParent().getId()};
+        } else if (SearchUtils.useHomeAsMyFiles(this)) {
+            List<Long> homeFolderIds = SearchUtils.getHomeFolderIds(this, getLoggedInUser());
+            ids = homeFolderIds.toArray(new Long[homeFolderIds.size()]);
+        } else {
+            List<Long> hiddenFolderIds = SearchUtils.getMyFilesFolderIds(this, getLoggedInUser());
+            ids = hiddenFolderIds.toArray(new Long[hiddenFolderIds.size()]);
+        }
+        return getLibraryModifiedDate(ids, recursive);
+    }
+
+    protected Binder getMyFilesFolderParent() {
+        org.kablink.teaming.domain.User loggedInUser = getLoggedInUser();
+        if (SearchUtils.useHomeAsMyFiles(this, loggedInUser)) {
+            return _getHomeFolder();
+        } else {
+            return _getUserWorkspace();
+        }
+    }
+
+    protected BinderBrief getFakeMyFileFolders() {
+        org.kablink.teaming.domain.User user = getLoggedInUser();
+        BinderBrief binder = new BinderBrief();
+        //TODO: localize
+        binder.setId(ObjectKeys.MY_FILES_ID);
+        binder.setTitle("My Files");
+        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
+        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, user.getId().toString(), PermaLinkUtil.COLLECTION_MY_FILES));
+        String baseUri = "/self/my_files";
+        binder.setLink(baseUri);
+        binder.addAdditionalLink("child_binders", baseUri + "/library_folders");
+        binder.addAdditionalLink("child_files", baseUri + "/library_files");
+        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
+        binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
+        binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
+        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
+        return binder;
+    }
+
+    protected BinderBrief getFakeSharedWithMe() {
+        BinderBrief binder = new BinderBrief();
+        //TODO: localize
+        binder.setId(ObjectKeys.SHARED_WITH_ME_ID);
+        binder.setTitle("Shared with Me");
+        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
+        Long userId = getLoggedInUserId();
+        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, userId.toString(), PermaLinkUtil.COLLECTION_SHARED_WITH_ME));
+        binder.setLink("/self/shared_with_me");
+        String baseUri = "/shares/with_user/" + userId;
+        binder.addAdditionalLink("child_binders", baseUri + "/binders");
+        binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
+        binder.addAdditionalLink("child_entries", baseUri + "/entries");
+        binder.addAdditionalLink("child_files", baseUri + "/files");
+        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
+        binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
+        binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
+        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
+        return binder;
+    }
+
+    protected BinderBrief getFakeSharedByMe() {
+        BinderBrief binder = new BinderBrief();
+        //TODO: localize
+        binder.setId(ObjectKeys.SHARED_BY_ME_ID);
+        binder.setTitle("Shared by Me");
+        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
+        Long userId = getLoggedInUserId();
+        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, userId.toString(), PermaLinkUtil.COLLECTION_SHARED_BY_ME));
+        binder.setLink("/self/shared_by_me");
+        String baseUri = "/shares/by_user/" + userId;
+        binder.addAdditionalLink("child_binders", baseUri + "/binders");
+//        binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
+        binder.addAdditionalLink("child_entries", baseUri + "/entries");
+        binder.addAdditionalLink("child_files", baseUri + "/files");
+        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
+        binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
+        binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
+//        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
+        return binder;
+    }
+
+    protected BinderBrief getFakeNetFolders() {
+        BinderBrief binder = new BinderBrief();
+        //TODO: localize
+        binder.setId(ObjectKeys.NET_FOLDERS_ID);
+        binder.setTitle("Net Folders");
+        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
+        Long userId = getLoggedInUserId();
+        binder.setLink("/self/net_folders");
+        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, userId.toString(), PermaLinkUtil.COLLECTION_NET_FOLDERS));
+        String baseUri = "/net_folders";
+        binder.addAdditionalLink("child_binders", baseUri);
+        //binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
+        //binder.addAdditionalLink("child_files", baseUri + "/files");
+        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
+        //binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
+        binder.addAdditionalLink("child_library_folders", baseUri);
+        //binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
+        return binder;
+    }
 }
