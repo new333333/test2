@@ -390,9 +390,6 @@ public class FolderUtils {
 			ExtendedMultipartFile dmf = new ExtendedMultipartFile(fileName, content, contentLength);
 			if(modDate != null) {
 				dmf.setModDate(modDate);
-				Calendar modCal = Calendar.getInstance();
-				modCal.setTime(modDate);
-				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modCal);
 			}
 			if(creatorId != null) {
 				dmf.setCreatorId(creatorId);
