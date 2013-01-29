@@ -104,6 +104,11 @@ public abstract class WebdavResource extends AbstractAllModulesInjected implemen
 			return date;
 	}
 	
+	@Override
+	public String toString() {
+		return this.getWebdavPath();
+	}
+	
 	protected GroovyScriptService getGroovyScriptService() {
 		return (GroovyScriptService) SpringContextUtil.getBean("groovyScriptService");
 	}
