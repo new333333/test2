@@ -306,7 +306,7 @@
 										<select class="ss_compactSelectBox" name="data_sortBy" id="data_sortBy">
 											<option value="sortByRelevance" <c:if test="${sortBy == 'sortByRelevance'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.relevance"></ssf:nlt></option>
 											<option value="sortByDate" <c:if test="${sortBy == 'sortByDate'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.date"></ssf:nlt></option>
-											<option value="sortByRating" <c:if test="${sortBy == 'sortByRating'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.rating"></ssf:nlt></option>
+											<ssf:ifNotFilr><option value="sortByRating" <c:if test="${sortBy == 'sortByRating'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.rating"></ssf:nlt></option></ssf:ifNotFilr>
 											<option value="sortByReplyCount" <c:if test="${sortBy == 'sortByReplyCount'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.replyCount"></ssf:nlt></option>
 										</select>
 									</td>
@@ -321,7 +321,7 @@
 										<select class="ss_compactSelectBox" name="data_sortBy_secondary" id="data_sortBy_secondary">
 											<option value="sortByRelevance" <c:if test="${sortBySecondary == 'sortByRelevance'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.relevance"></ssf:nlt></option>
 											<option value="sortByDate" <c:if test="${sortBySecondary == 'sortByDate'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.date"></ssf:nlt></option>
-											<option value="sortByRating" <c:if test="${sortBySecondary == 'sortByRating'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.rating"></ssf:nlt></option>
+											<ssf:ifNotFilr><option value="sortByRating" <c:if test="${sortBySecondary == 'sortByRating'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.rating"></ssf:nlt></option></ssf:ifNotFilr>
 											<option value="sortByReplyCount" <c:if test="${sortBySecondary == 'sortByReplyCount'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.replyCount"></ssf:nlt></option>
 										</select>
 									</td>
