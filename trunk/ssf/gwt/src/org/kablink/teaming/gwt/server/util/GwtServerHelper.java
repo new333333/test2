@@ -3549,6 +3549,18 @@ public class GwtServerHelper {
 						value = nextMap.get( "_desc" );
 						if ( value != null && value instanceof String )
 							grpInfo.setDesc( (String) value );
+					
+						value = nextMap.get( "_isGroupFromLdap" );
+						if ( value != null && value instanceof String )
+						{
+							String tmp;
+							
+							tmp = (String) value;
+							if ( tmp.equalsIgnoreCase( "true" ) )
+								grpInfo.setIsFromLdap( true );
+							else
+								grpInfo.setIsFromLdap( false );
+						}
 						
 						reply.add( grpInfo );
 					}

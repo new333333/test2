@@ -1060,8 +1060,8 @@ public class ModifyNetFolderDlg extends DlgBox
 		if ( m_modifyNetFolderRootDlg == null )
 		{
 			ModifyNetFolderRootDlg.createAsync(
-											false, 
-											true,
+											true, 
+											false,
 											x, 
 											y,
 											new ModifyNetFolderRootDlgClient()

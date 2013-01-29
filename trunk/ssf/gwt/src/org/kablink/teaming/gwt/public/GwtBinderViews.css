@@ -217,8 +217,10 @@
 		.vibe-dataTableTaskFolder-stats           {padding-left: 8px;}
 		.vibe-dataTableTaskFolder-statsStatusBar  {width: 150px;}
 		.vibe-dataTableUserType-image             {}
+		.vibe-dataTableGroupType-image            {}
 		.vibe-dataTableUserType-panel             {text-align: center; display: block;}
-	/* ...End:  Data table cell styles. */
+		.vibe-dataTableGroupType-panel            {text-align: center; display: block;}
+/* ...End:  Data table cell styles. */
 
 	/* ...Start:  Calendar folder view styles. */
 		.vibe-calendarFolder-appointment {}

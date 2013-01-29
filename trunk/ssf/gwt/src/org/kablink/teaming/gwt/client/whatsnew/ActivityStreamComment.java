@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.whatsnew;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
@@ -42,6 +43,7 @@ import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
@@ -51,7 +53,9 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	implements ActivityStreamCommentsContainer
 {
 	private CommentAddedCallback m_commentAddedCallback;
-	
+
+	private static final BigDecimal DELTA = BigDecimal.valueOf( 1, 1 );
+
 	/**
 	 * 
 	 */
@@ -90,7 +94,7 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
-	private void addChildComment( ActivityStreamEntry activityStreamEntry )
+	private void addChildComment( ActivityStreamEntry activityStreamEntry, boolean scrollIntoView )
 	{
 		FlowPanel commentsPanel;
 		ActivityStreamComment commentUI;
@@ -107,6 +111,9 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 		commentsPanel = getCommentsPanel();
 		if ( commentsPanel != null )
 			commentsPanel.add( commentUI );
+		
+		if ( scrollIntoView )
+			showNewComment( commentUI );
 	}
 	
 	
@@ -251,7 +258,7 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	public void insertReply( ActivityStreamEntry reply )
 	{
 		// Add this reply to the container that holds the comments.
-		addChildComment( reply );
+		addChildComment( reply, true );
 		
 		if ( m_commentAddedCallback != null )
 			m_commentAddedCallback.commentAdded( reply );
@@ -275,8 +282,59 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 			for ( ActivityStreamEntry nextComment: listOfChildComments )
 			{
 				// Add this comment to the panel that holds all comments.
-				addChildComment( nextComment );
+				addChildComment( nextComment, false );
 			}
 		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void showNewComment( ActivityStreamComment asComment )
+	{
+		Timer showTimer;
+		final Element element;
+		
+		element = asComment.getElement();
+		
+		element.scrollIntoView();
+		element.getStyle().setOpacity( 0 );
+
+		showTimer = new Timer()
+		{
+			@Override
+			public void run()
+			{
+				String opacityStr;
+				boolean increased = false;
+
+				opacityStr = element.getStyle().getOpacity();
+				if ( opacityStr != null && opacityStr.length() > 0 )
+				{
+					try
+					{
+						BigDecimal opacity;
+				
+						opacity = new BigDecimal( opacityStr );
+						if ( opacity.compareTo( new BigDecimal( 1 ) ) < 0 )
+						{
+							element.getStyle().setOpacity( opacity.add( DELTA ).doubleValue() );
+							increased = true;
+						}
+					}
+					catch ( NumberFormatException nfe )
+					{
+					}
+				}
+				
+				if ( increased == false )
+				{
+					element.getStyle().setOpacity( 1 );
+					cancel();
+				}
+			}
+		};
+         
+		showTimer.scheduleRepeating( 75 );
 	}
 }

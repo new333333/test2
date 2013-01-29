@@ -160,7 +160,7 @@ public class SelectPrincipalsWidget extends Composite
 			if ( m_groupMembershipPopup == null )
 			{
 				m_groupMembershipPopup = new GroupMembershipPopup(
-															false,
+															true,
 															false,
 															m_principal.getName(),
 															m_principal.getIdLong().toString() );

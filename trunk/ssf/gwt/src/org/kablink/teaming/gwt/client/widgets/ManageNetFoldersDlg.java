@@ -787,8 +787,8 @@ public class ManageNetFoldersDlg extends DlgBox
 		if ( m_modifyNetFolderDlg == null )
 		{
 			ModifyNetFolderDlg.createAsync(
-										false, 
-										true,
+										true, 
+										false,
 										x, 
 										y,
 										new ModifyNetFolderDlgClient()

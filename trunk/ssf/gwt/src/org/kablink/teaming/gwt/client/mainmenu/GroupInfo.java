@@ -53,6 +53,7 @@ public class GroupInfo
 	private String m_title;			// The group's title.
 	private String m_name;		// The group's name
 	private String m_desc;		// The group's description
+	private boolean m_fromLdap;
 	private GroupMembershipInfo m_membershipInfo;
 	
 
@@ -65,6 +66,8 @@ public class GroupInfo
 		// Nothing to do.
 		m_membershipInfo = new GroupMembershipInfo();
 		m_membershipInfo.setMembershipInfo( false, true );
+		
+		m_fromLdap = false;
 	}
 
 	/**
@@ -145,11 +148,27 @@ public class GroupInfo
 	}
 	
 	/**
+	 * Is this group from ldap?
+	 */
+	public boolean getIsFromLdap()
+	{
+		return m_fromLdap;
+	}
+	
+	/**
 	 * Return the flag that tells us whether the group membership is dynamic 
 	 */
 	public boolean getIsMembershipDynamic()
 	{
 		return m_membershipInfo.getIsMembershipDynamic();
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIsFromLdap( boolean fromLdap )
+	{
+		m_fromLdap = fromLdap;
 	}
 	
 	/**

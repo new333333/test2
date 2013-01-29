@@ -654,6 +654,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	        ProfileIndexUtils.addDynamic(indexDoc, (Group)entry, false);	
 			ProfileIndexUtils.addIdentityInfo( indexDoc, (UserPrincipal)entry );
 			ProfileIndexUtils.addIsLdapContainer( indexDoc, (Group)entry );
+			ProfileIndexUtils.addIsFromLdap( indexDoc, (Group)entry );
 		} else if(entry instanceof Application) {
 	        ProfileIndexUtils.addName(indexDoc, (Application)entry, false);	
 		} else if(entry instanceof ApplicationGroup) {

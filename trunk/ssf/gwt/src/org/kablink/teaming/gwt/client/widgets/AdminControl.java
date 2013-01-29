@@ -1240,8 +1240,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ConfigureAdhocFoldersDlg.createAsync(
-											false, 
-											true,
+											true, 
+											false,
 											x, 
 											y,
 											width,
@@ -1336,8 +1336,8 @@ public class AdminControl extends TeamingPopupPanel
 					height = m_dlgHeight;
 					width = m_dlgWidth;
 					ConfigureFileSyncAppDlg.createAsync(
-							false, 
-							true,
+							true, 
+							false,
 							x, 
 							y,
 							width,
@@ -1418,8 +1418,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ConfigureMobileAppsDlg.createAsync(
-											false, 
-											true,
+											true, 
+											false,
 											x, 
 											y,
 											width,
@@ -1488,8 +1488,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			EditZoneShareRightsDlg.createAsync(
-											false, 
-											true,
+											true, 
+											false,
 											x, 
 											y,
 											width,
@@ -1558,8 +1558,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ConfigureUserAccessDlg.createAsync(
-											false, 
-											true,
+											true, 
+											false,
 											x, 
 											y,
 											width,
@@ -1628,8 +1628,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ManageNetFoldersDlg.createAsync(
-											false, 
-											true,
+											true, 
+											false,
 											x, 
 											y,
 											width,
@@ -1697,8 +1697,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ManageNetFolderRootsDlg.createAsync(
-											false, 
-											true,
+											true, 
+											false,
 											x, 
 											y,
 											width,
@@ -1766,8 +1766,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ManageGroupsDlg.createAsync(
-									false, 
-									true,
+									true, 
+									false,
 									x, 
 									y,
 									width,
@@ -1851,8 +1851,8 @@ public class AdminControl extends TeamingPopupPanel
 					Scheduler.get().scheduleDeferred( cmd );
 				}
 			},
-			false,	// false -> Not auto hide.
-			true,	// true  -> Modal.
+			true,	// true -> auto hide.
+			false,	// false -> not Modal.
 			x, 
 			y,
 			m_dlgWidth,
@@ -1923,8 +1923,8 @@ public class AdminControl extends TeamingPopupPanel
 					Scheduler.get().scheduleDeferred( cmd );
 				}
 			},
-			false,	// false -> Not auto hide.
-			true,	// true  -> Modal.
+			true,	// true -> auto hide.
+			false,	// false -> not Modal.
 			x, 
 			y,
 			m_dlgWidth,
@@ -1965,8 +1965,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ConfigureUserFileSyncAppDlg.createAsync(
-											false, 
-											true,
+											true, 
+											false,
 											x, 
 											y,
 											width,
@@ -2033,8 +2033,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ConfigureUserMobileAppsDlg.createAsync(
-											false, 
-											true,
+											true, 
+											false,
 											x, 
 											y,
 											width,

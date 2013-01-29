@@ -128,6 +128,22 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource groupAssignee();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/group_LDAP.png")
+	public ImageResource groupType_LDAP();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/group_Local.png")
+	public ImageResource groupType_Local();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/group_System.png")
+	public ImageResource groupType_System();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/group_Unknown.png")
+	public ImageResource groupType_Unknown();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/help3.gif")
 	public ImageResource help();
 
