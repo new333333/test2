@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
+import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.shared.Network;
 import org.kabling.teaming.install.shared.WebService;
 
@@ -86,6 +87,15 @@ public class WebServicesPage extends ConfigPageDlgBox
 			basicAuthCheckBox.setValue(webService.isBasicEnabled());
 			anonymousAccessCheckBox.setValue(webService.isAnonymousEnabled());
 		}
+	}
+
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData =  new HelpData();
+		helpData.setPageId("webservices");
+		
+		return helpData;
 	}
 
 }

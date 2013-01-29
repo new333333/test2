@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
+import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.ValueRequiredBasedOnBoolValidator;
 import org.kabling.teaming.install.client.ValueRequiredValidator;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
@@ -338,6 +339,15 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 					ehcacheTable.setVisible(false);
 			}
 		}
+	}
+
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData =  new HelpData();
+		helpData.setPageId("clustering");
+		
+		return helpData;
 	}
 
 }

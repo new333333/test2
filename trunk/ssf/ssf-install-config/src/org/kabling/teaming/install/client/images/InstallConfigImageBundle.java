@@ -14,4 +14,10 @@ public interface InstallConfigImageBundle extends ClientBundle
 
 	@Source("busyanim16b.gif")
 	ImageResource loading16();
+	
+	@Source("help_btn.png")
+	ImageResource help16();
+	
+	@Source("warn_large.gif")
+	ImageResource warnLarge();
 }

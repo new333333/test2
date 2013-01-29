@@ -26,6 +26,8 @@ public class StatusIndicator extends PopupPanel
 
 		label = new InlineLabel(message);
 		dialogContent.add(label);
+		
+		setModal(true);
 		setWidget(dialogContent);
 	}
 	

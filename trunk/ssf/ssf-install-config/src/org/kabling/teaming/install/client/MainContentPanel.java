@@ -20,7 +20,7 @@ public class MainContentPanel extends Composite implements ConfigWizardSuccessEv
 			div.add(new ConfigSummaryPage());
 		}
 		initWidget(div);
-		
+
 		// Look for config modifications
 		AppUtil.getEventBus().addHandler(ConfigWizardSucessEvent.TYPE, this);
 	}
@@ -29,13 +29,6 @@ public class MainContentPanel extends Composite implements ConfigWizardSuccessEv
 	public void onEvent(ConfigWizardSucessEvent event)
 	{
 		div.clear();
-		if (event.isSucess())
-		{
-			div.add(new ConfigSummaryPage(true));
-		}
-		else
-		{
-			div.add(new ConfigSummaryPage(false));
-		}
+		div.add(new ConfigSummaryPage(event.getWizFinishType()));
 	}
 }

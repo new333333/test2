@@ -3,6 +3,7 @@ package org.kabling.teaming.install.client.config;
 import java.util.List;
 
 import org.kabling.teaming.install.client.AppUtil;
+import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.ValueRequiredValidator;
 import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.client.widgets.DlgBox;
@@ -199,5 +200,11 @@ public class NewLuceneHANodeDialog extends DlgBox
 	public FocusWidget getFocusWidget()
 	{
 		return nameTextBox;
+	}
+
+	@Override
+	public HelpData getHelpData()
+	{
+		return null;
 	}
 }

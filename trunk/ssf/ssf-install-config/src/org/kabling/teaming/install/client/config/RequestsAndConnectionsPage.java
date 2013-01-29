@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
+import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.shared.RequestsAndConnections;
 
@@ -108,6 +109,15 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 			maxIdleSpinner.setValue(req.getMaxIdle());
 			maxThreadsSpinner.setValue(req.getMaxThreads());
 		}
+	}
+
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData =  new HelpData();
+		helpData.setPageId("requests");
+		
+		return helpData;
 	}
 
 }

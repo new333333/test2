@@ -36,6 +36,7 @@ import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.EditCanceledHandler;
 import org.kabling.teaming.install.client.EditSuccessfulHandler;
 import org.kabling.teaming.install.client.GwtClientHelper;
+import org.kabling.teaming.install.client.HelpData;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -79,6 +80,7 @@ public abstract class DlgBox extends PopupPanel
 	private FlowPanel 				m_footerPanel;				//
 	private int 					m_id;						//
 	private boolean                 m_showHeaderCloseButton = true;
+	private HelpData				m_helpData;	
     	
 	protected static int			m_numDlgsVisible = 0;		// Number of dialogs that are currently visible.
 	private   static int			m_uniqueId       = 100;		//
@@ -413,7 +415,7 @@ public abstract class DlgBox extends PopupPanel
 		m_caption.setStyleName( "teamingDlgBoxHeader-captionLabel" );
 		flowPanel.add( m_caption );
 		
-		/**
+		
 		// Add a help link to the header if needed.
 		m_helpData = getHelpData();
 		if ( m_helpData != null )
@@ -422,7 +424,7 @@ public abstract class DlgBox extends PopupPanel
 			ImageResource imageResource;
 			Image img;
 			
-			imageResource = GwtTeaming.getImageBundle().help3();
+			imageResource = AppUtil.getAppImageBundle().help16();
 			img = new Image( imageResource );
 			img.addStyleName( "dlgHeaderHelpImg" );
 			img.getElement().setId( "helpImg" );
@@ -437,10 +439,7 @@ public abstract class DlgBox extends PopupPanel
 					Scheduler.ScheduledCommand cmd;
 					cmd = new Scheduler.ScheduledCommand()
 					{
-						/**
-						 * 
-						 */
-						/**
+						
 						@Override
 						public void execute()
 						{
@@ -452,7 +451,7 @@ public abstract class DlgBox extends PopupPanel
 				}
 			};
 			img.addClickHandler( clickHandler );
-		}**/
+		}
 		
 		return flowPanel;
 	}// end createHeader()
@@ -478,6 +477,7 @@ public abstract class DlgBox extends PopupPanel
 	 */
 	public abstract FocusWidget getFocusWidget();
 	
+	public abstract HelpData getHelpData();
 	
 	/**
 	 * If a dialog wants to have a help link in the header then override this method
@@ -851,5 +851,14 @@ public abstract class DlgBox extends PopupPanel
 	public Panel getFooterPanel()
 	{
 		return m_footerPanel;
+	}
+	
+	private void invokeHelp()
+	{
+		// Do we have help data?
+		if ( m_helpData != null )
+		{
+			GwtClientHelper.invokeHelp( m_helpData );
+		}
 	}
 }

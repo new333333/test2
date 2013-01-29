@@ -34,41 +34,25 @@ package org.kabling.teaming.install.client;
 
 /**
  * This class is used to define what help documentation to display.
+ * 
  * @author jwootton
- *
+ * 
  */
 public class HelpData
 {
 	public static final String USER_GUIDE = "user";
 	public static final String ADV_USER_GUIDE = "adv_user";
 	public static final String ADMIN_GUIDE = "admin";
-	
+
 	private String m_guideName;
 	private String m_pageId;
 	private String m_sectionId;
 
 	// The following holds the language codes for all the languages that the online
 	// documentation supports (except English, English does not need a language code)
-	private final static String[] DOC_LANGS =
-	{
-		"cs-cz",
-		"da-dk",
-		"de-de",
-		"es-es",
-		"fr-fr",
-		"hu-hu",
-		"it-it",
-		"ja-jp",
-		"nl-nl",
-		"pl-pl",
-		"pt-br",
-		"ru-ru",
-		"sv-se",
-		"zh-cn",
-		"zh-tw",		
-	};
-	
-	
+	private final static String[] DOC_LANGS = { "cs-cz", "da-dk", "de-de", "es-es", "fr-fr", "hu-hu", "it-it", "ja-jp", "nl-nl", "pl-pl",
+			"pt-br", "ru-ru", "sv-se", "zh-cn", "zh-tw", };
+
 	/**
 	 * 
 	 */
@@ -78,97 +62,60 @@ public class HelpData
 		m_pageId = null;
 		m_sectionId = null;
 	}
-	
+
 	/**
 	 * 
 	 */
-	public void setGuideName( String guideName )
+	public void setGuideName(String guideName)
 	{
 		m_guideName = guideName;
 	}
-	
+
 	/**
 	 * 
 	 */
-	public void setPageId( String pageId )
+	public void setPageId(String pageId)
 	{
 		m_pageId = pageId;
 	}
-	
+
 	/**
 	 * 
 	 */
-	public void setSectionId( String sectionId )
+	public void setSectionId(String sectionId)
 	{
 		m_sectionId = sectionId;
 	}
-	
 
 	/**
 	 * Return the language code that should be put on the help url.
 	 */
-	/**private String getLangCode()
-	{
-		String lang;
-		String originalLang;
-		int i;
-		
-		lang = null;
-		RequestInfo ri = GwtClientHelper.getRequestInfo();
-		if ( ri != null )
-			lang = ri.getLanguage();
+	/**
+	 * private String getLangCode() { String lang; String originalLang; int i;
+	 * 
+	 * lang = null; RequestInfo ri = GwtClientHelper.getRequestInfo(); if ( ri != null ) lang = ri.getLanguage();
+	 * 
+	 * originalLang = lang;
+	 * 
+	 * // Do we know the language? if ( lang == null || lang.length() == 0 ) { // No return null; }
+	 * 
+	 * // Is the language English? if ( lang.indexOf( "en" ) == 0 ) { // Yes, we don't need to put a language code on the url. return null;
+	 * }
+	 * 
+	 * // We only need the first two characters of the language to // localize the documentation URLs. if ( lang.length() > 2 ) { lang =
+	 * lang.substring( 0, 2 ); }
+	 * 
+	 * // Is the language Chinese? if ( lang.equalsIgnoreCase( "zh" ) ) { // Yes, use the full language string of zh-tw or zh-cn lang =
+	 * originalLang.toLowerCase(); lang = lang.replace( '_', '-' ); }
+	 * 
+	 * // Look for the appropriate language code. for (i = 0; i < DOC_LANGS.length; ++i) { if ( DOC_LANGS[i].indexOf( lang ) == 0 ) { break;
+	 * } }
+	 * 
+	 * // Do we have a language code for this language? if ( i == DOC_LANGS.length ) { // No return null; }
+	 * 
+	 * return DOC_LANGS[i]; }
+	 **/
 
-		originalLang = lang;
-		
-		// Do we know the language? 
-		if ( lang == null || lang.length() == 0 )
-		{
-			// No
-			return null;
-		}
-		
-		// Is the language English?
-		if ( lang.indexOf( "en" ) == 0 )
-		{
-			// Yes, we don't need to put a language code on the url.
-			return null;
-		}
-
-		// We only need the first two characters of the language to
-		// localize the documentation URLs.
-		if ( lang.length() > 2 )
-		{
-			lang = lang.substring( 0, 2 ); 
-		}
-
-		// Is the language Chinese?
-		if ( lang.equalsIgnoreCase( "zh" ) )
-		{
-			// Yes, use the full language string of zh-tw or zh-cn
-			lang = originalLang.toLowerCase();
-			lang = lang.replace( '_', '-' );
-		}
-
-		// Look for the appropriate language code.
-		for (i = 0; i < DOC_LANGS.length; ++i)
-		{
-			if ( DOC_LANGS[i].indexOf( lang ) == 0 )
-			{
-				break;
-			}
-		}		
-
-		// Do we have a language code for this language?
-		if ( i == DOC_LANGS.length )
-		{
-			// No
-			return null;
-		}
-
-		return DOC_LANGS[i];
-	}**/
-	
-	
 	/**
 	 * Return the url that points to the appropriate help documentation.
 	 */
@@ -178,72 +125,56 @@ public class HelpData
 		String lang;
 		String guideComponent = null;
 		String product;
-		
-		//!!! Get the base help url from ssf-ext.properties.
+
+		// !!! Get the base help url from ssf-ext.properties.
 		url = "http://www.novell.com";
-		
+
 		// Do we have a language code to put on the url?
-		lang = null; //getLangCode();
-		if ( lang != null && lang.length() > 0 )
+		lang = null; // getLangCode();
+		if (lang != null && lang.length() > 0)
 		{
 			// Yes
-			url +=  "/" + lang;
+			url += "/" + lang;
 		}
-		
+
 		url += "/documentation";
 
-		product = "/vibe33";
-		
-		// Are we running Filr?
-//		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
-//		{
-//			// Yes
-//			url += "/filr10";
-//			product = "/filr10";
-//		}
-//		// Are we running Novell Teaming?
-//		else if ( GwtMainPage.m_requestInfo.isNovellTeaming() )
-//		{
-//			// Yes
-//			url += "/vibe33";
-//		}
-//		else
-			url += "/kablinkvibe33";
-		
-		if ( m_guideName != null && m_guideName.length() > 0 )
+		product = "/novell-filr1";
+
+		if (m_guideName != null && m_guideName.length() > 0)
 		{
-			if ( m_guideName.equalsIgnoreCase( USER_GUIDE ) )
+			if (m_guideName.equalsIgnoreCase(USER_GUIDE))
 			{
 				// Get the url to the user guide.
 				guideComponent = product + "_user/data/";
 			}
-			else if ( m_guideName.equalsIgnoreCase( ADV_USER_GUIDE ) )
+			else if (m_guideName.equalsIgnoreCase(ADV_USER_GUIDE))
 			{
 				// Get the url to the advanced user guide.
 				guideComponent = product + "_useradv/data/";
 			}
-			else if ( m_guideName.equalsIgnoreCase( ADMIN_GUIDE ) )
+			else if (m_guideName.equalsIgnoreCase(ADMIN_GUIDE))
 			{
 				// Get the url to the administration guide.
 				guideComponent = product + "_admin/data/";
 			}
 			else
 				guideComponent = null;
-			
+
 			// Did we recognize the name of the guide?
-			if ( guideComponent != null )
+			if (guideComponent != null)
 			{
 				// Yes, add the guide component to the url.
 				url += guideComponent;
-				
+
 				// Do we have a specific page to go to in the documentation?
-				if ( m_pageId != null )
+				if (m_pageId != null)
 				{
 					// Yes, each page has its own html file.
 					url += m_pageId + ".html";
-					
+
 					// Do we have a specific section within the page to go to?
-					if ( m_sectionId != null )
+					if (m_sectionId != null)
 					{
 						// Yes
 						url += "#" + m_sectionId;
@@ -254,6 +185,17 @@ public class HelpData
 					// No, take the user to the start of the guide.
 					url += "bookinfo.html";
 				}
+			}
+		}
+		else
+		{
+			product = "/novell-filr1";
+			// Install
+			url += product + "/filr1_inst/data/" + m_pageId + ".html";
+			if (m_sectionId != null)
+			{
+				// Yes
+				url += "#" + m_sectionId;
 			}
 		}
 

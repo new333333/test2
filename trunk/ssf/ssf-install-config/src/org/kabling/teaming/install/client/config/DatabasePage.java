@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
+import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.shared.Database;
@@ -274,5 +275,14 @@ public class DatabasePage extends ConfigPageDlgBox
 	public FocusWidget getFocusWidget()
 	{
 		return null;
+	}
+
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData =  new HelpData();
+		helpData.setPageId("database");
+		
+		return helpData;
 	}
 }

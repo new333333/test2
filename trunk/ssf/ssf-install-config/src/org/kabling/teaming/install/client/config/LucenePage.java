@@ -2,6 +2,7 @@ package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
+import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.ValueRequiredValidator;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.client.widgets.VibePasswordTextBox;
@@ -371,5 +372,14 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 		
 		haPanel.setVisible(true);
 		haPanel.updateUI(config);
+	}
+
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData =  new HelpData();
+		helpData.setPageId("search_index");
+		
+		return helpData;
 	}
 }

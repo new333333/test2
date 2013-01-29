@@ -3,6 +3,7 @@ package org.kabling.teaming.install.client.config;
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigModifiedEvent;
 import org.kabling.teaming.install.client.ConfigModifiedEvent.ConfigModifiedEventHandler;
+import org.kabling.teaming.install.client.ConfigWizardSucessEvent.WizardFinishType;
 import org.kabling.teaming.install.client.RevertChangesEvent;
 import org.kabling.teaming.install.client.RevertChangesEvent.RevertChangesEventHandler;
 import org.kabling.teaming.install.client.i18n.AppResource;
@@ -34,11 +35,11 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 	private FlowPanel content;
 	private AppResource RBUNDLE = AppUtil.getAppResource();
 	private InstallerConfig config;
-	private boolean showGeneralPanelWithSuccessMessage;
+	private WizardFinishType wizardFinishType;
 
-	public ConfigSummaryPage(boolean showGeneralPanelWithSuccessMessage)
+	public ConfigSummaryPage(WizardFinishType wizFinishType)
 	{
-		this.showGeneralPanelWithSuccessMessage = showGeneralPanelWithSuccessMessage;
+		this.wizardFinishType = wizFinishType;
 		content = new FlowPanel();
 		initWidget(content);
 
@@ -52,7 +53,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 	
 	public ConfigSummaryPage()
 	{
-		this(false);
+		this(null);
 	}
 
 	private void buildUI()
@@ -63,10 +64,12 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		
 		String ipAddr ="https://" + AppUtil.getProductInfo().getLocalIpAddress() + ":8443";
 		
-		if (showGeneralPanelWithSuccessMessage)
-			configFinishedLabel = new HTML(RBUNDLE.configFinishedMsg(ipAddr));
-		else
+		if (wizardFinishType == null)
 			configFinishedLabel = new HTML(RBUNDLE.filrServerInfo(ipAddr));
+		else if (wizardFinishType.equals(WizardFinishType.LOCAL_SUCESS) || wizardFinishType.equals(WizardFinishType.REMOTE_SUCESS))
+			configFinishedLabel = new HTML(RBUNDLE.configFinishedMsg(ipAddr));
+		else if (wizardFinishType.equals(WizardFinishType.UPGRADE))
+			configFinishedLabel = new HTML(RBUNDLE.upgradeFinishedMsg(ipAddr));
 		
 		configFinishedLabel.addStyleName("configFinishedLabel");
 		content.add(configFinishedLabel);

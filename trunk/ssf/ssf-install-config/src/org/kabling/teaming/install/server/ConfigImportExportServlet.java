@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,6 +32,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -47,7 +50,11 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.kabling.teaming.install.shared.InstallerConfig;
+import org.kabling.teaming.install.shared.LicenseInformation;
+import org.kabling.teaming.install.shared.ShellCommandInfo;
 
 /**
  * @author Rajesh
@@ -70,12 +77,28 @@ public class ConfigImportExportServlet extends HttpServlet
 		// Add the files that need to be zipped part of export
 		if (TimeZoneHelper.isUnix())
 		{
-			filesToZipMap.put("installer.xml", "/filrinstall/installer.xml");
-			filesToZipMap.put("configurationDetails.properties", "/filrinstall/configurationDetails.properties");
-		}
-		else
-			filesToZipMap.put("installer.xml", "c:/test/installer.xml");
+			// Cert Files
+			filesToZipMap.put("cacerts", "/usr/lib64/jvm/jre-1.6.0-ibm/lib/security/cacerts");
 
+			// Ganglia Files
+			filesToZipMap.put("gmontd.conf", "/etc/opt/novell/ganglia/monitor/gmontd.conf");
+			filesToZipMap.put("gmetad.conf", "/etc/opt/novell/ganglia/monitor/gmetad.conf");
+
+			filesToZipMap.put("installer.xml", "/filrinstall/installer.xml");
+			filesToZipMap.put("license-key.xml", "/filrinstall/license-key.xml");
+			filesToZipMap.put("mysql-liquibase.properties", "/filrinstall/db/mysql-liquibase.properties");
+			filesToZipMap.put("configurationDetails.properties", "/filrinstall/configurationDetails.properties");
+
+			filesToZipMap.put("hibernate-ext.cfg.xml",
+					"/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/hibernate-ext.cfg.xml");
+			filesToZipMap.put("zone-ext.cfg.xml", "/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/zone-ext.cfg.xml");
+			filesToZipMap.put("ssf-ext.properties", "/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties");
+			filesToZipMap.put("messages-ext.properties",
+					"/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/messages/messages-ext.properties");
+			filesToZipMap.put("applicationContext-ext.xml",
+					"/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/context/applicationContext-ext.xml");
+
+		}
 	}
 
 	@Override
@@ -111,6 +134,9 @@ public class ConfigImportExportServlet extends HttpServlet
 			Iterator<?> iter = items.iterator();
 
 			boolean licenseKey = false;
+			boolean upgradeOverwrite = false;
+			boolean hostNameNotValidContinue = false;
+			boolean dataDriveNotFoundContinue = false;
 			while (iter.hasNext())
 			{
 				// Get the current item in the iteration
@@ -119,6 +145,16 @@ public class ConfigImportExportServlet extends HttpServlet
 				if (item.isFormField() && item.getFieldName().equals("licenseKey"))
 				{
 					licenseKey = Boolean.valueOf(item.getString());
+					continue;
+				}
+
+				if (item.isFormField() && item.getFieldName().equals("upgradeOverwrite"))
+				{
+					upgradeOverwrite = Boolean.valueOf(item.getString());
+
+					// For now, we will just use upgrade overwrite
+					hostNameNotValidContinue = upgradeOverwrite;
+					dataDriveNotFoundContinue = upgradeOverwrite;
 					continue;
 				}
 
@@ -135,48 +171,27 @@ public class ConfigImportExportServlet extends HttpServlet
 					outStream.write(item.get());
 					outStream.close();
 				}
-				//Zip file
+				// Zip File - Import Process
 				else
 				{
-					ZipInputStream zipStream = new ZipInputStream(new ByteArrayInputStream(data));
-					ZipEntry entry = null;
-
-					// Go through each file entry
-					while ((entry = zipStream.getNextEntry()) != null)
-					{
-						String entryName = entry.getName();
-						String filePath = filesToZipMap.get(entryName);
-
-						// If it is a file we know, we can save it to the file system
-						if (filePath != null)
-						{
-							FileOutputStream outStream = new FileOutputStream(filePath);
-
-							byte[] buf = new byte[4096];
-							int bytesRead = 0;
-							while ((bytesRead = zipStream.read(buf)) != -1)
-							{
-								outStream.write(buf, 0, bytesRead);
-							}
-							outStream.close();
-							zipStream.closeEntry();
-						}
-					}
-					zipStream.close();
+					handleImportProcess(data, res, response, hostNameNotValidContinue, dataDriveNotFoundContinue);
 				}
 			}
 		}
 		catch (FileUploadException fue)
 		{
 			logger.error("File Upload exception " + fue.getMessage());
+			returnFailureResponse(response, fue.getMessage());
 		}
 		catch (IOException ioe)
 		{
 			logger.error("IO exception " + ioe.getMessage());
+			returnFailureResponse(response, ioe.getMessage());
 		}
 		catch (Exception e)
 		{
 			logger.error("Exception " + e.getMessage());
+			returnFailureResponse(response, e.getMessage());
 		}
 		finally
 		{
@@ -217,5 +232,286 @@ public class ConfigImportExportServlet extends HttpServlet
 		op.write(baos.toByteArray());
 		op.flush();
 
+	}
+
+	private void handleImportProcess(byte[] data, HttpServletRequest res, HttpServletResponse response, boolean hostNameNotValidContinue,
+			boolean dataDriveNotFoundContinue) throws ServletException, IOException
+	{
+		ZipInputStream zipStream = new ZipInputStream(new ByteArrayInputStream(data));
+		ZipEntry entry = null;
+
+		// First, extract to temp directory
+		File tempDir = createTempDir();
+
+		{
+			// Extract the zip file into a temporary location
+			while ((entry = zipStream.getNextEntry()) != null)
+			{
+				String entryName = entry.getName();
+				String filePath = tempDir.getAbsolutePath() + File.separator + entryName;
+
+				// If it is a file we know, we can save it to the file system
+				if (filePath != null)
+				{
+					FileOutputStream outStream = new FileOutputStream(filePath);
+
+					byte[] buf = new byte[4096];
+					int bytesRead = 0;
+					while ((bytesRead = zipStream.read(buf)) != -1)
+					{
+						outStream.write(buf, 0, bytesRead);
+					}
+					outStream.close();
+					zipStream.closeEntry();
+				}
+			}
+			zipStream.close();
+		}
+
+		{
+			// Validate Requirements
+			// If we have an invalid data drive or if the new appliance host name does not match the host name of the installer.xml
+			// We should get out
+			boolean validDataDriveFound = dataDriveNotFoundContinue;
+			if (!dataDriveNotFoundContinue)
+			{
+				if (isVAReleaseMatch(tempDir.getAbsolutePath() + File.separator + "Novell-VA-release"))
+				{
+					validDataDriveFound = true;
+				}
+			}
+
+			boolean validHostNameFound = hostNameNotValidContinue;
+			if (!hostNameNotValidContinue)
+			{
+				if (isHostNameMatch(tempDir.getAbsolutePath() + File.separator + "installer.xml"))
+				{
+					validHostNameFound = true;
+				}
+			}
+
+			if (!validDataDriveFound || !validHostNameFound)
+			{
+				// Set a response content type
+				response.setContentType("text/html");
+
+				ServletOutputStream out = response.getOutputStream();
+				
+				//Sending as html will not keep the case, so, sendign everything as lower case
+				out.println("<status><datadrive>" + validDataDriveFound + "</datadrive><hostname>" + validHostNameFound
+						+ "</hostname></status>");
+				return;
+			}
+		}
+
+		// Do we need to override license?
+		boolean overrideLicense = isNeedToOverwriteLicense(tempDir.getAbsolutePath() + File.separator + "license-key.xml");
+
+		// Copy installer.xml
+		File oldLocation = new File(tempDir + File.separator + "installer.xml");
+		File newLocation = new File("/filrinstall/installer.xml");
+		FileUtils.copyFile(oldLocation, newLocation);
+
+		// Copy mysql-liquibase.properties
+		oldLocation = new File(tempDir + File.separator + "mysql-liquibase.properties");
+		newLocation = new File("/filrinstall/db/mysql-liquibase.properties");
+		FileUtils.copyFile(oldLocation, newLocation);
+
+		// Update the database
+		int result = ConfigService.executeCommand("cd /filrinstall/db; pwd; sudo sh manage-database.sh mysql updateDatabase", true)
+				.getExitValue();
+
+		// We got an error ( 0 for success, 107 for database exists)
+		if (result != 0)
+		{
+			returnFailureResponse(response, "Error updating database ");
+			return;
+		}
+
+		// Stop gmetad service
+		if (ApplianceService.gmetadService(false).getExitValue() != 0)
+		{
+			logger.debug("Error stoping gmetad service,Error code " + result);
+			returnFailureResponse(response, "Error stopping gmetad ");
+			return;
+		}
+
+		// Stop gmontd service
+		if (ApplianceService.gmondService(false).getExitValue() != 0)
+		{
+			logger.debug("Error stoping gmontd service,Error code " + result);
+			returnFailureResponse(response, "Error stopping gmond ");
+			return;
+		}
+
+		ConfigService.reconfigure(false);
+
+		// Copy files (we have already copied installer.xml and mysql-liquibase.properties)
+		extractZipContent(data, overrideLicense);
+
+		// This should disable mysql and lucene for large deployment and creates
+		// configured filed in /filrinstall
+		ConfigService.markConfigurationDone(null);
+
+		// Start gmetad service
+		if (ApplianceService.gmetadService(true).getExitValue() != 0)
+		{
+			logger.debug("Error starting gmetad service,Error code " + result);
+			returnFailureResponse(response, "Error starting gmetad ");
+			return;
+		}
+
+		// Start gmontd service
+		if (ApplianceService.gmondService(true).getExitValue() != 0)
+		{
+			logger.debug("Error starting gmontd service,Error code " + result);
+			returnFailureResponse(response, "Error starting gmond ");
+			return;
+		}
+
+		ConfigService.startFilrServer();
+
+		returnSucessResponse(response, null);
+	}
+
+	private boolean isVAReleaseMatch(String newFilePath)
+	{
+		File oldFile = new File("/vastorage/etc/Novell-VA-release");
+
+		// File does not exist, no match
+		if (!oldFile.exists())
+			return false;
+
+		Properties prop = new Properties();
+		try
+		{
+			prop.load(new FileInputStream(oldFile));
+			String oldProductName = prop.getProperty("PRODUCT");
+
+			prop.load(new FileInputStream(new File(newFilePath)));
+
+			// product name matches
+			if (prop.getProperty("PRODUCT").equals(oldProductName))
+			{
+				return true;
+			}
+		}
+		catch (Exception e)
+		{
+		}
+
+		return false;
+	}
+
+	private boolean isHostNameMatch(String newFilePath)
+	{
+
+		InstallerConfig config = ConfigService.getConfiguration(newFilePath);
+		String hostName = config.getNetwork().getHost();
+
+		ShellCommandInfo info = ConfigService.executeCommand("sudo hostname -f", true);
+		if (info.getExitValue() == 0)
+		{
+			String sysHostName = info.getOutputAsString();
+			if (sysHostName.startsWith(hostName))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isNeedToOverwriteLicense(String newFilePath)
+	{
+
+		LicenseInformation newLicenseInfo = ConfigService.getLicenseInformation(newFilePath);
+
+		if (newLicenseInfo.getDatesEffective().equals("trial"))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	public static File createTempDir()
+	{
+		final String baseTempPath = System.getProperty("java.io.tmpdir");
+		File tempDir = null;
+		for (int i = 0; i < 100; i++)
+		{
+			Random rand = new Random();
+			int randomInt = 1 + rand.nextInt();
+
+			tempDir = new File(baseTempPath + File.separator + "tempDir" + randomInt);
+			if (tempDir.exists() == false)
+			{
+				tempDir.mkdir();
+				tempDir.deleteOnExit();
+				break;
+			}
+		}
+
+		return tempDir;
+	}
+
+	private void extractZipContent(byte[] data, boolean overwriteLicenseKey) throws FileNotFoundException, IOException
+	{
+		ZipInputStream zipStream = new ZipInputStream(new ByteArrayInputStream(data));
+		ZipEntry entry = null;
+
+		// Go through each file entry
+		while ((entry = zipStream.getNextEntry()) != null)
+		{
+			String entryName = entry.getName();
+
+			// These files have already been copied
+			if (entryName.endsWith("installer.xml") || entryName.equals("mysql-liquibase.properties"))
+			{
+				continue;
+			}
+			
+			if (entryName.endsWith("license-key.xml") && !overwriteLicenseKey)
+				continue;
+			String filePath = filesToZipMap.get(entryName);
+
+			// If it is a file we know, we can save it to the file system
+			if (filePath != null)
+			{
+				FileOutputStream outStream = new FileOutputStream(filePath);
+
+				byte[] buf = new byte[4096];
+				int bytesRead = 0;
+				while ((bytesRead = zipStream.read(buf)) != -1)
+				{
+					outStream.write(buf, 0, bytesRead);
+				}
+				outStream.close();
+				zipStream.closeEntry();
+			}
+		}
+		zipStream.close();
+	}
+
+	private void returnFailureResponse(HttpServletResponse response, String statusMsg) throws IOException
+	{
+		String FAILURE_XML = "<status success=\"false\"></status>";
+
+		// Set a response content type
+		response.setContentType("text/html");
+
+		ServletOutputStream out = response.getOutputStream();
+		out.println(FAILURE_XML);
+	}
+
+	private void returnSucessResponse(HttpServletResponse response, String statusMsg) throws IOException
+	{
+		String SUCESS_XML = "<status success=\"true\"></status>";
+
+		// Set a response content type
+		response.setContentType("text/html");
+
+		ServletOutputStream out = response.getOutputStream();
+		out.println(SUCESS_XML);
 	}
 }

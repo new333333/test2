@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
+import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
 
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -109,6 +110,15 @@ public class JavaJDKPage extends ConfigPageDlgBox
 		// Heap Size
 		if (config.getJvmMemory() != null)
 			jvmHeapSizeTextBox.setText(config.getJvmMemory());
+	}
+
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData =  new HelpData();
+		helpData.setPageId("jdk");
+		
+		return helpData;
 	}
 
 
