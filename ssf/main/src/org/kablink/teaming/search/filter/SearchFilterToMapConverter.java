@@ -183,7 +183,7 @@ public class SearchFilterToMapConverter {
     		String filterType = filterTerm.attributeValue(SearchFilterKeys.FilterType, "");
     		if (filterType.equals(SearchFilterKeys.FilterTypeSearchText)) {
     			String searchedText = (String)convertedQuery.get(SearchFilterKeys.SearchText);
-    			if (searchedText == null || searchedText.equals("")) {
+    			if (searchedText == null || searchedText.trim().equals("") || searchedText.trim().equals("*")) {
     				searchedText = filterTerm.getText(); 
     			} else {
     				searchedText = searchedText.concat(" "+filterTerm.getText()); 
