@@ -44,25 +44,27 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.file.FileModule;
-import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.webdav.util.WebdavUtils;
 
 import com.bradmcevoy.common.Path;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.ResourceFactory;
 import com.bradmcevoy.http.SecurityManager;
+import com.bradmcevoy.http.exceptions.BadRequestException;
+import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 import com.ettrema.http.fs.LockManager;
 
 /**
  * @author jong
  *
  */
-public class WebdavResourceFactory implements ResourceFactory {
+public class WebdavResourceFactory extends AbstractAllModulesInjected implements ResourceFactory {
 
 	private static final Log logger = LogFactory.getLog(WebdavResourceFactory.class);
 	
@@ -77,6 +79,10 @@ public class WebdavResourceFactory implements ResourceFactory {
 	private static final Long DEFAULT_MAX_AGE_SECONDS_FILE = 10L;
 	private static final Long DEFAULT_MAX_AGE_SECONDS_EIP_FILE = null;
 	
+	private static final String DEFAULT_MY_FILES_PREFIX = "my_files";
+	private static final String DEFAULT_NET_FOLDERS_PREFIX = "net_folders";
+	private static final String DEFAULT_SHARED_WITH_ME_PREFIX = "shared_with_me";
+	
 	private boolean allowDirectoryBrowsing = true;
 	
 	private Long maxAgeSecondsStatic = DEFAULT_MAX_AGE_SECONDS_STATIC;
@@ -84,6 +90,10 @@ public class WebdavResourceFactory implements ResourceFactory {
 	private Long maxAgeSecondsFolder = DEFAULT_MAX_AGE_SECONDS_FOLDER;
 	private Long maxAgeSecondsFile = DEFAULT_MAX_AGE_SECONDS_FILE;
 	private Long maxAgeSecondsEipFile = DEFAULT_MAX_AGE_SECONDS_EIP_FILE;
+	
+	private String myFilesPrefix = DEFAULT_MY_FILES_PREFIX;
+	private String netFoldersPrefix = DEFAULT_NET_FOLDERS_PREFIX;
+	private String sharedWithMePrefix = DEFAULT_SHARED_WITH_ME_PREFIX;
 	
 	private LockManager lockManager;
 	private SecurityManager securityManager;
@@ -111,18 +121,7 @@ public class WebdavResourceFactory implements ResourceFactory {
 			}
 			else {
 				Object obj = resolvePath(p.getStripFirst());
-				if(obj instanceof FileAttachment) {
-					return new FileResource(this, path, (FileAttachment)obj);
-				}
-				else if(obj instanceof Folder) {
-					return new FolderResource(this, path, (Folder)obj);
-				}
-				else if(obj instanceof Workspace) {
-					return new WorkspaceResource(this, path, (Workspace)obj);
-				}
-				else {
-					return null;
-				}
+				return vibeObjectToResource(path, obj);
 			}
 		}
 		else if(p.getFirst().equals("dave")) { // edit-in-place
@@ -172,25 +171,140 @@ public class WebdavResourceFactory implements ResourceFactory {
 				Path vibePathForSimpleNamedBinder = Path.path(binder.getPathName());
 				Path vibeFullPath = vibePathForSimpleNamedBinder.add(p.getStripFirst());
 				Object obj = resolvePath(vibeFullPath);
-				if(obj instanceof FileAttachment) {
-					return new FileResource(this, path, (FileAttachment)obj);
-				}
-				else if(obj instanceof Folder) {
-					return new FolderResource(this, path, (Folder)obj);
-				}
-				else if(obj instanceof Workspace) {
-					return new WorkspaceResource(this, path, (Workspace)obj);
-				}
-				else {
-					return null;
-				}
+				return vibeObjectToResource(path, obj);
 			}
+		}
+		else if(p.getFirst().equals(this.getMyFilesPrefix())) { // My Files
+			if(!WebdavUtils.userCanAccessMyFiles(this)) {
+				return null; // Personal storage is not allowed.
+			}
+			if(p.getLength() == 1) {
+				return new MyFilesResource(this);
+			}
+			p = p.getStripFirst();
+			Resource mfcr = getMyFilesChildResource(p.getFirst());
+			if(mfcr == null) {
+				return null;
+			}
+			if(p.getLength() == 1) {
+				return mfcr;
+			}	
+			if(mfcr instanceof FileResource) {
+				// File can not have sub-path (i.e., children). This is not a valid situation.
+				return null;
+			}
+			else if(mfcr instanceof BinderResource) {
+				String vibePath = ((BinderResource)mfcr).getPath() + p.getStripFirst().toPath();
+				Object obj = resolvePath(Path.path(vibePath));
+				return vibeObjectToResource(path, obj);
+			}
+			else {
+				return null;
+			}
+		}
+		else if(p.getFirst().equals(this.getNetFoldersPrefix())) { // Net Folders
+			if(!WebdavUtils.userCanAccessNetFolders()) {
+				return null;
+			}
+			if(p.getLength() == 1) {
+				return new NetFoldersResource(this);
+			}
+			p = p.getStripFirst();
+			Resource mfcr = getNetFoldersChildResource(p.getFirst());
+			if(mfcr == null) {
+				return null;
+			}
+			if(p.getLength() == 1) {
+				return mfcr;
+			}	
+			if(mfcr instanceof FileResource) {
+				// File can not have sub-path (i.e., children). This is not a valid situation.
+				return null;
+			}
+			else if(mfcr instanceof BinderResource) {
+				String vibePath = ((BinderResource)mfcr).getPath() + p.getStripFirst().toPath();
+				Object obj = resolvePath(Path.path(vibePath));
+				return vibeObjectToResource(path, obj);
+			}
+			else {
+				return null;
+			}
+		}
+		else if(p.getFirst().equals(this.getSharedWithMePrefix())) { // Shared With Me
+			if(p.getLength() == 1) {
+				return new SharedWithMeResource(this);
+			}
+			p = p.getStripFirst();
+			Resource swmcr = getSharedWithMeChildResource(p.getFirst());
+			if(swmcr == null) {
+				return null;
+			}
+			if(p.getLength() == 1) {
+				return swmcr;
+			}
+			if(swmcr instanceof FileResource) {
+				// File can not have sub-path (i.e., children). This is not a valid situation.
+				return null;
+			}
+			else if(swmcr instanceof BinderResource) {
+				String vibePath = ((BinderResource)swmcr).getPath() + p.getStripFirst().toPath();
+				Object obj = resolvePath(Path.path(vibePath));
+				return vibeObjectToResource(path, obj);
+			}
+			else {
+				return null;
+			}			
 		}
 		else {
 			return null;
 		}
 	}
-
+	
+	private Resource vibeObjectToResource(String path, Object obj) {
+		if(obj instanceof FileAttachment) {
+			return new FileResource(this, path, (FileAttachment)obj);
+		}
+		else if(obj instanceof Folder) {
+			return new FolderResource(this, path, (Folder)obj);
+		}
+		else if(obj instanceof Workspace) {
+			return new WorkspaceResource(this, path, (Workspace)obj);
+		}
+		else {
+			return null;
+		}
+	}
+	
+	private Resource getMyFilesChildResource(String childName) {
+		try {
+			return new MyFilesResource(this).child(childName);
+		} catch (NotAuthorizedException e) {
+			return null;
+		} catch (BadRequestException e) {
+			return null;
+		}
+	}
+	
+	private Resource getNetFoldersChildResource(String childName) {
+		try {
+			return new NetFoldersResource(this).child(childName);
+		} catch (NotAuthorizedException e) {
+			return null;
+		} catch (BadRequestException e) {
+			return null;
+		}
+	}
+	
+	private Resource getSharedWithMeChildResource(String childName) {
+		try {
+			return new SharedWithMeResource(this).child(childName);
+		} catch (NotAuthorizedException e) {
+			return null;
+		} catch (BadRequestException e) {
+			return null;
+		}
+	}
+	
 	/**
 	 * Whether to allow generation of a listing of the contents of a binder via GET.
 	 * If allowed, user can easily browse the contents of a binder using a browser.
@@ -231,6 +345,24 @@ public class WebdavResourceFactory implements ResourceFactory {
 		if(!inited)
 			init();
 		return maxAgeSecondsEipFile;
+	}
+
+	public String getMyFilesPrefix() {
+		if(!inited)
+			init();
+		return myFilesPrefix;
+	}
+
+	public String getNetFoldersPrefix() {
+		if(!inited)
+			init();
+		return netFoldersPrefix;
+	}
+
+	public String getSharedWithMePrefix() {
+		if(!inited)
+			init();
+		return sharedWithMePrefix;
 	}
 
 	public LockManager getLockManager() {
@@ -297,28 +429,23 @@ public class WebdavResourceFactory implements ResourceFactory {
 		maxAgeSecondsFile = SPropsUtil.getLongObject("wd.max.age.seconds.file", DEFAULT_MAX_AGE_SECONDS_FILE);
 		maxAgeSecondsEipFile = SPropsUtil.getLongObject("wd.max.age.seconds.eip.file", DEFAULT_MAX_AGE_SECONDS_EIP_FILE);
 		
+		myFilesPrefix = SPropsUtil.getString("wd.myfiles.prefix", DEFAULT_MY_FILES_PREFIX);
+		netFoldersPrefix = SPropsUtil.getString("wd.netfolders.prefix", DEFAULT_NET_FOLDERS_PREFIX);
+		sharedWithMePrefix = SPropsUtil.getString("wd.sharedwithme.prefix", DEFAULT_SHARED_WITH_ME_PREFIX);
+		
 		logger.info("allowDirectoryBrowsing:" + allowDirectoryBrowsing + 
 				" maxAgeSecondsStatic:" + maxAgeSecondsStatic +
 				" maxAgeSecondsWorkspace:" + maxAgeSecondsWorkspace +
 				" maxAgeSecondsFolder:" + maxAgeSecondsFolder +
 				" maxAgeSecondsFile:" + maxAgeSecondsFile +
-				" maxAgeSecondsEipFile:" + maxAgeSecondsEipFile);
+				" maxAgeSecondsEipFile:" + maxAgeSecondsEipFile + 
+				" myFilesPrefix:" + myFilesPrefix +
+				" netFoldersPrefix:" + netFoldersPrefix +
+				" sharedWithMePrefix:" + sharedWithMePrefix);
 		
 		inited = true;
 	}
 	
-	protected BinderModule getBinderModule () {
-		return (BinderModule) SpringContextUtil.getBean("binderModule");
-	}
-	
-	protected FolderModule getFolderModule () {
-		return (FolderModule) SpringContextUtil.getBean("folderModule");
-	}
-
-	protected FileModule getFileModule () {
-		return (FileModule) SpringContextUtil.getBean("fileModule");
-	}
-
 	protected CoreDao getCoreDao() {
 		return (CoreDao) SpringContextUtil.getBean("coreDao");
 	}

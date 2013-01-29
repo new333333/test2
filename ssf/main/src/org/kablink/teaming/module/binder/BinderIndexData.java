@@ -76,17 +76,17 @@ public class BinderIndexData {
 		family = doc.get(Constants.FAMILY_FIELD);
 		path = doc.get(Constants.ENTITY_PATH);
 		String libraryStr = doc.get(Constants.IS_LIBRARY_FIELD);
-		if(Boolean.TRUE.equals(libraryStr))
+		if(String.valueOf(true).equals(libraryStr))
 			library = true;
 		else
 			library = false;
 		String mirroredStr = doc.get(Constants.IS_MIRRORED_FIELD);
-		if(Boolean.TRUE.equals(mirroredStr))
+		if(String.valueOf(true).equals(mirroredStr))
 			mirrored = true;
 		else
 			mirrored = false;
 		String homeDirStr = doc.get(Constants.IS_HOME_DIR_FIELD);
-		if(Boolean.TRUE.equals(homeDirStr))
+		if(String.valueOf(true).equals(homeDirStr))
 			homeDir = true;
 		else
 			homeDir = false;

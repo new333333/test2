@@ -30,14 +30,18 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.webdav;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
@@ -61,18 +65,18 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 
 /**
  * @author jong
- *
+ * 
  */
-public class MyFilesResource extends ContainerResource 
-	implements PropFindableResource, GetableResource, CollectionResource, PutableResource, MakeCollectionableResource {
+public class NetFoldersResource extends ContainerResource implements
+		PropFindableResource, GetableResource, CollectionResource {
 
-	public MyFilesResource(WebdavResourceFactory factory) {
-		super(factory, "/" + factory.getMyFilesPrefix());
+	public NetFoldersResource(WebdavResourceFactory factory) {
+		super(factory, "/" + factory.getNetFoldersPrefix());
 	}
 
 	@Override
 	public String getUniqueId() {
-		return this.factory.getMyFilesPrefix();
+		return this.factory.getNetFoldersPrefix();
 	}
 
 	@Override
@@ -82,10 +86,12 @@ public class MyFilesResource extends ContainerResource
 
 	@Override
 	public Date getModifiedDate() {
-		// $$$We don't have this information for My Files container. So, let's just return
-		// current time to force WebDAV client to always come and get the latest view.
-		//return new Date();
-		
+		// $$$We don't have this information for Net Folders container. So, let's
+		// just return
+		// current time to force WebDAV client to always come and get the latest
+		// view.
+		// return new Date();
+
 		return getCreateDate();
 	}
 
@@ -103,20 +109,13 @@ public class MyFilesResource extends ContainerResource
 	@Override
 	public Resource child(String childName) throws NotAuthorizedException,
 			BadRequestException {
-        // Get folders contained in My Files view
-        Criteria myFoldersCrit = SearchUtils.getMyFilesSearchCriteria(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), true, false, false, false);
-        List<BinderIndexData> bidList = getBinderDataFromIndex(myFoldersCrit, false, null);
-        for(BinderIndexData bid : bidList) {
-        	if(bid.getTitle().equals(childName))
-            	return makeResourceFromBinder(bid);
-        }
+		Criteria netFoldersCrit = SearchUtils.getNetFoldersSearchCriteria(this, false);
+
+		List<BinderIndexData> bidList = getBinderDataFromIndex(netFoldersCrit, true, SearchUtils.getNetFoldersRootBinder());
 		
-		// Get files contained in My Files view
-        Criteria myFilesCrit = SearchUtils.getMyFilesSearchCriteria(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), false, false, false, true);
-        List<FileIndexData> fidList = getFileModule().getFileDataFromIndex(myFilesCrit);
-		for(FileIndexData fid : fidList) {
-			if(fid.getName().equals(childName))
-				return makeResourceFromFile(fid);
+		for (BinderIndexData bid : bidList) {
+			if (bid.getTitle().equals(childName))
+				return makeResourceFromBinder(bid);
 		}
 
 		return null;
@@ -128,54 +127,17 @@ public class MyFilesResource extends ContainerResource
 		List<Resource> childrenResources = new ArrayList<Resource>();
 		Resource resource;
 		
-		// Get folders
-        Criteria myFoldersCrit = SearchUtils.getMyFilesSearchCriteria(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), true, false, false, false);
-        List<BinderIndexData> bidList = getBinderDataFromIndex(myFoldersCrit, false, null);
-        for(BinderIndexData bid : bidList) {
-        	resource = makeResourceFromBinder(bid);
-        	if(resource != null)
-        		childrenResources.add(resource);
-        }
+		Criteria netFoldersCrit = SearchUtils.getNetFoldersSearchCriteria(this, false);
+
+		List<BinderIndexData> bidList = getBinderDataFromIndex(netFoldersCrit, true, SearchUtils.getNetFoldersRootBinder());
 		
-		// Get files
-        Criteria myFilesCrit = SearchUtils.getMyFilesSearchCriteria(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), false, false, false, true);
-        List<FileIndexData> fidList = getFileModule().getFileDataFromIndex(myFilesCrit);
-		for(FileIndexData fid : fidList) {
-			resource = makeResourceFromFile(fid);
-			if(resource != null)
+		for (BinderIndexData bid : bidList) {
+			resource = makeResourceFromBinder(bid);
+			if (resource != null)
 				childrenResources.add(resource);
 		}
-		
+
 		return childrenResources;
-	}
-
-	@Override
-	public CollectionResource createCollection(String newName)
-			throws NotAuthorizedException, ConflictException,
-			BadRequestException {
-		Binder parent = getBinderModule().getBinder(RequestContextHolder.getRequestContext().getUser().getWorkspaceId());
-		
-		return createChildFolder(parent, newName);
-	}
-
-	@Override
-	public Resource createNew(String newName, InputStream inputStream,
-			Long length, String contentType) throws IOException,
-			ConflictException, NotAuthorizedException, BadRequestException {
-		Long folderId =  SearchUtils.getMyFilesFolderId(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), true);
-		Folder folder = getFolder(folderId);
-		FolderEntry entry = writeFileWithModDate(folder, newName, inputStream, null);
-		return makeResourceFromFile(entry.getFileAttachment(newName));
-	}
-
-	private Folder getFolder(Long folderId) throws ConflictException {
-		if(folderId == null)
-			throw new ConflictException("No folder id");
-		Binder binder = getBinderModule().getBinder(folderId);
-		if(binder instanceof Folder)
-			return (Folder) binder;
-		else
-			throw new ConflictException("id '" + folderId + "' does not represent a folder");
 	}
 
 }

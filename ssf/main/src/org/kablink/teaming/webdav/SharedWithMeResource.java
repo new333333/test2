@@ -46,7 +46,6 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.util.ReleaseInfo;
-import org.kablink.teaming.util.SPropsUtil;
 
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
@@ -63,14 +62,13 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 public class SharedWithMeResource extends ContainerResource 
 	implements PropFindableResource, GetableResource, CollectionResource {
 
-	protected SharedWithMeResource(WebdavResourceFactory factory,
-			String webdavPath) {
-		super(factory, webdavPath);
+	public SharedWithMeResource(WebdavResourceFactory factory) {
+		super(factory, "/" + factory.getSharedWithMePrefix());
 	}
 
 	@Override
 	public String getUniqueId() {
-		return SPropsUtil.getString("wd.sharedwithme.prefix", "shared_with_me");
+		return this.factory.getSharedWithMePrefix();
 	}
 
 	@Override
@@ -80,22 +78,22 @@ public class SharedWithMeResource extends ContainerResource
 
 	@Override
 	public Date getModifiedDate() {
+		// $$$We don't have this information for Shared With Me container. So, let's just return
+		// current time to force WebDAV client to always come and get the latest view.
+		//return new Date();
+		
 		return getCreateDate();
 	}
 
 	@Override
 	public Long getMaxAgeSeconds(Auth auth) {
-		return factory.getMaxAgeSecondsStatic();
+		// Share the setting with regular folders.
+		return factory.getMaxAgeSecondsFolder();
 	}
 
 	@Override
 	public Date getCreateDate() {
 		return getMiltonSafeDate(ReleaseInfo.getBuildDate()); // This is as good as any other random date
-	}
-
-	@Override
-	public String getWebdavPath() {
-		return "/" + getUniqueId();
 	}
 
 	@Override
