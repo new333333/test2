@@ -57,9 +57,14 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @Path("{id}")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Binder getBinder(@PathParam("id") long id,
+                            @QueryParam("library_mod_time") @DefaultValue("false") boolean libraryModTime,
                             @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
                             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
-        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
+        Binder binder = ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
+        if (libraryModTime) {
+            binder.setLibraryModificationDate(getLibraryModifiedDate(new Long[]{id}, true));
+        }
+        return binder;
     }
 
     @PUT
@@ -245,6 +250,15 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         SearchResultList<FileProperties> subFiles = getSubFiles(id, fileName, recursive, false, includeParentPaths,
                 offset, maxCount, getBasePath() + id + "/files", nextParams, ifModifiedSince);
         return Response.ok(subFiles).lastModified(subFiles.getLastModified()).build();
+	}
+
+	@GET
+	@Path("{id}/library_mod_time")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	public Response getFiles(@PathParam("id") long id, @QueryParam("recursive") @DefaultValue("false") boolean recursive) {
+        org.kablink.teaming.domain.Binder binder = _getBinder(id);
+        Date date = getLibraryModifiedDate(new Long[] {id}, recursive);
+        return Response.ok().lastModified(date).build();
 	}
 
     @GET

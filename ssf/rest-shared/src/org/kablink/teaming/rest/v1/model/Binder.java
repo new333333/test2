@@ -34,12 +34,15 @@ package org.kablink.teaming.rest.v1.model;
 
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
 
 @XmlRootElement (name="binder")
 @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 public class Binder extends DefinableEntity {
     private String path;
+    private Date libraryModificationDate;
 
     public Binder() {
         setDocType("binder");
@@ -56,6 +59,15 @@ public class Binder extends DefinableEntity {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    @XmlElement(name = "library_mod_time")
+    public Date getLibraryModificationDate() {
+        return libraryModificationDate;
+    }
+
+    public void setLibraryModificationDate(Date libraryModificationDate) {
+        this.libraryModificationDate = libraryModificationDate;
     }
 
     @Override

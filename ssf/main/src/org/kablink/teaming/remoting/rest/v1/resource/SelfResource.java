@@ -43,7 +43,6 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
-import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
@@ -66,7 +65,6 @@ import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
@@ -123,6 +121,7 @@ public class SelfResource extends AbstractFileResource {
         user.addAdditionalPermaLink("net_folders", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_NET_FOLDERS));
         user.addAdditionalPermaLink("shared_with_me", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_SHARED_WITH_ME));
         user.addAdditionalPermaLink("shared_by_me", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_SHARED_BY_ME));
+        user.addAdditionalPermaLink("recent_activity", PermaLinkUtil.getUserWhatsNewPermalink(null, entry.getId().toString()));
         Long myFilesFolderId = SearchUtils.getMyFilesFolderId(this, entry.getWorkspaceId(), true);
         if (myFilesFolderId!=null) {
             user.setHiddenFilesFolder(new LongIdLinkPair(myFilesFolderId, LinkUriUtil.getFolderLinkUri(myFilesFolderId)));
@@ -198,8 +197,13 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/shared_with_me")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public BinderBrief getSharedWithMe() {
-        return getFakeSharedWithMe();
+    public BinderBrief getSharedWithMe(@QueryParam("library_mod_time") @DefaultValue("false") boolean libraryModTime) {
+        BinderBrief fakeSharedWithMe = getFakeSharedWithMe();
+        if (libraryModTime) {
+            Long userId = getLoggedInUserId();
+            fakeSharedWithMe.setLibraryModificationDate(getSharedWithLibraryModifiedDate(userId, true));
+        }
+        return fakeSharedWithMe;
     }
 
     @GET
@@ -212,11 +216,23 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/my_files")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public BinderBrief getMyFiles() {
+    public BinderBrief getMyFiles(@QueryParam("library_mod_time") @DefaultValue("false") boolean libraryModTime) {
         if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
-        return getFakeMyFileFolders();
+        BinderBrief fakeMyFileFolders = getFakeMyFileFolders();
+        if (libraryModTime) {
+            fakeMyFileFolders.setLibraryModificationDate(getMyFilesLibraryModifiedDate(true));
+        }
+        return fakeMyFileFolders;
+    }
+
+    @GET
+    @Path("/my_files/library_mod_time")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getFiles(@QueryParam("recursive") @DefaultValue("false") boolean recursive) {
+        Date date = getMyFilesLibraryModifiedDate(recursive);
+        return Response.ok().lastModified(date).build();
     }
 
     @GET
@@ -249,15 +265,6 @@ public class SelfResource extends AbstractFileResource {
         } else {
             return Response.ok(results).build();
         }
-    }
-
-    private SearchResultList<BinderBrief> _getMyFilesLibraryFolders(boolean textDescriptions, Integer offset, Integer maxCount, Date parentModTime) {
-        Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", textDescriptions);
-        Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), true, false, false, false);
-        SearchResultList<BinderBrief> results = lookUpBinders(crit, textDescriptions, offset, maxCount, "/self/my_files/library_folders", nextParams, parentModTime);
-        setMyFilesParents(results);
-        return results;
     }
 
     @POST
@@ -482,6 +489,15 @@ public class SelfResource extends AbstractFileResource {
         return resultList;
     }
 
+    private SearchResultList<BinderBrief> _getMyFilesLibraryFolders(boolean textDescriptions, Integer offset, Integer maxCount, Date parentModTime) {
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("text_descriptions", textDescriptions);
+        Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), true, false, false, false);
+        SearchResultList<BinderBrief> results = lookUpBinders(crit, textDescriptions, offset, maxCount, "/self/my_files/library_folders", nextParams, parentModTime);
+        setMyFilesParents(results);
+        return results;
+    }
+
     private void setMyFilesParents(SearchResultList results) {
         List<Long> hiddenFolderIds = getEffectiveMyFilesFolderIds();
         Set<Long> allParentIds = new HashSet(hiddenFolderIds);
@@ -503,15 +519,6 @@ public class SelfResource extends AbstractFileResource {
             return _getHomeFolder();
         } else {
             return _getHiddenFilesFolder();
-        }
-    }
-
-    private Binder getMyFilesFolderParent() {
-        org.kablink.teaming.domain.User loggedInUser = getLoggedInUser();
-        if (SearchUtils.useHomeAsMyFiles(this, loggedInUser)) {
-            return _getHomeFolder();
-        } else {
-            return _getUserWorkspace();
         }
     }
 
@@ -606,91 +613,6 @@ public class SelfResource extends AbstractFileResource {
         binder.setTitle("My Favorites");
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace_star.png"));
         binder.addAdditionalLink("child_binders", "/self/favorites");
-        return binder;
-    }
-
-    private BinderBrief getFakeMyFileFolders() {
-        org.kablink.teaming.domain.User user = getLoggedInUser();
-        BinderBrief binder = new BinderBrief();
-        //TODO: localize
-        binder.setId(ObjectKeys.MY_FILES_ID);
-        binder.setTitle("My Files");
-        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
-        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, user.getId().toString(), PermaLinkUtil.COLLECTION_MY_FILES));
-        String baseUri = "/self/my_files";
-        binder.setLink(baseUri);
-        binder.addAdditionalLink("child_binders", baseUri + "/library_folders");
-        binder.addAdditionalLink("child_files", baseUri + "/library_files");
-        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
-        binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
-        binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
-        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
-        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
-        return binder;
-    }
-
-    private BinderBrief getFakeSharedWithMe() {
-        BinderBrief binder = new BinderBrief();
-        //TODO: localize
-        binder.setId(ObjectKeys.SHARED_WITH_ME_ID);
-        binder.setTitle("Shared with Me");
-        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
-        Long userId = getLoggedInUserId();
-        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, userId.toString(), PermaLinkUtil.COLLECTION_SHARED_WITH_ME));
-        binder.setLink("/self/shared_with_me");
-        String baseUri = "/shares/with_user/" + userId;
-        binder.addAdditionalLink("child_binders", baseUri + "/binders");
-        binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
-        binder.addAdditionalLink("child_entries", baseUri + "/entries");
-        binder.addAdditionalLink("child_files", baseUri + "/files");
-        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
-        binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
-        binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
-        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
-        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
-        return binder;
-    }
-
-    private BinderBrief getFakeSharedByMe() {
-        BinderBrief binder = new BinderBrief();
-        //TODO: localize
-        binder.setId(ObjectKeys.SHARED_BY_ME_ID);
-        binder.setTitle("Shared by Me");
-        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
-        Long userId = getLoggedInUserId();
-        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, userId.toString(), PermaLinkUtil.COLLECTION_SHARED_BY_ME));
-        binder.setLink("/self/shared_by_me");
-        String baseUri = "/shares/by_user/" + userId;
-        binder.addAdditionalLink("child_binders", baseUri + "/binders");
-//        binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
-        binder.addAdditionalLink("child_entries", baseUri + "/entries");
-        binder.addAdditionalLink("child_files", baseUri + "/files");
-        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
-        binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
-        binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
-//        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
-        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
-        return binder;
-    }
-
-    private BinderBrief getFakeNetFolders() {
-        BinderBrief binder = new BinderBrief();
-        //TODO: localize
-        binder.setId(ObjectKeys.NET_FOLDERS_ID);
-        binder.setTitle("Net Folders");
-        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
-        Long userId = getLoggedInUserId();
-        binder.setLink("/self/net_folders");
-        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, userId.toString(), PermaLinkUtil.COLLECTION_NET_FOLDERS));
-        String baseUri = "/net_folders";
-        binder.addAdditionalLink("child_binders", baseUri);
-        //binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
-        //binder.addAdditionalLink("child_files", baseUri + "/files");
-        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
-        //binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
-        binder.addAdditionalLink("child_library_folders", baseUri);
-        //binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
-        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }
 }

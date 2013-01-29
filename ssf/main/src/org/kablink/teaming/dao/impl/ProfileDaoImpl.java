@@ -2651,6 +2651,13 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    		else
 	                    			crit.add(Restrictions.lt("startDate", selectSpec.startDateMax));
 	                    	}
+                            if(selectSpec.deleted != null) {
+                                if (selectSpec.deleted) {
+                                    crit.add(Restrictions.isNotNull("deletedDate"));
+                                } else {
+                                    crit.add(Restrictions.isNull("deletedDate"));
+                                }
+                            }
 	                    	if(selectSpec.orderByFieldName != null) {
 	                    		if(selectSpec.orderByDescending)
 	                    			crit.addOrder(Order.desc(selectSpec.orderByFieldName));

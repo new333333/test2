@@ -69,6 +69,16 @@ public class PermaLinkUtil {
 		return adapterUrl.toString();
 	}
 
+	public static String getUserWhatsNewPermalink(HttpServletRequest request, String userId) {
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true, true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name());
+        adapterUrl.setParameter(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "1");
+        adapterUrl.setParameter(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SPECIFIC, "10");
+		return adapterUrl.toString();
+	}
+
 	//userId may be placeholder
 	public static String getUserPermalink(HttpServletRequest request, String userId, boolean startWithActivityStreams, boolean startWithMyFiles) {
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true, true);

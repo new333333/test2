@@ -823,7 +823,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				getCoreDao().delete(shareItem);
+                shareItem.setDeletedDate(new Date());
+				getCoreDao().update(shareItem);
 				
 				//Log this share action in the change log
 				addShareItemChangeLogEntry(shareItem, ChangeLog.SHARE_DELETE);
