@@ -648,40 +648,80 @@ public class GwtShareHelper
 	 * This method will return null if the given user is not an external user.
 	 */
 	private static ExtProvState getExternalUserAccountState(
-		AllModulesInjected ami,
-		Long userId )
-	{
-		try
+			AllModulesInjected ami,
+			Long userId )
 		{
-			ArrayList<Long> ids;
-			SortedSet<Principal> principals;
-			
-			ids = new ArrayList<Long>();
-			ids.add( userId );
-			principals = ami.getProfileModule().getPrincipals( ids );
-			if ( principals != null && principals.size() == 1 )
+			try
 			{
-				Principal principal;
+				ArrayList<Long> ids;
+				SortedSet<Principal> principals;
 				
-				// 
-				principal = principals.first();
-				if ( principal instanceof User )
+				ids = new ArrayList<Long>();
+				ids.add( userId );
+				principals = ami.getProfileModule().getPrincipals( ids );
+				if ( principals != null && principals.size() == 1 )
 				{
-					User user;
+					Principal principal;
+					
+					// 
+					principal = principals.first();
+					if ( principal instanceof User )
+					{
+						User user;
 
-					user = (User) principal;
-					if ( user.getIdentityInfo().isInternal() == false )
-						return user.getExtProvState();
+						user = (User) principal;
+						if ( user.getIdentityInfo().isInternal() == false )
+							return user.getExtProvState();
+					}
 				}
 			}
+			catch ( AccessControlException acEx )
+			{
+				// Nothing to do
+			}
+			
+			return null;
 		}
-		catch ( AccessControlException acEx )
+
+	/**
+	 * Return true iff the user is an external user and has logged in using OpenID at least once.
+	 * It doesn't matter whether the user is self provisioned or not. 
+	 */
+	private static boolean getExternalUserLoggedInWithOpenIdAtLeastOnce(
+			AllModulesInjected ami,
+			Long userId )
 		{
-			// Nothing to do
+			try
+			{
+				ArrayList<Long> ids;
+				SortedSet<Principal> principals;
+				
+				ids = new ArrayList<Long>();
+				ids.add( userId );
+				principals = ami.getProfileModule().getPrincipals( ids );
+				if ( principals != null && principals.size() == 1 )
+				{
+					Principal principal;
+					
+					// 
+					principal = principals.first();
+					if ( principal instanceof User )
+					{
+						User user;
+
+						user = (User) principal;
+						if ( user.getIdentityInfo().isInternal() == false )
+							return user.getIdentityInfo().isFromOpenid();
+					}
+				}
+			}
+			catch ( AccessControlException acEx )
+			{
+				// Nothing to do
+			}
+			
+			return false;
 		}
-		
-		return null;
-	}
 
 	/**
 	 * Return the name of the given group
@@ -1610,7 +1650,8 @@ public class GwtShareHelper
 			Map<String,Object> errorMap;
 			
 			if ( gwtShareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER &&
-				 getExternalUserAccountState( ami, gwtShareItem.getRecipientId() ) == ExtProvState.initial )
+				 getExternalUserAccountState( ami, gwtShareItem.getRecipientId() ) == ExtProvState.initial &&
+				 !getExternalUserLoggedInWithOpenIdAtLeastOnce( ami, gwtShareItem.getRecipientId()))
 			{
 				errorMap = null;
 				
