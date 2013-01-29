@@ -157,17 +157,16 @@
   	</c:forEach>
   	<br/>
   </c:if>
-  <span><ssf:nlt tag="license.contact"/> ${ssLicenseContact}</span>
+  <c:if test="${!empty ssLicenseContact}">
+    <span><ssf:nlt tag="license.contact"/> ${ssLicenseContact}</span>
     <br/>
-	<hr shade=noshade size=1/>
+  </c:if>
+  <hr shade=noshade size=1/>
 	
   </div>
   </c:if>
   
   <div class="ss_style">
-    <div class="ss_license">
-	${ssLicense}
-	</div>
 <c:if test='${empty ssLicenseException}'>
   <ssf:ifLicenseExpired><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.expired.warning"/></span></div></ssf:ifLicenseExpired>
   <ssf:ifLicenseExpired invert="true">
