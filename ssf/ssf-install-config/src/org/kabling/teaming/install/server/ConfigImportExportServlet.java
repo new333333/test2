@@ -386,12 +386,12 @@ public class ConfigImportExportServlet extends HttpServlet
 		try
 		{
 			prop.load(new FileInputStream(oldFile));
-			String oldProductName = prop.getProperty("PRODUCT");
+			String oldProductName = prop.getProperty("product");
 
 			prop.load(new FileInputStream(new File(newFilePath)));
 
 			// product name matches
-			if (prop.getProperty("PRODUCT").equals(oldProductName))
+			if (prop.getProperty("product").equals(oldProductName))
 			{
 				return true;
 			}
