@@ -1663,7 +1663,9 @@ public final class ConfigService
 			{
 				cmd = new ShellCommand("sh");
 				if (displayToConsole)
-					logger.info(command);
+				{
+					logger.info("Displaying to Console "+command);
+				}
 				cmd.stdin.write(command);
 				cmd.stdin.close();
 				cmd.waitFor();
@@ -1708,7 +1710,8 @@ public final class ConfigService
 				e.printStackTrace();
 				exitValue = -1;
 			}
-			logger.info(command + ": exitValue = " + exitValue);
+			if (displayToConsole)
+				logger.info(command + ": exitValue = " + exitValue);
 		}
 		if ((exitValue != 0) && waitingForLock && (tryCount >= MAX_TRIES))
 		{
@@ -2310,9 +2313,10 @@ public final class ConfigService
 	{
 		DatabaseConfig config = db.getDatabaseConfig("Installed");
 		ShellCommandInfo info = executeCommand("mysqladmin -uroot -proot password '" + config.getResourcePassword() + "'", false);
+		
+		logger.debug("mysqladmin setting up admin password exit Value" + info.getExitValue());
 		if (info.getExitValue() != 0)
 		{
-			logger.debug("Error setting up admin password" + info.getExitValue());
 			throw new ConfigurationSaveException();
 		}
 	}
