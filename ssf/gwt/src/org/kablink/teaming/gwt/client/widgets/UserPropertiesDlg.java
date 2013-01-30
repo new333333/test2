@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.datatable.UserTypeCell;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserShareRightsDlgEvent;
 import org.kablink.teaming.gwt.client.event.ReloadDialogContentEvent;
@@ -213,6 +214,8 @@ public class UserPropertiesDlg extends DlgBox
 		
 		// Does the user doesn't have a Home folder?
 		if (hasHome) {
+			final Long netFolderId;
+			
 			// Yes!  Add information about the path to it to the grid.
 			row = grid.getRowCount();
 			StringBuffer	homeBuf   = new StringBuffer();
@@ -237,6 +240,40 @@ public class UserPropertiesDlg extends DlgBox
 				row,
 				m_messages.userPropertiesDlgLabel_HomePath(),
 				homeDisplay);
+
+			// Do we have a net folder id for the home directory?
+			netFolderId = home.getId();
+			if ( netFolderId != null )
+			{
+				// Yes, add an "edit home folder" button.
+				final Button button = new Button( m_messages.userPropertiesDlgEdit_HomeFolder() );
+				button.addStyleName( "vibe-userPropertiesDlg-buttonAct vibe-userPropertiesDlg-buttonLook" );
+				button.addClickHandler( new ClickHandler()
+				{
+					@Override
+					public void onClick( ClickEvent event )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								InvokeEditNetFolderDlgEvent event;
+								
+								event = new InvokeEditNetFolderDlgEvent( netFolderId, button );
+								GwtTeaming.fireEventAsync( event );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				});
+	
+				// ...and add the button to the grid.
+				grid.setWidget( row, 0, button);
+				cf.setHorizontalAlignment( row, 0, HasHorizontalAlignment.ALIGN_CENTER );
+			}
 		}
 	}
 	

@@ -2444,6 +2444,7 @@ public interface GwtTeamingMessages extends Messages
 	String userActivityReportWarning_UserAlreadySelected(String name);
 
 	// Strings used by the 'User Properties' dialog.
+	String userPropertiesDlgEdit_HomeFolder();
 	String userPropertiesDlgEdit_NetFolders();
 	String userPropertiesDlgEdit_PersonalStorage();
 	String userPropertiesDlgEdit_Profile();
