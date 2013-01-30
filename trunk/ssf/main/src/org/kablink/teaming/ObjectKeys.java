@@ -922,5 +922,10 @@ public interface ObjectKeys {
     public static final String CONVERTER_DIR_TEXT = "";		//Content text files go where they used to go (i.e., in cachefilestore)
     public static final String CONVERTER_DIR_HTML = "converted_html_files";
     public static final String CONVERTER_DIR_IMAGE = "converted_images";
-    
+
+    // The following are used as the names of the personal tags added
+    // to a shared entity to indicate that the user has it hidden.
+    // Must match values in GWT client's TagInfo class
+    public final static String	HIDDEN_SHARED_BY_TAG	= "sharedByHidden";
+    public final static String	HIDDEN_SHARED_WITH_TAG	= "sharedWithHidden";
 }

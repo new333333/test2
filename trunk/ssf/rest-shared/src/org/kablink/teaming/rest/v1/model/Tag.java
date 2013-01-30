@@ -38,11 +38,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement(name="tag")
 public class Tag extends BaseRestObject {
-    // The following are used as the names of the personal tags added
-    // to a shared entity to indicate that the user has it hidden.
-    private final static String	HIDDEN_SHARED_BY_TAG	= "sharedByHidden";
-    private final static String	HIDDEN_SHARED_WITH_TAG	= "sharedWithHidden";
-
 	protected String id;
 	protected String name="";
 	protected Boolean isPublic=false;
@@ -76,19 +71,4 @@ public class Tag extends BaseRestObject {
 	public void setPublic(Boolean isPublic) {
 		this.isPublic = isPublic;
 	}
-
-    @XmlTransient
-    public boolean isHidden() {
-        return isHiddenInSharedByMe() || isHiddenInSharedWithMe();
-    }
-
-    @XmlTransient
-    public boolean isHiddenInSharedByMe() {
-        return HIDDEN_SHARED_BY_TAG.equals(name);
-    }
-
-    @XmlTransient
-    public boolean isHiddenInSharedWithMe() {
-        return HIDDEN_SHARED_WITH_TAG.equals(name);
-    }
 }
