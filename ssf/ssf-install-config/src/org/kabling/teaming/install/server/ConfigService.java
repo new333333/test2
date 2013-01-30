@@ -1068,11 +1068,7 @@ public final class ConfigService
 				LSOutput lsOutput = impl.createLSOutput();
 				lsOutput.setEncoding("UTF-8");
 
-				// Temporary, so that we can all the work from a Windows Box
-				String osName = System.getProperty("os.name");
-				{
-					lsOutput.setByteStream(new FileOutputStream("/filrinstall/installer.xml"));
-				}
+				lsOutput.setByteStream(new FileOutputStream("/filrinstall/installer.xml"));
 				LSSerializer serializer = impl.createLSSerializer();
 
 				serializer.write(document, lsOutput);
@@ -1664,7 +1660,7 @@ public final class ConfigService
 				cmd = new ShellCommand("sh");
 				if (displayToConsole)
 				{
-					logger.info("Displaying to Console "+command);
+					logger.info("Displaying to Console " + command);
 				}
 				cmd.stdin.write(command);
 				cmd.stdin.close();
@@ -2109,7 +2105,10 @@ public final class ConfigService
 					+ " " + network.getListenPort(), true);
 
 			// Enable the firewall for this port 80 443
-			executeCommand("sudo SuSEfirewall2 open EXT TCP 80 443 8080", true);
+			executeCommand("sudo SuSEfirewall2 open EXT TCP 80 443", true);
+
+			// We need to open up both 8080 and 8443 for port redirection to work
+			executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getListenPort() + " " + network.getSecureListenPort(), true);
 		}
 		else
 		{
@@ -2290,8 +2289,8 @@ public final class ConfigService
 
 		executeCommand("sudo mv /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf "
 				+ " /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf.disabled", true);
-		
-		executeCommand("sudo rcmysql stop",true);
+
+		executeCommand("sudo rcmysql stop", true);
 	}
 
 	public static void reverConfiguration() throws IOException
@@ -2313,7 +2312,7 @@ public final class ConfigService
 	{
 		DatabaseConfig config = db.getDatabaseConfig("Installed");
 		ShellCommandInfo info = executeCommand("mysqladmin -uroot -proot password '" + config.getResourcePassword() + "'", false);
-		
+
 		logger.debug("mysqladmin setting up admin password exit Value" + info.getExitValue());
 		if (info.getExitValue() != 0)
 		{
