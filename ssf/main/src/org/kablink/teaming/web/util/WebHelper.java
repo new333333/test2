@@ -642,6 +642,11 @@ public class WebHelper {
 		HttpSession ses = getCurrentHttpSession();
 		if(ses == null)
 			return false;
+		else
+			return isUserAuthenticatedViaOpenid(ses);
+	}
+	
+	public static boolean isUserAuthenticatedViaOpenid(HttpSession ses) {
 		SecurityContext securityContext = (SecurityContext) ses.getAttribute("SPRING_SECURITY_CONTEXT");
 		if(securityContext == null)
 			return false;
