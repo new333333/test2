@@ -151,7 +151,7 @@ public interface SharingModule {
      * Hides the binders or folder entries from the logged in user's Shared With Me or Shared By Me list.
      * @param ids       The IDs of the shared entities
      * @param recipient true if the user is the recipient of the share (Shared With Me),
-     *                  false if the user is the sharer (Shared With Me).
+     *                  false if the user is the sharer (Shared By Me).
      */
     public void hideSharedEntitiesForCurrentUser(Collection<EntityIdentifier> ids, boolean recipient);
 
@@ -160,7 +160,7 @@ public interface SharingModule {
     /**
      * Returns the date when the user last hid or unhid a shared entity in his/her Shared With Me or Shared By Me.
      * @param recipient true for where the user is the recipient of the share (Shared With Me),
-     *                  false for where the user is the sharer (Shared With Me).
+     *                  false for where the user is the sharer (Shared By Me).
      * @return
      */
     public Date getHiddenShareModTimeForCurrentUser(boolean recipient);
