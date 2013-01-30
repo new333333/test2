@@ -413,11 +413,14 @@ public class ConfigImportExportServlet extends HttpServlet
 		if (info.getExitValue() == 0)
 		{
 			String sysHostName = info.getOutputAsString();
-			if (sysHostName.startsWith(hostName))
+			logger.info("Comparing "+sysHostName + " with "+hostName);
+			if (sysHostName.contains(hostName))
 			{
+				logger.debug("Host Names match");
 				return true;
 			}
 		}
+		logger.debug("Host Names NO match");
 		return false;
 	}
 

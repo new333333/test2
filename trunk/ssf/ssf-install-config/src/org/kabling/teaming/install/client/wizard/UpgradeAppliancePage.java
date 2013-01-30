@@ -145,14 +145,20 @@ public class UpgradeAppliancePage implements IWizardPage<InstallerConfig>, EditS
 								
 								if (dataDriveElement != null && dataDriveElement.getLength() > 0)
 								{
+									if (dataDriveElement.item(0).getChildNodes().item(0).getNodeValue().equals("false"))
+									{
 									builder.append(RBUNDLE.dataDriveNotFound());
 									builder.append("<br><br>");
+									}
 								}
 								
 								if (hostNameElement != null && hostNameElement.getLength() > 0)
 								{
-									builder.append(RBUNDLE.hostNameNoMatch());
-									builder.append("<br><br>");
+									if (hostNameElement.item(0).getChildNodes().item(0).getNodeValue().equals("false"))
+									{
+										builder.append(RBUNDLE.hostNameNoMatch());
+										builder.append("<br><br>");
+									}
 								}
 								
 								builder.append(RBUNDLE.wishToContinueUpgrade());
