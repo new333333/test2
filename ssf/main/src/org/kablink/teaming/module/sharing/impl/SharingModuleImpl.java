@@ -32,31 +32,15 @@
  */
 package org.kablink.teaming.module.sharing.impl;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.kablink.teaming.NotSupportedException;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.ChangeLog;
-import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.NoGroupByTheIdException;
-import org.kablink.teaming.domain.NoUserByTheIdException;
-import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.NoShareItemByTheIdException;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
-import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.jobs.ExpiredShareHandler;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -883,8 +867,68 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			return getProfileDao().findShareItems(selectSpec);
 		}
 	}
-    
-	private void addShareRightInheritingParents(EntityIdentifier entityIdentifier, Set<EntityIdentifier> set) {
+
+    public void hideSharedEntitiesForCurrentUser(Collection<EntityIdentifier> ids, boolean recipient) {
+        String tagName;
+        if (recipient) {
+            tagName = ObjectKeys.HIDDEN_SHARED_WITH_TAG;
+        } else {
+            tagName = ObjectKeys.HIDDEN_SHARED_BY_TAG;
+        }
+        FolderModule folderModule = getFolderModule();
+        BinderModule binderModule = getBinderModule();
+        for (EntityIdentifier id : ids) {
+            if (id.getEntityType().equals(EntityType.folderEntry)) {
+                folderModule.setTag(null, id.getEntityId(), tagName, false);
+            } else {
+                binderModule.setTag(id.getEntityId(), tagName, false);
+            }
+        }
+        updateUserHiddenShareModTime(recipient);
+    }
+
+    @Override
+    public void unhideSharedEntitiesForCurrentUser(Collection<EntityIdentifier> ids, boolean recipient) {
+        String tagName;
+        if (recipient) {
+            tagName = ObjectKeys.HIDDEN_SHARED_WITH_TAG;
+        } else {
+            tagName = ObjectKeys.HIDDEN_SHARED_BY_TAG;
+        }
+        FolderModule folderModule = getFolderModule();
+        BinderModule binderModule = getBinderModule();
+        Collection<Tag> tags;
+        for (EntityIdentifier id : ids) {
+            if (id.getEntityType().equals(EntityType.folderEntry)) {
+                tags = folderModule.getTags(folderModule.getEntry(null, id.getEntityId()));
+                for (Tag tag : tags) {
+                    if (!tag.isPublic() && tag.getName().equals(tagName)) {
+                        folderModule.deleteTag(null, id.getEntityId(), tag.getId());
+                    }
+                }
+            } else {
+                tags = binderModule.getTags(binderModule.getBinder(id.getEntityId()));
+                for (Tag tag : tags) {
+                    if (!tag.isPublic() && tag.getName().equals(tagName)) {
+                        binderModule.deleteTag(id.getEntityId(), tag.getId());
+                    }
+                }
+            }
+        }
+        updateUserHiddenShareModTime(recipient);
+    }
+
+    public Date getHiddenShareModTimeForCurrentUser(boolean recipient) {
+        String tagName;
+        if (recipient) {
+            tagName = ObjectKeys.HIDDEN_SHARED_WITH_TAG;
+        } else {
+            tagName = ObjectKeys.HIDDEN_SHARED_BY_TAG;
+        }
+        return (Date)getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUserId()).getProperty(tagName);
+    }
+
+    private void addShareRightInheritingParents(EntityIdentifier entityIdentifier, Set<EntityIdentifier> set) {
 		DefinableEntity entity;
 		
 		try {
@@ -1062,5 +1106,15 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			processor.processChangeLog(binder, action);
 		}
 	}
+
+    private void updateUserHiddenShareModTime(boolean recipient) {
+        String tagName;
+        if (recipient) {
+            tagName = ObjectKeys.HIDDEN_SHARED_WITH_TAG;
+        } else {
+            tagName = ObjectKeys.HIDDEN_SHARED_BY_TAG;
+        }
+        getProfileModule().setUserProperty(RequestContextHolder.getRequestContext().getUserId(), tagName, new Date());
+    }
 
 }

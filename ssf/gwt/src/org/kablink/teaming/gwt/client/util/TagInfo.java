@@ -55,9 +55,10 @@ public class TagInfo implements IsSerializable {
 	
 	// The following are used as the names of the personal tags added
 	// to a shared entity to indicate that the user has it hidden.
+    // Must match values in ObjectKeys.java
 	private final static String	HIDDEN_SHARED_BY_TAG	= "sharedByHidden";
 	private final static String	HIDDEN_SHARED_WITH_TAG	= "sharedWithHidden";
-	
+
 	/**
 	 * Constructor method.
 	 * 

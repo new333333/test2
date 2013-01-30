@@ -35,6 +35,7 @@ import org.kablink.util.search.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.*;
 
 /**
@@ -554,8 +555,8 @@ public class ShareResource extends AbstractResource {
         }
         SearchResultList<Tag> entryTags = getBinderTags(binder, true);
         for (Tag tag : entryTags.getResults()) {
-            if ((collectionId == ObjectKeys.SHARED_WITH_ME_ID && tag.isHiddenInSharedWithMe()) ||
-                    (collectionId == ObjectKeys.SHARED_BY_ME_ID && tag.isHiddenInSharedByMe())) {
+            if ((collectionId == ObjectKeys.SHARED_WITH_ME_ID && isHiddenInSharedWithMe(tag)) ||
+                    (collectionId == ObjectKeys.SHARED_BY_ME_ID && isHiddenInSharedByMe(tag))) {
                 return showHidden;
             }
         }
@@ -574,8 +575,8 @@ public class ShareResource extends AbstractResource {
         }
         SearchResultList<Tag> entryTags = getEntryTags(entry, true);
         for (Tag tag : entryTags.getResults()) {
-            if ((collectionId == ObjectKeys.SHARED_WITH_ME_ID && tag.isHiddenInSharedWithMe()) ||
-                    (collectionId == ObjectKeys.SHARED_BY_ME_ID && tag.isHiddenInSharedByMe())) {
+            if ((collectionId == ObjectKeys.SHARED_WITH_ME_ID && isHiddenInSharedWithMe(tag)) ||
+                    (collectionId == ObjectKeys.SHARED_BY_ME_ID && isHiddenInSharedByMe(tag))) {
                 return showHidden;
             }
         }

@@ -756,7 +756,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         SearchResultList<Tag> results = new SearchResultList<Tag>();
         for (org.kablink.teaming.domain.Tag tag : tags) {
             Tag obj = ResourceUtil.buildTag(tag);
-            if (hidden==obj.isHidden()) {
+            if (hidden==isHidden(obj)) {
                 results.append(obj);
             }
         }
@@ -768,11 +768,23 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         SearchResultList<Tag> results = new SearchResultList<Tag>();
         for (org.kablink.teaming.domain.Tag tag : tags) {
             Tag obj = ResourceUtil.buildTag(tag);
-            if (hidden==obj.isHidden()) {
+            if (hidden==isHidden(obj)) {
                 results.append(obj);
             }
         }
         return results;
+    }
+
+    protected boolean isHidden(Tag tag) {
+        return isHiddenInSharedByMe(tag) || isHiddenInSharedWithMe(tag);
+    }
+
+    protected boolean isHiddenInSharedByMe(Tag tag) {
+        return ObjectKeys.HIDDEN_SHARED_BY_TAG.equals(tag.getName());
+    }
+
+    protected boolean isHiddenInSharedWithMe(Tag tag) {
+        return ObjectKeys.HIDDEN_SHARED_WITH_TAG.equals(tag.getName());
     }
 
     protected ShareItemSelectSpec getSharedWithSpec(Long userId) {
@@ -801,7 +813,9 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         // Include deleted entries as well.
         spec.deleted = null;
         List<ShareItem> shareItems = getShareItems(spec, userId, true);
-        return getLibraryModifiedDateForShareItems(recursive, shareItems);
+        Date libraryModifiedDateForShareItems = getLibraryModifiedDateForShareItems(recursive, shareItems);
+        Date hideDate = getSharingModule().getHiddenShareModTimeForCurrentUser(true);
+        return max(hideDate, libraryModifiedDateForShareItems);
     }
 
     protected Date getLibraryModifiedDateForShareItems(boolean recursive, List<ShareItem> shareItems) {

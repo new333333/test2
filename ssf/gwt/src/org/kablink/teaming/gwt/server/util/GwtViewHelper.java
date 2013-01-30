@@ -173,7 +173,6 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
 import org.kablink.teaming.gwt.client.util.ShareMessageInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.server.util.GwtPerShareInfo.PerShareInfoComparator;
-import org.kablink.teaming.gwt.server.util.GwtSharedMeItem;
 import org.kablink.teaming.gwt.server.util.GwtSharedMeItem.SharedMeEntriesMapComparator;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareRights;
@@ -6110,18 +6109,13 @@ public class GwtViewHelper {
 			// Are there any entities to hide?
 			if (MiscUtil.hasItems(entityIds)) {
 				// Yes!  Scan them...
-				BinderModule bm = bs.getBinderModule();
-				FolderModule fm = bs.getFolderModule();
+				SharingModule sm = bs.getSharingModule();
+                boolean isSharedWithMe = ct.equals(CollectionType.SHARED_WITH_ME);
+                List<EntityIdentifier> ids = new ArrayList<EntityIdentifier>();
 				for (EntityId eid:  entityIds) {
-					// ...adding a hidden share tag to each entity.
-					TagInfo ti;
-					if (ct.equals(CollectionType.SHARED_BY_ME))
-					     ti = TagInfo.buildHiddenSharedByTag();
-					else ti = TagInfo.buildHiddenSharedWithTag();
-					if (eid.isBinder())
-					     GwtServerHelper.addBinderTag(bm, bm.getBinder(eid.getEntityId()), ti);
-					else GwtServerHelper.addEntryTag( fm,              eid.getEntityId(),  ti);
+                    ids.add(toEntityIdentifier(eid));
 				}
+                sm.hideSharedEntitiesForCurrentUser(ids, isSharedWithMe);
 			}
 			
 			// If we get here, the hide was successful.  Return true.
@@ -7335,43 +7329,13 @@ public class GwtViewHelper {
 			// Are there any entities to show?
 			if (MiscUtil.hasItems(entityIds)) {
 				// Yes!  Scan them.
-				BinderModule bm = bs.getBinderModule();
-				FolderModule fm = bs.getFolderModule();
-				ArrayList<TagInfo> deleteTags = new ArrayList<TagInfo>();
-				boolean isSharedByMe = ct.equals(CollectionType.SHARED_BY_ME);
-				for (EntityId eid:  entityIds) {
-					// Are there any personal tags on this entity?
-					ArrayList<TagInfo> entityTags;
-					if (eid.isBinder())
-					     entityTags = GwtServerHelper.getBinderTags(bs, bm.getBinder(                  eid.getEntityId()), false, true);
-					else entityTags = GwtServerHelper.getEntryTags( bs, fm.getEntry(eid.getBinderId(), eid.getEntityId()), false, true);
-					
-					if (MiscUtil.hasItems(entityTags)) {
-						// Yes!  Scan them.
-						deleteTags.clear();
-						for (TagInfo ti:  entityTags) {
-							// Is this a tag marking the share as being
-							// hidden?
-							boolean isHidden;
-							if (isSharedByMe)
-							     isHidden = ti.isHiddenSharedByTag();
-							else isHidden = ti.isHiddenSharedWithTag();
-							if (isHidden) {
-								// Yes!  Then we'll need to delete it.
-								deleteTags.add(ti);
-							}
-						}
-						
-						// Do we have any tags that need to be deleted?
-						if (MiscUtil.hasItems(deleteTags)) {
-							// Yes!  Delete them.
-							String eidS = String.valueOf(eid.getEntityId());
-							if (eid.isBinder())
-							     GwtServerHelper.updateBinderTags(bs, eidS, deleteTags, null);
-							else GwtServerHelper.updateEntryTags( bs, eidS, deleteTags, null);
-						}
-					}
-				}
+                SharingModule sm = bs.getSharingModule();
+				boolean isSharedWithMe = ct.equals(CollectionType.SHARED_WITH_ME);
+                List<EntityIdentifier> ids = new ArrayList<EntityIdentifier>();
+                for (EntityId eid:  entityIds) {
+                    ids.add(toEntityIdentifier(eid));
+                }
+                sm.unhideSharedEntitiesForCurrentUser(ids, isSharedWithMe);
 			}
 			
 			// If we get here, the show was successful.  Return true.
@@ -7927,4 +7891,17 @@ public class GwtViewHelper {
 		     return value.contains(quickFilter);
 		else return false;
 	}
+
+    public static EntityIdentifier toEntityIdentifier(EntityId eid) {
+        if (eid.isEntry()) {
+            return new EntityIdentifier(eid.getEntityId(), EntityIdentifier.EntityType.folderEntry);
+        } else if (eid.isFolder()) {
+            return new EntityIdentifier(eid.getEntityId(), EntityIdentifier.EntityType.folder);
+        } else if (eid.isWorkspace()) {
+            return new EntityIdentifier(eid.getEntityId(), EntityIdentifier.EntityType.workspace);
+        }
+        throw new UnsupportedOperationException("Can't convert EntityId to EntityIdentifier.  Unknown entity type: " + eid.getEntityType());
+    }
+
+
 }

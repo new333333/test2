@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.sharing;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
@@ -145,4 +146,22 @@ public interface SharingModule {
  	 * @param shareItem
  	 */
  	public void handleExpiredShareItem(ShareItem shareItem);
+
+    /**
+     * Hides the binders or folder entries from the logged in user's Shared With Me or Shared By Me list.
+     * @param ids       The IDs of the shared entities
+     * @param recipient true if the user is the recipient of the share (Shared With Me),
+     *                  false if the user is the sharer (Shared With Me).
+     */
+    public void hideSharedEntitiesForCurrentUser(Collection<EntityIdentifier> ids, boolean recipient);
+
+    public void unhideSharedEntitiesForCurrentUser(Collection<EntityIdentifier> ids, boolean recipient);
+
+    /**
+     * Returns the date when the user last hid or unhid a shared entity in his/her Shared With Me or Shared By Me.
+     * @param recipient true for where the user is the recipient of the share (Shared With Me),
+     *                  false for where the user is the sharer (Shared With Me).
+     * @return
+     */
+    public Date getHiddenShareModTimeForCurrentUser(boolean recipient);
 }
