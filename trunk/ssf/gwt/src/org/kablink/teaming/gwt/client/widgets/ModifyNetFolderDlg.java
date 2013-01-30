@@ -112,6 +112,7 @@ public class ModifyNetFolderDlg extends DlgBox
 	private FlowPanel m_inProgressPanel;
 	private CheckBox m_allowDesktopAppToSync;
 	private CheckBox m_allowMobileAppsToSync;
+	private Panel m_rightsPanel;
 	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
 	private List<HandlerRegistration> m_registeredEventHandlers;
@@ -199,10 +200,8 @@ public class ModifyNetFolderDlg extends DlgBox
 		
 		// Create the panel that will hold the controls for access rights
 		{
-			Panel rightsPanel;
-			
-			rightsPanel = createRightsPanel();
-			m_tabPanel.add( rightsPanel, messages.modifyNetFolderDlg_RightsTab() );
+			m_rightsPanel = createRightsPanel();
+			m_tabPanel.add( m_rightsPanel, messages.modifyNetFolderDlg_RightsTab() );
 		}
 		
 		// create the panel that will hold the controls for the schedule
@@ -799,11 +798,15 @@ public class ModifyNetFolderDlg extends DlgBox
 		netFolder.setNetFolderRootName( getNetFolderRootName() );
 		netFolder.setIndexContent( getIndexContent() );
 		netFolder.setSyncSchedule( getSyncSchedule() );
-		netFolder.setRoles( getRoles() );
 		netFolder.setDataSyncSettings( getDataSyncSettings() );
 		
 		if ( m_netFolder != null )
+		{
 			netFolder.setId( m_netFolder.getId() );
+			netFolder.setIsHomeDir( m_netFolder.getIsHomeDir() );
+			if ( m_netFolder.getIsHomeDir() == false )
+				netFolder.setRoles( getRoles() );
+		}
 		
 		return netFolder;
 	}
@@ -910,6 +913,10 @@ public class ModifyNetFolderDlg extends DlgBox
 		m_netFolderRootsListbox.clear();
 		m_netFolderRootsListbox.setVisible( false );
 		m_noNetFolderRootsLabel.setVisible( false );
+
+		// Make sure the "Rights" tab has been added.
+		if ( m_tabPanel.getWidgetIndex( m_rightsPanel ) == -1 )
+			m_tabPanel.insert( m_rightsPanel, GwtTeaming.getMessages().modifyNetFolderDlg_RightsTab(), 1 );
 		
 		// Initialize the sync schedule controls
 		initSyncSchedule();
@@ -934,6 +941,13 @@ public class ModifyNetFolderDlg extends DlgBox
 			m_relativePathTxtBox.setValue( netFolder.getRelativePath() );
 			
 			m_indexContentCkbox.setValue( netFolder.getIndexContent() );
+			
+			// Are we dealing with a home net folder?
+			if ( netFolder.getIsHomeDir() )
+			{
+				// Yes, remove the "Rights" panel.
+				m_tabPanel.remove( m_tabPanel.getWidgetIndex( m_rightsPanel ) );
+			}
 		}
 		else
 		{
@@ -981,7 +995,7 @@ public class ModifyNetFolderDlg extends DlgBox
 	{
 		if ( m_selectPrincipalsWidget != null && m_selectPrincipalsWidget.isReady() )
 		{
-			if ( m_netFolder != null )
+			if ( m_netFolder != null && m_netFolder.getIsHomeDir() == false )
 				m_selectPrincipalsWidget.initWidget( m_netFolder.getRoles() );
 			else
 				m_selectPrincipalsWidget.initWidget( null );

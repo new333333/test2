@@ -958,7 +958,8 @@ public class GwtNetFolderHelper
 										netFolder.getIndexContent() );
 
 			// Set the rights on the net folder
-			setNetFolderRights( ami, netFolder.getId(), netFolder.getRoles() );
+			if ( netFolder.getIsHomeDir() == false )
+				setNetFolderRights( ami, netFolder.getId(), netFolder.getRoles() );
 			
 			// Save the data sync settings.
 			saveDataSyncSettings( ami, netFolder.getId(), netFolder.getDataSyncSettings() );

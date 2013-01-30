@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureMobileAppsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureShareSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
@@ -58,6 +59,7 @@ import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.AdminConsoleHomePage;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
@@ -65,6 +67,7 @@ import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -82,6 +85,7 @@ import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgCli
 import org.kablink.teaming.gwt.client.widgets.ManageNetFolderRootsDlg.ManageNetFolderRootsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFoldersDlg.ManageNetFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg.ManageUsersDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
 import org.kablink.teaming.gwt.client.widgets.RunAReportDlg.RunAReportDlgClient;
 
 import com.google.gwt.core.client.GWT;
@@ -124,6 +128,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeConfigureMobileAppsDlgEvent.Handler,
 		InvokeConfigureShareSettingsDlgEvent.Handler,
 		InvokeConfigureUserAccessDlgEvent.Handler,
+		InvokeEditNetFolderDlgEvent.Handler,
 		InvokeManageNetFoldersDlgEvent.Handler,
 		InvokeManageNetFolderRootsDlgEvent.Handler,
 		InvokeManageGroupsDlgEvent.Handler,
@@ -156,6 +161,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ConfigureUserAccessDlg m_configureUserAccessDlg = null;
 	private ConfigureAdhocFoldersDlg m_configureAdhocFoldersDlg = null;
 	private EditZoneShareRightsDlg m_editZoneShareRightsDlg = null;
+	private ModifyNetFolderDlg m_modifyNetFolderDlg = null;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -167,6 +173,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_CONFIGURE_MOBILE_APPS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_SHARE_SETTINGS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
+		TeamingEvents.INVOKE_EDIT_NET_FOLDER_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
@@ -1008,6 +1015,123 @@ public class AdminControl extends TeamingPopupPanel
 	/**
 	 * 
 	 */
+	private void invokeEditNetFolderDlgById( Long id, final UIObject showRelativeTo )
+	{
+		if ( id != null )
+		{
+			GetNetFolderCmd cmd;
+			AsyncCallback<VibeRpcResponse> rpcCallback = null;
+
+			// Yes
+			// Create the callback that will be used when we issue an ajax call to get the net folder.
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetNetFolder() );
+				}
+		
+				@Override
+				public void onSuccess( final VibeRpcResponse response )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							NetFolder netFolder;
+							
+							netFolder = (NetFolder) response.getResponseData();
+							
+							// Invoke the modify net folder dialog
+							if ( netFolder != null )
+							{
+								invokeEditNetFolderDlg( netFolder, showRelativeTo );
+							}
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+
+			// Issue an ajax request to get the net folder.
+			cmd = new GetNetFolderCmd();
+			cmd.setId( id );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void invokeEditNetFolderDlg( final NetFolder netFolder, final UIObject showRelativeTo )
+	{
+		int x;
+		int y;
+		
+		// Get the position of this dialog.
+		x = getAbsoluteLeft() + 50;
+		y = getAbsoluteTop() + 50;
+		
+		if ( m_modifyNetFolderDlg == null )
+		{
+			ModifyNetFolderDlg.createAsync(
+										true, 
+										false,
+										x, 
+										y,
+										new ModifyNetFolderDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ModifyNetFolderDlg mnfDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_modifyNetFolderDlg = mnfDlg;
+							
+							m_modifyNetFolderDlg.init( netFolder );
+							if ( showRelativeTo != null )
+								m_modifyNetFolderDlg.showRelativeTo( showRelativeTo );
+							else
+								m_modifyNetFolderDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_modifyNetFolderDlg.init( netFolder );
+			if ( showRelativeTo != null )
+				m_modifyNetFolderDlg.showRelativeTo( showRelativeTo );
+			else
+			{
+				m_modifyNetFolderDlg.setPopupPosition( x, y );
+				m_modifyNetFolderDlg.show();
+			}
+		}
+	}
+
+	/**
+	 * 
+	 */
 	public void relayoutPage()
 	{
 		// If the AdminControl is visible...
@@ -1600,7 +1724,28 @@ public class AdminControl extends TeamingPopupPanel
 		}
 	}
 	
-
+	/**
+	 * Handle the InvokeEditNetFolderDlgEvent received by this class
+	 * 
+	 * Implements the InvokeEditNetFolderDlgEvent.Handler.onInvokeEditNetFolderDlg() method
+	 * 
+	 */
+	@Override
+	public void onInvokeEditNetFolderDlg( final InvokeEditNetFolderDlgEvent event )
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				invokeEditNetFolderDlgById( event.getNetFolderId(), event.getShowRelativeTo() );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
 	/**
 	 * Handles InvokeManageNetFoldersDlgEvent received by this class.
 	 * 
