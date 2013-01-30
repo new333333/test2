@@ -44,9 +44,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
-import org.apache.lucene.util.Version;
 import org.kablink.teaming.lucene.analyzer.NullAnalyzer;
-import org.kablink.teaming.lucene.analyzer.SsfQueryAnalyzer;
 import org.kablink.teaming.lucene.analyzer.VibeQueryAnalyzer;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.util.ReflectHelper;
@@ -59,7 +57,9 @@ public class SearchObject {
 
 	private static final int DEFAULT_MAX_BOOLEAN_CLAUSES = 10000;
 	
-	
+	private static boolean inited = false;
+	private static String[] termQueryOnlyFields = null;
+	 
 	protected Log logger = LogFactory.getLog(getClass());
 	private SortField[] sortBy = null;
 	
@@ -96,7 +96,7 @@ public class SearchObject {
 				pfAnalyzer.addAnalyzer(Constants.TITLE_FIELD, analyzer);
 				analyzer = pfAnalyzer;
 			}	
-			QueryParser qp =  QueryParserFactory.createQueryParser(analyzer);
+			QueryParser qp =  QueryParserFactory.createQueryParser(analyzer, getTermQueryOnlyFields());
 			qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 			queryParser.set(qp);
 			qp =  QueryParserFactory.createQueryParser(new WhitespaceAnalyzer());
@@ -182,7 +182,7 @@ public class SearchObject {
 		else if (lang.equalsIgnoreCase(LanguageTaster.CJK)) {
 			if (queryParserCJK.get() == null) {
 				logger.debug("QueryParser instantiating new CJK QP");
-				QueryParser qp =  QueryParserFactory.createQueryParser(getCJKAnalyzer());
+				QueryParser qp =  QueryParserFactory.createQueryParser(getCJKAnalyzer(), getTermQueryOnlyFields());
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserCJK.set(qp);
 				return qp;
@@ -203,7 +203,7 @@ public class SearchObject {
 						logger.error("Could not initialize arabic analyzer class: " + e.toString());
 					}
 				}
-				QueryParser qp =  QueryParserFactory.createQueryParser(analyzer);
+				QueryParser qp =  QueryParserFactory.createQueryParser(analyzer, getTermQueryOnlyFields());
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserARABIC.set(qp);
 				return qp;
@@ -224,7 +224,7 @@ public class SearchObject {
 						logger.error("Could not initialize hebrew analyzer class: " + e.toString());
 					}
 				}
-				QueryParser qp =  QueryParserFactory.createQueryParser(analyzer);
+				QueryParser qp =  QueryParserFactory.createQueryParser(analyzer, getTermQueryOnlyFields());
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserHEBREW.set(qp);
 				return qp;
@@ -253,6 +253,14 @@ public class SearchObject {
 		retAnalyzer.addAnalyzer(Constants.TITLE_FIELD, new ChineseAnalyzer());
 		retAnalyzer.addAnalyzer(Constants.DESC_TEXT_FIELD, new ChineseAnalyzer());
 		return retAnalyzer;
+	}
+	
+	private String[] getTermQueryOnlyFields() {
+		if(!inited) {
+			termQueryOnlyFields = SPropsUtil.getStringArray("lucene.termqueryonly.fields", ",");
+			inited = true;
+		}
+		return termQueryOnlyFields; 
 	}
 }
 
