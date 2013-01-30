@@ -89,9 +89,15 @@ public class ExternalUserUtil {
 	}
 	
 	public static String encodeUserTokenWithNewSeed(User user) {
+		// Generate new seed for the user
+		newSeedForUser(user);
+		// Encode user token using the seed
+		return Long.toHexString(user.getId().longValue()) + DELIM + user.computeExtProvHash();
+	}
+	
+	public static void newSeedForUser(User user) {
 		user.reseedExtProvSeed();
 		updateUser(user);
-		return Long.toHexString(user.getId().longValue()) + DELIM + user.computeExtProvHash();
 	}
 	
 	public static Map<String, String> getQueryParamsFromUrl(String url) {   
