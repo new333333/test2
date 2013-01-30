@@ -33,22 +33,52 @@
 package org.kablink.util.search;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.Version;
 
 /**
  * @author jong
  *
  */
-public class QueryParserFactory {
+public class DefaultQueryParser extends MultiFieldQueryParser {
 
-	private static final String[] fields = new String[] {Constants.TITLE_FIELD, Constants.DESC_TEXT_FIELD, Constants.GENERAL_TEXT_FIELD};
+	private String[] termQueryOnlyFields;
 	
-	public static QueryParser createQueryParser(Analyzer analyzer) {
-		return new DefaultQueryParser(Version.LUCENE_34, fields, analyzer);
+	public DefaultQueryParser(Version matchVersion, String[] fields,
+			Analyzer analyzer) {
+		this(matchVersion, fields, analyzer, null);
+	}
+
+	public DefaultQueryParser(Version matchVersion, String[] fields,
+			Analyzer analyzer, String[] termQueryOnlyFields) {
+		super(matchVersion, fields, analyzer);
+		this.termQueryOnlyFields = termQueryOnlyFields;
+	}
+
+	@Override
+	protected Query getFieldQuery(String field, String queryText, boolean quoted)  throws ParseException {
+		if(field != null && termQueryOnlyFields != null && isTermQueryOnlyField(field)) {
+			// The field is known to be a single term field with no text analysis applied to the value.
+			// In this case, we short circuit the normal flow of control and instead create
+			// a single term query from the entire query text value. Otherwise, the default
+			// implementation in the super class will apply text analysis (e.g. tokenization,
+			// stemming and stop word removal, etc.) to the query text  which can yield 
+			// unexpected/undesirable search result.
+			return new TermQuery(new org.apache.lucene.index.Term(field, queryText));
+		}
+		else {
+			return super.getFieldQuery(field, queryText, quoted);
+		}
 	}
 	
-	public static QueryParser createQueryParser(Analyzer analyzer, String[] termQueryOnlyFields) {
-		return new DefaultQueryParser(Version.LUCENE_34, fields, analyzer, termQueryOnlyFields);
+	private boolean isTermQueryOnlyField(String field) {
+		for(String termQueryOnlyField : termQueryOnlyFields) {
+			if(termQueryOnlyField.equals(field))
+				return true;
+		}
+		return false;
 	}
 }
