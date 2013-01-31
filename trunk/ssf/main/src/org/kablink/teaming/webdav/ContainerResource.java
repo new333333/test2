@@ -132,17 +132,23 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
 	}
 	
 	protected Resource makeResourceFromFile(FileAttachment fa) {
+		// Only file owned by folder entry is supported through this interface
 		if(fa == null)
 			return null;
-		else
+		else if(EntityType.folderEntry.equals(fa.getOwner().getEntity().getEntityType()))
 			return new FileResource(factory, getWebdavPath() + "/" + fa.getFileItem().getName(), fa);
+		else
+			return null;
 	}
 	
 	protected Resource makeResourceFromFile(FileIndexData file) {
+		// Only file owned by folder entry is supported through this interface
 		if(file == null)
 			return null;
-		else
+		else if(EntityType.folderEntry.equals(file.getOwningEntityType()))
 			return new FileResource(factory, getWebdavPath() + "/" + file.getName(), file);
+		else
+			return null;
 	}
 
 	protected CollectionResource createChildFolder(Binder parentBinder, String childFolderName) throws NotAuthorizedException {

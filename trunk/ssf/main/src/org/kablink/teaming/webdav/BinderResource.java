@@ -72,7 +72,7 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 	// Required properties
 	protected Long id;
 	protected EntityType entityType;
-	protected String title;
+	protected String name;
 	protected String path;
 	protected Date createdDate;
 	protected Date modifiedDate;
@@ -88,7 +88,7 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 		this.id = entityIdentifier.getEntityId();
 		this.entityType = entityIdentifier.getEntityType();
 		this.entityIdentifier = entityIdentifier;
-		this.title = title;
+		this.name = title;
 		this.path = path;
 		this.createdDate = getMiltonSafeDate(createdDate);
 		this.modifiedDate = getMiltonSafeDate(modifiedDate);
@@ -133,7 +133,7 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 	 */
 	@Override
 	public String getName() {
-		return title;
+		return name;
 	}
 
 	/* (non-Javadoc)
@@ -175,10 +175,25 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 		return path;
 	}
 	
+	public Long getBinderId() {
+		return id;
+	}
+	
 	public EntityIdentifier getEntityIdentifier() {
 		return entityIdentifier;
 	}
 	
+	public void fixupName(String newName) {
+		int index = webdavPath.indexOf(name);
+		if(index >= 0) {
+			webdavPath = webdavPath.substring(0, index) + newName;
+			name = newName;
+		}
+		else {
+			// This should never happen!?
+		}
+	}
+
 	protected void renameBinder(Binder binder, String newTitle) 
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
 		// Do this only if the new title is actually different from the current value.

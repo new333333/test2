@@ -61,7 +61,6 @@ import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.webdav.util.WebdavUtils;
 
 import com.bradmcevoy.http.Auth;
@@ -77,8 +76,6 @@ import com.bradmcevoy.http.LockableResource;
 import com.bradmcevoy.http.MoveableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Range;
-import com.bradmcevoy.http.Request;
-import com.bradmcevoy.http.Request.Method;
 import com.bradmcevoy.http.exceptions.BadRequestException;
 import com.bradmcevoy.http.exceptions.ConflictException;
 import com.bradmcevoy.http.exceptions.LockedException;
@@ -98,6 +95,7 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 	private String webdavPath; // full webdav path leading to this resource
 	private String name; // file name
 	private String id; // file database id
+	private Long entryId; // owning folder entry id
 	private Date createdDate; // creation date
 	private Date modifiedDate; // last modification date
 	
@@ -107,22 +105,23 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 	// lazy resolved for efficiency, so may be null initially
 	private FileAttachment fa; 
 	
-	private void init(String webdavPath, String name, String id, Date createdDate, Date modifiedDate, Long size) {
+	private void init(String webdavPath, String name, String id, Long entryId, Date createdDate, Date modifiedDate, Long size) {
 		this.webdavPath = webdavPath;
 		this.name = name;
 		this.id = id;
+		this.entryId = entryId;
 		this.createdDate = getMiltonSafeDate(createdDate);
 		this.modifiedDate = getMiltonSafeDate(modifiedDate);
 		this.size = size;
 	}
 	
 	private void init(String webdavPath, FileAttachment fa) {
-		init(webdavPath, fa.getFileItem().getName(), fa.getId(), fa.getCreation().getDate(), fa.getModification().getDate(), null);		
+		init(webdavPath, fa.getFileItem().getName(), fa.getId(), fa.getOwner().getEntity().getId(), fa.getCreation().getDate(), fa.getModification().getDate(), null);		
 		this.fa = fa; // already resolved
 	}
 	
 	private void init(String webdavPath, FileIndexData fid) {
-		init(webdavPath, fid.getName(), fid.getId(),  fid.getCreatedDate(), fid.getModifiedDate(), fid.getSize());
+		init(webdavPath, fid.getName(), fid.getId(), fid.getOwningEntityId(), fid.getCreatedDate(), fid.getModifiedDate(), fid.getSize());
 	}
 	
 	public FileResource(WebdavResourceFactory factory, String webdavPath, FileAttachment fa) {
@@ -173,6 +172,10 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 	@Override
 	public Long getMaxAgeSeconds(Auth auth) {
 		return factory.getMaxAgeSecondsFile();
+	}
+	
+	public Long getEntryId() {
+		return entryId;
 	}
 
 	/* (non-Javadoc)
@@ -499,6 +502,17 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 		}
 		else {
 			throw new ConflictException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a folder resource.");
+		}
+	}
+	
+	public void fixupName(String newName) {
+		int index = webdavPath.indexOf(name);
+		if(index >= 0) {
+			webdavPath = webdavPath.substring(0, index) + newName;
+			name = newName;
+		}
+		else {
+			// This should never happen!?
 		}
 	}
 	
