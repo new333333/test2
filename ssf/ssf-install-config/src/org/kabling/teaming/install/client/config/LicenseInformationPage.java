@@ -182,7 +182,7 @@ public class LicenseInformationPage extends LicensePageDlgBox
 		}
 		else
 		{
-			form.setAction("/filrconfig/InstallConfig/fileUpload");
+			form.setAction("/InstallConfig/fileUpload");
 		}
 
 		// Because we're going to add a FileUpload widget, we'll need to set
