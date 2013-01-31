@@ -33,6 +33,8 @@
 package org.kablink.teaming.webdav;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -159,9 +161,43 @@ public class SharedWithMeResource extends ContainerResource
             		childrenResources.add(resource);
             }
 		}
+		Collections.sort(childrenResources, new Comparator<Resource>() {
+			@Override
+			public int compare(Resource r1, Resource r2) {
+				return r1.getName().compareToIgnoreCase(r2.getName());
+			};			
+		});
+		int size = childrenResources.size();
+		boolean sameAsPrev = false;
+		for(int i = 0; i < size; i++) {
+			resource = childrenResources.get(i);
+			if(i < size-1) {
+				if(resource.getName().equalsIgnoreCase(childrenResources.get(i+1).getName())) {
+					fixupResourceName(resource);
+					// Indicate that the element in the next iteration will be identical to the previous one.
+					sameAsPrev = true;
+				}
+				else {
+					if(sameAsPrev) {
+						fixupResourceName(resource);
+						sameAsPrev = false;
+					}
+				}
+			}
+			else {
+				if(sameAsPrev) {
+					fixupResourceName(resource);
+					sameAsPrev = false;
+				}				
+			}
+		}
 		return childrenResources;
 	}
 
+	private void fixupResourceName(Resource resource) {
+		// $$$ TODO
+	}
+	
 	protected ShareItemSelectSpec getShareItemSelectSpec() {
 		ShareItemSelectSpec spec = new ShareItemSelectSpec();
 		spec.setRecipientsFromUserMembership(RequestContextHolder.getRequestContext().getUserId());
