@@ -39,7 +39,6 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.InvokeEditShareRightsDlgEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
@@ -61,7 +60,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * to change the rights.
  */
 public class ShareRightsWidget extends Composite
-	implements ClickHandler, InvokeEditShareRightsDlgEvent.Handler
+	implements ClickHandler
 {
 	private GwtShareItem m_shareInfo;
 	private ShareRights m_highestRightsPossible;
@@ -77,7 +76,6 @@ public class ShareRightsWidget extends Composite
 	// this array is used.
 	private static TeamingEvents[] m_registeredEvents = new TeamingEvents[] 
 	{
-		TeamingEvents.INVOKE_EDIT_SHARE_RIGHTS_DLG
 	};
 	
 	/**
@@ -91,7 +89,7 @@ public class ShareRightsWidget extends Composite
 		
 		m_shareInfo = shareInfo;
 		m_highestRightsPossible = highestRightsPossible;
-		
+
 		// Are we dealing with an external user?
 		if ( m_shareInfo.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
 		{
@@ -115,7 +113,6 @@ public class ShareRightsWidget extends Composite
 			m_highestRightsPossible.setCanShareWithPublic( false );
 		}
 
-
 		m_rightsLabel = new InlineLabel( shareInfo.getShareRightsAsString() );
 		m_rightsLabel.addStyleName( "shareThisDlg_RightsLabel" );
 		m_rightsLabel.addClickHandler( this );
@@ -136,6 +133,8 @@ public class ShareRightsWidget extends Composite
 	{
 		if ( m_editShareRightsDlg != null )
 		{
+			ArrayList<GwtShareItem> listOfShareItems;
+			
 			if ( m_editShareRightsHandler == null )
 			{
 				m_editShareRightsHandler = new EditSuccessfulHandler()
@@ -160,7 +159,9 @@ public class ShareRightsWidget extends Composite
 			}
 			
 			// Invoke the "edit share rights" dialog.
-			m_editShareRightsDlg.init( m_shareInfo, m_highestRightsPossible, m_editShareRightsHandler );
+			listOfShareItems = new ArrayList<GwtShareItem>();
+			listOfShareItems.add( m_shareInfo );
+			m_editShareRightsDlg.init( listOfShareItems, m_highestRightsPossible, m_editShareRightsHandler );
 			m_editShareRightsDlg.showRelativeToTarget( m_rightsLabel );
 		}
 		else
@@ -229,39 +230,6 @@ public class ShareRightsWidget extends Composite
 		Scheduler.get().scheduleDeferred( cmd );
 	}
 
-	/**
-	 * Handles the InvokeEditShareRightsDlgEvent received by this class
-	 */
-	@Override
-	public void onInvokeEditShareRightsDlg( InvokeEditShareRightsDlgEvent event )
-	{
-		Long recipientId;
-		Long itemId;
-		
-		// Get the id of the recipient and the item we want to edit the share rights for.
-		recipientId = event.getRecipientId();
-		itemId = event.getItemId();
-		
-		// Is this event meant for this widget?
-		if ( recipientId != null && itemId != null &&
-			 recipientId.equals( m_shareInfo.getRecipientId() ) &&
-			 itemId.equals( m_shareInfo.getEntityId().getEntityId() ) )
-		{
-			Scheduler.ScheduledCommand cmd;
-			
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				@Override
-				public void execute()
-				{
-					// Invoke the edit rights dialog.
-					invokeEditShareRightsDlg();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-		}
-	}
-	
 	/*
 	 * Registers any global event handlers that need to be registered.
 	 */
@@ -302,7 +270,7 @@ public class ShareRightsWidget extends Composite
 	/**
 	 * 
 	 */
-	private void updateRightsLabel()
+	public void updateRightsLabel()
 	{
 		m_rightsLabel.setText( m_shareInfo.getShareRightsAsString() );
 		m_rightsLabel.getElement().appendChild( m_rightsImg.getElement() );
