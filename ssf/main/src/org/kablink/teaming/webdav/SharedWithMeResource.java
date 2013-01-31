@@ -64,6 +64,9 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 public class SharedWithMeResource extends ContainerResource 
 	implements PropFindableResource, GetableResource, CollectionResource {
 
+	private static final String ENTRY_ID_PREFIX = "1"; // folder entry namespace
+	private static final String BINDER_ID_PREFIX = "2"; // binder (folder/workspace) namespace
+	
 	public SharedWithMeResource(WebdavResourceFactory factory) {
 		super(factory, "/" + factory.getSharedWithMePrefix());
 	}
@@ -195,7 +198,47 @@ public class SharedWithMeResource extends ContainerResource
 	}
 
 	private void fixupResourceName(Resource resource) {
-		// $$$ TODO
+		if(resource instanceof FileResource) {
+			FileResource fr = (FileResource)resource;
+			String newName = fixedupFileName(fr.getName(), fr.getEntryId());
+			fr.fixupName(newName);
+		}
+		else if(resource instanceof BinderResource) {
+			BinderResource br = (BinderResource)resource;
+			String newName = fixedupBinderName(br.getName(), br.getBinderId());
+			br.fixupName(newName);
+		}
+	}
+	
+	private String fixedupFileName(String fileName, Long entityId) {
+		StringBuilder sb = new StringBuilder();
+		int index = fileName.lastIndexOf(".");
+		if(index >= 0) {
+			sb.append(fileName.subSequence(0, index))
+			.append(" (")
+			.append(ENTRY_ID_PREFIX)
+			.append(entityId)
+			.append(")")
+			.append(fileName.substring(index));
+		}
+		else {
+			sb.append(fileName)
+			.append(" (")
+			.append(ENTRY_ID_PREFIX)
+			.append(entityId)
+			.append(")");
+		}
+		return sb.toString();
+	}
+	
+	private String fixedupBinderName(String binderName, Long binderId) {
+		StringBuilder sb = new StringBuilder();
+		return sb.append(binderName)
+		.append(" (")
+		.append(BINDER_ID_PREFIX)
+		.append(binderId)
+		.append(")")
+		.toString();
 	}
 	
 	protected ShareItemSelectSpec getShareItemSelectSpec() {
