@@ -33,6 +33,8 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -68,7 +70,7 @@ public class EditShareRightsDlg extends DlgBox
 	private CheckBox m_canShareInternalCkbox;
 	private CheckBox m_canSharePublicCkbox;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
-	private GwtShareItem m_shareItem;
+	private ArrayList<GwtShareItem> m_listOfShareItems;
 	
 	/**
 	 * Callback interface to interact with the "Edit Share Rights" dialog asynchronously after it loads. 
@@ -213,45 +215,48 @@ public class EditShareRightsDlg extends DlgBox
 	public boolean editSuccessful( Object obj )
 	{
 		// Do we have a share item we are working with?
-		if ( m_shareItem != null )
+		if ( m_listOfShareItems != null )
 		{
 			AccessRights accessRights;
 			ShareRights shareRights;
 			
 			// Yes
-			shareRights = m_shareItem.getShareRights();
-			accessRights = ShareRights.AccessRights.UNKNOWN;
-			
-			if ( m_viewerRb.isVisible() && m_viewerRb.getValue() == true )
-				accessRights = ShareRights.AccessRights.VIEWER;
-			else if ( m_editorRb.isVisible() && m_editorRb.getValue() == true )
-				accessRights = ShareRights.AccessRights.EDITOR;
-			else if ( m_contributorRb.isVisible() && m_contributorRb.getValue() == true )
-				accessRights = ShareRights.AccessRights.CONTRIBUTOR;
-			
-			shareRights.setAccessRights( accessRights );
-
-			if ( m_canShareForwardCkbox.isVisible() && m_canShareForwardCkbox.getValue() == true )
-				shareRights.setCanShareForward( true );
-			else
-				shareRights.setCanShareForward( false );
-			
-			if ( m_canShareInternalCkbox.isVisible() && m_canShareInternalCkbox.getValue() == true )
-				shareRights.setCanShareWithInternalUsers( true );
-			else
-				shareRights.setCanShareWithInternalUsers( false );
-
-			if ( m_canShareExternalCkbox.isVisible() && m_canShareExternalCkbox.getValue() == true )
-				shareRights.setCanShareWithExternalUsers( true );
-			else
-				shareRights.setCanShareWithExternalUsers( false );
-
-			if ( m_canSharePublicCkbox.isVisible() && m_canSharePublicCkbox.getValue() == true )
-				shareRights.setCanShareWithPublic( true );
-			else
-				shareRights.setCanShareWithPublic( false );
-
-			m_shareItem.setIsDirty( true );
+			for ( GwtShareItem nextShareItem : m_listOfShareItems )
+			{
+				shareRights = nextShareItem.getShareRights();
+				accessRights = ShareRights.AccessRights.UNKNOWN;
+				
+				if ( m_viewerRb.isVisible() && m_viewerRb.getValue() == true )
+					accessRights = ShareRights.AccessRights.VIEWER;
+				else if ( m_editorRb.isVisible() && m_editorRb.getValue() == true )
+					accessRights = ShareRights.AccessRights.EDITOR;
+				else if ( m_contributorRb.isVisible() && m_contributorRb.getValue() == true )
+					accessRights = ShareRights.AccessRights.CONTRIBUTOR;
+				
+				shareRights.setAccessRights( accessRights );
+	
+				if ( m_canShareForwardCkbox.isVisible() && m_canShareForwardCkbox.getValue() == true )
+					shareRights.setCanShareForward( true );
+				else
+					shareRights.setCanShareForward( false );
+				
+				if ( m_canShareInternalCkbox.isVisible() && m_canShareInternalCkbox.getValue() == true )
+					shareRights.setCanShareWithInternalUsers( true );
+				else
+					shareRights.setCanShareWithInternalUsers( false );
+	
+				if ( m_canShareExternalCkbox.isVisible() && m_canShareExternalCkbox.getValue() == true )
+					shareRights.setCanShareWithExternalUsers( true );
+				else
+					shareRights.setCanShareWithExternalUsers( false );
+	
+				if ( m_canSharePublicCkbox.isVisible() && m_canSharePublicCkbox.getValue() == true )
+					shareRights.setCanShareWithPublic( true );
+				else
+					shareRights.setCanShareWithPublic( false );
+	
+				nextShareItem.setIsDirty( true );
+			}
 			
 			// Do we have a handler we should call?
 			if ( m_editSuccessfulHandler != null )
@@ -283,13 +288,14 @@ public class EditShareRightsDlg extends DlgBox
 	 * Initialize the controls in the dialog with the values from the properties
 	 */
 	public void init(
-		GwtShareItem shareItem,
+		ArrayList<GwtShareItem> listOfShareItems,
 		ShareRights highestRightsPossible,
 		EditSuccessfulHandler editSuccessfulHandler )
 	{
 		ShareRights shareRights;
+		boolean entityIsBinder;
 
-		m_shareItem = shareItem;
+		m_listOfShareItems = listOfShareItems;
 		m_editSuccessfulHandler = editSuccessfulHandler;
 		
 		m_viewerRb.setVisible( false );
@@ -300,7 +306,33 @@ public class EditShareRightsDlg extends DlgBox
 		m_editorRb.setValue( false );
 		m_contributorRb.setValue( false );
 		
-		shareRights = shareItem.getShareRights();
+		// Are we only dealing with 1 share item?
+		if ( listOfShareItems.size() == 1 )
+		{
+			GwtShareItem shareItem;
+			
+			// Get the share rights from the one share item we are working with.
+			shareItem = listOfShareItems.get( 0 );
+			shareRights = shareItem.getShareRights();
+			entityIsBinder = shareItem.getEntityId().isBinder();
+		}
+		else
+		{
+			// We are working with multiple share items.  Default to Viewer.
+			shareRights = new ShareRights();
+			shareRights.setAccessRights( AccessRights.VIEWER );
+			
+			entityIsBinder = true;
+			
+			// See if every entity is a binder
+			for ( GwtShareItem nextShareItem : listOfShareItems )
+			{
+				entityIsBinder = nextShareItem.getEntityId().isBinder();
+				if ( entityIsBinder == false )
+					break;
+			}
+		}
+		
 		switch ( shareRights.getAccessRights() )
 		{
 		case CONTRIBUTOR:
@@ -324,7 +356,7 @@ public class EditShareRightsDlg extends DlgBox
 			m_editorRb.setVisible( true );
 			
 			// Show the "contributor" radio button only if we are dealing with a binder.
-			m_contributorRb.setVisible( shareItem.getEntityId().isBinder() );
+			m_contributorRb.setVisible( entityIsBinder );
 			break;
 			
 		case EDITOR:

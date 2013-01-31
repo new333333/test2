@@ -76,7 +76,9 @@ import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
+import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.widgets.EditShareNoteDlg.EditShareNoteDlgClient;
+import org.kablink.teaming.gwt.client.widgets.EditShareRightsDlg.EditShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ShareExpirationDlg.ShareExpirationDlgClient;
@@ -130,7 +132,8 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class ShareThisDlg extends DlgBox
 	implements EditSuccessfulHandler, EditCanceledHandler,
 	// Event handlers implemented by this class.
-		SearchFindResultsEvent.Handler
+		SearchFindResultsEvent.Handler,
+		InvokeEditShareRightsDlgEvent.Handler
 {
 	private int m_numCols = 0;
 	
@@ -149,6 +152,7 @@ public class ShareThisDlg extends DlgBox
 	private FlowPanel m_makePulicPanel;
 	private FlexCellFormatter m_shareCellFormatter;
 	private HTMLTable.RowFormatter m_shareRowFormatter;
+	private int m_rightsCol;
 	private List<EntityId> m_entityIds;
 	private GwtSharingInfo m_sharingInfo;		// Holds all of the sharing info for the entities we are working with.
 	private List<TeamInfo> m_listOfTeams;
@@ -162,7 +166,9 @@ public class ShareThisDlg extends DlgBox
 	private EditShareNoteDlg m_editShareNoteDlg;
 	private ShareWithTeamsDlg m_shareWithTeamsDlg;
 	private ShareWithPublicInfoDlg m_shareWithPublicInfoDlg=null;
+	private EditShareRightsDlg m_editShareRightsDlg = null;
 	private EditSuccessfulHandler m_editShareWithTeamsHandler;
+	private EditSuccessfulHandler m_editShareRightsHandler;
 	
 
 	// The following defines the TeamingEvents that are handled by
@@ -171,6 +177,7 @@ public class ShareThisDlg extends DlgBox
 	private static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[]
     {
 		// Search events.
+		TeamingEvents.INVOKE_EDIT_SHARE_RIGHTS_DLG,
 		TeamingEvents.SEARCH_FIND_RESULTS,
 	};
 	
@@ -726,15 +733,19 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * Add a share for the given GwtTeamingItem
 	 */
-	private GwtShareItem addShare( GwtTeamingItem gwtTeamingItem )
+	private ArrayList<GwtShareItem> addShare( GwtTeamingItem gwtTeamingItem )
 	{
-		GwtShareItem shareItem = null;
+		ArrayList<GwtShareItem> returnValue;
 		
 		if ( gwtTeamingItem == null )
 			return null;
 		
+		returnValue = new ArrayList<GwtShareItem>();
+		
 		for ( EntityId nextEntityId : m_entityIds )
 		{
+			GwtShareItem shareItem;
+			
 			shareItem = null;
 			
 			// Are we dealing with a User?
@@ -860,9 +871,13 @@ public class ShareThisDlg extends DlgBox
 					shareItem = null;
 				}
 			}
+			
+			if ( shareItem != null )
+				returnValue.add( shareItem );
+			
 		}// end for()
 		
-		return shareItem;
+		return returnValue;
 	}
 	
 	/**
@@ -964,6 +979,7 @@ public class ShareThisDlg extends DlgBox
 											shareItem,
 											m_sharingInfo.getShareRights( shareItem.getEntityId() ) );
 			m_shareTable.setWidget( row, col, rightsWidget );
+			m_rightsCol = col;
 			++col;
 		}
 		
@@ -1048,6 +1064,71 @@ public class ShareThisDlg extends DlgBox
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+	/**
+	 * Look at each item in the list and return the highest rights possible
+	 * that is available on all items in the list.
+	 */
+	private ShareRights calculateHighestRightsPossible( ArrayList<GwtShareItem> listOfShareItems )
+	{
+		ShareRights highestRightsPossible;
+		AccessRights accessRights = AccessRights.CONTRIBUTOR;
+		boolean canShareForward = true;
+		boolean canShareWithInternalUsers = true;
+		boolean canShareWithExternalUsers = true;
+		boolean canShareWithPublic = true;
+		
+		if ( listOfShareItems != null )
+		{
+			for ( GwtShareItem nextShareItem : listOfShareItems )
+			{
+				ShareRights shareRights;
+				AccessRights nextAccessRights;
+				
+				shareRights = m_sharingInfo.getShareRights( nextShareItem.getEntityId() );
+				
+				if ( shareRights.getCanShareForward() == false )
+					canShareForward = false;
+				
+				if ( shareRights.getCanShareWithExternalUsers() == false )
+					canShareWithExternalUsers = false;
+				
+				if ( shareRights.getCanShareWithInternalUsers() == false )
+					canShareWithInternalUsers = false;
+				
+				if ( shareRights.getCanShareWithPublic() == false )
+					canShareWithPublic = false;
+
+				nextAccessRights = shareRights.getAccessRights();
+				
+				switch ( accessRights )
+				{
+				case CONTRIBUTOR:
+					if ( nextAccessRights == AccessRights.EDITOR || nextAccessRights == AccessRights.VIEWER )
+						accessRights = nextAccessRights;
+					break;
+					
+				case EDITOR:
+					if ( nextAccessRights == AccessRights.VIEWER )
+						accessRights = nextAccessRights;
+					break;
+				
+				case VIEWER:
+					// Nothing to do we are already at the lowest rights.
+					break;
+				}
+			}
+		}
+		
+		highestRightsPossible = new ShareRights();
+		highestRightsPossible.setAccessRights( accessRights );
+		highestRightsPossible.setCanShareForward( canShareForward );
+		highestRightsPossible.setCanShareWithInternalUsers( canShareWithInternalUsers );
+		highestRightsPossible.setCanShareWithExternalUsers( canShareWithExternalUsers );
+		highestRightsPossible.setCanShareWithPublic( canShareWithPublic );
+	
+		return highestRightsPossible;
 	}
 	
 	/**
@@ -1792,6 +1873,26 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
+	 * Return the ShareRightsWidget associated with the given share item.
+	 */
+	private ShareRightsWidget getShareRightsWidget( GwtShareItem shareItem )
+	{
+		int row;
+		
+		row = findShareItem( shareItem );
+		if ( row >= 0 )
+		{
+			Widget widget;
+			
+			widget = m_shareTable.getWidget( row, m_rightsCol );
+			if ( widget instanceof ShareRightsWidget )
+				return (ShareRightsWidget)widget;
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * 
 	 */
 	private void handleClickOnAddExternalUser()
@@ -1841,40 +1942,29 @@ public class ShareThisDlg extends DlgBox
 							// Was the email associated with an internal user?
 							if ( vibeResult.getResponseData() != null )
 							{
-								GwtShareItem shareItem;
+								final ArrayList<GwtShareItem> listOfShareItems; 
 								
 								// Yes
 								gwtUser = (GwtUser) vibeResult.getResponseData();
-								shareItem = addShare( gwtUser );
+								listOfShareItems = addShare( gwtUser );
 
-								if ( shareItem != null )
+								if ( listOfShareItems != null )
 								{
-									// We only want to invoke the "edit share rights" dialog if
-									// we are dealing with 1 entity
-									if ( m_entityIds != null && m_entityIds.size() == 1 )
+									Scheduler.ScheduledCommand cmd;
+									
+									cmd = new Scheduler.ScheduledCommand()
 									{
-										final Long recipientId;
-										final Long entityId;
-										Scheduler.ScheduledCommand cmd;
-										
-										recipientId = shareItem.getRecipientId();
-										entityId = shareItem.getEntityId().getEntityId();
-										cmd = new Scheduler.ScheduledCommand()
+										@Override
+										public void execute()
 										{
-											@Override
-											public void execute()
-											{
-												InvokeEditShareRightsDlgEvent event;
-	
-												// Fire an event to invoke the "edit share rights" dialog.
-												event = new InvokeEditShareRightsDlgEvent(
-																						recipientId,
-																						entityId );
-												GwtTeaming.fireEvent( event );
-											}
-										};
-										Scheduler.get().scheduleDeferred( cmd );
-									}
+											InvokeEditShareRightsDlgEvent event;
+
+											// Fire an event to invoke the "edit share rights" dialog.
+											event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
+											GwtTeaming.fireEvent( event );
+										}
+									};
+									Scheduler.get().scheduleDeferred( cmd );
 								}
 							}
 							else
@@ -2044,6 +2134,101 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
+	 * This method gets called when to invoke the "edit share rights" dialog.
+	 */
+	private void invokeEditShareRightsDlg( final ArrayList<GwtShareItem> listOfShareItems )
+	{
+		if ( listOfShareItems == null || listOfShareItems.size() == 0 )
+			return;
+		
+		if ( m_editShareRightsDlg != null )
+		{
+			if ( m_editShareRightsHandler == null )
+			{
+				m_editShareRightsHandler = new EditSuccessfulHandler()
+				{
+					@Override
+					public boolean editSuccessful( Object obj )
+					{
+						if ( obj instanceof Boolean )
+						{
+							Boolean retValue;
+							
+							// Did the "Edit Share Rights" dialog successfully update
+							// our GwtShareItem.
+							retValue = (Boolean) obj;
+							if ( retValue == true )
+							{
+								Scheduler.ScheduledCommand cmd;
+								
+								cmd = new Scheduler.ScheduledCommand()
+								{
+									@Override
+									public void execute() 
+									{
+										updateRightsLabel( listOfShareItems );
+									}
+								};
+								Scheduler.get().scheduleDeferred( cmd );
+							}
+						}
+
+						return true;
+					}
+				};
+			}
+			
+			// Invoke the "edit share rights" dialog.
+			{
+				ShareRights highestRightsPossible;
+				UIObject showRelativeTo = null;
+				GwtShareItem shareItem;
+
+				shareItem = listOfShareItems.get( 0 );
+				
+				// Find the ShareRightsWidget for the first share item.
+				showRelativeTo = getShareRightsWidget( shareItem );
+
+				// Are we dealing with only 1 share item?
+				if ( listOfShareItems.size() == 1 )
+				{
+					
+					// Yes
+					highestRightsPossible = m_sharingInfo.getShareRights( shareItem.getEntityId() );
+				}
+				else
+				{
+					// Look at each item being shared and return the highest rights possible
+					// that is available on all items being shared.
+					highestRightsPossible = calculateHighestRightsPossible( listOfShareItems );
+				}
+				
+				m_editShareRightsDlg.init( listOfShareItems, highestRightsPossible, m_editShareRightsHandler );
+				m_editShareRightsDlg.showRelativeToTarget( showRelativeTo );
+			}
+		}
+		else
+		{
+			EditShareRightsDlg.createAsync( true, true, new EditShareRightsDlgClient()
+			{
+				@Override
+				public void onUnavailable() 
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( EditShareRightsDlg esrDlg )
+				{
+					m_editShareRightsDlg = esrDlg;
+					invokeEditShareRightsDlg( listOfShareItems );
+				}
+			} );
+			
+		}
+	}
+	
+	/**
 	 * Invoke the "Share with teams" dialog
 	 */
 	private void invokeShareWithTeamsDlg()
@@ -2150,6 +2335,35 @@ public class ShareThisDlg extends DlgBox
 		}
 	}
 
+	/**
+	 * Handles the InvokeEditShareRightsDlgEvent received by this class
+	 */
+	@Override
+	public void onInvokeEditShareRightsDlg( InvokeEditShareRightsDlgEvent event )
+	{
+		final ArrayList<GwtShareItem> listOfShareItems;
+		
+		// Get the list of GwtShareItems we will be editing the share rights for.
+		listOfShareItems = event.getListOfShareItems();
+		
+		// Is this event meant for this widget?
+		if ( listOfShareItems != null && listOfShareItems.size() > 0 )
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					// Invoke the edit rights dialog.
+					invokeEditShareRightsDlg( listOfShareItems );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
 	/**
 	 * Remove the given share from the table
 	 */
@@ -2263,6 +2477,25 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
+	 * For the given list of share items, update the ShareRightsWidget for each
+	 */
+	private void updateRightsLabel( ArrayList<GwtShareItem> listOfShareItems )
+	{
+		if ( listOfShareItems != null )
+		{
+			for ( GwtShareItem nextShareItem : listOfShareItems )
+			{
+				ShareRightsWidget rightsWidget;
+				
+				// Find the ShareRightsWidget for the this share item.
+				rightsWidget = getShareRightsWidget( nextShareItem );
+				if ( rightsWidget != null )
+					rightsWidget.updateRightsLabel();
+			}
+		}
+	}
+	
+	/**
 	 * Update the sharing information with the given information
 	 */
 	private void updateSharingInfo( GwtSharingInfo sharingInfo )
@@ -2362,7 +2595,7 @@ public class ShareThisDlg extends DlgBox
 			@Override
 			public void execute() 
 			{
-				GwtShareItem shareItem;
+				final ArrayList<GwtShareItem> listOfShareItems;
 				
 				// Hide the search-results widget.
 				m_findCtrl.hideSearchResults();
@@ -2371,36 +2604,25 @@ public class ShareThisDlg extends DlgBox
 				m_findCtrl.clearText();
 
 				// Create a GwtShareItem for every entity we are sharing with.
-				shareItem = addShare( selectedObj );
+				listOfShareItems = addShare( selectedObj );
 				
-				if ( shareItem != null )
+				if ( listOfShareItems != null && listOfShareItems.size() > 0 )
 				{
-					// We only want to invoke the "edit share rights" dialog if
-					// we are dealing with 1 entity
-					if ( m_entityIds != null && m_entityIds.size() == 1 )
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
 					{
-						final Long recipientId;
-						final Long entityId;
-						Scheduler.ScheduledCommand cmd;
-						
-						recipientId = shareItem.getRecipientId();
-						entityId = shareItem.getEntityId().getEntityId();
-						cmd = new Scheduler.ScheduledCommand()
+						@Override
+						public void execute()
 						{
-							@Override
-							public void execute()
-							{
-								InvokeEditShareRightsDlgEvent event;
-	
-								// Fire an event to invoke the "edit share rights" dialog.
-								event = new InvokeEditShareRightsDlgEvent(
-																		recipientId,
-																		entityId );
-								GwtTeaming.fireEvent( event );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
+							InvokeEditShareRightsDlgEvent event;
+
+							// Fire an event to invoke the "edit share rights" dialog.
+							event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
+							GwtTeaming.fireEvent( event );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			}
 		};

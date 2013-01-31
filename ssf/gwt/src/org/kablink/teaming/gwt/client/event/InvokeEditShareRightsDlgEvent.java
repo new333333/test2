@@ -32,6 +32,10 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
+import java.util.ArrayList;
+
+import org.kablink.teaming.gwt.client.util.GwtShareItem;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -43,8 +47,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  */
 public class InvokeEditShareRightsDlgEvent extends VibeEventBase<InvokeEditShareRightsDlgEvent.Handler>
 {
-	private Long m_recipientId;	// Id of the recipient we should invoke the edit share rights dialog for.
-	private Long m_itemId;
+	private ArrayList<GwtShareItem> m_listOfShareItems;
 	
     public static Type<Handler> TYPE = new Type<Handler>();
     
@@ -59,12 +62,11 @@ public class InvokeEditShareRightsDlgEvent extends VibeEventBase<InvokeEditShare
 	/**
 	 * Class constructor.
 	 */
-	public InvokeEditShareRightsDlgEvent( Long recipientId, Long itemId )
+	public InvokeEditShareRightsDlgEvent( ArrayList<GwtShareItem> listOfShareItems )
 	{
 		super();
-		
-		m_recipientId = recipientId;
-		m_itemId = itemId;
+
+		m_listOfShareItems = listOfShareItems;
 	}
 	
 	/**
@@ -110,17 +112,9 @@ public class InvokeEditShareRightsDlgEvent extends VibeEventBase<InvokeEditShare
 	/**
 	 * 
 	 */
-	public Long getItemId()
+	public ArrayList<GwtShareItem> getListOfShareItems()
 	{
-		return m_itemId;
-	}
-	
-	/**
-	 * 
-	 */
-	public Long getRecipientId()
-	{
-		return m_recipientId;
+		return m_listOfShareItems;
 	}
 	
 	/**
