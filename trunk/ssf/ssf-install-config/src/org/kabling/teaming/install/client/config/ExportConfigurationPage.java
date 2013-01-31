@@ -82,7 +82,7 @@ public class ExportConfigurationPage extends ConfigPageDlgBox implements ClickHa
 			if (GWT.isProdMode() && !AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 				Window.Location.replace("/filrconfig/InstallConfig/fileUpload");
 			else
-				Window.Location.replace("/filrconfig/InstallConfig/fileUpload");
+				Window.Location.replace("/InstallConfig/fileUpload");
 		}
 	}
 

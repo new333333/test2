@@ -376,7 +376,7 @@ public class ConfigImportExportServlet extends HttpServlet
 
 	private boolean isVAReleaseMatch(String newFilePath)
 	{
-		File oldFile = new File("/vastorage/etc/Novell-VA-release");
+		File oldFile = new File("/vastorage/conf/Novell-VA-release");
 
 		// File does not exist, no match
 		if (!oldFile.exists())
