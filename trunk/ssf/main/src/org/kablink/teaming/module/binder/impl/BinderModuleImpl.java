@@ -847,7 +847,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         		!inputData.getSingleValue("title").equals(binder.getTitle())) { 
         	// This is renaming of a Net Folder (or its sub-folder), which means that the user is attempting to rename a directory.
 			// Do the checking in a way that is consistent with the file system semantic.				
-			getAccessControlManager().checkOperation(binder.getParentBinder(), WorkAreaOperation.MODIFY_ENTRIES);
+        	// Renaming a directory (a -> b) is like deleting a directory (a) and then adding another with a different name
+        	// (b) when looking at it from the directory membership point of view. So, we require the user to
+        	// have CREATE_FOLDERS right on the parent folder to allow for this operation.
+			getAccessControlManager().checkOperation(binder.getParentBinder(), WorkAreaOperation.CREATE_FOLDERS);
 		}
 		else {
 			checkAccess(binder, BinderOperation.modifyBinder);
