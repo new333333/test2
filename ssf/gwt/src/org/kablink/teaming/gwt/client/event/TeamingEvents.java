@@ -273,6 +273,7 @@ public enum TeamingEvents implements IsSerializable {
 	GET_MANAGE_USERS_TITLE,							// Event to request the manage users title.
 	HIDE_SELECTED_SHARES,							// Marks the selected shares as being hidden.
 	LOCK_SELECTED_ENTRIES,							// Locks the Selected Entries.
+	MANAGE_SHARES_SELECTED_ENTRIES,					// Invokes the Share dialog in administrative mode.
 	MARK_READ_SELECTED_ENTRIES,						// Marks the Selected Entries as     Having Been Read.
 	MARK_UNREAD_SELECTED_ENTRIES,					// Marks the Selected Entries as Not Having Been Read.
 	MOVE_SELECTED_ENTRIES,							// Moves the Selected Entries.

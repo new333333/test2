@@ -1308,6 +1308,8 @@ public interface GwtTeamingMessages extends Messages
 	String shareRecipientTypePublic();
 	String shareRecipientTypeTeam();
 	String shareRecipientTypeUser();
+	String shareSharedBy();
+	String shareSharedWith();
 	String shareTheseItems();
 	String shareWithGroups();
 	String shareWithTeams();

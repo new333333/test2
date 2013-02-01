@@ -49,6 +49,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -61,6 +62,7 @@ import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SimpleName;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.SimpleName.SimpleNamePK;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
@@ -96,11 +98,14 @@ import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -731,6 +736,55 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem for managing the shares for the selected entries.
+	 */
+	private static void constructEntryManageSharesItem(
+		ToolbarItem entryToolbar,
+		AllModulesInjected bs,
+		String viewType,
+		Folder folder )
+	{
+		// For the view types that support it...
+		if ( MiscUtil.hasString( viewType ) )
+		{
+			if ( folderSupportsShare( bs, folder, viewType ) )
+			{
+				constructEntryManageSharesItem( entryToolbar, bs );
+			}
+		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for the "Manage shares..." menu item.
+	 */
+	private static void constructEntryManageSharesItem(
+		ToolbarItem entryToolbar,
+		AllModulesInjected bs )
+	{
+		User currentUser;
+    	Long zoneId;
+    	ZoneConfig zoneConfig;
+		AccessControlManager accessControlManager;
+
+    	// Is the current user a zone administrator?
+		currentUser = GwtServerHelper.getCurrentUser();
+    	zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	zoneConfig = getCoreDao().loadZoneConfig( zoneId );
+    	accessControlManager = getAccessControlManager();
+		accessControlManager = (AccessControlManager) SpringContextUtil.getBean( "accessControlManager" );
+		if ( accessControlManager.testOperation( currentUser, zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION ) )
+		{
+			ToolbarItem tbi;
+
+			// Yes, add the "Manage shares..." menu item.
+			tbi = new ToolbarItem( "1_manageSharesSelected" );
+			markTBITitle( tbi, "toolbar.menu.manageSharesSelected" );
+			markTBIEvent( tbi, TeamingEvents.MANAGE_SHARES_SELECTED_ENTRIES );
+			entryToolbar.addNestedItem( tbi );
+		}
+	}
+	
+	/*
 	 * Constructs a ToolbarItem for miscellaneous operations against
 	 * the selected entries.
 	 */
@@ -844,6 +898,9 @@ public class GwtMenuHelper {
 
 		// ...add the subscribe item.
 		constructEntrySubscribeItem(moreTBI, bs, request, false);
+		
+		// Add the "Manage shares..." menu item.  This will only be available for the admin
+		constructEntryManageSharesItem( moreTBI, bs );
 
 		// If we added anything to the more toolbar...
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {
@@ -2387,6 +2444,22 @@ public class GwtMenuHelper {
 		return reply;
 	}
 	
+	/**
+	 * 
+	 */
+	private static AccessControlManager getAccessControlManager()
+	{
+		return (AccessControlManager) SpringContextUtil.getBean( "accessControlManager" );
+	}
+
+	/**
+	 * 
+	 */
+	private static CoreDao getCoreDao()
+	{
+		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
+	}
+	
 	/*
 	 * Walks up the parentage change of a folder looking for the
 	 * topmost containing folder of the same type.
@@ -2444,6 +2517,7 @@ public class GwtMenuHelper {
 					
 					if (GwtShareHelper.isEntitySharable(bs, fe)) {
 						constructEntryShareItem(actionToolbar, bs, request);
+						constructEntryManageSharesItem( actionToolbar, bs );
 					}
 					constructEntryDetailsItem(     actionToolbar, bs, request, "toolbar.details.view");
 					constructEntryViewHtmlItem(    actionToolbar, bs, request, fe                    );
@@ -2459,6 +2533,7 @@ public class GwtMenuHelper {
 					boolean addShare = GwtShareHelper.isEntitySharable(bs, folder);
 					if (addShare) {
 						actionToolbar.addNestedItem(constructShareBinderItem(request, folder));
+						constructEntryManageSharesItem( actionToolbar, bs );
 					}
 					if (!(Utils.checkIfFilr())) {
 						boolean isFavorite = false;

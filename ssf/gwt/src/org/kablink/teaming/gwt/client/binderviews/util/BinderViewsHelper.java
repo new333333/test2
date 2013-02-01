@@ -76,6 +76,7 @@ import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgMode;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.Scheduler;
@@ -750,6 +751,49 @@ public class BinderViewsHelper {
 	}
 	
 	/**
+	 * Invokes the Share dialog in administrative mode based on a
+	 * List<EntityId> of the entries.
+	 *
+	 * @param entityIds
+	 */
+	public static void invokeManageSharesDlg( final List<EntityId> entityIds )
+	{
+		// If we weren't given any entity IDs to be shared...
+		if ( GwtClientHelper.hasItems( entityIds ) == false )
+		{
+			// ...bail.
+			return;
+		}
+
+		// Have we created a share dialog yet?
+		if ( null == m_shareDlg )
+		{
+			// No!  Create one now...
+			ShareThisDlg.createAsync( new ShareThisDlgClient()
+			{
+				@Override
+				public void onUnavailable() 
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( ShareThisDlg stDlg )
+				{
+					// ...and show it with the given entity IDs.
+					m_shareDlg = stDlg;
+					showManageSharesDlgAsync( entityIds );
+				}
+			});
+		}
+		else
+		{
+			// Yes, we've already create a share dialog!  Simply show it with the given entry IDs.
+			showManageSharesDlgAsync( entityIds );
+		}
+	}
+	
+	/**
 	 * Locks the entries based on a List<EntityId> of their entity IDs.
 	 *
 	 * @param entityIds
@@ -1253,6 +1297,35 @@ public class BinderViewsHelper {
 			reloadEvent);	// Event to fire to reload things after a successful operation.
 	}
 	
+	/*
+	 * Asynchronously shows the share dialog in administrative mode.
+	 */
+	private static void showManageSharesDlgAsync( final List<EntityId> entityIds )
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute() 
+			{
+				showManageSharesDlgNow( entityIds );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+	/*
+	 * Synchronously shows the share dialog in administrative mode.
+	 */
+	private static void showManageSharesDlgNow( List<EntityId> entityIds )
+	{
+		String caption;
+
+		caption = GwtClientHelper.patchMessage( m_messages.shareTheseItems(), String.valueOf( entityIds.size() ) );
+		ShareThisDlg.initAndShow( m_shareDlg, null, caption, null, entityIds, ShareThisDlgMode.ADMINISTRATIVE );
+	}
+
 	/*
 	 * Asynchronously shows the share dialog.
 	 */

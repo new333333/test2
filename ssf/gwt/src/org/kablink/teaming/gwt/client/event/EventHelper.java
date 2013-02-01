@@ -1394,6 +1394,17 @@ public class EventHelper {
 				}
 				break;
 			
+			case MANAGE_SHARES_SELECTED_ENTRIES:
+				// A ManageSharesSelectedEntriesEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof ManageSharesSelectedEntriesEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = ManageSharesSelectedEntriesEvent.registerEvent(
+																					eventBus,
+																					((ManageSharesSelectedEntriesEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case MANAGE_USERS_FILTER:
 				// An ManageUsersFilterEvent!  Can the event handler we
 				// were given handle that?
@@ -2461,6 +2472,7 @@ public class EventHelper {
 
 			case PREVIEW_LANDING_PAGE:      			       hasHandler = (eventHandler instanceof PreviewLandingPageEvent.Handler);     	               break;
 
+			case MANAGE_SHARES_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof ManageSharesSelectedEntriesEvent.Handler);            break;
 			case MARK_ENTRY_READ:                   	       hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);                          break;
 			case MARK_ENTRY_UNREAD:                 	       hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);                        break;
 			

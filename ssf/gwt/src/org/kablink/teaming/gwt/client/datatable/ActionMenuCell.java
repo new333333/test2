@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.event.InvokeRenameEntityEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserPropertiesDlgEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
@@ -354,6 +355,7 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 						case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         binderId, eid); break;
 						case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           binderId, eid); break;
 						case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         binderId, eid); break;
+						case MANAGE_SHARES_SELECTED_ENTRIES:	  event = new ManageSharesSelectedEntriesEvent(   binderId, eid); break;
 						case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       binderId, eid); break;
 						case MARK_UNREAD_SELECTED_ENTRIES:        event = new MarkUnreadSelectedEntriesEvent(     binderId, eid); break;
 						case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           binderId, eid); break;

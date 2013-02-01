@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
@@ -137,6 +138,7 @@ public class ShareThisDlg extends DlgBox
 {
 	private int m_numCols = 0;
 	
+	private ShareThisDlgMode m_mode;
 	private Image m_headerImg;
 	private Label m_headerNameLabel;
 	private Label m_headerPathLabel;
@@ -145,11 +147,12 @@ public class ShareThisDlg extends DlgBox
 	private Image m_addExternalUserImg;
 	private FlowPanel m_mainPanel;
 	private ImageResource m_deleteImgR;
+	private FlexTable m_mainTable;
 	private FlexTable m_shareTable;
 	private InlineLabel m_shareWithTeamsLabel;
 	private FlowPanel m_shareTablePanel;
 	private ShareSendToWidget m_sendToWidget;
-	private FlowPanel m_makePulicPanel;
+	private FlowPanel m_makePublicPanel;
 	private FlexCellFormatter m_shareCellFormatter;
 	private HTMLTable.RowFormatter m_shareRowFormatter;
 	private int m_rightsCol;
@@ -180,6 +183,23 @@ public class ShareThisDlg extends DlgBox
 		TeamingEvents.INVOKE_EDIT_SHARE_RIGHTS_DLG,
 		TeamingEvents.SEARCH_FIND_RESULTS,
 	};
+
+	/**
+	 * ShareThisDlgMode determines how the ShareThisDlg behaves.
+	 * ShareThisDlgMode.NORMAL:
+	 * 	User can see only the shares he has created
+	 * 	User can add/remove/modify shares
+	 * 
+	 * ShareThisDlgMode.ADMINISTRATIVE:
+	 * 	User will see all shares that have been created by anyone for the given entities.
+	 *  User can remove/modify shares but cannot add shares
+	 *   
+	 */
+	public enum ShareThisDlgMode
+	{
+		NORMAL,
+		ADMINISTRATIVE
+	}
 	
 	/**
 	 * This widget is used to display a recipient's name.  If the recipient is a group
@@ -873,7 +893,11 @@ public class ShareThisDlg extends DlgBox
 			}
 			
 			if ( shareItem != null )
+			{
+				shareItem.setSharedById( Long.valueOf( GwtTeaming.m_requestInfo.getUserId() ) );
+				
 				returnValue.add( shareItem );
+			}
 			
 		}// end for()
 		
@@ -942,6 +966,25 @@ public class ShareThisDlg extends DlgBox
 		recipientTypeWidget = new RecipientTypeWidget( shareItem );
 		m_shareTable.setWidget( row, col, recipientTypeWidget );
 		++col;
+		
+		// Are we in "administrative" mode?
+		if ( m_mode == ShareThisDlgMode.ADMINISTRATIVE )
+		{
+			String name;
+			InlineLabel label;
+
+			// Yes, add a field for "shared by"
+			m_shareCellFormatter.setWordWrap( row, col, false );
+			m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
+			
+			label = new InlineLabel();
+			
+			// Only show the first 15 characters
+			name = shareItem.getSharedByName();
+			label.setText( name );
+			m_shareTable.setWidget( row, col, label );
+			++col;
+		}
 		
 		// Are we sharing more than 1 entity?
 		if ( m_entityIds != null && m_entityIds.size() > 1 )
@@ -1180,7 +1223,6 @@ public class ShareThisDlg extends DlgBox
 	 */
 	private FlexTable createShareControls()
 	{
-		FlexTable mainTable;
 		HTMLTable.RowFormatter mainRowFormatter;
 		FlexCellFormatter mainCellFormatter;
 		int row;
@@ -1192,9 +1234,9 @@ public class ShareThisDlg extends DlgBox
 			ImageResource imgResource;
 			Image img;
 			
-			m_makePulicPanel = new FlowPanel();
-			m_makePulicPanel.addStyleName( "shareThisDlg_MakePublicDiv" );
-			m_mainPanel.add( m_makePulicPanel );
+			m_makePublicPanel = new FlowPanel();
+			m_makePublicPanel.addStyleName( "shareThisDlg_MakePublicDiv" );
+			m_mainPanel.add( m_makePublicPanel );
 			
 			clickHandler = new ClickHandler()
 			{
@@ -1219,7 +1261,7 @@ public class ShareThisDlg extends DlgBox
 			anchor.addStyleName( "teamingButton" );
 			anchor.addClickHandler( clickHandler );
 			anchor.setTitle( GwtTeaming.getMessages().shareDlg_makePublic() );
-			m_makePulicPanel.add( anchor );
+			m_makePublicPanel.add( anchor );
 			
 			imgResource = GwtTeaming.getImageBundle().public16();
 			img = new Image( imgResource );
@@ -1228,11 +1270,11 @@ public class ShareThisDlg extends DlgBox
 			anchor.getElement().insertFirst( img.getElement() );
 		}
 		
-		mainTable = new FlexTable();
-		mainTable.setCellSpacing( 6 );
+		m_mainTable = new FlexTable();
+		m_mainTable.setCellSpacing( 6 );
 		
-		mainRowFormatter = mainTable.getRowFormatter();
-		mainCellFormatter = mainTable.getFlexCellFormatter();
+		mainRowFormatter = m_mainTable.getRowFormatter();
+		mainCellFormatter = m_mainTable.getFlexCellFormatter();
 		row = 0;
 		
 		mainCellFormatter.setVerticalAlignment( row, 0, HasVerticalAlignment.ALIGN_MIDDLE );
@@ -1295,8 +1337,8 @@ public class ShareThisDlg extends DlgBox
 			
 			shareLabel = new Label( GwtTeaming.getMessages().shareDlg_shareLabel() );
 			shareLabel.addStyleName( "shareThisDlg_shareLabel" );
-			mainTable.setWidget( row, 0, shareLabel );
-			mainTable.setWidget( row, 1, findTable );
+			m_mainTable.setWidget( row, 0, shareLabel );
+			m_mainTable.setWidget( row, 1, findTable );
 			mainRowFormatter.setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
 			// On IE calling m_cellFormatter.setWidth( row, col, "*" ); throws an exception.
 			// That is why we are calling DOM.setElementAttribute(...) instead.
@@ -1392,7 +1434,7 @@ public class ShareThisDlg extends DlgBox
 
 			mainRowFormatter.setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
 
-			mainTable.setWidget( row, 0, m_shareTablePanel );
+			m_mainTable.setWidget( row, 0, m_shareTablePanel );
 			mainCellFormatter.setColSpan( row, 0, 2 );
 			
 			++row;
@@ -1401,7 +1443,7 @@ public class ShareThisDlg extends DlgBox
 		// Create an image resource for the delete image.
 		m_deleteImgR = GwtTeaming.getImageBundle().delete();
 
-		return mainTable;
+		return m_mainTable;
 	}
 	
 	/**
@@ -2005,10 +2047,18 @@ public class ShareThisDlg extends DlgBox
 		GetMyTeamsCmd rpcCmd2;
 		
 		updateHeader();
-		
+
 		// Set the column headers.  We do this now because the column headers vary
 		// depending on how many entities we are sharing.
 		setColumnHeaders();
+		
+		// Adjust the width of the table
+		if ( m_numCols > 7 )
+			m_shareTablePanel.getElement().getStyle().setWidth( 740, Unit.PX );
+		else if ( m_numCols == 7 )
+			m_shareTablePanel.getElement().getStyle().setWidth( 650, Unit.PX );
+		else
+			m_shareTablePanel.getElement().getStyle().setWidth( 610, Unit.PX );
 		
 		// Enable the Ok button.
 		hideStatusMsg();
@@ -2017,7 +2067,7 @@ public class ShareThisDlg extends DlgBox
 		if ( m_findCtrl != null )
 		{
 			m_findCtrl.setInitialSearchString( "" );
-	
+			
 			// Set the filter of the Find Control to only search for users and groups.
 			m_findCtrl.setSearchType( SearchType.PRINCIPAL );
 		}
@@ -2034,6 +2084,16 @@ public class ShareThisDlg extends DlgBox
 		addNotSharedMessage();
 
 		adjustShareTablePanelHeight();
+		
+		// If we are in Administrative mode, we don't allow the user to add shares.
+		if ( m_mode == ShareThisDlgMode.ADMINISTRATIVE )
+		{
+			m_mainTable.getRowFormatter().setVisible( 0, false );
+		}
+		else
+		{
+			m_mainTable.getRowFormatter().setVisible( 0, true );
+		}
 		
 		if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
 		{
@@ -2121,8 +2181,20 @@ public class ShareThisDlg extends DlgBox
 			};
 		}
 		
+		// Are we in Administrative mode?
+		if ( m_mode == ShareThisDlgMode.ADMINISTRATIVE )
+		{
+			// Yes
+			// Passing null to GetSharingInfoCmd() means get all shares by everyone.
+			rpcCmd1 = new GetSharingInfoCmd( m_entityIds, null );
+		}
+		else
+		{
+			// No
+			rpcCmd1 = new GetSharingInfoCmd( m_entityIds, GwtTeaming.m_requestInfo.getUserId() );
+		}
+
 		// Issue an rpc request to get the share information for the entities we are working with.
-		rpcCmd1 = new GetSharingInfoCmd( m_entityIds );
 		GwtClientHelper.executeCommand( rpcCmd1, m_getSharingInfoCallback );
 
 		// Issue an rpc request to get the teams this user is a member of.
@@ -2519,7 +2591,10 @@ public class ShareThisDlg extends DlgBox
 
 			// Show/hide the "Make public" button depending on whether the user has rights to
 			// share with the public.
-			m_makePulicPanel.setVisible( canShareWithPublic() );
+			if ( m_mode == ShareThisDlgMode.NORMAL )
+				m_makePublicPanel.setVisible( canShareWithPublic() );
+			else
+				m_makePublicPanel.setVisible( false );
 			
 			// We never want external users to be included in the name completion.
 			m_findCtrl.setSearchForExternalPrincipals( false );
@@ -2673,14 +2748,20 @@ public class ShareThisDlg extends DlgBox
 	 * Asynchronously runs the given instance of the move entries
 	 * dialog.
 	 */
-	private static void runDlgAsync( final ShareThisDlg stDlg, final UIObject target, final String caption, final String title, final List<EntityId> entityIds )
+	private static void runDlgAsync(
+		final ShareThisDlg stDlg,
+		final UIObject target,
+		final String caption,
+		final String title,
+		final List<EntityId> entityIds,
+		final ShareThisDlgMode mode )
 	{
 		ScheduledCommand doRun = new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
-				stDlg.runDlgNow( target, caption, title, entityIds );
+				stDlg.runDlgNow( target, caption, title, entityIds, mode );
 			}
 		};
 		Scheduler.get().scheduleDeferred( doRun );
@@ -2690,7 +2771,12 @@ public class ShareThisDlg extends DlgBox
 	 * Synchronously runs the given instance of the move entries
 	 * dialog.
 	 */
-	private void runDlgNow( UIObject target, String caption, String title, List<EntityId> entityIds )
+	private void runDlgNow(
+		UIObject target,
+		String caption,
+		String title,
+		List<EntityId> entityIds,
+		ShareThisDlgMode mode )
 	{
 		// Set the caption...
 		setCaption( caption );
@@ -2698,6 +2784,7 @@ public class ShareThisDlg extends DlgBox
 		// ...and store the parameters.
 		m_target    = target;
 		m_entityIds = entityIds;
+		m_mode = mode;
 		
 		// If we haven't completed construction of the dialog yet,
 		// complete it now.  Otherwise, simply show it.
@@ -2816,7 +2903,11 @@ public class ShareThisDlg extends DlgBox
 	private void setColumnHeaders()
 	{
 		int col;
+		String text;
+		GwtTeamingMessages messages;
 
+		messages = GwtTeaming.getMessages();
+		
 		// On IE calling m_cellFormatter.setWidth( 0, 2, "*" ); throws an exception.
 		// That is why we are calling DOM.setElementAttribute(...) instead.
 
@@ -2835,32 +2926,46 @@ public class ShareThisDlg extends DlgBox
 		}
 		
 		col = 0;
-		m_shareTable.setText( 0, col, GwtTeaming.getMessages().shareName() );
+
+		if ( m_mode == ShareThisDlgMode.ADMINISTRATIVE )
+			text = messages.shareSharedWith();
+		else
+			text = messages.shareName();
+		m_shareTable.setText( 0, col, text );
 		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "90px" );
 		++col;
 		
-		m_shareTable.setText( 0, col, GwtTeaming.getMessages().shareRecipientType() );
+		m_shareTable.setText( 0, col, messages.shareRecipientType() );
 		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "45px" );
 		++col;
+		
+		// Are we in Administrative mode?
+		if ( m_mode == ShareThisDlgMode.ADMINISTRATIVE )
+		{
+			// Yes, add a "Shared By" column.
+			m_shareTable.setText( 0, col, messages.shareSharedBy() );
+			DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "90px" );
+			++col;
+		}
 		
 		// Are we sharing more than 1 item?
 		if ( m_entityIds != null && m_entityIds.size() > 1 )
 		{
 			// Yes, add the "Item Name" column header
-			m_shareTable.setText( 0, col, GwtTeaming.getMessages().shareEntityName() );
+			m_shareTable.setText( 0, col, messages.shareEntityName() );
 			DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "80px" );
 			++col;
 		}
 		
-		m_shareTable.setText( 0, col, GwtTeaming.getMessages().shareAccess() );
+		m_shareTable.setText( 0, col, messages.shareAccess() );
 		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "85px" );
 		++col;
 		
-		m_shareTable.setText( 0, col, GwtTeaming.getMessages().shareExpires() );
+		m_shareTable.setText( 0, col, messages.shareExpires() );
 		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "90px" );
 		++col;
 		
-		m_shareTable.setText( 0, col, GwtTeaming.getMessages().shareNote() );
+		m_shareTable.setText( 0, col, messages.shareNote() );
 		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "100px" );
 		++col;
 		
@@ -3028,7 +3133,8 @@ public class ShareThisDlg extends DlgBox
 			final UIObject			target,
 			final String			caption,
 			final String			title,
-			final List<EntityId>	entityIds )
+			final List<EntityId>	entityIds,
+			final ShareThisDlgMode	mode )
 	{
 		GWT.runAsync(ShareThisDlg.class, new RunAsyncCallback()
 		{
@@ -3057,7 +3163,7 @@ public class ShareThisDlg extends DlgBox
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync( stDlg, target, caption, title, entityIds );
+					runDlgAsync( stDlg, target, caption, title, entityIds, mode );
 				}
 			}
 		});
@@ -3071,7 +3177,7 @@ public class ShareThisDlg extends DlgBox
 	 */
 	public static void createAsync( ShareThisDlgClient stDlgClient )
 	{
-		doAsyncOperation( stDlgClient, null, null, null, null, null );
+		doAsyncOperation( stDlgClient, null, null, null, null, null, ShareThisDlgMode.NORMAL );
 	}
 	
 	/**
@@ -3082,8 +3188,32 @@ public class ShareThisDlg extends DlgBox
 	 * @param title
 	 * @param entityIds
 	 */
-	public static void initAndShow( ShareThisDlg stDlg, UIObject target, String caption, String title, List<EntityId> entityIds )
+	public static void initAndShow(
+		ShareThisDlg stDlg,
+		UIObject target,
+		String caption,
+		String title,
+		List<EntityId> entityIds )
 	{
-		doAsyncOperation( null, stDlg, target, caption, title, entityIds );
+		doAsyncOperation( null, stDlg, target, caption, title, entityIds, ShareThisDlgMode.NORMAL );
+	}
+
+	/**
+	 * Initializes and shows the share this dialog.
+	 * 
+	 * @param stDlg
+	 * @param caption
+	 * @param title
+	 * @param entityIds
+	 */
+	public static void initAndShow(
+		ShareThisDlg stDlg,
+		UIObject target,
+		String caption,
+		String title,
+		List<EntityId> entityIds,
+		ShareThisDlgMode mode )
+	{
+		doAsyncOperation( null, stDlg, target, caption, title, entityIds, mode );
 	}
 }
