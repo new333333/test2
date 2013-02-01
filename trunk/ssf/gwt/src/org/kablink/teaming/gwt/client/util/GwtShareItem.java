@@ -53,6 +53,8 @@ public class GwtShareItem
 	private Long m_recipientId;
 	private String m_recipientName;
 	private GwtRecipientType m_recipientType;
+	private Long m_sharedById;
+	private String m_sharedByName;
 	private ShareRights m_shareRights;
 	private ShareExpirationValue m_shareExpirationValue;
 	private boolean m_isDirty;
@@ -104,6 +106,8 @@ public class GwtShareItem
 		m_recipientName = null;
 		m_recipientId = null;
 		m_recipientType = GwtRecipientType.UNKNOWN;
+		m_sharedById = null;
+		m_sharedByName = null;
 		m_shareRights = new ShareRights();
 		m_shareExpirationValue = null;
 		m_isDirty = false;
@@ -264,6 +268,22 @@ public class GwtShareItem
 	}
 	
 	/**
+	 * Get the id of the person who shared this item.
+	 */
+	public Long getSharedById()
+	{
+		return m_sharedById;
+	}
+	
+	/**
+	 * Return the name of the person who shared this item.
+	 */
+	public String getSharedByName()
+	{
+		return m_sharedByName;
+	}
+	
+	/**
 	 * 
 	 */
 	public ShareExpirationValue getShareExpirationValue()
@@ -403,6 +423,22 @@ public class GwtShareItem
 	public void setRecipientType( GwtRecipientType type )
 	{
 		m_recipientType = type;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setSharedById( Long id )
+	{
+		m_sharedById = id;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setSharedByName( String name )
+	{
+		m_sharedByName = name;
 	}
 	
 	/**

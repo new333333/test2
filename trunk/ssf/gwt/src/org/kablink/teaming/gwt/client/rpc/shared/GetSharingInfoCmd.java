@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
  */
 public class GetSharingInfoCmd extends VibeRpcCmd
 {
+	private String m_sharedById;
 	private List<EntityId> m_listOfEntities;	// The entities we are getting sharing information about.
 	
 	/**
@@ -59,9 +60,10 @@ public class GetSharingInfoCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public GetSharingInfoCmd( List<EntityId> listOfEntities )
+	public GetSharingInfoCmd( List<EntityId> listOfEntities, String sharedById )
 	{
 		m_listOfEntities = listOfEntities;
+		m_sharedById = sharedById;
 	}
 	
 	/**
@@ -83,5 +85,13 @@ public class GetSharingInfoCmd extends VibeRpcCmd
 	public List<EntityId> getListOfEntities()
 	{
 		return m_listOfEntities;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getSharedById()
+	{
+		return m_sharedById;
 	}
 }

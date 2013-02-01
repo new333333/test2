@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ManageUsersFilterEvent;
 import org.kablink.teaming.gwt.client.event.ManageUsersFilterEvent.ManageUsersFilter;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
@@ -1164,6 +1165,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case INVOKE_SIGN_GUESTBOOK:                 event = new InvokeSignGuestbookEvent(             folderId   ); break;
 					case LOCK_SELECTED_ENTRIES:                 event = new LockSelectedEntriesEvent(             folderId   ); break;
 					case UNLOCK_SELECTED_ENTRIES:               event = new UnlockSelectedEntriesEvent(           folderId   ); break;
+					case MANAGE_SHARES_SELECTED_ENTRIES:        event = new ManageSharesSelectedEntriesEvent(     folderId   ); break;
 					case MARK_READ_SELECTED_ENTRIES:            event = new MarkReadSelectedEntriesEvent(         folderId   ); break;
 					case MARK_UNREAD_SELECTED_ENTRIES:          event = new MarkUnreadSelectedEntriesEvent(       folderId   ); break;
 					case MOVE_SELECTED_ENTRIES:                 event = new MoveSelectedEntriesEvent(             folderId   ); break;

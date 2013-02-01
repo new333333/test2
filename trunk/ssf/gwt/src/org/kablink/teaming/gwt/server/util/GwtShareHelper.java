@@ -375,10 +375,10 @@ public class GwtShareHelper
 	 */
 	private static ShareItem createShareItem(
 		AllModulesInjected ami,
-		User sharer,
+		Long sharedById,
 		GwtShareItem gwtShareItem )
 	{
-		ShareItem shareItem = buildShareItem(ami, sharer, gwtShareItem);
+		ShareItem shareItem = buildShareItem( ami, sharedById, gwtShareItem );
 		
 		ami.getSharingModule().addShareItem( shareItem );
 		
@@ -390,7 +390,7 @@ public class GwtShareHelper
 	 */
 	private static ShareItem buildShareItem(
 		AllModulesInjected ami,
-		User sharer,
+		Long sharedById,
 		GwtShareItem gwtShareItem )
 	{
 		ShareItem shareItem;
@@ -472,7 +472,7 @@ public class GwtShareHelper
 		// Create the new ShareItem in the db
 		{
 			shareItem = new ShareItem(
-								sharer.getId(),
+								sharedById,
 								entityIdentifier,
 								gwtShareItem.getComments(),
 								endDate,
@@ -948,7 +948,7 @@ public class GwtShareHelper
 	 */
 	private static ArrayList<GwtShareItem> getListOfGwtShareItems(
 		AllModulesInjected ami,
-		User currentUser,
+		String sharedById,
 		EntityId entityId )
 	{
 		EntityIdentifier entityIdentifier;
@@ -963,7 +963,8 @@ public class GwtShareHelper
 		
 		// Get the list of ShareItem objects for the given entity
 		spec = new ShareItemSelectSpec();
-		spec.setSharerId( currentUser.getId() );
+		if ( sharedById != null )
+			spec.setSharerId( Long.valueOf( sharedById ) );
 		spec.setSharedEntityIdentifier( entityIdentifier );
 		spec.setLatest( true );
 		
@@ -1065,6 +1066,27 @@ public class GwtShareHelper
 					}
 				}
 				
+				// Set the "shared by" info
+				{
+					Long sharedByIdL;
+					
+					sharedByIdL = nextShareItem.getSharerId();
+					
+					gwtShareItem.setSharedById( sharedByIdL );
+
+					try 
+					{
+						User user;
+						
+						user = ami.getProfileModule().getUserDeadOrAlive( sharedByIdL );
+						gwtShareItem.setSharedByName( user.getTitle() );
+					}
+					catch ( Exception e )
+					{
+						m_logger.error( "Could not find the sharer: " + nextShareItem.getSharerId().toString() );
+					}
+				}
+				
 				// Set the expiration value
 				{
 					ShareExpirationValue expirationValue;
@@ -1149,6 +1171,8 @@ public class GwtShareHelper
 				publicShareItem.setComments( allInternalUsersShareItem.getComments() );
 				publicShareItem.setShareExpirationValue( allInternalUsersShareItem.getShareExpirationValue() );
 				publicShareItem.setShareRights( allInternalUsersShareItem.getShareRights() );
+				publicShareItem.setSharedById( allInternalUsersShareItem.getSharedById() );
+				publicShareItem.setSharedByName( allInternalUsersShareItem.getSharedByName() );
 				
 				// Add the "share public" item.
 				listOfGwtShareItems.add( publicShareItem );
@@ -1440,10 +1464,12 @@ public class GwtShareHelper
 	/**
 	 * Return sharing information for the given entities
 	 */
-	public static GwtSharingInfo getSharingInfo( AllModulesInjected ami, List<EntityId> listOfEntityIds )
+	public static GwtSharingInfo getSharingInfo(
+		AllModulesInjected ami,
+		List<EntityId> listOfEntityIds,
+		String sharedById )
 	{
 		GwtSharingInfo sharingInfo;
-		User currentUser;
 
 		sharingInfo = new GwtSharingInfo();
 		
@@ -1477,8 +1503,6 @@ public class GwtShareHelper
 		// See if the user has rights to share with the "all internal users" group.
 		sharingInfo.setCanShareWithAllInternalUsersGroup( canShareWithAllInternalUsersGroup( ami ) );
 
-		currentUser = GwtServerHelper.getCurrentUser();
-
 		if ( listOfEntityIds == null || listOfEntityIds.size() == 0 )
 		{
 			m_logger.error( "In GwtShareHelper.getSharingInfo(), listOfEntityIds is null or empty" );
@@ -1501,7 +1525,7 @@ public class GwtShareHelper
 			sharingInfo.setEntityShareRights( nextEntityId, shareRights );
 			
 			// Get the list of GwtShareItem objects for the given user/entity
-			listOfGwtShareItems = getListOfGwtShareItems( ami, currentUser, nextEntityId );
+			listOfGwtShareItems = getListOfGwtShareItems( ami, sharedById, nextEntityId );
 
 			if ( listOfGwtShareItems != null )
 			{
@@ -1697,7 +1721,6 @@ public class GwtShareHelper
 		GwtShareEntryResults results;
 		ArrayList<GwtShareItem> listOfGwtShareItems;
 		ArrayList<GwtShareItem> listOfGwtShareItemsToDelete;
-		User currentUser;
 		List<SendMailErrorWrapper> emailErrors;
 
 		sharingModule = ami.getSharingModule();
@@ -1717,7 +1740,6 @@ public class GwtShareHelper
 			return results;
 		}
 		
-		currentUser = GwtServerHelper.getCurrentUser();
 		emailErrors = null;
 		
 		// Delete ShareItems that the user removed.
@@ -1804,7 +1826,7 @@ public class GwtShareHelper
 								gwtShareItem.setShareExpirationValue( publicShareItem.getShareExpirationValue() );
 								gwtShareItem.setComments( publicShareItem.getComments() );
 								
-								shareItem = buildShareItem( ami, currentUser, gwtShareItem );
+								shareItem = buildShareItem( ami, gwtShareItem.getSharedById(), gwtShareItem );
 
 								// Modify the share by marking existing snapshot as not being the latest
 								// and persisting the new snapshot. 
@@ -1825,7 +1847,7 @@ public class GwtShareHelper
 								gwtShareItem.setShareExpirationValue( publicShareItem.getShareExpirationValue() );
 								gwtShareItem.setComments( publicShareItem.getComments() );
 								
-								shareItem = buildShareItem( ami, currentUser, gwtShareItem );
+								shareItem = buildShareItem( ami, gwtShareItem.getSharedById(), gwtShareItem );
 
 								// Modify the share by marking existing snapshot as not being the latest
 								// and persisting the new snapshot. 
@@ -1847,11 +1869,12 @@ public class GwtShareHelper
 						gwtShareItem.setComments( publicShareItem.getComments() );
 						gwtShareItem.setRecipientId( Utils.getAllUsersGroupId() );
 						gwtShareItem.setRecipientType( GwtRecipientType.GROUP );
+						gwtShareItem.setSharedById( publicShareItem.getSharedById() );
 						gwtShareItem.setShareRights( publicShareItem.getShareRights() );
 						gwtShareItem.setShareExpirationValue( publicShareItem.getShareExpirationValue() );
 						gwtShareItem.setIsPartOfPublicShare( true );
 						
-						createShareItem( ami, currentUser, gwtShareItem );
+						createShareItem( ami, gwtShareItem.getSharedById(), gwtShareItem );
 					}
 
 
@@ -1863,11 +1886,12 @@ public class GwtShareHelper
 						gwtShareItem.setComments( publicShareItem.getComments() );
 						gwtShareItem.setRecipientId( Utils.getGuestId( ami ) );
 						gwtShareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
+						gwtShareItem.setSharedById( publicShareItem.getSharedById() );
 						gwtShareItem.setShareRights( publicShareItem.getShareRights() );
 						gwtShareItem.setShareExpirationValue( publicShareItem.getShareExpirationValue() );
 						gwtShareItem.setIsPartOfPublicShare( true );
 						
-						createShareItem( ami, currentUser, gwtShareItem );
+						createShareItem( ami, gwtShareItem.getSharedById(), gwtShareItem );
 					}
 				}
 			}
@@ -1890,7 +1914,7 @@ public class GwtShareHelper
 					// No, create a ShareItem object
 					try
 					{
-						shareItem = createShareItem( ami, currentUser, nextGwtShareItem );
+						shareItem = createShareItem( ami, nextGwtShareItem.getSharedById(), nextGwtShareItem );
 						
 						// createShareItem() may have created an external user.  Get the
 						// recipient id just in case.
@@ -1924,7 +1948,7 @@ public class GwtShareHelper
 				{
 					// The ShareItem exists.
 					// Build a new ShareItem with the new information.
-					shareItem = buildShareItem( ami, currentUser, nextGwtShareItem );
+					shareItem = buildShareItem( ami, nextGwtShareItem.getSharedById(), nextGwtShareItem );
 					
 					// Was it modified?
 					if ( nextGwtShareItem.isDirty() )
@@ -1943,6 +1967,9 @@ public class GwtShareHelper
 				if ( sendEmail )
 				{
 					List<SendMailErrorWrapper> entityEmailErrors = null;
+					User currentUser;
+
+					currentUser = GwtServerHelper.getCurrentUser();
 					
 					// Send an email to each of the recipients
 					entityEmailErrors = sendEmailToRecipient(

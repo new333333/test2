@@ -331,9 +331,15 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			break;
 		case modifyShareItem:
 			//The share creator and the entity owner can modify a shareItem
-			if (!user.getId().equals(shareItem.getSharerId())) {
+			if (!user.getId().equals(shareItem.getSharerId()))
+			{
 				//The user is not the creator of the share. Only the share item creator is allowed to modify it
-				throw new AccessControlException();
+				// Check for site administrator.  It is ok if the admin changes a share item he didn't create.
+				if ( accessControlManager.testOperation( user, zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION ) == false )
+				{
+					// User is not a site administrator
+					throw new AccessControlException();
+				}
 			}
 			//Now check if this user is still allowed to add a share of this entity
 			if (testAccess(shareItem, SharingOperation.addShareItem)) {

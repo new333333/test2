@@ -93,6 +93,7 @@ import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
@@ -152,6 +153,7 @@ import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -210,6 +212,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		InvokeDropBoxEvent.Handler,
 		InvokeSignGuestbookEvent.Handler,
 		LockSelectedEntriesEvent.Handler,
+		ManageSharesSelectedEntriesEvent.Handler,
 		MarkReadSelectedEntriesEvent.Handler,
 		MarkUnreadSelectedEntriesEvent.Handler,
 		MoveSelectedEntriesEvent.Handler,
@@ -290,6 +293,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.INVOKE_SIGN_GUESTBOOK,
 		TeamingEvents.LOCK_SELECTED_ENTRIES,
+		TeamingEvents.MANAGE_SHARES_SELECTED_ENTRIES,
 		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
 		TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES,
 		TeamingEvents.MOVE_SELECTED_ENTRIES,
@@ -1624,6 +1628,15 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
+	 * Invoke the share dialog in administrative mode on the selected entities.
+	 */
+	private void invokeManageSharesDlgSelectedEntities( List<EntityId> selectedEntities )
+	{
+		BinderViewsHelper.invokeManageSharesDlg( selectedEntities );
+	}
+	
+
+	/*
 	 * Return true if the data table should used a fixed layout and
 	 * false other wise. 
 	 */
@@ -2120,6 +2133,47 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.lockEntries(selectedEntityIds);
+		}
+	}
+	
+	/**
+	 * Handles ManageSharesSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the ManageSharesSelectedEntriesEvent.Handler.onManageSharesSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onManageSharesSelectedEntries( ManageSharesSelectedEntriesEvent event )
+	{
+		Long eventFolderId;
+
+		// Is the event targeted to this folder?
+		eventFolderId = event.getFolderId();
+		if ( eventFolderId.equals( getFolderId() ) )
+		{
+			Scheduler.ScheduledCommand cmd;
+			List<EntityId> seList;
+			final List<EntityId> selectedEntities;
+
+			// Yes!
+			seList = event.getSelectedEntities();
+			if ( GwtClientHelper.hasItems(seList) == false )
+			{
+				seList = getSelectedEntityIds();
+			}
+			selectedEntities = seList;
+
+			// Invoke the Manage Shares dialog
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute() 
+				{
+					invokeManageSharesDlgSelectedEntities( selectedEntities );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 	

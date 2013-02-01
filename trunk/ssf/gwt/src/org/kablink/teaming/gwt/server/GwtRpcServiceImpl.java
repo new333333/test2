@@ -1841,7 +1841,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtSharingInfo sharingInfo;
 			
 			gsiCmd = (GetSharingInfoCmd) cmd;
-			sharingInfo = GwtShareHelper.getSharingInfo( this, gsiCmd.getListOfEntities() );
+			sharingInfo = GwtShareHelper.getSharingInfo(
+													this,
+													gsiCmd.getListOfEntities(),
+													gsiCmd.getSharedById() );
 			response = new VibeRpcResponse( sharingInfo );
 			return response;
 		}
