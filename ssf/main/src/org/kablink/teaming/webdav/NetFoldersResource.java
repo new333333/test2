@@ -71,17 +71,12 @@ public class NetFoldersResource extends ContainerResource implements
 		PropFindableResource, GetableResource, CollectionResource {
 
 	public NetFoldersResource(WebdavResourceFactory factory) {
-		super(factory, "/" + factory.getNetFoldersPrefix());
+		super(factory, "/" + factory.getNetFoldersPrefix(), factory.getNetFoldersPrefix());
 	}
 
 	@Override
 	public String getUniqueId() {
 		return this.factory.getNetFoldersPrefix();
-	}
-
-	@Override
-	public String getName() {
-		return getUniqueId();
 	}
 
 	@Override

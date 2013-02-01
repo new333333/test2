@@ -12,7 +12,7 @@ public class SimpleNameResource extends WebdavResource implements PropFindableRe
 	static final String WEBDAV_PATH = "/davs";
 
 	public SimpleNameResource(WebdavResourceFactory factory) {
-		super(factory);
+		super(factory, WEBDAV_PATH, ID);
 	}
 
 	/* (non-Javadoc)
@@ -20,14 +20,6 @@ public class SimpleNameResource extends WebdavResource implements PropFindableRe
 	 */
 	@Override
 	public String getUniqueId() {
-		return ID;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getName()
-	 */
-	@Override
-	public String getName() {
 		return ID;
 	}
 
@@ -45,14 +37,6 @@ public class SimpleNameResource extends WebdavResource implements PropFindableRe
 	@Override
 	public Date getCreateDate() {
 		return getMiltonSafeDate(ReleaseInfo.getBuildDate()); // This is as good as any other random date
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.webdav.WebdavResource#getWebdavPath()
-	 */
-	@Override
-	public String getWebdavPath() {
-		return WEBDAV_PATH;
 	}
 
 }

@@ -68,17 +68,12 @@ public class SharedWithMeResource extends ContainerResource
 	private static final String BINDER_ID_PREFIX = "2"; // binder (folder/workspace) namespace
 	
 	public SharedWithMeResource(WebdavResourceFactory factory) {
-		super(factory, "/" + factory.getSharedWithMePrefix());
+		super(factory, "/" + factory.getSharedWithMePrefix(), factory.getSharedWithMePrefix());
 	}
 
 	@Override
 	public String getUniqueId() {
 		return this.factory.getSharedWithMePrefix();
-	}
-
-	@Override
-	public String getName() {
-		return getUniqueId();
 	}
 
 	@Override
@@ -106,7 +101,7 @@ public class SharedWithMeResource extends ContainerResource
 			BadRequestException {
 		ShareItemSelectSpec spec = getShareItemSelectSpec();
 		List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
-		Resource resource = null;
+		WebdavResource resource = null;
 		for(ShareItem shareItem:shareItems) {
             if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
             	FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
@@ -116,8 +111,14 @@ public class SharedWithMeResource extends ContainerResource
             		for(Attachment attachment:attachments) {
             			if(attachment instanceof FileAttachment) {
             				FileAttachment fa = (FileAttachment)attachment;
-            				if(fa.getFileItem().getName().equals(childName)) {
+            				String fileName = fa.getFileItem().getName();
+            				if(childName.equals(fileName)) {
             					resource = makeResourceFromFile(fa);
+            					break;
+            				}
+            				else if(childName.equals(fixedupFileName(fileName, fa.getOwner().getEntity().getId()))) {
+            					resource = makeResourceFromFile(fa);
+            					resource.fixupName(childName);
             					break;
             				}
             			}
@@ -126,8 +127,14 @@ public class SharedWithMeResource extends ContainerResource
             }
             else if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folder) {
             	Folder folder = (Folder) getSharingModule().getSharedEntity(shareItem);
-            	if(folder.getTitle().equals(childName)) {		
+            	String folderName = folder.getTitle();
+            	if(childName.equals(folderName)) {		
             		resource = makeResourceFromBinder(folder);
+            		break;
+            	}
+            	else if(childName.equals(fixedupBinderName(folderName, folder.getId()))) {
+            		resource = makeResourceFromBinder(folder);
+            		resource.fixupName(childName);
             		break;
             	}
             }

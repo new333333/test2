@@ -68,7 +68,7 @@ public class EipFileNameResource extends WebdavResource implements FileAttachmen
 	private FileAttachment fa;
 	
 	public EipFileNameResource(WebdavResourceFactory factory, FileAttachment fa) {
-		super(factory);
+		super(factory, EipResource.WEBDAV_PATH + "/" + fa.getId() + "/" + fa.getFileItem().getName(), fa.getFileItem().getName());
 		this.fa = fa;
 	}
 
@@ -78,14 +78,6 @@ public class EipFileNameResource extends WebdavResource implements FileAttachmen
 	@Override
 	public String getUniqueId() {
 		return "efn:" + fa.getId();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getName()
-	 */
-	@Override
-	public String getName() {
-		return fa.getFileItem().getName();
 	}
 
 	/* (non-Javadoc)
@@ -180,23 +172,11 @@ public class EipFileNameResource extends WebdavResource implements FileAttachmen
 	}
 
 	/* (non-Javadoc)
-	 * @see org.kablink.teaming.webdav.WebdavResource#getWebdavPath()
-	 */
-	@Override
-	public String getWebdavPath() {
-		return EipResource.WEBDAV_PATH + "/" + fa.getId() + "/" + fa.getFileItem().getName();
-	}
-
-	/* (non-Javadoc)
 	 * @see org.kablink.teaming.webdav.FileAttachmentResource#getFileAttachment()
 	 */
 	@Override
 	public FileAttachment getFileAttachment() {
 		return fa;
 	}
-	
-	@Override
-	public String toString() {
-		return getName();
-	}
+
 }

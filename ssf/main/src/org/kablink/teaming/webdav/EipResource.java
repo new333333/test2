@@ -48,7 +48,7 @@ public class EipResource extends WebdavResource implements PropFindableResource 
 	static final String WEBDAV_PATH = "/dave";
 
 	public EipResource(WebdavResourceFactory factory) {
-		super(factory);
+		super(factory, WEBDAV_PATH, ID);
 	}
 
 	/* (non-Javadoc)
@@ -56,14 +56,6 @@ public class EipResource extends WebdavResource implements PropFindableResource 
 	 */
 	@Override
 	public String getUniqueId() {
-		return ID;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getName()
-	 */
-	@Override
-	public String getName() {
 		return ID;
 	}
 
@@ -81,14 +73,6 @@ public class EipResource extends WebdavResource implements PropFindableResource 
 	@Override
 	public Date getCreateDate() {
 		return getMiltonSafeDate(ReleaseInfo.getBuildDate()); // This is as good as any other random date
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.webdav.WebdavResource#getWebdavPath()
-	 */
-	@Override
-	public String getWebdavPath() {
-		return WEBDAV_PATH;
 	}
 
 }
