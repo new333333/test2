@@ -59,7 +59,7 @@ public class RootResource extends WebdavCollectionResource implements PropFindab
 	private static final String ID = "root";
 	
 	public RootResource(WebdavResourceFactory factory) {
-		super(factory);
+		super(factory, "/", "");
 	}
 	
 	/* (non-Javadoc)
@@ -68,14 +68,6 @@ public class RootResource extends WebdavCollectionResource implements PropFindab
 	@Override
 	public String getUniqueId() {
 		return ID;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getName()
-	 */
-	@Override
-	public String getName() {
-		return "";
 	}
 
 	/* (non-Javadoc)
@@ -131,9 +123,10 @@ public class RootResource extends WebdavCollectionResource implements PropFindab
 	 */
 	@Override
 	public Resource child(String childName) {
+		/* disable navigation built on physical path
 		if(DavResource.ID.equals(childName))
 			return new DavResource(factory);
-		else if(this.factory.getMyFilesPrefix().equals(childName) && WebdavUtils.userCanAccessMyFiles(this))
+		else*/ if(this.factory.getMyFilesPrefix().equals(childName) && WebdavUtils.userCanAccessMyFiles(this))
 			return new MyFilesResource(factory);
 		else if(this.factory.getNetFoldersPrefix().equals(childName) && WebdavUtils.userCanAccessNetFolders())
 			return new NetFoldersResource(factory);
@@ -149,21 +142,15 @@ public class RootResource extends WebdavCollectionResource implements PropFindab
 	@Override
 	public List<? extends Resource> getChildren() {
 		List<Resource> list = new ArrayList<Resource>();
+		/* disable navigation built on physical path
 		list.add(new DavResource(factory));
+		*/
 		if(WebdavUtils.userCanAccessMyFiles(this))
 			list.add(new MyFilesResource(factory));
 		if(WebdavUtils.userCanAccessNetFolders())
 			list.add(new NetFoldersResource(factory));
 		list.add(new SharedWithMeResource(factory));
 		return list;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.webdav.WebdavResource#getWebdavPath()
-	 */
-	@Override
-	public String getWebdavPath() {
-		return "/";
 	}
 
 }

@@ -92,8 +92,6 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 	private static final Log logger = LogFactory.getLog(FileResource.class);
 	
 	// The following properties are required
-	private String webdavPath; // full webdav path leading to this resource
-	private String name; // file name
 	private String id; // file database id
 	private Long entryId; // owning folder entry id
 	private Date createdDate; // creation date
@@ -105,9 +103,7 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 	// lazy resolved for efficiency, so may be null initially
 	private FileAttachment fa; 
 	
-	private void init(String webdavPath, String name, String id, Long entryId, Date createdDate, Date modifiedDate, Long size) {
-		this.webdavPath = webdavPath;
-		this.name = name;
+	private void init(String id, Long entryId, Date createdDate, Date modifiedDate, Long size) {
 		this.id = id;
 		this.entryId = entryId;
 		this.createdDate = getMiltonSafeDate(createdDate);
@@ -115,23 +111,23 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 		this.size = size;
 	}
 	
-	private void init(String webdavPath, FileAttachment fa) {
-		init(webdavPath, fa.getFileItem().getName(), fa.getId(), fa.getOwner().getEntity().getId(), fa.getCreation().getDate(), fa.getModification().getDate(), null);		
+	private void init(FileAttachment fa) {
+		init(fa.getId(), fa.getOwner().getEntity().getId(), fa.getCreation().getDate(), fa.getModification().getDate(), null);		
 		this.fa = fa; // already resolved
 	}
 	
-	private void init(String webdavPath, FileIndexData fid) {
-		init(webdavPath, fid.getName(), fid.getId(), fid.getOwningEntityId(), fid.getCreatedDate(), fid.getModifiedDate(), fid.getSize());
+	private void init(FileIndexData fid) {
+		init(fid.getId(), fid.getOwningEntityId(), fid.getCreatedDate(), fid.getModifiedDate(), fid.getSize());
 	}
 	
 	public FileResource(WebdavResourceFactory factory, String webdavPath, FileAttachment fa) {
-		super(factory);
-		init(webdavPath, fa);
+		super(factory, webdavPath, fa.getFileItem().getName());
+		init(fa);
 	}
 
 	public FileResource(WebdavResourceFactory factory, String webdavPath, FileIndexData fid) {
-		super(factory);
-		init(webdavPath, fid);
+		super(factory, webdavPath, fid.getName());
+		init(fid);
 	}
 
 	/* (non-Javadoc)
@@ -140,14 +136,6 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 	@Override
 	public String getUniqueId() {
 		return "fa:" + id;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getName()
-	 */
-	@Override
-	public String getName() {
-		return name;
 	}
 
 	/* (non-Javadoc)
@@ -200,7 +188,7 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 	 */
 	@Override
 	public String getContentType(String accepts) {
-		return WebdavUtils.getFileContentType(accepts, name, logger);
+		return WebdavUtils.getFileContentType(accepts, getName(), logger);
 	}
 
 	/* (non-Javadoc)
@@ -229,10 +217,6 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 		return fa.getFileItem().getLength();
 	}
 	
-	public String getWebdavPath() {
-		return webdavPath;
-	}
-	
 	private FileAttachment resolveFileAttachment() throws NoFileByTheIdException {
 		if(fa == null) {
 			// Load it directly from DAO without further access check, since access check
@@ -249,10 +233,6 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 		return fa;
 	}
 	
-	public String toString() {
-    	return new StringBuilder().append("[").append(name).append(":").append(id).append("]").toString(); 
-	}
-
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.DeletableResource#delete()
 	 */
@@ -478,7 +458,8 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 								getFolderModule().moveEntry(entry.getParentBinder().getId(), entry.getId(), destFolderId, new String[] {name}, options);
 								// Finally, we need to adjust the state of this FileResource to properly reflect the post-operation state.
 								// Reload file attachment object just in case.
-								init(destFolderResource.getWebdavPath() + "/" + name, getFileModule().getFileAttachmentById(id));
+								this.setWebdavPath(destFolderResource.getWebdavPath() + "/" + name);
+								init(getFileModule().getFileAttachmentById(id));
 							}
 						}
 						else {
@@ -502,17 +483,6 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 		}
 		else {
 			throw new ConflictException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a folder resource.");
-		}
-	}
-	
-	public void fixupName(String newName) {
-		int index = webdavPath.indexOf(name);
-		if(index >= 0) {
-			webdavPath = webdavPath.substring(0, index) + newName;
-			name = newName;
-		}
-		else {
-			// This should never happen!?
 		}
 	}
 	
@@ -571,7 +541,7 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 		// Copy it iby creating a new entry using FolderResource.
 		InputStream is = getFileModule().readFile(entry.getParentBinder(), entry, fa);
 		try {
-			((FolderResource)destFolderResource).createNewWithModDate(name, is, fa.getModification().getDate());
+			((FolderResource)destFolderResource).createNewWithModDate(getName(), is, fa.getModification().getDate());
 		} catch (IOException e) {
 			throw new WebdavException(e);
 		}

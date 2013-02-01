@@ -67,17 +67,12 @@ public class MyFilesResource extends ContainerResource
 	implements PropFindableResource, GetableResource, CollectionResource, PutableResource, MakeCollectionableResource {
 
 	public MyFilesResource(WebdavResourceFactory factory) {
-		super(factory, "/" + factory.getMyFilesPrefix());
+		super(factory, "/" + factory.getMyFilesPrefix(), factory.getMyFilesPrefix());
 	}
 
 	@Override
 	public String getUniqueId() {
 		return this.factory.getMyFilesPrefix();
-	}
-
-	@Override
-	public String getName() {
-		return getUniqueId();
 	}
 
 	@Override

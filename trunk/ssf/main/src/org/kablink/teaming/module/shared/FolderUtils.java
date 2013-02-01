@@ -658,7 +658,7 @@ public class FolderUtils {
 	public static void deleteFileInFolderEntry(FolderEntry entry, FileAttachment fa) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {
         // By default, entry is simply moved into trash rather than permanently deleted.
         boolean predelete = SPropsUtil.getBoolean("folderutils.deleteentry.predelete", true);
-        deleteFileInFolderEntry(entry, fa);
+        deleteFileInFolderEntry(entry, fa, predelete);
     }
 
 	public static void deleteFileInFolderEntry(FolderEntry entry, FileAttachment fa, boolean predelete) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {

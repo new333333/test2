@@ -60,8 +60,8 @@ public abstract class WebdavCollectionResource extends WebdavResource implements
 
 	protected static final String CONTENT_TYPE_TEXT_HTML_UTF8 = "text/html; charset=utf-8";
 	
-	protected WebdavCollectionResource(WebdavResourceFactory factory) {
-		super(factory);
+	protected WebdavCollectionResource(WebdavResourceFactory factory, String webdavPath, String name) {
+		super(factory, webdavPath, name);
 	}
 
 	/* (non-Javadoc)

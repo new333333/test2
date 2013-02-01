@@ -77,19 +77,11 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
  */
 public abstract class ContainerResource extends WebdavCollectionResource implements PropFindableResource, GetableResource, CollectionResource {
 
-	protected String webdavPath;
-
-	protected ContainerResource(WebdavResourceFactory factory, String webdavPath) {
-		super(factory);
-		this.webdavPath = webdavPath;
+	protected ContainerResource(WebdavResourceFactory factory, String webdavPath, String name) {
+		super(factory, webdavPath, name);
 	}
 
-	@Override
-	public String getWebdavPath() {
-		return webdavPath;
-	}
-
-	protected Resource makeResourceFromBinder(Binder binder) {
+	protected BinderResource makeResourceFromBinder(Binder binder) {
 		if(binder == null)
 			return null;
 		
@@ -112,7 +104,7 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
 		}
 	}
 	
-	protected Resource makeResourceFromBinder(BinderIndexData binder) {
+	protected BinderResource makeResourceFromBinder(BinderIndexData binder) {
 		if(binder == null)
 			return null;
 		
@@ -131,7 +123,7 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
 		}
 	}
 	
-	protected Resource makeResourceFromFile(FileAttachment fa) {
+	protected FileResource makeResourceFromFile(FileAttachment fa) {
 		// Only file owned by folder entry is supported through this interface
 		if(fa == null)
 			return null;
@@ -141,7 +133,7 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
 			return null;
 	}
 	
-	protected Resource makeResourceFromFile(FileIndexData file) {
+	protected FileResource makeResourceFromFile(FileIndexData file) {
 		// Only file owned by folder entry is supported through this interface
 		if(file == null)
 			return null;
@@ -287,10 +279,10 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
 	}
 
 	private String getChildWebdavPath(String childName) {
-		if(webdavPath.endsWith("/"))
-			return webdavPath + childName;
+		if(getWebdavPath().endsWith("/"))
+			return getWebdavPath() + childName;
 		else
-			return webdavPath + "/" + childName;
+			return getWebdavPath() + "/" + childName;
 	}
 	
 	private LuceneSessionFactory getLuceneSessionFactory() {

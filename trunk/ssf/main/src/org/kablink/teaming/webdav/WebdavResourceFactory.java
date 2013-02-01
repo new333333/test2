@@ -115,6 +115,7 @@ public class WebdavResourceFactory extends AbstractAllModulesInjected implements
 		if(p.isRoot()) {
 			return new RootResource(this);
 		}
+		/* disable navigation built on physical path
 		else if(p.getFirst().equals("dav")) {
 			if(p.getLength() == 1) {
 				return new DavResource(this);
@@ -123,7 +124,7 @@ public class WebdavResourceFactory extends AbstractAllModulesInjected implements
 				Object obj = resolvePath(p.getStripFirst());
 				return vibeObjectToResource(path, obj);
 			}
-		}
+		}*/
 		else if(p.getFirst().equals("dave")) { // edit-in-place
 			String[] parts = p.getParts();
 			if(parts.length == 1) {

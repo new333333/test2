@@ -67,7 +67,7 @@ public class EipFileIdResource extends WebdavResource implements PropFindableRes
 	private FileAttachment fa;
 	
 	public EipFileIdResource(WebdavResourceFactory factory, FileAttachment fa) {
-		super(factory);
+		super(factory, EipResource.WEBDAV_PATH + "/" + fa.getId(), fa.getId());
 		this.fa = fa;
 	}
 
@@ -77,14 +77,6 @@ public class EipFileIdResource extends WebdavResource implements PropFindableRes
 	@Override
 	public String getUniqueId() {
 		return "efi:" + fa.getId();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getName()
-	 */
-	@Override
-	public String getName() {
-		return fa.getId();
 	}
 
 	/* (non-Javadoc)
@@ -168,19 +160,6 @@ public class EipFileIdResource extends WebdavResource implements PropFindableRes
 	@Override
 	public Date getCreateDate() {
 		return getMiltonSafeDate(fa.getCreation().getDate());
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.webdav.WebdavResource#getWebdavPath()
-	 */
-	@Override
-	public String getWebdavPath() {
-		return EipResource.WEBDAV_PATH + "/" + fa.getId();
-	}
-	
-	@Override
-	public String toString() {
-		return getName();
 	}
 
 }

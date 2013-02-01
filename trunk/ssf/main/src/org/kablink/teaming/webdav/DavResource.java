@@ -56,7 +56,7 @@ public class DavResource extends WebdavCollectionResource implements PropFindabl
 	static final String WEBDAV_PATH = "/dav";
 	
 	public DavResource(WebdavResourceFactory factory) {
-		super(factory);
+		super(factory, WEBDAV_PATH, ID);
 	}
 	
 	/* (non-Javadoc)
@@ -66,15 +66,6 @@ public class DavResource extends WebdavCollectionResource implements PropFindabl
 	public String getUniqueId() {
 		return ID;
 	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getName()
-	 */
-	@Override
-	public String getName() {
-		return ID;
-	}
-
 
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.Resource#getModifiedDate()
@@ -121,14 +112,6 @@ public class DavResource extends WebdavCollectionResource implements PropFindabl
 		List<Resource> list = new ArrayList<Resource>();
 		list.add(new WorkspaceResource(factory, getWebdavPath() + "/" + topWS.getTitle(), topWS));
 		return list;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.webdav.WebdavResource#getWebdavPath()
-	 */
-	@Override
-	public String getWebdavPath() {
-		return WEBDAV_PATH;
 	}
 
 }

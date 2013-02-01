@@ -72,7 +72,6 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 	// Required properties
 	protected Long id;
 	protected EntityType entityType;
-	protected String name;
 	protected String path;
 	protected Date createdDate;
 	protected Date modifiedDate;
@@ -83,12 +82,10 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 
 	private BinderResource(WebdavResourceFactory factory, String webdavPath, EntityIdentifier entityIdentifier, String title, String path, Date createdDate, Date modifiedDate,
 			boolean library, boolean mirrored) {
-		super(factory, webdavPath);
-		this.webdavPath = webdavPath;
+		super(factory, webdavPath, title);
 		this.id = entityIdentifier.getEntityId();
 		this.entityType = entityIdentifier.getEntityType();
 		this.entityIdentifier = entityIdentifier;
-		this.name = title;
 		this.path = path;
 		this.createdDate = getMiltonSafeDate(createdDate);
 		this.modifiedDate = getMiltonSafeDate(modifiedDate);
@@ -129,14 +126,6 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getName()
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.Resource#getModifiedDate()
 	 */
 	@Override
@@ -165,11 +154,6 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 		return false;
 	}
 
-	@Override
-	public String toString() {
-		return path;
-	}
-	
 	// Return Vibe path
 	public String getPath() {
 		return path;
@@ -183,17 +167,6 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 		return entityIdentifier;
 	}
 	
-	public void fixupName(String newName) {
-		int index = webdavPath.indexOf(name);
-		if(index >= 0) {
-			webdavPath = webdavPath.substring(0, index) + newName;
-			name = newName;
-		}
-		else {
-			// This should never happen!?
-		}
-	}
-
 	protected void renameBinder(Binder binder, String newTitle) 
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
 		// Do this only if the new title is actually different from the current value.

@@ -54,11 +54,18 @@ public abstract class WebdavResource extends AbstractAllModulesInjected implemen
 	
 	protected WebdavResourceFactory factory;
 	
-	protected WebdavResource(WebdavResourceFactory factory) {
-		this.factory = factory;
-	}
+	// At minimum, each WebDAV resource must have a full path and a name (which is the last element of the path). 
 	
-	public abstract String getWebdavPath();
+	// Full WebDAV path leading to this resource
+	private String webdavPath; 
+	// Name portion of the URL. This must be consistent with the full path.
+	private String name; 
+	
+	protected WebdavResource(WebdavResourceFactory factory, String webdavPath, String name) {
+		this.factory = factory;
+		this.webdavPath = webdavPath;
+		this.name = name;
+	}
 	
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.Resource#authenticate(java.lang.String, java.lang.String)
@@ -104,9 +111,38 @@ public abstract class WebdavResource extends AbstractAllModulesInjected implemen
 			return date;
 	}
 	
+	public String getWebdavPath() {
+		return webdavPath;
+	}
+	
+	public void setWebdavPath(String webdavPath) {
+		this.webdavPath = webdavPath;
+	}
+	
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public void fixupName(String newName) {
+		String oldName = getName();
+		int index = getWebdavPath().indexOf(oldName);
+		if(index >= 0) {
+			setWebdavPath(getWebdavPath().substring(0, index) + newName);
+			setName(newName);
+		}
+		else {
+			// This should never happen!?
+		}
+	}
+	
 	@Override
 	public String toString() {
-		return this.getWebdavPath();
+		return this.webdavPath;
 	}
 	
 	protected GroovyScriptService getGroovyScriptService() {
