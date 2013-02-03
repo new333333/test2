@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.FilesErrors;
@@ -824,7 +825,9 @@ public interface BinderModule {
 	 * @param parentBinderPath
 	 * @return
 	 */
-    public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath);
+    public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath, boolean isParentBinderMirrored);
+
+    public Hits searchFolderOneLevelWithInferredAccess_Hits(Criteria crit, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath, boolean isParentBinderMirrored);
 
     /**
      * Return whether or not the calling user can gain inferred access to the specified

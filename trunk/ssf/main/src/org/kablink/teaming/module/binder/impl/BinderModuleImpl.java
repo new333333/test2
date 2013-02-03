@@ -3218,18 +3218,33 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 	
-    public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath) {
+	@Override
+    public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath, boolean isParentBinderMirrored) {
+		Hits hits = searchFolderOneLevelWithInferredAccess_Hits(crit, searchMode, offset, maxResults, parentBinderId, parentBinderPath, isParentBinderMirrored);
+		
+		return returnSearchQuery(hits);
+    }
+
+	@Override
+    public Hits searchFolderOneLevelWithInferredAccess_Hits(Criteria crit, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath, boolean isParentBinderMirrored) {
+		consultJits(parentBinderId, isParentBinderMirrored);
+		
     	boolean preDeleted = false;
     	boolean ignoreAcls = false;
     	
 		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted);
 		SearchObject so = qb.buildQuery(crit.toQuery());
-
-		Hits hits = executeNetFolderLuceneQuery(so, searchMode, offset, maxResults, parentBinderId, parentBinderPath);
 		
-		return returnSearchQuery(hits);
+		return executeNetFolderLuceneQuery(so, searchMode, offset, maxResults, parentBinderId, parentBinderPath);
     }
 
+	private void consultJits(Long parentBinderId, boolean isParentBinderMirrored) {
+		if(!isParentBinderMirrored)
+			return;
+		
+		
+	}
+	
 	@Override
 	public boolean testInferredAccessToBinder(Binder binder) {
 		User user = RequestContextHolder.getRequestContext().getUser();

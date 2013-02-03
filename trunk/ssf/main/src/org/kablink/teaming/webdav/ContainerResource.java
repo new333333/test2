@@ -217,33 +217,26 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
 	 * @return
 	 */
 	protected List<BinderIndexData> getBinderDataFromIndex(Criteria crit, boolean oneLevelWithInferredAccess, Binder parentBinder) {
-		QueryBuilder qb = new QueryBuilder(true, false);
-    	org.dom4j.Document qTree = crit.toQuery();
-		SearchObject so = qb.buildQuery(qTree);   	
-   	
-    	Query soQuery = so.getLuceneQuery();
-    	    	
-    	if(logger.isDebugEnabled()) {
-    		logger.debug("Query is: " + qTree.asXML());
-    		logger.debug("Query is: " + soQuery.toString());
-    	}
-    	
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
     	Hits hits = null;
         try {
         	if(oneLevelWithInferredAccess) {
-    			hits = luceneSession.searchFolderOneLevelWithInferredAccess(RequestContextHolder.getRequestContext().getUserId(),
-    					so.getAclQueryStr(), 
-    					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
-    					soQuery, 
-    					null, 
-    					0,
-    					Integer.MAX_VALUE, 
-    					parentBinder.getId(), 
-    					parentBinder.getPathName());
+        		hits = getBinderModule().searchFolderOneLevelWithInferredAccess_Hits(crit, 
+        				Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
+        				0, 
+        				Integer.MAX_VALUE, 
+        				parentBinder.getId(), 
+        				parentBinder.getPathName(),
+        				parentBinder.isMirrored());
         	}
         	else {
+        		QueryBuilder qb = new QueryBuilder(true, false);
+            	org.dom4j.Document qTree = crit.toQuery();
+        		SearchObject so = qb.buildQuery(qTree);   	
+           	
+            	Query soQuery = so.getLuceneQuery();
+            	    	
         		hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
 	        		so.getAclQueryStr(), 
 	        		Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
