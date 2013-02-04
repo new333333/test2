@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
@@ -153,8 +154,6 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private static int MIN_WIDTH	= 800;	//
 
 	// Padding on the left/right and top/bottom of the popup.
-//	private static int LEFT_RIGHT_PAD	= 240;	// This number of pixels on the left and right.
-//	private static int TOP_BOTTOM_PAD	= 200;	// This number of pixels on the top  and bottom.
 	private static int LEFT_RIGHT_PAD	= 16;	// This number of pixels on the left and right.
 	private static int TOP_BOTTOM_PAD	= 16;	// This number of pixels on the top  and bottom.
 	
@@ -1043,7 +1042,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			m_hintLabel.setText(m_messages.addFilesHtml5PopupBusy(file.getName(), ++m_readThis, m_readTotal));
 			try {
 				// ...and upload it by blobs.
-				m_fileBlob = new FileBlob(file.getName(), getFileDate(file), file.getSize());
+				m_fileBlob = new FileBlob(file.getName(), getFileDate(file), file.getSize(), new Date().getTime());
 				readNextBlobNow(file.slice(m_fileBlob.getBlobStart(), m_fileBlob.getBlobSize()));
 			}
 			

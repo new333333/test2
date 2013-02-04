@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,6 +42,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FileBlob implements IsSerializable {
+	// The following pertains to a single file being uploaded.
+	private Long	m_uploadId;				//
+	
 	// The following pertain to blobs from the file as they're uploaded.
 	private boolean	m_blobBase64Encoded;	//
 	private long	m_blobSize;				//
@@ -79,12 +82,14 @@ public class FileBlob implements IsSerializable {
 	 * @param fileName
 	 * @param fileUTC
 	 * @param fileSize
+	 * @param uploadId
 	 */
-	public FileBlob(String fileName, String fileUTC, long fileSize) {
+	public FileBlob(String fileName, String fileUTC, long fileSize, Long uploadId) {
 		// Initialize this object...
 		this();
 
 		// ...store the parameters...
+		setUploadId(uploadId);
 		setFileName(fileName);
 		setFileUTC( fileUTC );
 		setFileSize(fileSize);
@@ -99,6 +104,8 @@ public class FileBlob implements IsSerializable {
 	 * 
 	 * @return
 	 */
+	public Long getUploadId() {return m_uploadId;}
+	
 	public boolean isBlobBase64Encoded() {return m_blobBase64Encoded;}
 	public long    getBlobSize()         {return m_blobSize;         }
 	public long    getBlobStart()        {return m_blobStart;        }
@@ -114,6 +121,8 @@ public class FileBlob implements IsSerializable {
 	 * 
 	 * @param
 	 */
+	public void setUploadId(Long uploadId) {m_uploadId = uploadId;}
+	
 	public void setBlobBase64Encoded(boolean blobBase64Encoded) {m_blobBase64Encoded = blobBase64Encoded;}
 	public void setBlobSize(         long    blobSize)          {m_blobSize          = blobSize;         }
 	public void setBlobStart(        long    blobStart)         {m_blobStart         = blobStart;        }
