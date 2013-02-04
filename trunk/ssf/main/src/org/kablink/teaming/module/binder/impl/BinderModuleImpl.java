@@ -3219,15 +3219,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	@Override
-    public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath, boolean isParentBinderMirrored) {
-		Hits hits = searchFolderOneLevelWithInferredAccess_Hits(crit, searchMode, offset, maxResults, parentBinderId, parentBinderPath, isParentBinderMirrored);
+    public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder) {
+		// No access checking in this method, because we expect the caller to check access on the parent binder before calling this method.
+		Hits hits = searchFolderOneLevelWithInferredAccess_Hits(crit, searchMode, offset, maxResults, parentBinder);
 		
 		return returnSearchQuery(hits);
     }
 
 	@Override
-    public Hits searchFolderOneLevelWithInferredAccess_Hits(Criteria crit, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath, boolean isParentBinderMirrored) {
-		consultJits(parentBinderId, isParentBinderMirrored);
+    public Hits searchFolderOneLevelWithInferredAccess_Hits(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder) {
+		// No access checking in this method, because we expect the caller to check access on the parent binder before calling this method.
+		
+		if(parentBinder.isMirrored() && parentBinder instanceof Folder)
+			getFolderModule().jits((Folder)parentBinder);
 		
     	boolean preDeleted = false;
     	boolean ignoreAcls = false;
@@ -3235,16 +3239,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted);
 		SearchObject so = qb.buildQuery(crit.toQuery());
 		
-		return executeNetFolderLuceneQuery(so, searchMode, offset, maxResults, parentBinderId, parentBinderPath);
+		return executeNetFolderLuceneQuery(so, searchMode, offset, maxResults, parentBinder.getId(), parentBinder.getPathName());
     }
 
-	private void consultJits(Long parentBinderId, boolean isParentBinderMirrored) {
-		if(!isParentBinderMirrored)
-			return;
-		
-		
-	}
-	
 	@Override
 	public boolean testInferredAccessToBinder(Binder binder) {
 		User user = RequestContextHolder.getRequestContext().getUser();

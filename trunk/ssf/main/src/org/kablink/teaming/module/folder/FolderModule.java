@@ -698,4 +698,5 @@ public interface FolderModule {
     		List<Map> fileItemsList, List<Map> optionsList) 
     	throws AccessControlException, WriteFilesException, WriteEntryDataException;
 
+    public void jits(Folder folder);
 }
