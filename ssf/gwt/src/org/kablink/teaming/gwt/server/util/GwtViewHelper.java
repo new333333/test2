@@ -2571,9 +2571,7 @@ public class GwtViewHelper {
 					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
 					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
 					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
-					nfBinder.getId(),
-					nfBinder.getPathName(),
-					nfBinder.isMirrored());
+					nfBinder);
 			
 		case SHARED_BY_ME:
 		case SHARED_WITH_ME:

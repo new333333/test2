@@ -226,9 +226,7 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
         				Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
         				0, 
         				Integer.MAX_VALUE, 
-        				parentBinder.getId(), 
-        				parentBinder.getPathName(),
-        				parentBinder.isMirrored());
+        				parentBinder);
         	}
         	else {
         		QueryBuilder qb = new QueryBuilder(true, false);

@@ -1050,9 +1050,7 @@ public class SearchUtils {
                 Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
                 getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
                 getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
-                nfBinder.getId(),
-                nfBinder.getPathName(),
-                nfBinder.isMirrored());
+                nfBinder);
     }
 
     /**

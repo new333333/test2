@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.UncheckedIOException;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.jobs.ScheduleInfo;
@@ -87,6 +88,11 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
     		List<Map> fileItemsList, List<Map> optionsList) 
     	throws AccessControlException, WriteFilesException, WriteEntryDataException {
 		throw new UnsupportedOperationException("addNetFolderEntries operation is not supported in the base edition");
+	}
+
+	@Override
+	public void jits(Folder folder) {
+		throw new UnsupportedOperationException("jits operation is not supported in the base edition");
 	}
 
 }

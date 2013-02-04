@@ -506,7 +506,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
         crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
         crit.add(Restrictions.eq(Constants.BINDERS_PARENT_ID_FIELD, ((Long) id).toString()));
-        Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount, binder.getId(), binder.getPathName(), binder.isMirrored());
+        Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount, binder);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset, binder.getModificationDate());
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultMap, nextUrl, nextParams, offset);
         if (modifiedSince!=null && !modifiedSince.before(results.getLastModified())) {

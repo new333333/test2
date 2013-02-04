@@ -112,6 +112,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean allowDesktopAppToSyncData = Boolean.TRUE;
     protected Boolean allowMobileAppsToSyncData = Boolean.TRUE;
     protected Boolean indexContent = Boolean.TRUE;
+    protected Boolean jitsEnabled = Boolean.TRUE; // Applicable only to mirrored folders
     
     public Binder() {
     }
@@ -146,6 +147,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 allowDesktopAppToSyncData = source.allowDesktopAppToSyncData;
 		 allowMobileAppsToSyncData = source.allowMobileAppsToSyncData;
 		 indexContent = source.indexContent;
+		 jitsEnabled = source.jitsEnabled;
      }
     /**
      * Return the zone id
@@ -783,6 +785,16 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     public void setIndexContent( boolean index )
     {
    		indexContent = new Boolean( index );
+    }
+    
+    public boolean isJitsEnabled() {
+    	if(jitsEnabled == null)
+    		return true;
+    	else
+    		return jitsEnabled.booleanValue();
+    }
+    public void setJitsEnabled(boolean jitsEnabled) {
+    	this.jitsEnabled = jitsEnabled;
     }
     
     /**

@@ -825,9 +825,9 @@ public interface BinderModule {
 	 * @param parentBinderPath
 	 * @return
 	 */
-    public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath, boolean isParentBinderMirrored);
+    public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder);
 
-    public Hits searchFolderOneLevelWithInferredAccess_Hits(Criteria crit, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath, boolean isParentBinderMirrored);
+    public Hits searchFolderOneLevelWithInferredAccess_Hits(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder);
 
     /**
      * Return whether or not the calling user can gain inferred access to the specified
