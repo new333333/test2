@@ -3515,6 +3515,7 @@ public class BinderHelper {
 	
 	public static void prepareSearchResultData(AllModulesInjected bs, RenderRequest request, Tabs tabs, Map model, Map options) {
 
+		User user = RequestContextHolder.getRequestContext().getUser();
 		SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, bs.getDefinitionModule());
 		Document searchQuery = requestParser.getSearchQuery();
 		if(options != null) {
@@ -3526,7 +3527,7 @@ public class BinderHelper {
 		//See if this is a request to search within the My Files collection
 		if (ObjectKeys.SEARCH_SCOPE_MY_FILES.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
 			//Build the ancilary criteria for searching within the My Files collection
-			Criteria crit = SearchUtils.getMyFilesSearchCriteria(bs);
+			Criteria crit = SearchUtils.getMyFilesSearchCriteria(bs, user.getWorkspaceId(), true, true, true, true, true);
 			// Perform the search for the binders to search...
 			int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 			Map searchResults = bs.getBinderModule().executeSearchQuery(
@@ -3550,7 +3551,8 @@ public class BinderHelper {
 				//Make sure there is some binderId to search for or the search returns everything
 				binderIds.add("xxx");
 			}
-			crit = SearchUtils.getBinderEntriesSearchCriteria(bs, binderIds, false);
+			crit = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(bs, binderIds, null, null, false, 
+					Constants.LASTACTIVITY_FIELD, true, true);
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		} else if (ObjectKeys.SEARCH_SCOPE_NET_FOLDERS.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
 			//Search just the user's net folders
@@ -3579,7 +3581,7 @@ public class BinderHelper {
 				//Make sure there is some binderId to search for or the search returns everything
 				binderIds.add("xxx");
 			}
-			crit = SearchUtils.getBinderEntriesSearchCriteria(bs, binderIds, false);
+			crit = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(bs, binderIds, null, null, false, Constants.LASTACTIVITY_FIELD, true, true);
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		} else if (ObjectKeys.SEARCH_SCOPE_SHARED_WITH_ME.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
 			//Search the user's "shared with me" files
@@ -3617,7 +3619,8 @@ public class BinderHelper {
 			if (options.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS)) {
 				includeSubFolders = (Boolean)options.get(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS);
 			}
-			Criteria crit = SearchUtils.getBinderEntriesSearchCriteria(bs, binderIds, false, includeSubFolders);
+			Criteria crit = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(bs, binderIds, null, null, false, 
+					Constants.LASTACTIVITY_FIELD, includeSubFolders, true);
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		}
 		
