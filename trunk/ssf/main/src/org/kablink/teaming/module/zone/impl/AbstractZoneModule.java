@@ -1107,9 +1107,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		// all users visitors at profiles
     		addMembership(top, visitorsRole, profiles, members);
     		// all users participants at teamroot
-    		addMembership(top, participantsRole, teamRoot, members);
+    		if (!Utils.checkIfFilr() && !Utils.checkIfIPrint()) {
+    			//For Filr and iPrint, the team workspace is there, but hidden from sight
+    			addMembership(top, participantsRole, teamRoot, members);
+    		}
     		// all users createWs  at teamroot
-    		addMembership(top, teamWsRole, teamRoot, members);
+    		if (!Utils.checkIfFilr() && !Utils.checkIfIPrint()) {
+    			addMembership(top, teamWsRole, teamRoot, members);
+    		}
     		//add members to participants
     		members.clear();
     		members.add(ObjectKeys.TEAM_MEMBER_ID);
