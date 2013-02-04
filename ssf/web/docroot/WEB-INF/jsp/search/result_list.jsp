@@ -93,7 +93,7 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 				if (strEntityType == null) strEntityType = "";
 				if ( strEntityType.equals("folderEntry") || strEntityType.equals("reply") ) {
 					strUseBinderMethod = "no";
-				} else if ( (isDashboard.equals("yes") || GwtUIHelper.isGwtUIActive(request)) && (strEntityType.equals("user") || strEntityType.equals("folder") || strEntityType.equals("workspace") || strEntityType.equals("profiles")) ) {
+				} else if ( (isDashboard.equals("yes") || GwtUIHelper.isGwtUIActive(request)) && (strEntityType.equals("folder") || strEntityType.equals("workspace") || strEntityType.equals("profiles")) ) {
 					strUseBinderMethod = "permalink";
 				}
 			%>
@@ -446,18 +446,26 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 											entryId="${entry._docId}" binderId="${entry._binderId}" 
 											entityType="${entry._entityType}"  
 											namespace="${ss_namespace}" 
-											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+											useBinderFunction="<%= strUseBinderMethod %>" 
+											isDashboard="${isDashboard}" 
+											dashboardType="${ssDashboard.scope}">
 											
 											<ssf:param name="url" useBody="true">
-											
 												<c:if test="${isDashboard == 'yes'}">
 													<ssf:permalink search="${entry}"/>
 												</c:if>
 												<c:if test="${empty isDashboard || isDashboard == 'no'}">
-													<ssf:url adapter="false" portletName="ss_forum" binderId="${entry._binderId}" 
-														entryId="${entry._docId}" action="view_ws_listing" actionUrl="false" >
-			    	  									<ssf:param name="newTab" value="1"/>
+												  <c:if test="${!empty entry._workspaceId}">
+													<ssf:url adapter="false" portletName="ss_forum" 
+													    binderId="${entry._workspaceId}" 
+														action="view_ws_listing" actionUrl="false" >
+			    	  									<ssf:param name="profile" value="1"/>
 			    	  								</ssf:url>
+			    	  							  </c:if>
+												  <c:if test="${empty entry._workspaceId}">
+													javascript:alert('<ssf:escapeJavaScript><ssf:nlt 
+													  tag="workspace.noUserWorkspace"/></ssf:escapeJavaScript>');return false;
+			    	  							  </c:if>
 												</c:if>
 												
 											</ssf:param>
