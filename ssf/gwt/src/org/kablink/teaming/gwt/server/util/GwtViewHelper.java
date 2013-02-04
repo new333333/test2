@@ -1354,7 +1354,7 @@ public class GwtViewHelper {
 	 */
 	private static void debugTraceBlob(FileBlob fileBlob, String methodName, String traceHead, String traceTail, boolean lastBlob) {
 		if (m_logger.isDebugEnabled()) {
-			String	dump  = (traceHead + ":  '" + fileBlob.getFileName() + "' (fSize:" + fileBlob.getFileSize() + ", bStart:" + fileBlob.getBlobStart() + ", bSize:" + fileBlob.getBlobSize() + ", last:" + lastBlob + ", md5Hash:" + fileBlob.getBlobMD5Hash() + ")");
+			String	dump  = (traceHead + ":  '" + fileBlob.getFileName() + "' (fSize:" + fileBlob.getFileSize() + ", bStart:" + fileBlob.getBlobStart() + ", bSize:" + fileBlob.getBlobSize() + ", last:" + lastBlob + ", md5Hash:" + fileBlob.getBlobMD5Hash() + ", uploadId:" + fileBlob.getUploadId() + ")");
 			boolean hasTail = MiscUtil.hasString(traceTail);
 			dump = ("GwtViewHelper." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
 			String data = fileBlob.getBlobData();
@@ -1553,20 +1553,24 @@ public class GwtViewHelper {
 			BinderType bt = bi.getBinderType();
 			m_logger.debug(".....dumpViewInfo( BINDER ):  " + bt.name());
 			switch (bt) {
+			case COLLECTION:
+				m_logger.debug("........dumpViewInfo( BINDER:COLLECTION  ):  " + bi.getCollectionType().name());
+				break;
+				
 			case FOLDER:
-				m_logger.debug("........dumpViewInfo( BINDER:FOLDER     ):  " + bi.getFolderType().name());
+				m_logger.debug("........dumpViewInfo( BINDER:FOLDER      ):  " + bi.getFolderType().name());
 				break;
 				
 			case WORKSPACE:
-				m_logger.debug("........dumpViewInfo( BINDER:WORKSPACE  ):  " + bi.getWorkspaceType().name());
+				m_logger.debug("........dumpViewInfo( BINDER:WORKSPACE   ):  " + bi.getWorkspaceType().name());
 				break;
 			
 			case OTHER:
-				m_logger.debug("........dumpViewInfo( BINDER:OTHER      )");
+				m_logger.debug("........dumpViewInfo( BINDER:OTHER       )");
 				break;
 				
 			default:
-				m_logger.debug(".........dumpViewInfo( BINDER:Not Handled ):  This BinderType is not implemented by the dumper.");
+				m_logger.debug("........dumpViewInfo( BINDER:Not Handled ):  This BinderType is not implemented by the dumper.");
 				break;
 			}
 			
@@ -7587,14 +7591,14 @@ public class GwtViewHelper {
 			HttpSession session = WebHelper.getRequiredSession(request);
 			boolean firstBlob = (0l == fileBlob.getBlobStart());
 			File tempFile;
+			String uploadFName = (CACHED_UPLOAD_FILE + "." + String.valueOf(GwtServerHelper.getCurrentUserId()) + "." + String.valueOf(fileBlob.getUploadId()) + ".");
 			if (firstBlob) {
 				// Yes!  Create a new temporary file for it and store
 				// the file handle in the session cache.  The format of
 				// the prefix used is:  'uploadFile.<userId>.<timestamp>.'
-				String prefix = (CACHED_UPLOAD_FILE + "." + String.valueOf(GwtServerHelper.getCurrentUserId()) + "." + String.valueOf(new Date().getTime()) + ".");
-				tempFile = TempFileUtil.createTempFile(prefix);
+				tempFile = TempFileUtil.createTempFile(uploadFName);
 				if (!lastBlob) {
-					session.setAttribute(CACHED_UPLOAD_FILE, tempFile.getName());
+					session.setAttribute(uploadFName, tempFile.getName());
 				}
 			}
 			
@@ -7602,9 +7606,9 @@ public class GwtViewHelper {
 				// No, this isn't the first blob of a file!  Access the
 				// temporary file from the handle stored in the session
 				// cache.
-				tempFile = TempFileUtil.getTempFileByName((String) session.getAttribute(CACHED_UPLOAD_FILE));
+				tempFile = TempFileUtil.getTempFileByName((String) session.getAttribute(uploadFName));
 				if (lastBlob) {
-					session.removeAttribute(CACHED_UPLOAD_FILE);
+					session.removeAttribute(uploadFName);
 				}
 			}
 
