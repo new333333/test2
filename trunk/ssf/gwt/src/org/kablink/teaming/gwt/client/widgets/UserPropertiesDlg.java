@@ -214,8 +214,6 @@ public class UserPropertiesDlg extends DlgBox
 		
 		// Does the user doesn't have a Home folder?
 		if (hasHome) {
-			final Long netFolderId;
-			
 			// Yes!  Add information about the path to it to the grid.
 			row = grid.getRowCount();
 			StringBuffer	homeBuf   = new StringBuffer();
@@ -241,38 +239,30 @@ public class UserPropertiesDlg extends DlgBox
 				m_messages.userPropertiesDlgLabel_HomePath(),
 				homeDisplay);
 
-			// Do we have a net folder id for the home directory?
-			netFolderId = home.getId();
-			if ( netFolderId != null )
-			{
-				// Yes, add an "edit home folder" button.
-				final Button button = new Button( m_messages.userPropertiesDlgEdit_HomeFolder() );
-				button.addStyleName( "vibe-userPropertiesDlg-buttonAct vibe-userPropertiesDlg-buttonLook" );
-				button.addClickHandler( new ClickHandler()
-				{
+			// Do we have a net folder ID for the home directory?
+			final Long netFolderId = home.getId();
+			if (null != netFolderId) {
+				// Yes, add an 'edit home folder' button...
+				final Button button = new Button(m_messages.userPropertiesDlgEdit_HomeFolder());
+				button.addStyleName("vibe-userPropertiesDlg-buttonAct vibe-userPropertiesDlg-buttonLook");
+				button.addClickHandler(new ClickHandler() {
 					@Override
-					public void onClick( ClickEvent event )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
+					public void onClick(ClickEvent event) {
+						GwtClientHelper.deferCommand(new Scheduler.ScheduledCommand() {
 							@Override
-							public void execute()
-							{
-								InvokeEditNetFolderDlgEvent event;
-								
-								event = new InvokeEditNetFolderDlgEvent( netFolderId, button );
-								GwtTeaming.fireEventAsync( event );
+							public void execute() {
+								GwtTeaming.fireEventAsync(
+									new InvokeEditNetFolderDlgEvent(
+										netFolderId,
+										button));
 							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
+						});
 					}
 				});
 	
 				// ...and add the button to the grid.
-				grid.setWidget( row, 0, button);
-				cf.setHorizontalAlignment( row, 0, HasHorizontalAlignment.ALIGN_CENTER );
+				grid.setWidget(           row, 0, button);
+				cf.setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_CENTER);
 			}
 		}
 	}
