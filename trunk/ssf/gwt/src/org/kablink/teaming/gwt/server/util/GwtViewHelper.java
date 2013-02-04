@@ -1311,15 +1311,9 @@ public class GwtViewHelper {
 				for (EntityId entityId:  entityIds) {
 					try {
 						// Can we copy this entity?
-						if (entityId.isBinder()) {
-							bm.copyBinder(entityId.getEntityId(), tis.getBinderTargetId(), true, null);
-						}
-						else {
-							FolderEntry copiedFE = fm.copyEntry( entityId.getBinderId(), entityId.getEntityId(), tis.getEntryTargetId(),  null, null);
-							if (null == copiedFE) {
-								throw new TitleException("");
-							}
-						}
+						if (entityId.isBinder())
+						     bm.copyBinder(                        entityId.getEntityId(), tis.getBinderTargetId(), true, null);
+						else fm.copyEntry( entityId.getBinderId(), entityId.getEntityId(), tis.getEntryTargetId(),  null, null);
 					}
 
 					catch (Exception e) {

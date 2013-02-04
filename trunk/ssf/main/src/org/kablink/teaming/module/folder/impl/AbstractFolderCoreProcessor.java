@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -98,7 +98,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import com.sitescape.team.domain.Statistics;
 
 /**
- *
+ * ?
+ * 
  * @author Jong Kim
  */
 @SuppressWarnings("unchecked")
@@ -106,7 +107,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	implements FolderCoreProcessor {
   //***********************************************************************************************************	
     //inside write transaction
-    protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
+    @Override
+	protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
     	Folder folder = (Folder)binder;
     	FolderEntry fEntry = (FolderEntry)entry;
     	//lock the parent binder = to reduce optimistic lock exceptions
@@ -125,18 +127,21 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	}
     }
     //inside write transaction
-    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    @Override
+	protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     	super.addEntry_postSave(binder, entry, inputData, entryData, ctx);
     }
     //no transaction
-    protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
+    @Override
+	protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
        	super.addEntry_done(binder, entry, inputData, ctx);
    		getRssModule().updateRssFeed(entry); 
      }
  
     //***********************************************************************************************************
     //no transaction    
-    public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems, Map options) 
+    @Override
+	public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems, Map options) 
    		throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
                
@@ -152,7 +157,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		newEntry = entry;
         	// The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
+        	@Override
+			public Object doInTransaction(TransactionStatus status) {
         		addReply_fillIn(parent, entry, inputData, entryData, ctx);
         		addReply_preSave(parent, entry, inputData, entryData, ctx);
         		addReply_save(parent, entry, inputData, entryData, ctx);
@@ -269,12 +275,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     
      //***********************************************************************************************************
     //inside write transaction
-    protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
+    @Override
+	protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
     	Statistics statistics = getFolderStatistics((Folder)binder);
     	statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
     	super.modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
     }
     //inside write transaction
+	@Override
 	protected void modifyEntry_postFillIn(Binder binder, Entry entry, 
  			InputDataAccessor inputData, Map entryData, Map<FileAttachment,String> fileRenamesTo, Map ctx) {
  		super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
@@ -285,10 +293,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	    setFolderStatistics((Folder)binder, statistics);
   }
     //no transaction
+	@Override
 	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
     	getRssModule().updateRssFeed(entry);
  	}
-    protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
+    @Override
+	protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, 
     		Collection<FileAttachment> filesToIndex, Map ctx) {
   	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
@@ -300,7 +310,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
     //***********************************************************************************************************
     //no write transaction    
-    protected void deleteEntry_setCtx(Entry entry, Map ctx) {
+    @Override
+	protected void deleteEntry_setCtx(Entry entry, Map ctx) {
     	//need context to pass replies
       	FolderEntry fEntry = (FolderEntry)entry;
       	//save top cause remove of reply sets it to null
@@ -312,7 +323,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         super.deleteEntry_setCtx(entry, ctx);
     }
     //no transaction
-   	protected void deleteEntry_processChangeLogs(Binder parentBinder, Entry entry, Map ctx, List changeLogs) {
+   	@Override
+	protected void deleteEntry_processChangeLogs(Binder parentBinder, Entry entry, Map ctx, List changeLogs) {
    		super.deleteEntry_processChangeLogs(parentBinder, entry, ctx, changeLogs);
    		//create history prior to delete.
      	List<FolderEntry> replies= (List)ctx.get("this.replies");
@@ -321,7 +333,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
      	}
    	}
     //inside write transaction
-    protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
+    @Override
+	protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
         Statistics statistics = getFolderStatistics((Folder)parentBinder);        
         statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
     	super.deleteEntry_preDelete(parentBinder, entry, ctx);
@@ -339,11 +352,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
       	
     }
     //inside write transaction    
-    protected void deleteEntry_workflow(Binder parentBinder, Entry entry, Map ctx) {
+    @Override
+	protected void deleteEntry_workflow(Binder parentBinder, Entry entry, Map ctx) {
     	//folder Dao will handle
     }
     //no write transaction    
-    protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) {
+    @Override
+	protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) {
     	List<FolderEntry> replies = (List)ctx.get("this.replies");
      	for (FolderEntry reply: replies) {
      		super.deleteEntry_processFiles(parentBinder, reply, deleteMirroredSource, null);
@@ -352,7 +367,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     
     //inside write transaction    
-    protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
+    @Override
+	protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
        	if (parentBinder.isDeleted()) return;  //will handle in bulk way
         //use the optimized deleteEntry or hibernate deletes each collection entry one at a time
        	List entries = new ArrayList((List)ctx.get("this.replies"));
@@ -365,7 +381,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
        	getFolderDao().deleteEntries((Folder)parentBinder, entries);   
     }
     //inside write transaction
-    protected void deleteEntry_postDelete(Binder parentBinder, Entry entry, Map ctx) {
+    @Override
+	protected void deleteEntry_postDelete(Binder parentBinder, Entry entry, Map ctx) {
        	if (parentBinder.isDeleted()) return;  //will handle in bulk way
        	List<FolderEntry> replies = (List)ctx.get("this.replies");
       	for (FolderEntry reply: replies) {
@@ -377,7 +394,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		super.deleteEntry_postDelete(parentBinder, entry, null);
   }
     //no transaction    
-    protected void deleteEntry_indexDel(Binder parentBinder, Entry entry, Map ctx) {
+    @Override
+	protected void deleteEntry_indexDel(Binder parentBinder, Entry entry, Map ctx) {
        	if (parentBinder.isDeleted()) return;  //will handle in bulk way
         List<FolderEntry> replies = (List)ctx.get("this.replies");
       	for (FolderEntry reply: replies) {
@@ -390,7 +408,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    }
     //***********************************************************************************************************
     //inside write transaction
-    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options) {
+    @Override
+	public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options) {
     	super.addEntryWorkflow(binder, entry, definition, options);
  		if (options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
      	
@@ -402,7 +421,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //***********************************************************************************************************
     //inside write transaction
-    public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition) {
+    @Override
+	public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition) {
     	super.deleteEntryWorkflow(binder, entry, definition);
     	//reindex top whose lastActivity has changed
     	if (!entry.isTop()) {
@@ -412,7 +432,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //***********************************************************************************************************
     //inside write transaction
-    public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
+    @Override
+	public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
     	super.modifyWorkflowState(binder, entry, tokenId, toState);
     	if (!entry.isTop()) {
  		   FolderEntry top = ((FolderEntry)entry).getTopEntry();
@@ -423,7 +444,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //***********************************************************************************************************
     //inside write transaction
-   public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData, Boolean canModifyEntry)  {
+   @Override
+public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData, Boolean canModifyEntry)  {
 	   Long version = entry.getLogVersion();
 	   super.setWorkflowResponse(binder, entry, stateId, inputData, canModifyEntry);
 	   if (version != entry.getLogVersion()) {
@@ -436,7 +458,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	   }
    }
    //***********************************************************************************************************
-   public Entry copyEntry(Binder binder, Entry source, Binder destination, String[] toFileNames, Map options) {
+   @Override
+public Entry copyEntry(Binder binder, Entry source, Binder destination, String[] toFileNames, Map options) {
    	 
 	   if (destination.isZone() || 
 			   ObjectKeys.PROFILE_ROOT_INTERNALID.equals(destination.getInternalId()) ||
@@ -485,6 +508,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 				sourceMap.remove(child);
 				FolderModule folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
 				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
+				if (e instanceof TitleException) {
+					throw ((TitleException) e);
+				}
 				break;
 			}
 	   }
@@ -587,7 +613,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  
    //***********************************************************************************************************
     //inside write transaction    
-    public void moveEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options) {
+    @Override
+	public void moveEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options) {
        	if (destination == null || binder.equals(destination)) return;
     	Folder from = (Folder)binder;
     	if (!(destination instanceof Folder))
@@ -667,16 +694,19 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     
     //***********************************************************************************************************
        
-    protected SFQuery indexEntries_getQuery(Binder binder) {
+    @Override
+	protected SFQuery indexEntries_getQuery(Binder binder) {
         return getFolderDao().queryEntries((Folder)binder, null);
    	}
- 	protected void indexEntries_postIndex(Binder binder, Entry entry) {
+ 	@Override
+	protected void indexEntries_postIndex(Binder binder, Entry entry) {
  		super.indexEntries_postIndex(binder, entry);
 	}
  
     //***********************************************************************************************************
     //inside write transaction    
-   public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
+   @Override
+public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
     	if(logger.isDebugEnabled())
     		logger.debug("Deleting binder [" + binder.getPathName() + "]");
     	//mark deleted first, saving real work for later
@@ -693,6 +723,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 			Boolean done=Boolean.FALSE;
 			while (!done) {
 				done = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
+					@Override
 					public Object doInTransaction(TransactionStatus status) {
 						SFQuery query = getFolderDao().queryEntries(folder, filter); 
 						try {
@@ -754,12 +785,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     
    //inside write transaction    
-    protected void deleteBinder_processFiles(Binder binder, Map ctx) {
+    @Override
+	protected void deleteBinder_processFiles(Binder binder, Map ctx) {
     	//save for background
 
     }
     //inside write transaction    
-   public void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
+   @Override
+public void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
       	if (!binder.isRoot()) {
     		binder.getParentBinder().removeBinder(binder);
     	}
@@ -773,7 +806,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
 
    //inside write transaction    
-   protected void deleteBinder_postDelete(Binder binder, Map ctx) {
+   @Override
+protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 	   //remove notification status so mail isn't sent
 	   getCoreDao().executeUpdate("delete from org.kablink.teaming.domain.NotifyStatus where owningBinderId=" + binder.getId());
 	   getRssModule().deleteRssFeed(binder);
@@ -781,13 +815,15 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
     //***********************************************************************************************************
    //inside write transaction    
-    public void moveBinder(Binder source, Binder destination, Map options) {
+    @Override
+	public void moveBinder(Binder source, Binder destination, Map options) {
     	if ((destination instanceof Folder) || (destination instanceof Workspace)) 
     		super.moveBinder(source, destination, options);
     	else throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
    	 
     }
     //inside write transaction    
+	@Override
 	public void moveBinderFixup(Binder binder) {
 		//Some parentage has changed.
 		Folder folder = (Folder)binder;
@@ -800,7 +836,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	}
     //***********************************************************************************************************
     //no transaction
-    public Binder copyBinder(Binder source, Binder destination, Map options) {
+    @Override
+	public Binder copyBinder(Binder source, Binder destination, Map options) {
     	if ((destination instanceof Folder) || (destination instanceof Workspace)) 
     		return super.copyBinder(source, destination, options);
     	else throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
@@ -808,7 +845,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //***********************************************************************************************************
    //no transaction
-    public void copyEntries(final Binder source, Binder binder, final Map options) { 
+    @Override
+	public void copyEntries(final Binder source, Binder binder, final Map options) { 
 		//now copy entries
 		final Folder folder = (Folder)binder;
 		Map serializationMap = ((Map) folder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
@@ -816,6 +854,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		final List<Long>      sIds    = (hasTaskLinkage ? new ArrayList<Long>()     : null);
 		final Map<Long, Long> eIdsMap = (hasTaskLinkage ? new HashMap<Long, Long>() : null);
 		getTransactionTemplate().execute(new TransactionCallback() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 		    	Boolean preserverDocNum = null;
 		    	if (options != null) preserverDocNum = (Boolean)options.get(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER);
@@ -826,7 +865,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 				SFQuery query = getFolderDao().queryEntries((Folder)source, filter);
 		      	try {       
 		  			List<FolderEntry> batch = new ArrayList();
-		  			int total=0;
+		  			@SuppressWarnings("unused")
+					int total=0;
 		  			Map<FolderEntry, FolderEntry> sourceMap = new HashMap();
 		      		while (query.hasNext()) {
 		       			int count=0;
@@ -935,13 +975,15 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
     //***********************************************************************************************************
     //no transaction
+	@Override
 	public void setFileAgingDates(final Binder binder) { 
 		if (binder instanceof Folder) {
 	 		//now update the entries in the binder
 	 		@SuppressWarnings("unused")
 			final Folder folder = (Folder)binder;
 	 		getTransactionTemplate().execute(new TransactionCallback() {
-	 			public Object doInTransaction(TransactionStatus status) {
+	 			@Override
+				public Object doInTransaction(TransactionStatus status) {
 	 				FilterControls filter = new FilterControls();
 	 				filter.setOrderBy(new OrderBy("HKey.sortKey"));
 	 				SFQuery query = getFolderDao().queryEntries((Folder)binder, filter);
@@ -969,6 +1011,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	
     //***********************************************************************************************************
     //no transaction
+	@Override
 	public boolean isFolderEmpty(final Binder binder) { 
 		Boolean result = true;
 		if (binder instanceof Folder) {
@@ -976,7 +1019,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	 		@SuppressWarnings("unused")
 			final Folder folder = (Folder)binder;
 	 		result = (Boolean) getTransactionTemplate().execute(new TransactionCallback() {
-	 			public Object doInTransaction(TransactionStatus status) {
+	 			@Override
+				public Object doInTransaction(TransactionStatus status) {
 	 				FilterControls filter = new FilterControls();
 	 				filter.setOrderBy(new OrderBy("HKey.sortKey"));
 	 				SFQuery query = getFolderDao().queryEntries((Folder)binder, filter);
@@ -991,7 +1035,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	}
 	
     //***********************************************************************************************************
-    public Set getPrincipalIds(DefinableEntity entity) {
+    @Override
+	public Set getPrincipalIds(DefinableEntity entity) {
     	Set ids = super.getPrincipalIds(entity);
     	if (entity instanceof FolderEntry) {
     		FolderEntry fEntry = (FolderEntry)entity;
@@ -1001,7 +1046,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	return ids;
     } 
 
-    public Set getPrincipalIds(List<DefinableEntity> results) {
+    @Override
+	public Set getPrincipalIds(List<DefinableEntity> results) {
     	Set ids = super.getPrincipalIds(results);
     	for (DefinableEntity entity: results) {
         	if (entity instanceof FolderEntry) {
@@ -1013,7 +1059,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	return ids;
      }     
 
-    public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
+    @Override
+	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
     	FolderEntry fEntry = (FolderEntry)entry;        
         // Add Doc number
@@ -1039,10 +1086,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************
           
 
-    public Map getEntryTree(Folder parentFolder, FolderEntry entry) {
+    @Override
+	public Map getEntryTree(Folder parentFolder, FolderEntry entry) {
     	return getEntryTree(parentFolder, entry, false);
     }
-    public Map getEntryTree(Folder parentFolder, FolderEntry entry, boolean includePreDeleted) {
+    @Override
+	public Map getEntryTree(Folder parentFolder, FolderEntry entry, boolean includePreDeleted) {
     	int entryLevel;
     	List<FolderEntry> lineage;
     	Map model = new HashMap();   	
@@ -1085,6 +1134,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************   
 
 
+	@Override
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
 		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
 		ChangeLog changes = new ChangeLog(entry, operation);
@@ -1178,5 +1228,4 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  		   }
  	   }
     }
-
 }
