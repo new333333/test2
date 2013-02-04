@@ -1741,7 +1741,7 @@ public class GwtMenuHelper {
 				// Yes!  Does this user have rights to manually
 				// synchronize this mirrored folder?
 				FolderModule fm = bs.getFolderModule();
-				if (fm.testAccess(folder, FolderOperation.synchronize)) {
+				if (fm.testAccess(folder, FolderOperation.fullSynchronize)) {
 					// Yes!  Add the ToolbarItem for it.
 					adminMenuCreated  =
 					configMenuCreated = true;

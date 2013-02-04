@@ -1764,7 +1764,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	}
 
-	private Hits executeNetFolderLuceneQuery(SearchObject so, int searchMode, int offset, int maxResults, Long parentBinderId, String parentBinderPath) {
+	private Hits executeNetFolderLuceneQuery(SearchObject so, int searchMode, int offset, int maxResults, Binder parentBinder) {
 		Hits hits = new Hits(0);
 
 		Query soQuery = so.getLuceneQuery(); // Get the query into a variable to avoid
@@ -1778,9 +1778,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		LuceneReadSession luceneSession = getLuceneSessionFactory()
 				.openReadSession();
 		try {
-			hits = luceneSession.searchFolderOneLevelWithInferredAccess(RequestContextHolder.getRequestContext().getUserId(),
+			hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(),
 					so.getAclQueryStr(), searchMode, soQuery, so.getSortBy(), offset,
-					maxResults, parentBinderId, parentBinderPath);
+					maxResults, parentBinder);
 		} catch (Exception e) {
 			logger.info("Exception:" + e);
 		} finally {
@@ -2491,9 +2491,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 				// We have to figure out the size of the pool before building
 				// the buckets
-				Hits testHits = luceneSession.searchFolderOneLevelWithInferredAccess(RequestContextHolder.getRequestContext().getUserId(), 
+				Hits testHits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(), 
 						searchObject.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, query, searchObject
-						.getSortBy(), 0, maxBucketSize, top.getId(), top.getPathName());
+						.getSortBy(), 0, maxBucketSize, top);
 				totalHits = testHits.getTotalHits();
 				if (totalHits > maxBucketSize) {
 					skipLength = testHits.getTotalHits() / maxBucketSize;
@@ -2533,8 +2533,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					logger.debug("Query is in executeSearchQuery: "
 							+ query.toString());
 				}
-				hits = luceneSession.searchFolderOneLevelWithInferredAccess(RequestContextHolder.getRequestContext().getUserId(), searchObject.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, query, searchObject.getSortBy(), 0,
-						-1, top.getId(), top.getPathName());
+				hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(), searchObject.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, query, searchObject.getSortBy(), 0,
+						-1, top);
 			}
 		} finally {
 			luceneSession.close();
@@ -3220,26 +3220,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	
 	@Override
     public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder) {
-		// No access checking in this method, because we expect the caller to check access on the parent binder before calling this method.
-		Hits hits = searchFolderOneLevelWithInferredAccess_Hits(crit, searchMode, offset, maxResults, parentBinder);
-		
-		return returnSearchQuery(hits);
-    }
-
-	@Override
-    public Hits searchFolderOneLevelWithInferredAccess_Hits(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder) {
-		// No access checking in this method, because we expect the caller to check access on the parent binder before calling this method.
-		
-		if(parentBinder.isMirrored() && parentBinder instanceof Folder)
-			getFolderModule().jits((Folder)parentBinder);
-		
+		// No access checking in this method, because we expect the caller to check access on the parent binder before calling this method.	
     	boolean preDeleted = false;
     	boolean ignoreAcls = false;
     	
 		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted);
 		SearchObject so = qb.buildQuery(crit.toQuery());
 		
-		return executeNetFolderLuceneQuery(so, searchMode, offset, maxResults, parentBinder.getId(), parentBinder.getPathName());
+		Hits hits = executeNetFolderLuceneQuery(so, searchMode, offset, maxResults, parentBinder);
+
+		return returnSearchQuery(hits);
     }
 
 	@Override

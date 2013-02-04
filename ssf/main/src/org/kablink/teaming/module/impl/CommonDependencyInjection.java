@@ -66,6 +66,7 @@ import org.quartz.Scheduler;
 public abstract class CommonDependencyInjection {
 
 	protected Log logger = LogFactory.getLog(getClass());
+	protected boolean traceEnabled = logger.isTraceEnabled();
 	protected boolean debugEnabled = logger.isDebugEnabled();
 	protected boolean infoEnabled = logger.isInfoEnabled();
 

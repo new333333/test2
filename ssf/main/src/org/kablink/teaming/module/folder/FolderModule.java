@@ -96,7 +96,7 @@ public interface FolderModule {
 	   report(true, true),
 	   reserveEntry(false, true),
 	   overrideReserveEntry(false, true),
-	   synchronize(true, false),
+	   fullSynchronize(true, false),
 	   scheduleSynchronization(true, false),
 	   changeEntryTimestamps(true, false),
 	   entryOwnerSetAcl(true, false),
@@ -683,7 +683,7 @@ public interface FolderModule {
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public boolean synchronize(Long folderId, StatusTicket statusTicket)
+	public boolean fullSynchronize(Long folderId, StatusTicket statusTicket)
 		throws AccessControlException, FIException, UncheckedIOException, ConfigurationException;
 	
 	public ScheduleInfo getSynchronizationSchedule(Long zoneId, Long folderId);	
@@ -698,5 +698,5 @@ public interface FolderModule {
     		List<Map> fileItemsList, List<Map> optionsList) 
     	throws AccessControlException, WriteFilesException, WriteEntryDataException;
 
-    public void jits(Folder folder);
+    public boolean jitSynchronize(Folder folder);
 }

@@ -285,7 +285,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		}
 		switch (operation) {
 			case addEntry: 
-			case synchronize:
+			case fullSynchronize:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.BINDER_ADMINISTRATION);
 				break;
 			case manageEmail:

@@ -1901,7 +1901,7 @@ public class ListFolderHelper {
 			//Synchronize mirrored folder
 			if(folder.isMirrored() &&
 					folder.getResourceDriverName() != null &&
-					bs.getFolderModule().testAccess(folder, FolderOperation.synchronize)) {
+					bs.getFolderModule().testAccess(folder, FolderOperation.fullSynchronize)) {
 				adminMenuCreated=true;
 				qualifiers = new HashMap();
 				qualifiers.put("showSpinner", new Boolean(true));

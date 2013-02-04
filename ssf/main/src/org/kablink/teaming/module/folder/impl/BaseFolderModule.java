@@ -49,7 +49,7 @@ import org.kablink.teaming.util.StatusTicket;
 
 public class BaseFolderModule extends AbstractFolderModule implements BaseFolderModuleMBean {
 
-	public boolean synchronize(Long folderId, StatusTicket statusTicket) throws FIException, UncheckedIOException {
+	public boolean fullSynchronize(Long folderId, StatusTicket statusTicket) throws FIException, UncheckedIOException {
 		throw new UnsupportedOperationException("synchronize operation is not supported in the base edition");
 	}
 	
@@ -91,7 +91,7 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	}
 
 	@Override
-	public void jits(Folder folder) {
+	public boolean jitSynchronize(Folder folder) {
 		throw new UnsupportedOperationException("jits operation is not supported in the base edition");
 	}
 

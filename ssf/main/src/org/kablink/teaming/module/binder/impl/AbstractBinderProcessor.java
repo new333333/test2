@@ -1635,9 +1635,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         
     	Hits hits = null;
         try {
-        	hits = luceneSession.searchFolderOneLevelWithInferredAccess(RequestContextHolder.getRequestContext().getUserId(),
+        	hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(),
         			so.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, soQuery, so.getSortBy(), searchOffset, maxResults,
-        			binder.getId(), binder.getPathName());
+        			binder);
         }
         finally {
             luceneSession.close();
