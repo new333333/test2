@@ -201,21 +201,28 @@ public class SearchUtils {
 			List<String> trackedEntryIds, List<String> trackedPeopleIds, boolean entriesOnly, String searchDateField)
 	{
 		return entriesForTrackedPlacesEntriesAndPeople(bs, userWorkspaces, 
-				trackedEntryIds, trackedPeopleIds, entriesOnly, searchDateField, Boolean.TRUE);
+				trackedEntryIds, trackedPeopleIds, entriesOnly, searchDateField, Boolean.TRUE, Boolean.FALSE);
 	}
 
 	public static Criteria entriesForTrackedPlacesEntriesAndPeople(AllModulesInjected bs, List userWorkspaces, 
 			List<String> trackedEntryIds, List<String> trackedPeopleIds, boolean entriesOnly, String searchDateField, 
-			boolean searchSubFolders)
+			boolean searchSubFolders, boolean includeAttachments)
 	{
 		String[] entryTypes;
 		if (entriesOnly)
 			 entryTypes = new String[] {Constants.ENTRY_TYPE_ENTRY                            };
 		else entryTypes = new String[] {Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY};
 		
+		String[] docTypes;
+		if (includeAttachments) {
+			docTypes = new String[] {Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_ATTACHMENT};
+		} else {
+			docTypes = new String[] {Constants.DOC_TYPE_ENTRY};
+		}
+		
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD, entryTypes                             ))
-			.add(in(DOC_TYPE_FIELD,   new String[] {Constants.DOC_TYPE_ENTRY}));
+		crit.add(in(ENTRY_TYPE_FIELD, entryTypes))
+			.add(in(DOC_TYPE_FIELD, docTypes));
 		crit.addOrder(Order.desc(searchDateField));
 		
 		Disjunction disjunction = disjunction();
@@ -670,10 +677,12 @@ public class SearchUtils {
 	 * @param entries
 	 * @param replies
 	 * @param attachments
+	 * @param includeMyFilesStorageBinder
 	 * 
 	 * @return
 	 */
-	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs, Long rootBinderId, boolean binders, boolean entries, boolean replies, boolean attachments) {
+	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs, Long rootBinderId, 
+			boolean binders, boolean entries, boolean replies, boolean attachments, boolean includeMyFilesStorageBinder) {
 		// Based on the installed license, what definition families do
 		// we consider as 'file'?
 		String[] fileFamilies;
@@ -737,7 +746,7 @@ public class SearchUtils {
             rootConj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
 
             // ...if we have a non-Home My Files containers...
-            if (hasMFContainerId && (!usingHomeAsMF)) {
+            if (hasMFContainerId && (!usingHomeAsMF) && !includeMyFilesStorageBinder) {
                 // ...exclude them from the binder list.
                 Junction noMF = not();
                 rootConj.add(noMF);
@@ -809,8 +818,13 @@ public class SearchUtils {
 	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs, Long rootBinderId) {
 		// Always use the initial form of the method.  By default, just
 		// return binders and entries
-        return getMyFilesSearchCriteria(bs, rootBinderId, true, true, false, false);
+        return getMyFilesSearchCriteria(bs, rootBinderId, true, true, false, false, false);
     }
+	
+	public static Criteria getMyFilesSearchCriteria(AllModulesInjected bs, Long rootBinderId, boolean binders, boolean entries, boolean replies, boolean attachments) {
+		return getMyFilesSearchCriteria (bs, rootBinderId, binders, entries, replies, attachments, false);
+	}
+
 
 	/**
 	 * Returns the Net Folders root binder.
@@ -895,7 +909,8 @@ public class SearchUtils {
 				null,
 				entriesOnly,	// true -> Entries only (no replies.)
 				Constants.LASTACTIVITY_FIELD,
-				searchSubFolders);
+				searchSubFolders,
+				Boolean.FALSE);
 		
 		return reply;
 	}
