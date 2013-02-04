@@ -161,7 +161,11 @@ public class NetFolder
 	 */
 	public ArrayList<GwtRole> getRoles()
 	{
-		return m_roles;
+		if (m_roles == null) {
+			return new ArrayList<GwtRole>();
+		} else {
+			return m_roles;
+		}
 	}
 	
 	/**
