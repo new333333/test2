@@ -113,7 +113,7 @@ public class ModifyBinderController extends AbstractBinderController {
 
 			//StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
 			StatusTicket statusTicket = null;
-			if(getFolderModule().synchronize(binderId, statusTicket)) {
+			if(getFolderModule().fullSynchronize(binderId, statusTicket)) {
 				// The binder was not deleted (typical situation). 
 				// Setup the right view which will override the previous setup.
 				setupViewBinder(response, binderId, binderType);

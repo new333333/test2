@@ -549,7 +549,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 					{
 						try {
 							// No, sync this net folder
-							folderModule.synchronize( binderId, statusTicket );
+							folderModule.fullSynchronize( binderId, statusTicket );
 						}
 						catch(Exception e) {
 							logger.error("Error during synchronization of net folder '" + binderId + "'", e);

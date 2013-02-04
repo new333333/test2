@@ -217,24 +217,28 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
 	 * @return
 	 */
 	protected List<BinderIndexData> getBinderDataFromIndex(Criteria crit, boolean oneLevelWithInferredAccess, Binder parentBinder) {
+		QueryBuilder qb = new QueryBuilder(true, false);
+    	org.dom4j.Document qTree = crit.toQuery();
+		SearchObject so = qb.buildQuery(qTree);   	
+   	
+    	Query soQuery = so.getLuceneQuery();
+    	    	    	
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
     	Hits hits = null;
         try {
         	if(oneLevelWithInferredAccess) {
-        		hits = getBinderModule().searchFolderOneLevelWithInferredAccess_Hits(crit, 
-        				Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
-        				0, 
-        				Integer.MAX_VALUE, 
-        				parentBinder);
+    			hits = org.kablink.teaming.module.shared.SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession,
+    					RequestContextHolder.getRequestContext().getUserId(),
+    					so.getAclQueryStr(), 
+    					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
+    					soQuery, 
+    					null, 
+    					0,
+    					Integer.MAX_VALUE, 
+    					parentBinder);
         	}
         	else {
-        		QueryBuilder qb = new QueryBuilder(true, false);
-            	org.dom4j.Document qTree = crit.toQuery();
-        		SearchObject so = qb.buildQuery(qTree);   	
-           	
-            	Query soQuery = so.getLuceneQuery();
-            	    	
         		hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
 	        		so.getAclQueryStr(), 
 	        		Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 

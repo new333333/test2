@@ -827,8 +827,6 @@ public interface BinderModule {
 	 */
     public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder);
 
-    public Hits searchFolderOneLevelWithInferredAccess_Hits(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder);
-
     /**
      * Return whether or not the calling user can gain inferred access to the specified
      * binder because the user has explicit access to at least one descendant binder of

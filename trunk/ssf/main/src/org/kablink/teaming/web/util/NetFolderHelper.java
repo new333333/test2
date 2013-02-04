@@ -356,7 +356,7 @@ public class NetFolderHelper
 							public Object doAsynchronously() throws Exception 
 							{
 								m_logger.info( "About to sync home directory net folder: " + binderId );
-								folderModule.synchronize( binderId, null );
+								folderModule.fullSynchronize( binderId, null );
 						    	return null;
 							}
 

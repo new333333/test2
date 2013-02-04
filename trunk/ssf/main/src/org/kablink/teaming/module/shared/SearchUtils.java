@@ -50,6 +50,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -58,16 +60,23 @@ import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.util.LanguageTaster;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.search.filter.SearchFilterToSearchBooleanConverter;
 import org.kablink.teaming.task.TaskHelper;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.util.search.Constants;
@@ -578,5 +587,51 @@ public class SearchUtils {
 		
 		// Store the assignees that we're searching for.
 		searchFilter.addEntries(entries, "userGroupTeam");		
+	}
+	
+	/**
+	 * Wraps the request to the search index with a check for jits need on the binder
+	 * in order to add a simple near-real-time directory navigation support. 
+	 * 
+	 * @param luceneSession
+	 * @param contextUserId
+	 * @param aclQueryStr
+	 * @param mode
+	 * @param query
+	 * @param sort
+	 * @param offset
+	 * @param size
+	 * @param parentBinderId
+	 * @param parentBinderPath
+	 * @return
+	 * @throws LuceneException
+	 */
+	public static Hits searchFolderOneLevelWithInferredAccess(LuceneReadSession luceneSession,
+			Long contextUserId, 
+			String aclQueryStr, 
+			int mode, 
+			Query query, 
+			Sort sort, 
+			int offset, 
+			int size, 
+			Binder parentBinder)
+					throws LuceneException {
+		
+		if(parentBinder.isMirrored() && parentBinder instanceof Folder) {			
+			if(!getFolderModule().jitSynchronize((Folder)parentBinder)) {
+				// As result of JITS, the parent binder just disappeared from the system.
+				// We have to somehow notify the caller of this situation - 
+				// Shall we throw an exception or return an empty hits? Each has pros and cons.
+				throw new NoBinderByTheIdException(parentBinder.getId());
+				//return new Hits(0);
+			}
+		}	
+		
+		return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
+	}
+
+	
+	private static FolderModule getFolderModule() {
+		return (FolderModule) SpringContextUtil.getBean("folderModule");
 	}
 }
