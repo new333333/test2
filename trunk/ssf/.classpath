@@ -175,7 +175,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/liquibase-hibernate.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/liquibase.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-log4j12.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/milton-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/milton-api.jar" sourcepath="C:/software/milton-1.7.3-snapshot/milton-api/src/main/java"/>
 	<classpathentry exported="true" kind="lib" path="lib/milton-servlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/groovy-all.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-config.jar"/>
