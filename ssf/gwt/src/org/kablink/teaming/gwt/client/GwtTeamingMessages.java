@@ -2555,5 +2555,7 @@ public interface GwtTeamingMessages extends Messages
 	String changePasswordDlg_PasswordCannotBeEmpty();
 	String changePasswordDlg_PasswordsDoNotMatch();
 	
+	// Strings used by the find control browser.
+	String findControlBrowser_Error_NotSupporter(String searchType);
 	
 }// end GwtTeamingMessages

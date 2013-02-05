@@ -653,11 +653,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case EXPAND_VERTICAL_BUCKET:
 		{
-			ExpandVerticalBucketCmd evbCmd;
-			TreeInfo result;
-			
-			evbCmd = (ExpandVerticalBucketCmd) cmd;
-			result = expandVerticalBucket( ri, evbCmd.getBucketInfo() );
+			ExpandVerticalBucketCmd evbCmd = ((ExpandVerticalBucketCmd) cmd);
+			TreeInfo result = expandVerticalBucket( ri, evbCmd.isFindBrowser(), evbCmd.getBucketInfo() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1516,7 +1513,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ArrayList<TreeInfo> listOfChildBinders;
 			
 			glocbCmd = (GetListOfChildBindersCmd) cmd;
-			listOfChildBinders = GwtServerHelper.getListOfChildBinders( req, this, glocbCmd.getBinderId() );
+			listOfChildBinders = GwtServerHelper.getListOfChildBinders( req, this, false, glocbCmd.getBinderId() );
 			responseData = new GetListOfChildBindersRpcResponseData( listOfChildBinders );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -2139,22 +2136,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_VERTICAL_NODE:
 		{
-			GetVerticalNodeCmd gvnCmd;
-			TreeInfo result;
-			
-			gvnCmd = (GetVerticalNodeCmd) cmd;
-			result = getVerticalNode( ri, gvnCmd.getBinderId() );
+			GetVerticalNodeCmd gvnCmd = ((GetVerticalNodeCmd) cmd);
+			TreeInfo result = getVerticalNode( ri, gvnCmd.isFindBrowser(), gvnCmd.getBinderId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
 		case GET_VERTICAL_TREE:
 		{
-			GetVerticalTreeCmd gvtCmd;
-			TreeInfo result;
-			
-			gvtCmd = (GetVerticalTreeCmd) cmd;
-			result = getVerticalTree( ri, gvtCmd.getBinderId() );
+			GetVerticalTreeCmd gvtCmd = ((GetVerticalTreeCmd) cmd);
+			TreeInfo result = getVerticalTree( ri, gvtCmd.isFindBrowser(), gvtCmd.getBinderId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -4583,41 +4574,31 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 
 
-	/**
+	/*
 	 * Returns a TreeInfo containing the display information for the
 	 * Binder hierarchy referred to by a BucketInfo
 	 * 
 	 * The information returned is typically used for driving a
 	 * horizontal WorkspaceTreeControl widget.
-	 * 
-	 * @param ri
-	 * @param bucketInfo
-	 * 
-	 * @return
 	 */
 	private TreeInfo expandHorizontalBucket( HttpRequestInfo ri, BucketInfo bucketInfo )
 	{
 		// Expand the bucket list without regard to persistent Binder
 		// expansions.
-		return GwtServerHelper.expandBucket( getRequest( ri ), this, bucketInfo, null );
+		return GwtServerHelper.expandBucket( getRequest( ri ), this, false, bucketInfo, null );
 	}//end expandHorizontalBucket()
 	
-	/**
+	/*
 	 * Returns a TreeInfo containing the display information for the
 	 * Binder hierarchy referred to by a BucketInfo.
 	 * 
 	 * The information returned is typically used for driving a
 	 * vertical WorkspaceTreeControl widget.
-	 * 
-	 * @param ri
-	 * @param bucketInfo
-	 * 
-	 * @return
 	 */
-	private TreeInfo expandVerticalBucket( HttpRequestInfo ri, BucketInfo bucketInfo ) {
+	private TreeInfo expandVerticalBucket( HttpRequestInfo ri, boolean findBrowser, BucketInfo bucketInfo ) {
 		// Expand the bucket list taking any persistent Binder
 		// expansions into account.
-		return GwtServerHelper.expandBucket( getRequest( ri ), this, bucketInfo, new ArrayList<Long>() );
+		return GwtServerHelper.expandBucket( getRequest( ri ), this, findBrowser, bucketInfo, new ArrayList<Long>() );
 	}
 
 	/**
@@ -4691,7 +4672,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		binder = GwtServerHelper.getBinderForWorkspaceTree( this, binderIdS );
 
 		// ...and build the TreeInfo for it.
-		reply = ((null == binder) ? null : GwtServerHelper.buildTreeInfoFromBinder( getRequest( ri ), this, binder ));
+		reply = ((null == binder) ? null : GwtServerHelper.buildTreeInfoFromBinder( getRequest( ri ), this, false, binder ));
 		return reply;
 	}// end getHorizontalNode()
 
@@ -4754,18 +4735,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * vertical WorkspaceTreeControl widget.
 	 * 
 	 * @param ri
+	 * @param findBrowser
 	 * @param binderIdS
 	 * 
 	 * @return
 	 */
-	private TreeInfo getVerticalTree( HttpRequestInfo ri, String binderIdS ) throws GwtTeamingException
+	private TreeInfo getVerticalTree( HttpRequestInfo ri, boolean findBrowser, String binderIdS ) throws GwtTeamingException
 	{
 		Binder binder;
 		TreeInfo reply;
 		
 		// Can we access the Binder?
 		binder = GwtServerHelper.getBinderForWorkspaceTree( this, binderIdS, true );
-		if (null == binder) {
+		if ( null == binder )
+		{
 			// No!  We can't build a TreeInfo for it.
 			reply = new TreeInfo();
 		}
@@ -4773,7 +4756,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		else {
 			// Yes, we can access the Binder!  Access the Binder's
 			// nearest containing Workspace...
-			Workspace binderWS = BinderHelper.getBinderWorkspace( binder );
+			Workspace binderWS;
+			if (findBrowser)
+			     binderWS = getWorkspaceModule().getTopWorkspace();
+			else binderWS = BinderHelper.getBinderWorkspace( binder );
 	
 			// ...note that the Workspace should always be expanded...
 			Long binderWSId = binderWS.getId();
@@ -4784,7 +4770,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			// ...to show the requested Binder...
 			long binderId      = Long.parseLong( binderIdS );
 			long binderWSIdVal = binderWSId.longValue();
-			if ( binderId != binderWSIdVal ) {
+			if ( binderId != binderWSIdVal )
+			{
 				Binder parentBinder = binder.getParentBinder();
 				if ( null != parentBinder )
 				{
@@ -4801,6 +4788,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			reply = GwtServerHelper.buildTreeInfoFromBinder(
 				getRequest( ri ),
 				this,
+				findBrowser,
 				binderWS,
 				expandedBindersList );
 
@@ -4818,14 +4806,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 			// If the Binder supports Trash access...
 			boolean allowTrash = TrashHelper.allowUserTrashAccess( GwtServerHelper.getCurrentUser() );
-			if ( allowTrash && ( !(binder.isMirrored()) ) )
+			if ( allowTrash && ( !(binder.isMirrored()) ) && ( !findBrowser ))
 			{
 				// ...add a TreeInfo to the reply's children for it.
 				GwtServerHelper.addTrashFolder( this, reply, binder );
 			}
 			
 			// Finally, if we're rooted on the current user's workspace...
-			if (binderWS.getId().equals(GwtServerHelper.getCurrentUser().getWorkspaceId())) {
+			if ( (!findBrowser) && binderWS.getId().equals( GwtServerHelper.getCurrentUser().getWorkspaceId() ) )
+			{
 				// ...add the TreeInfo's for the collections we display
 				// ...at the top of the tree.
 				GwtServerHelper.addCollections( this, getRequest( ri ), reply );
@@ -4845,11 +4834,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * vertical WorkspaceTreeControl widget.
 	 * 
 	 * @param ri
+	 * @param findBrowser
 	 * @param binderId
 	 * 
 	 * @return
 	 */
-	private TreeInfo getVerticalNode( HttpRequestInfo ri, String binderIdS )
+	private TreeInfo getVerticalNode( HttpRequestInfo ri, boolean findBrowser, String binderIdS )
 	{
 		Binder binder;
 		TreeInfo reply;
@@ -4863,7 +4853,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			expandedBindersList.add( Long.parseLong( binderIdS ));
 	
 			// ...and build the TreeInfo folist.toArray(infoArray);r it.
-			reply = GwtServerHelper.buildTreeInfoFromBinder( getRequest( ri ), this, binder, expandedBindersList );
+			reply = GwtServerHelper.buildTreeInfoFromBinder( getRequest( ri ), this, findBrowser, binder, expandedBindersList );
 		}
 		else
 		{
