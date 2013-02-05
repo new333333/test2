@@ -502,7 +502,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	User user = RequestContextHolder.getRequestContext().getUser();
     	String className = SPropsUtil.getString("job.binder.reindex.class", "org.kablink.teaming.jobs.DefaultBinderReindex");
 		BinderReindex job = (BinderReindex)ReflectHelper.getInstance(className);
-		job.schedule(binderIds, user, false); 
+		job.scheduleNonBlocking(binderIds, user, false); 
     	return binderIds;
     }
 
