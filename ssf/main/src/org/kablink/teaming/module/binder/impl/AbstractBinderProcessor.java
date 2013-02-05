@@ -1831,7 +1831,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			User user = RequestContextHolder.getRequestContext().getUser();
 			String className = SPropsUtil.getString("job.binder.reindex.class", "org.kablink.teaming.jobs.DefaultBinderReindex");
 			BinderReindex job = (BinderReindex)ReflectHelper.getInstance(className);
-			job.schedule(binders, user, indexEntries); 
+			job.scheduleNonBlocking(binders, user, indexEntries); 
 		}
 
 	}

@@ -86,7 +86,7 @@ public class DefaultBinderReindex extends SimpleTriggerJob implements BinderRein
 
 	}
 
-    public void schedule( List<Long> binderIds, User user, boolean includeEntries) { 
+    public void scheduleNonBlocking( List<Long> binderIds, User user, boolean includeEntries) { 
 		//the number of changes could be large, and some databases won't accept it (mssql packet size 1M)
 		int count = 0;
 		int binderIndex=0;
@@ -109,7 +109,7 @@ public class DefaultBinderReindex extends SimpleTriggerJob implements BinderRein
 
 			GregorianCalendar start = new GregorianCalendar();
 			start.add(Calendar.SECOND, 3+count);
-			schedule(new JobDescription(user.getZoneId(), userIdString, start.getTime(), data));
+			scheduleNonBlocking(new JobDescription(user.getZoneId(), userIdString, start.getTime(), data));
 		
 			++count;
 		}

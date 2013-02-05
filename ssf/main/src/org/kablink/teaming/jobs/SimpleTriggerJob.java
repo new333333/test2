@@ -35,6 +35,9 @@ package org.kablink.teaming.jobs;
 import java.util.Date;
 
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.runasync.RunAsyncCallback;
+import org.kablink.teaming.runasync.RunAsyncManager;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -84,6 +87,17 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 			throw new ConfigurationException(cf.getLocalizedMessage());			
 		}
 	}
+	
+	public void scheduleNonBlocking(final SimpleJobDescription job) {
+		getRunAsyncManager().execute(new RunAsyncCallback<Object>() {
+			@Override
+			public Object doAsynchronously() throws Exception {
+				schedule(job);
+				return null;
+			}
+		});
+	}
+	
 	public class SimpleJobDescription {
 		protected Long zoneId;
 		protected String jobName, jobGroup, jobDescription;
@@ -147,5 +161,9 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 		protected boolean getDurability() {
 			return durability;
 		}
+	}
+	
+	private RunAsyncManager getRunAsyncManager() {
+		return (RunAsyncManager) SpringContextUtil.getBean("runAsyncManager");
 	}
 }
