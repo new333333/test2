@@ -955,6 +955,17 @@ public class FindCtrl extends Composite
 	}// end setSearchType()
 
 	
+	/**
+	 * Returns the current search type.
+	 * 
+	 * @return
+	 */
+	public SearchType getSearchType()
+	{
+		return m_searchCriteria.getSearchType();
+	}// end getSearchType()
+
+	
 	/*
 	 * Sets the selected item in the FindCtrl.
 	 */

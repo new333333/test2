@@ -1206,7 +1206,7 @@ public class GwtServerHelper {
 	/*
 	 * Builds the TreeInfo objects for a list of child Binder IDs.
 	 */
-	private static void buildChildTIs(HttpServletRequest request, AllModulesInjected bs, List<TreeInfo> childTIList, List<Long> childBinderList, List<Long> expandedBindersList, int depth) {
+	private static void buildChildTIs(HttpServletRequest request, AllModulesInjected bs, boolean findBrowser, List<TreeInfo> childTIList, List<Long> childBinderList, List<Long> expandedBindersList, int depth) {
 		SortedSet<Binder> binders = null;
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.buildChildTIs( READ )");
 		try {
@@ -1226,9 +1226,9 @@ public class GwtServerHelper {
 					long sbi = subBinderId.longValue();
 					for (Binder subBinder:  binders) {
 						if (subBinder.getId().longValue() == sbi) {
-							if (!(BinderHelper.isBinderMyFilesStorage(subBinder))) {	// Drop 'My Files Storage' folders.
+							if (findBrowser || (!(BinderHelper.isBinderMyFilesStorage(subBinder)))) {	// Drop 'My Files Storage' folders.
 								try {
-									TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, subBinder, expandedBindersList, false, depth);
+									TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, findBrowser, subBinder, expandedBindersList, false, depth);
 									childTIList.add(subWsTI);
 								} catch(AccessControlException ace) {
 								} catch(NoBinderByTheIdException nbe) {}
@@ -1284,22 +1284,23 @@ public class GwtServerHelper {
 	 * Builds a TreeInfo object for a given Binder.
 	 *
 	 * @param bs
+	 * @param findBrowser
 	 * @param binder
 	 * @param expandedBindersList
 	 * 
 	 * @return
 	 */
-	public static TreeInfo buildTreeInfoFromBinder(HttpServletRequest request, AllModulesInjected bs, Binder binder, List<Long> expandedBindersList) {
+	public static TreeInfo buildTreeInfoFromBinder(HttpServletRequest request, AllModulesInjected bs, boolean findBrowser, Binder binder, List<Long> expandedBindersList) {
 		// Always use the private implementation of this method.
-		return buildTreeInfoFromBinder(request, bs, binder, expandedBindersList, (null != expandedBindersList), 0);
+		return buildTreeInfoFromBinder(request, bs, findBrowser, binder, expandedBindersList, ((!findBrowser) && (null != expandedBindersList)), 0);
 	}
 	
-	public static TreeInfo buildTreeInfoFromBinder(HttpServletRequest request, AllModulesInjected bs, Binder binder) {
+	public static TreeInfo buildTreeInfoFromBinder(HttpServletRequest request, AllModulesInjected bs, boolean findBrowser, Binder binder) {
 		// Always use the private implementation of this method.
-		return buildTreeInfoFromBinder(request, bs, binder, null, false, 0);
+		return buildTreeInfoFromBinder(request, bs, findBrowser, binder, null, false, 0);
 	}
 	
-	public static TreeInfo buildTreeInfoFromBinder(HttpServletRequest request, AllModulesInjected bs, Binder binder, List<Long> expandedBindersList, boolean mergeUsersExpansions, int depth) {
+	public static TreeInfo buildTreeInfoFromBinder(HttpServletRequest request, AllModulesInjected bs, boolean findBrowser, Binder binder, List<Long> expandedBindersList, boolean mergeUsersExpansions, int depth) {
 		// Construct the base TreeInfo for the Binder.
 		TreeInfo reply = new TreeInfo();
 		reply.setBinderInfo(getBinderInfo(request, bs, binder));
@@ -1354,6 +1355,7 @@ public class GwtServerHelper {
 				buildChildTIs(
 					request,
 					bs,
+					findBrowser,
 					childTIList,
 					childBinderIds,
 					expandedBindersList,
@@ -1384,7 +1386,7 @@ public class GwtServerHelper {
 		for (Iterator<Long> lIT = bindersList.iterator(); lIT.hasNext(); ) {
 			Binder binder = getBinderForWorkspaceTree(bs, lIT.next());
 			if (null != binder) {
-				reply.add(buildTreeInfoFromBinder(request, bs, binder, null, false, (-1)));
+				reply.add(buildTreeInfoFromBinder(request, bs, false, binder, null, false, (-1)));
 			}
 		}
 		return reply;
@@ -2461,12 +2463,13 @@ public class GwtServerHelper {
 	 * 
 	 * @param request
 	 * @param bs
+	 * @param findBrowser
 	 * @param bucketInfo
 	 * @param expandedBindersList
 	 * 
 	 * @return
 	 */
-	public static TreeInfo expandBucket(HttpServletRequest request, AllModulesInjected bs, BucketInfo bi, List<Long> expandedBindersList) {
+	public static TreeInfo expandBucket(HttpServletRequest request, AllModulesInjected bs, boolean findBrowser, BucketInfo bi, List<Long> expandedBindersList) {
 		TreeInfo reply = new TreeInfo();
 		List<TreeInfo> childTIList = reply.getChildBindersList(); 
 		List<BinderData> childBinderData = getChildBinderData(bs, bi);
@@ -2495,6 +2498,7 @@ public class GwtServerHelper {
 			buildChildTIs(
 				request,
 				bs,
+				findBrowser,
 				childTIList,
 				childBinderIds,
 				expandedBindersList,
@@ -6211,7 +6215,7 @@ public class GwtServerHelper {
 	/**
 	 * Return a list of child binders for the given binder.
 	 */
-	public static ArrayList<TreeInfo> getListOfChildBinders( HttpServletRequest request, AllModulesInjected ami, String binderId )
+	public static ArrayList<TreeInfo> getListOfChildBinders( HttpServletRequest request, AllModulesInjected ami, boolean findBrowser, String binderId )
 	{
 		Binder binder;
 		ArrayList<TreeInfo> listOfChildBinders;
@@ -6322,7 +6326,7 @@ public class GwtServerHelper {
 					
 					if ( childBinder != null )
 					{
-						treeInfo = buildTreeInfoFromBinder( request, ami, childBinder, expandedBindersList, false, 1 );
+						treeInfo = buildTreeInfoFromBinder( request, ami, findBrowser, childBinder, expandedBindersList, false, 1 );
 	
 						// Set the number of unseen entries for this binder
 						{

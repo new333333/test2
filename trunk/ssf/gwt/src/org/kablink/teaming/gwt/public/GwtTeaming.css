@@ -5237,8 +5237,21 @@ td.datePickerMonth {
 	font-size: .8em;
 	margin-top: 0.7em;
 }
-
 /* End */
 
 
-/* End */
+/* Start:  Styles used by the find control browser. */
+	.vibe-findBrowser-node  {font-size:  13px !important;}
+	.vibe-findBrowser-popup {z-index: 1002; padding: 2px !important;}
+	.vibe-findBrowser-tree  {
+		background-color: #f6f6f6;
+		margin: 0px;
+		border-top: 1px solid #808384;
+		-moz-border-radius-bottomleft: 3px;
+		-moz-border-radius-bottomright: 3px;
+		border-bottom-left-radius: 3px;
+		border-bottom-right-radius: 3px;
+		-webkit-border-bottom-left-radius: 3px;
+		-webkit-border-bottom-right-radius: 3px;
+	}
+/* End:  Styles used by the find control browser. */

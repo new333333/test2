@@ -60,6 +60,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ProgressDlg;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.FindControlBrowsePopup;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ProgressBar;
@@ -96,8 +97,6 @@ public class CopyMoveEntriesDlg extends DlgBox
 		FindControlBrowseEvent.Handler,
 		SearchFindResultsEvent.Handler
 {
-	private final static boolean	SHOW_BROWSE_BUTTON	= false;	// 20130205 (DRF):  Leave false on checkin until I get this working.
-	
 	private boolean						m_doCopy;					// true -> The dialog is doing a copy.  false -> It's doing a move.
 	private Button						m_browseButton;				// Button used to connect a browse widget to the find control.
 	private FindCtrl					m_findControl;				// The search widget.
@@ -659,8 +658,9 @@ public class CopyMoveEntriesDlg extends DlgBox
 	 */
 	@Override
 	public void onFindControlBrowse(FindControlBrowseEvent event) {
-//!		...this needs to be implemented...
-		GwtClientHelper.deferredAlert("CopyMoveEntriesDlg.onFindControlBrowse():  ...this needs to be implemented...");
+		// Simply invoke the find browser using the parameters from the
+		// event.
+		FindControlBrowsePopup.doBrowse(event.getFindControl(), event.getFindStart());
 	}
 	
 	/**
@@ -763,7 +763,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 		fp.add(hp);
 		
 		// ...if we're showing a browse button...
-		if (SHOW_BROWSE_BUTTON) {
+		if (FindControlBrowsePopup.SHOW_FIND_BROWSER) {
 			// ...add it next to the search widget...
 			Image buttonImg = GwtClientHelper.buildImage(m_images.browseHierarchy(), m_messages.cmeDlg_Alt_Browse());
 			m_browseButton = new Button(GwtClientHelper.getWidgetHTML(buttonImg), new ClickHandler() {
