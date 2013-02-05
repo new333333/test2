@@ -14,6 +14,8 @@
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="fileModule"><ref bean="fileModule"/></property>
     	<property name="binderModule"><ref bean="binderModule"/></property>
+		<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+		<property name="runAsyncManager"><ref bean="runAsyncManager"/></property>
 	</bean>
 
 	<bean id="licenseModuleTarget" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.license.impl.BaseLicenseModule">
