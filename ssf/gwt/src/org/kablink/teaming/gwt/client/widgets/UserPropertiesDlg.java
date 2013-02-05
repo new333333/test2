@@ -133,7 +133,7 @@ public class UserPropertiesDlg extends DlgBox
 	 */
 	private UserPropertiesDlg() {
 		// Initialize the superclass...
-		super(false, true, DlgButtonMode.Close);
+		super(true, false, DlgButtonMode.Close);
 
 		// ...initialize everything else...
 		m_images   = GwtTeaming.getDataTableImageBundle();

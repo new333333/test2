@@ -113,7 +113,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	 */
 	private UserShareRightsDlg() {
 		// Initialize the superclass...
-		super(false, true);
+		super(true, false);
 
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();

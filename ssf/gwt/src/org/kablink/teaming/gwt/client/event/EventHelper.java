@@ -679,6 +679,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case FIND_CONTROL_BROWSE:
+				// An FindControlBrowseEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof FindControlBrowseEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = FindControlBrowseEvent.registerEvent(eventBus, ((FindControlBrowseEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case FOLDER_ENTRY_ACTION_COMPLETE:
 				// An FolderEntryActionCompleteEvent!  Can the event
 				// handler we were given handle that?
@@ -2583,6 +2592,7 @@ public class EventHelper {
 			case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:         hasHandler = (eventHandler instanceof DisableSelectedUsersAdHocFoldersEvent.Handler);       break;
 			case ENABLE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);                    break;
 			case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:          hasHandler = (eventHandler instanceof EnableSelectedUsersAdHocFoldersEvent.Handler);        break;
+			case FIND_CONTROL_BROWSE:                          hasHandler = (eventHandler instanceof FindControlBrowseEvent.Handler);                      break;
 			case FOLDER_ENTRY_ACTION_COMPLETE:                 hasHandler = (eventHandler instanceof FolderEntryActionCompleteEvent.Handler);              break;
 			case GET_MANAGE_USERS_TITLE:                       hasHandler = (eventHandler instanceof GetManageUsersTitleEvent.Handler);                    break;
 			case HIDE_SELECTED_SHARES:                         hasHandler = (eventHandler instanceof HideSelectedSharesEvent.Handler);                     break;
