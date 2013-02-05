@@ -78,7 +78,7 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 	}
 
 	public <V> Future<V> execute(final RunAsyncCallback<V> action, User contextUser) {
-		return _execute(action, new RequestContext(contextUser, null));
+		return _execute(action, new RequestContext(contextUser, null).resolve());
 	}
 
 	private <V> Future<V> _execute(final RunAsyncCallback<V> action, final RequestContext parentRequestContext) {
