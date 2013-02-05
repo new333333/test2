@@ -42,6 +42,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SessionUtil;
 import org.springframework.beans.factory.DisposableBean;
@@ -72,10 +73,17 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 		}
 	}
 
-	public Future execute(final RunAsyncCallback action) {
-		final RequestContext parentRequestContext = RequestContextHolder.getRequestContext();
-		Callable<Object> task = new Callable<Object>() {
-			public Object call() throws Exception {
+	public <V> Future<V> execute(final RunAsyncCallback<V> action) {
+		return _execute(action, RequestContextHolder.getRequestContext());
+	}
+
+	public <V> Future<V> execute(final RunAsyncCallback<V> action, User contextUser) {
+		return _execute(action, new RequestContext(contextUser, null));
+	}
+
+	private <V> Future<V> _execute(final RunAsyncCallback<V> action, final RequestContext parentRequestContext) {
+		Callable<V> task = new Callable<V>() {
+			public V call() throws Exception {
 				boolean hadSession = SessionUtil.sessionActive();
 				try {
 					if (!hadSession)
@@ -91,7 +99,7 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 						}
 						if(logger.isDebugEnabled())
 							logger.debug("Executing " + action.toString());
-						Object result = action.doAsynchronously();
+						V result = action.doAsynchronously();
 						
 						if(logger.isDebugEnabled()) {
 							if(result != null)

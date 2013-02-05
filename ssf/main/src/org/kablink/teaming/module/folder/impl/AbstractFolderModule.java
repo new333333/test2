@@ -130,6 +130,7 @@ import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
+import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.QueryBuilder;
@@ -218,6 +219,14 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		this.transactionTemplate = transactionTemplate;
 	}
 
+	private RunAsyncManager runAsyncManager;
+	protected RunAsyncManager getRunAsyncManager() {
+		return runAsyncManager;
+	}
+	public void setRunAsyncManager(RunAsyncManager runAsyncManager) {
+		this.runAsyncManager = runAsyncManager;
+	}
+	
  	protected FolderDelete getDeleteProcessor(Workspace zone) {
  	   String jobClass = SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_JOB + "']");
  	   if (Validator.isNotNull(jobClass)) {
