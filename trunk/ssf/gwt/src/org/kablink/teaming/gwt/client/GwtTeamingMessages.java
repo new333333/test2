@@ -1787,6 +1787,9 @@ public interface GwtTeamingMessages extends Messages
 	String moveEntriesDlgProgress(int done, int total);
 	String moveEntriesDlgSelectDestination();
 	String moveEntriesDlgWarningNoSelection();
+	
+	// Strings used in the CopyMoveEntriesDlg in all modes.
+	String cmeDlg_Alt_Browse();
 
 	// Strings used by the operations against selected entries.
 	String deleteFolderEntriesError();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,16 +30,14 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.widgets;
-
-
 
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchScope;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
@@ -49,7 +47,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -76,12 +74,11 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-
 /**
  * This widget will allow the user to type into a text field and will use what is typed to search Teaming for
  * the requested object type, entry, folder, etc.
+ * 
  * @author jwootton
- *
  */
 public class FindCtrl extends Composite
 	implements ClickHandler, Event.NativePreviewHandler, KeyUpHandler
@@ -397,25 +394,14 @@ public class FindCtrl extends Composite
 			// Get the item selected by the user.
 			if ( clickEvent.getSource() instanceof SearchResultItemWidget )
 			{
-				Scheduler.ScheduledCommand cmd;
 				SearchResultItemWidget tmp;
 				final GwtTeamingItem selectedItem;
 				
 				tmp = (SearchResultItemWidget) clickEvent.getSource();
 				selectedItem = tmp.getTeamingItem();
-				
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					@Override
-					public void execute() 
-					{
-						// Update the text box with name of the selected item.
-						updateTextBoxWithSelectedItem( selectedItem );
-						
-						GwtTeaming.fireEvent( new SearchFindResultsEvent( m_containerWidget, selectedItem ) );
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+
+				// Put the selected item into affect.
+				setSelectedItemAsync( selectedItem );
 			}
 		}// end onClick()
 		
@@ -474,7 +460,7 @@ public class FindCtrl extends Composite
 	 */
 	private FindCtrl(
 		Widget containerWidget,
-		GwtSearchCriteria.SearchType searchType,
+		SearchType searchType,
 		int visibleLength )
 	{
 		m_containerWidget = containerWidget;
@@ -512,9 +498,7 @@ public class FindCtrl extends Composite
 				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
@@ -525,8 +509,7 @@ public class FindCtrl extends Composite
 							// Hide the search results.
 							hideSearchResults();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			};
 			m_searchSiteRb.addClickHandler( clickHandler );
@@ -544,9 +527,7 @@ public class FindCtrl extends Composite
 				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
@@ -557,8 +538,7 @@ public class FindCtrl extends Composite
 							// Hide the search results.
 							hideSearchResults();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			};
 			m_searchBinderRb.addClickHandler( clickHandler );
@@ -969,11 +949,35 @@ public class FindCtrl extends Composite
 	 * 
 	 * @param searchType
 	 */
-	public void setSearchType( GwtSearchCriteria.SearchType searchType )
+	public void setSearchType( SearchType searchType )
 	{
 		m_searchCriteria.setSearchType( searchType );
 	}// end setSearchType()
+
 	
+	/*
+	 * Sets the selected item in the FindCtrl.
+	 */
+	private void setSelectedItemAsync( final GwtTeamingItem selectedItem )
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute() 
+			{
+				setSelectedItemNow( selectedItem );
+			}
+		} );
+	}
+	
+	/*
+	 * Sets the selected item in the FindCtrl.
+	 */
+	private void setSelectedItemNow( GwtTeamingItem selectedItem )
+	{
+		updateTextBoxWithSelectedItem( selectedItem );
+		GwtTeaming.fireEvent( new SearchFindResultsEvent( m_containerWidget, selectedItem ) );
+	}
 	
 	/**
 	 * Show the search results. 
@@ -985,28 +989,58 @@ public class FindCtrl extends Composite
 		m_searchResultsWidget.setVisible( true );
 	}// end showSearchResults()
 	
+	
+	/*
+	 * Update the text box with the name of the selected item.
+	 */
+	private void updateTextBoxWithSelectedItem( GwtTeamingItem selectedItem )
+	{
+		String name;
+
+		// Get the name of the selected item.
+		name = selectedItem.getShortDisplayName();
+		
+		// Put the name of the selected item in the text box.
+		m_txtBox.setText( name );
+		
+		// Put the focus in the text box.
+		m_txtBox.setFocus( true );
+	}// end updateTextBoxWithSelectedItem()
+
+
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	/* The following code is used to load the split point containing */
+	/* the FindCtrl and perform some operation on it.                */
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	
 	/**
 	 * Callback interface to interact with the find control
 	 * asynchronously after it loads. 
 	 */
-	public interface FindCtrlClient {
-		void onSuccess(FindCtrl findCtrl);
+	public interface FindCtrlClient
+	{
+		void onSuccess( FindCtrl findCtrl );
 		void onUnavailable();
-	}
+	}// FindCtrlClient
+
 
 	/*
 	 * Asynchronously loads the TagThisDialog and performs some
 	 * operation against the code.
 	 */
 	private static void doAsyncOperation(
-		// Prefetch parameters.  If true, only a prefetch is performed.
-		final FindCtrlClient findCtrlClient,
-		final boolean prefetch,
+		// Prefetch parameters.
+		final FindCtrlClient	findCtrlClient,
+		final boolean			prefetch,	// true -> Only a prefetch is performed. 
 		
 		// Creation parameters.
-		final Widget containerWidget,
-		final GwtSearchCriteria.SearchType searchType,
-		final int visibleLength )
+		final Widget		containerWidget,
+		final SearchType	searchType,
+		final int			visibleLength,
+		
+		// Set selected item parameters.
+		final FindCtrl			findCtrl,
+		final GwtTeamingItem	selectedItem)
 	{
 		loadControl1(
 			// Prefetch parameters.
@@ -1016,9 +1050,14 @@ public class FindCtrl extends Composite
 			// Creation parameters.
 			containerWidget,
 			searchType,
-			visibleLength );				
+			visibleLength,
+			
+			// Set selected item parameters.
+			findCtrl,
+			selectedItem );
 	}// end doAsyncOperation()
-	
+
+
 	/*
 	 * Various control loaders used to load the split points containing
 	 * the code for the controls in the find control.
@@ -1026,14 +1065,18 @@ public class FindCtrl extends Composite
 	 * Load the split point for the FindCtrl.
 	 */
 	private static void loadControl1(
-		// Prefetch parameters.  If true, only a prefetch is performed.
-		final FindCtrlClient findCtrlClient,
-		final boolean prefetch,
+		// Prefetch parameters.
+		final FindCtrlClient	findCtrlClient,
+		final boolean			prefetch,	// true -> Only a prefetch is performed.
 		
 		// Creation parameters.
-		final Widget containerWidget,
-		final GwtSearchCriteria.SearchType searchType,
-		final int visibleLength )
+		final Widget		containerWidget,
+		final SearchType	searchType,
+		final int			visibleLength,
+		
+		// Set selected item parameters.
+		final FindCtrl			findCtrl,
+		final GwtTeamingItem	selectedItem )
 	{
 		GWT.runAsync( FindCtrl.class, new RunAsyncCallback()
 		{			
@@ -1048,7 +1091,11 @@ public class FindCtrl extends Composite
 					// Creation parameters.
 					containerWidget,
 					searchType,
-					visibleLength );
+					visibleLength,
+					
+					// Set selected item parameters.
+					findCtrl,
+					selectedItem );
 			}// end onSuccess()
 			
 			@Override
@@ -1059,26 +1106,45 @@ public class FindCtrl extends Composite
 			}// end onFailure()
 		} );
 	}// end doAsyncOperation()
-		
+
+
 	/*
 	 * Finishes the initialization of the FindCtrl object.
 	 */
 	private static void initFindCtrl_Finish(
-		// Prefetch parameters.  If true, only a prefetch is performed.
-		final FindCtrlClient findCtrlClient,
-		final boolean prefetch,
+		// Prefetch parameters.
+		final FindCtrlClient	findCtrlClient,
+		final boolean			prefetch,	// true -> only a prefetch is performed.
 		
 		// Creation parameters.
-		final Widget containerWidget,
-		final GwtSearchCriteria.SearchType searchType,
-		final int visibleLength )
+		final Widget		containerWidget,
+		final SearchType	searchType,
+		final int			visibleLength,
+		
+		// Set selected item parameters.
+		final FindCtrl			findCtrl,
+		final GwtTeamingItem	selectedItem )
 	{
-		FindCtrl findCtrl;
-		if (prefetch)
-		     findCtrl = null;
-		else findCtrl = new FindCtrl( containerWidget, searchType, visibleLength );
-		findCtrlClient.onSuccess( findCtrl );
+		FindCtrl reply;
+		if ( prefetch )
+		{
+			// Operation:  Prefetch.
+			reply = null;
+		}
+		else if ( null != findCtrl )
+		{
+			// Operation:  Set selected item.
+			reply = findCtrl;
+			findCtrl.setSelectedItemAsync( selectedItem );
+		}
+		else
+		{
+			// Operation:  Create.
+			reply = new FindCtrl( containerWidget, searchType, visibleLength );
+		}
+		findCtrlClient.onSuccess( reply );
 	}// end initFindCtrl_Finish()
+
 
 	/**
 	 * Loads the FindCtrl split point and returns an instance of it
@@ -1089,37 +1155,46 @@ public class FindCtrl extends Composite
 	 * @param findCtrlClient
 	 */
 	public static void createAsync(
-		final Widget containerWidget,
-		final GwtSearchCriteria.SearchType searchType,
-		final int visibleLength,
-		final FindCtrlClient findCtrlClient )
+		final Widget			containerWidget,
+		final SearchType		searchType,
+		final int				visibleLength,
+		final FindCtrlClient	findCtrlClient )
 	{
 		doAsyncOperation(
-			// Prefetch parameters.  false -> Not a prefetch.
+			// Prefetch parameters.
 			findCtrlClient,
-			false,
+			false,	// false -> Not a prefetch.
 			
 			// Required creation parameters.
 			containerWidget,
 			searchType,
-			visibleLength );
+			visibleLength,
+			
+			// Set selected item parameters.
+			null,
+			null );
 	}// end createAsync()
 	
 	public static void createAsync(
-		final Widget containerWidget,
-		final GwtSearchCriteria.SearchType searchType,
-		final FindCtrlClient findCtrlClient )
+		final Widget			containerWidget,
+		final SearchType		searchType,
+		final FindCtrlClient	findCtrlClient )
 	{
 		doAsyncOperation(
-			// Prefetch parameters.  false -> Not a prefetch.
+			// Prefetch parameters.
 			findCtrlClient,
-			false,
+			false,	// false -> Not a prefetch.
 			
-			// Required creation parameters.
+			// Creation parameters.
 			containerWidget,
 			searchType,
-			40 );
+			40,
+			
+			// Set selected item parameters.
+			null,
+			null );
 	}// end createAsync()
+
 
 	/**
 	 * Causes the split point for the FindCtrl to be fetched.
@@ -1147,35 +1222,47 @@ public class FindCtrl extends Composite
 		}
 		
 		doAsyncOperation(
-			// Prefetch parameters.  true -> Prefetch only.
+			// Prefetch parameters.
 			findCtrlClient,
-			true,
+			true,	// true -> Only a prefetch is performed.
 			
-			// Creation parameters ignore.
+			// Creation parameters.
 			null,
 			null,
-			-1 );
+			-1,
+			
+			// Set selected item parameters.
+			null,
+			null );
 	}// end prefetch()
 	
 	public static void prefetch()
 	{
+		// Always use the initial form of the method.
 		prefetch( null );
 	}// end prefetch()
 
+	
 	/**
-	 * Update the text box with the name of the selected item.
+	 * Sets the selected item in the FindCtrl.
+	 * 
+	 * @param findCtrl
+	 * @param selectedItem
 	 */
-	private void updateTextBoxWithSelectedItem( GwtTeamingItem selectedItem )
+	public static void setSelectedItem( FindCtrl findCtrl, GwtTeamingItem selectedItem )
 	{
-		String name;
-
-		// Get the name of the selected item.
-		name = selectedItem.getShortDisplayName();
-		
-		// Put the name of the selected item in the text box.
-		m_txtBox.setText( name );
-		
-		// Put the focus in the text box.
-		m_txtBox.setFocus( true );
-	}
+		doAsyncOperation(
+			// Prefetch parameters.
+			null,
+			false,	// false -> Not a prefetch.
+			
+			// Creation parameters.
+			null,
+			null,
+			-1,
+			
+			// Set selected item parameters.
+			findCtrl,
+			selectedItem );
+	}// end setSelectedItem()
 }// end FindCtrl

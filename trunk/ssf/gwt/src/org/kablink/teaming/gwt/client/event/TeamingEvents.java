@@ -269,6 +269,7 @@ public enum TeamingEvents implements IsSerializable {
 	DISABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Disables adHoc folders for the Selected Users.
 	ENABLE_SELECTED_USERS,							// Enables the Selected Users.
 	ENABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Enables adHoc folders for the the Selected Users.
+	FIND_CONTROL_BROWSE,							// Invoke the find control browser.
 	FOLDER_ENTRY_ACTION_COMPLETE,					// An action on a folder entry has completed.
 	GET_MANAGE_USERS_TITLE,							// Event to request the manage users title.
 	HIDE_SELECTED_SHARES,							// Marks the selected shares as being hidden.

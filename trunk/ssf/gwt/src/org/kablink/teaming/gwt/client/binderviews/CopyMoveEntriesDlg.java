@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,6 +39,7 @@ import java.util.Map;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.FindControlBrowseEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -46,6 +47,7 @@ import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.CopyEntriesCmd;
@@ -62,15 +64,20 @@ import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ProgressBar;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.widgets.VibeHorizontalPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -86,13 +93,18 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class CopyMoveEntriesDlg extends DlgBox
 	implements EditSuccessfulHandler,
 	// Event handlers implemented by this class.
+		FindControlBrowseEvent.Handler,
 		SearchFindResultsEvent.Handler
 {
+	private final static boolean	SHOW_BROWSE_BUTTON	= false;	// 20130205 (DRF):  Leave false on checkin until I get this working.
+	
 	private boolean						m_doCopy;					// true -> The dialog is doing a copy.  false -> It's doing a move.
+	private Button						m_browseButton;				// Button used to connect a browse widget to the find control.
 	private FindCtrl					m_findControl;				// The search widget.
 	private GwtFolder					m_recentDest;				// Tracks the last destination used.  If a new folder isn't selected, this will be used.
 	private GwtFolder					m_selectedDest;				// The currently selected folder returned by the search widget.
-	private GwtTeamingMessages 			m_messages;					// Access to Vibe's string resource.
+	private GwtTeamingImageBundle		m_images;					// Access to Vibe's image  resources.
+	private GwtTeamingMessages 			m_messages;					// Access to Vibe's string resources.
 	private InlineLabel					m_progressIndicator;		// Label containing the 'x of y' progress indicator.
 	private int							m_totalDone;				// Tracks the number of entities that have been copied/moved while the operation is in progress.
 	private List<EntityId>				m_entityIds;				// Current list of entity IDs to be copied/moved.
@@ -126,7 +138,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private static final TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
-		// Search events.
+		TeamingEvents.FIND_CONTROL_BROWSE,
 		TeamingEvents.SEARCH_FIND_RESULTS,
 	};
 	
@@ -142,6 +154,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 		super(false, true);
 		
 		// ...initialize everything else...
+		m_images   = GwtTeaming.getImageBundle();
 		m_messages = GwtTeaming.getMessages();
 		
 		// ...and create the dialog's content.
@@ -637,6 +650,20 @@ public class CopyMoveEntriesDlg extends DlgBox
 	}
 	
 	/**
+	 * Handles FindControlBrowseEvent's received by this class.
+	 * 
+	 * Implements the FindControlBrowseEvent.Handler.onFindControlBrowse()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onFindControlBrowse(FindControlBrowseEvent event) {
+//!		...this needs to be implemented...
+		GwtClientHelper.deferredAlert("CopyMoveEntriesDlg.onFindControlBrowse():  ...this needs to be implemented...");
+	}
+	
+	/**
 	 * Handles SearchFindResultsEvent's received by this class.
 	 * 
 	 * Implements the SearchFindResultsEvent.Handler.onSearchFindResults()
@@ -724,13 +751,36 @@ public class CopyMoveEntriesDlg extends DlgBox
 
 		// ...add the search widget...
 		fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-cmeDlg_FindPanel");
+		fp.addStyleName("vibe-cmeDlg_FindPanel_Outer");
 		m_vp.add(fp);
 		il = new InlineLabel(m_strMap.get(StringIds.SELECT_DEST));
 		il.addStyleName("vibe-cmeDlg_FindLabel");
 		il.setWordWrap(false);
 		fp.add(il);
-		fp.add(m_findControl);
+		VibeHorizontalPanel hp = new VibeHorizontalPanel(null, null);
+		hp.addStyleName("vibe-cmeDlg_FindPanel_Inner");
+		hp.add(m_findControl);
+		fp.add(hp);
+		
+		// ...if we're showing a browse button...
+		if (SHOW_BROWSE_BUTTON) {
+			// ...add it next to the search widget...
+			Image buttonImg = GwtClientHelper.buildImage(m_images.browseHierarchy(), m_messages.cmeDlg_Alt_Browse());
+			m_browseButton = new Button(GwtClientHelper.getWidgetHTML(buttonImg), new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					GwtTeaming.fireEventAsync(
+						new FindControlBrowseEvent(
+							m_findControl,
+							((null == m_selectedDest) ?
+								m_recentDest          :
+								m_selectedDest)));
+				}
+			});
+			m_browseButton.addStyleName("vibe-cmeDlg_BrowseButton");
+			hp.add(m_browseButton);
+			hp.setCellVerticalAlignment(m_browseButton, HasVerticalAlignment.ALIGN_MIDDLE);
+		}
 
 		// ...add a progress bar...
 		m_progressBar = new ProgressBar(0, m_entityIds.size());
@@ -844,9 +894,11 @@ public class CopyMoveEntriesDlg extends DlgBox
 		}
 	}
 	
+	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
-	/* the move entries dialog and perform some operation on it.     */
+	/* the copy/move entries dialog and perform some operation on    */
+	/* it.                                                           */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
 	/**

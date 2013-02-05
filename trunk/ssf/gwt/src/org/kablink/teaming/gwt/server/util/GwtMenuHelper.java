@@ -736,51 +736,36 @@ public class GwtMenuHelper {
 	}
 	
 	/*
-	 * Constructs a ToolbarItem for managing the shares for the selected entries.
+	 * Constructs a ToolbarItem for managing the shares for the
+	 * selected entries.
 	 */
-	private static void constructEntryManageSharesItem(
-		ToolbarItem entryToolbar,
-		AllModulesInjected bs,
-		String viewType,
-		Folder folder )
-	{
+	@SuppressWarnings("unused")
+	private static void constructEntryManageSharesItem(ToolbarItem entryToolbar, AllModulesInjected bs, String viewType, Folder folder) {
 		// For the view types that support it...
-		if ( MiscUtil.hasString( viewType ) )
-		{
-			if ( folderSupportsShare( bs, folder, viewType ) )
-			{
-				constructEntryManageSharesItem( entryToolbar, bs );
+		if (MiscUtil.hasString(viewType)) {
+			if (folderSupportsShare(bs, folder, viewType)) {
+				// ...add the 'Manage Shares...' menu item.
+				constructEntryManageSharesItem(entryToolbar, bs);
 			}
 		}
 	}
 	
 	/*
-	 * Constructs a ToolbarItem for the "Manage shares..." menu item.
+	 * Constructs a ToolbarItem for the 'Manage Shares...' menu item.
 	 */
-	private static void constructEntryManageSharesItem(
-		ToolbarItem entryToolbar,
-		AllModulesInjected bs )
-	{
-		User currentUser;
-    	Long zoneId;
-    	ZoneConfig zoneConfig;
-		AccessControlManager accessControlManager;
-
+	private static void constructEntryManageSharesItem(ToolbarItem entryToolbar, AllModulesInjected bs) {
     	// Is the current user a zone administrator?
-		currentUser = GwtServerHelper.getCurrentUser();
-    	zoneId = RequestContextHolder.getRequestContext().getZoneId();
-    	zoneConfig = getCoreDao().loadZoneConfig( zoneId );
-    	accessControlManager = getAccessControlManager();
-		accessControlManager = (AccessControlManager) SpringContextUtil.getBean( "accessControlManager" );
-		if ( accessControlManager.testOperation( currentUser, zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION ) )
-		{
-			ToolbarItem tbi;
-
-			// Yes, add the "Manage shares..." menu item.
-			tbi = new ToolbarItem( "1_manageSharesSelected" );
-			markTBITitle( tbi, "toolbar.menu.manageSharesSelected" );
-			markTBIEvent( tbi, TeamingEvents.MANAGE_SHARES_SELECTED_ENTRIES );
-			entryToolbar.addNestedItem( tbi );
+		User currentUser = GwtServerHelper.getCurrentUser();
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig( zoneId );
+		AccessControlManager accessControlManager = getAccessControlManager();
+		accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
+		if (accessControlManager.testOperation(currentUser, zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION)) {
+			// Yes!  Add the 'Manage Shares...' menu item.
+			ToolbarItem tbi = new ToolbarItem("1_manageSharesSelected");
+			markTBITitle(tbi, "toolbar.menu.manageSharesSelected");
+			markTBIEvent(tbi, TeamingEvents.MANAGE_SHARES_SELECTED_ENTRIES);
+			entryToolbar.addNestedItem(tbi);
 		}
 	}
 	
@@ -899,8 +884,9 @@ public class GwtMenuHelper {
 		// ...add the subscribe item.
 		constructEntrySubscribeItem(moreTBI, bs, request, false);
 		
-		// Add the "Manage shares..." menu item.  This will only be available for the admin
-		constructEntryManageSharesItem( moreTBI, bs );
+		// Add the 'Manage Shares...' menu item.  This will only be
+		// available for the admin users.
+		constructEntryManageSharesItem(moreTBI, bs);
 
 		// If we added anything to the more toolbar...
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {
@@ -2516,8 +2502,8 @@ public class GwtMenuHelper {
 					FolderEntry fe= bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
 					
 					if (GwtShareHelper.isEntitySharable(bs, fe)) {
-						constructEntryShareItem(actionToolbar, bs, request);
-						constructEntryManageSharesItem( actionToolbar, bs );
+						constructEntryShareItem(       actionToolbar, bs, request);
+						constructEntryManageSharesItem(actionToolbar, bs         );
 					}
 					constructEntryDetailsItem(     actionToolbar, bs, request, "toolbar.details.view");
 					constructEntryViewHtmlItem(    actionToolbar, bs, request, fe                    );
@@ -2533,7 +2519,7 @@ public class GwtMenuHelper {
 					boolean addShare = GwtShareHelper.isEntitySharable(bs, folder);
 					if (addShare) {
 						actionToolbar.addNestedItem(constructShareBinderItem(request, folder));
-						constructEntryManageSharesItem( actionToolbar, bs );
+						constructEntryManageSharesItem(actionToolbar, bs);
 					}
 					if (!(Utils.checkIfFilr())) {
 						boolean isFavorite = false;
