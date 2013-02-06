@@ -47,5 +47,6 @@ public interface AbstractFolderModuleMBean {
 	public void clearSyncStats();
 	public void dumpSyncStatsToLog();
 	public String dumpSyncStatsAsString();
-	
+	public void dumpJitsStatsToLog();
+	public String dumpJitsStatsAsString();
 }

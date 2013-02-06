@@ -88,4 +88,13 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 		throw new UnsupportedOperationException("jits operation is not supported in the base edition");
 	}
 
+	@Override
+	public void dumpJitsStatsToLog() {
+	}
+
+	@Override
+	public String dumpJitsStatsAsString() {
+		return "";
+	}
+
 }
