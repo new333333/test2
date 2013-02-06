@@ -5246,7 +5246,7 @@ td.datePickerMonth {
 	.vibe-findBrowser-nodePanel           {}
 	.vibe-findBrowser-nodePanelActive     {}
 	.vibe-findBrowser-nodePanelInert      {cursor: default !important;}
-	.vibe-findBrowser-nodeTxt             {font-size:  13px !important;}
+	.vibe-findBrowser-nodeTxt             {font-size:  13px;}
 	.vibe-findBrowser-nodeTxtInert        {}
 	.vibe-findBrowser-nodeTxtActive       {}
 	.vibe-findBrowser-nodeTxtActive:hover {
@@ -5257,8 +5257,17 @@ td.datePickerMonth {
 		-moz-border-radius: 5px;
 		-webkit-border-radius: 5px;
 	}
-	.vibe-findBrowser-popup     {z-index: 1002; padding: 2px !important;}
-	.vibe-findBrowser-tree      {
+	.vibe-findBrowser-nodeTxtStart {
+		font-size: 14px !important;
+		font-weight: bold;
+		background: url(images/blends/gray_blend6_28.png) repeat-x;
+		background-position:center;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+	}
+	.vibe-findBrowser-popup {z-index: 1002; padding: 2px !important;}
+	.vibe-findBrowser-tree  {
 		background-color: #f6f6f6;
 		margin: 0px;
 		padding-right: 5px;

@@ -390,6 +390,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetDataQuotaExceededHtml();
 	String rpcFailure_GetDataQuotaHighwaterExceededHtml();
 	String rpcFailure_GetDefaultActivityStream();
+	String rpcFailure_GetDefaultStorageId();
 	String rpcFailure_GetDiskUsageHtml();
 	String rpcFailure_GetFileSyncAppConfiguration();
 	String rpcFailure_GetEntryPermalink();

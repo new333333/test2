@@ -43,9 +43,11 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandVerticalBucketCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDefaultStorageIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalNodeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalTreeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -58,13 +60,13 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -77,8 +79,10 @@ public class FindControlBrowserPopup extends TeamingPopupPanel
 {
 	private boolean						m_foldersOnly;				// true -> Only folders are to be returned.  false -> Folders and workspaces can be returned.
 	private FindCtrl					m_findControl;				// The FindCtrl widget we're browsing for.
+	private FindTreeNode				m_findStartNode;			// The node corresponding to m_findStart.
 	private GwtFolder					m_findStart;				// The starting point to browse.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private Long						m_findStartBinderId;		// The ID of the starting binder specified when the tree was loaded.
 	private Tree						m_browser;					// The Tree containing the hierarchy being browsed.
 	private TreeInfo					m_rootTI;					// The TreeInfo containing the root of the tree being browsed.
 	
@@ -92,27 +96,29 @@ public class FindControlBrowserPopup extends TeamingPopupPanel
 	};
 	
 	/*
-	 * Inner class used to wrap items for nodes in the find control
-	 * browser.
+	 * Inner class used to encapsulate the Widget's used for a tree
+	 * node.
 	 */
-	private static class FindTreeNode extends TreeItem {
-		private boolean		m_expandPlaceholder;	// true -> This node is a placeholder for an expandable node whose contents have yet to be read.
-		private TreeInfo	m_ti;					// The TreeInfo for this FindTreeNode.
+	private static class FindNodeWidgets {
+		private Image			m_nodeImg;		//
+		private InlineLabel		m_nodeTxt;		//
+		private VibeFlowPanel	m_nodePanel;	//
 
 		/**
 		 * Constructor method.
 		 * 
-		 * @param w
-		 * @param ti
-		 * @param expandPlaceholder
+		 * @param nodePanel
+		 * @param nodeImg
+		 * @param nodeTxt
 		 */
-		public FindTreeNode(Widget w, TreeInfo ti, boolean expandPlaceholder) {
+		public FindNodeWidgets(VibeFlowPanel nodePanel, Image nodeImg, InlineLabel nodeTxt) {
 			// Initialize the super class...
-			super(w);
-			
+			super();
+
 			// ...and store the parameters.
-			setExpandPlaceholder(expandPlaceholder);
-			setTreeInfo(         ti               );
+			setNodePanel(nodePanel);
+			setNodeImg(  nodeImg  );
+			setNodeTxt(  nodeTxt  );
 		}
 
 		/**
@@ -120,19 +126,89 @@ public class FindControlBrowserPopup extends TeamingPopupPanel
 		 * 
 		 * @return
 		 */
-		public boolean  isBucket()            {return m_ti.isBucket();    }
-		public boolean  isExpandPlaceholder() {return m_expandPlaceholder;}
-		public TreeInfo getTreeInfo()         {return m_ti;               }
+		public VibeFlowPanel getNodePanel() {return m_nodePanel;}
+		@SuppressWarnings("unused")
+		public Image         getNodeImg()   {return m_nodeImg;  }
+		public InlineLabel   getNodeTxt()   {return m_nodeTxt;  }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setExpandPlaceholder(boolean  expandPlaceholder) {m_expandPlaceholder = expandPlaceholder;}
-		public void setTreeInfo(         TreeInfo ti)                {m_ti                = ti;               }
+		public void setNodePanel(VibeFlowPanel nodePanel) {m_nodePanel = nodePanel;}
+		public void setNodeImg(  Image         nodeImg)   {m_nodeImg   = nodeImg;  }
+		public void setNodeTxt(  InlineLabel   nodeTxt)   {m_nodeTxt   = nodeTxt;  }
 	}
 	
+	/*
+	 * Inner class used to wrap items for the nodes in the find control
+	 * browser.
+	 */
+	private static class FindTreeNode extends TreeItem {
+		private boolean			m_expandPlaceholder;	// true -> This node is a placeholder for an expandable node whose contents have yet to be read.
+		private FindNodeWidgets	m_nw;					// The FindNodeWidgets encapsulating the node's widgets.
+		private TreeInfo		m_ti;					// The TreeInfo for this FindTreeNode.
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param nw
+		 * @param ti
+		 * @param expandPlaceholder
+		 */
+		public FindTreeNode(FindNodeWidgets nw, TreeInfo ti, boolean expandPlaceholder) {
+			// Initialize the super class...
+			super(nw.getNodePanel());
+			
+			// ...and store the parameters.
+			setExpandPlaceholder(expandPlaceholder);
+			setFindNodeWidgets(  nw               );
+			setTreeInfo(         ti               );
+			
+			addStyleName("vibe-findBrowser-node");
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean         isBucket()            {return m_ti.isBucket();    }
+		public boolean         isExpandPlaceholder() {return m_expandPlaceholder;}
+		public FindNodeWidgets getFindNodeWidgets()  {return m_nw;               }
+		public TreeInfo        getTreeInfo()         {return m_ti;               }
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setExpandPlaceholder(boolean         expandPlaceholder) {m_expandPlaceholder = expandPlaceholder;}
+		public void setFindNodeWidgets(  FindNodeWidgets nw)                {m_nw                = nw;               }
+		public void setTreeInfo(         TreeInfo        ti)                {m_ti                = ti;               }
+
+		/**
+		 * Does what's necessary to ensure the node is scrolled into
+		 * view.
+		 */
+		public void scrollIntoView() {
+			// If we can access the node's Element...
+			Element fsnE = getElement();
+			if (null != fsnE) {
+				// ...ensure its scrolled into view.
+				fsnE.scrollIntoView();
+			}
+		}
+		
+		/**
+		 * Sets the styles on a text
+		 */
+		public void setFindStart() {
+			getFindNodeWidgets().getNodeTxt().addStyleName("vibe-findBrowser-nodeTxtStart");			
+		}
+	}
+
 	/*
 	 * Creates an empty popup panel, specifying its auto-hide and modal
 	 * properties.
@@ -157,23 +233,26 @@ public class FindControlBrowserPopup extends TeamingPopupPanel
 		showRelativeTo(findControl);
 		
 		// ...and load the tree.
-		populateTree();
+		loadPart1Async();
 	}
 
 	/*
-	 * Creates a FindTreeNode that wraps a Widget that constitutes a
+	 * Creates a FindTreeNode that wraps the Widgets that constitute a
 	 * browser tree node based on the given TreeInfo.
 	 */
 	private FindTreeNode createNode(TreeInfo ti, boolean expandPlaceholder) {
-		FindTreeNode reply = new FindTreeNode(createNodeWidget(ti), ti, expandPlaceholder);
-		reply.addStyleName("vibe-findBrowser-node");
+		FindTreeNode reply = new FindTreeNode(createNodeWidgets(ti), ti, expandPlaceholder);
+		if (isFindStart(reply)) {
+			reply.setFindStart();
+			m_findStartNode = reply;
+		}
 		return reply;
 	}
 	
 	/*
-	 * Creates the Widget a tree node should contain.
+	 * Creates the FindNodeWidgets a tree node should contain.
 	 */
-	private Widget createNodeWidget(TreeInfo ti) {
+	private FindNodeWidgets createNodeWidgets(TreeInfo ti) {
 		// Create a panel to hold the node's widgets...
 		boolean isSelectable = isSelectable(ti);
 		VibeFlowPanel fp = new VibeFlowPanel();
@@ -198,7 +277,7 @@ public class FindControlBrowserPopup extends TeamingPopupPanel
 		fp.add(il);
 
 		// ...and return the panel as the node's Widget.
-		return fp;
+		return new FindNodeWidgets(fp, binderImg, il);
 	}
 	
 	/**
@@ -387,6 +466,31 @@ public class FindControlBrowserPopup extends TeamingPopupPanel
 	}
 
 	/*
+	 * Returns true if a tree node should be marked as the starting
+	 * node in the tree browser and false otherwise.
+	 */
+	private boolean isFindStart(TreeInfo ti) {
+		// If the TreeInfo is a bucket...
+		if (ti.isBucket()) {
+			// ...it can't be selected.
+			return false;
+		}
+
+		// Return true if the binder ID we're tracking as the starting
+		// binder matches the binder ID in the TreeInfo and false
+		// otherwise. 
+		return (
+			(null != m_findStartBinderId) &&
+			m_findStartBinderId.equals(
+				ti.getBinderInfo().getBinderIdAsLong()));
+	}
+	
+	private boolean isFindStart(FindTreeNode node) {
+		// Always use the initial form of the method.
+		return isFindStart(node.getTreeInfo());
+	}
+	
+	/*
 	 * Returns true if a tree node can be selected for the find control
 	 * and false if it can't.
 	 */
@@ -414,25 +518,83 @@ public class FindControlBrowserPopup extends TeamingPopupPanel
 	}
 	
 	/*
-	 * Reads the root TreeInfo from the server and uses it to populate
-	 * the tree.
+	 * Asynchronously loads the next part of the information required
+	 * to run the find control browser.
 	 */
-	private void populateTree() {
+	private void loadPart1Async() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart1Now();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the next part of the information required to
+	 * run the find control browser.
+	 */
+	private void loadPart1Now() {
+		// If we were given the starting point for the tree...
+		if (null != m_findStart) {
+			// ...simply populate it from there.
+			loadPart2Async(m_findStart.getFolderId());
+		}
+		
+		else {
+			// ...otherwise, get the user's default storage ID from the
+			// ...server...
+			GwtClientHelper.executeCommand(new GetDefaultStorageIdCmd(), new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetDefaultStorageId());
+					loadPart2Async(GwtClientHelper.getRequestInfo().getCurrentUserWorkspaceId());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response)  {
+					// ...and start from there.
+					StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+					String defaultStorageId = responseData.getStringValue();
+					loadPart2Async(defaultStorageId);
+				}
+			});
+		}
+	}
+
+	/*
+	 * Asynchronously loads the next part of the information required
+	 * to run the find control browser.
+	 */
+	private void loadPart2Async(final String startBinderId) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart2Now(startBinderId);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the next part of the information required to
+	 * run the find control browser.
+	 */
+	private void loadPart2Now(final String startBinderId) {
 		// Where should we start browsing from?
-		final String binderId;
-		if (null != m_findStart)
-		     binderId = m_findStart.getFolderId();
-		else binderId = GwtClientHelper.getRequestInfo().getCurrentUserWorkspaceId();
+		m_findStartBinderId = Long.parseLong(startBinderId);
+		m_findStartNode     = null;	// Set when the tree populates.
 		
 		// Read the tree information...
-		GetVerticalTreeCmd cmd = new GetVerticalTreeCmd(binderId, true);	// true -> Find browser mode.
+		GetVerticalTreeCmd cmd = new GetVerticalTreeCmd(startBinderId, true);	// true -> Find browser mode.
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetTree(),
-					binderId);
+					startBinderId);
 			}
 			
 			@Override
@@ -606,6 +768,12 @@ public class FindControlBrowserPopup extends TeamingPopupPanel
 		
 		// We always show the root as expanded.
 		rootNode.setState(true, false);
+		
+		// If we have a starting node...
+		if (null != m_findStartNode) {
+			// ...make sure it's scrolled into view.
+			m_findStartNode.scrollIntoView();
+		}
 	}
 
 	/*
