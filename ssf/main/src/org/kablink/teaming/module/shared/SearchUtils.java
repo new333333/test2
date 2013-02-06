@@ -622,8 +622,15 @@ public class SearchUtils {
 				// As result of JITS, the parent binder just disappeared from the system.
 				// We have to somehow notify the caller of this situation - 
 				// Shall we throw an exception or return an empty hits? Each has pros and cons.
-				throw new NoBinderByTheIdException(parentBinder.getId());
-				//return new Hits(0);
+				// Exception throwing is more unpredictable and risky since it's not exactly
+				// clear how various clients would behave upon the error. So instead, we will
+				// throw an empty result, which will make the caller think that this binder
+				// has no children. And then this binder can disapear more graciously from
+				// the client's view when the caller invokes this method on the binder's 
+				// parent at a later time.
+				
+				//throw new NoBinderByTheIdException(parentBinder.getId());
+				return new Hits(0);
 			}
 		}	
 		
