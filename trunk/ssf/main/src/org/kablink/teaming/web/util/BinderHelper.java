@@ -85,10 +85,12 @@ import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
@@ -97,6 +99,7 @@ import org.kablink.teaming.domain.DashboardPortlet;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
@@ -158,6 +161,8 @@ import org.kablink.teaming.web.tree.DomTreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.FixupFolderDefsThread;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.fi.connection.ResourceDriver;
+import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -5036,6 +5041,14 @@ public class BinderHelper {
 		return ((ProfileModule) SpringContextUtil.getBean("profileModule"));
 	}
 	
+	private static FolderDao getFolderDao() {
+		return ((FolderDao) SpringContextUtil.getBean("folderDao"));
+	}
+	
+	private static ResourceDriverManager getResourceDriverManager() {
+		return ((ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager"));
+	}
+	
 	/**
 	 * Make sure binder title is unique.
 	 * 
@@ -5183,4 +5196,72 @@ public class BinderHelper {
 		// workspace and false otherwise.  Return it.
 		return reply;
 	}
+	
+    public static void moveEntryCheckMirrored(Binder binder, Entry entry, Binder destination) 
+			throws NotSupportedException {
+    	if(binder.isMirrored()) {
+    		ResourceDriver sourceDriver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
+ 			if(sourceDriver.isReadonly()) {
+ 				throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredSource.readonly",
+ 						new String[] {sourceDriver.getTitle(), binder.getPathName()});
+ 			}
+ 			else {
+ 				if(destination.isMirrored()) {
+ 					ResourceDriver destDriver = getResourceDriverManager().getDriver(destination.getResourceDriverName());
+ 					if(destDriver.isReadonly()) {
+ 						throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredDestination.readonly",
+ 								new String[] {destDriver.getTitle(), destination.getPathName()});
+ 					}
+ 				}
+ 				else {
+ 					throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredSource",
+ 							new String[] {binder.getPathName(), destination.getPathName()});
+ 				}
+ 			}
+ 	   }
+ 	   else {
+ 		   if(destination.isMirrored()) {
+ 				throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredDestination",
+ 						new String[] {binder.getPathName(), destination.getPathName()});			   
+ 		   }
+ 	   }
+    }
+    
+    public static void copyEntryCheckMirrored(Binder binder, Entry entry, Binder destination) 
+    		throws NotSupportedException {
+    	if(binder.isMirrored()) {
+			if(destination.isMirrored()) {
+				ResourceDriver destDriver = getResourceDriverManager().getDriver(destination.getResourceDriverName());
+				if(destDriver.isReadonly()) {
+					throw new NotSupportedException("errorcode.notsupported.copyEntry.mirroredDestination.readonly",
+							new String[] {destDriver.getTitle(), destination.getPathName()});
+				}
+			}
+			else {
+				//It is always OK to copy from mirrored to non-mirrored
+			}
+ 	   }
+ 	   else {
+ 		   if (destination.isMirrored()) {
+ 			   //If the source is not mirroerd and the destination is mirrored, then check that the entry has one and only one file
+ 			   Set<Attachment> atts = entry.getAttachments();
+ 			   if (atts.size() == 1) {
+ 				   //Now check that all comments have no attached files
+ 				   List<FolderEntry>children = getFolderDao().loadEntryDescendants((FolderEntry)entry);
+ 				   for (FolderEntry child:children) {
+ 					   atts = child.getAttachments();
+ 					   if (!atts.isEmpty()) {
+ 			 			   throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored",
+ 			 						new String[] {binder.getPathName(), destination.getPathName()});			   
+ 					   }
+ 				   }
+ 				   //This entry is OK to copy
+ 				   return;
+ 			   }
+ 			   throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored",
+ 						new String[] {binder.getPathName(), destination.getPathName()});			   
+ 		   }
+ 	   }
+    }
+
 }
