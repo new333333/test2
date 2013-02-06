@@ -1072,7 +1072,13 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			throw new BinderQuotaException(entry.getTitle());
 		}
 
-        processor.moveEntry(folder, entry, destination, toFileNames, options);
+		if ((folder.isMirrored() || destination.isMirrored())) {
+			//To move to and from mirrored folders, copy the entry to the destination folder then delete the original entry
+			processor.copyEntry(folder, entry, destination, toFileNames, options);
+			processor.deleteEntry(folder, entry, true, options);
+		} else {
+			processor.moveEntry(folder, entry, destination, toFileNames, options);
+		}
         
 		updateModificationTime(folder, options);
         if(destination != folder)
