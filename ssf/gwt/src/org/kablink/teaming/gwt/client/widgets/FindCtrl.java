@@ -1153,7 +1153,13 @@ public class FindCtrl extends Composite
 			// Operation:  Create.
 			reply = new FindCtrl( containerWidget, searchType, visibleLength );
 		}
-		findCtrlClient.onSuccess( reply );
+		
+		// If we have a FindCtrlClient...
+		if ( null != findCtrlClient )
+		{
+			// ...call its success handler.
+			findCtrlClient.onSuccess( reply );
+		}
 	}// end initFindCtrl_Finish()
 
 
