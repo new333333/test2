@@ -84,13 +84,6 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	}  
 
 	@Override
-    public List<FolderEntry> _addNetFolderEntriesInSync(Long folderId, String definitionId, List<InputDataAccessor> inputDataList, 
-    		List<Map> fileItemsList, List<Map> optionsList) 
-    	throws AccessControlException, WriteFilesException, WriteEntryDataException {
-		throw new UnsupportedOperationException("addNetFolderEntries operation is not supported in the base edition");
-	}
-
-	@Override
 	public boolean jitSynchronize(Folder folder) {
 		throw new UnsupportedOperationException("jits operation is not supported in the base edition");
 	}
