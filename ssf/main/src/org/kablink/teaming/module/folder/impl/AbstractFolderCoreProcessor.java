@@ -93,8 +93,11 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.CollectionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ServerTaskLinkage;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -470,7 +473,7 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
      		throw new NotSupportedException("errorcode.notsupported.copyEntryDestination", new String[] {destination.getPathName()});
 	   if (!source.isTop()) throw new NotSupportedException("errorcode.notsupported.copyReply");
 	   
-   	   copyEntryCheckMirrored(binder, source, destination);
+	   BinderHelper.copyEntryCheckMirrored(binder, source, destination);
 
 	   List<FolderEntry>children = getFolderDao().loadEntryDescendants((FolderEntry)source);
 	   children.add(0, (FolderEntry)source);
@@ -637,7 +640,7 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
     	FolderEntry fEntry = (FolderEntry)entry;
     	if (fEntry.getTopEntry() != null)
     		throw new NotSupportedException("errorcode.notsupported.moveReply");
-    	moveEntryCheckMirrored(binder, entry, destination);
+    	BinderHelper.moveEntryCheckMirrored(binder, entry, destination);
     	
     	//Remove this entry from the RSS index
     	Set<Entry> entriesToDelete = new HashSet<Entry>();
@@ -853,24 +856,6 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
     @Override
 	public Binder copyBinder(Binder source, Binder destination, Map options) {
     	if ((destination instanceof Folder) || (destination instanceof Workspace)) {
-        	if (!options.containsKey(ObjectKeys.INPUT_OPTION_SKIP_INVALID_FILES) ||
-        			!(Boolean)options.get(ObjectKeys.INPUT_OPTION_SKIP_INVALID_FILES)) {
-        		//We must guard against invalid copy attempts
-        		if (!source.isAclExternallyControlled() && destination.isAclExternallyControlled()) {
-        			//This type of request could have invalid entries, so check each one
-        			Set<WorkArea> workAreas = source.getChildWorkAreas();
-        			for (WorkArea w : workAreas) {
-        				if (w instanceof FolderEntry) {
-        					try {
-        						copyEntryCheckMirrored(source, (FolderEntry)w, destination);
-        					} catch(Exception e) {
-        						//This entry cannot be copied, so don't copy this binder
-        						throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored");
-        					}
-        				}
-        			}
-        		}
-        	}
     		return super.copyBinder(source, destination, options);
     	} else {
     		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
@@ -936,7 +921,7 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 		       				boolean okToCopy = false;
 		       				try {
 		       					//See if copying from this source binder to this destination folder is a legal operation to do
-		       					copyEntryCheckMirrored(source, sEntry, folder);
+		       					BinderHelper.copyEntryCheckMirrored(source, sEntry, folder);
 		       					okToCopy = true;
 		       				} catch(Exception e) {}
 		       				
@@ -1226,70 +1211,4 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
         }
 	}
     
-    protected void moveEntryCheckMirrored(Binder binder, Entry entry, Binder destination) 
-    throws NotSupportedException {
- 	   if(binder.isMirrored()) {
- 			ResourceDriver sourceDriver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
- 			if(sourceDriver.isReadonly()) {
- 				throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredSource.readonly",
- 						new String[] {sourceDriver.getTitle(), binder.getPathName()});
- 			}
- 			else {
- 				if(destination.isMirrored()) {
- 					ResourceDriver destDriver = getResourceDriverManager().getDriver(destination.getResourceDriverName());
- 					if(destDriver.isReadonly()) {
- 						throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredDestination.readonly",
- 								new String[] {destDriver.getTitle(), destination.getPathName()});
- 					}
- 				}
- 				else {
- 					throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredSource",
- 							new String[] {binder.getPathName(), destination.getPathName()});
- 				}
- 			}
- 	   }
- 	   else {
- 		   if(destination.isMirrored()) {
- 				throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredDestination",
- 						new String[] {binder.getPathName(), destination.getPathName()});			   
- 		   }
- 	   }
-    }
-    
-    protected void copyEntryCheckMirrored(Binder binder, Entry entry, Binder destination) 
-    throws NotSupportedException {
- 	   if(binder.isMirrored()) {
-			if(destination.isMirrored()) {
-				ResourceDriver destDriver = getResourceDriverManager().getDriver(destination.getResourceDriverName());
-				if(destDriver.isReadonly()) {
-					throw new NotSupportedException("errorcode.notsupported.copyEntry.mirroredDestination.readonly",
-							new String[] {destDriver.getTitle(), destination.getPathName()});
-				}
-			}
-			else {
-				//It is always OK to copy from mirrored to non-mirrored
-			}
- 	   }
- 	   else {
- 		   if (destination.isMirrored()) {
- 			   //If the source is not mirroerd and the destination is mirrored, then check that the entry has one and only one file
- 			   Set<Attachment> atts = entry.getAttachments();
- 			   if (atts.size() == 1) {
- 				   //Now check that all comments have no attached files
- 				   List<FolderEntry>children = getFolderDao().loadEntryDescendants((FolderEntry)entry);
- 				   for (FolderEntry child:children) {
- 					   atts = child.getAttachments();
- 					   if (!atts.isEmpty()) {
- 			 			   throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored",
- 			 						new String[] {binder.getPathName(), destination.getPathName()});			   
- 					   }
- 				   }
- 				   //This entry is OK to copy
- 				   return;
- 			   }
- 			   throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored",
- 						new String[] {binder.getPathName(), destination.getPathName()});			   
- 		   }
- 	   }
-    }
 }

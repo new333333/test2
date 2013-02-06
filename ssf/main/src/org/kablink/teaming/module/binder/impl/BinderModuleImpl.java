@@ -77,6 +77,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -1387,9 +1388,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.copyBinder);
 		Binder destinationParent = loadBinder(toId);
-    	// We don't allow (more precisely, don't support yet) copying of a binder into a mirrored folder.
-    	if(destinationParent.isMirrored())
-    		throw new NotSupportedException("errorcode.notsupported.copyBinder.mirroredDestination", new String[] {destinationParent.getPathName()});
 		//See if there is enough quota to do this
 		if (loadBinderProcessor(source).checkMoveBinderQuota(source, destinationParent)) {
 			if (source.getEntityType().equals(EntityType.folder)) {
@@ -1399,6 +1397,27 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				getAccessControlManager().checkOperation(destinationParent,
 						WorkAreaOperation.CREATE_WORKSPACES);
 			}
+    		//We must guard against invalid copy attempts (such as complex entries copied to mirrored folder)
+    		if (!source.isAclExternallyControlled() && destinationParent.isAclExternallyControlled()) {
+    			//This type of request could have invalid entries, so check each one
+    			Map getEntriesOptions = new HashMap();
+          		Map folderEntries = getFolderModule().getEntries(source.getId(), getEntriesOptions);
+    	      	List<Map> searchEntries = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+
+    			for (Map se : searchEntries) {
+    				String entryIdStr = (String)se.get(Constants.DOCID_FIELD);
+    				if (entryIdStr != null && !entryIdStr.equals("")) {
+        				Long entryId = Long.valueOf(entryIdStr);
+        				Entry entry = getFolderModule().getEntry(null, entryId);
+    					try {
+    						BinderHelper.copyEntryCheckMirrored(source, entry, destinationParent);
+    					} catch(Exception e) {
+    						//This entry cannot be copied, so don't copy this binder
+    						throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored");
+    					}
+    				}
+    			}
+    		}
 			Map params = new HashMap();
 			if (options != null)
 				params.putAll(options);
