@@ -1260,7 +1260,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtFolder result;
 			
 			gfCmd = (GetFolderCmd) cmd;
-			result = getFolder( ri, gfCmd.getZoneUUId(), gfCmd.getFolderId() );
+			result = getFolder( ri, gfCmd.getZoneUUId(), gfCmd.getFolderId(), gfCmd.isExtendedTitle() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3766,26 +3766,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getFileAttachments()
 	
 	
-	/**
+	/*
 	 * Return a Folder object for the given folder id.
-	 * 
-	 * @param ri
-	 * @param zoneUUID
-	 * @param folderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException 
 	 */
-	private GwtFolder getFolder( HttpRequestInfo ri, String zoneUUID, String folderId ) throws GwtTeamingException
+	private GwtFolder getFolder( HttpRequestInfo ri, String zoneUUID, String folderId, boolean extendedTitle ) throws GwtTeamingException
 	{
-		return GwtServerHelper.getFolderImpl( this, getRequest( ri ), zoneUUID, folderId, null );
+		return GwtServerHelper.getFolderImpl( this, getRequest( ri ), zoneUUID, folderId, null, extendedTitle );
 	}
 	
-	/**
+	/*
 	 * Return a list of the first n entries in the given folder.
-	 * 
-	 * @throws GwtTeamingException 
 	 */
 	@SuppressWarnings({ "unchecked" })
 	private ArrayList<GwtFolderEntry> getFolderEntries( HttpRequestInfo ri, String zoneUUID, String folderId, int numEntriesToRead, int numReplies, boolean getFileAttachments ) throws GwtTeamingException

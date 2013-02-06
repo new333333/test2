@@ -5241,11 +5241,27 @@ td.datePickerMonth {
 
 
 /* Start:  Styles used by the find control browser. */
-	.vibe-findBrowser-node  {font-size:  13px !important;}
-	.vibe-findBrowser-popup {z-index: 1002; padding: 2px !important;}
-	.vibe-findBrowser-tree  {
+	.vibe-findBrowser-node                {}
+	.vibe-findBrowser-nodeImg             {padding-right: 2px; height: 16px; width: 16px;}
+	.vibe-findBrowser-nodePanel           {}
+	.vibe-findBrowser-nodePanelActive     {}
+	.vibe-findBrowser-nodePanelInert      {cursor: default !important;}
+	.vibe-findBrowser-nodeTxt             {font-size:  13px !important;}
+	.vibe-findBrowser-nodeTxtInert        {}
+	.vibe-findBrowser-nodeTxtActive       {}
+	.vibe-findBrowser-nodeTxtActive:hover {
+		background: url(images/blends/teal_slice.png) repeat-x;
+		background-position:center;
+		cursor: pointer;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+	}
+	.vibe-findBrowser-popup     {z-index: 1002; padding: 2px !important;}
+	.vibe-findBrowser-tree      {
 		background-color: #f6f6f6;
 		margin: 0px;
+		padding-right: 5px;
 		border-top: 1px solid #808384;
 		-moz-border-radius-bottomleft: 3px;
 		-moz-border-radius-bottomright: 3px;

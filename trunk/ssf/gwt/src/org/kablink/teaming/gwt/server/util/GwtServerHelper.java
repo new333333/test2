@@ -5420,89 +5420,94 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * 
+	 * ?
+	 *
+	 * @param bs
 	 * @param request
 	 * @param zoneUUID
 	 * @param folderId
 	 * @param folderTitle
+	 * @param extendedTitle
+	 * 
 	 * @return
+	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static GwtFolder getFolderImpl( AllModulesInjected ami, HttpServletRequest request, String zoneUUID, String folderId, String folderTitle ) throws GwtTeamingException
-	{
-		BinderModule binderModule;
-		Binder binder = null;
-		GwtFolder folder = null;
-		Binder parentBinder;
+	public static GwtFolder getFolderImpl(AllModulesInjected bs, HttpServletRequest request, String zoneUUID, String folderId, String folderTitle, boolean extendedTitle) throws GwtTeamingException {
+		GwtFolder folder = new GwtFolder();
 		
-		try
-		{
-			ZoneInfo zoneInfo;
-			String zoneInfoId;
-			Long folderIdL;
-
-			// Get the id of the zone we are running in.
-			zoneInfo = MiscUtil.getCurrentZone();
-			zoneInfoId = zoneInfo.getId();
-			if ( zoneInfoId == null )
+		try {
+			// Get the ID of the zone we are running in.
+			ZoneInfo	zoneInfo   = MiscUtil.getCurrentZone();
+			String		zoneInfoId = zoneInfo.getId();
+			if (null == zoneInfoId) {
 				zoneInfoId = "";
+			}
 
-			binderModule = ami.getBinderModule();
-
-			folderIdL = new Long( folderId );
+			BinderModule	binderModule = bs.getBinderModule();
+			Long			folderIdL    = new Long(folderId);
 			
-			// Are we looking for a folder that was imported from another zone?
-			if ( zoneUUID != null && zoneUUID.length() > 0 && !zoneInfoId.equals( zoneUUID ) )
-			{
-				// Yes, get the folder id for the folder in this zone.
-				folderIdL = binderModule.getZoneBinderId( folderIdL, zoneUUID, EntityType.folder.name() );
+			// Are we looking for a folder that was imported from
+			// another zone?
+			if ((null != zoneUUID) && (0 < zoneUUID.length()) && (!(zoneInfoId.equals(zoneUUID)))) {
+				// Yes!  Get the folder ID for the folder in this zone.
+				folderIdL = binderModule.getZoneBinderId(folderIdL, zoneUUID, EntityType.folder.name());
 			}
 
 			// Get the binder object.
-			if ( folderIdL != null )
-				binder = binderModule.getBinder( folderIdL );
+			Binder binder;
+			if (null != folderIdL)
+			     binder = binderModule.getBinder(folderIdL);
+			else binder = null;
 			
 			// Initialize the data members of the GwtFolder object.
 			folder = new GwtFolder();
-			if ( folderIdL != null )
-				folder.setFolderId( folderIdL.toString() );
-			if ( binder != null )
-			{
-				String url;
-				Description desc;
+			if (null != folderIdL) {
+				folder.setFolderId(folderIdL.toString());
+			}
+			if (null != binder) {
+				String title;
+				if (MiscUtil.hasString(folderTitle)) {
+					title = folderTitle;
+				}
+				else {
+					title = binder.getTitle();
+					if (extendedTitle) {
+	                	if (!binder.isRoot() && !binder.getParentBinder().getEntityType().equals(EntityType.profiles)) {
+	                		title += (" (" + binder.getParentBinder().getTitle() + ")");
+	                	} 
+					}
+				}
+				folder.setFolderName(title);
+				Binder parentBinder = binder.getParentBinder();
+				if (null != parentBinder) {
+					folder.setParentBinderName(parentBinder.getPathName());
+				}
 
-				folder.setFolderName( MiscUtil.hasString( folderTitle ) ? folderTitle : binder.getTitle() );
-			
-				parentBinder = binder.getParentBinder();
-				if ( parentBinder != null )
-					folder.setParentBinderName( parentBinder.getPathName() );
-
-				// Create a url that can be used to view this folder.
-				url = PermaLinkUtil.getPermalink( request, binder );
-				folder.setViewFolderUrl( url );
+				// Create a URL that can be used to view this folder.
+				String url = PermaLinkUtil.getPermalink(request, binder);
+				folder.setViewFolderUrl(url);
 				
-				desc = binder.getDescription();
-				if ( desc != null )
-				{
-					String descStr;
-					
-					descStr = desc.getText();
-					
+				Description desc = binder.getDescription();
+				if (null != desc) {
 					// Perform any fixups needed on the entry's description
-					descStr = markupStringReplacementImpl( ami, request, folderId, descStr, "view" );
-					
-					folder.setFolderDesc( descStr );
+					String descStr = desc.getText();
+					descStr = markupStringReplacementImpl(bs, request, folderId, descStr, "view");
+					folder.setFolderDesc(descStr);
 				}
 			}
 		}
-		catch (Exception e)
-		{
-			throw getGwtTeamingException( e );
+		catch (Exception e) {
+			throw getGwtTeamingException(e);
 		}
 		
 		return folder;
-	}// end getFolderImpl()
+	}
 	
+	public static GwtFolder getFolderImpl( AllModulesInjected ami, HttpServletRequest request, String zoneUUID, String folderId, String folderTitle ) throws GwtTeamingException {
+		// Always use the initial form of the method.
+		return getFolderImpl(ami, request, zoneUUID, folderId, folderTitle, false);
+	}
 	
 	/**
 	 * Get the folder sort settings on the specified binder.

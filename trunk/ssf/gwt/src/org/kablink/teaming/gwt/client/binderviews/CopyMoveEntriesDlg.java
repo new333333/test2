@@ -60,7 +60,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ProgressDlg;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.FindControlBrowsePopup;
+import org.kablink.teaming.gwt.client.widgets.FindControlBrowserPopup;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ProgressBar;
@@ -660,7 +660,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 	public void onFindControlBrowse(FindControlBrowseEvent event) {
 		// Simply invoke the find browser using the parameters from the
 		// event.
-		FindControlBrowsePopup.doBrowse(event.getFindControl(), event.getFindStart());
+		FindControlBrowserPopup.doBrowse(event.getFindControl(), event.getFindStart());
 	}
 	
 	/**
@@ -762,25 +762,22 @@ public class CopyMoveEntriesDlg extends DlgBox
 		hp.add(m_findControl);
 		fp.add(hp);
 		
-		// ...if we're showing a browse button...
-		if (FindControlBrowsePopup.SHOW_FIND_BROWSER) {
-			// ...add it next to the search widget...
-			Image buttonImg = GwtClientHelper.buildImage(m_images.browseHierarchy(), m_messages.cmeDlg_Alt_Browse());
-			m_browseButton = new Button(GwtClientHelper.getWidgetHTML(buttonImg), new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					GwtTeaming.fireEventAsync(
-						new FindControlBrowseEvent(
-							m_findControl,
-							((null == m_selectedDest) ?
-								m_recentDest          :
-								m_selectedDest)));
-				}
-			});
-			m_browseButton.addStyleName("vibe-cmeDlg_BrowseButton");
-			hp.add(m_browseButton);
-			hp.setCellVerticalAlignment(m_browseButton, HasVerticalAlignment.ALIGN_MIDDLE);
-		}
+		// ...add a browse button next to the search widget...
+		Image buttonImg = GwtClientHelper.buildImage(m_images.browseHierarchy(), m_messages.cmeDlg_Alt_Browse());
+		m_browseButton = new Button(GwtClientHelper.getWidgetHTML(buttonImg), new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				GwtTeaming.fireEventAsync(
+					new FindControlBrowseEvent(
+						m_findControl,
+						((null == m_selectedDest) ?
+							m_recentDest          :
+							m_selectedDest)));
+			}
+		});
+		m_browseButton.addStyleName("vibe-cmeDlg_BrowseButton");
+		hp.add(m_browseButton);
+		hp.setCellVerticalAlignment(m_browseButton, HasVerticalAlignment.ALIGN_MIDDLE);
 
 		// ...add a progress bar...
 		m_progressBar = new ProgressBar(0, m_entityIds.size());
