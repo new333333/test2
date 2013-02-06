@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -50,6 +51,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -544,6 +546,17 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
     		Statistics statistics = getFolderStatistics(entry.getParentFolder());
     		statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
     		setFolderStatistics(entry.getParentFolder(), statistics);
+    		
+    		//Check if this entry is being added to a Filr folder
+    		if (entry.getParentBinder().isMirrored() && entry.getParentBinder().isAclExternallyControlled()) {
+    			//In this case, we must change the entry definition type to be a Filr file
+    			Document defDoc = entry.getEntryDefDoc();
+    			String internalDefId = defDoc.getRootElement().attributeValue("internalId", "");
+    			if (!internalDefId.equals(ObjectKeys.DEFAULT_MIRRORED_FILR_FILE_ENTRY_DEF)) {
+    				//This is a bad definition type for a remote file. Change it
+    				entry.setEntryDefId(ObjectKeys.DEFAULT_MIRRORED_FILR_FILE_ENTRY_DEF);
+    			}
+    		}
     	}
     	processChangeLog(entry, ChangeLog.ADDENTRY);
 		getCoreDao().evict(tags);
@@ -1217,13 +1230,24 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 				}
 			}
 			else {
-				throw new NotSupportedException("errorcode.notsupported.copyEntry.mirroredSource",
-						new String[] {binder.getPathName(), destination.getPathName()});
+				//It is always OK to copy from mirrored to non-mirrored
 			}
  	   }
  	   else {
- 		   if(destination.isMirrored()) {
- 				throw new NotSupportedException("errorcode.notsupported.copyEntry.mirroredDestination",
+ 		   if (destination.isMirrored()) {
+ 			   //If the source is not mirroerd and the destination is mirrored, then check that the entry has one and only one file
+ 			   Set<Attachment> atts = entry.getAttachments();
+ 			   if (atts.size() == 1) {
+ 				   //Now check that all comments have no attached files
+ 				   List<FolderEntry>children = getFolderDao().loadEntryDescendants((FolderEntry)entry);
+ 				   for (FolderEntry child:children) {
+ 					   atts = child.getAttachments();
+ 					   if (!atts.isEmpty()) break;
+ 				   }
+ 				   //This entry is OK to copy
+ 				   return;
+ 			   }
+ 			   throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored",
  						new String[] {binder.getPathName(), destination.getPathName()});			   
  		   }
  	   }

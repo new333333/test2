@@ -1264,6 +1264,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
   						targetRepositoryName = RepositoryUtil.getDefaultRepositoryName();
   					}
   				}
+  			} else {
+  				//The source entity is not a mirrored file
+  				if (destBinder.isMirrored()) {
+  					//But the destination binder is mirrored. We have to get the right repository name
+  					targetRepositoryName = ObjectKeys.FI_ADAPTER;
+  				}
   			}
   			String toFileName = (toFileNames != null)? toFileNames[i] : fa.getFileItem().getName();
 			// Preserve modification time of the source for the target
