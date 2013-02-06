@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
@@ -174,6 +175,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.presence.PresenceManager;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -1037,6 +1039,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			gdfdiCmd = (GetDefaultFolderDefinitionIdCmd) cmd;
 			result = getDefaultFolderDefinitionId( ri, gdfdiCmd.getBinderId() );
 			responseData = new StringRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_DEFAULT_STORAGE_ID:
+		{
+			String result = getDefaultStorageId();
+			StringRpcResponseData responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -5095,6 +5105,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private String getDefaultFolderDefinitionId( HttpRequestInfo ri, String binderId ) {
 		return GwtServerHelper.getDefaultFolderDefinitionId( this, binderId );
+	}
+
+	/*
+	 * Returns the ID of the current user's default storage area.
+	 */
+	private String getDefaultStorageId() {
+		Long	mfRootId;
+		Long	userWSId      = RequestContextHolder.getRequestContext().getUser().getWorkspaceId();
+		boolean	usingHomeAsMF = SearchUtils.useHomeAsMyFiles(this);
+        if (usingHomeAsMF)
+             mfRootId = SearchUtils.getHomeFolderId(   this                 );
+        else mfRootId = SearchUtils.getMyFilesFolderId(this, userWSId, false);
+        String defaultStorageId;
+        if (null == mfRootId)
+        	 defaultStorageId = String.valueOf(userWSId);
+        else defaultStorageId = String.valueOf(mfRootId);
+        return defaultStorageId;
 	}
 
 	/**
