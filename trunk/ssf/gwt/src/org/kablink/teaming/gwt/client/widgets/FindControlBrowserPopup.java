@@ -451,13 +451,6 @@ public class FindControlBrowserPopup extends TeamingPopupPanel
 	}
 	
 	/*
-	 * Returns the path to Vibe's images.
-	 */
-	private static String getImagesPath() {
-		return GwtClientHelper.getRequestInfo().getImagesPath();
-	}
-
-	/*
 	 * Returns true if a TreeInfo should have an expander and false
 	 * otherwise.
 	 */
@@ -788,8 +781,8 @@ public class FindControlBrowserPopup extends TeamingPopupPanel
 			if ((!(ti.getBinderInfo().isFolderHome())) && GwtClientHelper.hasString(binderIcon)) {
 				// Yes!  Set its URL into the Image.
 				if (binderIcon.startsWith("/"))
-				     binderImg.setUrl(getImagesPath() + binderIcon.substring(1));
-				else binderImg.setUrl(getImagesPath() + binderIcon);
+				     binderImg.setUrl(GwtClientHelper.getImagesPath() + binderIcon.substring(1));
+				else binderImg.setUrl(GwtClientHelper.getImagesPath() + binderIcon);
 			}
 			
 			else {

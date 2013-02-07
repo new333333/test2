@@ -820,7 +820,8 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuClipboardDlgSelectAll();
 	String mainMenuEmailNotificationDlgAltHelpAll();
 	String mainMenuEmailNotificationDlgAltHelpOverride();
-	String mainMenuEmailNotificationDlgBanner();
+	String mainMenuEmailNotificationDlgBannerFilr();
+	String mainMenuEmailNotificationDlgBannerVibe();
 	String mainMenuEmailNotificationDlgClearEntrySubscription();
 	String mainMenuEmailNotificationDlgDigest();
 	String mainMenuEmailNotificationDlgErrorSelection();
@@ -828,7 +829,10 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuEmailNotificationDlgIndividualMessages();
 	String mainMenuEmailNotificationDlgIndividualMessagesNoAttachments();
 	String mainMenuEmailNotificationDlgMakeSelection();
+	String mainMenuEmailNotificationDlgMessageType();
+	String mainMenuEmailNotificationDlgMultipleItems(int count);
 	String mainMenuEmailNotificationDlgNoChanges();
+	String mainMenuEmailNotificationDlgNoTitle();
 	String mainMenuEmailNotificationDlgOverride();
 	String mainMenuEmailNotificationDlgReading();
 	String mainMenuEmailNotificationDlgTextMessaging();
