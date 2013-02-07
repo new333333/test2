@@ -42,6 +42,7 @@ import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.LibraryInfo;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
@@ -68,9 +69,11 @@ public class BinderResource extends AbstractResource {
     @GET
     public SearchResultList<BinderBrief> getBinders(@QueryParam("id") Set<Long> ids,
                                                     @QueryParam("library_mod_times") @DefaultValue("false") boolean libraryModTimes,
+                                                    @QueryParam("library_info") @DefaultValue("false") boolean libraryInfo,
                                                     @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
                                                     @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        boolean skipSearch = true;
         List<Long> specialIds = new ArrayList<Long>();
         Junction criterion = Restrictions.conjunction();
         criterion.add(buildBindersCriterion());
@@ -79,16 +82,19 @@ public class BinderResource extends AbstractResource {
             for (Long id : ids) {
                 if (id>0) {
                     or.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
+                    skipSearch = false;
                 } else {
                     specialIds.add(id);
                 }
             }
             criterion.add(or);
         }
-        Document queryDoc = buildQueryDocument("<query/>", criterion);
-        Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/binders", null, offset);
+        if (!skipSearch) {
+            Document queryDoc = buildQueryDocument("<query/>", criterion);
+            Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+            SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/binders", null, offset);
+        }
         for (Long id : specialIds) {
             if (id.equals(ObjectKeys.SHARED_BY_ME_ID)) {
                 results.append(getFakeSharedByMe());
@@ -100,7 +106,9 @@ public class BinderResource extends AbstractResource {
                 results.append(getFakeNetFolders());
             }
         }
-        if (libraryModTimes) {
+        if (libraryInfo) {
+            populateLibraryInfo(results);
+        } else if (libraryModTimes) {
             populateLibraryModTimes(results);
         }
         return results;
@@ -152,12 +160,29 @@ public class BinderResource extends AbstractResource {
     protected void populateLibraryModTimes(SearchResultList<BinderBrief> results) {
         for (BinderBrief binder : results.getResults()) {
             Long id = binder.getId();
+            LibraryInfo info = new LibraryInfo();
             if (id.equals(ObjectKeys.SHARED_WITH_ME_ID)) {
-                binder.setLibraryModificationDate(getSharedWithLibraryModifiedDate(getLoggedInUserId(), true));
+                info.setModifiedDate(getSharedWithLibraryModifiedDate(getLoggedInUserId(), true));
             } else if (id.equals(ObjectKeys.MY_FILES_ID)) {
-                binder.setLibraryModificationDate(getMyFilesLibraryModifiedDate(true));
+                info.setModifiedDate(getMyFilesLibraryModifiedDate(true));
             } else if (id>0) {
-                binder.setLibraryModificationDate(getLibraryModifiedDate(new Long[]{id}, true));
+                info.setModifiedDate(getLibraryModifiedDate(new Long[]{id}, true));
+            }
+            if (info.getModifiedDate()!=null) {
+                binder.setLibraryInfo(info);
+            }
+        }
+    }
+
+    protected void populateLibraryInfo(SearchResultList<BinderBrief> results) {
+        for (BinderBrief binder : results.getResults()) {
+            Long id = binder.getId();
+            if (id.equals(ObjectKeys.SHARED_WITH_ME_ID)) {
+                binder.setLibraryInfo(getSharedWithLibraryInfo(getLoggedInUserId()));
+            } else if (id.equals(ObjectKeys.MY_FILES_ID)) {
+                binder.setLibraryInfo(getMyFilesLibraryInfo());
+            } else if (id>0) {
+                binder.setLibraryInfo(getLibraryInfo(new Long[]{id}));
             }
         }
     }

@@ -260,12 +260,10 @@ public class ShareResource extends AbstractResource {
     }
 
     @GET
-    @Path("/with_user/{id}/library_mod_time")
+    @Path("/with_user/{id}/library_info")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getLibraryModTime(@PathParam("id") Long userId,
-                                      @QueryParam("recursive") @DefaultValue("false") boolean recursive) {
-        Date maxDate = getSharedWithLibraryModifiedDate(userId, recursive);
-        return Response.ok().lastModified(maxDate).build();
+    public LibraryInfo getLibraryModTime(@PathParam("id") Long userId) {
+        return getSharedWithLibraryInfo(getLoggedInUserId());
     }
 
     @GET

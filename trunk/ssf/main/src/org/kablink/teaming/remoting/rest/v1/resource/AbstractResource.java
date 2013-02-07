@@ -850,10 +850,120 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return maxDate;
     }
 
+    protected LibraryInfo getSharedWithLibraryInfo(Long userId) {
+        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+        // Include deleted entries as well.
+        spec.deleted = null;
+        List<ShareItem> shareItems = getShareItems(spec, userId, true);
+        LibraryInfo info = getLibraryInfoForShareItems(shareItems);
+        Date hideDate = getSharingModule().getHiddenShareModTimeForCurrentUser(true);
+        info.setModifiedDate(max(hideDate, info.getModifiedDate()));
+        return info;
+    }
+
+    protected LibraryInfo getLibraryInfoForShareItems(List<ShareItem> shareItems) {
+        Date maxDate = null;
+        int files = 0;
+        int folders = 0;
+        long diskSpace = 0;
+        List<Long> binderList = new ArrayList<Long>();
+        for (ShareItem item : shareItems) {
+            if (item.isExpired()) {
+                maxDate = max(maxDate, item.getEndDate());
+            } else if (item.isDeleted()) {
+                maxDate = max(maxDate, item.getDeletedDate());
+            } else {
+                maxDate = max(maxDate, item.getStartDate());
+                EntityIdentifier entityId = item.getSharedEntityIdentifier();
+                if (entityId.getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+                    FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(item);
+                    if (entry.isPreDeleted()) {
+                        maxDate = max(maxDate, new Date(entry.getPreDeletedWhen()));
+                    } else {
+                        maxDate = max(maxDate, entry.getModificationDate());
+                    }
+                    for (Attachment att : entry.getAttachments()) {
+                        if (att instanceof FileAttachment) {
+                            files++;
+                            diskSpace += ((FileAttachment)att).getFileItem().getLength();
+                        }
+                    }
+                } else if (entityId.getEntityType()== EntityIdentifier.EntityType.folder || entityId.getEntityType()== EntityIdentifier.EntityType.workspace) {
+                    Binder binder = (Binder) getSharingModule().getSharedEntity(item);
+                    if (isBinderPreDeleted(binder)) {
+                        maxDate = max(maxDate, getPreDeletedDate(binder));
+                    } else {
+                        binderList.add(binder.getId());
+                        folders++;
+                    }
+                }
+            }
+        }
+        LibraryInfo info = getLibraryInfo(binderList.toArray(new Long[binderList.size()]));
+        info.setModifiedDate(max(maxDate, info.getModifiedDate()));
+        info.setDiskSpace(info.getDiskSpace() + diskSpace);
+        info.setFolderCount(info.getFolderCount() + folders);
+        info.setFileCount(info.getFileCount() + files);
+        return info;
+    }
+
     protected Date getLibraryModifiedDate(Long [] binderIds, boolean recursive) {
         if (binderIds.length==0) {
             return null;
         }
+        Criteria crit = getLibraryCriteria(binderIds, false, recursive);
+
+        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1);
+        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(false), resultsMap, null, null, 0);
+        return results.getLastModified();
+    }
+
+    protected LibraryInfo getLibraryInfo(Long [] binderIds) {
+        if (binderIds.length==0) {
+            return null;
+        }
+        Set<Long> idSet = new HashSet<Long>(Arrays.asList(binderIds));
+        Criteria crit = getLibraryCriteria(binderIds, true, true);
+
+        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1);
+        LibraryInfo info = new LibraryInfo();
+        Date modDate = null;
+        long diskSpace = 0;
+        int files = 0;
+        int folders = 0;
+        List<Map> entries = (List<Map>)resultsMap.get(ObjectKeys.SEARCH_ENTRIES);
+        if (entries!=null) {
+            for (Map entry : entries) {
+                String docType = (String) entry.get(Constants.DOC_TYPE_FIELD);
+                if (Constants.DOC_TYPE_ATTACHMENT.equals(docType)) {
+                    files++;
+                    String sizeStr = (String) entry.get(Constants.FILE_SIZE_IN_BYTES_FIELD);
+                    if(sizeStr != null)
+                        try {
+                            diskSpace += Long.valueOf(sizeStr);
+                        } catch (NumberFormatException e) {
+                        }
+                } else if (Constants.DOC_TYPE_BINDER.equals(docType)) {
+                    String binderIdStr = (String) entry.get(Constants.DOCID_FIELD);
+                    Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
+                    if (!idSet.contains(binderId)) {
+                        folders++;
+                    }
+                    modDate = max(modDate, (Date) entry.get(Constants.MODIFICATION_DATE_FIELD));
+                } else if (Constants.DOC_TYPE_ENTRY.equals(docType)) {
+                    modDate = max(modDate, (Date) entry.get(Constants.MODIFICATION_DATE_FIELD));
+                }
+            }
+        }
+        info.setDiskSpace(diskSpace);
+        info.setFileCount(files);
+        info.setFolderCount(folders);
+        info.setModifiedDate(modDate);
+        return info;
+    }
+
+    protected Criteria getLibraryCriteria(Long[] binderIds, boolean includeAttachments, boolean recursive) {
         Criteria crit = new Criteria();
         if (recursive) {
             Junction or = Restrictions.disjunction();
@@ -871,6 +981,9 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             or = Restrictions.disjunction();
             or.add(buildFoldersCriterion());
             or.add(buildEntriesCriterion());
+            if (includeAttachments) {
+                or.add(buildAttachmentsCriterion());
+            }
             and.add(or);
         } else {
             Junction or = Restrictions.disjunction();
@@ -878,18 +991,19 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             for (Long binderId : binderIds) {
                 or.add(buildBinderCriterion(binderId));
                 Junction entryAnd = Restrictions.conjunction();
-                entryAnd.add(buildEntriesCriterion());
+                Junction typeOr = Restrictions.disjunction();
+                typeOr.add(buildEntriesCriterion());
+                if (includeAttachments) {
+                    typeOr.add(buildAttachmentsCriterion());
+                }
+                entryAnd.add(typeOr);
                 entryAnd.add(buildParentBinderCriterion(binderId));
                 or.add(entryAnd);
             }
         }
 
         crit.addOrder(new Order(Constants.MODIFICATION_DATE_FIELD, false));
-
-        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1);
-        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(false), resultsMap, null, null, 0);
-        return results.getLastModified();
+        return crit;
     }
 
     protected Date getMyFilesLibraryModifiedDate(boolean recursive) {
@@ -904,6 +1018,21 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             ids = hiddenFolderIds.toArray(new Long[hiddenFolderIds.size()]);
         }
         return getLibraryModifiedDate(ids, recursive);
+    }
+
+    protected LibraryInfo getMyFilesLibraryInfo() {
+        int hiddenFolders = 0;
+        Long [] ids;
+        if (SearchUtils.useHomeAsMyFiles(this)) {
+            List<Long> homeFolderIds = SearchUtils.getHomeFolderIds(this, getLoggedInUser());
+            ids = homeFolderIds.toArray(new Long[homeFolderIds.size()]);
+        } else {
+            ids = new Long[] {getMyFilesFolderParent().getId()};
+            hiddenFolders = SearchUtils.getMyFilesFolderIds(this, getLoggedInUser()).size();
+        }
+        LibraryInfo libraryInfo = getLibraryInfo(ids);
+        libraryInfo.setFolderCount(libraryInfo.getFolderCount() - hiddenFolders);
+        return libraryInfo;
     }
 
     protected Binder getMyFilesFolderParent() {
