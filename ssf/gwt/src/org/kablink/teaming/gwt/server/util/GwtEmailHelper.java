@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EmailAddress;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
@@ -54,6 +55,8 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.FileIconsHelper;
+import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.web.util.MiscUtil;
 
 /**
@@ -117,6 +120,9 @@ public class GwtEmailHelper {
 			}
 
 			// We're we given an entity ID?
+			String singleEntityIconUrl = null;
+			String singleEntityPath    = null;
+			String singleEntityTitle   = null;
 			if (null != entityId) {
 				// Yes!  Is it for a binder?
 				Subscription sub;
@@ -126,6 +132,10 @@ public class GwtEmailHelper {
 					BinderModule bm = bs.getBinderModule();
 					Binder binder = bm.getBinder(entityId.getEntityId());
 					sub = bm.getSubscription(binder);
+					
+					singleEntityIconUrl = binder.getIconName(IconSize.MEDIUM);
+					singleEntityPath    = binder.getPathName();
+					singleEntityTitle   = binder.getTitle();
 				}
 				
 				else {
@@ -135,6 +145,14 @@ public class GwtEmailHelper {
 					FolderModule fm = bs.getFolderModule();
 					FolderEntry fe = fm.getEntry(entityId.getBinderId(), entityId.getEntityId());
 					sub = fm.getSubscription(fe);
+					
+					FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true);
+					if (null != fa) {
+						String fName = fa.getFileItem().getName();
+						singleEntityIconUrl = FileIconsHelper.getFileIconFromFileName(fName, IconSize.MEDIUM);
+					}
+					singleEntityPath  = fe.getParentBinder().getPathName();
+					singleEntityTitle = fe.getTitle();
 				}
 
 				// Did we get any subscriptions?
@@ -175,6 +193,11 @@ public class GwtEmailHelper {
 					}
 				}
 			}
+
+			// Store any single entity information we found.
+			reply.setSingleEntityIconUrl(singleEntityIconUrl);
+			reply.setSingleEntityPath(   singleEntityPath   );
+			reply.setSingleEntityTitle(  singleEntityTitle  );
 			
 			// If we get here, reply refers to an
 			// EmailNotificationInfoRpcResponseData object with the

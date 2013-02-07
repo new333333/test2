@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,6 +52,9 @@ public class EmailNotificationInfoRpcResponseData implements IsSerializable, Vib
 	private List<String>			m_textAddresses;		// List of email addresses used for text messaging,                          if any.
 	private String					m_bannerHelpUrl;		// URL for the help to launch with the button on the dialog's banner. 
 	private String					m_overrideHelpUrl;		// URL for the help to launch with the button next to the override checkbox.
+	private String					m_singleEntityIconUrl;	//
+	private String					m_singleEntityPath;		//
+	private String					m_singleEntityTitle;	//
 	
 	/**
 	 * Inner class used to represent an email address.
@@ -125,28 +128,34 @@ public class EmailNotificationInfoRpcResponseData implements IsSerializable, Vib
 	 * 
 	 * @return
 	 */
-	public boolean                getOverridePresets()   {return m_overridePresets;  }
-	public List<EmailAddressInfo> getEmailAddresses()    {return m_emailAddresses;   }
-	public List<String>           getDigestAddresses()   {return m_digestAddresses;  }
-	public List<String>           getMsgAddresses()      {return m_msgAddresses;     }
-	public List<String>           getMsgNoAttAddresses() {return m_msgNoAttAddresses;}
-	public List<String>           getTextAddresses()     {return m_textAddresses;    }
-	public String                 getBannerHelpUrl()     {return m_bannerHelpUrl;    }
-	public String                 getOverrideHelpUrl()   {return m_overrideHelpUrl;  }
+	public boolean                getOverridePresets()     {return m_overridePresets;    }
+	public List<EmailAddressInfo> getEmailAddresses()      {return m_emailAddresses;     }
+	public List<String>           getDigestAddresses()     {return m_digestAddresses;    }
+	public List<String>           getMsgAddresses()        {return m_msgAddresses;       }
+	public List<String>           getMsgNoAttAddresses()   {return m_msgNoAttAddresses;  }
+	public List<String>           getTextAddresses()       {return m_textAddresses;      }
+	public String                 getBannerHelpUrl()       {return m_bannerHelpUrl;      }
+	public String                 getOverrideHelpUrl()     {return m_overrideHelpUrl;    }
+	public String                 getSingleEntityIconUrl() {return m_singleEntityIconUrl;}
+	public String                 getSingleEntityPath()    {return m_singleEntityPath;   }
+	public String                 getSingleEntityTitle()   {return m_singleEntityTitle;  }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setOverridePresets(   boolean                overridePresets)   {m_overridePresets   = overridePresets;  }
-	public void setEmailAddresses(    List<EmailAddressInfo> emailAddresses)    {m_emailAddresses    = emailAddresses;   }
-	public void setDigestAddresses(   List<String>           digestAddresses)   {m_digestAddresses   = digestAddresses;  }
-	public void setMsgAddresses(      List<String>           msgAddresses)      {m_msgAddresses      = msgAddresses;     }
-	public void setMsgNoAttAddresses( List<String>           msgNoAttAddresses) {m_msgNoAttAddresses = msgNoAttAddresses;}
-	public void setTextAddresses(     List<String>           textAddresses)     {m_textAddresses     = textAddresses;    }
-	public void setBannerHelpUrl(     String                 bannerHelpUrl)     {m_bannerHelpUrl     = bannerHelpUrl;    }
-	public void setOverrideHelpUrl(   String                 overrideHelpUrl)   {m_overrideHelpUrl   = overrideHelpUrl;  }
+	public void setOverridePresets(    boolean                overridePresets)     {m_overridePresets     = overridePresets;    }
+	public void setEmailAddresses(     List<EmailAddressInfo> emailAddresses)      {m_emailAddresses      = emailAddresses;     }
+	public void setDigestAddresses(    List<String>           digestAddresses)     {m_digestAddresses     = digestAddresses;    }
+	public void setMsgAddresses(       List<String>           msgAddresses)        {m_msgAddresses        = msgAddresses;       }
+	public void setMsgNoAttAddresses(  List<String>           msgNoAttAddresses)   {m_msgNoAttAddresses   = msgNoAttAddresses;  }
+	public void setTextAddresses(      List<String>           textAddresses)       {m_textAddresses       = textAddresses;      }
+	public void setBannerHelpUrl(      String                 bannerHelpUrl)       {m_bannerHelpUrl       = bannerHelpUrl;      }
+	public void setOverrideHelpUrl(    String                 overrideHelpUrl)     {m_overrideHelpUrl     = overrideHelpUrl;    }
+	public void setSingleEntityIconUrl(String                 singleEntityIconUrl) {m_singleEntityIconUrl = singleEntityIconUrl;}
+	public void setSingleEntityPath(   String                 singleEntityPath)    {m_singleEntityPath    = singleEntityPath;   }
+	public void setSingleEntityTitle(  String                 singleEntityTitle)   {m_singleEntityTitle   = singleEntityTitle;  }
 
 	/**
 	 * Adds an email address to the list of email addresses.

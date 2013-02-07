@@ -439,6 +439,15 @@ public class GwtClientHelper {
 	}	
 
 	/**
+	 * Returns the path to Vibe's images.
+	 * 
+	 * @return
+	 */
+	public static String getImagesPath() {
+		return getRequestInfo().getImagesPath();
+	}
+
+	/**
 	 * Returns the license type that we're currently running under.
 	 * 
 	 * @return
