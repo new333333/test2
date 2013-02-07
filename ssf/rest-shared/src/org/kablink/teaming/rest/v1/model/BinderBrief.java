@@ -48,7 +48,7 @@ public class BinderBrief extends DefinableEntityBrief {
    	private String path;
    	private Boolean mirrored;
    	private Boolean homeDir;
-    private Date libraryModificationDate;
+    private LibraryInfo libraryInfo;
 
     public BinderBrief() {
         setDocType("binder");
@@ -91,13 +91,13 @@ public class BinderBrief extends DefinableEntityBrief {
         this.path = path;
     }
 
-    @XmlElement(name = "library_mod_time")
-    public Date getLibraryModificationDate() {
-        return libraryModificationDate;
+    @XmlElement(name = "library_info")
+    public LibraryInfo getLibraryInfo() {
+        return libraryInfo;
     }
 
-    public void setLibraryModificationDate(Date libraryModificationDate) {
-        this.libraryModificationDate = libraryModificationDate;
+    public void setLibraryInfo(LibraryInfo libraryInfo) {
+        this.libraryInfo = libraryInfo;
     }
 
     @XmlTransient

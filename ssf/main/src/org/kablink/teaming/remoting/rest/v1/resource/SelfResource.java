@@ -39,6 +39,7 @@ import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
@@ -54,6 +55,7 @@ import org.kablink.teaming.rest.v1.model.BinderTree;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.LibraryInfo;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.ParentBinder;
 import org.kablink.teaming.rest.v1.model.RecentActivityEntry;
@@ -197,11 +199,11 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/shared_with_me")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public BinderBrief getSharedWithMe(@QueryParam("library_mod_time") @DefaultValue("false") boolean libraryModTime) {
+    public BinderBrief getSharedWithMe(@QueryParam("library_info") @DefaultValue("false") boolean libraryModTime) {
         BinderBrief fakeSharedWithMe = getFakeSharedWithMe();
         if (libraryModTime) {
             Long userId = getLoggedInUserId();
-            fakeSharedWithMe.setLibraryModificationDate(getSharedWithLibraryModifiedDate(userId, true));
+            fakeSharedWithMe.setLibraryInfo(getSharedWithLibraryInfo(userId));
         }
         return fakeSharedWithMe;
     }
@@ -216,23 +218,22 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/my_files")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public BinderBrief getMyFiles(@QueryParam("library_mod_time") @DefaultValue("false") boolean libraryModTime) {
+    public BinderBrief getMyFiles(@QueryParam("library_info") @DefaultValue("false") boolean libraryInfo) {
         if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
         BinderBrief fakeMyFileFolders = getFakeMyFileFolders();
-        if (libraryModTime) {
-            fakeMyFileFolders.setLibraryModificationDate(getMyFilesLibraryModifiedDate(true));
+        if (libraryInfo) {
+            fakeMyFileFolders.setLibraryInfo(getMyFilesLibraryInfo());
         }
         return fakeMyFileFolders;
     }
 
     @GET
-    @Path("/my_files/library_mod_time")
+    @Path("/my_files/library_info")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getFiles(@QueryParam("recursive") @DefaultValue("false") boolean recursive) {
-        Date date = getMyFilesLibraryModifiedDate(recursive);
-        return Response.ok().lastModified(date).build();
+    public LibraryInfo getFiles() {
+        return getMyFilesLibraryInfo();
     }
 
     @GET

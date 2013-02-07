@@ -83,6 +83,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
     		HistoryStamp.class,
     		LegacyFileProperties.class,
     		LegacyHistoryStamp.class,
+    		LibraryInfo.class,
     		Link.class,
     		Locale.class,
     		LongIdLinkPair.class,
