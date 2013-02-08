@@ -74,6 +74,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Integer auditTrailKeepDays;
 	private Integer changeLogsKeepDays;
 	private MobileAppsConfig mobileAppsConfig;
+	private Boolean jitsEnabled;
 
 	public ZoneConfig()
 	{
@@ -448,5 +449,15 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public void setMobileAppsConfig( MobileAppsConfig config )
 	{
 		mobileAppsConfig = config;
+	}
+	
+	public boolean getJitsEnabled() {
+		if(jitsEnabled == null)
+			return SPropsUtil.getBoolean("nf.jits.enabled", true);
+		else
+			return fsaEnabled.booleanValue();
+	}
+	public void setJitsEnabled(boolean jitsEnabled) {
+		this.jitsEnabled = Boolean.valueOf(jitsEnabled);
 	}
 }

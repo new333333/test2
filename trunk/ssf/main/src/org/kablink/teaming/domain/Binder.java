@@ -54,6 +54,7 @@ import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -113,6 +114,8 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean allowMobileAppsToSyncData = Boolean.TRUE;
     protected Boolean indexContent = Boolean.TRUE;
     protected Boolean jitsEnabled = Boolean.TRUE; // Applicable only to mirrored folders
+    protected Long jitsWaitTimeout; // in milliseconds
+    
     
     public Binder() {
     }
@@ -1040,4 +1043,14 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
         limited.title = this.title;
         return limited;
     }
+    
+	public Long getJitsWaitTimeout() {
+		if(jitsWaitTimeout == null)
+			return SPropsUtil.getLongObject("nf.jits.wait.timeout", 15000L);
+		return jitsWaitTimeout;
+	}
+	public void setJitsWaitTimeout(Long jitsWaitTimeout) {
+		this.jitsWaitTimeout = jitsWaitTimeout;
+	}
+
 }
