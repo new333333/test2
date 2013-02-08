@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
+import org.kablink.teaming.gwt.client.event.MenuLoadedEvent.MenuItem;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
 import org.kablink.teaming.gwt.client.event.InvokeAboutEvent;
@@ -54,6 +55,7 @@ import org.kablink.teaming.gwt.client.event.InvokeRenameEntityEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
+import org.kablink.teaming.gwt.client.event.MenuLoadedEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -396,11 +398,13 @@ public class MainMenuControl extends Composite
 		m_wsTreeSlider = new MenuBarToggle(m_images.slideLeft(), m_messages.mainMenuAltLeftNavHideShow(), TeamingEvents.SIDEBAR_HIDE, m_images.slideRight(), m_messages.mainMenuAltLeftNavHideShow(), TeamingEvents.SIDEBAR_SHOW);
 		m_wsTreeSlider.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
 		m_mainMenu.addItem(m_wsTreeSlider);
+		MenuLoadedEvent.fireOneAsync(MenuItem.SIDEBAR_VISIBILITY);
 
 		// ...add the slide-up/down toggle...
 		m_mastHeadSlider = new MenuBarToggle(m_images.slideUp(), m_messages.mainMenuAltMastHeadHideShow(), TeamingEvents.MASTHEAD_HIDE, m_images.slideDown(), m_messages.mainMenuAltMastHeadHideShow(), TeamingEvents.MASTHEAD_SHOW);
 		m_mastHeadSlider.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
 		m_mainMenu.addItem(m_mastHeadSlider);
+		MenuLoadedEvent.fireOneAsync(MenuItem.MASHEAD_VISIBILITY);
 
 		// ...if site navigation is available...
 		if (WorkspaceTreeControl.siteNavigationAvailable()) {
@@ -410,6 +414,7 @@ public class MainMenuControl extends Composite
 			bhe.setOnBrowseHierarchyInfo(new OnBrowseHierarchyInfo(m_bhButton));
 			m_bhButton.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
 			m_mainMenu.addItem(m_bhButton);
+			MenuLoadedEvent.fireOneAsync(MenuItem.BREADCRUM_BROWSER);
 		}
 
 		// ...and finally, add the common drop down items to the menu bar.
@@ -448,6 +453,7 @@ public class MainMenuControl extends Composite
 							// ...and tie it all together.
 							mmp.setMenuBox(m_manageBox);
 							m_mainMenu.addItem(m_manageBox);
+							MenuLoadedEvent.fireOneAsync(MenuItem.MANAGE_BINDER);
 							if (m_manageBoxHidden) {
 								m_manageBox.setVisible(false);
 							}
@@ -476,6 +482,7 @@ public class MainMenuControl extends Composite
 		m_myFavoritesBox = new MenuBarBox("ss_mainMenuMyFavorites", m_messages.mainMenuBarMyFavorites(), m_myFavoritesMenuPopup.getMenuBar());
 		m_myFavoritesMenuPopup.setMenuBox(m_myFavoritesBox);
 		menuPanel.addItem(m_myFavoritesBox);
+		MenuLoadedEvent.fireOneAsync(MenuItem.MY_FAVORITES);
 	}
 	
 	/*
@@ -486,6 +493,7 @@ public class MainMenuControl extends Composite
 		m_myTeamsBox = new MenuBarBox("ss_mainMenuMyTeams", m_messages.mainMenuBarMyTeams(), m_myTeamsMenuPopup.getMenuBar());
 		m_myTeamsMenuPopup.setMenuBox(m_myTeamsBox);
 		menuPanel.addItem(m_myTeamsBox);
+		MenuLoadedEvent.fireOneAsync(MenuItem.MY_TEAMS);
 	}
 	
 	/*
@@ -502,6 +510,7 @@ public class MainMenuControl extends Composite
 				}
 			});
 		menuPanel.addItem(m_myWorkspaceBox);
+		MenuLoadedEvent.fireOneAsync(MenuItem.MY_WORKSPACE);
 	}
 
 	/*
@@ -517,6 +526,7 @@ public class MainMenuControl extends Composite
 				m_recentPlacesBox = new MenuBarBox("ss_mainMenuRecentPlaces", m_messages.mainMenuBarRecentPlaces(), rpmp.getMenuBar());
 				rpmp.setMenuBox(m_recentPlacesBox);
 				m_mainMenu.addItem(m_recentPlacesBox);
+				MenuLoadedEvent.fireOneAsync(MenuItem.RECENT_PLACES);
 			}
 			contextCallback.contextItemComplete();
 		}
@@ -549,6 +559,7 @@ public class MainMenuControl extends Composite
 						m_viewsBox = new MenuBarBox("ss_mainMenuViews", m_messages.mainMenuBarViews(), vmp.getMenuBar());
 						vmp.setMenuBox(m_viewsBox);
 						m_mainMenu.addItem(m_viewsBox);
+						MenuLoadedEvent.fireOneAsync(MenuItem.VIEW);
 					}
 					contextCallback.contextItemComplete();
 				}
@@ -574,6 +585,7 @@ public class MainMenuControl extends Composite
 				}
 			});
 		menuPanel.addItem(m_whatsNewBox);
+		MenuLoadedEvent.fireOneAsync(MenuItem.WHATS_NEW);
 	}
 
 	/*

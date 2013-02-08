@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent.CollectionCallback;
+import org.kablink.teaming.gwt.client.event.MenuLoadedEvent.MenuItem;
 import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -73,7 +74,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -177,13 +177,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * Asynchronously collapses the current row.
 		 */
 		private void doCollapseRowAsync() {
-			ScheduledCommand collapser = new ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					doCollapseRowNow();
 				}
-			};
-			Scheduler.get().scheduleDeferred(collapser);
+			});
 		}
 
 		/*
@@ -209,13 +208,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * Asynchronously expands the current row.
 		 */
 		private void doExpandRowAsync(final TreeInfo expandedTI) {
-			ScheduledCommand expander = new ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					doExpandRowNow(expandedTI);
 				}
-			};
-			Scheduler.get().scheduleDeferred(expander);
+			});
 		}
 		
 		/*
@@ -333,7 +331,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 							// as a scheduled command so the RPC
 							// request that got us here can be
 							// terminated.
-							ScheduledCommand getVNode = new ScheduledCommand() {
+							GwtClientHelper.deferCommand(new ScheduledCommand() {
 								@Override
 								public void execute() {
 									// Can we get a TreeInfo for the
@@ -361,8 +359,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 										}
 									});
 								}
-							};
-							Scheduler.get().scheduleDeferred(getVNode);
+							});
 						}
 					});
 				}
@@ -536,13 +533,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Asynchronously builds and runs the selector configuration menu.
 	 */
 	private void buildAndRunSelectorConfigMenuAsync(final Anchor selectorConfigA) {
-		ScheduledCommand doBuildAndRunMenu = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				buildAndRunSelectorConfigMenuNow(selectorConfigA);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doBuildAndRunMenu);
+		});
 	}
 	
 	/*
@@ -739,13 +735,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * sidebar.
 	 */
 	private void enterActivityStreamModeAsync(final TreeInfo asRootTI, final ActivityStreamInfo defaultASI) {
-		ScheduledCommand asLoader = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				enterActivityStreamModeNow(asRootTI, defaultASI);
 			}
-		};
-		Scheduler.get().scheduleDeferred(asLoader);
+		});
 	}
 	
 	/*
@@ -1056,6 +1051,25 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	}
 
 	/**
+	 * Called when a particular menu item is loaded.  If an extender of
+	 * this class is interested in these, it should overwrite this
+	 * method.
+	 * 
+	 * Implements the TreeDisplayBase.menuLoaded() abstract method.
+	 */
+	@Override
+	public void menuLoaded(MenuItem menuItem) {
+		// If we're getting notified that the manage menu has been
+		// loaded...
+		if (MenuItem.MANAGE_BINDER.equals(menuItem)) {
+			// ...simply null out the selector config popup.  That will
+			// ...cause it to get recreated the next time it's needed
+			// ...and pull over a new manage menu.
+			m_selectorConfigPopup = null;
+		}
+	}
+
+	/**
 	 * Tells a sidebar tree implementation to refresh itself
 	 * maintaining its current context and selected binder.
 	 * 
@@ -1136,7 +1150,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * and optionally selects a binder.
 	 */
 	private void rerootTreeAsync(final BinderInfo newRootBinderInfo, final BinderInfo selectedBinderInfo, final ExitMode exitingActivityStreamMode, final TreeInfo rootTI) {
-		ScheduledCommand treeRooter = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				rerootTreeNow(
@@ -1145,8 +1159,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					exitingActivityStreamMode,
 					rootTI);
 			}
-		};
-		Scheduler.get().scheduleDeferred(treeRooter);
+		});
 	}
 	
 	/*
@@ -1465,13 +1478,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Asynchronously runs the selector configuration menu.
 	 */
 	private void runSelectorConfigMenuAsync(final Anchor selectorConfigA) {
-		ScheduledCommand doRunMenu = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				runSelectorConfigMenuNow(selectorConfigA);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRunMenu);
+		});
 	}
 	
 	/*
@@ -1723,13 +1735,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Asynchronously selects a binder and/or re-roots the tree.
 	 */
 	private void selectRootWorkspaceIdAsync(final BinderInfo binderInfo, final boolean forceRefresh, final TreeInfo targetTI, final String rootWorkspaceId) {
-		ScheduledCommand rootWSSelector = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				selectRootWorkspaceIdNow(binderInfo, forceRefresh, targetTI, rootWorkspaceId);
 			}
-		};
-		Scheduler.get().scheduleDeferred(rootWSSelector);
+		});
 	}
 	
 	/*
