@@ -184,10 +184,28 @@ public class EntityId implements IsSerializable {
 	 * @return
 	 */
 	public boolean equalsEntityId(EntityId entityId) {
-		boolean reply =
-			(getEntityId().equals(  entityId.getEntityId()) &&
-			 getBinderId().equals(  entityId.getBinderId()) &&
-			 getEntityType().equals(entityId.getEntityType()));
+		Long entryId;
+		Long binderId;
+		String entityType;
+		boolean reply = false;
+		
+		entryId = getEntityId();
+		binderId = getBinderId();
+		entityType = getEntityType();
+
+		if ( (entryId == null && entityId.getEntityId() == null) ||
+			 (entryId != null && entryId.equals( entityId.getEntityId() )) )
+		{
+			if ( (binderId == null && entityId.getBinderId() == null) ||
+				 (binderId != null && binderId.equals( entityId.getBinderId() )) )
+			{
+				if ( (entityType == null && entityId.getEntityType() == null) ||
+					 (entityType != null && entityType.equalsIgnoreCase( entityId.getEntityType() )) )
+				{
+					reply = true;
+				}
+			}
+		}
 		
 		return reply;
 	}
