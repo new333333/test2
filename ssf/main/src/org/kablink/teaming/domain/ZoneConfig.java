@@ -75,6 +75,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Integer changeLogsKeepDays;
 	private MobileAppsConfig mobileAppsConfig;
 	private Boolean jitsEnabled;
+    private Long jitsWaitTimeout; // in milliseconds
 
 	public ZoneConfig()
 	{
@@ -460,4 +461,14 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public void setJitsEnabled(boolean jitsEnabled) {
 		this.jitsEnabled = Boolean.valueOf(jitsEnabled);
 	}
+	
+	public long getJitsWaitTimeout() {
+		if(jitsWaitTimeout == null)
+			return SPropsUtil.getLong("nf.jits.wait.timeout", 15000L);
+		return jitsWaitTimeout;
+	}
+	public void setJitsWaitTimeout(long jitsWaitTimeout) {
+		this.jitsWaitTimeout = Long.valueOf(jitsWaitTimeout);
+	}
+	
 }
