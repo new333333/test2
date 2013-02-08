@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeRunAReportDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -87,6 +88,8 @@ import org.kablink.teaming.gwt.client.widgets.ManageNetFoldersDlg.ManageNetFolde
 import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg.ManageUsersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
 import org.kablink.teaming.gwt.client.widgets.RunAReportDlg.RunAReportDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgMode;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -112,6 +115,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * This widget will display the controls that make up the "Administration" control.
@@ -136,6 +140,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeRunAReportDlgEvent.Handler,
 		InvokeUserDesktopSettingsDlgEvent.Handler,
 		InvokeUserMobileSettingsDlgEvent.Handler,
+		ManageSharesSelectedEntriesEvent.Handler,
 		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
@@ -162,6 +167,8 @@ public class AdminControl extends TeamingPopupPanel
 	private ConfigureAdhocFoldersDlg m_configureAdhocFoldersDlg = null;
 	private EditZoneShareRightsDlg m_editZoneShareRightsDlg = null;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg = null;
+	private ShareThisDlg m_shareDlg = null;
+	private List<HandlerRegistration> m_registeredEventHandlers;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -177,6 +184,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
+		TeamingEvents.MANAGE_SHARES_SELECTED_ENTRIES,
 		TeamingEvents.INVOKE_MANAGE_USERS_DLG,
 		TeamingEvents.INVOKE_RUN_A_REPORT_DLG,
 		TeamingEvents.INVOKE_USER_DESKTOP_SETTINGS_DLG,
@@ -692,12 +700,6 @@ public class AdminControl extends TeamingPopupPanel
 	{
 		super( false, false );
 		
-		// Register the events to be handled by this class.
-		EventHelper.registerEventHandlers(
-			GwtTeaming.getEventBus(),
-			m_registeredEvents,
-			this );
-		
 		Scheduler.ScheduledCommand cmd;
 		final FlowPanel mainPanel = new FlowPanel();
 		
@@ -814,6 +816,14 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Fire the event to invoke the "Manage net folders" dialog.
 			InvokeManageNetFoldersDlgEvent.fireOne();
+		}
+		else if ( adminAction.getActionType() == AdminAction.MANAGE_SHARE_ITEMS )
+		{
+			ManageSharesSelectedEntriesEvent event;
+			
+			// Fire the event to invoke the Manage Shares dialog.
+			event = new ManageSharesSelectedEntriesEvent();
+			GwtTeaming.fireEvent( event );
 		}
 		
 		else if ( adminAction.getActionType() == AdminAction.ADD_USER )
@@ -1130,6 +1140,58 @@ public class AdminControl extends TeamingPopupPanel
 	}
 
 	/**
+	 * Invokes the Share dialog in administrative mode.
+	 */
+	public void invokeManageSharesDlg()
+	{
+		// Have we created a share dialog yet?
+		if ( m_shareDlg == null )
+		{
+			ShareThisDlgClient client;
+			
+			// No!  Create one now...
+			client = new ShareThisDlgClient()
+			{
+				@Override
+				public void onUnavailable() 
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( ShareThisDlg stDlg )
+				{
+					// ...and show it with the given entity IDs.
+					m_shareDlg = stDlg;
+					invokeManageSharesDlg();
+				}
+			};
+			ShareThisDlg.createAsync( client, true, false ); 
+		}
+		else
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			// Yes, we've already create a share dialog!  Simply show it.
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute() 
+				{
+					ShareThisDlg.initAndShow(
+										m_shareDlg,
+										null,
+										GwtTeaming.getMessages().shareDlg_manageShares(),
+										null,
+										null,
+										ShareThisDlgMode.MANAGE_ALL );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
+	/**
 	 * 
 	 */
 	public void relayoutPage()
@@ -1336,6 +1398,33 @@ public class AdminControl extends TeamingPopupPanel
 		}
 	}// end showTreeControl()
 
+	
+	/**
+	 * Called when the dialog is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach()
+	{
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the dialog is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach()
+	{
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
 	
 	/**
 	 * Handles InvokeConfigureAdhocFoldersDlgEvent received by this class.
@@ -2221,6 +2310,30 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 	/**
+	 * Handles ManageSharesSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the ManageSharesSelectedEntriesEvent.Handler.onManageSharesSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onManageSharesSelectedEntries( ManageSharesSelectedEntriesEvent event )
+	{
+		Scheduler.ScheduledCommand cmd;
+
+		// Invoke the Manage Shares dialog
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute() 
+			{
+				invokeManageSharesDlg();
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+	/**
 	 * Handles SidebarHideEvent's received by this class.
 	 * 
 	 * Implements the SidebarHideEvent.Handler.onSidebarHide() method.
@@ -2251,6 +2364,45 @@ public class AdminControl extends TeamingPopupPanel
 			showTreeControl();
 		}
 	}// end onSidebarShow()
+	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents()
+	{
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if ( null == m_registeredEventHandlers )
+		{
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if ( m_registeredEventHandlers.isEmpty() )
+		{
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+										GwtTeaming.getEventBus(),
+										m_registeredEvents,
+										this,
+										m_registeredEventHandlers );
+		}
+	}
+
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents()
+	{
+		// If we have a non-empty list of registered events...
+		if ( ( null != m_registeredEventHandlers ) && ( ! ( m_registeredEventHandlers.isEmpty() ) ) )
+		{
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
+		}
+	}
 	
 	/**
 	 * Update the information found on the home page

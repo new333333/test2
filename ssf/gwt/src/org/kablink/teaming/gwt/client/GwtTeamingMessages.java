@@ -1291,6 +1291,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_expiresNever();
 	String shareDlg_expiresOn( String on );
 	String shareDlg_makePublic();
+	String shareDlg_manageShares();
 	String shareDlg_noNote();
 	String shareDlg_noTeamsToShareWith();
 	String shareDlg_noteLabel();

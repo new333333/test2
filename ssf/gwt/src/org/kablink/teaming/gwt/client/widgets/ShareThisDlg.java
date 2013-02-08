@@ -190,7 +190,7 @@ public class ShareThisDlg extends DlgBox
 	 * 	User can see only the shares he has created
 	 * 	User can add/remove/modify shares
 	 * 
-	 * ShareThisDlgMode.ADMINISTRATIVE:
+	 * ShareThisDlgMode.MANAGE_SELECTED:
 	 * 	User will see all shares that have been created by anyone for the given entities.
 	 *  User can remove/modify shares but cannot add shares
 	 *   
@@ -198,7 +198,8 @@ public class ShareThisDlg extends DlgBox
 	public enum ShareThisDlgMode
 	{
 		NORMAL,
-		ADMINISTRATIVE
+		MANAGE_ALL,
+		MANAGE_SELECTED
 	}
 	
 	/**
@@ -718,10 +719,10 @@ public class ShareThisDlg extends DlgBox
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ShareThisDlg()
+	private ShareThisDlg( boolean autoHide, boolean modal )
 	{
 		// Initialize the superclass.
-		super( false, true );
+		super( autoHide, modal );
 
 		// Create the dialog's content
 		createAllDlgContent(
@@ -968,7 +969,7 @@ public class ShareThisDlg extends DlgBox
 		++col;
 		
 		// Are we in "administrative" mode?
-		if ( m_mode == ShareThisDlgMode.ADMINISTRATIVE )
+		if ( m_mode == ShareThisDlgMode.MANAGE_SELECTED || m_mode == ShareThisDlgMode.MANAGE_ALL )
 		{
 			String name;
 			InlineLabel label;
@@ -986,8 +987,8 @@ public class ShareThisDlg extends DlgBox
 			++col;
 		}
 		
-		// Are we sharing more than 1 entity?
-		if ( m_entityIds != null && m_entityIds.size() > 1 )
+		// Are we sharing more than 1 entity or are we in "manage all" mode?
+		if ( (m_entityIds != null && m_entityIds.size() > 1) || m_mode == ShareThisDlgMode.MANAGE_ALL )
 		{
 			String entityName;
 			InlineLabel label;
@@ -2086,7 +2087,7 @@ public class ShareThisDlg extends DlgBox
 		adjustShareTablePanelHeight();
 		
 		// If we are in Administrative mode, we don't allow the user to add shares.
-		if ( m_mode == ShareThisDlgMode.ADMINISTRATIVE )
+		if ( m_mode == ShareThisDlgMode.MANAGE_SELECTED || m_mode == ShareThisDlgMode.MANAGE_ALL )
 		{
 			m_mainTable.getRowFormatter().setVisible( 0, false );
 		}
@@ -2182,7 +2183,7 @@ public class ShareThisDlg extends DlgBox
 		}
 		
 		// Are we in Administrative mode?
-		if ( m_mode == ShareThisDlgMode.ADMINISTRATIVE )
+		if ( m_mode == ShareThisDlgMode.MANAGE_SELECTED || m_mode == ShareThisDlgMode.MANAGE_ALL )
 		{
 			// Yes
 			// Passing null to GetSharingInfoCmd() means get all shares by everyone.
@@ -2927,8 +2928,8 @@ public class ShareThisDlg extends DlgBox
 		
 		col = 0;
 
-		if ( m_mode == ShareThisDlgMode.ADMINISTRATIVE )
-			text = messages.shareSharedWith();
+		if ( m_mode == ShareThisDlgMode.MANAGE_SELECTED || m_mode == ShareThisDlgMode.MANAGE_ALL )
+			text = messages.shareDlg_manageShares();
 		else
 			text = messages.shareName();
 		m_shareTable.setText( 0, col, text );
@@ -2940,7 +2941,7 @@ public class ShareThisDlg extends DlgBox
 		++col;
 		
 		// Are we in Administrative mode?
-		if ( m_mode == ShareThisDlgMode.ADMINISTRATIVE )
+		if ( m_mode == ShareThisDlgMode.MANAGE_SELECTED || m_mode == ShareThisDlgMode.MANAGE_ALL )
 		{
 			// Yes, add a "Shared By" column.
 			m_shareTable.setText( 0, col, messages.shareSharedBy() );
@@ -2949,7 +2950,7 @@ public class ShareThisDlg extends DlgBox
 		}
 		
 		// Are we sharing more than 1 item?
-		if ( m_entityIds != null && m_entityIds.size() > 1 )
+		if ( (m_entityIds != null && m_entityIds.size() > 1) || m_mode == ShareThisDlgMode.MANAGE_ALL )
 		{
 			// Yes, add the "Item Name" column header
 			m_shareTable.setText( 0, col, messages.shareEntityName() );
@@ -3127,6 +3128,8 @@ public class ShareThisDlg extends DlgBox
 	private static void doAsyncOperation(
 			// Required creation parameters.
 			final ShareThisDlgClient stDlgClient,
+			final Boolean autoHide,
+			final Boolean modal,
 			
 			// initAndShow parameters,
 			final ShareThisDlg		stDlg,
@@ -3155,7 +3158,7 @@ public class ShareThisDlg extends DlgBox
 				if ( null != stDlgClient )
 				{
 					// Yes!  Create it and return it via the callback.
-					ShareThisDlg stDlg = new ShareThisDlg();
+					ShareThisDlg stDlg = new ShareThisDlg( autoHide, modal );
 					stDlgClient.onSuccess( stDlg );
 				}
 				
@@ -3177,7 +3180,21 @@ public class ShareThisDlg extends DlgBox
 	 */
 	public static void createAsync( ShareThisDlgClient stDlgClient )
 	{
-		doAsyncOperation( stDlgClient, null, null, null, null, null, ShareThisDlgMode.NORMAL );
+		doAsyncOperation( stDlgClient, false, true, null, null, null, null, null, ShareThisDlgMode.NORMAL );
+	}
+	
+	/**
+	 * Loads the ShareThisDlg split point and returns an instance
+	 * of it via the callback.
+	 * 
+	 * @param stDlgClient
+	 */
+	public static void createAsync(
+		ShareThisDlgClient stDlgClient,
+		Boolean autoHide,
+		Boolean modal )
+	{
+		doAsyncOperation( stDlgClient, autoHide, modal, null, null, null, null, null, ShareThisDlgMode.NORMAL );
 	}
 	
 	/**
@@ -3195,7 +3212,7 @@ public class ShareThisDlg extends DlgBox
 		String title,
 		List<EntityId> entityIds )
 	{
-		doAsyncOperation( null, stDlg, target, caption, title, entityIds, ShareThisDlgMode.NORMAL );
+		doAsyncOperation( null, null, null, stDlg, target, caption, title, entityIds, ShareThisDlgMode.NORMAL );
 	}
 
 	/**
@@ -3214,6 +3231,6 @@ public class ShareThisDlg extends DlgBox
 		List<EntityId> entityIds,
 		ShareThisDlgMode mode )
 	{
-		doAsyncOperation( null, stDlg, target, caption, title, entityIds, mode );
+		doAsyncOperation( null, null, null, stDlg, target, caption, title, entityIds, mode );
 	}
 }

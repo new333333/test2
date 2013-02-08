@@ -95,7 +95,8 @@ public class ShareRightsWidget extends Composite
 		{
 			// Yes, don't let the user give the external user rights to share.
 			m_highestRightsPossible = new ShareRights();
-			m_highestRightsPossible.setAccessRights( highestRightsPossible.getAccessRights() );
+			if ( highestRightsPossible != null )
+				m_highestRightsPossible.setAccessRights( highestRightsPossible.getAccessRights() );
 			m_highestRightsPossible.setCanShareForward( false );
 			m_highestRightsPossible.setCanShareWithExternalUsers( false );
 			m_highestRightsPossible.setCanShareWithInternalUsers( false );

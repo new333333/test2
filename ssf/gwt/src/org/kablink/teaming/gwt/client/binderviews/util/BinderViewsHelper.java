@@ -1323,7 +1323,7 @@ public class BinderViewsHelper {
 		String caption;
 
 		caption = GwtClientHelper.patchMessage( m_messages.shareTheseItems(), String.valueOf( entityIds.size() ) );
-		ShareThisDlg.initAndShow( m_shareDlg, null, caption, null, entityIds, ShareThisDlgMode.ADMINISTRATIVE );
+		ShareThisDlg.initAndShow( m_shareDlg, null, caption, null, entityIds, ShareThisDlgMode.MANAGE_SELECTED );
 	}
 
 	/*
