@@ -298,6 +298,9 @@ public class EditShareRightsDlg extends DlgBox
 		m_listOfShareItems = listOfShareItems;
 		m_editSuccessfulHandler = editSuccessfulHandler;
 		
+		if ( highestRightsPossible == null )
+			highestRightsPossible = new ShareRights();
+		
 		m_viewerRb.setVisible( false );
 		m_editorRb.setVisible( false );
 		m_contributorRb.setVisible( false );

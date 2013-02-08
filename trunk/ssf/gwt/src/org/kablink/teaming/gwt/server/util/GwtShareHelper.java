@@ -371,6 +371,137 @@ public class GwtShareHelper
 	}
 
 	/**
+	 * Take the given list of GwtShareItems and find shares with "all users" and "guest" and 
+	 * combine them into 1 "public" share.
+	 */
+	private static ArrayList<GwtShareItem> consolidatePublicShareItems(
+		AllModulesInjected ami,
+		ArrayList<GwtShareItem> listOfGwtShareItems )
+	{
+		if ( listOfGwtShareItems != null )
+		{
+			ArrayList<GwtShareItem> listOfPartOfPublicShareItems;
+			
+			// Get a list of all shares that are part of a public share.
+			listOfPartOfPublicShareItems = new ArrayList<GwtShareItem>();
+			for ( GwtShareItem nextShareItem : listOfGwtShareItems )
+			{
+				if ( nextShareItem.getIsPartOfPublicShare() )
+				{
+					listOfPartOfPublicShareItems.add( nextShareItem );
+				}
+			}
+			
+			// Do we have any shares that are part of a public share?
+			if ( listOfPartOfPublicShareItems.size() > 0 )
+			{
+				Long guestId;
+				Long allUsersGroupId;
+				int i;
+				
+				// Yes
+				guestId = Utils.getGuestId( ami );
+				allUsersGroupId = Utils.getAllUsersGroupId();
+				
+				// There are two shares that are part of a "public" share; 1 share with "all users"
+				// and 1 share with "guest".  Find the two shares and replace them with 1
+				// "public" share item.
+				for ( i = 0; i < listOfPartOfPublicShareItems.size(); ++i )
+				{
+					GwtShareItem nextShareItem;
+					GwtShareItem allInternalUsersShareItem = null;
+					GwtShareItem guestShareItem = null;
+					Long recipientId;
+					Long sharedById;
+					EntityId entityId;
+
+					nextShareItem = listOfPartOfPublicShareItems.get( i );
+					
+					recipientId = nextShareItem.getRecipientId();
+					sharedById = nextShareItem.getSharedById();
+					entityId = nextShareItem.getEntityId();
+
+					// Is the recipient the "all internal users" group?
+					if ( recipientId.equals( allUsersGroupId ) )
+					{
+						// Yes
+						allInternalUsersShareItem = nextShareItem;
+						
+						// Find the corresponding share with "guest"
+						guestShareItem = findPartOfPublicShareItem(
+													listOfPartOfPublicShareItems,
+													guestId,
+													sharedById,
+													entityId );
+						
+						// Remove the "guest" share item from our list
+						if ( guestShareItem != null )
+							listOfPartOfPublicShareItems.remove( guestShareItem );
+					}
+					// Is the recipient the "guest" user?
+					else if ( recipientId.equals( guestId ) )
+					{
+						// Yes
+						guestShareItem = nextShareItem;
+						
+						// Find the corresponding share with "all users"
+						allInternalUsersShareItem = findPartOfPublicShareItem(
+																listOfPartOfPublicShareItems,
+																allUsersGroupId,
+																sharedById,
+																entityId );
+						
+						// Remove the "all users" share item from our list
+						if ( allInternalUsersShareItem != null )
+							listOfPartOfPublicShareItems.remove( allInternalUsersShareItem );
+					}
+					
+					// Did we find the 2 parts of the "public" share?
+					if ( allInternalUsersShareItem != null && guestShareItem != null )
+					{
+						GwtPublicShareItem	publicShareItem;
+						GwtPublic gwtPublic;
+						
+						// Yes
+						// This means we are sharing with the public.
+						// Replace these 2 shares with one share public item.
+						publicShareItem = new GwtPublicShareItem();
+						gwtPublic = new GwtPublic();
+						gwtPublic.setName( NLT.get( "share.recipientType.title.public" ) );
+						publicShareItem.setRecipientName( gwtPublic.getName() );
+						publicShareItem.setRecipientType( GwtRecipientType.PUBLIC_TYPE );
+						publicShareItem.setRecipientId( gwtPublic.getIdLong() );
+
+						// Remember the 2 share items that make up "share public"
+						publicShareItem.setAllInternalShareItem( allInternalUsersShareItem );
+						publicShareItem.setGuestShareItem( guestShareItem );
+						
+						// Get the various share values from the "all internal users" group share.
+						// All 2 shares will have the same values so it doesn't matter which one
+						// we copy from.
+						publicShareItem.setEntityId( allInternalUsersShareItem.getEntityId() );
+						publicShareItem.setEntityName( allInternalUsersShareItem.getEntityName() );
+						publicShareItem.setIsExpired( allInternalUsersShareItem.isExpired() );
+						publicShareItem.setComments( allInternalUsersShareItem.getComments() );
+						publicShareItem.setShareExpirationValue( allInternalUsersShareItem.getShareExpirationValue() );
+						publicShareItem.setShareRights( allInternalUsersShareItem.getShareRights() );
+						publicShareItem.setSharedById( allInternalUsersShareItem.getSharedById() );
+						publicShareItem.setSharedByName( allInternalUsersShareItem.getSharedByName() );
+						
+						// Add the "share public" item.
+						listOfGwtShareItems.add( publicShareItem );
+						
+						listOfGwtShareItems.remove( allInternalUsersShareItem );
+						listOfGwtShareItems.remove( guestShareItem );
+					}
+				}// end for()
+			}
+		}
+
+		return listOfGwtShareItems;
+	}
+	
+	/**
 	 * Create a ShareItem from the given GwtShareItem object
 	 */
 	private static ShareItem createShareItem(
@@ -486,6 +617,34 @@ public class GwtShareHelper
 		}		
 		
 		return shareItem;
+	}
+	
+	/**
+	 * Take the given list of GwtShareItems and find the share item that has the given recipientId,
+	 * sharedById and entityId 
+	 */
+	private static GwtShareItem findPartOfPublicShareItem(
+		ArrayList<GwtShareItem> listOfGwtShareItems,
+		Long recipientId,
+		Long sharedById,
+		EntityId entityId )
+	{
+		if ( listOfGwtShareItems != null && recipientId != null && sharedById != null && entityId != null )
+		{
+			for ( GwtShareItem nextShareItem : listOfGwtShareItems )
+			{
+				if ( nextShareItem.getIsPartOfPublicShare() &&
+					 recipientId.equals( nextShareItem.getRecipientId() ) &&
+					 sharedById.equals( nextShareItem.getSharedById() ) &&
+					 entityId.equalsEntityId( nextShareItem.getEntityId() ) )
+				{
+					return nextShareItem;
+				}
+			}
+		}
+		
+		// If we get here we didn't find the item.
+		return null;
 	}
 	
 	/**
@@ -951,38 +1110,44 @@ public class GwtShareHelper
 		String sharedById,
 		EntityId entityId )
 	{
-		EntityIdentifier entityIdentifier;
 		List<ShareItem> listOfShareItems = null;
 		ArrayList<GwtShareItem> listOfGwtShareItems = null;
 		ShareItemSelectSpec spec;
 
 		listOfGwtShareItems = new ArrayList<GwtShareItem>();
 		
-		// Get the entity type
-		entityIdentifier = getEntityIdentifierFromEntityId( entityId );
-		
-		// Get the list of ShareItem objects for the given entity
-		spec = new ShareItemSelectSpec();
-		if ( sharedById != null )
-			spec.setSharerId( Long.valueOf( sharedById ) );
-		spec.setSharedEntityIdentifier( entityIdentifier );
-		spec.setLatest( true );
+		// Set up the search criteria
+		{
+			spec = new ShareItemSelectSpec();
+			
+			if ( sharedById != null )
+				spec.setSharerId( Long.valueOf( sharedById ) );
+			
+			if ( entityId != null )
+			{
+				EntityIdentifier entityIdentifier;
+	
+				entityIdentifier = getEntityIdentifierFromEntityId( entityId );
+				spec.setSharedEntityIdentifier( entityIdentifier );
+			}
+			
+			spec.setLatest( true );
+		}
 		
 		try
 		{
+			// Get the list of ShareItem objects for the given entity
 			listOfShareItems = ami.getSharingModule().getShareItems( spec );
 		}
 		catch ( Exception ex )
 		{
-			m_logger.error( "sharingModule.getShareItems() failed: " + ex.toString() );
+			m_logger.error( "sharingModule.getListOfGwtShareItems() failed: " + ex.toString() );
 		}
 
 		// Do we have a list of ShareItem objects for the given entity?
 		if ( listOfShareItems != null )
 		{
 			Date today;
-			GwtShareItem allInternalUsersShareItem = null;
-			GwtShareItem guestShareItem = null;
 
 			// Yes
 			today = new Date();
@@ -991,34 +1156,71 @@ public class GwtShareHelper
 			{
 				GwtShareItem gwtShareItem;
 				Long recipientId;
+				EntityId nextEntityId;
 				
 				recipientId = nextShareItem.getRecipientId();
 				
 				gwtShareItem = new GwtShareItem();
-				gwtShareItem.setEntityId( entityId );
-				gwtShareItem.setEntityName( getEntityName( ami, entityId ) );
+				
+				// Were we passed an EntityId
+				if ( entityId == null )
+				{
+					EntityIdentifier entityIdentifier;
+					
+					// No.
+					nextEntityId = null;
+					
+					entityIdentifier = nextShareItem.getSharedEntityIdentifier();
+					if ( entityIdentifier != null )
+					{
+						nextEntityId = new EntityId();
+
+						switch ( entityIdentifier.getEntityType() )
+						{
+						case folderEntry:
+							FolderEntry entry;
+
+							entry = ami.getFolderModule().getEntry( null, entityIdentifier.getEntityId() );
+							
+							nextEntityId.setEntityId( entityIdentifier.getEntityId() );
+							nextEntityId.setBinderId( entry.getParentBinder().getId() );
+							nextEntityId.setEntityType( EntityId.FOLDER_ENTRY );
+							break;
+							
+						case folder:
+							nextEntityId.setEntityId( entityIdentifier.getEntityId() );
+							nextEntityId.setEntityType( EntityId.FOLDER );
+							break;
+							
+						case workspace:
+							nextEntityId.setEntityId( entityIdentifier.getEntityId() );
+							nextEntityId.setEntityType( EntityId.WORKSPACE );
+							break;
+							
+						default:
+							m_logger.error( "sharingModule.getListOfGwtShareItems(), unknown entity type: " + entityIdentifier.getEntityType() );
+							nextEntityId = null;
+							break;
+						}
+					}
+				}
+				else
+				{
+					// Yes, use it.
+					nextEntityId = entityId;
+				}
+				
+				if ( nextEntityId == null )
+					continue;
+				
+				gwtShareItem.setEntityId( nextEntityId );
+				gwtShareItem.setEntityName( getEntityName( ami, nextEntityId ) );
 				gwtShareItem.setId( nextShareItem.getId() );
 				gwtShareItem.setIsExpired( nextShareItem.isExpired() );
 				gwtShareItem.setRecipientId( recipientId );
 				gwtShareItem.setComments( nextShareItem.getComment() );
 				gwtShareItem.setIsPartOfPublicShare( nextShareItem.getIsPartOfPublicShare() );
 				
-				// Is this share item part of a "public share"?
-				if ( nextShareItem.getIsPartOfPublicShare() )
-				{
-					// Yes
-					// Is the recipient the "all internal users" group?
-					if ( recipientId.equals( Utils.getAllUsersGroupId() ) )
-					{
-						allInternalUsersShareItem = gwtShareItem;
-					}
-					// Is the recipient the "guest" user?
-					else if ( recipientId.equals( Utils.getGuestId( ami ) ) )
-					{
-						guestShareItem = gwtShareItem;
-					}
-				}
-
 				// Set the recipient type and name.
 				{
 					String name;
@@ -1139,46 +1341,6 @@ public class GwtShareHelper
 				}
 
 				listOfGwtShareItems.add( gwtShareItem );
-			}
-			
-			// Did we find a share with the "all internal users" group and the
-			// "guest" user?
-			if ( allInternalUsersShareItem != null && guestShareItem != null )
-			{
-				GwtPublicShareItem	publicShareItem;
-				GwtPublic gwtPublic;
-				
-				// Yes
-				// This means we are sharing with the public.
-				// Replace these 2 shares with one share public item.
-				publicShareItem = new GwtPublicShareItem();
-				gwtPublic = new GwtPublic();
-				gwtPublic.setName( NLT.get( "share.recipientType.title.public" ) );
-				publicShareItem.setRecipientName( gwtPublic.getName() );
-				publicShareItem.setRecipientType( GwtRecipientType.PUBLIC_TYPE );
-				publicShareItem.setRecipientId( gwtPublic.getIdLong() );
-
-				// Remember the 2 share items that make up "share public"
-				publicShareItem.setAllInternalShareItem( allInternalUsersShareItem );
-				publicShareItem.setGuestShareItem( guestShareItem );
-				
-				// Get the various share values from the "all internal users" group share.
-				// All 2 shares will have the same values so it doesn't matter which one
-				// we copy from.
-				publicShareItem.setEntityId( allInternalUsersShareItem.getEntityId() );
-				publicShareItem.setEntityName( allInternalUsersShareItem.getEntityName() );
-				publicShareItem.setIsExpired( allInternalUsersShareItem.isExpired() );
-				publicShareItem.setComments( allInternalUsersShareItem.getComments() );
-				publicShareItem.setShareExpirationValue( allInternalUsersShareItem.getShareExpirationValue() );
-				publicShareItem.setShareRights( allInternalUsersShareItem.getShareRights() );
-				publicShareItem.setSharedById( allInternalUsersShareItem.getSharedById() );
-				publicShareItem.setSharedByName( allInternalUsersShareItem.getSharedByName() );
-				
-				// Add the "share public" item.
-				listOfGwtShareItems.add( publicShareItem );
-				
-				listOfGwtShareItems.remove( allInternalUsersShareItem );
-				listOfGwtShareItems.remove( guestShareItem );
 			}
 		}
 
@@ -1473,6 +1635,87 @@ public class GwtShareHelper
 
 		sharingInfo = new GwtSharingInfo();
 		
+		// See if the user has rights to share with the "all external users" group.
+		sharingInfo.setCanShareWithAllExternalUsersGroup( canShareWithAllExternalUsersGroup( ami ) );
+		
+		// See if the user has rights to share with the "all internal users" group.
+		sharingInfo.setCanShareWithAllInternalUsersGroup( canShareWithAllInternalUsersGroup( ami ) );
+
+		// Were we passed a list of entity ids?
+		if ( listOfEntityIds != null && listOfEntityIds.size() > 0 )
+		{
+			// Yes
+			// For each given entity, get the sharing information.
+			for (EntityId nextEntityId : listOfEntityIds)
+			{
+				ArrayList<GwtShareItem> listOfGwtShareItems;
+				String entityName;
+				ShareRights shareRights;
+	
+				// Get the name of the entity
+				entityName = getEntityName( ami, nextEntityId );
+				sharingInfo.setEntityName( nextEntityId, entityName );
+				
+				// Get the highest share rights the logged-in user has to this entity
+				shareRights = getHighestEntityShareRights( ami, nextEntityId );
+				sharingInfo.setEntityShareRights( nextEntityId, shareRights );
+				
+				// Get the list of GwtShareItem objects for the given user/entity
+				listOfGwtShareItems = getListOfGwtShareItems( ami, sharedById, nextEntityId );
+				
+				// Consolidate shares with "guest" and "all users" into 1 "public" share.
+				listOfGwtShareItems = consolidatePublicShareItems( ami, listOfGwtShareItems );
+	
+				if ( listOfGwtShareItems != null )
+				{
+					for ( GwtShareItem nextGwtShareItem : listOfGwtShareItems )
+					{
+						sharingInfo.addShareItem( nextGwtShareItem );
+					}
+				}
+			}
+		}
+		else
+		{
+			ArrayList<GwtShareItem> listOfGwtShareItems;
+
+			// No, get a list of all share items.
+			listOfGwtShareItems = getListOfGwtShareItems( ami, sharedById, null );
+
+			if ( listOfGwtShareItems != null )
+			{
+				HashMap<String,EntityId> entityIdMap;
+				
+				entityIdMap = new HashMap<String,EntityId>();
+				listOfEntityIds = new ArrayList<EntityId>();
+				
+				listOfEntityIds = new ArrayList<EntityId>( entityIdMap.values() );
+
+				// Consolidate shares with "guest" and "all users" into 1 "public" share.
+				listOfGwtShareItems = consolidatePublicShareItems( ami, listOfGwtShareItems );
+
+				// Create a list of the ids of the entities we found a share for.
+				for ( GwtShareItem nextGwtShareItem : listOfGwtShareItems )
+				{
+					EntityId entityId;
+					
+					sharingInfo.addShareItem( nextGwtShareItem );
+					
+					entityId = nextGwtShareItem.getEntityId();
+					if ( entityId != null )
+					{
+						String key;
+						
+						key = entityId.getEntityIdString();
+						if ( entityIdMap.containsKey( key ) == false )
+						{
+							entityIdMap.put( key, entityId );
+						}
+					}
+				}
+			}
+		}
+		
 		// See if the user has rights to share the given entities with an external user.
 		sharingInfo.setCanShareWithExternalUsers( canShareWithExternalUsers( ami, listOfEntityIds ) );
 		
@@ -1495,45 +1738,6 @@ public class GwtShareHelper
 				canShareWithPublic = canShareWithPublic( ami, listOfEntityIds );
 			}
 			sharingInfo.setCanShareWithPublic( canShareWithPublic );
-		}
-		
-		// See if the user has rights to share with the "all external users" group.
-		sharingInfo.setCanShareWithAllExternalUsersGroup( canShareWithAllExternalUsersGroup( ami ) );
-		
-		// See if the user has rights to share with the "all internal users" group.
-		sharingInfo.setCanShareWithAllInternalUsersGroup( canShareWithAllInternalUsersGroup( ami ) );
-
-		if ( listOfEntityIds == null || listOfEntityIds.size() == 0 )
-		{
-			m_logger.error( "In GwtShareHelper.getSharingInfo(), listOfEntityIds is null or empty" );
-			return sharingInfo;
-		}
-		
-		// For each given entity, get the sharing information.
-		for (EntityId nextEntityId : listOfEntityIds)
-		{
-			ArrayList<GwtShareItem> listOfGwtShareItems;
-			String entityName;
-			ShareRights shareRights;
-
-			// Get the name of the entity
-			entityName = getEntityName( ami, nextEntityId );
-			sharingInfo.setEntityName( nextEntityId, entityName );
-			
-			// Get the highest share rights the logged-in user has to this entity
-			shareRights = getHighestEntityShareRights( ami, nextEntityId );
-			sharingInfo.setEntityShareRights( nextEntityId, shareRights );
-			
-			// Get the list of GwtShareItem objects for the given user/entity
-			listOfGwtShareItems = getListOfGwtShareItems( ami, sharedById, nextEntityId );
-
-			if ( listOfGwtShareItems != null )
-			{
-				for ( GwtShareItem nextGwtShareItem : listOfGwtShareItems )
-				{
-					sharingInfo.addShareItem( nextGwtShareItem );
-				}
-			}
 		}
 		
 		return sharingInfo;

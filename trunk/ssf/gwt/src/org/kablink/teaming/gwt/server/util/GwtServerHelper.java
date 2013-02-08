@@ -2877,6 +2877,27 @@ public class GwtServerHelper {
 				managementCategory.addAdminOption( adminAction );
 			}
 
+			// Does the user have rights to "Manage shares"?
+			try
+			{
+				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.shareItems" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_SHARE_ITEMS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_SHARE_ITEMS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
 			// Does the user have rights to "Manage workspace and folder templates"?
 			if ( isFilr == false && adminModule.testAccess( AdminOperation.manageTemplate ) )
 			{
