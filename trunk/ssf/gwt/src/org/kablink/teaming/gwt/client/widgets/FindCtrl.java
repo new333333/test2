@@ -898,6 +898,13 @@ public class FindCtrl extends Composite
 		}
 	}// end onPreviewNativeEvent()
 	
+	/**
+	 * 
+	 */
+	public void setContainerWidget( Widget containerWidget )
+	{
+		m_containerWidget = containerWidget;
+	}
 	
 	/**
 	 * 

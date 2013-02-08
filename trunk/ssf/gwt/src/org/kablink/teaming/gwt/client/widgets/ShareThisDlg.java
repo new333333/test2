@@ -93,6 +93,8 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.VerticalAlign;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -118,6 +120,7 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
@@ -143,6 +146,7 @@ public class ShareThisDlg extends DlgBox
 	private Label m_headerNameLabel;
 	private Label m_headerPathLabel;
 	private FindCtrl m_findCtrl;
+	private FindCtrl m_manageSharesFindCtrl;
 	private CheckBox m_notifyCheckbox;
 	private Image m_addExternalUserImg;
 	private FlowPanel m_mainPanel;
@@ -150,9 +154,12 @@ public class ShareThisDlg extends DlgBox
 	private FlexTable m_mainTable;
 	private FlexTable m_shareTable;
 	private InlineLabel m_shareWithTeamsLabel;
+	private InlineLabel m_manageSharesFindCtrlLabel;
 	private FlowPanel m_shareTablePanel;
 	private ShareSendToWidget m_sendToWidget;
 	private FlowPanel m_makePublicPanel;
+	private FlowPanel m_manageShareItemsPanel;
+	private ListBox m_findByListbox;
 	private FlexCellFormatter m_shareCellFormatter;
 	private HTMLTable.RowFormatter m_shareRowFormatter;
 	private int m_rightsCol;
@@ -173,6 +180,11 @@ public class ShareThisDlg extends DlgBox
 	private EditSuccessfulHandler m_editShareWithTeamsHandler;
 	private EditSuccessfulHandler m_editShareRightsHandler;
 	
+	private static final String FIND_SHARES_BY_USER = "by-user";
+	private static final String FIND_SHARES_BY_FILE = "by-file";
+	private static final String FIND_SHARES_BY_FOLDER = "by-folder";
+	private static final String FIND_ALL_SHARES = "find-all";
+	private static final String FIND_SHARES_BY_HINT = "by-hint";
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -1612,6 +1624,23 @@ public class ShareThisDlg extends DlgBox
 	}
 
 	/**
+	 * Issue an rpc request to find all share items.
+	 */
+	private void findAllShares()
+	{
+		GetSharingInfoCmd cmd;
+		
+		showStatusMsg( GwtTeaming.getMessages().shareDlg_readingShareInfo() );
+		
+		// Remove all the share items we might have already.
+		removeAllShares();
+
+		// Issue an rpc request to get the share information for the entities we are working with.
+		cmd = new GetSharingInfoCmd( null, null );
+		GwtClientHelper.executeCommand( cmd, m_getSharingInfoCallback );
+	}
+	
+	/**
 	 * Find the given recipient in the table that holds the recipients.
 	 */
 	private int findShareItem( GwtShareItem shareItem )
@@ -1650,6 +1679,75 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 
+	/**
+	 * Issue an rpc request to find share items.
+	 */
+	private void findSharesBy( String findBy, GwtTeamingItem selectedItem )
+	{
+		GetSharingInfoCmd cmd = null;
+		
+		if ( findBy != null )
+		{
+			if ( findBy.equalsIgnoreCase( FIND_SHARES_BY_FILE ) ||
+					findBy.equalsIgnoreCase( FIND_SHARES_BY_FOLDER ) )
+			{
+				ArrayList<EntityId> listOfEntityIds;
+				
+				listOfEntityIds = new ArrayList<EntityId>();
+
+				if ( selectedItem instanceof GwtFolderEntry )
+				{
+					GwtFolderEntry gwtFolderEntry;
+					EntityId entityId;
+					
+					gwtFolderEntry = (GwtFolderEntry) selectedItem;
+					entityId = new EntityId();
+					entityId.setEntityId( Long.valueOf( gwtFolderEntry.getEntryId() ) );
+					entityId.setBinderId( gwtFolderEntry.getParentBinderId() );
+					entityId.setEntityType( EntityId.FOLDER_ENTRY );
+
+					listOfEntityIds.add( entityId );
+				}
+				else if ( selectedItem instanceof GwtFolder )
+				{
+					GwtFolder gwtFolder;
+					EntityId entityId;
+					
+					gwtFolder = (GwtFolder) selectedItem;
+					entityId = new EntityId();
+					entityId.setEntityId( Long.valueOf( gwtFolder.getFolderId() ) );
+					entityId.setEntityType( EntityId.FOLDER );
+
+					listOfEntityIds.add( entityId );
+				}
+				
+				if ( listOfEntityIds.size() > 0 )
+					cmd = new GetSharingInfoCmd( listOfEntityIds, null );
+			}
+			else if ( findBy.equalsIgnoreCase( FIND_SHARES_BY_USER ) )
+			{
+				if ( selectedItem instanceof GwtUser )
+				{
+					GwtUser user;
+					
+					user = (GwtUser) selectedItem;
+					cmd = new GetSharingInfoCmd( null, user.getUserId() );
+				}
+			}
+		}
+		
+		if ( cmd != null )
+		{
+			showStatusMsg( GwtTeaming.getMessages().shareDlg_readingShareInfo() );
+			
+			// Remove all the share items we might have already.
+			removeAllShares();
+
+			// Issue an rpc request to get the share information for the entities we are working with.
+			GwtClientHelper.executeCommand( cmd, m_getSharingInfoCallback );
+		}
+	}
+	
 	/**
 	 * Return the default comment
 	 */
@@ -1791,6 +1889,27 @@ public class ShareThisDlg extends DlgBox
 	private String getEntityName( EntityId entityId )
 	{
 		return m_sharingInfo.getEntityName( entityId );
+	}
+	
+	/**
+	 * Return the selection of how to find shares.
+	 */
+	private String getFindBy()
+	{
+		String findBy = null;
+		
+		if ( m_findByListbox != null )
+		{
+			int index;
+
+			index = m_findByListbox.getSelectedIndex();
+			if ( index >= 0 )
+			{
+				findBy = m_findByListbox.getValue( index );
+			}
+		}
+		
+		return findBy;
 	}
 	
 	/**
@@ -2031,6 +2150,49 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
+	 * This method gets called to handle when the user selects how they want to find shares
+	 */
+	private void handleFindSharesBySelectionChanged( String findBy )
+	{
+		boolean visible;
+		
+		if ( findBy == null )
+			return;
+		
+		visible = true;
+
+		m_manageSharesFindCtrl.setInitialSearchString( "" );
+
+		if ( findBy.equalsIgnoreCase( FIND_SHARES_BY_USER ) )
+		{
+			m_manageSharesFindCtrl.setSearchForExternalPrincipals( true );
+			m_manageSharesFindCtrl.setSearchForInternalPrincipals( true );
+			m_manageSharesFindCtrl.setSearchType( SearchType.USER );
+			m_manageSharesFindCtrlLabel.setText( GwtTeaming.getMessages().shareDlg_findByUserLabel() );
+		}
+		else if ( findBy.equalsIgnoreCase( FIND_SHARES_BY_FILE ) )
+		{
+			m_manageSharesFindCtrl.setSearchType( SearchType.ENTRIES );
+			m_manageSharesFindCtrlLabel.setText( GwtTeaming.getMessages().shareDlg_findByFileLabel() );
+		}
+		else if ( findBy.equalsIgnoreCase( FIND_SHARES_BY_FOLDER ) )
+		{
+			m_manageSharesFindCtrl.setSearchType( SearchType.FOLDERS );
+			m_manageSharesFindCtrlLabel.setText( GwtTeaming.getMessages().shareDlg_findByFolderLabel() );
+		}
+		else if ( findBy.equalsIgnoreCase( FIND_ALL_SHARES ) )
+		{
+			visible = false;
+			findAllShares();
+		}
+
+		m_manageSharesFindCtrlLabel.setVisible( visible );
+		m_manageSharesFindCtrl.setVisible( visible );
+		if ( visible )
+			m_manageSharesFindCtrl.getFocusWidget().setFocus( true );
+	}
+	
+	/**
 	 * 
 	 */
 	private void highlightRecipient( int row )
@@ -2044,8 +2206,8 @@ public class ShareThisDlg extends DlgBox
 	 */
 	private void init()
 	{
-		GetSharingInfoCmd rpcCmd1;
-		GetMyTeamsCmd rpcCmd2;
+		GetSharingInfoCmd rpcCmd1 = null;
+		GetMyTeamsCmd rpcCmd2 = null;
 		
 		updateHeader();
 
@@ -2074,17 +2236,7 @@ public class ShareThisDlg extends DlgBox
 		}
 		
 		// Remove all of the rows from the table.
-		// We start at row 1 so we don't delete the header.
-		while ( m_shareTable.getRowCount() > 1 )
-		{
-			// Remove the 1st row that holds share information.
-			m_shareTable.removeRow( 1 );
-		}
-		
-		// Add a message to the table telling the user this item has not been shared.
-		addNotSharedMessage();
-
-		adjustShareTablePanelHeight();
+		removeAllShares();
 		
 		// If we are in Administrative mode, we don't allow the user to add shares.
 		if ( m_mode == ShareThisDlgMode.MANAGE_SELECTED || m_mode == ShareThisDlgMode.MANAGE_ALL )
@@ -2156,6 +2308,8 @@ public class ShareThisDlg extends DlgBox
 					GwtClientHelper.handleGwtRPCFailure(
 							t,
 							GwtTeaming.getMessages().rpcFailure_GetSharingInfo() );
+					
+					hideStatusMsg();
 				}
 				
 				/**
@@ -2175,6 +2329,7 @@ public class ShareThisDlg extends DlgBox
 						public void execute() 
 						{
 							updateSharingInfo( sharingInfo );
+							hideStatusMsg();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -2183,21 +2338,26 @@ public class ShareThisDlg extends DlgBox
 		}
 		
 		// Are we in Administrative mode?
-		if ( m_mode == ShareThisDlgMode.MANAGE_SELECTED || m_mode == ShareThisDlgMode.MANAGE_ALL )
+		if ( m_mode == ShareThisDlgMode.MANAGE_SELECTED )
 		{
 			// Yes
 			// Passing null to GetSharingInfoCmd() means get all shares by everyone.
 			rpcCmd1 = new GetSharingInfoCmd( m_entityIds, null );
 		}
-		else
+		else if ( m_mode == ShareThisDlgMode.NORMAL )
 		{
 			// No
 			rpcCmd1 = new GetSharingInfoCmd( m_entityIds, GwtTeaming.m_requestInfo.getUserId() );
 		}
 
-		// Issue an rpc request to get the share information for the entities we are working with.
-		GwtClientHelper.executeCommand( rpcCmd1, m_getSharingInfoCallback );
-
+		if ( rpcCmd1 != null )
+		{
+			showStatusMsg( GwtTeaming.getMessages().shareDlg_readingShareInfo() );
+	
+			// Issue an rpc request to get the share information for the entities we are working with.
+			GwtClientHelper.executeCommand( rpcCmd1, m_getSharingInfoCallback );
+		}
+		
 		// Issue an rpc request to get the teams this user is a member of.
 		if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
 		{
@@ -2438,6 +2598,24 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
+	 * Remove all share items that may be in the table.
+	 */
+	private void removeAllShares()
+	{
+		// We start at row 1 so we don't delete the header.
+		while ( m_shareTable.getRowCount() > 1 )
+		{
+			// Remove the 1st row that holds share information.
+			m_shareTable.removeRow( 1 );
+		}
+		
+		// Add a message to the table telling the user this item has not been shared.
+		addNotSharedMessage();
+
+		adjustShareTablePanelHeight();
+	}
+	
+	/**
 	 * Remove the given share from the table
 	 */
 	public void removeShare( GwtShareItem shareItem )
@@ -2505,6 +2683,33 @@ public class ShareThisDlg extends DlgBox
 		ImageResource imgResource;
 		int numItems;
 
+		if ( m_mode == ShareThisDlgMode.MANAGE_ALL )
+		{
+			m_makePublicPanel.setVisible( false );
+
+			m_manageShareItemsPanel.setVisible( true );
+			m_manageSharesFindCtrlLabel.setVisible( false );
+			m_manageSharesFindCtrl.setVisible( false );
+
+			// Do we need to add the hint to the listbox?
+			if ( m_findByListbox.getItemCount() == 4 )
+			{
+				// Yes
+				m_findByListbox.insertItem(
+										GwtTeaming.getMessages().shareDlg_findSharesByHint(),
+										FIND_SHARES_BY_HINT,
+										0 );
+			}
+			m_findByListbox.setSelectedIndex( 0 );
+		}
+		else if ( m_mode == ShareThisDlgMode.MANAGE_SELECTED )
+		{
+			m_makePublicPanel.setVisible( false );
+			m_manageShareItemsPanel.setVisible( false );
+		}
+		else
+			m_manageShareItemsPanel.setVisible( false );
+		
 		if ( m_entityIds == null )
 		{
 			return;
@@ -2542,7 +2747,11 @@ public class ShareThisDlg extends DlgBox
 			// We are sharing mulitiple items.  Use the entry image.
 			imgResource = GwtTeaming.getFilrImageBundle().entry_large();
 			
-			m_headerNameLabel.setText( GwtTeaming.getMessages().sharingMultipleItems( numItems ) );
+			if ( m_mode == ShareThisDlgMode.NORMAL )
+				m_headerNameLabel.setText( GwtTeaming.getMessages().sharingMultipleItems( numItems ) );
+			else
+				m_headerNameLabel.setText( GwtTeaming.getMessages().shareDlg_manageMultipleItems( numItems ) );
+			
 			m_headerPathLabel.setText( "" );
 		}
 
@@ -2654,55 +2863,87 @@ public class ShareThisDlg extends DlgBox
 	@Override
 	public void onSearchFindResults( SearchFindResultsEvent event )
 	{
-		final GwtTeamingItem selectedObj;
-		Scheduler.ScheduledCommand cmd;
-
-		// If the find results aren't for this share this dialog...
-		if ( !((Widget) event.getSource()).equals( this ) )
-		{
-			// ...ignore the event.
+		Widget sourceWidget;
+		
+		sourceWidget = (Widget) event.getSource();
+		
+		if ( sourceWidget == null )
 			return;
+		
+		// Is this meant to add a share with someone?
+		if ( sourceWidget.equals( this ) )
+		{
+			final GwtTeamingItem selectedObj;
+			Scheduler.ScheduledCommand cmd;
+
+			// Yes
+			selectedObj = event.getSearchResults();
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute() 
+				{
+					final ArrayList<GwtShareItem> listOfShareItems;
+					
+					// Hide the search-results widget.
+					m_findCtrl.hideSearchResults();
+					
+					// Clear the text from the find control.
+					m_findCtrl.clearText();
+
+					// Create a GwtShareItem for every entity we are sharing with.
+					listOfShareItems = addShare( selectedObj );
+					
+					if ( listOfShareItems != null && listOfShareItems.size() > 0 )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								InvokeEditShareRightsDlgEvent event;
+
+								// Fire an event to invoke the "edit share rights" dialog.
+								event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
+								GwtTeaming.fireEvent( event );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+		// Is this meant to identify a user/file/folder to search for shares by?
+		else if ( sourceWidget.equals( m_manageShareItemsPanel ) )
+		{
+			final String findBy;
+			final GwtTeamingItem selectedObj;
+			Scheduler.ScheduledCommand cmd;
+
+			// Yes
+			selectedObj = event.getSearchResults();
+			
+			// Get how the users wants to find the shares
+			findBy = getFindBy();
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute() 
+				{
+					// Hide the search-results widget.
+					m_manageSharesFindCtrl.hideSearchResults();
+					
+					findSharesBy( findBy, selectedObj );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 		
-		selectedObj = event.getSearchResults();
-		
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			@Override
-			public void execute() 
-			{
-				final ArrayList<GwtShareItem> listOfShareItems;
-				
-				// Hide the search-results widget.
-				m_findCtrl.hideSearchResults();
-				
-				// Clear the text from the find control.
-				m_findCtrl.clearText();
-
-				// Create a GwtShareItem for every entity we are sharing with.
-				listOfShareItems = addShare( selectedObj );
-				
-				if ( listOfShareItems != null && listOfShareItems.size() > 0 )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							InvokeEditShareRightsDlgEvent event;
-
-							// Fire an event to invoke the "edit share rights" dialog.
-							event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
-							GwtTeaming.fireEvent( event );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
 	}// end onSearchFindResults()
 	
 	/*
@@ -2738,8 +2979,42 @@ public class ShareThisDlg extends DlgBox
 			@Override
 			public void onSuccess( FindCtrl findCtrl )
 			{
-				// ...and populate the dialog.
+				Scheduler.ScheduledCommand cmd;
+				
 				m_findCtrl = findCtrl;
+
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						loadPart2Now();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		});
+	}
+	
+	/**
+	 * 
+	 */
+	private void loadPart2Now()
+	{
+		FindCtrl.createAsync( this, GwtSearchCriteria.SearchType.USER, new FindCtrlClient()
+		{			
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess( FindCtrl findCtrl )
+			{
+				// ...and populate the dialog.
+				m_manageSharesFindCtrl = findCtrl;
 				populateDlgAsync();
 			}
 		});
@@ -2818,6 +3093,9 @@ public class ShareThisDlg extends DlgBox
 		FlexTable mainTable;
 		FlowPanel tmpPanel;
 		int row;
+		GwtTeamingMessages messages;
+		
+		messages = GwtTeaming.getMessages();
 		
 		// Create the controls needed in the header
 		{
@@ -2847,7 +3125,83 @@ public class ShareThisDlg extends DlgBox
 			m_mainPanel.add( headerPanel );
 		}
 		
-		// Add the controls needed to manage sharing.
+		// Add the controls needed to select how to manage share items.
+		{
+			FlexTable table;
+			
+			m_manageShareItemsPanel = new FlowPanel();
+			m_manageShareItemsPanel.addStyleName( "shareThisDlg_ManageSharesPanel" );
+			
+			table = new FlexTable();
+			table.setText( 0, 0, messages.shareDlg_findShareItemsBy() );
+			
+			m_manageShareItemsPanel.add( table );
+			
+			// Create a listbox that will hold the options of how to find share items.
+			{
+				m_findByListbox = new ListBox( false );
+				m_findByListbox.setVisibleItemCount( 1 );
+				
+				m_findByListbox.addItem( messages.shareDlg_findSharesByHint(), FIND_SHARES_BY_HINT );
+				m_findByListbox.addItem( messages.shareDlg_findSharesByUser(), FIND_SHARES_BY_USER );
+				m_findByListbox.addItem( messages.shareDlg_findSharesByFile(), FIND_SHARES_BY_FILE );
+				m_findByListbox.addItem( messages.shareDlg_findSharesByFolder(), FIND_SHARES_BY_FOLDER );
+				m_findByListbox.addItem( messages.shareDlg_findAllShares(), FIND_ALL_SHARES );
+				m_findByListbox.setSelectedIndex( 0 );
+				
+				m_findByListbox.addChangeHandler( new ChangeHandler()
+				{
+					@Override
+					public void onChange( ChangeEvent event )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								int selectedIndex;
+							
+								selectedIndex = m_findByListbox.getSelectedIndex();
+								if ( selectedIndex >= 0 )
+								{
+									handleFindSharesBySelectionChanged( m_findByListbox.getValue( selectedIndex ) );
+									
+									// Since something was selected, remove the hint.
+									if ( m_findByListbox.getValue( 0 ).equalsIgnoreCase( FIND_SHARES_BY_HINT ) )
+										m_findByListbox.removeItem( 0 );
+								}
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				} );
+
+				table.setWidget( 0, 1, m_findByListbox );
+
+				// Create a table that will hold the controls needed to search for a user/file/folder
+				{
+					FlexTable table2;
+					
+					table2 = new FlexTable();
+					table.setWidget( 0, 2, table2 );
+					
+					m_manageSharesFindCtrlLabel = new InlineLabel( "abc" );
+					m_manageSharesFindCtrlLabel.addStyleName( "marginleft2" );
+					table2.setWidget( 0, 0, m_manageSharesFindCtrlLabel );
+					table2.setWidget( 0, 1, m_manageSharesFindCtrl );
+					
+					m_manageSharesFindCtrl.setContainerWidget( m_manageShareItemsPanel );
+					m_manageSharesFindCtrl.setVisible( false );
+					m_manageSharesFindCtrlLabel.setVisible( false );
+				}
+			}
+			
+			m_mainPanel.add( m_manageShareItemsPanel );
+		}
+		
+		// Add the controls needed for sharing.
 		mainTable = createShareControls();
 		m_mainPanel.add( mainTable );
 		
@@ -2856,7 +3210,7 @@ public class ShareThisDlg extends DlgBox
 		// Create the "notify" controls
 		{
 			tmpPanel = new FlowPanel();
-			m_notifyCheckbox = new CheckBox( GwtTeaming.getMessages().shareDlg_notifyLabel() );
+			m_notifyCheckbox = new CheckBox( messages.shareDlg_notifyLabel() );
 			m_notifyCheckbox.setValue( true );
 			tmpPanel.add( m_notifyCheckbox );
 			
