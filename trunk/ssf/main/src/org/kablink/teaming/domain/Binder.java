@@ -114,7 +114,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean allowMobileAppsToSyncData = Boolean.TRUE;
     protected Boolean indexContent = Boolean.TRUE;
     protected Boolean jitsEnabled = Boolean.TRUE; // Applicable only to mirrored folders
-    protected Long jitsWaitTimeout; // in milliseconds
+    protected Long jitsMaxAge; // in milliseconds
     
     
     public Binder() {
@@ -151,6 +151,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 allowMobileAppsToSyncData = source.allowMobileAppsToSyncData;
 		 indexContent = source.indexContent;
 		 jitsEnabled = source.jitsEnabled;
+		 jitsMaxAge = source.jitsMaxAge;
      }
     /**
      * Return the zone id
@@ -800,6 +801,16 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	this.jitsEnabled = jitsEnabled;
     }
     
+	public long getJitsMaxAge() {
+		if(jitsMaxAge == null)
+			return SPropsUtil.getLong("nf.jits.max.age", 30000L);
+		else 
+			return jitsMaxAge.longValue();
+	}
+	public void setJitsMaxAge(long jitsWaitTimeout) {
+		this.jitsMaxAge = Long.valueOf(jitsWaitTimeout);
+	}
+    
     /**
      * Get the xml document that holds the landing page properties such as the background color,
      * background image, etc. 
@@ -1043,14 +1054,5 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
         limited.title = this.title;
         return limited;
     }
-    
-	public Long getJitsWaitTimeout() {
-		if(jitsWaitTimeout == null)
-			return SPropsUtil.getLongObject("nf.jits.wait.timeout", 15000L);
-		return jitsWaitTimeout;
-	}
-	public void setJitsWaitTimeout(Long jitsWaitTimeout) {
-		this.jitsWaitTimeout = jitsWaitTimeout;
-	}
 
 }
