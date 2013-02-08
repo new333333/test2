@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
@@ -42,6 +43,7 @@ import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent;
+import org.kablink.teaming.gwt.client.event.MenuLoadedEvent;
 import org.kablink.teaming.gwt.client.event.RefreshSidebarTreeEvent;
 import org.kablink.teaming.gwt.client.event.RerootSidebarTreeEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -74,6 +76,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * This widget will display a workspace tree control.
@@ -82,29 +85,36 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  */
 public class WorkspaceTreeControl extends ResizeComposite
 	implements
-	// Event handlers implemented by this class.
+		// Event handlers implemented by this class.
 		ActivityStreamEnterEvent.Handler,
 		ActivityStreamEvent.Handler,
 		ActivityStreamExitEvent.Handler,
 		ChangeContextEvent.Handler,
 		ContextChangedEvent.Handler,
 		GetSidebarCollectionEvent.Handler,
+		MenuLoadedEvent.Handler,
 		RefreshSidebarTreeEvent.Handler,
 		RerootSidebarTreeEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
 {
-	private BinderInfo		m_selectedBinderInfo;	//
-	private boolean			m_hiddenByEmptySidebar;	//
-	private boolean			m_isTrash;				//
-	private GwtMainPage		m_mainPage;				//
-	private TreeDisplayBase	m_treeDisplay;			//
-	private TreeMode 		m_tm;					//
+	private BinderInfo					m_selectedBinderInfo;		//
+	private boolean						m_hiddenByEmptySidebar;		//
+	private boolean						m_isTrash;					//
+	private GwtMainPage					m_mainPage;					//
+	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private TreeDisplayBase				m_treeDisplay;				//
+	private TreeMode 					m_tm;						//
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private TeamingEvents[] m_verticalTreeRegisteredEvents = new TeamingEvents[] {
+	private static final TeamingEvents[] HORIZONTAL_BINDER_TREE_REGISTERED_EVENTS = new TeamingEvents[] {
+		// Menu events.
+		TeamingEvents.MENU_LOADED,
+	};
+	
+	private static final TeamingEvents[] VERTICAL_TREE_REGISTERED_EVENTS = new TeamingEvents[] {
 		// Activity stream events.
 		TeamingEvents.ACTIVITY_STREAM_ENTER,
 		TeamingEvents.ACTIVITY_STREAM,
@@ -120,6 +130,9 @@ public class WorkspaceTreeControl extends ResizeComposite
 		TeamingEvents.REROOT_SIDEBAR_TREE,
 		TeamingEvents.SIDEBAR_HIDE,
 		TeamingEvents.SIDEBAR_SHOW,
+		
+		// Menu events.
+		TeamingEvents.MENU_LOADED,
 	};
 	
 	/**
@@ -234,12 +247,6 @@ public class WorkspaceTreeControl extends ResizeComposite
 			
 		case VERTICAL:
 		{
-			// Register the events to be handled by this class.
-			EventHelper.registerEventHandlers(
-				GwtTeaming.getEventBus(),
-				m_verticalTreeRegisteredEvents,
-				this);
-
 			mainPanel.addStyleName("workspaceTreeControl workspaceTreeWidth");
 			GetVerticalTreeCmd cmd = new GetVerticalTreeCmd(selectedBinderInfo.getBinderId());
 			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
@@ -448,6 +455,31 @@ public class WorkspaceTreeControl extends ResizeComposite
 	}
 	
 	/**
+	 * Called when the accessories panel is attached to the document.
+	 * 
+	 * Overrides Widget.onAttach()
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the accessories panel is detached from the document.
+	 * 
+	 * Overrides Widget.onDetach()
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+	
+	/**
 	 * Handles ContextChangedEvent's received by this class.
 	 * 
 	 * Implements the ContextChangedEvent.Handler.onContextChanged() method.
@@ -510,6 +542,23 @@ public class WorkspaceTreeControl extends ResizeComposite
 		if (isSidebarTree()) {
 			// ...tell it to return its collection.
 			m_treeDisplay.getSidebarCollection(event.getCollectionCallback());
+		}
+	}
+	
+	/**
+	 * Handles MenuLoadedEvent's received by this class.
+	 * 
+	 * Implements the MenuLoadedEvent.Handler.onMenuLoaded()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMenuLoaded(MenuLoadedEvent event) {
+		// If we have a tree display...
+		if (null != m_treeDisplay) {
+			// ...simply tell it which menu item was loaded.
+			m_treeDisplay.menuLoaded(event.getMenuItem());
 		}
 	}
 	
@@ -739,6 +788,39 @@ public class WorkspaceTreeControl extends ResizeComposite
 	}
 	
 	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			boolean			doValidation;
+			TeamingEvents[]	registeredEvents;
+			switch (m_tm) {
+			default:
+			case HORIZONTAL_POPUP:   registeredEvents = null;                                     doValidation = false; break;
+			case HORIZONTAL_BINDER:  registeredEvents = HORIZONTAL_BINDER_TREE_REGISTERED_EVENTS; doValidation = false; break;
+			case VERTICAL:           registeredEvents = VERTICAL_TREE_REGISTERED_EVENTS;          doValidation = true;  break;
+			}
+			if (null != registeredEvents) {
+				EventHelper.registerEventHandlers(
+					GwtTeaming.getEventBus(),
+					registeredEvents,
+					this,
+					m_registeredEventHandlers,
+					doValidation);
+			}
+		}
+	}
+	
+	/*
 	 * Called when a selection change is in progress.
 	 */
 	private void showBinderBusy(OnSelectBinderInfo osbInfo) {
@@ -758,6 +840,24 @@ public class WorkspaceTreeControl extends ResizeComposite
 		// Filr.
 		return (!(GwtClientHelper.isLicenseFilr()));
 	}
+	
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
+	}
+
+
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	/* The following code is used to load the split point containing */
+	/* the workspace tree control and perform some operation on it.  */
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
 	/**
 	 * Callback interface to interact with the workspace tree control

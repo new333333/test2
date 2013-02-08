@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent.CollectionCallback;
+import org.kablink.teaming.gwt.client.event.MenuLoadedEvent.MenuItem;
 import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
 import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
@@ -655,6 +656,25 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		return false;
 	}
 	
+	/**
+	 * Called when a particular menu item is loaded.  If an extender of
+	 * this class is interested in these, it should overwrite this
+	 * method.
+	 * 
+	 * Implements the TreeDisplayBase.menuLoaded() abstract method.
+	 */
+	@Override
+	public void menuLoaded(MenuItem menuItem) {
+		// If we're getting notified that the manage menu has been
+		// loaded...
+		if (MenuItem.MANAGE_BINDER.equals(menuItem)) {
+			// ...simply null out the selector config popup.  That will
+			// ...cause it to get recreated the next time it's needed
+			// ...and pull over a new manage menu.
+			m_selectorConfigPopup = null;
+		}
+	}
+
 	/**
 	 * Tells a sidebar tree implementation to refresh itself
 	 * maintaining its current context and selected binder.

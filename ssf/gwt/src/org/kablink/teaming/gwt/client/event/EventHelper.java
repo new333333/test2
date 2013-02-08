@@ -44,7 +44,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Window;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -142,7 +141,7 @@ public class EventHelper {
 			
 		default:
 		case UNDEFINED:
-			Window.alert(GwtTeaming.getMessages().eventHandling_NonSimpleEvent(eventEnum.name(), EventHelper.class.getName()));
+			GwtClientHelper.deferredAlert(GwtTeaming.getMessages().eventHandling_NonSimpleEvent(eventEnum.name(), EventHelper.class.getName()));
 			reply = null;
 			break;
 		}
@@ -268,11 +267,15 @@ public class EventHelper {
 	 * @param registerdEvents
 	 * @param eventHandler
 	 * @param registeredEventHandlers	Optional.  May be null.
+	 * @param doValidation
 	 */
-	public static void registerEventHandlers(SimpleEventBus eventBus, TeamingEvents[] eventsToBeRegistered, Object eventHandler, List<HandlerRegistration> registeredEventHandlers) {
-		// Validate what's being asked for vs. what the object is
-		// defined to support.
-		validateEvents(eventsToBeRegistered, eventHandler);
+	public static void registerEventHandlers(SimpleEventBus eventBus, TeamingEvents[] eventsToBeRegistered, Object eventHandler, List<HandlerRegistration> registeredEventHandlers, boolean doValidation) {
+		// If we supposed to validate the handlers...
+		if (doValidation) {
+			// ...validate what's being asked for vs. what the object
+			// ...is defined to support.
+			validateEvents(eventsToBeRegistered, eventHandler);
+		}
 		
 		// Scan the events we were given to register.
 		boolean returnRegisteredEventHandlers = (null != registeredEventHandlers);
@@ -1478,20 +1481,29 @@ public class EventHelper {
 				break;
 			
 			case MENU_HIDE:
-				// A MenuHideEvent.  Can the event handler we were given handle that?
-				if ( eventHandler instanceof MenuHideEvent.Handler )
-				{
+				// A MenuHideEvent.  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof MenuHideEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = MenuHideEvent.registerEvent( eventBus, ((MenuHideEvent.Handler) eventHandler) );
+					registrationHandler = MenuHideEvent.registerEvent(eventBus, ((MenuHideEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case MENU_LOADED:
+				// A MenuLoadedEvent.  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof MenuLoadedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = MenuLoadedEvent.registerEvent(eventBus, ((MenuLoadedEvent.Handler) eventHandler));
 				}
 				break;
 			
 			case MENU_SHOW:
-				// A MenuShowEvent.  Can the event handler we were given handle that?
-				if ( eventHandler instanceof MenuShowEvent.Handler )
-				{
+				// A MenuShowEvent.  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof MenuShowEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = MenuShowEvent.registerEvent( eventBus, ((MenuShowEvent.Handler) eventHandler) );
+					registrationHandler = MenuShowEvent.registerEvent(eventBus, ((MenuShowEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2268,7 +2280,7 @@ public class EventHelper {
 			case UNDEFINED:
 				// Whatever it is, we can't handle it!  Tell the user
 				// about the problem.
-				Window.alert(GwtTeaming.getMessages().eventHandling_UnhandledEvent(te.name(), EventHelper.class.getName()));
+				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().eventHandling_UnhandledEvent(te.name(), EventHelper.class.getName()));
 				handlerNotDefined = false;
 				registrationHandler = null;
 				break;
@@ -2278,7 +2290,7 @@ public class EventHelper {
 			// event?
 			if (handlerNotDefined) {
 				// No!  Tell the user about the problem.
-				Window.alert(
+				GwtClientHelper.deferredAlert(
 					GwtTeaming.getMessages().eventHandling_UnhandledEvent(
 						te.name(),
 						eventHandler.getClass().getName()));
@@ -2301,13 +2313,34 @@ public class EventHelper {
 		}
 	}
 	
+	public static void registerEventHandlers(SimpleEventBus eventBus, TeamingEvents[] eventsToBeRegistered, Object eventHandler, List<HandlerRegistration> registeredEventHandlers) {
+		// Always use the initial form of the method.
+		registerEventHandlers(
+			eventBus,
+			eventsToBeRegistered,
+			eventHandler,
+			registeredEventHandlers,
+			true);
+	}
+	
+	public static void registerEventHandlers(SimpleEventBus eventBus, TeamingEvents[] eventsToBeRegistered, Object eventHandler, boolean doValidation) {
+		// Always use the initial form of the method.
+		registerEventHandlers(
+			eventBus,
+			eventsToBeRegistered,
+			eventHandler,
+			null,
+			doValidation);
+	}
+	
 	public static void registerEventHandlers(SimpleEventBus eventBus, TeamingEvents[] eventsToBeRegistered, Object eventHandler) {
 		// Always use the initial form of the method.
 		registerEventHandlers(
 			eventBus,
 			eventsToBeRegistered,
 			eventHandler,
-			null);
+			null,
+			true);
 	}
 
 	/**
@@ -2412,6 +2445,7 @@ public class EventHelper {
 			case HIDE_MANAGE_MENU:						       hasHandler = (eventHandler instanceof HideManageMenuEvent.Handler);		                   break;
 			case MANAGE_USERS_FILTER:                     	   hasHandler = (eventHandler instanceof ManageUsersFilterEvent.Handler);                 	   break;
 			case MENU_HIDE:                     		       hasHandler = (eventHandler instanceof MenuHideEvent.Handler);                 	           break;
+			case MENU_LOADED:                     		       hasHandler = (eventHandler instanceof MenuLoadedEvent.Handler);                 	           break;
 			case MENU_SHOW:                     		       hasHandler = (eventHandler instanceof MenuShowEvent.Handler);                               break;
 			case SHARED_VIEW_FILTER:                     	   hasHandler = (eventHandler instanceof SharedViewFilterEvent.Handler);                 	   break;
 
@@ -2621,7 +2655,7 @@ public class EventHelper {
 			default:
 				// Somebody forget to add a validation handler for
 				// this!
-				Window.alert(GwtTeaming.getMessages().eventHandling_Validation_NoValidator(te.name()));
+				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().eventHandling_Validation_NoValidator(te.name()));
 				continue;
 			}
 
@@ -2635,7 +2669,7 @@ public class EventHelper {
 				String error = "*???*";
 				if      (needsHandler) error = GwtTeaming.getMessages().eventHandling_Validation_NoHandler(teName, className);
 				else if (hasHandler)   error = GwtTeaming.getMessages().eventHandling_Validation_NotListed(teName, className);
-				Window.alert(error);
+				GwtClientHelper.deferredAlert(error);
 			}
 		}
 	}

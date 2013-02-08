@@ -41,8 +41,10 @@ import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
 import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
 import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent.ManageUsersTitleCallback;
+import org.kablink.teaming.gwt.client.event.MenuLoadedEvent.MenuItem;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
+import org.kablink.teaming.gwt.client.event.MenuLoadedEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -65,7 +67,6 @@ import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTree
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -88,6 +89,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class BreadCrumbPanel extends ToolPanelBase
 	implements
 		// Event handlers implemented by this class.
+		MenuLoadedEvent.Handler,
 		TreeNodeCollapsedEvent.Handler,
 		TreeNodeExpandedEvent.Handler
 {
@@ -98,7 +100,8 @@ public class BreadCrumbPanel extends ToolPanelBase
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+	private static final TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+		TeamingEvents.MENU_LOADED,
 		TeamingEvents.TREE_NODE_COLLAPSED,
 		TeamingEvents.TREE_NODE_EXPANDED,
 	};
@@ -232,13 +235,12 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * Asynchronously builds and runs the selector configuration menu.
 	 */
 	private void buildAndRunSelectorConfigMenuAsync(final Anchor selectorConfigA) {
-		ScheduledCommand doBuildAndRunMenu = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				buildAndRunSelectorConfigMenuNow(selectorConfigA);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doBuildAndRunMenu);
+		});
 	}
 	
 	/*
@@ -275,13 +277,12 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * Asynchronously handles the panel being resized.
 	 */
 	private void doResizeAsync() {
-		ScheduledCommand doResize = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				doResizeNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doResize);
+		});
 	}
 	
 	/*
@@ -307,13 +308,12 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * panel.
 	 */
 	private void loadPart1Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart1Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
@@ -501,6 +501,26 @@ public class BreadCrumbPanel extends ToolPanelBase
 	}
 	
 	/**
+	 * Handles MenuLoadedEvent's received by this class.
+	 * 
+	 * Implements the MenuLoadedEvent.Handler.onMenuLoaded()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMenuLoaded(MenuLoadedEvent event) {
+		// If we're getting notified that the manage menu has been
+		// loaded...
+		if (MenuItem.MANAGE_BINDER.equals(event.getMenuItem())) {
+			// ...simply null out the selector config popup.  That will
+			// ...cause it to get recreated the next time it's needed
+			// ...and pull over a new manage menu.
+			m_selectorConfigPopup = null;
+		}
+	}
+	
+	/**
 	 * Handles TreeNodeCollapsedEvent's received by this class.
 	 * 
 	 * Implements the TreeNodeCollapsedEvent.Handler.onTreeNodeCollapsed()
@@ -552,7 +572,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 			// ...register the events.
 			EventHelper.registerEventHandlers(
 				GwtTeaming.getEventBus(),
-				m_registeredEvents,
+				REGISTERED_EVENTS,
 				this,
 				m_registeredEventHandlers);
 		}
@@ -575,13 +595,12 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * Asynchronously runs the selector configuration menu.
 	 */
 	private void runSelectorConfigMenuAsync(final Anchor selectorConfigA) {
-		ScheduledCommand doRunMenu = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				runSelectorConfigMenuNow(selectorConfigA);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRunMenu);
+		});
 	}
 	
 	/*
@@ -598,13 +617,12 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * Asynchronously runs What's New on the current binder.
 	 */
 	private void showWhatsNewAsync() {
-		ScheduledCommand doWhatsNew = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showWhatsNewNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doWhatsNew);
+		});
 	}
 
 	/*
