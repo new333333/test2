@@ -46,7 +46,7 @@ public class BinderState extends ZonedObject {
 	private Long binderId;
 	/*
 	 * Last time sync completed on this particular binder.
-	 * This does NOT tell whether the sync was full (recursive) or JIT (single level only), 
+	 * This does NOT tell whether the sync was full (whole branch) or JIT (single level only), 
 	 * or whether the sync was successful or not.
 	 */
 	private Date lastSyncTime; 
@@ -56,7 +56,7 @@ public class BinderState extends ZonedObject {
 	}
 	
 	public BinderState(Long binderId) {
-		
+		setBinderId(binderId);
 	}
 	
 	public Long getBinderId() {
@@ -65,5 +65,13 @@ public class BinderState extends ZonedObject {
 
 	public void setBinderId(Long binderId) {
 		this.binderId = binderId;
+	}
+
+	public Date getLastSyncTime() {
+		return lastSyncTime;
+	}
+
+	public void setLastSyncTime(Date lastSyncTime) {
+		this.lastSyncTime = lastSyncTime;
 	}
 }

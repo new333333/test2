@@ -7,5 +7,6 @@
       <generator class="assigned"/>
     </id>
     <property name="zoneId" access="field"/>
+    <property name="lastSyncTime"/>
   </class>
 </hibernate-mapping>
