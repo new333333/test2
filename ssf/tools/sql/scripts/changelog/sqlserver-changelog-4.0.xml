@@ -566,4 +566,22 @@ update SS_Principals set foreignName=LOWER(foreignName);
         </addColumn>
 	</changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="65">
+        <comment>Add jitsEnabled field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="jitsEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="66">
+        <comment>Add jitsWaitTimeout field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="jitsWaitTimeout" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
 </databaseChangeLog>
