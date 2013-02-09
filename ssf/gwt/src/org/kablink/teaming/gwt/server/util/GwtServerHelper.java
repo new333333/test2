@@ -3201,7 +3201,7 @@ public class GwtServerHelper {
 			}
 
 			// Does the user have rights to "Site Branding"
-			if ( isFilr == false && top != null && binderModule.testAccess( top, BinderOperation.modifyBinder ) )
+			if ( top != null && binderModule.testAccess( top, BinderOperation.modifyBinder ) )
 			{
 				// Yes
 				title = NLT.get( "administration.modifySiteBranding" );
@@ -3700,7 +3700,7 @@ public class GwtServerHelper {
 						brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_IMAGE );
 					}
 
-					if ( xmlStr != null )
+					if ( xmlStr != null && xmlStr.length() > 0 )
 					{
 						try
 			    		{
