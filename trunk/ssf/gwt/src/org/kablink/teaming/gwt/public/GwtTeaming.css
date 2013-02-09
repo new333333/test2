@@ -629,33 +629,33 @@
 	position: relative;
 }
 
-.shareThisDlg_HeaderImg
+.shareThisDlg_HeaderPanel img
 {
 	left: 0px;
-	margin-right: 5px;
 	position: absolute;
-	top: -8px;
+	top: -3px;
 }
 
 .shareThisDlg_HeaderNamePanel
 {
-	left: 50px;
-	position: absolute;
-	top: 6px;
+	margin-left: 55px;
 }
 
 .shareThisDlg_HeaderNameLabel
 {
-	font-size: 1.2em;
-	color: #333333;
+	font-size: 19px;
+	color: #1f1f1f;
+	padding-bottom: 2px;
+	width: 550px;
 }
 
 .shareThisDlg_HeaderPathLabel
 {
-	color: gray;
-	font-size: 0.75em;
-	line-height: 1.1em;
+	color: #505354;
+	font-size: 13px;
+	line-height: 17px;
 	padding-left: 2px;
+	width: 550px;
 }
 
 .shareThisDlg_NoteLabel
