@@ -841,6 +841,9 @@ public class EditBrandingDlg extends DlgBox
 			GwtBrandingDataExt.BrandingRule rule = GwtBrandingDataExt.BrandingRule.BRANDING_RULE_UNDEFINED;
 			
 			// Yes.  Get the branding rule.
+			if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
+				rule = GwtBrandingDataExt.BrandingRule.DISPLAY_SITE_BRANDING_ONLY;
+			
 			if ( m_ruleBinderOverridesRb.getValue() == true )
 				rule = GwtBrandingDataExt.BrandingRule.BINDER_BRANDING_OVERRIDES_SITE_BRANDING;
 			else if ( m_ruleBothSiteAndBinderBrandingRb.getValue() == true )
@@ -920,7 +923,7 @@ public class EditBrandingDlg extends DlgBox
 		updateSampleTextColor();
 		
 		// Are we dealing with site branding?
-		if ( brandingData.isSiteBranding() )
+		if ( brandingData.isSiteBranding() && GwtTeaming.m_requestInfo.isLicenseFilr() == false )
 		{
 			BrandingRule brandingRule;
 
