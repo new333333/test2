@@ -74,7 +74,9 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Integer auditTrailKeepDays;
 	private Integer changeLogsKeepDays;
 	private MobileAppsConfig mobileAppsConfig;
-	private Boolean jitsEnabled;
+	// If this is false, JITS is turned off on all binders regardless of their individual settings.
+	private Boolean jitsEnabled = Boolean.TRUE;
+	// This setting exists only on zones, not on individual binders.
     private Long jitsWaitTimeout; // in milliseconds
 
 	public ZoneConfig()
@@ -453,10 +455,10 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	}
 	
 	public boolean getJitsEnabled() {
-		if(jitsEnabled == null)
-			return SPropsUtil.getBoolean("nf.jits.enabled", true);
-		else
-			return fsaEnabled.booleanValue();
+    	if(jitsEnabled == null)
+    		return true;
+    	else
+    		return jitsEnabled.booleanValue();
 	}
 	public void setJitsEnabled(boolean jitsEnabled) {
 		this.jitsEnabled = Boolean.valueOf(jitsEnabled);

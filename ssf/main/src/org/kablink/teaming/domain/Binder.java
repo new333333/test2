@@ -33,7 +33,6 @@
 package org.kablink.teaming.domain;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -115,6 +114,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean indexContent = Boolean.TRUE;
     protected Boolean jitsEnabled = Boolean.TRUE; // Applicable only to mirrored folders
     protected Long jitsMaxAge; // in milliseconds
+    protected Long jitsAclMaxAge; // in milliseconds
     
     
     public Binder() {
@@ -152,6 +152,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 indexContent = source.indexContent;
 		 jitsEnabled = source.jitsEnabled;
 		 jitsMaxAge = source.jitsMaxAge;
+		 jitsAclMaxAge = source.jitsAclMaxAge;
      }
     /**
      * Return the zone id
@@ -793,7 +794,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     
     public boolean isJitsEnabled() {
     	if(jitsEnabled == null)
-    		return true;
+    		return SPropsUtil.getBoolean("nf.jits.enabled", true);
     	else
     		return jitsEnabled.booleanValue();
     }
@@ -807,8 +808,18 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		else 
 			return jitsMaxAge.longValue();
 	}
-	public void setJitsMaxAge(long jitsWaitTimeout) {
-		this.jitsMaxAge = Long.valueOf(jitsWaitTimeout);
+	public void setJitsMaxAge(long jitsMaxAge) {
+		this.jitsMaxAge = Long.valueOf(jitsMaxAge);
+	}
+    
+	public long getJitsAclMaxAge() {
+		if(jitsAclMaxAge == null)
+			return SPropsUtil.getLong("nf.jits.acl.max.age", 30000L);
+		else 
+			return jitsAclMaxAge.longValue();
+	}
+	public void setJitsAclMaxAge(long jitsAclMaxAge) {
+		this.jitsAclMaxAge = Long.valueOf(jitsAclMaxAge);
 	}
     
     /**
