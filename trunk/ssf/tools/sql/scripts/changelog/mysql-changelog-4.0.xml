@@ -632,4 +632,17 @@ update SS_Principals set foreignName=LOWER(foreignName);
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="75">
+        <createTable tableName="SS_BinderState">
+            <column name="binderId" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="lastSyncTime" type="DATETIME"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    
 </databaseChangeLog>

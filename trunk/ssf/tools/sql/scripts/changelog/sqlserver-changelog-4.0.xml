@@ -602,4 +602,14 @@ update SS_Principals set foreignName=LOWER(foreignName);
         </addColumn>
 	</changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="69">
+        <createTable schemaName="dbo" tableName="SS_BinderState">
+            <column name="binderId" type="NUMERIC(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_BinderState"/>
+            </column>
+            <column name="zoneId" type="NUMERIC(19,0)"/>
+            <column name="lastSyncTime" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    
 </databaseChangeLog>

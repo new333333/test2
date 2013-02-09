@@ -92,6 +92,7 @@
 	    <mapping resource="org/kablink/teaming/domain/BinderQuota.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/FolderEntryStats.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/OpenIDProvider.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/BinderState.hbm.xml"/>
 	    
 	    <!-- jbpms -->
 	    <mapping resource="org/jbpm/graph/action/Script.hbm.xml"/>
@@ -243,6 +244,7 @@
  		<class-cache class="org.kablink.teaming.security.function.Condition" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.security.function.WorkAreaFunctionMembership" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.OpenIDProvider" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.BinderState" usage="read-write"/>
  		
  		<collection-cache collection="org.kablink.teaming.domain.FileAttachment.fileVersions" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.domain.Binder.binders" usage="read-write"/>
