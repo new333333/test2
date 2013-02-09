@@ -814,7 +814,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     
 	public long getJitsAclMaxAge() {
 		if(jitsAclMaxAge == null)
-			return SPropsUtil.getLong("nf.jits.acl.max.age", 30000L);
+			return SPropsUtil.getLong("nf.jits.acl.max.age", 60000L);
 		else 
 			return jitsAclMaxAge.longValue();
 	}
