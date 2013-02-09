@@ -68,15 +68,15 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource filrBackgroundRepeat();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder.png")
+	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_folder.png")
 	public ImageResource folder();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder_36.png")
+	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_folder_36.png")
 	public ImageResource folder_medium();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder_48.png")
+	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_folder_48.png")
 	public ImageResource folder_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -90,19 +90,7 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/folder_home_48.png")
 	public ImageResource folderHome_large();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder_shared.png")
-	public ImageResource folderShared();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder_shared_36.png")
-	public ImageResource folderShared_medium();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder_shared_48.png")
-	public ImageResource folderShared_large();
-	
+		
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/android_logo_100.png")
 	public ImageResource logoAndroid();
