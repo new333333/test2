@@ -606,4 +606,14 @@ update SS_PRINCIPALS set FOREIGNNAME=LOWER(FOREIGNNAME);
         </addColumn>
 	</changeSet>
 	    
+    <changeSet author="jong" context="schema" failOnError="true" id="70">
+        <createTable tableName="SS_BINDERSTATE">
+            <column name="BINDERID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_BINDERSTATE"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="LASTSYNCTIME" type="TIMESTAMP(6)"/>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>

@@ -77,6 +77,7 @@ import org.kablink.teaming.domain.AnyOwner;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
+import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.CustomAttributeListElement;
 import org.kablink.teaming.domain.Dashboard;
@@ -107,6 +108,7 @@ import org.kablink.teaming.domain.NoZoneByTheIdException;
 import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
+import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.SimpleName;
@@ -131,6 +133,7 @@ import org.kablink.util.Validator;
 import org.kablink.util.dao.hibernate.DynamicDialect;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateSystemException;
 
 /**
  * @author Jong Kim
@@ -485,6 +488,10 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			   			session.createQuery("DELETE org.kablink.teaming.domain.SimpleName where binderId=:binderId")
 			   				.setLong("binderId", binder.getId())
 			   				.executeUpdate();
+			   			//delete associated binder state
+			   			session.createQuery("DELETE org.kablink.teaming.domain.BinderState where binderId=:binderId")
+		   				.setLong("binderId", binder.getId())
+		   				.executeUpdate();
 	
 			   			if (entryClass != null) {
 			   				
@@ -2860,4 +2867,25 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		}
 	}
 
+	public BinderState loadBinderState(Long binderId) {
+		long begin = System.nanoTime();
+		try {
+			BinderState bs =(BinderState)getHibernateTemplate().get(BinderState.class, binderId);
+	   		if (bs == null) {
+	   			bs = new BinderState(binderId);
+	   			//quick write
+	   			try {
+	   				bs = (BinderState)this.saveNewSession(bs);
+	   			} catch (Exception ex) {
+	   				//contension?
+	   				bs =(BinderState)getHibernateTemplate().get(BinderState.class, binderId);
+	   			}
+	   		}
+	   		return bs;
+    	}
+    	finally {
+    		end(begin, "loadBinderState(Long)");
+    	}	        
+
+	}
  }

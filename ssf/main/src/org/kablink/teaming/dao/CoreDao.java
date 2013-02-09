@@ -44,6 +44,7 @@ import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
+import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.Dashboard;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -264,4 +265,6 @@ public interface CoreDao {
 	public int purgeChangeLogs(Long zoneId, Date purgeBeforeDate);
 
 	public boolean contains(Object obj);
+	
+	public BinderState loadBinderState(Long binderId);
 }
