@@ -26,6 +26,8 @@
     <property name="allowMobileAppsToSyncData" access="field"/>
     <property name="indexContent" access="field"/>
     <property name="jitsEnabled" access="field"/>
+    <property name="jitsMaxAge" access="field"/>
+    <property name="jitsAclMaxAge" access="field"/>
     <many-to-one name="parentBinder">
           <column name="parentBinder" index="owningBinder_Binder"/>
     </many-to-one>

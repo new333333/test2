@@ -593,4 +593,13 @@ update SS_Principals set foreignName=LOWER(foreignName);
         </addColumn>
 	</changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="68">
+        <comment>Add jitsAclMaxAge field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="jitsAclMaxAge" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
 </databaseChangeLog>
