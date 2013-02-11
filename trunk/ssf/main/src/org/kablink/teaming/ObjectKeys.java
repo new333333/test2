@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -69,9 +69,10 @@ public interface ObjectKeys {
 	public static final String DEFAULT_TEMPLATE_NAME_WIKI="_folder_wiki";
 	public static final String DEFAULT_TEMPLATE_NAME_LIBRARY = "_folder_library";
 	public static final String DEFAULT_TEMPLATE_NAME_MIRRORED_FILE = "_folder_mirrored_file";
+	public static final String DEFAULT_TEMPLATE_NAME_FILR_NETFOLDER_FILE = "_folder_filr_netfolder";
 		
 	// reserved internalIds for Definitions (not necessarily databaseId cause of multi-zone support)
-	//Used only to locate a minimual set of definitions if something isn't configured correctly
+	//Used only to locate a minimal set of definitions if something isn't configured correctly
 	public static final String DEFAULT_FOLDER_DEF="402883b90cc53079010cc539bf260001";
 	public static final String DEFAULT_FOLDER_ENTRY_DEF="402883b90cc53079010cc539bf260002";
 	public static final String DEFAULT_WORKSPACE_DEF="402883b90cc53079010cc539bf260005";
@@ -115,6 +116,7 @@ public interface ObjectKeys {
 	public static final String DEFAULT_WORKSPACE_WELCOME_CONFIG="402883b90d0de1f3010d0df5582b0016";
 	public static final String DEFAULT_FOLDER_FILR_ROOT_CONFIG="402883b90d0de1f3010d0df5582b0032";
 	public static final String DEFAULT_FOLDER_FILR_HOME_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0040";
+	public static final String DEFAULT_FOLDER_FILR_NET_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0048";
 	
 	//reserved internalIds for binders
 	public static final String PROFILE_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0005";

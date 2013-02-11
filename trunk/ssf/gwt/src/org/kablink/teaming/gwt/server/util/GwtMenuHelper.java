@@ -489,7 +489,7 @@ public class GwtMenuHelper {
 						if (tb.getEntryDefId().equals(fedId)) {
 							// Yes!  Save its ID.
 							if (tb.getInternalId().equals(ObjectKeys.DEFAULT_FOLDER_FILR_ROOT_CONFIG)) {
-								tb = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_MIRRORED_FILE);
+								tb = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_FILR_NETFOLDER_FILE);
 								folderTemplateId = ((null == tb) ? null : tb.getId());
 							}
 							else {
