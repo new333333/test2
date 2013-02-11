@@ -1043,7 +1043,7 @@ public class GwtShareHelper
 		}
 		catch ( Exception ex )
 		{
-			m_logger.error( "sharingModule.getShareItems() failed: " + ex.toString() );
+			m_logger.error( "In getHighestEntityShareRights(), sharingModule.getShareItems() failed: " + ex.toString() );
 		}
 
 		// Has the given entity been shared with the current user?
@@ -1687,20 +1687,19 @@ public class GwtShareHelper
 				HashMap<String,EntityId> entityIdMap;
 				
 				entityIdMap = new HashMap<String,EntityId>();
-				listOfEntityIds = new ArrayList<EntityId>();
 				
-				listOfEntityIds = new ArrayList<EntityId>( entityIdMap.values() );
-
 				// Consolidate shares with "guest" and "all users" into 1 "public" share.
 				listOfGwtShareItems = consolidatePublicShareItems( ami, listOfGwtShareItems );
 
-				// Create a list of the ids of the entities we found a share for.
+				// Add each share to the results
 				for ( GwtShareItem nextGwtShareItem : listOfGwtShareItems )
 				{
 					EntityId entityId;
 					
+					// Add the share to the results
 					sharingInfo.addShareItem( nextGwtShareItem );
 					
+					// Get the id of the entity being shared.
 					entityId = nextGwtShareItem.getEntityId();
 					if ( entityId != null )
 					{
@@ -1709,10 +1708,18 @@ public class GwtShareHelper
 						key = entityId.getEntityIdString();
 						if ( entityIdMap.containsKey( key ) == false )
 						{
+							ShareRights shareRights;
+							
 							entityIdMap.put( key, entityId );
+
+							// Get the highest share rights the logged-in user has to this entity
+							shareRights = getHighestEntityShareRights( ami, entityId );
+							sharingInfo.setEntityShareRights( entityId, shareRights );
 						}
 					}
 				}
+
+				listOfEntityIds = new ArrayList<EntityId>( entityIdMap.values() );
 			}
 		}
 		
