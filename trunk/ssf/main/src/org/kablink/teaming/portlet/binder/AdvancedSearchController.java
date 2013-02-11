@@ -219,7 +219,11 @@ public class AdvancedSearchController extends AbstractBinderController {
 	public void addPropertiesForFolderView(Map model) {
     	User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
-		model.put(WebKeys.USER_PROPERTIES, userProperties);
+		if (userProperties != null) {
+			model.put(WebKeys.USER_PROPERTIES, userProperties);
+		} else {
+			model.put(WebKeys.USER_PROPERTIES, new HashMap());
+		}
 		if (!model.containsKey(WebKeys.SEEN_MAP)) 
 			model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(user.getId()));
     	
