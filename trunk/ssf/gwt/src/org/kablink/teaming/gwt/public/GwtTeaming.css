@@ -629,24 +629,25 @@
 	position: relative;
 }
 
-.shareThisDlg_HeaderPanel img
+.shareThisDlg_HeaderImg
 {
 	left: 0px;
+	margin-right: 5px;
 	position: absolute;
-	top: -3px;
+	top: -5px;
 }
 
 .shareThisDlg_HeaderNamePanel
 {
-	margin-left: 55px;
+	left: 55px;
+	position: absolute;
+	top: 6px;
 }
 
 .shareThisDlg_HeaderNameLabel
 {
-	font-size: 19px;
+	font-size: 1.2em;
 	color: #1f1f1f;
-	padding-bottom: 2px;
-	width: 550px;
 }
 
 .shareThisDlg_HeaderPathLabel
@@ -655,7 +656,6 @@
 	font-size: 13px;
 	line-height: 17px;
 	padding-left: 2px;
-	width: 550px;
 }
 
 .shareThisDlg_NoteLabel
