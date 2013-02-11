@@ -144,7 +144,7 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 				    ><ssf:userTitle user="${ss_presence_user}" /></span></a>
 				</c:if>
 				<c:if test="${empty ss_presence_user.workspaceId}">
-					<c:if test="${!empty ss_presence_user.parentBinder.id}">
+					<c:if test="${!empty ss_presence_user.parentBinder.id && ss_canAccessProfilesBinder}">
 						<a
 							<c:if test="${!empty ss_presence_target}">target="${ss_presence_target}"</c:if>
 							href="<ssf:url     
@@ -158,7 +158,7 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 							class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle
 							user="${ss_presence_user}" /></span> </a>
 					</c:if>
-					<c:if test="${empty ss_presence_user.parentBinder.id}">
+					<c:if test="${empty ss_presence_user.parentBinder.id || !ss_canAccessProfilesBinder}">
 						<span id="${ss_presence_user.id}"
 							class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle
 							user="${ss_presence_user}" /></span>

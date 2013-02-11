@@ -98,8 +98,8 @@
 			  	</c:choose>	
          	  </c:if>
          	  <c:if test="${empty ss_showUserUser.workspaceId || ss_showUserProfileEntry}">
-         	    <c:if test="${!empty ss_showUserUser.parentBinder.id}">
-          	      <a href="<ssf:url     
+         	    <c:if test="${!empty ss_showUserUser.parentBinder.id && ss_canAccessProfilesBinder}">
+          	      xxxxxxxxxxxxxxx<a href="<ssf:url     
 				    binderId="${ss_showUserUser.parentBinder.id}" 
 				    action="view_profile_entry" 
 				    entryId="${ss_showUserUser.id}"><ssf:param 
@@ -111,8 +111,8 @@
             	      ><ssf:userTitle user="${ss_showUserUser}" /></span>
             	  </a>
                 </c:if>		  	
-         	    <c:if test="${empty ss_showUserUser.parentBinder.id}">
-				      <span id="${ss_showUserUser.id}" 
+         	    <c:if test="${empty ss_showUserUser.parentBinder.id || !ss_canAccessProfilesBinder}">
+				      zzzzzzzzzzz<span id="${ss_showUserUser.id}" 
             	       class="${ss_showUserTitleStyle} ss_muster_users"><ssf:userTitle user="${ss_showUserUser}" /></span>
                 </c:if>		  	
               </c:if>		  	
@@ -150,8 +150,8 @@
 			    </c:if>
 			  </c:if>
 			  <c:if test="${empty ss_showUserUser.workspaceId || ss_showUserProfileEntry}">
-			    <c:if test="${!empty ss_showUserUser.parentBinder.id}">
-          	      <a href="<ssf:url     
+			    <c:if test="${!empty ss_showUserUser.parentBinder.id && ss_canAccessProfilesBinder}">
+          	      aaaaaaaaaaa<a href="<ssf:url     
 				    binderId="${ss_showUserUser.parentBinder.id}" 
 				    action="view_profile_entry" 
 				    entryId="${ss_showUserUser.id}"><ssf:param 
@@ -162,8 +162,8 @@
 				      class="${ss_showUserTitleStyle} ss_muster_users"><ssf:userTitle user="${ss_showUserUser}"/></span>
 				  </a>
 			    </c:if>
-			    <c:if test="${empty ss_showUserUser.parentBinder.id}">
-				    <span id="${ss_showUserUser.id}"  
+			    <c:if test="${empty ss_showUserUser.parentBinder.id || !ss_canAccessProfilesBinder}">
+				    bbbbbbbbbbbbbb<span id="${ss_showUserUser.id}"  
 				      class="${ss_showUserTitleStyle} ss_muster_users"><ssf:userTitle user="${ss_showUserUser}"/></span>
 			    </c:if>
 			  </c:if>

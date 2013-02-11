@@ -462,13 +462,14 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 			    	  									<ssf:param name="profile" value="1"/>
 			    	  								</ssf:url>
 			    	  							  </c:if>
-												  <c:if test="${empty entry._workspaceId}">
-													javascript:alert('<ssf:escapeJavaScript><ssf:nlt 
-													  tag="workspace.noUserWorkspace"/></ssf:escapeJavaScript>');return false;
-			    	  							  </c:if>
 												</c:if>
 												
 											</ssf:param>
+											<c:if test="${empty entry._workspaceId}">
+											  <ssf:param name="onClick" 
+											    useBody="true">alert('<ssf:escapeJavaScript><ssf:nlt 
+												  tag="workspace.noUserWorkspace"/></ssf:escapeJavaScript>');return false;</ssf:param>
+		    	  							</c:if>
 									    	<c:out value="${entry.title}"/>
 										</ssf:titleLink>
 	
@@ -486,7 +487,8 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 							</div>
 							<div class="ss_clear">&nbsp;</div>
 							<div id="details_${status.count}" class="ss_entryDetails">
-								<p><ssf:showUser user="${entry._principal}" />
+								<p>
+								<ssf:showUser user="${entry._principal}" />
 								   <span class="ss_search_results_entry_date"><fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></span>
 								</p>
 							</div>

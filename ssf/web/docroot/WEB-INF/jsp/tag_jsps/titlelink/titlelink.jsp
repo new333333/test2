@@ -58,6 +58,7 @@ String seenStyle = ParamUtil.get(request, "seenStyle", "");
 String seenStyleFine = ParamUtil.get(request, "seenStyleFine", "class=\"ss_light\"");
 String namespace = ParamUtil.get(request, "namespace", "");
 String url = ParamUtil.get(request, "url", "");
+String onClick = ParamUtil.get(request, "onClick", "");
 String isDashboard = ParamUtil.get(request, "isDashboard", "no");
 String useBinderFunction = ParamUtil.get(request, "useBinderFunction", "no");
 String dashboardType = ParamUtil.get(request, "dashboardType", "");
@@ -79,7 +80,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	</ssHelpSpot>
 </c:if><c:set 
   var="ss_menuLinkHelpShown" value="1" scope="request"/><a href="<%= url %>" 
-<% if ( useBinderFunction.equals("no") ) {  %>
+<% 
+if (!"".equals(onClick)) {
+	%> onClick="<%= onClick %>" <%
+}
+
+if ( useBinderFunction.equals("no") ) {  %>
 	onClick="ss_loadEntryFromMenu(this,  '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= namespace %>', '<%= isDashboard %>', '<%= isFile %>');return false;" 
 <% } else if (useBinderFunction.equals("permalink")) { %>
 	onClick="return ss_gotoPermalink('<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', 'yes');" 
@@ -110,7 +116,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			</c:otherwise>
 		</c:choose>
 		href="javascript:;" onClick="return ss_gotoPermalink('<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', 'yes');"
-	<% } %>
+	<% } 
+	%>
+	
 ><c:if test='<%= (title == null || title.equals("")) %>'>
 <span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>
 <% } %>

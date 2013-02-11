@@ -3854,7 +3854,7 @@ public class BinderHelper {
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(currentUser.getId());
 		if (userProperties != null) {
 			Map properties = userProperties.getProperties();
-			if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			if (properties != null && properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
 				Map queries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
 				result.put(WebKeys.SEARCH_SAVED_QUERIES, queries.keySet());
 			}

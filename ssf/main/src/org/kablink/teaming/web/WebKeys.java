@@ -1421,6 +1421,7 @@ public class WebKeys {
     public static final String SHOW_GROUP_SHOW_PRESENCE="ss_showGroupShowPresence";
     public static final String SHOW_GROUP_GROUP_MEMBERS="ss_showGroupGroupMembers";
     public static final String SHOW_GROUP_INSTANCE_COUNT="ss_showGroupInstanceCount";
+    public static final String SHOW_USER_CAN_ACCESS_PROFILES_BINDER="ss_canAccessProfilesBinder";
     public static final String SHOW_USER_CLOSE="ss_showUserClose";
     public static final String SHOW_USER_SHOW_HINT="ss_showUserShowHint";
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
