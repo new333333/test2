@@ -633,7 +633,7 @@
 .shareThisDlg_HeaderPanel img
 {
 	position: absolute;
-	top: -5px;
+	top: -3px;
 }
 
 .shareThisDlg_HeaderNamePanel
@@ -5177,9 +5177,10 @@ td.datePickerMonth {
 
 .editZoneShareRightsDlg_SelectPrincipalsHint
 {
-	color: #4D6D8B;
-	font-size: 1em;
-	margin-bottom: 0.5em;
+	display: inline-block;
+	color: #505354;
+	font-size: 14px;
+	margin-bottom: 15px;
 }
 
 .zoneShareRightsSelectPrincipalsWidget_PrincipalsTablePanelHeight
