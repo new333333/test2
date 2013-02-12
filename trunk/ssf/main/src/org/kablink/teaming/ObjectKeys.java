@@ -625,6 +625,7 @@ public interface ObjectKeys {
 	public static final String INPUT_OPTION_DELETE_MIRRORED_FOLDER_SOURCE = "org.kablink.teaming.options.delete.userworkspace.mirrored.folder.source";
 	//migration flags
 	public static final String INPUT_OPTION_NO_INDEX="org.kablink.teaming.options.no_indexing";
+	public static final String INPUT_OPTION_NO_FILE_CONTENT_INDEX="org.kablink.teaming.options.no_file_content_indexing";
     public static final String INPUT_OPTION_NO_WORKFLOW="org.kablink.teaming.options.no_workflow_processing";
     public static final String INPUT_OPTION_CREATION_NAME="org.kablink.teaming.options.entity.creation.name";
     public static final String INPUT_OPTION_CREATION_ID="org.kablink.teaming.options.entity.creation.id";

@@ -84,4 +84,6 @@ public interface EntryProcessor extends BinderProcessor {
 	public List<FolderEntry> _addNetFolderEntriesInSync(Folder folder, Definition def, 
 			List<InputDataAccessor> inputDataList, List<Map> fileItemsList, List<Map> optionsList) 
     	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException;
+    public org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
+	(Binder binder, Entry entry, FileAttachment fa, Collection tags, boolean skipFileContentIndexing);
  }

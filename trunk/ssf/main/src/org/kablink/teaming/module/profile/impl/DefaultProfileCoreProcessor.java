@@ -299,12 +299,12 @@ protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAcces
    @Override
 protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
    		InputDataAccessor inputData, List fileUploadItems, 
-   		Collection<FileAttachment> filesToIndex, Map ctx) {
+   		Collection<FileAttachment> filesToIndex, boolean skipFileContentIndexing, Map ctx) {
 	   if((entry instanceof Group) && ((Group)entry).isLdapContainer())
 		   return; // Do NOT index container group
 	   //index self
 	   super.modifyEntry_indexAdd(binder, entry, 
-		   		inputData, fileUploadItems, filesToIndex, ctx);
+		   		inputData, fileUploadItems, filesToIndex, skipFileContentIndexing, ctx);
 /* Only needed if index group membership
  * 	   if ((entry instanceof Group) && ctx.containsKey(ObjectKeys.FIELD_GROUP_MEMBERS)) {
 		   Group g = (Group)entry;
@@ -688,7 +688,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
         		if (result1 || result2) return Boolean.TRUE;
         		return Boolean.FALSE;
         	}});
-	    if (changed.equals(Boolean.TRUE)) modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null, ctx);		
+	    if (changed.equals(Boolean.TRUE)) modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null, false, ctx);		
 		
 	}
 	protected void syncEntry_setCtx(Entry entry, Map ctx) {
@@ -769,7 +769,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	    	Map.Entry mEntry = (Map.Entry)i.next();
 	    	Entry entry = (Entry)mEntry.getKey();
 	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
-	    	modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null, null);
+	    	modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null, false, null);
 	    	
 	    	// Add this entry to the sync results.
 	    	if ( syncResults != null && entry instanceof Principal )

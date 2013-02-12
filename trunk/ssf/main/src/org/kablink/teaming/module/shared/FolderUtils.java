@@ -104,7 +104,7 @@ public class FolderUtils {
 	public static FolderEntry createLibraryEntry(Folder folder, String fileName,
 			InputStream content, Date modDate, String expectedMd5, boolean synchToSourceIfMirrored)
 					throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
-		return createLibraryEntry(folder, fileName, content, null, null, modDate, expectedMd5, synchToSourceIfMirrored, null);
+		return createLibraryEntry(folder, fileName, content, null, null, modDate, expectedMd5, synchToSourceIfMirrored, null, null);
 	}
 	
 	/**
@@ -122,11 +122,11 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	public static FolderEntry createLibraryEntry(Folder folder, String fileName,
-			InputStream content, Long contentLength, Long creatorId, Date modDate, String expectedMd5, boolean synchToSourceIfMirrored, Boolean skipParentModtimeUpdate)
+			InputStream content, Long contentLength, Long creatorId, Date modDate, String expectedMd5, boolean synchToSourceIfMirrored, Boolean skipParentModtimeUpdate, Boolean skipFileContentIndexing)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		if(folder.isLibrary()) {
 			if(folder.isMirrored()) {
-				return createMirroredEntry(folder, fileName, content, contentLength, creatorId, modDate, expectedMd5, synchToSourceIfMirrored, skipParentModtimeUpdate);
+				return createMirroredEntry(folder, fileName, content, contentLength, creatorId, modDate, expectedMd5, synchToSourceIfMirrored, skipParentModtimeUpdate, skipFileContentIndexing);
 			}
 			else {
 				return createNonMirroredEntry(folder, fileName, content, contentLength, modDate, expectedMd5, skipParentModtimeUpdate);
@@ -150,12 +150,12 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	public static void modifyLibraryEntry(FolderEntry entry, String fileName,
-			InputStream content, Long contentLength, Date modDate, String expectedMd5, boolean synchToSourceIfMirrored)
+			InputStream content, Long contentLength, Date modDate, String expectedMd5, boolean synchToSourceIfMirrored, Boolean skipFileContentIndexing)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Folder folder = entry.getParentFolder();
 		if(folder.isLibrary()) {
 			if(folder.isMirrored()) {
-				modifyMirroredEntry(entry, fileName, content, contentLength, modDate, expectedMd5, synchToSourceIfMirrored);
+				modifyMirroredEntry(entry, fileName, content, contentLength, modDate, expectedMd5, synchToSourceIfMirrored, skipFileContentIndexing);
 			}
 			else {
 				modifyNonMirroredEntry(entry, fileName, content, contentLength, modDate, expectedMd5);
@@ -375,7 +375,7 @@ public class FolderUtils {
 	}
 	
 	private static FolderEntry createMirroredEntry(Folder folder, String fileName, 
-			InputStream content, Long contentLength, Long creatorId, Date modDate, String expectedMd5, boolean synchToSource, Boolean skipParentModtimeUpdate)
+			InputStream content, Long contentLength, Long creatorId, Date modDate, String expectedMd5, boolean synchToSource, Boolean skipParentModtimeUpdate, Boolean skipFileContentIndexing)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
@@ -408,6 +408,8 @@ public class FolderUtils {
 		}
 		if(skipParentModtimeUpdate != null)
 			options.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, skipParentModtimeUpdate);
+		if(skipFileContentIndexing != null)
+			options.put(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX, skipFileContentIndexing);
 		
 		Map fileItems = new HashMap(); // Map of element names to file items	
 		fileItems.put(elementNameAndRepository[0], mf); // single file item
@@ -461,7 +463,7 @@ public class FolderUtils {
 	}
 	
 	private static void modifyMirroredEntry(FolderEntry entry, String fileName, 
-			InputStream content, Long contentLength, Date modDate, String expectedMd5, boolean synchToSource)
+			InputStream content, Long contentLength, Date modDate, String expectedMd5, boolean synchToSource, Boolean skipFileContentIndexing)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Folder folder = entry.getParentFolder();
 		
@@ -486,8 +488,14 @@ public class FolderUtils {
 		if(elementNameAndRepository[1] != null)
 			data.put(elementNameAndRepository[1], ObjectKeys.FI_ADAPTER);
 	
+		Map options = null;
+		if(skipFileContentIndexing != null) {
+			options = new HashMap();
+			options.put(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX, skipFileContentIndexing);
+		}
+
 		getFolderModule().modifyEntry(folder.getId(), entry.getId(), 
-				new MapInputData(data), fileItems, null, null, null);
+				new MapInputData(data), fileItems, null, null, options);
 	}
 
 	private static String getDefinitionElementNameForNonMirroredFile(Definition definition) 
