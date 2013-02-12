@@ -517,6 +517,7 @@
 		text-decoration:none;	
 		white-space: nowrap;
 		text-align: center !important;
+		min-width: 20px;
 		border-radius: 5px;
 		-moz-border-radius: 5px;
 		-webkit-border-radius: 5px;
