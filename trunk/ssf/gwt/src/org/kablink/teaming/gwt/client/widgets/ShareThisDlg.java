@@ -1356,7 +1356,7 @@ public class ShareThisDlg extends DlgBox
 			// On IE calling m_cellFormatter.setWidth( row, col, "*" ); throws an exception.
 			// That is why we are calling DOM.setElementAttribute(...) instead.
 			//mainCellFormatter.setWidth( row, 1, "*" );
-			DOM.setElementAttribute( mainCellFormatter.getElement( row, 1 ), "width", "100%" );
+			DOM.setElementAttribute( mainCellFormatter.getElement( row, 1 ), "width", "*" );
 			
 			// Add an "add external user" image.
 			{
