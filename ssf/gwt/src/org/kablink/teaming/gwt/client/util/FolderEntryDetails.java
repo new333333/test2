@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -54,6 +54,8 @@ public class FolderEntryDetails implements IsSerializable {
 	private boolean						m_top;					// true -> The entry is a top level entry.  false -> It's a comment.
 	private CommentsInfo				m_comments;				// Information about the comments on the entry.
 	private EntityId					m_entityId;				// The folder entry to view.
+	private int							m_contentImageHeight;	// If m_contentIsImage is true, the height of the images.
+	private int							m_contentImageWidth;	// If m_contentIsImage is true, the width  of the images.
 	private List<ToolbarItem>			m_toolbarItems;			// List<ToolbarItem> of the toolbar items for entry entry view's menu.
 	private List<ViewFolderEntryInfo>	m_commentBreadCrumbs;	// List<ViewFolderEntryInfo> of the break crumb links for a comment entry.
 	private String						m_desc;					// The entry description.
@@ -156,6 +158,8 @@ public class FolderEntryDetails implements IsSerializable {
 	public boolean                   isHtmlViewable()         {return (null != m_htmlView);  }
 	public CommentsInfo              getComments()            {return m_comments;            }
 	public EntityId                  getEntityId()            {return m_entityId;            }
+	public int                       getContentImageHeight()  {return m_contentImageHeight;  }
+	public int                       getContentImageWidth()   {return m_contentImageWidth;   }
 	public List<ToolbarItem>         getToolbarItems()        {return m_toolbarItems;        }
 	public List<ViewFolderEntryInfo> getCommentBreadCrumbs()  {return m_commentBreadCrumbs;  }
 	public String                    getDesc()                {return m_desc;                }
@@ -183,6 +187,8 @@ public class FolderEntryDetails implements IsSerializable {
 	public void setTop(                 boolean                   top)                    {m_top                  = top;                   }
 	public void setComments(            CommentsInfo              comments)               {m_comments             = comments;              }
 	public void setEntityId(            EntityId                  entityId)               {m_entityId             = entityId;              }
+	public void setContentImageHeight(  int                       contentImageHeight)     {m_contentImageHeight   = contentImageHeight;    }
+	public void setContentImageWidth(   int                       contentImageWidth)      {m_contentImageWidth    = contentImageWidth;     }
 	public void setToolbarItems(        List<ToolbarItem>         toolbarItems)           {m_toolbarItems         = toolbarItems;          }
 	public void setCommentBreadCrumbs(  List<ViewFolderEntryInfo> commentBreadCrumbItems) {m_commentBreadCrumbs   = commentBreadCrumbItems;}
 	public void setDesc(                String                    desc)                   {m_desc                 = desc;                  }
