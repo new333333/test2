@@ -113,6 +113,7 @@ import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.EntryBuilder;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.module.template.TemplateModule;
@@ -512,6 +513,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		if(binder.isMirrored()) { // The newly created binder is a mirrored one.
 			// Make sure that the resource path we store is normalized.
 	    	normalizeResourcePathIfInInput(binder, inputData);
+	    	binder.setResourceDriverName(parent.getResourceDriverName());
 						
 	    	if(binder.getResourceDriverName() != null) {
 				ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
@@ -1277,14 +1279,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			else {
 					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
 							+ "] because the source is not top-level mirrored and the destination is not mirrored");
-		      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});  				
+		      		throw new NotSupportedException("errorcode.notsupported.moveBinderMirroredToNonMirrored");  				
     			}
     		}
     		else { // top-level mirrored
     			if(destination.isMirrored()) {
 					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
 							+ "] because the source is top-level mirrored and the destination is already mirrored");
-		      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
+		      		throw new NotSupportedException("errorcode.notsupported.moveBinderTopMirroredDestinationMirrored");
     			}
     			else {
     				// Does not involve resource moving.
@@ -1399,80 +1401,30 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	copyBinder_setCtx(source, destination, ctx);
 		//Make sure there is no other binder with the same name in the parent.
      	String newTitle = BinderHelper.getUniqueBinderTitleInParent(source.getTitle(), destination, (options==null)?null:(String)options.get(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE));
-     	final Binder binder = copyBinder_create(source, ctx);
-    	if (!newTitle.equals(binder.getTitle())) {
-    		//There was a conflict, so update the title and the normalized title
-    		binder.setTitle(newTitle);
-    	}
-     	copyBinder_adjustForMirroredFolder(binder, destination);
-        // The following part requires update database transaction.
-        getTransactionTemplate().execute(new TransactionCallback() {
-        	@Override
-			public Object doInTransaction(TransactionStatus status) {
-                //need to set entry/binder information before generating file attachments
-                //Attachments/Events need binder info for AnyOwner
-        		copyBinder_fillIn(source, destination, binder, ctx);
-                                
-                copyBinder_preSave(source, destination, binder, ctx);      
-
-                copyBinder_save(source, destination, binder, ctx);      
-                
-                copyBinder_postSave(source, destination, binder, ctx);
-                //register title for uniqueness for webdav; always ensure binder titles are unique in parent
-                getCoreDao().updateFileName(binder.getParentBinder(), binder, null, binder.getTitle());
-                if (binder.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(binder.getParentBinder(), binder, null, binder.getNormalTitle());
-                return null;
-        	}
-        });
- 		copyBinder_index(binder, ctx);
+     	final Binder binder = copyBinder_create(source, destination, newTitle, ctx);
  		return binder;
     }
     //no transaction    
     protected void copyBinder_setCtx(Binder source, Binder destination, Map ctx) {
     }
     //no transaction - should be overridden 
-   protected Binder copyBinder_create(Binder source, Map ctx) {
-	   Class params[] = new Class[] {source.getClass()};
-	   try {
-		   Constructor construct = source.getClass().getConstructor(params);
-		   return (Binder)construct.newInstance(new Object[]{source});
-	   } catch (Exception ex) {
+	protected Binder copyBinder_create(Binder source, Binder destination, String title, Map ctx) {
+	   Binder sampleBinder = source;
+	   if (destination.isAclExternallyControlled() || destination.isMirrored()) {
+		   //When the destination is a remote disk folder, make the new binder the same type as the destination
+		   sampleBinder = destination;
 	   }
-	   try {
-		   return source.getClass().newInstance();
-	   } catch (Exception ex) {
-		   return null;
-	   }
+       Map data = new HashMap();
+       data.put("title", title);
+       InputDataAccessor inputData = new MapInputData(data);
+       Binder binder = null;
+       try {
+			binder = addBinder(destination, sampleBinder.getEntryDef(), sampleBinder.getClass(), inputData, null, null);
+       } catch (Exception e) {}
+       
+       return binder;
+   }
 
-   }
-   // no transaction
-   protected Binder copyBinder_adjustForMirroredFolder(Binder newBinder, Binder destinationParent) {
-	   if(newBinder.isMirrored()) {
-		   // This means the source binder being copied is a mirrored folder.
-		   // Also, in the current implementation, the destination parent can never be a mirrored folder,
-		   // that is, we do not support copying of a binder of any type into a mirrored folder.
-		   // Consequently, we want the copy of the mirrored folder to be a regular file folder.
-		   // Since the copy and the original will be of two different types of folders, there are certain 
-		   // attributes of the source that we can't maintain on the copy.
-		   newBinder.setMirrored(false);
-		   newBinder.setResourceDriverName(null);
-		   newBinder.setResourcePath(null);
-		   newBinder.setDefinitions(null);
-		   newBinder.setWorkflowAssociations(null);
-		   Definition libraryFolderDef = definitionModule.getDefinitionByReservedId(ObjectKeys.DEFAULT_LIBRARY_FOLDER_DEF);
-		   if(libraryFolderDef != null)
-			   newBinder.setEntryDef(libraryFolderDef);
-		   TemplateBinder libraryTemplate = getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY);
-		   if(libraryTemplate != null) {
-			   if(!newBinder.isDefinitionsInherited()) {
-				   newBinder.setDefinitions(libraryTemplate.getDefinitions());
-				   newBinder.setWorkflowAssociations(libraryTemplate.getWorkflowAssociations());
-			   }
-			   newBinder.setIconName(libraryTemplate.getIconName());
-		   }
-	   }
-	   return newBinder;
-   }
    //inside write transaction    
    protected void copyBinder_fillIn(Binder source, Binder parent, Binder binder, Map ctx) {  
        binder.setLogVersion(Long.valueOf(1));
