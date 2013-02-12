@@ -850,7 +850,7 @@
 .groupMembershipPopup
 {
 	font-size: 14px;
-	background-color: #EBECA5;
+	background-color: #fafad5;
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
@@ -3573,7 +3573,7 @@ top:100px;
 .gwtTaskList_processActive
 {
 	font-size: 14px;
-	background-color: #EBECA5;
+	background-color: #fafad5;
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
@@ -4465,7 +4465,7 @@ td.datePickerMonth {
 	padding-bottom: 12px;
 }
 
-.vibe-hoverHint      {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #f6f6f6; width: auto; -moz-border-radius: 6px; border-radius: 6px; -webkit-border-radius: 6px; }
+.vibe-hoverHint      {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #fafad5; width: auto; -moz-border-radius: 6px; border-radius: 6px; -webkit-border-radius: 6px; }
 .vibe-hoverHintLabel {font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #1f1f1f; line-height: 1.4em;}
 
 /* End */
