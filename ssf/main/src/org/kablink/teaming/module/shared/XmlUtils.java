@@ -50,10 +50,12 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
 
 
@@ -235,7 +237,8 @@ public class XmlUtils {
 	 //convert principal names to real principals
 	 public static void getTeamMembersFromXml(Binder binder, Element config, CommonDependencyInjection ci) {
 		 List<Element> teamElements = config.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_PROPERTY + "[@name='" + ObjectKeys.XTAG_BINDER_TEAMMEMBER_NAME + "']");
-		 binder.setTeamMemberIds(namesToIds(teamElements, ci));
+		 BinderModule getBinderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
+		 getBinderModule.setTeamMembers(binder.getId(), namesToIds(teamElements, ci));
 	 }
 	protected static Set namesToIds(List<Element>nameAttributes, CommonDependencyInjection ci) {
 		Set<String> names = new HashSet();

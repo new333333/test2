@@ -106,6 +106,7 @@ import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.util.TagObject;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
@@ -209,6 +210,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	protected BinderModule getBinderModule() {
 		// Can't use IoC due to circular dependency
 		return (BinderModule) SpringContextUtil.getBean("binderModule");
+	}
+
+	protected AdminModule getAdminModule() {
+		// Can't use IoC due to circular dependency
+		return (AdminModule) SpringContextUtil.getBean("adminModule");
 	}
 
 	protected ProfileModule getProfileModule() {
@@ -1362,23 +1368,35 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		Binder sourceParent = source.getParentBinder();
 		checkAccess(source, BinderOperation.moveBinder);
 		Binder destination = loadBinder(toId);
-		if (loadBinderProcessor(source).checkMoveBinderQuota(source, destination)) {
-			if (source.getEntityType().equals(EntityType.folder)) {
-				getAccessControlManager().checkOperation(destination,
-						WorkAreaOperation.CREATE_FOLDERS);
-			} else {
-				getAccessControlManager().checkOperation(destination,
-						WorkAreaOperation.CREATE_WORKSPACES);
-			}
-			// move whole tree at once
-			loadBinderProcessor(source).moveBinder(source, destination, options);
-			
-			updateModificationTimeIfNecessary(sourceParent, options);
-			if(sourceParent != destination)
-				updateModificationTimeIfNecessary(destination, options);
+		
+		//See if moving from a regular folder to a mirrored folder
+		if (!source.isMirrored() && destination.isMirrored()) {
+			//This is a special case move. Do it by copying the folder then deleting it
+			Binder copiedBinder = copyBinder(fromId, toId, true, options);
+			//Note that if the delete fails, the copied binder will still remain
+			//However, some of the original source binders may also be left behind
+			//It was felt that it is better to leave everything to the user to clean up.
+			deleteBinder(source.getId(), false, null);
 			
 		} else {
-			throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
+			if (loadBinderProcessor(source).checkMoveBinderQuota(source, destination)) {
+				if (source.getEntityType().equals(EntityType.folder)) {
+					getAccessControlManager().checkOperation(destination,
+							WorkAreaOperation.CREATE_FOLDERS);
+				} else {
+					getAccessControlManager().checkOperation(destination,
+							WorkAreaOperation.CREATE_WORKSPACES);
+				}
+				// move whole tree at once
+				loadBinderProcessor(source).moveBinder(source, destination, options);
+				
+				updateModificationTimeIfNecessary(sourceParent, options);
+				if(sourceParent != destination)
+					updateModificationTimeIfNecessary(destination, options);
+				
+			} else {
+				throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
+			}
 		}
 	}
 
@@ -1401,6 +1419,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     		if (!source.isAclExternallyControlled() && destinationParent.isAclExternallyControlled()) {
     			//This type of request could have invalid entries, so check each one
     			Map getEntriesOptions = new HashMap();
+				//Specify if this request is to copy children binders, too.
+    			getEntriesOptions.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, new Boolean(cascade));
           		Map folderEntries = getFolderModule().getEntries(source.getId(), getEntriesOptions);
     	      	List<Map> searchEntries = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 
@@ -2018,6 +2038,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		checkAccess(binder, BinderOperation.manageTeamMembers);
 		if (binder.getTeamMemberIds().equals(memberIds))
 			return;
+		//See if the guest user is included in the list
+		User guest = getProfileModule().getGuestUser();
+		if (memberIds.contains(guest.getId())) {
+			//If adding guest to a team, the user must be allowed to do it from the zone
+			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+			getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ADD_GUEST_ACCESS);
+		}
 		final BinderProcessor processor = loadBinderProcessor(binder);
 		Boolean index = (Boolean) getTransactionTemplate().execute(
 				new TransactionCallback() {
