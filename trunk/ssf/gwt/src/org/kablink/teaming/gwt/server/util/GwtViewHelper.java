@@ -961,35 +961,6 @@ public class GwtViewHelper {
 		}
 	}
 
-	/*
-	 * If the file's data can be viewed as an image, returns a URL to
-	 * reference in an <IMG> tag.  Otherwise, returns null.
-	 */
-	private static boolean contentIsImage(AllModulesInjected bs, HttpServletRequest request, FolderEntry fe, FileAttachment fa) {
-		boolean reply = false;
-		try {
-			// Can we convert the file's data to an image?
-			InputStream	inputStream = bs.getFileModule().readFile(fe.getParentBinder(), fe, fa);
-			byte[]		inputData   = FileCopyUtils.copyToByteArray(inputStream);
-			ImageIcon	imageIcon   = new ImageIcon(inputData);
-			
-			reply =
-				((null != imageIcon)                 &&
-				 (0     < imageIcon.getIconHeight()) &&
-				 (0     < imageIcon.getIconWidth()));
-		}
-		
-		catch (Exception ex) {
-			// Any exception we handle as though the file can't be
-			// displayed as an image. 
-			reply = false;
-		}
-		
-		// If we get here, reply is true if the content can be viewed
-		// as an image and false otherwise.  Return it.
-		return reply;
-	}
-	
 	/**
 	 * Change the entry types for a collection of entries.
 	 *
@@ -3384,7 +3355,7 @@ public class GwtViewHelper {
 				// ...file if it supports it...
 				ViewFileInfo vfi = buildViewFileInfo(request, fe, fa);
 				if (null == vfi)
-				     reply.setContentIsImage(contentIsImage(bs, request, fe, fa));
+				     setImageContentDetails(bs, request, reply, fe, fa);
 				else reply.setHtmlView(vfi);
 				
 				reply.setDownloadUrl(
@@ -6872,6 +6843,35 @@ public class GwtViewHelper {
 			     m_logger.debug("GwtViewHelper.renameEntity( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/*
+	 * If the file's data can be viewed as an image, returns a URL to
+	 * reference in an <IMG> tag.  Otherwise, returns null.
+	 */
+	private static void setImageContentDetails(AllModulesInjected bs, HttpServletRequest request, FolderEntryDetails fed, FolderEntry fe, FileAttachment fa) {
+		try {
+			// Can we convert the file's data to an image?
+			InputStream	inputStream = bs.getFileModule().readFile(fe.getParentBinder(), fe, fa);
+			byte[]		inputData   = FileCopyUtils.copyToByteArray(inputStream);
+			ImageIcon	imageIcon   = new ImageIcon(inputData);
+			
+			boolean contentIsImage =
+				((null != imageIcon)                 &&
+				 (0     < imageIcon.getIconHeight()) &&
+				 (0     < imageIcon.getIconWidth()));
+			fed.setContentIsImage(contentIsImage);
+			if (contentIsImage) {
+				fed.setContentImageHeight(imageIcon.getIconHeight());
+				fed.setContentImageWidth( imageIcon.getIconWidth() );
+			}
+		}
+		
+		catch (Exception ex) {
+			// Any exception we handle as though the file can't be
+			// displayed as an image. 
+			fed.setContentIsImage(false);
 		}
 	}
 	

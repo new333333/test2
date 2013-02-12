@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.Image;
@@ -58,9 +59,13 @@ public class FolderEntryDocument extends VibeFlowPanel {
 	private GwtTeamingDataTableImageBundle	m_images;		// Access to Vibe's images.
 	private GwtTeamingFilrImageBundle		m_filrImages;	// Access to Filr's images.
 	private GwtTeamingMessages				m_messages;		// Access to Vibe's messages.
+	private Image							m_contentImage;	//
 
 	private final static int	NO_VSCROLL_ADJUST		= 20;
 	private final static String VIEW_DOCUMENT_FRAME_ID	= "ss_iframe_fileview_GWT";
+
+	private final static int	IMAGE_MINIMUM   = 200;	// Minimum size an image should be scaled to.
+	private final static int	IMAGE_OVERHEAD	=  40;	// Pixels of overhead required for an image within the document view.
 	
 	public FolderEntryDocument(FolderEntryCallback fec, FolderEntryDetails fed) {
 		// Initialize the super class...
@@ -128,9 +133,9 @@ public class FolderEntryDocument extends VibeFlowPanel {
 			}
 
 			// Add the appropriate image. 
-			Image i = GwtClientHelper.buildImage(imgUrl);
-			i.addStyleName(imgStyle);
-			add(i);
+			m_contentImage = GwtClientHelper.buildImage(imgUrl);
+			m_contentImage.addStyleName(imgStyle);
+			add(m_contentImage);
 			
 		}
 		
@@ -144,6 +149,8 @@ public class FolderEntryDocument extends VibeFlowPanel {
 	
 	/**
 	 * Called to set the panel's height.
+	 * 
+	 * Overrides the UIObject.setHeight() method.
 	 */
 	@Override
 	public void setHeight(String height) {
@@ -157,5 +164,33 @@ public class FolderEntryDocument extends VibeFlowPanel {
 
 		// ...and pass the height to the super class.
 		super.setHeight(height);
+	}
+	
+	/**
+	 * Called when the document gets resized.
+	 * 
+	 * Overrides the VibeFlowPanel.onReisize() method.
+	 */
+	@Override
+	public void onResize() {
+		super.onResize();
+
+		// If we're displaying a document as an <IMG>...
+		if (m_fed.isContentImage() && (null != m_contentImage)) {
+			// ...and the image is widget than the width we have to
+			// ...display in...
+			int offsetWidth = (getOffsetWidth() - IMAGE_OVERHEAD);
+			if (IMAGE_MINIMUM > offsetWidth) {
+				offsetWidth = IMAGE_MINIMUM;
+			}
+			if (m_fed.getContentImageWidth() > offsetWidth) {
+				// ...scale the image to fit.
+				m_contentImage.setWidth(offsetWidth + "px");
+			}
+			else {
+				// ...otherwise, remove any scaling we may have had.
+			    DOM.setStyleAttribute(getElement(), "width", "");
+			}
+		}
 	}
 }
