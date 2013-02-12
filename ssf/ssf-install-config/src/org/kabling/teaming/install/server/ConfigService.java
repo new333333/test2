@@ -1476,7 +1476,9 @@ public final class ConfigService
 			resourceElement.setAttribute("mail.smtp.port", String.valueOf(emailSettings.getSmtpPort()));
 			resourceElement.setAttribute("mail.smtp.sendpartial", String.valueOf(emailSettings.isSmtpSendPartial()));
 			resourceElement.setAttribute("mail.smtp.user", emailSettings.getSmtpUser());
-			resourceElement.setAttribute("mail.smtp.connectiontimeout", String.valueOf(emailSettings.getSmtpConnectionTimeout()));
+			
+			if (emailSettings.getSmtpConnectionTimeout() != 0)
+				resourceElement.setAttribute("mail.smtp.connectiontimeout", String.valueOf(emailSettings.getSmtpConnectionTimeout()));
 
 			if (emailSettings.getSmtpPassword() != null && !emailSettings.getSmtpPassword().isEmpty())
 			{
@@ -1490,7 +1492,9 @@ public final class ConfigService
 			resourceElement.setAttribute("mail.smtps.port", String.valueOf(emailSettings.getSmtpsPort()));
 			resourceElement.setAttribute("mail.smtps.sendpartial", String.valueOf(emailSettings.isSmtpsSendPartial()));
 			resourceElement.setAttribute("mail.smtps.user", emailSettings.getSmtpsUser());
-			resourceElement.setAttribute("mail.smtps.connectiontimeout", String.valueOf(emailSettings.getSmtpsConnectionTimeout()));
+			
+			if (emailSettings.getSmtpsConnectionTimeout() != 0)
+				resourceElement.setAttribute("mail.smtps.connectiontimeout", String.valueOf(emailSettings.getSmtpsConnectionTimeout()));
 
 			if (emailSettings.getSmtpsPassword() != null && !emailSettings.getSmtpsPassword().isEmpty())
 			{

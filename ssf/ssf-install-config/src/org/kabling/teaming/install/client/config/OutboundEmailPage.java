@@ -241,7 +241,8 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			if (!passwordTextBox.getText().trim().equals(""))
 				emailSettings.setSmtpPassword(passwordTextBox.getText());
 			emailSettings.setSmtpPort(portSpinner.getValueAsInt());
-			emailSettings.setSmtpConnectionTimeout(connectionTimeOutSpinner.getValueAsInt() * 1000);
+			if (connectionTimeOutSpinner.getValueAsInt() != 0)
+				emailSettings.setSmtpConnectionTimeout(connectionTimeOutSpinner.getValueAsInt() * 1000);
 			//emailSettings.setSmtpSendPartial(allowSendEmailUsersCheckBox.getValue());
 		}
 		// SMPTS
@@ -253,7 +254,8 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			if (!passwordTextBox.getText().trim().equals(""))
 				emailSettings.setSmtpsPassword(passwordTextBox.getText());
 			emailSettings.setSmtpsPort(portSpinner.getValueAsInt());
-			emailSettings.setSmtpsConnectionTimeout(connectionTimeOutSpinner.getValueAsInt() * 1000);
+			if (connectionTimeOutSpinner.getValueAsInt() != 0)
+				emailSettings.setSmtpsConnectionTimeout(connectionTimeOutSpinner.getValueAsInt() * 1000);
 			//emailSettings.setSmtpsSendPartial(allowSendEmailUsersCheckBox.getValue());
 		}
 
@@ -293,7 +295,8 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 				usernameTextBox.setText(emailSettings.getSmtpUser());
 				authRequiredCheckBox.setValue(emailSettings.isSmtpAuthEnabled());
 				portSpinner.setValue(emailSettings.getSmtpPort());
-				connectionTimeOutSpinner.setValue(emailSettings.getSmtpConnectionTimeout() /1000);
+				if (emailSettings.getSmtpConnectionTimeout() != 0)
+					connectionTimeOutSpinner.setValue(emailSettings.getSmtpConnectionTimeout() /1000);
 			}
 			else
 			{
@@ -301,7 +304,8 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 				usernameTextBox.setText(emailSettings.getSmtpsUser());
 				authRequiredCheckBox.setValue(emailSettings.isSmtpsAuthEnabled());
 				portSpinner.setValue(emailSettings.getSmtpsPort());
-				connectionTimeOutSpinner.setValue(emailSettings.getSmtpsConnectionTimeout() / 1000);
+				if (emailSettings.getSmtpConnectionTimeout() != 0)
+					connectionTimeOutSpinner.setValue(emailSettings.getSmtpsConnectionTimeout() / 1000);
 			}
 
 			String tzString = emailSettings.getDefaultTZ();
