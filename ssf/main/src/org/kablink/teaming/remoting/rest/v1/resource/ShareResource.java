@@ -182,7 +182,7 @@ public class ShareResource extends AbstractResource {
         ShareItemSelectSpec spec = getSharedBySpec(userId);
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.SHARED_BY_ME_ID, null, recursive,
                 includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword,
-                textDescriptions, offset, maxCount, "/with_user/" + userId + "/library_entities", nextParams, spec,
+                textDescriptions, offset, maxCount, "/shares/with_user/" + userId + "/library_entities", nextParams, spec,
                 showHidden, showUnhidden);
         return results;
     }
@@ -308,7 +308,7 @@ public class ShareResource extends AbstractResource {
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.SHARED_WITH_ME_ID, userId, recursive,
                 includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword,
-                textDescriptions, offset, maxCount, "/with_user/" + userId + "/library_entities", nextParams, spec,
+                textDescriptions, offset, maxCount, "/shares/with_user/" + userId + "/library_entities", nextParams, spec,
                 showHidden, showUnhidden);
         return results;
     }
