@@ -2692,7 +2692,7 @@ public class GwtMenuHelper {
 						if (addAllowed && supportsApplets) {
 							// Yes!  Is it other than a mini-blog or a mirrored
 							// file that can't be written to?
-							if ((!(isViewMiniBlog(viewType))) && ((!(folder.isMirrored())) || isFolderWritableMirrored(folder))) {
+							if ((!(isViewMiniBlog(viewType))) && ((!(folder.isMirrored())) || isFolderWritableMirrored(folder)) && addAllowed) {
 								// Yes!  The the 'drop box' item.
 								constructEntryDropBoxItem(entryToolbar);
 							}
