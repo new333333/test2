@@ -2295,7 +2295,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder, true);
         BasicIndexUtils.addAttachmentType(indexDoc, Constants.ATTACHMENT_TYPE_BINDER, true);
 
-  	  	buildIndexDocumentFromFile(indexDoc, binder, binder, fa, fui, tags, false);
+  	  	buildIndexDocumentFromFile(indexDoc, binder, binder, fa, tags, false, false);
        	return indexDoc;
      }
 
@@ -2308,13 +2308,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * @return
      */
     protected void buildIndexDocumentFromFile
-    	(org.apache.lucene.document.Document indexDoc, Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui, Collection tags, boolean isLibraryFile) {
+    	(org.apache.lucene.document.Document indexDoc, Binder binder, DefinableEntity entity, FileAttachment fa, Collection tags, boolean isLibraryFile, boolean skipFileContentIndexing) {
 
 		String text = "";
 		//See if the file contents are supposed to be indexed
 		//The root folder of a folder chain dictates if file contents are to be indexed
 		Binder rootFolder = AccessUtils.getRootFolder(entity);
-		if (rootFolder == null || rootFolder.getIndexContent()) {
+		if (!skipFileContentIndexing && (rootFolder == null || rootFolder.getIndexContent())) {
 			//The file contents of files in this folder are to be added to the index
 			// Get the Text converter from manager
 	    	TextConverter converter = textConverterManager.getConverter();
@@ -2328,7 +2328,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			}
 		} else {
 			//The text contents are not added
-			rootFolder.getIndexContent();
 		}
 			
 		// Is there a relevance engine engine enabled?

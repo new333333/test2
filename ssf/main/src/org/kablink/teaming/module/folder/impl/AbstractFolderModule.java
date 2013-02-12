@@ -54,6 +54,7 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
+import org.apache.lucene.index.Term;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.BinderQuotaException;
@@ -132,6 +133,7 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.IndexErrors;
+import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
@@ -1690,6 +1692,34 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		return processor.buildIndexDocumentFromEntry(binder, entry, tags);
     }    
 
+    public void indexFileContentInFolder(Long netFolderRoot) {
+    	// $$$$$$$$$$$
+    	
+    	
+    }
+    
+    protected void indexFileContentInEntry(FileAttachment fa) throws Exception {
+        DefinableEntity entity = fa.getOwner().getEntity();
+        if(!(entity instanceof FolderEntry)) {
+        	logger.error("The file with id [" + fa.getId() + "] is owned by an entity that is not a folder entry");
+        	return;
+        }
+        
+        FolderEntry entry = (FolderEntry) entity;
+        Folder folder = entry.getParentFolder();
+        
+        FolderCoreProcessor processor = loadProcessor(folder);
+        
+        // Delete existing document from the index.
+        IndexSynchronizationManager.deleteDocuments(new Term(Constants.FILE_ID_FIELD, fa.getId()));
+        // Add new document with file content.
+    	try {
+    		IndexSynchronizationManager.addDocument(processor.buildIndexDocumentFromEntryFile(folder, entry, fa, null, false));
+    	}
+    	catch(Exception e) {
+    		logger.error("Error indexing file '" + fa.getFileItem().getName() + "' for entry '" + entry.getId() + "'", e);
+    	}
+    }
     
     /**
      * Helper classs to return folder unseen counts as an objects

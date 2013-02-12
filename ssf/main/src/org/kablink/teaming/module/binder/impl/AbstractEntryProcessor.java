@@ -386,7 +386,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    			// Index the entry
 	    	        IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntry(folder, entry, Collections.EMPTY_LIST));
 	    	        // Index the file
-	    			IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntryFile(folder, entry, fAtt, fui, Collections.EMPTY_LIST));
+	    			IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntryFile(folder, entry, fAtt, Collections.EMPTY_LIST, true));
 
 	    			result.add(entry); // entry may be null
 	    			
@@ -621,7 +621,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
   	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
     	if (ctx != null) tags = (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS);
     	if (tags == null) tags = new ArrayList();
-    	indexEntry(binder, entry, fileUploadItems, null, true, tags);
+    	boolean skipFileContentIndexing = false;
+    	if(ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX)))
+    		skipFileContentIndexing = true;
+    		
+    	indexEntry(binder, entry, fileUploadItems, null, true, tags, skipFileContentIndexing);
     }
  
     protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
@@ -783,7 +787,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	}
 	    	
 	    	SimpleProfiler.start("modifyEntry_indexAdd");
-	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToReindex,ctx);
+	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToReindex,false,ctx);
 	    	SimpleProfiler.stop("modifyEntry_indexAdd");
 	    	
 	    	SimpleProfiler.start("modifyEntry_done");
@@ -1004,11 +1008,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
     protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, 
-    		Collection<FileAttachment> filesToIndex, Map ctx) {
+    		Collection<FileAttachment> filesToIndex, boolean skipFileContentIndexing, Map ctx) {
   	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
   	    	//tags will be null for now
     	indexEntry(binder, entry, fileUploadItems, filesToIndex, false, 
-    			(ctx == null ? null : (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS )));
+    			(ctx == null ? null : (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS )), skipFileContentIndexing);
     }
 
     protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
@@ -1391,7 +1395,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        					// Entry already deleted from index, so pretend we are new
        	       			SimpleProfiler.start("indexEntries_indexEntryWithAttachments");
        				   	try {
-       				   		IndexErrors entryErrors = indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags);
+       				   		IndexErrors entryErrors = indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags, false);
        				   		errors.add(entryErrors);
        				   	} catch(Exception e) {
        				   		logger.error("Error indexing entry: (" + entry.getId().toString() + ") " + entry.getTitle(), e);
@@ -1667,7 +1671,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     @Override
 	public IndexErrors indexEntry(Entry entry) {
-    	return indexEntry(entry.getParentBinder(), entry, null, null, false, null);
+    	return indexEntry(entry.getParentBinder(), entry, null, null, false, null, false);
     }
     /**
      * Index entry and optionally its attached files.
@@ -1681,7 +1685,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * @param newEntry
      */
     protected IndexErrors indexEntry(Binder binder, Entry entry, List fileUploadItems, 
-    		Collection<FileAttachment> filesToIndex, boolean newEntry, Collection tags) {
+    		Collection<FileAttachment> filesToIndex, boolean newEntry, Collection tags, boolean skipFileContentIndexing) {
     	// Logically speaking, the only files we need to index are the ones
     	// that have been uploaded (fileUploadItems) and the ones explicitly
     	// specified (in the filesToIndex). In ideal world, indexing only
@@ -1696,7 +1700,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	// Consequently we obtain and pass "all" the attachments to the 
     	// following method and ignore the filesToIndex list (for now).
     	
-    	return indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), fileUploadItems, newEntry, tags);
+    	return indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), fileUploadItems, newEntry, tags, skipFileContentIndexing);
     }
     
     /**
@@ -1715,7 +1719,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * @param newEntry
      */
 	protected IndexErrors indexEntryWithAttachments(Binder binder, Entry entry,
-			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, Collection tags) {
+			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, Collection tags, boolean skipFileContentIndexing) {
 		IndexErrors errors = new IndexErrors();
 		if(SPropsUtil.getBoolean("indexing.escalate.add.to.update", true))
 			newEntry = false;
@@ -1732,11 +1736,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntry(entry.getParentBinder(), entry, tags));
         //Create separate documents one for each attached file and index them.
         for(FileAttachment fa : fileAttachments) {
-        	FileUploadItem fui = null;
-        	if(fileUploadItems != null)
-        		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryName(), fa.getFileItem().getName());
         	try {
-        		IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntryFile(binder, entry, fa, fui, tags));
+        		IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntryFile(binder, entry, fa, tags, skipFileContentIndexing));
            		// Register the index document for indexing.
 	        } catch (Exception ex) {
 		       		//log error but continue
@@ -1783,14 +1784,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	SimpleProfiler.stop("buildIndexDocumentFromEntry");
         return indexDoc;
     }
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
-	(Binder binder, Entry entry, FileAttachment fa, FileUploadItem fui, Collection tags) {
+    public org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
+	(Binder binder, Entry entry, FileAttachment fa, Collection tags, boolean skipFileContentIndexing) {
     	SimpleProfiler.start("buildIndexDocumentFromEntryFile");
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
     	//do common part first. Indexing a file overrides some values
     	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry, true);
         BasicIndexUtils.addAttachmentType(indexDoc, Constants.ATTACHMENT_TYPE_ENTRY, true);
-  		buildIndexDocumentFromFile(indexDoc, binder, entry, fa, fui, tags, binder.isLibrary());
+  		buildIndexDocumentFromFile(indexDoc, binder, entry, fa, tags, binder.isLibrary(), skipFileContentIndexing);
     	SimpleProfiler.stop("buildIndexDocumentFromEntryFile");
    		return indexDoc;
  

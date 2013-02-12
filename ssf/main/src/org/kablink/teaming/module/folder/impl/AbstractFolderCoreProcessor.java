@@ -306,9 +306,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     @Override
 	protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, 
-    		Collection<FileAttachment> filesToIndex, Map ctx) {
+    		Collection<FileAttachment> filesToIndex, boolean skipFileContentIndexing, Map ctx) {
   	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
-  	   super.modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToIndex, ctx);
+  	   super.modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToIndex, skipFileContentIndexing, ctx);
        	//Also re-index the top entry (to catch the change in lastActivity)
     	FolderEntry fEntry = (FolderEntry)entry;
     	if (!fEntry.isTop()) indexEntry(fEntry.getTopEntry());
@@ -525,7 +525,7 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 	   //the top folder was already index but prior to adding its children, so by adding this index on the top folder entry
 	   //the additional information such as # of comments on a blog entry will show correctly
 	   if (top != null) {
-		   indexEntry(top.getParentBinder(), top, null, top.getFileAttachments(), true, tags.get(top.getEntityIdentifier()));
+		   indexEntry(top.getParentBinder(), top, null, top.getFileAttachments(), true, tags.get(top.getEntityIdentifier()), false);
 	   }
 	   return top; 
    }
@@ -624,7 +624,7 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 	    	}
 		}
 
-		indexEntry(entry.getParentBinder(), entry, null, entry.getFileAttachments(), true, myTags);
+		indexEntry(entry.getParentBinder(), entry, null, entry.getFileAttachments(), true, myTags, false);
    	 
    }
  
