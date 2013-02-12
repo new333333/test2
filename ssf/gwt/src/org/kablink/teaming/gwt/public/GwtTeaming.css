@@ -5272,8 +5272,9 @@ td.datePickerMonth {
 		-moz-border-radius: 5px;
 		-webkit-border-radius: 5px;
 	}
-	.vibe-findBrowser-popup {z-index: 1002; padding: 2px !important;}
-	.vibe-findBrowser-tree  {
+	.vibe-findBrowser-popup       {z-index: 1002; padding: 2px !important;}
+	.vibe-findBrowser-scrollPanel {width: 600px; height: 350px; overflow: auto;}
+	.vibe-findBrowser-tree        {
 		background-color: #f6f6f6;
 		margin: 0px;
 		padding-right: 5px;

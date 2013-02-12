@@ -64,6 +64,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -225,11 +226,14 @@ public class FindControlBrowserPopup extends TeamingPopupPanel
 		m_foldersOnly = foldersOnly;
 		
 		// ...construct the panel...
+		ScrollPanel sp = new ScrollPanel();
+		sp.addStyleName("vibe-findBrowser-scrollPanel");
 		m_browser = new Tree();
 		m_browser.addStyleName("vibe-findBrowser-tree");
 		m_browser.addOpenHandler(     this);
 		m_browser.addSelectionHandler(this);
-		setWidget(m_browser);
+		sp.setWidget(m_browser);
+		setWidget(sp);
 		showRelativeTo(findControl);
 		
 		// ...and load the tree.
