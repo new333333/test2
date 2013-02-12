@@ -627,21 +627,19 @@
 .shareThisDlg_HeaderPanel
 {
 	position: relative;
+	margin-bottom: 5px;
 }
 
-.shareThisDlg_HeaderImg
+.shareThisDlg_HeaderPanel img
 {
-	left: 0px;
-	margin-right: 5px;
 	position: absolute;
 	top: -5px;
 }
 
 .shareThisDlg_HeaderNamePanel
 {
-	left: 55px;
-	position: absolute;
-	top: 6px;
+	margin-left: 55px;
+	width: 550px;
 }
 
 .shareThisDlg_HeaderNameLabel
@@ -654,13 +652,12 @@
 {
 	color: #505354;
 	font-size: 13px;
-	line-height: 17px;
-	padding-left: 2px;
+	line-height: 16px;
 }
 
 .shareThisDlg_NoteLabel
 {
-	color: #5691A6;
+	color: #135c8f;
 	padding-left: 4px;
 }
 
@@ -738,6 +735,7 @@
 {
 	padding-top: 5px;
 	white-space: nowrap;
+	text-align: right;
 }
 
 .shareThisDlg_shareWithTeamsLink
@@ -2857,6 +2855,7 @@ body, table td, select
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
     text-align: center !important;
+	min-width: 70px;
 	}
 
 .teamingDlgBoxFooter .gwt-Button:hover {
@@ -2897,9 +2896,10 @@ body, table td, select
 	margin-right: 3px;
 	text-decoration:none;	
 	cursor: pointer !important;
-	-moz-border-radius: 15px;
 	border-radius: 15px;
+	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
+	min-width: 70px;
 }
 .gwt-Button:hover {
 	border: 1px solid #81b2bd;
