@@ -120,9 +120,6 @@ public class EditShareRightsDlg extends DlgBox
 		mainPanel = new VibeFlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 		mainPanel.addStyleName( "editShareRightsDlg_MainPanel" );
-
-		label = new Label( messages.editShareRightsDlg_GrantRightsLabel() );
-		mainPanel.add( label );
 		
 		// Create a panel for the radio buttons to live in.
 		rbPanel = new VibeFlowPanel();
@@ -154,28 +151,28 @@ public class EditShareRightsDlg extends DlgBox
 			}
 		} );
 		tmpPanel = new VibeFlowPanel();
-		tmpPanel.addStyleName( "margintop3" );
+		tmpPanel.addStyleName( "margintop2" );
 		tmpPanel.add( m_canShareForwardCkbox );
 		rbPanel.add( tmpPanel );
 		
 		// Add the "allow share internal checkbox.
 		m_canShareInternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareInternalLabel() );
 		tmpPanel = new VibeFlowPanel();
-		tmpPanel.addStyleName( "marginleft2" );
+		tmpPanel.addStyleName( "marginleft1" );
 		tmpPanel.add( m_canShareInternalCkbox );
 		rbPanel.add( tmpPanel );
 		
 		// Add the "allow share external" checkbox.
 		m_canShareExternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareExternalLabel() );
 		tmpPanel = new VibeFlowPanel();
-		tmpPanel.addStyleName( "marginleft2" );
+		tmpPanel.addStyleName( "marginleft1" );
 		tmpPanel.add( m_canShareExternalCkbox );
 		rbPanel.add( tmpPanel );
 		
 		// Add the "allow share public" checkbox.
 		m_canSharePublicCkbox = new CheckBox( messages.editShareRightsDlg_CanSharePublicLabel() );
 		tmpPanel = new VibeFlowPanel();
-		tmpPanel.addStyleName( "marginleft2" );
+		tmpPanel.addStyleName( "marginleft1" );
 		tmpPanel.add( m_canSharePublicCkbox );
 		rbPanel.add( tmpPanel );
 		
