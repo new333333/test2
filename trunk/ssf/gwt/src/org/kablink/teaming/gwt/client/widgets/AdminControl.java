@@ -56,6 +56,8 @@ import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.AdminConsoleInfo;
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtMainPage;
@@ -70,6 +72,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -77,6 +80,7 @@ import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.ConfigureAdhocFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureMobileAppsDlg.ConfigureMobileAppsDlgClient;
+import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditZoneShareRightsDlg.EditZoneShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUserAccessDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.ConfigureUserFileSyncAppDlgClient;
@@ -127,6 +131,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class AdminControl extends TeamingPopupPanel
 	implements 
 	// Event handlers implemented by this class.
+		EditSiteBrandingEvent.Handler,
 		InvokeConfigureAdhocFoldersDlgEvent.Handler,
 		InvokeConfigureFileSyncAppDlgEvent.Handler,
 		InvokeConfigureMobileAppsDlgEvent.Handler,
@@ -168,6 +173,8 @@ public class AdminControl extends TeamingPopupPanel
 	private EditZoneShareRightsDlg m_editZoneShareRightsDlg = null;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg = null;
 	private ShareThisDlg m_shareDlg = null;
+	private EditBrandingDlg m_editSiteBrandingDlg = null;
+	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
 	// The following defines the TeamingEvents that are handled by
@@ -175,6 +182,7 @@ public class AdminControl extends TeamingPopupPanel
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
+		TeamingEvents.EDIT_SITE_BRANDING,
 		TeamingEvents.INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_MOBILE_APPS_DLG,
@@ -1139,6 +1147,147 @@ public class AdminControl extends TeamingPopupPanel
 		}
 	}
 
+	/*
+	 * Invoke the "Edit Branding" dialog.
+	 */
+	private void invokeEditSiteBrandingDlg( GwtBrandingData brandingDataIn )
+	{
+		final int x;
+		final int y;
+		
+		// Get the position of the content control.
+		x = m_contentControlX;
+		y = m_contentControlY;
+		
+		// Create a handler that will be called when the user presses the ok button in the dialog.
+		if ( m_editBrandingSuccessHandler == null )
+		{
+			m_editBrandingSuccessHandler = new EditSuccessfulHandler()
+			{
+				private AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
+				private GwtBrandingData savedBrandingData = null;
+				
+				/**
+				 * This method gets called when user user presses ok in the "Edit Branding" dialog.
+				 */
+				@Override
+				public boolean editSuccessful( Object obj )
+				{
+					// Create the callback that will be used when we issue an ajax request to save the branding data.
+					if ( rpcSaveCallback == null )
+					{
+						rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
+						{
+							/**
+							 * 
+							 */
+							@Override
+							public void onFailure( Throwable t )
+							{
+								GwtClientHelper.handleGwtRPCFailure(
+																t,
+																GwtTeaming.getMessages().rpcFailure_GetBranding(),
+																GwtTeaming.getMainPage().getMastHead().getBinderId() );
+							}
+					
+							/**
+							 * 
+							 * @param result
+							 */
+							@Override
+							public void onSuccess( VibeRpcResponse response )
+							{
+								Scheduler.ScheduledCommand cmd;
+								
+								cmd = new Scheduler.ScheduledCommand()
+								{
+									@Override
+									public void execute()
+									{
+										MastHead mastHead;
+										
+										mastHead = GwtTeaming.getMainPage().getMastHead();
+										
+										// Tell the masthead to go get the new site branding.
+										if ( mastHead != null )
+											mastHead.refreshSiteBranding();
+									}
+								};
+								Scheduler.get().scheduleDeferred( cmd );
+							}
+						};
+					}
+			
+					// Issue an ajax request to save the branding data.
+					{
+						SaveBrandingCmd cmd;
+						
+						// Issue an ajax request to save the branding data to the db.  rpcSaveCallback will
+						// be called when we get the response back.
+						savedBrandingData = (GwtBrandingData) obj;
+						cmd = new SaveBrandingCmd( savedBrandingData.getBinderId(), savedBrandingData );
+						GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
+					}
+
+					return true;
+				}
+			};
+		}
+
+		final GwtBrandingData brandingData = brandingDataIn;
+
+		// Have we already created an "Edit branding" dialog?
+		if ( m_editSiteBrandingDlg == null )
+		{
+			Integer width;
+			Integer height;
+			
+			height = new Integer( m_dlgHeight );
+			width = new Integer( m_dlgWidth );
+
+			// No, create one.
+			EditBrandingDlg.createAsync(
+									m_editBrandingSuccessHandler,
+									null,
+									true,
+									false,
+									x,
+									y,
+									width,
+									height,
+									new EditBrandingDlgClient()
+			{				
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( EditBrandingDlg ebDlg )
+				{
+					m_editSiteBrandingDlg = ebDlg;
+					invokeEditSiteBrandingDlgImpl( brandingData, x, y );
+				}
+			} );
+		}
+		else
+		{
+			invokeEditSiteBrandingDlgImpl( brandingData, x, y );
+		}
+		
+	}
+
+	/**
+	 * 
+	 */
+	private void invokeEditSiteBrandingDlgImpl( GwtBrandingData brandingData, int x, int y )
+	{
+		m_editSiteBrandingDlg.init( brandingData );
+		m_editSiteBrandingDlg.setPopupPosition( x, y );
+		m_editSiteBrandingDlg.show();
+	}
+
 	/**
 	 * Invokes the Share dialog in administrative mode.
 	 */
@@ -1424,6 +1573,38 @@ public class AdminControl extends TeamingPopupPanel
 		// handlers.
 		super.onDetach();
 		unregisterEvents();
+	}
+	
+	/**
+	 * Handles EditSiteBrandingEvent's received by this class.
+	 * 
+	 * Implements the EditSiteBrandingEvent.Handler.onEditSiteBranding() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onEditSiteBranding( EditSiteBrandingEvent event )
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				MastHead mastHead;
+				
+				mastHead = GwtTeaming.getMainPage().getMastHead();
+				if ( mastHead != null )
+				{
+					GwtBrandingData siteBrandingData;
+					
+					siteBrandingData = mastHead.getSiteBrandingData();
+					invokeEditSiteBrandingDlg( siteBrandingData );
+				}
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}
 	
 	/**

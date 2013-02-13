@@ -5616,7 +5616,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					branding = "";
 				hashMap.put( "branding", branding );
 
-				// Add the exteneded branding data to the map.
+				// Add the extended branding data to the map.
 				branding = brandingData.getBrandingAsXmlString();
 				if ( branding == null )
 					branding = "";

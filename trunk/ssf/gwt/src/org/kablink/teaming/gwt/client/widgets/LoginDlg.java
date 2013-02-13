@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
@@ -69,6 +70,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -367,36 +369,107 @@ public class LoginDlg extends DlgBox
 	}
 	
 	/**
+	 * 
+	 */
+	private void createHeaderNow( String caption, FlowPanel panel )
+	{
+		MastHead mastHead;
+		boolean useDefaultImg = true;
+		String imgUrl = null;
+		
+		// Get the branding data.
+		mastHead = GwtTeaming.getMainPage().getMastHead();
+		if ( mastHead != null )
+		{
+			GwtBrandingData brandingData;
+			
+			brandingData = mastHead.getSiteBrandingData();
+			if ( brandingData != null )
+			{
+				String imgName;
+				
+				// Get the name of the image to use.
+				imgName = brandingData.getLoginDlgImageName();
+				
+				// Do we have an image name to use
+				if ( imgName != null && imgName.length() > 0 )
+				{
+					// Yes
+					// Is the branding image name "__default teaming image__"?
+					if ( imgName.equalsIgnoreCase( BrandingPanel.DEFAULT_TEAMING_IMAGE ) )
+					{
+						// Yes
+						useDefaultImg = true;
+					}
+					// Is the branding image name "__no image__"?
+					else if ( imgName.equalsIgnoreCase( BrandingPanel.NO_IMAGE ) )
+					{
+						// Yes
+						useDefaultImg = false;
+					}
+					else
+					{
+						imgUrl = brandingData.getLoginDlgImageUrl();
+						if ( imgUrl != null && imgUrl.length() > 0 )
+							useDefaultImg = false;
+					}
+				}
+			}
+		}
+	
+		if ( useDefaultImg )
+		{
+			if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
+			{
+				// Create a Novell Filr image that will be used in case there is no branding.
+				imgUrl = GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/novell_filr_graphic.png";
+			}
+			else if ( GwtTeaming.m_requestInfo.isNovellTeaming() )
+			{
+				// Create a Novell Teaming image that will be used in case there is no branding.
+				imgUrl = GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/novell_graphic.png";
+			}
+			else
+			{
+				// Create a Kablink Teaming image that will be used in case there is no branding.
+				imgUrl = GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/kablink_graphic.png";
+			}
+		}
+		
+		// Should we add an image?
+		if ( imgUrl != null )
+		{
+			Image img = null;
+
+			// Yes
+			img = new Image( imgUrl );
+			panel.add( img );
+		}
+	}
+	
+	/**
 	 * Override the createHeader() method because we need to make it nicer.
 	 */
 	@Override
-	public Panel createHeader( String caption )
+	public Panel createHeader( final String caption )
 	{
-		Image img;
-		FlowPanel panel;
+		Timer timer;
+		final FlowPanel panel;
 		
 		panel = new FlowPanel();
-
-		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
-		{
-			// Create a Novell Filr image that will be used in case there is no branding.
-			img = new Image( GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/novell_filr_graphic.png" );
-		}
-		else if ( GwtTeaming.m_requestInfo.isNovellTeaming() )
-		{
-			// Create a Novell Teaming image that will be used in case there is no branding.
-			img = new Image( GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/novell_graphic.png" );
-		}
-		else
-		{
-			// Create a Kablink Teaming image that will be used in case there is no branding.
-			img = new Image( GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/kablink_graphic.png" );
-		}
-	
-		img.setHeight( "75" );
-
-		panel.add( img );
 		
+		// We need to wait until the masthead has read the branding data
+		timer = new Timer()
+		{
+			@Override
+			public void run()
+			{
+				createHeaderNow( caption, panel );
+			}
+		};
+		
+		timer.schedule( 250 );
+
 		return panel;
 	}// end createHeader()
 	
