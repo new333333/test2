@@ -911,7 +911,6 @@ public class ShareThisDlg extends DlgBox
 				
 				returnValue.add( shareItem );
 			}
-			
 		}// end for()
 		
 		return returnValue;
@@ -3426,13 +3425,15 @@ public class ShareThisDlg extends DlgBox
 								GwtShareItem shareItem;
 
 								shareItem = new GwtShareItem();
+								shareItem.setSharedById( Long.valueOf( GwtTeaming.m_requestInfo.getUserId() ) );
 								shareItem.setEntityId( nextEntityId );
 								shareItem.setEntityName( getEntityName( nextEntityId ) );
 								shareItem.setRecipientName( emailAddress );
 								shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 								shareItem.setShareRights( getDefaultShareRights() );
 								shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
-								
+								shareItem.setComments( getDefaultComment() );
+
 								// Is this external user already in the list?
 								if ( findShareItem( shareItem ) == -1 )
 								{
