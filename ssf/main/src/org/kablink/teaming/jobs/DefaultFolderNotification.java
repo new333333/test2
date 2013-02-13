@@ -65,7 +65,7 @@ public class DefaultFolderNotification extends SSCronTriggerJob implements Folde
 			Date end = mail.sendNotifications(folderId, (Date)jobDataMap.get("lastNotification") );
 			jobDataMap.put("lastNotification", end);
 		} catch (NoBinderByTheIdException nf) {
-			removeJobOnError(context,nf);
+			deleteJobOnError(context,nf);
 		} 
     }
 
