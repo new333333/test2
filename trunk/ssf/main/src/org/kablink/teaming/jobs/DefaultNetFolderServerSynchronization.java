@@ -129,7 +129,7 @@ public class DefaultNetFolderServerSynchronization extends SSCronTriggerJob
 			
 			if ( serverId.equals( new Long( -1 ) ) )
 			{
-				removeJob( context );
+				deleteJob( context );
 			}
 			else
 			{
@@ -140,7 +140,7 @@ public class DefaultNetFolderServerSynchronization extends SSCronTriggerJob
     	{
 			// Apparently the net folder server on which this scheduler is defined has been removed.
 			// This is not an error. So simply remove the job.
-			removeJob( context );
+			deleteJob( context );
 		} 
     }
 

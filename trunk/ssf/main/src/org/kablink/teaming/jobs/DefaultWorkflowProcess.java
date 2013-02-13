@@ -82,14 +82,14 @@ public class DefaultWorkflowProcess extends SimpleTriggerJob implements Workflow
     	try {
     		entry = folderModule.getEntry(null, entryId);
     		if (entry.isDeleted()) {
-    			removeJob(context);
+    			deleteJob(context);
     			return;
     		}
        	} catch (NoObjectByTheIdException no) {
-    		removeJob(context);
+    		deleteJob(context);
     		return;
       	} catch (AccessControlException acc) {
-    		removeJobOnError(context, acc);
+    		deleteJobOnError(context, acc);
     		return;
     	}
 
@@ -97,7 +97,7 @@ public class DefaultWorkflowProcess extends SimpleTriggerJob implements Workflow
        	WorkflowState state = entry.getWorkflowState(stateId);
        	//workflow done, remove job
        	if (state == null) {
-       		removeJob(context);
+       		deleteJob(context);
        		return;
        	}
        	//remove from cache in case execution takes long
@@ -112,7 +112,7 @@ public class DefaultWorkflowProcess extends SimpleTriggerJob implements Workflow
 		       			//reload incase execute took a long time
 		       			FolderEntry entry = folderModule.getEntry(null, entryId);
 		       			WorkflowState state = entry.getWorkflowState(stateId);
-		       			removeJob(context);
+		       			deleteJob(context);
 		       			if (state != null && job instanceof WorkflowCallout) {
 		       				//	could be a naming issue for variables if multiple remote apps run simultaneously for the same entry
 		       				WorkflowModule wf = (WorkflowModule)SpringContextUtil.getBean("workflowModule");
@@ -143,10 +143,10 @@ public class DefaultWorkflowProcess extends SimpleTriggerJob implements Workflow
 			throw new ConfigurationException("Invalid Workflow Action class name '" + actionName + "'",
 					e);
        	} catch (InternalException e) {
-   			removeJob(context);			
+   			deleteJob(context);			
       		throw new ConfigurationException("Cannot instantiate Workflowprocess of type '" 	+ actionName + "'");
  		} catch (NoObjectByTheIdException no) {
-   			removeJob(context);			
+   			deleteJob(context);			
 		}
     }
 	public void remove(WorkflowSupport entry, WorkflowState wfState) {

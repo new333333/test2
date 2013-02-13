@@ -93,7 +93,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 		try {  
 	           	//zone required
            	if (!jobDataMap.containsKey(ZONEID)) {			
-           		removeJobOnError(context, new SchedulerException(context.getJobDetail().getFullName() + " : zoneId missing from jobData"));
+           		deleteJobOnError(context, new SchedulerException(context.getJobDetail().getFullName() + " : zoneId missing from jobData"));
            	}
            	zoneId = jobDataMap.getLong(ZONEID);
            	//Validate user and zone are compatible
@@ -109,20 +109,20 @@ public abstract class SSStatefulJob implements StatefulJob {
            		try {
            			Workspace zone = (Workspace)coreDao.loadBinder(zoneId, zoneId);
            			if (zone.isDeleted()) {
-           	   			removeJob(context);
+           	   			deleteJob(context);
           				return;
            			}
            		} catch (NoBinderByTheIdException nb) {
-       	   			removeJob(context);   
+       	   			deleteJob(context);   
        	   			return;
            		} catch (NoFolderByTheIdException nb) {
-       	   			removeJob(context);   
+       	   			deleteJob(context);   
        	   			return;
            		}
            		throw ex;  //zone exists, other error
            	}
            	if (user.getParentBinder().getRoot().isDeleted()) {
-  	   			removeJob(context); 
+  	   			deleteJob(context); 
            	} else {
            		//	Setup thread context expected by business logic
            		RequestContextUtil.setThreadContext(user).resolve();
@@ -130,9 +130,9 @@ public abstract class SSStatefulJob implements StatefulJob {
            		doExecute(context);
            	}
 		} catch (NoUserByTheIdException nu) {
-			removeJobOnError(context, nu);
+			deleteJobOnError(context, nu);
 		} catch (NoUserByTheNameException nn) {
-			removeJobOnError(context, nn);
+			deleteJobOnError(context, nn);
 		} catch (JobExecutionException je) {
 			context.setResult("Failed");
 			//re-throw
@@ -149,7 +149,7 @@ public abstract class SSStatefulJob implements StatefulJob {
     	}
 
 	}  
-	protected void removeJob(JobExecutionContext context) {
+	protected void deleteJob(JobExecutionContext context) {
 		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);
 		context.setResult("Success");
 		return;
@@ -169,20 +169,20 @@ public abstract class SSStatefulJob implements StatefulJob {
 		return (Scheduler)SpringContextUtil.getBean("scheduler");		
 	}
 	/**
-	 * Job failed due to missing domain objects.  Return exception that will remove the
-	 * job triggers and the job if durablility=false;
+	 * Job failed due to an error.  Return exception that will remove BOTH the
+	 * job triggers and the job itself.
 	 * @param context
 	 * @param e
 	 * @throws JobExecutionException
 	 */
-	protected void removeJobOnError(JobExecutionContext context, Exception e) throws JobExecutionException {
+	protected void deleteJobOnError(JobExecutionContext context, Exception e) throws JobExecutionException {
 		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJobOnError);
 		context.setResult("Failed");
 		throw new JobExecutionException(e);
 	}
 	/**
-	 * Job failed due to missing domain objects.  Return exception that will unschedule the
-	 * job triggers.  JobDetails will remain. 
+	 * Job failed due to an error.  Return exception that will unschedule the job triggers.
+	 * It will also delete the job if its durablility is false. 
 	 * @param context
 	 * @param e
 	 * @throws JobExecutionException
@@ -193,6 +193,14 @@ public abstract class SSStatefulJob implements StatefulJob {
 		throw new JobExecutionException(e);
 	}
 	
+	/**
+	 * This method removes the trigger. Also this may or may not remove the job associated 
+	 * with the trigger, depending on whether the job is durable or not. If durable, the
+	 * job will stay, if not durable, it will get deleted as well.
+	 * 
+	 * @param jobName
+	 * @param jobGroup
+	 */
 	protected void unscheduleJob(String jobName, String jobGroup) {
 		Scheduler scheduler = getScheduler();		
 		try {
@@ -203,6 +211,13 @@ public abstract class SSStatefulJob implements StatefulJob {
 		
 	}
 	
+	/**
+	 * This method removes BOTH the trigger and the job.
+	 * 
+	 * @param jobName
+	 * @param jobGroup
+	 * @return
+	 */
 	protected boolean deleteJob(String jobName, String jobGroup) {
 		Scheduler scheduler = getScheduler();
 		try {

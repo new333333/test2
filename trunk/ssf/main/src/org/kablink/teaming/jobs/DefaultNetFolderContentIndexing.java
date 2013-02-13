@@ -66,7 +66,7 @@ public class DefaultNetFolderContentIndexing extends SimpleTriggerJob implements
 		}
 		if(binderId.longValue() == -1L) {
 			logger.warn("Deleting job because binder id is not specified: " + context.toString());
-			removeJob(context);
+			deleteJob(context);
 		}
 		else {
 			try {
@@ -78,14 +78,14 @@ public class DefaultNetFolderContentIndexing extends SimpleTriggerJob implements
 					// Content indexing is disabled on this folder at this time. Probably admin has changed that 
 					// setting. Simply unschedule the job without physically deleting it. It will be re-scheduled
 					// next time the admin enables content indexing on this net folder.
-					logger.info("Unscheduling job because content indexing is currently disabled on folder by id " + binderId);
+					logger.info("Unscheduling job because content indexing is currently disabled on net folder [" + netFolderRoot.getPathName() + "]");
 					unscheduleJob(context);
 				}
 			} catch (NoBinderByTheIdException nf) {
 				// Apparently the folder on which this scheduler is defined has been removed.
 				// This is not an error. So simply remove the job.
 				logger.info("Deleting job because folder by id " + binderId + " is not found: " + context.toString());
-				removeJob(context);
+				deleteJob(context);
 			} 
 		}
 	}
