@@ -298,6 +298,7 @@ public class Constants {
     public static final String ALLOW_DESKTOP_SYNC_FIELD = "_allowDesktopSync";
     public static final String IS_LDAP_CONTAINER_FIELD = "_isLdapContainer";
     public static final String IS_GROUP_FROM_LDAP_FIELD = "_isGroupFromLdap";
+    public static final String CONTENT_INDEXED_FIELD = "_contentIndexed";
 
 	/**
 	 * Constructor method.
