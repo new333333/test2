@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,8 +50,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.DocumentException;
 import org.dom4j.io.DocumentSource;
 import org.dom4j.io.SAXReader;
@@ -71,7 +69,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
-
+/**
+ * ?
+ * 
+ * @author ?
+ */
 public abstract class TextConverter extends Converter<String> implements EntityResolver, InitializingBean
 {
 	protected String _nullTransform = "";
@@ -87,6 +89,7 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 	
 	private File nullTransformFile = null;
 	
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		nullTransformFile = new ClassPathResource(_nullTransform).getFile();
 	}
@@ -113,6 +116,7 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 		
 	}
 	
+	@Override
 	protected void createCachedFile(File convertedFile, Binder binder, DefinableEntity entry, FileAttachment fa,
 			String filePath, String relativeFilePath, String parameters)
 		throws IOException
@@ -133,7 +137,11 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 				fos.close();
 			}
 		} catch (DocumentException de) {
-			logger.warn("Failed to convert file: " + fa.getFileItem().getName() + " in Binder: " + binder.getPathName(), de);
+			String deMsg = de.toString();
+			logger.warn("Failed to convert file: " + fa.getFileItem().getName() + " in Binder: " + binder.getPathName() + ":  " + deMsg);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Failed to convert file: " + fa.getFileItem().getName() + " in Binder: " + binder.getPathName() + ":EXCEPTION", de);
+			}
 		}
 		finally
 		{
@@ -150,6 +158,7 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 	//      http://forums.java.net/jive/thread.jspa?threadID=38493
 	// which describes one solution which is to always replace the
 	// DTD's with references to an empty XML document.
+	@Override
 	public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 		return new InputSource(new ByteArrayInputStream("<?xml version='1.0' encoding='UTF-8'?>".getBytes()));
 	}
@@ -239,6 +248,7 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 		return nullTransformFile;
 	}
 	
+	@Override
 	protected void createConvertedFileWithDefaultContent(File convertedFile) throws IOException {
 		// simply create an empty file
 		convertedFile.createNewFile();
