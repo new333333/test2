@@ -106,7 +106,8 @@ public class LoginFilter  implements Filter {
 				boolean mobileFullUI = false;
 				if (session != null) {
 					Boolean mfu = (Boolean) session.getAttribute(WebKeys.MOBILE_FULL_UI);
-					if (mfu != null && mfu) {
+					if (Utils.checkIfFilr() || (mfu != null && mfu)) {
+						//In Filr we don't support the mobile ui. just use the full ui
 						mobileFullUI = true;
 					}
 				}
