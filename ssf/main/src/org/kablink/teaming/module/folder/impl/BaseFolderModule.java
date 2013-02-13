@@ -54,6 +54,11 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
     }
 
 	@Override
+	public void deleteSynchronizationJob(Long folderId) {
+		throw new UnsupportedOperationException("deleteSynchronizationJob operation is not supported in the base edition");
+	}
+
+	@Override
 	public boolean isSyncStatsEnabled() {
 		return false;
 	}

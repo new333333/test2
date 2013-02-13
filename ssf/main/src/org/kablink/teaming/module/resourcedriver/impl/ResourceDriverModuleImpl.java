@@ -67,6 +67,8 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.util.NetFolderHelper;
@@ -484,7 +486,9 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	 */
 	private NetFolderServerSynchronization getSynchronizationScheduleObject() 
 	{
-		return new DefaultNetFolderServerSynchronization();
+		String className = SPropsUtil.getString("job.net.folder.server.synchronization.class", "org.kablink.teaming.jobs.DefaultNetFolderServerSynchronization");
+
+		return (NetFolderServerSynchronization)ReflectHelper.getInstance(className);
     }    
 
 	/**
