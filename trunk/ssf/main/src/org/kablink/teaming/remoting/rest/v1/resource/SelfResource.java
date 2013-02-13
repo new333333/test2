@@ -485,7 +485,7 @@ public class SelfResource extends AbstractFileResource {
             return new SearchResultList<RecentActivityEntry>();
         }
         Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binders, entries, null, true, Constants.LASTACTIVITY_FIELD);
-        SearchResultList<RecentActivityEntry> resultList = _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, "/net_folders/recent_activity", nextParams);
+        SearchResultList<RecentActivityEntry> resultList = _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, "/self/my_files/recent_activity", nextParams);
         setMyFilesParents(resultList);
         return resultList;
     }
