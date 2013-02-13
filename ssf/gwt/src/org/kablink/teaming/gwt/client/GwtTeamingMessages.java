@@ -722,6 +722,7 @@ public interface GwtTeamingMessages extends Messages
 	String backgroundColorLabel();
 	String binderOverridesBrandingLabel();
 	String brandingDlgHeader();
+	String brandingDlgSiteBrandingHeader();
 	String brandingRulesLabel();
 	String backgroundImgLabel();
 	String cantEditBranding();
@@ -729,6 +730,11 @@ public interface GwtTeamingMessages extends Messages
 	String colorHint();
 	String displayColorPicker();
 	String editAdvancedBranding();
+	String editBrandingDlg_CurrentImage();
+	String editBrandingDlg_CustomLoginDlgImg();
+	String editBrandingDlg_LoginDialogCaption();
+	String editBrandingDlg_LoginDialogImgHint();
+	String editBrandingDlg_UploadLabel();
 	String imgNone();
 	String invalidBackgroundColor( String color );
 	String invalidTextColor( String color );

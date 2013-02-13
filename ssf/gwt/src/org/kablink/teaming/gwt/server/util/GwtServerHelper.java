@@ -3750,6 +3750,27 @@ public class GwtServerHelper {
 			    				}
 			    			}
 			    			
+			    			// Get the name of the branding image
+			    			attrNode = node.selectSingleNode( "@loginDlgImgName" );
+			    			if ( attrNode != null )
+			    			{
+			        			imgName = attrNode.getText();
+
+			    				if ( imgName != null && imgName.length() > 0 )
+			    				{
+			    					brandingExt.setLoginDlgImgName( imgName );
+
+			    					// Is the image name "__no image__" or "__default teaming image__"?
+			    					// These are special names that don't represent a real image file name.
+			    					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
+			    					{
+			    						// No, Get a url to the file.
+				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
+				    					brandingExt.setLoginDlgImgUrl( fileUrl );
+			    					}
+			    				}
+			    			}
+			    			
 			    			// Get the type of branding, "advanced" or "image"
 			    			attrNode = node.selectSingleNode( "@brandingType" );
 			    			if ( attrNode != null )

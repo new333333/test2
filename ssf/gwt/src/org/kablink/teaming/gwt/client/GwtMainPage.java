@@ -56,7 +56,6 @@ import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EditCurrentBinderBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EditPersonalPreferencesEvent;
-import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FilesDroppedEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
@@ -212,7 +211,6 @@ public class GwtMainPage extends ResizeComposite
 		ContextChangingEvent.Handler,
 		EditCurrentBinderBrandingEvent.Handler,
 		EditPersonalPreferencesEvent.Handler,
-		EditSiteBrandingEvent.Handler,
 		FullUIReloadEvent.Handler,
 		GotoContentUrlEvent.Handler,
 		GotoMyWorkspaceEvent.Handler,
@@ -314,7 +312,6 @@ public class GwtMainPage extends ResizeComposite
 		// Edit events.
 		TeamingEvents.EDIT_CURRENT_BINDER_BRANDING,
 		TeamingEvents.EDIT_PERSONAL_PREFERENCES,
-		TeamingEvents.EDIT_SITE_BRANDING,
 
 		// Invoke events.
 		TeamingEvents.INVOKE_ADD_NEW_FOLDER,
@@ -924,6 +921,14 @@ public class GwtMainPage extends ResizeComposite
 	}// end getMainPageInfo()
 
 	/**
+	 * Return the mast head object
+	 */
+	public MastHead getMastHead()
+	{
+		return m_mastHead;
+	}
+	
+	/**
 	 * Returns any current search tab ID.
 	 * 
 	 * @return
@@ -1519,6 +1524,8 @@ public class GwtMainPage extends ResizeComposite
 					true,
 					x,
 					y,
+					null,
+					null,
 					new EditBrandingDlgClient() {				
 				@Override
 				public void onUnavailable()
@@ -2632,22 +2639,6 @@ public class GwtMainPage extends ResizeComposite
 			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 		}
 	}// end onEditPersonalPreferences()
-	
-	/**
-	 * Handles EditSiteBrandingEvent's received by this class.
-	 * 
-	 * Implements the EditSiteBrandingEvent.Handler.onEditSiteBranding() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onEditSiteBranding( EditSiteBrandingEvent event )
-	{
-		GwtBrandingData siteBrandingData;
-		
-		siteBrandingData = m_mastHead.getSiteBrandingData();
-		editBranding( siteBrandingData, event.getX(), event.getY() );
-	}// end onEditSiteBranding()
 	
 	/**
 	 * Handles FullUIReloadEvent's received by this class.

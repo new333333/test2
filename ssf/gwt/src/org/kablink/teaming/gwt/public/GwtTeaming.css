@@ -1270,6 +1270,18 @@ body, table td, select
 	width: 28px;
 }
 
+.editBrandingDlg_LoginDialogHint
+{
+	color: #4D6D8B;
+	font-size: 1em;
+	margin-bottom: 0.5em;
+}
+
+.editBrandingDlg_LoginDialogCaptionPanel
+{
+	font-size: 13px;
+}
+
 /* Style used for links in the "edit branding" dialog. */
 .editBrandingLink, .editorOverridesLink2, .selfRegLink2, .landingPagePropertiesLink
 {
@@ -3090,7 +3102,7 @@ body, table td, select
 	text-align:center;
 	position: relative;
 }
-.subhead-control-bg1
+.subhead-control-bg1, .editBrandingBrowseLink:hover
 {
 	background: url(images/trans10_black_blend.png) repeat;
 	background-position:bottom;
