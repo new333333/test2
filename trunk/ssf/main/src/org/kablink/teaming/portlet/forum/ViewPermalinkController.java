@@ -103,7 +103,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			isMobile = (BrowserSniffer.is_mobile(httpReq, userAgents) && 
 					!BrowserSniffer.is_tablet(httpReq, tabletUserAgents, testForAndroid));
 		}
-		if (WebUrlUtil.isMobileFullUI(httpReq)) isMobile = false;
+		if (WebUrlUtil.isMobileFullUI(httpReq) || Utils.checkIfFilr()) isMobile = false;
 		
 		try {
 			if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
@@ -243,7 +243,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		Boolean testForAndroid = org.kablink.teaming.util.SPropsUtil.getBoolean("tablet.useDefaultTestForAndroidTablets", false);
 		if (httpReq != null) {
 			isMobile = (BrowserSniffer.is_mobile(httpReq, userAgents) && !BrowserSniffer.is_tablet(httpReq, tabletUserAgents, testForAndroid));
-			if (WebUrlUtil.isMobileFullUI(httpReq)) isMobile = false;
+			if (WebUrlUtil.isMobileFullUI(httpReq) || Utils.checkIfFilr()) isMobile = false;
 		}
 		//binderId is not longer required on all entries
 		String zoneUUID= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
