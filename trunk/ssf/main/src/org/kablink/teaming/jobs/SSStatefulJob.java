@@ -154,6 +154,11 @@ public abstract class SSStatefulJob implements StatefulJob {
 		context.setResult("Success");
 		return;
 	}
+	protected void unscheduleJob(JobExecutionContext context) {
+		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.UnscheduleJob);
+		context.setResult("Success");
+		return;
+	}
 	protected void setupSession() {
 		SessionUtil.sessionStartup();		
 	}
@@ -188,15 +193,27 @@ public abstract class SSStatefulJob implements StatefulJob {
 		throw new JobExecutionException(e);
 	}
 	
-	protected void removeJob(String jobName, String jobGroup) {
+	protected void unscheduleJob(String jobName, String jobGroup) {
 		Scheduler scheduler = getScheduler();		
 		try {
 			scheduler.unscheduleJob(jobName, jobGroup);
 		} catch (SchedulerException se) {			
-			logger.error(se.getLocalizedMessage()==null?se.getMessage():se.getLocalizedMessage());
+			logger.error("Failed to unschedule job '" + jobName + "' of group '" + jobGroup + "': " + se.toString());
 		}
 		
 	}
+	
+	protected boolean deleteJob(String jobName, String jobGroup) {
+		Scheduler scheduler = getScheduler();
+		try {
+			scheduler.deleteJob(jobName, jobGroup);
+			return true;
+		} catch (SchedulerException se) {
+			logger.error("Failed to delete job '" + jobName + "' of group '" + jobGroup + "': " + se.toString());
+			return false;
+		}
+	}
+	
 	protected abstract void doExecute(JobExecutionContext context) throws JobExecutionException;
 
 	protected String getDefaultCleanupListener() {

@@ -123,6 +123,7 @@ import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
@@ -3298,4 +3299,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
             luceneSession.close();
         }
 	}
+	
+
 }

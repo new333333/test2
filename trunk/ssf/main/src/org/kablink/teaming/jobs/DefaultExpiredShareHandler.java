@@ -98,7 +98,7 @@ public class DefaultExpiredShareHandler extends SimpleTriggerJob implements Expi
 
 	@Override
 	public void remove(Long zoneId) {
-		removeJob(zoneId.toString(), EXPIRED_SHARE_HANDLER_GROUP);
+		unscheduleJob(zoneId.toString(), EXPIRED_SHARE_HANDLER_GROUP);
 	}
 
 	protected ProfileDao getProfileDao() {

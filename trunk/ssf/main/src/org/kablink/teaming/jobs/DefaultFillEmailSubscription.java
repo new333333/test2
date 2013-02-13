@@ -80,7 +80,7 @@ public class DefaultFillEmailSubscription extends SimpleTriggerJob implements Fi
     }
 
 	public void remove(Long zoneId) {
-		removeJob(zoneId.toString(), SUBSCRIPTION_GROUP);		
+		unscheduleJob(zoneId.toString(), SUBSCRIPTION_GROUP);		
 	}
 	
     public void schedule(Long zoneId, Date changeDate, int minutes) {

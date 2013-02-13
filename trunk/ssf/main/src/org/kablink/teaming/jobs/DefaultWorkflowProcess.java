@@ -171,7 +171,7 @@ public class DefaultWorkflowProcess extends SimpleTriggerJob implements Workflow
 			//old jobs could be registered that were not rolledback
 			//If I integrate the transaction into quartz I get deadlocks
 			//so this will have to do.
-			removeJob(clazz, groupName);
+			unscheduleJob(clazz, groupName);
 		} catch (Exception noexist) {};
 		JobDataMap data = new JobDataMap();
 		data.put(ZONEID,wfState.getZoneId());
