@@ -2314,6 +2314,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		//See if the file contents are supposed to be indexed
 		//The root folder of a folder chain dictates if file contents are to be indexed
 		Binder rootFolder = AccessUtils.getRootFolder(entity);
+		Field contentIndexTypeField;
 		if (!skipFileContentIndexing && (rootFolder == null || rootFolder.getIndexContent())) {
 			//The file contents of files in this folder are to be added to the index
 			// Get the Text converter from manager
@@ -2326,9 +2327,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				// can do about this limitation of software.
 				logger.error("AbstractBinderProcessor.buildIndexDocumentFromFile( EXCEPTION:1 ):  ", e);
 			}
+			// Indicate that file content is being indexed.
+            contentIndexTypeField = FieldFactory.createFieldStoredNotAnalyzed(Constants.CONTENT_INDEXED_FIELD, Constants.TRUE);
 		} else {
 			//The text contents are not added
+	        contentIndexTypeField = FieldFactory.createFieldStoredNotAnalyzed(Constants.CONTENT_INDEXED_FIELD, Constants.FALSE);
 		}
+        indexDoc.add(contentIndexTypeField);
 			
 		// Is there a relevance engine engine enabled?
     	Relevance relevanceEngine = getRelevanceManager().getRelevanceEngine();
