@@ -42,7 +42,6 @@ import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 
 /**
@@ -179,21 +178,17 @@ public class DefaultNetFolderServerSynchronization extends SSCronTriggerJob
 	
 	@Override
 	public void deleteJob(Long netFolderServerId) {
-		Scheduler scheduler = getScheduler();
-		try {
-			// Try deleting the job directly
-			scheduler.deleteJob(netFolderServerId.toString(), SYNCHRONIZATION_GROUP);
-		} catch (SchedulerException e) {
-			// For whatever reason, could not delete the job (probably because the job is currently executing or something)
-			logger.warn("Failed to delete quartz job for net folder server " + netFolderServerId + " at this time: " + e.toString());
-			ScheduleInfo si = this.getScheduleInfo(netFolderServerId);
-			// Now, here's a backup strategy - Enable the job if currently disabled. This way, the job will
-			// run, realize that the binder is gone, and self-clean itself by removing the job.
-			if (si != null && !si.isEnabled()) {
-				si.setEnabled(true);
-				this.setScheduleInfo(si, netFolderServerId);
-			}
+		// Try deleting the job directly
+		if(super.deleteJob(netFolderServerId.toString(), SYNCHRONIZATION_GROUP))
+			return; // no error
+			
+		// For whatever reason, could not delete the job (probably because the job is currently executing or something)
+		ScheduleInfo si = this.getScheduleInfo(netFolderServerId);
+		// Now, here's a backup strategy - Enable the job if currently disabled. This way, the job will
+		// run, realize that the binder is gone, and self-clean itself by removing the job.
+		if (si != null && !si.isEnabled()) {
+			si.setEnabled(true);
+			this.setScheduleInfo(si, netFolderServerId);
 		}
-
 	}
 }

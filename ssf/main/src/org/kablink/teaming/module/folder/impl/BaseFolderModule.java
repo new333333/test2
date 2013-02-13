@@ -36,26 +36,31 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.StatusTicket;
 
 
 public class BaseFolderModule extends AbstractFolderModule implements BaseFolderModuleMBean {
 
 	public boolean fullSynchronize(Long folderId, StatusTicket statusTicket) throws FIException, UncheckedIOException {
-		throw new UnsupportedOperationException("synchronize operation is not supported in the base edition");
+		return true;
 	}
 	
 	public ScheduleInfo getSynchronizationSchedule(Long folderId) {
-		throw new UnsupportedOperationException("getSynchronizationSchedule operation is not supported in the base edition");
+		return null;
 	}
 	
 	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId) {
-		throw new UnsupportedOperationException("setSynchronizationSchedule operation is not supported in the base edition");
     }
 
 	@Override
 	public void deleteSynchronizationJob(Long folderId) {
-		throw new UnsupportedOperationException("deleteSynchronizationJob operation is not supported in the base edition");
+	}
+
+	@Override
+    public void indexFileContentForNetFolder(Folder netFolderRoot) {
 	}
 
 	@Override
@@ -82,7 +87,7 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 
 	@Override
 	public boolean jitSynchronize(Folder folder) {
-		throw new UnsupportedOperationException("jits operation is not supported in the base edition");
+		return true;
 	}
 
 	@Override
@@ -94,4 +99,8 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 		return "";
 	}
 
+	@Override
+	public void modifyNetFolder(Long folderId, String rootName, String path, Boolean isHomeDir, boolean indexContent)
+			throws AccessControlException, WriteFilesException, WriteEntryDataException {
+	}
 }
