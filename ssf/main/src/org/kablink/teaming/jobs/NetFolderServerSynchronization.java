@@ -42,21 +42,13 @@ public interface NetFolderServerSynchronization
 {
 	public static final String SYNCHRONIZATION_GROUP = "net-folder-server-synchronizations";
 	public static final String SYNCHRONIZATION_DESCRIPTION = "Synchronize net folders associated with net folder server: ";
-	
+		
 	/**
 	 * 
-	 * @param enable
-	 * @param zoneId
-	 */
-	void enable(boolean enable, Long zoneId);
-	
-	/**
-	 * 
-	 * @param zoneId
 	 * @param folderId
 	 * @return
 	 */
-	public ScheduleInfo getScheduleInfo( Long zoneId, Long netFolderServerId );
+	public ScheduleInfo getScheduleInfo( Long netFolderServerId );
 	
 	/**
 	 * 
@@ -65,4 +57,5 @@ public interface NetFolderServerSynchronization
 	 */
 	public void setScheduleInfo( ScheduleInfo schedulerInfo, Long netFolderServerId );
 
+	public void deleteJob(Long netFolderServerId);
 }

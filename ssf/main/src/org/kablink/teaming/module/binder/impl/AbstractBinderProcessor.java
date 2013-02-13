@@ -146,6 +146,7 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.FieldFactory;
+import org.quartz.SchedulerException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -1055,11 +1056,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   // Delete associated schedule, if any.
 	   if(binder.isMirrored()) {
 		   MirroredFolderSynchronization sync = new DefaultMirroredFolderSynchronization();
-		   ScheduleInfo si = sync.getScheduleInfo(binder.getZoneId(), binder.getId());
-		   if(si != null && si.isEnabled()) {
-			   si.setEnabled(false);
-			   sync.setScheduleInfo(si, binder.getId());
-		   }
+		   sync.deleteJob(binder.getId());
 	   }
 	   
 	   	// Delete the source resource, if so required.

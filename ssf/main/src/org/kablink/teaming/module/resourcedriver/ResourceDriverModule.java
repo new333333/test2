@@ -125,11 +125,10 @@ public interface ResourceDriverModule {
     /**
      * Get the synchronization schedule
      * 
-     * @param zoneId
      * @param driverId
      * @return
      */
-    public ScheduleInfo getSynchronizationSchedule( Long zoneId, Long driverId );
+    public ScheduleInfo getSynchronizationSchedule( Long driverId );
     
     /**
      * Set the sync schedule

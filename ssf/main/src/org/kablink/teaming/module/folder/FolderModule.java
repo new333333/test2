@@ -686,7 +686,7 @@ public interface FolderModule {
 	public boolean fullSynchronize(Long folderId, StatusTicket statusTicket)
 		throws AccessControlException, FIException, UncheckedIOException, ConfigurationException;
 	
-	public ScheduleInfo getSynchronizationSchedule(Long zoneId, Long folderId);	
+	public ScheduleInfo getSynchronizationSchedule(Long folderId);	
 	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId);
 	
 	public ScheduleInfo getNotificationSchedule(Long zoneId, Long folderId);	
@@ -695,4 +695,13 @@ public interface FolderModule {
 	public Long getZoneEntryId(Long entryId, String zoneUUID);
 	
     public boolean jitSynchronize(Folder folder);
+    
+    /**
+     * This method is meant to be used only from the background job that indexes file content
+     * in coordination with file sync process. Must NOT be used directly by the application layer.
+     * 
+     * @param netFolderRoot
+     */
+    public void indexFileContentForNetFolder(Folder netFolderRoot);
+
 }

@@ -42,9 +42,9 @@ public interface MirroredFolderSynchronization  {
 	public static final String SYNCHRONIZATION_GROUP="mirrored-folder-synchronizations";
 	public static final String SYNCHRONIZATION_DESCRIPTION="Synchronize mirrored folder ";
 	
-	void enable(boolean enable, Long zoneId);
-	public ScheduleInfo getScheduleInfo(Long zoneId, Long folderId);
+	public void deleteJob(Long folderId);
+	public ScheduleInfo getScheduleInfo(Long folderId);
 	public void setScheduleInfo(ScheduleInfo schedulerInfo, Long folderId);
-	
+
 
 }
