@@ -190,9 +190,13 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                          @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, SearchUtils.libraryFolders(), offset, maxCount, getBasePath() + id + "/library_folders", nextParams, textDescriptions, ifModifiedSince);
-        return Response.ok(subBinders).lastModified(subBinders.getLastModified()).build();
+        return Response.ok(subBinders).lastModified(lastModified).build();
    	}
 
     @POST
@@ -223,10 +227,14 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
         nextParams.put("recursive", Boolean.toString(recursive));
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, recursive);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
         SearchResultList<FileProperties> subFiles = getSubFiles(id, fileName, recursive, true, includeParentPaths,
                 offset, maxCount, getBasePath() + id + "/library_files", nextParams, ifModifiedSince);
-        return Response.ok(subFiles).lastModified(subFiles.getLastModified()).build();
+        return Response.ok(subFiles).lastModified(lastModified).build();
 	}
 
     // Read entries
@@ -246,10 +254,14 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
         nextParams.put("recursive", Boolean.toString(recursive));
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, recursive);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
         SearchResultList<FileProperties> subFiles = getSubFiles(id, fileName, recursive, false, includeParentPaths,
                 offset, maxCount, getBasePath() + id + "/files", nextParams, ifModifiedSince);
-        return Response.ok(subFiles).lastModified(subFiles.getLastModified()).build();
+        return Response.ok(subFiles).lastModified(lastModified).build();
 	}
 
 	@GET

@@ -248,21 +248,14 @@ public class SelfResource extends AbstractFileResource {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
 
-        Date lastModified = null;
-        if (getLoggedInUser().getWorkspaceId()!=null) {
-            try {
-                Workspace ws = getWorkspaceModule().getWorkspace(getLoggedInUser().getWorkspaceId());
-                lastModified = ws.getModificationDate();
-            } catch (Exception e) {
-            }
-        }
+        Date lastModified = getMyFilesLibraryModifiedDate(false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
         SearchResultList<BinderBrief> results = _getMyFilesLibraryFolders(textDescriptions, offset, maxCount, lastModified);
         if (lastModified!=null) {
-            if (ifModifiedSince!=null && !ifModifiedSince.before(results.getLastModified())) {
-                throw new NotModifiedException();
-            }
-            return Response.ok(results).lastModified(results.getLastModified()).build();
+            return Response.ok(results).lastModified(lastModified).build();
         } else {
             return Response.ok(results).build();
         }
@@ -400,12 +393,13 @@ public class SelfResource extends AbstractFileResource {
         if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
-        SearchResultList<FileProperties> resultList = _getMyFilesLibraryFiles(fileName, recursive, includeParentPaths, offset, maxCount);
+        Date lastModified = getMyFilesLibraryModifiedDate(recursive);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(resultList.getLastModified())) {
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        return Response.ok(resultList).lastModified(resultList.getLastModified()).build();
+        SearchResultList<FileProperties> resultList = _getMyFilesLibraryFiles(fileName, recursive, includeParentPaths, offset, maxCount);
+        return Response.ok(resultList).lastModified(lastModified).build();
     }
 
     @POST

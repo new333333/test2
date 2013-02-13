@@ -50,6 +50,7 @@ import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
+import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
@@ -203,9 +204,13 @@ public class FolderResource extends AbstractBinderResource {
                                                        @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, offset, maxCount, "/folders/" + id + "/binders", nextParams, textDescriptions, ifModifiedSince);
-        return Response.ok(subBinders).lastModified(subBinders.getLastModified()).build();
+        return Response.ok(subBinders).lastModified(lastModified).build();
     }
 
     // Read sub-folders
@@ -219,10 +224,14 @@ public class FolderResource extends AbstractBinderResource {
             @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
                 offset, maxCount, "/folders/" + id + "/folders", nextParams, textDescriptions, ifModifiedSince);
-        return Response.ok(subBinders).lastModified(subBinders.getLastModified()).build();
+        return Response.ok(subBinders).lastModified(lastModified).build();
 	}
 
     @POST

@@ -22,6 +22,7 @@ import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.file.FileIndexData;
+import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
@@ -32,7 +33,9 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.util.search.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlTransient;
@@ -268,12 +271,22 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/with_user/{id}/library_folders")
-    public SearchResultList<SharedBinderBrief> getLibraryFoldersSharedWithUser(@PathParam("id") Long userId,
+    public Response getLibraryFoldersSharedWithUser(@PathParam("id") Long userId,
                                                                                @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
-                                                                               @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
+                                                                               @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
+                                                                               @Context HttpServletRequest request) {
+        Date lastModified = getSharedWithLibraryModifiedDate(userId, false);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
         results.appendAll(getSharedWithBinders(userId, true, true, showHidden, showUnhidden));
-        return results;
+        if (lastModified!=null) {
+            return Response.ok(results).lastModified(lastModified).build();
+        } else {
+            return Response.ok(results).build();
+        }
     }
 
     @GET
@@ -326,12 +339,18 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/with_user/{id}/files")
-    public SearchResultList<FileProperties> getFilesSharedWithUser(@PathParam("id") Long userId,
+    public Response getFilesSharedWithUser(@PathParam("id") Long userId,
                                                                    @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                    @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                    @QueryParam("file_name") String fileName,
                                                                    @QueryParam("recursive") @DefaultValue("false") boolean recursive,
-                                                                   @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
+                                                                   @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
+                                                                   @Context HttpServletRequest request) {
+        Date lastModified = getSharedWithLibraryModifiedDate(userId, false);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.appendAll(getSharedWithFiles(userId, false, showHidden, showUnhidden));
         if (recursive) {
@@ -340,17 +359,27 @@ public class ShareResource extends AbstractResource {
         if (includeParentPaths) {
             populateParentBinderPaths(results);
         }
-        return results;
+        if (lastModified!=null) {
+            return Response.ok(results).lastModified(lastModified).build();
+        } else {
+            return Response.ok(results).build();
+        }
     }
 
     @GET
     @Path("/with_user/{id}/library_files")
-    public SearchResultList<FileProperties> getLibraryFilesSharedWithUser(@PathParam("id") Long userId,
+    public Response getLibraryFilesSharedWithUser(@PathParam("id") Long userId,
                                                                           @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                           @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                           @QueryParam("file_name") String fileName,
                                                                           @QueryParam("recursive") @DefaultValue("false") boolean recursive,
-                                                                          @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
+                                                                          @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
+                                                                          @Context HttpServletRequest request) {
+        Date lastModified = getSharedWithLibraryModifiedDate(userId, false);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.appendAll(getSharedWithFiles(userId, true, showHidden, showUnhidden));
         if (recursive) {
@@ -359,7 +388,11 @@ public class ShareResource extends AbstractResource {
         if (includeParentPaths) {
             populateParentBinderPaths(results);
         }
-        return results;
+        if (lastModified!=null) {
+            return Response.ok(results).lastModified(lastModified).build();
+        } else {
+            return Response.ok(results).build();
+        }
     }
 
     @GET

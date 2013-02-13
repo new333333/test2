@@ -43,6 +43,7 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
+import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
@@ -136,9 +137,13 @@ public class WorkspaceResource extends AbstractBinderResource {
                                                        @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, offset, maxCount, "/workspaces/" + id + "/binders", nextParams, textDescriptions, ifModifiedSince);
-        return Response.ok(subBinders).lastModified(subBinders.getLastModified()).build();
+        return Response.ok(subBinders).lastModified(lastModified).build();
     }
 
     @GET
@@ -163,10 +168,15 @@ public class WorkspaceResource extends AbstractBinderResource {
             @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_WORKSPACE),
                 offset, maxCount, "/workspaces/" + id + "/workspaces", nextParams, textDescriptions, ifModifiedSince);
-        return Response.ok(subBinders).lastModified(subBinders.getLastModified()).build();
+        return Response.ok(subBinders).lastModified(lastModified).build();
 	}
 
     @POST
@@ -197,10 +207,15 @@ public class WorkspaceResource extends AbstractBinderResource {
             @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
                 offset, maxCount, "/workspaces/" + id + "/folders", nextParams, textDescriptions, ifModifiedSince);
-        return Response.ok(subBinders).lastModified(subBinders.getLastModified()).build();
+        return Response.ok(subBinders).lastModified(lastModified).build();
 	}
 
     @POST

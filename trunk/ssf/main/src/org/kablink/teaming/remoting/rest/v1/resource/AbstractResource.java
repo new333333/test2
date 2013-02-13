@@ -971,39 +971,38 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 or.add(buildAncentryCriterion(binderId));
             }
             crit.add(or);
-            or = Restrictions.disjunction();
-            or.add(buildWorkspacesCriterion());
+            or = buildWorkspacesAndLibraryEntitiesCriterion(includeAttachments);
             crit.add(or);
-
-            Junction and = Restrictions.conjunction();
-            or.add(and);
-            and.add(buildLibraryCriterion(Boolean.TRUE));
-            or = Restrictions.disjunction();
-            or.add(buildFoldersCriterion());
-            or.add(buildEntriesCriterion());
-            if (includeAttachments) {
-                or.add(buildAttachmentsCriterion());
-            }
-            and.add(or);
         } else {
             Junction or = Restrictions.disjunction();
-            crit.add(or);
             for (Long binderId : binderIds) {
                 or.add(buildBinderCriterion(binderId));
-                Junction entryAnd = Restrictions.conjunction();
-                Junction typeOr = Restrictions.disjunction();
-                typeOr.add(buildEntriesCriterion());
-                if (includeAttachments) {
-                    typeOr.add(buildAttachmentsCriterion());
-                }
-                entryAnd.add(typeOr);
-                entryAnd.add(buildParentBinderCriterion(binderId));
-                or.add(entryAnd);
+                or.add(buildParentBinderCriterion(binderId));
             }
+            crit.add(or);
+            crit.add(buildWorkspacesAndLibraryEntitiesCriterion(includeAttachments));
         }
 
         crit.addOrder(new Order(Constants.MODIFICATION_DATE_FIELD, false));
         return crit;
+    }
+
+    private Junction buildWorkspacesAndLibraryEntitiesCriterion(boolean includeAttachments) {
+        Junction or;
+        or = Restrictions.disjunction();
+        or.add(buildWorkspacesCriterion());
+
+        Junction and = Restrictions.conjunction();
+        or.add(and);
+        and.add(buildLibraryCriterion(Boolean.TRUE));
+        or = Restrictions.disjunction();
+        or.add(buildFoldersCriterion());
+        or.add(buildEntriesCriterion());
+        if (includeAttachments) {
+            or.add(buildAttachmentsCriterion());
+        }
+        and.add(or);
+        return or;
     }
 
     protected Date getMyFilesLibraryModifiedDate(boolean recursive) {
@@ -1015,6 +1014,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             ids = homeFolderIds.toArray(new Long[homeFolderIds.size()]);
         } else {
             List<Long> hiddenFolderIds = SearchUtils.getMyFilesFolderIds(this, getLoggedInUser());
+            hiddenFolderIds.add(getMyFilesFolderParent().getId());
             ids = hiddenFolderIds.toArray(new Long[hiddenFolderIds.size()]);
         }
         return getLibraryModifiedDate(ids, recursive);
