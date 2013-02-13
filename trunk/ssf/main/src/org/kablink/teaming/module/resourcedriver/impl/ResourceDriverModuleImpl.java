@@ -451,6 +451,8 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			throw new RDException(NLT.get(RDException.NO_SUCH_RESOURCE_DRIVER_NAME, new String[] {name}), name);
 		}
 		
+		Long driverId = rdc.getId();
+		
 	   	//Modify this resource driver config
     	SimpleProfiler.start("deleteResourceDriverConfig");
     	// 	The following part requires update database transaction.
@@ -470,6 +472,11 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		
 		//Remove this resource driver from the list of drivers
 		getResourceDriverManager().resetResourceDriverList();
+		
+		// Finally, delete the background job associated with this driver
+		
+		NetFolderServerSynchronization job = getSynchronizationScheduleObject();
+		job.deleteJob(driverId);
 	}
 
 	/**
@@ -484,9 +491,9 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	 * Get the sync schedule for the given driver.
 	 */
 	@Override
-	public ScheduleInfo getSynchronizationSchedule( Long zoneId, Long driverId )
+	public ScheduleInfo getSynchronizationSchedule( Long driverId )
 	{
-  		return getSynchronizationScheduleObject().getScheduleInfo( zoneId, driverId );
+  		return getSynchronizationScheduleObject().getScheduleInfo( driverId );
 	}
 
 	/**
@@ -543,8 +550,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 					ScheduleInfo scheduleInfo;
 					
 					// Does this net folder have a sync schedule that is enabled?
-					zoneId = RequestContextHolder.getRequestContext().getZoneId();
-					scheduleInfo = folderModule.getSynchronizationSchedule( zoneId, binderId );
+					scheduleInfo = folderModule.getSynchronizationSchedule( binderId );
 					if ( excludeFoldersWithSchedule == false || scheduleInfo == null || scheduleInfo.isEnabled() == false )
 					{
 						try {

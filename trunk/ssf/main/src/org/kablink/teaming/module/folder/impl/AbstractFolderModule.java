@@ -55,6 +55,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Query;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.BinderQuotaException;
@@ -90,6 +91,7 @@ import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.Visits;
 import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
@@ -107,6 +109,7 @@ import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -152,6 +155,7 @@ import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Order;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -1692,16 +1696,66 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		return processor.buildIndexDocumentFromEntry(binder, entry, tags);
     }    
 
-    public void indexFileContentInFolder(Long netFolderRoot) {
-    	// $$$$$$$$$$$
+    @Override
+    public void indexFileContentForNetFolder(Folder netFolderRoot) {
+    	Criteria crit = new Criteria()
+    	.add(eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT))
+    	.add(eq(Constants.CONTENT_INDEXED_FIELD, Constants.FALSE))
+    	.add(eq(Constants.ENTRY_ANCESTRY, netFolderRoot.getId().toString()));
     	
-    	
+		QueryBuilder qb = new QueryBuilder(false, false);
+    	org.dom4j.Document qTree = crit.toQuery();
+		SearchObject so = qb.buildQuery(qTree);   	
+   	
+    	Query soQuery = so.getLuceneQuery();
+    	    	    	
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
+        
+    	Hits hits = null;
+        try {
+    		hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
+        		null, 
+        		Constants.SEARCH_MODE_NORMAL, 
+        		soQuery, 
+        		null, 
+        		0, 
+        		Integer.MAX_VALUE);
+        }
+        finally {
+            luceneSession.close();
+        }
+
+        int count = hits.length();
+        String fileId;
+        for(int i = 0; i < count; i++) {
+        	fileId = hits.doc(i).get(Constants.FILE_ID_FIELD);
+        	if(fileId != null) {
+        		try {
+        			indexFileContent(fileId);
+        		}
+        		catch(Exception e) {
+            		logger.error("Error indexing file by id [" + fileId + "] for net folder [" + netFolderRoot.getPathName() + "]", e);
+        		}
+        	}
+        }
+
     }
     
-    protected void indexFileContentInEntry(FileAttachment fa) throws Exception {
+    protected void indexFileContent(String fileId) {	
+    	FileAttachment fa = (FileAttachment) getCoreDao().load(FileAttachment.class, fileId);
+    	if(fa == null) {
+    		logger.error("No file is found by the id [" + fileId + "]");
+    		return;
+    	}
+    		
+    	if(fa instanceof VersionAttachment) {
+    		logger.error("The file id [" + fileId + "] represents a file version rather than a file");
+    		return;
+    	}
+    	
         DefinableEntity entity = fa.getOwner().getEntity();
         if(!(entity instanceof FolderEntry)) {
-        	logger.error("The file with id [" + fa.getId() + "] is owned by an entity that is not a folder entry");
+        	logger.error("The file by id [" + fa.getId() + "] is owned by an entity that is not a folder entry");
         	return;
         }
         
@@ -1711,13 +1765,14 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         FolderCoreProcessor processor = loadProcessor(folder);
         
         // Delete existing document from the index.
-        IndexSynchronizationManager.deleteDocuments(new Term(Constants.FILE_ID_FIELD, fa.getId()));
+        IndexSynchronizationManager.deleteDocuments(new Term(Constants.FILE_ID_FIELD, fileId));
+        
         // Add new document with file content.
     	try {
     		IndexSynchronizationManager.addDocument(processor.buildIndexDocumentFromEntryFile(folder, entry, fa, null, false));
     	}
     	catch(Exception e) {
-    		logger.error("Error indexing file '" + fa.getFileItem().getName() + "' for entry '" + entry.getId() + "'", e);
+    		logger.error("Error indexing file '" + fa.getFileItem().getName() + "' (id=[" + fileId + "]) in folder [" + folder.getPathName() + "]", e);
     	}
     }
     

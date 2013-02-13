@@ -597,8 +597,7 @@ public class GwtNetFolderHelper
 			return null;
 		
 		// Get the ScheduleInfo for the given binder.
-		zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		scheduleInfo = ami.getFolderModule().getSynchronizationSchedule( zoneId, binder.getId() );
+		scheduleInfo = ami.getFolderModule().getSynchronizationSchedule(binder.getId() );
 		
 		gwtSchedule = GwtNetFolderHelper.getGwtSyncSchedule( scheduleInfo );
 		
@@ -621,8 +620,7 @@ public class GwtNetFolderHelper
 			return null;
 		
 		// Get the ScheduleInfo for the given net folder server.
-		zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		scheduleInfo = ami.getResourceDriverModule().getSynchronizationSchedule( zoneId, rdConfig.getId() );
+		scheduleInfo = ami.getResourceDriverModule().getSynchronizationSchedule( rdConfig.getId() );
 
 		gwtSchedule = GwtNetFolderHelper.getGwtSyncSchedule( scheduleInfo );
 		

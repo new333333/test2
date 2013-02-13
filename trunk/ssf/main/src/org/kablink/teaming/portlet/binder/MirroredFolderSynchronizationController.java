@@ -60,8 +60,7 @@ public class MirroredFolderSynchronizationController extends  SAbstractControlle
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		response.setRenderParameters(formData);		
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
-			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-			ScheduleInfo config = getFolderModule().getSynchronizationSchedule(zoneId, binderId);			
+			ScheduleInfo config = getFolderModule().getSynchronizationSchedule(binderId);			
 			config.setSchedule(ScheduleHelper.getSchedule(request, "sync"));
 			config.setEnabled(PortletRequestUtils.getBooleanParameter(request, "enabled", false));
 			getFolderModule().setSynchronizationSchedule(config, binderId);			
@@ -78,8 +77,7 @@ public class MirroredFolderSynchronizationController extends  SAbstractControlle
 		}
 		HashMap model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		ScheduleInfo config = getFolderModule().getSynchronizationSchedule(zoneId, binderId);		
+		ScheduleInfo config = getFolderModule().getSynchronizationSchedule(binderId);		
 		
 		model.put(WebKeys.SCHEDULE_INFO, config);
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
