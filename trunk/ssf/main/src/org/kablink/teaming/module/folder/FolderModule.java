@@ -688,6 +688,7 @@ public interface FolderModule {
 	
 	public ScheduleInfo getSynchronizationSchedule(Long folderId);	
 	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId);
+	public void deleteSynchronizationJob(Long folderId);
 	
 	public ScheduleInfo getNotificationSchedule(Long zoneId, Long folderId);	
 	public void setNotificationSchedule(ScheduleInfo config, Long folderId);

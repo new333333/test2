@@ -1055,8 +1055,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    protected void deleteBinder_mirrored(Binder binder, boolean deleteMirroredSource, Map ctx) {
 	   // Delete associated schedule, if any.
 	   if(binder.isMirrored()) {
-		   MirroredFolderSynchronization sync = new DefaultMirroredFolderSynchronization();
-		   sync.deleteJob(binder.getId());
+		   getFolderModule().deleteSynchronizationJob(binder.getId());
 	   }
 	   
 	   	// Delete the source resource, if so required.
