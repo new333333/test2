@@ -691,7 +691,6 @@ public interface FolderModule {
 	
 	public ScheduleInfo getSynchronizationSchedule(Long folderId);	
 	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId);
-	public void deleteSynchronizationJob(Long folderId);
 	
 	public ScheduleInfo getNotificationSchedule(Long zoneId, Long folderId);	
 	public void setNotificationSchedule(ScheduleInfo config, Long folderId);
@@ -711,4 +710,5 @@ public interface FolderModule {
 	public void modifyNetFolder(Long folderId, String rootName, String path, Boolean isHomeDir, boolean indexContent)
 			throws AccessControlException, WriteFilesException, WriteEntryDataException;
 
+	public void deleteNetFolder(Long folderId, boolean deleteSource);
 }
