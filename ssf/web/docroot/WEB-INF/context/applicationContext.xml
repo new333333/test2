@@ -638,6 +638,7 @@
 		<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="workflowModule"><ref bean="workflowModule"/></property>
+		<property name="folderModule"><ref bean="folderModule"/></property>
 		<property name="fileModule"><ref bean="fileModule"/></property>
 		<property name="reportModule"><ref bean="reportModule"/></property>
 		<property name="rssModule"><ref bean="rssModule"/></property>

@@ -420,7 +420,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	/**
 	 * Load 1 folder
 	 */
-    public Folder loadFolder(Long folderId, Long zoneId) throws DataAccessException {
+    public Folder loadFolder(Long folderId, Long zoneId) throws NoFolderByTheIdException {
 		long begin = System.nanoTime();
 		try {
 	        if (folderId == null) {throw new NoFolderByTheIdException(folderId);}

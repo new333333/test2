@@ -306,9 +306,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     @Override
 	protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, 
-    		Collection<FileAttachment> filesToIndex, boolean skipFileContentIndexing, Map ctx) {
+    		Collection<FileAttachment> filesToIndex, Map ctx) {
   	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
-  	   super.modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToIndex, skipFileContentIndexing, ctx);
+  	   super.modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToIndex, ctx);
        	//Also re-index the top entry (to catch the change in lastActivity)
     	FolderEntry fEntry = (FolderEntry)entry;
     	if (!fEntry.isTop()) indexEntry(fEntry.getTopEntry());

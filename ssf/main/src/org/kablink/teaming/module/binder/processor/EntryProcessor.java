@@ -77,6 +77,7 @@ public interface EntryProcessor extends BinderProcessor {
     public void setWorkflowResponse(Binder binder, Entry entry, Long tokenId, InputDataAccessor inputData, Boolean canModifyEntry);
   	public IndexErrors indexEntries(Collection entries);
   	public IndexErrors indexEntry(Entry entry);
+	public IndexErrors indexEntry(Entry entry, boolean skipFileContentIndexing);
   	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags);
     public void moveEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options);
 	public ChangeLog processChangeLog(DefinableEntity entity, String operation);

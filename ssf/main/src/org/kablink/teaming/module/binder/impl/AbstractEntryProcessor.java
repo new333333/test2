@@ -622,8 +622,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	if (ctx != null) tags = (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS);
     	if (tags == null) tags = new ArrayList();
     	boolean skipFileContentIndexing = false;
-    	if(ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX)))
-    		skipFileContentIndexing = true;
+    	if(ctx != null && ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX) != null)
+    		skipFileContentIndexing = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX)).booleanValue();
     		
     	indexEntry(binder, entry, fileUploadItems, null, true, tags, skipFileContentIndexing);
     }
@@ -787,7 +787,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	}
 	    	
 	    	SimpleProfiler.start("modifyEntry_indexAdd");
-	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToReindex,false,ctx);
+	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToReindex,ctx);
 	    	SimpleProfiler.stop("modifyEntry_indexAdd");
 	    	
 	    	SimpleProfiler.start("modifyEntry_done");
@@ -1008,11 +1008,22 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
     protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, 
-    		Collection<FileAttachment> filesToIndex, boolean skipFileContentIndexing, Map ctx) {
-  	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
-  	    	//tags will be null for now
-    	indexEntry(binder, entry, fileUploadItems, filesToIndex, false, 
-    			(ctx == null ? null : (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS )), skipFileContentIndexing);
+    		Collection<FileAttachment> filesToIndex, Map ctx) {
+  	   	if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
+  	   	
+    	boolean skipFileContentIndexing = false;
+    	
+    	if(ctx != null && ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX) != null)
+    		skipFileContentIndexing = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_NO_FILE_CONTENT_INDEX)).booleanValue();
+  	   	
+  	    //tags will be null for now
+    	indexEntry(binder, 
+    			entry, 
+    			fileUploadItems, 
+    			filesToIndex, 
+    			false, 
+    			(ctx == null ? null : (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS )),			
+    			skipFileContentIndexing);
     }
 
     protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
@@ -1673,6 +1684,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	public IndexErrors indexEntry(Entry entry) {
     	return indexEntry(entry.getParentBinder(), entry, null, null, false, null, false);
     }
+    
+    @Override
+	public IndexErrors indexEntry(Entry entry, boolean skipFileContentIndexing) {
+    	return indexEntry(entry.getParentBinder(), entry, null, null, false, null, skipFileContentIndexing);
+    }
+    
     /**
      * Index entry and optionally its attached files.
      * 

@@ -112,7 +112,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean allowDesktopAppToSyncData = Boolean.TRUE;
     protected Boolean allowMobileAppsToSyncData = Boolean.TRUE;
     protected Boolean indexContent = Boolean.TRUE;
-    protected Boolean jitsEnabled = Boolean.TRUE; // Applicable only to mirrored folders
+    protected Boolean jitsEnabled; // Applicable only to mirrored folders
     protected Long jitsMaxAge; // in milliseconds
     protected Long jitsAclMaxAge; // in milliseconds
     
