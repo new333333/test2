@@ -347,15 +347,9 @@ public class FolderResource extends AbstractBinderResource {
                                                   @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("recursive", Boolean.toString(recursive));
-        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        if (keyword!=null) {
-            nextParams.put("keyword", keyword);
-        }
-        return getSubEntities(id, recursive, includeBinders, includeFolderEntries, includeFiles, includeReplies,
-                true, includeParentPaths, keyword, offset, maxCount, "/folders/" + id + "/library_entities", nextParams, textDescriptions);
+        return searchForLibraryEntities(keyword, buildSearchBinderCriterion(id, recursive), recursive, offset, maxCount,
+                includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, textDescriptions,
+                "/folders/" + id + "/library_entities");
 	}
 
     @POST

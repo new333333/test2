@@ -39,7 +39,6 @@ import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
@@ -49,7 +48,6 @@ import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
-import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderTree;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
@@ -328,7 +326,6 @@ public class SelfResource extends AbstractFileResource {
         if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
-        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         Criteria subContextSearch = null;
         if (recursive) {
             SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(false, 0, -1, null);
@@ -343,40 +340,19 @@ public class SelfResource extends AbstractFileResource {
                 subContextSearch.add(searchContext);
             }
         }
-        Criteria crit = new Criteria();
-        if (keyword!=null) {
-            crit.add(buildKeywordCriterion(keyword));
-        }
-        crit.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
-        crit.add(buildLibraryCriterion(true));
+
         Criteria myFilesCrit = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), includeBinders, includeFolderEntries, includeReplies, includeFiles);
+        Junction searchContext = null;
         if (subContextSearch!=null) {
-            crit.add(Restrictions.disjunction()
+            searchContext = Restrictions.disjunction()
                     .add(myFilesCrit.asJunction())
-                    .add(subContextSearch.asJunction())
-            );
+                    .add(subContextSearch.asJunction());
         } else {
-            crit.add(myFilesCrit.asJunction());
+            searchContext = myFilesCrit.asJunction();
         }
 
-        Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("recursive", Boolean.toString(recursive));
-        nextParams.put("binders", Boolean.toString(includeBinders));
-        nextParams.put("folder_entries", Boolean.toString(includeFolderEntries));
-        nextParams.put("files", Boolean.toString(includeFiles));
-        nextParams.put("replies", Boolean.toString(includeReplies));
-        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        if (keyword!=null) {
-            nextParams.put("keyword", keyword);
-        }
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
-                "/self/my_files/library_entities", nextParams, offset);
+        SearchResultList<SearchableObject> results = searchForLibraryEntities(keyword, searchContext, recursive, offset, maxCount, includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, textDescriptions, "/self/my_files/library_entities");
         setMyFilesParents(results);
-        if (includeParentPaths) {
-            populateParentBinderPaths(results);
-        }
         return results;
     }
 
