@@ -3601,6 +3601,27 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns a string for a value out of the entry map from a search
+	 * results.
+	 * 
+	 * @param em
+	 * @param key
+	 * @param dateStyle
+	 * @param timeStyle
+	 * 
+	 * @return
+	 */
+	public static boolean getBooleanFromEntryMap(Map em, String key) {
+		boolean	reply = false;
+		Object	v     = getValueFromEntryMap(em, key);
+		if (null != v) {
+			if      (v instanceof Boolean) reply = ((Boolean) v);
+			else if (v instanceof String)  reply = ((String) v).trim().toLowerCase().equals("true");
+		}
+		return reply;
+	}
+		
+	/**
 	 * Return the branding data for the given binder.
 	 */
 	public static GwtBrandingData getBinderBrandingData( AbstractAllModulesInjected allModules, String binderId, HttpServletRequest request ) throws GwtTeamingException
@@ -5314,6 +5335,27 @@ public class GwtServerHelper {
 	public static FileAttachment getFileEntrysFileAttachment(AllModulesInjected bs, FolderEntry fileEntry) {
 		// Always use the initial form of the method.
 		return getFileEntrysFileAttachment(bs, fileEntry, true);
+	}
+	
+	/**
+	 * Returns a file entry's FileAttachment or null if the entry isn't
+	 * a file entry or a FileAttachment with a name can't be found.
+	 * 
+	 * @param bs
+	 * @param eid
+	 */
+	public static FileAttachment getFileEntrysFileAttachment(AllModulesInjected bs, EntityId eid) {
+		FileAttachment reply = null;
+		if (eid.isEntry()) {
+			FolderEntry fe;
+			try                 {fe = bs.getFolderModule().getEntry(eid.getBinderId(), eid.getEntityId());}
+			catch (Exception e) {fe = null;                                                               }
+			if (null != fe) {
+				// Always use the initial form of the method.
+				reply = getFileEntrysFileAttachment(bs, fe, true);
+			}
+		}
+		return reply;
 	}
 	
 	/**
@@ -11097,12 +11139,13 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
-	/*
+	/**
 	 * Get the number of days since the installation
 	 * This is used with trial licenses
+	 * 
+	 * @return
 	 */
 	public static int getDaysSinceInstallation() {
 		return getCoreDao().daysSinceInstallation();
 	}
-
 }

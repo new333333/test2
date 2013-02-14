@@ -211,6 +211,7 @@ import org.kablink.teaming.portletadapter.support.KeyNames;
 import org.kablink.teaming.portletadapter.support.PortletInfo;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
+import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkArea;
@@ -656,6 +657,11 @@ public class GwtViewHelper {
 		        entryMap.put(Constants.TOTALREPLYCOUNT_FIELD,   String.valueOf(fe.getTotalReplyCount()));
 		        entryMap.put(Constants.LASTACTIVITY_FIELD,      fe.getLastActivity()                   );
 		        entryMap.put(Constants.MODIFICATION_DATE_FIELD, fe.getModification()                   );
+				FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
+				if (null != fa) {
+			        entryMap.put(Constants.FILE_TIME_FIELD,  String.valueOf(fa.getModification().getDate().getTime()));
+			        entryMap.put(Constants.IS_LIBRARY_FIELD, String.valueOf(Boolean.TRUE)                            );
+				}
 				
 				// Store the entry's parent binder's ID in the Map.
 				binderIdField = Constants.BINDER_ID_FIELD;
@@ -3629,6 +3635,10 @@ public class GwtViewHelper {
 				// Is this an entry or folder?
 				String  entityType          = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD);
 				boolean isEntityFolderEntry = EntityType.folderEntry.name().equals(entityType);
+				boolean isLibraryEntry;
+				if (isEntityFolderEntry)
+				     isLibraryEntry = GwtServerHelper.getBooleanFromEntryMap(entryMap, Constants.IS_LIBRARY_FIELD);
+				else isLibraryEntry = false;
 				
 				String locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD);
 				if (!(MiscUtil.hasString(locationBinderId))) {
@@ -3664,13 +3674,48 @@ public class GwtViewHelper {
 					
 					else {
 						// No, this isn't a custom column!
-						String cn      = fc.getColumnName();
-						String csk     = fc.getColumnSearchKey();
-						Object emValue = GwtServerHelper.getValueFromEntryMap(entryMap, csk);
-						if ((null == emValue) && csk.equals(Constants.MODIFICATION_DATE_FIELD)) {
+						String	cn        = fc.getColumnName();
+						String	csk       = fc.getColumnSearchKey();
+						Object	emValue   = GwtServerHelper.getValueFromEntryMap(entryMap, csk);
+						boolean	isModDate = csk.equals(Constants.MODIFICATION_DATE_FIELD);
+						
+						// Is it the modification date on a library entry?
+						if (isModDate && isLibraryEntry) {
+							// Yes!  Does the entry map have a file time?
+							Object ftValue = GwtServerHelper.getValueFromEntryMap(entryMap, Constants.FILE_TIME_FIELD);
+							if (null != ftValue) {
+								// Yes!  Is it a single string value?
+								if (ftValue instanceof String) {
+									// Yes!  Then we use that as the
+									// modification time.
+									emValue   = new Date(Long.parseLong((String) ftValue));
+									csk       = Constants.FILE_TIME_FIELD;
+									isModDate = false;
+								}
+								
+								// No, it's not a single string value!
+								// Is it a SearchFieldResult?
+								else if (ftValue instanceof SearchFieldResult) {
+									// Yes!  Then it's multi-valued
+									// (more than one file attachment.)
+									// If we can get the file entry's
+									// primary attachment...
+									FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, entityId);
+									if (null != fa) {
+										// ...then we'll use it modification time.
+										emValue   = fa.getModification().getDate();
+										csk       = Constants.FILE_TIME_FIELD;
+										isModDate = false;
+									}
+
+								}
+							}
+						}
+						if ((null == emValue) && isModDate) {
 							emValue = GwtServerHelper.getValueFromEntryMap(entryMap, Constants.CREATION_DATE_FIELD);
 							if (null != emValue) {
-								csk = Constants.CREATION_DATE_FIELD;
+								csk       = Constants.CREATION_DATE_FIELD;
+								isModDate = false;
 							}
 						}
 						
@@ -6876,6 +6921,21 @@ public class GwtViewHelper {
 	}
 	
 	/**
+	 * Maps an EntityId to its equivalent EntityIdentifier and returns it.
+	 * 
+	 * @param eid
+	 * 
+	 * @return
+	 */
+    public static EntityIdentifier toEntityIdentifier(EntityId eid) {
+        if (eid.isEntry())     return new EntityIdentifier(eid.getEntityId(), EntityIdentifier.EntityType.folderEntry);
+        if (eid.isFolder())    return new EntityIdentifier(eid.getEntityId(), EntityIdentifier.EntityType.folder     );
+        if (eid.isWorkspace()) return new EntityIdentifier(eid.getEntityId(), EntityIdentifier.EntityType.workspace  );
+        
+        throw new UnsupportedOperationException("Can't convert EntityId to EntityIdentifier.  Unknown entity type: " + eid.getEntityType());
+    }
+    
+	/**
 	 * Unlocks the entries.
 	 * 
 	 * @param bs
@@ -7917,17 +7977,4 @@ public class GwtViewHelper {
 		     return value.contains(quickFilter);
 		else return false;
 	}
-
-    public static EntityIdentifier toEntityIdentifier(EntityId eid) {
-        if (eid.isEntry()) {
-            return new EntityIdentifier(eid.getEntityId(), EntityIdentifier.EntityType.folderEntry);
-        } else if (eid.isFolder()) {
-            return new EntityIdentifier(eid.getEntityId(), EntityIdentifier.EntityType.folder);
-        } else if (eid.isWorkspace()) {
-            return new EntityIdentifier(eid.getEntityId(), EntityIdentifier.EntityType.workspace);
-        }
-        throw new UnsupportedOperationException("Can't convert EntityId to EntityIdentifier.  Unknown entity type: " + eid.getEntityType());
-    }
-
-
 }
