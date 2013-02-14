@@ -188,10 +188,10 @@ public class UserPropertiesDlg extends DlgBox
 					row = grid.getRowCount();
 					addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_LdapDN(), ldapAttr);
 				}
-				ldapAttr = account.getEDirContainer();
+				ldapAttr = account.getLdapContainer();
 				if (GwtClientHelper.hasString(ldapAttr)) {
 					row = grid.getRowCount();
-					addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_eDirContainer(), ldapAttr);
+					addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_LdapContainer(), ldapAttr);
 				}
 			}
 		}
