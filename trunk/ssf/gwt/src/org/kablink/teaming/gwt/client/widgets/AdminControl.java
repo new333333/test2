@@ -1249,8 +1249,8 @@ public class AdminControl extends TeamingPopupPanel
 			EditBrandingDlg.createAsync(
 									m_editBrandingSuccessHandler,
 									null,
-									true,
 									false,
+									true,
 									x,
 									y,
 									width,

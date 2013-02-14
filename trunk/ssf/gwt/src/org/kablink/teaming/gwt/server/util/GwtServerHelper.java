@@ -146,6 +146,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
@@ -6947,6 +6948,26 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Construct a url the user can click on that will invoke the "change password" dialog.
+	 * Then send an email that includes that url to the given email address
+	 */
+	public static SendForgottenPwdEmailRpcResponseData sendForgottenPwdEmail( String emailAddress )
+	{
+		SendForgottenPwdEmailRpcResponseData responseData;
+		
+		responseData = new SendForgottenPwdEmailRpcResponseData();
+		
+		if ( emailAddress != null && emailAddress.length() > 0 )
+		{
+			responseData.addError( NLT.get( "send.forgotten.pwd.email.noemailaddress" ) );
+		}
+		else
+			responseData.addError( NLT.get( "send.forgotten.pwd.email.noemailaddress" ) );
+		
+		return responseData;
+	}
+	
+	/**
 	 * Stores a localized status text in a GwtPresenceInfo base on its
 	 * status.
 	 * 
@@ -9482,6 +9503,7 @@ public class GwtServerHelper {
 		case SAVE_USER_MOBILE_APPS_CONFIGURATION:
 		case SAVE_WHATS_NEW_SETTINGS:
 		case SAVE_ZONE_SHARE_RIGHTS:
+		case SEND_FORGOTTEN_PWD_EMAIL:
 		case SET_DESKTOP_APP_DOWNLOAD_VISIBILITY:
 		case SET_ENTRIES_PIN_STATE:
 		case SET_SEEN:

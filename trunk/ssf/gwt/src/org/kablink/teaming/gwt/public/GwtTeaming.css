@@ -5300,3 +5300,16 @@ td.datePickerMonth {
 		-webkit-border-bottom-right-radius: 3px;
 	}
 /* End:  Styles used by the find control browser. */
+
+
+/**
+ * Styles used in the "Forgotten Password" dialog
+ */
+
+.forgottenPwdDlg_Instructions
+{
+	color: 353838;
+	font-size: 14px;
+	padding-bottom: 10px;
+	width: 450px;
+}
