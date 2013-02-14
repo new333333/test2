@@ -479,6 +479,9 @@ public interface FolderModule {
 	 * @param includeReplies
 	 */
 	public IndexErrors indexEntry(FolderEntry entry, boolean includeReplies);
+	
+	public IndexErrors indexEntry(FolderEntry entry, boolean includeReplies, boolean skipFileContentIndexing);
+	
 	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags);
 	/**
 	 * Return the parent Folder of the entry.  Useful if an entry has moved.

@@ -40,6 +40,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobDataMap;
@@ -81,7 +82,7 @@ public class DefaultNetFolderContentIndexing extends SimpleTriggerJob implements
 					logger.info("Unscheduling job because content indexing is currently disabled on net folder [" + netFolderRoot.getPathName() + "]");
 					unscheduleJob(context);
 				}
-			} catch (NoBinderByTheIdException nf) {
+			} catch (NoFolderByTheIdException nf) {
 				// Apparently the folder on which this scheduler is defined has been removed.
 				// This is not an error. So simply remove the job.
 				logger.info("Deleting job because folder by id " + binderId + " is not found: " + context.toString());
@@ -103,7 +104,6 @@ public class DefaultNetFolderContentIndexing extends SimpleTriggerJob implements
 		schedule(new JobDescription(folderId, start.getTime(), intervalInMinutes, data));
 	}
 
-	/*
 	@Override
 	public void unschedule(Long folderId) {
 		unscheduleJob(folderId.toString(), NET_FOLDER_CONTENT_INDEXING_GROUP);
@@ -116,7 +116,6 @@ public class DefaultNetFolderContentIndexing extends SimpleTriggerJob implements
 		// with is gone, and it will self-destruct itself.
 		deleteJob(folderId.toString(), NET_FOLDER_CONTENT_INDEXING_GROUP);
 	}
-	*/
 
 	public class JobDescription extends SimpleJobDescription {
 		Date startDate;

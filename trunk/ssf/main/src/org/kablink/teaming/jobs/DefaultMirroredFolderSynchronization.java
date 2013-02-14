@@ -35,12 +35,11 @@ package org.kablink.teaming.jobs;
 import java.util.Date;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.SchedulerException;
 
 /**
  *
@@ -60,9 +59,13 @@ public class DefaultMirroredFolderSynchronization extends SSCronTriggerJob
 			if(binderId.longValue() == -1L) {
 				deleteJob(context);
 			} else {
-				folderModule.fullSynchronize(binderId,null);
+				boolean result = folderModule.fullSynchronize(binderId,null);
+				if(!result) {
+					// The folder is now gone. Remove the job.
+					deleteJob(context);
+				}
 			}
-		} catch (NoBinderByTheIdException nf) {
+		} catch (NoFolderByTheIdException nf) {
 			// Apparently the folder on which this scheduler is defined has been removed.
 			// This is not an error. So simply remove the job.
 			deleteJob(context);

@@ -43,8 +43,6 @@ public interface NetFolderContentIndexing {
 	
 	public void schedule(Long folderId, int intervalInMinutes);
 	
-	/*
 	public void unschedule(Long folderId);
 	public void deleteJob(Long folderId);
-	 */
 }

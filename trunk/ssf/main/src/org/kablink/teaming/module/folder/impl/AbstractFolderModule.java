@@ -478,9 +478,9 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 
 	}
     
-	protected Folder loadFolder(Long folderId)  {
+	protected Folder loadFolder(Long folderId) throws NoFolderByTheIdException {
         Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneId());
-		if (folder.isDeleted()) throw new NoBinderByTheIdException(folderId);
+		if (folder.isDeleted()) throw new NoFolderByTheIdException(folderId);
 		return folder;
 
 	}
@@ -1676,8 +1676,12 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 
 
     public IndexErrors indexEntry(FolderEntry entry, boolean includeReplies) {
+    	return indexEntry(entry, includeReplies, false);
+    }
+    
+	public IndexErrors indexEntry(FolderEntry entry, boolean includeReplies, boolean skipFileContentIndexing) {
     	FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
-    	IndexErrors errors = processor.indexEntry(entry);
+    	IndexErrors errors = processor.indexEntry(entry, skipFileContentIndexing);
 		if (includeReplies) {
 			List<FolderEntry> replies = new ArrayList();
 			replies.addAll(entry.getReplies());
@@ -1690,7 +1694,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			}
 		}
 		return errors;
-    }
+	}
+    
     public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
 		FolderCoreProcessor processor = loadProcessor((Folder)binder);
 		return processor.buildIndexDocumentFromEntry(binder, entry, tags);
