@@ -169,23 +169,10 @@ public class ShareResource extends AbstractResource {
                                                                                @QueryParam("first") @DefaultValue("0") Integer offset,
                                                                                @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         _getUser(userId);
-        Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("recursive", Boolean.toString(recursive));
-        nextParams.put("binders", Boolean.toString(includeBinders));
-        nextParams.put("folder_entries", Boolean.toString(includeFolderEntries));
-        nextParams.put("files", Boolean.toString(includeFiles));
-        nextParams.put("replies", Boolean.toString(includeReplies));
-        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        nextParams.put("hidden", Boolean.toString(showHidden));
-        nextParams.put("unhidden", Boolean.toString(showUnhidden));
-        if (keyword!=null) {
-            nextParams.put("keyword", keyword);
-        }
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         ShareItemSelectSpec spec = getSharedBySpec(userId);
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.SHARED_BY_ME_ID, null, recursive,
                 includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword,
-                textDescriptions, offset, maxCount, "/shares/by_user/" + userId + "/library_entities", nextParams, spec,
+                textDescriptions, offset, maxCount, "/shares/by_user/" + userId + "/library_entities", spec,
                 showHidden, showUnhidden);
         return results;
     }
@@ -305,23 +292,10 @@ public class ShareResource extends AbstractResource {
                                                       @QueryParam("first") @DefaultValue("0") Integer offset,
                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         _getUser(userId);
-        Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("recursive", Boolean.toString(recursive));
-        nextParams.put("binders", Boolean.toString(includeBinders));
-        nextParams.put("folder_entries", Boolean.toString(includeFolderEntries));
-        nextParams.put("files", Boolean.toString(includeFiles));
-        nextParams.put("replies", Boolean.toString(includeReplies));
-        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        nextParams.put("hidden", Boolean.toString(showHidden));
-        nextParams.put("unhidden", Boolean.toString(showUnhidden));
-        if (keyword!=null) {
-            nextParams.put("keyword", keyword);
-        }
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.SHARED_WITH_ME_ID, userId, recursive,
                 includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword,
-                textDescriptions, offset, maxCount, "/shares/with_user/" + userId + "/library_entities", nextParams, spec,
+                textDescriptions, offset, maxCount, "/shares/with_user/" + userId + "/library_entities", spec,
                 showHidden, showUnhidden);
         return results;
     }
@@ -668,18 +642,14 @@ public class ShareResource extends AbstractResource {
                                                                    boolean includeFiles, boolean includeReplies,
                                                                    boolean includeParentPaths, String keyword,
                                                                    boolean textDescriptions, Integer offset,
-                                                                   Integer maxCount, String nextUrl, Map<String, Object> nextParams,
+                                                                   Integer maxCount, String nextUrl,
                                                                    ShareItemSelectSpec spec, boolean showHidden, boolean showUnhidden) {
         List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID);
-        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
+        SearchResultList<SearchableObject> results;
         if (shareItems.size()>0) {
-            Junction criterion = Restrictions.conjunction();
             Junction searchContext = Restrictions.disjunction();
             for (ShareItem shareItem : shareItems) {
                 Junction shareCrit = Restrictions.conjunction();
-                if (keyword!=null) {
-                    shareCrit.add(buildKeywordCriterion(keyword));
-                }
                 EntityIdentifier entityId = shareItem.getSharedEntityIdentifier();
                 if (entityId.getEntityType()==EntityIdentifier.EntityType.folderEntry) {
                     FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
@@ -702,17 +672,10 @@ public class ShareResource extends AbstractResource {
                 }
                 searchContext.add(shareCrit);
             }
-            criterion.add(searchContext);
-            criterion.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
-            criterion.add(buildLibraryCriterion(true));
-            Criteria crit = new Criteria();
-            crit.add(criterion);
-            Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-            SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
-                    nextUrl, nextParams, offset);
-        }
-        if (includeParentPaths) {
-            populateParentBinderPaths(results);
+            results = searchForLibraryEntities(keyword, searchContext, recursive, offset, maxCount, includeBinders,
+                    includeFolderEntries, includeReplies, includeFiles, includeParentPaths, textDescriptions, nextUrl);
+        } else {
+            results = new SearchResultList<SearchableObject>();
         }
         return results;
     }

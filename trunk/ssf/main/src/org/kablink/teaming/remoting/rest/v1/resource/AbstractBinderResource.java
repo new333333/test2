@@ -439,33 +439,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
     }
 
-    protected SearchResultList<SearchableObject> getSubEntities(long id, boolean recursive, boolean includeBinders,
-                                                                boolean includeFolderEntries, boolean includeFiles,
-                                                                boolean includeReplies,
-                                                                boolean onlyLibrary, boolean includeParentPaths, String keyword,
-                                                                Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams, boolean textDescriptions) {
-        org.kablink.teaming.domain.Binder binder = _getBinder(id);
-        Junction criterion = Restrictions.conjunction();
-
-        criterion.add(buildSearchBinderCriterion(id, recursive));
-        criterion.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
-        if (onlyLibrary) {
-            criterion.add(buildLibraryCriterion(onlyLibrary));
-        }
-        if (keyword!=null) {
-            criterion.add(buildKeywordCriterion(keyword));
-        }
-        Criteria crit = new Criteria();
-        crit.add(criterion);
-        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset, binder.getModificationDate());
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap, nextUrl, nextParams, offset);
-        if (includeParentPaths) {
-            populateParentBinderPaths(results);
-        }
-        return results;
-    }
-
     protected SearchResultList<FileProperties> getSubFiles(long id, String fileName, boolean recursive, boolean onlyLibraryFiles, boolean includeParentPaths,
                                                            Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams,
                                                            Date modifiedSince) {

@@ -91,10 +91,9 @@ public class NetFoldersResource extends AbstractResource {
                                                                  @QueryParam("keyword") String keyword,
                                                                  @QueryParam("first") @DefaultValue("0") Integer offset,
                                                                  @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
+        SearchResultList<SearchableObject> results;
         SearchResultList<NetFolderBrief> netFolders = getNetFolders(textDescriptions, 0, -1);
         if (netFolders.getCount()>0) {
-            Junction criterion = Restrictions.conjunction();
             Junction searchContext = Restrictions.disjunction();
             for (BinderBrief binder : netFolders.getResults()) {
                 Junction shareCrit = Restrictions.conjunction();
@@ -105,31 +104,11 @@ public class NetFoldersResource extends AbstractResource {
                 }
                 searchContext.add(shareCrit);
             }
-            criterion.add(searchContext);
-            if (keyword!=null) {
-                criterion.add(buildKeywordCriterion(keyword));
-            }
-            criterion.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
-            criterion.add(buildLibraryCriterion(true));
-            Map<String, Object> nextParams = new HashMap<String, Object>();
-            nextParams.put("recursive", Boolean.toString(recursive));
-            nextParams.put("binders", Boolean.toString(includeBinders));
-            nextParams.put("folder_entries", Boolean.toString(includeFolderEntries));
-            nextParams.put("files", Boolean.toString(includeFiles));
-            nextParams.put("replies", Boolean.toString(includeReplies));
-            nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-            if (keyword!=null) {
-                nextParams.put("keyword", keyword);
-            }
-            nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-            Criteria crit = new Criteria();
-            crit.add(criterion);
-            Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-            SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
-                    "/net_folders/library_entities", nextParams, offset);
-        }
-        if (includeParentPaths) {
-            populateParentBinderPaths(results);
+            results = searchForLibraryEntities(keyword, searchContext, recursive, offset, maxCount,
+                    includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, textDescriptions,
+                    "/net_folders/library_entities");
+        } else {
+            results = new SearchResultList<SearchableObject>();
         }
         return results;
     }

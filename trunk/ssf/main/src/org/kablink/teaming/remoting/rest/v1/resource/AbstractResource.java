@@ -63,6 +63,7 @@ import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
@@ -77,6 +78,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 
 public abstract class AbstractResource extends AbstractAllModulesInjected {
@@ -172,6 +175,54 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if(!(entry instanceof org.kablink.teaming.domain.User))
             throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
         return (org.kablink.teaming.domain.User) entry;
+    }
+
+    protected SearchResultList<SearchableObject> searchForLibraryEntities(String keyword, Criterion searchContext, boolean recursive, Integer offset, Integer maxCount, boolean includeBinders, boolean includeFolderEntries, boolean includeReplies, boolean includeFiles, boolean includeParentPaths, boolean textDescriptions, String nextUrl) {
+        Criteria crit = new Criteria();
+        crit.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
+        crit.add(buildLibraryCriterion(true));
+        crit.add(searchContext);
+
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        nextParams.put("recursive", Boolean.toString(recursive));
+        nextParams.put("binders", Boolean.toString(includeBinders));
+        nextParams.put("folder_entries", Boolean.toString(includeFolderEntries));
+        nextParams.put("files", Boolean.toString(includeFiles));
+        nextParams.put("replies", Boolean.toString(includeReplies));
+        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
+        if (keyword!=null) {
+            try {
+                nextParams.put("keyword", URLEncoder.encode(keyword, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                // Ignore
+            }
+        }
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        SearchFilter searchFilter = new SearchFilter(true);
+        if (keyword!=null) {
+            keyword = keyword.trim();
+            if (!keyword.equals("") && !keyword.equals("*")) {
+                searchFilter.addText(keyword, false);
+            }
+        }
+
+        Map options = new HashMap();
+        options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
+        options.put(ObjectKeys.SEARCH_OFFSET, offset);
+        options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
+        options.put(ObjectKeys.SEARCH_SORT_BY, ObjectKeys.SEARCH_SORT_BY_RELEVANCE);
+        options.put(ObjectKeys.SEARCH_SORT_DESCEND, false);
+        options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY, ObjectKeys.SEARCH_SORT_BY_DATE);
+        options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, true);
+
+        Map resultsMap = getBinderModule().executeSearchQuery(searchFilter.getFilter(), Constants.SEARCH_MODE_NORMAL, options);
+        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
+                nextUrl, nextParams, offset);
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
+        return results;
     }
 
     protected SearchResultList<RecentActivityEntry> _getRecentActivity(boolean includeParentPaths, boolean textDescriptions,
@@ -519,13 +570,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected Criterion buildFileNameCriterion(String fileName) {
         return Restrictions.like(Constants.FILENAME_FIELD, fileName);
-    }
-
-    protected Criterion buildKeywordCriterion(String keyword) {
-        return Restrictions.disjunction()
-                .add(Restrictions.like(Constants.TITLE_FIELD, keyword))
-                .add(Restrictions.like(Constants.DESC_TEXT_FIELD, keyword))
-                .add(Restrictions.like(Constants.GENERAL_TEXT_FIELD, keyword));
     }
 
     protected Document buildQueryDocument(String query, Criterion additionalCriteria) {

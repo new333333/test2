@@ -263,19 +263,9 @@ public class WorkspaceResource extends AbstractBinderResource {
                                                   @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("recursive", Boolean.toString(recursive));
-        nextParams.put("binders", Boolean.toString(includeBinders));
-        nextParams.put("folder_entries", Boolean.toString(includeFolderEntries));
-        nextParams.put("files", Boolean.toString(includeFiles));
-        nextParams.put("replies", Boolean.toString(includeReplies));
-        nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        if (keyword!=null) {
-            nextParams.put("keyword", keyword);
-        }
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        return getSubEntities(id, recursive, includeBinders, includeFolderEntries, includeFiles, includeReplies, true,
-                includeParentPaths, keyword, offset, maxCount, "/workspaces/" + id + "/library_entities", nextParams, textDescriptions);
+        return searchForLibraryEntities(keyword, buildSearchBinderCriterion(id, recursive), recursive, offset, maxCount,
+                includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, textDescriptions,
+                "/workspaces/" + id + "/library_entities");
 	}
 
     @Override
