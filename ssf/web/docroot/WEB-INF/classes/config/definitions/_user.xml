@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_user" caption="__definition_default_user" type="7" nextId="197" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
+<definition name="_user" caption="__definition_default_user" type="7" nextId="203" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
   <item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" id="1" display="form"> 
     <properties/>  
     <item name="profileEntryFormForm" caption="__form" id="2" display="form"> 
@@ -122,23 +122,6 @@
           <property name="caption" value="__locale"/>  
           <property name="name" value="locale"/> 
         </properties> 
-      </item>  
-      <item name="entryFormButtons" caption="__form_buttons" id="10"> 
-        <properties> 
-          <property name="alignment" value=""/> 
-        </properties>  
-        <item name="okButton" caption="__ok_button" id="11"> 
-          <properties> 
-            <property name="caption" value="__ok"/>  
-            <property name="onClick" value=""/> 
-          </properties> 
-        </item>  
-        <item name="cancelButton" caption="__cancel_button" id="12"> 
-          <properties> 
-            <property name="caption" value="__cancel"/>  
-            <property name="onClick" value=""/> 
-          </properties> 
-        </item> 
       </item>  
       <item id="142" name="conditionalProfileFormItem" caption="__conditional" category="profileFormLayout" display="form"> 
         <properties> 
@@ -360,7 +343,32 @@
               <property name="width" value=""/>  
               <property name="required" value="false"/> 
             </properties> 
+          </item>  
+          <item name="profileTxtEmailAddress" caption="__txtEmailAddress" type="data" dataType="email" multipleAllowed="false" category="profileEntryData" display="form" id="197"> 
+            <properties> 
+              <property name="caption" value="__txtEmailAddress"/>  
+              <property name="name" value="txtEmailAddress"/>  
+              <property name="width" value=""/>  
+              <property name="required" value="false"/> 
+            </properties> 
           </item> 
+        </item> 
+      </item>  
+      <item name="entryFormButtons" caption="__form_buttons" id="10"> 
+        <properties> 
+          <property name="alignment" value=""/> 
+        </properties>  
+        <item name="okButton" caption="__ok_button" id="11"> 
+          <properties> 
+            <property name="caption" value="__ok"/>  
+            <property name="onClick" value=""/> 
+          </properties> 
+        </item>  
+        <item name="cancelButton" caption="__cancel_button" id="12"> 
+          <properties> 
+            <property name="caption" value="__cancel"/>  
+            <property name="onClick" value=""/> 
+          </properties> 
         </item> 
       </item>  
       <properties> 
@@ -476,7 +484,13 @@
           <property name="_elements" value="title"/>  
           <property name="_elements" value="phone"/>  
           <property name="_elements" value="emailAddress"/> 
-        </properties> 
+        </properties>  
+        <item id="198" name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" formItem="profileTxtEmailAddress"> 
+          <properties> 
+            <property name="caption" value="__txtEmailAddress"/>  
+            <property name="name" value="txtEmailAddress"/> 
+          </properties> 
+        </item> 
       </item> 
     </item> 
   </item>  
@@ -717,35 +731,43 @@
             <property name="caption" value="__phone"/>  
             <property name="name" value="phone"/> 
           </properties> 
+        </item>  
+        <item name="profileTxtEmailAddress" caption="__txtEmailAddress" type="data" dataType="email" multipleAllowed="false" category="profileEntryData" display="form" id="199"> 
+          <properties> 
+            <property name="caption" value="__txtEmailAddress"/>  
+            <property name="name" value="txtEmailAddress"/>  
+            <property name="width" value=""/>  
+            <property name="required" value="false"/> 
+          </properties> 
         </item> 
       </item>  
-      <item id="192" name="profileHeadingPhotosAndImagesView" caption="__profile_heading_PhotosAndImages_div" category="userViewLayout" display="view">
-        <properties>
-          <property name="caption" value="__profile_heading_PhotosAndImages_div"/>
-        </properties>
-        <item id="193" name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" formItem="profileEntryPicture">
-          <properties>
-            <property name="caption" value="__profile_entry_picture"/>
-            <property name="name" value="picture"/>
-          </properties>
-        </item>
-      </item>
-      <item id="194" name="profileSidePanelView" caption="__profile_sidePanel_div" category="userViewLayout" display="view">
-        <properties>
-          <property name="caption" value=""/>
-        </properties>
-        <item id="195" name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" formItem="htmlEditorTextarea">
-          <properties>
-            <property name="caption" value="__aboutMe"/>
-            <property name="name" value="aboutMe"/>
-          </properties>
-        </item>
-        <item name="profileGroups" caption="__groups" multipleAllowed="false" category="userSideViewLayout" display="view" id="196">
-          <properties>
-            <property name="caption" value="__groups"/>
-          </properties>
-        </item>
-      </item>
+      <item id="192" name="profileHeadingPhotosAndImagesView" caption="__profile_heading_PhotosAndImages_div" category="userViewLayout" display="view"> 
+        <properties> 
+          <property name="caption" value="__profile_heading_PhotosAndImages_div"/> 
+        </properties>  
+        <item id="193" name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" formItem="profileEntryPicture"> 
+          <properties> 
+            <property name="caption" value="__profile_entry_picture"/>  
+            <property name="name" value="picture"/> 
+          </properties> 
+        </item> 
+      </item>  
+      <item id="194" name="profileSidePanelView" caption="__profile_sidePanel_div" category="userViewLayout" display="view"> 
+        <properties> 
+          <property name="caption" value=""/> 
+        </properties>  
+        <item id="195" name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" formItem="htmlEditorTextarea"> 
+          <properties> 
+            <property name="caption" value="__aboutMe"/>  
+            <property name="name" value="aboutMe"/> 
+          </properties> 
+        </item>  
+        <item name="profileGroups" caption="__groups" multipleAllowed="false" category="userSideViewLayout" display="view" id="196"> 
+          <properties> 
+            <property name="caption" value="__groups"/> 
+          </properties> 
+        </item> 
+      </item> 
     </item> 
   </item>  
   <item name="profileEntrySimpleView" caption="__profile_entry_simple_view" id="62" display="view"> 
@@ -786,18 +808,19 @@
         <property name="license" value="filr"/> 
       </properties>  
       <item id="183" name="profileEntrySimpleViewElements" caption="__profile_entry_simple_view_elements" display="view"> 
-        <properties> 
-          <property name="_elements" value="name"/>  
-          <property name="_elements" value="title"/>  
-          <property name="_elements" value="phone"/>  
-          <property name="_elements" value="emailAddress"/> 
-        </properties>  
         <item id="184" name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" formItem="profileEntryPicture"> 
           <properties> 
             <property name="caption" value="__profile_entry_picture"/>  
             <property name="name" value="picture"/> 
           </properties> 
-        </item> 
+        </item>  
+        <properties> 
+          <property name="_elements" value="name"/>  
+          <property name="_elements" value="title"/>  
+          <property name="_elements" value="phone"/>  
+          <property name="_elements" value="emailAddress"/>  
+          <property name="_elements" value="txtEmailAddress"/> 
+        </properties> 
       </item> 
     </item> 
   </item>  

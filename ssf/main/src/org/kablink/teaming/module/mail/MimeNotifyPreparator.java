@@ -59,15 +59,19 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.module.definition.notify.Notify;
 import org.kablink.teaming.module.ical.IcalModule;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.TextToHtml;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
@@ -390,17 +394,51 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 			}
 			if ((null != msgEntries) && (!(msgEntries.isEmpty()))) {
 				int count = 0;
-				for (Iterator i = msgEntries.iterator(); i.hasNext(); count += 1) {
+				Iterator itMsgEntries = msgEntries.iterator();
+				while (itMsgEntries.hasNext()) {
+					Entry nextEntry = (Entry) itMsgEntries.next();
 					if (0 < count) {
 						ptBuf.append("\r\n");
 					}
-					ptBuf.append(PermaLinkUtil.getPermalink(((Entry) i.next())));
+					count++;
+					String[] txtMsgArgs = new String[3];
+					String txtMsgString;
+					if (nextEntry.getCreation().getDate().before(nextEntry.getModification().getDate())) {
+						txtMsgArgs[0] = nextEntry.getCreation().getPrincipal().getTitle();
+						txtMsgString = "email.textMessageFormatModified";
+					} else {
+						txtMsgArgs[0] = nextEntry.getModification().getPrincipal().getTitle();
+						txtMsgString = "email.textMessageFormatAdded";
+					}
+					txtMsgArgs[1] = nextEntry.getTitle();
+					String path = "";
+					Binder parent = nextEntry.getParentBinder();
+					while (parent != null && parent instanceof Folder) {
+						if (!path.equals("")) path = "/" + path;
+						path = parent.getTitle() + path;
+						parent = parent.getParentBinder();
+					}
+					if (parent != null) {
+						//Add in the first workspace above the folder
+						path = parent.getTitle() + "/" + path;
+					}
+					txtMsgArgs[2] = path;
+					ptBuf.append(NLT.get(txtMsgString, txtMsgArgs));
 				}
 			}
 			
 			String ptStr = ptBuf.toString();
-			String hStr = EmailUtil.validateHTMLForEmail(
-				"<a href=\"" + ptStr + "\">" + ptStr + "</a>");
+			//Get the body text and turn it into html
+			TextToHtml textToHtml = new TextToHtml();
+			textToHtml.setBreakOnLines(true);
+			textToHtml.setStripHtml(false);
+			textToHtml.parseText(ptStr);
+			String hStr = EmailUtil.validateHTMLForEmail((textToHtml.toString()));
+			String subject = mimeMessage.getSubject();
+			if ((subject.length() + ptStr.length()) >= 156) {
+				//This message is longer than the 160 characters allowed in a text message, truncate it.
+				ptStr = ptStr.substring(0, 155-subject.length()) + "...";
+			}
 			setText(ptStr, hStr, helper);
 			
 		} else {
