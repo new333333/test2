@@ -58,7 +58,6 @@ public abstract class PrincipalBriefBuilder extends DefinableEntityBriefBuilder 
         populateDefinableEntityBrief(model, entry, Constants.BINDER_ID_FIELD);
         String reservedId = (String) entry.get(Constants.RESERVEDID_FIELD);
         model.setReserved(reservedId!=null);
-        model.setName((String) entry.get(Constants.LOGINNAME_FIELD));
         model.setEmailAddress(SearchResultBuilderUtil.getString(entry, Constants.EMAIL_FIELD));
     }
 }

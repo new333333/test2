@@ -34,6 +34,7 @@ package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.kablink.teaming.rest.v1.model.GroupBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
+import org.kablink.util.search.Constants;
 
 import java.util.Date;
 import java.util.Map;
@@ -54,6 +55,7 @@ public class GroupBriefBuilder extends PrincipalBriefBuilder implements SearchRe
     public GroupBrief build(Map entry) {
         GroupBrief group = new GroupBrief();
         populatePrincipalBrief(group, entry);
+        group.setName((String) entry.get(Constants.GROUPNAME_FIELD));
         group.setLink(LinkUriUtil.getGroupLinkUri(group.getId()));
         LinkUriUtil.populateGroupLinks(group);
         return group;
