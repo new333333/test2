@@ -640,7 +640,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			correctFilrRoles(zoneConfig);
 		}
 		
-		if (version.intValue() <= 12) {
+		if (version.intValue() <= 13) {
 			if (Utils.checkIfFilr()) {
 				//In Filr, we must reset all of the definitions and templates and definitions automatically
 				//But this is only done when needed (i.e., update the version if another change is made)
