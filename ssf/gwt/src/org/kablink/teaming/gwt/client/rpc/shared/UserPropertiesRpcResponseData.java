@@ -63,8 +63,8 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		private boolean		m_fromOpenId;		//
 		private boolean		m_hasAdHocFolders;	//
 		private boolean		m_perUserAdHoc;		//
-		private String		m_eDirContainer;	//
 		private String		m_lastLogin;		//
+		private String		m_ldapContainer;	//
 		private String		m_ldapDN;			//
 		private String		m_loginId;			//
 		private UserType	m_userType;			//
@@ -91,8 +91,8 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		public boolean  hasAdHocFolders()  {return m_hasAdHocFolders;          }
 		public boolean  isPerUserAdHoc()   {return m_perUserAdHoc;             }
 		public boolean  isInternal()       {return m_userType.isInternal();    }
-		public String   getEDirContainer() {return m_eDirContainer;            }
 		public String   getLastLogin()     {return m_lastLogin;                }
+		public String   getLdapContainer() {return m_ldapContainer;            }
 		public String   getLdapDN()        {return m_ldapDN;                   }
 		public String   getLoginId()       {return m_loginId;                  }
 		public UserType getUserType()      {return m_userType;                 }
@@ -105,8 +105,8 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		public void setFromOpenId(     boolean  fromOpenId)      {m_fromOpenId      = fromOpenId;     }
 		public void setHasAdHocFolders(boolean  hasAdHocFolders) {m_hasAdHocFolders = hasAdHocFolders;}
 		public void setPerUserAdHoc(   boolean  perUserAdHoc)    {m_perUserAdHoc    = perUserAdHoc;   }
-		public void setEDirContainer(  String   eDirContainer)   {m_eDirContainer   = eDirContainer;  }
 		public void setLastLogin(      String   lastLogin)       {m_lastLogin       = lastLogin;      }
+		public void setLdapContainer(  String   ldapContainer)   {m_ldapContainer   = ldapContainer;  }
 		public void setLdapDN(         String   ldapDN)          {m_ldapDN          = ldapDN;         }
 		public void setLoginId(        String   loginId)         {m_loginId         = loginId;        }
 		public void setUserType(       UserType userType)        {m_userType        = userType;       }

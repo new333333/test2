@@ -5326,7 +5326,7 @@ public class GwtViewHelper {
 				// ...available...
 				String ldapDN = user.getForeignName();
 				ai.setLdapDN(                            ldapDN );
-				ai.setEDirContainer(getParentContainerDN(ldapDN));
+				ai.setLdapContainer(getParentContainerDN(ldapDN));
 			}
 
 			// ...if we can determine the last time the user logged

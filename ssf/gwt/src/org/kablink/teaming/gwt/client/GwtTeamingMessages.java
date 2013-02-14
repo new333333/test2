@@ -2484,10 +2484,10 @@ public interface GwtTeamingMessages extends Messages
 	String userPropertiesDlgEdit_Sharing();
 	String userPropertiesDlgHeader();
 	String userPropertiesDlgLabelize(String label);
-	String userPropertiesDlgLabel_eDirContainer();
 	String userPropertiesDlgLabel_Home();
 	String userPropertiesDlgLabel_HomePath();
 	String userPropertiesDlgLabel_LastLogin();
+	String userPropertiesDlgLabel_LdapContainer();
 	String userPropertiesDlgLabel_LdapDN();
 	String userPropertiesDlgLabel_NetFolders();
 	String userPropertiesDlgLabel_PersonalStorage();
