@@ -1053,11 +1053,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     //inside write transaction    
    protected void deleteBinder_mirrored(Binder binder, boolean deleteMirroredSource, Map ctx) {
-	   // Delete associated schedule, if any.
-	   if(binder.isMirrored()) {
-		   getFolderModule().deleteSynchronizationJob(binder.getId());
-	   }
-	   
 	   	// Delete the source resource, if so required.
     	if(deleteMirroredSource && binder.isMirrored() && binder.getResourceDriverName() != null) {
     		try {

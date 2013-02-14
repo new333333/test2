@@ -311,10 +311,9 @@ public class GwtNetFolderHelper
 			{
 				boolean deleteSource = false;
 				
-				ami.getBinderModule().deleteBinder(
+				ami.getFolderModule().deleteNetFolder(
 												nextNetFolder.getId(),
-												deleteSource,
-												null );
+												deleteSource );
 			}
 			catch ( Exception e )
 			{
