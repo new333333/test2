@@ -362,8 +362,19 @@
 						<div class="gwt-Label loginAuthenticatingMsg" style="display: none;" id="authenticatingDiv"></div>
 					</td>
 				</tr>
+			</tbody>
+		</table>
+		
+		<table cellspacing="4" class="dlgContent" style="margin: 10px;">
+			<colgroup>
+				<col>
+			</colgroup>
+			<tbody>
 				<tr>
-					<td colspan="2">
+					<td>
+						<span class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2 subhead-control-bg1 roundcornerSM" style="display: none;" id="forgottenPwdSpan"></span>
+					</td>
+					<td>
 						<span class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2 subhead-control-bg1 roundcornerSM" style="display: none;" id="createNewAccountSpan"></span>
 					</td>
 				</tr>

@@ -49,6 +49,8 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.ForgottenPwdDlg.ForgottenPwdDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -113,6 +115,7 @@ public class LoginDlg extends DlgBox
 	private Button m_cancelBtn = null;
 	private Label m_loginFailedMsg = null;
 	private Label m_authenticatingMsg = null;
+	private InlineLabel m_forgotPwdLink = null;
 	private InlineLabel m_selfRegLink = null;
 	private CheckBox m_useOpenIdCkbox = null;
 	private FlowPanel m_openIdProvidersPanel = null;
@@ -123,6 +126,7 @@ public class LoginDlg extends DlgBox
 	private PasswordTextBox m_pwd2TxtBox;
 	private FlowPanel m_selfRegPanel;
 	private Button m_registerBtn;
+	private ForgottenPwdDlg m_forgottenPwdDlg = null;
 
 	private String m_loginUrl = null;
 	private String m_springSecurityRedirect = null;	// This values tells Teaming what url to go to after the user authenticates.
@@ -1406,6 +1410,81 @@ public class LoginDlg extends DlgBox
 			m_cancelBtn.setVisible( false );
 		}
 		
+		// Create a "I forgot my password" link.
+		{
+			ClickHandler clickHandler;
+			MouseOverHandler mouseOverHandler;
+			MouseOutHandler mouseOutHandler;
+			Element forgotPwdElement;
+			
+			forgotPwdElement = Document.get().getElementById( "forgottenPwdSpan" );
+			forgotPwdElement.setInnerText( GwtTeaming.getMessages().loginDlg_ForgottenPwd() );
+			m_forgotPwdLink = InlineLabel.wrap( forgotPwdElement );
+			m_forgotPwdLink.setVisible( true );
+			
+			// Add a clickhandler to the "I forgot my password" link.  When the user clicks on the link we
+			// will invoke the "Forgotten password" dialog.
+			clickHandler = new ClickHandler()
+			{
+				/**
+				 * Clear all branding information.
+				 */
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							invokeForgottenPwdDlg();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			m_forgotPwdLink.addClickHandler( clickHandler );
+
+			// Add a mouse-over handler
+			mouseOverHandler = new MouseOverHandler()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onMouseOver( MouseOverEvent event )
+				{
+					Widget widget;
+					
+					widget = (Widget)event.getSource();
+					widget.removeStyleName( "subhead-control-bg1" );
+					widget.addStyleName( "subhead-control-bg2" );
+				}// end onMouseOver()
+			};
+			m_forgotPwdLink.addMouseOverHandler( mouseOverHandler );
+
+			// Add a mouse-out handler
+			mouseOutHandler = new MouseOutHandler()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onMouseOut( MouseOutEvent event )
+				{
+					Widget widget;
+					
+					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
+					widget = (Widget)event.getSource();
+					widget.removeStyleName( "subhead-control-bg2" );
+					widget.addStyleName( "subhead-control-bg1" );
+				}// end onMouseOut()
+			};
+			m_forgotPwdLink.addMouseOutHandler( mouseOutHandler );
+		}
+
 		// Create a "Create new account" link that will initially be hidden.
 		// We will show this link later when we get the response to our request to get
 		// self registration info and self registration is allowed.
@@ -1430,13 +1509,23 @@ public class LoginDlg extends DlgBox
 				@Override
 				public void onClick( ClickEvent event )
 				{
-					String url;
+					Scheduler.ScheduledCommand cmd;
 					
-					// Get the url we need to invoke the "Create User" page.
-					url = m_selfRegInfo.getCreateUserUrl();
-					
-					// Invoke the "Create User" page in a new window.
-					Window.open( url, "self_reg_create_new_account", "height=750,resizeable,scrollbars,width=750" );
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							String url;
+							
+							// Get the url we need to invoke the "Create User" page.
+							url = m_selfRegInfo.getCreateUserUrl();
+							
+							// Invoke the "Create User" page in a new window.
+							Window.open( url, "self_reg_create_new_account", "height=750,resizeable,scrollbars,width=750" );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}//end onClick()
 			};
 			m_selfRegLink.addClickHandler( clickHandler );
@@ -1528,7 +1617,51 @@ public class LoginDlg extends DlgBox
 		return false;
 	}
 
-
+	/**
+	 * Invoke the "Forgotten Password" dialog
+	 */
+	private void invokeForgottenPwdDlg()
+	{
+		if ( m_forgottenPwdDlg == null )
+		{
+			ForgottenPwdDlg.createAsync(
+										false, 
+										true,
+										new ForgottenPwdDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ForgottenPwdDlg fpDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_forgottenPwdDlg = fpDlg;
+							
+							fpDlg.init();
+							fpDlg.showRelativeTo( m_forgotPwdLink );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_forgottenPwdDlg.init();
+			m_forgottenPwdDlg.showRelativeTo( m_forgotPwdLink );
+		}
+	}
+	
 	/**
 	 * Callback interface to interact with the dialog asynchronously
 	 * after it loads. 

@@ -531,6 +531,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveWhatsNewShowSetting();
 	String rpcFailure_SaveZoneShareRights();
 	String rpcFailure_Search();
+	String rpcFailure_SendForgottenPwdEmail();
 	String rpcFailure_SetDesktopAppDownloadVisibility();
 	String rpcFailure_SetEntriesPinState();
 	String rpcFailure_SetSeen();
@@ -622,6 +623,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_FolderOptionsDlg();
 	String codeSplitFailure_FolderColumnsDlg();
 	String codeSplitFailure_FooterPanel();
+	String codeSplitFailure_ForgottenPwdDlg();
 	String codeSplitFailure_GenericWSView();
 	String codeSplitFailure_GuestbookFolderView();
 	String codeSplitFailure_HomeWSView();
@@ -762,6 +764,7 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlg_externalUserSelfRegFailed();
 	String loginDlg_ExtUserRegistrationHint();
 	String loginDlg_FirstNameLabel();
+	String loginDlg_ForgottenPwd();
 	String loginDlg_firstNameRequired();
 	String loginDlg_LastNameLabel();
 	String loginDlg_lastNameRequired();
@@ -2581,5 +2584,14 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by the find control browser.
 	String findControlBrowser_Error_NotSupporter(String searchType);
+
+	// String used in the Forgotten Password dialog
+	String forgottenPwdDlg_Caption();
+	String forgottenPwdDlg_EmailAddress();
+	String forgottenPwdDlg_EnterEmailAddress();
+	String forgottenPwdDlg_Instructions();
+	String forgottenPwdDlg_InvalidEmailAddress();
+	String forgottenPwdDlg_ForgottenPwdEmailSent();
+	String forgottenPwdDlg_sendingEmail();
 	
 }// end GwtTeamingMessages

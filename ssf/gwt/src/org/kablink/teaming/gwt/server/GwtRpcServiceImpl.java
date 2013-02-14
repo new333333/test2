@@ -73,6 +73,7 @@ import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
+import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.GwtUserFileSyncAppConfig;
 import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
@@ -2857,6 +2858,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			szsrCmd = (SaveZoneShareRightsCmd) cmd;
 			result = GwtShareHelper.saveZoneShareRights( this, szsrCmd.getRights() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
+		case SEND_FORGOTTEN_PWD_EMAIL:
+		{
+			SendForgottenPwdEmailCmd sfpeCmd;
+			SendForgottenPwdEmailRpcResponseData result;
+			
+			sfpeCmd = (SendForgottenPwdEmailCmd) cmd;
+			result = GwtServerHelper.sendForgottenPwdEmail( sfpeCmd.getEmailAddress() );
+			
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 
