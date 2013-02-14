@@ -2648,7 +2648,7 @@ body, table td, select
 {
 	left: 15px;
 	position: absolute;
-	top: 45px;
+	bottom: 2px;
 	z-index: 400;
 }
 
@@ -2656,7 +2656,7 @@ body, table td, select
 {
 	left: 70px;
 	position: absolute;
-	top: 45px;
+	bottom: 2px;
 	z-index: 400;
 }
 
