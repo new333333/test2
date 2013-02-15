@@ -5735,8 +5735,9 @@ public class GwtViewHelper {
 									Long.parseLong(entryId),
 									isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SHARE,     "1"),
 									isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SUBSCRIBE, "1")));
-							vi.setInvokeShare(    false);	// We'll invoke any share     on the entry, not the binder.
-							vi.setInvokeSubscribe(false);	// We'll invoke any subscribe on the entry, not the binder.
+							vi.setInvokeShare(       false);	// We'll invoke any share     on the entry, not the binder.
+							vi.setInvokeShareEnabled(false);	// We'll invoke any share     on the entry, not the binder.
+							vi.setInvokeSubscribe(   false);	// We'll invoke any subscribe on the entry, not the binder.
 						}
 
 						// Is the folder this entry is located in
@@ -5860,7 +5861,10 @@ public class GwtViewHelper {
 			if (invokeShare) {
 				// ...mark the ViewInfo accordingly...
 				FolderEntry fe = GwtUIHelper.getEntrySafely(bs.getFolderModule(), binderId, entryId);
-				vi.setInvokeShare((null != fe) && GwtShareHelper.isEntitySharable(bs, fe));
+				invokeShare = (null != fe);
+				boolean invokeShareEnabled = (invokeShare && GwtShareHelper.isEntitySharable(bs, fe));
+				vi.setInvokeShare(       invokeShare       );
+				vi.setInvokeShareEnabled(invokeShareEnabled);
 			}
 			
 			// ...if we're supposed to invoke the subscribe dialog on
@@ -6245,8 +6249,11 @@ public class GwtViewHelper {
 		// Are we supposed to invoke the share dialog on this binder?
 		if (isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SHARE, "1")) {
 			// Yes!  Mark the ViewInfo accordingly.
-			Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
-			vi.setInvokeShare((null != binder) && GwtShareHelper.isEntitySharable(bs, binder));
+			Binder	binder             = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
+			boolean	invokeShare        = (null != binder);
+			boolean	invokeShareEnabled = (invokeShare && GwtShareHelper.isEntitySharable(bs, binder));
+			vi.setInvokeShare(       invokeShare       );
+			vi.setInvokeShareEnabled(invokeShareEnabled);
 		}
 		
 		// Are we supposed to invoke the subscribe dialog on this binder?
