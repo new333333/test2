@@ -143,6 +143,7 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -1965,6 +1966,183 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     }
 
     /**
+	 * Sends a URL notification mail message to a collection of users
+	 * and/or explicit email addresses.
+	 * 
+	 * @param url					- The URL embedded in the notification.
+	 * @param urlNotificationType	- Type of notification to send.
+	 * @param principalIds			- toList,  users and groups
+	 * @param teamIds				- toList,  teams.
+	 * @param emailAddresses		- toList,  stand alone email address.
+	 * @param ccIds					- ccList,  users and groups
+	 * @param bccIds				- bccList, users and groups
+     * 
+     * @return
+     * 
+     * @throws Exception
+     */
+	@Override
+    public Map<String, Object> sendUrlNotification(String url, UrlNotificationType urlNotificationType, Collection<Long> principalIds, Collection<Long> teamIds,
+    		Collection<String> emailAddresses, Collection<Long> ccIds, Collection<Long> bccIds) throws Exception {
+    	// If sending email is not enabled in the system...
+		if (!(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled())) {
+			// ...throw an appropriate exception.
+			throw new ConfigurationException(NLT.get("errorcode.sendmail.disabled"));
+		}
+		
+		// Allocate the error tracking/reply objects.
+		List<SendMailErrorWrapper>	errors = new ArrayList<SendMailErrorWrapper>();
+		Map							result = new HashMap();
+		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
+		
+		// Allocate the maps of email addresses to locales we'll
+		// use for sending the notifications in the appropriate
+		// locale(s).
+		Map<Locale, List<InternetAddress>>	toIAsMap  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>>	ccIAsMap  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>>	bccIAsMap = new HashMap<Locale, List<InternetAddress>>();
+		List<TimeZone>						targetTZs = new ArrayList<TimeZone>();
+
+		// Process the recipient collections we received into the
+		// appropriate email address to locale map.
+		EmailHelper.addPrincipalsToLocaleMap(              MailModule.TO,  toIAsMap,  targetTZs, MiscUtil.validateCL(principalIds  ));
+		EmailHelper.addTeamsToLocaleMap(getBinderModule(), MailModule.TO,  toIAsMap,  targetTZs, MiscUtil.validateCL(teamIds       ));
+		EmailHelper.addEMAsToLocaleMap(                    MailModule.TO,  toIAsMap,  targetTZs, MiscUtil.validateCS(emailAddresses));
+		EmailHelper.addPrincipalsToLocaleMap(              MailModule.CC,  ccIAsMap,  targetTZs, MiscUtil.validateCL(ccIds         ));
+		EmailHelper.addPrincipalsToLocaleMap(              MailModule.BCC, bccIAsMap, targetTZs, MiscUtil.validateCL(bccIds        ));
+
+		// What timezone should we use for date conversions?  If
+		// there's only 1 from all the recipients, use that.
+		// Otherwise, use the senders. 
+		User		sendingUser = RequestContextHolder.getRequestContext().getUser();
+		TimeZone	targetTZ;
+		if (1 == targetTZs.size())
+		     targetTZ = targetTZs.get(0);
+		else targetTZ = sendingUser.getTimeZone();
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+		// Once we get here, we have maps containing the valid //
+		// email addresses we need to send notifications to    //
+		// mapped with the locale to use to send them.         //
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+		// Get what we need from the zone for sending email.
+		Workspace		zone       = RequestContextHolder.getRequestContext().getZone();
+		MailModule		mm         = getMailModule();
+		String			mailSender = mm.getNotificationMailSenderName(zone);
+		String			defaultEMA = mm.getNotificationDefaultFrom(   zone); 
+
+		// Get what we need about the sending user for sending email.
+		Date			now         = new Date();
+		InternetAddress	sendingIA   = new InternetAddress();
+		String			sendersEMA  = sendingUser.getEmailAddress();
+		sendingIA.setAddress(MiscUtil.hasString(sendersEMA) ? sendersEMA : defaultEMA);
+
+		// What Velocity template should we use for this URL?
+		String purposeKey;
+		String subjectKey;
+		String template;
+		switch (urlNotificationType) {
+		case FORGOTTEN_PASSWORD:  template = "forgottenPasswordNotification.vm"; purposeKey = subjectKey = "relevance.mailForgottenPassword"; break;
+		case PASSWORD_CHANGED:    template = "passwordChangedNotification.vm";   purposeKey = subjectKey = "relevance.mailPasswordChanged";   break;
+		default:
+			throw new ConfigurationException(NLT.get("errorcode.sendurlnotification.bogusUrlType", new String[]{urlNotificationType.name()}));
+		}
+		
+		// Scan the unique Locale's we need to localize the
+		// notification email into.
+		boolean			notifyAsBCC   = false;	// SPropsUtil.getBoolean("mail.notifyAsBCC", true);
+		List<Locale>	targetLocales = MiscUtil.validateLL(EmailHelper.getTargetLocales(toIAsMap, ccIAsMap, bccIAsMap));
+		for (Locale locale:  targetLocales) {
+			// Extract the TO:, CC: and BCC: lists for this Locale.
+			List<InternetAddress> toIAs  = MiscUtil.validateIAL(toIAsMap.get( locale));
+			List<InternetAddress> ccIAs  = MiscUtil.validateIAL(ccIAsMap.get( locale));
+			List<InternetAddress> bccIAs = MiscUtil.validateIAL(bccIAsMap.get(locale));
+			
+			// If we we're supposed to send notifications as BCC:s...
+			if (notifyAsBCC && (!(toIAs.isEmpty()))) {
+				// ...move the TO:s to the BCC:s.
+				bccIAs.addAll(toIAs);
+				toIAs.clear();
+			}
+
+			// Allocate a Map to hold the email components for building
+			// the mime...
+			Map mailMap = new HashMap();
+			
+			// ...add the from...
+			mailMap.put(MailModule.FROM, sendingIA);
+
+			// ...add the recipients...
+			mailMap.put(MailModule.TO,  toIAs );
+			mailMap.put(MailModule.CC,  ccIAs );
+			mailMap.put(MailModule.BCC, bccIAs);
+
+			// ...add the subject...
+			String subject = NLT.get(subjectKey, locale);
+			mailMap.put(MailModule.SUBJECT, subject);
+			
+			// ...generate and add the HTML variant...
+			StringWriter	writer  = new StringWriter();
+			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
+           	NotifyVisitor	visitor = new NotifyVisitor(null, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
+		    VelocityContext	ctx     = getUrlNotificationVelocityContext(visitor, url, purposeKey);
+			visitor.processTemplate(template, ctx);
+			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, writer.toString());
+			
+			// ...generate and add the TEXT variant...
+			writer  = new StringWriter();
+			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
+           	visitor = new NotifyVisitor(null, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
+		    ctx     = getUrlNotificationVelocityContext(visitor, url, purposeKey);
+			visitor.processTemplate(template, ctx);
+			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, writer.toString());
+
+			// ...create the mime helper... 
+			MimeSharePreparator helper = new MimeSharePreparator(mailMap, logger);
+			helper.setDefaultFrom(sendingUser.getEmailAddress());
+			
+			try {
+				// ...and send the email.
+				mm.sendMail(mailSender, helper);
+			}
+			
+	 		catch (MailSendException ex) {
+	 			// The send failed!  Log the exception...
+	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
+	 			logger.error("EXCEPTION:  Error sending URL notification:" + exMsg);
+				logger.debug("EXCEPTION", ex);
+				errors.add(new SendMailErrorWrapper(ex, exMsg));
+
+				// ...and if there were any send failed
+				// ...sub-exceptions...
+				Exception[] exceptions = ex.getMessageExceptions();
+				int exCount = ((null == exceptions) ? 0 : exceptions.length);
+	 			if ((0 < exCount) && exceptions[0] instanceof SendFailedException) {
+	 				// ...return them in the error list too.
+	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
+	 				EmailHelper.addMailFailures(errors, sf.getInvalidAddresses(),     "url.notify.invalidAddresses"    );
+	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "url.notify.validUnsentAddresses");
+	 				
+	 			}
+	 	   	}
+	 		
+	 		catch (MailAuthenticationException ex) {
+	 			// The send failed because we couldn't authenticate to
+	 			// the email server!  Log the exception.
+	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
+	       		logger.error("EXCEPTION:  Authentication Exception:" + exMsg);				
+				logger.debug("EXCEPTION", ex);
+				errors.add(new SendMailErrorWrapper(ex, exMsg));
+	 		} 
+		}
+
+		// If we get here, result refers to a map of any errors, ...
+		// Return it.
+		return result;
+    }
+    	 
+    /**
      * Sends a confirmation mail message to an external user.
      * 
      * @param externalUserId
@@ -2032,7 +2210,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		String			sendersEMA  = sendingUser.getEmailAddress();
 		sendingIA.setAddress(MiscUtil.hasString(sendersEMA) ? sendersEMA : defaultEMA);
 
-		// Scan the unique Locale's we need to localize the share
+		// Scan the unique Locale's we need to localize the
 		// notification email into.
 		List<Locale>	targetLocales = MiscUtil.validateLL(EmailHelper.getTargetLocales(toIAsMap, ccIAsMap, bccIAsMap));
 		for (Locale locale:  targetLocales) {
@@ -2337,7 +2515,27 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// Always use the initial form of the method.
 		return getShareVelocityContext(visitor, share, sharedEntity, null);
 	}
+
+	/*
+	 * Returns a VelocityContext to use for URL notification emails. 
+	 */
+	private static VelocityContext getUrlNotificationVelocityContext(NotifyVisitor visitor, String url, String purposeKey) {
+		// Create the context...
+	    VelocityContext	reply = NotifyBuilderUtil.getVelocityContext();
+	    
+	    // ...initialize it...
+		reply.put("ssVisitor",     visitor                                           );
+		reply.put("ssUrl",         url                                               );
+		reply.put("ssUrlPurpose",  NLT.get(purposeKey)				                 );
+		reply.put("ssProduct",     (Utils.checkIfFilr() ? "Filr" : "Vibe")           );
+		reply.put("user",          RequestContextHolder.getRequestContext().getUser());
+		
+		// ...and return it.
+		return reply;
+	}
 	
+	/*
+	 */
     private Set<InternetAddress> getEmail(Collection<Long>ids, List errors) {
     	Set<InternetAddress> addrs=null;
     	if (ids != null && !ids.isEmpty()) {

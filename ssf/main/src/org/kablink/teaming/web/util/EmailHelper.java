@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -73,6 +73,15 @@ import org.kablink.teaming.util.Utils;
  */
 public class EmailHelper {
 	protected static Log m_logger = LogFactory.getLog(EmailHelper.class);
+	
+	/**
+	 * Enumeration type used to indicate the type of notification a URL
+	 * is being send for. 
+	 */
+	public enum UrlNotificationType {
+		FORGOTTEN_PASSWORD,
+		PASSWORD_CHANGED,
+	}
 	
 	/**
 	 * Adds the valid email addresses from a collection to a
@@ -640,6 +649,94 @@ public class EmailHelper {
 			m_logger.debug("EmailHelper.sendShareNotification( SOURCE EXCEPTION ):  ", ex);
 			throw ex;
 		}
+	}
+	
+	/**
+	 * Sends a URL notification mail message to a collection of users
+	 * and/or explicit email addresses.
+	 * 
+	 * @param bs					- Access to modules.
+	 * @param url					- The URL embedded in the notification.
+	 * @param urlNotificationType	- Type of notification to send.
+	 * @param principalIds			- toList,  users and groups
+	 * @param teamIds				- toList,  teams.
+	 * @param emailAddresses		- toList,  stand alone email address.
+	 * @param ccIds					- ccList,  users and groups
+	 * @param bccIds				- bccList, users and groups
+	 * 
+	 * @return
+	 * 
+	 * @throws Exception
+	 */
+	public static Map<String, Object> sendUrlNotification(
+		AllModulesInjected	bs,						//
+		String				url,					//
+		UrlNotificationType	urlNotificationType,	//
+		Collection<Long>	principalIds,			//
+		Collection<Long>	teamIds,				//
+		Collection<String>	emailAddresses,			//
+		Collection<Long>	ccIds, 					//
+		Collection<Long>	bccIds)					//
+			throws Exception
+	{
+		try {
+			// Are there any actual targets for the email notification?
+			boolean hasTargets = (
+				MiscUtil.hasItems(principalIds)   ||
+				MiscUtil.hasItems(teamIds)        ||
+				MiscUtil.hasItems(emailAddresses) ||
+				MiscUtil.hasItems(ccIds)          ||
+				MiscUtil.hasItems(bccIds));
+
+			Map<String, Object> reply;
+			if (hasTargets) {
+				// Yes!  Send it.
+				reply = bs.getAdminModule().sendUrlNotification(
+					url,
+					urlNotificationType,
+					principalIds,
+					teamIds,
+					emailAddresses,
+					ccIds,
+					bccIds);
+			}
+			else {
+				// No, there aren't any targets!  Return an empty
+				// reply.
+				reply = new HashMap<String, Object>();
+			}
+			
+			// If we get here, reply contains a map of the results of
+			// the email notification.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			m_logger.debug("EmailHelper.sendUrlNotification( SOURCE EXCEPTION ):  ", ex);
+			throw ex;
+		}
+	}
+	
+	public static Map<String, Object> sendUrlNotification(
+		AllModulesInjected	bs,						//
+		String				url,					//
+		UrlNotificationType	urlNotificationType,	//
+		Long				principalId)			//
+			throws Exception
+	{
+		// Always use the initial form of the method.
+		Collection<Long> principalIds = new ArrayList<Long>();
+		principalIds.add(principalId);
+		return
+			sendUrlNotification(
+				bs,
+				url,
+				urlNotificationType,
+				principalIds,
+				null,	// null -> No teams.
+				null,	// null -> No specific email addresses.
+				null,	// null -> No CCs.
+				null);	// null -> No BCCs.
 	}
 	
 	/*

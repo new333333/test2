@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -66,6 +66,7 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 
 /**
  * ?
@@ -279,6 +280,25 @@ public interface AdminModule {
      * @throws Exception
      */
     public Map<String, Object> sendMail(ShareItem share, DefinableEntity sharedEntity, Collection<Long> principalIds, Collection<Long> teamIds,
+    		Collection<String> emailAddresses, Collection<Long> ccIds, Collection<Long> bccIds) throws Exception;
+    	 
+    /**
+	 * Sends a URL notification mail message to a collection of users
+	 * and/or explicit email addresses.
+	 * 
+	 * @param url					- The URL embedded in the notification.
+	 * @param urlNotificationType	- Type of notification to send.
+	 * @param principalIds			- toList,  users and groups
+	 * @param teamIds				- toList,  teams.
+	 * @param emailAddresses		- toList,  stand alone email address.
+	 * @param ccIds					- ccList,  users and groups
+	 * @param bccIds				- bccList, users and groups
+     * 
+     * @return
+     * 
+     * @throws Exception
+     */
+    public Map<String, Object> sendUrlNotification(String url, UrlNotificationType urlNotificationType, Collection<Long> principalIds, Collection<Long> teamIds,
     		Collection<String> emailAddresses, Collection<Long> ccIds, Collection<Long> bccIds) throws Exception;
     	 
     /**
