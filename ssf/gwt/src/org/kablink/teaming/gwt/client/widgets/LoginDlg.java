@@ -1409,7 +1409,7 @@ public class LoginDlg extends DlgBox
 			m_cancelBtn.setVisible( false );
 		}
 		
-		// Create a "I forgot my password" link.
+		// Create a "Forgot Your Password?" link.
 		{
 			ClickHandler clickHandler;
 			MouseOverHandler mouseOverHandler;
@@ -1447,41 +1447,41 @@ public class LoginDlg extends DlgBox
 			m_forgotPwdLink.addClickHandler( clickHandler );
 
 			// Add a mouse-over handler
-			mouseOverHandler = new MouseOverHandler()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onMouseOver( MouseOverEvent event )
-				{
-					Widget widget;
-					
-					widget = (Widget)event.getSource();
-					widget.removeStyleName( "subhead-control-bg1" );
-					widget.addStyleName( "subhead-control-bg2" );
-				}// end onMouseOver()
-			};
-			m_forgotPwdLink.addMouseOverHandler( mouseOverHandler );
-
-			// Add a mouse-out handler
-			mouseOutHandler = new MouseOutHandler()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onMouseOut( MouseOutEvent event )
-				{
-					Widget widget;
-					
-					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
-					widget = (Widget)event.getSource();
-					widget.removeStyleName( "subhead-control-bg2" );
-					widget.addStyleName( "subhead-control-bg1" );
-				}// end onMouseOut()
-			};
-			m_forgotPwdLink.addMouseOutHandler( mouseOutHandler );
+//			mouseOverHandler = new MouseOverHandler()
+//			{
+//				/**
+//				 * 
+//				 */
+//				@Override
+//				public void onMouseOver( MouseOverEvent event )
+//				{
+//					Widget widget;
+//					
+//					widget = (Widget)event.getSource();
+//					widget.removeStyleName( "subhead-control-bg1" );
+//					widget.addStyleName( "subhead-control-bg2" );
+//				}// end onMouseOver()
+//			};
+//			m_forgotPwdLink.addMouseOverHandler( mouseOverHandler );
+//
+//			// Add a mouse-out handler
+//			mouseOutHandler = new MouseOutHandler()
+//			{
+//				/**
+//				 * 
+//				 */
+//				@Override
+//				public void onMouseOut( MouseOutEvent event )
+//				{
+//					Widget widget;
+//					
+//					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
+//					widget = (Widget)event.getSource();
+//					widget.removeStyleName( "subhead-control-bg2" );
+//					widget.addStyleName( "subhead-control-bg1" );
+//				}// end onMouseOut()
+//			};
+//			m_forgotPwdLink.addMouseOutHandler( mouseOutHandler );
 		}
 
 		// Create a "Create new account" link that will initially be hidden.
@@ -1530,41 +1530,41 @@ public class LoginDlg extends DlgBox
 			m_selfRegLink.addClickHandler( clickHandler );
 			
 			// Add a mouse-over handler
-			mouseOverHandler = new MouseOverHandler()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onMouseOver( MouseOverEvent event )
-				{
-					Widget widget;
-					
-					widget = (Widget)event.getSource();
-					widget.removeStyleName( "subhead-control-bg1" );
-					widget.addStyleName( "subhead-control-bg2" );
-				}// end onMouseOver()
-			};
-			m_selfRegLink.addMouseOverHandler( mouseOverHandler );
-
-			// Add a mouse-out handler
-			mouseOutHandler = new MouseOutHandler()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onMouseOut( MouseOutEvent event )
-				{
-					Widget widget;
-					
-					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
-					widget = (Widget)event.getSource();
-					widget.removeStyleName( "subhead-control-bg2" );
-					widget.addStyleName( "subhead-control-bg1" );
-				}// end onMouseOut()
-			};
-			m_selfRegLink.addMouseOutHandler( mouseOutHandler );
+//			mouseOverHandler = new MouseOverHandler()
+//			{
+//				/**
+//				 * 
+//				 */
+//				@Override
+//				public void onMouseOver( MouseOverEvent event )
+//				{
+//					Widget widget;
+//					
+//					widget = (Widget)event.getSource();
+//					widget.removeStyleName( "subhead-control-bg1" );
+//					widget.addStyleName( "subhead-control-bg2" );
+//				}// end onMouseOver()
+//			};
+//			m_selfRegLink.addMouseOverHandler( mouseOverHandler );
+//
+//			// Add a mouse-out handler
+//			mouseOutHandler = new MouseOutHandler()
+//			{
+//				/**
+//				 * 
+//				 */
+//				@Override
+//				public void onMouseOut( MouseOutEvent event )
+//				{
+//					Widget widget;
+//					
+//					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
+//					widget = (Widget)event.getSource();
+//					widget.removeStyleName( "subhead-control-bg2" );
+//					widget.addStyleName( "subhead-control-bg1" );
+//				}// end onMouseOut()
+//			};
+//			m_selfRegLink.addMouseOutHandler( mouseOutHandler );
 		}
 		
 		m_mainPanel.add( m_formPanel );
