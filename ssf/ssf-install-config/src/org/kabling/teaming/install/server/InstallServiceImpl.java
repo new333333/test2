@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.server;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -8,6 +9,7 @@ import org.jvnet.libpam.PAM;
 import org.jvnet.libpam.PAMException;
 import org.jvnet.libpam.UnixUser;
 import org.kabling.teaming.install.client.InstallService;
+import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.shared.ConfigurationSaveException;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.InstallerConfig;
@@ -69,9 +71,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	}
 
 	@Override
-	public void saveConfiguration(InstallerConfig config) throws ConfigurationSaveException
+	public void saveConfiguration(InstallerConfig config,List<LeftNavItemType> sectionsToUpdate) throws ConfigurationSaveException
 	{
-		ConfigService.saveConfiguration(config);
+		ConfigService.saveConfiguration(config,sectionsToUpdate);
 	}
 
 	@Override

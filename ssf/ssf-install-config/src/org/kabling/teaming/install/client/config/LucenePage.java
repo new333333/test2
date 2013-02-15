@@ -1,12 +1,17 @@
 package org.kabling.teaming.install.client.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.ValueRequiredValidator;
+import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.client.widgets.VibePasswordTextBox;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
+import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.Lucene;
 import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
@@ -381,5 +386,17 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 		helpData.setPageId("search_index");
 		
 		return helpData;
+	}
+	
+	@Override
+	public boolean editSuccessful(Object obj)
+	{
+		List<LeftNavItemType> sectionsToUpdate = new ArrayList<LeftNavItemType>();
+		sectionsToUpdate.add(LeftNavItemType.LUCENE);
+		// Save the configuration
+		AppUtil.getInstallService().saveConfiguration((InstallerConfig) obj, sectionsToUpdate,saveConfigCallback);
+
+		// Return false, we will close if the save is successful
+		return false;
 	}
 }

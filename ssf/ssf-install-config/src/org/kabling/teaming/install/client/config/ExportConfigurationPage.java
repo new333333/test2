@@ -1,8 +1,13 @@
 package org.kabling.teaming.install.client.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.HelpData;
+import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
+import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
 import com.google.gwt.core.client.GWT;
@@ -107,6 +112,12 @@ public class ExportConfigurationPage extends ConfigPageDlgBox implements ClickHa
 		helpData.setPageId("update");
 		
 		return helpData;
+	}
+	
+	@Override
+	public boolean editSuccessful(Object obj)
+	{
+		return true;
 	}
 
 }

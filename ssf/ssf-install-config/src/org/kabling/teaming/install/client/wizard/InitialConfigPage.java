@@ -62,7 +62,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			radioPanel.add(useDefaultsRB);
 
 			HTML defaultConfigDescLabel = new HTML(
-					"Set up an evaluation environment or small network infrastructure.<br> The Lucene search service and MySQL database will be on this Filr virtual appliance.");
+					"Set up an evaluation environment or small network infrastructure.<br> The Lucene search service and MySQL database will be installed on this Filr virtual appliance.");
 			defaultConfigDescLabel.addStyleName("configDescLabel");
 			radioPanel.add(defaultConfigDescLabel);
 

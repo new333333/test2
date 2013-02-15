@@ -1,7 +1,9 @@
 package org.kabling.teaming.install.client;
 
+import java.util.List;
 import java.util.Map;
 
+import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.shared.ConfigurationSaveException;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.InstallerConfig;
@@ -16,7 +18,7 @@ public interface InstallServiceAsync
 {
 	void getConfiguration(AsyncCallback<InstallerConfig> callback);
 
-	void saveConfiguration(InstallerConfig config, AsyncCallback<Void> callback) throws ConfigurationSaveException;
+	void saveConfiguration(InstallerConfig config, List<LeftNavItemType> sectionsToUpdate,AsyncCallback<Void> callback) throws ConfigurationSaveException;
 
 	void login(String userName, String password, AsyncCallback<LoginInfo> callback) throws LoginException;
 

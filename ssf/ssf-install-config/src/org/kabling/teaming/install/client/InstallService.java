@@ -1,8 +1,10 @@
 package org.kabling.teaming.install.client;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
+import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.shared.ConfigurationSaveException;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.InstallerConfig;
@@ -32,7 +34,7 @@ public interface InstallService extends RemoteService
 	 * @param config - configuration details that needs to be saved
 	 * @throws ConfigurationSaveException
 	 */
-	void saveConfiguration(InstallerConfig config) throws ConfigurationSaveException;
+	void saveConfiguration(InstallerConfig config,List<LeftNavItemType> sectionsToUpdate) throws ConfigurationSaveException;
 
 	/**
 	 * Create the database. 

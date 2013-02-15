@@ -230,7 +230,7 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 
 		case NOVELL_ACCESS_MANAGER:
 			dlg = new ReverseProxyPage();
-			dlg.createAllDlgContent(AppUtil.getAppResource().reverseProxyIntegration(), dlg, null, null);
+			dlg.createAllDlgContent(AppUtil.getAppResource().reverseProxy(), dlg, null, null);
 			break;
 			
 		case IMPORT_EXPORT:
