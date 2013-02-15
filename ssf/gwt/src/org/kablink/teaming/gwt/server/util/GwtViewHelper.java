@@ -3274,12 +3274,13 @@ public class GwtViewHelper {
 	 * @param bs
 	 * @param request
 	 * @param entityId
+	 * @param markRead
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static FolderEntryDetails getFolderEntryDetails(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) throws GwtTeamingException {
+	public static FolderEntryDetails getFolderEntryDetails(AllModulesInjected bs, HttpServletRequest request, EntityId entityId, boolean markRead) throws GwtTeamingException {
 		SimpleProfiler.start("GwtViewHelper.getFolderEntryDetails()");
 		try {
 			// Create the ViewFolderEntryInfo to return...
@@ -3290,8 +3291,16 @@ public class GwtViewHelper {
 			Long			folderId = entityId.getBinderId();
 			FolderModule	fm       = bs.getFolderModule();
 			FolderEntry 	fe       = fm.getEntry(folderId, entityId.getEntityId());
-			SeenMap			seenMap  = bs.getProfileModule().getUserSeenMap(userId);
-			reply.setSeen(seenMap.checkIfSeen(fe));
+			ProfileModule	pm       = bs.getProfileModule();
+			SeenMap			seenMap  = pm.getUserSeenMap(userId);
+			boolean			feSeen   = seenMap.checkIfSeen(fe);
+			reply.setSeenPrevious(feSeen);
+			if ((!feSeen) && markRead) {
+				// ...and if it hasn't, it has now...
+				feSeen = true;
+				pm.setSeen(null, fe);
+			}
+			reply.setSeen(feSeen);
 			
 			// ...set the entry's family and path... 
 			FolderEntry feTop = fe.getTopEntry();

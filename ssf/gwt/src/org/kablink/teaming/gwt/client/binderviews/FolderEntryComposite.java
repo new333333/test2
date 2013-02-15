@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -79,7 +79,6 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -217,7 +216,7 @@ public class FolderEntryComposite extends ResizeComposite
 		initWidget(m_rootPanel);
 
 		// ...and continue building the composite.
-		loadPart1Async();
+		loadPart1Async(false);	// false -> Load is not part of a refresh.
 	}
 
 	/*
@@ -491,13 +490,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously navigates to the previous/next entry.
 	 */
 	private void doNavigateAsync(final boolean previous) {
-		ScheduledCommand doNavigate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				doNavigateNow(previous);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doNavigate);
+		});
 	}
 	
 	/*
@@ -565,20 +563,19 @@ public class FolderEntryComposite extends ResizeComposite
 	/*
 	 * Asynchronously loads the next part of the composite.
 	 */
-	private void loadPart1Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
+	private void loadPart1Async(final boolean refresh) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				loadPart1Now();
+				loadPart1Now(refresh);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
 	 * Synchronously loads the next part of the composite.
 	 */
-	private void loadPart1Now() {
+	private void loadPart1Now(final boolean refresh) {
 		FooterPanel.createAsync(this, m_vfei.getEntityId(), this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
@@ -591,7 +588,7 @@ public class FolderEntryComposite extends ResizeComposite
 				m_footerPanel = ((FooterPanel) tpb);
 				m_footerPanel.addStyleName("vibe-feComposite-footerPanel");
 				m_rootPanel.add(m_footerPanel);
-				loadPart2Async();
+				loadPart2Async(refresh);
 			}
 		});
 	}
@@ -599,22 +596,21 @@ public class FolderEntryComposite extends ResizeComposite
 	/*
 	 * Asynchronously loads the next part of the composite.
 	 */
-	private void loadPart2Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
+	private void loadPart2Async(final boolean refresh) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				loadPart2Now();
+				loadPart2Now(refresh);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
 	 * Synchronously loads the next part of the composite.
 	 */
-	private void loadPart2Now() {
+	private void loadPart2Now(final boolean refresh) {
 		// Can we get the previous/next entry navigate to?
-		GetFolderEntryDetailsCmd cmd = new GetFolderEntryDetailsCmd(m_vfei.getEntityId());
+		GetFolderEntryDetailsCmd cmd = new GetFolderEntryDetailsCmd(m_vfei.getEntityId(), (!refresh));
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -636,13 +632,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously loads the next part of the composite.
 	 */
 	private void loadPart3Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart3Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
@@ -732,13 +727,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously handles copying the folder entry.
 	 */
 	private void onCopySelectedEntriesAsync(final List<EntityId> copiedEntities) {
-		Scheduler.ScheduledCommand doCopy = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onCopySelectedEntriesNow(copiedEntities);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doCopy);
+		});
 	}
 	
 	/*
@@ -769,13 +763,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously handles changing the folder entry type.
 	 */
 	private void onChangeEntryTypeSelectedEntriesAsync(final List<EntityId> changedEntities) {
-		Scheduler.ScheduledCommand doChange = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onChangeEntryTypeSelectedEntriesNow(changedEntities);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doChange);
+		});
 	}
 	
 	/*
@@ -819,13 +812,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously handles deleting the folder entry.
 	 */
 	private void onDeleteSelectedEntriesAsync(final List<EntityId> deletedEntities) {
-		Scheduler.ScheduledCommand doDelete = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onDeleteSelectedEntriesNow(deletedEntities);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doDelete);
+		});
 	}
 	
 	/*
@@ -891,13 +883,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously handles editing the folder entry.
 	 */
 	private void onInvokeEditInPlaceAsync(final InvokeEditInPlaceEvent event) {
-		Scheduler.ScheduledCommand doEdit = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onInvokeEditInPlaceNow(event);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doEdit);
+		});
 	}
 	
 	/*
@@ -949,13 +940,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously handles locking the folder entry.
 	 */
 	private void onLockSelectedEntriesAsync(final List<EntityId> lockedEntities) {
-		Scheduler.ScheduledCommand doLock = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onLockSelectedEntriesNow(lockedEntities);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLock);
+		});
 	}
 	
 	/*
@@ -986,13 +976,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously handles marking the folder entry as being read
 	 */
 	private void onMarkReadSelectedEntriesAsync(final List<EntityId> markedReadEntities) {
-		Scheduler.ScheduledCommand doMarkRead = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onMarkReadSelectedEntriesNow(markedReadEntities);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doMarkRead);
+		});
 	}
 	
 	/*
@@ -1023,13 +1012,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously handles marking the folder entry as being read
 	 */
 	private void onMarkUnreadSelectedEntriesAsync(final List<EntityId> markedUnreadEntities) {
-		Scheduler.ScheduledCommand doMarkUnread = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onMarkUnreadSelectedEntriesNow(markedUnreadEntities);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doMarkUnread);
+		});
 	}
 	
 	/*
@@ -1060,13 +1048,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously handles moving the folder entry.
 	 */
 	private void onMoveSelectedEntriesAsync(final List<EntityId> movedEntities) {
-		Scheduler.ScheduledCommand doMove = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onMoveSelectedEntriesNow(movedEntities);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doMove);
+		});
 	}
 	
 	/*
@@ -1097,13 +1084,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously handles purging the folder entry.
 	 */
 	private void onPurgeSelectedEntriesAsync(final List<EntityId> purgedEntities) {
-		Scheduler.ScheduledCommand doPurge = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onPurgeSelectedEntriesNow(purgedEntities);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPurge);
+		});
 	}
 	
 	/*
@@ -1149,25 +1135,13 @@ public class FolderEntryComposite extends ResizeComposite
 	 * position in the view.
 	 */
 	private void onResizeAsync(int delay) {
-		if (0 == delay) {
-			ScheduledCommand doResize = new ScheduledCommand() {
-				@Override
-				public void execute() {
-					onResize();
-				}
-			};
-			Scheduler.get().scheduleDeferred(doResize);
-		}
-		
-		else {
-			Timer timer = new Timer() {
-				@Override
-				public void run() {
-					onResize();
-				}
-			};
-			timer.schedule(delay);
-		}
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onResize();
+			}
+		},
+		delay);
 	}
 
 	/*
@@ -1241,13 +1215,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously handles sharing the folder entry.
 	 */
 	private void onShareSelectedEntriesAsync(final List<EntityId> sharedEntities) {
-		Scheduler.ScheduledCommand doShare = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onShareSelectedEntriesNow(sharedEntities);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doShare);
+		});
 	}
 	
 	/*
@@ -1278,13 +1251,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously handles subscribing to the folder entry.
 	 */
 	private void onSubscribeSelectedEntriesAsync(final List<EntityId> subscribedEntities) {
-		Scheduler.ScheduledCommand doSubscribe = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onSubscribeSelectedEntriesNow(subscribedEntities);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doSubscribe);
+		});
 	}
 	
 	/*
@@ -1315,13 +1287,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously handles unlocking the folder entry.
 	 */
 	private void onUnlockSelectedEntriesAsync(final List<EntityId> unlockedEntities) {
-		Scheduler.ScheduledCommand doUnlock = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				onUnlockSelectedEntriesNow(unlockedEntities);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doUnlock);
+		});
 	}
 	
 	/*
@@ -1358,7 +1329,7 @@ public class FolderEntryComposite extends ResizeComposite
 		m_readyComponents = 0;
 
 		// ...and start loading the new content. 
-		loadPart1Async();
+		loadPart1Async(true);	// true -> Load is part of a refresh.
 	}
 
 	/*

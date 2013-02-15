@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,7 +40,10 @@ import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryCookies.Cookie;
 import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg.ProfileEntryDlgClient;
+import org.kablink.teaming.gwt.client.event.FolderEntryActionCompleteEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
@@ -50,11 +53,11 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -105,13 +108,12 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		bcAnchor.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				ScheduledCommand doNavigate = new ScheduledCommand() {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
 					@Override
 					public void execute() {
 						m_fec.doNavigate(bcItem);
 					}
-				};
-				Scheduler.get().scheduleDeferred(doNavigate);
+				});
 			}
 		});
 		return bcAnchor;
@@ -225,7 +227,9 @@ public class FolderEntryHeader extends VibeFlowPanel {
 	 * Creates the header's title information.
 	 */
 	private void createEntryTitle(VibeFlowPanel contentPanel) {
+		// If this is not the top entry...
 		if (!(m_fed.isTop())) {
+			// ...add bread crumbs to the top entry...
 			VibeFlowPanel bcPanel = new VibeFlowPanel();
 			bcPanel.addStyleName("vibe-feView-headerContentBCPanel");
 			List<ViewFolderEntryInfo> bcItems = m_fed.getCommentBreadCrumbs();
@@ -233,6 +237,23 @@ public class FolderEntryHeader extends VibeFlowPanel {
 				bcPanel.add(createBCAnchor(bcItem));
 			}
 			contentPanel.add(bcPanel);
+		}
+
+		// ...if this entry hasn't been read...
+		VibeFlowPanel titlePanel = new VibeFlowPanel();
+		titlePanel.addStyleName("vibe-feView-headerContentTitlePanel");
+		contentPanel.add(titlePanel);
+		if (!(m_fed.isSeen())) {
+			// ...let the user mark it read from there...
+			Image i = GwtClientHelper.buildImage(m_images.unread(), m_messages.folderEntry_Alt_MarkRead());
+			i.addStyleName("vibe-feView-headerContentTitleMarkRead");
+			i.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					markReadAsync();
+				}
+			});
+			titlePanel.add(i);
 		}
 
 		// Create the title label...
@@ -249,13 +270,13 @@ public class FolderEntryHeader extends VibeFlowPanel {
 			titleA.setTarget("_blank");
 			titleA.getElement().appendChild(titleL.getElement());
 			titleL.addStyleName("displayInline");
-			contentPanel.add(titleA);
+			titlePanel.add(titleA);
 		}
 		
 		else {
 			// ...otherwise, just add the title Label directly...
 			titleL.addStyleName("displayBlock");
-			contentPanel.add(titleL);
+			titlePanel.add(titleL);
 		}
 		
 		// ...and add the entry's path.
@@ -405,6 +426,40 @@ public class FolderEntryHeader extends VibeFlowPanel {
 	}
 
 	/*
+	 * Asynchronously marks the entry as having been read.
+	 */
+	private void markReadAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				markReadNow();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously marks the entry as having been read.
+	 */
+	private void markReadNow() {
+		final Long entryId = m_fed.getEntityId().getEntityId();
+		SetSeenCmd cmd = new SetSeenCmd(entryId);
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_SetSeen(),
+					String.valueOf(entryId));
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				GwtTeaming.fireEventAsync(new FolderEntryActionCompleteEvent(m_fed.getEntityId(), false));
+			}
+		});
+	}
+
+	/*
 	 * Shows/hides the description.
 	 */
 	private void setDescVisible(boolean show) {
@@ -423,13 +478,12 @@ public class FolderEntryHeader extends VibeFlowPanel {
 	 * Asynchronously shows the profile entry dialog.
 	 */
 	private void showProfileEntryDlgAsync(final PrincipalInfo pi) {
-		ScheduledCommand doShow = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showProfileEntryDlgNow(pi);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doShow);
+		});
 	}
 	
 	/*

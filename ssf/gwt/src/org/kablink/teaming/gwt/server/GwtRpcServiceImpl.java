@@ -1313,7 +1313,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_FOLDER_ENTRY_DETAILS:
 		{
 			GetFolderEntryDetailsCmd			gfeCmd       = ((GetFolderEntryDetailsCmd) cmd);
-			FolderEntryDetails					fed          = GwtViewHelper.getFolderEntryDetails( this, getRequest( ri ), gfeCmd.getEntityId() );
+			FolderEntryDetails					fed          = GwtViewHelper.getFolderEntryDetails( this, getRequest( ri ), gfeCmd.getEntityId(), gfeCmd.isMarkRead() );
 			FolderEntryDetailsRpcResponseData	responseData = new FolderEntryDetailsRpcResponseData( fed );
 			response = new VibeRpcResponse( responseData );
 			return response;
