@@ -5847,9 +5847,11 @@ public class GwtViewHelper {
 		else if (action.equals(WebKeys.ACTION_VIEW_FOLDER_ENTRY)) {
 			// A view folder entry!  Construct a ViewFolderEntryInfo
 			// for it...
-			Long				binderId = getQueryParameterLong(nvMap, WebKeys.URL_BINDER_ID);
-			Long				entryId  = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID );
-			ViewFolderEntryInfo	vfei     = buildViewFolderEntryInfo(bs, request, binderId, entryId);
+			Long				entryId   = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID );
+			FolderEntry			fe        = GwtUIHelper.getEntrySafely(bs.getFolderModule(), null, entryId);
+			boolean				hasAccess = (null != fe);
+			Long				binderId  = (hasAccess ? fe.getParentBinder().getId() : getQueryParameterLong(nvMap, WebKeys.URL_BINDER_ID));
+			ViewFolderEntryInfo	vfei      = buildViewFolderEntryInfo(bs, request, binderId, entryId);
 			
 			// ...mark the ViewInfo as such...
 			vi.setViewFolderEntryInfo(vfei                 );
@@ -5860,10 +5862,8 @@ public class GwtViewHelper {
 			boolean invokeShare = isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SHARE, "1");
 			if (invokeShare) {
 				// ...mark the ViewInfo accordingly...
-				FolderEntry fe = GwtUIHelper.getEntrySafely(bs.getFolderModule(), binderId, entryId);
-				invokeShare = (null != fe);
-				boolean invokeShareEnabled = (invokeShare && GwtShareHelper.isEntitySharable(bs, fe));
-				vi.setInvokeShare(       invokeShare       );
+				boolean invokeShareEnabled = (hasAccess && GwtShareHelper.isEntitySharable(bs, fe));
+				vi.setInvokeShare(       hasAccess         );
 				vi.setInvokeShareEnabled(invokeShareEnabled);
 			}
 			
