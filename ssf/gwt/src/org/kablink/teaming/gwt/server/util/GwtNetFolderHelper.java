@@ -230,6 +230,7 @@ public class GwtNetFolderHelper
 			
 			gtEx = GwtServerHelper.getGwtTeamingException();
 			gtEx.setAdditionalDetails( NLT.get( "netfolder.cant.load.parent.binder" ) );
+			m_logger.error( "Error creating net folder: " + netFolder.getName(), ex);
 			throw gtEx;				
 		}
 		
@@ -317,7 +318,7 @@ public class GwtNetFolderHelper
 			}
 			catch ( Exception e )
 			{
-				m_logger.error( "Error deleting next net folder: " + nextNetFolder.getName() + ", " + e.toString() );
+				m_logger.error( "Error deleting next net folder: " + nextNetFolder.getName(), e);
 			}
 		}
 		
@@ -363,7 +364,7 @@ public class GwtNetFolderHelper
 			}
 			catch ( Exception ex )
 			{
-				m_logger.error( "Error deleting next folder root: " + nextRoot.getName() + ", " + ex.toString() );
+				m_logger.error( "Error deleting next folder root: " + nextRoot.getName(), ex );
 				result.addCouldNotBeDeletedNetFolderServer( nextRoot );
 			}
 		}
@@ -966,6 +967,7 @@ public class GwtNetFolderHelper
 			GwtTeamingException gtEx;
 			
 			gtEx = GwtServerHelper.getGwtTeamingException( ex );
+			m_logger.error( "Error modifying net folder: " + netFolder.getName(), ex);
 			throw gtEx;				
 		}
 		
@@ -1011,6 +1013,7 @@ public class GwtNetFolderHelper
 			GwtTeamingException gtEx;
 			
 			gtEx = GwtServerHelper.getGwtTeamingException( ex );
+			m_logger.error( "Error modifying net folder root: " + netFolderRoot.getName(), ex);
 			throw gtEx;				
 		}
 		
