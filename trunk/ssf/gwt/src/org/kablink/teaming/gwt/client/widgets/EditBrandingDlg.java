@@ -235,11 +235,8 @@ public class EditBrandingDlg extends DlgBox
 				Image browseImg;
 				
 				flowPanel = new FlowPanel();
-				flowPanel.getElement().getStyle().setMarginTop( 2, Style.Unit.PX );
+//				flowPanel.getElement().getStyle().setMarginTop( 2, Style.Unit.PX );
 				flowPanel.addStyleName( "editBrandingBrowseLink" );
-				flowPanel.addStyleName( "editBrandingLink" );
-				flowPanel.addStyleName( "subhead-control-bg1" );
-				flowPanel.addStyleName( "roundcornerSM" );
 
 				addFileAnchor = new Anchor();
 				addFileAnchor.setTitle( messages.addImage() );
@@ -249,7 +246,7 @@ public class EditBrandingDlg extends DlgBox
 				browseImg = new Image( GwtTeaming.getImageBundle().browseHierarchy() );
 				linkElement = addFileAnchor.getElement();
 				imgElement = browseImg.getElement();
-				imgElement.getStyle().setMarginTop( 2, Style.Unit.PX );
+//				imgElement.getStyle().setMarginTop( 2, Style.Unit.PX );
 				linkElement.appendChild( imgElement );
 
 				// Add a clickhandler to the "add file" link.  When the user clicks on the hint we
@@ -302,10 +299,7 @@ public class EditBrandingDlg extends DlgBox
 				
 				advancedAnchor = new Anchor( messages.advancedBtn() );
 				advancedAnchor.setTitle( messages.editAdvancedBranding() );
-				advancedAnchor.addStyleName( "editBrandingLink" );
 				advancedAnchor.addStyleName( "editBrandingAdvancedLink" );
-				advancedAnchor.addStyleName( "subhead-control-bg1" );
-				advancedAnchor.addStyleName( "roundcornerSM" );
 				
 				// Add a clickhandler to the "advanced" link.  When the user clicks on the link we
 				// will invoke the "edit advanced branding" dialog.
@@ -336,42 +330,6 @@ public class EditBrandingDlg extends DlgBox
 					}//end onClick()
 				};
 				advancedAnchor.addClickHandler( clickHandler );
-				
-				// Add a mouse-over handler
-				mouseOverHandler = new MouseOverHandler()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void onMouseOver( MouseOverEvent event )
-					{
-						Widget widget;
-						
-						widget = (Widget)event.getSource();
-						widget.removeStyleName( "subhead-control-bg1" );
-						widget.addStyleName( "subhead-control-bg2" );
-					}// end onMouseOver()
-				};
-				advancedAnchor.addMouseOverHandler( mouseOverHandler );
-
-				// Add a mouse-out handler
-				mouseOutHandler = new MouseOutHandler()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void onMouseOut( MouseOutEvent event )
-					{
-						Widget widget;
-						
-						// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
-						widget = (Widget)event.getSource();
-						removeMouseOverStyles( widget );
-					}// end onMouseOut()
-				};
-				advancedAnchor.addMouseOutHandler( mouseOutHandler );
 
 				table.setWidget( nextRow, 1,advancedAnchor );
 			}
@@ -410,11 +368,8 @@ public class EditBrandingDlg extends DlgBox
 				Image browseImg;
 				
 				flowPanel = new FlowPanel();
-				flowPanel.getElement().getStyle().setMarginTop( 2, Style.Unit.PX );
+//				flowPanel.getElement().getStyle().setMarginTop( 2, Style.Unit.PX );
 				flowPanel.addStyleName( "editBrandingBrowseLink" );
-				flowPanel.addStyleName( "editBrandingLink" );
-				flowPanel.addStyleName( "subhead-control-bg1" );
-				flowPanel.addStyleName( "roundcornerSM" );
 
 				addFileAnchor = new Anchor();
 				addFileAnchor.setTitle( messages.addImage() );
@@ -424,7 +379,7 @@ public class EditBrandingDlg extends DlgBox
 				browseImg = new Image( GwtTeaming.getImageBundle().browseHierarchy() );
 				linkElement = addFileAnchor.getElement();
 				imgElement = browseImg.getElement();
-				imgElement.getStyle().setMarginTop( 2, Style.Unit.PX );
+//				imgElement.getStyle().setMarginTop( 2, Style.Unit.PX );
 				linkElement.appendChild( imgElement );
 
 				// Add a clickhandler to the "add file" link.  When the user clicks on the hint we
@@ -685,11 +640,8 @@ public class EditBrandingDlg extends DlgBox
 				Image browseImg;
 				
 				flowPanel = new FlowPanel();
-				flowPanel.getElement().getStyle().setMarginTop( 2, Style.Unit.PX );
+//				flowPanel.getElement().getStyle().setMarginTop( 2, Style.Unit.PX );
 				flowPanel.addStyleName( "editBrandingBrowseLink" );
-				flowPanel.addStyleName( "editBrandingLink" );
-				flowPanel.addStyleName( "subhead-control-bg1" );
-				flowPanel.addStyleName( "roundcornerSM" );
 
 				addFileAnchor = new Anchor();
 				addFileAnchor.setTitle( messages.addImage() );
@@ -699,7 +651,7 @@ public class EditBrandingDlg extends DlgBox
 				browseImg = new Image( GwtTeaming.getImageBundle().browseHierarchy() );
 				linkElement = addFileAnchor.getElement();
 				imgElement = browseImg.getElement();
-				imgElement.getStyle().setMarginTop( 2, Style.Unit.PX );
+//				imgElement.getStyle().setMarginTop( 2, Style.Unit.PX );
 				linkElement.appendChild( imgElement );
 
 				// Add a clickhandler to the "add file" link.  When the user clicks on the hint we
@@ -1364,11 +1316,11 @@ public class EditBrandingDlg extends DlgBox
 	/**
 	 * Remove the styles that were added to the given widget when the user moved the mouse over the widget.
 	 */
-	private void removeMouseOverStyles( Widget widget )
-	{
-		widget.removeStyleName( "subhead-control-bg2" );
-		widget.addStyleName( "subhead-control-bg1" );
-	}// end removeMouseOverStyles()
+//	private void removeMouseOverStyles( Widget widget )
+//	{
+//		widget.removeStyleName( "subhead-control-bg2" );
+//		widget.addStyleName( "subhead-control-bg1" );
+//	}// end removeMouseOverStyles()
 	
 	
 	/**

@@ -1261,14 +1261,52 @@ body, table td, select
 }
 
 /* Style used for the Browse link in the "edit branding" dialog. */
-.editBrandingBrowseLink, .addAttachmentLink, .colorPickerLink
+.editBrandingBrowseLink, .editBrandingAdvancedLink, .addAttachmentLink, .colorPickerLink, #forgottenPwdSpan
 {
-	height: 20px;
-	overflow: hidden;
-	padding: 0;
-	text-align: center;
-	width: 28px;
+	cursor: pointer;
+	border: 1px solid #B8B8B8;
+	font-weight: normal !important;
+	font-size: 12px;
+	margin-left: 3px;
+	padding: 2px 5px  !important;
+	text-decoration:none;	
+	white-space: nowrap;
+	text-align: center !important;
+	min-width: 20px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background-color: transparent;
 }
+	
+.editBrandingBrowseLink:hover, .editBrandingAdvancedLink:hover, .addAttachmentLink:hover, .colorPickerLink:hover, #forgottenPwdSpan:hover
+{
+	color: #135c8f !important;
+	border: 1px solid #81b2bd;
+	padding: 2px 5px  !important;
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-gradient(linear, left bottom, left top, color-stop(0.47, #A8D4DD), color-stop(0.53, #D5EDF1), color-stop(1, #C8E4E9));
+	border-radius: 5px !important;
+	-moz-border-radius: 5px !important;
+	-webkit-border-radius: 5px !important;
+}
+
+
+
+
+
+
+
+
+
 
 .editBrandingDlg_LoginDialogHint
 {
@@ -1464,8 +1502,9 @@ body, table td, select
 
 .loginDlg_useOpenIdPanel
 {
-	margin-left: 10px;
 	margin-top: 6px;
+	margin-left: 10px;
+	margin-bottom: 20px;
 }
 
 .loginDlg_openIdProviderImg:hover
@@ -1477,6 +1516,13 @@ body, table td, select
 {
 	margin-left: 10px;
 	margin-top: 8px;
+}
+
+/* Styles used in the Sign In dialog for User ID and Password labels */
+
+#userIdLabel, #pwdLabel
+{
+	color: #949494;
 }
 
 .loginDlg_OrText
@@ -3102,7 +3148,7 @@ body, table td, select
 	text-align:center;
 	position: relative;
 }
-.subhead-control-bg1, .editBrandingBrowseLink:hover
+.subhead-control-bg1
 {
 	background: url(images/trans10_black_blend.png) repeat;
 	background-position:bottom;
@@ -4595,6 +4641,11 @@ td.datePickerMonth {
 	background: url(images/trans30_black.png) repeat;
 	border-radius: 2px;
 	box-shadow:	0 1px 4px #1F1F1F inset;
+}
+
+.FilrAction_Selected .FilrAction_Text
+{
+	color: #ffffff;
 }
 
 .FilrAction_Text
