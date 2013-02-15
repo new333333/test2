@@ -1241,6 +1241,8 @@ public class EntityIndexUtils {
     public static void addFileAttachment(Document doc, FileAttachment fa, boolean fieldsOnly) {
     	Field fileIDField = FieldFactory.createFieldStoredNotAnalyzed(FILE_ID_FIELD, fa.getId());
     	doc.add(fileIDField); 
+    	Field fileOnlyIDField = FieldFactory.createFieldNotStoredNotAnalyzed(FILE_ONLY_ID_FIELD, fa.getId());
+    	doc.add(fileOnlyIDField); 
     	Field fileOwnerIdField = FieldFactory.createFieldStoredNotAnalyzed(FILE_CREATOR_ID_FIELD, String.valueOf(fa.getCreation().getPrincipal().getId()));
     	doc.add(fileOwnerIdField); 
     	Field fileSizeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_SIZE_FIELD, getSortableNumber(String.valueOf(fa.getFileItem().getLengthKB()), ObjectKeys.MAX_FILE_SIZE_DECIMAL_PLACES));
