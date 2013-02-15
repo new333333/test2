@@ -275,6 +275,24 @@ public class LoginDlg extends DlgBox
 	}
 	
 	/**
+	 * 
+	 */
+	private void centerAndShow()
+	{
+		setPopupPositionAndShow( new PopupPanel.PositionCallback()
+		{
+			@Override
+			public void setPosition(int offsetWidth, int offsetHeight)
+			{
+				int x = ( ( Window.getClientWidth()  - offsetWidth  ) / 2 );
+				int y = ( ( Window.getClientHeight() - offsetHeight ) / 3 );
+				
+				setPopupPosition( x, y );
+			}
+		} );
+	}
+	
+	/**
 	 * Clear all the content from the dialog and start fresh.
 	 */
 	public void clearContent()
@@ -959,36 +977,34 @@ public class LoginDlg extends DlgBox
 	{
 		debugAlert( "In LoginDlg.showDlg()" );
 		
+		if ( m_initialized )
+		{
+			centerAndShow();
+			return;
+		}
+
 		m_loginStatus = loginStatus;
 
-		if ( m_initialized == false )
+		switch ( loginStatus )
 		{
-			switch ( loginStatus )
-			{
-			case AuthenticationFailed:
-				showRegularLoginUI();
-			    showLoginFailedMsg();
-			    break;
-				
-			case RegistrationRequired:
-				showExternalUserRegistrationUI();
-				break;
-				
-			case PromptForLogin:
-				showRegularLoginUI();
-				hideLoginFailedMsg();
-				break;
-			}
+		case AuthenticationFailed:
+			showRegularLoginUI();
+		    showLoginFailedMsg();
+		    break;
+			
+		case RegistrationRequired:
+			showExternalUserRegistrationUI();
+			break;
+			
+		case PromptForLogin:
+			showRegularLoginUI();
+			hideLoginFailedMsg();
+			break;
 		}
 
 		setAllowCancel( allowCancel );
 
-		// Issue an ajax request to get self registration info and a list of open id providers
-		if ( loginStatus != LoginStatus.RegistrationRequired )
-			getLoginInfoFromServer();
-		
 		// We need to wait until the masthead has read the branding data
-		if ( m_initialized == false )
 		{
 			Timer timer;
 			
@@ -999,16 +1015,16 @@ public class LoginDlg extends DlgBox
 				{
 					m_initialized = true;
 					createHeaderNow();
-					center();
+					centerAndShow();
 				}
 			};
 			
-			timer.schedule( 250 );
+			timer.schedule( 150 );
 		}
-		else
-		{
-			show();
-		}
+
+		// Issue an ajax request to get self registration info and a list of open id providers
+		if ( loginStatus != LoginStatus.RegistrationRequired )
+			getLoginInfoFromServer();
 	}
 	
 	/**
