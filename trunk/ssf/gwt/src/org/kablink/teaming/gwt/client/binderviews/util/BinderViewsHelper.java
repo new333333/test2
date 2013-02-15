@@ -79,7 +79,6 @@ import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgMode;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -149,13 +148,12 @@ public class BinderViewsHelper {
 				public void onSuccess(final ChangeEntryTypesDlg cetDlg) {
 					// ...and show it.
 					m_cetDlg = cetDlg;
-					ScheduledCommand doChangeEntryType = new ScheduledCommand() {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
 						public void execute() {
 							changeEntryTypesAsync(entityIds, reloadEvent);
 						}
-					};
-					Scheduler.get().scheduleDeferred(doChangeEntryType);
+					});
 				}
 			});
 		}
@@ -177,13 +175,12 @@ public class BinderViewsHelper {
 	 * type of the entries based on a List<EntityId> of the entries.
 	 */
 	private static void changeEntryTypesAsync(final List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
-		ScheduledCommand doShow = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				changeEntryTypesNow(entityIds, reloadEvent);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doShow);
+		});
 	}
 	
 	/*
@@ -696,13 +693,12 @@ public class BinderViewsHelper {
 					public void onSuccess(final AddFilesHtml5Popup afPopup) {
 						// ...and show it.
 						m_addFilesHtml5Popup = afPopup;
-						ScheduledCommand doShow = new ScheduledCommand() {
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
 							@Override
 							public void execute() {
 								showAddFilesPopupNow(folderInfo);
 							}
-						};
-						Scheduler.get().scheduleDeferred(doShow);
+						});
 					}
 				});
 			}
@@ -731,13 +727,12 @@ public class BinderViewsHelper {
 					public void onSuccess(final AddFilesDlg afDlg) {
 						// ...and show it.
 						m_addFilesAppletDlg = afDlg;
-						ScheduledCommand doShow = new ScheduledCommand() {
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
 							@Override
 							public void execute() {
 								showAddFilesDlgNow(folderInfo, showRelativeWidget);
 							}
-						};
-						Scheduler.get().scheduleDeferred(doShow);
+						});
 					}
 				});
 			}
@@ -756,40 +751,35 @@ public class BinderViewsHelper {
 	 *
 	 * @param entityIds
 	 */
-	public static void invokeManageSharesDlg( final List<EntityId> entityIds )
-	{
+	public static void invokeManageSharesDlg(final List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to be shared...
-		if ( GwtClientHelper.hasItems( entityIds ) == false )
-		{
+		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
 			return;
 		}
 
 		// Have we created a share dialog yet?
-		if ( null == m_shareDlg )
-		{
+		if (null == m_shareDlg) {
 			// No!  Create one now...
-			ShareThisDlg.createAsync( new ShareThisDlgClient()
-			{
+			ShareThisDlg.createAsync(new ShareThisDlgClient() {
 				@Override
-				public void onUnavailable() 
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
 				}
 				
 				@Override
-				public void onSuccess( ShareThisDlg stDlg )
-				{
+				public void onSuccess(ShareThisDlg stDlg) {
 					// ...and show it with the given entity IDs.
 					m_shareDlg = stDlg;
-					showManageSharesDlgAsync( entityIds );
+					showManageSharesDlgAsync(entityIds);
 				}
 			});
 		}
-		else
-		{
-			// Yes, we've already create a share dialog!  Simply show it with the given entry IDs.
-			showManageSharesDlgAsync( entityIds );
+		else {
+			// Yes, we've already create a share dialog!  Simply show
+			// it with the given entry IDs.
+			showManageSharesDlgAsync(entityIds);
 		}
 	}
 	
@@ -1276,13 +1266,12 @@ public class BinderViewsHelper {
 	 * dialog.
 	 */
 	private static void showCMEDlgAsync(final CopyMoveEntriesDlg cmeDlg, final boolean invokeToCopy, final List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
-		ScheduledCommand doShow = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showCMEDlgNow(cmeDlg, invokeToCopy, entityIds, reloadEvent);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doShow);
+		});
 	}
 	
 	/*
@@ -1300,43 +1289,33 @@ public class BinderViewsHelper {
 	/*
 	 * Asynchronously shows the share dialog in administrative mode.
 	 */
-	private static void showManageSharesDlgAsync( final List<EntityId> entityIds )
-	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
-		{
+	private static void showManageSharesDlgAsync(final List<EntityId> entityIds) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
-			public void execute() 
-			{
-				showManageSharesDlgNow( entityIds );
+			public void execute() {
+				showManageSharesDlgNow(entityIds);
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		});
 	}
 	
 	/*
 	 * Synchronously shows the share dialog in administrative mode.
 	 */
-	private static void showManageSharesDlgNow( List<EntityId> entityIds )
-	{
-		String caption;
-
-		caption = GwtClientHelper.patchMessage( m_messages.manageShares(), String.valueOf( entityIds.size() ) );
-		ShareThisDlg.initAndShow( m_shareDlg, null, caption, null, entityIds, ShareThisDlgMode.MANAGE_SELECTED );
+	private static void showManageSharesDlgNow(List<EntityId> entityIds) {
+		String caption = GwtClientHelper.patchMessage( m_messages.manageShares(), String.valueOf(entityIds.size()));
+		ShareThisDlg.initAndShow(m_shareDlg, null, caption, null, entityIds, ShareThisDlgMode.MANAGE_SELECTED);
 	}
 
 	/*
 	 * Asynchronously shows the share dialog.
 	 */
 	private static void showShareDlgAsync(final List<EntityId> entityIds) {
-		ScheduledCommand doShow = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showShareDlgNow(entityIds);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doShow);
+		});
 	}
 	
 	/*
@@ -1397,13 +1376,12 @@ public class BinderViewsHelper {
 	 * Asynchronously invokes the who has access dialog on an entity.
 	 */
 	private static void showWhoHasAccessAsync(final EntityId entityId) {
-		ScheduledCommand doShow = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showWhoHasAccessNow(entityId);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doShow);
+		});
 	}
 	
 	/*
@@ -1440,13 +1418,12 @@ public class BinderViewsHelper {
 				public void onSuccess(final EmailNotificationDlg enDlg) {
 					// ...and show it.
 					m_enDlg = enDlg;
-					ScheduledCommand doSubscribe = new ScheduledCommand() {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
 						public void execute() {
 							subscribeToEntriesAsync(entityIds, showRelativeTo);
 						}
-					};
-					Scheduler.get().scheduleDeferred(doSubscribe);
+					});
 				}
 			});
 		}
@@ -1468,13 +1445,12 @@ public class BinderViewsHelper {
 	 * entries based on a List<EntityId> of the entries.
 	 */
 	private static void subscribeToEntriesAsync(final List<EntityId> entityIds, final UIObject showRelativeTo) {
-		ScheduledCommand doShow = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				subscribeToEntriesNow(entityIds, showRelativeTo);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doShow);
+		});
 	}
 	
 	/*
@@ -1582,13 +1558,12 @@ public class BinderViewsHelper {
 	 * @param entityId
 	 */
 	public static void viewEntry(final EntityId entityId) {
-		ScheduledCommand doView = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				viewEntryNow(entityId);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doView);
+		});
 	}
 	
 	public static void viewEntry(Long folderId, Long entryId) {
@@ -1632,13 +1607,12 @@ public class BinderViewsHelper {
 	 * @param entityId
 	 */
 	public static void viewWhoHasAccess(final EntityId entityId) {
-		ScheduledCommand doView = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				viewWhoHasAccessNow(entityId);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doView);
+		});
 	}
 	
 	/*
@@ -1660,13 +1634,12 @@ public class BinderViewsHelper {
 				public void onSuccess(final WhoHasAccessDlg whaDlg) {
 					// ...and show it.
 					m_whaDlg = whaDlg;
-					ScheduledCommand doSubscribe = new ScheduledCommand() {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
 						public void execute() {
 							showWhoHasAccessAsync(entityId);
 						}
-					};
-					Scheduler.get().scheduleDeferred(doSubscribe);
+					});
 				}
 			});
 		}

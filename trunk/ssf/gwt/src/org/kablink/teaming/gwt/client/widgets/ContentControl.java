@@ -796,9 +796,16 @@ public class ContentControl extends Composite
 									{
 										if ( vi.isInvokeShare() )
 										{
-											GwtTeaming.fireEventAsync(
-												new InvokeShareBinderEvent(
-												bi.getBinderId() ) );
+											if ( vi.isInvokeShareEnabled() )
+											{
+												GwtTeaming.fireEventAsync(
+													new InvokeShareBinderEvent(
+													bi.getBinderId() ) );
+											}
+											else
+											{
+												GwtClientHelper.deferredAlert(GwtTeaming.getMessages().contentControl_Warning_ShareNoRights());
+											}
 										}
 										if ( vi.isInvokeSubscribe() )
 										{
@@ -1040,10 +1047,17 @@ public class ContentControl extends Composite
 								EntityId eid = vfei.getEntityId();
 								if ( vi.isInvokeShare() )
 								{
-									GwtTeaming.fireEventAsync(
-										new ShareSelectedEntriesEvent(
-											eid.getBinderId(),
-											eid ) );
+									if ( vi.isInvokeShareEnabled() )
+									{
+										GwtTeaming.fireEventAsync(
+											new ShareSelectedEntriesEvent(
+												eid.getBinderId(),
+												eid ) );
+									}
+									else
+									{
+										GwtClientHelper.deferredAlert(GwtTeaming.getMessages().contentControl_Warning_ShareNoRights());
+									}
 								}
 								if ( vi.isInvokeSubscribe() )
 								{
@@ -1069,10 +1083,17 @@ public class ContentControl extends Composite
 						EntityId eid = vi.getFolderEntryInfo().getEntityId();
 						if ( vi.isInvokeShare() )
 						{
-							GwtTeaming.fireEventAsync(
-								new ShareSelectedEntriesEvent(
-									eid.getBinderId(),
-									eid ) );
+							if ( vi.isInvokeShareEnabled() )
+							{
+								GwtTeaming.fireEventAsync(
+									new ShareSelectedEntriesEvent(
+										eid.getBinderId(),
+										eid ) );
+							}
+							else
+							{
+								GwtClientHelper.deferredAlert(GwtTeaming.getMessages().contentControl_Warning_ShareNoRights());
+							}
 						}
 						if ( vi.isInvokeSubscribe() )
 						{
@@ -1132,9 +1153,16 @@ public class ContentControl extends Composite
 				// ...dialogs on the view.
 				if ( vi.isInvokeShare() )
 				{
-					GwtTeaming.fireEventAsync(
-						new InvokeShareBinderEvent(
-							vi.getBinderInfo().getBinderId() ) );
+					if ( vi.isInvokeShareEnabled() )
+					{
+						GwtTeaming.fireEventAsync(
+							new InvokeShareBinderEvent(
+								vi.getBinderInfo().getBinderId() ) );
+					}
+					else
+					{
+						GwtClientHelper.deferredAlert(GwtTeaming.getMessages().contentControl_Warning_ShareNoRights());
+					}
 				}
 				if ( vi.isInvokeSubscribe() )
 				{

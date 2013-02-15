@@ -2594,4 +2594,7 @@ public interface GwtTeamingMessages extends Messages
 	String forgottenPwdDlg_ForgottenPwdEmailSent();
 	String forgottenPwdDlg_sendingEmail();
 	
+	// String used in the main content control.
+	String contentControl_Warning_ShareNoRights();
+
 }// end GwtTeamingMessages
