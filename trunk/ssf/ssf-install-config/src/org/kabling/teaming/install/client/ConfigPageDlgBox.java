@@ -19,7 +19,7 @@ import com.google.gwt.user.client.ui.Label;
 public abstract class ConfigPageDlgBox extends DlgBox implements EditSuccessfulHandler
 {
 	private GetConfigInformationCallback getConfigCallback = new GetConfigInformationCallback();
-	private SaveConfigInformationCallback saveConfigCallback = new SaveConfigInformationCallback();
+	protected SaveConfigInformationCallback saveConfigCallback = new SaveConfigInformationCallback();
 	private Label errorLabel;
 
 	// Installer.xml configuration data
@@ -77,16 +77,6 @@ public abstract class ConfigPageDlgBox extends DlgBox implements EditSuccessfulH
 	public void clearErrorMessage()
 	{
 		getErrorPanel().setVisible(false);
-	}
-
-	@Override
-	public boolean editSuccessful(Object obj)
-	{
-		// Save the configuration
-		AppUtil.getInstallService().saveConfiguration((InstallerConfig) obj, saveConfigCallback);
-
-		// Return false, we will close if the save is successful
-		return false;
 	}
 
 	class GetConfigInformationCallback implements AsyncCallback<InstallerConfig>

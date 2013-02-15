@@ -1,11 +1,17 @@
 package org.kabling.teaming.install.client.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.ValueRequiredValidator;
+import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.shared.EmailSettings;
+import org.kabling.teaming.install.shared.InstallerConfig;
 
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -125,6 +131,18 @@ public class InboundEmailPage extends ConfigPageDlgBox
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public boolean editSuccessful(Object obj)
+	{
+		List<LeftNavItemType> sectionsToUpdate = new ArrayList<LeftNavItemType>();
+		sectionsToUpdate.add(LeftNavItemType.INBOUND_EMAIL);
+		// Save the configuration
+		AppUtil.getInstallService().saveConfiguration((InstallerConfig) obj, sectionsToUpdate,saveConfigCallback);
+
+		// Return false, we will close if the save is successful
+		return false;
 	}
 
 }

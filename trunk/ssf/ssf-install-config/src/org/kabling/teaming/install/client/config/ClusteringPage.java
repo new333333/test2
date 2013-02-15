@@ -1,12 +1,18 @@
 package org.kabling.teaming.install.client.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.ValueRequiredBasedOnBoolValidator;
 import org.kabling.teaming.install.client.ValueRequiredValidator;
+import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.shared.Clustered;
+import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.Network;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -348,6 +354,22 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 		helpData.setPageId("clustering");
 		
 		return helpData;
+	}
+	
+	@Override
+	public boolean editSuccessful(Object obj)
+	{
+		List<LeftNavItemType> sectionsToUpdate = new ArrayList<LeftNavItemType>();
+		sectionsToUpdate.add(LeftNavItemType.CLUSTERING);
+		
+		//As we need to update host name
+		sectionsToUpdate.add(LeftNavItemType.NETWORK);
+		
+		// Save the configuration
+		AppUtil.getInstallService().saveConfiguration((InstallerConfig) obj, sectionsToUpdate,saveConfigCallback);
+
+		// Return false, we will close if the save is successful
+		return false;
 	}
 
 }

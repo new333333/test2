@@ -72,6 +72,7 @@ public class InstallerConfig implements Serializable
 	private Clustered clustered;
 	private EncryptionAlgorithm encryption;
 	private boolean advancedConfiguration;
+	private boolean localPostfix;
 
 	public InstallerConfig()
 	{
@@ -265,5 +266,15 @@ public class InstallerConfig implements Serializable
 	public void setAdvancedConfiguration(boolean advancedConfiguration)
 	{
 		this.advancedConfiguration = advancedConfiguration;
+	}
+
+	public boolean isLocalPostfix()
+	{
+		return localPostfix;
+	}
+
+	public void setLocalPostfix(boolean localPostfix)
+	{
+		this.localPostfix = localPostfix;
 	}
 }

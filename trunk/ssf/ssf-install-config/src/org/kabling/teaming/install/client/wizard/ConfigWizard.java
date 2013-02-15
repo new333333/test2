@@ -1,10 +1,14 @@
 package org.kabling.teaming.install.client.wizard;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigWizardSucessEvent;
 import org.kabling.teaming.install.client.GwtClientHelper;
 import org.kabling.teaming.install.client.ConfigWizardSucessEvent.WizardFinishType;
 import org.kabling.teaming.install.client.i18n.AppResource;
+import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.client.widgets.StatusIndicator;
 import org.kabling.teaming.install.shared.InstallerConfig;
 
@@ -155,7 +159,12 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 			importPage.upgrade();
 		}
 		else
-			AppUtil.getInstallService().saveConfiguration(config, new SaveConfigCallback());
+		{
+			List<LeftNavItemType> sectionsToUpdate = new ArrayList<LeftNavItemType>();
+			sectionsToUpdate.add(LeftNavItemType.DATABASE);
+			sectionsToUpdate.add(LeftNavItemType.LUCENE);
+			AppUtil.getInstallService().saveConfiguration(config, sectionsToUpdate, new SaveConfigCallback());
+		}
 	}
 
 	private void updateButtons()

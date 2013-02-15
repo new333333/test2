@@ -1,18 +1,25 @@
 package org.kabling.teaming.install.client.config;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.HelpData;
+import org.kabling.teaming.install.client.LocalHostNotAllowedValidator;
 import org.kabling.teaming.install.client.ValueRequiredValidator;
+import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.client.widgets.VibePasswordTextBox;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.shared.EmailSettings;
+import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.EmailSettings.EmailProtocol;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -34,6 +41,7 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 	private CheckBox authRequiredCheckBox;
 	private CheckBox allowSendEmailUsersCheckBox;
 	private GwValueSpinner connectionTimeOutSpinner;
+	private CheckBox localPostfixCheckBox;
 	private static Map<String, String> timezones;
 
 	@Override
@@ -61,6 +69,24 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 		int row = 0;
 		{
 
+			localPostfixCheckBox = new CheckBox(RBUNDLE.useLocalPostFixMail());
+			table.setWidget(row, 1, localPostfixCheckBox);
+			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			localPostfixCheckBox.addClickHandler(new ClickHandler()
+			{
+				
+				@Override
+				public void onClick(ClickEvent event)
+				{
+					boolean selected = localPostfixCheckBox.getValue();
+					
+					setLocalPostfixEnabled(selected);
+				}
+			});
+		}
+		
+		{
+			row++;
 			// Protocol
 			InlineLabel keyLabel = new InlineLabel(RBUNDLE.protocolColon());
 			table.setWidget(row, 0, keyLabel);
@@ -211,6 +237,34 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 		return fPanel;
 	}
 
+	private void setLocalPostfixEnabled(boolean enabled)
+	{
+		if (enabled)
+		{
+			protocolListBox.setSelectedIndex(0);
+			portSpinner.setValue(25);
+			hostTextBox.setText("localhost");
+			hostTextBox.setValidator(new ValueRequiredValidator(hostTextBox));
+			authRequiredCheckBox.setValue(false);
+		}
+		else
+		{
+			hostTextBox.setValidator(new LocalHostNotAllowedValidator(hostTextBox));
+		}
+		protocolListBox.setEnabled(!enabled);
+		portSpinner.setEnabled(!enabled);
+		hostTextBox.setEnabled(!enabled);
+		authRequiredCheckBox.setEnabled(!enabled);
+		
+		if (hostTextBox.getText().equals("localhost"))
+		{
+			if (localPostfixCheckBox.getValue())
+				hostTextBox.clearError();
+			else
+				hostTextBox.isValid();
+		}
+	}
+	
 	@Override
 	public Object getDataFromDlg()
 	{
@@ -232,6 +286,8 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 		EmailSettings emailSettings = config.getEmailSettings();
 		emailSettings.setTransportProtocol(protocol);
 
+		config.setLocalPostfix(localPostfixCheckBox.getValue());
+		
 		// SMTP
 		if (protocol.equals(EmailProtocol.SMTP))
 		{
@@ -280,6 +336,11 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 	{
 		EmailSettings emailSettings = config.getEmailSettings();
 
+		if (emailSettings.getSmtpHost().equalsIgnoreCase("localhost"))
+			localPostfixCheckBox.setValue(true);
+		else
+			localPostfixCheckBox.setValue(config.isLocalPostfix());
+		
 		if (emailSettings != null)
 		{
 			EmailProtocol protocol = emailSettings.getTransportProtocol();
@@ -315,8 +376,9 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			}
 			
 			allowSendEmailUsersCheckBox.setValue(emailSettings.isAllowSendToAllUsers());
-			
 		}
+		
+		setLocalPostfixEnabled(localPostfixCheckBox.getValue());
 	}
 
 	private void selectTimeZone(String id)
@@ -339,5 +401,17 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 		helpData.setPageId("email_outbound");
 		
 		return helpData;
+	}
+	
+	@Override
+	public boolean editSuccessful(Object obj)
+	{
+		List<LeftNavItemType> sectionsToUpdate = new ArrayList<LeftNavItemType>();
+		sectionsToUpdate.add(LeftNavItemType.OUTBOUND_EMAIL);
+		// Save the configuration
+		AppUtil.getInstallService().saveConfiguration((InstallerConfig) obj, sectionsToUpdate,saveConfigCallback);
+
+		// Return false, we will close if the save is successful
+		return false;
 	}
 }

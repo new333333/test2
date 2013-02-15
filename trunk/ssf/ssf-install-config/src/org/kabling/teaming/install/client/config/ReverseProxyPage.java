@@ -1,10 +1,16 @@
 package org.kabling.teaming.install.client.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.ValueRequiredBasedOnBoolValidator;
+import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
+import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.Network;
 import org.kabling.teaming.install.shared.SSO;
 
@@ -16,6 +22,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 
 public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
@@ -36,61 +43,11 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 		FlowPanel fPanel = new FlowPanel();
 		fPanel.addStyleName("configPage");
 
-		HTML titleDescLabel = new HTML(RBUNDLE.reverseProxyPageTitleDesc());
-		titleDescLabel.addStyleName("configPageTitleDescLabel");
-		fPanel.add(titleDescLabel);
-
-		HTML descLabel = new HTML(RBUNDLE.reverseProxyPageDesc());
-		descLabel.addStyleName("configPageDescLabel");
-		fPanel.add(descLabel);
-
-		FlowPanel contentPanel = new FlowPanel();
-		fPanel.add(contentPanel);
-
-		contentPanel.addStyleName("reverseProxyPageContent");
-
-		enableAccessGatewayCheckBox = new CheckBox(RBUNDLE.enableAccessGateway());
-		enableAccessGatewayCheckBox.addClickHandler(this);
-		contentPanel.add(enableAccessGatewayCheckBox);
-
-		FlexTable table = new FlexTable();
-		table.addStyleName("inboundEmailTable");
-		contentPanel.add(table);
-
-		int row = 0;
-		{
-
-			// Access Gateway Addresseses
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.accessGatewayAddressesColon());
-			table.setWidget(row, 0, keyLabel);
-			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-
-			accessGatewayAddrTextBox = new VibeTextBox();
-			accessGatewayAddrValidator = new ValueRequiredBasedOnBoolValidator(true, accessGatewayAddrTextBox);
-			accessGatewayAddrTextBox.setValidator(accessGatewayAddrValidator);
-			table.setWidget(row, 1, accessGatewayAddrTextBox);
-			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-		}
-
-		{
-			row++;
-			// Logout URL
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.logoutUrlColon());
-			table.setWidget(row, 0, keyLabel);
-			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-
-			logoutUrlTextBox = new VibeTextBox();
-			accessGatewayLogOffValidator = new ValueRequiredBasedOnBoolValidator(true, logoutUrlTextBox);
-			logoutUrlTextBox.setValidator(accessGatewayLogOffValidator);
-			table.setWidget(row, 1, logoutUrlTextBox);
-			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-		}
-
 		FlexTable portTable = new FlexTable();
 		portTable.addStyleName("reverProxyPortTable");
-		contentPanel.add(portTable);
+		fPanel.add(portTable);
 		
-		row = 0;
+		int row = 0;
 		{
 			// Http Port
 			InlineLabel keyLabel = new InlineLabel(RBUNDLE.reverseProxyHttpPortColon());
@@ -117,6 +74,65 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			httpSecureSpinner = new GwValueSpinner(8443, 80, 9999, null);
 			portTable.setWidget(row, 1, httpSecureSpinner);
 			portTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
+		
+		Label nameTitleLabel = new Label(RBUNDLE.reverseProxyIntegration());
+		nameTitleLabel.addStyleName("namContentPanelHeader");
+		fPanel.add(nameTitleLabel);
+		
+		FlowPanel namContentPanel = new FlowPanel();
+		namContentPanel.addStyleName("namContentPanel");
+		fPanel.add(namContentPanel);
+		
+		
+		
+		HTML titleDescLabel = new HTML(RBUNDLE.reverseProxyPageTitleDesc());
+		titleDescLabel.addStyleName("configPageTitleDescLabel");
+		namContentPanel.add(titleDescLabel);
+
+		HTML descLabel = new HTML(RBUNDLE.reverseProxyPageDesc());
+		descLabel.addStyleName("configPageDescLabel");
+		namContentPanel.add(descLabel);
+
+		FlowPanel contentPanel = new FlowPanel();
+		namContentPanel.add(contentPanel);
+
+		enableAccessGatewayCheckBox = new CheckBox(RBUNDLE.enableAccessGateway());
+		enableAccessGatewayCheckBox.addStyleName("enableNamCheckBox");
+		enableAccessGatewayCheckBox.addClickHandler(this);
+		namContentPanel.add(enableAccessGatewayCheckBox);
+
+		FlexTable table = new FlexTable();
+		table.addStyleName("inboundEmailTable");
+		namContentPanel.add(table);
+
+		row = 0;
+		{
+
+			// Access Gateway Addresseses
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.accessGatewayAddressesColon());
+			table.setWidget(row, 0, keyLabel);
+			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			accessGatewayAddrTextBox = new VibeTextBox();
+			accessGatewayAddrValidator = new ValueRequiredBasedOnBoolValidator(true, accessGatewayAddrTextBox);
+			accessGatewayAddrTextBox.setValidator(accessGatewayAddrValidator);
+			table.setWidget(row, 1, accessGatewayAddrTextBox);
+			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
+
+		{
+			row++;
+			// Logout URL
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.logoutUrlColon());
+			table.setWidget(row, 0, keyLabel);
+			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			logoutUrlTextBox = new VibeTextBox();
+			accessGatewayLogOffValidator = new ValueRequiredBasedOnBoolValidator(true, logoutUrlTextBox);
+			logoutUrlTextBox.setValidator(accessGatewayLogOffValidator);
+			table.setWidget(row, 1, logoutUrlTextBox);
+			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
 		return fPanel;
@@ -230,6 +246,19 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 		helpData.setPageId("access_manager");
 		
 		return helpData;
+	}
+	
+	@Override
+	public boolean editSuccessful(Object obj)
+	{
+		List<LeftNavItemType> sectionsToUpdate = new ArrayList<LeftNavItemType>();
+		sectionsToUpdate.add(LeftNavItemType.NOVELL_ACCESS_MANAGER);
+		sectionsToUpdate.add(LeftNavItemType.NETWORK);
+		// Save the configuration
+		AppUtil.getInstallService().saveConfiguration((InstallerConfig) obj, sectionsToUpdate,saveConfigCallback);
+
+		// Return false, we will close if the save is successful
+		return false;
 	}
 
 }

@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
+import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.shared.Clustered;
 import org.kabling.teaming.install.shared.ConfigurationSaveException;
 import org.kabling.teaming.install.shared.Database;
@@ -98,9 +99,26 @@ public final class ConfigService
 		if (document != null)
 			config = getInstallerConfig(document);
 
-		// TODO Get the data from Lucene server and other servers and make sure
-		// we
-		// update it again with those data
+		File file = new File("/filrinstall/configurationDetails.properties");
+		
+		if (file.exists())
+		{
+			Properties prop = new Properties();
+			try
+			{
+				prop.load(new FileInputStream(file));
+
+				String localpostfix=prop.getProperty("using.local.postfix");
+				
+				if (localpostfix != null)
+					config.setLocalPostfix(Boolean.parseBoolean(localpostfix));
+				
+			}
+			catch(IOException e)
+			{
+				
+			}
+		}
 		return config;
 	}
 
@@ -1003,7 +1021,7 @@ public final class ConfigService
 		return null;
 	}
 
-	public static void saveConfiguration(InstallerConfig config) throws ConfigurationSaveException
+	public static void saveConfiguration(InstallerConfig config,List<LeftNavItemType> sectionsToUpdate) throws ConfigurationSaveException
 	{
 		// Make a copy of the original installer.xml so that we can revert if we need to
 		try
@@ -1033,27 +1051,61 @@ public final class ConfigService
 
 		// Save each sections
 		{
-			saveDatabaseConfiguration(config, document);
+			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.DATABASE))
+				saveDatabaseConfiguration(config, document);
 
 			// TODO: For lucene configuration, we need to update the changes to
 			// the lucene server
-			saveLuceneConfiguration(config, document);
+			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.LUCENE))
+				saveLuceneConfiguration(config, document);
 
-			saveMemoryConfiguration(config, document);
+			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.JAVA_JDK))
+				saveMemoryConfiguration(config, document);
 
-			saveWebDavConfiguration(config, document);
+			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.WEBDAV_AUTHENTICATION))
+				saveWebDavConfiguration(config, document);
 
-			saveNetworkConfiguration(config, document);
+			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.NETWORK))
+				saveNetworkConfiguration(config, document);
 
-			saveWebServiceConfiguration(config, document);
+			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.WEB_SERVICES))
+				saveWebServiceConfiguration(config, document);
 
-			saveClusteredConfiguration(config, document);
+			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.CLUSTERING))
+				saveClusteredConfiguration(config, document);
 
-			saveSSOConfiguration(config, document);
+			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.NOVELL_ACCESS_MANAGER))
+				saveSSOConfiguration(config, document);
 
-			saveEmailSettingsConfiguration(config, document);
+			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.INBOUND_EMAIL) || sectionsToUpdate.contains(LeftNavItemType.OUTBOUND_EMAIL))
+			{
+				saveEmailSettingsConfiguration(config, document);
+				
+				//SAVE POSTFIX INFO INTO CONFIGURATION DETAILS.PROPERTIES
+				File file = new File("/filrinstall/configurationDetails.properties");
+				
+				if (file.exists())
+				{
+					Properties prop = new Properties();
+					try
+					{
+						prop.load(new FileInputStream(file));
 
-			saveReqAndConnectionsConfiguration(config, document);
+						prop.setProperty("using.local.postfix",String.valueOf(config.isLocalPostfix()));
+						
+						store(prop, file);
+						
+					}
+					catch(IOException e)
+					{
+						
+					}
+				}
+
+			}
+
+			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.REQUESTS_AND_CONNECTIONS))
+				saveReqAndConnectionsConfiguration(config, document);
 		}
 
 		// Save the changes to installer.xml
@@ -1361,17 +1413,17 @@ public final class ConfigService
 		if (clustered == null)
 			return;
 
-		Element webDavElement = getElement(document.getDocumentElement(), "Clustered");
+		Element clusteredElement = getElement(document.getDocumentElement(), "Clustered");
 
-		if (webDavElement != null)
+		if (clusteredElement != null)
 		{
-			webDavElement.setAttribute("enable", String.valueOf(clustered.isEnabled()));
-			webDavElement.setAttribute("cachingProvider", clustered.getCachingProvider());
-			webDavElement.setAttribute("cacheService", clustered.getCacheService());
-			webDavElement.setAttribute("cacheGroupAddress", clustered.getCacheGroupAddress());
-			webDavElement.setAttribute("cacheGroupPort", String.valueOf(clustered.getCacheGroupPort()));
-			webDavElement.setAttribute("memcachedAddresses", clustered.getMemCachedAddress());
-			webDavElement.setAttribute("jvmRoute", clustered.getJvmRoute());
+			clusteredElement.setAttribute("enable", String.valueOf(clustered.isEnabled()));
+			clusteredElement.setAttribute("cachingProvider", clustered.getCachingProvider());
+			clusteredElement.setAttribute("cacheService", clustered.getCacheService());
+			clusteredElement.setAttribute("cacheGroupAddress", clustered.getCacheGroupAddress());
+			clusteredElement.setAttribute("cacheGroupPort", String.valueOf(clustered.getCacheGroupPort()));
+			clusteredElement.setAttribute("memcachedAddresses", clustered.getMemCachedAddress());
+			clusteredElement.setAttribute("jvmRoute", clustered.getJvmRoute());
 		}
 	}
 

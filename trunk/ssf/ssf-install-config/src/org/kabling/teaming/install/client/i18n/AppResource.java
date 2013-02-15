@@ -313,4 +313,8 @@ public interface AppResource extends Messages
 	String wishToContinueUpgrade();
 
 	String warning();
+
+	String useLocalPostFixMail();
+
+	String localHostNotValid();
 }
