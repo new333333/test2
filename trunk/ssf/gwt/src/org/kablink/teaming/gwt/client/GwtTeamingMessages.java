@@ -2212,6 +2212,7 @@ public interface GwtTeamingMessages extends Messages
 	String folderEntry_Alt_Close();
 	String folderEntry_Alt_Hide();
 	String folderEntry_Alt_LockedBy(String user);
+	String folderEntry_Alt_MarkRead();
 	String folderEntry_Alt_Next();
 	String folderEntry_Alt_Previous();
 	String folderEntry_Error_NoNext();
