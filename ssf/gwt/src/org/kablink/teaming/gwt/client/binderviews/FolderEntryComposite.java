@@ -122,8 +122,6 @@ public class FolderEntryComposite extends ResizeComposite
 	private boolean							m_commentsVisible;			//
 	private boolean							m_compositeReady;			// Set true once the composite and all its components are ready.
 	private boolean							m_isDialog;					// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.
-	private FolderEntryActionCompleteEvent	m_actionClose;				// Event fired when an action we requested completes and we need to close   the viewer.
-	private FolderEntryActionCompleteEvent	m_actionRefresh;			// Event fired when an action we requested completes and we need to refresh the viewer.
 	private FolderEntryComments				m_commentsArea;				//
 	private FolderEntryDetails				m_fed;						// Details about the folder entry being viewed.
 	private FolderEntryDocument				m_documentArea;				//
@@ -200,11 +198,6 @@ public class FolderEntryComposite extends ResizeComposite
 		m_images   = GwtTeaming.getDataTableImageBundle();
 		m_messages = GwtTeaming.getMessages();
 
-		// ...create the events that get fired when an action we
-		// ...request completes...
-		m_actionClose   = new FolderEntryActionCompleteEvent(vfei.getEntityId(), true );
-		m_actionRefresh = new FolderEntryActionCompleteEvent(vfei.getEntityId(), false);
-		
 		// ...create the base content panels...
 		m_rootPanel = new VibeFlowPanel();
 		m_rootPanel.addStyleName("vibe-feComposite-rootPanel");
@@ -216,7 +209,7 @@ public class FolderEntryComposite extends ResizeComposite
 		initWidget(m_rootPanel);
 
 		// ...and continue building the composite.
-		loadPart1Async(false);	// false -> Load is not part of a refresh.
+		loadPart1Async(false);	// false -> Not part of a refresh.
 	}
 
 	/*
@@ -483,7 +476,7 @@ public class FolderEntryComposite extends ResizeComposite
 		if (m_commentsVisible != FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), false)) {
 			toggleCommentsVisibility();
 		}
-		refreshFolderEntryViewer();
+		reloadFolderEntryViewer(false);	// false -> Not part of a refresh.
 	}
 	
 	/*
@@ -739,7 +732,11 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously handles copying the folder entry.
 	 */
 	private void onCopySelectedEntriesNow(List<EntityId> copiedEntities) {
-		BinderViewsHelper.copyEntries(copiedEntities, m_actionClose);
+		BinderViewsHelper.copyEntries(
+			copiedEntities,
+			new FolderEntryActionCompleteEvent(
+				m_vfei.getEntityId(),
+				true));
 	}
 	
 	/**
@@ -775,7 +772,11 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously handles changing the folder entry type.
 	 */
 	private void onChangeEntryTypeSelectedEntriesNow(List<EntityId> changedEntities) {
-		BinderViewsHelper.changeEntryTypes(changedEntities, m_actionClose);
+		BinderViewsHelper.changeEntryTypes(
+			changedEntities,
+			new FolderEntryActionCompleteEvent(
+				m_vfei.getEntityId(),
+				true));
 	}
 	
 	/**
@@ -832,7 +833,10 @@ public class FolderEntryComposite extends ResizeComposite
 
 			@Override
 			public void operationComplete() {
-				GwtTeaming.fireEventAsync(m_actionClose);
+				GwtTeaming.fireEventAsync(
+					new FolderEntryActionCompleteEvent(
+						m_vfei.getEntityId(),
+						true));
 			}
 			
 			@Override
@@ -858,7 +862,7 @@ public class FolderEntryComposite extends ResizeComposite
 			// required.
 			if (event.exitViewer())
 			     closeFolderEntryViewer();
-			else refreshFolderEntryViewer();
+			else reloadFolderEntryViewer(true);	// true -> Part of a refresh.
 		}
 	}
 	
@@ -952,7 +956,11 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously handles locking the folder entry.
 	 */
 	private void onLockSelectedEntriesNow(List<EntityId> lockedEntities) {
-		BinderViewsHelper.lockEntries(lockedEntities, m_actionRefresh);
+		BinderViewsHelper.lockEntries(
+			lockedEntities,
+			new FolderEntryActionCompleteEvent(
+				m_vfei.getEntityId(),
+				false));
 	}
 	
 	/**
@@ -988,7 +996,11 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously handles marking the folder entry as being read.
 	 */
 	private void onMarkReadSelectedEntriesNow(List<EntityId> markedReadEntities) {
-		BinderViewsHelper.markEntriesRead(markedReadEntities, m_actionRefresh);
+		BinderViewsHelper.markEntriesRead(
+			markedReadEntities,
+			new FolderEntryActionCompleteEvent(
+				m_vfei.getEntityId(),
+				false));
 	}
 	
 	/**
@@ -1024,7 +1036,11 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously handles marking the folder entry as being read.
 	 */
 	private void onMarkUnreadSelectedEntriesNow(List<EntityId> markedUnreadEntities) {
-		BinderViewsHelper.markEntriesUnread(markedUnreadEntities, m_actionRefresh);
+		BinderViewsHelper.markEntriesUnread(
+			markedUnreadEntities,
+			new FolderEntryActionCompleteEvent(
+				m_vfei.getEntityId(),
+				false));
 	}
 	
 	/**
@@ -1060,7 +1076,11 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously handles moving the folder entry.
 	 */
 	private void onMoveSelectedEntriesNow(List<EntityId> movedEntities) {
-		BinderViewsHelper.moveEntries(movedEntities, m_actionClose);
+		BinderViewsHelper.moveEntries(
+			movedEntities,
+			new FolderEntryActionCompleteEvent(
+				m_vfei.getEntityId(),
+				true));
 	}
 	
 	/**
@@ -1104,7 +1124,10 @@ public class FolderEntryComposite extends ResizeComposite
 
 			@Override
 			public void operationComplete() {
-				GwtTeaming.fireEventAsync(m_actionClose);
+				GwtTeaming.fireEventAsync(
+					new FolderEntryActionCompleteEvent(
+						m_vfei.getEntityId(),
+						true));
 			}
 			
 			@Override
@@ -1299,7 +1322,11 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously handles unlocking the folder entry.
 	 */
 	private void onUnlockSelectedEntriesNow(List<EntityId> unlockedEntities) {
-		BinderViewsHelper.unlockEntries(unlockedEntities, m_actionRefresh);
+		BinderViewsHelper.unlockEntries(
+			unlockedEntities,
+			new FolderEntryActionCompleteEvent(
+				m_vfei.getEntityId(),
+				false));
 	}
 	
 	/*
@@ -1314,22 +1341,6 @@ public class FolderEntryComposite extends ResizeComposite
 		else {
 			GwtClientHelper.debugAlert("FolderEntryComposite.partReady( *Internal Error* ):  Unexpected call to partReady() method.");
 		}
-	}
-
-	/*
-	 * Refreshes the contents of the folder entry viewer.
-	 */
-	private void refreshFolderEntryViewer() {
-		// Remove the existing content...
-		m_contentPanel.clear();
-		m_rootPanel.remove(m_footerPanel);
-
-		// ...prepare for new content to be created...
-		m_compositeReady  = false;
-		m_readyComponents = 0;
-
-		// ...and start loading the new content. 
-		loadPart1Async(true);	// true -> Load is part of a refresh.
 	}
 
 	/*
@@ -1352,6 +1363,22 @@ public class FolderEntryComposite extends ResizeComposite
 				this,
 				m_registeredEventHandlers);
 		}
+	}
+
+	/*
+	 * Reloads the contents of the folder entry viewer.
+	 */
+	private void reloadFolderEntryViewer(final boolean refresh) {
+		// Remove the existing content...
+		m_contentPanel.clear();
+		m_rootPanel.remove(m_footerPanel);
+
+		// ...prepare for new content to be created...
+		m_compositeReady  = false;
+		m_readyComponents = 0;
+
+		// ...and start loading the new content. 
+		loadPart1Async(refresh);
 	}
 
 	/**
