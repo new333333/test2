@@ -360,11 +360,10 @@
 		top: 3px;
 		height: 18px;
 		white-space: nowrap;
-		
-		background-color: #949494;
-		border: 1px solid #b8b8b8;
-		-moz-border-radius: 15px;
+		background: transparent url(images/trans30_black.png) repeat ;
+		border: 1px solid transparent;
 		border-radius: 15px;
+		-moz-border-radius: 15px;
 		-webkit-border-radius: 15px;
 	}
 
