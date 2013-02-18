@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -55,7 +55,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
@@ -282,13 +281,12 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		}
 
 		// ...and asynchronously complete the view construction.
-		ScheduledCommand doConstructView = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				constructView();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doConstructView);
+		});
 	}
 
 	/**
@@ -445,13 +443,12 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the display data information for the folder.
 	 */
 	private void loadPart1Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart1Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 
 	/*
@@ -508,13 +505,12 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 			return;
 		}
 		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart2Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
@@ -552,13 +548,12 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 			return;
 		}
 		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart3Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
@@ -596,13 +591,12 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 			return;
 		}
 		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart4Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 
 	/*
@@ -640,13 +634,12 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 			return;
 		}
 		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart5Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 
 	/*
@@ -685,13 +678,12 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 			return;
 		}
 		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart6Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
@@ -729,13 +721,12 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 			return;
 		}
 		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart7Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 
 	/*
@@ -775,13 +766,12 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		
 		if (showFooter) {
 			// ...load it...
-			Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					loadPart8Now();
 				}
-			};
-			Scheduler.get().scheduleDeferred(doLoad);
+			});
 		}
 		
 		else {
@@ -824,13 +814,12 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 			return;
 		}
 		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart9Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
@@ -864,13 +853,12 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 			return;
 		}
 		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart10Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
@@ -959,13 +947,12 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Asynchronously tells the view to resize itself.
 	 */
 	private void resizeViewAsync() {
-		ScheduledCommand doResize = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				resizeView();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doResize);
+		});
 	}
 
 	/**
