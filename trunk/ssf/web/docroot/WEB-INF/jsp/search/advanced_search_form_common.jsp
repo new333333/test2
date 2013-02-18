@@ -71,6 +71,13 @@
 					<div class="n-buttonright"><ssf:showHelp guideName="user" pageId="informed_search" sectionId="informed_search_advanced" /></div>
 				</c:if>
 				<div class="ss_clear"></div>
+
+				  <c:if test="${!empty ss_searchError}">
+				    <div style="padding:20px;">
+				      <span class="ss_errorLabel ss_bold ss_largeprint">${ss_searchError}</span>
+				    </div>
+				  </c:if>
+
 				<table>
 					<tr>
 						<th class="ss_nowrap ss_size_15px ss_bold" style="vertical-align: middle;"><ssf:nlt tag="searchForm.advanced.Title"/></th>

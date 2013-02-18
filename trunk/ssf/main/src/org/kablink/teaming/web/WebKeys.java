@@ -1312,6 +1312,7 @@ public class WebKeys {
     public static final String SEARCH_FORM_SELECTED_FILTER_NAME="ss_selectedSearchForm";
     public static final String SEARCH_FILTER_MAP = "ss_filterMap";
     public static final String SEARCH_TOP_FOLDER_ID = "ss_searchTopFolderId";
+    public static final String SEARCH_ERROR="ss_searchError";
     public static final String SEARCH_RESULTS="ss_searchResults";
     public static final String SEARCH_RESULTS_COUNT="searchResultsCount";
     public static final String SEARCH_RESULTS_RATING="searchResultsRating";
@@ -1322,6 +1323,7 @@ public class WebKeys {
     public static final String SEARCH_SEARCH_SORT_BY="sortBy";
     public static final String SEARCH_SEARCH_SORT_BY_SECONDARY="sortBySecondary";
     public static final String SEARCH_TEXT="ss_searchText";
+    public static final String SEARCH_TEXT_FIELD="searchText";
     public static final String SEARCH_TOTAL_HITS="ss_searchTotalHits";
     public static final String SEARCH_CONTEXT="ss_searchContext";
     public static final String SEARCH_CONTEXT_BINDER="ss_searchContextBinder";

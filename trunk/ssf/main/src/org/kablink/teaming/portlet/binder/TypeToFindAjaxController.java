@@ -129,7 +129,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		String searchText = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TEXT_FIELD, "");
 		try {
 			searchText = URLDecoder.decode(searchText, "UTF-8");
 		} catch(Exception e) {}
