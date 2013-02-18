@@ -1090,6 +1090,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		addFileSyncAgent(profiles, stamp);
     		addGuest(profiles, stamp); 
     		Workspace globalRoot = addGlobalRoot(top, stamp);		
+    		if (Utils.checkIfFilr() || Utils.checkIfIPrint()) {
+    			//In Filr, the global workspace is hidden
+    			globalRoot.setFunctionMembershipInherited(false);
+    			addMembership(top, visitorsRole, globalRoot, new ArrayList());
+    			addMembership(top, participantsRole, globalRoot, new ArrayList());
+    		}
     		Workspace netFoldersRoot = addNetFoldersRoot(top, stamp);		
     		Workspace teamRoot = addTeamRoot(top, stamp);
     		teamRoot.setFunctionMembershipInherited(false);
