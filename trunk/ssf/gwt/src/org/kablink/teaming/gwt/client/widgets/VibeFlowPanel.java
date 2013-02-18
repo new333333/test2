@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,34 +30,61 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ProvidesResize;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * 
+ * Wraps a GWT FlowPanel to so that it can participate in various
+ * layout panels.
+ *  
  * @author jwootton
- *
  */
 public class VibeFlowPanel extends FlowPanel
 	implements ProvidesResize, RequiresResize
 {
 	/**
-	 * 
+	 * Constructor method.
 	 */
 	public VibeFlowPanel()
 	{
+		// Initialize the super class.
 		super();
 	}
 	
 	/**
-	 * 
 	 */
+	@Override
 	public void onResize()
+	{
+		onResizeAsync();
+	}//end onResize()
+
+	/*
+	 * Asynchronously resizes the flow panel.
+	 */
+	private void onResizeAsync()
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				onResizeNow();
+			}//end execute()
+		});
+	}//end onResizeAsync()
+	
+	/*
+	 * Synchronously resizes the flow panel.
+	 */
+	private void onResizeNow()
 	{
 		for (Widget child : getChildren())
 	    {
@@ -66,5 +93,5 @@ public class VibeFlowPanel extends FlowPanel
 	        	((RequiresResize) child).onResize();
 	        }
 	    }
-	}
+	}//end onResizeNow()
 }

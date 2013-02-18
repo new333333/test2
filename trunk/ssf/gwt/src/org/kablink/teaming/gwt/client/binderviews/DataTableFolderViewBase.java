@@ -153,7 +153,6 @@ import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -782,7 +781,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		});
 
 		// ...and connect it all together.
-		m_selectColumn.setSortable(     false                                       ); 
+		m_selectColumn.setSortable(false); 
 	    m_dataTable.addColumn(m_selectColumn, saHeader);
 	    setColumnStyles(m_selectColumn, FolderColumn.COLUMN_SELECT, colIndex        );
 	    setColumnWidth(         FolderColumn.COLUMN_SELECT, m_selectColumn, pctTotal);
@@ -938,6 +937,36 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		}
 	}
 
+	/*
+	 * Asynchronously sets the size of the data table based on its
+	 * position in the view.
+	 */
+	private void doResizeAsync(int delay) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				doResizeNow();
+			}
+		},
+		delay);
+	}
+
+	/*
+	 * Asynchronously sets the size of the data table based on its
+	 * position in the view.
+	 */
+	private void doResizeAsync() {
+		doResizeAsync(INITIAL_RESIZE_DELAY);
+	}
+	
+	/*
+	 * Synchronously sets the size of the data table based on its
+	 * position in the view.
+	 */
+	private void doResizeNow() {
+		onResize();
+	}
+	
 	/*
 	 * If all the column widths use pixels, forces the last one to
 	 * 100%.
@@ -1628,13 +1657,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
-	 * Invoke the share dialog in administrative mode on the selected entities.
+	 * Invoke the share dialog in administrative mode on the selected
+	 * entities.
 	 */
-	private void invokeManageSharesDlgSelectedEntities( List<EntityId> selectedEntities )
-	{
-		BinderViewsHelper.invokeManageSharesDlg( selectedEntities );
+	private void invokeManageSharesDlgSelectedEntities(List<EntityId> selectedEntities) {
+		BinderViewsHelper.invokeManageSharesDlg(selectedEntities);
 	}
-	
 
 	/*
 	 * Return true if the data table should used a fixed layout and
@@ -2144,36 +2172,24 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * @param event
 	 */
 	@Override
-	public void onManageSharesSelectedEntries( ManageSharesSelectedEntriesEvent event )
-	{
-		Long eventFolderId;
-
+	public void onManageSharesSelectedEntries(ManageSharesSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
-		eventFolderId = event.getFolderId();
-		if ( eventFolderId.equals( getFolderId() ) )
-		{
-			Scheduler.ScheduledCommand cmd;
-			List<EntityId> seList;
-			final List<EntityId> selectedEntities;
-
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals( getFolderId())) {
 			// Yes!
-			seList = event.getSelectedEntities();
-			if ( GwtClientHelper.hasItems(seList) == false )
-			{
+			List<EntityId> seList = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(seList))) {
 				seList = getSelectedEntityIds();
 			}
-			selectedEntities = seList;
+			final List<EntityId> selectedEntities = seList;
 
 			// Invoke the Manage Shares dialog
-			cmd = new Scheduler.ScheduledCommand()
-			{
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
-				public void execute() 
-				{
-					invokeManageSharesDlgSelectedEntities( selectedEntities );
+				public void execute() {
+					invokeManageSharesDlgSelectedEntities(selectedEntities);
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			});
 		}
 	}
 	
@@ -2335,28 +2351,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		}
 	}
 	
-	/*
-	 * Asynchronously sets the size of the data table based on its
-	 * position in the view.
-	 */
-	private void onResizeAsync(int delay) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onResize();
-			}
-		},
-		delay);
-	}
-
-	/*
-	 * Asynchronously sets the size of the data table based on its
-	 * position in the view.
-	 */
-	private void onResizeAsync() {
-		onResizeAsync(INITIAL_RESIZE_DELAY);
-	}
-	
 	/**
 	 * Synchronously sets the size of the data table based on its
 	 * position in the view.
@@ -2369,18 +2363,45 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		super.onResize();
 
 		// ...and do what we need to do locally.
-		onResizeImpl(m_dataTable);
+		onResizeAsync(m_dataTable);
 	}
 
 	/*
-	 * Performs the local resizing necessary.
+	 * Asynchronously performs the local resizing necessary.
 	 */
 	@SuppressWarnings("unused")
-	private void onResizeImpl(CellTable<FolderRow> ct) {
+	private void onResizeAsync(final CellTable<FolderRow> ct) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onResizeNow(ct);
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously performs the local resizing necessary.
+	 */
+	private void onResizeAsync(final DataGrid<FolderRow> dg) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onResizeNow(dg);
+			}
+		});
+	}
+
+	/*
+	 * Synchronously performs the local resizing necessary.
+	 */
+	private void onResizeNow(final CellTable<FolderRow> ct) {
 		// Nothing to do.
 	}
 	
-	private void onResizeImpl(DataGrid<FolderRow> dg) {
+	/*
+	 * Synchronously performs the local resizing necessary.
+	 */
+	private void onResizeNow(final DataGrid<FolderRow> dg) {
 		FooterPanel fp = getFooterPanel();
 		
 		int viewHeight		= getOffsetHeight();							// Height of the view.
@@ -2924,7 +2945,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		getFlowPanel().add(vp);
 		
 		// Finally, ensure the table gets sized correctly.
-		onResizeAsync();
+		doResizeAsync();
 	}
 
 	/*
