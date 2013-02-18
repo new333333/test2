@@ -44,6 +44,11 @@
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
 				<div class="n-buttonright"><ssf:showHelp guideName="user" pageId="informed_search" sectionId="informed_search_basic" /></div>
+				  <c:if test="${!empty ss_searchError}">
+				    <div style="padding:20px;">
+				      <span class="ss_errorLabel ss_bold ss_largestprint">${ss_searchError}</span>
+				    </div>
+				  </c:if>
 								
 				<table>
 					<tr>

@@ -3447,7 +3447,7 @@ public class BinderHelper {
 		}		
 	}
 
-	public static Map prepareSearchResultPage(AllModulesInjected bs, RenderRequest request, Tabs tabs) {
+	public static Map prepareSearchResultPage(AllModulesInjected bs, RenderRequest request, Tabs tabs) throws Exception {
 		Map model = new HashMap();
 
 		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID, -1);
@@ -3518,17 +3518,20 @@ public class BinderHelper {
 		return model;
 	}
 	
-	public static void prepareSearchResultData(AllModulesInjected bs, RenderRequest request, Tabs tabs, Map model, Map options) {
+	public static void prepareSearchResultData(AllModulesInjected bs, RenderRequest request, Tabs tabs, Map model, Map options) 
+			throws Exception {
 
 		User user = RequestContextHolder.getRequestContext().getUser();
-		SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, bs.getDefinitionModule());
-		Document searchQuery = requestParser.getSearchQuery();
 		if(options != null) {
 			options.putAll(prepareSearchOptions(bs, request));
 		}
 		else {
 			options = prepareSearchOptions(bs, request);			
 		}
+		model.put("quickSearch", options.get(WebKeys.SEARCH_FORM_QUICKSEARCH));
+		
+		SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, bs.getDefinitionModule());
+		Document searchQuery = requestParser.getSearchQuery();
 		//See if this is a request to search within the My Files collection
 		if (ObjectKeys.SEARCH_SCOPE_MY_FILES.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
 			//Build the ancilary criteria for searching within the My Files collection

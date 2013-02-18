@@ -151,6 +151,9 @@ public enum ApiErrorCode {
 	ROLE_NOT_FOUND, // No role object found with this name or id
 	ROLE_CONDITION_NOT_FOUND, // No role condition object found with this name or id
 	
+	// Search errors
+	SEARCH_INVALID_WILD_CARD, // Invalid use of a wild card in a search request
+	
 	// Tag errors
 	TAG_NOT_FOUND, // No tag object found with this name or id
 	

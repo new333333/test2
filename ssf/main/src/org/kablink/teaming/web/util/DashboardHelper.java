@@ -1247,7 +1247,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		doComponentConfigSetup(ssDashboard, dashboard, null, model, PORTLET_COMPONENT_ID);
 		return ssDashboard;
 	}
-	public static void saveComponentData(ActionRequest request, Binder binder, String scope) {
+	public static void saveComponentData(ActionRequest request, Binder binder, String scope) throws Exception {
 		//Get the dashboard component
 		if (!scope.equals(DashboardHelper.Binder) || getInstance().getBinderModule().testAccess(binder, BinderOperation.setProperty)) {
 			String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
@@ -1260,7 +1260,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		}
 	}
 
-	public static void saveComponentData(ActionRequest request, Dashboard d) {
+	public static void saveComponentData(ActionRequest request, Dashboard d) throws Exception {
 		//Get the dashboard component
 		getInstance().internSaveComponentData(request, null, d, PORTLET_COMPONENT_ID, DashboardHelper.Portlet);
 	}
@@ -1268,7 +1268,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	/*
 	 * No static version because needs a DefinitionModule.
 	 */
-	private void internSaveComponentData(ActionRequest request, Binder binder, Dashboard d, String componentId, String scope) {
+	private void internSaveComponentData(ActionRequest request, Binder binder, Dashboard d, String componentId, String scope) throws Exception {
 
 		//Get the generic data elements that start with the ElementNamePrefix
 		Map formData = request.getParameterMap();

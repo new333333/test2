@@ -52,6 +52,7 @@ import javax.portlet.WindowState;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.SearchWildCardException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -152,7 +153,11 @@ public class AdvancedSearchController extends AbstractBinderController {
 		*/
 
        if (op.equals(WebKeys.SEARCH_RESULTS)) {
-        	BinderHelper.prepareSearchResultData(this, request, tabs, model, null );
+    	    try {
+    		   BinderHelper.prepareSearchResultData(this, request, tabs, model, null );
+	        } catch(SearchWildCardException e) {
+	    		model.put(WebKeys.SEARCH_ERROR, e.getMessage());
+	    	}
         	addPropertiesForFolderView(model);
         	buildToolbars(model, request);
 
@@ -191,7 +196,11 @@ public class AdvancedSearchController extends AbstractBinderController {
 
         	return prepBeans(request, new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model));
         } else {
-        	model.putAll(BinderHelper.prepareSearchFormData(this, request));
+        	try {
+        		model.putAll(BinderHelper.prepareSearchFormData(this, request));
+        	} catch(SearchWildCardException e) {
+        		model.put(WebKeys.SEARCH_ERROR, e.getMessage());
+        	}
         	if (binderId != null) {
         		Map options = new HashMap();
         		options.put("search_subfolders", Boolean.TRUE);

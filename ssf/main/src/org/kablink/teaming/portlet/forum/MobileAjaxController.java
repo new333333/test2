@@ -770,7 +770,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map formData = request.getParameterMap();
 	    Tabs tabs = Tabs.getTabs(request);
 		model.put(WebKeys.TABS, tabs);		
-		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		String searchText = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TEXT_FIELD, "");
 		model.put(WebKeys.SEARCH_TEXT, searchText);
 	    if (formData.containsKey("searchBtn") || formData.containsKey("quickSearch")) {
 	    	SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
