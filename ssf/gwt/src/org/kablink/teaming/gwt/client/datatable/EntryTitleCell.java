@@ -70,22 +70,18 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
-	private boolean			m_isFilr;			//
 	private HoverHintPopup	m_hoverHintPopup;	//
 	
 	/**
 	 * Constructor method.
 	 */
 	public EntryTitleCell() {
-		// Sink the events we need to process an entry title...
+		// Sink the events we need to process an entry title.
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
 			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
-		
-		// ...and initialize everything else.
-		m_isFilr = GwtClientHelper.isLicenseFilr();
 	}
 
 	/*
@@ -290,7 +286,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			// ...if have a description...
 			String	description       = eti.getDescription();
 			boolean	descriptionIsHTML = eti.isDescriptionHtml();
-			if (m_isFilr && eti.isFile() && (!(GwtClientHelper.hasString(description)))) {
+			if (eti.isFile() && (!(GwtClientHelper.hasString(description)))) {
 				description       = eti.getTitle();
 				descriptionIsHTML = false;
 			}
@@ -372,16 +368,12 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		boolean			titleIsLink  = ((!isTrash) || ((null != entityType) && entityType.equals("folderEntry")));
 		VibeFlowPanel	html         = new VibeFlowPanel();
 		
-		VibeFlowPanel	etContainerWidget = new VibeFlowPanel();
-		
-		// In Filr...
-		html.add(etContainerWidget );
+		// We don't word wrap the title of files or folders.
+		VibeFlowPanel etContainerWidget = new VibeFlowPanel();
 		etContainerWidget.addStyleName("vibe-dataTableEntry-panel");
-		if (m_isFilr) {
-			// ...we don't word wrap the title of files or folders.
-			if (eti.isFile() || eti.getEntityId().isBinder()) {
-				etContainerWidget.addStyleName("gwtUI_nowrap");
-			}
+		html.add(etContainerWidget );
+		if (eti.isFile() || eti.getEntityId().isBinder()) {
+			etContainerWidget.addStyleName("gwtUI_nowrap");
 		}
 		
 		// If we're dealing with an item in the trash...
