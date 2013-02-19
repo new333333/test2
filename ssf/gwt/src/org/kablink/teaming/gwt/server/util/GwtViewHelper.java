@@ -1299,6 +1299,7 @@ public class GwtViewHelper {
 						String messageKey;
 						NotSupportedException nse = null;
 						if      (e instanceof AccessControlException)  messageKey = "copyEntryError.AccssControlException";
+						else if (e instanceof BinderQuotaException)    messageKey = "copyEntryError.BinderQuotaException";
 						else if (e instanceof NotSupportedException)  {messageKey = "copyEntryError.NotSupportedException"; nse = ((NotSupportedException) e);}
 						else if (e instanceof TitleException)          messageKey = "copyEntryError.TitleException";
 						else                                           messageKey = "copyEntryError.OtherException";
@@ -6480,6 +6481,7 @@ public class GwtViewHelper {
 						String messageKey;
 						NotSupportedException nse = null;
 						if      (e instanceof AccessControlException)  messageKey = "moveEntryError.AccssControlException";
+						else if (e instanceof BinderQuotaException)    messageKey = "moveEntryError.BinderQuotaException";
 						else if (e instanceof NotSupportedException)  {messageKey = "moveEntryError.NotSupportedException"; nse = ((NotSupportedException) e);}
 						else if (e instanceof TitleException)          messageKey = "moveEntryError.TitleException";
 						else                                           messageKey = "moveEntryError.OtherException";
