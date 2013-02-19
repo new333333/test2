@@ -36,6 +36,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
@@ -52,36 +54,71 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 
 	private Log logger = LogFactory.getLog(getClass());
 	
-	private ExecutorService executorService;
+	private ExecutorService executorServiceLight;
+	private ExecutorService executorServiceHeavy;
+
 	private int executorTerminationTimeout;
 	
 	public void afterPropertiesSet() throws Exception {
-		executorService = Executors.newCachedThreadPool();
+		// Create a thread pool that creates new threads as needed with no upper bound.
+		executorServiceLight = Executors.newCachedThreadPool();
+
+		// Create a thread pool that creates new threads as needed up to the specified size.
+		// The threads will operate off a shared unbounded queue. This means that the
+		// application can queue up unlimited number of requests for asynchronous execution,
+		// but only up to the specified number of threads can execute the tasks concurrently.
+		
+		executorServiceHeavy = new ThreadPoolExecutor(0, 
+				SPropsUtil.getInt("runasync.executor.heavy.maximum.pool.size", 50),
+                60L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>());
+		
 		executorTerminationTimeout = SPropsUtil.getInt("runasync.executor.termination.timeout", 20);
 	}
 
 	public void destroy() throws Exception {
-		if(executorService != null) {
-			executorService.shutdown();
+		// Initiate shutdown
+		if(executorServiceHeavy != null)
+			executorServiceHeavy.shutdown();
+		if(executorServiceLight != null)
+			executorServiceLight.shutdown();
+		
+		// Wait on the heavy-duty executor service first.
+		long start = System.currentTimeMillis();
+		if(executorServiceHeavy != null) {
 			try {
-				executorService.awaitTermination(executorTerminationTimeout, TimeUnit.SECONDS);
+				executorServiceHeavy.awaitTermination(executorTerminationTimeout*1000, TimeUnit.MILLISECONDS);
 			}
 			catch(InterruptedException e) {
 				Thread.currentThread().interrupt(); // Restore the interrupt
 			}
-			executorService = null;
+			executorServiceHeavy = null;
+		}
+		
+		// If we still have remaining time available, wait on the light-duty executor service.
+		if(executorServiceLight != null) {
+			long remainingTime = start + executorTerminationTimeout*1000 - System.currentTimeMillis();
+			if(remainingTime > 0) {
+				try {
+					executorServiceLight.awaitTermination(remainingTime, TimeUnit.MILLISECONDS);
+				}
+				catch(InterruptedException e) {
+					Thread.currentThread().interrupt(); // Restore the interrupt
+				}
+				executorServiceLight = null;
+			}
 		}
 	}
 
-	public <V> Future<V> execute(final RunAsyncCallback<V> action) {
-		return _execute(action, RequestContextHolder.getRequestContext());
+	public <V> Future<V> execute(final RunAsyncCallback<V> action, boolean lightDuty) {
+		return _execute(action, lightDuty, RequestContextHolder.getRequestContext());
 	}
 
-	public <V> Future<V> execute(final RunAsyncCallback<V> action, User contextUser) {
-		return _execute(action, new RequestContext(contextUser, null).resolve());
+	public <V> Future<V> execute(final RunAsyncCallback<V> action, boolean lightDuty, User contextUser) {
+		return _execute(action, lightDuty, new RequestContext(contextUser, null).resolve());
 	}
 
-	private <V> Future<V> _execute(final RunAsyncCallback<V> action, final RequestContext parentRequestContext) {
+	private <V> Future<V> _execute(final RunAsyncCallback<V> action, final boolean lightDuty, final RequestContext parentRequestContext) {
 		Callable<V> task = new Callable<V>() {
 			public V call() throws Exception {
 				boolean hadSession = SessionUtil.sessionActive();
@@ -119,7 +156,10 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 				}				
 			}
 		};
-		return executorService.submit(task);
+		if(lightDuty)
+			return executorServiceLight.submit(task);
+		else
+			return executorServiceHeavy.submit(task);
 	}
 
 }

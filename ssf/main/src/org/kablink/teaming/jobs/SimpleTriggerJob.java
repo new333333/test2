@@ -95,7 +95,7 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 				schedule(job);
 				return null;
 			}
-		});
+		}, true);
 	}
 	
 	public class SimpleJobDescription {

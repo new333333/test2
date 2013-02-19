@@ -365,7 +365,7 @@ public class NetFolderHelper
 							{
 								return "folderModule.synchronize()";
 							}
-						});
+						}, false);
 					}
 					catch ( Exception e )
 					{
