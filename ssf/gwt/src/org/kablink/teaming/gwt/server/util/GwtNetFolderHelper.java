@@ -199,6 +199,7 @@ public class GwtNetFolderHelper
 												ami.getTemplateModule(),
 												ami.getBinderModule(),
 												ami.getFolderModule(),
+												ami.getAdminModule(),
 												GwtServerHelper.getCurrentUser(),
 												netFolder.getName(),
 												netFolder.getNetFolderRootName(),
