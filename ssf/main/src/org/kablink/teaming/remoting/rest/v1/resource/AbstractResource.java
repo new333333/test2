@@ -290,7 +290,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     private RecentActivityEntry findEntry(List<RecentActivityEntry> entries, Long entryId) {
         for (RecentActivityEntry entry : entries) {
-            if (entry.getId()==entryId) {
+            if (entryId.equals(entry.getId())) {
                 return entry;
             }
         }
