@@ -38,9 +38,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.lucene.document.DateTools;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.SearchWildCardException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
@@ -1359,4 +1362,15 @@ public class SearchUtils {
 		String obj = ((String) options.get(key));
 		return (((null == obj) || (0 == obj.length())) ? defStr : obj);
 	}
+
+    public static void validateSearchText(String searchText) {
+        if (searchText!=null && (!(searchText.trim().equals("") || searchText.trim().equals("*")))) {
+            Pattern p = Pattern.compile("[\\s][*?]|^[*?]|[^\\s][*][^\\s]");
+            Matcher m = p.matcher(searchText);
+            if (m.find()) {
+                //This request has an invalid use of the wild card character; give an error
+                throw new SearchWildCardException(searchText);
+            }
+        }
+    }
 }

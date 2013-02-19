@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming;
 
+import org.kablink.teaming.exception.UncheckedCodedException;
 import org.kablink.util.api.ApiErrorCode;
 
 
@@ -39,7 +40,7 @@ import org.kablink.util.api.ApiErrorCode;
  * @author jong
  *
  */
-public class SearchWildCardException extends DataQuotaException {
+public class SearchWildCardException extends UncheckedCodedException {
 
 	private static final String errorCode = "errorcode.search.invalidUseOfWildCard";
 	
@@ -54,4 +55,9 @@ public class SearchWildCardException extends DataQuotaException {
 	public ApiErrorCode getApiErrorCode() {
 		return ApiErrorCode.SEARCH_INVALID_WILD_CARD;
 	}
+
+    @Override
+    public int getHttpStatusCode() {
+        return 400;
+    }
 }
