@@ -39,8 +39,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.portlet.PortletRequest;
 
@@ -48,6 +46,7 @@ import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SearchWildCardException;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -381,12 +380,7 @@ public class SearchFilterRequestParser {
 
 	private void parseFreeText(PortletRequest request, SearchFilter searchFilter) throws SearchWildCardException {
 		String searchText = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchText, "");
-		Pattern p = Pattern.compile("[\\s][*?]|^[*?]|[^\\s][*][^\\s]");
-		Matcher m = p.matcher(searchText);
-		if (m.find() && !(searchText.trim().equals("") || searchText.trim().equals("*"))) {
-			//This request has an invalid use of the wild card character; give an error
-			throw new SearchWildCardException(searchText);
-		}
+        SearchUtils.validateSearchText(searchText);
 		Boolean searchCaseSensitive = false;
 		try {
 			searchCaseSensitive = PortletRequestUtils.getBooleanParameter(request, WebKeys.SEARCH_FORM_CASE_SENSITIVE);

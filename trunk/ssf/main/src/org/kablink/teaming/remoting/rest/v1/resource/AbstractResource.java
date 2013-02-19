@@ -178,6 +178,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     }
 
     protected SearchResultList<SearchableObject> searchForLibraryEntities(String keyword, Criterion searchContext, boolean recursive, Integer offset, Integer maxCount, boolean includeBinders, boolean includeFolderEntries, boolean includeReplies, boolean includeFiles, boolean includeParentPaths, boolean textDescriptions, String nextUrl) {
+        SearchUtils.validateSearchText(keyword);
         Criteria crit = new Criteria();
         crit.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
         crit.add(buildLibraryCriterion(true));
