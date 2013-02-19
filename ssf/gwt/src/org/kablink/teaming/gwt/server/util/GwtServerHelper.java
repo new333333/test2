@@ -1307,11 +1307,23 @@ public class GwtServerHelper {
 		reply.setBinderInfo(getBinderInfo(request, bs, binder));
 		reply.setBinderTitle(GwtUIHelper.getTreeBinderTitle(binder));
 		reply.setBinderChildren(binder.getBinderCount());
-		String binderPermalink = PermaLinkUtil.getPermalink(request, binder);
-		if (Utils.checkIfFilr() && BinderHelper.isBinderPersonalWorkspace(binder)) {
-			binderPermalink = appendUrlParam(binderPermalink, WebKeys.URL_OPERATION, WebKeys.ACTION_SHOW_PROFILE);
+		String binderPermalink;
+		boolean isFilr = Utils.checkIfFilr();
+		if (isFilr && binder.isReserved() && binder.getInternalId().equals(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID)) {
+			// In Filr, if the user navigates to the root Net Folders
+			// binder, we simply sent them to the Net Folders
+			// collection instead.
+			binderPermalink = PermaLinkUtil.getPermalink(request, bs.getBinderModule().getBinder(getCurrentUser().getWorkspaceId()));
+			reply.setBinderPermalink(GwtUIHelper.appendUrlParam(binderPermalink, WebKeys.URL_SHOW_COLLECTION, String.valueOf(CollectionType.NET_FOLDERS.ordinal())));
+			
 		}
-		reply.setBinderPermalink(binderPermalink);
+		else {
+			binderPermalink = PermaLinkUtil.getPermalink(request, binder);
+			if (isFilr && BinderHelper.isBinderPersonalWorkspace(binder)) {
+				binderPermalink = appendUrlParam(binderPermalink, WebKeys.URL_OPERATION, WebKeys.ACTION_SHOW_PROFILE);
+			}
+			reply.setBinderPermalink(binderPermalink);
+		}
 		reply.setBinderTrashPermalink(GwtUIHelper.getTrashPermalink(binderPermalink));
 		reply.setBinderIcon(binder.getIconName(), BinderIconSize.SMALL);
 		reply.setBinderIcon(binder.getIconName(IconSize.MEDIUM), BinderIconSize.MEDIUM);
