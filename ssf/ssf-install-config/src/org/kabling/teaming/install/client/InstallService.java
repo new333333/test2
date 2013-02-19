@@ -7,6 +7,7 @@ import java.util.Map;
 import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.shared.ConfigurationSaveException;
 import org.kabling.teaming.install.shared.Database;
+import org.kabling.teaming.install.shared.EmailSettings;
 import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.LicenseInformation;
 import org.kabling.teaming.install.shared.LoginException;
@@ -107,4 +108,6 @@ public interface InstallService extends RemoteService
 	void setupLocalMySqlUserPassword(Database db);
 	
 	LicenseInformation getLicenseInformation();
+	
+	boolean testSmtpConnection(EmailSettings emailSettings);
 }

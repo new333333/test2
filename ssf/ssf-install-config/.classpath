@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="../lib/joda-time.jar"/>
 	<classpathentry kind="lib" path="../lib/libpam4j-1.6.jar"/>
 		<classpathentry kind="lib" path="../lib/commons-fileupload.jar"/>
+		<classpathentry kind="lib" path="../lib/mail.jar"/>
 	<classpathentry kind="output" path="www/WEB-INF/classes"/>
 </classpath>

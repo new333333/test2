@@ -658,6 +658,7 @@ td.table-value {
 	padding: 25px;
 	background: #fafafa;
 	border-radius: 3px;
+	width: 350px;
 }
 
 .statusIndicator img {
@@ -674,6 +675,22 @@ td.table-value {
 	color: #949494;
 	font-style: italic;
 	font-size: 12px;
+}
+
+.gw-dlgConfirm {
+    padding: 10px;
+    color: #505354;
+    font-size: 12px;
+}
+
+.gw-dlgConfirm img {
+    display: inline-block;
+    margin: 15px;
+}
+
+.gw-dlgConfirmDesc {
+	display: inline-block;
+	width: 350px;
 }
 
 .webDavPageContent {
@@ -924,8 +941,26 @@ td.table-value {
 	margin-right:5px;
 }
 
-.reverProxyPortTable {
-	margin-top: 30px;
+.reverProxyPortTable, .namContentPanel {
+	margin-top: 20px;
+	padding: 10px;
+	border-radius: 3px;
+}
+
+.namContentPanel {
+	width: 80%;
+	background: #fff;
+	margin-top: 0;
+}
+
+.namContentPanelHeader {
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.enableNamCheckBox {
+	margin-top: 20px;
+	display: block;
 }
 
 .networkPageHttpEnabledCheckBox {
