@@ -16,12 +16,23 @@
 		<property name="gwt.war"    value="-war www"                            />
 	</target>
 	<target name="init-gwt-builds">
+		<!-- Development vs. Production. -->
 		<condition property="development.build">
 			<equals arg1="${build.gwt.mode}" arg2="development" />
 		</condition>
 		<condition property="production.build">
 			<not>
 				<isset property="development.build"/>
+			</not>
+		</condition>
+
+		<!-- Deploy or Drop GWT symbol maps. -->
+		<condition property="drop.symbol.maps">
+			<equals arg1="${gwt.symbol.maps}" arg2="drop" />
+		</condition>
+		<condition property="deploy.symbol.maps">
+			<not>
+				<isset property="drop.symbol.maps"/>
 			</not>
 		</condition>
 	</target>
@@ -136,5 +147,15 @@
 		        	<include name="**/*"/>
 			</fileset>
 		</copy>			
+		<antcall target="clean-symbol-maps" />
+	</target>
+	
+	<target name="clean-symbol-maps" if="drop.symbol.maps">
+		<echo message="...removing symbol maps."/>
+		<delete>
+		        <fileset dir="${app.server.ssf.dir}/${web.static.path}/js/gwt/WEB-INF/deploy/gwtteaming/symbolMaps">
+		        	<include name="**/*"/>
+			</fileset>
+		</delete>			
 	</target>
 </project>
