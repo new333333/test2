@@ -7839,18 +7839,19 @@ public class GwtViewHelper {
 			if (MiscUtil.hasItems(uploads)) {
 				// Yes!  Access the objects we need to perform the
 				// analysis.
-				AdminModule		am                = bs.getAdminModule();
-				BinderModule	bm                = bs.getBinderModule();
-				FolderModule	fm                = bs.getFolderModule();
-				Folder			folder            = fm.getFolder(folderInfo.getBinderIdAsLong());
-				Long			userFileSizeLimit = am.getUserFileSizeLimit();
+				AdminModule		am                  = bs.getAdminModule();
+				BinderModule	bm                  = bs.getBinderModule();
+				FolderModule	fm                  = bs.getFolderModule();
+				Folder			folder              = fm.getFolder(folderInfo.getBinderIdAsLong());
+				Long			userFileSizeLimit   = am.getUserFileSizeLimit();
+				Long			userFileSizeLimitMB = null;
 				
 				// What do we need to check?
 				boolean	checkBinderQuotas      = bm.isBinderDiskQuotaEnabled();
 				boolean	checkUserQuotas        = am.isQuotaEnabled();
 				boolean	checkUserFileSizeLimit = ((null != userFileSizeLimit) && (0 < userFileSizeLimit));
 				if (checkUserFileSizeLimit) {
-					userFileSizeLimit = (userFileSizeLimit * MEGABYTES);
+					userFileSizeLimitMB = (userFileSizeLimit * MEGABYTES);
 				}
 				
 				// Do we need to worry about quotas?
@@ -7863,7 +7864,7 @@ public class GwtViewHelper {
 							// Yes!  Does its size exceed the user's
 							// file size limit?
 							long size = upload.getSize();
-							if (checkUserFileSizeLimit && (size > userFileSizeLimit)) {
+							if (checkUserFileSizeLimit && (size > userFileSizeLimitMB)) {
 								// Yes!  Add an appropriate error the
 								// reply.
 								reply.addError(NLT.get("validateUploadError.quotaExceeded.file", new String[]{upload.getName(), String.valueOf(userFileSizeLimit)}));
@@ -7881,26 +7882,30 @@ public class GwtViewHelper {
 						// Yes!  Add an appropriate error the reply.
 						reply.addError(NLT.get("validateUploadError.quotaExceeded.folder", new String[]{String.valueOf(bm.getMinBinderQuotaLeft(folder) / MEGABYTES)}));
 					}
-
-					// Do we need to check the total upload size against
-					// this user's quota?
-					User user = GwtServerHelper.getCurrentUser();
-					long userQuota = user.getDiskQuota();
-					if (0 == userQuota) {
-						userQuota = user.getMaxGroupsQuota();
+	
+					// Do we need to check quotas assigned to this user
+					// or their groups?
+					if (checkUserQuotas) {
+						// Yes!  Do we need to check the total upload
+						// size against this user's quota?
+						User user = GwtServerHelper.getCurrentUser();
+						long userQuota = user.getDiskQuota();
 						if (0 == userQuota) {
-							ZoneConfig zc = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-							userQuota = zc.getDiskQuotaUserDefault();
+							userQuota = user.getMaxGroupsQuota();
+							if (0 == userQuota) {
+								ZoneConfig zc = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+								userQuota = zc.getDiskQuotaUserDefault();
+							}
 						}
-					}
-					long userQuotaMB       = (userQuota * MEGABYTES);
-					Long userDiskSpaceUsed = user.getDiskSpaceUsed();
-					if ((0l < userQuota) && (null != userDiskSpaceUsed)) {
-						// Yes!  Does it exceed the user's quota?
-						if ((totalSize + userDiskSpaceUsed) > userQuotaMB) {
-							// Yes!  Add an appropriate error the
-							// reply.
-							reply.addError(NLT.get("validateUploadError.quotaExceeded.user", new String[]{String.valueOf(userQuota)}));
+						long userQuotaMB       = (userQuota * MEGABYTES);
+						Long userDiskSpaceUsed = user.getDiskSpaceUsed();
+						if ((0l < userQuota) && (null != userDiskSpaceUsed)) {
+							// Yes!  Does it exceed the user's quota?
+							if ((totalSize + userDiskSpaceUsed) > userQuotaMB) {
+								// Yes!  Add an appropriate error the
+								// reply.
+								reply.addError(NLT.get("validateUploadError.quotaExceeded.user", new String[]{String.valueOf(userQuota)}));
+							}
 						}
 					}
 
