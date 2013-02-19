@@ -317,4 +317,6 @@ public interface AppResource extends Messages
 	String useLocalPostFixMail();
 
 	String localHostNotValid();
+
+	String testConnection();
 }

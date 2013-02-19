@@ -1,8 +1,13 @@
 package org.kabling.teaming.install.server;
 
 import java.io.IOException;
+import java.net.Authenticator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+
+import javax.mail.*;
+import javax.mail.internet.*;
 
 import org.apache.log4j.Logger;
 import org.jvnet.libpam.PAM;
@@ -12,6 +17,8 @@ import org.kabling.teaming.install.client.InstallService;
 import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.shared.ConfigurationSaveException;
 import org.kabling.teaming.install.shared.Database;
+import org.kabling.teaming.install.shared.EmailSettings;
+import org.kabling.teaming.install.shared.EmailSettings.EmailProtocol;
 import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.LicenseInformation;
 import org.kabling.teaming.install.shared.LoginException;
@@ -71,9 +78,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	}
 
 	@Override
-	public void saveConfiguration(InstallerConfig config,List<LeftNavItemType> sectionsToUpdate) throws ConfigurationSaveException
+	public void saveConfiguration(InstallerConfig config, List<LeftNavItemType> sectionsToUpdate) throws ConfigurationSaveException
 	{
-		ConfigService.saveConfiguration(config,sectionsToUpdate);
+		ConfigService.saveConfiguration(config, sectionsToUpdate);
 	}
 
 	@Override
@@ -86,14 +93,14 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	public void updateDatabase(Database database) throws ConfigurationSaveException
 	{
 		ConfigService.updateDatabase(database);
-		
+
 	}
 
 	@Override
 	public void reconfigure(boolean restartServer)
 	{
 		ConfigService.reconfigure(restartServer);
-		
+
 	}
 
 	@Override
@@ -117,7 +124,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	@Override
 	public Boolean isLuceneServerValid(String host, long port) throws LuceneConnectException
 	{
-		return ConfigService.isLuceneServerValid(host,port);
+		return ConfigService.isLuceneServerValid(host, port);
 	}
 
 	@Override
@@ -154,5 +161,74 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	public LicenseInformation getLicenseInformation()
 	{
 		return ConfigService.getLicenseInformation();
+	}
+
+	@Override
+	public boolean testSmtpConnection(final EmailSettings settings)
+	{
+		Properties props = new Properties();
+		final String protocol = settings.getTransportProtocol().equals(EmailProtocol.SMTP) ? "smtp" : "smtps";
+		
+		if (protocol.equals("smtp"))
+		{
+			props.put("mail.transport.protocol", "smtp");
+			props.put("mail.smtp.host", settings.getSmtpHost());
+			if (settings.isSmtpAuthEnabled())
+				props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.port", settings.getSmtpPort());
+//			props.put("mail.smtp.user", settings.getSmtpUser());
+//			props.put("mail.smtp.password", settings.getSmtpPassword());
+		}
+		else
+		{
+			props.put("mail.smtps.host", settings.getSmtpsHost());
+			props.put("mail.smtps.socketFactory.port", "465");
+			props.put("mail.smtps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+			if (settings.isSmtpAuthEnabled())
+				props.put("mail.smtps.auth", "true");
+			props.put("mail.smtps.port", settings.getSmtpsPort());
+		}
+
+		//Create a session with the password authenticator
+		Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator()
+		{
+			protected PasswordAuthentication getPasswordAuthentication()
+			{
+
+				if (protocol.equals("smtp"))
+				{
+					return new PasswordAuthentication(settings.getSmtpUser(), settings.getSmtpPassword());
+				}
+				return new PasswordAuthentication(settings.getSmtpsUser(), settings.getSmtpsPassword());
+			}
+		});
+
+		try
+		{
+			Transport transport = session.getTransport(protocol);
+			
+			//See if you can connect
+			if (protocol.equals("smtp"))
+			{
+				transport.connect(settings.getSmtpHost(), settings.getSmtpUser(), settings.getSmtpPassword());
+			}
+			else
+			{
+				transport.connect(settings.getSmtpsHost(), settings.getSmtpsUser(), settings.getSmtpsPassword());
+			}
+		}
+		catch (NoSuchProviderException e)
+		{
+			return false;
+		}
+		catch (MessagingException e)
+		{
+			//AuthenticationFailureException will also go through this
+			return false;
+		}
+
+		
+		//Able to connect
+		return true;
 	}
 }

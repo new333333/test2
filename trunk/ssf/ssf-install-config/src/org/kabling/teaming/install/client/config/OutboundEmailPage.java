@@ -15,8 +15,8 @@ import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.client.widgets.VibePasswordTextBox;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
 import org.kabling.teaming.install.shared.EmailSettings;
-import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.EmailSettings.EmailProtocol;
+import org.kabling.teaming.install.shared.InstallerConfig;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -189,6 +189,42 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			table.setWidget(row, 1, connectionTimeOutSpinner);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
+		
+//		{
+//			row++;
+//			// Test Connection
+//			Button testConnButton = new Button(RBUNDLE.testConnection());
+//			table.setWidget(row, 1, testConnButton);
+//			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+//			
+//			testConnButton.addClickHandler(new ClickHandler()
+//			{
+//				
+//				@Override
+//				public void onClick(ClickEvent event)
+//				{
+//					InstallerConfig config = (InstallerConfig) getDataFromDlg();
+//					AppUtil.getInstallService().testSmtpConnection(config.getEmailSettings(), new AsyncCallback<Boolean>()
+//					{
+//
+//						@Override
+//						public void onFailure(Throwable caught)
+//						{
+//							Window.alert("Connection not Valid");
+//						}
+//
+//						@Override
+//						public void onSuccess(Boolean result)
+//						{
+//							if (result )
+//								Window.alert("Connection Valid");
+//							else
+//								Window.alert("Connection not Valid");
+//						}
+//					});
+//				}
+//			});
+//		}
 
 		if (timezones == null)
 		{
