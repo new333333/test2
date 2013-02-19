@@ -60,7 +60,9 @@ public class RecentActivityEntry extends FolderEntryBrief {
             this.replies = new ReplyBrief[] {reply};
         } else {
             ReplyBrief [] newReplies = new ReplyBrief[Math.min(maxReplies, this.replies.length + 1)];
-            if (this.replies.length>1) {
+            if (this.replies.length<maxReplies) {
+                System.arraycopy(this.replies, 0, newReplies, 0, this.replies.length);
+            } else {
                 System.arraycopy(this.replies, 1, newReplies, 0, Math.min(maxReplies - 1, this.replies.length));
             }
             newReplies[newReplies.length - 1] = reply;

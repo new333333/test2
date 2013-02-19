@@ -168,4 +168,8 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         additionalPermaLinks.add(link);
     }
 
+    @Override
+    public String toString() {
+        return super.toString() + " id=" + this.id;
+    }
 }
