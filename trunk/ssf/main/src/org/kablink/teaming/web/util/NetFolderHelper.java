@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -71,6 +72,7 @@ import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.runasync.RunAsyncCallback;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.Utils;
@@ -299,6 +301,7 @@ public class NetFolderHelper
 															templateModule,
 															binderModule,
 															folderModule,
+															adminModule,
 															user,
 															folderName,
 															rdConfig.getName(),
@@ -384,6 +387,7 @@ public class NetFolderHelper
 		TemplateModule templateModule,
 		BinderModule binderModule,
 		FolderModule folderModule,
+		AdminModule adminModule,
 		User owner,
 		String name,
 		String rootName,
@@ -441,6 +445,12 @@ public class NetFolderHelper
 											name,
 											null,
 											options );
+			
+			//After creating the binder, we need to make sure it doesn't have any risidual roles and rights
+			List<WorkAreaFunctionMembership> wfms = adminModule.getWorkAreaFunctionMemberships(binder);
+			for (WorkAreaFunctionMembership wfm : wfms) {
+				adminModule.resetWorkAreaFunctionMemberships( binder, wfm.getFunctionId(), new ArrayList<Long>() );
+			}
 			
 			// Modify the binder with the additional net folder information.
 			{
