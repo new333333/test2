@@ -9942,6 +9942,15 @@ public class GwtServerHelper {
 					 user.getIdentityInfo().isInternal() == false &&
 					 user.getExtProvState() == ExtProvState.pwdResetRequested )
 				{
+					// Save the password to the user's properties.  We will read it from the user's properties
+					// when the user clicks on the url in the "reset password verification" email.
+					{
+						ami.getProfileModule().setUserProperty(
+															user.getId(),
+															ObjectKeys.USER_PROPERTY_RESET_PWD,
+															pwd );
+					}
+					
 					// Send the user an email telling them that their password has been modified
 					// and they need to verify that they were the one who changed the password.
 					{
@@ -9959,14 +9968,6 @@ public class GwtServerHelper {
 						// If we are running Filr, take the user to "my files"
 						if ( Utils.checkIfFilr() )
 							adapterUrl.setParameter(WebKeys.URL_SHOW_COLLECTION, "0");	// 0 -> CollectionType.MY_FILES
-						
-						// Add the password to the url.
-						{
-							String encodedPwd;
-							
-							encodedPwd = Base64.encodeBase64URLSafeString( pwd.getBytes() );
-							adapterUrl.setParameter( WebKeys.URL_PASSWORD, encodedPwd );
-						}
 						
 						// Append the encoded user token to the url.
 						token = ExternalUserUtil.encodeUserTokenWithNewSeed( user );

@@ -276,18 +276,10 @@ public class ExternalUserUtil {
 				else if ( User.ExtProvState.pwdResetWaitingForVerification == user.getExtProvState() )
 				{
 					ExternalUserRespondingToPwdResetVerificationException exc;
-					String pwd;
 
 					// The user is responding to the pwd reset confirmation previously sent out.
-			
-					pwd = queryParams.get( WebKeys.URL_PASSWORD );
-					if ( pwd != null && pwd.length() > 0 )
-					{
-						pwd = new String( Base64.decodeBase64( pwd ) );
-					}
-
 					// Create an exception object to be used as more like a normal status code
-					exc = new ExternalUserRespondingToPwdResetVerificationException( user.getId(), url, pwd );
+					exc = new ExternalUserRespondingToPwdResetVerificationException( user.getId(), url );
 
 					// Unfortunately, the spring security framework won't store this exception into the session even though
 					// it correctly catches it and triggers redirect to the login page. So we must put it in ourselves.

@@ -589,6 +589,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_DEFAULT_ACTIVITY_STREAM = "defaultActivityStream";
     public static final String USER_PROPERTY_COLLAPSE_SUBTASKS = "collapsedSubtasks";
     public static final String USER_PROPERTY_COLUMN_WIDTHS = "columnWidths";
+    public static final String USER_PROPERTY_RESET_PWD = "userResetPwd";
     public static final String USER_THEME_DEFAULT="default";
 	public static final String USER_PROPERTY_TABS="userTabs";
     

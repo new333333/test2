@@ -44,14 +44,12 @@ public class ExternalUserRespondingToPwdResetVerificationException extends Authe
 	
 	private Long m_userId;
 	private String m_url;
-	private String m_pwd;
 
-	public ExternalUserRespondingToPwdResetVerificationException( Long userId, String url, String pwd )
+	public ExternalUserRespondingToPwdResetVerificationException( Long userId, String url )
 	{
 		super( "External user is responding to password reset verification" );
 		m_userId = userId;
 		m_url = url;
-		m_pwd = pwd;
 	}
 
 	/**
@@ -60,14 +58,6 @@ public class ExternalUserRespondingToPwdResetVerificationException extends Authe
 	public Long getExternalUserId()
 	{
 		return m_userId;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getPwd()
-	{
-		return m_pwd;
 	}
 	
 	/**

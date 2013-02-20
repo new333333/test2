@@ -45,12 +45,14 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.extuser.ExternalUserRespondingToInvitationException;
 import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetException;
 import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetVerificationException;
@@ -94,9 +96,9 @@ public class LoginController  extends SAbstractControllerRetry {
 	 * Set the given user's password and mark the user as verified.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void completePasswordReset( final User extUser, final String pwd )
+	private void completePasswordReset( final User extUser )
 	{
-		if ( extUser != null && pwd != null && pwd.length() > 0 )
+		if ( extUser != null )
 		{
 			RunasCallback callback;
 
@@ -105,13 +107,33 @@ public class LoginController  extends SAbstractControllerRetry {
 				@Override
 				public Object doAs()
 				{
+					boolean pwdReset = false;
+					
 					// Change the user's password
 					try
 					{
 						Map updates = new HashMap();
+						String pwd = null;
 
-						updates.put( "password", pwd );
-						getProfileModule().modifyUserFromPortal( extUser.getId(), updates, null );
+						// The password is stored in the user's properties.
+						{
+							UserProperties userProperties;
+							Object value;
+							
+					    	userProperties = getProfileModule().getUserProperties( extUser.getId() );
+							value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_RESET_PWD );
+							if ( value != null && value instanceof String )
+								pwd = (String) value;
+						}
+						
+						if ( pwd != null && pwd.length() > 0 )
+						{
+							updates.put( "password", pwd );
+							getProfileModule().modifyUserFromPortal( extUser.getId(), updates, null );
+							pwdReset = true;
+						}
+						else
+							logger.error( "In completePasswordReset(), unable to get the reset password" );
 					}
 					catch ( Exception ex )
 					{
@@ -120,8 +142,17 @@ public class LoginController  extends SAbstractControllerRetry {
 
 					try
 					{
-						// Mark the user as verified
-						ExternalUserUtil.markAsVerified( extUser );
+						if ( pwdReset )
+						{
+							// Mark the user as verified
+							ExternalUserUtil.markAsVerified( extUser );
+	
+							// Remove the password from the user's properties 
+							getProfileModule().setUserProperty(
+															extUser.getId(),
+															ObjectKeys.USER_PROPERTY_RESET_PWD,
+															"" );
+						}
 					}
 					catch ( Exception ex )
 					{
@@ -137,6 +168,8 @@ public class LoginController  extends SAbstractControllerRetry {
 									callback,
 									RequestContextHolder.getRequestContext().getZoneName() );
 		}
+		else
+			logger.error( "In completePasswordReset(), extUser is null" );
 	}
 
 	//caller will retry on OptimisiticLockExceptions
@@ -281,7 +314,7 @@ public class LoginController  extends SAbstractControllerRetry {
     			extUser = ((User) getProfileModule().getEntry( userId ));
 
     			// Reset the user's password and mark the user as verified.
-    			completePasswordReset( extUser, ex.getPwd() );
+    			completePasswordReset( extUser );
     			
         		model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_PWD_RESET_VERIFIED );
         		model.put( WebKeys.LOGIN_EXTERNAL_USER_NAME, extUser.getName() );
