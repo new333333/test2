@@ -73,6 +73,7 @@ import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
+import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
 import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.GwtUserFileSyncAppConfig;
 import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
@@ -2480,6 +2481,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case REQUEST_RESET_PASSWORD:
+		{
+			RequestResetPwdCmd rpCmd;
+			RequestResetPwdRpcResponseData result;
+			
+			rpCmd = (RequestResetPwdCmd) cmd;
+			result = GwtServerHelper.requestResetPwd( this, getRequest( ri ), rpCmd.getExtUserId(), rpCmd.getPwd() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case SAVE_ACCESSORY_STATUS:
 		{
 			SaveAccessoryStatusCmd sasCmd = ((SaveAccessoryStatusCmd) cmd);
@@ -2867,7 +2879,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SendForgottenPwdEmailRpcResponseData result;
 			
 			sfpeCmd = (SendForgottenPwdEmailCmd) cmd;
-			result = GwtServerHelper.sendForgottenPwdEmail( sfpeCmd.getEmailAddress() );
+			result = GwtServerHelper.sendForgottenPwdEmail(
+														this,
+														getRequest( ri ),
+														sfpeCmd.getGwtUser(),
+														sfpeCmd.getEmailAddress() );
 			
 			response = new VibeRpcResponse( result );
 			return response;

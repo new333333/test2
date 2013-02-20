@@ -147,6 +147,7 @@ public class WebKeys {
     public static final String URL_BY_TEAM_MEMBERS="ss_byTeamMembers";
     public static final String URL_BY_ALL_USERS="ss_byAllUsers";
 	public static final String URL_CAPTIVE="captive";
+	public static final String URL_PASSWORD = "pwd";
 	public static final String URL_PRODUCT="product";
 	public static final String URL_PRODUCT_GW="gw";
 	public static final String URL_PRODUCT_KABLINK="kablink";

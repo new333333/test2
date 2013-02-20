@@ -52,6 +52,43 @@ public class GwtUser extends GwtPrincipal
 	private String m_viewUrl;
 	private String m_wsId;
 	private String m_wsTitle;
+	private ExtUserProvState m_extUserProvState;
+	
+	/**
+	 * This represents the provisioned state of an external user.
+	 * Keep this up-to-date with ExtProvState in User.java
+	 */
+	public enum ExtUserProvState implements IsSerializable
+	{
+		INITIAL,
+		
+		/**
+		 * The invited external user responded, and through self-provisioning interface
+		 * successfully supplied his credential to use with local Filr authentication
+		 * in the future. The account still needs to be confirmed/verified before
+		 * the user can actually log into Fir using the specified credential and
+		 * start accessing data. 
+		 */
+		CREDENTIALED,
+
+		/**
+		 * The user has been successfully verified and is ready to use the system.
+		 * Verification is needed/performed only once for each user account.
+		 */
+		VERIFIED,
+		
+		/**
+		 * The user has requested to reset their password
+		 */
+		PWD_RESET_REQUESTED,
+		
+		/**
+		 * The user has reset their password and has not responded to the verification email.
+		 */
+		PWD_RESET_WAITING_FOR_VERIFICATION,
+		
+		UNKNOWN,
+	}
 	
 	/**
 	 * Constructor method. 
@@ -62,6 +99,14 @@ public class GwtUser extends GwtPrincipal
 		// Nothing to do.
 	}	
 		
+	/**
+	 * 
+	 */
+	public ExtUserProvState getExtUserProvState()
+	{
+		return m_extUserProvState;
+	}
+	
 	/**
 	 * 
 	 */
@@ -148,6 +193,14 @@ public class GwtUser extends GwtPrincipal
 	 */
 	public String getViewWorkspaceUrl() {
 		return m_viewUrl;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setExtUserProvState( ExtUserProvState state )
+	{
+		m_extUserProvState = state;
 	}
 	
 	/**

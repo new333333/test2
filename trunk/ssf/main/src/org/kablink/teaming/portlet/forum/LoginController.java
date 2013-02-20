@@ -52,9 +52,14 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.extuser.ExternalUserRespondingToInvitationException;
+import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetException;
+import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetVerificationException;
 import org.kablink.teaming.extuser.ExternalUserRespondingToVerificationException;
+import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
@@ -82,7 +87,46 @@ public class LoginController  extends SAbstractControllerRetry {
 	private static final String LOGIN_STATUS_AUTHENTICATION_FAILED = "authenticationFailed";
 	private static final String LOGIN_STATUS_REGISTRATION_REQUIRED = "registrationRequired";
 	private static final String LOGIN_STATUS_PROMPT_FOR_LOGIN = "promptForLogin";
+	private static final String LOGIN_STATUS_PROMPT_FOR_PWD_RESET = "promptForPwdReset";
+	private static final String LOGIN_STATUS_PWD_RESET_VERIFIED = "pwdResetVerified";
 	
+	/**
+	 * Set the given user's password and mark the user as verified.
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void completePasswordReset( final User extUser, final String pwd )
+	{
+		if ( extUser != null && pwd != null && pwd.length() > 0 )
+		{
+			RunasCallback callback;
+
+			callback = new RunasCallback()
+			{
+				@Override
+				public Object doAs()
+				{
+					// Change the user's password
+					{
+						Map updates = new HashMap();
+
+						updates.put( "password", pwd );
+//!!!						getProfileModule().modifyUserFromPortal( extUser, updates, null );
+					}
+
+					// Mark the user as verified
+					ExternalUserUtil.markAsVerified( extUser );
+
+					return null;
+				}
+			}; 
+
+			// Do the necessary work as the admin user.
+			RunasTemplate.runasAdmin(
+									callback,
+									RequestContextHolder.getRequestContext().getZoneName() );
+		}
+	}
+
 	//caller will retry on OptimisiticLockExceptions
 	@Override
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) 
@@ -195,6 +239,40 @@ public class LoginController  extends SAbstractControllerRetry {
         		model.put( WebKeys.LOGIN_EXTERNAL_USER_NAME, extUser.getName() );
         		String refererUrl = ex.getVerificationLink();
     			model.put(WebKeys.URL, refererUrl);
+    			model.put( "loginRefererUrl", refererUrl );
+    		}
+    		else if ( sessionObj instanceof ExternalUserRespondingToPwdResetException )
+    		{
+    			User extUser;
+    			ExternalUserRespondingToPwdResetException ex;
+        		String refererUrl;
+
+    			ex = (ExternalUserRespondingToPwdResetException) sessionObj;
+    			extUser = ex.getExternalUser();
+    			
+        		model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_PROMPT_FOR_PWD_RESET );
+        		model.put( WebKeys.LOGIN_EXTERNAL_USER_NAME, extUser.getName() );
+    			model.put( WebKeys.LOGIN_EXTERNAL_USER_ID, String.valueOf( extUser.getId() ) );
+        		refererUrl = ex.getUrl();
+    			model.put( WebKeys.URL, refererUrl );
+    			model.put( "loginRefererUrl", refererUrl );
+    		}
+    		else if ( sessionObj instanceof ExternalUserRespondingToPwdResetVerificationException )
+    		{
+    			User extUser;
+    			ExternalUserRespondingToPwdResetVerificationException ex;
+        		String refererUrl;
+
+    			ex = (ExternalUserRespondingToPwdResetVerificationException) sessionObj;
+    			extUser = ex.getExternalUser();
+
+    			// Reset the user's password and mark the user as verified.
+    			completePasswordReset( extUser, ex.getPwd() );
+    			
+        		model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_PWD_RESET_VERIFIED );
+        		model.put( WebKeys.LOGIN_EXTERNAL_USER_NAME, extUser.getName() );
+        		refererUrl = ex.getUrl();
+    			model.put( WebKeys.URL, refererUrl );
     			model.put( "loginRefererUrl", refererUrl );
     		}
     		else if ( sessionObj instanceof AuthenticationException )
@@ -369,6 +447,4 @@ public class LoginController  extends SAbstractControllerRetry {
 		
 		return config.isAllowAnonymousAccess();
 	}
-	
-
 }

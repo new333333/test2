@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,71 +30,70 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client;
 
-package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.GwtUser;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This class holds all of the information necessary to execute the
- * 'send forgotten password email' command.
+ * Class used to return the results of the request to reset an external user's password.
  * 
  * @author jwootton@novell.com
  */
-public class SendForgottenPwdEmailCmd extends VibeRpcCmd 
+public class RequestResetPwdRpcResponseData
+	implements IsSerializable, VibeRpcResponseData
 {
-	private String m_emailAddress;
-	private GwtUser m_gwtUser;
+	private ArrayList<String> m_errors;
 	
 	/**
-	 * Class constructor.
+	 * Constructor method. 
 	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
+	 * No parameters as per GWT serialization requirements.
 	 */
-	public SendForgottenPwdEmailCmd() 
+	public RequestResetPwdRpcResponseData()
 	{
-		super();		
-	}
-
+		// Nothing to do.
+	}	
+	
 	/**
-	 * Class constructor.
+	 * 
 	 */
-	public SendForgottenPwdEmailCmd( GwtUser gwtUser, String emailAddress )
+	public void addError( String error )
 	{
-		this();
+		if ( m_errors == null )
+			m_errors = new ArrayList<String>();
 		
-		m_gwtUser = gwtUser;
-		m_emailAddress = emailAddress;
+		m_errors.add( error );
 	}
 	
 	/**
-	 * Returns the command's enumeration value.
 	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
 	 */
-	@Override
-	public int getCmdType() 
+	public void addErrors( List<String> errors )
 	{
-		return VibeRpcCmdType.SEND_FORGOTTEN_PWD_EMAIL.ordinal();
+		if ( errors != null )
+		{
+			for ( String error : errors )
+			{
+				addError( error );
+			}
+		}
 	}
 
 	/**
-	 * 
+	 * Return the list of errors.
 	 */
-	public String getEmailAddress()
+	public String[] getErrors()
 	{
-		return m_emailAddress;
-	}
-
-	/**
-	 * 
-	 */
-	public GwtUser getGwtUser()
-	{
-		return m_gwtUser;
+		if ( m_errors != null )
+			return m_errors.toArray( new String[ m_errors.size() ] );
+	
+		return null;
 	}
 }

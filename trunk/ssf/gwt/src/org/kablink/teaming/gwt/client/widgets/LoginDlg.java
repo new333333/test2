@@ -41,9 +41,12 @@ import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
+import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CompleteExternalUserSelfRegistrationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLoginInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.RequestResetPwdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -128,6 +131,7 @@ public class LoginDlg extends DlgBox
 	private PasswordTextBox m_pwd2TxtBox;
 	private FlowPanel m_selfRegPanel;
 	private Button m_registerBtn;
+	private Button m_pwdResetBtn;
 	private ForgottenPwdDlg m_forgottenPwdDlg = null;
 
 	private String m_loginUrl = null;
@@ -146,7 +150,9 @@ public class LoginDlg extends DlgBox
 	{
 		AuthenticationFailed,
 		RegistrationRequired,
-		PromptForLogin
+		PromptForLogin,
+		PromptForPwdReset,
+		PwdResetVerified,
 	}
 	
 	/**
@@ -857,6 +863,107 @@ public class LoginDlg extends DlgBox
 	}
 	
 	/**
+	 * This method gets called when the user clicks on the "Reset Password" button
+	 */
+	private void handleClickOnResetPwdBtn()
+	{
+		RequestResetPwdCmd cmd;
+		AsyncCallback<VibeRpcResponse> rpcCallback;
+		
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( Throwable t )
+			{
+				// Don't call GwtClientHelper.handleGwtRPCFailure() like we would normally do.  If the
+				// session has expired, handleGwtRPCFailure() will invoke this login dialog again
+				// and we will be in an infinite loop.
+				// GwtClientHelper.handleGwtRPCFailure(
+				//	t,
+				//	GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo());
+				debugAlert( "In ResetPwdCmd / onFailure()" );
+			}// end onFailure()
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				debugAlert( "In ResetPwdCmd / onSuccess()" );
+				if ( response.getResponseData() != null && response.getResponseData() instanceof RequestResetPwdRpcResponseData )
+				{
+					RequestResetPwdRpcResponseData responseData;
+					String[] errors;
+					
+					responseData = (RequestResetPwdRpcResponseData) response.getResponseData();
+					
+					// Were there any errors?
+					errors = responseData.getErrors();
+					if ( errors != null && errors.length > 0 )
+					{
+						FlowPanel errorPanel;
+						Label label;
+						
+						// Yes
+						// Get the panel that holds the errors.
+						errorPanel = getErrorPanel();
+						errorPanel.clear();
+
+						label = new Label( GwtTeaming.getMessages().shareErrors() );
+						label.addStyleName( "dlgErrorLabel" );
+						errorPanel.add( label );
+						
+						for ( String nextErrMsg : errors )
+						{
+							label = new Label( nextErrMsg );
+							label.addStyleName( "bulletListItem" );
+							errorPanel.add( label );
+						}
+
+						// Make the error panel visible.
+						showErrorPanel();
+
+						// Enable the Ok button.
+						hideStatusMsg();
+						setOkEnabled( true );
+					}
+					else
+					{
+						ScheduledCommand cmd;
+						
+						cmd = new ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								showExternalUserPasswordResetRequestedUI();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
+			}
+		};
+		
+		// Did the user fill out all the necessary information
+		if ( isPwdResetDataValid() == false )
+		{
+			// No, just bail.  The user will have already been told what's wrong.
+			return;
+		}
+		
+		cmd = new RequestResetPwdCmd(
+							getExtUserId(),
+							getPwd1() );
+		GwtClientHelper.executeCommand( cmd, rpcCallback );
+	}
+	
+	/**
 	 * Submit the login form using the url of the selecte openid authentication provider.
 	 */
 	private void handleOpenIDAuthProviderSelected( GwtOpenIDAuthenticationProvider provider )
@@ -941,6 +1048,35 @@ public class LoginDlg extends DlgBox
 		// If we get here, everything is good.
 		return true;
 	}
+
+	/**
+	 * Did the user fill out all the necessary data to reset their password
+	 */
+	private boolean isPwdResetDataValid()
+	{
+		String pwd1;
+		String pwd2;
+		
+		pwd1 = getPwd1();
+		if ( pwd1 == null || pwd1.length() == 0 )
+		{
+			Window.alert( GwtTeaming.getMessages().loginDlg_pwdRequired() );
+			m_pwd1TxtBox.setFocus( true );
+			return false;
+		}
+		
+		pwd2 = getPwd2();
+		if ( pwd1.equalsIgnoreCase( pwd2 ) == false )
+		{
+			Window.alert( GwtTeaming.getMessages().loginDlg_pwdDoNotMatch() );
+			m_pwd2TxtBox.setFocus( true );
+			return false;
+		}
+		
+		// If we get here, everything is good.
+		return true;
+	}
+
 	/*
 	 * This method gets called when the user clicks on a button in the footer.
 	 */
@@ -1000,6 +1136,17 @@ public class LoginDlg extends DlgBox
 			showRegularLoginUI();
 			hideLoginFailedMsg();
 			break;
+		
+		case PromptForPwdReset:
+			showExternalUserPwdResetUI();
+			allowCancel = false;
+			break;
+			
+		case PwdResetVerified:
+			Window.alert( GwtTeaming.getMessages().loginDlg_PasswordResetComplete() );
+			showRegularLoginUI();
+			hideLoginFailedMsg();
+			break;
 		}
 
 		setAllowCancel( allowCancel );
@@ -1023,8 +1170,11 @@ public class LoginDlg extends DlgBox
 		}
 
 		// Issue an ajax request to get self registration info and a list of open id providers
-		if ( loginStatus != LoginStatus.RegistrationRequired )
+		if ( loginStatus != LoginStatus.RegistrationRequired &&
+			 loginStatus != LoginStatus.PromptForPwdReset )
+		{
 			getLoginInfoFromServer();
+		}
 	}
 	
 	/**
@@ -1334,6 +1484,205 @@ public class LoginDlg extends DlgBox
 		}
 
 		m_mainPanel.add( m_formPanel );
+	}
+	
+	/**
+	 * Show the ui needed for an external user to reset their password.
+	 */
+	private void showExternalUserPwdResetUI()
+	{
+		GwtTeamingMessages messages;
+		FlowPanel panel;
+		
+		m_mainPanel.clear();
+
+		messages = GwtTeaming.getMessages();
+		
+		createFormPanel();
+		
+		panel = new FlowPanel();
+		panel.addStyleName( "loginDlg_ExtUserPwdResetPanel" );
+		m_mainPanel.add( panel );
+		
+		// Hide the ok and cancel buttons
+		{
+			Element okElement;
+			Element cancelElement;
+			
+			okElement = Document.get().getElementById( "loginOkBtn" );
+			m_okBtn = Button.wrap( okElement );
+			m_okBtn.setVisible( false );
+			
+			cancelElement = Document.get().getElementById( "loginCancelBtn" );
+			m_cancelBtn = Button.wrap( cancelElement );
+			m_cancelBtn.setText( messages.cancel() );
+			m_cancelBtn.addClickHandler( this );
+			m_cancelBtn.setVisible( false );
+		}
+
+		// Show the "Reset password" button
+		{
+			Element element;
+			
+			element = Document.get().getElementById( "resetPwdBtn" );
+			m_pwdResetBtn = Button.wrap( element );
+			m_pwdResetBtn.setText( messages.loginDlg_ResetPwd() );
+			m_pwdResetBtn.setVisible( true );
+			
+			m_pwdResetBtn.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							handleClickOnResetPwdBtn();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+
+		// Create a panel that holds the password reset controls
+		{
+			FlexTable table;
+			FlowPanel pwdResetPanel;
+			Label label;
+			int row;
+
+			pwdResetPanel = new FlowPanel();
+			pwdResetPanel.addStyleName( "loginDlg_ExtUserPwdResetPanel" );
+			
+			// Add some instructions
+			label = new Label( messages.loginDlg_ExtUserPwdResetHint() );
+			label.addStyleName( "loginDlg_ExtUserPwdResetHint" );
+			pwdResetPanel.add( label );
+			
+			panel.add( pwdResetPanel );
+			
+			row = 0;
+			table = new FlexTable();
+			
+			pwdResetPanel.add( table );
+			
+			// Add a read-only control for the user id
+			{
+				TextBox txtBox;
+				
+				label = new Label( messages.loginDlgUserId() );
+				table.setHTML( row, 0, label.getElement().getInnerHTML() );
+	
+				txtBox = new TextBox();
+				txtBox.setReadOnly( true );
+				txtBox.setValue( GwtTeaming.getMainPage().getLoginExternalUserName() );
+				txtBox.setVisibleLength( 20 );
+				table.setWidget( row, 1, txtBox );
+			
+				++row;
+			}
+			
+			// Add the controls for the password
+			{
+				label = new InlineLabel( messages.loginDlg_PwdLabel() );
+				table.setHTML( row, 0, label.getElement().getInnerHTML() );
+				
+				m_pwd1TxtBox = new PasswordTextBox();
+				m_pwd1TxtBox.setVisibleLength( 20 );
+				table.setWidget( row, 1, m_pwd1TxtBox );
+				++row;
+			}
+
+			// Add the controls for the reenter password
+			{
+				label = new InlineLabel( messages.loginDlg_ReenterPwdLabel() );
+				table.setHTML( row, 0, label.getElement().getInnerHTML() );
+				
+				m_pwd2TxtBox = new PasswordTextBox();
+				m_pwd2TxtBox.setVisibleLength( 20 );
+				table.setWidget( row, 1, m_pwd2TxtBox );
+				++row;
+			}
+		}
+		
+		// Hide the user name and password controls that are used for regular authentication
+		{
+			Element element;
+			TextBox txtBox;
+			PasswordTextBox pwd;
+			InlineLabel label;
+			
+			element = Document.get().getElementById( "userIdLabel" );
+			if ( element != null )
+			{
+				label = InlineLabel.wrap( element );
+				label.setVisible( false );
+			}
+
+			element = Document.get().getElementById( "j_usernameId" );
+			if ( element != null )
+			{
+				txtBox = TextBox.wrap( element );
+				txtBox.setVisible( false );
+			}
+
+			element = Document.get().getElementById( "pwdLabel" );
+			if ( element != null )
+			{
+				label = InlineLabel.wrap( element );
+				label.setVisible( false );
+			}
+
+			element = Document.get().getElementById( "j_passwordId" );
+			if ( element != null )
+			{
+				pwd = PasswordTextBox.wrap( element );
+				pwd.setVisible( false );
+			}
+		}
+
+		m_mainPanel.add( m_formPanel );
+	}
+	
+	/**
+	 * Show the message when the external user has requested to reset their password.
+	 */
+	private void showExternalUserPasswordResetRequestedUI()
+	{
+		FlowPanel panel;
+		FlexTable table;
+		FlexCellFormatter cellFormatter;
+		InlineLabel label;
+		Image img;
+		
+		m_mainPanel.clear();
+		
+		panel = new FlowPanel();
+		panel.addStyleName( "loginDlg_confirmationPanel" );
+		
+		table = new FlexTable();
+		cellFormatter = table.getFlexCellFormatter();
+		panel.add( table );
+		
+		// Add an image
+		img = new Image( GwtTeaming.getImageBundle().emailConfirmation() );
+		img.addStyleName( "loginDlg_confirmationImg" );
+		table.setWidget( 0, 0, img );
+		cellFormatter.setVerticalAlignment( 0, 0, HasVerticalAlignment.ALIGN_TOP );
+		
+		// Add a message telling the user to check their email.
+		label = new InlineLabel( GwtTeaming.getMessages().loginDlg_PasswordResetRequested() );
+		label.addStyleName( "loginDlg_confirmationHint" );
+		table.setWidget( 0, 1, label );
+		
+		m_pwdResetBtn.setVisible( false );
+		
+		m_mainPanel.add( panel );
 	}
 	
 	/**
