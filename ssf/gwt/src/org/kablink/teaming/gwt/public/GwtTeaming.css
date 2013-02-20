@@ -5376,3 +5376,19 @@ td.datePickerMonth {
 	padding-bottom: 10px;
 	width: 450px;
 }
+
+/* End */
+
+
+/**
+ * Styles used to position the "Powered by Novell Filr" image
+ */
+.poweredByImg
+{
+	position: absolute;
+	right: 10px;
+	top: 35px;
+}
+
+/* End */
+

@@ -36,6 +36,8 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
+import org.kablink.teaming.gwt.client.GwtBrandingDataExt.BrandingRule;
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.event.SizeChangedEvent;
@@ -164,6 +166,8 @@ public class BrandingPanel extends Composite
 				// Should we do branding using an image?  
 				if ( brandingType != null )
 				{
+					boolean showPoweredBy = false;
+					
 					if ( brandingType.equalsIgnoreCase( GwtBrandingDataExt.BRANDING_TYPE_IMAGE ) )
 					{
 						String brandingImgUrl;
@@ -212,6 +216,12 @@ public class BrandingPanel extends Composite
 							// Yes
 							m_panel.add( m_teamingImg );
 						}
+						else
+						{
+							// Are we running Filr?
+							if ( m_requestInfo.isLicenseFilr() )
+								showPoweredBy = true;
+						}
 					}
 					else
 					{
@@ -221,6 +231,10 @@ public class BrandingPanel extends Composite
 						// Get the branding html.
 						html = brandingData.getBranding();
 						
+						// Are we running Filr?
+						if ( m_requestInfo.isLicenseFilr() )
+							showPoweredBy = true;
+
 						// Do we have any branding?
 						if ( html != null && html.length() > 0 )
 						{
@@ -252,6 +266,21 @@ public class BrandingPanel extends Composite
 							
 							timer.schedule( 1500 );
 						}
+					}
+					
+					// Should we show the "powered by" image?
+					if ( showPoweredBy && brandingData.getBrandingRule() == BrandingRule.DISPLAY_SITE_BRANDING_ONLY )
+					{
+						Image img;
+						String imgUrl;
+						
+						// Yes
+						// Create the "Powered by Novell Filr" image.
+						imgUrl = GwtMainPage.m_requestInfo.getImagesPath() + "pics/masthead/PoweredByFilr.png";
+
+						img = new Image( imgUrl );
+						img.addStyleName( "poweredByImg" );
+						m_panel.add( img );
 					}
 				}
 				else
