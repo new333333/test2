@@ -2825,6 +2825,27 @@ public class GwtServerHelper {
 			}
 			catch(AccessControlException e) {}
 
+			// Does the user have rights to "Manage file upload limits"?
+			try
+			{
+				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.fileUploadLimits" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_FILE_UPLOAD_LIMITS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_FILE_UPLOAD_LIMITS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
 			// Does the user have rights to "Manage resource drivers"?
 			try
 			{

@@ -411,6 +411,7 @@ public class WebKeys {
 	public static final String ACTION_MANAGE_EXTENSIONS="manage_extensions";
 	public static final String ACTION_MANAGE_GROUPS="manage_groups";
 	public static final String ACTION_MANAGE_QUOTAS="manage_quotas";
+	public static final String ACTION_MANAGE_FILE_UPLOAD_LIMITS="manage_file_upload_limits";
 	public static final String ACTION_MANAGE_NET_FOLDERS = "manage_net_folders";
 	public static final String ACTION_MANAGE_RESOURCE_DRIVERS="manage_resource_drivers";
 	public static final String ACTION_MANAGE_SHARE_ITEMS = "manage_share_items";
@@ -1625,6 +1626,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_MANAGE_EXTENSIONS="administration/manage_extensions";
     public static final String VIEW_ADMIN_MANAGE_GROUPS="administration/manage_groups";
     public static final String VIEW_ADMIN_MANAGE_QUOTAS="administration/manage_quotas";
+    public static final String VIEW_ADMIN_MANAGE_FILE_UPLOAD_LIMITS="administration/manage_file_upload_limits";
     public static final String VIEW_ADMIN_MANAGE_RESOURCE_DRIVERS="administration/manage_resource_drivers";
     public static final String VIEW_ADMIN_MANAGE_USER_ACCOUNTS="administration/manage_user_accounts";
     public static final String VIEW_ADMIN_MANAGE_ZONES="administration/manage_zones";
