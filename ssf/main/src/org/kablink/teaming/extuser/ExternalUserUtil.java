@@ -287,7 +287,7 @@ public class ExternalUserUtil {
 					}
 
 					// Create an exception object to be used as more like a normal status code
-					exc = new ExternalUserRespondingToPwdResetVerificationException( user, url, pwd );
+					exc = new ExternalUserRespondingToPwdResetVerificationException( user.getId(), url, pwd );
 
 					// Unfortunately, the spring security framework won't store this exception into the session even though
 					// it correctly catches it and triggers redirect to the login page. So we must put it in ourselves.

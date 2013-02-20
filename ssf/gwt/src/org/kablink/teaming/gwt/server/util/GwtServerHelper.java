@@ -7033,7 +7033,11 @@ public class GwtServerHelper {
 						adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK );
 						adapterUrl.setParameter( WebKeys.URL_ENTRY_ID, String.valueOf( user.getId() ) );
 						adapterUrl.setParameter( WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name() );
-						
+
+						// If we are running Filr, take the user to "my files"
+						if ( Utils.checkIfFilr() )
+							adapterUrl.setParameter( WebKeys.URL_SHOW_COLLECTION, "0" );	// 0 -> CollectionType.MY_FILES
+
 						// Append the encoded user token to the url.
 						token = ExternalUserUtil.encodeUserToken( user );
 						adapterUrl.setParameter( ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN, token );
@@ -9951,6 +9955,10 @@ public class GwtServerHelper {
 						adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK );
 						adapterUrl.setParameter( WebKeys.URL_ENTRY_ID, String.valueOf( userId ) );
 						adapterUrl.setParameter( WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name() );
+						
+						// If we are running Filr, take the user to "my files"
+						if ( Utils.checkIfFilr() )
+							adapterUrl.setParameter(WebKeys.URL_SHOW_COLLECTION, "0");	// 0 -> CollectionType.MY_FILES
 						
 						// Add the password to the url.
 						{
