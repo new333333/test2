@@ -192,109 +192,6 @@ public class ManageQuotasController extends SAbstractController {
 						getProfileModule().setUserDiskQuotas(ids, quotaValues.get(id.toString()));
 				}
 				
-				//Now check file size limits
-				String s_defaultFileSizeLimit;
-				Long defaultFileSizeLimit = null;
-				
-				// Get the default file size limit entered by the user.
-				s_defaultFileSizeLimit = PortletRequestUtils.getStringParameter(request, "defaultFileSizeLimit", "");
-				if (!s_defaultFileSizeLimit.equals("")) {
-					try {
-						defaultFileSizeLimit = Long.valueOf(s_defaultFileSizeLimit);
-					} catch(Exception e) {}
-				}
-				
-				if (defaultFileSizeLimit != null && defaultFileSizeLimit < 0) {
-					defaultFileSizeLimit = 0L;
-				}
-				
-				getAdminModule().setFileSizeLimitUserDefault(defaultFileSizeLimit);
-				
-				Set<Long> groupFSLIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addFSLGroups"));
-				if (allUsersGroupId != null && groupFSLIds.contains(allUsersGroupId)) {
-					//Trying to set a limit for all users by using the All Users group is prohibited
-					groupFSLIds.remove(allUsersGroupId);
-				}
-				Set<Long> userFSLIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addFSLUsers"));
-				String s_userFSLLimit = PortletRequestUtils.getStringParameter(request, "addFSLUserLimit", "");
-				Long userFileSizeLimit = null;
-				try {
-					if (!s_userFSLLimit.equals("")) {
-						userFileSizeLimit = Long.valueOf(s_userFSLLimit);
-					}
-					if (!userFSLIds.isEmpty()) {
-						getProfileModule().setUserFileSizeLimits(userFSLIds, userFileSizeLimit);
-					}
-				} catch(Exception e) {}
-				
-				Long groupFileSizeLimit = null;
-				String s_groupFileSizeLimit = PortletRequestUtils.getStringParameter(request, "addFSLGroupLimit", "");
-				try {
-					if (!s_groupFileSizeLimit.equals("")) {
-						groupFileSizeLimit = Long.valueOf(s_groupFileSizeLimit);
-					}
-					if (!groupFSLIds.isEmpty()) {
-						getProfileModule().setGroupFileSizeLimits(groupFSLIds, groupFileSizeLimit);
-					}
-				} catch(Exception e) {}
-				
-				//Check for individual group and user changes
-				userFSLIds = new HashSet<Long>();
-				groupFSLIds = new HashSet<Long>();
-				Map<String, Long> fileSizeLimitValues = new HashMap<String, Long>();
-				itFormData = formData.keySet().iterator();
-				while (itFormData.hasNext()) {
-					String key = (String)itFormData.next();
-					if (okBtnDelete && (key.indexOf("deleteFSLUser_") == 0)) {
-						String s_userId = key.substring(14, key.length());
-						userFSLIds.add(Long.valueOf(s_userId));
-						fileSizeLimitValues.put(s_userId, null);
-					}
-					if (okBtnDelete && (key.indexOf("deleteFSLGroup_") == 0)) {
-						String groupId = key.substring(15, key.length());
-						groupFSLIds.add(Long.valueOf(groupId));
-						fileSizeLimitValues.put(groupId, null);
-					}
-					if (key.indexOf("modifyFSLId") == 0) {
-						String s_id = PortletRequestUtils.getStringParameter(request, "modifyFSLId", "");
-						String s_newGroupFileSizeLimit = PortletRequestUtils.getStringParameter(request, "newFSLGroupLimit_"+s_id, "");
-						Long newGroupFileSizeLimit = null;
-						if (formData.containsKey("newFSLGroupLimit_"+s_id)) {
-							try {
-								if (!s_newGroupFileSizeLimit.equals("")) {
-									newGroupFileSizeLimit = Long.valueOf(s_newGroupFileSizeLimit);
-								}
-								groupFSLIds.add(Long.valueOf(s_id));
-								fileSizeLimitValues.put(s_id, newGroupFileSizeLimit);
-							} catch(Exception e) {}
-						}
-						
-						String s_newUserFileSizeLimit = PortletRequestUtils.getStringParameter(request, "newFSLUserLimit_"+s_id, "");
-						Long newUserFileSizeLimit = null;
-						if (formData.containsKey("newFSLUserLimit_"+s_id)) {
-							try {
-								if (!s_newUserFileSizeLimit.equals("")) {
-									newUserFileSizeLimit = Long.valueOf(s_newUserFileSizeLimit);
-								}
-								userFSLIds.add(Long.valueOf(s_id));
-								fileSizeLimitValues.put(s_id, newUserFileSizeLimit);
-							} catch(Exception e) {}
-						}
-					}
-				}
-				for (Long id : groupFSLIds) {
-					List ids = new ArrayList();
-					ids.add(id);
-					if (id != null && fileSizeLimitValues.containsKey(id.toString())) 
-						getProfileModule().setGroupFileSizeLimits(ids, fileSizeLimitValues.get(id.toString()));
-				}
-				for (Long id : userFSLIds) {
-					List ids = new ArrayList();
-					ids.add(id);
-					if (id != null && fileSizeLimitValues.containsKey(id.toString())) 
-						getProfileModule().setUserFileSizeLimits(ids, fileSizeLimitValues.get(id.toString()));
-				}
-
 			}
 
 		} else {
@@ -328,15 +225,6 @@ public class ManageQuotasController extends SAbstractController {
 		model.put(WebKeys.BINDER_QUOTAS_INITIALIZED, getAdminModule().isBinderQuotaInitialized());
 		model.put(WebKeys.BINDER_QUOTAS_ENABLED, getAdminModule().isBinderQuotaEnabled());
 		model.put(WebKeys.BINDER_QUOTAS_ALLOW_BINDER_OWNER_ENABLED, getAdminModule().isBinderQuotaAllowBinderOwnerEnabled());
-		
-		model.put(WebKeys.FILE_SIZE_LIMIT_USER_DEFAULT, getAdminModule().getFileSizeLimitUserDefault());
-		users = getProfileModule().getNonDefaultFileSizeLimits(ObjectKeys.PRINCIPAL_TYPE_USER);
-		groups = getProfileModule().getNonDefaultFileSizeLimits(ObjectKeys.PRINCIPAL_TYPE_GROUP);
-		
-		principals = getProfileModule().getPrincipals(users);
-		model.put(WebKeys.FILE_SIZE_LIMITS_USERS, principals);
-		group_principals = getProfileModule().getPrincipals(groups);
-		model.put(WebKeys.FILE_SIZE_LIMITS_GROUPS, group_principals);
 		
 		model.put( "isFilr", Utils.checkIfFilr() );
 		

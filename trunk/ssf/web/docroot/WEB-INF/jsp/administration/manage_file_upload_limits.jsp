@@ -35,7 +35,7 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value='<%= NLT.get("administration.manage.quotas") %>' scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.manage.fileUploadLimits") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 
@@ -101,94 +101,49 @@ function ss_checkIfNumber(obj) {
 	
 	return true;
 }
-function showAddUsersDiv() {
+function showAddFSLUsersDiv() {
 	hideAllDivs();
-	var userDivObj = self.document.getElementById("addUserDiv");
+	var userDivObj = self.document.getElementById("addFSLUserDiv");
 	userDivObj.style.display = "block";
 }
 
-function showAddGroupsDiv() {
+function showAddFSLGroupsDiv() {
 	hideAllDivs();
-	var groupDivObj = self.document.getElementById("addGroupDiv");
+	var groupDivObj = self.document.getElementById("addFSLGroupDiv");
 	groupDivObj.style.display = "block";
 }
 
 function hideAllDivs() {
-	var userDivObj = self.document.getElementById("addUserDiv");
-	var groupDivObj = self.document.getElementById("addGroupDiv");
-	groupDivObj.style.display = "none";
-	userDivObj.style.display = "none";
-	if (ss_quotaModifyDivBeingShown != null) {
-		var divObj = self.document.getElementById("ss_modifyQuotaDiv" + ss_quotaModifyDivBeingShown);
+	var userFSLDivObj = self.document.getElementById("addFSLUserDiv");
+	var groupFSLDivObj = self.document.getElementById("addFSLGroupDiv");
+	groupFSLDivObj.style.display = "none";
+	userFSLDivObj.style.display = "none";
+	if (ss_fileSizeLimitModifyDivBeingShown != null) {
+		var divObj = self.document.getElementById("ss_modifyFSLDiv" + ss_fileSizeLimitModifyDivBeingShown);
 		divObj.style.display = "none";
-		ss_quotaModifyDivBeingShown = null;
+		ss_fileSizeLimitModifyDivBeingShown = null;
 	}
-	var modifyIdObj = self.document.getElementById("modifyId");
-	if (modifyIdObj != null) modifyIdObj.value = "";
-	
+	var modifyFSLIdObj = self.document.getElementById("modifyFSLId");
+	if (modifyFSLIdObj != null) modifyFSLIdObj.value = "";
 }
 
-var ss_quotaModifyDivBeingShown = null;
+var ss_fileSizeLimitModifyDivBeingShown = null;
 
-function ss_showModifyDiv(id) {
+function ss_showModifyFSLDiv(id) {
 	hideAllDivs();
-	var modifyIdObj = self.document.getElementById("modifyId");
-	if (modifyIdObj != null) {
-		modifyIdObj.value = id;
-		var divObj = self.document.getElementById("ss_modifyQuotaDiv" + id);
+	var modifyFSLIdObj = self.document.getElementById("modifyFSLId");
+	if (modifyFSLIdObj != null) {
+		modifyFSLIdObj.value = id;
+		var divObj = self.document.getElementById("ss_modifyFSLDiv" + id);
 		divObj.style.display = "block";
-		ss_quotaModifyDivBeingShown = id;
+		ss_fileSizeLimitModifyDivBeingShown = id;
 	}
-}
-
-var ss_validationRunning = false;
-function ss_validateBinderQuotas() {
-	ss_setupStatusMessageDiv();
-	var statusDiv = document.getElementById("ss_operation_status");
-	statusDiv.innerHTML = "<span class='ss_bold'><ssf:escapeQuotes><ssf:nlt tag="validate.binderQuota.starting"/></ssf:escapeQuotes></span>";
-	var urlParams = {operation:"validate_binder_quotas", ss_statusId:ss_validateStatusTicket};
-	ss_get_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams), ss_validationComplete);
-	ss_validationRunning = true;
-	ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
-}
-
-function ss_validationComplete(data) {
-	if (ss_indexTimeout != null) {
-		clearTimeout(ss_indexTimeout);
-		ss_indexTimeout = null;
-	}
-	ss_validationRunning = false;
-	var statusDiv = document.getElementById("ss_operation_status");
-	statusDiv.innerHTML = "<span class='ss_bold'><ssf:escapeQuotes><ssf:nlt tag="validate.binderQuota.completed"/></ssf:escapeQuotes></span><br/>\n";
-	statusDiv.innerHTML += "<span class='ss_bold'><ssf:escapeQuotes><ssf:nlt tag="validate.binderQuota.completedScanned"/></ssf:escapeQuotes> " + data.ids + "</span><br/>\n";
-	statusDiv.innerHTML += "<span class='ss_bold'><ssf:escapeQuotes><ssf:nlt tag="validate.binderQuota.completedCorrections"/></ssf:escapeQuotes> " + data.errors + "</span><br/>\n";
-	<c:if test="${!ss_binderQuotasInitialized}">
-	  var url = "<ssf:url action="manage_quotas" actionUrl="true"><ssf:param 
-		name="binderId" value="${ssBinder.id}"/></ssf:url>";
-	  self.location.href = url;
-	</c:if>
-}
-
-var ss_checkStatusUrl = "<ssf:url 
-	adapter="true" 
-	portletName="ss_forum" 
-	action="__ajax_request" 
-	actionUrl="false" >
-	<ssf:param name="operation" value="check_status" />
-	</ssf:url>";
-	
-function ss_getOperationStatus() {
-	if (!ss_validationRunning) return;
-	var ajaxRequest = new ss_AjaxRequest(ss_checkStatusUrl); //Create AjaxRequest object
-	ajaxRequest.addKeyValue("ss_statusId",ss_validateStatusTicket);
-	ajaxRequest.sendRequest();  //Send the request
-	ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
 }
 
 function ss_checkForAllUsersGroup() {
 	var formObj = self.document.getElementById("form1");
-	if (formObj != null && typeof formObj.addGroups.value != "undefined") {
-		var groups = formObj.addGroups.value.split(" ");
+	if (formObj != null && typeof formObj.addFSLGroups.value != "undefined") {
+		var groups = formObj.addFSLGroups.value.split(" ");
 		for (var i = 0; i < groups.length; i++) {
 			if (groups[i] == '${ssAllUsersGroupId}' || groups[i] == '${ssAllExtUsersGroupId}') {
 				alert("<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.allUsers.notAllowed"/></ssf:escapeQuotes>")
@@ -203,9 +158,9 @@ function ss_checkForAllUsersGroup() {
 <div class="ss_pseudoPortal">
 
 <div class="ss_style ss_portlet">
-<ssf:form titleTag="administration.manage.quotas">
+<ssf:form titleTag="administration.manage.fileUploadLimits">
 
-<div style="padding:10px;" id="ss_manageQuotas">
+<div style="padding:10px;" id="ss_manageFileUploadLimits">
 
 <c:if test="${!empty ssException}">
   <font color="red">
@@ -215,7 +170,7 @@ function ss_checkForAllUsersGroup() {
 </c:if>
 
 <form name="form1" id="form1" class="ss_style ss_form" method="post" 
-	action="<ssf:url action="manage_quotas" actionUrl="true"><ssf:param 
+	action="<ssf:url action="manage_file_upload_limits" actionUrl="true"><ssf:param 
 	name="binderId" value="${ssBinder.id}"/></ssf:url>"
 	onSubmit="ss_checkForAllUsersGroup();return true;"
 >
@@ -224,91 +179,35 @@ function ss_checkForAllUsersGroup() {
 	  <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="return handleCloseBtn();"/>
 	</div>
-		
-	<c:if test="${!isFilr}">
-		<fieldset class="ss_fieldset">
-		  <legend class="ss_legend">
-		    <input type="checkbox" name="enableBinderQuotas" 
-			  <c:if test="${ss_binderQuotasEnabled}">checked=checked</c:if>
-			  <c:if test="${!ss_binderQuotasInitialized}">disabled=disabled</c:if>
-			/>
-			<span class="ss_bold"><ssf:nlt tag="administration.quotas.binder.enable" /></span></legend>
-			
-			<div style="margin: 10px">
-			  <c:if test="${ss_binderQuotasInitialized}">
-			    <input type="checkbox" name="allowBinderQuotasByOwner" 
-			    <c:if test="${ss_binderQuotasAllowBinderOwnerEnabled}">checked=checked</c:if>
-			    /><ssf:nlt tag="administration.quotas.binder.allowBinderOwners"/>
-			  </c:if>
-			  <c:if test="${!ss_binderQuotasInitialized}">
-			    <span class="ss_bold"><ssf:nlt tag="administration.quotas.binder.mustInitialize"/></span>
-			  </c:if>
-			</div>
-		    <div style="margin: 10px; padding-top:16px;">
-		      <a class="ss_button ss_bold" href="javascript: ;" onClick="ss_validateBinderQuotas();return false;"
-		        title="<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.binder.validateHint"/></ssf:escapeQuotes>"
-		      >
-		        <c:if test="${ss_binderQuotasInitialized}">
-		          <span><ssf:nlt tag="administration.quotas.binder.validate"/></span>
-		        </c:if>
-		        <c:if test="${!ss_binderQuotasInitialized}">
-		          <span><ssf:nlt tag="administration.quotas.binder.initialize"/></span>
-		        </c:if>
-		      </a>
-		    </div>
-		    <div style="padding-left:100px;">
-		      <div id="ss_operation_status">
-		      </div>
-		    </div>
-	
-		  <div style="padding: 10px 0px;">
-			<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
-		  </div>
-		</fieldset>
-	</c:if>
-		
-	<br/>
-	<br/>
-			
+
 <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><input type="checkbox" name="enableQuotas" 
-	  <c:if test="${ss_quotasEnabled}">checked=checked</c:if>
-	  />
-	  <b><ssf:nlt tag="administration.quotas.enable" /></b></legend>
+    <legend class="ss_legend">
+      <span class="ss_bold"><ssf:nlt tag="administration.fileSizeLimit" /></span>
+    </legend>
 		
 	<table style="margin: 10px">
 	<tr>
 	<td>
-	  <ssf:nlt tag="administration.quotas.default"/>
+	  <ssf:nlt tag="administration.fileSizeLimit.default"/>
 	</td>
 	<td style="padding-left:4px;">
-	  <input type="text" size="6" name="defaultQuota" value="${ss_quotasDefault}"
+	  <input type="text" size="6" name="defaultFileSizeLimit" value="${ss_fileSizeLimitUserDefault}"
 	    onblur="ss_validateSize(this);" style="text-align: right; font-weight: bold;"
 	  />
 	  <ssf:nlt tag="administration.quotas.mb"/>
-	</td>
-	</tr>
-	<tr>
-	<td>
-	  <ssf:nlt tag="administration.quotas.highWaterMark"/>
-	</td>
-	<td style="padding-left:4px;">
-	  <input type="text" size="6" name="highWaterMark" value="${ss_quotasHighWaterMark}"
-	  	onblur="ss_checkIfNumber(this);" style="text-align: right; font-weight: bold;"
-	  />&nbsp;%
 	</td>
 	</tr>
 	</table>
 			
 	<div style="margin: 10px">
 	<div style="margin: 15px 0 7px 0; padding-right: 40px;">
-		<span style="paddong-right: 5px;"><input type="button" class="ss_submit" name="addGroupBtn" 
+		<input type="button" class="ss_submit" name="addFSLGroupBtn" 
 		  value="<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.addGroupQuota"/></ssf:escapeQuotes>"
-		  onClick="showAddGroupsDiv();return false;"/></span>
+		  onClick="showAddFSLGroupsDiv();return false;"/>
 	</div>  
 	<!--Add Group DIV dialog-->
 	<div class="ss_relDiv">
- 	  	<div class="ss_diagSmallDiv teamingDlgBox" id="addGroupDiv" style="display: none;">
+ 	  	<div class="ss_diagSmallDiv teamingDlgBox" id="addFSLGroupDiv" style="display: none;">
 			<div class="ss_diagDivTitle">
 		  		<ssf:nlt tag="administration.quotas.addGroupQuota"/>
 			</div>
@@ -317,13 +216,13 @@ function ss_checkForAllUsersGroup() {
   					<tr>
 						<td class="ss_cellvalign"><span class="ss_bold"><ssf:nlt tag="__definition_default_group"/>:&nbsp;</span></td>
 						<td valign="top">
-							<ssf:find formName="form1" formElement="addGroups" type="group" width="150px" />
+							<ssf:find formName="form1" formElement="addFSLGroups" type="group" width="150px" />
 						</td>
 					</tr>
 					<tr>
-						<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/>:&nbsp;</span></td>
+						<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.fileSizeLimit"/>:&nbsp;</span></td>
 						<td valign="top">
-							<input class="ss_bold" type="text" name="addGroupQuota" size="6" style="width:50px; text-align: right;" 
+							<input class="ss_bold" type="text" name="addFSLGroupLimit" size="6" style="width:50px; text-align: right;" 
 							  onblur="ss_validateSize(this);" style="text-align:right;"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
 						</td>
 					</tr>
@@ -338,28 +237,28 @@ function ss_checkForAllUsersGroup() {
 	</div>	
 	<!--END-->
 
-	<c:if test="${!empty ss_quotasGroups}">
+	<c:if test="${!empty ss_fileSizeLimitsGroups}">
 	  <table class="objlist" width="100%">
 		<tr class="title ends">
-		  <td colspan="5"><ssf:nlt tag="administration.quotas.currentSettingsGroup" /></td>
+		  <td colspan="5"><ssf:nlt tag="administration.quotas.currentSettingsGroupFSL" /></td>
 		</tr>  
 	    <tr class="columnhead">
 	      <td class="leftend"><ssf:nlt tag="button.delete"/></td>
 	      <td><ssf:nlt tag="userlist.groupName"/></td>
 	      <td><ssf:nlt tag="userlist.groupTitle"/></td>
-	      <td align="center"><ssf:nlt tag="administration.quotas.quota"/></td>
+	      <td align="center"><ssf:nlt tag="administration.quotas.fileSizeLimit"/></td>
 	      <td class="rightend" width="100%">&nbsp;</td>
 	    </tr>
-	    <c:forEach var="group" items="${ss_quotasGroups}">
+	    <c:forEach var="group" items="${ss_fileSizeLimitsGroups}">
 	      <tr class="regrow">
 	        <td class="leftend">
-	          <input type="checkbox" name="deleteGroup_${group.id}" />
+	          <input type="checkbox" name="deleteFSLGroup_${group.id}" />
 	        </td>
 	        <td>
-	          <a href="javascript: ;" onClick="ss_showModifyDiv('${group.id}');return false;">${group.name}</a>
+	          <a href="javascript: ;" onClick="ss_showModifyFSLDiv('${group.id}');return false;">${group.name}</a>
 			  	<!--Edit Group DIV dialog-->
 				<div class="ss_relDiv">
-					<div class="ss_diagSmallDiv teamingDlgBox" id="ss_modifyQuotaDiv${group.id}" style="display: none;">
+					<div class="ss_diagSmallDiv teamingDlgBox" id="ss_modifyFSLDiv${group.id}" style="display: none;">
 						<div class="ss_diagDivTitle">
 							<ssf:nlt tag="administration.quotas.quotaModify"/>
 						</div>
@@ -372,10 +271,10 @@ function ss_checkForAllUsersGroup() {
 									</td>
 								</tr>
 								<tr class="no-regrow">
-									<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/>:&nbsp;</span></td>
+									<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.fileSizeLimit"/>:&nbsp;</span></td>
 									<td valign="top">
-										<input class="ss_bold" type="text" name="newGroupQuota_${group.id}" size="6" style="width:50px; text-align: right;" 
-										  onblur="ss_validateSize(this);" style="text-align:right;" value="${group.diskQuota}"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
+										<input class="ss_bold" type="text" name="newFSLGroupLimit_${group.id}" size="6" style="width:50px; text-align: right;" 
+										  onblur="ss_validateSize(this);" style="text-align:right;" value="${group.fileSizeLimit}"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
 									</td>
 								</tr>
 							</table>
@@ -393,29 +292,29 @@ function ss_checkForAllUsersGroup() {
 	          ${group.title}
 	        </td>
 	        <td align="center">
-	          ${group.diskQuota}
+	          ${group.fileSizeLimit}
 	        </td>
 	        <td class="rightend">&nbsp;
 	        </td>
 	      </tr>
 	    </c:forEach>
-		  <tr class="footrow ends">
-		    <td colspan="6" style="padding: 3px;">
-				<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
-		  			title="<ssf:escapeQuotes><ssf:nlt tag="quota.select.itemToBeDeleteChecked"/></ssf:escapeQuotes>"/>
-			</td>
-		  </tr>		
-	  </table>
+		  <tr class="ends footrow">
+		    <td colspan="5" style="padding: 3px;">
+    <input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
+		  title="<ssf:escapeQuotes><ssf:nlt tag="quota.select.itemToBeDeleteCheckedFSL"/></ssf:escapeQuotes>"/>
+			  </td>
+			</tr>
+		  </table>
 	</c:if>
 	
 	<div style="margin: 15px 0 7px 0; padding-right: 40px;">
-		<input type="button" class="ss_submit" name="addUserBtn" 
+		<input type="button" class="ss_submit" name="addFSLUserBtn" 
 		  value="<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.addUserQuota"/></ssf:escapeQuotes>"
-	      onClick="showAddUsersDiv();return false;"/>
+	      onClick="showAddFSLUsersDiv();return false;"/>
 	</div>  
 	<!--Add User DIV dialog-->
 	<div class="ss_relDiv">
-	  	<div class="ss_diagSmallDiv teamingDlgBox" id="addUserDiv" style="display: none;">
+	  	<div class="ss_diagSmallDiv teamingDlgBox" id="addFSLUserDiv" style="display: none;">
 			<div class="ss_diagDivTitle">
 		  		<ssf:nlt tag="administration.quotas.addUserQuota"/>
 			</div>
@@ -424,13 +323,13 @@ function ss_checkForAllUsersGroup() {
   					<tr>
 						<td class="ss_cellvalign"><span class="ss_bold"><ssf:nlt tag="__definition_default_user"/>:&nbsp;</span></td>
 						<td valign="top">
-							<ssf:find formName="form1" formElement="addUsers" type="user" width="150px" />
+							<ssf:find formName="form1" formElement="addFSLUsers" type="user" width="150px" />
 						</td>
 					</tr>
 					<tr>
-						<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/>:&nbsp;</span></td>
+						<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.fileSizeLimit"/>:&nbsp;</span></td>
 						<td valign="top">
-							<input class="ss_bold" type="text" name="addUserQuota" size="6" style="width:50px; text-align: right;" 
+							<input class="ss_bold" type="text" name="addFSLUserLimit" size="6" style="width:50px; text-align: right;" 
 							  onblur="ss_validateSize(this);" style="text-align:right;"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
 						</td>
 					</tr>
@@ -444,31 +343,30 @@ function ss_checkForAllUsersGroup() {
 	    </div>
 	</div>	
 	<!--END-->
-	<c:if test="${!empty ss_quotasUsers}">
+	<c:if test="${!empty ss_fileSizeLimitsUsers}">
 	  <table class="objlist" width="100%">
 	  	<tr class="title ends">
-		  <td colspan="6"><ssf:nlt tag="administration.quotas.currentSettingsUser" /></td>
+		  <td colspan="6"><ssf:nlt tag="administration.quotas.currentSettingsUserFSL" /></td>
 	    <tr class="columnhead">
 	      <td class="leftend"><ssf:nlt tag="button.delete"/></td>
 	      <td><ssf:nlt tag="profile.element.title"/></td>
 	      <td><ssf:nlt tag="profile.element.name"/></td>
-	      <td align="center"><ssf:nlt tag="administration.quotas.quota"/></td>
-	      <td align="center"><ssf:nlt tag="administration.quotas.diskSpaceUsed"/></td>
+	      <td align="center"><ssf:nlt tag="administration.quotas.fileSizeLimit"/></td>
 	      <td class="rightend" width="100%">&nbsp;</td>
 	    </tr>
-	    <c:forEach var="user" items="${ss_quotasUsers}">
+	    <c:forEach var="user" items="${ss_fileSizeLimitsUsers}">
 	      <tr class="regrow">
 	        <td class="leftend">
-	          <input type="checkbox" name="deleteUser_${user.id}" />
+	          <input type="checkbox" name="deleteFSLUser_${user.id}" />
 	        </td>
 	        <td>
-	          <a href="javascript: ;" onClick="ss_showModifyDiv('${user.id}');return false;">${user.title}</a>
+	          <a href="javascript: ;" onClick="ss_showModifyFSLDiv('${user.id}');return false;">${user.title}</a>
 
 			  	<!--Edit User DIV dialog-->
 				<div class="ss_relDiv">
-					<div class="ss_diagSmallDiv teamingDlgBox" id="ss_modifyQuotaDiv${user.id}" style="display: none;">
+					<div class="ss_diagSmallDiv teamingDlgBox" id="ss_modifyFSLDiv${user.id}" style="display: none;">
 						<div class="ss_diagDivTitle">
-							<ssf:nlt tag="administration.quotas.quotaModify"/>
+							<ssf:nlt tag="administration.quotas.quotaModifyFSL"/>
 						</div>
 						<div class="ss_diagDivContent">
 							<table>
@@ -479,10 +377,10 @@ function ss_checkForAllUsersGroup() {
 									</td>
 								</tr>
 								<tr class="no-regrow">
-									<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.quota"/>:&nbsp;</span></td>
+									<td><span class="ss_bold"><ssf:nlt tag="administration.quotas.fileSizeLimit"/>:&nbsp;</span></td>
 									<td valign="top">
-										<input class="ss_bold" type="text" name="newUserQuota_${user.id}" size="6" style="width:50px; text-align: right;" 
-										  onblur="ss_validateSize(this);" style="text-align:right;" value="${user.diskQuota}"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
+										<input class="ss_bold" type="text" name="newFSLUserLimit_${user.id}" size="6" style="width:50px; text-align: right;" 
+										  onblur="ss_validateSize(this);" style="text-align:right;" value="${user.fileSizeLimit}"/>&nbsp;<ssf:nlt tag="administration.quotas.mb" />
 									</td>
 								</tr>
 							</table>
@@ -501,10 +399,7 @@ function ss_checkForAllUsersGroup() {
 	          <ssf:userName user="${user}"/>
 	        </td>
 	        <td align="center">
-	          ${user.diskQuota}
-	        </td>
-	        <td align="center">
-	          <fmt:formatNumber value="${user.diskSpaceUsed/1048576}" maxFractionDigits="2"/>
+	          ${user.fileSizeLimit}
 	        </td>
 	        <td class="rightend">&nbsp;</td>
 	      </tr>
@@ -512,22 +407,18 @@ function ss_checkForAllUsersGroup() {
 		  <tr class="footrow ends">
 		    <td colspan="6" style="padding: 3px;">
     <input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
-		  title="<ssf:escapeQuotes><ssf:nlt tag="quota.select.itemToBeDeleteChecked"/></ssf:escapeQuotes>"/>
+		  title="<ssf:escapeQuotes><ssf:nlt tag="quota.select.itemToBeDeleteCheckedFSL"/></ssf:escapeQuotes>"/>
 
 			</td>
 		  </tr>
 	  </table>
 	</c:if>
 
-	<c:if test="${!ss_quotasEnabled}">
-	  <span class="ss_bold ss_errorLabel"><ssf:nlt tag="administration.quotas.notEnabled"/></span>
-	    <br/>
-	    <br/>
-	</c:if>
 	</div>
 </fieldset>
 
 <br/>
+
 
   <div style="padding: 10px 0px;">
 	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
@@ -536,7 +427,7 @@ function ss_checkForAllUsersGroup() {
   </div>
   
   <input type="hidden" name="modifyId" id="modifyId" value="" />
-
+  <input type="hidden" name="modifyFSLId" id="modifyFSLId" value="" />
 </form>
 </div>
 </ssf:form>
