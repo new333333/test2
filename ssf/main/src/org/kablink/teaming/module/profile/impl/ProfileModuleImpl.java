@@ -1776,9 +1776,10 @@ public Map getUsers() {
 
     //No transaction
 	@Override
-	public void modifyUserFromPortal(User user, Map updates, Map options) {
+	public void modifyUserFromPortal(Long userId, Map updates, Map options) {
 		if (updates == null)
 			return; // nothing to update with
+		User user = getProfileDao().loadUser(userId, (Long) null);
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(user).resolve();
 		try {

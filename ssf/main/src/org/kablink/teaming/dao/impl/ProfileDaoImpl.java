@@ -1104,8 +1104,10 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	public User loadUser(Long userId, String zoneName) {
 		long begin = System.nanoTime();
 		try {
-			Binder top = getCoreDao().findTopWorkspace(zoneName);
-			return loadUser(userId, top.getZoneId());
+			Long zoneId = null;
+			if(zoneName != null)
+				zoneId = getCoreDao().findTopWorkspace(zoneName).getZoneId();
+			return loadUser(userId, zoneId);
     	}
     	finally {
     		end(begin, "loadUser(Long,String)");
@@ -1118,7 +1120,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		User user = (User)getHibernateTemplate().get(User.class, userId);
     		if (user == null) {throw new NoUserByTheIdException(userId);}
     		//	make sure from correct zone
-    		if (!user.getZoneId().equals(zoneId) || !user.isActive()) {
+    		if((zoneId != null && !user.getZoneId().equals(zoneId)) || !user.isActive()) {
     			throw new NoUserByTheIdException(userId);
     		}
     		user = (User) filterInaccessiblePrincipal(user);
