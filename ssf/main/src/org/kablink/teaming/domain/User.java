@@ -76,7 +76,18 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		 * The user has been successfully verified and is ready to use the system.
 		 * Verification is needed/performed only once for each user account.
 		 */
-		verified((short)3);
+		verified((short)3),
+		
+		/**
+		 * The user has requested to reset their password.
+		 */
+		pwdResetRequested( (short) 4 ),
+		
+		/**
+		 * The user has reset their password but have not verified the reset
+		 */
+		pwdResetWaitingForVerification( (short) 5 );
+		
 		short value;
 		ExtProvState(short value) {
 			this.value = value;
@@ -89,6 +100,8 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 			case 1: return ExtProvState.initial;
 			case 2: return ExtProvState.credentialed;
 			case 3: return ExtProvState.verified;
+			case 4: return ExtProvState.pwdResetRequested;
+			case 5: return ExtProvState.pwdResetWaitingForVerification;
 			default: throw new IllegalArgumentException("Invalid db value " + value + " for enum ExtProvState");
 			}
 		}

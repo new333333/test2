@@ -38,6 +38,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.InternalException;
@@ -54,6 +55,7 @@ import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.spring.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -220,7 +222,100 @@ public class ExternalUserUtil {
 			}
 		}
 	}
+
+	/**
+	 * 
+	 */
+	public static void handleResponseToPwdReset( HttpSession session, String url ) 
+		throws ExternalUserRespondingToInvitationException, InternalException
+	{
+		Map<String,String> queryParams;
+		String token;
 	
+		queryParams = ExternalUserUtil.getQueryParamsFromUrl( url );
+		token = queryParams.get( ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN );
+		if ( Validator.isNotNull( token ) )
+		{
+			String zoneName;
+			Long userId;
+			User user;
+
+			zoneName = getZoneModule().getZoneNameByVirtualHost( ZoneContextHolder.getServerName() );
+			userId = ExternalUserUtil.getUserId( token );
+			
+			// Load the user object by the ID value encoded in the token. 
+			user = findExternalUserById( userId, zoneName );
+			
+			// If still here, the ID value encoded in the token refers to a valid user account.
+			// Validate the token against the current state of the account to make sure that the client didn't forge the token/link.
+			if ( isDigestValid( user, ExternalUserUtil.getPrivateDigest( token ) ) )
+			{
+				// The digest value in the URL is valid. Let's further check.
+				if ( User.ExtProvState.pwdResetRequested == user.getExtProvState() )
+				{
+					ExternalUserRespondingToPwdResetException exc;
+
+					// The user is responding to the "how to reset your password" email we sent them when
+					// they requested to reset their password.
+					// Create an exception object to be used as more like a normal status code
+					exc = new ExternalUserRespondingToPwdResetException( user, url );
+					
+					// Unfortunately, the spring security framework won't store this exception into the session even though
+					// it correctly catches it and triggers redirect to the login page. So we must put it in ourselves.
+					session.setAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY, exc );
+
+					// Store in the session the original access url so that we can redirect the user to correct entity
+					// after successful authentication with OpenID, in the case the user chooses to authenticate via 
+					// OpenID rather than going through the self-provisioning steps.
+					session.setAttribute( SavedRequestAwareAuthenticationSuccessHandler.FILR_REDIRECT_AFTER_SUCCESSFUL_LOGIN, url );
+
+					// Throwing this exception is NOT an indication of an error. Rather, this signals
+					// GWT layer to proceed to the next step in the normal flow.
+					throw exc;
+				}
+				else if ( User.ExtProvState.pwdResetWaitingForVerification == user.getExtProvState() )
+				{
+					ExternalUserRespondingToPwdResetVerificationException exc;
+					String pwd;
+
+					// The user is responding to the pwd reset confirmation previously sent out.
+			
+					pwd = queryParams.get( WebKeys.URL_PASSWORD );
+					if ( pwd != null && pwd.length() > 0 )
+					{
+						pwd = new String( Base64.decodeBase64( pwd ) );
+					}
+
+					// Create an exception object to be used as more like a normal status code
+					exc = new ExternalUserRespondingToPwdResetVerificationException( user, url, pwd );
+
+					// Unfortunately, the spring security framework won't store this exception into the session even though
+					// it correctly catches it and triggers redirect to the login page. So we must put it in ourselves.
+					session.setAttribute( AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY, exc );
+					
+					// Store in the session the original access url so that we can redirect the user to correct entity
+					// after successful authentication with OpenID, in the case the user chooses to authenticate via 
+					// OpenID rather than going through the self-provisioning steps.
+					session.setAttribute( SavedRequestAwareAuthenticationSuccessHandler.FILR_REDIRECT_AFTER_SUCCESSFUL_LOGIN, url );
+					
+					// Throwing this exception is NOT an indication of an error. Rather, this signals
+					// GWT layer to proceed to the next step in the normal flow.
+					throw exc;
+				}
+			}
+			else
+			{
+				// The digest value in the URL is invalid. This may be that the digest value is forged by someone,
+				// or is simply old which can happen when the user clicks on the previous invitation or confirmation
+				// link even after successfully self-provisioned with the system. Either way, let's just proceed
+				// as if the digest value wasn't found in the URL. This does NOT open up any security hole, because
+				// the system is still protected by the regular login and access rights, and it's not going to let
+				// the user log in unless the user properly authenticates first and the account is in a state that
+				// allows access to system.
+			}
+		}
+	}
+
 	public static void markAsCredentialed(User user) {
 		user.setExtProvState(User.ExtProvState.credentialed);
 		updateUser(user);
@@ -235,6 +330,24 @@ public class ExternalUserUtil {
 	public static void markAsBoundToOpenid(User user) {
 		user.getIdentityInfo().setFromOpenid(true);
 		updateUser(user);
+	}
+
+	/**
+	 * 
+	 */
+	public static void markAsPwdResetRequested( User user )
+	{
+		user.setExtProvState( User.ExtProvState.pwdResetRequested );
+		updateUser( user );
+	}
+	
+	/**
+	 * 
+	 */
+	public static void markAsPwdResetWaitingForVerification( User user )
+	{
+		user.setExtProvState( User.ExtProvState.pwdResetWaitingForVerification );
+		updateUser( user );
 	}
 	
 	public static String replaceTokenInUrl(String url, String newToken) {

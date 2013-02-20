@@ -847,6 +847,8 @@ public class GwtSearchHelper
 				reply.setTitle( Utils.getUserTitle( user ) );
 				reply.setWorkspaceTitle( user.getWSTitle() );
 				
+				GwtServerHelper.setExtUserProvState( reply, user );
+				
 				// Do we have access to this user's workspace?
 				if ( null == binder ) {
 					// No!  Provide a permalink to the user's profile.

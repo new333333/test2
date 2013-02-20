@@ -80,7 +80,7 @@ public class EmailHelper {
 	 */
 	public enum UrlNotificationType {
 		FORGOTTEN_PASSWORD,
-		PASSWORD_CHANGED,
+		PASSWORD_RESET_REQUESTED,
 	}
 	
 	/**

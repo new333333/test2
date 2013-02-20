@@ -37,6 +37,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.GwtUser.ExtUserProvState;
 import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SendForgottenPwdEmailCmd;
@@ -205,7 +206,7 @@ public class ForgottenPwdDlg extends DlgBox
 						@Override
 						public void execute()
 						{
-							GwtUser gwtUser = null;
+							final GwtUser gwtUser;
 							
 							// Was the email associated with a user?
 							if ( vibeResult.getResponseData() != null )
@@ -213,9 +214,13 @@ public class ForgottenPwdDlg extends DlgBox
 								// Yes
 								gwtUser = (GwtUser) vibeResult.getResponseData();
 							}
+							else
+								gwtUser = null;
 							
 							// Did we find an external user with the given email address?
-							if ( gwtUser != null && gwtUser.isInternal() == false )
+							if ( gwtUser != null &&
+								 gwtUser.isInternal() == false &&
+								 gwtUser.getExtUserProvState() == ExtUserProvState.VERIFIED )
 							{
 								Scheduler.ScheduledCommand cmd;
 								
@@ -226,7 +231,7 @@ public class ForgottenPwdDlg extends DlgBox
 									@Override
 									public void execute()
 									{
-										sendForgottenPwdEmail( emailAddress );
+										sendForgottenPwdEmail( gwtUser, emailAddress );
 									}
 								};
 								Scheduler.get().scheduleDeferred( cmd );
@@ -294,6 +299,7 @@ public class ForgottenPwdDlg extends DlgBox
 		m_emailAddressTxtBox.setValue( "" );
 
 		// Enable the Ok button.
+		hideErrorPanel();
 		hideStatusMsg();
 		setOkEnabled( true );
 	}
@@ -302,7 +308,7 @@ public class ForgottenPwdDlg extends DlgBox
 	 * Issue an rpc request to send an email to the user with instructions on how to reset their
 	 * password. 
 	 */
-	private void sendForgottenPwdEmail( String emailAddress )
+	private void sendForgottenPwdEmail( GwtUser user, String emailAddress )
 	{
 		AsyncCallback<VibeRpcResponse> callback;
 		SendForgottenPwdEmailCmd cmd;
@@ -387,7 +393,7 @@ public class ForgottenPwdDlg extends DlgBox
 		setOkEnabled( false );
 		
 		// Issue an ajax request to send the forgotten password email to the given email address
-		cmd = new SendForgottenPwdEmailCmd( emailAddress );
+		cmd = new SendForgottenPwdEmailCmd( user, emailAddress );
 		GwtClientHelper.executeCommand( cmd, callback );
 	}
 	

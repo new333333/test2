@@ -762,6 +762,7 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlg_AuthenticateUsingOpenID( String providerName );
 	String loginDlg_ConfirmationText();
 	String loginDlg_externalUserSelfRegFailed();
+	String loginDlg_ExtUserPwdResetHint();
 	String loginDlg_ExtUserRegistrationHint();
 	String loginDlg_FirstNameLabel();
 	String loginDlg_ForgottenPwd();
@@ -771,10 +772,14 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlg_OrLabel();
 	String loginDlg_PwdLabel();
 	String loginDlg_pwdRequired();
+	String loginDlg_PasswordResetComplete();
+	String loginDlg_PasswordResetRequested();
+	String loginDlg_PwdResetFailed();
 	String loginDlg_pwdDoNotMatch();
 	String loginDlg_ReenterPwdLabel();
 	String loginDlg_Register();
 	String loginDlg_RegisterUsingSelfReg();
+	String loginDlg_ResetPwd();
 	String loginDlgAuthenticating();
 	String loginDlgCreateNewAccount();
 	String loginDlgKablinkHeader();

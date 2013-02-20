@@ -30,71 +30,42 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.extuser;
 
-package org.kablink.teaming.gwt.client.rpc.shared;
-
-import org.kablink.teaming.gwt.client.GwtUser;
-
-
+import org.kablink.teaming.domain.User;
+import org.springframework.security.core.AuthenticationException;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'send forgotten password email' command.
- * 
- * @author jwootton@novell.com
+ * @author jwootton
+ *
  */
-public class SendForgottenPwdEmailCmd extends VibeRpcCmd 
+public class ExternalUserRespondingToPwdResetException extends AuthenticationException
 {
-	private String m_emailAddress;
-	private GwtUser m_gwtUser;
+	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Class constructor.
-	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
-	 */
-	public SendForgottenPwdEmailCmd() 
+	private User m_user;
+	private String m_url;
+
+	public ExternalUserRespondingToPwdResetException( User user, String url )
 	{
-		super();		
+		super( "External user is responding to password reset" );
+		m_user = user;
+		m_url = url;
 	}
 
 	/**
-	 * Class constructor.
+	 * 
 	 */
-	public SendForgottenPwdEmailCmd( GwtUser gwtUser, String emailAddress )
+	public User getExternalUser()
 	{
-		this();
-		
-		m_gwtUser = gwtUser;
-		m_emailAddress = emailAddress;
+		return m_user;
 	}
 	
 	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCmdType() 
-	{
-		return VibeRpcCmdType.SEND_FORGOTTEN_PWD_EMAIL.ordinal();
-	}
-
-	/**
 	 * 
 	 */
-	public String getEmailAddress()
+	public String getUrl()
 	{
-		return m_emailAddress;
-	}
-
-	/**
-	 * 
-	 */
-	public GwtUser getGwtUser()
-	{
-		return m_gwtUser;
+		return m_url;
 	}
 }

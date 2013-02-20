@@ -56,6 +56,8 @@ import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.extuser.ExternalUserRespondingToInvitationException;
+import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetException;
+import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetVerificationException;
 import org.kablink.teaming.extuser.ExternalUserRespondingToVerificationException;
 import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -148,6 +150,12 @@ public class LoginFilter  implements Filter {
 				if(req.getQueryString() != null && req.getQueryString().contains(ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN + "=")) {
 					// This might be a response from external user to an invitation. Should check and deal with it if so.
 					ExternalUserUtil.handleResponseToInvitationOrConfirmation(WebHelper.getRequiredSession(req), Http.getCompleteURL(req));
+					
+					// This might be a response from external user to reset their password or verify that
+					// they reset their password.
+					ExternalUserUtil.handleResponseToPwdReset(
+															WebHelper.getRequiredSession( req ),
+															Http.getCompleteURL( req ) );
 				}
 
 				if(WebHelper.isGuestLoggedIn(req)) {
@@ -178,6 +186,16 @@ public class LoginFilter  implements Filter {
 			throw e;
 		}
 		catch(ExternalUserRespondingToVerificationException e) {
+			// This is NOT an error. Just re-throw it.
+			throw e;
+		}
+		catch( ExternalUserRespondingToPwdResetException e )
+		{
+			// This is NOT an error. Just re-throw it.
+			throw e;
+		}
+		catch( ExternalUserRespondingToPwdResetVerificationException e )
+		{
 			// This is NOT an error. Just re-throw it.
 			throw e;
 		}

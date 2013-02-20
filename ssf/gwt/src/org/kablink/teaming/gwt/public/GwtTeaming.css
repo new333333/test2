@@ -1539,7 +1539,19 @@ body, table td, select
 	margin-top: 4px;
 }
 
-.loginDlg_extUserSelfRegHint
+.loginDlg_ExtUserPwdResetPanel
+{
+	margin-top: 8px;
+}
+
+.loginDlg_ExtUserPwdResetPanel
+{
+	margin-top: 8px;
+	margin-left: 8px;
+}
+
+
+.loginDlg_extUserSelfRegHint, .loginDlg_ExtUserPwdResetHint
 {
 	font-size: small;
 	margin-bottom: .75em;

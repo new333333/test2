@@ -63,6 +63,7 @@ import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpURL;
@@ -119,6 +120,7 @@ import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.User.ExtProvState;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
@@ -135,17 +137,18 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtRole;
+import org.kablink.teaming.gwt.client.GwtUser.ExtUserProvState;
 import org.kablink.teaming.gwt.client.GwtUserFileSyncAppConfig;
 import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
-import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
 import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
@@ -228,6 +231,7 @@ import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.admin.SendMailErrorWrapper;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
@@ -248,7 +252,6 @@ import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.resourcedriver.RDException;
-import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -260,6 +263,8 @@ import org.kablink.teaming.portletadapter.support.KeyNames;
 import org.kablink.teaming.portletadapter.support.PortletInfo;
 import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.presence.PresenceManager;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -295,6 +300,7 @@ import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.FavoritesLimitExceededException;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
+import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
@@ -6963,20 +6969,132 @@ public class GwtServerHelper {
 	 * Construct a url the user can click on that will invoke the "change password" dialog.
 	 * Then send an email that includes that url to the given email address
 	 */
-	public static SendForgottenPwdEmailRpcResponseData sendForgottenPwdEmail( String emailAddress )
+	public static SendForgottenPwdEmailRpcResponseData sendForgottenPwdEmail(
+		final AllModulesInjected ami,
+		final HttpServletRequest request,
+		final GwtUser gwtUser,
+		final String emailAddress )
 	{
-		SendForgottenPwdEmailRpcResponseData responseData;
+		final SendForgottenPwdEmailRpcResponseData responseData;
 		
 		responseData = new SendForgottenPwdEmailRpcResponseData();
 		
-		if ( emailAddress != null && emailAddress.length() > 0 )
+		if ( gwtUser == null || emailAddress == null || emailAddress.length() == 0 || ami == null )
 		{
-			responseData.addError( NLT.get( "send.forgotten.pwd.email.noemailaddress" ) );
+			responseData.addError( "Invalid parameters passed to sendForgottenPwdEmail()" );
+			return responseData;
 		}
-		else
-			responseData.addError( NLT.get( "send.forgotten.pwd.email.noemailaddress" ) );
+		
+		RunasCallback callback;
+
+		callback = new RunasCallback()
+		{
+			@Override
+			public Object doAs()
+			{
+				try
+				{
+					User user;
+
+					// Is this an external user that has already been verified?
+					user = ((User) ami.getProfileModule().getEntry( gwtUser.getIdLong() ));
+					if ( user.getIdentityInfo().isInternal() == false &&
+						 user.getExtProvState() == ExtProvState.verified )
+					{
+						String token;
+						String url;
+						AdaptedPortletURL adapterUrl;
+						Map<String,Object> errorMap;
+						
+						// Yes
+						// Get a url to the user's workspace.
+						adapterUrl = new AdaptedPortletURL( request, "ss_forum", true, false );
+						adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK );
+						adapterUrl.setParameter( WebKeys.URL_ENTRY_ID, String.valueOf( user.getId() ) );
+						adapterUrl.setParameter( WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name() );
+						
+						// Append the encoded user token to the url.
+						token = ExternalUserUtil.encodeUserToken( user );
+						adapterUrl.setParameter( ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN, token );
+						url = adapterUrl.toString();
+		
+						errorMap = EmailHelper.sendUrlNotification(
+																ami,
+																url,
+																UrlNotificationType.FORGOTTEN_PASSWORD,
+																user.getId() );
+						if ( errorMap != null )
+						{
+							List<SendMailErrorWrapper> emailErrors;
+							
+							emailErrors = ((List<SendMailErrorWrapper>) errorMap.get( ObjectKeys.SENDMAIL_ERRORS ));
+							if ( emailErrors != null && emailErrors.size() > 0 )
+								responseData.addErrors( SendMailErrorWrapper.getErrorMessages( emailErrors ) );
+							else
+							{
+								// Sending the email worked.  Change the users "external user provisioned state" to
+								// "password reset requested"
+								ExternalUserUtil.markAsPwdResetRequested( user );
+							}
+						}
+					}
+				}
+				catch ( Exception ex )
+				{
+					String error;
+					
+					error = NLT.get( "send.forgotten.pwd.send.email.failed", new String[]{ex.toString()} );
+					responseData.addError( error );
+				}
+
+				return null;
+			}
+		}; 
+
+		// Do the necessary work as the admin user.
+		RunasTemplate.runasAdmin(
+								callback,
+								RequestContextHolder.getRequestContext().getZoneName() );
 		
 		return responseData;
+	}
+	
+	/**
+	 * 
+	 */
+	public static void setExtUserProvState( GwtUser gwtUser, User user )
+	{
+		// Are we dealing with an external user?
+		if ( user.getIdentityInfo().isInternal() == false )
+		{
+			// Yes.
+			switch ( user.getExtProvState() )
+			{
+			case credentialed:
+				gwtUser.setExtUserProvState( ExtUserProvState.CREDENTIALED );
+				break;
+				
+			case initial:
+				gwtUser.setExtUserProvState( ExtUserProvState.INITIAL );
+				break;
+			
+			case pwdResetRequested:
+				gwtUser.setExtUserProvState( ExtUserProvState.PWD_RESET_REQUESTED );
+				break;
+			
+			case pwdResetWaitingForVerification:
+				gwtUser.setExtUserProvState( ExtUserProvState.PWD_RESET_WAITING_FOR_VERIFICATION );
+				break;
+			
+			case verified:
+				gwtUser.setExtUserProvState( ExtUserProvState.VERIFIED );
+				break;
+			
+			default:
+				gwtUser.setExtUserProvState( ExtUserProvState.UNKNOWN );
+				break;
+			}
+		}
 	}
 	
 	/**
@@ -9480,6 +9598,7 @@ public class GwtServerHelper {
 		case REMOVE_TASK_LINKAGE:
 		case REMOVE_SAVED_SEARCH:
 		case RENAME_ENTITY:
+		case REQUEST_RESET_PASSWORD:
 		case SAVE_ACCESSORY_STATUS:
 		case SAVE_ADHOC_FOLDER_SETTING:
 		case SAVE_BINDER_REGION_STATE:
@@ -9752,6 +9871,129 @@ public class GwtServerHelper {
 		
 		// ...and clearing the remove list.
 		removeList.clear();
+	}
+	
+	/**
+	 * Reset send the user an email with a link they need to click on to verify their
+	 * password reset.
+	 */
+	public static RequestResetPwdRpcResponseData requestResetPwd(
+		final AllModulesInjected ami,
+		final HttpServletRequest request,
+		final Long userId,
+		final String pwd )
+	{
+		final RequestResetPwdRpcResponseData responseData;
+		RunasCallback callback;
+
+		responseData = new RequestResetPwdRpcResponseData();
+		
+		if ( pwd == null || pwd.length() == 0 || userId == null )
+		{
+			responseData.addError( "Invalid parameters passed to GwtServerHelper.requestResetPwd()" );
+			return responseData;
+		}
+
+		callback = new RunasCallback()
+		{
+			@Override
+			public Object doAs()
+			{
+				User user = null;
+
+				try
+				{
+					user = ((User) ami.getProfileModule().getEntry( userId ));
+				}
+				catch ( AccessControlException acEx )
+				{
+					String error;
+					
+					error = NLT.get( "request.pwd.reset.cant.find.user", new String[]{userId.toString()} );
+					responseData.addError( error );
+				}
+				
+				if ( user != null &&
+					 user.getIdentityInfo().isInternal() == false &&
+					 user.getExtProvState() == ExtProvState.pwdResetRequested )
+				{
+					// Send the user an email telling them that their password has been modified
+					// and they need to verify that they were the one who changed the password.
+					{
+						String token;
+						String url;
+						AdaptedPortletURL adapterUrl;
+						Map<String,Object> errorMap = null;
+						
+						// Get a url to the user's workspace.
+						adapterUrl = new AdaptedPortletURL( request, "ss_forum", true, false );
+						adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK );
+						adapterUrl.setParameter( WebKeys.URL_ENTRY_ID, String.valueOf( userId ) );
+						adapterUrl.setParameter( WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name() );
+						
+						// Add the password to the url.
+						{
+							String encodedPwd;
+							
+							encodedPwd = Base64.encodeBase64URLSafeString( pwd.getBytes() );
+							adapterUrl.setParameter( WebKeys.URL_PASSWORD, encodedPwd );
+						}
+						
+						// Append the encoded user token to the url.
+						token = ExternalUserUtil.encodeUserTokenWithNewSeed( user );
+						adapterUrl.setParameter( ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN, token );
+						url = adapterUrl.toString();
+
+						try
+						{
+							errorMap = EmailHelper.sendUrlNotification(
+																	ami,
+																	url,
+																	UrlNotificationType.PASSWORD_RESET_REQUESTED,
+																	userId );
+						}
+						catch ( Exception ex )
+						{
+							String error;
+							
+							error = NLT.get( "request.pwd.reset.send.email.failed", new String[]{ex.toString()} );
+							responseData.addError( error );
+						}
+
+						if ( errorMap != null )
+						{
+							List<SendMailErrorWrapper> emailErrors;
+							
+							emailErrors = ((List<SendMailErrorWrapper>) errorMap.get( ObjectKeys.SENDMAIL_ERRORS ));
+							if ( emailErrors != null && emailErrors.size() > 0 )
+								responseData.addErrors( SendMailErrorWrapper.getErrorMessages( emailErrors ) );
+							else
+							{
+								// Sending the email worked.  Change the users "external user provisioned state" to
+								// "password reset waiting for verification"
+								ExternalUserUtil.markAsPwdResetWaitingForVerification( user );
+							}
+						}
+					}
+				}
+				else
+				{
+					String error;
+					
+					error = NLT.get( "request.pwd.reset.invalid.user.state" );
+					responseData.addError( error );
+				}
+				
+				return null;
+			}
+		}; 
+
+		// Do the necessary work as the admin user.
+		RunasTemplate.runasAdmin(
+								callback,
+								RequestContextHolder.getRequestContext().getZoneName() );
+
+		return responseData;
 	}
 	
 	/**
@@ -10641,188 +10883,6 @@ public class GwtServerHelper {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Send an email notification to the given recipients for the given
-	 * entities.
-	 * 
-	 * This code was taken from RelevanceAjaxController.java,
-	 * ajaxSaveShareThisBinder() and modified.
-	 * 
-	 * @param ami
-	 * @param entityIds
-	 * @param addedComments
-	 * @param principalIds
-	 * @param teamIds
-	 * 
-	 * @return
-	 * 
-	 * @throws Exception
-	 */
-	public static GwtShareEntryResults shareEntry( AllModulesInjected ami, List<EntityId> entityIds, String addedComments, List<String> principalIds, List<String> teamIds )
-		throws Exception
-	{
-		AdminModule adminModule;
-		BinderModule binderModule;
-		FolderModule folderModule;
-		ProfileModule profileModule;
-		Set<Long> principalIdsL;
-		Set<Long> teamIdsL;
-		List emailErrors;
-		List<User> noAccessPrincipals;
-		GwtShareEntryResults results;
-		
-		// Convert all of the user and groups ids to Longs
-		principalIdsL = new HashSet<Long>();
-		if ( principalIds != null )
-		{
-			for ( String nextId : principalIds )
-			{
-				principalIdsL.add( Long.valueOf( nextId ) );
-			}
-		}
-		
-		// Convert all of the team ids to Longs
-		teamIdsL = new HashSet<Long>();
-		if ( teamIds != null )
-		{
-			for ( String nextId : teamIds )
-			{
-				teamIdsL.add( Long.valueOf( nextId ) );
-			}
-		}
-		
-		emailErrors        = null;
-		noAccessPrincipals = new ArrayList<User>();
-
-		adminModule   = ami.getAdminModule();
-		binderModule  = ami.getBinderModule();
-		folderModule  = ami.getFolderModule();
-		profileModule = ami.getProfileModule();
-
-		for ( EntityId entityId:  entityIds )
-		{
-			DefinableEntity de;
-			if ( entityId.isBinder() )
-			     de = binderModule.getBinder(                        entityId.getEntityId() );
-			else de = folderModule.getEntry( entityId.getBinderId(), entityId.getEntityId() );
-			
-			profileModule.setShares( de, principalIdsL, teamIdsL );
-	
-			// Send an email to the given recipients.
-			{
-				String title;
-				String shortTitle;
-				String desc;
-				Description body;
-		        User user;
-				String mailTitle;
-				Set<String> emailAddress;
-				String bccEmailAddress;
-				List entityEmailErrors;
-	
-		        user = RequestContextHolder.getRequestContext().getUser();
-	
-				title = de.getTitle();
-				shortTitle = title;
-				
-				if ( de.getParentBinder() != null )
-					title = de.getParentBinder().getPathName() + "/" + title;
-	
-				// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
-				desc = "<a href=\"" + PermaLinkUtil.getPermalinkForEmail( de ) + "\">" + title + "</a><br/><br/>" + addedComments;
-				body = new Description( desc );
-	
-				mailTitle = NLT.get( "relevance.mailShared", new Object[]{Utils.getUserTitle( user )} );
-				mailTitle += " (" + shortTitle +")";
-				
-				emailAddress = new HashSet();
-				
-				//See if this user wants to be BCC'd on all mail sent out
-				bccEmailAddress = user.getBccEmailAddress();
-				if ( bccEmailAddress != null && !bccEmailAddress.equals("") )
-				{
-					if ( !emailAddress.contains( bccEmailAddress.trim() ) )
-					{
-						//Add the user's chosen bcc email address
-						emailAddress.add( bccEmailAddress.trim() );
-					}
-				}
-				
-				// Send the email notification
-				entityEmailErrors = (List)adminModule.sendMail( principalIdsL, teamIdsL, emailAddress, null, null, mailTitle, body ).get( ObjectKeys.SENDMAIL_ERRORS );
-				if ( null == emailErrors )
-				{
-					emailErrors = entityEmailErrors;
-				}
-				else
-				{
-					if ( null != entityEmailErrors )
-					{
-						emailErrors.addAll( entityEmailErrors );
-					}
-				}
-			}
-				
-			// Check to see if the recipients have rights to see the given entry.
-			{
-				Set<Long> totalIds;
-				Set<Principal> totalUsers;
-	
-				totalIds = new HashSet<Long>();
-				totalIds.addAll( principalIdsL );
-				
-				totalUsers = profileModule.getPrincipals( totalIds );
-				for ( Principal p : totalUsers )
-				{
-					if ( p instanceof User )
-					{
-						try
-						{
-							AccessUtils.readCheck( (User)p, de );
-						}
-						catch( AccessControlException e )
-						{
-							noAccessPrincipals.add( (User) p );
-						}
-					}
-				}
-			}
-		}
-
-		results = new GwtShareEntryResults();
-		
-		// Package up the results.
-		{
-			// Do we have any users who were sent an email who don't have rights to read the entry?
-			if ( noAccessPrincipals != null && noAccessPrincipals.size() > 0 )
-			{
-				// Yes, add them to the results
-				for ( User user : noAccessPrincipals )
-				{
-					GwtUser gwtUser;
-					
-					// Add this user to the results.
-					gwtUser = new GwtUser();
-					gwtUser.setInternal( user.getIdentityInfo().isInternal() );
-					gwtUser.setUserId( user.getId() );
-					gwtUser.setName( user.getName() );
-					gwtUser.setTitle( Utils.getUserTitle( user ) );
-					gwtUser.setWorkspaceTitle( user.getWSTitle() );
-					
-					results.addUser( gwtUser );
-				}
-			}
-			
-			// Add any errors that happened to the results.
-			if ( null != emailErrors )
-			{
-				results.addErrors( emailErrors );
-			}
-		}
-			
-		return results;
 	}
 
 	/**

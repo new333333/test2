@@ -2044,7 +2044,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		String template;
 		switch (urlNotificationType) {
 		case FORGOTTEN_PASSWORD:  template = "forgottenPasswordNotification.vm"; purposeKey = subjectKey = "relevance.mailForgottenPassword"; break;
-		case PASSWORD_CHANGED:    template = "passwordChangedNotification.vm";   purposeKey = subjectKey = "relevance.mailPasswordChanged";   break;
+		case PASSWORD_RESET_REQUESTED:    template = "passwordChangedNotification.vm";   purposeKey = subjectKey = "relevance.mailPasswordChanged";   break;
 		default:
 			throw new ConfigurationException(NLT.get("errorcode.sendurlnotification.bogusUrlType", new String[]{urlNotificationType.name()}));
 		}

@@ -1646,6 +1646,10 @@ public class GwtMainPage extends ResizeComposite
 				loginStatus = LoginStatus.RegistrationRequired;
 			else if ( status.equalsIgnoreCase( "promptForLogin" ) )
 				loginStatus = LoginStatus.PromptForLogin;
+			else if ( status.equalsIgnoreCase( "promptForPwdReset" ) )
+				loginStatus = LoginStatus.PromptForPwdReset;
+			else if ( status.equalsIgnoreCase( "pwdResetVerified" ) )
+				loginStatus = LoginStatus.PwdResetVerified;
 		}
 			
 		return loginStatus;
