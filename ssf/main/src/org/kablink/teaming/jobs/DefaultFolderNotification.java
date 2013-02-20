@@ -36,8 +36,6 @@ import java.util.Date;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization.SyncJobDescription;
-import org.kablink.teaming.jobs.SSCronTriggerJob.CronJobDescription;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobExecutionContext;
