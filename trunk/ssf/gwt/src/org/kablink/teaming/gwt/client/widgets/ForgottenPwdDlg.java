@@ -240,6 +240,7 @@ public class ForgottenPwdDlg extends DlgBox
 							{
 								FlowPanel errorPanel;
 								Label label;
+								String txt;
 
 								// No, tell the user about it.
 								// Get the panel that holds the errors.
@@ -250,7 +251,11 @@ public class ForgottenPwdDlg extends DlgBox
 								label.addStyleName( "dlgErrorLabel" );
 								errorPanel.add( label );
 								
-								label = new Label( GwtTeaming.getMessages().forgottenPwdDlg_InvalidEmailAddress() );
+								txt = GwtTeaming.getMessages().forgottenPwdDlg_InvalidEmailAddress();
+								if ( gwtUser != null && gwtUser.isInternal() == true )
+									txt = GwtTeaming.getMessages().forgottenPwdDlg_OnlyForExternalUsers();
+								
+								label = new Label( txt );
 								label.addStyleName( "bulletListItem" );
 								errorPanel.add( label );
 
