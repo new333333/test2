@@ -773,9 +773,30 @@ public class GwtMainPage extends ResizeComposite
 		// Is the user logged in?
 		if ( m_requestInfo.isUserLoggedIn() == false )
 		{
+			boolean promptForLogin;
+			final boolean canCancel;
+			
 			// No
+			promptForLogin = m_requestInfo.promptForLogin();
+			
+			// Should we prompt for login?
+			if ( promptForLogin == false )
+			{
+				// No, are we running Filr?
+				if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
+				{
+					// Yes, we always want to prompt for login.
+					promptForLogin = true;
+					canCancel = true;
+				}
+				else
+					canCancel = getLoginCanCancel();
+			}
+			else
+				canCancel = getLoginCanCancel();
+			
 			// Should we invoke the login dialog?
-			if ( m_requestInfo.promptForLogin() == true )
+			if ( promptForLogin == true )
 			{
 				// Yes
 				// Hide the workspace tree control and the menu bar.
@@ -788,7 +809,7 @@ public class GwtMainPage extends ResizeComposite
 					@Override
 					public void execute()
 					{
-						invokeLoginDlg( getLoginCanCancel() );
+						invokeLoginDlg( canCancel );
 					}
 				} );
 			}

@@ -761,6 +761,7 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlg_AuthProviderUnknown();
 	String loginDlg_AuthenticateUsingOpenID( String providerName );
 	String loginDlg_ConfirmationText();
+	String loginDlg_EnterAsGuest();
 	String loginDlg_externalUserSelfRegFailed();
 	String loginDlg_ExtUserPwdResetHint();
 	String loginDlg_ExtUserRegistrationHint();
