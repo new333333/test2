@@ -106,15 +106,27 @@ public class LoginController  extends SAbstractControllerRetry {
 				public Object doAs()
 				{
 					// Change the user's password
+					try
 					{
 						Map updates = new HashMap();
 
 						updates.put( "password", pwd );
-//!!!						getProfileModule().modifyUserFromPortal( extUser, updates, null );
+						getProfileModule().modifyUserFromPortal( extUser.getId(), updates, null );
+					}
+					catch ( Exception ex )
+					{
+						logger.error( "In completePasswordReset(), call to getProfileModule().modifyUserFromPortal() failed: " + ex.toString() );
 					}
 
-					// Mark the user as verified
-					ExternalUserUtil.markAsVerified( extUser );
+					try
+					{
+						// Mark the user as verified
+						ExternalUserUtil.markAsVerified( extUser );
+					}
+					catch ( Exception ex )
+					{
+						logger.error( "In completePasswordReset(), call to ExternalUserUtil.markAsVerified() failed: " + ex.toString() );
+					}
 
 					return null;
 				}
@@ -259,12 +271,14 @@ public class LoginController  extends SAbstractControllerRetry {
     		}
     		else if ( sessionObj instanceof ExternalUserRespondingToPwdResetVerificationException )
     		{
+    			Long userId;
     			User extUser;
     			ExternalUserRespondingToPwdResetVerificationException ex;
         		String refererUrl;
 
     			ex = (ExternalUserRespondingToPwdResetVerificationException) sessionObj;
-    			extUser = ex.getExternalUser();
+    			userId = ex.getExternalUserId();
+    			extUser = ((User) getProfileModule().getEntry( userId ));
 
     			// Reset the user's password and mark the user as verified.
     			completePasswordReset( extUser, ex.getPwd() );

@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.extuser;
 
-import org.kablink.teaming.domain.User;
 import org.springframework.security.core.AuthenticationException;
 
 /**
@@ -43,14 +42,14 @@ public class ExternalUserRespondingToPwdResetVerificationException extends Authe
 {
 	private static final long serialVersionUID = 1L;
 	
-	private User m_user;
+	private Long m_userId;
 	private String m_url;
 	private String m_pwd;
 
-	public ExternalUserRespondingToPwdResetVerificationException( User user, String url, String pwd )
+	public ExternalUserRespondingToPwdResetVerificationException( Long userId, String url, String pwd )
 	{
 		super( "External user is responding to password reset verification" );
-		m_user = user;
+		m_userId = userId;
 		m_url = url;
 		m_pwd = pwd;
 	}
@@ -58,9 +57,9 @@ public class ExternalUserRespondingToPwdResetVerificationException extends Authe
 	/**
 	 * 
 	 */
-	public User getExternalUser()
+	public Long getExternalUserId()
 	{
-		return m_user;
+		return m_userId;
 	}
 	
 	/**
