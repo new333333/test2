@@ -1252,7 +1252,7 @@ public class LoginDlg extends DlgBox
 			
 			cancelElement = Document.get().getElementById( "loginCancelBtn" );
 			m_cancelBtn = Button.wrap( cancelElement );
-			m_cancelBtn.setText( messages.cancel() );
+			m_cancelBtn.setText( messages.loginDlg_EnterAsGuest() );
 			m_cancelBtn.addClickHandler( this );
 			m_cancelBtn.setVisible( false );
 		}
@@ -1515,7 +1515,7 @@ public class LoginDlg extends DlgBox
 			
 			cancelElement = Document.get().getElementById( "loginCancelBtn" );
 			m_cancelBtn = Button.wrap( cancelElement );
-			m_cancelBtn.setText( messages.cancel() );
+			m_cancelBtn.setText( messages.loginDlg_EnterAsGuest() );
 			m_cancelBtn.addClickHandler( this );
 			m_cancelBtn.setVisible( false );
 		}
@@ -1753,7 +1753,7 @@ public class LoginDlg extends DlgBox
 			
 			cancelElement = Document.get().getElementById( "loginCancelBtn" );
 			m_cancelBtn = Button.wrap( cancelElement );
-			m_cancelBtn.setText( GwtTeaming.getMessages().cancel() );
+			m_cancelBtn.setText( GwtTeaming.getMessages().loginDlg_EnterAsGuest() );
 			m_cancelBtn.addClickHandler( this );
 			m_cancelBtn.setVisible( false );
 		}
