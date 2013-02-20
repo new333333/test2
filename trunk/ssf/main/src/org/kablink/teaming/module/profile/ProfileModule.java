@@ -458,11 +458,11 @@ public interface ProfileModule {
 	  
 	/**
 	 * Update user from information from the portal.
-	 * 
+	 * r
 	 * @param user
 	 * @param updates
 	 */
-	public void modifyUserFromPortal(User user, Map updates, Map options);
+	public void modifyUserFromPortal(Long userId, Map updates, Map options);
 	/**
 	 * Set a property for a binder
 	 * @param userId - null for current user

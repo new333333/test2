@@ -678,7 +678,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	void modifyPassword(User user, String password) {
 		Map updates = new HashMap();
 		updates.put("password", password);
-		getProfileModule().modifyUserFromPortal(user, updates, null);
+		getProfileModule().modifyUserFromPortal(user.getId(), updates, null);
 	}
 	
 	public User authenticate(String zoneName, Long userId, String binderId, String privateDigest, String authenticatorName) 

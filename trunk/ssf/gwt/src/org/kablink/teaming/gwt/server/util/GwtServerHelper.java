@@ -1793,7 +1793,7 @@ public class GwtServerHelper {
 			updates.put( ObjectKeys.FIELD_USER_FIRSTNAME, firstName );
 			updates.put( ObjectKeys.FIELD_USER_LASTNAME, lastName );
 
-			ami.getProfileModule().modifyUserFromPortal( extUser, updates, null );
+			ami.getProfileModule().modifyUserFromPortal( extUser.getId(), updates, null );
 			
 			ExternalUserUtil.markAsCredentialed( extUser );
 			
