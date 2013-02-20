@@ -58,7 +58,6 @@ import org.kablink.teaming.gwt.client.widgets.TimePicker;
 import org.kablink.teaming.gwt.client.widgets.ValueSpinner;
 import org.kablink.teaming.gwt.client.widgets.TZDateBox;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -349,7 +348,7 @@ public class TaskDueDateDlg extends DlgBox
 		// Do we have an event to apply?
 		if (null != event) {
 			// Yes!  Asynchronously put the due date into affect...
-			ScheduledCommand doApply = new ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					// Put the new due date information into affect.
@@ -357,8 +356,7 @@ public class TaskDueDateDlg extends DlgBox
 						event,
 						m_selectedTask.getTaskId().getEntityId());
 				}
-			};
-			Scheduler.get().scheduleDeferred(doApply);
+			});
 			
 			// ...and close the dialog.
 			hide();
@@ -553,7 +551,7 @@ public class TaskDueDateDlg extends DlgBox
 	 * initialize the date picker when entering the dialog.
 	 */
 	private Date getPickerDateOnEntry(TaskDate taskDate) {
-		boolean hasDate = (null != taskDate);
+		boolean hasDate = (null != taskDate) && (null != taskDate.getDate());
 		Date    reply   = (hasDate ? new Date(taskDate.getDate().getTime()) : null);
 		if (hasDate && isAllDayEvent()) {
 			Long t = reply.getTime();
