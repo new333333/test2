@@ -1363,14 +1363,30 @@ public class SearchUtils {
 		return (((null == obj) || (0 == obj.length())) ? defStr : obj);
 	}
 
-    public static void validateSearchText(String searchText) {
-        if (searchText!=null && (!(searchText.trim().equals("") || searchText.trim().equals("*")))) {
-            Pattern p = Pattern.compile("[\\s][*?]|^[*?]|[a-zA-Z0-9_][*][a-zA-Z0-9_]");
+    //Routine to look for invalid wild cards
+	//This routine may also fix up the text so that it will work
+	public static String validateSearchText(String searchText) {
+        if (searchText != null) {
+            Pattern p = Pattern.compile("[\\s][*?][a-zA-Z0-9_]|^[*?][a-zA-Z0-9_]|[a-zA-Z0-9_][*][a-zA-Z0-9_]");
             Matcher m = p.matcher(searchText);
             if (m.find()) {
                 //This request has an invalid use of the wild card character; give an error
                 throw new SearchWildCardException(searchText);
             }
+            p = Pattern.compile("([^a-zA-Z0-9_])([*])([^a-zA-Z0-9_])");
+            m = p.matcher(searchText);
+            if (m.find()) {
+            	//Remove any stand alone "*" characters
+            	searchText = m.replaceAll("$1$3");
+            }
+            p = Pattern.compile("^([*])([^a-zA-Z0-9_])");
+            m = p.matcher(searchText);
+            if (m.find()) {
+            	//Remove any stand alone "*" characters
+            	searchText = m.replaceAll("$2");
+            }
+
         }
+        return searchText.trim();
     }
 }
