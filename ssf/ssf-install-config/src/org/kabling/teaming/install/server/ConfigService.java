@@ -2175,9 +2175,22 @@ public final class ConfigService
 			executeCommand("sudo SuSEfirewall2 close EXT TCP 80 443", true);
 		}
 
+		//If memcache is enabled, enable port 11211
+		if ( config.getClustered().getCachingProvider().equals("memcache"))
+		{
+			executeCommand("sudo SuSEfirewall2 open EXT TCP 11211", true);
+		}
+		//Don't enable the port 11211
+		else
+		{
+			executeCommand("sudo SuSEfirewall2 close EXT TCP 11211", true);
+		}
+		
 		// Restart the firewall after the changes
 		executeCommand("sudo SuSEfirewall2 stop", true);
 		executeCommand("sudo SuSEfirewall2 start", true);
+		
+		
 	}
 
 	private static boolean isFilrServerRunning() throws MalformedURLException, IOException
