@@ -1872,7 +1872,7 @@ public final class ConfigService
 
 			// Create the database if needed
 			int result = executeCommand(
-					"sudo mysql -h " + resourceHost + " -u" + resourceName + " -p'" + resourcePassword + "'"
+					"mysql -h " + resourceHost + " -u" + resourceName + " -p'" + resourcePassword + "'"
 							+ " < /filrinstall/db/scripts/sql/mysql-create-empty-database.sql", false).getExitValue();
 
 			// We got an error ( 0 for success, 1 for database exists)
