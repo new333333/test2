@@ -2511,8 +2511,8 @@ public class GwtTaskHelper {
 				
 				else if (hasActualStart && (!hasActualEnd)) {
 					// Has start, no end!  Calculate an end.
-					if (EventHelper.debugEnabled()) {
-						EventHelper.debugLog("GwtTaskHelper.updateCalculatedDatesImpl( 1:Adjusting Start ):  " + ti.getTitle());
+					if (m_logger.isDebugEnabled()) {
+						m_logger.debug("GwtTaskHelper.updateCalculatedDatesImpl( 1:Adjusting Start ):  " + ti.getTitle());
 					}
 					newCalcEnd      = EventHelper.adjustDate(tiSD.getActualStart().getDate(), durDays);
 					removeCalcStart = true;
@@ -2520,8 +2520,8 @@ public class GwtTaskHelper {
 				
 				else if ((!hasActualStart) && hasActualEnd) {
 					// No start, has end!  Calculate a start.
-					if (EventHelper.debugEnabled()) {
-						EventHelper.debugLog("GwtTaskHelper.updateCalculatedDatesImpl( 2:Adjusting End ):  " + ti.getTitle());
+					if (m_logger.isDebugEnabled()) {
+						m_logger.debug("GwtTaskHelper.updateCalculatedDatesImpl( 2:Adjusting End ):  " + ti.getTitle());
 					}
 					newCalcStart  = EventHelper.adjustDate(tiSD.getActualEnd().getDate(), (-durDays));
 					removeCalcEnd = true;
@@ -2563,8 +2563,8 @@ public class GwtTaskHelper {
 						else {
 							// ...otherwise, use its start to calculate
 							// ...its end.
-							if (EventHelper.debugEnabled()) {
-								EventHelper.debugLog("GwtTaskHelper.updateCalculatedDatesImpl( 3:Adjusting End ):  " + ti.getTitle());
+							if (m_logger.isDebugEnabled()) {
+								m_logger.debug("GwtTaskHelper.updateCalculatedDatesImpl( 3:Adjusting End ):  " + ti.getTitle());
 							}
 							newCalcEnd = EventHelper.adjustDate(newCalcStart, durDays);
 						}
