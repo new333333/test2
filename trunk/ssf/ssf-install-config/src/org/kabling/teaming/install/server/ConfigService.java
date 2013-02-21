@@ -100,7 +100,7 @@ public final class ConfigService
 			config = getInstallerConfig(document);
 
 		File file = new File("/filrinstall/configurationDetails.properties");
-		
+
 		if (file.exists())
 		{
 			Properties prop = new Properties();
@@ -108,15 +108,15 @@ public final class ConfigService
 			{
 				prop.load(new FileInputStream(file));
 
-				String localpostfix=prop.getProperty("using.local.postfix");
-				
+				String localpostfix = prop.getProperty("using.local.postfix");
+
 				if (localpostfix != null)
 					config.setLocalPostfix(Boolean.parseBoolean(localpostfix));
-				
+
 			}
-			catch(IOException e)
+			catch (IOException e)
 			{
-				
+
 			}
 		}
 		return config;
@@ -1021,7 +1021,7 @@ public final class ConfigService
 		return null;
 	}
 
-	public static void saveConfiguration(InstallerConfig config,List<LeftNavItemType> sectionsToUpdate) throws ConfigurationSaveException
+	public static void saveConfiguration(InstallerConfig config, List<LeftNavItemType> sectionsToUpdate) throws ConfigurationSaveException
 	{
 		// Make a copy of the original installer.xml so that we can revert if we need to
 		try
@@ -1077,13 +1077,14 @@ public final class ConfigService
 			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.NOVELL_ACCESS_MANAGER))
 				saveSSOConfiguration(config, document);
 
-			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.INBOUND_EMAIL) || sectionsToUpdate.contains(LeftNavItemType.OUTBOUND_EMAIL))
+			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.INBOUND_EMAIL)
+					|| sectionsToUpdate.contains(LeftNavItemType.OUTBOUND_EMAIL))
 			{
 				saveEmailSettingsConfiguration(config, document);
-				
-				//SAVE POSTFIX INFO INTO CONFIGURATION DETAILS.PROPERTIES
+
+				// SAVE POSTFIX INFO INTO CONFIGURATION DETAILS.PROPERTIES
 				File file = new File("/filrinstall/configurationDetails.properties");
-				
+
 				if (file.exists())
 				{
 					Properties prop = new Properties();
@@ -1091,14 +1092,14 @@ public final class ConfigService
 					{
 						prop.load(new FileInputStream(file));
 
-						prop.setProperty("using.local.postfix",String.valueOf(config.isLocalPostfix()));
-						
+						prop.setProperty("using.local.postfix", String.valueOf(config.isLocalPostfix()));
+
 						store(prop, file);
-						
+
 					}
-					catch(IOException e)
+					catch (IOException e)
 					{
-						
+
 					}
 				}
 
@@ -1528,7 +1529,7 @@ public final class ConfigService
 			resourceElement.setAttribute("mail.smtp.port", String.valueOf(emailSettings.getSmtpPort()));
 			resourceElement.setAttribute("mail.smtp.sendpartial", String.valueOf(emailSettings.isSmtpSendPartial()));
 			resourceElement.setAttribute("mail.smtp.user", emailSettings.getSmtpUser());
-			
+
 			if (emailSettings.getSmtpConnectionTimeout() != 0)
 				resourceElement.setAttribute("mail.smtp.connectiontimeout", String.valueOf(emailSettings.getSmtpConnectionTimeout()));
 
@@ -1544,7 +1545,7 @@ public final class ConfigService
 			resourceElement.setAttribute("mail.smtps.port", String.valueOf(emailSettings.getSmtpsPort()));
 			resourceElement.setAttribute("mail.smtps.sendpartial", String.valueOf(emailSettings.isSmtpsSendPartial()));
 			resourceElement.setAttribute("mail.smtps.user", emailSettings.getSmtpsUser());
-			
+
 			if (emailSettings.getSmtpsConnectionTimeout() != 0)
 				resourceElement.setAttribute("mail.smtps.connectiontimeout", String.valueOf(emailSettings.getSmtpsConnectionTimeout()));
 
@@ -1952,7 +1953,30 @@ public final class ConfigService
 				throw new ConfigurationSaveException();
 			}
 		}
-
+		
+		ShellCommandInfo info = executeCommand("sudo hostname -f", true);
+		String hostName = null;
+		List<String> outputList = info.getOutput();
+		if (info.getExitValue() == 0 && outputList != null && outputList.get(0) != null)
+		{
+			hostName = info.getOutput().get(0);
+		}
+		DatabaseConfig config = database.getDatabaseConfig("Installed");
+		
+		StringBuilder commandToRun = new StringBuilder();
+		commandToRun.append("mysql -h " + config.getHostNameFromUrl());
+		commandToRun.append(" -u" + config.getResourceUserName());
+		commandToRun.append(" -p'" + config.getResourcePassword() + "'");
+		commandToRun.append(" -D"+config.getResourceDatabase() );
+		commandToRun.append(" -e \"update SS_ZoneConfig set fsaAutoUpdateUrl='");
+		commandToRun.append("https://"+hostName+ "/desktopapp'");
+		commandToRun.append(" where zoneId=1 and (fsaAutoUpdateUrl is null or fsaAutoUpdateUrl='')\"");
+		
+		//W
+		int exitValue = executeCommand(commandToRun.toString(), false).getExitValue();
+		
+		logger.debug("Update SS_ZoneConfig update url exitValue "+exitValue);
+			
 	}
 
 	public static void reconfigure(boolean restartServer) throws ConfigurationSaveException
@@ -2175,22 +2199,21 @@ public final class ConfigService
 			executeCommand("sudo SuSEfirewall2 close EXT TCP 80 443", true);
 		}
 
-		//If memcache is enabled, enable port 11211
-		if ( config.getClustered().getCachingProvider().equals("memcache"))
+		// If memcache is enabled, enable port 11211
+		if (config.getClustered().getCachingProvider().equals("memcache"))
 		{
 			executeCommand("sudo SuSEfirewall2 open EXT TCP 11211", true);
 		}
-		//Don't enable the port 11211
+		// Don't enable the port 11211
 		else
 		{
 			executeCommand("sudo SuSEfirewall2 close EXT TCP 11211", true);
 		}
-		
+
 		// Restart the firewall after the changes
 		executeCommand("sudo SuSEfirewall2 stop", true);
 		executeCommand("sudo SuSEfirewall2 start", true);
-		
-		
+
 	}
 
 	private static boolean isFilrServerRunning() throws MalformedURLException, IOException

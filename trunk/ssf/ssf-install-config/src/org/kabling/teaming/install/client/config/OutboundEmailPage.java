@@ -20,7 +20,9 @@ import org.kabling.teaming.install.shared.InstallerConfig;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -190,41 +192,42 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 		
-//		{
-//			row++;
-//			// Test Connection
-//			Button testConnButton = new Button(RBUNDLE.testConnection());
-//			table.setWidget(row, 1, testConnButton);
-//			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-//			
-//			testConnButton.addClickHandler(new ClickHandler()
-//			{
-//				
-//				@Override
-//				public void onClick(ClickEvent event)
-//				{
-//					InstallerConfig config = (InstallerConfig) getDataFromDlg();
-//					AppUtil.getInstallService().testSmtpConnection(config.getEmailSettings(), new AsyncCallback<Boolean>()
-//					{
-//
-//						@Override
-//						public void onFailure(Throwable caught)
-//						{
-//							Window.alert("Connection not Valid");
-//						}
-//
-//						@Override
-//						public void onSuccess(Boolean result)
-//						{
-//							if (result )
-//								Window.alert("Connection Valid");
-//							else
-//								Window.alert("Connection not Valid");
-//						}
-//					});
-//				}
-//			});
-//		}
+		{
+			row++;
+			// Test Connection
+			Button testConnButton = new Button(RBUNDLE.testConnection());
+			testConnButton.addStyleName("tomcatRestartButton");
+			table.setWidget(row, 1, testConnButton);
+			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			
+			testConnButton.addClickHandler(new ClickHandler()
+			{
+				
+				@Override
+				public void onClick(ClickEvent event)
+				{
+					InstallerConfig config = (InstallerConfig) getDataFromDlg();
+					AppUtil.getInstallService().testSmtpConnection(config.getEmailSettings(), new AsyncCallback<Boolean>()
+					{
+
+						@Override
+						public void onFailure(Throwable caught)
+						{
+							Window.alert("Connection not Valid");
+						}
+
+						@Override
+						public void onSuccess(Boolean result)
+						{
+							if (result )
+								Window.alert("Connection Valid");
+							else
+								Window.alert("Connection not Valid");
+						}
+					});
+				}
+			});
+		}
 
 		if (timezones == null)
 		{
