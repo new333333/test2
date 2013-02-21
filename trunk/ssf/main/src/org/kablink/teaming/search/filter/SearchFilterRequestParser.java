@@ -380,14 +380,14 @@ public class SearchFilterRequestParser {
 
 	private void parseFreeText(PortletRequest request, SearchFilter searchFilter) throws SearchWildCardException {
 		String searchText = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchText, "");
-        SearchUtils.validateSearchText(searchText);
+		searchText = SearchUtils.validateSearchText(searchText);
 		Boolean searchCaseSensitive = false;
 		try {
 			searchCaseSensitive = PortletRequestUtils.getBooleanParameter(request, WebKeys.SEARCH_FORM_CASE_SENSITIVE);
 		} catch(Exception e) {}
 		if (searchCaseSensitive == null) searchCaseSensitive = false;
 		
-		if (!searchText.trim().equals("") && !searchText.trim().equals("*")) {
+		if (!searchText.trim().equals("")) {
 			searchFilter.addText(searchText, searchCaseSensitive);
 		}
 	}
