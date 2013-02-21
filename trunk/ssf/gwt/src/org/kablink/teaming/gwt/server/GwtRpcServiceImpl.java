@@ -73,6 +73,7 @@ import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
+import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
 import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
 import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.GwtUserFileSyncAppConfig;
@@ -1489,6 +1490,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_JITS_ZONE_CONFIG:
+		{
+			GwtJitsZoneConfig jitsZoneConfig; 
+
+			jitsZoneConfig = GwtServerHelper.getJitsZoneConfig( this );
+			response = new VibeRpcResponse( jitsZoneConfig );
+			return response;
+		}
+		
 		case GET_JSP_HTML:
 		{
 			HttpServletResponse resp;
@@ -2656,6 +2666,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveFolderSortCmd sfsCmd = ((SaveFolderSortCmd) cmd);
 			Boolean result = saveFolderSort( ri, sfsCmd.getBinderInfo(), sfsCmd.getSortKey(), sfsCmd.getSortAscending() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
+		case SAVE_JITS_ZONE_CONFIG:
+		{
+			SaveJitsZoneConfigCmd sjzcCmd;
+			Boolean result;
+			
+			sjzcCmd = ((SaveJitsZoneConfigCmd) cmd);
+			result = GwtServerHelper.saveJitsZoneConfig( this, sjzcCmd.getJitsZoneConfig() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
 		

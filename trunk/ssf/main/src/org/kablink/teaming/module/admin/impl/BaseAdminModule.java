@@ -117,4 +117,10 @@ public class BaseAdminModule extends AbstractAdminModule {
 	{
 		// Noop
 	}
+
+	@Override
+	public void setJitsConfig( boolean enabled, long maxWait )
+	{
+		// Noop
+	}
 }

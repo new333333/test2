@@ -455,4 +455,6 @@ public interface AdminModule {
     public MobileAppsConfig getMobileAppsConfig();
     
     public void setMobileAppsConfig( MobileAppsConfig mobileAppsConfig );
+    
+    public void setJitsConfig( boolean enabled, long maxWait );
  }

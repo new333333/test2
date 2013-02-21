@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureMobileAppsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureShareSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeJitsZoneConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
@@ -86,6 +87,7 @@ import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUs
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.ConfigureUserFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserMobileAppsDlg.ConfigureUserMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
+import org.kablink.teaming.gwt.client.widgets.JitsZoneConfigDlg.JitsZoneConfigDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFolderRootsDlg.ManageNetFolderRootsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFoldersDlg.ManageNetFoldersDlgClient;
@@ -138,6 +140,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeConfigureShareSettingsDlgEvent.Handler,
 		InvokeConfigureUserAccessDlgEvent.Handler,
 		InvokeEditNetFolderDlgEvent.Handler,
+		InvokeJitsZoneConfigDlgEvent.Handler,
 		InvokeManageNetFoldersDlgEvent.Handler,
 		InvokeManageNetFolderRootsDlgEvent.Handler,
 		InvokeManageGroupsDlgEvent.Handler,
@@ -173,6 +176,7 @@ public class AdminControl extends TeamingPopupPanel
 	private EditZoneShareRightsDlg m_editZoneShareRightsDlg = null;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg = null;
 	private ShareThisDlg m_shareDlg = null;
+	private JitsZoneConfigDlg m_jitsDlg = null;
 	private EditBrandingDlg m_editSiteBrandingDlg = null;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private List<HandlerRegistration> m_registeredEventHandlers;
@@ -189,6 +193,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_CONFIGURE_SHARE_SETTINGS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
 		TeamingEvents.INVOKE_EDIT_NET_FOLDER_DLG,
+		TeamingEvents.INVOKE_JITS_ZONE_CONFIG_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
@@ -846,6 +851,11 @@ public class AdminControl extends TeamingPopupPanel
 			InvokeRunAReportDlgEvent.fireOne();
 		}
 		
+		else if ( adminAction.getActionType() == AdminAction.JITS_ZONE_CONFIG )
+		{
+			// Fire the event to invoke the "Configure Jits" dialog.
+			InvokeJitsZoneConfigDlgEvent.fireOne();
+		}
 		else
 		{
 			String url;
@@ -2014,6 +2024,74 @@ public class AdminControl extends TeamingPopupPanel
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+	/**
+	 * Handles the InvokeJitsZoneConfigDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeJitsZoneConfigDlgEvent.Handler.onInvokeJitsZoneConfigDlg() method.
+	 *  
+	 */
+	@Override
+	public void onInvokeJitsZoneConfigDlg( InvokeJitsZoneConfigDlgEvent event )
+	{
+		int x;
+		int y;
+
+		// Get the position of the content control.
+		x = m_contentControlX;
+		y = m_contentControlY;
+		
+		// Have we already created a Jits configuration" dialog?
+		if ( m_jitsDlg == null )
+		{
+			int width;
+			int height;
+			
+			// No, create one.
+			height = m_dlgHeight;
+			width = m_dlgWidth;
+			JitsZoneConfigDlg.createAsync(
+										true, 
+										false,
+										x, 
+										y,
+										width,
+										height,
+										new JitsZoneConfigDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final JitsZoneConfigDlg jzcDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_jitsDlg = jzcDlg;
+							
+							m_jitsDlg.init();
+							m_jitsDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_jitsDlg.init();
+			m_jitsDlg.setPopupPosition( x, y );
+			m_jitsDlg.show();
+		}
 	}
 	
 	/**
