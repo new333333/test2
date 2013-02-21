@@ -33,6 +33,8 @@
 package org.kabling.teaming.install.server;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,6 +45,7 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 
 import org.joda.time.DateTimeZone;
+import org.kabling.teaming.install.shared.TimeZoneNameComparator;
 
 
 /**
@@ -253,7 +256,8 @@ public class TimeZoneHelper
 		String[] ids = java.util.TimeZone.getAvailableIDs();
 		// prune the list
 		String offset = "";
-		TreeMap<String, String> results = new TreeMap<String, String>(); // sorted list
+		//We use our own comparator here to sort by name
+		TreeMap<String, String> results = new TreeMap<String, String>(new TimeZoneNameComparator()); // sorted list
 		for (int i = 0; i < ids.length; ++i)
 		{
 			String id = fixTimeZoneId(ids[i]);
@@ -264,10 +268,18 @@ public class TimeZoneHelper
 			if (id.length() == 3 && !id.equals("GMT"))
 				continue; // UTC is only one left
 			String tzString = TimeZone.getTimeZone(id).getDisplayName(false, TimeZone.LONG, Locale.getDefault());
-			Integer o = TimeZone.getTimeZone(id).getRawOffset() / (1000 * 60 * 60);
+			
+			//Read it as float so that we can calculate the minutes
+			Float o = (float)TimeZone.getTimeZone(id).getRawOffset() / (1000 * 60 * 60);
 			if (o > 12 || 0 < -11)
 				continue; // Skip any timezones that are outside of our expected range or -11 to +12
-			offset = "(" + getLocalizedValue("GMT") + " " + o.toString() + ":00) ";
+			
+			//We need to also get the minutes 
+			int minutes = (int )((o - o.intValue()) * 60);
+			String formattedValue = getFormattedMinutes(minutes);
+			
+			offset = "(" + getLocalizedValue("GMT") + " " + getFormattedHour(o.intValue()) + ":" + formattedValue + ") ";
+			
 			String city = id;
 			if (id.indexOf("/") >= 0)
 				city = id.substring(id.indexOf("/") + 1);
@@ -277,7 +289,27 @@ public class TimeZoneHelper
 		}
 //		if (!results.containsValue(fixTimeZoneId(user.getTimeZone().getID())))
 //			results.put(user.getTimeZone().getDisplayName(), fixTimeZoneId(user.getTimeZone().getID()));
+		
 		return results;
+	}
+
+	private static String getFormattedMinutes(int minutes)
+	{
+		//If we get 2, make it 02
+		if (minutes < 9)
+			return "0" + minutes;
+		
+		return String.valueOf(minutes);
+	}
+	
+	private static String getFormattedHour(int hour)
+	{
+		//If we get 2, make it +2
+		if (hour > 0)
+			return "+" + hour;
+		
+		//Negative or 0, return the same value
+		return String.valueOf(hour);
 	}
 
 	public static String getLocalizedValue(String key)

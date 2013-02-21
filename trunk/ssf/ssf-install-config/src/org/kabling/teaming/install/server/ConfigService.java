@@ -1729,7 +1729,8 @@ public final class ConfigService
 					while ((output = cmd.stdout.readLine()) != null)
 					{
 						cmdOutput.add(output);
-						logger.info(output); // log stdout
+						if (displayToConsole)
+							logger.info(output); // log stdout
 					}
 					commandInfo.setOutput(cmdOutput);
 				}
