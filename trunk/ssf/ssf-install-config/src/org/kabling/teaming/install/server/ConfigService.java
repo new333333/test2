@@ -423,7 +423,7 @@ public final class ConfigService
 		// Properties (maxThreads, maxActive and maxIdle)
 		requestAndConnections.setMaxThreads(getIntegerValue(rootNode.getAttribute("maxThreads")));
 		requestAndConnections.setMaxActive(getIntegerValue(rootNode.getAttribute("maxActive")));
-		requestAndConnections.setMaxIdle(getIntegerValue(rootNode.getAttribute("maxIdle")));
+		//requestAndConnections.setMaxIdle(getIntegerValue(rootNode.getAttribute("maxIdle")));
 
 		return requestAndConnections;
 	}
