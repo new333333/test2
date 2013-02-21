@@ -63,7 +63,6 @@ import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpURL;
@@ -135,6 +134,7 @@ import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
+import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtUser.ExtUserProvState;
@@ -3047,6 +3047,19 @@ public class GwtServerHelper {
 				
 				adminAction = new GwtAdminAction();
 				adminAction.init( title, url, AdminAction.MANAGE_EXTENSIONS );
+				
+				// Add this action to the "management" category
+				managementCategory.addAdminOption( adminAction );
+			}
+
+			// Does the user have rights to "manage JITS configuration"?
+			if ( isFilr && adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_jits_zone_config" );
+
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, "", AdminAction.JITS_ZONE_CONFIG );
 				
 				// Add this action to the "management" category
 				managementCategory.addAdminOption( adminAction );
@@ -6092,6 +6105,32 @@ public class GwtServerHelper {
 		return lpProperties;
 	}
 	
+	/**
+	 * Return a GwtJitsZoneConfig object that holds the jits zone config data.
+	 * 
+	 * @return
+	 */
+	public static GwtJitsZoneConfig getJitsZoneConfig( AllModulesInjected allModules )
+	{
+		GwtJitsZoneConfig gwtJitsZoneConfig;
+		ZoneConfig zoneConfig;
+		ZoneModule zoneModule;
+		
+		zoneModule = allModules.getZoneModule();
+		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+		
+		gwtJitsZoneConfig = new GwtJitsZoneConfig();
+		
+		// Get the whether jits is enabled.
+		gwtJitsZoneConfig.setJitsEnabled( zoneConfig.getJitsEnabled() );
+		
+		// Get the max wait time.
+		gwtJitsZoneConfig.setMaxWaitTime( zoneConfig.getJitsWaitTimeout() / 1000 );
+		
+		return gwtJitsZoneConfig;
+	}
+	
+
 	/*
 	 * Parses a JSON data string and if valid, returns a JSONObject.
 	 * Otherwise, returns null.
@@ -9530,6 +9569,7 @@ public class GwtServerHelper {
 		case GET_IM_URL:
 		case GET_INHERITED_LANDING_PAGE_PROPERTIES:
 		case GET_IS_DYNAMIC_GROUP_MEMBERSHIP_ALLOWED:
+		case GET_JITS_ZONE_CONFIG:
 		case GET_LANDING_PAGE_DATA:
 		case GET_LIST_OF_CHILD_BINDERS:
 		case GET_LIST_OF_FILES:
@@ -9638,6 +9678,7 @@ public class GwtServerHelper {
 		case SAVE_FOLDER_ENTRY_DLG_POSITION:
 		case SAVE_FOLDER_PINNING_STATE:
 		case SAVE_FOLDER_SORT:
+		case SAVE_JITS_ZONE_CONFIG:
 		case SAVE_MANAGE_USERS_STATE:
 		case SAVE_MOBILE_APPS_CONFIGURATION:
 		case SAVE_MULTIPLE_ADHOC_FOLDER_SETTINGS:
@@ -10202,6 +10243,21 @@ public class GwtServerHelper {
 		}
 	}
 
+	/**
+	 * Save the given Jits zone config
+	 */
+	public static Boolean saveJitsZoneConfig(
+		AllModulesInjected allModules,
+		GwtJitsZoneConfig gwtJitsZoneConfig ) throws GwtTeamingException
+	{
+		AdminModule adminModule;
+		
+		adminModule = allModules.getAdminModule();
+		adminModule.setJitsConfig( gwtJitsZoneConfig.getJitsEnabled(), gwtJitsZoneConfig.getMaxWaitTime() );
+
+		return Boolean.TRUE;
+	}
+	
 	/**
 	 * Stores the values from a ManageUsersState object in the session cache.
 	 * 

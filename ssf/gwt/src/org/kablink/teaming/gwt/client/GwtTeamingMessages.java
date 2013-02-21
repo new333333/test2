@@ -378,6 +378,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFolderSortSetting();
 	String rpcFailure_GetFolderToolbarItems();
 	String rpcFailure_GetFooterToolbarItems();
+	String rpcFailure_GetJitsZoneConfig();
 	String rpcFailure_GetLandingPageData();
 	String rpcFailure_GetListOfAttachments();
 	String rpcFailure_GetBinderAccessories();
@@ -630,6 +631,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ImportIcalByFileDlg();
 	String codeSplitFailure_ImportIcalByUrlDlg();
 	String codeSplitFailure_ImportProfilesDlg();
+	String codeSplitFailure_JitsZoneConfigDlg();
 	String codeSplitFailure_LandingPage();
 	String codeSplitFailure_LandingPageEditor();
 	String codeSplitFailure_LandingPageWidget();
@@ -2605,4 +2607,12 @@ public interface GwtTeamingMessages extends Messages
 	// String used in the main content control.
 	String contentControl_Warning_ShareNoRights();
 
+	// Strings used in the Jits zone config dialog
+	String jitsZoneConfigDlg_EnableJits();
+	String jitsZoneConfigDlg_Header();
+	String jitsZoneConfigDlg_MaxWaitLabel();
+	String jitsZoneConfigDlg_OnSaveUnknownException( String errMsg );
+	String jitsZoneConfigDlg_SavingConfig();
+	String jitsZoneConfigDlg_SecondsLabel();
+	
 }// end GwtTeamingMessages
