@@ -68,7 +68,7 @@ public abstract class ConfigPageDlgBox extends DlgBox implements EditSuccessfulH
 		}
 
 		errorLabel.setText(text);
-		getErrorPanel().setVisible(true);
+		getErrorPanel().setVisible(text != null);
 	}
 
 	/**

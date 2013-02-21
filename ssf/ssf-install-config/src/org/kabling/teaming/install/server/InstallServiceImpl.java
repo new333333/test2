@@ -1,13 +1,15 @@
 package org.kabling.teaming.install.server;
 
 import java.io.IOException;
-import java.net.Authenticator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.mail.*;
-import javax.mail.internet.*;
+import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
 
 import org.apache.log4j.Logger;
 import org.jvnet.libpam.PAM;
@@ -211,6 +213,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			if (protocol.equals("smtp"))
 			{
 				transport.connect(settings.getSmtpHost(), settings.getSmtpUser(), settings.getSmtpPassword());
+				logger.debug("smtp connection success ");
 			}
 			else
 			{
@@ -224,6 +227,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		catch (MessagingException e)
 		{
 			//AuthenticationFailureException will also go through this
+			logger.debug("smtp connection failed with "+e.getMessage());
 			return false;
 		}
 
