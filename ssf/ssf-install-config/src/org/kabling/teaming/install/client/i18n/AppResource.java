@@ -319,4 +319,8 @@ public interface AppResource extends Messages
 	String localHostNotValid();
 
 	String testConnection();
+
+	String default100();
+	
+	String default250();
 }

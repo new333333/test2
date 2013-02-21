@@ -21,7 +21,7 @@ import com.google.gwt.user.client.ui.Panel;
 public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 {
 	private GwValueSpinner maxThreadsSpinner;
-	private GwValueSpinner maxIdleSpinner;
+	//private GwValueSpinner maxIdleSpinner;
 	private GwValueSpinner maxActiveSpinner;
 
 	@Override
@@ -53,7 +53,7 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			maxThreadsSpinner = new GwValueSpinner(200, 100, 500, RBUNDLE.default200());
+			maxThreadsSpinner = new GwValueSpinner(250, 100, 500, RBUNDLE.default250());
 			maxThreadsSpinner.getValSpinnerLabel().addStyleName("infoLabel");
 			table.setWidget(row, 1, maxThreadsSpinner);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
@@ -66,24 +66,24 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			maxActiveSpinner = new GwValueSpinner(50, 50, 100, RBUNDLE.default50());
+			maxActiveSpinner = new GwValueSpinner(100, 50, 100, RBUNDLE.default100());
 			maxActiveSpinner.getValSpinnerLabel().addStyleName("infoLabel");
 			table.setWidget(row, 1, maxActiveSpinner);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
-		{
-			row++;
-			// Max Active
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.maxIdleColon());
-			table.setWidget(row, 0, keyLabel);
-			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-
-			maxIdleSpinner = new GwValueSpinner(20, 20, 100, RBUNDLE.default20());
-			maxIdleSpinner.getValSpinnerLabel().addStyleName("infoLabel");
-			table.setWidget(row, 1, maxIdleSpinner);
-			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-		}
+//		{
+//			row++;
+//			// Max Idle
+//			InlineLabel keyLabel = new InlineLabel(RBUNDLE.maxIdleColon());
+//			table.setWidget(row, 0, keyLabel);
+//			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+//
+//			maxIdleSpinner = new GwValueSpinner(20, 20, 100, RBUNDLE.default20());
+//			maxIdleSpinner.getValSpinnerLabel().addStyleName("infoLabel");
+//			table.setWidget(row, 1, maxIdleSpinner);
+//			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+//		}
 
 		return fPanel;
 	}
@@ -94,7 +94,7 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 		//Nothing to validate here..Fill up the object and return
 		RequestsAndConnections req = config.getRequestsAndConnections();
 		req.setMaxActive(maxActiveSpinner.getValueAsInt());
-		req.setMaxIdle(maxIdleSpinner.getValueAsInt());
+		//req.setMaxIdle(maxIdleSpinner.getValueAsInt());
 		req.setMaxThreads(maxThreadsSpinner.getValueAsInt());
 		return config;
 	}
@@ -112,7 +112,7 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 		if (req != null)
 		{
 			maxActiveSpinner.setValue(req.getMaxActive());
-			maxIdleSpinner.setValue(req.getMaxIdle());
+			//maxIdleSpinner.setValue(req.getMaxIdle());
 			maxThreadsSpinner.setValue(req.getMaxThreads());
 		}
 	}
