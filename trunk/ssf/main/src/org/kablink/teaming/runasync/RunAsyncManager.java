@@ -69,7 +69,7 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 		// but only up to the specified number of threads can execute the tasks concurrently.
 		
 		executorServiceHeavy = new ThreadPoolExecutor(0, 
-				SPropsUtil.getInt("runasync.executor.heavy.maximum.pool.size", 50),
+				SPropsUtil.getInt("runasync.executor.heavy.maximum.pool.size", 30),
                 60L, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>());
 		
