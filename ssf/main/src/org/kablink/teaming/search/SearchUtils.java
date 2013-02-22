@@ -1385,8 +1385,8 @@ public class SearchUtils {
             	//Remove any stand alone "*" characters
             	searchText = m.replaceAll("$2");
             }
-
+            searchText = searchText.trim();
         }
-        return searchText.trim();
+        return searchText;
     }
 }
