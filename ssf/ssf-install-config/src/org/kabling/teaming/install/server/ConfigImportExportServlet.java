@@ -79,6 +79,8 @@ public class ConfigImportExportServlet extends HttpServlet
 		{
 			// Cert Files
 			filesToZipMap.put("cacerts", "/usr/lib64/jvm/jre-1.6.0-ibm/lib/security/cacerts");
+			
+			filesToZipMap.put("Novell-VA-release", "/vastorage/conf/Novell-VA-release");
 
 			// Ganglia Files
 			filesToZipMap.put("gmontd.conf", "/etc/opt/novell/ganglia/monitor/gmontd.conf");
@@ -369,6 +371,19 @@ public class ConfigImportExportServlet extends HttpServlet
 			return;
 		}
 
+		//Delete temp files
+		String[] filesToDelete = tempDir.list();
+		if (filesToDelete != null)
+		{
+			for (String file : filesToDelete)
+			{
+				logger.debug("Deleting file="+file  +" from temp directory");
+				new File(file).delete();
+			}
+		}
+		tempDir.delete();
+		
+		
 		ConfigService.startFilrServer();
 
 		returnSucessResponse(response, null);
@@ -380,7 +395,10 @@ public class ConfigImportExportServlet extends HttpServlet
 
 		// File does not exist, no match
 		if (!oldFile.exists())
+		{
+			logger.debug("VA Release Match false, did not exist");
 			return false;
+		}
 
 		Properties prop = new Properties();
 		try
@@ -393,13 +411,14 @@ public class ConfigImportExportServlet extends HttpServlet
 			// product name matches
 			if (prop.getProperty("product").equals(oldProductName))
 			{
+				logger.debug("VA Release Match true");
 				return true;
 			}
 		}
 		catch (Exception e)
 		{
 		}
-
+		logger.debug("VA Release Match false");
 		return false;
 	}
 
@@ -431,9 +450,11 @@ public class ConfigImportExportServlet extends HttpServlet
 
 		if (newLicenseInfo.getDatesEffective().equals("trial"))
 		{
+			logger.debug("Need to overwrite license false");
 			return false;
 		}
-
+		
+		logger.debug("Need to overwrite license true");
 		return true;
 	}
 
