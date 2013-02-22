@@ -458,6 +458,9 @@ public class NetFolderHelper
 											options );
 			
 			//After creating the binder, we need to make sure it doesn't have any risidual roles and rights
+			// Note: Due to a bug in the template engine, functionMembershipInherited field value in the
+			// template is not being set properly in the target binder. We have to do it manually here.
+			adminModule.setWorkAreaFunctionMembershipInherited(binder, false);
 			List<WorkAreaFunctionMembership> wfms = adminModule.getWorkAreaFunctionMemberships(binder);
 			for (WorkAreaFunctionMembership wfm : wfms) {
 				adminModule.resetWorkAreaFunctionMemberships( binder, wfm.getFunctionId(), new ArrayList<Long>() );
