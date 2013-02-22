@@ -498,14 +498,14 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 
 <c:if test="${ssWorkArea.workAreaType == 'zone'}">
 <div style="padding-bottom:10px;">
-* <ssf:nlt tag="access.zone.applicationsFiltering"/>
+	<ssf:nlt tag="access.zone.applicationsFiltering"/>
 </div>
 </c:if>
 
-<span class="ss_italic ss_small">[<ssf:nlt tag="access.superUser">
+<span class="ss_small"><ssf:nlt tag="access.superUser">
   <ssf:param name="value" useBody="true"><ssf:userTitle user="${ss_superUser}"/></ssf:param>
   <ssf:param name="value" useBody="true"><ssf:userName user="${ss_superUser}"/></ssf:param>
-  </ssf:nlt>]</span><br/>
+  </ssf:nlt></span><br/>
 </div>
 </ssf:box>
 
