@@ -96,77 +96,61 @@ public class LoginController  extends SAbstractControllerRetry {
 	 * Set the given user's password and mark the user as verified.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void completePasswordReset( final User extUser )
+	private void completePasswordReset( User extUser )
 	{
 		if ( extUser != null )
 		{
-			RunasCallback callback;
-
-			callback = new RunasCallback()
+			boolean pwdReset = false;
+			
+			// Change the user's password
+			try
 			{
-				@Override
-				public Object doAs()
+				Map updates = new HashMap();
+				String pwd = null;
+
+				// The password is stored in the user's properties.
 				{
-					boolean pwdReset = false;
+					UserProperties userProperties;
+					Object value;
 					
-					// Change the user's password
-					try
-					{
-						Map updates = new HashMap();
-						String pwd = null;
-
-						// The password is stored in the user's properties.
-						{
-							UserProperties userProperties;
-							Object value;
-							
-					    	userProperties = getProfileModule().getUserProperties( extUser.getId() );
-							value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_RESET_PWD );
-							if ( value != null && value instanceof String )
-								pwd = (String) value;
-						}
-						
-						if ( pwd != null && pwd.length() > 0 )
-						{
-							updates.put( "password", pwd );
-							getProfileModule().modifyUserFromPortal( extUser.getId(), updates, null );
-							pwdReset = true;
-						}
-						else
-							logger.error( "In completePasswordReset(), unable to get the reset password" );
-					}
-					catch ( Exception ex )
-					{
-						logger.error( "In completePasswordReset(), call to getProfileModule().modifyUserFromPortal() failed: " + ex.toString() );
-					}
-
-					try
-					{
-						if ( pwdReset )
-						{
-							// Mark the user as verified
-							ExternalUserUtil.markAsVerified( extUser );
-	
-							// Remove the password from the user's properties 
-							getProfileModule().setUserProperty(
-															extUser.getId(),
-															ObjectKeys.USER_PROPERTY_RESET_PWD,
-															"" );
-						}
-					}
-					catch ( Exception ex )
-					{
-						logger.error( "In completePasswordReset(), call to ExternalUserUtil.markAsVerified() failed: " + ex.toString() );
-					}
-
-					return null;
+			    	userProperties = getProfileModule().getUserProperties( extUser.getId() );
+					value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_RESET_PWD );
+					if ( value != null && value instanceof String )
+						pwd = (String) value;
 				}
-			}; 
+				
+				if ( pwd != null && pwd.length() > 0 )
+				{
+					updates.put( "password", pwd );
+					getProfileModule().modifyUserFromPortal( extUser.getId(), updates, null );
+					pwdReset = true;
+				}
+				else
+					logger.error( "In completePasswordReset(), unable to get the reset password" );
+			}
+			catch ( Exception ex )
+			{
+				logger.error( "In completePasswordReset(), call to getProfileModule().modifyUserFromPortal() failed: " + ex.toString() );
+			}
 
-			// Do the necessary work as the admin user.
-			RunasTemplate.runasAdmin(
-									callback,
-									RequestContextHolder.getRequestContext().getZoneName() );
+			try
+			{
+				if ( pwdReset )
+				{
+					// Mark the user as verified
+					ExternalUserUtil.markAsVerified( extUser );
+
+					// Remove the password from the user's properties 
+					getProfileModule().setUserProperty(
+													extUser.getId(),
+													ObjectKeys.USER_PROPERTY_RESET_PWD,
+													"" );
+				}
+			}
+			catch ( Exception ex )
+			{
+				logger.error( "In completePasswordReset(), call to ExternalUserUtil.markAsVerified() failed: " + ex.toString() );
+			}
 		}
 		else
 			logger.error( "In completePasswordReset(), extUser is null" );
@@ -304,20 +288,41 @@ public class LoginController  extends SAbstractControllerRetry {
     		}
     		else if ( sessionObj instanceof ExternalUserRespondingToPwdResetVerificationException )
     		{
-    			Long userId;
-    			User extUser;
+    			RunasCallback callback;
     			ExternalUserRespondingToPwdResetVerificationException ex;
+    			final Long userId;
         		String refererUrl;
+        		Object retVal;
 
     			ex = (ExternalUserRespondingToPwdResetVerificationException) sessionObj;
     			userId = ex.getExternalUserId();
-    			extUser = ((User) getProfileModule().getEntry( userId ));
 
-    			// Reset the user's password and mark the user as verified.
-    			completePasswordReset( extUser );
-    			
+    			callback = new RunasCallback()
+    			{
+    				@Override
+    				public Object doAs()
+    				{
+    	    			User extUser;
+    	    			String extUserName;
+
+    	    			extUser = ((User) getProfileModule().getEntry( userId ));
+    	    			extUserName = extUser.getName();
+
+    	    			// Reset the user's password and mark the user as verified.
+    	    			completePasswordReset( extUser );
+    	    			
+    	    			return extUserName;
+    				}
+    			};
+
+    			// Do the necessary work as the admin user.
+    			retVal = RunasTemplate.runasAdmin(
+		    									callback,
+		    									RequestContextHolder.getRequestContext().getZoneName() );
+
+        		if ( retVal != null && retVal instanceof String )
+        			model.put( WebKeys.LOGIN_EXTERNAL_USER_NAME, (String) retVal );
         		model.put( WebKeys.LOGIN_STATUS, LOGIN_STATUS_PWD_RESET_VERIFIED );
-        		model.put( WebKeys.LOGIN_EXTERNAL_USER_NAME, extUser.getName() );
         		refererUrl = ex.getUrl();
     			model.put( WebKeys.URL, refererUrl );
     			model.put( "loginRefererUrl", refererUrl );
