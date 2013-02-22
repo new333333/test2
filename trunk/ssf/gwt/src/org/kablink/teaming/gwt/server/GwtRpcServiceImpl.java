@@ -178,9 +178,12 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.presence.PresenceManager;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
@@ -666,13 +669,35 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case FIND_USER_BY_EMAIL_ADDRESS:
 		{
-			FindUserByEmailAddressCmd fuCmd;
-			GwtUser gwtUser;
-			
+			final FindUserByEmailAddressCmd fuCmd;
+			final HttpServletRequest request;
+			final AllModulesInjected ami;
+			Object retValue;
+			RunasCallback callback;
+
 			fuCmd = (FindUserByEmailAddressCmd) cmd;
-			gwtUser = GwtSearchHelper.findUserByEmailAddress( this, req, fuCmd.getEmailAddress() );
-			response = new VibeRpcResponse( gwtUser );
-			return response;
+			request = req;
+			ami = this;
+			
+			callback = new RunasCallback()
+			{
+				@Override
+				public Object doAs()
+				{
+					GwtUser gwtUser;
+
+					gwtUser = GwtSearchHelper.findUserByEmailAddress( ami, request, fuCmd.getEmailAddress() );
+					
+					return new VibeRpcResponse( gwtUser );
+				}
+			}; 
+
+			// Do the necessary work as the admin user.
+			retValue = RunasTemplate.runasAdmin(
+											callback,
+											RequestContextHolder.getRequestContext().getZoneName() );
+			
+			return (VibeRpcResponse) retValue;
 		}
 
 		case GET_ACCESSORY_STATUS:
