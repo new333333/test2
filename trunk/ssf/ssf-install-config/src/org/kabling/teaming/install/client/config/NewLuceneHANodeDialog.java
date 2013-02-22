@@ -148,6 +148,8 @@ public class NewLuceneHANodeDialog extends DlgBox
 			luceneUserNameTextBox.setValidator(new ValueRequiredValidator(luceneUserNameTextBox));
 			table.setWidget(row, 1, luceneUserNameTextBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			
+			luceneUserNameTextBox.setText("lucense service");
 		}
 		
 		{
