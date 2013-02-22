@@ -177,10 +177,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return (org.kablink.teaming.domain.User) entry;
     }
 
-    protected SearchResultList<SearchableObject> searchForLibraryEntities(String keyword, List<Long> binderIds, boolean recursive, Integer offset, Integer maxCount, boolean includeBinders, boolean includeFolderEntries, boolean includeReplies, boolean includeFiles, boolean includeParentPaths, boolean textDescriptions, String nextUrl) {
-    	keyword = SearchUtils.validateSearchText(keyword);
-        Criteria crit = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binderIds, null, null, false,
-        Constants.LASTACTIVITY_FIELD, includeSubFolders, true);        crit.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
+    protected SearchResultList<SearchableObject> searchForLibraryEntities(String keyword, Criterion searchContext, boolean recursive, Integer offset, Integer maxCount, boolean includeBinders, boolean includeFolderEntries, boolean includeReplies, boolean includeFiles, boolean includeParentPaths, boolean textDescriptions, String nextUrl) {
+        keyword = SearchUtils.validateSearchText(keyword);
+        Criteria crit = new Criteria();
+        crit.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
         crit.add(buildLibraryCriterion(true));
         crit.add(searchContext);
 
