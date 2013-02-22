@@ -940,6 +940,8 @@ public class ModifyNetFolderDlg extends DlgBox
 			if ( m_netFolder.getIsHomeDir() == false )
 				netFolder.setRoles( getRoles() );
 		}
+		else
+			netFolder.setRoles( getRoles() );
 		
 		return netFolder;
 	}
