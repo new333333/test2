@@ -60,6 +60,7 @@ import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver.ConnectionTestStatus;
 import org.kablink.teaming.gwt.client.GwtGroup;
+import org.kablink.teaming.gwt.client.GwtJitsNetFolderConfig;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
@@ -212,8 +213,24 @@ public class GwtNetFolderHelper
 			// Set the rights on the net folder
 			setNetFolderRights( ami, binder.getId(), netFolder.getRoles() );
 			
-			// Set the data sync settings on the next folder
+			// Set the data sync settings on the net folder
 			saveDataSyncSettings( ami, binder.getId(), netFolder.getDataSyncSettings() );
+			
+			// Save the jits settings
+			{
+				GwtJitsNetFolderConfig settings;
+				
+				settings = netFolder.getJitsConfig();
+				if ( settings != null )
+				{
+					NetFolderHelper.saveJitsSettings(
+												ami.getBinderModule(),
+												binder.getId(),
+												settings.getJitsEnabled(),
+												settings.getAclMaxAge(),
+												settings.getResultsMaxAge() );
+				}
+			}
 
 			newNetFolder = new NetFolder();
 			newNetFolder.setName( netFolder.getName() );
@@ -224,6 +241,7 @@ public class GwtNetFolderHelper
 			newNetFolder.setSyncSchedule( netFolder.getSyncSchedule() );
 			newNetFolder.setRoles( netFolder.getRoles() );
 			newNetFolder.setDataSyncSettings( netFolder.getDataSyncSettings() );
+			newNetFolder.setJitsConfig( netFolder.getJitsConfig() );
 		}
 		catch ( Exception ex )
 		{
@@ -590,7 +608,6 @@ public class GwtNetFolderHelper
 		AllModulesInjected ami,
 		Binder binder )
 	{
-		Long zoneId;
 		ScheduleInfo scheduleInfo;
 		GwtSchedule gwtSchedule;
 		
@@ -613,7 +630,6 @@ public class GwtNetFolderHelper
 		AllModulesInjected ami,
 		ResourceDriverConfig rdConfig )
 	{
-		Long zoneId;
 		ScheduleInfo scheduleInfo;
 		GwtSchedule gwtSchedule;
 		
@@ -626,6 +642,25 @@ public class GwtNetFolderHelper
 		gwtSchedule = GwtNetFolderHelper.getGwtSyncSchedule( scheduleInfo );
 		
 		return gwtSchedule;
+	}
+	
+	/**
+	 * 
+	 */
+	private static GwtJitsNetFolderConfig getJitsSettings( Binder binder )
+	{
+		GwtJitsNetFolderConfig jitsSettings;
+		
+		jitsSettings = new GwtJitsNetFolderConfig();
+		
+		if ( binder != null )
+		{
+			jitsSettings.setJitsEnabled( binder.isJitsEnabled() );
+			jitsSettings.setResultsMaxAge( binder.getJitsMaxAge() );
+			jitsSettings.setAclMaxAge( binder.getJitsAclMaxAge() );
+		}
+
+		return jitsSettings;
 	}
 	
 	/**
@@ -711,6 +746,7 @@ public class GwtNetFolderHelper
 		GwtSchedule gwtSchedule;
 		ArrayList<GwtRole> listOfRoles;
 		NetFolderDataSyncSettings dataSyncSettings;
+		GwtJitsNetFolderConfig jitsSettings;
 		
 		netFolder = new NetFolder();
 		netFolder.setId( id );
@@ -722,7 +758,7 @@ public class GwtNetFolderHelper
 		netFolder.setStatus( NetFolderStatus.READY );
 		netFolder.setIsHomeDir( binder.isHomeDir() );
 		netFolder.setIndexContent( binder.getIndexContent() );
-		
+
 		// Get the net folder's sync schedule.
 		gwtSchedule = getGwtSyncSchedule( ami, binder );
 		netFolder.setSyncSchedule( gwtSchedule );
@@ -734,6 +770,10 @@ public class GwtNetFolderHelper
 		// Get the data sync settings
 		dataSyncSettings = getDataSyncSettings( ami, binder );
 		netFolder.setDataSyncSettings( dataSyncSettings );
+		
+		// Get the jits settings
+		jitsSettings = getJitsSettings( binder );
+		netFolder.setJitsConfig( jitsSettings );
 
 		return netFolder;
 	}
@@ -962,6 +1002,22 @@ public class GwtNetFolderHelper
 			
 			// Save the data sync settings.
 			saveDataSyncSettings( ami, netFolder.getId(), netFolder.getDataSyncSettings() );
+			
+			// Save the jits settings
+			{
+				GwtJitsNetFolderConfig settings;
+				
+				settings = netFolder.getJitsConfig();
+				if ( settings != null )
+				{
+					NetFolderHelper.saveJitsSettings(
+												ami.getBinderModule(),
+												netFolder.getId(),
+												settings.getJitsEnabled(),
+												settings.getAclMaxAge(),
+												settings.getResultsMaxAge() );
+				}
+			}
 		}
 		catch ( Exception ex )
 		{

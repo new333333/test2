@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtJitsNetFolderConfig;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -69,6 +70,9 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -79,6 +83,8 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -98,6 +104,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class ModifyNetFolderDlg extends DlgBox
 	implements
 		EditSuccessfulHandler,
+		KeyPressHandler,
 		NetFolderRootCreatedEvent.Handler
 {
 	private TabPanel m_tabPanel;
@@ -106,6 +113,9 @@ public class ModifyNetFolderDlg extends DlgBox
 	private TextBox m_relativePathTxtBox;
 	private ListBox m_netFolderRootsListbox;
 	private CheckBox m_indexContentCkbox;
+	private CheckBox m_jitsEnabledCkbox;
+	private TextBox m_jitsResultsMaxAge;
+	private TextBox m_jitsAclMaxAge;
 	private InlineLabel m_noNetFolderRootsLabel;
 	private ScheduleWidget m_scheduleWidget;
 	private NetFolderSelectPrincipalsWidget m_selectPrincipalsWidget;
@@ -391,6 +401,70 @@ public class ModifyNetFolderDlg extends DlgBox
 			tmpPanel.add( m_indexContentCkbox );
 			table.setWidget( nextRow, 0, tmpPanel );
 			++nextRow;
+		}
+		
+		// Add the controls needed to define Jits settings
+		{
+			FlowPanel tmpPanel;
+			FlexCellFormatter cellFormatter;
+
+			cellFormatter = table.getFlexCellFormatter();
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+			m_jitsEnabledCkbox = new CheckBox( messages.modifyNetFolderDlg_EnableJitsLabel() );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_jitsEnabledCkbox );
+			table.setWidget( nextRow, 0, tmpPanel );
+			++nextRow;
+			
+			// Add the controls for "results max age"
+			{
+				HorizontalPanel hPanel;
+				Label intervalLabel;
+
+				cellFormatter.setColSpan( nextRow, 0, 2 );
+
+				hPanel = new HorizontalPanel();
+				hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+				hPanel.setSpacing( 4 );
+				
+				intervalLabel = new Label( messages.modifyNetFolderDlg_JitsResultsMaxAgeLabel() );
+				hPanel.add( intervalLabel );
+				
+				m_jitsResultsMaxAge = new TextBox();
+				m_jitsResultsMaxAge.addKeyPressHandler( this );
+				m_jitsResultsMaxAge.setVisibleLength( 3 );
+				hPanel.add( m_jitsResultsMaxAge );
+				
+				intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+				hPanel.add( intervalLabel );
+				table.setWidget( nextRow, 0, hPanel );
+				++nextRow;
+			}
+
+			// Add the controls for "acl max age"
+			{
+				HorizontalPanel hPanel;
+				Label intervalLabel;
+
+				cellFormatter.setColSpan( nextRow, 0, 2 );
+
+				hPanel = new HorizontalPanel();
+				hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+				hPanel.setSpacing( 4 );
+				
+				intervalLabel = new Label( messages.modifyNetFolderDlg_JitsAclMaxAgeLabel() );
+				hPanel.add( intervalLabel );
+				
+				m_jitsAclMaxAge = new TextBox();
+				m_jitsAclMaxAge.addKeyPressHandler( this );
+				m_jitsAclMaxAge.setVisibleLength( 3 );
+				hPanel.add( m_jitsAclMaxAge );
+				
+				intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+				hPanel.add( intervalLabel );
+				table.setWidget( nextRow, 0, hPanel );
+				++nextRow;
+			}
 		}
 		
 		mainPanel.add( table );
@@ -707,6 +781,64 @@ public class ModifyNetFolderDlg extends DlgBox
 	}
 	
 	/**
+	 * 
+	 */
+	private GwtJitsNetFolderConfig getJitsSettings()
+	{
+		GwtJitsNetFolderConfig settings;
+		
+		settings = new GwtJitsNetFolderConfig();
+		settings.setJitsEnabled( getJitsEnabled() );
+		settings.setAclMaxAge( getJitsAclMaxAge() );
+		settings.setResultsMaxAge( getJitsResultsMaxAge() );
+
+		return settings;
+	}
+	
+	/**
+	 * 
+	 */
+	private long getJitsAclMaxAge()
+	{
+		String maxAgeStr;
+		long maxAge = 0;
+		
+		maxAgeStr = m_jitsAclMaxAge.getText();
+		if ( maxAgeStr != null && maxAgeStr.length() > 0 )
+			maxAge = Long.parseLong( maxAgeStr );
+		
+		maxAge *= 1000;
+		return maxAge;
+	}
+	
+	/**
+	 * 
+	 */
+	private boolean getJitsEnabled()
+	{
+		if ( m_jitsEnabledCkbox.getValue() == Boolean.TRUE )
+			return true;
+
+		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	private long getJitsResultsMaxAge()
+	{
+		String maxAgeStr;
+		long maxAge = 0;
+		
+		maxAgeStr = m_jitsResultsMaxAge.getText();
+		if ( maxAgeStr != null && maxAgeStr.length() > 0 )
+			maxAge = Long.parseLong( maxAgeStr );
+		
+		maxAge *= 1000;
+		return maxAge;
+	}
+	
+	/**
 	 * Issue an ajax request to get the list of net folder roots the user has
 	 * permission to use. 
 	 */
@@ -799,6 +931,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		netFolder.setIndexContent( getIndexContent() );
 		netFolder.setSyncSchedule( getSyncSchedule() );
 		netFolder.setDataSyncSettings( getDataSyncSettings() );
+		netFolder.setJitsConfig( getJitsSettings() );
 		
 		if ( m_netFolder != null )
 		{
@@ -926,6 +1059,9 @@ public class ModifyNetFolderDlg extends DlgBox
 		
 		// Initialize the data sync controls.
 		initDataSync();
+		
+		// Initialize the jits controls
+		initJits();
 
 		// Are we modifying an existing net folder?
 		if ( m_netFolder != null )
@@ -985,6 +1121,35 @@ public class ModifyNetFolderDlg extends DlgBox
 				m_allowDesktopAppToSync.setValue( settings.getAllowDesktopAppToSyncData() );
 				m_allowMobileAppsToSync.setValue( settings.getAllowMobileAppsToSyncData() );
 			}
+		}
+	}
+	
+	/**
+	 * Initialize the controls used for the jits settings
+	 */
+	private void initJits()
+	{
+		m_jitsEnabledCkbox.setValue( true );
+		m_jitsAclMaxAge.setValue( "" );
+		m_jitsResultsMaxAge.setValue( "" );
+		
+		if ( m_netFolder != null )
+		{
+			GwtJitsNetFolderConfig settings;
+			
+			settings = m_netFolder.getJitsConfig();
+			if ( settings != null )
+			{
+				m_jitsEnabledCkbox.setValue( settings.getJitsEnabled() );
+				m_jitsAclMaxAge.setValue( String.valueOf( settings.getAclMaxAge() / 1000 ) );
+				m_jitsResultsMaxAge.setValue( String.valueOf( settings.getResultsMaxAge() / 1000 ) );
+			}
+		}
+		else
+		{
+			m_jitsEnabledCkbox.setValue( false );
+			m_jitsAclMaxAge.setValue( "60" );
+			m_jitsResultsMaxAge.setValue( "30" );
 		}
 	}
 	
@@ -1261,6 +1426,38 @@ public class ModifyNetFolderDlg extends DlgBox
 											this,
 											m_registeredEventHandlers );
 		}
+	}
+
+	/**
+	 * This method gets called when the user types in the "results max age" or the
+	 * "acl max age" text box.
+	 * We only allow the user to enter numbers.
+	 */
+	@Override
+	public void onKeyPress( KeyPressEvent event )
+	{
+        int keyCode;
+
+        // Get the key the user pressed
+        keyCode = event.getNativeEvent().getKeyCode();
+        
+        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
+            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
+            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
+            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
+        {
+        	TextBox txtBox;
+        	Object source;
+        	
+        	// Make sure we are dealing with a text box.
+        	source = event.getSource();
+        	if ( source instanceof TextBox )
+        	{
+        		// Suppress the current keyboard event.
+        		txtBox = (TextBox) source;
+        		txtBox.cancelKey();
+        	}
+        }
 	}
 
 	/**

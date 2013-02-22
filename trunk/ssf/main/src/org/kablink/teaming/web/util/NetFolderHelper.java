@@ -74,6 +74,7 @@ import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.Utils;
 import org.kablink.util.search.Constants;
@@ -310,8 +311,18 @@ public class NetFolderHelper
 															workspaceId,
 															true,
 															false );
+
+				// Save the jits settings
+				{
+					NetFolderHelper.saveJitsSettings(
+												binderModule,
+												netFolderBinder.getId(),
+												true,
+												getDefaultJitsAclMaxAge(),
+												getDefaultJitsResultsMaxAge() );
+				}
 				
-				syncNeeded = true;
+				syncNeeded = false;
 			}
 			else
 			{
@@ -653,6 +664,22 @@ public class NetFolderHelper
 	}
 	
 	/**
+	 * 
+	 */
+	public static long getDefaultJitsAclMaxAge()
+	{
+		return SPropsUtil.getLong( "nf.jits.max.age", 30000L );
+	}
+	
+	/**
+	 * 
+	 */
+	public static long getDefaultJitsResultsMaxAge()
+	{
+		return SPropsUtil.getLong( "nf.jits.acl.max.age", 60000L );
+	}
+	
+	/**
 	 * Return all the net folders that are associated with the given net folder server
 	 */
 	@SuppressWarnings({ "unchecked" })
@@ -768,7 +795,6 @@ public class NetFolderHelper
 	/**
 	 * 
 	 */
-	@SuppressWarnings("unchecked")
 	public static void modifyNetFolder(
 		BinderModule binderModule,
 		FolderModule folderModule,
@@ -951,5 +977,46 @@ public class NetFolderHelper
 		}
 		
 		return rdConfig;
+	}
+
+	/**
+	 * Save the jits settings for the given net folder binder
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public static void saveJitsSettings(
+		BinderModule binderModule,
+		Long binderId,
+		boolean jitsEnabled,
+		long aclMaxAge,
+		long resultsMaxAge )
+	{
+		if ( binderId != null )
+		{
+			Set deleteAtts;
+			Map fileMap = null;
+			MapInputData mid;
+			Map formData = null;
+			
+			deleteAtts = new HashSet();
+			fileMap = new HashMap();
+			formData = new HashMap();
+
+			formData.put( ObjectKeys.FIELD_BINDER_JITS_ENABLED, Boolean.toString( jitsEnabled ) );
+			
+			formData.put( ObjectKeys.FIELD_BINDER_JITS_ACL_MAX_AGE, String.valueOf( aclMaxAge ) );
+
+			formData.put( ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE, String.valueOf( resultsMaxAge ) );
+
+			mid = new MapInputData( formData );
+
+			try
+			{
+				binderModule.modifyBinder( binderId, mid, fileMap, deleteAtts, null );
+			}
+			catch ( Exception ex )
+			{
+				m_logger.error( "In saveJitsSettings(), call to modifyBinder() failed. " + ex.toString() );
+			}
+		}
 	}
 }
