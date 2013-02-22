@@ -698,6 +698,36 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    				if ( index != null )
    					entryData.put( ObjectKeys.FIELD_BINDER_INDEX_CONTENT, index );
    			}
+
+   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_JITS_ENABLED ) &&
+   				 !entryData.containsKey( ObjectKeys.FIELD_BINDER_JITS_ENABLED ) )
+   			{
+   				Boolean enabled = null;
+   				
+   				enabled = Boolean.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_JITS_ENABLED ) );
+   				if ( enabled != null )
+   					entryData.put( ObjectKeys.FIELD_BINDER_JITS_ENABLED, enabled );
+   			}
+
+   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_JITS_ACL_MAX_AGE ) &&
+   				 !entryData.containsKey( ObjectKeys.FIELD_BINDER_JITS_ACL_MAX_AGE ) )
+   			{
+   				Long value;
+   				
+   				value = Long.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_JITS_ACL_MAX_AGE ) );
+   				if ( value != null )
+   					entryData.put( ObjectKeys.FIELD_BINDER_JITS_ACL_MAX_AGE, value );
+   			}
+
+   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE ) &&
+      			 !entryData.containsKey( ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE ) )
+   			{
+   				Long value;
+   				
+   				value = Long.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE ) );
+   				if ( value != null )
+   					entryData.put( ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE, value );
+   			}
    		}
    		Boolean library = null;
 		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY))

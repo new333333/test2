@@ -669,6 +669,9 @@ public interface ObjectKeys {
     public static final String FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA = "allowDesktopAppToSyncData";
     public static final String FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA = "allowMobileAppsToSyncData";
     public static final String FIELD_BINDER_INDEX_CONTENT = "indexContent";
+    public static final String FIELD_BINDER_JITS_ACL_MAX_AGE = "jitsAclMaxAge";
+    public static final String FIELD_BINDER_JITS_ENABLED = "jitsEnabled";
+    public static final String FIELD_BINDER_JITS_RESULTS_MAX_AGE = "jitsMaxAge";
     public static final String FIELD_BINDER_LIBRARY="library";
     public static final String FIELD_BINDER_NAME="name";
     public static final String FIELD_BINDER_UNIQUETITLES="uniqueTitles";

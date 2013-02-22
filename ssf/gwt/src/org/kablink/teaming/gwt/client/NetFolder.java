@@ -60,6 +60,7 @@ public class NetFolder
 	private boolean m_isHomeDir;
 	private boolean m_indexContent;
 	private NetFolderDataSyncSettings m_dataSyncSettings;
+	private GwtJitsNetFolderConfig m_jitsConfig;
 	
 	/**
 	 * The different statuses of a net Folder
@@ -96,8 +97,12 @@ public class NetFolder
 		m_syncSchedule = netFolder.getSyncSchedule();
 		m_isHomeDir = netFolder.getIsHomeDir();
 		m_indexContent = netFolder.getIndexContent();
+		
 		m_dataSyncSettings = new NetFolderDataSyncSettings();
 		m_dataSyncSettings.copy( netFolder.getDataSyncSettings() );
+		
+		m_jitsConfig = new GwtJitsNetFolderConfig();
+		m_jitsConfig.copy( netFolder.getJitsConfig() );
 	}
 	
 	/**
@@ -130,6 +135,14 @@ public class NetFolder
 	public boolean getIsHomeDir()
 	{
 		return m_isHomeDir;
+	}
+	
+	/**
+	 * 
+	 */
+	public GwtJitsNetFolderConfig getJitsConfig()
+	{
+		return m_jitsConfig;
 	}
 	
 	/**
@@ -225,6 +238,14 @@ public class NetFolder
 		m_isHomeDir = isHomeDir;
 	}
 
+	/**
+	 * 
+	 */
+	public void setJitsConfig( GwtJitsNetFolderConfig config )
+	{
+		m_jitsConfig = new GwtJitsNetFolderConfig();
+		m_jitsConfig.copy( config );
+	}
 	/**
 	 * Stores the Net Folder's name.
 	 * 

@@ -2147,11 +2147,14 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_CreatingNetFolder();
 	String modifyNetFolderDlg_DataSyncTab();
 	String modifyNetFolderDlg_EditHeader( String name );
+	String modifyNetFolderDlg_EnableJitsLabel();
 	String modifyNetFolderDlg_EnableSyncScheduleLabel();
 	String modifyNetFolderDlg_ErrorCreatingNetFolder( String err );
 	String modifyNetFolderDlg_ErrorModifyingNetFolder( String err );
 	String modifyNetFolderDlg_IndexContentLabel();
 	String modifyNetFolderDlg_InsufficientRights();
+	String modifyNetFolderDlg_JitsAclMaxAgeLabel();
+	String modifyNetFolderDlg_JitsResultsMaxAgeLabel();
 	String modifyNetFolderDlg_ModifyingNetFolder();
 	String modifyNetFolderDlg_NameLabel();
 	String modifyNetFolderDlg_NameRequired();
