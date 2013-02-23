@@ -677,6 +677,8 @@ public interface ObjectKeys {
     public static final String FIELD_BINDER_UNIQUETITLES="uniqueTitles";
 	public static final String FIELD_BINDER_MIRRORED = "mirrored"; 
 	public static final String FIELD_BINDER_INHERITTEAMMEMBERS = "teamMembershipInherited"; 
+	public static final String FIELD_BINDER_INHERITFUNCTIONS = "functionMembershipInherited"; 
+	public static final String FIELD_BINDER_INHERITDEFINITIONS = "definitionsInherited"; 
 	public static final String FIELD_BINDER_RESOURCE_DRIVER_NAME = "resourceDriverName";
 	public static final String FIELD_BINDER_RESOURCE_PATH = "resourcePath"; 
 	public static final String FIELD_IS_HOME_DIR = "homeDir";
