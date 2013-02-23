@@ -30,12 +30,12 @@
 		.vibe-breadCrumbProfiles-image     {vertical-align: middle; margin-right: 5px; margin-bottom: 3px;}
 		.vibe-breadCrumbProfiles-label     {font-size: 1.4em; color: #1f1f1f; padding: 0px 10px 2px 0px; white-space: nowrap;}
 		.vibe-breadCrumbProfiles-panel     {display: inline; white-space: nowrap;}
-		.vibe-breadCrumbRightPanel         {position: absolute; top: 15px; right: 20px; white-space: nowrap;}
+		.vibe-breadCrumbRightPanel         {position: absolute; top: 5px; right: 5px; white-space: nowrap;}
 		.vibe-breadCrumbRoot               {position: relative;}
 		.vibe-breadCrumbTrashAnchor        {padding-left: 5px; cursor: pointer;}
-		.vibe-breadCrumbTrashImg           {width: 16px; height: 16px;}
-		.vibe-breadCrumbWhatsNewLink       {cursor: pointer; color: #135c8f !important; padding: 2px; font-size: 12px; vertical-align: middle;}
-		.vibe-breadCrumbWhatsNewLink:hover {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-breadCrumbTrashImg           {width: 25px; height: 25px;}
+		.vibe-breadCrumbWhatsNewLink       {cursor: pointer; color: #135c8f !important; padding: 2px; font-size: 12px; vertical-align: middle; padding-right: 15px;}
+		.vibe-breadCrumbWhatsNewLink:hover {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; border-radius: 3px; -moz-border-radius: 3px; -webkit-border-radius: 3px; padding: 2px; padding-right: 15px;}
 	/* ...End:  Bread crumb panel styles. */
 	
 	/* ...Start:  Binder owner avatar panel styles. */
