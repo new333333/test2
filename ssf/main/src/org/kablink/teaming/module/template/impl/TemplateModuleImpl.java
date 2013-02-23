@@ -879,6 +879,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   }
 	   entryData.put(ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.toString(mirrored));
 	   entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.toString(cfg.isUniqueTitles()));
+	   entryData.put(ObjectKeys.FIELD_BINDER_INHERITFUNCTIONS, Boolean.toString(cfg.isFunctionMembershipInherited()));
+	   entryData.put(ObjectKeys.FIELD_BINDER_INHERITDEFINITIONS, Boolean.toString(cfg.isDefinitionsInherited()));
 	   entryData.put(ObjectKeys.FIELD_BINDER_INHERITTEAMMEMBERS, Boolean.toString(cfg.isTeamMembershipInherited()));
 	   //if not null, use icon from template.  Otherwise try icon from definition when binder is created.
 	   if (Validator.isNotNull(cfg.getIconName())) entryData.put(ObjectKeys.FIELD_ENTITY_ICONNAME, cfg.getIconName());

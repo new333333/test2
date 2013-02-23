@@ -450,6 +450,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		if (inputData.exists(ObjectKeys.FIELD_BINDER_UNIQUETITLES) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_UNIQUETITLES)) {
    			entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_UNIQUETITLES)));
    		}
+  		if (inputData.exists(ObjectKeys.FIELD_BINDER_INHERITFUNCTIONS) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_INHERITFUNCTIONS)) {
+   			entryData.put(ObjectKeys.FIELD_BINDER_INHERITFUNCTIONS, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_INHERITFUNCTIONS)));
+   		}
+  		if (inputData.exists(ObjectKeys.FIELD_BINDER_INHERITDEFINITIONS) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_INHERITDEFINITIONS)) {
+   			entryData.put(ObjectKeys.FIELD_BINDER_INHERITDEFINITIONS, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_INHERITDEFINITIONS)));
+   		}
   		if (inputData.exists(ObjectKeys.FIELD_BINDER_INHERITTEAMMEMBERS) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_INHERITTEAMMEMBERS)) {
    			entryData.put(ObjectKeys.FIELD_BINDER_INHERITTEAMMEMBERS, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_INHERITTEAMMEMBERS)));
    		}
