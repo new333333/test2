@@ -52,6 +52,7 @@ import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -711,4 +712,8 @@ public interface FolderModule {
 			throws AccessControlException, WriteFilesException, WriteEntryDataException;
 
 	public void deleteNetFolder(Long folderId, boolean deleteSource);
+	
+    public void syncAclForNetFolderRoot(Folder netFolderRoot);
+
+    public Folder createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent) throws AccessControlException, WriteFilesException, WriteEntryDataException;
 }

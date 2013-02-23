@@ -443,33 +443,8 @@ public class NetFolderHelper
 		}
 
 		if ( templateId != null )
-		{
-			Map options;
-			
-			// Create the binder
-			options = new HashMap();
-	   		options.put ( ObjectKeys.INPUT_OPTION_OWNER_ID, owner.getId() );
-			binder = templateModule.addBinder(
-											templateId,
-											parentBinderId,
-											name,
-											name,
-											null,
-											options );
-			
-			//After creating the binder, we need to make sure it doesn't have any risidual roles and rights
-			// Note: Due to a bug in the template engine, functionMembershipInherited field value in the
-			// template is not being set properly in the target binder. We have to do it manually here.
-			adminModule.setWorkAreaFunctionMembershipInherited(binder, false);
-			List<WorkAreaFunctionMembership> wfms = adminModule.getWorkAreaFunctionMemberships(binder);
-			for (WorkAreaFunctionMembership wfm : wfms) {
-				adminModule.resetWorkAreaFunctionMemberships( binder, wfm.getFunctionId(), new ArrayList<Long>() );
-			}
-			
-			// Modify the binder with the additional net folder information.
-			{
-	   			folderModule.modifyNetFolder(binder.getId(), rootName, path, isHomeDir, indexContent);
-			}
+		{			
+			binder = folderModule.createNetFolder(templateId, parentBinderId, name, owner, rootName, path, isHomeDir, indexContent);
 			
 			// Set the net folder's sync schedule
 			if ( scheduleInfo != null )
