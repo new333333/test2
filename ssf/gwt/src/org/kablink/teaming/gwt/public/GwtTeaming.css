@@ -305,7 +305,7 @@
 .activityStreamTopEntryFullDesc
 {
 	color: #353838;
-	font-size: 12px;
+	font-size: 13px;
 	margin-top: 4px;
 	margin-left: 1px;
 	position: relative;
@@ -314,7 +314,7 @@
 .activityStreamTopEntryPartialDesc
 {
 	color: #353838;
-	font-size: 12px;
+	font-size: 13px;
 	height: 4em;
 	margin-top: 4px;
 	margin-left: 1px;
@@ -329,9 +329,11 @@
 .activityStreamCommentFullDesc
 {
 	color: #353838;
-	font-size: 14px;
+	font-size: 13px;
+	line-height: 17px;
 	margin-top: 4px;
 	margin-left: 1px;
+	margin-right: 20px;
 	padding-bottom: 12px;
 	position: relative;
 }
@@ -339,11 +341,13 @@
 .activityStreamCommentPartialDesc
 {
 	color: #353838;
-	font-size: 12px;
-	height: 24px;
+	font-size: 13px;
+	line-height: 17px;
+	height: 30px;
 	margin-top: 4px;
 	margin-bottom: 10px;
 	margin-left: 1px;
+	margin-right: 20px;
 	overflow: hidden;
 	position: relative;
 }
@@ -404,8 +408,8 @@
 
 .activityStreamTopEntryHeader
 {
-	background: #ededed;
-	border-top: 1px solid #d2d5d1;
+	background: #f6f6f6;
+	border-top: 1px solid #ededed;
 	padding-right: 65px;
 	padding-left: 55px;
 	-moz-border-radius-bottomleft: 3px;
@@ -1593,7 +1597,7 @@ body, table td, select
 
 
 /* Styles used by the WorkspaceTreeControl. */
-.workspaceTreeBinderAnchor            {color: #353838; text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-size: .9em;}
+.workspaceTreeBinderAnchor            {color: #353838; text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-size: 14px; margin-bottom: 5px;}
 .workspaceTreeBinderAnchor_collection {font-size: 14px; padding-left: 2px; color: #000;}
 
 .workspaceTreeBinderAnchor:hover            {color: #135c8f;}
@@ -3256,7 +3260,9 @@ a.ss_new_thread {
 .qViewActions {
 }
 .qViewPhoto img {
-	width: 100px;
+	width: 85px;
+	margin-left: 7px;
+	border-radius: 3px;
 }
 .qViewPhoto_No {
 	margin-left:25px;
@@ -3302,16 +3308,25 @@ a.ss_new_thread {
 	color: #135c8f;
 }
 .qView-action  {
-	-moz-border-radius:15px;
-	border-radius:15px;
-	-webkit-border-radius: 15px;
-	background:url("images/putty_blend2.png") repeat-x scroll center bottom #FFFFFF;
-	border:1px solid #c4c4c4;
-	font-size:11px;
 	margin-top:5px;
 	padding:2px 5px;
 	text-align:center;
 	position: relative;
+	
+	border: 1px solid #B8B8B8;
+	font-weight: normal !important;
+	font-size: 12px;
+	padding: 2px 5px  !important;
+	text-decoration:none;	
+	cursor: pointer !important;
+	white-space: nowrap;
+	border-radius: 15px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background-color: transparent;	
 }
 .qView-action2 {
 	color: #135c8f;
