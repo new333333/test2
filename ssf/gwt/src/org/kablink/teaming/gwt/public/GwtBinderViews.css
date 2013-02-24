@@ -25,7 +25,7 @@
 	/* ...Start:  Bread crumb panel styles. */
 		.vibe-breadCrumbCollection-image   {vertical-align: middle; margin-right: 5px; margin-bottom: 3px;}
 		.vibe-breadCrumbCollection-label   {font-size: 1.4em; color: #1f1f1f; padding: 0px 10px 2px 0px; white-space: nowrap;}
-		.vibe-breadCrumbCollection-panel   {display: inline; white-space: nowrap;}
+		.vibe-breadCrumbCollection-panel   {display: inline-block; white-space: nowrap;}
 		.vibe-breadCrumbPanel              {width: 1%;}
 		.vibe-breadCrumbProfiles-image     {vertical-align: middle; margin-right: 5px; margin-bottom: 3px;}
 		.vibe-breadCrumbProfiles-label     {font-size: 1.4em; color: #1f1f1f; padding: 0px 10px 2px 0px; white-space: nowrap;}
