@@ -1506,6 +1506,17 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	    }
         return source;
 	}
+	//Routine to return the external workarea that access control is being inherited from
+	public WorkArea getWorkAreaExtFunctionInheritance(WorkArea workArea) {
+		// open to anyone - only way to get parentMemberships
+		// checkAccess(workArea, "getWorkAreaFunctionMembershipsInherited");
+	    WorkArea source = workArea;
+	    if (!workArea.isExtFunctionMembershipInherited()) return source;
+	    while (source != null && source.isExtFunctionMembershipInherited()) {
+	    	source = source.getParentWorkArea();
+	    }
+        return source;
+	}
 	//no transaction
 	@Override
 	public void setWorkAreaFunctionMembershipInherited(final WorkArea workArea, final boolean inherit) 
@@ -1559,6 +1570,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         				getWorkAreaFunctionMembershipManager().copyWorkAreaFunctionMemberships(
         						RequestContextHolder.getRequestContext().getZoneId(),
         						getWorkAreaFunctionInheritance(workArea), 
+        						getWorkAreaExtFunctionInheritance(workArea), 
         						workArea,
         						justThisScope,
         						scope);
