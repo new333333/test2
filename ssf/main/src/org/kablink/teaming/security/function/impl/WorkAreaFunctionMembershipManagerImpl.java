@@ -68,10 +68,11 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         getSecurityDao().save(functionMembership);
     }
     public void copyWorkAreaFunctionMemberships(Long zoneId, WorkArea source, WorkArea destination) {
-    	copyWorkAreaFunctionMemberships(zoneId, source, destination, Boolean.FALSE, ObjectKeys.ROLE_TYPE_FILR);
+    	copyWorkAreaFunctionMemberships(zoneId, source, source, destination, Boolean.FALSE, ObjectKeys.ROLE_TYPE_FILR);
     }
-    public void copyWorkAreaFunctionMemberships(Long zoneId, WorkArea source, WorkArea destination,
+    public void copyWorkAreaFunctionMemberships(Long zoneId, WorkArea source, WorkArea extSource, WorkArea destination,
     		boolean justThisScope, String scope) {
+    	List<WorkAreaOperation> extWaos = destination.getExternallyControlledRights();
 		List<WorkAreaFunctionMembership> wfms = findWorkAreaFunctionMemberships(zoneId, source);
 		for (WorkAreaFunctionMembership fm: wfms) {
 			Function f = getFunction(zoneId, fm.getFunctionId());
@@ -79,18 +80,67 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
 	        	if (f != null) {
 					if ((scope.equals(f.getScope()) && justThisScope) || 
 							(!scope.equals(f.getScope()) && !justThisScope)) {
-						WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
-						membership.setZoneId(zoneId);
-						membership.setWorkAreaId(destination.getWorkAreaId());
-						membership.setWorkAreaType(destination.getWorkAreaType());
-						membership.setFunctionId(fm.getFunctionId());
-						membership.setMemberIds(new HashSet(fm.getMemberIds()));
-						addWorkAreaFunctionMembership(membership);	
+						//See if this function has externally defined operations
+						boolean copyThisFunction = true;
+						//If source and extSource are the same, then copy all function memberships
+						if (!source.equals(extSource)) {
+							Set<WorkAreaOperation> functionWaos = f.getOperations();
+							for (WorkAreaOperation wao : functionWaos) {
+								if (extWaos.contains(wao)) {
+									//Don't copy any function that has externally controlled rights.
+									//This will be done later
+									copyThisFunction = false;
+									break;
+								}
+							}
+						}
+						if (copyThisFunction) {
+							WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
+							membership.setZoneId(zoneId);
+							membership.setWorkAreaId(destination.getWorkAreaId());
+							membership.setWorkAreaType(destination.getWorkAreaType());
+							membership.setFunctionId(fm.getFunctionId());
+							membership.setMemberIds(new HashSet(fm.getMemberIds()));
+							addWorkAreaFunctionMembership(membership);	
+						}
 					}
 	        	}
 			}
 		}
-	}
+		//Now do the functions for the external source (if different)
+		if (!source.equals(extSource)) {
+			wfms = findWorkAreaFunctionMemberships(zoneId, extSource);
+			for (WorkAreaFunctionMembership fm: wfms) {
+				Function f = getFunction(zoneId, fm.getFunctionId());
+				if (Validator.isNotNull(scope)) {
+		        	if (f != null) {
+						if ((scope.equals(f.getScope()) && justThisScope) || 
+								(!scope.equals(f.getScope()) && !justThisScope)) {
+							//See if this function has externally defined operations
+							Set<WorkAreaOperation> functionWaos = f.getOperations();
+							boolean copyThisFunction = false;
+							for (WorkAreaOperation wao : functionWaos) {
+								if (extWaos.contains(wao)) {
+									copyThisFunction = true;
+									break;
+								}
+							}
+							if (copyThisFunction) {
+								//This fumction was skiped above, so do it now
+								WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
+								membership.setZoneId(zoneId);
+								membership.setWorkAreaId(destination.getWorkAreaId());
+								membership.setWorkAreaType(destination.getWorkAreaType());
+								membership.setFunctionId(fm.getFunctionId());
+								membership.setMemberIds(new HashSet(fm.getMemberIds()));
+								addWorkAreaFunctionMembership(membership);	
+							}
+						}
+		        	}
+				}
+			}
+		}
+}
     public void deleteWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea) {
     	getSecurityDao().deleteWorkAreaFunctionMemberships(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType());
     }
