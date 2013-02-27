@@ -66,6 +66,7 @@ import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -372,6 +373,7 @@ public class AccessControlController extends AbstractBinderController {
 				//These roles cannot have any rights that are being controlled externally
 				List<Function> binderFunctions = bs.getAdminModule().getFunctions(ObjectKeys.ROLE_TYPE_BINDER);
 				List<WorkAreaOperation> ardWaos = wArea.getExternallyControlledRights();
+				List<WorkAreaFunctionMembership> memberships = bs.getAdminModule().getWorkAreaFunctionMemberships(wArea);
 				//Now check if this role is OK to be used
 				for (Function f : binderFunctions) {
 					//If there are no operations (aka rights) that are being controlled by the external ACL 
@@ -381,6 +383,15 @@ public class AccessControlController extends AbstractBinderController {
 					for (WorkAreaOperation wao : waos) {
 						if (ardWaos.contains(wao)) {
 							addThisFunction = false;
+							if ("true".equals(request.getParameter("showAll"))) {
+								//Check if there are members in this function
+								for (WorkAreaFunctionMembership membership : memberships) {
+									if (membership.getFunctionId() == f.getId() && !(membership.getMemberIds().isEmpty())) {
+										//Override the rule if there is a membership in this function. We don't want it to be invisible
+										addThisFunction = true;
+									}
+								}
+							}
 							break;
 						}
 					}
