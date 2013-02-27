@@ -223,7 +223,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                                   @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         if (fileName!=null) {
-            nextParams.put("recursive", fileName);
+            nextParams.put("file_name", fileName);
         }
         nextParams.put("recursive", Boolean.toString(recursive));
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
@@ -250,7 +250,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                                   @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         if (fileName!=null) {
-            nextParams.put("recursive", fileName);
+            nextParams.put("file_name", fileName);
         }
         nextParams.put("recursive", Boolean.toString(recursive));
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
