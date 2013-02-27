@@ -205,6 +205,18 @@ public class ConfigImportExportServlet extends HttpServlet
 	private void getFilrConfigurationSettings(HttpServletResponse response) throws Exception
 	{
 		ServletOutputStream op = response.getOutputStream();
+	
+
+		response.setContentType(ZIP_MIME_TYPE);
+		response.setHeader("Content-Disposition", "attachment;filename=\"" + CONFIG_ZIP_NAME + "\"");
+
+		op.write(getFilrConfigZipFile());
+		op.flush();
+
+	}
+	
+	private byte[] getFilrConfigZipFile() throws Exception
+	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(baos);
 
@@ -227,13 +239,35 @@ public class ConfigImportExportServlet extends HttpServlet
 			zos.closeEntry();
 		}
 		zos.close();
+		
+		return baos.toByteArray();
+	}
+	
+	public static void saveFilrConfigLocally() throws Exception
+	{
+		initializeFileMap();
+		FileOutputStream baos = new FileOutputStream("/vastorage/conf/filrconfig.zip");
+		ZipOutputStream zos = new ZipOutputStream(baos);
 
-		response.setContentType(ZIP_MIME_TYPE);
-		response.setHeader("Content-Disposition", "attachment;filename=\"" + CONFIG_ZIP_NAME + "\"");
+		// Zip all the files that we need to send as part of export configuration
+		for (Entry<String, String> entry : filesToZipMap.entrySet())
+		{
+			// If the file does not exist, ignore and continue
+			if (!(new File(entry.getValue()).exists()))
+				continue;
 
-		op.write(baos.toByteArray());
-		op.flush();
-
+			zos.putNextEntry(new ZipEntry(entry.getKey()));
+			byte[] b = new byte[1024];
+			int len;
+			FileInputStream fis = new FileInputStream(entry.getValue());
+			while ((len = fis.read(b)) != -1)
+			{
+				zos.write(b, 0, len);
+			}
+			fis.close();
+			zos.closeEntry();
+		}
+		zos.close();
 	}
 
 	private void handleImportProcess(byte[] data, HttpServletRequest res, HttpServletResponse response, boolean hostNameNotValidContinue,
@@ -537,5 +571,35 @@ public class ConfigImportExportServlet extends HttpServlet
 
 		ServletOutputStream out = response.getOutputStream();
 		out.println(SUCESS_XML);
+	}
+	
+	private static void initializeFileMap()
+	{
+		if (TimeZoneHelper.isUnix() && filesToZipMap.size() == 0)
+		{
+			// Cert Files
+			filesToZipMap.put("cacerts", "/usr/lib64/jvm/jre-1.6.0-ibm/lib/security/cacerts");
+			
+			filesToZipMap.put("Novell-VA-release", "/vastorage/conf/Novell-VA-release");
+
+			// Ganglia Files
+			filesToZipMap.put("gmontd.conf", "/etc/opt/novell/ganglia/monitor/gmontd.conf");
+			filesToZipMap.put("gmetad.conf", "/etc/opt/novell/ganglia/monitor/gmetad.conf");
+
+			filesToZipMap.put("installer.xml", "/filrinstall/installer.xml");
+			filesToZipMap.put("license-key.xml", "/filrinstall/license-key.xml");
+			filesToZipMap.put("mysql-liquibase.properties", "/filrinstall/db/mysql-liquibase.properties");
+			filesToZipMap.put("configurationDetails.properties", "/filrinstall/configurationDetails.properties");
+
+			filesToZipMap.put("hibernate-ext.cfg.xml",
+					"/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/hibernate-ext.cfg.xml");
+			filesToZipMap.put("zone-ext.cfg.xml", "/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/zone-ext.cfg.xml");
+			filesToZipMap.put("ssf-ext.properties", "/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties");
+			filesToZipMap.put("messages-ext.properties",
+					"/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/messages/messages-ext.properties");
+			filesToZipMap.put("applicationContext-ext.xml",
+					"/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/context/applicationContext-ext.xml");
+
+		}
 	}
 }
