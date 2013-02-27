@@ -2066,6 +2066,17 @@ public final class ConfigService
 		{
 			logger.debug("Does not exists for deletion /filrinstall/installer.xml.orig ");
 		}
+		
+		//Save filrconfig locally to /vastorage/conf/filrconfig.zip
+		try
+		{
+			ConfigImportExportServlet.saveFilrConfigLocally();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
 		if (restartServer)
 			startFilrServer();
 	}
