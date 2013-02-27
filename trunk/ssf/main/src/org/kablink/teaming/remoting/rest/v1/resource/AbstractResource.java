@@ -51,6 +51,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Workspace;
@@ -64,6 +65,7 @@ import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
@@ -956,6 +958,15 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (binderIds.length==0) {
             return null;
         }
+        for (Long id : binderIds) {
+            try {
+                Binder binder = getBinderModule().getBinder(id);
+                if (binder instanceof Folder && binder.isMirrored()) {
+                    getFolderModule().jitSynchronize((Folder)binder);
+                }
+            } catch (Exception e) {
+            }
+        }
         Criteria crit = getLibraryCriteria(binderIds, false, recursive);
 
         Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1);
@@ -966,7 +977,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected LibraryInfo getLibraryInfo(Long [] binderIds) {
         if (binderIds.length==0) {
-            return new LibraryInfo();
+            return new LibraryInfo(0L, 0, 0, null);
         }
         Set<Long> idSet = new HashSet<Long>(Arrays.asList(binderIds));
         Criteria crit = getLibraryCriteria(binderIds, true, true);
@@ -1056,6 +1067,13 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             ids = new Long[] {getMyFilesFolderParent().getId()};
         } else if (SearchUtils.useHomeAsMyFiles(this)) {
             List<Long> homeFolderIds = SearchUtils.getHomeFolderIds(this, getLoggedInUser());
+            try {
+                for (Long id : homeFolderIds) {
+                    Folder folder = getFolderModule().getFolder(id);
+                    getFolderModule().jitSynchronize(folder);
+                }
+            } catch (Exception e) {
+            }
             ids = homeFolderIds.toArray(new Long[homeFolderIds.size()]);
         } else {
             List<Long> hiddenFolderIds = SearchUtils.getMyFilesFolderIds(this, getLoggedInUser());
@@ -1091,10 +1109,12 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected BinderBrief getFakeMyFileFolders() {
         org.kablink.teaming.domain.User user = getLoggedInUser();
+        Binder folderParent = getMyFilesFolderParent();
         BinderBrief binder = new BinderBrief();
         //TODO: localize
         binder.setId(ObjectKeys.MY_FILES_ID);
         binder.setTitle("My Files");
+        binder.setPath(folderParent.getPathName());
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
         binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, user.getId().toString(), PermaLinkUtil.COLLECTION_MY_FILES));
         String baseUri = "/self/my_files";
@@ -1155,9 +1175,12 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected BinderBrief getFakeNetFolders() {
         BinderBrief binder = new BinderBrief();
+
+        Binder netFoldersBinder = SearchUtils.getNetFoldersRootBinder();
         //TODO: localize
         binder.setId(ObjectKeys.NET_FOLDERS_ID);
         binder.setTitle("Net Folders");
+        binder.setPath(netFoldersBinder.getPathName());
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
         Long userId = getLoggedInUserId();
         binder.setLink("/self/net_folders");

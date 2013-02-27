@@ -48,6 +48,16 @@ public class LibraryInfo {
     private Integer folderCount;
     private Long diskSpace;
 
+    public LibraryInfo() {
+    }
+
+    public LibraryInfo(Long diskSpace, Integer fileCount, Integer folderCount, Date modifiedDate) {
+        this.diskSpace = diskSpace;
+        this.fileCount = fileCount;
+        this.folderCount = folderCount;
+        this.modifiedDate = modifiedDate;
+    }
+
     @XmlElement(name = "mod_date")
     public Date getModifiedDate() {
         return modifiedDate;
