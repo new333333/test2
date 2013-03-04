@@ -903,11 +903,6 @@ public class Utils {
 				if (!Utils.checkIfFilrDefinition(def)) return null;
 			}
 		}
-		//Next, check all of the child binders
-		List<TemplateBinder> children = binder.getBinders();
-		for (TemplateBinder child:children) {
-			if (validateTemplateBinder(child) == null) return null;
-		}
 
 		return binder;
 	}
