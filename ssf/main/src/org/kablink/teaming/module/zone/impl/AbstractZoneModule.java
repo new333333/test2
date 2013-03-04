@@ -1497,6 +1497,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 //		function.removeOperation(WorkAreaOperation.USER_SEE_COMMUNITY);
 		
+		// Remove the Filr operations.
+		function.removeOperation( WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER );
+		function.removeOperation( WorkAreaOperation.ALLOW_SHARING_EXTERNAL );
+		function.removeOperation( WorkAreaOperation.ALLOW_SHARING_FORWARD );
+		function.removeOperation( WorkAreaOperation.ALLOW_SHARING_INTERNAL );
+		function.removeOperation( WorkAreaOperation.ALLOW_SHARING_PUBLIC );
+		
 		//generate functionId
 		getFunctionManager().addFunction(function);
 		return function;
