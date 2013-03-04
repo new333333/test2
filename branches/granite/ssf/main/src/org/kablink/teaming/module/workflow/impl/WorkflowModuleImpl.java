@@ -752,6 +752,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     				isDueDateInPast = false;
     			}
    	      	}
+   	   	} catch(Exception e) {
+   	   		logger.error("Could not find any timers in JBPM_TIMER: " + e.getMessage());
     	} finally {
     		jContext.close();
     		SimpleProfiler.stop("findTimers");
