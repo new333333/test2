@@ -1050,6 +1050,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		Function teamMemberRole = addTeamMemberRole(top);
     		Function binderRole = addBinderRole(top);
     		Function teamWsRole = addTeamWorkspaceRole(top);
+    		addGlobalFunctions(zoneConfig);
 
     		//make sure allusers group and roles are defined, may be referenced by templates
     		getAdminModule().updateDefaultDefinitions(top.getId(), false);
@@ -1137,7 +1138,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	
     		members.clear();
     		members.add(user.getId());
-    		addGlobalFunctions(zoneConfig);
     		
     		//all applications limited to participant for zone
     		setApplicationGlobalRoles(zoneConfig, applicationGroup, participantsRole);
@@ -1493,16 +1493,19 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
 		//add all them remove a few
 		for (Iterator iter=WorkAreaOperation.getWorkAreaOperations(); iter.hasNext();) {
-			function.addOperation((WorkAreaOperation)iter.next());			
+			WorkAreaOperation wao;
+			
+			wao = (WorkAreaOperation) iter.next();
+			if ( wao.equals( WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER ) == false &&
+				 wao.equals( WorkAreaOperation.ALLOW_SHARING_EXTERNAL )  == false &&
+				 wao.equals( WorkAreaOperation.ALLOW_SHARING_FORWARD ) == false &&
+				 wao.equals( WorkAreaOperation.ALLOW_SHARING_INTERNAL ) == false &&
+				 wao.equals( WorkAreaOperation.ALLOW_SHARING_PUBLIC ) == false )
+			{
+				function.addOperation( wao );
+			}
 		}
 //		function.removeOperation(WorkAreaOperation.USER_SEE_COMMUNITY);
-		
-		// Remove the Filr operations.
-		function.removeOperation( WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER );
-		function.removeOperation( WorkAreaOperation.ALLOW_SHARING_EXTERNAL );
-		function.removeOperation( WorkAreaOperation.ALLOW_SHARING_FORWARD );
-		function.removeOperation( WorkAreaOperation.ALLOW_SHARING_INTERNAL );
-		function.removeOperation( WorkAreaOperation.ALLOW_SHARING_PUBLIC );
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);
