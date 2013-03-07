@@ -34,7 +34,6 @@ package org.kablink.teaming.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
@@ -45,6 +44,8 @@ public class TraceableInputStreamWrapper extends InputStream implements Comparab
 	private static final Log logger = LogFactory.getLog(TraceableInputStreamWrapper.class);
 	
 	private static final TreeSet<TraceableInputStreamWrapper> openStreamHandles = new TreeSet<TraceableInputStreamWrapper>();
+	private static long createdStreamHandlesCount = 0;
+	private static long openStreamHandlesPeak = 0;
 	
 	// Original input stream that this object wraps and delegates to.
 	private InputStream original;
@@ -59,6 +60,9 @@ public class TraceableInputStreamWrapper extends InputStream implements Comparab
 		
 		synchronized(openStreamHandles) {
 			openStreamHandles.add(this);
+			createdStreamHandlesCount++;
+			if(openStreamHandles.size() > openStreamHandlesPeak)
+				openStreamHandlesPeak = openStreamHandles.size();
 		}
 	}
 	
@@ -141,7 +145,12 @@ public class TraceableInputStreamWrapper extends InputStream implements Comparab
 	public static String getOpenStreamHandlesAsString() {
 		StringBuilder sb = new StringBuilder();
 		synchronized(openStreamHandles) {
-			sb.append("Number of open stream handles = " + openStreamHandles.size());
+			sb.append("Input stream: created=")
+			.append(createdStreamHandlesCount)
+			.append(" still open=")
+			.append(openStreamHandles.size())
+			.append(" peak open=")
+			.append(openStreamHandlesPeak);
 			for(TraceableInputStreamWrapper handle : openStreamHandles) {
 				sb.append(Constants.NEWLINE)
 				.append(handle.path);
