@@ -93,6 +93,7 @@ public interface FolderModule {
 	   manageTag(false, true),
 	   modifyEntry(false, true),
 	   modifyEntryFields(false, true),
+	   renameEntry(false, true),
 	   moveEntry(false, true),
 	   report(true, true),
 	   reserveEntry(false, true),

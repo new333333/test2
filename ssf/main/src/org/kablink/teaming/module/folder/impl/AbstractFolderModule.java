@@ -384,6 +384,9 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			case modifyEntryFields:
 				AccessUtils.modifyFieldCheck(entry);   
 				break;
+			case renameEntry:
+				AccessUtils.operationCheck(entry, WorkAreaOperation.RENAME_ENTRIES);   
+				break;
 			case restoreEntry:
 			case preDeleteEntry:
 			case deleteEntry:

@@ -66,6 +66,7 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation CREATE_ENTRIES = new WorkAreaOperation("createEntries");
     public final static WorkAreaOperation MODIFY_ENTRIES = new WorkAreaOperation("modifyEntries");    
     public final static WorkAreaOperation MODIFY_ENTRY_FIELDS = new WorkAreaOperation("modifyEntryFields");    
+    public final static WorkAreaOperation RENAME_ENTRIES = new WorkAreaOperation("renameEntries");    
     public final static WorkAreaOperation DELETE_ENTRIES = new WorkAreaOperation("deleteEntries");    
     public final static WorkAreaOperation READ_ENTRIES = new WorkAreaOperation("readEntries");
     public final static WorkAreaOperation ADD_REPLIES = new WorkAreaOperation("addReplies");
@@ -79,6 +80,7 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation MANAGE_WORKFLOW_DEFINITIONS = new WorkAreaOperation("manageWorkflowDefinitions");
     public final static WorkAreaOperation CREATOR_READ = new WorkAreaOperation("creatorReadEntries");
     public final static WorkAreaOperation CREATOR_MODIFY = new WorkAreaOperation("creatorModifyEntries");
+    public final static WorkAreaOperation CREATOR_RENAME = new WorkAreaOperation("creatorRenameEntries");
     public final static WorkAreaOperation CREATOR_DELETE = new WorkAreaOperation("creatorDeleteEntries");
     public final static WorkAreaOperation CREATOR_CREATE_ENTRY_ACLS = new WorkAreaOperation("ownerCreateEntryAcls");
     public final static WorkAreaOperation ADD_COMMUNITY_TAGS = new WorkAreaOperation("addTags");
@@ -111,6 +113,7 @@ public class WorkAreaOperation {
 		WorkAreaOperation.CREATE_ENTRIES,
 		WorkAreaOperation.MODIFY_ENTRIES,
 		WorkAreaOperation.MODIFY_ENTRY_FIELDS,
+		WorkAreaOperation.RENAME_ENTRIES,
 		WorkAreaOperation.DELETE_ENTRIES,
 		WorkAreaOperation.CREATE_ENTRY_ACLS,
 		WorkAreaOperation.CHANGE_ACCESS_CONTROL,
@@ -118,6 +121,7 @@ public class WorkAreaOperation {
 		WorkAreaOperation.CREATE_FOLDERS, 
 		WorkAreaOperation.CREATOR_READ,
 		WorkAreaOperation.CREATOR_MODIFY, 
+		WorkAreaOperation.CREATOR_RENAME, 
 		WorkAreaOperation.CREATOR_DELETE,
 		WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS };
 	
@@ -193,6 +197,7 @@ public class WorkAreaOperation {
 		protected Boolean createEntries = Boolean.FALSE;
 		protected Boolean modifyEntries = Boolean.FALSE;
 		protected Boolean modifyEntryFields = Boolean.FALSE;
+		protected Boolean renameEntries = Boolean.FALSE;
 		protected Boolean deleteEntries = Boolean.FALSE;
 		protected Boolean readEntries = Boolean.FALSE;
 		protected Boolean addReplies = Boolean.FALSE;
@@ -206,6 +211,7 @@ public class WorkAreaOperation {
 		protected Boolean manageWorkflowDefinitions = Boolean.FALSE;
 		protected Boolean creatorReadEntries = Boolean.FALSE;
 		protected Boolean creatorModifyEntries = Boolean.FALSE;
+		protected Boolean creatorRenameEntries = Boolean.FALSE;
 		protected Boolean creatorDeleteEntries = Boolean.FALSE;
 		protected Boolean ownerCreateEntryAcls = Boolean.FALSE;
 		protected Boolean addTags = Boolean.FALSE;
@@ -334,6 +340,7 @@ public class WorkAreaOperation {
 			if(this.createEntries) rights.add(WorkAreaOperation.CREATE_ENTRIES);
 			if(this.modifyEntries) rights.add(WorkAreaOperation.MODIFY_ENTRIES);
 			if(this.modifyEntryFields) rights.add(WorkAreaOperation.MODIFY_ENTRY_FIELDS);
+			if(this.renameEntries) rights.add(WorkAreaOperation.RENAME_ENTRIES);
 			if(this.deleteEntries) rights.add(WorkAreaOperation.DELETE_ENTRIES);
 			if(this.readEntries) rights.add(WorkAreaOperation.READ_ENTRIES);
 			if(this.addReplies) rights.add(WorkAreaOperation.ADD_REPLIES);
@@ -347,6 +354,7 @@ public class WorkAreaOperation {
 			if(this.manageWorkflowDefinitions) rights.add(WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS);
 			if(this.creatorReadEntries) rights.add(WorkAreaOperation.CREATOR_READ);
 			if(this.creatorModifyEntries) rights.add(WorkAreaOperation.CREATOR_MODIFY);
+			if(this.creatorRenameEntries) rights.add(WorkAreaOperation.CREATOR_RENAME);
 			if(this.creatorDeleteEntries) rights.add(WorkAreaOperation.CREATOR_DELETE);
 			if(this.ownerCreateEntryAcls) rights.add(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
 			if(this.addTags) rights.add(WorkAreaOperation.ADD_COMMUNITY_TAGS);
