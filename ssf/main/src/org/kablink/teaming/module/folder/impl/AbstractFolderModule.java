@@ -298,15 +298,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);
 				break;
 			case scheduleSynchronization:
-				// For Net Folders...
-				if (folder.isAclExternallyControlled()) {
-					// ...we don't allow scheduled synchronizations.
-					throw new OperationAccessControlException(RequestContextHolder.getRequestContext().getUser().getName(),
-							operation.name(), folder.toString());
-				}
-				
-				// Fall through and handle with the
-				// BINDER_ADMINISTRATION cases. 
 			case manageEmail:
 			case changeEntryTimestamps:
 			case fullSynchronize:
