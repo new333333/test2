@@ -7,6 +7,7 @@ import org.kabling.teaming.install.shared.InstallerConfig;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
@@ -120,7 +121,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 		if (useDefaultsRB.getValue())
 		{
 			Database db = config.getDatabase();
-			DatabaseConfig dbConfig = db.getDatabaseConfig("Installed");
+			DatabaseConfig dbConfig = db.getDatabaseConfig("MySQL_Default");
 			dbConfig.setResourcePassword("root");
 		}
 	}
@@ -147,5 +148,12 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 		else if (customRB.getValue())
 			return "large";
 		return "upgrade";
+	}
+
+	@Override
+	public FocusWidget getWidgetToFocus()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

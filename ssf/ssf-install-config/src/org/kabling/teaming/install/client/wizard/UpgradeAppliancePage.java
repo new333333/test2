@@ -13,6 +13,7 @@ import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
@@ -230,5 +231,12 @@ public class UpgradeAppliancePage implements IWizardPage<InstallerConfig>, EditS
 		wizard.getFinishButton().setEnabled(true);
 		wizard.hideStatusIndicator();
 		return true;
+	}
+
+	@Override
+	public FocusWidget getWidgetToFocus()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

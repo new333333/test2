@@ -73,34 +73,7 @@ public class ConfigImportExportServlet extends HttpServlet
 	public void init(ServletConfig config) throws ServletException
 	{
 		super.init(config);
-
-		// Add the files that need to be zipped part of export
-		if (TimeZoneHelper.isUnix())
-		{
-			// Cert Files
-			filesToZipMap.put("cacerts", "/usr/lib64/jvm/jre-1.6.0-ibm/lib/security/cacerts");
-			
-			filesToZipMap.put("Novell-VA-release", "/vastorage/conf/Novell-VA-release");
-
-			// Ganglia Files
-			filesToZipMap.put("gmontd.conf", "/etc/opt/novell/ganglia/monitor/gmontd.conf");
-			filesToZipMap.put("gmetad.conf", "/etc/opt/novell/ganglia/monitor/gmetad.conf");
-
-			filesToZipMap.put("installer.xml", "/filrinstall/installer.xml");
-			filesToZipMap.put("license-key.xml", "/filrinstall/license-key.xml");
-			filesToZipMap.put("mysql-liquibase.properties", "/filrinstall/db/mysql-liquibase.properties");
-			filesToZipMap.put("configurationDetails.properties", "/filrinstall/configurationDetails.properties");
-
-			filesToZipMap.put("hibernate-ext.cfg.xml",
-					"/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/hibernate-ext.cfg.xml");
-			filesToZipMap.put("zone-ext.cfg.xml", "/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/zone-ext.cfg.xml");
-			filesToZipMap.put("ssf-ext.properties", "/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties");
-			filesToZipMap.put("messages-ext.properties",
-					"/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/messages/messages-ext.properties");
-			filesToZipMap.put("applicationContext-ext.xml",
-					"/opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/context/applicationContext-ext.xml");
-
-		}
+		initializeFileMap();
 	}
 
 	@Override

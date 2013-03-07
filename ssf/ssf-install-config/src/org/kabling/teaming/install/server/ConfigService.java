@@ -76,7 +76,7 @@ public final class ConfigService
 {
 	static Logger logger = Logger.getLogger("org.kabling.teaming.install.server.ConfigService");
 	private static final int MAX_TRIES = 2;
-	private static final String FILR_SERVER_URL = "http://localhost:8443";
+	private static final String FILR_SERVER_URL = "http://localhost:";
 	static final Pattern IPv4_ADDR = Pattern.compile("\\binet addr:\\s*([\\d\\.]+)\\b", Pattern.MULTILINE);
 
 	public static InstallerConfig getConfiguration()
@@ -423,6 +423,7 @@ public final class ConfigService
 		// Properties (maxThreads, maxActive and maxIdle)
 		requestAndConnections.setMaxThreads(getIntegerValue(rootNode.getAttribute("maxThreads")));
 		requestAndConnections.setMaxActive(getIntegerValue(rootNode.getAttribute("maxActive")));
+		requestAndConnections.setSchedulerThreads(getIntegerValue(rootNode.getAttribute("schedulerThreads")));
 		//requestAndConnections.setMaxIdle(getIntegerValue(rootNode.getAttribute("maxIdle")));
 
 		return requestAndConnections;
@@ -1483,6 +1484,7 @@ public final class ConfigService
 		reqElement.setAttribute("maxThreads", String.valueOf(req.getMaxThreads()));
 		reqElement.setAttribute("maxActive", String.valueOf(req.getMaxActive()));
 		reqElement.setAttribute("maxIdle", String.valueOf(req.getMaxIdle()));
+		reqElement.setAttribute("schedulerThreds", String.valueOf(req.getSchedulerThreads()));
 	}
 
 	private static void saveEmailSettingsConfiguration(InstallerConfig config, Document document)
@@ -1781,7 +1783,7 @@ public final class ConfigService
 		{
 
 			// Update the mysql-liquibase.properties
-			DatabaseConfig dbConfig = database.getDatabaseConfig("Installed");
+			DatabaseConfig dbConfig = database.getDatabaseConfig("MySQL_Default");
 
 			String resourceName = "root";
 			String resourcePassword = "root";
@@ -1845,7 +1847,7 @@ public final class ConfigService
 			updateMySqlLiquiBaseProperties(database);
 
 			// Update the mysql-liquibase.properties
-			DatabaseConfig dbConfig = database.getDatabaseConfig("Installed");
+			DatabaseConfig dbConfig = database.getDatabaseConfig("MySQL_Default");
 
 			// Check to see if database exists
 			String resourceName = "root";
@@ -1961,7 +1963,7 @@ public final class ConfigService
 		{
 			hostName = info.getOutput().get(0);
 		}
-		DatabaseConfig config = database.getDatabaseConfig("Installed");
+		DatabaseConfig config = database.getDatabaseConfig("MySQL_Default");
 		
 		StringBuilder commandToRun = new StringBuilder();
 		commandToRun.append("mysql -h " + config.getHostNameFromUrl());
@@ -2002,19 +2004,6 @@ public final class ConfigService
 				}
 				logger.debug("Error reconfiguring installer in silent mode,Error code " + info.getExitValue());
 				throw new ConfigurationSaveException();
-			}
-
-			// Setup Encoding on hostname information in installer.xml
-			info = executeCommand("sudo hostname -f", true);
-			List<String> outputList = info.getOutput();
-			if (info.getExitValue() == 0 && outputList != null && outputList.get(0) != null)
-			{
-				String hostName = info.getOutput().get(0);
-				info = executeCommand("sudo sed -i -e's/@@HOSTNAME@@/" + hostName + "/' /filrinstall/installer.xml", true);
-				if (info.getExitValue() != 0)
-				{
-					logger.debug("Unable to set hostName " + info.getExitValue());
-				}
 			}
 
 			// Setup Encoding on /etc/init.d/teaming file
@@ -2094,7 +2083,7 @@ public final class ConfigService
 				try
 				{
 					Thread.sleep(1000);
-					if (!isFilrServerRunning())
+					if (!isFilrServerRunning(getConfiguration().getNetwork().getSecureListenPort()))
 						return;
 				}
 				catch (MalformedURLException e)
@@ -2134,7 +2123,7 @@ public final class ConfigService
 					// Sleeping for minute and 20 seconds
 					// This is temporary workaround
 					Thread.sleep(80000);
-					if (isFilrServerRunning())
+					if (isFilrServerRunning(getConfiguration().getNetwork().getSecureListenPort()))
 						return;
 				}
 				catch (MalformedURLException e)
@@ -2227,12 +2216,12 @@ public final class ConfigService
 
 	}
 
-	private static boolean isFilrServerRunning() throws MalformedURLException, IOException
+	private static boolean isFilrServerRunning(int port) throws MalformedURLException, IOException
 	{
 		logger.debug("Check to see if Filr server is running");
 		try
 		{
-			URL myURL = new URL(FILR_SERVER_URL);
+			URL myURL = new URL(FILR_SERVER_URL + port);
 			URLConnection myURLConnection = myURL.openConnection();
 			myURLConnection.connect();
 		}
@@ -2414,7 +2403,7 @@ public final class ConfigService
 
 	public static void setupLocalMySqlUserPassword(Database db)
 	{
-		DatabaseConfig config = db.getDatabaseConfig("Installed");
+		DatabaseConfig config = db.getDatabaseConfig("MySQL_Default");
 		ShellCommandInfo info = executeCommand("mysqladmin -uroot -proot password '" + config.getResourcePassword() + "'", false);
 
 		logger.debug("mysqladmin setting up admin password exit Value" + info.getExitValue());

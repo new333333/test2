@@ -20,23 +20,15 @@
  */
 package org.kabling.teaming.install.server;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Random;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.ServletConfig;
@@ -46,16 +38,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.kabling.teaming.install.shared.InstallerConfig;
-import org.kabling.teaming.install.shared.LicenseInformation;
-import org.kabling.teaming.install.shared.ShellCommandInfo;
 
 /**
  * @author Rajesh
@@ -89,35 +72,55 @@ public class LogExportViewServlet extends HttpServlet
 		}
 	}
 
-
-
 	private void getFilrConfigurationSettings(HttpServletResponse response) throws Exception
 	{
 		ServletOutputStream op = response.getOutputStream();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(baos);
 
-		// Zip all the catalina logs
-		File file = new File("/opt/novell/filr/apache-tomcat/logs");
-		
+		List<String> filesToZip = new ArrayList<String>();
+
+		// Zip all the stderrorout logs
+		File file = new File("/opt/novell/jetty8/logs/");
+
 		String[] files = file.list(new FilenameFilter()
 		{
-			
+
 			@Override
 			public boolean accept(File arg0, String arg1)
 			{
-				if (arg0.getName().startsWith("catalina"))
+				if (arg0.getName().endsWith(".stderrorout.log"))
 					return true;
-				
+
 				return false;
 			}
 		});
-		
+
+		// Catalina Out
+		filesToZip.add("/opt/novell/filr/apahce-tomcat/logs/catalina.out");
+
+		// Famtd.log
+		filesToZip.add("/var/opt/novell/filr/logs/famtd.log");
+
+		// mail
+		filesToZip.add("/var/log/mail");
+
 		if (files != null)
+		{
+			filesToZip.addAll(Arrays.asList(files));
+		}
+
+		if (filesToZip != null)
 		{
 			for (String fileName : files)
 			{
+				//Check to see if the file exists
+				if (!new File(fileName).exists())
+					continue;
+				
+				//Add the entry
 				zos.putNextEntry(new ZipEntry(fileName));
+				
 				byte[] b = new byte[1024];
 				int len;
 				FileInputStream fis = new FileInputStream(file.getAbsolutePath() + File.separator + fileName);

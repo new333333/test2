@@ -24,6 +24,7 @@ public class RequestsAndConnections implements Serializable
 	private int maxThreads;
 	private int maxActive;
 	private int maxIdle;
+	private int schedulerThreads;
 
 	public RequestsAndConnections()
 	{
@@ -58,4 +59,16 @@ public class RequestsAndConnections implements Serializable
 	{
 		this.maxIdle = maxIdle;
 	}
+
+	public int getSchedulerThreads()
+	{
+		return schedulerThreads;
+	}
+
+	public void setSchedulerThreads(int schedulerThreads)
+	{
+		this.schedulerThreads = schedulerThreads;
+	}
+	
+	
 }

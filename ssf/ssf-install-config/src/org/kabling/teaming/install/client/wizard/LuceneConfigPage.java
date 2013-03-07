@@ -11,6 +11,7 @@ import org.kabling.teaming.install.shared.Lucene;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
@@ -210,6 +211,12 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 	@Override
 	public IWizardPage<InstallerConfig> getNextPage() {
 		return null;
+	}
+
+	@Override
+	public FocusWidget getWidgetToFocus()
+	{
+		return luceneAddrTextBox;
 	}
 
 }

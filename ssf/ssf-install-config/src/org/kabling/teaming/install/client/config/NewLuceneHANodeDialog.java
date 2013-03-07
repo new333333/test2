@@ -114,7 +114,7 @@ public class NewLuceneHANodeDialog extends DlgBox
 		{
 			row++;
 			// Host
-			InlineLabel keyLabel = new InlineLabel(RBUNDLE.hostNameOrIpAddrColon());
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.hostNameColon());
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
