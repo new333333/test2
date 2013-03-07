@@ -771,6 +771,15 @@ public interface ProfileModule {
     public SortedSet<IndividualPrincipal> getIndividualPrincipals(Collection<Long> individualIds);
 
     public void changePassword(Long userId, String oldPassword, String newPassword);
+
+    /**
+     * Returns true if the logged in user must provide the current password of the specified user in
+     * order to change the user's password.  Ordinary users need to provide the old password in order
+     * to change their own, but super users do not.
+     * @param userId
+     * @return
+     */
+    public boolean mustSupplyOldPasswordToSetNewPassword(Long userId);
     
     /**
      * Returns a set of users matching the email, sorted by title

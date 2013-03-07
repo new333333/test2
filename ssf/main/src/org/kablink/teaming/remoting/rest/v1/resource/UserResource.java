@@ -39,6 +39,7 @@ import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -47,19 +48,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.spi.resource.Singleton;
 import org.dom4j.Document;
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
-import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.ChainedInputData;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
@@ -67,7 +65,6 @@ import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UserBriefBuilder;
-import org.kablink.teaming.remoting.ws.util.ModelInputData;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.GroupBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
@@ -75,7 +72,6 @@ import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.UserBrief;
 import org.kablink.teaming.search.SearchUtils;
-import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Junction;
@@ -190,6 +186,23 @@ public class UserResource extends AbstractPrincipalResource {
         }
         getProfileModule().modifyEntry(id, new RestModelInputData(user));
         return getUser(id, includeAttachments, textDescriptions);
+    }
+
+    @POST
+    @Path("/{id}/password")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response changePassword(@PathParam("id") long id,
+                           @FormParam("old_password") String oldPassword,
+                           @FormParam("new_password") String newPassword) {
+        org.kablink.teaming.domain.User existing = _getUser(id);
+        if (newPassword==null || newPassword.length()==0) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing new_password form parameter");
+        }
+        if (getProfileModule().mustSupplyOldPasswordToSetNewPassword(id) && (oldPassword==null || oldPassword.length()==0)) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing old_password form parameter");
+        }
+        getProfileModule().changePassword(id, oldPassword, newPassword);
+        return Response.ok().build();
     }
 
     @GET

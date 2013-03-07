@@ -89,13 +89,11 @@ import org.kablink.teaming.domain.NoApplicationByTheNameException;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
-import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -2258,12 +2256,9 @@ public Map getUsers() {
 public void changePassword(Long userId, String oldPassword, String newPassword) {
 	  if(newPassword == null || newPassword.equals(""))
 		  throw new PasswordMismatchException("errorcode.password.cannotBeNull");
-	  User currentUser = RequestContextHolder.getRequestContext().getUser();
 	  User user = getUser(userId, true);
-	  ProfileBinder profileBinder = loadProfileBinder();
-	  
-      if (!testAccess(profileBinder, ProfileOperation.manageEntries) || currentUser.getName().equals(user.getName()) ||
-    		  user.isSuper() ) {
+
+      if (mustSupplyOldPasswordToSetNewPassword(userId)) {
     	  // The user making the call does not have the right to manage profile entries. 
     	  // In this case, we require that the old password be specified. 
     	  // Note: This code needs to be kept in synch with the similar check in ModifyEntryController.java.
@@ -2279,6 +2274,16 @@ public void changePassword(Long userId, String oldPassword, String newPassword) 
       user.setPassword(newPassword);
   }
   
+  @Override
+public boolean mustSupplyOldPasswordToSetNewPassword(Long userId) {
+	  User currentUser = RequestContextHolder.getRequestContext().getUser();
+	  User user = getUser(userId, true);
+	  ProfileBinder profileBinder = loadProfileBinder();
+
+      return (!testAccess(profileBinder, ProfileOperation.manageEntries) || currentUser.getName().equals(user.getName()) ||
+    		  user.isSuper() );
+  }
+
   //RO transaction
   @Override
 public SortedSet<User> getUsersByEmail(String emailAddress, String emailType) {
