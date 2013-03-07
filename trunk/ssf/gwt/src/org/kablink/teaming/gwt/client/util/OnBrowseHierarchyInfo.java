@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.util;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Widget;
 
-
 /**
  * Class used to communicate information about a browse hierarchy
  * request between the MainMenuControl and its event handlers.
@@ -94,6 +93,6 @@ public class OnBrowseHierarchyInfo {
 	 * 
 	 * @return
 	 */
-	public int getLeft() {return ((null != m_browseWidget) ? m_browseWidget.getAbsoluteLeft() : m_browseItem.getAbsoluteLeft());}
-	public int getTop()  {return ((null != m_browseWidget) ? m_browseWidget.getParent().getElement().getAbsoluteBottom() : m_browseItem.getParentMenu().getElement().getAbsoluteBottom());}
+	public int getLeft() {return ((null != m_browseWidget) ? m_browseWidget.getAbsoluteLeft()                : m_browseItem.getAbsoluteLeft());                               }
+	public int getTop()  {return ((null != m_browseWidget) ? m_browseWidget.getElement().getAbsoluteBottom() : m_browseItem.getParentMenu().getElement().getAbsoluteBottom());}
 }
