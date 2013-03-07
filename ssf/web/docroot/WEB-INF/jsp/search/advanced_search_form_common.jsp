@@ -490,7 +490,7 @@
 			</c:if>
 		</div>
 		
-		<c:if test="${! empty ss_filterMap.additionalFilters}">
+		<c:if test="${!empty ss_filterMap.additionalFilters && !filterDefinition}">
 		<div id="ss_searchForm_filterSummary" style="visibility:visible; display: block;">
 			<!-- Summary of user filters -->
 			<%@ include file="/WEB-INF/jsp/search/filterSummary.jsp" %>
