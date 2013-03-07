@@ -87,6 +87,7 @@ import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.Function;
+import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
@@ -898,6 +899,14 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   //get binder created
 	   try {
 			binder = getCoreDao().loadBinder(getBinderModule().addBinder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx).getId(), zoneId);
+			//See if this binder is in the personal workspace tree
+			boolean personal = Utils.isWorkareaInProfilesTree((WorkArea)binder);
+			if (personal) {
+				//Make sure the owner of this new binder starts out as the owner its parent binder
+				//We want binders in a user's workspace to be manageable by the workspace owner
+				//The owner can explicitly change the ownership, then the new owner propagates as new biders are added
+				binder.setOwner(parentBinder.getOwner());
+			}
 	   } catch (WriteFilesException wf) {
 		   //don't fail, but log it
   			logger.error("Error creating binder from template: ", wf);
