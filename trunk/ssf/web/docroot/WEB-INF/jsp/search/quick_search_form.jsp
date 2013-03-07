@@ -120,6 +120,7 @@
 								<a href="<ssf:url action="view_folder_listing" 
 									binderId="${ss_searchContextBinderId}" />"
 									title="${ss_searchContextBinder.pathName}"
+									onClick="ss_openUrlInWorkarea(this.href, '${ss_searchContextBinderId}', 'view_folder_listing');return false;"
 								>
 								  <span>${ss_searchContextBinder.title}</span>
 								</a>

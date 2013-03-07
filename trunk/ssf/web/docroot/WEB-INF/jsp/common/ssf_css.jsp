@@ -4259,6 +4259,9 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	padding: 0px 24px 0px 0px;
 }
 
+div.ss_search_hit {
+	background: #f6f6f6;
+}
 div.ss_thumbnail {
 	float: left;
 	font-size: 8px;
@@ -4269,7 +4272,7 @@ div.ss_thumbnail img {width:24px;height:24px;padding:0px; margin:0px;}
 div.ss_entry, div.ss_reply {
 	float: left;
 }
-div.ss_entry p, , div.ss_reply p {
+div.ss_entry p, div.ss_reply p {
 	margin-top:    2px;
 	margin-bottom: 2px;
 
