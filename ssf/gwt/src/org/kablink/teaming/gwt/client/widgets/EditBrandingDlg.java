@@ -425,17 +425,22 @@ public class EditBrandingDlg extends DlgBox
 		}
 		
 		// Add an empty row to add some space between the "background image" listbox and the "background color" textbox.
-		spacer = new Label( " " );
-		spacer.addStyleName( "marginTop10px" );
-		table.setWidget( nextRow, 0, spacer );
+		spacer = new Label( messages.colorDescription() );
+		spacer.addStyleName( "margintop3" );
+		spacer.addStyleName( "gray3" );
+		table.setWidget( nextRow, 1, spacer );
 		++nextRow;
-		
+
+
 		// Add the controls for "Background color"
 		{
 			KeyUpHandler keyUpHandler;
 			ClickHandler clickHandler;
 			HorizontalPanel hPanel;
 			Anchor colorHint;
+			Element linkElement;
+			Element imgElement;
+			Image colorBrowseImg;
 			
 			table.setText( nextRow, 0, messages.backgroundColorLabel() );
 
@@ -447,14 +452,21 @@ public class EditBrandingDlg extends DlgBox
 			m_backgroundColorTextbox.setVisibleLength( 20 );
 			hPanel.add( m_backgroundColorTextbox );
 
-			// Add a hint next to the background color textbox the user can click on to invoke a color picker.
-			colorHint = new Anchor( messages.colorHint() );
-			colorHint.setTitle( messages.displayColorPicker() );
-			colorHint.addStyleName( "editBrandingLink" );
-			hPanel.add( colorHint );
+			// Add a button next to the background color textbox the user can click on to invoke a color picker.
 
+			colorHint = new Anchor();
+			colorHint.setTitle( messages.displayColorPicker() );
+			colorHint.addStyleName( "editBrandingBrowseLink" );
+			colorHint.addStyleName( "displayInlineBlock" );
+
+			// Add the browse image to the link.
+			colorBrowseImg = new Image( GwtTeaming.getImageBundle().colorPicker() );
+			linkElement = colorHint.getElement();
+			imgElement = colorBrowseImg.getElement();
+			linkElement.appendChild( imgElement );
+			hPanel.add( colorHint );
 			table.setWidget( nextRow, 1, hPanel );
-			
+
 			// Add a keyup handler so we can update the "sample text" background color.
 			keyUpHandler = new KeyUpHandler()
 			{
@@ -499,10 +511,13 @@ public class EditBrandingDlg extends DlgBox
 			ClickHandler clickHandler;
 			Anchor textColorHint;
 			HorizontalPanel hPanel;
+			Element linkElement;
+			Element imgElement;
+			Image colorBrowseImg;
 			
 			table.setText( nextRow, 0, messages.textColorLabel() );
 
-			// Create a panel where the text color control and hint will live.
+			// Create a panel where the text color control and button will live.
 			hPanel = new HorizontalPanel();
 			
 			// Add a text box where the user can enter the font color.
@@ -510,14 +525,21 @@ public class EditBrandingDlg extends DlgBox
 			m_textColorTextbox.setVisibleLength( 20 );
 			hPanel.add( m_textColorTextbox );
 			
-			// Add a hint next to the text color textbox the user can click on to invoke a color picker.
-			textColorHint = new Anchor( messages.colorHint() );
+			// Add a button next to the text color textbox the user can click on to invoke a color picker.
+			textColorHint = new Anchor();
 			textColorHint.setTitle( messages.displayColorPicker() );
-			textColorHint.addStyleName( "editBrandingLink" );
+			textColorHint.addStyleName( "editBrandingBrowseLink" );
+			textColorHint.addStyleName( "displayInlineBlock" );
+
+			// Add the browse image to the link.
+			colorBrowseImg = new Image( GwtTeaming.getImageBundle().colorPicker() );
+			linkElement = textColorHint.getElement();
+			imgElement = colorBrowseImg.getElement();
+			linkElement.appendChild( imgElement );
+
 			hPanel.add( textColorHint );
-			
 			table.setWidget( nextRow, 1, hPanel );
-			
+
 			// Add a keyup handler so we can update the "sample text" color
 			keyUpHandler = new KeyUpHandler()
 			{
