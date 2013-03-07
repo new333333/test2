@@ -1770,7 +1770,7 @@ public class LoginDlg extends DlgBox
 			m_forgotPwdLink = InlineLabel.wrap( forgotPwdElement );
 			m_forgotPwdLink.setVisible( true );
 			
-			// Add a clickhandler to the "I forgot my password" link.  When the user clicks on the link we
+			// Add a clickhandler to the "Forgot your password?" link.  When the user clicks on the link we
 			// will invoke the "Forgotten password" dialog.
 			clickHandler = new ClickHandler()
 			{
