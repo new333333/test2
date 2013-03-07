@@ -122,8 +122,8 @@
 		.vibe-footerDataHintGrid                {width: 100%; background: #eaebe8; border-spacing: 0px;}
 		.vibe-footerDataHintGridFooter          {padding: 10px 10px 6px 6px;}
 		.vibe-footerDataHintGridHeader          {font-weight: bold;}
-		.vibe-footerDataLinksGrid               {width: 100%; background: #cecece; border-spacing: 0px;}
-		.vibe-footerDataLinksInput              {width: 100%; background-color: #cecece; overflow: hidden; padding: 0px !important; border: 0px;}
+		.vibe-footerDataLinksGrid               {width: 100%; background: #fafafa; border-spacing: 2px; box-shadow: 0px 2px 6px #949494;}
+		.vibe-footerDataLinksInput              {width: 100%; background-color: #fafafa; overflow: hidden; padding: 0px !important; border: 0px;}
 		.vibe-footerDataLinksOpenerAnchor       {cursor: pointer; color: #666; text-decoration: none;}
 		.vibe-footerDataLinksOpenerAnchor-hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 		.vibe-footerDataLinksOpenerLabel        {}
@@ -378,7 +378,7 @@
 	.vibe-addFilesHtml5Popup-innerHintBrowseUpload       {visibility: hidden; width: 0px; margin: 0px;}
 	.vibe-addFilesHtml5Popup-innerHintBusy               {margin-right: 10px; vertical-align: middle;}
 	.vibe-addFilesHtml5Popup-innerHintLabel              {}
-	.vibe-addFilesHtml5Popup-innerHintPanel              {position: absolute; top: 150px; left: 25%; right: 25%; color: white; font-size: 1.3em; text-align: center; padding: 15px; -moz-border-radius: 10px; border-radius: 10px; -webkit-border-radius: 10px; background: url("images/trans50_black.png") repeat;}
+	.vibe-addFilesHtml5Popup-innerHintPanel              {position: absolute; top: 150px; left: 25%; right: 25%; color: white; font-size: 1.2em; text-align: center; padding: 15px; -moz-border-radius: 10px; border-radius: 10px; -webkit-border-radius: 10px; background: url("images/trans50_black.png") repeat;}
 	.vibe-addFilesHtml5Popup-panel                       {z-index: 1001;}
 	.vibe-addFilesHtml5Popup-progressBar-panel           {padding: 6px; margin-left: auto; margin-right: auto; margin-top: 15px;}
 	.vibe-addFilesHtml5Popup-progressBar-perItem-bar     {margin-bottom: 3px; width: 250px !important;}
@@ -436,7 +436,6 @@
 		border-radius: 15px;
 		-moz-border-radius: 15px;
 		-webkit-border-radius: 15px;
-		min-width: 70px;
 	}
 	.vibe-manageCommentsComposite-sendButton:hover {
 		color: #135c8f !important;
@@ -504,12 +503,12 @@
 	.vibe-sizeColumnsDlg-sizeSpinner .textBox
 	{
 		font-size: 12px;
-		padding: 2px 0px;
-		border: 0px;
+		padding: 3px 0px;
 		text-align: center;
 		font-family: sans-serif;
 		font-weight: bold;
 		border: 1px solid #949494;
+		border-radius: 3px;
 	}
 /* End:  Size columns dialog styles. */
 
@@ -524,7 +523,7 @@
 		text-decoration:none;	
 		white-space: nowrap;
 		text-align: center !important;
-		min-width: 20px;
+		width: 25px;
 		border-radius: 5px;
 		-moz-border-radius: 5px;
 		-webkit-border-radius: 5px;
