@@ -315,7 +315,10 @@
 {
 	color: #353838;
 	font-size: 13px;
-	height: 4em;
+
+	/* reduce size for Filr only */
+	height: .2em;
+/*	height: 4em; -- vibe height */
 	margin-top: 4px;
 	margin-left: 1px;
 	overflow: hidden;
@@ -638,6 +641,7 @@
 {
 	position: absolute;
 	top: -3px;
+	left: 1px;
 }
 
 .shareThisDlg_HeaderNamePanel
@@ -965,27 +969,27 @@ a, a:visited, a:hover {
 	top: 8px;
 	width: 300px;
 	z-index: 100;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
 /* Style used for the header in the AdminActionsTreeControl */
 .adminActionsTreeControlHeader
 {
-	background: #85BCC3 url(images/header_blend_grey_bg.png) repeat-x scroll center bottom;
-	background-position:bottom;
 	color: #fff;
 	font-size: 0.85em;
 	font-weight: bold;
 	letter-spacing: 0.02em;
 	width: 100%;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
+	padding: 4px;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
+	background-color: #949494;
 }
 
 /* Style used for the header in the AdminActionsTreeControl */
@@ -1012,8 +1016,8 @@ a, a:visited, a:hover {
 	position: absolute;
 	top: 8px;
 	background-color:#fff;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -1028,8 +1032,9 @@ a, a:visited, a:hover {
     border-radius: 15px 15px 15px 15px;
     color: #FFFFFF !important;
     background: #505354;
+	border: 1px solid transparent;
     font-size: 12px;
-	margin-right: 10px;
+	margin-right: 5px;
     padding-left: 10px;
     padding-right: 10px;
     padding-top: 2px;
@@ -1039,7 +1044,9 @@ a, a:visited, a:hover {
 
 .adminControl_CloseLabel:hover
 {
+    color: #135c8f !important;
 	cursor: pointer;
+	border: 1px solid #81b2bd;
 	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
@@ -1089,11 +1096,17 @@ body, table td, select
 .mediumtext { color: black; font-size: 0.85em;  line-height: 1.1em; }
 .largetext  { color: black; font-style: normal; line-height: 1.1em; font-weight: normal; font-size: 1em; }
 
+/* Various margin styles */
 .margintop1      {margin-top:    0.3em;}
 .margintop1a     {margin-top:    0.3em !important;}
 .margintop2      {margin-top:    0.5em;}
 .margintop3      {margin-top:    1em;}
+.margintop4      {margin-top:    1.5em;}
+.margintop5      {margin-top:    2em;}
 .margintop3px    {margin-top:    3px;}
+.marginTop5px	 {margin-top: 	 5px;}
+.marginTop10px	 {margin-top: 10px;}
+
 .marginleft1     {margin-left:   1em;}
 .marginleft2     {margin-left:   2em;}
 .marginleft2px   {margin-left:   2px;}
@@ -1101,13 +1114,22 @@ body, table td, select
 .marginleft4     {margin-left:   4em;}
 .marginleft5px   {margin-left:   5px;}
 .marginleft8px   {margin-left:   8px;}
-.marginbottom1   {margin-bottom: 0.3em;}
-.marginbottom2   {margin-bottom: 0.5em;}
-.marginbottom3   {margin-bottom: 1em;}
-.marginright2px  {margin-right:  2px;}
-.marginright3px  {margin-right:  3px;}
-.marginright5px  {margin-right: 5px;}
-.marginright10px {margin-right:  10px;}
+.marginLeftPoint25em	{margin-left: .25em;}
+
+.marginbottom1   		{margin-bottom: 0.3em;}
+.marginbottom2   		{margin-bottom: 0.5em;}
+.marginbottom3   		{margin-bottom: 1em;}
+.marginBottom15em		{margin-bottom: .15em;}
+.marginBottomPoint25em	{margin-bottom: .25em;}
+
+.marginright2px  		{margin-right:  2px;}
+.marginright3px  		{margin-right:  3px;}
+.marginright5px  		{margin-right: 5px;}
+.marginright10px 		{margin-right:  10px;}
+.margin-right-5			{margin-right: 5px;}
+.margin-right-22		{margin-right: 22px;}
+.marginRightPoint25em	{margin-right: .25em;}
+
 
 /* Style used for the panel that holds the content in the "color picker" dialog. */
 .colorPickerContentPanel
@@ -1266,7 +1288,7 @@ body, table td, select
 }
 
 /* Style used for the Browse link in the "edit branding" dialog. */
-.editBrandingBrowseLink, .editBrandingAdvancedLink, .addAttachmentLink, .colorPickerLink, #forgottenPwdSpan
+.editBrandingBrowseLink, .editBrandingAdvancedLink, .addAttachmentLink, .colorPickerLink
 {
 	cursor: pointer;
 	border: 1px solid #B8B8B8;
@@ -1277,7 +1299,7 @@ body, table td, select
 	text-decoration:none;	
 	white-space: nowrap;
 	text-align: center !important;
-	min-width: 20px;
+	width: 20px;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -1303,15 +1325,6 @@ body, table td, select
 	-moz-border-radius: 5px !important;
 	-webkit-border-radius: 5px !important;
 }
-
-
-
-
-
-
-
-
-
 
 .editBrandingDlg_LoginDialogHint
 {
@@ -1507,9 +1520,11 @@ body, table td, select
 
 .loginDlg_useOpenIdPanel
 {
-	margin-top: 6px;
-	margin-left: 10px;
-	margin-bottom: 20px;
+	position: absolute;
+	left: 15px;
+	bottom: 15px;
+	z-index: 1000;
+	color: #353838;
 }
 
 .loginDlg_openIdProviderImg:hover
@@ -1527,7 +1542,7 @@ body, table td, select
 
 #userIdLabel, #pwdLabel
 {
-	color: #949494;
+	color: #505354;
 }
 
 .loginDlg_OrText
@@ -2132,17 +2147,17 @@ body, table td, select
 	position: relative;
 	top: 8px !important;
 	background-color:#fff;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
 }
 
 .mainContentControl iframe.gwt-Frame
 {
 	border-width: 0px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
 }
 
 /* Style used for the content panel in Teaming's main page. */
@@ -2604,53 +2619,6 @@ body, table td, select
 	width: 100%;
 }
 
-/* Style used to create a bottom margin of .10em */
-.marginBottom15em
-{
-	margin-bottom: .15em;
-}
-
-/* Style used to create a bottom margin of .25em */
-.marginBottomPoint25em
-{
-	margin-bottom: .25em;
-}
-
-/* Style used to create a left margin of .25em */
-.marginLeftPoint25em
-{
-	margin-left: .25em;
-}
-
-/* Style used to create a right margin of .25em */
-.marginRightPoint25em
-{
-	margin-right: .25em;
-}
-
-/* Style used to create a right margin of 5 px. */
-.margin-right-5
-{
-	margin-right: 5px;
-}
-
-/* Style used to create a right margin of 22 px. */
-.margin-right-22
-{
-	margin-right: 22px;
-}
-
-/* Style used to create a top margin of 5 px. */
-.marginTop5px
-{
-	margin-top: 5px;
-}
-
-/* Style used to create a top margin of 10 px. */
-.marginTop10px
-{
-	margin-top: 10px;
-}
 
 /* Style used with the mast head */
 .mastHead
@@ -2709,17 +2677,17 @@ body, table td, select
 
 .mastheadFilr_PeoplePanel
 {
-	left: 15px;
+	left: 10px;
 	position: absolute;
-	bottom: 2px;
+	bottom: 0px;
 	z-index: 400;
 }
 
 .mastheadFilr_WhatsNewPanel
 {
-	left: 70px;
+	left: 60px;
 	position: absolute;
-	bottom: 2px;
+	bottom: 0px;
 	z-index: 400;
 }
 
@@ -2930,7 +2898,6 @@ body, table td, select
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
     text-align: center !important;
-	min-width: 70px;
 }
 
 .teamingDlgBoxFooter .gwt-Button:hover {
@@ -2974,7 +2941,6 @@ body, table td, select
 	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
-	min-width: 70px;
 }
 .gwt-Button:hover {
 	border: 1px solid #81b2bd;
@@ -2992,6 +2958,7 @@ body, table td, select
   border: 1px outset #ccc !important;
 }
 
+.gwt-RadioButton {white-space: nowrap;}
 .gwt-RadioButton label {
 	font-size: 14px;
 	padding-top: 5px;
@@ -3001,12 +2968,20 @@ body, table td, select
 }
 
 .gwt-CheckBox label {
-	font-size: 14px !important;
+	font-size: 13px !important;
 	padding-top: 2px;
 	padding-left: 2px;
-	padding-right: 8px;
+	padding-right: 4px;
 	display: inline-block;
 	}
+
+.gwt-TextBox, .gwt-PasswordTextBox, .gwt-DateBox, .gwt-FileUpload {
+	border: 1px solid #949494;
+	border-radius: 3px;
+	font-size: 12px;
+	padding: 5px;
+	background-color: #fff;
+}
 
 /* Styles for dialog boxes */
 .teamingDlgBox
@@ -3014,8 +2989,8 @@ body, table td, select
 	font-family: Arial,Helvetica,sans-serif;
 	background: url(images/trans30_black.png) repeat;
 	padding: 6px;
-	-moz-border-radius: 6px;
 	border-radius: 6px;
+	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
 	z-index: 1001;
 }
@@ -3029,7 +3004,7 @@ body, table td, select
 {
 	background-color: #000;
 	filter: alpha(opacity=50);
-	opacity: 0.5;
+	opacity: 0.4;
 	overflow: hidden;
 	z-index: 1000;
 }
@@ -3082,15 +3057,23 @@ body, table td, select
 	font-size: 14px;
 	font-weight: bold;
 	padding: 5px;
-	-moz-border-radius-topleft: 3px;
-	-moz-border-radius-topright: 3px;
 	border-top-left-radius: 3px;
 	border-top-right-radius: 3px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
 	-webkit-border-top-left-radius: 3px;
 	-webkit-border-top-right-radius: 3px;
 	white-space: nowrap;
 	vertical-align: middle;
+	
+	background-color: #81b2bd;
+	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
 }
+
 .teamingDlgBoxHeaderBG_NonIE
 {
 	background-color: #81b2bd;
@@ -3237,10 +3220,11 @@ a.ss_new_thread {
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
+
 .qViewTitleText {
 	color:#FFFFFF;
-	font-size:1.1em;
-	letter-spacing:0.05em;
+	font-size:1.4em;
+	letter-spacing:0.02em;
 	overflow:auto;
 	width:auto;
 	font-weight: normal;
@@ -3255,7 +3239,7 @@ a.ss_new_thread {
 .qViewMain {
 }
 .qViewLeft {
-	margin: -15px 10px 10px;
+	margin: -20px 10px 10px;
 	width: 100px;
 }
 .qViewRight {
@@ -3265,23 +3249,27 @@ a.ss_new_thread {
 	position: relative;
 	margin-bottom: 10px;
 }
-.qViewActions {
+.qViewPhoto_none {
+	background-color: transparent;
+	background-image: url(images/UserPhoto.png);
+	background-repeat: no-repeat;
+	background-position: center;
 }
 .qViewPhoto img {
 	width: 85px;
 	margin-left: 7px;
 	border-radius: 3px;
 }
-.qViewPhoto_No {
-	margin-left:25px;
-	margin-top:25px;
-	margin-bottom:10px;
-}
 .qViewPhotoHeight_No {
-	height:50px;
+	width: 85px;
+	height: 85px;
+	margin-left: 7px;
+	border-radius: 3px;
 }
 .qViewPhotoDisabled {
 	margin-bottom: 20px;
+}
+.qViewActions {
 }
 .qViewStatus {
 	padding-bottom: 10px;
@@ -3296,13 +3284,19 @@ a.ss_new_thread {
 .qViewFooter {
 }
 .qViewClose {
+	display: inline-block;
 	position:absolute;
-	right:4px;
-	top:4px;
+	right:-15px;
+	top:-15px;
+}
+.qViewClose img {
+	background-image:url(images/close_w_border.png) !important;
+	width: 27px !important;
+	height: 27px !important;
+	cursor: pointer;
 }
 .qViewInfoTable {
 	margin-bottom: 35px;
-	margin-left: 5px;
 }
 .qView-a {
 	color: #353838 !important;
@@ -3339,7 +3333,7 @@ a.ss_new_thread {
 .qView-action2 {
 	color: #135c8f;
 	background: url("images/teal_slice.png") repeat-x center;
-	border:1px solid #91daf2;
+	border:1px solid #81b2bd;
 }
 .qView-action-following  {
 	-moz-border-radius:15px;
@@ -3355,7 +3349,7 @@ a.ss_new_thread {
 }
 .qView-action-following:hover {
 	background: url("images/teal_slice.png") repeat-x center;
-	border:1px solid #91daf2;
+	border:1px solid #81b2bd;
 	color:#135c8f;
 }
 .qView-action-img {
@@ -4083,7 +4077,7 @@ td.datePickerMonth {
 	.vibe-emailNotifDlg_EMAList           {}
 	.vibe-emailNotifDlg_EMAPanel          {}
 	.vibe-emailNotifDlg_EMARootPanel      {display: block; white-space: nowrap; margin-top: 3px;}
-	.vibe-emailNotifDlg_EMASectionPanel   {background-color: white; border-color: #BABDB6; border-style: solid solid solid; border-width: 1px; padding: 2px 5px 0px 0px;}
+	.vibe-emailNotifDlg_EMASectionPanel   {background-color: #fff; border: 1px solid #b8b8b8; padding: 5px 5px 5px 0;}
 	.vibe-emailNotifDlg_ExpanderImg       {}
 	.vibe-emailNotifDlg_FooterCheck       {}
 	.vibe-emailNotifDlg_FooterHelp        {margin-left: 10px;}
@@ -4370,19 +4364,20 @@ td.datePickerMonth {
 
 .groupManagementMenuPanel, .modifyStaticMembershipMenuPanel, .manageNetFolderRootsDlg_MenuPanel, .manageNetFoldersDlg_MenuPanel
 {
-    background-color: #CCCCCC;
+    background-color: #ededed;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     display: block;
     font-family: Arial,Helvetica,sans-serif;
     font-size: 1.25em;
-    padding: 3px 3px 3px 12px;
+    padding: 3px 3px 3px 5px;
     position: relative;
     white-space: nowrap;
 }
 
 .groupTitlePanel, .netFolderRoot_NamePanel, .netFolder_NamePanel
 {
+	font-size: 14px;
 	vertical-align: middle;
 }
 
@@ -4437,6 +4432,11 @@ td.datePickerMonth {
 	border-radius: 0px 3px 3px 3px;
 }
  
+.vibe-tabPanel .gwt-TabBar
+{
+	border-bottom: 1px solid #c4c4c4;
+}
+
 .vibt-tabPanel .gwt-TabBarItem-wrapper
 {
 	padding-bottom: 3px;
@@ -4453,6 +4453,7 @@ td.datePickerMonth {
 	padding: 3px 10px;
 	margin-right: 6px;
 	margin-left: 0px;
+	margin-bottom: 4px;
 }
  
 .vibe-tabPanel .gwt-TabBar .gwt-TabBarItem:hover
@@ -4468,13 +4469,17 @@ td.datePickerMonth {
 	background: -moz-linear-gradient(center top, #FAFAFA, #EDEDED) repeat scroll 0 0 transparent;
 	background: linear-gradient(center top, #FAFAFA, #EDEDED) repeat scroll 0 0 transparent;
 	cursor: default;
-	padding: 3px 10px;
+	padding: 6px 10px;
 	color: black;
 	font-weight: bold;
-	-moz-border-radius: 3px 3px 0px 0px;
 	border-radius: 3px 3px 0px 0px;
+	-moz-border-radius: 3px 3px 0px 0px;
 	-webkit-border-radius: 0px 3px 3px 3px;
 	border-bottom: 3px solid #EDEDED;
+	border-top: 1px solid #c4c4c4;
+	border-left: 1px solid #c4c4c4;
+	border-right: 1px solid #c4c4c4;
+	margin-bottom: -2px;
 }
  
 .vibe-tabPanel .gwt-TabBarItem-wrapper-selected
@@ -4643,6 +4648,7 @@ td.datePickerMonth {
  */
 .FilrActionsCtrl_mainPanel
 {
+	left: 200px;
 }
 
 .FilrAction_Img
@@ -4674,8 +4680,8 @@ td.datePickerMonth {
 .FilrAction_Selected
 {
 	background: url(images/trans30_black.png) repeat;
-	border-radius: 2px;
-	box-shadow:	0 1px 4px #1F1F1F inset;
+	border-radius: 3px;
+	box-shadow:	0 1px 1px #1F1F1F inset;
 }
 
 .FilrAction_Selected .FilrAction_Text
@@ -4867,8 +4873,7 @@ td.datePickerMonth {
 
 .editShareNoteDlg_TextArea
 {
-	background-color: transparent;
-	border: 0 none;
+	background-color: #fff;
 	color: #353838;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 14px;
@@ -4880,9 +4885,6 @@ td.datePickerMonth {
 
 .editShareNoteDlg_TextAreaBorder
 {
-	border-color: #BABDB6;
-	border-style: solid solid solid;
-	border-width: 1px;
 }
 
 .editShareNoteDlg_MainPanel
@@ -5073,16 +5075,18 @@ td.datePickerMonth {
 /* End:  Import profiles dialog styles. */
 
 /* Start:  User properties dialog styles. */
-	.vibe-userPropertiesDlg-aboutMe          {width: 330px;}
-	.vibe-userPropertiesDlg-attrCaption      {font-weight: bold; padding-right: 3px;}
+	.vibe-userPropertiesDlg-aboutMe          {color: #353838; width: 330px;}
+	.vibe-userPropertiesDlg-attrCaption      {color: #949494; padding-right: 3px; display: inline-block; padding-top: 2px;; padding-bottom: 3px;}
 	.vibe-userPropertiesDlg-attrImage        {}	
-	.vibe-userPropertiesDlg-attrValue        {}
+	.vibe-userPropertiesDlg-attrValue        {color: #353838; font-size: 14px; display: inline-block; padding-top: 2px;; padding-bottom: 3px;}
 	.vibe-userPropertiesDlg-avatar           {border-width: 1px; border-style: solid; border-color: #ccc; width: 75px; height: 75px; margin-right: 5px; margin-bottom: 10px; margin-left: 35px;}
 	.vibe-userPropertiesDlg-buttonLook       {
 		border: 1px solid #B8B8B8;
 		font-weight: normal !important;
 		font-size: 12px;
-		padding: 2px 10px  !important;
+		padding: 2px 6px  !important;
+		margin-right: 15px;
+		margin-bottom: 3px;
 		text-decoration:none;	
 		white-space: nowrap;
 		text-align: center !important;
@@ -5093,7 +5097,7 @@ td.datePickerMonth {
 		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
 		background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
 		background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-		background-color: transparent;
+		background-color: ffffff;
 	}
 	.vibe-userPropertiesDlg-buttonAct        {cursor: pointer;}
 	.vibe-userPropertiesDlg-buttonNoAct      {
@@ -5102,11 +5106,11 @@ td.datePickerMonth {
 		min-width: 125px !important;
 	}
 	.vibe-userPropertiesDlg-delete           {}
-	.vibe-userPropertiesDlg-grid             {padding: 5px;}
+	.vibe-userPropertiesDlg-grid             {border-spacing: 0; padding: 10px;}
 
 	.vibe-userPropertiesDlg-nfHoverHint      {z-index: 1002;}
 	.vibe-userPropertiesDlg-rootPanel        {}
-	.vibe-userPropertiesDlg-title            {font-size: 20px; font-weight: 200; font-family: Arial, Helvetica, sans-serif; color:#5691A6!important; display: inline-block; padding-left: 30px; padding-top: 5px;}
+	.vibe-userPropertiesDlg-title            {font-size: 20px; font-weight: 200; font-family: Arial, Helvetica, sans-serif; color:#5691A6!important; display: inline-block; padding-left: 35px; padding-top: 5px;}
 	.vibe-userPropertiesDlg-nfRow td         {vertical-align: top;}
 	.vibe-userPropertiesDlg-nfRowScroll      {overflow-y: auto !important; overflow-x: hidden !important;}
 	.vibe-userPropertiesDlg-nfRowScroll td   {border-top: 0px !important;}
@@ -5177,9 +5181,9 @@ td.datePickerMonth {
 .AdminConsoleHomePage_mainPanel
 {
 	background-color: #F6F6F6;
-	border: 1px solid #ccc;
 	border-radius: 5px;
 	position: absolute;
+	overflow: hidden;
 }
 
 .AdminConsoleInfoWidget_mainPanel
