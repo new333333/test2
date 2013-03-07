@@ -42,11 +42,12 @@ import org.kablink.util.search.FieldFactory;
 
 public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 	
+	@Override
 	protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
 		String strToIndex = getStringToIndex(dataElemValue);
 		if(strToIndex != null && !strToIndex.equals("")) {
 			// Handle primary field
-           	Field field = FieldFactory.createField(getSearchFieldName(dataElemName), strToIndex, getFieldStore(), getFieldIndex());
+           	Field field = FieldFactory.createField(getSearchFieldName(dataElemName), strToIndex, getFieldStore(), getFieldIndex(), getOmitTermFreqAndpositions());
            	// Handle optional sort field
 			Field sortField = null;
 			if(getSortFieldName(dataElemName) != null && 
@@ -113,4 +114,7 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 		return Constants.SORT_FIELD_PREFIX + getSearchFieldName(dataElemName);
 	}
 
+	public boolean getOmitTermFreqAndpositions() {
+		return true;
+	}
 }

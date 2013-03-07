@@ -132,7 +132,8 @@ public class EntityIndexUtils {
     	        // is useful primarily for file entries where the title happens to represent the file name in the entry.
     	        // For all other entry types, this isn't useful, so the extra field isn't generic enough to be included
     	        // in all queries by default.
-    	        Field lowercasedSingleTermTitleField = FieldFactory.createFieldNotStoredNotAnalyzed(Constants.TITLE_FIELD, title.toLowerCase());
+    	        Field lowercasedSingleTermTitleField = FieldFactory.createField(Constants.TITLE_FIELD, title.toLowerCase(), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS, false);
+    	        		
     	        doc.add(titleField);
     	        doc.add(sortTitleField);
                 doc.add(title1Field);
