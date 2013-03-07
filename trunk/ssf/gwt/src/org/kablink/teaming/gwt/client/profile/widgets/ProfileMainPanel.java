@@ -203,60 +203,60 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		//create the edit action
 		edit = createEditAction(actionsPanel);
 
-		// Add a mouse-over handler
-		MouseOverHandler mouseOverHandler = new MouseOverHandler() {
-			@Override
-			public void onMouseOver(MouseOverEvent event) {
-				Widget widget;
-
-				widget = (Widget) event.getSource();
-				widget.removeStyleName("subhead-control-bg1");
-				widget.addStyleName("subhead-control-bg2");
-			}// end onMouseOver()
-		};
-		edit.addMouseOverHandler(mouseOverHandler);
-		
-
-		// Add a mouse-out handler
-		MouseOutHandler mouseOutHandler = new MouseOutHandler() {
-			@Override
-			public void onMouseOut(MouseOutEvent event) {
-				Widget widget;
-
-				// Remove the background color we added to the anchor when the
-				// user moved the mouse over the anchor.
-				widget = (Widget) event.getSource();
-				removeMouseOverStyles(widget);
-			}// end onMouseOut()
-		};
-		edit.addMouseOutHandler(mouseOutHandler);
+//		// Add a mouse-over handler
+//		MouseOverHandler mouseOverHandler = new MouseOverHandler() {
+//			@Override
+//			public void onMouseOver(MouseOverEvent event) {
+//				Widget widget;
+//
+//				widget = (Widget) event.getSource();
+//				widget.removeStyleName("subhead-control-bg1");
+//				widget.addStyleName("subhead-control-bg2");
+//			}// end onMouseOver()
+//		};
+//		edit.addMouseOverHandler(mouseOverHandler);
+//		
+//
+//		// Add a mouse-out handler
+//		MouseOutHandler mouseOutHandler = new MouseOutHandler() {
+//			@Override
+//			public void onMouseOut(MouseOutEvent event) {
+//				Widget widget;
+//
+//				// Remove the background color we added to the anchor when the
+//				// user moved the mouse over the anchor.
+//				widget = (Widget) event.getSource();
+//				removeMouseOverStyles(widget);
+//			}// end onMouseOut()
+//		};
+//		edit.addMouseOutHandler(mouseOutHandler);
 		
 		delete = createDeleteAction(actionsPanel);
 		
 		// Add a mouse-over handler
-		delete.addMouseOverHandler( new MouseOverHandler() {
-			@Override
-			public void onMouseOver(MouseOverEvent event) {
-				Widget widget;
-
-				widget = (Widget) event.getSource();
-				widget.removeStyleName("subhead-control-bg1");
-				widget.addStyleName("subhead-control-bg2");
-			}// end onMouseOver()
-		});
-
-		// Add a mouse-out handler
-		delete.addMouseOutHandler( new MouseOutHandler() {
-			@Override
-			public void onMouseOut(MouseOutEvent event) {
-				Widget widget;
-
-				// Remove the background color we added to the anchor when the
-				// user moved the mouse over the anchor.
-				widget = (Widget) event.getSource();
-				removeMouseOverStyles(widget);
-			}// end onMouseOut()
-		});
+//		delete.addMouseOverHandler( new MouseOverHandler() {
+//			@Override
+//			public void onMouseOver(MouseOverEvent event) {
+//				Widget widget;
+//
+//				widget = (Widget) event.getSource();
+//				widget.removeStyleName("subhead-control-bg1");
+//				widget.addStyleName("subhead-control-bg2");
+//			}// end onMouseOver()
+//		});
+//
+//		// Add a mouse-out handler
+//		delete.addMouseOutHandler( new MouseOutHandler() {
+//			@Override
+//			public void onMouseOut(MouseOutEvent event) {
+//				Widget widget;
+//
+//				// Remove the background color we added to the anchor when the
+//				// user moved the mouse over the anchor.
+//				widget = (Widget) event.getSource();
+//				removeMouseOverStyles(widget);
+//			}// end onMouseOut()
+//		});
 		
 		updateFollowingStatus();
 	}
@@ -273,10 +273,10 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		fAnchor.setVisible(showFollowButton());
 		followPanel.add(fAnchor);
 		
-		fAnchor.addStyleName("editBrandingLink");
-		fAnchor.addStyleName("editBrandingAdvancedLink");
-		fAnchor.addStyleName("roundcornerSM");
-		fAnchor.addStyleName("subhead-control-bg1");
+//		fAnchor.addStyleName("editBrandingLink");
+//		fAnchor.addStyleName("editBrandingAdvancedLink");
+//		fAnchor.addStyleName("roundcornerSM");
+//		fAnchor.addStyleName("subhead-control-bg1");
 		
 		fAnchor.addClickHandler(new ActionClickHandler("FollowId"));;
 		
@@ -292,10 +292,10 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		Anchor eAnchor = new Anchor(GwtTeaming.getMessages().profileEdit());
 		eAnchor.setTitle(GwtTeaming.getMessages().profileEditTitle());
 		
-		eAnchor.addStyleName("editBrandingLink");
-		eAnchor.addStyleName("editBrandingAdvancedLink");
-		eAnchor.addStyleName("roundcornerSM");
-		eAnchor.addStyleName("subhead-control-bg1");
+//		eAnchor.addStyleName("editBrandingLink");
+//		eAnchor.addStyleName("editBrandingAdvancedLink");
+//		eAnchor.addStyleName("roundcornerSM");
+//		eAnchor.addStyleName("subhead-control-bg1");
 		eAnchor.setVisible(isProfileModifable());
 
 		actions.add(eAnchor);
@@ -313,10 +313,10 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		Anchor eAnchor = new Anchor(GwtTeaming.getMessages().profileDelete());
 		eAnchor.setTitle(GwtTeaming.getMessages().profileDelete());
 		
-		eAnchor.addStyleName("editBrandingLink");
-		eAnchor.addStyleName("editBrandingAdvancedLink");
-		eAnchor.addStyleName("roundcornerSM");
-		eAnchor.addStyleName("subhead-control-bg1");
+//		eAnchor.addStyleName("editBrandingLink");
+//		eAnchor.addStyleName("editBrandingAdvancedLink");
+//		eAnchor.addStyleName("roundcornerSM");
+//		eAnchor.addStyleName("subhead-control-bg1");
 		eAnchor.setVisible(profileRequestInfo.isBinderAdmin() && !profileRequestInfo.isOwner());
 
 		actions.add(eAnchor);
