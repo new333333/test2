@@ -345,8 +345,12 @@ public class ResourceUtil {
         return model;
     }
 
-    public static ZoneConfig buildZoneConfig(org.kablink.teaming.domain.ZoneConfig config, UserProperties userProperties) {
+    public static ZoneConfig buildZoneConfig(org.kablink.teaming.domain.ZoneConfig config, ZoneInfo zoneInfo, UserProperties userProperties) {
         ZoneConfig modelConfig = new ZoneConfig();
+        modelConfig.setId(config.getZoneId());
+        if (zoneInfo!=null) {
+            modelConfig.setGuid(zoneInfo.getId());
+        }
         BinderQuotasConfig binderQuotasConfig = new BinderQuotasConfig();
         binderQuotasConfig.setAllowOwner(config.isBinderQuotaAllowBinderOwnerEnabled());
         binderQuotasConfig.setEnabled(config.isBinderQuotaEnabled());
@@ -775,7 +779,7 @@ public class ResourceUtil {
         }
         model.setRole(shareItem.getRole().name());
         model.setSharedEntity(buildEntityId(shareItem.getSharedEntityIdentifier()));
-        model.setCanShare(shareItem.getRightSet().isAllowSharing());
+        model.setCanShare(shareItem.getRightSet().allowResharing());
         model.setLink(LinkUriUtil.getShareLinkUri(model.getId()));
         return model;
     }

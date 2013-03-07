@@ -215,6 +215,36 @@ public class WorkAreaOperation {
 		protected Boolean allowSharingPublic = Boolean.FALSE;
 		protected Boolean allowSharingForward = Boolean.FALSE;
 		protected Boolean allowAccessNetFolder = Boolean.FALSE;
+
+        public static RightSet and(RightSet set1, RightSet set2) {
+            RightSet andSet = new RightSet();
+            andSet.createEntries = andRights(set1.createEntries, set2.createEntries);
+            andSet.modifyEntries = andRights(set1.modifyEntries, set2.modifyEntries);
+            andSet.modifyEntryFields = andRights(set1.modifyEntryFields, set2.modifyEntryFields);
+            andSet.deleteEntries = andRights(set1.deleteEntries, set2.deleteEntries);
+            andSet.readEntries = andRights(set1.readEntries, set2.readEntries);
+            andSet.addReplies = andRights(set1.addReplies, set2.addReplies);
+            andSet.generateReports = andRights(set1.generateReports, set2.generateReports);
+            andSet.binderAdministration = andRights(set1.binderAdministration, set2.binderAdministration);
+            andSet.createEntryAcls = andRights(set1.createEntryAcls, set2.createEntryAcls);
+            andSet.changeAccessControl = andRights(set1.changeAccessControl, set2.changeAccessControl);
+            andSet.createWorkspaces = andRights(set1.createWorkspaces, set2.createWorkspaces);
+            andSet.createFolders = andRights(set1.createFolders, set2.createFolders);
+            andSet.manageEntryDefinitions = andRights(set1.manageEntryDefinitions, set2.manageEntryDefinitions);
+            andSet.manageWorkflowDefinitions = andRights(set1.manageWorkflowDefinitions, set2.manageWorkflowDefinitions);
+            andSet.creatorReadEntries = andRights(set1.creatorReadEntries, set2.creatorReadEntries);
+            andSet.creatorModifyEntries = andRights(set1.creatorModifyEntries, set2.creatorModifyEntries);
+            andSet.creatorDeleteEntries = andRights(set1.creatorDeleteEntries, set2.creatorDeleteEntries);
+            andSet.ownerCreateEntryAcls = andRights(set1.ownerCreateEntryAcls, set2.ownerCreateEntryAcls);
+            andSet.addTags = andRights(set1.addTags, set2.addTags);
+            andSet.viewBinderTitle = andRights(set1.viewBinderTitle, set2.viewBinderTitle);
+            andSet.allowSharing = andRights(set1.allowSharing, set2.allowSharing);
+            andSet.allowSharingExternal = andRights(set1.allowSharingExternal, set2.allowSharingExternal);
+            andSet.allowSharingPublic = andRights(set1.allowSharingPublic, set2.allowSharingPublic);
+            andSet.allowSharingForward = andRights(set1.allowSharingForward, set2.allowSharingForward);
+            andSet.allowAccessNetFolder = andRights(set1.allowAccessNetFolder, set2.allowAccessNetFolder);
+            return andSet;
+        }
 		
 		public RightSet() {}
 		
@@ -546,6 +576,10 @@ public class WorkAreaOperation {
 			this.viewBinderTitle = viewBinderTitle;
 		}
 
+        public boolean allowResharing() {
+            return isAllowSharing() || isAllowSharingExternal() || isAllowSharingForward() || isAllowSharingPublic();
+        }
+
 		public boolean isAllowSharing() {
 			if(allowSharing == null) return false;
 			return allowSharing;
@@ -599,6 +633,10 @@ public class WorkAreaOperation {
 			return right1.equals(right2);
 		}
 		
+		private static boolean andRights(Boolean right1, Boolean right2) {
+			return right1!=null && right1 && right1.equals(right2);
+		}
+
 	}
 
 }

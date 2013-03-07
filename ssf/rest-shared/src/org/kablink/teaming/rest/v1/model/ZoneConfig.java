@@ -42,12 +42,30 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "zone_config")
 public class ZoneConfig extends BaseRestObject {
+    private Long id;
+    private String guid;
     private BinderQuotasConfig binderQuotasConfig;
     private DiskQuotasConfig diskQuotasConfig;
     private DesktopAppConfig desktopAppConfig;
     private MobileAppConfig mobileAppConfig;
    	private Long fileSizeLimitUserDefault;
    	private Long fileVersionsMaxAge;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
 
     @XmlElement(name="binder_quotas")
     public BinderQuotasConfig getBinderQuotasConfig() {

@@ -38,6 +38,10 @@ public class Share extends BaseRestObject {
     private EntityId sharedEntity;
     private String role;
     private Boolean canShare;
+    private Boolean canShareInternal;
+    private Boolean canShareExternal;
+    private Boolean canSharePublic;
+    private Boolean canShareForward;
 
     public String getComment() {
         return comment;

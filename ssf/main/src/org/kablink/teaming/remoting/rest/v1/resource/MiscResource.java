@@ -50,6 +50,7 @@ import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
@@ -123,7 +124,8 @@ public class MiscResource extends AbstractResource {
 	public ZoneConfig getZoneConfig() {
         org.kablink.teaming.domain.ZoneConfig zoneConfig =
       			getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-        return ResourceUtil.buildZoneConfig(zoneConfig, getProfileModule().getUserProperties(getLoggedInUserId()));
+        ZoneInfo info = getZoneModule().getZoneInfo(zoneConfig.getZoneId());
+        return ResourceUtil.buildZoneConfig(zoneConfig, info, getProfileModule().getUserProperties(getLoggedInUserId()));
 	}
 
     @GET

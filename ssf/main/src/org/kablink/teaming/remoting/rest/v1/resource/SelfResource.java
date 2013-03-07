@@ -129,6 +129,7 @@ public class SelfResource extends AbstractFileResource {
         }
         ZoneConfig zoneConfig = ResourceUtil.buildZoneConfig(
                 getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId()),
+                null,
                 getProfileModule().getUserProperties(getLoggedInUserId()));
 
         user.setDesktopAppConfig(zoneConfig.getDesktopAppConfig());
