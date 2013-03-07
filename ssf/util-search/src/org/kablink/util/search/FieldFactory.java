@@ -85,10 +85,27 @@ public class FieldFactory {
 	 * @return
 	 */
 	public static Field createField(String name, String value, Field.Store store, Field.Index index) {
+		return createField(name, value, store, index, true);
+	}
+
+	/**
+	 * Create a field that is not used to index full-text data. For full-text indexed field containing
+	 * application data, use <code>createFullTextFieldIndexed</code> method instead.
+	 * <p>
+	 * Most fields in the system belong in this category.
+	 * 
+	 * @param name
+	 * @param value
+	 * @param store
+	 * @param index
+	 * @param omitTermFreqAndpositions
+	 * @return
+	 */
+	public static Field createField(String name, String value, Field.Store store, Field.Index index, boolean omitTermFreqAndpositions) {
 		Field field = new Field(name, value, store, index);
 		float boost = PropsUtil.getFloat("lucene.index.field.boost." + name, NON_FULL_TEXT_FIELD_BOOST_DEFAULT);
 		field.setBoost(boost);
-		field.setOmitTermFreqAndPositions(true);
+		field.setOmitTermFreqAndPositions(omitTermFreqAndpositions);
 		return field;
 	}
 
