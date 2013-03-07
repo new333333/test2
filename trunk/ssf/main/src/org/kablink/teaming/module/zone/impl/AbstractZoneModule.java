@@ -651,6 +651,23 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 		}
 		
+		if (version.intValue() <= 14) {
+			Function function;
+			List<Function> functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
+			for (Function f : functions) {
+				Set wao = f.getOperations();
+				if (wao.contains(WorkAreaOperation.MODIFY_ENTRIES)) {
+					f.addOperation(WorkAreaOperation.RENAME_ENTRIES);
+				}
+				if (wao.contains(WorkAreaOperation.CREATOR_MODIFY)) {
+					f.addOperation(WorkAreaOperation.CREATOR_RENAME);
+				}
+			}
+			getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
+			getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
+		}
+
+		
   	}
  	
  	private void correctFilrRoles(ZoneConfig zoneConfig) {
@@ -1421,6 +1438,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
+		function.addOperation(WorkAreaOperation.CREATOR_RENAME);
 		function.addOperation(WorkAreaOperation.CREATOR_DELETE);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
@@ -1472,6 +1490,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
+		function.addOperation(WorkAreaOperation.CREATOR_RENAME);
 		function.addOperation(WorkAreaOperation.CREATOR_DELETE);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
@@ -1582,6 +1601,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		function.addOperation(WorkAreaOperation.RENAME_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
 		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
 		
@@ -1598,6 +1618,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		function.addOperation(WorkAreaOperation.RENAME_ENTRIES);
 		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
 		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
@@ -1615,6 +1636,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		function.addOperation(WorkAreaOperation.RENAME_ENTRIES);
 		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
 		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
@@ -1683,6 +1705,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		function.addOperation(WorkAreaOperation.RENAME_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_FOLDERS);		
 		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
@@ -1853,8 +1876,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getFunctionManager().addFunction(function);
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
-		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID)) {
+
+		if ((Utils.checkIfVibe() || Utils.checkIfKablink()) && 
+				!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID)) {
+			//Don't add this role to Filr
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_ENABLE_SHARING_EXTERNAL);
@@ -1866,7 +1891,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getFunctionManager().addFunction(function);
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
-		
+
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_PUBLIC_SHARING_INTERNALID)) {
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());

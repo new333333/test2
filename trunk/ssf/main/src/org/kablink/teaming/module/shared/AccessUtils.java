@@ -589,6 +589,9 @@ public class AccessUtils  {
     public static void modifyCheck(User user, Entry entry) {
     	operationCheck(user, entry, WorkAreaOperation.MODIFY_ENTRIES);
     }
+    public static void renameCheck(Entry entry) {
+    	operationCheck(entry, WorkAreaOperation.RENAME_ENTRIES);
+    }
     
     public static void deleteCheck(Entry entry) {
     	operationCheck(entry, WorkAreaOperation.DELETE_ENTRIES);
@@ -652,6 +655,18 @@ public class AccessUtils  {
   					return;
   				}
   			} catch(OperationAccessControlException ex2) {}
+       	} else if (WorkAreaOperation.RENAME_ENTRIES.equals(operation) && entry.getCreation() != null && 
+       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
+  			try {
+  				if (entry.hasEntryAcl()) {
+  					getInstance().getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_RENAME);
+  	       			if (!widen) {
+  	       				//"Widening" is not allowed, so also check for read access to the folder
+  	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
+  	       			}
+  					return;
+  				}
+  			} catch(OperationAccessControlException ex2) {}
        	} else if (WorkAreaOperation.DELETE_ENTRIES.equals(operation) && entry.getCreation() != null && 
        			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
   			try {
@@ -696,6 +711,12 @@ public class AccessUtils  {
 	      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
       			try {
       				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY);
+	      			return;
+      			} catch (AccessControlException ex3) {}
+	      	} else if (WorkAreaOperation.RENAME_ENTRIES.equals(operation) && entry.getCreation() != null && 
+	      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
+      			try {
+      				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_RENAME);
 	      			return;
       			} catch (AccessControlException ex3) {}
 	      	} else if (WorkAreaOperation.DELETE_ENTRIES.equals(operation) && entry.getCreation() != null && 

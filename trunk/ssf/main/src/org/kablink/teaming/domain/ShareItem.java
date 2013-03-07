@@ -336,6 +336,7 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 				WorkAreaOperation.READ_ENTRIES, 
 				WorkAreaOperation.ADD_REPLIES, 
 				WorkAreaOperation.MODIFY_ENTRIES, 
+				WorkAreaOperation.RENAME_ENTRIES, 
 				WorkAreaOperation.CREATE_ENTRIES, 
 				WorkAreaOperation.CREATE_FOLDERS, 
 				WorkAreaOperation.DELETE_ENTRIES,

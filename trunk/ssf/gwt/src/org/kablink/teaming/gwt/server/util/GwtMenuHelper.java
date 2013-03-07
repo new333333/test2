@@ -1165,7 +1165,7 @@ public class GwtMenuHelper {
 	 */
 	private static void constructEntryRenameFile(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
 		// Does the user have rights to rename this entry?
-		if (bs.getFolderModule().testAccess(fe, FolderOperation.modifyEntry)) {
+		if (bs.getFolderModule().testAccess(fe, FolderOperation.renameEntry)) {
 			// Yes!  Is it a file entry?
 			String feFamily = GwtServerHelper.getFolderEntityFamily(bs, fe);
 			if (GwtServerHelper.isFamilyFile(feFamily)) {
