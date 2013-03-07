@@ -41,6 +41,7 @@ import org.kablink.teaming.remoting.ws.RemotingException;
 
 public class LdapServiceImpl extends BaseService implements LdapService {
 
+	@Override
 	public void ldap_syncUser(String accessToken, Long userId) {
 		try {
 			getLdapModule().syncUser(userId);
@@ -49,9 +50,10 @@ public class LdapServiceImpl extends BaseService implements LdapService {
 		}
 	}
 
+	@Override
 	public void ldap_syncAll(String accessToken) {
 		try {
-			getLdapModule().syncAll( true, false, null );
+			getLdapModule().syncAll( true, null, null );
 		} catch (LdapSyncException ldapSyncEx) {
 			NamingException ex;
 			

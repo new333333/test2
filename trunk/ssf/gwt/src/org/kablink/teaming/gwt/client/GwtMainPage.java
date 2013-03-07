@@ -178,6 +178,7 @@ import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
@@ -2401,7 +2402,6 @@ public class GwtMainPage extends ResizeComposite
 		{
 			// ...we simply ignore requests to open one.
 			return;
-			
 		}
 		
 		WorkspaceTreeControl.createAsync(
@@ -3691,12 +3691,57 @@ public class GwtMainPage extends ResizeComposite
 		// Are we supposed to relayout now?
 		if ( layoutImmediately == true )
 		{
-			// Are we in administration mode?
-			if ( isAdminActive() ) {
-				// Yes!  Tell the admin console to relayout.
-				m_adminControl.relayoutPage();
+			// Adjust the size of the north panel that holds the masthead and menu bar
+			{
+				int panelHeight;
+				
+				panelHeight = 0;
+				
+				if ( m_mastHead != null && m_mastHead.isVisible() )
+					panelHeight += m_mastHead.getOffsetHeight();
+				
+				if ( m_mainMenuCtrl != null && m_mainMenuCtrl.isVisible() )
+					panelHeight += m_mainMenuCtrl.getOffsetHeight();
+
+				m_mainPanel.setWidgetSize( m_headerPanel, panelHeight );
 			}
 			
+			// Are we in administration mode?
+			if ( isAdminActive() ) {
+				Scheduler.ScheduledCommand cmd;
+				
+				// Yes
+				// Reposition the admin control
+				{
+					int top;
+
+					// Is the main menu visible?
+					if ( m_mainMenuCtrl.isVisible() )
+					{
+						// Yes, position the admin control relative to the main menu control.
+						top = m_mainMenuCtrl.getAbsoluteTop() + m_mainMenuCtrl.getOffsetHeight();
+					}
+					else
+					{
+						// No, position the admin control relative to the masthead
+						top = m_adminControl.getAbsoluteTop() + m_adminControl.getOffsetHeight();
+					}
+
+					top = m_headerPanel.getAbsoluteTop() + m_headerPanel.getOffsetHeight();
+					m_adminControl.getElement().getStyle().setTop( top, Unit.PX );
+				}
+
+				// Tell the admin console to relayout.
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						m_adminControl.relayoutPage();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
 			else
 			{
 				int width;
@@ -3713,21 +3758,6 @@ public class GwtMainPage extends ResizeComposite
 				
 				if ( isActivityStreamActive() )
 					m_activityStreamCtrl.setSize( width, height );
-				
-				// Adjust the size of the north panel that holds the masthead and menu bar
-				{
-					int panelHeight;
-					
-					panelHeight = 0;
-					
-					if ( m_mastHead != null && m_mastHead.isVisible() )
-						panelHeight += m_mastHead.getOffsetHeight();
-					
-					if ( m_mainMenuCtrl != null && m_mainMenuCtrl.isVisible() )
-						panelHeight += m_mainMenuCtrl.getOffsetHeight();
-	
-					m_mainPanel.setWidgetSize( m_headerPanel, panelHeight );
-				}
 				
 				// Do we have a workspace tree control?
 				if ( null != m_wsTreeCtrl )

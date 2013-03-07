@@ -59,7 +59,7 @@ public class LdapSyncThread
 	private String				m_id;
 	private LdapModule			m_ldapModule;
 	private boolean			m_syncUsersAndGroups;
-	private boolean			m_syncGuids;
+	private String[]		m_listOfLdapConfigsToSyncGuid;
 	
 	/**
 	 * Create an LdapSyncThread object.
@@ -69,7 +69,7 @@ public class LdapSyncThread
 		String			id,				// Create the thread using this id
 		LdapModule		ldapModule,
 		boolean			syncUsersAndGroups,
-		boolean			syncGuids )
+		String[]		listOfLdapConfigsToSyncGuid )
 	{
 		LdapSyncThread	ldapSyncThread;
 		PortletSession 	session;
@@ -79,7 +79,7 @@ public class LdapSyncThread
 		if( session == null )
 			return null; // unable to allocate a new LdapSyncThread object.
 	
-		ldapSyncThread = new LdapSyncThread( session, id, ldapModule, syncUsersAndGroups, syncGuids );
+		ldapSyncThread = new LdapSyncThread( session, id, ldapModule, syncUsersAndGroups, listOfLdapConfigsToSyncGuid );
 		
 		// Set the priority of the thread to be the lowest.
 		ldapSyncThread.setPriority( Thread.MIN_PRIORITY );
@@ -144,7 +144,7 @@ public class LdapSyncThread
 		String			id,
 		LdapModule		ldapModule,
 		boolean			syncUsersAndGroups,
-		boolean			syncGuids )
+		String[]		listOfLdapConfigsToSyncGuid )
 	{
 		// Initialize this object's super class.
 		super( id );
@@ -153,7 +153,7 @@ public class LdapSyncThread
 		m_session = session;
 		m_ldapModule = ldapModule;
 		m_syncUsersAndGroups = syncUsersAndGroups;
-		m_syncGuids = syncGuids;
+		m_listOfLdapConfigsToSyncGuid = listOfLdapConfigsToSyncGuid;
 		
 		// Create an LdapSyncResults object to hold the results of the sync.
 		m_ldapSyncResults = new LdapSyncResults( id );
@@ -182,7 +182,7 @@ public class LdapSyncThread
 		try
 		{
 			// Perform the sync.
-			m_ldapModule.syncAll( m_syncUsersAndGroups, m_syncGuids, syncResults );
+			m_ldapModule.syncAll( m_syncUsersAndGroups, m_listOfLdapConfigsToSyncGuid, syncResults );
 			
 			// Did syncAll() return because a sync was already in progress?
 			if ( syncResults.getStatus() != SyncStatus.STATUS_SYNC_ALREADY_IN_PROGRESS )
@@ -245,7 +245,8 @@ public class LdapSyncThread
     /**
      * Implement the Thread::run method.  Do the work of the ldap sync.
      */
-    public void run()
+    @Override
+	public void run()
     {
     	// Run the ldap sync.
     	doLdapSync();

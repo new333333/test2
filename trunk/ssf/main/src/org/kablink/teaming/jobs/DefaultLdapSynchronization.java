@@ -32,7 +32,6 @@
  */
 
 package org.kablink.teaming.jobs;
-import java.util.TimeZone;
 
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.module.ldap.LdapModule;
@@ -52,11 +51,12 @@ public class DefaultLdapSynchronization extends SSCronTriggerJob implements Ldap
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
 	 */
+	@Override
 	protected void doExecute(JobExecutionContext context)
 			throws JobExecutionException {
     	LdapModule ldap = (LdapModule)SpringContextUtil.getBean("ldapModule");
 		try {
-			ldap.syncAll( true, false, null );
+			ldap.syncAll( true, null, null );
 		} catch (LdapSyncException ldapSyncEx) {
 			NamingException	ne;
 			
@@ -69,13 +69,16 @@ public class DefaultLdapSynchronization extends SSCronTriggerJob implements Ldap
 			context.setResult("Failed");
 		}
 	}
+	@Override
 	public ScheduleInfo getScheduleInfo(Long zoneId) {
 		return getScheduleInfo(new CronJobDescription(zoneId, zoneId.toString(),LDAP_GROUP, zoneId.toString()));
 	}
+	@Override
 	public void setScheduleInfo(ScheduleInfo info) {
 		setScheduleInfo(new CronJobDescription(info.getZoneId(), info.getZoneId().toString(),LDAP_GROUP, info.getZoneId().toString()), info);
 	}
 
+	@Override
 	public void enable(boolean enable, Long zoneId) {
 		enable(enable, new CronJobDescription(zoneId, zoneId.toString(),LDAP_GROUP, LDAP_DESCRIPTION));
  	}

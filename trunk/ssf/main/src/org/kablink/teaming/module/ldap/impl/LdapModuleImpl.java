@@ -1471,7 +1471,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * This method should be called whenever the user changes the the name of the ldap attribute
      * that holds the guid (in the ldap configuration).
      */
-    public void syncGuidAttributeForAllUsersAndGroups( LdapSyncResults syncResults ) throws LdapSyncException
+    public void syncGuidAttributeForAllUsersAndGroups(
+    	String[] listOfLdapConfigsToSyncGuid,
+    	LdapSyncResults syncResults ) throws LdapSyncException
     {
 		Workspace zone;
 		Long zoneId;
@@ -1481,6 +1483,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		ObjectControls objCtrls;
 		FilterControls filterCtrls;
 		int i;
+		LdapSyncException ldapSyncEx = null;
+		
+		if ( listOfLdapConfigsToSyncGuid == null || listOfLdapConfigsToSyncGuid.length == 0 )
+		{
+			logger.info( "In syncGuidAttributeForAllUsersAndGroups(), listOfLdapConfigsToSyncGuid is empty" );
+			return;
+		}
 		
 		zone = RequestContextHolder.getRequestContext().getZone();
 		zoneId = zone.getId();
@@ -1520,61 +1529,81 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Go through each ldap configuration
 		for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
 		{
-	   		LdapContext ldapContext;
-	   		NamingException namingEx;
-
-	   		namingEx = null;
-	   		ldapContext = null;
-	  		try
-	  		{
-				// Get an ldap context for the given ldap configuration
-				ldapContext = getContext( zoneId, nextLdapConfig, false );
-				
-				// Sync the guid attributes for all users.
-				logger.info( "about to call syncGuidAttributeForAllUsers()" );
-				syncGuidAttributeForAllUsers( nextLdapConfig, ldapContext, userMap, syncResults );
-				logger.info( "back from syncGuidAttributeForAllUsers()" );
-				
-				// Sync the guid attribute for all groups.
-				logger.info( "about to call syncGuidAttributeForAllGroups()" );
-				syncGuidAttributeForAllGroups( nextLdapConfig, ldapContext, syncResults );
-				logger.info( "back from syncGuidAttributeForAllGroups()" );
-			}// end try
-	  		catch (NamingException ex)
-	  		{
-	  			namingEx = ex;
-	  		}
-	  		finally
-	  		{
-				if ( ldapContext != null )
+			boolean syncThis;
+			String url;
+			
+			syncThis = false;
+			url = nextLdapConfig.getUrl();
+			
+			// See if we should sync the guid for this ldap source.
+			for ( String nextUrl : listOfLdapConfigsToSyncGuid )
+			{
+				if ( nextUrl.equalsIgnoreCase( url ) )
 				{
-					try
-					{
-						// Close the ldap context.
-						ldapContext.close();
-					}
-					catch (NamingException ex)
-			  		{
-						namingEx = ex;
-			  		}
+					syncThis = true;
+					break;
 				}
 			}
-	  		
-	  		// Did we encounter a problem?
-	  		if ( namingEx != null )
-	  		{
-	  			LdapSyncException	ldapSyncEx;
+			
+			if ( syncThis )
+			{
+		   		LdapContext ldapContext;
+		   		NamingException namingEx;
 
-	  			// Yes
-	  			logError( NLT.get( "errorcode.ldap.context" ), namingEx );
-	  			
-	  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-	  			// the LdapConnectionConfig object that was being used when the error happened.
-	  			ldapSyncEx = new LdapSyncException( nextLdapConfig, namingEx );
-	  			throw ldapSyncEx;
-	  		}
-
+		   		namingEx = null;
+		   		ldapContext = null;
+		  		try
+		  		{
+					// Get an ldap context for the given ldap configuration
+					ldapContext = getContext( zoneId, nextLdapConfig, false );
+					
+					// Sync the guid attributes for all users.
+					logger.info( "about to call syncGuidAttributeForAllUsers()" );
+					syncGuidAttributeForAllUsers( nextLdapConfig, ldapContext, userMap, syncResults );
+					logger.info( "back from syncGuidAttributeForAllUsers()" );
+					
+					// Sync the guid attribute for all groups.
+					logger.info( "about to call syncGuidAttributeForAllGroups()" );
+					syncGuidAttributeForAllGroups( nextLdapConfig, ldapContext, syncResults );
+					logger.info( "back from syncGuidAttributeForAllGroups()" );
+				}// end try
+		  		catch (NamingException ex)
+		  		{
+		  			namingEx = ex;
+		  		}
+		  		finally
+		  		{
+					if ( ldapContext != null )
+					{
+						try
+						{
+							// Close the ldap context.
+							ldapContext.close();
+						}
+						catch (NamingException ex)
+				  		{
+							namingEx = ex;
+				  		}
+					}
+				}
+		  		
+		  		// Did we encounter a problem?
+		  		if ( namingEx != null )
+		  		{
+		  			// Yes
+		  			logError( NLT.get( "errorcode.ldap.context" ), namingEx );
+		  			
+		  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+		  			// the LdapConnectionConfig object that was being used when the error happened.
+		  			if ( ldapSyncEx == null )
+		  				ldapSyncEx = new LdapSyncException( nextLdapConfig, namingEx );
+		  		}
+			}
 		}// end for()
+		
+		if ( ldapSyncEx != null )
+			throw ldapSyncEx;
+		
     }// end syncGuidAttributeForAllUsersAndGroups()
     
     
@@ -1948,11 +1977,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	@Override
 	public void syncAll(
 		boolean syncUsersAndGroups,
-		boolean syncGuids,
+		String[] listOfLdapConfigsToSyncGuid,
 		LdapSyncResults syncResults ) throws LdapSyncException
 	{
 		Workspace zone = RequestContextHolder.getRequestContext().getZone();
 		Boolean syncInProgress;
+		LdapSyncException ldapSyncEx = null;
 
 		// Is an ldap sync currently going on for the zone?
 		syncInProgress = m_zoneSyncInProgressMap.get( zone.getId() );
@@ -1966,15 +1996,27 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		try
 		{
+			boolean errorSyncingUsers;
+			boolean errorSyncingGroups;
+			boolean doUserCleanup = false;
+	   		boolean delContainers;
+			
 			m_server_vol_map.clear();
 			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.TRUE );
 			
 			// Sync guids if called for.
-			if ( syncGuids == true )
+			if ( listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length > 0 )
 			{
-				logger.info( "about to call syncGuidAttributeForAllUsersAndGroups()" );
-				syncGuidAttributeForAllUsersAndGroups( syncResults );
-				logger.info( "back from syncGuidAttributeForAllUsersAndGroups()" );
+				try
+				{
+					logger.info( "about to call syncGuidAttributeForAllUsersAndGroups()" );
+					syncGuidAttributeForAllUsersAndGroups( listOfLdapConfigsToSyncGuid, syncResults );
+					logger.info( "back from syncGuidAttributeForAllUsersAndGroups()" );
+				}
+				catch ( LdapSyncException ex )
+				{
+					ldapSyncEx = ex;
+				}
 			}
 			
 			// If we don't need to sync users and groups then bail.
@@ -1985,6 +2027,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			// Read the list of all containers from the db.
 			m_containerCoordinator.getListOfAllContainers();
+			
+			errorSyncingUsers = false;
 			
 			LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
 	    	UserCoordinator userCoordinator = new UserCoordinator(zone,info.isUserSync(),info.isUserRegister(),
@@ -2003,20 +2047,39 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		  		}
 		  		catch (Exception ex)
 		  		{
-		  			if ( ex instanceof NamingException )
+	  				errorSyncingUsers = true;
+
+	  				if ( ex instanceof NamingException )
 		  			{
 			  			logError(NLT.get("errorcode.ldap.context"), ex);
-			  			
-			  			LdapSyncException	ldapSyncEx;
-			  			
-			  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-			  			// the LdapConnectionConfig object that was being used when the error happened.
-			  			ldapSyncEx = new LdapSyncException( config, (NamingException)ex );
-			  			throw ldapSyncEx;
+
+			  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+			  			//!!! errors and return them instead of just throwing an exception for the first
+			  			//!!! problem we find.
+			  			// Have we already encountered a problem?
+			  			if ( ldapSyncEx == null )
+			  			{
+			  				// No
+				  			// Create an LdapSyncException.  We throw an LdapSyncException so we can return
+				  			// the LdapConnectionConfig object that was being used when the error happened.
+			  				// We will throw the exception after we have gone through all the ldap configs.
+				  			ldapSyncEx = new LdapSyncException( config, (NamingException)ex );
+			  			}
 		  			}
-		  			
-		  			logger.error( "Unknown exception: " + ex.toString() );
-		  			throw new LdapSyncException( config, new NamingException( ex.toString() ) );
+		  			else
+		  			{
+		  				logger.error( "Unknown exception: " + ex.toString() );
+		  				
+			  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+			  			//!!! errors and return them instead of just throwing an exception for the first
+			  			//!!! problem we find.
+			  			// Have we already encountered a problem?
+			  			if ( ldapSyncEx == null )
+			  			{
+			  				// No
+			  				ldapSyncEx = new LdapSyncException( config, new NamingException( ex.toString() ) );
+			  			}
+		  			}
 		  		}
 		  		finally {
 					if (ctx != null) {
@@ -2026,21 +2089,31 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						}
 						catch (NamingException namingEx)
 				  		{
-				  			LdapSyncException	ldapSyncEx;
-				  			
-				  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-				  			// the LdapConnectionConfig object that was being used when the error happened.
-				  			ldapSyncEx = new LdapSyncException( config, namingEx );
-				  			throw ldapSyncEx;
+				  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+				  			//!!! errors and return them instead of just throwing an exception for the first
+				  			//!!! problem we find.
+				  			// Have we already encountered a problem?
+				  			if ( ldapSyncEx == null )
+				  			{
+				  				// No
+					  			// Create an LdapSyncException.  We throw an LdapSyncException so we can return
+					  			// the LdapConnectionConfig object that was being used when the error happened.
+				  				// We will throw the exception after we have gone through all the ldap configs.
+				  				ldapSyncEx = new LdapSyncException( config, namingEx );
+				  			}
 				  		}
 					}
 				}
 			}
 
 			logger.info( "Starting userCoordinator.wrapUp()" );
-			userCoordinator.wrapUp();
+			doUserCleanup = false;
+			if ( errorSyncingUsers == false )
+				doUserCleanup = true;
+			userCoordinator.wrapUp( doUserCleanup );
 			logger.info( "Finished userCoordinator.wrapUp()" );
 
+			errorSyncingGroups = false;
 	   		GroupCoordinator groupCoordinator = new GroupCoordinator(zone, userCoordinator.dnUsers, info.isGroupSync(), info.isGroupRegister(), info.isGroupDelete(), syncResults );
 	   		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
 		   		LdapContext ctx=null;
@@ -2055,14 +2128,21 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 		  		catch (NamingException namingEx)
 		  		{
+		  			errorSyncingGroups = true;
 		  			logError(NLT.get("errorcode.ldap.context"), namingEx);
 		  			
-		  			LdapSyncException	ldapSyncEx;
-		  			
-		  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-		  			// the LdapConnectionConfig object that was being used when the error happened.
-		  			ldapSyncEx = new LdapSyncException( config, namingEx );
-		  			throw ldapSyncEx;
+		  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+		  			//!!! errors and return them instead of just throwing an exception for the first
+		  			//!!! problem we find.
+		  			// Have we already encountered a problem?
+		  			if ( ldapSyncEx == null )
+		  			{
+		  				// No
+		  				// Create an LdapSyncException.  We throw an LdapSyncException so we can return
+		  				// the LdapConnectionConfig object that was being used when the error happened.
+		  				// We will throw the exception after we have gone through all the ldap configs.
+		  				ldapSyncEx = new LdapSyncException( config, namingEx );
+		  			}
 		  		}
 		  		finally {
 					if (ctx != null) {
@@ -2072,19 +2152,25 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						}
 						catch (NamingException namingEx)
 				  		{
-				  			LdapSyncException	ldapSyncEx;
-				  			
-				  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-				  			// the LdapConnectionConfig object that was being used when the error happened.
-				  			ldapSyncEx = new LdapSyncException( config, namingEx );
-				  			throw ldapSyncEx;
+				  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+				  			//!!! errors and return them instead of just throwing an exception for the first
+				  			//!!! problem we find.
+				  			// Have we already encountered a problem?
+				  			if ( ldapSyncEx == null )
+				  			{
+				  				// No
+				  				// Create an LdapSyncException.  We throw an LdapSyncException so we can return
+				  				// the LdapConnectionConfig object that was being used when the error happened.
+				  				// We will throw the exception after we have gone through all the ldap configs.
+				  				ldapSyncEx = new LdapSyncException( config, namingEx );
+				  			}
 				  		}
 					}
-								
 				}
 			}
 	   		logger.info( "Finished syncGroups()" );
-	   		groupCoordinator.deleteObsoleteGroups();
+	   		if ( errorSyncingGroups == false )
+	   			groupCoordinator.deleteObsoleteGroups();
 	   		logger.info( "Finished groupCoordinator.deleteObsoleteGroups()" );
 
 	   		// Find all groups that have dynamic membership and update the membership
@@ -2110,7 +2196,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		}
 	   		
 	   		// Finish creating / deleting containers.
-	   		m_containerCoordinator.wrapUp( true );
+	   		delContainers = false;
+	   		if ( errorSyncingUsers == false && errorSyncingGroups == false )
+	   			delContainers = true;
+	   		m_containerCoordinator.wrapUp( delContainers );
+
+	   		if ( ldapSyncEx != null )
+	   			throw ldapSyncEx;
 	   		
 		}// end try
 		finally
@@ -3155,7 +3247,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			m_ldapCtx = ldapCtx;
 		}
 		
-		public Map wrapUp()
+		public Map wrapUp( boolean doCleanup )
 		{
 			if (!ldap_existing.isEmpty()) {
 				//doLog("Updating users:", ldap_existing);
@@ -3189,7 +3281,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			
 			//if disable is enabled, remove users that were not found in ldap
-			if (delete && !notInLdap.isEmpty()) {
+			if ( doCleanup && delete && !notInLdap.isEmpty()) {
 				PartialLdapSyncResults	syncResults	= null;
 				
 				if (logger.isInfoEnabled()) {
@@ -3210,7 +3302,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			//!!! Can we use the ldap guid as a better way of doing the following?
 			//Set foreign names of users to self; needed to recognize synced names and mark attributes read-only
-			if (!delete && !notInLdap.isEmpty()) {
+			if ( doCleanup && !delete && !notInLdap.isEmpty()) {
 		    	Map users = new HashMap();
 				if (logger.isDebugEnabled())
 					logger.debug("Users not found in ldap:");

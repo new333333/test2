@@ -957,7 +957,7 @@ public class AdminControl extends TeamingPopupPanel
 						if ( GwtTeaming.m_requestInfo.isLicenseFilr() && upgradeInfo.doFilrAdminTasksExist() )
 							filrAdminTasksExist = true;
 						
-						if ( upgradeTasksExist || filrAdminTasksExist )
+						if ( upgradeTasksExist || filrAdminTasksExist || upgradeInfo.getIsLicenseExpired() )
 						{
 							// Yes, invoke the AdminInfoDlg.
 							showAdminInfoDlg( upgradeInfo, 250, 100 );

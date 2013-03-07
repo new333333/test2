@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
+import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -59,6 +60,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.FilrActionsCtrl.FilrActionType;
@@ -105,6 +107,7 @@ public class MastHead extends Composite
 	private UserActionsPopup m_userActionsPopup = null;
 	private FilrActionsCtrl m_filrActionsCtrl;
 	private String m_personalWorkspacesUrl = null;
+	private FlowPanel m_browsePanel = null;
 
 	private GwtBrandingData m_siteBrandingData = null;
 	private GwtBrandingData m_binderBrandingData = null;
@@ -259,6 +262,44 @@ public class MastHead extends Composite
 				panel.add( imgPanel );
 				
 				m_mainMastheadPanel.add( panel );
+			}
+			
+			// Create a link for the user to click on that will display the browse control
+			{
+				FlowPanel imgPanel;
+				Image img;
+				
+				m_browsePanel = new FlowPanel();
+				m_browsePanel.addStyleName( "mastheadFilr_BrowseFilrPanel" );
+				
+				imgPanel = new FlowPanel();
+				imgPanel.addStyleName( "mastheadFilr_BrowseFilrImgPanel" );
+				img = new Image( GwtTeaming.getImageBundle().mastheadBrowseFilr() );
+				img.setTitle( GwtTeaming.getMessages().masthead_BrowseFilr() );
+				img.addStyleName( "mastheadFilr_BrowseFilrImg" );
+				img.addClickHandler( new ClickHandler()
+				{
+					@Override
+					public void onClick( ClickEvent event )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								displayBrowseControl( m_browsePanel );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				} );
+				imgPanel.add( img );
+				m_browsePanel.add( imgPanel );
+				m_browsePanel.setVisible( false );
+				
+				m_mainMastheadPanel.add( m_browsePanel );
 			}
 			
 			// Create a Filr Actions panel
@@ -624,6 +665,10 @@ public class MastHead extends Composite
 							// upgrade tasks that still need to be performed.
 							// Sent event to check for tasks
 							AdministrationUpgradeCheckEvent.fireOne();
+							
+							// Show the image the admin can click on to invoke the browse control.
+							if ( m_browsePanel != null )
+								m_browsePanel.setVisible( true );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -640,6 +685,20 @@ public class MastHead extends Composite
 		}
 	}
 
+	/**
+	 * Display the browse control
+	 */
+	private void displayBrowseControl( Widget relativeTo )
+	{
+		OnBrowseHierarchyInfo browseInfo;
+		BrowseHierarchyEvent browseEvent;
+
+		// Fire the event that will display the browse panel
+		browseInfo = new OnBrowseHierarchyInfo( relativeTo );
+		browseEvent = new BrowseHierarchyEvent( browseInfo );
+		GwtTeaming.fireEvent( browseEvent );
+	}
+	
 	/**
 	 * Return the binder id we are working with.
 	 */

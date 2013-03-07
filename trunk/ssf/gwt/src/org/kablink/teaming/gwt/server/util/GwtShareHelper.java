@@ -54,6 +54,7 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -2144,14 +2145,27 @@ public class GwtShareHelper
 					{
 						String error;
 						String[] args;
-						
-						args = new String[3];
-						args[0] = nextGwtShareItem.getEntityName();
-						args[1] = nextGwtShareItem.getRecipientName();
-						args[2] = ex.toString();
-						error = NLT.get( "errorcode.sharing.entity", args );
-						results.addError( error );
+
 						m_logger.error( "Error creating share item: " + ex.toString() );
+						
+						if ( ex instanceof OperationAccessControlExceptionNoName )
+						{
+							args = new String[3];
+							args[0] = nextGwtShareItem.getEntityName();
+							args[1] = nextGwtShareItem.getRecipientName();
+							error = NLT.get( "errorcode.sharing.entity.insufficient.rights", args );
+							results.addError( error );
+						}
+						else
+						{
+							args = new String[3];
+							args[0] = nextGwtShareItem.getEntityName();
+							args[1] = nextGwtShareItem.getRecipientName();
+							args[2] = ex.toString();
+							error = NLT.get( "errorcode.sharing.entity", args );
+							results.addError( error );
+						}
+						
 						continue;
 					}
 				}

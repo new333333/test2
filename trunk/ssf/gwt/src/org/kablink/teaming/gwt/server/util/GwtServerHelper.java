@@ -3053,7 +3053,7 @@ public class GwtServerHelper {
 			}
 
 			// Does the user have rights to "manage JITS configuration"?
-			if ( isFilr && adminModule.testAccess( AdminOperation.manageFunction ) )
+			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
 			{
 				// Yes
 				title = NLT.get( "administration.configure_jits_zone_config" );

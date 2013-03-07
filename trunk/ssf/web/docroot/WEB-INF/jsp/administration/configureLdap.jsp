@@ -104,9 +104,9 @@ var m_searchCount = 0;
 					</tr>
 					<tr>
 						<td>
-							<!-- This hidden input is used to store the flag that indicates whether to sync guids. -->
-							<input id="syncGuids" name="syncGuids" type="hidden" value="false" />
-			
+							<!-- This hidden input is used to store the ids of the configs that need their guid syncd -->
+							<input id="listOfLdapConfigsToSyncGuid" name="listOfLdapConfigsToSyncGuid" type="hidden" value="" />
+
 							<input type="checkbox" id="runnow" name="runnow"
 							<c:if test="${runnow}"> checked="checked" </c:if> /> <label
 							for="runnow"><span class="ss_labelRight ss_normal"><ssf:nlt
@@ -487,7 +487,7 @@ var LDAP_SYNC_STATUS_SYNC_ALREADY_IN_PROGRESS = 4;
 
 var m_ldapSyncResultsId = null;
 var m_syncAllUsersAndGroups = false;
-var m_syncGuids = false;
+var m_listOfLdapConfigsToSyncGuid = new Array();
 var m_syncResultsTimerId = null;
 var m_ldapConfigId = null;
 var m_ldapSyncStatus = -1;
@@ -869,7 +869,7 @@ function startLdapSync()
 	obj.operation = 'startLdapSync'
 	obj.ldapSyncResultsId = m_ldapSyncResultsId;
 	obj.syncUsersAndGroups = m_syncAllUsersAndGroups;
-	obj.syncGuids = m_syncGuids;
+	obj.listOfLdapConfigsToSyncGuid = m_listOfLdapConfigsToSyncGuid;
 
 	// Build the url used in the ajax request.
 	url = ss_buildAdapterUrl( ss_AjaxBaseUrl, obj );
@@ -993,6 +993,7 @@ ssPage = {
 	m_areMappingsValid : true,
 	m_ldapGuidAttributeNameChanged : false,
 	m_origLdapGuidAttributeNames : new Array(),
+	m_listOfLdapConfigsIsExisting : new Array(),
 	nextId : 1,
 	currentTab : 0,
 	defaultUserFilter: "${ssDefaultUserFilter}",
@@ -1065,7 +1066,7 @@ ssPage = {
 		$listDiv.append($newSearch);
 	},
 
-	createConnection : function(url, userIdAttribute, mappings, userSearches, groupSearches, principal, credentials, ldapGuidAttribute )
+	createConnection : function(url, userIdAttribute, mappings, userSearches, groupSearches, principal, credentials, ldapGuidAttribute, existingSrc )
 	{
 		var label = "<ssf:nlt tag="ldap.connection.newConnection"/>";
 		if(url != "") { label = url; }
@@ -1111,6 +1112,9 @@ ssPage = {
 		// Remember the original name of the ldap guid attribute.
 		ssPage.rememberLdapGuidAttributeName( id, ldapGuidAttribute );
 		
+		// Remember whether this ldap config is existing
+		ssPage.setIsLdapConfigExisting( id, existingSrc );
+		
 		ssPage.createBindings($pane);
 		$pane.show();
 		return $pane;
@@ -1135,6 +1139,31 @@ ssPage = {
 		// The names are stored in an associative array with the config id as the index into the array.
 		return ssPage.m_origLdapGuidAttributeNames[ldapConfigId];
 	},// end getOriginalLdapGuidAttributeName()
+	
+	/**
+	 * Return whether the given ldap config is existing
+	 */
+	 getIsExistingSource : function( ldapConfigId )
+	 {
+		return ssPage.m_listOfLdapConfigsIsExisting[ldapConfigId]; 
+	 },
+	 
+	 /**
+	  * Remember whether this ldap config is existing
+	  */
+	 setIsLdapConfigExisting : function( ldapConfigId, existing )
+	 {
+		 ssPage.m_listOfLdapConfigsIsExisting[ldapConfigId] = existing;
+	 },
+	
+	/**
+	 * Mark the given ldap config as needing to sync the guid
+	 */
+	 markConfigAsNeedingToSyncGuid : function( ldapConfigId )
+	 {
+		if ( ldapConfigId != null && ldapConfigId.length > 0 )
+			m_listOfLdapConfigsToSyncGuid[m_listOfLdapConfigsToSyncGuid.length] = ldapConfigId;
+	 },
 	
 	
 	/**
@@ -1275,7 +1304,7 @@ ssPage = {
 		msg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.connection.add.warning"><ssf:param name="value" value="${productName}" /></ssf:nlt></ssf:escapeJavaScript>';
 		alert( msg );
 
-		var $pane = ssPage.createConnection("", "uid", ssPage.defaultUserMappings, [], [], "", "", "" );
+		var $pane = ssPage.createConnection("", "uid", ssPage.defaultUserMappings, [], [], "", "", "", "false" );
 		return false;
 	},
 	
@@ -1389,37 +1418,56 @@ jQuery(document).ready(function() {
 		// ldap guid attribute has changed.  If it has changed
 		// ssPage.m_ldapGuidAttributeNameChanged will be set to true
 		ssPage.m_ldapGuidAttributeNameChanged = false;
+		m_listOfLdapConfigsToSyncGuid = new Array();
 		jQuery('#funkyDiv .ldapConfig').each(function()
 		{
 			var $this = jQuery( this );
 			var id;
 			var origName;
 			var newName;
+			var ldapUrl;
+			var existingSrc;
 
-			// If we have already determined that the name of the ldap guid attribute changed
-			// then we can just return.
-			if ( ssPage.m_ldapGuidAttributeNameChanged == true )
-				return;
-			
 			// Get the id of this ldap configuration.
 			id = $this.attr("id");
 
+			// Get the ldap url
+			ldapUrl = $this.find( '.ldapUrl' ).val();
+			
+			// Is this an existing ldap source?
+			existingSrc = ssPage.getIsExistingSource( id );
+			
 			// Get the original name of the ldap guid attribute.
 			origName = ssPage.getOriginalLdapGuidAttributeName( id );
 
 			// Get the new name of the ldap guid attribute.
 			newName = $this.find( '.ldapGuidAttribute' ).val();
 
-			// Did the name change?
-			if ( origName == null || origName.length == 0 )
+			// Are we dealing with an existing ldap source.
+			if ( existingSrc == 'true' )
 			{
-				if ( newName != null && newName.length > 0 )
-					ssPage.m_ldapGuidAttributeNameChanged = true;
-			}
-			else
-			{
-				if ( origName != newName )
-					ssPage.m_ldapGuidAttributeNameChanged = true;
+				// Yes
+				// Was there a prior value for guid?
+				if ( origName == null || origName.length == 0 )
+				{
+					// No
+					// Do we have a new value for guid?
+					if ( newName != null && newName.length > 0 )
+					{
+						// Yes
+						ssPage.m_ldapGuidAttributeNameChanged = true;
+						ssPage.markConfigAsNeedingToSyncGuid( ldapUrl );
+					}
+				}
+				else
+				{
+					// Yes
+					if ( origName != newName )
+					{
+						ssPage.m_ldapGuidAttributeNameChanged = true;
+						ssPage.markConfigAsNeedingToSyncGuid( ldapUrl );
+					}
+				}
 			}
 		});
 
@@ -1435,13 +1483,13 @@ jQuery(document).ready(function() {
 			{
 				var msg;
 				
-				// Tell the user we need to sync the ldap guid because the ldap guid attribute name changed.
+				// No, Tell the user we need to sync the ldap guid because the ldap guid attribute name changed.
 				msg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncGuids.Msg"><ssf:param name="value" value="${productName}" /></ssf:nlt></ssf:escapeJavaScript>';
 				alert( msg );
 			}
-				
-			input = document.getElementById( 'syncGuids' );
-			input.value = 'true';
+			
+			input = document.getElementById( 'listOfLdapConfigsToSyncGuid' );
+			input.value = m_listOfLdapConfigsToSyncGuid;
 		}
 
 		var wrapWithCDATA = function( str )
@@ -1563,7 +1611,8 @@ jQuery(document).ready(function() {
 									initialGroupSearches,
 									"<ssf:escapeJavaScript>${config.principal}</ssf:escapeJavaScript>",
 									"<ssf:escapeJavaScript>${config.credentials}</ssf:escapeJavaScript>",
-									"<ssf:escapeJavaScript>${config.ldapGuidAttribute}</ssf:escapeJavaScript>");
+									"<ssf:escapeJavaScript>${config.ldapGuidAttribute}</ssf:escapeJavaScript>",
+									"true" );
 		$pane.append(jQuery('<span id="${config.id}" style="display:none" class="ldapId">${config.id}</span>'));
 	</c:forEach>
 	
@@ -1600,8 +1649,23 @@ jQuery(document).ready(function() {
 			if ( '${syncAllUsersAndGroups}' == 'true' )
 				m_syncAllUsersAndGroups = true;
 
-			if ( '${syncGuids}' == 'true' )
-				m_syncGuids = true;
+			<c:if test="${!empty listOfLdapConfigsToSyncGuid}">
+				<c:set var="listOfLdapConfigsToSyncGuid" value="${listOfLdapConfigsToSyncGuid}"/>
+				<jsp:useBean id="listOfLdapConfigsToSyncGuid" type="java.util.ArrayList"/>
+				<%
+					int cnt;
+				
+					for ( cnt = 0; cnt < listOfLdapConfigsToSyncGuid.size(); ++cnt )
+					{
+						String nextConfigUrl;
+						
+						nextConfigUrl = (String) listOfLdapConfigsToSyncGuid.get( cnt );
+						%>
+						m_listOfLdapConfigsToSyncGuid[<%=cnt%>] = '<%=nextConfigUrl%>';
+						<%
+					}
+				%>
+			</c:if>
 			
 			// Start an ldap sync.
 			setTimeout( startLdapSync, 500 );
@@ -1733,7 +1797,6 @@ jQuery(document).ready(function() {
 	<div class="ldapConfig ss_tertiaryTabs">
 		<span class="ldapTitle ss_size_16px"><ssf:nlt tag="ldap.connection.title" /> <span class="ldapTitle ss_bold"></span></span><button class="ldapDelete ss_submit marginleft1"><ssf:nlt tag="ldap.connection.delete" /></button>
 		<div>
-			
 			<table class="margintop3">
 				<tr>
 					<td nowrap></td>
