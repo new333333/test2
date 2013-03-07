@@ -14,17 +14,22 @@ position:relative;
 }
 
 .column-head  {
-background: #85BCC3 url(images/header_blend_teal_bg.png) repeat-x scroll center bottom;
-color:#FFFFFF;
-font-weight:bold;
-letter-spacing:0.02em;
-margin-bottom:0.5em;
-padding:5px;
-cursor: pointer;
--moz-border-radius: 5px 5px 0px 0px;
-border-radius: 5px 5px 0px 0px;
--webkit-border-radius: 5px 5px 0px 0px;
-position:relative;
+	position: relative;
+	color: #FFFFFF;
+	font-weight: bold;
+	letter-spacing: 0.02em;
+	margin-bottom: 0.5em;
+	padding: 8px;
+	cursor: pointer;
+	border-radius: 5px 5px 0px 0px;
+	-moz-border-radius: 5px 5px 0px 0px;
+	-webkit-border-radius: 5px 5px 0px 0px;
+	background-color: #81b2bd;
+	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
 }
 
 .profileTable  {
@@ -72,9 +77,9 @@ margin-top:0.5em;
 
 
 .profile-title  {
-font-size:1.4em;
-font-weight:bold;
-letter-spacing:0.03em;
+color: #505354;
+font-size: 2em;
+letter-spacing: 0.02em;
 }
 
 .profile.a  {
@@ -86,7 +91,10 @@ text-decoration:none;
 color:#5A9A98!important;
 font-size:1.1em;
 line-height:1.1em;
-padding:10px 0px 5px;
+padding:5px 0 5px 0;
+margin-top: 15px;
+margin-right: 20%;
+border-top: 1px solid #E0E0E0;
 }
 
 .sectionTable {
@@ -106,8 +114,6 @@ padding:10px 0px 5px;
 
 .sectionTable td, .sectionTable th {
 	background-color:transparent !important;
-	border-bottom:1px solid #D2D5D1;
-	padding:3px;
 }
 .sectionHeadingRBB {
 	border-bottom:none !important;
@@ -220,12 +226,14 @@ padding-bottom: 10px;
 .attrLabel {
 	font-size: 12px;
 	white-space:nowrap;
-	color: #b8b8b8;
+	color: #949494;
 	margin-top: 8px;
 	padding-right: 6px;
+	padding-left: 10px;
 	}
 .profile-value {
-	Font-size: 13px;
+	color: #505354;
+	font-size: 15px;
 	margin-top: 7px;
 	}	
 .profile-anchor {
@@ -323,7 +331,7 @@ font-weight: bold;
 }
 .profileSideBar_Item { 
 	line-height: 13px;
-	font-size: 11px; 
+	font-size: 12px; 
 	margin-top: 1px;
 	text-transform:none;
 }
@@ -347,17 +355,16 @@ font-weight: bold;
 }
 .profile-actions{
 position:absolute;
-right: 4px;
+right: 5px;
 top: 0px;
 }
 .profile-action {
-	font-size: 11px;
-	padding-bottom: 4px;
+	margin-bottom: 5px;
 }
-.profile-action a {
+.profile-action a, .profileUploadButton {
 	color: #353838 !important;
+	display: inline-block;
 	text-align: center;
-	
 	border: 1px solid #B8B8B8;
 	font-weight: normal !important;
 	font-size: 12px;
@@ -371,7 +378,7 @@ top: 0px;
 	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
 	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
 	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;	
+	background-color: #fff;	
 }
 .profile-action a:hover {
 	color: #135c8f;
@@ -441,8 +448,8 @@ padding-right: 10px;
 }
 .aboutDesc {
 color: #353838;
-font-size: 11px;
-line-height: 14px;
+font-size: 13px;
+line-height: 17px;
 text-transform: none;
 }
 .profile-selected-bg {
@@ -482,7 +489,7 @@ div.profile_gallery a:hover {
 	margin-top:2px;
 }
 .profileUploadButton {
-	margin-left: 5px;
+	margin-left: 10px;
 }
 .profileUploadPanel {
 }
@@ -492,10 +499,10 @@ div.profile_gallery a:hover {
 .modifyAvatarDlg {
 position: relative;
 background:none repeat scroll 0 0 #FFFFFF;
--moz-border-radius-topleft:5px;
--moz-border-radius-topright:5px;
 border-top-left-radius:5px;
 border-top-right-radius:5px;
+-moz-border-radius-topleft:5px;
+-moz-border-radius-topright:5px;
 -webkit-border-top-left-radius: 5px;
 -webkit-border-top-right-radius: 5px;
 }

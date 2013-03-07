@@ -488,12 +488,12 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 						avatar.setUrl(url);
 					} else {
 						FlowPanel w = (FlowPanel)avatar.getParent();
-						w.removeStyleName("qViewPhoto");
-						w.addStyleName("qViewPhoto_No");
+						w.addStyleName("qViewPhoto");
+//						w.addStyleName("qViewPhoto_No");
 						FlowPanel panel = new FlowPanel();
 						w.add(panel);
 						panel.addStyleName("qViewPhotoHeight_No");
-						panel.addStyleName("ss_profile_photo_box_empty");
+						panel.addStyleName("qViewPhoto_none");
 						avatar.removeFromParent();
 					}
 				} else {
