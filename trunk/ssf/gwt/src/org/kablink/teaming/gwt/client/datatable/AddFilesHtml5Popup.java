@@ -154,8 +154,8 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private static int MIN_WIDTH	= 800;	//
 
 	// Padding on the left/right and top/bottom of the popup.
-	private static int LEFT_RIGHT_PAD	= 16;	// This number of pixels on the left and right.
-	private static int TOP_BOTTOM_PAD	= 16;	// This number of pixels on the top  and bottom.
+	private static int LEFT_RIGHT_PAD	= 50;	// This number of pixels on the left and right.
+	private static int TOP_BOTTOM_PAD	= 50;	// This number of pixels on the top  and bottom.
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
