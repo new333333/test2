@@ -89,7 +89,7 @@ public class PersonalPreferencesDlg extends DlgBox
 		super( autoHide, modal, xPos, yPos );
 		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().personalPreferencesDlgHeader(), editSuccessfulHandler, editCanceledHandler, null ); 
+		createAllDlgContent( GwtTeaming.getMessages().personalPreferencesDlgHeader(), editSuccessfulHandler, editCanceledHandler, null );
 	}// end PersonalPreferencesDlg()
 	
 
@@ -116,13 +116,16 @@ public class PersonalPreferencesDlg extends DlgBox
 		
 		// Create the controls for "Entry display style"
 		{
-			table.setText( nextRow, 0, messages.entryDisplayStyleLabel() );
+			// hidden for Filr
+//			table.setText( nextRow, 0, messages.entryDisplayStyleLabel() );
 			
 			// Create a listbox that will hold all the possible values for the "Entry Display Style".
 			m_entryDisplayStyleListbox = new ListBox( false );
 			m_entryDisplayStyleListbox.setVisibleItemCount( 1 );
 			m_entryDisplayStyleListbox.addItem( messages.showEntriesInNewPage(), "newpage" );
 			m_entryDisplayStyleListbox.addItem( messages.showEntriesAsAnOverlay(), "iframe" );
+			// added to hide in Filr
+			m_entryDisplayStyleListbox.setVisible( false );
 
 			table.setWidget( nextRow, 1, m_entryDisplayStyleListbox );
 			++nextRow;
@@ -157,7 +160,6 @@ public class PersonalPreferencesDlg extends DlgBox
 			m_editorOverridesAnchor.setTitle( messages.editorOverridesLabel() );
 			m_editorOverridesAnchor.addStyleName( "editorOverridesLink1" );
 			m_editorOverridesAnchor.addStyleName( "editorOverridesLink2" );
-			m_editorOverridesAnchor.addStyleName( "subhead-control-bg1" );
 			m_editorOverridesAnchor.addStyleName( "roundcornerSM" );
 			
 			// Add a clickhandler to the "Clear branding" link.  When the user clicks on the link we
@@ -174,40 +176,40 @@ public class PersonalPreferencesDlg extends DlgBox
 			};
 			m_editorOverridesAnchor.addClickHandler( clickHandler );
 			
-			// Add a mouse-over handler
-			mouseOverHandler = new MouseOverHandler()
-			{
-				/**
-				 * 
-				 */
-				public void onMouseOver( MouseOverEvent event )
-				{
-					Widget widget;
-					
-					widget = (Widget)event.getSource();
-					widget.removeStyleName( "subhead-control-bg1" );
-					widget.addStyleName( "subhead-control-bg2" );
-				}// end onMouseOver()
-			};
-			m_editorOverridesAnchor.addMouseOverHandler( mouseOverHandler );
-
-			// Add a mouse-out handler
-			mouseOutHandler = new MouseOutHandler()
-			{
-				/**
-				 * 
-				 */
-				public void onMouseOut( MouseOutEvent event )
-				{
-					Widget widget;
-					
-					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
-					widget = (Widget)event.getSource();
-					widget.removeStyleName( "subhead-control-bg2" );
-					widget.addStyleName( "subhead-control-bg1" );
-				}// end onMouseOut()
-			};
-			m_editorOverridesAnchor.addMouseOutHandler( mouseOutHandler );
+//			// Add a mouse-over handler
+//			mouseOverHandler = new MouseOverHandler()
+//			{
+//				/**
+//				 * 
+//				 */
+//				public void onMouseOver( MouseOverEvent event )
+//				{
+//					Widget widget;
+//					
+//					widget = (Widget)event.getSource();
+//					widget.removeStyleName( "subhead-control-bg1" );
+//					widget.addStyleName( "subhead-control-bg2" );
+//				}// end onMouseOver()
+//			};
+//			m_editorOverridesAnchor.addMouseOverHandler( mouseOverHandler );
+//
+//			// Add a mouse-out handler
+//			mouseOutHandler = new MouseOutHandler()
+//			{
+//				/**
+//				 * 
+//				 */
+//				public void onMouseOut( MouseOutEvent event )
+//				{
+//					Widget widget;
+//					
+//					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
+//					widget = (Widget)event.getSource();
+//					widget.removeStyleName( "subhead-control-bg2" );
+//					widget.addStyleName( "subhead-control-bg1" );
+//				}// end onMouseOut()
+//			};
+//			m_editorOverridesAnchor.addMouseOutHandler( mouseOutHandler );
 
 			table.getFlexCellFormatter().setColSpan( nextRow, 0, 2 );
 			table.setWidget( nextRow, 0, m_editorOverridesAnchor );
@@ -317,6 +319,7 @@ public class PersonalPreferencesDlg extends DlgBox
 		// Show/hide the "Define editor overrides..." button depending on whether or not
 		// "editor overrides" are supported.
 		m_editorOverridesAnchor.setVisible( personalPrefs.isEditorOverrideSupported() );
+
 	}// end init()
 	
 	
