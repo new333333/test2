@@ -112,7 +112,7 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	public ImageResource searchDelete();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/MainMenu/search_glass.png")
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/search_glass2.png")
 	public ImageResource searchGlass();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
