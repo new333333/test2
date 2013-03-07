@@ -732,6 +732,7 @@ public interface GwtTeamingMessages extends Messages
 	String backgroundImgLabel();
 	String cantEditBranding();
 	String clearBrandingLabel();
+	String colorDescription();
 	String colorHint();
 	String displayColorPicker();
 	String editAdvancedBranding();
