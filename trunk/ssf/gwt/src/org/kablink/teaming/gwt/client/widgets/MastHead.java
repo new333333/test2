@@ -695,7 +695,10 @@ public class MastHead extends Composite
 
 		// Fire the event that will display the browse panel
 		browseInfo = new OnBrowseHierarchyInfo( relativeTo );
-		browseEvent = new BrowseHierarchyEvent( browseInfo );
+		browseEvent = new BrowseHierarchyEvent();
+		browseEvent.setOnBrowseHierarchyInfo( browseInfo );
+
+		//GwtTeaming.fireEvent( new InvokeChangePasswordDlgEvent() );
 		GwtTeaming.fireEvent( browseEvent );
 	}
 	
