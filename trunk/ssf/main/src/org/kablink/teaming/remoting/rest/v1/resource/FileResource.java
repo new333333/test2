@@ -46,6 +46,7 @@ import org.kablink.teaming.remoting.rest.v1.util.FilePropertiesBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.rest.v1.model.AccessRole;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 import org.kablink.teaming.rest.v1.model.ParentBinder;
@@ -238,6 +239,19 @@ public class FileResource extends AbstractFileResource {
         }
     }
 
+    @GET
+    @Path("{id}/access_role")
+    public AccessRole getAccessRole(@PathParam("id") String fileId) {
+        FileAttachment fa = findFileAttachment(fileId);
+        DefinableEntity entity = fa.getOwner().getEntity();
+        if (entity instanceof FolderEntry) {
+            return getAccessRole((FolderEntry) entity);
+        }
+        AccessRole role = new AccessRole();
+        role.setRole(ShareItem.Role.NONE.name());
+        return role;
+    }
+
     @POST
     @Path("{id}/name")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -252,6 +266,7 @@ public class FileResource extends AbstractFileResource {
 
         Map<FileAttachment,String> renamesTo = new HashMap<FileAttachment,String>();
         renamesTo.put(fa, name);
+
 
         InputDataAccessor inputData = null;
 

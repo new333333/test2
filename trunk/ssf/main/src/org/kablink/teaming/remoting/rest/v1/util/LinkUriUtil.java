@@ -153,6 +153,7 @@ public class LinkUriUtil {
     public static void populateFolderEntryLinks(BaseRestObject model, Long id) {
         model.setLink(getFolderEntryLinkUri(id));
         populateBaseFolderEntryLinks(model);
+        model.addAdditionalLink("access_role", model.getLink() + "/access_role");
         model.addAdditionalLink("reservation", model.getLink() + "/reservation");
         model.addAdditionalLink("shares", model.getLink() + "/shares");
         if (model instanceof FolderEntry) {
@@ -188,6 +189,7 @@ public class LinkUriUtil {
             model.addAdditionalLink("child_library_tree", model.getLink() + "/library_tree");
             model.addAdditionalLink("child_library_files", model.getLink() + "/library_files");
         }
+        model.addAdditionalLink("access_role", model.getLink() + "/access_role");
         model.addAdditionalLink("title", model.getLink() + "/title");
         model.addAdditionalLink("parent_binder", model.getLink() + "/parent_binder");
         model.addAdditionalLink("recent_activity", model.getLink() + "/recent_activity");
@@ -231,6 +233,7 @@ public class LinkUriUtil {
         fp.addAdditionalLink("name", baseUrl + "/name");
         fp.addAdditionalLink("parent_folder", baseUrl + "/parent_folder");
         fp.addAdditionalLink("shares", fp.getOwningEntity().getLink() + "/shares");
+        fp.addAdditionalLink("access_role", fp.getOwningEntity().getLink() + "/access_role");
         fp.addAdditionalLink("versions", baseUrl + "/versions");
         fp.addAdditionalLink("thumbnail", baseUrl + "/thumbnail");
         fp.addAdditionalLink("scaled_image", baseUrl + "/scaled");
