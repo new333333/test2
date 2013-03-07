@@ -387,9 +387,9 @@ public class FooterPanel extends ToolPanelBase {
 		linksPanel.addStyleName("vibe-footerDataLinksPanel");
 		m_dataPanel.add(linksPanel);
 		FlexTable linksGrid = new FlexTable();
-		linksGrid.setCellPadding(6);
-		linksGrid.setCellSpacing(2);
-		linksGrid.setBorderWidth(1);
+		linksGrid.setCellPadding(5);
+		linksGrid.setCellSpacing(0);
+		linksGrid.setBorderWidth(0);
 		linksGrid.addStyleName("vibe-footerDataLinksGrid");
 		linksPanel.add(linksGrid);
 		FlexCellFormatter cf = linksGrid.getFlexCellFormatter();
