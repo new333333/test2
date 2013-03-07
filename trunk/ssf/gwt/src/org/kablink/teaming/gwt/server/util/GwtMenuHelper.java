@@ -1800,8 +1800,9 @@ public class GwtMenuHelper {
 				}
 				
 				// Does this user have rights to define a
-				// synchronization schedule on this mirrored folder?
-				if (fm.testAccess(folder, FolderOperation.scheduleSynchronization)) {
+				// synchronization schedule on this mirrored folder
+				// that's not a net folder?
+				if (fm.testAccess(folder, FolderOperation.scheduleSynchronization) && (!(folder.isAclExternallyControlled()))) {
 					// Yes!  Add the ToolbarItem for it.
 					adminMenuCreated  =
 					configMenuCreated = true;
