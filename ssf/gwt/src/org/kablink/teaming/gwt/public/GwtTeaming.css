@@ -1430,6 +1430,7 @@ body, table td, select
 .findSearchResultsPanel
 {
 	position: relative;
+	z-index: 10;		/* Fixes a bug in IE where the search results don't fully display on top. */
 }
 
 /* Styles for the "search results" in a "find" control. */
@@ -2649,7 +2650,7 @@ body, table td, select
 	position: absolute;
 }
 
-.mastheadFilr_PeopleImg, .mastheadFilr_WhatsNewImg
+.mastheadFilr_PeopleImg, .mastheadFilr_WhatsNewImg, .mastheadFilr_BrowseFilrImg
 {
 	color: #FFFFFF;
 	font-size: 12px;
@@ -2657,7 +2658,7 @@ body, table td, select
 	text-align: center;
 }
 	
-.mastheadFilr_PeopleImgPanel, .mastheadFilr_WhatsNewImgPanel
+.mastheadFilr_PeopleImgPanel, .mastheadFilr_WhatsNewImgPanel, .mastheadFilr_BrowseFilrImgPanel
 {
 	border: 1px solid transparent;
 	color: #FFFFFF;
@@ -2667,7 +2668,7 @@ body, table td, select
 	text-align: center;
 }
 
-.mastheadFilr_PeopleImgPanel:hover, .mastheadFilr_WhatsNewImgPanel:hover
+.mastheadFilr_PeopleImgPanel:hover, .mastheadFilr_WhatsNewImgPanel:hover, .mastheadFilr_BrowseFilrImgPanel:hover
 {
 	background-image: url(images/trans20_91daf2.png);
 	background-repeat: repeat;
@@ -2688,6 +2689,14 @@ body, table td, select
 	left: 60px;
 	position: absolute;
 	bottom: 0px;
+	z-index: 400;
+}
+
+.mastheadFilr_BrowseFilrPanel
+{
+	left: 110px;
+	position: absolute;
+	bottom: 2px;
 	z-index: 400;
 }
 
@@ -4760,6 +4769,13 @@ td.datePickerMonth {
 {
 }
 
+.modifyNetFolderServerDlg_ServerPathHint
+{
+	color: #4D6D8B;
+	font-size: 1em;
+	margin-bottom: 0.5em;
+}
+
 
 /**
  * Styles used in the SelectPrincipalsWidget
@@ -5182,6 +5198,7 @@ td.datePickerMonth {
 {
 	background-color: #F6F6F6;
 	border-radius: 5px;
+	overflow: auto;
 	position: absolute;
 	overflow: hidden;
 }
@@ -5396,6 +5413,14 @@ td.datePickerMonth {
  * Styles used in the "Forgotten Password" dialog
  */
 
+.forgottenPwdDlg_Hint
+{
+	color: #4D6D8B;
+	font-size: 1em;
+	margin-bottom: 1em;
+	width: 375px;
+}
+
 .forgottenPwdDlg_Instructions
 {
 	color: 353838;
@@ -5419,3 +5444,16 @@ td.datePickerMonth {
 
 /* End */
 
+
+
+/**
+ * Styles used to in the Admin Info dialog
+ */
+
+.adminInfoDlg_mainPanel
+{
+	height: 400px;
+	overflow: auto;
+}
+
+/* End */

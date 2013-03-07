@@ -119,6 +119,23 @@ public class ForgottenPwdDlg extends DlgBox
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 		mainPanel.addStyleName( "forgottenPwdDlg_MainPanel" );
 
+		// Add a hint telling the user that forgotten password is only for external users.
+		{
+			Label hint;
+			FlowPanel panel;
+			
+			panel = new FlowPanel();
+			panel.addStyleName( "forgottenPwdDlg_Hint" );
+			
+			hint = new Label( messages.forgottenPwdDlg_HintNote() );
+			panel.add( hint );
+			
+			hint = new Label( messages.forgottenPwdDlg_Hint() );
+			panel.add( hint );
+			
+			mainPanel.add( panel );
+		}
+
 		label = new Label( messages.forgottenPwdDlg_Instructions() );
 		label.addStyleName( "forgottenPwdDlg_Instructions" );
 		mainPanel.add( label );

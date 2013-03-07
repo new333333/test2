@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -53,6 +54,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
+import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
@@ -248,8 +250,26 @@ public class GwtNetFolderHelper
 			GwtTeamingException gtEx;
 			
 			gtEx = GwtServerHelper.getGwtTeamingException();
-			gtEx.setAdditionalDetails( NLT.get( "netfolder.cant.load.parent.binder" ) );
+			
+			if ( ex instanceof TitleException )
+			{
+				String[] args;
+				
+				args = new String[] { netFolder.getName() };
+				gtEx.setAdditionalDetails( NLT.get( "netfolder.duplicate.name", args ) );
+			}
+			else if ( ex instanceof IllegalCharacterInNameException )
+			{
+				gtEx = GwtServerHelper.getGwtTeamingException();
+				gtEx.setAdditionalDetails( NLT.get( "netfolder.name.illegal.characters" ) );
+			}
+			else
+			{
+				gtEx.setAdditionalDetails( NLT.get( "netfolder.cant.load.parent.binder" ) );
+			}
+			
 			m_logger.error( "Error creating net folder: " + netFolder.getName(), ex);
+			
 			throw gtEx;				
 		}
 		
@@ -991,6 +1011,7 @@ public class GwtNetFolderHelper
 										ami.getBinderModule(),
 										ami.getFolderModule(),
 										netFolder.getId(),
+										netFolder.getName(),
 										netFolder.getNetFolderRootName(),
 										netFolder.getRelativePath(),
 										scheduleInfo,
@@ -1023,8 +1044,25 @@ public class GwtNetFolderHelper
 		{
 			GwtTeamingException gtEx;
 			
-			gtEx = GwtServerHelper.getGwtTeamingException( ex );
+			if ( ex instanceof TitleException )
+			{
+				String[] args;
+				
+				args = new String[] { netFolder.getName() };
+				gtEx = GwtServerHelper.getGwtTeamingException();
+				gtEx.setAdditionalDetails( NLT.get( "netfolder.duplicate.name", args ) );
+			}
+			else if ( ex instanceof IllegalCharacterInNameException )
+			{
+				gtEx = GwtServerHelper.getGwtTeamingException();
+				gtEx.setAdditionalDetails( NLT.get( "netfolder.name.illegal.characters" ) );
+			}
+			else
+			{
+				gtEx = GwtServerHelper.getGwtTeamingException( ex );
+			}
 			m_logger.error( "Error modifying net folder: " + netFolder.getName(), ex);
+			
 			throw gtEx;				
 		}
 		

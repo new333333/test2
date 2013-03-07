@@ -370,13 +370,15 @@ public class CommentsWidget extends Composite
 			
 			list = new ArrayList<ActionMenuItem>();
 			list.add( ActionMenuItem.REPLY );
-			list.add( ActionMenuItem.SEND_TO_FRIEND );
 			list.add( ActionMenuItem.SUBSCRIBE );
 			if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
+			{
 				list.add( ActionMenuItem.TAG );
-			list.add( ActionMenuItem.SEPARATOR );
-			list.add( ActionMenuItem.MARK_READ );
-			list.add( ActionMenuItem.MARK_UNREAD );
+				list.add( ActionMenuItem.SEND_TO_FRIEND );
+				list.add( ActionMenuItem.SEPARATOR );
+				list.add( ActionMenuItem.MARK_READ );
+				list.add( ActionMenuItem.MARK_UNREAD );
+			}
 			
 			actionsMenu = new ActionsPopupMenu( true, true, list.toArray( new ActionMenuItem[list.size()] ) );
 			

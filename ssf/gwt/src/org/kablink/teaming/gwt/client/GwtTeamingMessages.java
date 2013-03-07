@@ -713,6 +713,7 @@ public interface GwtTeamingMessages extends Messages
 	String invokeUserListHint();
 	String loginHint();
 	String logoutHint();
+	String masthead_BrowseFilr();
 	String myWorkspaceHint();
 	String newsFeedMenuItem();
 	String personalPrefsMenuItem();
@@ -1235,6 +1236,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// The following strings are used in the Administration Information dialog
 	String adminInfoDlgEnterProxyCredentials( String serverName );
+	String adminInfoDlgExpiredLicense( String productName );
 	String adminInfoDlgFilrTasksToBeCompleted();
 	String adminInfoDlgHeader();
 	String adminInfoDlgLoginAsAdmin();
@@ -2116,6 +2118,9 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_ProxyNameLabel();
 	String modifyNetFolderServerDlg_ProxyPwdLabel();
 	String modifyNetFolderServerDlg_ServerAlreadyExists();
+	String modifyNetFolderServerDlg_ServerPathHint1();
+	String modifyNetFolderServerDlg_ServerPathHint2();
+	String modifyNetFolderServerDlg_ServerPathHint3();
 	String modifyNetFolderServerDlg_ServerPathLabel();
 	String modifyNetFolderServerDlg_SyncAllNetFoldersPrompt();
 	String modifyNetFolderServerDlg_SyncOfNetFolderServerStarted();
@@ -2607,6 +2612,8 @@ public interface GwtTeamingMessages extends Messages
 	String forgottenPwdDlg_Caption();
 	String forgottenPwdDlg_EmailAddress();
 	String forgottenPwdDlg_EnterEmailAddress();
+	String forgottenPwdDlg_Hint();
+	String forgottenPwdDlg_HintNote();
 	String forgottenPwdDlg_Instructions();
 	String forgottenPwdDlg_InvalidEmailAddress();
 	String forgottenPwdDlg_ForgottenPwdEmailSent();

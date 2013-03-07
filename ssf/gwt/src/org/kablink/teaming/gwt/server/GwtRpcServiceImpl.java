@@ -174,6 +174,7 @@ import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -4542,7 +4543,38 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 						filrAdminTasks.deleteEnterNetFolderServerProxyCredentialsTask( netFolderServerId );
 					}
 				}
+				
+				// Save the FilrAdminTasks to the administrator's user properties
+				{
+					RunasCallback callback;
+					final String tmpXmlStr;
+					final Long adminId;
+					
+					tmpXmlStr = filrAdminTasks.toString();
+					adminId = user.getId();
+					
+					callback = new RunasCallback()
+					{
+						@Override
+						public Object doAs()
+						{
+							getProfileModule().setUserProperty(
+														adminId,
+														ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS,
+														tmpXmlStr );
+							return null;
+						}
+					};
+					RunasTemplate.runasAdmin( callback, RequestContextHolder.getRequestContext().getZoneName() );
+				}
 			}
+		}
+		
+		// Has the license expired?
+		if ( LicenseChecker.isLicenseExpired() )
+		{
+			// Yes, add a "license expired" task.
+			upgradeInfo.addLicenseExpiredTask();
 		}
 		
 		return upgradeInfo;

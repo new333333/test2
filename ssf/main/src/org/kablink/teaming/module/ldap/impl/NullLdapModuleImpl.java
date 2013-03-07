@@ -88,7 +88,7 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 	}
 
 	@Override
-	public void syncAll( boolean syncUsersAndGroups, boolean syncGuids, LdapSyncResults syncResults ) throws LdapSyncException {
+	public void syncAll( boolean syncUsersAndGroups, String[] listOfLdapConfigsToSyncGuid, LdapSyncResults syncResults ) throws LdapSyncException {
 	}
 
 	/**

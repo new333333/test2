@@ -249,6 +249,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource entry_task();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/expired_license_icon16.gif")
+	public ImageResource expiredLicenseIcon16();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/pin_gray.png")
 	public ImageResource grayPin();
 	
@@ -359,6 +363,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Masthead/actions.png")
 	public ImageResource mastheadActions2();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/Filr_hierarchy_30.png")
+	public ImageResource mastheadBrowseFilr();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/mast_head_filr_graphic.png")

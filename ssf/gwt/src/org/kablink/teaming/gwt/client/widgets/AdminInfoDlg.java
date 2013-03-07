@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.admin.GwtEnterProxyCredentialsTask;
 import org.kablink.teaming.gwt.client.admin.GwtFilrAdminTask;
@@ -53,6 +54,7 @@ import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * Class used for the ui of the "Administration Information" dialog
@@ -60,6 +62,7 @@ import com.google.gwt.user.client.ui.Panel;
 public class AdminInfoDlg extends DlgBox
 {
 	private FlexTable m_table;
+	private FlowPanel m_mainPanel = null;
 	
 	/*
 	 * Class constructor.
@@ -89,10 +92,8 @@ public class AdminInfoDlg extends DlgBox
 	@Override
 	public Panel createContent( Object props )
 	{
-		FlowPanel mainPanel = null;
-		
-		mainPanel = new FlowPanel();
-		mainPanel.setStyleName( "teamingDlgBoxContent" );
+		m_mainPanel = new FlowPanel();
+		m_mainPanel.setStyleName( "teamingDlgBoxContent" );
 		
 		m_table = new FlexTable();
 		m_table.setCellSpacing( 4 );
@@ -101,11 +102,11 @@ public class AdminInfoDlg extends DlgBox
 		// The content of the dialog will be created in refreshContent() which will be called
 		// when we get the GwtUpgradeInfo object from the server.
 		
-		mainPanel.add( m_table );
+		m_mainPanel.add( m_table );
 
 		init( props );
 
-		return mainPanel;
+		return m_mainPanel;
 	}
 	
 
@@ -122,6 +123,38 @@ public class AdminInfoDlg extends DlgBox
 		FlexTable.FlexCellFormatter cellFormatter; 
 
 		cellFormatter = table.getFlexCellFormatter();
+		
+		// Has the license expired?
+		if ( upgradeInfo.getIsLicenseExpired() )
+		{
+			FlowPanel panel;
+			Image img;
+			InlineLabel label;
+			String productName;
+			
+			// Yes
+			panel = new FlowPanel();
+			
+			img = new Image( GwtTeaming.getImageBundle().expiredLicenseIcon16() );
+			img.getElement().setAttribute( "align", "absmiddle" );
+			panel.add( img );
+			
+			if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
+				productName = GwtTeaming.getMessages().novellFilr();
+			else if ( GwtMainPage.m_novellTeaming )
+				productName = GwtTeaming.getMessages().novellTeaming();
+			else
+				productName = GwtTeaming.getMessages().kablinkTeaming();
+			label = new InlineLabel( " " + GwtTeaming.getMessages().adminInfoDlgExpiredLicense( productName ) );
+			panel.add( label );
+			
+			cellFormatter.setColSpan( row, 0, 2 );
+			cellFormatter.setWordWrap( row, 0, wordWrap );
+			if ( tdStyleName != null )
+				cellFormatter.addStyleName( row, 0, tdStyleName );
+			table.setHTML( row, 0, panel.getElement().getInnerHTML() );
+			++row;
+		}
 		
 		// Are there upgrade tasks that need to be performed?
 		if ( upgradeInfo.doUpgradeTasksExist() )
@@ -142,6 +175,7 @@ public class AdminInfoDlg extends DlgBox
 				label = new InlineLabel( " " + GwtTeaming.getMessages().adminInfoDlgUpgradeTasksNotDone() );
 				panel.add( label );
 				
+				row += 3;
 				cellFormatter.setColSpan( row, 0, 2 );
 				cellFormatter.setWordWrap( row, 0, wordWrap );
 				if ( tdStyleName != null )
@@ -246,7 +280,7 @@ public class AdminInfoDlg extends DlgBox
 				uList.getStyle().setMarginTop( 0, Unit.PX );
 				uList.getStyle().setMarginBottom( 0, Unit.PX );
 			
-				// Add text to let the user know there are upgrade tasks that need to be completed.
+				// Add text to let the user know there are Filr tasks that need to be completed.
 				row += 3;
 				cellFormatter.setColSpan( row, 0, 2 );
 				cellFormatter.setWordWrap( row, 0, wordWrap );
@@ -327,6 +361,9 @@ public class AdminInfoDlg extends DlgBox
 		int row = 0;
 		FlexTable.FlexCellFormatter cellFormatter; 
 
+		// Remove the style that gives this dialog a fixed height.
+		m_mainPanel.removeStyleName( "adminInfoDlg_mainPanel" );
+		
 		// Clear any existing content.
 		m_table.clear();
 		
@@ -366,6 +403,31 @@ public class AdminInfoDlg extends DlgBox
 		// Create the ui that displays that tasks that need to be completed.
 		AdminInfoDlg.createTasksToDoUI( upgradeInfo, m_table, row, false, null );
 	}
+	
+	/**
+	 * Show this dialog.
+	 */
+	public void showDlg()
+	{
+		PopupPanel.PositionCallback posCallback;
+		
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void setPosition( int offsetWidth, int offsetHeight )
+			{
+				if ( offsetHeight > 400 )
+					m_mainPanel.addStyleName( "adminInfoDlg_mainPanel" );
+				else
+					m_mainPanel.removeStyleName( "adminInfoDlg_mainPanel" );
+			}
+		};
+		setPopupPositionAndShow( posCallback );
+	}
+
 	
 	/**
 	 * Callback interface to interact with the dialog asynchronously
@@ -506,7 +568,7 @@ public class AdminInfoDlg extends DlgBox
 			// Otherwise, we assume we're to initialize and show the
 			// AdminInfoDlg we were given!  Initialize...
 			adminInfoDlg.refreshContent( upgradeInfo );
-			adminInfoDlg.show();
+			adminInfoDlg.showDlg();
 		}
 	}
 	

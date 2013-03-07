@@ -717,6 +717,7 @@ public class ModifyNetFolderDlg extends DlgBox
 			if ( isNameValid() == false )
 			{
 				m_nameTxtBox.setFocus( true );
+				setOkEnabled( true );
 				return false;
 			}
 			
@@ -1083,9 +1084,7 @@ public class ModifyNetFolderDlg extends DlgBox
 			// Update the dialog's header to say "Edit Net Folder"
 			setCaption( GwtTeaming.getMessages().modifyNetFolderDlg_EditHeader( m_netFolder.getName() ) );
 			
-			// Don't let the user edit the name.
 			m_nameTxtBox.setValue( netFolder.getName() );
-			m_nameTxtBox.setEnabled( false );
 			
 			m_relativePathTxtBox.setValue( netFolder.getRelativePath() );
 			

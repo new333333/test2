@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.web.util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -72,7 +71,6 @@ import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.runasync.RunAsyncCallback;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
@@ -393,7 +391,6 @@ public class NetFolderHelper
 	/**
 	 * Create a net folder from the given data
 	 */
-	@SuppressWarnings({ "unchecked" })
 	public static Binder createNetFolder(
 		TemplateModule templateModule,
 		BinderModule binderModule,
@@ -777,13 +774,14 @@ public class NetFolderHelper
 		BinderModule binderModule,
 		FolderModule folderModule,
 		Long id,
+		String netFolderName,
 		String netFolderRootName,
 		String relativePath,
 		ScheduleInfo scheduleInfo,
 		boolean indexContent ) throws AccessControlException, WriteFilesException, WriteEntryDataException
 	{
 		// Modify the binder with the net folder information.
-		folderModule.modifyNetFolder(id, netFolderRootName, relativePath, null, indexContent);
+		folderModule.modifyNetFolder(id, netFolderName, netFolderRootName, relativePath, null, indexContent);
 
 		// Set the net folder's sync schedule
 		if ( scheduleInfo != null )
@@ -872,7 +870,11 @@ public class NetFolderHelper
 			resourceDriverModule.setSynchronizationSchedule( scheduleInfo, rdConfig.getId() );
 		}
 
-		// Remove the task for the administrtor to enter the proxy credentials for this net folder server.
+		// Is the configuration complete?
+		rdConfig = ResourceDriverManagerUtil.getResourceDriverManager().getDriverConfig( rootName );
+		isConfigured2 = isNetFolderServerConfigured( rdConfig );
+
+		// Update the Filr admin tasks
 		{
 			// Get the admin user so we can remove an administrative task to his user properties.
 			zoneName = RequestContextHolder.getRequestContext().getZoneName();
@@ -884,9 +886,20 @@ public class NetFolderHelper
 			xmlStr = (String)userProperties.getProperty( ObjectKeys.USER_PROPERTY_FILR_ADMIN_TASKS );
 			filrAdminTasks = new FilrAdminTasks( xmlStr );
 			
-			// Remove the task for the administrator to enter the proxy credentials for this net folder server.
-			filrAdminTasks.deleteEnterNetFolderServerProxyCredentialsTask( rdConfig.getId() );
-	
+			// Is the net folder server configured?
+			if ( isConfigured2 )
+			{
+				// Yes
+				// Remove the task for the administrator to enter the proxy credentials for this net folder server.
+				filrAdminTasks.deleteEnterNetFolderServerProxyCredentialsTask( rdConfig.getId() );
+			}
+			else
+			{
+				// No
+				// Add a task for the administrator to configure the net folder server.
+				filrAdminTasks.addEnterNetFolderServerProxyCredentialsTask( rdConfig.getId() );
+			}
+			
 			// Save the FilrAdminTasks to the administrator's user properties
 			{
 				RunasCallback callback;
@@ -912,10 +925,6 @@ public class NetFolderHelper
 			}
 		}
 		
-		// Is the configuration complete?
-		rdConfig = ResourceDriverManagerUtil.getResourceDriverManager().getDriverConfig( rootName );
-		isConfigured2 = isNetFolderServerConfigured( rdConfig );
-
 		if ( isConfigured1 != isConfigured2 )
 			reIndexNeeded = true;
 		

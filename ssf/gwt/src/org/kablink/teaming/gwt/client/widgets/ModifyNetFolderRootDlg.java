@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.SelectPrincipalsWidget.SelectPrincipalsWidgetClient;
 
@@ -251,6 +252,24 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 		// Create the controls for "root path"
 		{
+			FlowPanel panel;
+			
+			panel = new FlowPanel();
+			panel.addStyleName( "margintop1" );
+			panel.addStyleName( "modifyNetFolderServerDlg_ServerPathHint" );
+
+			// Add a hint that describes the unc syntax
+			label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint1() );
+			panel.add( label );
+			label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint2() );
+			panel.add( label );
+			label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint3() );
+			panel.add( label );
+			
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+			table.setWidget( nextRow, 0, panel );
+			++nextRow;
+			
 			label = new InlineLabel( messages.modifyNetFolderServerDlg_ServerPathLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 			
@@ -261,6 +280,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		}
 		
 		// Create the WebDAV specific controls
+		if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
 		{
 			// Add some space
 			m_webDavSpacerPanel = new FlowPanel();
@@ -547,11 +567,20 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					visible = true;
 				
 				// Show/hide the controls that are WebDAV specific
-				m_webDavSpacerPanel.setVisible( visible );
-				m_hostUrlLabel.setVisible( visible );
-				m_hostUrlTxtBox.setVisible( visible );
-				m_allowSelfSignedCertsCkbox.setVisible( visible );
-				m_isSharePointServerCkbox.setVisible( visible );
+				if ( m_webDavSpacerPanel != null )
+					m_webDavSpacerPanel.setVisible( visible );
+				
+				if ( m_hostUrlLabel != null )
+					m_hostUrlLabel.setVisible( visible );
+				
+				if ( m_hostUrlTxtBox != null )
+					m_hostUrlTxtBox.setVisible( visible );
+				
+				if ( m_allowSelfSignedCertsCkbox != null )
+					m_allowSelfSignedCertsCkbox.setVisible( visible );
+				
+				if ( m_isSharePointServerCkbox != null )
+					m_isSharePointServerCkbox.setVisible( visible );
 			}
 		}
 	}
@@ -659,6 +688,21 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			return m_nameTxtBox;
 		
 		return m_rootPathTxtBox;
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "netfolders_servers.html" );
+		
+		return helpData;
 	}
 	
 	/**
@@ -829,9 +873,12 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_rootPathTxtBox.setValue( "" );
 		m_proxyNameTxtBox.setValue( "" );
 		m_proxyPwdTxtBox.setValue( "" );
-		m_hostUrlTxtBox.setValue( "" );
-		m_allowSelfSignedCertsCkbox.setValue( false );
-		m_isSharePointServerCkbox.setValue( false );
+		if ( m_hostUrlTxtBox != null)
+			m_hostUrlTxtBox.setValue( "" );
+		if ( m_allowSelfSignedCertsCkbox != null )
+			m_allowSelfSignedCertsCkbox.setValue( false );
+		if ( m_isSharePointServerCkbox != null )
+			m_isSharePointServerCkbox.setValue( false );
 		m_inProgressPanel.setVisible( false );
 
 		if ( m_showPrivilegedUsersUI && m_selectPrincipalsWidget != null )

@@ -57,7 +57,7 @@ public class GwtUpgradeInfo
 	private ArrayList<GwtFilrAdminTask> m_filrAdminTasks = null;
 	private boolean m_upgradeTasksExist = false;
 	private boolean m_isAdmin = false;
-	
+	private boolean m_licenseExpired = false;
 	
 	/**
 	 * 
@@ -76,6 +76,14 @@ public class GwtUpgradeInfo
 			m_filrAdminTasks = new ArrayList<GwtFilrAdminTask>();
 		
 		m_filrAdminTasks.add( task );
+	}
+	
+	/**
+	 * Add a "license expired" task.
+	 */
+	public void addLicenseExpiredTask()
+	{
+		m_licenseExpired = true;
 	}
 	
 	/**
@@ -149,6 +157,14 @@ public class GwtUpgradeInfo
 	public String getFilrApplianceReleaseInfo()
 	{
 		return m_filrApplianceReleaseInfo;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getIsLicenseExpired()
+	{
+		return m_licenseExpired;
 	}
 	
 	/**
