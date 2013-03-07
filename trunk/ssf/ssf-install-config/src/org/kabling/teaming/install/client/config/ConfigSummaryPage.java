@@ -62,7 +62,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		//General sucess information
 		HTML configFinishedLabel = null;
 		
-		String ipAddr ="https://" + AppUtil.getProductInfo().getLocalIpAddress() + ":8443";
+		String ipAddr ="https://" + AppUtil.getProductInfo().getLocalIpAddress() + ":"+ config.getNetwork().getSecureListenPort();
 		
 		if (wizardFinishType == null)
 			configFinishedLabel = new HTML(RBUNDLE.filrServerInfo(ipAddr));
@@ -196,9 +196,9 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		Database db = config.getDatabase();
 
 		// We only need to display the Installed configuration
-		if (db != null && db.getDatabaseConfig("Installed") != null)
+		if (db != null && db.getDatabaseConfig("MySQL_Default") != null)
 		{
-			DatabaseConfig dbConfig = db.getDatabaseConfig("Installed");
+			DatabaseConfig dbConfig = db.getDatabaseConfig("MySQL_Default");
 			int row = 0;
 			{
 				// Host Name

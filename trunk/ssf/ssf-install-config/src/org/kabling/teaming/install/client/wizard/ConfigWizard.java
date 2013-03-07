@@ -12,8 +12,11 @@ import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.client.widgets.StatusIndicator;
 import org.kabling.teaming.install.shared.InstallerConfig;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -46,7 +49,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 	LuceneConfigPage lucenePage;
 	// StoragePage storagePage;
 	UpgradeAppliancePage importPage;
-	//PasswordPage pwdPage;
+	// PasswordPage pwdPage;
 	LocalDatabaseConfigPage dbLocalPage;
 
 	public ConfigWizard(InstallerConfig config)
@@ -80,7 +83,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 
 		// Local Db Page
 		dbLocalPage = new LocalDatabaseConfigPage(this, config);
-				
+
 		// Database Page
 		dbPage = new DatabaseConfigPage(this, config);
 
@@ -91,14 +94,14 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		importPage = new UpgradeAppliancePage(this);
 
 		// Password Page
-		//pwdPage = new PasswordPage(this, config);
+		// pwdPage = new PasswordPage(this, config);
 
 		// Show first page
 		currentPage = configPage;
 		showPage(currentPage);
 	}
 
-	private void showPage(IWizardPage<InstallerConfig> pageToShow)
+	private void showPage(final IWizardPage<InstallerConfig> pageToShow)
 	{
 		currentPage = pageToShow;
 
@@ -111,6 +114,19 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		wizardContentPanel.add(currentPage.getWizardUI());
 
 		m_caption.setText(currentPage.getPageTitle());
+
+		if (pageToShow.getWidgetToFocus() != null)
+		{
+			Scheduler.get().scheduleDeferred(new ScheduledCommand()
+			{
+
+				@Override
+				public void execute()
+				{
+					pageToShow.getWidgetToFocus().setFocus(true);
+				}
+			});
+		}
 	}
 
 	@Override
@@ -147,12 +163,12 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 	{
 		if (!currentPage.isValid())
 			return;
-		
+
 		currentPage.save();
-		
+
 		showStatusIndicator(AppUtil.getAppResource().pleaseWait());
 		finishButton.setEnabled(false);
-		
+
 		if (configPage.getDeploymentType().equals("upgrade"))
 		{
 			showStatusIndicator(AppUtil.getAppResource().upgradePleaseWait());
@@ -323,7 +339,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 			AppUtil.getInstallService().createDatabase(config.getDatabase(), new CreateDatabaseCallback());
 		}
 	}
-	
+
 	class CreateDatabaseCallback implements AsyncCallback<Void>
 	{
 
@@ -378,7 +394,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		{
 			loadingWidget.setText(AppUtil.getAppResource().startingServer());
 			AppUtil.getInstallService().startFilrServer(new StartFilrCallback());
-			
+
 			if (configPage.getDeploymentType() != null)
 				AppUtil.getInstallService().markConfigurationDone(configPage.getDeploymentType(), new MarkDeploymentDoneCallback());
 		}
@@ -407,7 +423,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 			ConfigWizard.this.hide(true);
 		}
 	}
-	
+
 	class MarkDeploymentDoneCallback implements AsyncCallback<Void>
 	{
 

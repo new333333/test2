@@ -10,6 +10,7 @@ import org.kabling.teaming.install.shared.InstallerConfig;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
@@ -121,7 +122,7 @@ public class PasswordPage implements IWizardPage<InstallerConfig>
 				// We only need to go through the data in "Installed" configuration
 				for (DatabaseConfig config : configList)
 				{
-					if (config.getId().equals("Installed"))
+					if (config.getId().equals("MySQL_Default"))
 					{
 						userTextBox.setText(config.getResourceUserName());
 					}
@@ -142,7 +143,7 @@ public class PasswordPage implements IWizardPage<InstallerConfig>
 		{
 			for (DatabaseConfig config : configList)
 			{
-				if (config.getId().equals("Installed"))
+				if (config.getId().equals("MySQL_Default"))
 				{
 					config.setResourcePassword(userPwdTextBox.getText());
 					config.setResourceUserName(userTextBox.getText());
@@ -205,5 +206,11 @@ public class PasswordPage implements IWizardPage<InstallerConfig>
 	public IWizardPage<InstallerConfig> getNextPage()
 	{
 		return null;
+	}
+
+	@Override
+	public FocusWidget getWidgetToFocus()
+	{
+		return userTextBox;
 	}
 }
