@@ -40,6 +40,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -48,6 +49,7 @@ import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.rest.v1.model.AccessRole;
 import org.kablink.teaming.rest.v1.model.EntityId;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
 import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
@@ -60,6 +62,8 @@ import org.kablink.teaming.rest.v1.model.SearchResultTree;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.Share;
 import org.kablink.teaming.rest.v1.model.Tag;
+import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
@@ -197,6 +201,14 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         org.kablink.teaming.domain.FolderEntry hEntry = _getFolderEntry(id);
         org.kablink.teaming.domain.HistoryStamp reservation = hEntry.getReservation();
         return ResourceUtil.buildHistoryStamp(reservation);
+    }
+
+    @GET
+    @Path("{id}/access_role")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public AccessRole getAccessRole(@PathParam("id") long id) {
+        org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
+        return getAccessRole(entry);
     }
 
     @PUT

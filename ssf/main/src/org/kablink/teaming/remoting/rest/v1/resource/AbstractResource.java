@@ -54,7 +54,9 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
@@ -66,8 +68,10 @@ import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.HttpHeaders;
@@ -90,6 +94,18 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     ServletContext context;
 
     protected Log logger = LogFactory.getLog(getClass());
+
+    private AccessControlManager accessControlManager;
+
+    public AccessControlManager getAccessControlManager() {
+        if(accessControlManager == null)
+            accessControlManager = (AccessControlManager) SpringContextUtil.getBean("accessControlManager");
+        return accessControlManager;
+    }
+
+    public void setAccessControlManager(AccessControlManager accessControlManager) {
+        this.accessControlManager = accessControlManager;
+    }
 
     protected ServletContext getServletContext() {
         return context;
@@ -1196,4 +1212,83 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }
+
+    protected AccessRole getAccessRole(org.kablink.teaming.domain.FolderEntry entry) {
+        AccessControlManager accessControlManager = getAccessControlManager();
+        User loggedInUser = getLoggedInUser();
+
+        ShareItem.Role foundRole = null;
+        ShareItem.Role [] roles = new ShareItem.Role[] {ShareItem.Role.CONTRIBUTOR, ShareItem.Role.EDITOR, ShareItem.Role.VIEWER};
+        for (ShareItem.Role role : roles) {
+            WorkAreaOperation[] rights = role.getWorkAreaOperations();
+            boolean match = true;
+            for (WorkAreaOperation operation : rights) {
+                if (!accessControlManager.testOperation(loggedInUser, entry, operation)) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                foundRole = role;
+                break;
+            }
+        }
+
+        AccessRole accessRole = new AccessRole();
+        if (foundRole!=null) {
+            accessRole.setRole(foundRole.name());
+            accessRole.setCanShareInternal(accessControlManager.testOperation(loggedInUser, entry, WorkAreaOperation.ALLOW_SHARING_INTERNAL));
+            accessRole.setCanShareExternal(accessControlManager.testOperation(loggedInUser, entry, WorkAreaOperation.ALLOW_SHARING_EXTERNAL));
+            accessRole.setCanSharePublic(accessControlManager.testOperation(loggedInUser, entry, WorkAreaOperation.ALLOW_SHARING_PUBLIC));
+            accessRole.setCanShareForward(accessControlManager.testOperation(loggedInUser, entry, WorkAreaOperation.ALLOW_SHARING_FORWARD));
+        } else {
+            accessRole.setRole(ShareItem.Role.NONE.name());
+            accessRole.setCanShareInternal(false);
+            accessRole.setCanShareExternal(false);
+            accessRole.setCanSharePublic(false);
+            accessRole.setCanShareForward(false);
+        }
+
+        return accessRole;
+    }
+
+    protected AccessRole getAccessRole(org.kablink.teaming.domain.Binder binder) {
+        AccessControlManager accessControlManager = getAccessControlManager();
+        User loggedInUser = getLoggedInUser();
+
+        ShareItem.Role foundRole = null;
+        ShareItem.Role [] roles = new ShareItem.Role[] {ShareItem.Role.CONTRIBUTOR, ShareItem.Role.EDITOR, ShareItem.Role.VIEWER};
+        for (ShareItem.Role role : roles) {
+            WorkAreaOperation[] rights = role.getWorkAreaOperations();
+            boolean match = true;
+            for (WorkAreaOperation operation : rights) {
+                if (!accessControlManager.testOperation(loggedInUser, binder, operation)) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                foundRole = role;
+                break;
+            }
+        }
+
+        AccessRole accessRole = new AccessRole();
+        if (foundRole!=null) {
+            accessRole.setRole(foundRole.name());
+            accessRole.setCanShareInternal(accessControlManager.testOperation(loggedInUser, binder, WorkAreaOperation.ALLOW_SHARING_INTERNAL));
+            accessRole.setCanShareExternal(accessControlManager.testOperation(loggedInUser, binder, WorkAreaOperation.ALLOW_SHARING_EXTERNAL));
+            accessRole.setCanSharePublic(accessControlManager.testOperation(loggedInUser, binder, WorkAreaOperation.ALLOW_SHARING_PUBLIC));
+            accessRole.setCanShareForward(accessControlManager.testOperation(loggedInUser, binder, WorkAreaOperation.ALLOW_SHARING_FORWARD));
+        } else {
+            accessRole.setRole(ShareItem.Role.NONE.name());
+            accessRole.setCanShareInternal(false);
+            accessRole.setCanShareExternal(false);
+            accessRole.setCanSharePublic(false);
+            accessRole.setCanShareForward(false);
+        }
+
+        return accessRole;
+    }
+
 }

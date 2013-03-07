@@ -58,6 +58,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
     private final Set<Class> types;
     
     public static final Class[] cTypes = {
+            AccessRole.class,
             ApplicationBrief.class,
             ApplicationGroupBrief.class,
             AverageRating.class,
