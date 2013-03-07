@@ -130,9 +130,10 @@ public class JitsZoneConfigDlg extends DlgBox
 			
 			hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
-			hPanel.setSpacing( 4 );
+			hPanel.setSpacing( 0 );
 			
 			intervalLabel = new Label( messages.jitsZoneConfigDlg_MaxWaitLabel() );
+			intervalLabel.addStyleName( "marginleft3" );
 			hPanel.add( intervalLabel );
 			
 			m_maxWaitTimeTextBox = new TextBox();
@@ -141,6 +142,8 @@ public class JitsZoneConfigDlg extends DlgBox
 			hPanel.add( m_maxWaitTimeTextBox );
 			
 			intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+			intervalLabel.addStyleName( "marginleft2px" );
+			intervalLabel.addStyleName( "gray3" );
 			hPanel.add( intervalLabel );
 			
 			mainPanel.add( hPanel );
