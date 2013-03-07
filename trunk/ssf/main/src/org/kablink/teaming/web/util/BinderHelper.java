@@ -3535,7 +3535,7 @@ public class BinderHelper {
 		//See if this is a request to search within the My Files collection
 		if (ObjectKeys.SEARCH_SCOPE_MY_FILES.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
 			//Build the ancilary criteria for searching within the My Files collection
-			Criteria crit = SearchUtils.getMyFilesSearchCriteria(bs, user.getWorkspaceId(), true, true, true, true, true);
+			Criteria crit = SearchUtils.getMyFilesSearchCriteria(bs, user.getWorkspaceId(), true, false, false, false, true);
 			// Perform the search for the binders to search...
 			int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 			Map searchResults = bs.getBinderModule().executeSearchQuery(
