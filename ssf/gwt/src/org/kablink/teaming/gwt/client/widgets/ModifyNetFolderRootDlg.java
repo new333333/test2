@@ -349,7 +349,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					
 				} );
 				
-				table.setWidget( nextRow, 0, testConnectionBtn );
+				table.setHTML( nextRow, 0, "" );
+				table.setWidget( nextRow, 1, testConnectionBtn );
 
 				// Add a panel that will display "Testing connection..." message
 				{

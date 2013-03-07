@@ -364,7 +364,8 @@ public class ModifyNetFolderDlg extends DlgBox
 				
 			} );
 			
-			table.setWidget( nextRow, 0, testConnectionBtn );
+				table.setHTML( nextRow, 0, "" );
+				table.setWidget( nextRow, 1, testConnectionBtn );
 
 			// Add a panel that will display "Testing connection..." message
 			{
@@ -383,7 +384,7 @@ public class ModifyNetFolderDlg extends DlgBox
 				label = new InlineLabel( GwtTeaming.getMessages().testConnection_InProgressLabel() );
 				m_inProgressPanel.add( label );
 				
-				table.setWidget( nextRow, 1, m_inProgressPanel );
+				table.setWidget( nextRow, 2, m_inProgressPanel );
 			}
 			
 			++nextRow;
@@ -398,6 +399,7 @@ public class ModifyNetFolderDlg extends DlgBox
 			cellFormatter.setColSpan( nextRow, 0, 2 );
 			m_indexContentCkbox = new CheckBox( messages.modifyNetFolderDlg_IndexContentLabel() );
 			tmpPanel = new FlowPanel();
+			tmpPanel.addStyleName( "margintop3" );
 			tmpPanel.add( m_indexContentCkbox );
 			table.setWidget( nextRow, 0, tmpPanel );
 			++nextRow;
@@ -412,6 +414,7 @@ public class ModifyNetFolderDlg extends DlgBox
 			cellFormatter.setColSpan( nextRow, 0, 2 );
 			m_jitsEnabledCkbox = new CheckBox( messages.modifyNetFolderDlg_EnableJitsLabel() );
 			tmpPanel = new FlowPanel();
+			tmpPanel.addStyleName( "margintop3" );
 			tmpPanel.add( m_jitsEnabledCkbox );
 			table.setWidget( nextRow, 0, tmpPanel );
 			++nextRow;
@@ -425,9 +428,11 @@ public class ModifyNetFolderDlg extends DlgBox
 
 				hPanel = new HorizontalPanel();
 				hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
-				hPanel.setSpacing( 4 );
+				hPanel.setSpacing( 0 );
 				
 				intervalLabel = new Label( messages.modifyNetFolderDlg_JitsResultsMaxAgeLabel() );
+				intervalLabel.addStyleName( "marginleft3" );
+
 				hPanel.add( intervalLabel );
 				
 				m_jitsResultsMaxAge = new TextBox();
@@ -436,6 +441,8 @@ public class ModifyNetFolderDlg extends DlgBox
 				hPanel.add( m_jitsResultsMaxAge );
 				
 				intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+				intervalLabel.addStyleName( "marginleft2px" );
+				intervalLabel.addStyleName( "gray3" );
 				hPanel.add( intervalLabel );
 				table.setWidget( nextRow, 0, hPanel );
 				++nextRow;
@@ -450,9 +457,11 @@ public class ModifyNetFolderDlg extends DlgBox
 
 				hPanel = new HorizontalPanel();
 				hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
-				hPanel.setSpacing( 4 );
+				hPanel.setSpacing( 0 );
 				
 				intervalLabel = new Label( messages.modifyNetFolderDlg_JitsAclMaxAgeLabel() );
+				intervalLabel.addStyleName( "marginleft3" );
+
 				hPanel.add( intervalLabel );
 				
 				m_jitsAclMaxAge = new TextBox();
@@ -461,6 +470,8 @@ public class ModifyNetFolderDlg extends DlgBox
 				hPanel.add( m_jitsAclMaxAge );
 				
 				intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+				intervalLabel.addStyleName( "marginleft2px" );
+				intervalLabel.addStyleName( "gray3" );
 				hPanel.add( intervalLabel );
 				table.setWidget( nextRow, 0, hPanel );
 				++nextRow;
