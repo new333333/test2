@@ -102,7 +102,7 @@
 		namespace:                          '${ss_namespace}',
 		productName:						'${productName}',
 		promptForLogin:						'${promptForLogin}',
-		quotasDiskMessage:					'${ss_quotaMessage}',
+		quotasDiskMessage:					'<ssf:escapeJavaScript>${ss_quotaMessage}</ssf:escapeJavaScript>',
 		quotasDiskSpacedUsed:				'${ssDiskSpaceUsed}',
 		quotasUserMaximum:					'${ssDiskQuota}',
 		recentPlaceSearchUrl:				'<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true"><ssf:param name="operation" value="viewPage"/></ssf:url></ssf:escapeJavaScript>',

@@ -32,6 +32,10 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.util.EntityId;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -41,9 +45,13 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * folder setting on the currently selected users in the personal
  * workspace binder.  This reverts these users to the zone setting.
  * 
+ * See the definition of the SelectedEntriesEventBase class for how and
+ * when an EntityId (or List<EntityId>) should be passed into the
+ * construction of this class.
+ * 
  * @author drfoster@novell.com
  */
-public class ClearSelectedUsersAdHocFoldersEvent extends VibeEventBase<ClearSelectedUsersAdHocFoldersEvent.Handler> {
+public class ClearSelectedUsersAdHocFoldersEvent extends SelectedEntriesEventBase<ClearSelectedUsersAdHocFoldersEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
     public Long m_workspaceId;	// The ID of the personal workspaces binder.
@@ -59,6 +67,7 @@ public class ClearSelectedUsersAdHocFoldersEvent extends VibeEventBase<ClearSele
 	 * Class constructor.
 	 */
 	public ClearSelectedUsersAdHocFoldersEvent() {
+		// Initialize the super class.
 		super();
 	}
 	
@@ -66,10 +75,40 @@ public class ClearSelectedUsersAdHocFoldersEvent extends VibeEventBase<ClearSele
 	 * Class constructor.
 	 * 
 	 * @param workspaceId
+	 * @param selectedEntityId
+	 */
+	public ClearSelectedUsersAdHocFoldersEvent(Long workspaceId, EntityId selectedEntityId) {
+		// Initialize this object...
+		this();
+
+		// ...and store the parameters.
+		setWorkspaceId(     workspaceId     );
+		setSelectedEntityId(selectedEntityId);
+	}
+
+	/**
+	 * Class constructor.
+	 * 
+	 * @param workspaceId
+	 * @param selectedEntities
+	 */
+	public ClearSelectedUsersAdHocFoldersEvent(Long workspaceId, List<EntityId> selectedEntities) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameters.
+		setWorkspaceId(     workspaceId     );
+		setSelectedEntities(selectedEntities);
+	}
+
+	/**
+	 * Class constructor.
+	 * 
+	 * @param workspaceId
 	 */
 	public ClearSelectedUsersAdHocFoldersEvent(Long workspaceId) {
-		super();
-		m_workspaceId = workspaceId;
+		// Initialize this object.
+		this(workspaceId, ((List<EntityId>) null));
 	}
 
 	/**

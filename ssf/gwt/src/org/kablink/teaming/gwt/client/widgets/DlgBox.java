@@ -311,6 +311,7 @@ public abstract class DlgBox extends PopupPanel
 		
 		// Create a panel where the error panel and the content panel live.
 		m_bodyPanel = new FlowPanel();
+		m_bodyPanel.addStyleName( "teamingDlgBoxBody" );
 		panel.add( m_bodyPanel );
 		
 		// Create a panel where errors can be displayed.

@@ -79,6 +79,8 @@ import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.AccountInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.CollectionType;
@@ -103,6 +105,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -186,6 +189,11 @@ public class GwtMenuHelper {
 	private final static String WHATS_NEW				= "whatsnew";
 	private final static String WHO_HAS_ACCESS			= "whohasaccess";
 	private final static String WORKFLOW_HISTORY_REPORT	= "workflowHistoryReport";
+	
+	// Controls whether WebDAV information shows up in footers.
+	// DRF (20130225):  Bug 805858:  Disabled these as a per a
+	// recommendation from Jong.
+	private final static boolean INCLUDE_FOOTER_WEBDAV_URLS	= false;
 
 	/*
 	 * Inhibits this class from being instantiated. 
@@ -750,6 +758,63 @@ public class GwtMenuHelper {
 		}
 	}
 	
+	/*
+	 * Constructs the ToolbarItems for action menu on individual users
+	 * in the Manage Users dialog.
+	 */
+	private static void constructEntryManageUserItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long userId) {
+		// Add a user properties item.
+		ToolbarItem manageUserTBI = new ToolbarItem("1_userProperties");
+		markTBITitle(manageUserTBI, "toolbar.details.userProperties");
+		markTBIEvent(manageUserTBI, TeamingEvents.INVOKE_USER_PROPERTIES_DLG);
+		entryToolbar.addNestedItem(manageUserTBI);
+		
+		// Are we re in filr mode?
+		if (Utils.checkIfFilr()) {
+			try {
+				// Yes!  Can we determine the user's current adHoc folder
+				// access?
+				UserPropertiesRpcResponseData	upData = GwtViewHelper.getUserProperties(bs, request, userId);
+				AccountInfo						ai     = upData.getAccountInfo();
+				
+				// Yes! Add a separator after the user properties item...
+				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
+
+				// ...and if they have adHoc folders...
+				if (ai.hasAdHocFolders()) {
+					// ...add the disable users adHoc folders item...
+					manageUserTBI = new ToolbarItem("1_disableSelectedAdHoc");
+					markTBITitle(manageUserTBI, "toolbar.disable.user.adHoc.perUser");
+					markTBIEvent(manageUserTBI, TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS);
+					entryToolbar.addNestedItem(manageUserTBI);
+				}
+				
+				else {
+					// ...otherwise, if they don't have adHoc folders,
+					// ...add the enable users adHoc folders item...
+					manageUserTBI = new ToolbarItem("1_enableSelectedAdHoc");
+					markTBITitle(manageUserTBI, "toolbar.enable.user.adHoc.perUser");
+					markTBIEvent(manageUserTBI, TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS);
+					entryToolbar.addNestedItem(manageUserTBI);
+				}
+
+				// ...if they currently have a per user adHoc folder setting...
+				if (ai.isPerUserAdHoc()) {
+					// ...and add the clear users adHoc folders item.
+					manageUserTBI = new ToolbarItem("1_clearSelectedAdHoc");
+					markTBITitle(manageUserTBI, "toolbar.clear.user.adHoc");
+					markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS);
+					entryToolbar.addNestedItem(manageUserTBI);
+				}
+			}
+			catch (Exception ex) {
+				// If we can't access the user properties information,
+				// we simply don't add options to adjust their adHoc
+				// folder access.
+			}
+		}
+	}
+
 	/*
 	 * Constructs a ToolbarItem for the 'Manage Shares...' menu item.
 	 */
@@ -1317,18 +1382,6 @@ public class GwtMenuHelper {
 		entryToolbar.addNestedItem(shareTBI);
 	}
 	
-	/*
-	 * Constructs a ToolbarItem for running the user properties dialog
-	 * on a user.
-	 */
-	private static void constructEntryUserPropertiesItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
-		// Add a Manage User item.
-		ToolbarItem manageUserTBI = new ToolbarItem("1_userProperties");
-		markTBITitle(manageUserTBI, "toolbar.details.userProperties");
-		markTBIEvent(manageUserTBI, TeamingEvents.INVOKE_USER_PROPERTIES_DLG);
-		entryToolbar.addNestedItem(manageUserTBI);
-	}
-
 	/*
 	 * Constructs a ToolbarItem for view operations against a calendar
 	 * folder.
@@ -1935,17 +1988,27 @@ public class GwtMenuHelper {
 		if (!(fe.isPreDeleted())) {
 			// No!  Generate the toolbar item for the permalink to the
 			// entry.
-			FileAttachment	fa                 = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
-			Binder			feBinder           = fe.getParentBinder();
-			String			webDavUrl          = ((null == fa) ? null : SsfsUtil.getInternalAttachmentUrl(request, feBinder, fe, fa));
-			boolean			hasWebDavUrl       = MiscUtil.hasString(webDavUrl     );
-			boolean			hasEvents          = MiscUtil.hasItems( fe.getEvents());
+			FileAttachment	fa        = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
+			Binder			feBinder  = fe.getParentBinder();
+			boolean			hasEvents = MiscUtil.hasItems(fe.getEvents());
 
-			String key;
-			if      (hasEvents && hasWebDavUrl) key = "toolbar.menu.folderEntryPermalink.iCal.webdav";
-			else if (hasEvents)                 key = "toolbar.menu.folderEntryPermalink.iCal";
-			else if (hasWebDavUrl)              key = "toolbar.menu.folderEntryPermalink.webdav";
-			else                                key = "toolbar.menu.folderEntryPermalink";
+			String	key;
+			String	webDavUrl;
+			boolean	hasWebDavUrl;
+			if (INCLUDE_FOOTER_WEBDAV_URLS) {
+				webDavUrl    = ((null == fa) ? null : SsfsUtil.getInternalAttachmentUrl(request, feBinder, fe, fa));
+				hasWebDavUrl = MiscUtil.hasString(webDavUrl     );
+				if      (hasEvents && hasWebDavUrl) key = "toolbar.menu.folderEntryPermalink.iCal.webdav";
+				else if (hasEvents)                 key = "toolbar.menu.folderEntryPermalink.iCal";
+				else if (hasWebDavUrl)              key = "toolbar.menu.folderEntryPermalink.webdav";
+				else                                key = "toolbar.menu.folderEntryPermalink";
+			}
+			else {
+				webDavUrl    = null;
+				hasWebDavUrl = false;
+				if (hasEvents) key = "toolbar.menu.folderEntryPermalink.iCal";
+				else           key = "toolbar.menu.folderEntryPermalink";
+			}
 			String permaLink = PermaLinkUtil.getPermalink(request, fe);
 			ToolbarItem permalinkTBI = new ToolbarItem(PERMALINK);
 			markTBITitle(permalinkTBI, key          );
@@ -1995,12 +2058,21 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs the ToolbarItem's for the footer on a folder.
 	 */
+	@SuppressWarnings("unused")
 	private static void constructFooterFolderItems(ToolbarItem footerToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
 		// Construct the permalink item...
 		String key;
-		if (Utils.checkIfFilr())
-		     key = "toolbar.menu.folderPermalink.filr";
-		else key = "toolbar.menu.folderPermalink";
+		boolean isFilr = Utils.checkIfFilr();
+		if (INCLUDE_FOOTER_WEBDAV_URLS) {
+			if (isFilr)
+			     key = "toolbar.menu.folderPermalink.filr";
+			else key = "toolbar.menu.folderPermalink";
+		}
+		else {
+			if (isFilr)
+			     key = "toolbar.menu.folderPermalink.filr.noWebDAV";
+			else key = "toolbar.menu.folderPermalink.noWebDAV";
+		}
 		String permaLink = PermaLinkUtil.getPermalink(request, folder);
 		ToolbarItem permalinkTBI = new ToolbarItem(PERMALINK);
 		markTBITitle(permalinkTBI, key                      );
@@ -2008,7 +2080,7 @@ public class GwtMenuHelper {
 		footerToolbar.addNestedItem(permalinkTBI            );
 
 		// ...for file folders...
-		if (folder.isLibrary()) {
+		if (INCLUDE_FOOTER_WEBDAV_URLS && folder.isLibrary()) {
 			// ...construct any WebDAV items...
 			String webdavUrl = SsfsUtil.getLibraryBinderUrl(request, folder);
 			if (MiscUtil.hasString(webdavUrl)) {
@@ -2490,8 +2562,9 @@ public class GwtMenuHelper {
 			// Are we working on an entity from the administration
 			// console's manage users dialog?
 			if (binderInfo.isBinderProfilesRootWSManagement()) {
-				// Yes!
-				constructEntryUserPropertiesItem(actionToolbar, bs, request);
+				// Yes!  Add the items for the action menu on
+				// individual users.
+				constructEntryManageUserItems(actionToolbar, bs, request, entityId.getEntityId());
 			}
 			
 			else {
@@ -2637,7 +2710,7 @@ public class GwtMenuHelper {
 					if ((isCollectionMyFiles && (!useHomeAsMyFiles)) && (!isCollectionNetFolders)) {
 						constructEntryDeleteItem(          entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
 					}
-					if (isCollectionMyFiles && supportsApplets && (null != GwtServerHelper.getMyFilesContainerId(bs))) {
+					if (isCollectionMyFiles && supportsApplets && (null != GwtServerHelper.getMyFilesContainerId(bs)) && isAddEntryAllowed()) {
 						constructEntryDropBoxItem(         entryToolbar                                                                                               );
 					}
 					constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null), ct                 );
@@ -2654,9 +2727,8 @@ public class GwtMenuHelper {
 				if ((!isMirrored) || isMirroredConfigured) {
 					// Yes!  Can the user can add entries to the
 					// folder?
-					FolderModule fm			= bs.getFolderModule();
-					boolean      hasVT      = MiscUtil.hasString(viewType);
-					boolean      addAllowed	= fm.testAccess(folder, FolderOperation.addEntry);
+					boolean hasVT      = MiscUtil.hasString(viewType);
+					boolean	addAllowed = isAddEntryAllowed(bs, folder);
 					if (addAllowed) {				
 						// Yes!  If the folder is a guest book...
 						if (hasVT && isViewGuestBook(viewType)) {
@@ -3314,6 +3386,13 @@ public class GwtMenuHelper {
 				}
 			}
 			
+			// Add a separator if necessary...
+			needSeparator = addNestedSeparatorIfNeeded(dropdownTBI, needSeparator);
+			actionTBI = new ToolbarItem(PERMALINK);
+			markTBITitle(   actionTBI, "toolbar.menu.showPermalinks"     );
+			markTBIEvent(   actionTBI, TeamingEvents.SHOW_VIEW_PERMALINKS);
+			dropdownTBI.addNestedItem(actionTBI);
+			
 			// If we added anything to the more toolbar...
 			if (!(dropdownTBI.getNestedItemsList().isEmpty())) {
 				// ...and it to the view entry toolbar.
@@ -3376,6 +3455,26 @@ public class GwtMenuHelper {
 		finally {
 			SimpleProfiler.stop("GwtMenuHelper.getViewEntryToolbarItems()");
 		}
+	}
+
+	/*
+	 * Returns true if we were given a folder AND the user has rights
+	 * to add entries to that folder AND if we're not running with an
+	 * expired license.
+	 */
+	private static boolean isAddEntryAllowed(AllModulesInjected bs, Folder folder) {
+		boolean reply = ((null == folder) || bs.getFolderModule().testAccess(folder, FolderOperation.addEntry));
+		if (reply) {
+			if (Utils.checkIfFilr() || ReleaseInfo.isLicenseRequiredEdition()) {
+				reply = (!(LicenseChecker.isLicenseExpired()));
+			}
+		}
+		return reply;
+	}
+	
+	private static boolean isAddEntryAllowed() {
+		// Always use the initial form of the method.
+		return isAddEntryAllowed(null, null);
 	}
 	
 	/*

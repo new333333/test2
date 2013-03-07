@@ -42,8 +42,11 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ChangeFavoriteStateEvent;
+import org.kablink.teaming.gwt.client.event.ClearSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
+import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeRenameEntityEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
@@ -349,21 +352,24 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 						VibeEventBase<?> event;
 						Long binderId = m_binderInfo.getBinderIdAsLong();
 						switch (simpleEvent) {
-						default:                                  event = EventHelper.createSimpleEvent(          simpleEvent  ); break;
-						case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(binderId, eid); break;
-						case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           binderId, eid); break;
-						case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         binderId, eid); break;
-						case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           binderId, eid); break;
-						case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         binderId, eid); break;
-						case MANAGE_SHARES_SELECTED_ENTRIES:	  event = new ManageSharesSelectedEntriesEvent(   binderId, eid); break;
-						case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       binderId, eid); break;
-						case MARK_UNREAD_SELECTED_ENTRIES:        event = new MarkUnreadSelectedEntriesEvent(     binderId, eid); break;
-						case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           binderId, eid); break;
-						case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          binderId, eid); break;
-						case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          binderId, eid); break;
-						case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      binderId, eid); break;
-						case VIEW_SELECTED_ENTRY:                 event = new ViewSelectedEntryEvent(             binderId, eid); break;
-						case VIEW_WHO_HAS_ACCESS:                 event = new ViewWhoHasAccessEvent(              binderId, eid); break;
+						default:                                    event = EventHelper.createSimpleEvent(            simpleEvent  ); break;
+						case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:    event = new ChangeEntryTypeSelectedEntriesEvent(  binderId, eid); break;
+						case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:    event = new ClearSelectedUsersAdHocFoldersEvent(  binderId, eid); break;
+						case COPY_SELECTED_ENTRIES:                 event = new CopySelectedEntriesEvent(             binderId, eid); break;
+						case DELETE_SELECTED_ENTRIES:               event = new DeleteSelectedEntriesEvent(           binderId, eid); break;
+						case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:  event = new DisableSelectedUsersAdHocFoldersEvent(binderId, eid); break;
+						case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:   event = new EnableSelectedUsersAdHocFoldersEvent( binderId, eid); break;
+						case LOCK_SELECTED_ENTRIES:                 event = new LockSelectedEntriesEvent(             binderId, eid); break;
+						case UNLOCK_SELECTED_ENTRIES:               event = new UnlockSelectedEntriesEvent(           binderId, eid); break;
+						case MANAGE_SHARES_SELECTED_ENTRIES:	    event = new ManageSharesSelectedEntriesEvent(     binderId, eid); break;
+						case MARK_READ_SELECTED_ENTRIES:            event = new MarkReadSelectedEntriesEvent(         binderId, eid); break;
+						case MARK_UNREAD_SELECTED_ENTRIES:          event = new MarkUnreadSelectedEntriesEvent(       binderId, eid); break;
+						case MOVE_SELECTED_ENTRIES:                 event = new MoveSelectedEntriesEvent(             binderId, eid); break;
+						case PURGE_SELECTED_ENTRIES:                event = new PurgeSelectedEntriesEvent(            binderId, eid); break;
+						case SHARE_SELECTED_ENTRIES:                event = new ShareSelectedEntriesEvent(            binderId, eid); break;
+						case SUBSCRIBE_SELECTED_ENTRIES:            event = new SubscribeSelectedEntriesEvent(        binderId, eid); break;
+						case VIEW_SELECTED_ENTRY:                   event = new ViewSelectedEntryEvent(               binderId, eid); break;
+						case VIEW_WHO_HAS_ACCESS:                   event = new ViewWhoHasAccessEvent(                binderId, eid); break;
 						
 						case CHANGE_FAVORITE_STATE:
 							event = new ChangeFavoriteStateEvent(

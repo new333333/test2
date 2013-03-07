@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -54,29 +54,41 @@ public class BrowseHierarchyEvent extends VibeEventBase<BrowseHierarchyEvent.Han
 	public interface Handler extends EventHandler {
 		void onBrowseHierarchy(BrowseHierarchyEvent event);
 	}
-	
+
 	/**
-	 * Class constructor.
+	 * Constructor method.
+	 */
+	public BrowseHierarchyEvent() {
+		// Initialize the super class.
+		super();
+	}
+
+	/**
+	 * Constructor method.
 	 * 
 	 * @param obhi	May be null.
 	 */
 	public BrowseHierarchyEvent(OnBrowseHierarchyInfo obhi) {
-		super();
-		m_obhi = obhi;
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameter.
+		setOnBrowseHierarchyInfo(obhi);
 	}
 	
-	public BrowseHierarchyEvent() {
-		// Always use the initial form of the constructor.
-		this(null);
-	}
-
 	/**
-	 * Get'er / Set'er methods.
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public OnBrowseHierarchyInfo getOnBrowseHierarchyInfo()                           {return m_obhi;}
-	public void                  setOnBrowseHierarchyInfo(OnBrowseHierarchyInfo obhi) {m_obhi = obhi;}
+	public OnBrowseHierarchyInfo getOnBrowseHierarchyInfo() {return m_obhi;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setOnBrowseHierarchyInfo(OnBrowseHierarchyInfo obhi) {m_obhi = obhi;}
 	
 	/**
 	 * Dispatches this event when one is triggered.

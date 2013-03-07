@@ -368,9 +368,17 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	/*
 	 * Returns the string to use for file's date.
 	 */
-	private String getFileDate(File file) {
+	private String getFileUTC(File file) {
 		JsDate fileDate = ((null == file) ? null : file.getLastModifiedDate());
 		return ((null == fileDate) ? null : fileDate.toUTCString());
+	}
+
+	/*
+	 * Returns the Long to use for file's date.
+	 */
+	private Long getFileUTCMS(File file) {
+		JsDate fileDate = ((null == file) ? null : file.getLastModifiedDate());
+		return ((null == fileDate) ? null : new Long((long) fileDate.getTime()));
 	}
 
 	/*
@@ -1042,7 +1050,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			m_hintLabel.setText(m_messages.addFilesHtml5PopupBusy(file.getName(), ++m_readThis, m_readTotal));
 			try {
 				// ...and upload it by blobs.
-				m_fileBlob = new FileBlob(file.getName(), getFileDate(file), file.getSize(), new Date().getTime());
+				m_fileBlob = new FileBlob(file.getName(), getFileUTC(file), getFileUTCMS(file), file.getSize(), new Date().getTime());
 				readNextBlobNow(file.slice(m_fileBlob.getBlobStart(), m_fileBlob.getBlobSize()));
 			}
 			

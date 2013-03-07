@@ -1541,6 +1541,13 @@ public class GwtUIHelper {
 			String showCollection = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SHOW_COLLECTION, "");
 			if (MiscUtil.hasString(showCollection)) {
 				// ...put that out.
+				int sc = Integer.parseInt(showCollection);
+				if (PermaLinkUtil.COLLECTION_USER_DEFAULT == sc) {
+					if (SearchUtils.userCanAccessMyFiles(bs, RequestContextHolder.getRequestContext().getUser()))
+					     sc = PermaLinkUtil.COLLECTION_MY_FILES;
+					else sc = PermaLinkUtil.COLLECTION_SHARED_WITH_ME;
+					showCollection = String.valueOf(sc);
+				}
 				model.put(WebKeys.URL_SHOW_COLLECTION, showCollection);
 			}
 		}

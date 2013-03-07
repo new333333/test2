@@ -1197,6 +1197,7 @@ body, table td, select
 	left: 10px;
 	position: absolute;
 	top: 12px;
+	z-index: 1901;
 }
 
 .dlgBox_statusMsg
@@ -2930,7 +2931,7 @@ body, table td, select
 	-webkit-border-radius: 15px;
     text-align: center !important;
 	min-width: 70px;
-	}
+}
 
 .teamingDlgBoxFooter .gwt-Button:hover {
 	color: #135c8f !important;
@@ -3047,6 +3048,12 @@ body, table td, select
 	margin: 10px;
 }
 
+.teamingDlgBoxBody
+{
+	position: relative;
+	z-index: 1950;
+}
+
 /* Styles for the footer of a dialog box. */
 .teamingDlgBoxFooter
 {
@@ -3064,6 +3071,7 @@ body, table td, select
 	-moz-border-radius-bottomright: 3px;
 	-webkit-border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px;
+	z-index: 1900;
 }
 
 /* Styles for the header in a dialog box. */

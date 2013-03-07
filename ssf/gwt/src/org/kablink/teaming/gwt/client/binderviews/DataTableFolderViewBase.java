@@ -146,13 +146,13 @@ import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.widgets.VibeSimplePager;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.ValueUpdater;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -174,7 +174,6 @@ import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.cellview.client.RowStyles;
-import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -238,7 +237,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private ColumnWidth					m_actionMenuColumnWidth;	//
 	private ColumnWidth					m_100PctColumnWidth;		//
 	private ColumnWidth					m_defaultColumnWidth;		//
-	private FolderRowPager 				m_dataTablePager;			// Pager widgets at the bottom of the data table.
 	private List<FolderColumn>			m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private List<Long>					m_contributorIds;			//
@@ -248,6 +246,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private String						m_folderStyles;				// Specific style(s) for the for the folders that extend this.
 	private String						m_quickFilter;				// Any quick filter that's active.
 	private VibeDataGrid<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
+	private VibeSimplePager 			m_dataTablePager;			// Pager widgets at the bottom of the data table.
 	
 	protected GwtTeamingDataTableImageBundle	m_images;		//
 	protected GwtTeamingFilrImageBundle			m_filrImages;	//
@@ -436,49 +435,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		}
 	}
 
-	/*
-	 * Inner class used to provide simple pager for FolderRow's.
-	 */
-	private final static SimplePager.Resources SIMPLE_PAGER_RESOURCES = GWT.create(SimplePager.Resources.class);
-	private class FolderRowPager extends SimplePager {
-		public FolderRowPager() {
-			// Simply initialize the super class.
-			super(
-				TextLocation.CENTER,
-				SIMPLE_PAGER_RESOURCES,
-				false,	// false -> No fast forward button...
-				0,		//          ...hence no fast forward rows needed.
-				true);	// true -> Show last page button.
-		}
-
-		/**
-		 * Set the page start index.  We override this method to
-		 * fix the problem that the last page display will be
-		 * weird without this.
-		 * 
-		 * Overrides the SimplePager.setPageStart() method.
-		 * 
-		 * @param index
-		 */
-		@Override
-		public void setPageStart(int index) {
-		  if (getDisplay() != null) {
-		    Range range = getDisplay().getVisibleRange();
-		    int pageSize = range.getLength();
-
-		    // Removed the min to show fixed ranges.
-		    // if (isRangeLimited && display.isRowCountExact()) {
-		    //	   index = Math.min(index, display.getRowCount() - pageSize);
-		    // }
-
-		    index = Math.max(0, index);
-		    if (index != range.getStart()) {
-		      getDisplay().setVisibleRange(index, pageSize);
-		    }
-		  }
-		}
-	}
-	
 	/*
 	 * Inner class used to provide row selection for FolderRow's.
 	 */
@@ -1762,9 +1718,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventWorkspaceId = event.getWorkspaceId();
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the clear.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.clearUsersAdHocFolders(
-				EntityId.getLongsFromEntityIds(
-					getSelectedEntityIds()));
+				EntityId.getLongsFromEntityIds(selectedEntityIds),
+				new FullUIReloadEvent());
 		}
 	}
 	
@@ -1952,9 +1912,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventWorkspaceId = event.getWorkspaceId();
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the disable.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.disableUsersAdHocFolders(
-				EntityId.getLongsFromEntityIds(
-					getSelectedEntityIds()));
+				EntityId.getLongsFromEntityIds(selectedEntityIds),
+				new FullUIReloadEvent());
 		}
 	}
 	
@@ -1990,9 +1954,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventWorkspaceId = event.getWorkspaceId();
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the enable.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.enableUsersAdHocFolders(
-				EntityId.getLongsFromEntityIds(
-					getSelectedEntityIds()));
+				EntityId.getLongsFromEntityIds(selectedEntityIds),
+				new FullUIReloadEvent());
 		}
 	}
 	
@@ -2923,7 +2891,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	    m_dataTable.addColumnSortHandler(sortHandler);
 		
 		// Create a pager that lets the user page through the table.
-	    m_dataTablePager = new FolderRowPager();
+	    m_dataTablePager = new VibeSimplePager();
 	    m_dataTablePager.setDisplay(m_dataTable);
 
 	    // Add a selection model so the user can select cells.

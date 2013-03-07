@@ -117,6 +117,7 @@ public class EventHelper {
 		case SIDEBAR_HIDE:                      	reply = new SidebarHideEvent();                   break;
 		case SIDEBAR_SHOW:                      	reply = new SidebarShowEvent();                   break;
 		case SIZE_CHANGED:                      	reply = new SizeChangedEvent();                   break;
+		case SHOW_VIEW_PERMALINKS:                  reply = new ShowViewPermalinksEvent();            break;
 		case TASK_DELETE:                       	reply = new TaskDeleteEvent();                    break;
 		case TASK_HIERARCHY_DISABLED:				reply = new TaskHierarchyDisabledEvent();         break;
 		case TASK_MOVE_DOWN:                    	reply = new TaskMoveDownEvent();                  break;
@@ -1928,6 +1929,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_VIEW_PERMALINKS:
+				// A ShowViewPermalinksEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ShowViewPermalinksEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowViewPermalinksEvent.registerEvent(eventBus, ((ShowViewPermalinksEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SIDEBAR_HIDE:
 				// A SidebarHideEvent!  Can the event handler we were
 				// given handle that?
@@ -2576,6 +2586,7 @@ public class EventHelper {
 			case SHOW_TEAM_ROOT_WORKSPACE:				       hasHandler = (eventHandler instanceof ShowTeamRootWSEvent.Handler);			   	           break;
 			case SHOW_TEAM_WORKSPACE:					       hasHandler = (eventHandler instanceof ShowTeamWSEvent.Handler);			   		           break;
 			case SHOW_TRASH:						           hasHandler = (eventHandler instanceof ShowTrashEvent.Handler);		                       break;
+			case SHOW_VIEW_PERMALINKS:						   hasHandler = (eventHandler instanceof ShowViewPermalinksEvent.Handler);		               break;
 			
 			case HIDE_ACCESSORIES:						       hasHandler = (eventHandler instanceof HideAccessoriesEvent.Handler);		   	               break;
 			case SHOW_ACCESSORIES:						       hasHandler = (eventHandler instanceof ShowAccessoriesEvent.Handler);		   	               break;

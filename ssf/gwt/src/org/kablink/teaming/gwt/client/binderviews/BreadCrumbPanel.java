@@ -60,9 +60,9 @@ import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
+import org.kablink.teaming.gwt.client.util.TreeMode;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
-import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTreeControlClient;
 
 import com.google.gwt.core.client.GWT;

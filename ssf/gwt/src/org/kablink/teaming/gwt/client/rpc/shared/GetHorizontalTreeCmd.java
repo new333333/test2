@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,44 +30,60 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import org.kablink.teaming.gwt.client.util.TreeMode;
 
 /**
- * This class holds all of the information necessary to execute the "get horizontal tree" command.
+ * This class holds all of the information necessary to execute the
+ * 'get horizontal tree' command.
  * 
- * @author jwootton
- *
+ * @author drfoster@novell.com
  */
-public class GetHorizontalTreeCmd extends VibeRpcCmd
-{
-	private String m_binderId;
+public class GetHorizontalTreeCmd extends VibeRpcCmd {
+	private Long		m_binderId;	//
+	private TreeMode	m_treeMode;	//
 	
 	/**
-	 * For GWT serialization, must have a zero param contructor
+	 * Constructor method.
+	 * 
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public GetHorizontalTreeCmd()
-	{
+	public GetHorizontalTreeCmd() {
+		// Initialize the super class.
 		super();
 	}
 	
 	/**
+	 * Constructor method.
 	 * 
+	 * @param binderId
+	 * @param treeMode
 	 */
-	public GetHorizontalTreeCmd( String binderId )
-	{
+	public GetHorizontalTreeCmd(Long binderId, TreeMode treeMode) {
+		// Initialize this object...
 		this();
-		m_binderId = binderId;
+		
+		// ...and store the parameters.
+		setBinderId(binderId);
+		setTreeMode(treeMode);
 	}
 	
 	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public String getBinderId()
-	{
-		return m_binderId;
-	}
+	public Long     getBinderId() {return m_binderId;}
+	public TreeMode getTreeMode() {return m_treeMode;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setBinderId(Long     binderId) {m_binderId = binderId;}
+	public void setTreeMode(TreeMode treeMode) {m_treeMode = treeMode;}
 	
 	/**
 	 * Returns the command's enumeration value.

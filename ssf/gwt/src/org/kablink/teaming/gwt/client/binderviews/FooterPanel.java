@@ -295,20 +295,7 @@ public class FooterPanel extends ToolPanelBase {
 			a.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					// Have we already rendered the data?
-					if (null != m_dataPanel) {
-						// Yes!  Toggle its visibility and force the
-						// container to resize to reflect the new
-						// visibility state of the footer.
-						m_dataPanel.setVisible(!m_dataPanel.isVisible());
-						panelResized();
-					}
-					
-					else {
-						// No, we have yet to render the data!  Render
-						// it now.
-						renderPermalinksAsync();
-					}
+					setFooterVisibleAsync((null == m_dataPanel) || (!(m_dataPanel.isVisible())));
 				}
 			});
 			a.addMouseOutHandler(new MouseOutHandler() {
@@ -500,19 +487,12 @@ public class FooterPanel extends ToolPanelBase {
 		cf.setColSpan(    0, 0, 2 );
 
 		// ...add rows for each item type...
-		boolean showWebDAV = hasWebDAVUrl;
-		if (!showWebDAV) {
-			showWebDAV = (null != m_binderInfo);
-			if (!showWebDAV) {
-				showWebDAV = (!(m_entityId.isEntry()));
-			}
-		}
 		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_PERMALINK),     m_strMap.get(StringIds.KEY_PERMALINK)      );
 		if (hasFileDownloadUrl) {
 			renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_FILE_DOWNLOAD), m_strMap.get(StringIds.KEY_FILE_DOWNLOAD)  );
 		}
 		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),          m_strMap.get(StringIds.KEY_EMAIL_ADDRESSES));
-		if (showWebDAV) {
+		if (hasWebDAVUrl) {
 			StringIds webDavId = ((null != m_binderInfo) ? StringIds.KEY_WEBDAV_FOLDER : StringIds.KEY_WEBDAV_ENTRY);
 			renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_WEBDAV),        m_strMap.get(webDavId)                     );
 		}
@@ -661,6 +641,38 @@ public class FooterPanel extends ToolPanelBase {
 		loadPart1Async();
 	}
 
+	/*
+	 * Asynchronously expands the footer.
+	 */
+	private void setFooterVisibleAsync(final boolean show) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				setFooterVisibleNow(show);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously expands the footer.
+	 */
+	private void setFooterVisibleNow(final boolean show) {
+		// Have we already rendered the data?
+		if (null != m_dataPanel) {
+			// Yes!  Toggle its visibility and force the
+			// container to resize to reflect the new
+			// visibility state of the footer.
+			m_dataPanel.setVisible(show);
+			panelResized();
+		}
+		
+		else {
+			// No, we have yet to render the data!  Render
+			// it now.
+			renderPermalinksAsync();
+		}
+	}
+	
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
@@ -672,17 +684,27 @@ public class FooterPanel extends ToolPanelBase {
 	 * instance of it via the callback.
 	 */
 	private static void doAsyncOperation(
+			// createAsync() parameters.
 			final ResizeComposite	containerResizer,
 			final BinderInfo		binderInfo,
 			final EntityId			entityId,
 			final ToolPanelReady	toolPanelReady,
-			final ToolPanelClient	tpClient) {
+			final ToolPanelClient	tpClient,
+			
+			// expandFooter parameters.
+			final FooterPanel expandFP) {
 		GWT.runAsync(FooterPanel.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				FooterPanel fp = new FooterPanel(containerResizer, binderInfo, entityId, toolPanelReady);
-				tpClient.onSuccess(fp);
+				if (null == expandFP) {
+					FooterPanel fp = new FooterPanel(containerResizer, binderInfo, entityId, toolPanelReady);
+					tpClient.onSuccess(fp);
+				}
+				
+				else {
+					expandFP.setFooterVisibleAsync(true);
+				}
 			}
 			
 			@Override
@@ -703,7 +725,7 @@ public class FooterPanel extends ToolPanelBase {
 	 * @param tpClient
 	 */
 	public static void createAsync(final ResizeComposite containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
-		doAsyncOperation(containerResizer, binderInfo, null, toolPanelReady, tpClient);
+		doAsyncOperation(containerResizer, binderInfo, null, toolPanelReady, tpClient, null);
 	}
 	
 	/**
@@ -716,6 +738,15 @@ public class FooterPanel extends ToolPanelBase {
 	 * @param tpClient
 	 */
 	public static void createAsync(final ResizeComposite containerResizer, final EntityId entityId, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
-		doAsyncOperation(containerResizer, null, entityId, toolPanelReady, tpClient);
+		doAsyncOperation(containerResizer, null, entityId, toolPanelReady, tpClient, null);
+	}
+	
+	/**
+	 * Expands the footer if it is not already expanded.
+	 * 
+	 * @param fp
+	 */
+	public static void expandFooter(FooterPanel fp) {
+		doAsyncOperation(null, null, null, null, null, fp);
 	}
 }

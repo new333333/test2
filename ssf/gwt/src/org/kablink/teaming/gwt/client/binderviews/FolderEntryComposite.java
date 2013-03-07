@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ShowViewPermalinksEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
@@ -116,6 +117,7 @@ public class FolderEntryComposite extends ResizeComposite
 		MoveSelectedEntriesEvent.Handler,
 		PurgeSelectedEntriesEvent.Handler,
 		ShareSelectedEntriesEvent.Handler,
+		ShowViewPermalinksEvent.Handler,
 		SubscribeSelectedEntriesEvent.Handler,
 		UnlockSelectedEntriesEvent.Handler
 {
@@ -175,6 +177,7 @@ public class FolderEntryComposite extends ResizeComposite
 		TeamingEvents.MOVE_SELECTED_ENTRIES,
 		TeamingEvents.PURGE_SELECTED_ENTRIES,
 		TeamingEvents.SHARE_SELECTED_ENTRIES,
+		TeamingEvents.SHOW_VIEW_PERMALINKS,
 		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
 		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 	};
@@ -1232,6 +1235,18 @@ public class FolderEntryComposite extends ResizeComposite
 			// Yes!  Run the share on it.
 			onShareSelectedEntriesAsync(sharedEntities);
 		}
+	}
+
+	/**
+	 * Handles ShowViewPermalinksEvent's received by this class.
+	 * 
+	 * Implements the ShowViewPermalinksEvent.Handler.onShowViewPermalinks() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowViewPermalinks(ShowViewPermalinksEvent event) {
+		FooterPanel.expandFooter(m_footerPanel);
 	}
 
 	/*
