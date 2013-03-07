@@ -249,7 +249,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource entry_task();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/expired_license_icon16.gif")
+	@Source("org/kablink/teaming/gwt/public/images/expired_license_icon16.png")
 	public ImageResource expiredLicenseIcon16();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
