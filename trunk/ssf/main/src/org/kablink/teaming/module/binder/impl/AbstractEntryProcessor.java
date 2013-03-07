@@ -1754,6 +1754,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         //Create separate documents one for each attached file and index them.
         for(FileAttachment fa : fileAttachments) {
         	try {
+                IndexSynchronizationManager.deleteDocuments(new Term(Constants.FILE_ONLY_ID_FIELD, fa.getId()));
         		IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntryFile(binder, entry, fa, tags, skipFileContentIndexing));
            		// Register the index document for indexing.
 	        } catch (Exception ex) {
