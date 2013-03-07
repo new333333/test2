@@ -393,6 +393,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetDefaultActivityStream();
 	String rpcFailure_GetDefaultStorageId();
 	String rpcFailure_GetDiskUsageHtml();
+	String rpcFailure_GetDiskUsageInfo();
 	String rpcFailure_GetFileSyncAppConfiguration();
 	String rpcFailure_GetEntryPermalink();
 	String rpcFailure_GetFavorites();
@@ -1733,6 +1734,10 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Warning_NoEntryActions();
 	String vibeDataTable_Warning_ShareNoRights();
 	String vibeDataTable_WhatsNew();
+	
+	// Strings used by the Vibe simple pager widget.
+	String vibeSimplePager_Of(String start, String end, String size);
+	String vibeSimplePager_OfOver(String start, String end, String size);
 	
 	// String used in the Landing Page
 	String nowFollowingBinder();

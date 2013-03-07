@@ -64,6 +64,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
+import org.kablink.teaming.gwt.client.util.TreeMode;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayBase;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayHorizontal;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayVertical;
@@ -135,60 +136,6 @@ public class WorkspaceTreeControl extends ResizeComposite
 		TeamingEvents.MENU_LOADED,
 	};
 	
-	/**
-	 * The mode this WorkspaceTreeControl is running in.
-	 * 
-	 * HORIZONTAL_BINDER:  Typically used in the Vibe bread crumbs embedded in a folder view.
-	 * HORIZONTAL_POPUP:   Typically used in the Vibe bread crumbs drop down from the main menu.
-	 * VERTICAL:           Typically used in the Vibe sidebar. 
-	 */
-	public enum TreeMode {
-		HORIZONTAL_BINDER,
-		HORIZONTAL_POPUP,
-		VERTICAL;
-		
-		/**
-		 * Returns true if we'redisplaying a horizontal tree and false
-		 * otherwise.
-		 * 
-		 * @return
-		 */
-		public boolean isHorizontal() {
-			return (isHorizontalBinder() || isHorizontalPopup());
-		}
-		
-		/**
-		 * Returns true if we'redisplaying a horizontal binder tree and
-		 * false otherwise.
-		 * 
-		 * @return
-		 */
-		public boolean isHorizontalBinder() {
-			return (TreeMode.HORIZONTAL_BINDER == this);
-		}
-		
-		/**
-		 * Returns true if we'redisplaying a horizontal popup tree and 
-		 * false otherwise.
-		 * 
-		 * @return
-		 */
-		public boolean isHorizontalPopup() {
-			return (TreeMode.HORIZONTAL_POPUP == this);
-		}
-		
-		/**
-		 * Returns true if we'redisplaying a vertical tree and false
-		 * otherwise.
-		 * 
-		 * @return
-		 */
-		public boolean isVertical() {
-			return (TreeMode.VERTICAL == this);
-		}
-		
-	}
-	
 	/*
 	 * Constructs a WorkspaceTreeControl based on the information
 	 * in the RequestInfo object.
@@ -218,7 +165,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 		{
 			boolean isBinder = (TreeMode.HORIZONTAL_BINDER == m_tm);
 			mainPanel.addStyleName("breadCrumb_Browser " + (isBinder ? "breadCrumb_BrowserBinder" : "breadCrumb_BrowserPopup"));
-			GetHorizontalTreeCmd cmd = new GetHorizontalTreeCmd(selectedBinderInfo.getBinderId());
+			GetHorizontalTreeCmd cmd = new GetHorizontalTreeCmd(selectedBinderInfo.getBinderIdAsLong(), m_tm);
 			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {

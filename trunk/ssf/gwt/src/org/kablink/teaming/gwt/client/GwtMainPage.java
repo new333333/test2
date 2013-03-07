@@ -133,6 +133,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfoHelper.BinderInfoCallback;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TagInfo;
+import org.kablink.teaming.gwt.client.util.TreeMode;
 import org.kablink.teaming.gwt.client.util.VibeProduct;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
@@ -166,7 +167,6 @@ import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
-import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTreeControlClient;
 import org.kablink.teaming.gwt.client.workspacetree.BreadcrumbTreePopup;
 
@@ -2325,32 +2325,50 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onAdministrationExit( AdministrationExitEvent event )
 	{
+		onAdministrationExitAsync();
+	}
+	
+	/*
+	 * Asynchronously handles AdministrationExitEvent's received by
+	 * this class.
+	 */
+	private void onAdministrationExitAsync()
+	{
 		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
-				// Hide the administration console and its menu.
-				m_adminControl.hideControl();
-				m_mainMenuCtrl.hideAdministrationMenubar();
-				
-				m_splitLayoutPanel.setVisible( true );
-
-				// If the activity stream was showing show it now.
-				if ( isActivityStreamActive() )
-				{
-					m_contentLayoutPanel.showActivityStream();
-				}
-				else if ( m_contentCtrl.isVisible() == false )
-				{
-					m_contentLayoutPanel.showContentControl();
-				}
-				
-				// Restore the ui state to what it was before we opened
-				// the site administration.
-				restoreUIState();
+				onAdministrationExitNow();
 			}// end execute()
 		} );
+	}
+	
+	/*
+	 * Synchronously handles AdministrationExitEvent's received by
+	 * this class.
+	 */
+	private void onAdministrationExitNow()
+	{
+		// Hide the administration console and its menu.
+		m_adminControl.hideControl();
+		m_mainMenuCtrl.hideAdministrationMenubar();
+		
+		m_splitLayoutPanel.setVisible( true );
+
+		// If the activity stream was showing show it now.
+		if ( isActivityStreamActive() )
+		{
+			m_contentLayoutPanel.showActivityStream();
+		}
+		else if ( m_contentCtrl.isVisible() == false )
+		{
+			m_contentLayoutPanel.showContentControl();
+		}
+		
+		// Restore the ui state to what it was before we opened
+		// the site administration.
+		restoreUIState();
 	}
 	
 	/**
@@ -2704,6 +2722,13 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onGotoMyWorkspace( GotoMyWorkspaceEvent event )
 	{
+		// Yes!  If we're currently running site administration...
+		if (isAdminActive()) {
+			// ...close it as we won't be in the admin console if
+			// ...we change contexts.
+			onAdministrationExitNow();
+		}			
+
 		m_contentLayoutPanel.showContentControl();
 		m_requestInfo.setRerootSidebarTree();
 		String myWSUrl = m_requestInfo.getMyWorkspaceUrl();

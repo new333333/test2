@@ -101,7 +101,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	@SuppressWarnings("unused")
 	private enum FileBreadCrumbMode {
 		BINDER_NAMES,	// Only binder names are links.  The expander arrows are not.
-		FULL,			// Links in bread crumbs are the same in File and Vibe.
+		FULL,			// Links in bread crumbs are the same in Filr and Vibe.
 		NONE;			// Neither the expander arrows or binder names are links.
 		
 		boolean isBinderNames() {return this.equals(BINDER_NAMES);}
@@ -748,11 +748,12 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * Renders a TreeInfo into the next position in a HorizontalPanel.
 	 */
 	private void renderNode(final TreeInfo ti, FlexTable nodeGrid) {
-		boolean isFilr = GwtClientHelper.isLicenseFilr();
-		int depth = Integer.parseInt(nodeGrid.getElement().getAttribute(GRID_DEPTH_ATTRIBUTE));
-		Widget selectorLabel      = getSelectorLabel(ti, (0 == depth));
-		String selectorLabelStyle = selectorLabel.getStyleName();
-		boolean binderBreadcrumbTail = selectorLabelStyle.contains("breadCrumb_ContentNode_AnchorTail");
+		boolean	isFilr               = GwtClientHelper.isLicenseFilr();
+		boolean	isHorizontalBinder   = getTreeMode().isHorizontalBinder();
+		int		depth                = Integer.parseInt(nodeGrid.getElement().getAttribute(GRID_DEPTH_ATTRIBUTE));
+		Widget	selectorLabel        = getSelectorLabel(ti, (0 == depth));
+		String	selectorLabelStyle   = selectorLabel.getStyleName();
+		boolean	binderBreadcrumbTail = selectorLabelStyle.contains("breadCrumb_ContentNode_AnchorTail");
 		
 		// Is this Binder expandable?
 		boolean showExpander;
@@ -771,10 +772,10 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				expanderImg = GwtClientHelper.buildImage(expanderImgRes.getSafeUri());
 				expanderImg.getElement().setAttribute("align", "absmiddle");
 				expanderImg.addStyleName("breadCrumb_ContentNode_ExpanderImg");
-				if (getTreeMode().isHorizontalBinder()) {
+				if (isHorizontalBinder) {
 					expanderImg.addStyleName("breadCrumb_ContentNode_ExpanderImgSmall");
 				}
-				if (isFilr && (FILR_BC_MODE.isBinderNames() || FILR_BC_MODE.isNone())) {
+				if (isHorizontalBinder && isFilr && (FILR_BC_MODE.isBinderNames() || FILR_BC_MODE.isNone())) {
 					expanderWidget = expanderImg;
 					expanderWidget.addStyleName("breadCrumb_ContentNode_Filr");
 				}
@@ -798,7 +799,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		
 		// Generate the widgets to select the Binder.
 		Anchor a;
-		if (isFilr && FILR_BC_MODE.isNone() && (!binderBreadcrumbTail)) {
+		if (isHorizontalBinder && isFilr && FILR_BC_MODE.isNone() && (!binderBreadcrumbTail)) {
 			a = null;
 			selectorLabel.addStyleName("breadCrumb_ContentNode_Filr");
 		}

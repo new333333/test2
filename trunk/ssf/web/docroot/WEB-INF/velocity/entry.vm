@@ -44,6 +44,7 @@
 	    title="$esc.html(${ssVisitor.Entity.ParentBinder.PathName})"
 	  >$esc.html(${ssVisitor.Entity.ParentBinder.Title})</a>
     </div>
+    ${ssVisitor.NotifyDef.setVariable('folderPathShown', 'true')}
   
   ## Show the entry
   $ssVisitor.visit()

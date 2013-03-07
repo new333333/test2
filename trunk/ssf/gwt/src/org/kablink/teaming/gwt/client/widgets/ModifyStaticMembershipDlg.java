@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -65,9 +65,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -89,7 +87,6 @@ import com.google.gwt.view.client.MultiSelectionModel;
  * This dialog can be used to modify the static membership of a group.
  * 
  * @author jwootton
- * 
  */
 public class ModifyStaticMembershipDlg extends DlgBox
 	implements SearchFindResultsEvent.Handler
@@ -202,8 +199,8 @@ public class ModifyStaticMembershipDlg extends DlgBox
 	private ListDataProvider<GwtGroup> m_groupDataProvider;
 	private MultiSelectionModel<GwtUser> m_userSelectionModel;
 	private MultiSelectionModel<GwtGroup> m_groupSelectionModel;
-	private SimplePager m_userPager;
-	private SimplePager m_groupPager;
+	private VibeSimplePager m_userPager;
+	private VibeSimplePager m_groupPager;
 	private ArrayList<GwtUser> m_listOfUsers;
 	private ArrayList<GwtGroup> m_listOfGroups;
 	private FindCtrl m_findUserCtrl;
@@ -522,10 +519,7 @@ public class ModifyStaticMembershipDlg extends DlgBox
 
 		// Create a pager
 		{
-			SimplePager.Resources pagerResources;
-
-			pagerResources = GWT.create( SimplePager.Resources.class );
-			m_groupPager = new SimplePager( TextLocation.CENTER, pagerResources, false, 0, true );
+			m_groupPager = new VibeSimplePager();
 			m_groupPager.setDisplay( m_groupTable );
 		}
 
@@ -681,10 +675,7 @@ public class ModifyStaticMembershipDlg extends DlgBox
 
 		// Create a pager
 		{
-			SimplePager.Resources pagerResources;
-
-			pagerResources = GWT.create( SimplePager.Resources.class );
-			m_userPager = new SimplePager( TextLocation.CENTER, pagerResources, false, 0, true );
+			m_userPager = new VibeSimplePager();
 			m_userPager.setDisplay( m_userTable );
 		}
 

@@ -35,89 +35,56 @@ package org.kablink.teaming.gwt.client.util;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Enumeration used to communicate the type of a collection between the
- * client and the server as part of a GWT RPC command.
+ * Defines the mode a WorkspaceTreeControl is running in.
  * 
+ * HORIZONTAL_BINDER:  Typically used in the Vibe bread crumbs embedded in a folder view.
+ * HORIZONTAL_POPUP:   Typically used in the Vibe bread crumbs drop down from the main menu.
+ * VERTICAL:           Typically used in the Vibe sidebar.
+ *  
  * @author drfoster@novell.com
  */
-public enum CollectionType implements IsSerializable {
-	// *** WARNING *** WARNING *** WARNING *** WARNING ***
-	// ***
-	// *** The ordinal values (i.e., MY_FILES = 0) are hard coded in
-	// *** PermaLinkUtil.getUserPermalink().  If the ordinal values
-	// *** of this enumeration changes, PermaLinkUtil.java MUST be
-	// *** changed accordingly.
-	// ***
-	// *** WARNING *** WARNING *** WARNING *** WARNING ***
-	MY_FILES,
-	NET_FOLDERS,
-	SHARED_BY_ME,
-	SHARED_WITH_ME,
+public enum TreeMode implements IsSerializable {
+	HORIZONTAL_BINDER,
+	HORIZONTAL_POPUP,
+	VERTICAL;
 	
-	OTHER,
-	NOT_A_COLLECTION;
-
 	/**
-	 * Converts the ordinal value of a CollectionType to its
-	 * enumeration equivalent.
-	 * 
-	 * @param ordinal
+	 * Returns true if we'redisplaying a horizontal tree and false
+	 * otherwise.
 	 * 
 	 * @return
 	 */
-	public static CollectionType getEnum(int ordinal) {
-		CollectionType reply;
-		try {
-			reply = CollectionType.values()[ordinal];
-		}
-		catch (ArrayIndexOutOfBoundsException e) {
-			reply = CollectionType.OTHER;
-		}
-		return reply;
-	}
-	
-	public static CollectionType getEnum(String ordinal) {
-		// Always use the initial form of the method.
-		return getEnum(Integer.parseInt(ordinal));
+	public boolean isHorizontal() {
+		return (isHorizontalBinder() || isHorizontalPopup());
 	}
 	
 	/**
-	 * Returns true if this CollectionType value represents a
-	 * collection and false otherwise.
+	 * Returns true if we'redisplaying a horizontal binder tree and
+	 * false otherwise.
 	 * 
 	 * @return
 	 */
-	public boolean isCollection() {
-		return (!(NOT_A_COLLECTION.equals(this)));
+	public boolean isHorizontalBinder() {
+		return (TreeMode.HORIZONTAL_BINDER == this);
 	}
 	
 	/**
-	 * Returns true if this CollectionType value represents a
-	 * Shared by Me collection and false otherwise.
+	 * Returns true if we'redisplaying a horizontal popup tree and 
+	 * false otherwise.
 	 * 
 	 * @return
 	 */
-	public boolean isSharedByMe() {
-		return (SHARED_BY_ME.equals(this));
+	public boolean isHorizontalPopup() {
+		return (TreeMode.HORIZONTAL_POPUP == this);
 	}
 	
 	/**
-	 * Returns true if this CollectionType value represents a
-	 * shared collection and false otherwise.
+	 * Returns true if we'redisplaying a vertical tree and false
+	 * otherwise.
 	 * 
 	 * @return
 	 */
-	public boolean isSharedCollection() {
-		return (isSharedByMe() || isSharedWithMe());
-	}
-	
-	/**
-	 * Returns true if this CollectionType value represents a
-	 * Shared with Me collection and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isSharedWithMe() {
-		return (SHARED_WITH_ME.equals(this));
+	public boolean isVertical() {
+		return (TreeMode.VERTICAL == this);
 	}
 }

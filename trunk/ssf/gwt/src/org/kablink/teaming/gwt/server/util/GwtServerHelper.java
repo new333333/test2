@@ -8284,15 +8284,14 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static User getUserFromId(AllModulesInjected bs, Long userId) {
-		List<Long> userIds = new ArrayList<Long>();
-		userIds.add(userId);
-		Set<User> userSet = bs.getProfileModule().getUsers(userIds);
-		User[] users = userSet.toArray(new User[0]);
-		
-		User reply;
-		if ((null != users) && (1 == users.length))
-		     reply = users[0];
-		else reply = null;
+		User reply = null;
+		Principal p = bs.getProfileModule().getEntry(userId);
+		if (null != p) {
+			p = Utils.fixProxy(p);
+			if (p instanceof User) {
+				reply = ((User) p);
+			}
+		}
 		return reply;
 	}
 

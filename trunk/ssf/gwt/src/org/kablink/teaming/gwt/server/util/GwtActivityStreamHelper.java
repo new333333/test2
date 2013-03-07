@@ -1645,6 +1645,7 @@ public class GwtActivityStreamHelper {
 			crit.add(in(Constants.FAMILY_FIELD,              new String[]{Definition.FAMILY_FILE}));
 			crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
 			crit.add(in(Constants.IS_TOP_FOLDER_FIELD,       new String[]{Constants.TRUE}));
+			crit.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.FALSE}));
     		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
 			
 			Map searchResults = bs.getBinderModule().executeSearchQuery(

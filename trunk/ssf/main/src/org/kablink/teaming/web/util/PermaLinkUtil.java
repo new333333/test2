@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,7 +52,13 @@ import org.kablink.util.Http;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 public class PermaLinkUtil {
+	public static final int COLLECTION_USER_DEFAULT = (-1);
     public static final int COLLECTION_MY_FILES = 0;
     public static final int COLLECTION_NET_FOLDERS = 1;
     public static final int COLLECTION_SHARED_BY_ME = 2;
@@ -80,7 +86,7 @@ public class PermaLinkUtil {
 	}
 
 	//userId may be placeholder
-	public static String getUserPermalink(HttpServletRequest request, String userId, boolean startWithActivityStreams, boolean startWithMyFiles) {
+	public static String getUserPermalink(HttpServletRequest request, String userId, boolean startWithActivityStreams, boolean startWithDefaultCollection) {
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true, true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
@@ -88,8 +94,8 @@ public class PermaLinkUtil {
 		if (startWithActivityStreams) {
 			adapterUrl.setParameter(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "1");
 		}
-		if (startWithMyFiles) {
-			adapterUrl.setParameter(WebKeys.URL_SHOW_COLLECTION, "0");	// 0 -> CollectionType.MY_FILES
+		else if (startWithDefaultCollection) {
+			adapterUrl.setParameter(WebKeys.URL_SHOW_COLLECTION, String.valueOf(COLLECTION_USER_DEFAULT));
 		}
 		return adapterUrl.toString();
 	}

@@ -151,6 +151,7 @@ import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
+import org.kablink.teaming.gwt.client.util.TreeMode;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -1474,7 +1475,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetHorizontalTreeRpcResponseData responseData;
 			
 			ghtCmd = (GetHorizontalTreeCmd) cmd;
-			result = getHorizontalTree( ri, ghtCmd.getBinderId() );
+			result = getHorizontalTree( ri, ghtCmd.getBinderId(), ghtCmd.getTreeMode() );
 			responseData = new GetHorizontalTreeRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -4685,16 +4686,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * horizontal WorkspaceTreeControl widget.
 	 * 
 	 * @param ri
-	 * @param binderIdS
+	 * @param binderId
+	 * @param treeMode
 	 * 
 	 * @return
 	 */
-	private List<TreeInfo> getHorizontalTree( HttpRequestInfo ri, String binderIdS ) {
+	private List<TreeInfo> getHorizontalTree( HttpRequestInfo ri, Long binderId, TreeMode treeMode ) {
 		Binder binder;
 		List<TreeInfo> reply;
 		
 		// Can we access the Binder?
-		binder = GwtServerHelper.getBinderForWorkspaceTree( this, binderIdS, true );
+		binder = GwtServerHelper.getBinderForWorkspaceTree( this, String.valueOf( binderId ), true );
 		if (null == binder) {
 			// No!  Then we can't build any TreeInfo objects for it.
 			reply = new ArrayList<TreeInfo>();
@@ -4702,6 +4704,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		else {
 			// Yes, we can access the Binder!  Access the Binder's
 			// nearest containing Workspace...
+			boolean isFilr = Utils.checkIfFilr();
 			List<Long> bindersList = new ArrayList<Long>();
 			while (true)
 			{
@@ -4710,6 +4713,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				if ( null == binder )
 				{
 					break;
+				}
+
+				// If we're displaying folder bread crumbs in Filr...
+				if ( isFilr && treeMode.equals( TreeMode.HORIZONTAL_BINDER ) && binder.isReserved() )
+				{
+					String biid = binder.getInternalId();
+					if ( MiscUtil.hasString( biid ))
+					{
+						if ( biid.equals( ObjectKeys.TOP_WORKSPACE_INTERNALID ) || biid.equals( ObjectKeys.PROFILE_ROOT_INTERNALID ) )
+						{
+							// ...we ignore and stop at the top (home)
+							// ...or profile root workspaces.
+							break;
+						}
+					}
 				}
 			}
 	

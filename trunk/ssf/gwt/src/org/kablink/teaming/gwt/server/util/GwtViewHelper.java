@@ -52,6 +52,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -792,11 +793,7 @@ public class GwtViewHelper {
 			reply.setFamily(GwtServerHelper.getFolderEntityFamily(bs, feTop));
 	
 			// ...set the entry's title... 
-			String feTitle = fe.getTitle();
-			if (!(MiscUtil.hasString(feTitle))) {
-				feTitle = ("--" + NLT.get("entry.noTitle") + "--");
-			}
-			reply.setTitle(feTitle);
+			reply.setTitle(getFolderEntryTitle(fe));
 			
 			// If we get here, reply refers to the ViewFolderEntryInfo
 			// for the user to view the entry.  Return it.
@@ -2846,12 +2843,13 @@ public class GwtViewHelper {
 	private static String[] getFolderColumnNames(FolderType ft) {
 		String[] reply;
 		switch (ft) {
-		case FILE:       reply = pruneColumnNames(ft, "title", "comments",    "size",     "state",  "author", "date"           ); break;
-		case GUESTBOOK:  reply = pruneColumnNames(ft, "guest", "title",       "date",     "descriptionHtml"                    ); break;
-		case MILESTONE:  reply = pruneColumnNames(ft, "title", "responsible", "tasks",    "status", "dueDate"                  ); break;
-		case MINIBLOG:   reply = pruneColumnNames(ft, "title", "description"                                                   ); break;
-		case SURVEY:     reply = pruneColumnNames(ft, "title", "author",      "dueDate"                                        ); break;
-		default:         reply = pruneColumnNames(ft, "number", "title",      "comments", "state",  "author", "date",  "rating"); break;
+		case FILE:
+		case MIRROREDFILE:  reply = pruneColumnNames(ft, "title",  "comments",    "size",     "state",  "author", "date"           ); break;
+		case GUESTBOOK:     reply = pruneColumnNames(ft, "guest",  "title",       "date",     "descriptionHtml"                    ); break;
+		case MILESTONE:     reply = pruneColumnNames(ft, "title",  "responsible", "tasks",    "status", "dueDate"                  ); break;
+		case MINIBLOG:      reply = pruneColumnNames(ft, "title",  "description"                                                   ); break;
+		case SURVEY:        reply = pruneColumnNames(ft, "title",  "author",      "dueDate"                                        ); break;
+		default:            reply = pruneColumnNames(ft, "number", "title",       "comments", "state",  "author", "date",  "rating"); break;
 		}
 		return reply;
 	}
@@ -3330,11 +3328,8 @@ public class GwtViewHelper {
 			// ...set the contributor's to this entry...
 			reply.setContributors(ListFolderHelper.collectContributorIds(fe));
 			
-			// ...set the entry's title... 
-			String feTitle = fe.getTitle();
-			if (!(MiscUtil.hasString(feTitle))) {
-				feTitle = ("--" + NLT.get("entry.noTitle") + "--");
-			}
+			// ...set the entry's title...
+			String feTitle = getFolderEntryTitle(fe);
 			reply.setTitle(feTitle);
 			
 			// ...set information about the entry's comments...
@@ -3446,6 +3441,20 @@ public class GwtViewHelper {
 		}
 	}
 
+	/*
+	 * Returns the string to use as the title of a folder entry.
+	 */
+	private static String getFolderEntryTitle(FolderEntry fe) {
+		String reply = fe.getTitle();
+		if (!(MiscUtil.hasString(reply))) {
+			FolderEntry feParent = fe.getParentEntry();
+			if (null == feParent)
+			     reply = ("--" + NLT.get("entry.noTitle") + "--");
+			else reply = NLT.get("reply.re.title", new String[]{getFolderEntryTitle(feParent)});
+		}
+		return reply;
+	}
+	
 	/**
 	 * Reads the row data from a folder and returns it as a
 	 * FolderRowsRpcResponseData.
@@ -4789,12 +4798,13 @@ public class GwtViewHelper {
 				// Yes!  Extract the profile information we need to
 				// display.
 				User user = ((User) resolvedList.get(0));
+				Locale userLocale = GwtServerHelper.getCurrentUser().getLocale();
 				addProfileAttribute(reply, "title",        user.getTitle());
 				addProfileAttribute(reply, "jobTitle",     GwtProfileHelper.getJobTitle(user));
 				addProfileAttribute(reply, "emailAddress", user.getEmailAddress());
 				addProfileAttribute(reply, "phone",        user.getPhone());
-				addProfileAttribute(reply, "timeZone",     user.getTimeZone().getDisplayName());
-				addProfileAttribute(reply, "locale",       user.getLocale().getDisplayName());
+				addProfileAttribute(reply, "timeZone",     user.getTimeZone().getDisplayName(userLocale));
+				addProfileAttribute(reply, "locale",       user.getLocale().getDisplayName(  userLocale));
 				if (!(Utils.checkIfFilr())) {
 					addProfileAttribute(reply, "mobileEmailAddress", user.getMobileEmailAddress());
 					addProfileAttribute(reply, "txtEmailAddress",    user.getTxtEmailAddress());
@@ -7760,17 +7770,22 @@ public class GwtViewHelper {
     	    	FileInputStream fi     = new FileInputStream(tempFile);
     	    	try {
         	    	// If there's an existing entry...
-    				String fileName = fileBlob.getFileName();
+    				String	fileName  = fileBlob.getFileName();
+        	    	Date	modDate;
+        	    	Long	fileUTCMS = fileBlob.getFileUTCMS();
+        	    	if (null == fileUTCMS)
+        	    	     modDate = null;
+        	    	else modDate = new Date(fileUTCMS);
         	    	FolderEntry existingEntry = fm.getLibraryFolderEntryByFileName(folder, fileName);
     	    		if (null != existingEntry) {
     	    			// ...we modify it...
-        	    		FolderUtils.modifyLibraryEntry(existingEntry, fileName, fi, null, null, null, true, null);
+        	    		FolderUtils.modifyLibraryEntry(existingEntry, fileName, fi, null, modDate, null, true, null);
         				pm.setSeen(null, existingEntry);
         	    	}
     	    		
     	    		else {
     	    			// ...otherwise, we create a new one.
-        	    		FolderEntry fe = FolderUtils.createLibraryEntry(folder, fileName, fi, null, null, true);
+        	    		FolderEntry fe = FolderUtils.createLibraryEntry(folder, fileName, fi, modDate, null, true);
         				pm.setSeen(null, fe);
         	    	}
     	    	}

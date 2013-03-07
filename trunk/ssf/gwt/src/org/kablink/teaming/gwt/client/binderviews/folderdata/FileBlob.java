@@ -54,6 +54,7 @@ public class FileBlob implements IsSerializable {
 	
 	// The following pertain to the file itself.
 	private long	m_fileSize;				//
+	private Long	m_fileUTCMS;			//
 	private String	m_fileName;				//
 	private String	m_fileUTC;				//
 
@@ -81,18 +82,20 @@ public class FileBlob implements IsSerializable {
 	 * 
 	 * @param fileName
 	 * @param fileUTC
+	 * @param fileUTCMS
 	 * @param fileSize
 	 * @param uploadId
 	 */
-	public FileBlob(String fileName, String fileUTC, long fileSize, Long uploadId) {
+	public FileBlob(String fileName, String fileUTC, Long fileUTCMS, long fileSize, Long uploadId) {
 		// Initialize this object...
 		this();
 
 		// ...store the parameters...
-		setUploadId(uploadId);
-		setFileName(fileName);
-		setFileUTC( fileUTC );
-		setFileSize(fileSize);
+		setUploadId( uploadId );
+		setFileName( fileName );
+		setFileUTC(  fileUTC  );
+		setFileUTCMS(fileUTCMS);
+		setFileSize( fileSize );
 		
 		// ...and initialize everything else.
 		setBlobBase64Encoded(BASE64_ENCODE_BLOBS);
@@ -113,6 +116,7 @@ public class FileBlob implements IsSerializable {
 	public String  getBlobMD5Hash()      {return m_blobMD5Hash;      }
 	
 	public long   getFileSize()  {return m_fileSize; }
+	public Long   getFileUTCMS() {return m_fileUTCMS;}
 	public String getFileName()  {return m_fileName; }
 	public String getFileUTC()   {return m_fileUTC;  }
 	
@@ -130,6 +134,7 @@ public class FileBlob implements IsSerializable {
 	public void setBlobMD5Hash(      String  blobMD5Hash)       {m_blobMD5Hash       = blobMD5Hash;      }
 	
 	public void setFileSize(         long    fileSize)          {m_fileSize          = fileSize;         }
+	public void setFileUTCMS(        Long    fileUTCMS)         {m_fileUTCMS         = fileUTCMS;        }
 	public void setFileName(         String  fileName)          {m_fileName          = fileName;         }
 	public void setFileUTC(          String  fileUTC)           {m_fileUTC           = fileUTC;          }
 	

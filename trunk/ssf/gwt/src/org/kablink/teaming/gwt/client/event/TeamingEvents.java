@@ -208,6 +208,7 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_TEAM_ROOT_WORKSPACE,						// Shows the team root workspace.
 	SHOW_TEAM_WORKSPACE,							// Shows a team workspace.
 	SHOW_TRASH,										// Shows a trash view.
+	SHOW_VIEW_PERMALINKS,							// Shows the permaLinks in the current view.
 	
 	HIDE_ACCESSORIES,								// Hides the accessories panel on the given binder.
 	SHOW_ACCESSORIES,								// Shows the accessories panel on the given binder.

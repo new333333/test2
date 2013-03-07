@@ -32,98 +32,35 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The DisableSelectedUsersAdHocFoldersEvent is used to disable adHoc
- * folders on the currently selected users in the personal workspace
- * binder.
- * 
- * See the definition of the SelectedEntriesEventBase class for how and
- * when an EntityId (or List<EntityId>) should be passed into the
- * construction of this class.
+ * The ShowViewPermalinksEvent is used to show the permaLinks footer
+ * in the current view.
  * 
  * @author drfoster@novell.com
  */
-public class DisableSelectedUsersAdHocFoldersEvent extends SelectedEntriesEventBase<DisableSelectedUsersAdHocFoldersEvent.Handler> {
-    public static Type<Handler> TYPE = new Type<Handler>();
-    
-    public Long m_workspaceId;	// The ID of the personal workspaces binder.
-    
+public class ShowViewPermalinksEvent extends VibeEventBase<ShowViewPermalinksEvent.Handler> {
+	public static Type<Handler> TYPE = new Type<Handler>();
+
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onDisableSelectedUsersAdHocFolders(DisableSelectedUsersAdHocFoldersEvent event);
+		void onShowViewPermalinks(ShowViewPermalinksEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public DisableSelectedUsersAdHocFoldersEvent() {
+	public ShowViewPermalinksEvent() {
 		// Initialize the super class.
 		super();
 	}
-	
-	/**
-	 * Class constructor.
-	 * 
-	 * @param workspaceId
-	 * @param selectedEntityId
-	 */
-	public DisableSelectedUsersAdHocFoldersEvent(Long workspaceId, EntityId selectedEntityId) {
-		// Initialize this object...
-		this();
-
-		// ...and store the parameters.
-		setWorkspaceId(     workspaceId     );
-		setSelectedEntityId(selectedEntityId);
-	}
-
-	/**
-	 * Class constructor.
-	 * 
-	 * @param workspaceId
-	 * @param selectedEntities
-	 */
-	public DisableSelectedUsersAdHocFoldersEvent(Long workspaceId, List<EntityId> selectedEntities) {
-		// Initialize this object...
-		this();
-		
-		// ...and store the parameters.
-		setWorkspaceId(     workspaceId     );
-		setSelectedEntities(selectedEntities);
-	}
-
-	/**
-	 * Class constructor.
-	 * 
-	 * @param workspaceId
-	 */
-	public DisableSelectedUsersAdHocFoldersEvent(Long workspaceId) {
-		// Initialize this object.
-		this(workspaceId, ((List<EntityId>) null));
-	}
-
-	/**
-	 * Get'er method.
-	 * 
-	 * @return
-	 */
-	public Long getWorkspaceId() {return m_workspaceId;}
-	
-	/**
-	 * Set'er method.
-	 * 
-	 * @param workspaceId
-	 */
-	public void setWorkspaceId(Long workspaceId) {m_workspaceId = workspaceId;}
 	
 	/**
 	 * Dispatches this event when one is triggered.
@@ -132,10 +69,24 @@ public class DisableSelectedUsersAdHocFoldersEvent extends SelectedEntriesEventB
 	 * 
 	 * @param handler
 	 */
-    @Override
-    protected void doDispatch(Handler handler) {
-        handler.onDisableSelectedUsersAdHocFolders(this);
-    }    
+	@Override
+	protected void doDispatch(Handler handler) {
+		handler.onShowViewPermalinks(this);
+	}
+	
+	/**
+	 * Synchronously fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new ShowViewPermalinksEvent());
+	}
+	
+	/**
+	 * Asynchronously fires a new one of these events.
+	 */
+	public static void fireOneAsync() {
+		GwtTeaming.fireEventAsync(new ShowViewPermalinksEvent());
+	}
 	
 	/**
 	 * Returns the GwtEvent.Type of this event.
@@ -144,11 +95,11 @@ public class DisableSelectedUsersAdHocFoldersEvent extends SelectedEntriesEventB
 	 * 
 	 * @return
 	 */
-    @Override
-    public Type<Handler> getAssociatedType() {
-        return TYPE;
-    }
-    
+	@Override
+	public Type<Handler> getAssociatedType() {
+		return TYPE;
+	}
+
 	/**
 	 * Returns the TeamingEvents enumeration value corresponding to
 	 * this event.
@@ -159,7 +110,7 @@ public class DisableSelectedUsersAdHocFoldersEvent extends SelectedEntriesEventB
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS;
+		return TeamingEvents.SHOW_VIEW_PERMALINKS;
 	}
 		
 	/**

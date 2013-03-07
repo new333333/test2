@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -72,8 +72,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.SimplePager;
-import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -88,11 +86,10 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
 
-
 /**
- * 
+ * ?
+ *  
  * @author jwootton
- *
  */
 public class ManageNetFolderRootsDlg extends DlgBox
 	implements
@@ -102,7 +99,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 	private CellTable<NetFolderRoot> m_netFolderRootsTable;
     private MultiSelectionModel<NetFolderRoot> m_selectionModel;
 	private ListDataProvider<NetFolderRoot> m_dataProvider;
-	private SimplePager m_pager;
+	private VibeSimplePager m_pager;
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
 	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
     private int m_width;
@@ -437,10 +434,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 		
 		// Create a pager
 		{
-			SimplePager.Resources pagerResources;
-
-			pagerResources = GWT.create( SimplePager.Resources.class );
-			m_pager = new SimplePager( TextLocation.CENTER, pagerResources, false, 0, true );
+			m_pager = new VibeSimplePager();
 			m_pager.setDisplay( m_netFolderRootsTable );
 		}
 

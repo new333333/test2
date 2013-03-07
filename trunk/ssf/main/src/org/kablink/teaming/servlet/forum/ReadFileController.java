@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -57,12 +57,18 @@ import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.FileUtil;
 
 import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
 import org.springframework.web.servlet.ModelAndView;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 public class ReadFileController extends AbstractReadFileController {
 	private final static boolean ZIP_ENCODED_FILENAMES	= true;
 	private final static boolean UTF8_ENCODE_ZIPS		= true;
@@ -252,6 +258,12 @@ public class ReadFileController extends AbstractReadFileController {
 				if (fa != null) {
 					String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
 					String contentType = getFileTypeMap().getContentType(shortFileName);
+					if (!(contentType.toLowerCase().contains("charset"))) {
+						String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
+						if (MiscUtil.hasString(encoding)) {
+							contentType += ("; charset=" + encoding);
+						}
+					}
 					response.setContentType(contentType);
 					boolean isHttps = request.getScheme().equalsIgnoreCase("https");
 					String cacheControl = "private, max-age=86400";
