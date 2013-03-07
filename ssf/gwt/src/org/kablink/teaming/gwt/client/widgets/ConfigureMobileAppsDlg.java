@@ -45,6 +45,8 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
@@ -151,6 +153,24 @@ public class ConfigureMobileAppsDlg extends DlgBox
 		
 		// Create the "Allow mobile applications to cache content offline"
 		m_allowOfflineContentCB = new CheckBox( messages.configureMobileAppsDlgAllowCacheContent() );
+		m_allowOfflineContentCB.addClickHandler( new ClickHandler()
+		{
+			@Override
+			public void onClick( ClickEvent event )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						danceDlg();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		} );
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_allowOfflineContentCB );
 		ckboxPanel.add( tmpPanel );
@@ -158,6 +178,7 @@ public class ConfigureMobileAppsDlg extends DlgBox
 		// Create the "Allow mobile applications to interact with other applications"
 		m_allowPlayWithOtherAppsCB = new CheckBox( messages.configureMobileAppsDlgAllowPlayWithOtherApps() );
 		tmpPanel = new FlowPanel();
+		tmpPanel.addStyleName( "marginleft2" );
 		tmpPanel.add( m_allowPlayWithOtherAppsCB );
 		ckboxPanel.add( tmpPanel );
 		
@@ -185,6 +206,19 @@ public class ConfigureMobileAppsDlg extends DlgBox
 		}
 		
 		return mainPanel;
+	}
+	
+	/**
+	 * Enable/disable the "interact with other applications" checkbox
+	 */
+	private void danceDlg()
+	{
+		boolean enable;
+		
+		enable = m_allowOfflineContentCB.getValue();
+		m_allowPlayWithOtherAppsCB.setEnabled( enable );
+		if ( enable == false )
+			m_allowPlayWithOtherAppsCB.setValue( false );
 	}
 	
 	/**
@@ -416,6 +450,8 @@ public class ConfigureMobileAppsDlg extends DlgBox
 		m_syncIntervalTextBox.setText( String.valueOf( interval ) );
 		
 		hideErrorPanel();
+		
+		danceDlg();
 	}
 	
 	
