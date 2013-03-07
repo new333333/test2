@@ -34,59 +34,70 @@ package org.kablink.teaming.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class TraceableInputStreamWrapper extends InputStream {
+public class TraceableInputStreamWrapper extends InputStream implements Comparable<TraceableInputStreamWrapper> {
 
 	private static final Log logger = LogFactory.getLog(TraceableInputStreamWrapper.class);
+	
+	private static final TreeSet<TraceableInputStreamWrapper> openStreamHandles = new TreeSet<TraceableInputStreamWrapper>();
 	
 	// Original input stream that this object wraps and delegates to.
 	private InputStream original;
 	private String path; // Some sort of path representing the original resource.
 	
 	public TraceableInputStreamWrapper(InputStream original, String path) {
+		if(logger.isDebugEnabled())
+			logger.debug("new() on [" + path + "]");
+		
 		this.original = original;
 		this.path = path;
+		
+		synchronized(openStreamHandles) {
+			openStreamHandles.add(this);
+		}
 	}
 	
 	@Override
 	public int read() throws IOException {
-		if(logger.isDebugEnabled())
-			logger.debug("read() on [" + path + "]");
+		if(logger.isTraceEnabled())
+			logger.trace("read() on [" + path + "]");
 		
 		return original.read();
 	}
 	
 	@Override
     public int read(byte b[]) throws IOException {
-		if(logger.isDebugEnabled())
-			logger.debug("read(byte[" + b.length + "]) on [" + path + "]");
+		if(logger.isTraceEnabled())
+			logger.trace("read(byte[" + b.length + "]) on [" + path + "]");
 		
 		return original.read(b);
     }
 
 	@Override
     public int read(byte b[], int off, int len) throws IOException {
-		if(logger.isDebugEnabled())
-			logger.debug("read(byte[" + b.length + "]," + off + "," + len + ") on [" + path + "]");
+		if(logger.isTraceEnabled())
+			logger.trace("read(byte[" + b.length + "]," + off + "," + len + ") on [" + path + "]");
 		
 		return original.read(b, off, len);
     }
 
 	@Override
     public long skip(long n) throws IOException {
-		if(logger.isDebugEnabled())
-			logger.debug("skip(" + n + ") on [" + path + "]");
+		if(logger.isTraceEnabled())
+			logger.trace("skip(" + n + ") on [" + path + "]");
 		
 		return original.skip(n);
     }
 
 	@Override
     public int available() throws IOException {
-		if(logger.isDebugEnabled())
-			logger.debug("available() on [" + path + "]");
+		if(logger.isTraceEnabled())
+			logger.trace("available() on [" + path + "]");
 		
 		return original.available();
     }
@@ -97,30 +108,50 @@ public class TraceableInputStreamWrapper extends InputStream {
 			logger.debug("close() on [" + path + "]");
 		
 		original.close();
+		
+		synchronized(openStreamHandles) {
+			openStreamHandles.remove(this);
+		}
     }
 
 	@Override
     public synchronized void mark(int readlimit) {
-		if(logger.isDebugEnabled())
-			logger.debug("mark(" + readlimit + ") on [" + path + "]");
+		if(logger.isTraceEnabled())
+			logger.trace("mark(" + readlimit + ") on [" + path + "]");
 		
 		original.mark(readlimit);
 	}
 
 	@Override
     public synchronized void reset() throws IOException {
-		if(logger.isDebugEnabled())
-			logger.debug("reset() on [" + path + "]");
+		if(logger.isTraceEnabled())
+			logger.trace("reset() on [" + path + "]");
 		
 		original.reset();
     }
 
 	@Override
     public boolean markSupported() {
-		if(logger.isDebugEnabled())
-			logger.debug("markSupported() on [" + path + "]");
+		if(logger.isTraceEnabled())
+			logger.trace("markSupported() on [" + path + "]");
 		
         return original.markSupported();
     }
 
+	public static String getOpenStreamHandlesAsString() {
+		StringBuilder sb = new StringBuilder();
+		synchronized(openStreamHandles) {
+			sb.append("Number of open stream handles = " + openStreamHandles.size());
+			for(TraceableInputStreamWrapper handle : openStreamHandles) {
+				sb.append(Constants.NEWLINE)
+				.append(handle.path);
+			}
+		}
+		return sb.toString();
+	}
+
+	@Override
+	public int compareTo(TraceableInputStreamWrapper o) {
+		return this.path.compareTo(o.path);
+	}
 }
