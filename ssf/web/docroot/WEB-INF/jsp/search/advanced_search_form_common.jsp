@@ -150,6 +150,7 @@
 								<a href="<ssf:url action="view_folder_listing" 
 									binderId="${ss_searchContextBinderId}" />"
 									title="${ss_searchContextBinder.pathName}"
+									onClick="ss_openUrlInWorkarea(this.href, '${ss_searchContextBinderId}', 'view_folder_listing');return false;"
 								>
 								  <span>${ss_searchContextBinder.title}</span>
 								</a>
@@ -272,7 +273,7 @@
 						    <div class="ss_bold"><ssf:nlt tag="searchForm.advanced.presentationOptions"/></div>
 							<table class="margintop1">
 								<tr>
-									<td>
+									<td nowrap>
 										<label for="data_resultsCount">
 											<ssf:nlt tag="searchForm.advanced.options.limitResults"/>:
 										</label>
@@ -288,7 +289,7 @@
 										</select>
 									</td>
 								</tr>	
-									<td>
+									<td nowrap>
 										<label for="data_summaryWordCount">
 											<ssf:nlt tag="searchForm.advanced.options.limitWords"/>: 
 										</label>
@@ -304,7 +305,7 @@
 									</td>
 								</tr>
 								<tr>
-									<td>
+									<td nowrap>
 										<label for="data_sortBy">
 											<ssf:nlt tag="searchForm.advanced.options.sortBy"/> 
 										</label>
@@ -319,7 +320,7 @@
 									</td>
 								</tr>
 								<tr>
-									<td>
+									<td nowrap>
 										<label for="data_sortBy_secondary">
 											<ssf:nlt tag="searchForm.advanced.options.sortBySecondary"/> 
 										</label>

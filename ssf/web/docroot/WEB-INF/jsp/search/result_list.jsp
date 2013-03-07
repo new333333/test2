@@ -44,6 +44,9 @@
 
 <%
 boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
+isFilr = false;		//I turned off the way Filr sorted its hits. (pmh)
+					//This caused the pages to have fewer than 10 hits per page
+					//Customers complained this was confusing. See bug #804179
 %>
 
 <c:if test="${empty ss_namespace}">
@@ -101,11 +104,11 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 			<li <c:if test="${status.last}">class="last"</c:if>>
 				<c:choose>
 			  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'entry' && entry._entryType != 'reply'}">
-							<div class="ss_thumbnail">
+							<div class="ss_thumbnail ss_search_hit">
 								<img alt="<ssf:nlt tag="alt.entry"/>" src="<html:imagesPath/>pics/entry_24.png"/>
 							</div>
 							<div class="ss_entry">
-								<div class="ss_entryHeader">
+								<div class="ss_entryHeader ss_search_hit">
 									<div class="ss_entryTitleSearchResults">
 	   									<% if (!ssSeenMap.checkIfSeen(entry)) { %>
 									    
@@ -225,7 +228,7 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 											
 											<ssf:param name="url" useBody="true">
 												<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-												action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+												action="view_folder_entry" entryId="${entry._entryTopEntryId}" actionUrl="true" />
 											</ssf:param>
 										
 										    <c:if test="${empty entry._entryTopEntryTitle}">
@@ -268,11 +271,11 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 							<div class="ss_clear"></div>
 
 							<div style="padding:6px 0px 0px 16px;">
-							<div class="ss_thumbnail">
+							<div class="ss_thumbnail ss_search_hit">
 								<img alt="<ssf:nlt tag="alt.comment"/>" src="<html:imagesPath/>pics/comment_24.png"/>
 							</div>
 							<div class="ss_reply">
-								<div class="ss_entryHeader">
+								<div class="ss_entryHeader ss_search_hit">
 									<div class="ss_entryTitleSearchResults">
 	   									<% if (!ssSeenMap.checkIfSeen(entry)) { %>
 									    
@@ -371,13 +374,13 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 		  				<c:if test="${empty fileIcon}">
 		  				  <c:set var="fileIcon" value="pics/attachment_24.png"/>
 		  				</c:if>
-							<div class="ss_thumbnail">
+							<div class="ss_thumbnail ss_search_hit">
 							  <c:if test="${!empty fileIcon}">
 								<img alt="<ssf:nlt tag="alt.attachment"/>" src="<html:imagesPath/>${fileIcon}"/>
 							  </c:if>
 							</div>
 							<div class="ss_entry">
-								<div class="ss_entryHeader">
+								<div class="ss_entryHeader ss_search_hit">
 									<div class="ss_entryTitleSearchResults">
 											<ssf:titleLink 
 												entryId="${entry._docId}" binderId="${entry._binderId}" 
@@ -430,7 +433,7 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 			    </c:when>
 	
 				<c:when test="${entry._entityType == 'user' && entry._docType == 'entry'}">
-							<div class="ss_thumbnail">
+							<div class="ss_thumbnail ss_search_hit">
 								<c:if test="${!empty entry._fileID}"><img alt="<ssf:nlt tag="alt.entry"/>"
 								
 								  src="<ssf:fileUrl webPath="readThumbnail" search="${entry}"/>" />
@@ -439,7 +442,7 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 								  src="<html:brandedImagesPath/>pics/UserPhoto.png"/></c:if>
 							</div>
 							<div class="ss_entry">
-								<div class="ss_entryHeader">
+								<div class="ss_entryHeader ss_search_hit">
 									<div class="ss_entryTitleSearchResults">
 	
 										<ssf:titleLink 
@@ -495,11 +498,11 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 				</c:when>
 				
 				<c:when test="${entry._entityType == 'user' && entry._docType == 'attachment'}">
-							<div class="ss_thumbnail">
+							<div class="ss_thumbnail ss_search_hit">
 								<img alt="<ssf:nlt tag="alt.attachment"/>" src="<html:imagesPath/>pics/attachment_24.png"/>
 							</div>
 							<div class="ss_entry">
-								<div class="ss_entryHeader">
+								<div class="ss_entryHeader ss_search_hit">
 									<div class="ss_entryTitleSearchResults">
 										<ssf:titleLink 
 											entryId="${entry._docId}" binderId="${entry._binderId}" 
@@ -548,11 +551,11 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 				</c:when>
 				
 				<c:when test="${entry._entityType == 'group'}">
-							<div class="ss_thumbnail">
+							<div class="ss_thumbnail ss_search_hit">
 								<img alt="<ssf:nlt tag="alt.group"/>" src="<html:imagesPath/>pics/group_24.png"/>
 							</div>
 							<div class="ss_entry">
-								<div class="ss_entryHeader">
+								<div class="ss_entryHeader ss_search_hit">
 									<div class="ss_entryTitleSearchResults">
 										<c:out value="${entry.title}"/>
 									</div>
@@ -577,7 +580,7 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 				</c:when>
 			
 				<c:when test="${entry._docType == 'binder'}">
-							<div class="ss_thumbnail">
+							<div class="ss_thumbnail ss_search_hit">
 								<c:set var="entryBinderId" value="${entry._docId}"/>
 								<c:set var="entryDocId" value="${entry._docId}"/>
 								<c:if test="${entry._entityType == 'folder'}">
@@ -597,7 +600,7 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 								</c:if>								
 							</div>
 							<div class="ss_entry">
-								<div class="ss_entryHeader">
+								<div class="ss_entryHeader ss_search_hit">
 									<div class="ss_entryTitleSearchResults">
 										<ssf:titleLink 
 											entryId="${entryDocId}" 
@@ -655,7 +658,7 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 							</div>
 			    </c:when>
 		  		<c:when test="${entry._docType == 'attachment'}">
-							<div class="ss_thumbnail">
+							<div class="ss_thumbnail ss_search_hit">
 								<img alt="<ssf:nlt tag="alt.attachment"/>" src="<html:imagesPath/>pics/attachment_24.png"/>
 							</div>
 								<c:if test="${entry._entityType == 'folder'}">
@@ -671,7 +674,7 @@ boolean isFilr = org.kablink.teaming.util.Utils.checkIfFilr();
 								<c:set var="binderLabel" value='<%= NLT.get("general.profiles") %>'/>
 								</c:if>								
 							<div class="ss_entry">
-								<div class="ss_entryHeader">
+								<div class="ss_entryHeader ss_search_hit">
 									<div class="ss_entryTitleSearchResults">
 											<ssf:titleLink 
 												entryId="${entry._docId}" binderId="${entry._docId}" 
