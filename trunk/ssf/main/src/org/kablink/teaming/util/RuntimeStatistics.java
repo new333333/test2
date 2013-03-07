@@ -372,4 +372,14 @@ public class RuntimeStatistics implements InitializingBean, RuntimeStatisticsMBe
 		return DSConnectionProvider.debugInfoAsString();
 	}
 
+	@Override
+	public boolean isNfsTraceEnabled() {
+		return SPropsUtil.getBoolean("nfs.trace.enabled", false);
+	}
+
+	@Override
+	public String dumpNfsTraceOpenStreamHandles() {
+		return TraceableInputStreamWrapper.getOpenStreamHandlesAsString();
+	}
+
 }
