@@ -69,6 +69,8 @@ import com.google.gwt.user.client.ui.CheckBox;
  * @author drfoster@novell.com
  */
 public class TrashView extends DataTableFolderViewBase {
+	private boolean m_isFilr;	//
+	
 	/*
 	 * Class constructor.
 	 * 
@@ -77,8 +79,11 @@ public class TrashView extends DataTableFolderViewBase {
 	 * through its createAsync().
 	 */
 	private TrashView(BinderInfo binderInfo, ViewReady viewReady) {
-		// Simply initialize the base class.
+		// Initialize the base class...
 		super(binderInfo, viewReady, "vibe-trashDataTable");
+		
+		// ...and initialize anything else requiring it.
+		m_isFilr = GwtClientHelper.isLicenseFilr();
 	}
 	
 	/**
@@ -287,9 +292,16 @@ public class TrashView extends DataTableFolderViewBase {
     	// If we need to, add a checkbox about purging mirrored sources.
 		final CheckBox cb;
 		final boolean purgeBinders = areBindersInDataTable();
-	    if (purgeBinders)
-		     cb = new CheckBox(m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders());
-	    else cb = null;
+	    if (purgeBinders) {
+	    	String caption;
+	    	if (m_isFilr)
+	    	     caption = m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Filr();
+	    	else caption = m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Vibe();
+	    	cb = new CheckBox(caption);
+	    }
+	    else {
+	    	cb = null;
+	    }
 		
 		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
@@ -359,9 +371,16 @@ public class TrashView extends DataTableFolderViewBase {
     	// If we need to, add a checkbox about purging mirrored sources.
 		final CheckBox cb;
 		final boolean purgeBinders = areBindersInDataTable();
-	    if (purgeBinders)
-		     cb = new CheckBox(m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders());
-	    else cb = null;
+	    if (purgeBinders) {
+	    	String caption;
+	    	if (m_isFilr)
+	    	     caption = m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Filr();
+	    	else caption = m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Vibe();
+	    	cb = new CheckBox(caption);
+	    }
+	    else {
+	    	cb = null;
+	    }
 		
 		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
