@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -151,10 +151,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-
 /**
- *
+ * ?
  * 
+ * @author ?
  */
 @SuppressWarnings({"unchecked", "unused"})
 public abstract class AbstractBinderProcessor extends CommonDependencyInjection 
@@ -482,7 +482,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  					binder.setResourceDriverName(parent.getResourceDriverName());
  				}
  				else {
- 					throw new ConfigurationException("errorcode.mirrored.folder.requires.resource.driver", new Object[]{});
+ 					throw new ConfigurationException("errorcode.mirrored.folder.requires.resource.driver." + (binder.isAclExternallyControlled() ? "net" : "mirrored"), new Object[]{});
  				}
  			}
  			else {
@@ -513,7 +513,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		if(parent.isMirrored() && parent.getResourceDriverName() == null) {
 			// We  allow adding sub-folder to a mirrored folder that has not been fully configured yet,
 			// since it can lead to 
-			throw new NotSupportedException("errorcode.notsupported.addBinder.unconfiguredParentMirroredBinder", 
+			throw new NotSupportedException("errorcode.notsupported.addBinder.unconfiguredParentMirroredBinder." + (parent.isAclExternallyControlled() ? "net" : "mirrored"), 
 					new String[] {binder.getPathName()});
 		}		
 		
@@ -540,7 +540,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 					if(Boolean.TRUE.equals(synchToSource)) {
 						
 						if(driver.isReadonly()) {
-							throw new NotSupportedException("errorcode.notsupported.addMirroredBinder.readonly", 
+							throw new NotSupportedException("errorcode.notsupported.addMirroredBinder.readonly." + (binder.isAclExternallyControlled() ? "net" : "mirrored"), 
 									new String[] {binder.getPathName(), driver.getTitle()});
 						}
 						else {
@@ -914,7 +914,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
     		
     		if(driver.isReadonly()) {
-				throw new NotSupportedException("errorcode.notsupported.renameMirroredBinder.readonly", 
+				throw new NotSupportedException("errorcode.notsupported.renameMirroredBinder.readonly." + (binder.isAclExternallyControlled() ? "net" : "mirrored"), 
 						new String[] {binder.getPathName(), driver.getTitle()});
     		}
     		else {
@@ -1095,7 +1095,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
 
 				if(driver.isReadonly()) {
-					throw new NotSupportedException("errorcode.notsupported.deleteMirroredBinder.readonly", 
+					throw new NotSupportedException("errorcode.notsupported.deleteMirroredBinder.readonly." + (binder.isAclExternallyControlled() ? "net" : "mirrored"), 
 							new String[] {binder.getPathName(), driver.getTitle()});
 				}
 				else {
@@ -1281,7 +1281,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     					ResourceDriver driver = getResourceDriverManager().getDriver(source.getResourceDriverName());
     					
     		    		if(driver.isReadonly()) {
-    						throw new NotSupportedException("errorcode.notsupported.moveMirroredBinder.readonly", 
+    						throw new NotSupportedException("errorcode.notsupported.moveMirroredBinder.readonly." + (destination.isAclExternallyControlled() ? "net" : "mirrored"), 
     								new String[] {source.getPathName(), driver.getTitle()});
     		    		}
     		    		else {
@@ -1306,14 +1306,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			else {
 					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
 							+ "] because the source is not top-level mirrored and the destination is not mirrored");
-		      		throw new NotSupportedException("errorcode.notsupported.moveBinderMirroredToNonMirrored");  				
+		      		throw new NotSupportedException("errorcode.notsupported.moveBinderMirroredToNonMirrored." + (source.isAclExternallyControlled() ? "net" : "mirrored"));  				
     			}
     		}
     		else { // top-level mirrored
     			if(destination.isMirrored()) {
 					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
 							+ "] because the source is top-level mirrored and the destination is already mirrored");
-		      		throw new NotSupportedException("errorcode.notsupported.moveBinderTopMirroredDestinationMirrored");
+		      		throw new NotSupportedException("errorcode.notsupported.moveBinderTopMirroredDestinationMirrored." + (source.isAclExternallyControlled() ? "net" : "mirrored"));
     			}
     			else {
     				// Does not involve resource moving.
@@ -2764,5 +2764,4 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		}
 		entity.setModification(new HistoryStamp(user, date.getTime()));
 	}
-
 }
