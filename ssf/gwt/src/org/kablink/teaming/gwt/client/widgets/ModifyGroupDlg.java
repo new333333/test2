@@ -61,6 +61,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.IntegerRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyStaticMembershipDlg.StaticMembershipInfo;
 
@@ -548,6 +549,21 @@ public class ModifyGroupDlg extends DlgBox
 	private String getGroupTitle()
 	{
 		return m_titleTxtBox.getText();
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "groups_manage" );
+		
+		return helpData;
 	}
 	
 	/**

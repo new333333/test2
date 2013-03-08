@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetAdhocFolderSettingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveAdhocFolderSettingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -208,6 +209,21 @@ public class ConfigureAdhocFoldersDlg extends DlgBox
 		return m_allowAdhocFoldersCkbox;
 	}
 	
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "personalfolders" );
+		
+		return helpData;
+	}
+
 	/**
 	 * Issue an rpc request to get the "allow adhoc folders" setting from the server.
 	 * If m_userId is not null we will get the setting from the user's properties.  Otherwise,

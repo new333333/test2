@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetJitsZoneConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveJitsZoneConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -255,6 +256,21 @@ public class JitsZoneConfigDlg extends DlgBox
 	public FocusWidget getFocusWidget()
 	{
 		return m_maxWaitTimeTextBox;
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "netfolders_justintime" );
+		
+		return helpData;
 	}
 	
 	/**

@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg.TinyMCEDlgClient;
 
@@ -902,6 +903,21 @@ public class EditBrandingDlg extends DlgBox
 	}// end getFocusWidget()
 	
 	
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "brand" );
+		
+		return helpData;
+	}
+
 	/**
 	 * Issue an ajax request to get the list of file attachments for this binder.
 	 * When we get the response, updateListOfFileAttachments() will be called.

@@ -369,8 +369,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					
 				} );
 				
-				table.setHTML( nextRow, 0, "" );
-				table.setWidget( nextRow, 1, testConnectionBtn );
+				table.setWidget( nextRow, 0, testConnectionBtn );
 
 				// Add a panel that will display "Testing connection..." message
 				{
@@ -700,7 +699,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		
 		helpData = new HelpData();
 		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		helpData.setPageId( "netfolders_servers.html" );
+		helpData.setPageId( "netfolders_servers" );
 		
 		return helpData;
 	}

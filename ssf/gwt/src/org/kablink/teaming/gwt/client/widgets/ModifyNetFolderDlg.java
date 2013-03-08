@@ -60,6 +60,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.ModifyNetFolderRootDlgClient;
 import org.kablink.teaming.gwt.client.widgets.NetFolderSelectPrincipalsWidget.NetFolderSelectPrincipalsWidgetClient;
@@ -784,6 +785,21 @@ public class ModifyNetFolderDlg extends DlgBox
 		return m_relativePathTxtBox;
 	}
 	
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "netfolders_create" );
+		
+		return helpData;
+	}
+
 	/**
 	 * 
 	 */
