@@ -905,7 +905,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				//Make sure the owner of this new binder starts out as the owner its parent binder
 				//We want binders in a user's workspace to be manageable by the workspace owner
 				//The owner can explicitly change the ownership, then the new owner propagates as new biders are added
-				binder.setOwner(parentBinder.getOwner());
+				//binder.setOwner(parentBinder.getOwner());
 			}
 	   } catch (WriteFilesException wf) {
 		   //don't fail, but log it
