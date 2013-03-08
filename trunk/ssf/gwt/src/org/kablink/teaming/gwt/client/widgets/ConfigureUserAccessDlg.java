@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveUserAccessConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UserAccessConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -336,6 +337,21 @@ public class ConfigureUserAccessDlg extends DlgBox
 		return m_allowGuestAccessCkbox;
 	}
 	
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "access_external" );
+		
+		return helpData;
+	}
+
 	/**
 	 * Issue an rpc request to get the user access information from the server.
 	 */

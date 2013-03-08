@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetZoneShareRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveZoneShareRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ZoneShareRightsSelectPrincipalsWidget.ZoneShareRightsSelectPrincipalsWidgetClient;
 
@@ -231,6 +232,21 @@ public class EditZoneShareRightsDlg extends DlgBox
 		return null;
 	}
 	
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "share" );
+		
+		return helpData;
+	}
+
 	/**
 	 * Return the roles (rights) the user defined on this net folder
 	 */

@@ -51,6 +51,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.ReportsInfoRpcResponseData.ReportInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -552,6 +553,21 @@ public class RunAReportDlg extends DlgBox
 	public FocusWidget getFocusWidget() {
 		// Nothing focusable in the dialog.
 		return null;
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "reports" );
+		
+		return helpData;
 	}
 
 	/*

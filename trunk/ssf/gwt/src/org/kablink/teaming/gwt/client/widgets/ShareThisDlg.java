@@ -74,6 +74,7 @@ import org.kablink.teaming.gwt.client.util.GwtPublicShareItem;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
@@ -1928,6 +1929,26 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		if ( m_mode == ShareThisDlgMode.MANAGE_SELECTED || m_mode == ShareThisDlgMode.MANAGE_ALL )
+		{
+			HelpData helpData;
+			
+			helpData = new HelpData();
+			helpData.setGuideName( HelpData.ADMIN_GUIDE );
+			helpData.setPageId( "share_manage" );
+			
+			return helpData;
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Return the list of GwtShareItem objects from the table that holds the
 	 * list of recipients

@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetMobileAppsConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveMobileAppsConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -346,6 +347,21 @@ public class ConfigureMobileAppsDlg extends DlgBox
 		return m_syncIntervalTextBox;
 	}
 	
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "mobile_site" );
+		
+		return helpData;
+	}
+
 	/**
 	 * Return the interval entered by the user.
 	 */

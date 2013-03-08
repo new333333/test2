@@ -57,8 +57,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFoldersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgMode;
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -686,6 +688,21 @@ public class ManageNetFoldersDlg extends DlgBox
 		return null;
 	}
 	
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "netfolders" );
+		
+		return helpData;
+	}
+
 	/**
 	 * Return a list of selected net folders.
 	 */

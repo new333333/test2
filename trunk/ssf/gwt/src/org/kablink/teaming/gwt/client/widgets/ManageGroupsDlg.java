@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetGroupsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GroupType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyGroupDlg.ModifyGroupDlgClient;
 
@@ -699,6 +700,21 @@ public class ManageGroupsDlg extends DlgBox implements
 		return null;
 	}
 
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "groups_manage" );
+		
+		return helpData;
+	}
+	
 	/**
 	 * Return a list of selected groups.
 	 */
