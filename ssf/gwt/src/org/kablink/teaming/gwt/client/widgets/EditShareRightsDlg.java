@@ -45,8 +45,6 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -65,7 +63,6 @@ public class EditShareRightsDlg extends DlgBox
 	private RadioButton m_viewerRb;
 	private RadioButton m_editorRb;
 	private RadioButton m_contributorRb;
-	private CheckBox m_canShareForwardCkbox;
 	private CheckBox m_canShareExternalCkbox;
 	private CheckBox m_canShareInternalCkbox;
 	private CheckBox m_canSharePublicCkbox;
@@ -140,20 +137,9 @@ public class EditShareRightsDlg extends DlgBox
 		tmpPanel.add( m_contributorRb );
 		rbPanel.add( tmpPanel );
 		
-		m_canShareForwardCkbox = new CheckBox( messages.editShareRightsDlg_CanShareLabel() );
-		m_canShareForwardCkbox.addStyleName( "editShareRightsDlg_CanShareCkbox" );
-		m_canShareForwardCkbox.addClickHandler( new ClickHandler()
-		{
-			@Override
-			public void onClick( ClickEvent event )
-			{
-				danceDlg();
-			}
-		} );
-		tmpPanel = new VibeFlowPanel();
-		tmpPanel.addStyleName( "margintop2" );
-		tmpPanel.add( m_canShareForwardCkbox );
-		rbPanel.add( tmpPanel );
+		label = new Label( messages.editShareRightsDlg_CanShareLabel() );
+		label.addStyleName( "margintop2" );
+		rbPanel.add( label );
 		
 		// Add the "allow share internal checkbox.
 		m_canShareInternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareInternalLabel() );
@@ -184,30 +170,6 @@ public class EditShareRightsDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void danceDlg()
-	{
-		if ( m_canShareForwardCkbox.isVisible() )
-		{
-			boolean enable;
-			
-			enable = m_canShareForwardCkbox.getValue();
-			m_canShareInternalCkbox.setEnabled( enable );
-			m_canShareExternalCkbox.setEnabled( enable );
-			m_canSharePublicCkbox.setEnabled( enable );
-			
-			if ( enable == false )
-			{
-				m_canShareInternalCkbox.setValue( false );
-				m_canShareExternalCkbox.setValue( false );
-				m_canSharePublicCkbox.setValue( false );
-			}
-		}
-	}
-	
-	
-	/**
-	 * 
-	 */
 	@Override
 	public boolean editSuccessful( Object obj )
 	{
@@ -220,6 +182,8 @@ public class EditShareRightsDlg extends DlgBox
 			// Yes
 			for ( GwtShareItem nextShareItem : m_listOfShareItems )
 			{
+				boolean canShareForward;
+				
 				shareRights = nextShareItem.getShareRights();
 				accessRights = ShareRights.AccessRights.UNKNOWN;
 				
@@ -232,26 +196,34 @@ public class EditShareRightsDlg extends DlgBox
 				
 				shareRights.setAccessRights( accessRights );
 	
-				if ( m_canShareForwardCkbox.isVisible() && m_canShareForwardCkbox.getValue() == true )
-					shareRights.setCanShareForward( true );
-				else
-					shareRights.setCanShareForward( false );
+				canShareForward = false;
 				
 				if ( m_canShareInternalCkbox.isVisible() && m_canShareInternalCkbox.getValue() == true )
+				{
+					canShareForward = true;
 					shareRights.setCanShareWithInternalUsers( true );
+				}
 				else
 					shareRights.setCanShareWithInternalUsers( false );
 	
 				if ( m_canShareExternalCkbox.isVisible() && m_canShareExternalCkbox.getValue() == true )
+				{
+					canShareForward = true;
 					shareRights.setCanShareWithExternalUsers( true );
+				}
 				else
 					shareRights.setCanShareWithExternalUsers( false );
 	
 				if ( m_canSharePublicCkbox.isVisible() && m_canSharePublicCkbox.getValue() == true )
+				{
+					canShareForward = true;
 					shareRights.setCanShareWithPublic( true );
+				}
 				else
 					shareRights.setCanShareWithPublic( false );
 	
+				shareRights.setCanShareForward( canShareForward );
+				
 				nextShareItem.setIsDirty( true );
 			}
 			
@@ -291,6 +263,7 @@ public class EditShareRightsDlg extends DlgBox
 	{
 		ShareRights shareRights;
 		boolean entityIsBinder;
+		boolean canShareForward;
 
 		m_listOfShareItems = listOfShareItems;
 		m_editSuccessfulHandler = editSuccessfulHandler;
@@ -372,23 +345,19 @@ public class EditShareRightsDlg extends DlgBox
 			break;
 		}
 		
-		// Show/hide the "share forward" checkbox depending on whether the user has "share forward" rights.
-		m_canShareForwardCkbox.setVisible( highestRightsPossible.getCanShareForward() );
-		m_canShareForwardCkbox.setValue( shareRights.getCanShareForward() );
+		canShareForward = highestRightsPossible.getCanShareForward();
 		
 		// Show/hide the "share internal" checkbox depending on whether the user has "share internal" rights.
-		m_canShareInternalCkbox.setVisible( m_canShareForwardCkbox.isVisible() && highestRightsPossible.getCanShareWithInternalUsers() );
+		m_canShareInternalCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithInternalUsers() );
 		m_canShareInternalCkbox.setValue( shareRights.getCanShareWithInternalUsers() );
 		
 		// Show/hide the "share external" checkbox depending on whether the user has "share external" rights.
-		m_canShareExternalCkbox.setVisible( m_canShareForwardCkbox.isVisible() && highestRightsPossible.getCanShareWithExternalUsers() );
+		m_canShareExternalCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithExternalUsers() );
 		m_canShareExternalCkbox.setValue( shareRights.getCanShareWithExternalUsers() );
 		
 		// Show/hide the "share public" checkbox depending on whether the user has "share public" rights.
-		m_canSharePublicCkbox.setVisible( m_canShareForwardCkbox.isVisible() && highestRightsPossible.getCanShareWithPublic() );
+		m_canSharePublicCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithPublic() );
 		m_canSharePublicCkbox.setValue( shareRights.getCanShareWithPublic() );
-		
-		danceDlg();
 	}
 	
 	/**
