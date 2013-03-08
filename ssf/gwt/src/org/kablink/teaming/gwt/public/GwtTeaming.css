@@ -2655,7 +2655,7 @@ body, table td, select
 {
 	color: #FFFFFF;
 	font-size: 12px;
-	margin: 3px;
+	margin: 2px 4px 4px;
 	text-align: center;
 }
 	
@@ -2665,7 +2665,7 @@ body, table td, select
 	color: #FFFFFF;
 	font-size: 12px;
 	margin-right: 5px;
-	padding: 3px;
+	padding: 0px;
 	text-align: center;
 }
 
@@ -2675,6 +2675,7 @@ body, table td, select
 	background-repeat: repeat;
 	border: 1px solid #3c4143;
 	cursor: pointer;
+	
 }
 
 .mastheadFilr_PeoplePanel
@@ -2697,7 +2698,7 @@ body, table td, select
 {
 	left: 110px;
 	position: absolute;
-	bottom: 2px;
+	bottom: 0px;
 	z-index: 400;
 }
 
