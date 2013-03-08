@@ -2197,10 +2197,10 @@ public class GwtShareHelper
 					currentUser = GwtServerHelper.getCurrentUser();
 					
 					// Send an email to each of the recipients
-					entityEmailErrors = sendEmailToRecipient(
+					entityEmailErrors = EmailHelper.sendEmailToRecipient(
 															ami,
 															shareItem,
-															nextGwtShareItem,
+															nextGwtShareItem.getRecipientType()==GwtRecipientType.EXTERNAL_USER,
 															currentUser );
 					
 					if ( emailErrors == null )

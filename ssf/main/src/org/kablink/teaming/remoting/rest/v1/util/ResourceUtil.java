@@ -55,6 +55,7 @@ import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.Workspace;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -777,9 +778,26 @@ public class ResourceUtil {
         if (link!=null) {
             model.setRecipient(new EntityId(recipientId, recipType.name(), link));
         }
-        model.setRole(shareItem.getRole().name());
         model.setSharedEntity(buildEntityId(shareItem.getSharedEntityIdentifier()));
-        model.setCanShare(shareItem.getRightSet().allowResharing());
+
+        Access access = new Access();
+        access.setRole(shareItem.getRole().name());
+        SharingPermission sharing = new SharingPermission();
+        access.setSharing(sharing);
+        WorkAreaOperation.RightSet rightSet = shareItem.getRightSet();
+        if (rightSet.isAllowSharingForward()) {
+            sharing.setInternal(rightSet.isAllowSharing());
+            sharing.setExternal(rightSet.isAllowSharingExternal());
+            sharing.setPublic(rightSet.isAllowSharingPublic());
+        } else {
+            sharing.setInternal(false);
+            sharing.setExternal(false);
+            sharing.setPublic(false);
+        }
+        model.setAccess(access);
+        model.setRole(access.getRole());
+        model.setCanShare(sharing.getPublic() || sharing.getExternal() || sharing.getInternal());
+
         model.setLink(LinkUriUtil.getShareLinkUri(model.getId()));
         return model;
     }

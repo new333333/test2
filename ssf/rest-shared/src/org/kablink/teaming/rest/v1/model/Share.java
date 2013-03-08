@@ -18,7 +18,6 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -38,10 +37,7 @@ public class Share extends BaseRestObject {
     private EntityId sharedEntity;
     private String role;
     private Boolean canShare;
-    private Boolean canShareInternal;
-    private Boolean canShareExternal;
-    private Boolean canSharePublic;
-    private Boolean canShareForward;
+    private Access access;
 
     public String getComment() {
         return comment;
@@ -126,5 +122,14 @@ public class Share extends BaseRestObject {
 
     public void setCanShare(Boolean canShare) {
         this.canShare = canShare;
+    }
+
+    @XmlElement(name = "access")
+    public Access getAccess() {
+        return access;
+    }
+
+    public void setAccess(Access access) {
+        this.access = access;
     }
 }

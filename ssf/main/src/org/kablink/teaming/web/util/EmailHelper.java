@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TimeZone;
 
 import javax.mail.Address;
@@ -50,21 +51,28 @@ import javax.mail.internet.InternetAddress;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
+import org.kablink.teaming.module.admin.SendMailErrorWrapper;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+
+import static org.kablink.teaming.domain.ShareItem.RecipientType.group;
+import static org.kablink.teaming.domain.ShareItem.RecipientType.user;
 
 /**
  * Helper methods for email handling.
@@ -650,8 +658,189 @@ public class EmailHelper {
 			throw ex;
 		}
 	}
-	
-	/**
+
+    public static List<SendMailErrorWrapper> sendEmailToRecipient(
+            AllModulesInjected ami,
+            ShareItem shareItem,
+            boolean isExternalUser,
+            User currentUser )
+    {
+        List emailErrors;
+        Set<Long> principalIds;
+        Set<Long> teamIds;
+        Set<Long> bccIds;
+        String bccEmailAddress;
+        EntityIdentifier entityId;
+        DefinableEntity sharedEntity;
+
+        if ( ami == null || currentUser == null || shareItem == null )
+        {
+            m_logger.error( "invalid parameter in sendEmailToRecipient()" );
+            return null;
+        }
+
+        principalIds = new HashSet<Long>();
+        teamIds = new HashSet<Long>();
+
+        switch ( shareItem.getRecipientType() )
+        {
+            case group:
+            case user:
+                principalIds.add( shareItem.getRecipientId() );
+                break;
+
+            case team:
+                teamIds.add( shareItem.getRecipientId() );
+                break;
+
+            default:
+                m_logger.error( "unknow recipient type in sendEmailToRecipient()" );
+                break;
+        }
+
+        entityId = shareItem.getSharedEntityIdentifier();
+        if ( entityId.getEntityType().isBinder() )
+            sharedEntity = ami.getBinderModule().getBinder( entityId.getEntityId() );
+        else
+            sharedEntity = ami.getFolderModule().getEntry( null, entityId.getEntityId() );
+
+        // Does this user want to be BCC'd on all mail sent out?
+        bccEmailAddress = currentUser.getBccEmailAddress();
+        if ( MiscUtil.hasString( bccEmailAddress ) )
+        {
+            // Yes!
+            // Add them to a BCC list.
+            bccIds = new HashSet<Long>();
+            bccIds.add( currentUser.getId() );
+        }
+        else
+        {
+            bccIds = null;
+        }
+
+        emailErrors = null;
+        try
+        {
+            Map<String,Object> errorMap;
+
+            if ( isExternalUser &&
+                    getExternalUserAccountState( ami, shareItem.getRecipientId() ) == User.ExtProvState.initial &&
+                    !getExternalUserLoggedInWithOpenIdAtLeastOnce( ami, shareItem.getRecipientId()))
+            {
+                errorMap = null;
+
+                errorMap = EmailHelper.sendShareInviteToExternalUser(
+                        ami,
+                        shareItem,
+                        sharedEntity,
+                        shareItem.getRecipientId() );
+            }
+            else
+            {
+                errorMap = EmailHelper.sendShareNotification(
+                        ami,
+                        shareItem,
+                        sharedEntity,
+                        principalIds,
+                        teamIds,
+                        null,	// null -> No stand alone email addresses.
+                        null,	// null -> No CC'ed users.
+                        bccIds );
+            }
+
+            if ( errorMap != null )
+            {
+                emailErrors = ((List<SendMailErrorWrapper>) errorMap.get( ObjectKeys.SENDMAIL_ERRORS ));
+            }
+        }
+        catch ( Exception ex )
+        {
+            m_logger.error( "GwtEmailHelper.sendShareNotification() threw an exception: " + ex.toString() );
+        }
+        return emailErrors;
+    }
+
+    /**
+     * Return the state of the external user account.  Possible values are, initial, bound and verified.
+     * This method will return null if the given user is not an external user.
+     */
+    private static User.ExtProvState getExternalUserAccountState(
+            AllModulesInjected ami,
+            Long userId )
+    {
+        try
+        {
+            ArrayList<Long> ids;
+            SortedSet<Principal> principals;
+
+            ids = new ArrayList<Long>();
+            ids.add( userId );
+            principals = ami.getProfileModule().getPrincipals( ids );
+            if ( principals != null && principals.size() == 1 )
+            {
+                Principal principal;
+
+                //
+                principal = principals.first();
+                if ( principal instanceof User )
+                {
+                    User user;
+
+                    user = (User) principal;
+                    if ( user.getIdentityInfo().isInternal() == false )
+                        return user.getExtProvState();
+                }
+            }
+        }
+        catch ( AccessControlException acEx )
+        {
+            // Nothing to do
+        }
+
+        return null;
+    }
+
+    /**
+     * Return true iff the user is an external user and has logged in using OpenID at least once.
+     * It doesn't matter whether the user is self provisioned or not.
+     */
+    private static boolean getExternalUserLoggedInWithOpenIdAtLeastOnce(
+            AllModulesInjected ami,
+            Long userId )
+    {
+        try
+        {
+            ArrayList<Long> ids;
+            SortedSet<Principal> principals;
+
+            ids = new ArrayList<Long>();
+            ids.add( userId );
+            principals = ami.getProfileModule().getPrincipals( ids );
+            if ( principals != null && principals.size() == 1 )
+            {
+                Principal principal;
+
+                //
+                principal = principals.first();
+                if ( principal instanceof User )
+                {
+                    User user;
+
+                    user = (User) principal;
+                    if ( user.getIdentityInfo().isInternal() == false )
+                        return user.getIdentityInfo().isFromOpenid();
+                }
+            }
+        }
+        catch ( AccessControlException acEx )
+        {
+            // Nothing to do
+        }
+
+        return false;
+    }
+
+    /**
 	 * Sends a URL notification mail message to a collection of users
 	 * and/or explicit email addresses.
 	 * 
