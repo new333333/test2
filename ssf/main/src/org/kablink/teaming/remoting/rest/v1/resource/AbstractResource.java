@@ -1240,7 +1240,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         User loggedInUser = getLoggedInUser();
 
         ShareItem.Role foundRole = null;
-        ShareItem.Role [] roles = new ShareItem.Role[] {ShareItem.Role.CONTRIBUTOR, ShareItem.Role.EDITOR, ShareItem.Role.VIEWER};
+        ShareItem.Role [] roles = new ShareItem.Role[] {ShareItem.Role.EDITOR, ShareItem.Role.VIEWER};
         for (ShareItem.Role role : roles) {
             WorkAreaOperation[] rights = role.getWorkAreaOperations();
             boolean match = true;
