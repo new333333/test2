@@ -31,6 +31,7 @@ import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.util.search.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,7 +62,9 @@ public class ShareResource extends AbstractResource {
     @POST
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Share updateShare(@PathParam("id") Long id, Share share) {
+    public Share updateShare(@PathParam("id") Long id,
+                             @QueryParam("notify") @DefaultValue("false") boolean notifyRecipient,
+                             Share share) {
         ShareItem origItem = _getShareItem(id);
         // You can't change the shared entity or the recipient via this API.  Perhaps I should fail if the client supplies
         // these values and they don't match?
@@ -69,6 +72,13 @@ public class ShareResource extends AbstractResource {
         share.setRecipient(new EntityId(origItem.getRecipientId(), origItem.getRecipientType().name(), null));
         ShareItem shareItem = toShareItem(share);
         getSharingModule().modifyShareItem(shareItem, id);
+        if (notifyRecipient) {
+            try {
+                EmailHelper.sendEmailToRecipient(this, shareItem, false, getLoggedInUser());
+            } catch (Exception e) {
+                logger.warn("Failed to send share notification email", e);
+            }
+        }
         return ResourceUtil.buildShare(shareItem);
     }
 
