@@ -1729,7 +1729,8 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_TrashConfirmPurge();
 	String vibeDataTable_TrashConfirmPurgeAll();
 	String vibeDataTable_TrashConfirmPurgeAllWithSelections();
-	String vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders();
+	String vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Filr();
+	String vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Vibe();
 	String vibeDataTable_TrashConfirmRestoreAllWithSelections();
 	String vibeDataTable_TrashInternalErrorOverrideMissing(String methodName);
 	String vibeDataTable_View();
@@ -1922,7 +1923,8 @@ public interface GwtTeamingMessages extends Messages
 	String binderViewsConfirmDeleteFolder();
 	String binderViewsConfirmDeleteWorkspace();
 	String binderViewsConfirmDeleteUserWS();
-	String binderViewsConfirmPurgeDeleteSourceOnMirroredSubFolders();
+	String binderViewsConfirmPurgeDeleteSourceOnMirroredSubFolders_Filr();
+	String binderViewsConfirmPurgeDeleteSourceOnMirroredSubFolders_Vibe();
 	String binderViewsConfirmPurgeEntries();
 	String binderViewsConfirmPurgeEntry();
 	String binderViewsConfirmPurgeFolder();
@@ -1935,7 +1937,8 @@ public interface GwtTeamingMessages extends Messages
 	String binderViewsDeleteTasksProgress();
 	String binderViewsDeleteUserWorkspacesCaption();
 	String binderViewsDeleteUserWorkspacesProgress();
-	String binderViewsPromptPurgeMirroredFolders();
+	String binderViewsPromptPurgeMirroredFolders_Filr();
+	String binderViewsPromptPurgeMirroredFolders_Vibe();
 	String binderViewsPurgeFolderEntriesCaption();
 	String binderViewsPurgeFolderEntriesProgress();
 	String binderViewsPurgeTasksCaption();
