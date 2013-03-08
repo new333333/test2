@@ -5254,14 +5254,14 @@ public class BinderHelper {
  				   for (FolderEntry child:children) {
  					   atts = child.getAttachments();
  					   if (!atts.isEmpty()) {
- 			 			   throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored",
+ 			 			   throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored." + (destination.isAclExternallyControlled() ? "net" : "mirrored"),
  			 						new String[] {binder.getPathName(), destination.getPathName()});			   
  					   }
  				   }
  				   //This entry is OK to copy
  				   return;
  			   }
- 			   throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored",
+ 			   throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored." + (destination.isAclExternallyControlled() ? "net" : "mirrored"),
  						new String[] {binder.getPathName(), destination.getPathName()});			   
  		   }
  	   }
