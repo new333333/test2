@@ -4,7 +4,6 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -19,14 +18,11 @@ import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
-import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.search.SearchUtils;
-import org.kablink.teaming.security.AccessControlManager;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -95,9 +91,9 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     @GET
-    @Path("{id}/access_role")
+    @Path("{id}/access")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public AccessRole getAccessRole(@PathParam("id") long id) {
+    public Access getAccessRole(@PathParam("id") long id) {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
         return getAccessRole(binder);
     }
@@ -319,8 +315,10 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
     @POST
     @Path("{id}/shares")
-    public Share shareEntity(@PathParam("id") Long id, Share share) {
-        return shareEntity(_getBinder(id), share);
+    public Share shareEntity(@PathParam("id") Long id,
+                             @QueryParam("notify") @DefaultValue("false") boolean notifyRecipient,
+                             Share share) {
+        return shareEntity(_getBinder(id), share, notifyRecipient);
     }
 
     @GET

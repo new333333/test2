@@ -24,13 +24,10 @@ import java.util.Date;
  * Date: 7/25/12
  * Time: 11:38 AM
  */
-@XmlRootElement(name="access_role")
-public class AccessRole extends BaseRestObject {
+@XmlRootElement(name="access")
+public class Access extends BaseRestObject {
     private String role;
-    private Boolean canShareInternal;
-    private Boolean canShareExternal;
-    private Boolean canSharePublic;
-    private Boolean canShareForward;
+    private SharingPermission sharing;
 
     public String getRole() {
         return role;
@@ -40,39 +37,11 @@ public class AccessRole extends BaseRestObject {
         this.role = role;
     }
 
-    @XmlElement(name = "can_share_external")
-    public Boolean getCanShareExternal() {
-        return canShareExternal;
+    public SharingPermission getSharing() {
+        return sharing;
     }
 
-    public void setCanShareExternal(Boolean canShareExternal) {
-        this.canShareExternal = canShareExternal;
-    }
-
-    @XmlElement(name = "can_share_forward")
-    public Boolean getCanShareForward() {
-        return canShareForward;
-    }
-
-    public void setCanShareForward(Boolean canShareForward) {
-        this.canShareForward = canShareForward;
-    }
-
-    @XmlElement(name = "can_share_internal")
-    public Boolean getCanShareInternal() {
-        return canShareInternal;
-    }
-
-    public void setCanShareInternal(Boolean canShareInternal) {
-        this.canShareInternal = canShareInternal;
-    }
-
-    @XmlElement(name = "can_share_public")
-    public Boolean getCanSharePublic() {
-        return canSharePublic;
-    }
-
-    public void setCanSharePublic(Boolean canSharePublic) {
-        this.canSharePublic = canSharePublic;
+    public void setSharing(SharingPermission sharing) {
+        this.sharing = sharing;
     }
 }

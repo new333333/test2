@@ -46,7 +46,7 @@ import org.kablink.teaming.remoting.rest.v1.util.FilePropertiesBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
-import org.kablink.teaming.rest.v1.model.AccessRole;
+import org.kablink.teaming.rest.v1.model.Access;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 import org.kablink.teaming.rest.v1.model.ParentBinder;
@@ -240,14 +240,14 @@ public class FileResource extends AbstractFileResource {
     }
 
     @GET
-    @Path("{id}/access_role")
-    public AccessRole getAccessRole(@PathParam("id") String fileId) {
+    @Path("{id}/access")
+    public Access getAccessRole(@PathParam("id") String fileId) {
         FileAttachment fa = findFileAttachment(fileId);
         DefinableEntity entity = fa.getOwner().getEntity();
         if (entity instanceof FolderEntry) {
             return getAccessRole((FolderEntry) entity);
         }
-        AccessRole role = new AccessRole();
+        Access role = new Access();
         role.setRole(ShareItem.Role.NONE.name());
         return role;
     }
