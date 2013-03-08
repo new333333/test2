@@ -349,15 +349,11 @@ public class GwtNetFolderHelper
 		{
 			try
 			{
-				boolean deleteSource = false;
-				
-				ami.getFolderModule().deleteNetFolder(
-												nextNetFolder.getId(),
-												deleteSource );
+				NetFolderHelper.deleteNetFolder( ami.getFolderModule(), nextNetFolder.getId(), false );
 			}
 			catch ( Exception e )
 			{
-				m_logger.error( "Error deleting next net folder: " + nextNetFolder.getName(), e);
+				m_logger.error( "Error deleting next net folder: " + nextNetFolder.getName(), e );
 			}
 		}
 		
