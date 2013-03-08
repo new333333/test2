@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -64,8 +64,12 @@ import org.kablink.util.Http;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 
-
-
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings("unchecked")
 public class WebUrlUtil {
 	public static final int FILE_URL_ACTION = 1;
 	public static final int FILE_URL_ENTITY_TYPE = 2;
@@ -451,19 +455,15 @@ public class WebUrlUtil {
 		return WebUrlUtil.getFileZipUrl(webPath, action, entity.getId().toString(), 
 					entity.getEntityType().name(), "");			
 	}
-	@SuppressWarnings("unchecked")
 	public static String getFileUrl(PortletRequest req, String path, Map searchResults) {
 		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, 	searchResults);
 	}
-	@SuppressWarnings("unchecked")
 	public static String getFileUrl(HttpServletRequest req, String path, Map searchResults) {
 		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, searchResults);
 	}
-	@SuppressWarnings("unchecked")
 	public static String getFileUrl(String webPath, String action, Map searchResults) {
 		return getFileUrl(webPath, action, searchResults, null);
 	}
-	@SuppressWarnings("unchecked")
 	public static String getFileUrl(String webPath, String action, Map searchResults, String file) {
 		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf((String)searchResults.get(org.kablink.util.search.Constants.ENTITY_FIELD));
 		String entityId = (String)searchResults.get(org.kablink.util.search.Constants.DOCID_FIELD);
@@ -905,78 +905,87 @@ public class WebUrlUtil {
 		
 	private static void init() {
 		if(adapterWebProtocol == -1) {
-			String prot;
+			int webProtocolHttp;
+			int webProtocolContextHttp;
+			if (0 == SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT)) {
+				webProtocolHttp        = WEB_PROTOCOL_HTTPS;
+				webProtocolContextHttp = WEB_PROTOCOL_CONTEXT_HTTPS;
+			}
+			else {
+				webProtocolHttp        = WEB_PROTOCOL_HTTP;
+				webProtocolContextHttp = WEB_PROTOCOL_CONTEXT_HTTP;
+			}
 			
-			prot = SPropsUtil.getString("adapter.web.protocol", "context");
+			String prot = SPropsUtil.getString("adapter.web.protocol", "context");
 			if(prot.equalsIgnoreCase("http"))
-				adapterWebProtocol = WEB_PROTOCOL_HTTP;
+				adapterWebProtocol = webProtocolHttp;
 			else if(prot.equalsIgnoreCase("https"))
 				adapterWebProtocol = WEB_PROTOCOL_HTTPS;
 			else if(prot.equalsIgnoreCase("context-https"))
 				adapterWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
 			else
-				adapterWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;
+				adapterWebProtocol = webProtocolContextHttp;
 			
 			prot = SPropsUtil.getString("servlet.web.protocol", "context");
 			if(prot.equalsIgnoreCase("http"))
-				servletWebProtocol = WEB_PROTOCOL_HTTP;
+				servletWebProtocol = webProtocolHttp;
 			else if(prot.equalsIgnoreCase("https"))
 				servletWebProtocol = WEB_PROTOCOL_HTTPS;
 			else if(prot.equalsIgnoreCase("context-https"))
 				servletWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
 			else
-				servletWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;
+				servletWebProtocol = webProtocolContextHttp;
 			
 			prot = SPropsUtil.getString("rss.web.protocol", "context");
 			if(prot.equalsIgnoreCase("http"))
-				rssWebProtocol = WEB_PROTOCOL_HTTP;
+				rssWebProtocol = webProtocolHttp;
 			else if(prot.equalsIgnoreCase("https"))
 				rssWebProtocol = WEB_PROTOCOL_HTTPS;
 			else if(prot.equalsIgnoreCase("context-https"))
 				rssWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
 			else
-				rssWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;
+				rssWebProtocol = webProtocolContextHttp;
 			
 			prot = SPropsUtil.getString("atom.web.protocol", "context");
 			if(prot.equalsIgnoreCase("http"))
-				atomWebProtocol = WEB_PROTOCOL_HTTP;
+				atomWebProtocol = webProtocolHttp;
 			else if(prot.equalsIgnoreCase("https"))
 				atomWebProtocol = WEB_PROTOCOL_HTTPS;
 			else if(prot.equalsIgnoreCase("context-https"))
 				atomWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
 			else
-				atomWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;
+				atomWebProtocol = webProtocolContextHttp;
 			
 			
 			prot = SPropsUtil.getString("ical.web.protocol", "context");
 			if(prot.equalsIgnoreCase("http"))
-				icalWebProtocol = WEB_PROTOCOL_HTTP;
+				icalWebProtocol = webProtocolHttp;
 			else if(prot.equalsIgnoreCase("https"))
 				icalWebProtocol = WEB_PROTOCOL_HTTPS;
 			else if(prot.equalsIgnoreCase("context-https"))
 				icalWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
 			else
-				icalWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;
+				icalWebProtocol = webProtocolContextHttp;
 
 			prot = SPropsUtil.getString("ssfs.web.protocol", "context");
 			if(prot.equalsIgnoreCase("http"))
-				ssfsWebProtocol = WEB_PROTOCOL_HTTP;
+				ssfsWebProtocol = webProtocolHttp;
 			else if(prot.equalsIgnoreCase("https"))
 				ssfsWebProtocol = WEB_PROTOCOL_HTTPS;
 			else if(prot.equalsIgnoreCase("context-https"))
 				ssfsWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
 			else
-				ssfsWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;			
+				ssfsWebProtocol = webProtocolContextHttp;			
 
 			prot = SPropsUtil.getString("simpleurl.web.protocol", "context");
 			if(prot.equalsIgnoreCase("http"))
-				simpleURLWebProtocol = WEB_PROTOCOL_HTTP;
+				simpleURLWebProtocol = webProtocolHttp;
 			else if(prot.equalsIgnoreCase("https"))
 				simpleURLWebProtocol = WEB_PROTOCOL_HTTPS;
 			else if(prot.equalsIgnoreCase("context-https"))
 				simpleURLWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
 			else
-				simpleURLWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;			
+				simpleURLWebProtocol = webProtocolContextHttp;			
 		}
 	}
 	
@@ -1120,5 +1129,4 @@ public class WebUrlUtil {
 		}
 		return map;
 	}
-	
 }
