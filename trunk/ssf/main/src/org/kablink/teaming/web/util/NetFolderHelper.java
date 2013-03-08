@@ -532,6 +532,17 @@ public class NetFolderHelper
 	}
 
 	/**
+	 * Delete the given net folder
+	 */
+	public static void deleteNetFolder(
+		FolderModule folderModule,
+		Long id,
+		boolean deleteSource )
+	{
+		folderModule.deleteNetFolder( id, deleteSource );
+	}
+	
+	/**
 	 * See if a "home directory" net folder exists with the given rootName and path for the given user.
 	 */
 	@SuppressWarnings("unchecked")
@@ -541,6 +552,9 @@ public class NetFolderHelper
 	{
 		Binder binder;
 		List<Binder> childBinders;
+		
+		if ( workspaceId == null )
+			return null;
 		
 		//!!! Ask Dennis how to do a search so I don't have to read the list of binders.
 		//!!! Maybe it is ok to enumerate through the list of binders.

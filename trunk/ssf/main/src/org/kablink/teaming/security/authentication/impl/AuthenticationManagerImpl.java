@@ -376,6 +376,31 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 							logger.error( "Unable to create home directory net folder, server: " + homeDirInfo.getServerAddr() + " error: " + ex.toString() );
 						}
 					}
+					else
+					{
+						Binder netFolderBinder;
+						
+						// The user does not have a home directory attribute.
+						// Does the user already have a home dir net folder?
+						// Does a net folder already exist for this user's home directory
+						netFolderBinder = NetFolderHelper.findHomeDirNetFolder(
+																			binderModule,
+																			user.getWorkspaceId() );
+						if ( netFolderBinder != null )
+						{
+							// Yes
+							// Delete the home net folder.
+							try
+							{
+								NetFolderHelper.deleteNetFolder( getFolderModule(), netFolderBinder.getId(), false );
+							}
+							catch ( Exception e )
+							{
+								logger.error( "Error deleting home net folder: " + netFolderBinder.getName(), e );
+							}
+						}
+						
+					}
 				}
 				catch ( NamingException ex )
 				{
