@@ -422,23 +422,34 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	}
 	
 	private String getTastingText(Document doc) {
-		String text = null;
+		StringBuilder sb = new StringBuilder();
+		
 		Fieldable title = doc.getFieldable(Constants.TITLE_FIELD);
 		if (title != null) 
-			text = title.stringValue();
-		if(text == null || text.length() == 0) {
+			sb.append(title.stringValue());
+		
+		if(sb.length() == 0) {
 			Fieldable desc = doc.getFieldable(Constants.DESC_TEXT_FIELD);
 			if(desc != null)
-				text = desc.stringValue();
+				sb.append(desc.stringValue());
 		}
-		if(text == null || text.length() == 0)
-			text = getTastingTextFromGeneralTextField(doc);
-		if(text == null)
-			text = "";
-		if (text.length()> 1024) 
-			return text.substring(0,1024);
-		else 
-			return text;
+		
+		if(sb.length() == 0) {
+			sb.append(getTastingTextFromGeneralTextField(doc));			
+		}
+		else if(sb.length() < 1024) {
+			Fieldable docTypeField = doc.getFieldable(Constants.DOC_TYPE_FIELD);
+			if(docTypeField != null && Constants.DOC_TYPE_ATTACHMENT.equals(docTypeField.stringValue())) {
+				sb.append(" ").append(getTastingTextFromGeneralTextField(doc));
+			}
+		}
+		
+		String text = sb.toString();
+		
+		if (text.length() > 1024) 
+			text = text.substring(0,1024);
+		
+		return text;
 	}
 	
 	private String getTastingTextFromGeneralTextField(Document doc) {
