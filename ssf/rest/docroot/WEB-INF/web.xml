@@ -66,6 +66,10 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
+    <listener>
+     	<listener-class>org.kablink.teaming.rest.servlet.listener.SessionListener</listener-class>
+    </listener>
+
 	<servlet>
 		<servlet-name>restServlet</servlet-name>
 		<servlet-class>org.kablink.teaming.rest.servlet.RestInvokingServlet</servlet-class>
