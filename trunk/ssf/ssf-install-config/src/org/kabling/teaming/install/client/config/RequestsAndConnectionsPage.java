@@ -23,6 +23,7 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 	private GwValueSpinner maxThreadsSpinner;
 	//private GwValueSpinner maxIdleSpinner;
 	private GwValueSpinner maxActiveSpinner;
+	private GwValueSpinner schedulerThreadsSpinner;
 
 	@Override
 	public Panel createContent(Object propertiesObj)
@@ -71,6 +72,19 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 			table.setWidget(row, 1, maxActiveSpinner);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
+		
+		{
+			row++;
+			// Max Active
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.schedulerThreadsColon());
+			table.setWidget(row, 0, keyLabel);
+			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			schedulerThreadsSpinner = new GwValueSpinner(20, 5, 100, RBUNDLE.default20());
+			schedulerThreadsSpinner.getValSpinnerLabel().addStyleName("infoLabel");
+			table.setWidget(row, 1, schedulerThreadsSpinner);
+			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
 
 //		{
 //			row++;
@@ -96,6 +110,7 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 		req.setMaxActive(maxActiveSpinner.getValueAsInt());
 		//req.setMaxIdle(maxIdleSpinner.getValueAsInt());
 		req.setMaxThreads(maxThreadsSpinner.getValueAsInt());
+		req.setSchedulerThreads(schedulerThreadsSpinner.getValueAsInt());
 		return config;
 	}
 
@@ -114,6 +129,7 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 			maxActiveSpinner.setValue(req.getMaxActive());
 			//maxIdleSpinner.setValue(req.getMaxIdle());
 			maxThreadsSpinner.setValue(req.getMaxThreads());
+			schedulerThreadsSpinner.setValue(req.getSchedulerThreads());
 		}
 	}
 

@@ -1484,7 +1484,7 @@ public final class ConfigService
 		reqElement.setAttribute("maxThreads", String.valueOf(req.getMaxThreads()));
 		reqElement.setAttribute("maxActive", String.valueOf(req.getMaxActive()));
 		reqElement.setAttribute("maxIdle", String.valueOf(req.getMaxIdle()));
-		reqElement.setAttribute("schedulerThreds", String.valueOf(req.getSchedulerThreads()));
+		reqElement.setAttribute("schedulerThreads", String.valueOf(req.getSchedulerThreads()));
 	}
 
 	private static void saveEmailSettingsConfiguration(InstallerConfig config, Document document)
