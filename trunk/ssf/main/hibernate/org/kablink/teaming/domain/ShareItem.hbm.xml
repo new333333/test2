@@ -31,6 +31,7 @@
     	<property name="createEntries" column="right_createEntries" access="field"/>
     	<property name="modifyEntries" column="right_modifyEntries" access="field"/>
     	<property name="modifyEntryFields" column="right_modifyEntryFields" access="field"/>
+    	<property name="renameEntries" column="right_renameEntries" access="field"/>
     	<property name="deleteEntries" column="right_deleteEntries" access="field"/>
     	<property name="readEntries" column="right_readEntries" access="field"/>
     	<property name="addReplies" column="right_addReplies" access="field"/>
