@@ -1831,6 +1831,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		EntityIndexUtils.addReadAccess(indexDoc, binder, entry, fieldsOnly);
       		
         EntityIndexUtils.addParentBinder(indexDoc, entry, fieldsOnly);
+        
+        EntityIndexUtils.addEntryPath(indexDoc, entry);
 
         // Add the workflows if any
         EntityIndexUtils.addWorkflow(indexDoc, entry, fieldsOnly);

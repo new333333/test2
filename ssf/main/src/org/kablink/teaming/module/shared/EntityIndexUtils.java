@@ -327,6 +327,18 @@ public class EntityIndexUtils {
     		doc.add(entryTypeField);
     	} 
    }
+    
+    public static void addEntryPath(Document doc, Entry entry) {
+    	Binder parent = entry.getParentBinder();
+    	if(parent == null) return;
+    	if(!parent.isLibrary()) return;
+    	Set<FileAttachment> fAtts = entry.getFileAttachments();
+    	if(fAtts.size() != 1) return;
+    	String fileName = fAtts.iterator().next().getFileItem().getName();
+		Field sortPath = FieldFactory.createFieldNotStoredNotAnalyzed(SORT_ENTITY_PATH, parent.getPathName().toLowerCase() + "/" + fileName.toLowerCase());
+		doc.add(sortPath);
+    }
+
     public static void addCreation(Document doc, HistoryStamp stamp, boolean fieldsOnly) {
     	if (stamp == null) return;
     	Date creationDate = stamp.getDate();
