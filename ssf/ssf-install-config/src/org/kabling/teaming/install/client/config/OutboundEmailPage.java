@@ -195,7 +195,7 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 		{
 			row++;
 			// Test Connection
-			Button testConnButton = new Button(RBUNDLE.testConnection());
+			final Button testConnButton = new Button(RBUNDLE.testConnection());
 			testConnButton.addStyleName("tomcatRestartButton");
 			table.setWidget(row, 1, testConnButton);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
@@ -206,6 +206,7 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 				@Override
 				public void onClick(ClickEvent event)
 				{
+					testConnButton.setEnabled(false);
 					InstallerConfig config = (InstallerConfig) getDataFromDlg();
 					AppUtil.getInstallService().testSmtpConnection(config.getEmailSettings(), new AsyncCallback<Boolean>()
 					{
@@ -213,12 +214,14 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 						@Override
 						public void onFailure(Throwable caught)
 						{
+							testConnButton.setEnabled(true);
 							Window.alert("Connection not Valid");
 						}
 
 						@Override
 						public void onSuccess(Boolean result)
 						{
+							testConnButton.setEnabled(true);
 							if (result )
 								Window.alert("Connection Valid");
 							else

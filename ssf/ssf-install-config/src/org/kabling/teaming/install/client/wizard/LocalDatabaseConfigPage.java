@@ -9,6 +9,9 @@ import org.kabling.teaming.install.shared.DatabaseConfig;
 import org.kabling.teaming.install.shared.DatabaseConfig.DatabaseType;
 import org.kabling.teaming.install.shared.InstallerConfig;
 
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -94,6 +97,20 @@ public class LocalDatabaseConfigPage implements IWizardPage<InstallerConfig>
 				userPwdConfirmTextBox = new PasswordTextBox();
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 				table.setWidget(row, 1, userPwdConfirmTextBox);
+				
+				userPwdConfirmTextBox.addKeyUpHandler(new KeyUpHandler()
+				{
+					
+					@Override
+					public void onKeyUp(KeyUpEvent event)
+					{
+						if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
+						{
+							if (!userPwdConfirmTextBox.getText().equals("") && !userPwdTextBox.getText().equals(""))
+								wizard.finish();
+						}
+					}
+				});
 			}
 
 			initUIWithData();
