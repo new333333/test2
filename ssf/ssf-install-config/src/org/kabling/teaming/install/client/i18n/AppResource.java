@@ -1,7 +1,6 @@
 package org.kabling.teaming.install.client.i18n;
 
 import com.google.gwt.i18n.client.Messages;
-import com.google.gwt.safehtml.shared.SafeHtml;
 
 public interface AppResource extends Messages
 {
@@ -222,6 +221,8 @@ public interface AppResource extends Messages
 	String default10000();
 
 	String default10();
+	
+	String default30();
 
 	String configurationTypeColon();
 
@@ -323,4 +324,6 @@ public interface AppResource extends Messages
 	String default100();
 	
 	String default250();
+
+	String schedulerThreadsColon();
 }

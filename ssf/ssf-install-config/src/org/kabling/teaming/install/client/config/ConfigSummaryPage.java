@@ -381,12 +381,12 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 
 			row++;
 			{
-				// Max Idle
-				InlineLabel keyLabel = new InlineLabel(RBUNDLE.maxIdleColon());
+				// Max Scheduler
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.schedulerThreadsColon());
 				table.setWidget(row, 0, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-				InlineLabel valueLabel = new InlineLabel(String.valueOf(reqConnections.getMaxIdle()));
+				InlineLabel valueLabel = new InlineLabel(String.valueOf(reqConnections.getSchedulerThreads()));
 				table.setWidget(row, 1, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 			}
