@@ -611,5 +611,11 @@ update SS_Principals set foreignName=LOWER(foreignName);
             <column name="lastSyncTime" type="DATETIME"/>
         </createTable>
     </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="70">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_renameEntries" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
     
 </databaseChangeLog>

@@ -616,4 +616,10 @@ update SS_PRINCIPALS set FOREIGNNAME=LOWER(FOREIGNNAME);
         </createTable>
     </changeSet>
 
+    <changeSet author="peter" context="schema" failOnError="true" id="71">
+        <addColumn tableName="SS_SHAREITEM">
+			<column name="right_renameEntries" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

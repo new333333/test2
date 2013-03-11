@@ -644,5 +644,11 @@ update SS_Principals set foreignName=LOWER(foreignName);
             <append value=" engine innodb"/>
         </modifySql>
     </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="76">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_renameEntries" type="BIT"/>
+        </addColumn>
+    </changeSet>
     
 </databaseChangeLog>
