@@ -1,6 +1,7 @@
 package org.kabling.teaming.install.client.config;
 
 import org.kabling.teaming.install.client.AppUtil;
+import org.kabling.teaming.install.client.ConfigModifiedEvent;
 import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.LicensePageDlgBox;
 import org.kabling.teaming.install.shared.ProductInfo.ProductType;
@@ -215,6 +216,7 @@ public class LicenseInformationPage extends LicensePageDlgBox
 			public void onSubmitComplete(SubmitCompleteEvent event)
 			{
 				hide(true);
+				AppUtil.getEventBus().fireEvent(new ConfigModifiedEvent(true,true));
 			}
 		});
 
