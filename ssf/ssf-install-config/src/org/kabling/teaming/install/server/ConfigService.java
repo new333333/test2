@@ -2159,6 +2159,9 @@ public final class ConfigService
 
 		String ipAddr = getLocalIpAddr();
 
+		//Turn on secure port 
+		executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getSecureListenPort(), true);
+		
 		// Http 8080 disabled
 		if (network.getListenPort() == 0)
 		{
@@ -2180,6 +2183,8 @@ public final class ConfigService
 			executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getListenPort(), true);
 		}
 
+		
+		
 		if (network.isPortRedirect())
 		{
 			executeCommand("sudo python /opt/novell/filr_config/updateFirewallRedirect.py " + ipAddr + " " + network.getSecureListenPort()
