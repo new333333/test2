@@ -233,11 +233,6 @@ public class MainUILayoutPanel extends Composite implements LeftNavSelectEventHa
 			dlg.createAllDlgContent(AppUtil.getAppResource().reverseProxy(), dlg, null, null);
 			break;
 			
-		case IMPORT_EXPORT:
-			dlg = new ExportConfigurationPage();
-			dlg.createAllDlgContent(AppUtil.getAppResource().exportConfiguration(), dlg, null, null);
-			break;
-			
 		case LUCENE:
 			dlg = new LucenePage();
 			dlg.createAllDlgContent(AppUtil.getAppResource().lucene(), dlg, null, null);
