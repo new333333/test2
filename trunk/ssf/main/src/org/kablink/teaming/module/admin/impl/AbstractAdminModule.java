@@ -1099,14 +1099,16 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null, true);
 		} else if (!originalRead.equals(currentRead) && workArea instanceof Entry) {
 			Entry entry = (Entry)workArea;
-			List entries = new ArrayList();
-			entries.add(entry);
-			Set<Entry> children = entry.getChildWorkAreas();
-			for (Entry e : children) entries.add(e);
-			loadEntryProcessor(entry).indexEntries(entries);
+			indexEntry(entry);
 		}
 	}
 
+    private void indexEntry(Entry entry) {
+		List entries = new ArrayList();
+		entries.add(entry);
+		entries.addAll(entry.getChildWorkAreas());
+		loadEntryProcessor(entry).indexEntries(entries);
+    }
 
 	//no transaction
     @Override
@@ -1375,14 +1377,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// need to re-index an entry?
 		else if ((!(originalRead.equals(currentRead))) && wa instanceof Entry) {
 			// Yes!  Re-index it.
-			List	entries = new ArrayList();
-			Entry	entry   = ((Entry) wa);
-			entries.add(entry);
-			Set<Entry> children = entry.getChildWorkAreas();
-			for (Entry e:  children) {
-				entries.add(e);
-			}
-			loadEntryProcessor(entry).indexEntries(entries);
+			indexEntry((Entry)wa);
 		}
 	}
 
@@ -1668,13 +1663,19 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				}
 			}
 		
-			//Set the entry external acl flag
-	        getTransactionTemplate().execute(new TransactionCallback() {
-	        	@Override
-				public Object doInTransaction(TransactionStatus status) {
-	           		if (workArea instanceof Entry) ((Entry)workArea).setHasEntryExternalAcl(hasExternalAcl);
-					return null;
-	        	}});
+			if(workArea instanceof Entry) {
+				final Entry entry = (Entry) workArea;
+				if(entry.hasEntryExternalAcl() != hasExternalAcl) {					
+					//Set the entry external acl flag
+			        getTransactionTemplate().execute(new TransactionCallback() {
+			        	@Override
+						public Object doInTransaction(TransactionStatus status) {
+			           		entry.setHasEntryExternalAcl(hasExternalAcl);
+							return null;
+			        	}});
+			        indexEntry(entry);
+				}
+			}
 		}
 	}
 
