@@ -1877,9 +1877,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 
-		if ((Utils.checkIfVibe() || Utils.checkIfKablink()) && 
-				!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID)) {
-			//Don't add this role to Filr
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID)) {
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_ENABLE_SHARING_EXTERNAL);
@@ -1992,7 +1990,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_EXTERNAL_INTERNALID)) {
+		if ((Utils.checkIfVibe() || Utils.checkIfKablink()) && 
+				!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_EXTERNAL_INTERNALID)) {
+			//Don't create this role in Filr
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_ENABLE_SHARING_ALL_EXTERNAL);
