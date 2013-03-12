@@ -32,93 +32,74 @@
  */
 package org.kablink.teaming.gwt.client;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
- * Class used to return the results of the request to share an entry
- * 
- * @author jwootton@novell.com
+ * This class is used to identify a ShareItem that we successfully created/modified
  */
-public class GwtShareEntryResults implements IsSerializable
+public class GwtShareItemResult implements IsSerializable
 {
-	private ArrayList<GwtShareItemResult> m_listOfSuccesses;	// List of shares we successfully created/modified.
-	private ArrayList<String> m_errors;
-	
-	/**
-	 * Constructor method. 
-	 * 
-	 * No parameters as per GWT serialization requirements.
-	 */
-	public GwtShareEntryResults()
-	{
-		// Nothing to do.
-	}	
+	private Long m_id;						// Database id of the ShareItem that was created/modified
+	private GwtShareItem m_gwtShareItem;	// Original GwtShareItem we were working with.
+	private boolean m_emailNeeded;
 	
 	/**
 	 * 
 	 */
-	public void addError( String error )
+	public GwtShareItemResult()
 	{
-		if ( m_errors == null )
-			m_errors = new ArrayList<String>();
-		
-		m_errors.add( error );
+		m_id = null;
+		m_gwtShareItem = null;
+		m_emailNeeded = false;
 	}
 	
 	/**
 	 * 
 	 */
-	public void addErrors( List<String> errors )
+	public boolean getEmailNeeded()
 	{
-		if ( errors != null )
-		{
-			for ( String error : errors )
-			{
-				addError( error );
-			}
-		}
+		return m_emailNeeded;
 	}
 	
 	/**
 	 * 
 	 */
-	public void addSuccess( Long id, GwtShareItem gwtShareItem, boolean emailNeeded )
+	public GwtShareItem getGwtShareItem()
 	{
-		GwtShareItemResult result;
-		
-		if ( m_listOfSuccesses == null )
-			m_listOfSuccesses = new ArrayList<GwtShareItemResult>();
-		
-		result = new GwtShareItemResult();
-		result.setId( id );
-		result.setEmailNeeded( emailNeeded );
-		result.setGwtShareItem( gwtShareItem );
-		m_listOfSuccesses.add( result );
-	}
-
-	/**
-	 * Return the list of errors.
-	 */
-	public String[] getErrors()
-	{
-		if ( m_errors != null )
-			return m_errors.toArray( new String[ m_errors.size() ] );
-	
-		return null;
+		return m_gwtShareItem;
 	}
 	
 	/**
-	 * Return the list of the shares we created/modified.
+	 * 
 	 */
-	public ArrayList<GwtShareItemResult> getSuccesses()
+	public Long getId()
 	{
-		return m_listOfSuccesses;
+		return m_id;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setEmailNeeded( boolean emailNeeded )
+	{
+		m_emailNeeded = emailNeeded;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setGwtShareItem( GwtShareItem gwtShareItem )
+	{
+		m_gwtShareItem = gwtShareItem;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setId( Long id )
+	{
+		m_id = id;
 	}
 }

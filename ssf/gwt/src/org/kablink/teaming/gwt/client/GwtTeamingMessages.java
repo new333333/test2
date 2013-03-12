@@ -534,6 +534,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveZoneShareRights();
 	String rpcFailure_Search();
 	String rpcFailure_SendForgottenPwdEmail();
+	String rpcFailure_SendNotificationEmail();
 	String rpcFailure_SetDesktopAppDownloadVisibility();
 	String rpcFailure_SetEntriesPinState();
 	String rpcFailure_SetSeen();
@@ -1331,6 +1332,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_readingShareInfo();
 	String shareDlg_rightsLabel();
 	String shareDlg_savingShareInfo();
+	String shareDlg_sendingNotificationEmail();
 	String shareDlg_shareLabel();
 	String shareDlg_sharingLabel();
 	String shareDlg_sharePublicTitle();

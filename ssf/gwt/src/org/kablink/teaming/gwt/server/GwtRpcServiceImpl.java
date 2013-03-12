@@ -74,6 +74,7 @@ import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
+import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
 import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
 import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.GwtUserFileSyncAppConfig;
@@ -2934,6 +2935,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 														sfpeCmd.getEmailAddress() );
 			
 			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case SEND_SHARE_NOTIFICATION_EMAIL:
+		{
+			SendShareNotificationEmailCmd ssneCmd;
+			GwtSendShareNotificationEmailResults results;
+			
+			ssneCmd = (SendShareNotificationEmailCmd) cmd;
+			results = GwtShareHelper.sendShareNotificationEmail( this, ssneCmd.getShareItemIds() );
+			
+			response = new VibeRpcResponse( results );
 			return response;
 		}
 

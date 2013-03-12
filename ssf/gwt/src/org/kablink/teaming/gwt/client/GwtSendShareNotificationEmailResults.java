@@ -36,19 +36,19 @@ package org.kablink.teaming.gwt.client;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.GwtShareItem;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * Class used to return the results of the request to share an entry
+ * Class used to return the results of the request to send the share notification email.
  * 
  * @author jwootton@novell.com
  */
-public class GwtShareEntryResults implements IsSerializable
+public class GwtSendShareNotificationEmailResults
+	implements IsSerializable, VibeRpcResponseData
 {
-	private ArrayList<GwtShareItemResult> m_listOfSuccesses;	// List of shares we successfully created/modified.
 	private ArrayList<String> m_errors;
 	
 	/**
@@ -56,7 +56,7 @@ public class GwtShareEntryResults implements IsSerializable
 	 * 
 	 * No parameters as per GWT serialization requirements.
 	 */
-	public GwtShareEntryResults()
+	public GwtSendShareNotificationEmailResults()
 	{
 		// Nothing to do.
 	}	
@@ -87,23 +87,6 @@ public class GwtShareEntryResults implements IsSerializable
 	}
 	
 	/**
-	 * 
-	 */
-	public void addSuccess( Long id, GwtShareItem gwtShareItem, boolean emailNeeded )
-	{
-		GwtShareItemResult result;
-		
-		if ( m_listOfSuccesses == null )
-			m_listOfSuccesses = new ArrayList<GwtShareItemResult>();
-		
-		result = new GwtShareItemResult();
-		result.setId( id );
-		result.setEmailNeeded( emailNeeded );
-		result.setGwtShareItem( gwtShareItem );
-		m_listOfSuccesses.add( result );
-	}
-
-	/**
 	 * Return the list of errors.
 	 */
 	public String[] getErrors()
@@ -112,13 +95,5 @@ public class GwtShareEntryResults implements IsSerializable
 			return m_errors.toArray( new String[ m_errors.size() ] );
 	
 		return null;
-	}
-	
-	/**
-	 * Return the list of the shares we created/modified.
-	 */
-	public ArrayList<GwtShareItemResult> getSuccesses()
-	{
-		return m_listOfSuccesses;
 	}
 }
