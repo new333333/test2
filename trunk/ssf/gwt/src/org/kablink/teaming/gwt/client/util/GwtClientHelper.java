@@ -1472,9 +1472,15 @@ public class GwtClientHelper {
 	public static void deferCommand(final ScheduledCommand cmd, final int delay) {
 		// Yes!  If we don't have a specific amount of time to
 		// delay...
-		if (0 >= delay) {
-			// ...simply schedule the command...
+		if (0 == delay) {
+			// ...defer the command...
 			Scheduler.get().scheduleDeferred(cmd);
+		}
+
+		// ...otherwise, if the delay is less than 0...
+		else if (0 > delay) {
+			// ...execute the command inline...
+			cmd.execute();
 		}
 		
 		else {
