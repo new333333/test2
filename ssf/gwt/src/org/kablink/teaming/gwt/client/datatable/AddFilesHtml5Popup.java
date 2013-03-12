@@ -124,11 +124,13 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 {
 	private BinderInfo						m_folderInfo;				// The folder the add files is running against.
 	private Button							m_browseButton;				// Button that fronts the default browser 'Browse' button.
+	private Button							m_closeButton;				// Button next to the Browse to close the popup.
 	private DropPanel						m_dndPanel;					// The drag and drop panel that holds the popup's content.
 	private FlexTable						m_pbPanel;					// Panel that will hold the progress bars.
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private Image							m_busyImage;				// Image holding a spinner that's show while an upload is happening.
+	private Image							m_closeX;					// The 'X' in the upper right corner of the upload popup.
 	private InlineLabel						m_hintLabel;				// The label inside the hint box.
 	private int								m_readThis;					// The file out of the total that is currently being uploaded.
 	private int								m_readTotal;				// Total number of files to upload during an upload event.
@@ -144,6 +146,9 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	// true -> Information about file blobs being uploaded is displayed
 	// via alerts.  false -> They're not.
 	private static boolean TRACE_BLOBS	= false;	//
+	
+	// true -> Hide the popup after an upload.  false -> Don't.
+	private static boolean AUTOHIDE_ON_COMPLETE	= true;	//
 	
 	// Defines the default type of HTML5 file read used to upload
 	// files.
@@ -252,15 +257,15 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		// hand corner of the popup.
 		FlowPanel closePanel = new FlowPanel();
 		closePanel.addStyleName("vibe-addFilesHtml5Popup-closePanel");
-		Image closeImg = new Image(m_images.closeBorder());
-		closeImg.addClickHandler(new ClickHandler() {
+		m_closeX = new Image(m_images.closeBorder());
+		m_closeX.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				// If the user clicks the close, simply hide the popup.
 				hide();
 			}
 		});
-		closePanel.add(closeImg  );
+		closePanel.add(m_closeX  );
 		mainPanel.add( closePanel);
 		
 		// Create a drag and drop panel for dropping into...
@@ -303,6 +308,16 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		m_browseButton.addClickHandler(  this);
 		m_browseButton.addKeyDownHandler(this);
 		browsePanel.add(m_browseButton);
+		m_closeButton = new Button(m_messages.addFilesHtml5PopupClose());
+		m_closeButton.addStyleName("vibe-addFilesHtml5Popup-innerHintCloseButton");
+		m_browseButton.setTitle(m_messages.addFilesHtml5PopupCloseAlt());
+		m_closeButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				hide();
+			}
+		});
+		browsePanel.add(m_closeButton);
 		hintPanel.add(browsePanel);
 
 		// Create an initially hidden panel containing progress bars
@@ -466,17 +481,17 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * Displays an error to the user if any files were ignored as
 	 * folders.
 	 */
-	private void handleIgnoredFolders() {
+	private int handleIgnoredFolders() {
 		// Are we tracking any ignored folders?
+		int reply = 0;
 		if (0 < m_ignoredAsFolders.size()) {
 			// Yes!  Display them to the user...
 			StringBuffer folderNames = new StringBuffer("");
-			int folders = 0;
 			for (File ignoredFolder:  m_ignoredAsFolders) {
-				if (0 < folders) {
+				if (0 < reply) {
 					folderNames.append(", ");
 				}
-				folders += 1;
+				reply += 1;
 				
 				folderNames.append("'");
 				folderNames.append(ignoredFolder.getName());
@@ -490,6 +505,10 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			// ...and clear the list.
 			m_ignoredAsFolders.clear();
 		}
+		
+		// If we get here, reply contains a count of the ignored
+		// folders.  Return it.
+		return reply;
 	}
 
 	/*
@@ -543,7 +562,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			// the uploadNext to clean up the display from the canceled
 			// uploads.
 			abortUpload();
-			uploadNextNow();
+			uploadNextNow(true);
 		}
 		
 		else {
@@ -706,7 +725,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 				if (m_pbTotal.isVisible()) {
 					m_pbTotal.setProgress(m_pbTotal.getMaxProgress() - getTotalQueueFileSize());
 				}
-				uploadNextNow();
+				uploadNextNow(true);
 			}
 		}
 	}
@@ -796,7 +815,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 				
 				// ...and continue with the next file.
 				popCurrentFile();
-				uploadNextAsync();
+				uploadNextAsync(true);
 			}
 
 			@Override
@@ -810,10 +829,14 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 						// ...display the error...
 						GwtClientHelper.deferredAlert(uploadError);
 					}
-					
-					// ...and continue with the next file.
-					popCurrentFile();
-					uploadNextAsync();
+
+					// ...and if there are uploads pending (there won't
+					// ...be if the use aborted the current upload)...
+					if (uploadsPending()) {
+						// ...continue with the next file.
+						popCurrentFile();
+						uploadNextAsync(hasUploadError);
+					}
 				}
 				
 				else {
@@ -831,7 +854,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 						// Standard-complying browsers will to go in this branch.
 						handleError(file);
 						popCurrentFile();
-						uploadNextAsync();
+						uploadNextAsync(true);
 					}
 				}
 			}
@@ -961,6 +984,10 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 				m_browseButton.setText( m_messages.addFilesHtml5PopupAbort()   );
 				m_browseButton.setTitle(m_messages.addFilesHtml5PopupAbortAlt());
 				
+				// ...hide the close button...
+				m_closeButton.setVisible(false);
+				m_closeX.setVisible(     false);
+				
 				// ...show the progress panel and if necessary...
 				m_busyImage.setVisible(true);
 				m_pbPanel.setVisible(  true);
@@ -987,6 +1014,10 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			m_browseButton.setTitle(m_messages.addFilesHtml5PopupBrowseAlt());
 			m_hintLabel.setText(    m_messages.addFilesHtml5PopupHint()     );
 			
+			// ..restore the close button...
+			m_closeButton.setVisible(true);
+			m_closeX.setVisible(     true);
+			
 			// ...clear out any value in the upload widget so the the
 			// ...same file can be reselected, if desired...
 			m_uploadButton.getElement().setPropertyString("value", "");
@@ -1012,11 +1043,11 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	/*
 	 * Asynchronously uploads the next file.
 	 */
-	private void uploadNextAsync() {
+	private void uploadNextAsync(final boolean aborted) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				uploadNextNow();
+				uploadNextNow(aborted);
 			}
 		});
 	}
@@ -1026,7 +1057,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * 
 	 * Called to read and upload the next file in the queue.
 	 */
-	private void uploadNextNow() {
+	private void uploadNextNow(boolean aborted) {
 		// Are we done uploading files?
 		if (!(uploadsPending())) {
 			// Yes!  Reset the popup to indicate there are no uploads
@@ -1034,7 +1065,15 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			showUploadsActive(false);
 
 			// ...tell the user about any folders that were ignored...
-			handleIgnoredFolders();
+			if (0 < handleIgnoredFolders()) {
+				aborted = true;
+			}
+			
+			// ...and if we're supposed...
+			if ((!aborted) && AUTOHIDE_ON_COMPLETE) {
+				// ...close the upload popup...
+				hide();
+			}
 			
 			// ...and force the folder to refresh.
 			GwtTeaming.fireEventAsync(new FullUIReloadEvent());
@@ -1059,7 +1098,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 				// Standard-complying browsers will to go in this branch.
 				handleError(file);
 				popCurrentFile();
-				uploadNextAsync();
+				uploadNextAsync(true);
 			}
 		}
 	}
@@ -1123,7 +1162,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 						// ...We call uploadNext to clean up the
 						// ...display from the failed uploads.
 						abortUpload();
-						uploadNextNow();
+						uploadNextNow(true);
 					}
 				}
 
@@ -1159,7 +1198,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 											// The user has accepted
 											// the duplicates.  We can
 											// start the override.
-											uploadNextAsync();
+											uploadNextAsync(false);
 										}
 
 										@Override
@@ -1171,7 +1210,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 											// the display from the
 											// failed uploads.
 											abortUpload();
-											uploadNextNow();
+											uploadNextNow(true);
 										}
 									},
 									m_folderInfo,
@@ -1183,7 +1222,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 					else {
 						// No, there were no duplicates!  We can start
 						// the upload.
-						uploadNextAsync();
+						uploadNextAsync(false);
 					}
 				}
 			}
