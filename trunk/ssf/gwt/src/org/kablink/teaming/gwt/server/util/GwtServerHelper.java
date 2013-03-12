@@ -171,7 +171,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.C
 import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData.FilenameUrlPair;
+import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData.FileDownloadInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
@@ -1156,19 +1156,20 @@ public class GwtServerHelper {
 	}
 
 	/*
-	 * Constructs a desktop application URL.
+	 * Constructs a desktop application FileDownloadInfo object.
 	 */
-	private static FilenameUrlPair buildDesktopAppUrl(String baseUrl, String platformTail) {
+	private static FileDownloadInfo buildDesktopAppInfo(String baseUrl, String platformTail) {
 		String jsonData = doHTTPGet((baseUrl + platformTail + JSON_TAIL));
 		String fName    = getSFromJSO(jsonData, "filename");
 		String url;
 		if (MiscUtil.hasString(fName))
 		     url = (baseUrl + platformTail + fName);
 		else url = null;
+		String md5 = getSFromJSO(jsonData, "md5");
 		
-		FilenameUrlPair reply;
+		FileDownloadInfo reply;
 		if (MiscUtil.hasString(url))
-		     reply = new FilenameUrlPair(fName, url);
+		     reply = new FileDownloadInfo(fName, url, md5);
 		else reply = null;
 		return reply;
 	}
@@ -4657,9 +4658,9 @@ public class GwtServerHelper {
 				// ...and construct and store the desktop
 				// ...application information.
 				boolean isFilr = Utils.checkIfFilr();
-				reply.setMac(  buildDesktopAppUrl(baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE)));
-				reply.setWin32(buildDesktopAppUrl(baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE)));
-				reply.setWin64(buildDesktopAppUrl(baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE)));
+				reply.setMac(  buildDesktopAppInfo(baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE)));
+				reply.setWin32(buildDesktopAppInfo(baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE)));
+				reply.setWin64(buildDesktopAppInfo(baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE)));
 			}
 			
 			// If we get here, reply refers to the
