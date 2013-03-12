@@ -28,6 +28,7 @@ import org.kabling.teaming.install.shared.LoginInfo;
 import org.kabling.teaming.install.shared.LuceneConnectException;
 import org.kabling.teaming.install.shared.ProductInfo;
 import org.kabling.teaming.install.shared.ProductInfo.ProductType;
+import org.kabling.teaming.install.shared.UpdateStatus;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -234,5 +235,17 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		
 		//Able to connect
 		return true;
+	}
+
+	@Override
+	public UpdateStatus updateFilr(boolean ignoreDataDrive, boolean ignoreHostNameNotMatch)
+	{
+		return UpdateService.updateFilrSystem(ignoreDataDrive, ignoreHostNameNotMatch);
+	}
+
+	@Override
+	public ProductInfo getProductInfoFromZipFile()
+	{
+		return UpdateService.getProductInfoFromZipFile();
 	}
 }

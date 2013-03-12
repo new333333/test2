@@ -14,6 +14,7 @@ import org.kabling.teaming.install.shared.LoginException;
 import org.kabling.teaming.install.shared.LoginInfo;
 import org.kabling.teaming.install.shared.LuceneConnectException;
 import org.kabling.teaming.install.shared.ProductInfo;
+import org.kabling.teaming.install.shared.UpdateStatus;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -110,4 +111,8 @@ public interface InstallService extends RemoteService
 	LicenseInformation getLicenseInformation();
 	
 	boolean testSmtpConnection(EmailSettings emailSettings);
+	
+	UpdateStatus updateFilr(boolean ignoreDataDrive, boolean ignoreHostNameNotMatch);
+	
+	ProductInfo getProductInfoFromZipFile();
 }

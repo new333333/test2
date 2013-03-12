@@ -73,6 +73,7 @@ public class InstallerConfig implements Serializable
 	private EncryptionAlgorithm encryption;
 	private boolean advancedConfiguration;
 	private boolean localPostfix;
+	private boolean updateMode;
 
 	public InstallerConfig()
 	{
@@ -276,5 +277,15 @@ public class InstallerConfig implements Serializable
 	public void setLocalPostfix(boolean localPostfix)
 	{
 		this.localPostfix = localPostfix;
+	}
+
+	public boolean isUpdateMode()
+	{
+		return updateMode;
+	}
+
+	public void setUpdateMode(boolean updateMode)
+	{
+		this.updateMode = updateMode;
 	}
 }

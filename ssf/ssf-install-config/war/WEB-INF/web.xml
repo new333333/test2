@@ -16,16 +16,6 @@
     <url-pattern>/InstallConfig/install</url-pattern>
   </servlet-mapping>
   
-   <servlet>
-       <servlet-name>fileUploadServlet</servlet-name>
-       <servlet-class>org.kabling.teaming.install.server.ConfigImportExportServlet</servlet-class>
-   </servlet>
-
-   <servlet-mapping>
-       <servlet-name>fileUploadServlet</servlet-name>
-       <url-pattern>/InstallConfig/fileUpload</url-pattern>
-   </servlet-mapping>
-  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>

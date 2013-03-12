@@ -119,6 +119,9 @@ public final class ConfigService
 
 			}
 		}
+		
+		File upgradeFile = new File("/vastorage/conf/vaconfig.zip");
+		config.setUpdateMode(upgradeFile.exists());
 		return config;
 	}
 
@@ -1625,7 +1628,7 @@ public final class ConfigService
 		ProductInfo productInfo = new ProductInfo();
 		productInfo.setType(ProductType.NOVELL_FILR);
 
-		productInfo.setProductVersion("Beta");
+		productInfo.setProductVersion(getProductVersion());
 
 		productInfo.setCopyRight("© Copyright 1993-2012 Novell, Inc. All rights reserved.");
 
@@ -1658,6 +1661,29 @@ public final class ConfigService
 		return productInfo;
 	}
 
+	private static String getProductVersion()
+	{
+		File file = new File("/vastorage/conf/Novell-VA-release");
+		
+
+			// File does not exist, no match
+			if (!file.exists())
+			{
+				return null;
+			}
+
+			Properties prop = new Properties();
+			try
+			{
+				prop.load(new FileInputStream(file));
+				return prop.getProperty("version");
+			}
+			catch(Exception e)
+			{
+				
+			}
+			return null;
+	}
 	private static String getLocalIpAddr()
 	{
 
@@ -2056,18 +2082,17 @@ public final class ConfigService
 			logger.debug("Does not exists for deletion /filrinstall/installer.xml.orig ");
 		}
 		
-		//Save filrconfig locally to /vastorage/conf/filrconfig.zip
-		try
-		{
-			ConfigImportExportServlet.saveFilrConfigLocally();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		//Save filrconfig locally to /vastorage/conf/vaconfig.zip
+		saveFilrConfigLocally();
 		
 		if (restartServer)
 			startFilrServer();
+	}
+
+	private static void saveFilrConfigLocally()
+	{
+		
+		executeCommand("sudo python /opt/novell/base_config/zipVAConfig.py", true);	
 	}
 
 	public static void stopFilrServer()
