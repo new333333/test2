@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDesktopAppDownloadInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData.FileDownloadInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -289,13 +290,11 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		VibeFlowPanel fp = new VibeFlowPanel();
 		fp.addStyleName("displayBlock");
 		if (m_hasMac) {
-			// ...add an <A> for it...
-			Anchor a = new Anchor();
-			a.addStyleName("vibe-desktopAppPage-linkAnchor");
-			a.setTarget("_blank");
-			a.setHref(m_desktopAppDownloadInfo.getMac().getUrl());
-			a.getElement().setInnerText(m_messages.downloadAppDlgUrlMac());
-			fp.add(a);
+			// ...add the <A> for it...
+			createDownloadLink(
+				m_desktopAppDownloadInfo.getMac(),
+				fp,
+				m_messages.downloadAppDlgUrlMac());
 		}
 		
 		else {
@@ -318,12 +317,10 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		VibeFlowPanel fp = new VibeFlowPanel();
 		fp.addStyleName("displayBlock");
 		if (m_hasWin32) {
-			Anchor a = new Anchor();
-			a.addStyleName("vibe-desktopAppPage-linkAnchor");
-			a.setTarget("_blank");
-			a.setHref(m_desktopAppDownloadInfo.getWin32().getUrl());
-			a.getElement().setInnerText(m_messages.downloadAppDlgUrlWin32());
-			fp.add(a);
+			createDownloadLink(
+				m_desktopAppDownloadInfo.getWin32(),
+				fp,
+				m_messages.downloadAppDlgUrlWin32());
 		}
 		else {
 			InlineLabel il = new InlineLabel(m_messages.downloadAppDlgError_NoWin32Url());
@@ -336,14 +333,12 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		
 		// ...add the Win64 link...
 		fp = new VibeFlowPanel();
-		fp.addStyleName("displayBlock");
+		fp.addStyleName("displayBlock vibe-desktopAppPage-link2nd");
 		if (m_hasWin64) {
-			Anchor a = new Anchor();
-			a.addStyleName("vibe-desktopAppPage-linkAnchor");
-			a.setTarget("_blank");
-			a.setHref(m_desktopAppDownloadInfo.getWin64().getUrl());
-			a.getElement().setInnerText(m_messages.downloadAppDlgUrlWin64());
-			fp.add(a);
+			createDownloadLink(
+				m_desktopAppDownloadInfo.getWin64(),
+				fp,
+				m_messages.downloadAppDlgUrlWin64());
 		}
 		else {
 			InlineLabel il = new InlineLabel(m_messages.downloadAppDlgError_NoWin64Url());
@@ -356,6 +351,28 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		fcf.addStyleName(WINDOWS_ROW, DOWNLOADS_COL, "vibe-desktopAppPage-linksNoWrap bottom");
 	}
 
+	/*
+	 * Creates the <A> to download a file.
+	 */
+	private void createDownloadLink(FileDownloadInfo fdi, VibeFlowPanel fp, String aText) {
+		// Create the <A>...
+		Anchor a = new Anchor();
+		a.addStyleName("vibe-desktopAppPage-linkAnchor");
+		a.setTarget("_blank");
+		a.setHref(fdi.getUrl());
+		a.getElement().setInnerText(aText);
+		fp.add(a);
+
+		// ...and if we have an MD5 checksum...
+		String md5 = fdi.getMd5();
+		if (GwtClientHelper.hasString(md5)) {
+			// ...create a label for that.
+			Label l = new Label(m_messages.downloadAppDlgDownloadMd5(md5));
+			l.addStyleName("vibe-desktopAppPage-linkMd5");
+			fp.add(l);
+		}
+	}
+	
 	/*
 	 * Creates a header cell.
 	 */

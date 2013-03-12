@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,23 +41,24 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private FilenameUrlPair	m_mac;		//
-	private FilenameUrlPair	m_win32;	//
-	private FilenameUrlPair	m_win64;	//
+	private FileDownloadInfo	m_mac;		//
+	private FileDownloadInfo	m_win32;	//
+	private FileDownloadInfo	m_win64;	//
 	
 	/**
 	 * Inner class used to track filename/URL pairs.
 	 */
-	public static class FilenameUrlPair implements IsSerializable {
-		private String m_filename;	// The filename for this filename/URL pair.
-		private String m_url;		// The URL      for this filename/URL pair.
+	public static class FileDownloadInfo implements IsSerializable {
+		private String m_filename;	// The name of this file.
+		private String m_md5;		// The MD5 checksum for the file, if known.
+		private String m_url;		// The URL to download this file.
 
 		/**
 		 * Constructor method.
 		 * 
 		 * Zero parameter constructor required for GWT serialization.
 		 */
-		public FilenameUrlPair() {
+		public FileDownloadInfo() {
 			// Initialize the super class.
 			super();
 		}
@@ -67,14 +68,26 @@ public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, Vi
 		 * 
 		 * @param filename
 		 * @param url
+		 * @param md5
 		 */
-		public FilenameUrlPair(String filename, String url) {
+		public FileDownloadInfo(String filename, String url, String md5) {
 			// Initialize this object...
 			this();
 			
 			// ...and store the parameters.
 			setFilename(filename);
 			setUrl(     url     );
+			setMd5(     md5     );
+		}
+		/**
+		 * Constructor method.
+		 * 
+		 * @param filename
+		 * @param url
+		 */
+		public FileDownloadInfo(String filename, String url) {
+			// Initialize this object.
+			this(filename, url, null);
 		}
 
 		/**
@@ -83,6 +96,7 @@ public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, Vi
 		 * @return
 		 */
 		public String getFilename(){return m_filename; }
+		public String getMd5()     {return m_md5;      }
 		public String getUrl()     {return m_url;      }
 
 		/**
@@ -91,6 +105,7 @@ public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, Vi
 		 * @param
 		 */
 		public void setFilename(String s) {m_filename = s;}
+		public void setMd5(     String s) {m_md5      = s;}
 		public void setUrl(     String s) {m_url      = s;}
 	}
 	
@@ -109,16 +124,16 @@ public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, Vi
 	 * 
 	 * @return
 	 */
-	public FilenameUrlPair getMac() {return m_mac;  }
-	public FilenameUrlPair getWin32() {return m_win32;}
-	public FilenameUrlPair getWin64() {return m_win64;}
+	public FileDownloadInfo getMac()   {return m_mac;  }
+	public FileDownloadInfo getWin32() {return m_win32;}
+	public FileDownloadInfo getWin64() {return m_win64;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setMac(  FilenameUrlPair mac)   {m_mac   = mac;  }
-	public void setWin32(FilenameUrlPair win32) {m_win32 = win32;}
-	public void setWin64(FilenameUrlPair win64) {m_win64 = win64;}
+	public void setMac(  FileDownloadInfo mac)   {m_mac   = mac;  }
+	public void setWin32(FileDownloadInfo win32) {m_win32 = win32;}
+	public void setWin64(FileDownloadInfo win64) {m_win64 = win64;}
 }
