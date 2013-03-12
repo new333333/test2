@@ -12,6 +12,7 @@ import org.kabling.teaming.install.shared.LicenseInformation;
 import org.kabling.teaming.install.shared.LoginException;
 import org.kabling.teaming.install.shared.LoginInfo;
 import org.kabling.teaming.install.shared.ProductInfo;
+import org.kabling.teaming.install.shared.UpdateStatus;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -52,4 +53,8 @@ public interface InstallServiceAsync
 	void getLicenseInformation(AsyncCallback<LicenseInformation> callback);
 
 	void testSmtpConnection(EmailSettings emailSettings, AsyncCallback<Boolean> callback);
+
+	void updateFilr(boolean ignoreDataDrive, boolean ignoreHostNameNotMatch, AsyncCallback<UpdateStatus> callback);
+
+	void getProductInfoFromZipFile(AsyncCallback<ProductInfo> callback);
 }

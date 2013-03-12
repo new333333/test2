@@ -56,7 +56,7 @@
 
 	
 	<!-- Define the tool directories. -->
-	<property name="gwt.dir" location="../tools/gwt" />
+	<property name="gwt.dir" location="lib" />
 	<property name="lib.dir" location="../lib"       />
 
 	
@@ -117,7 +117,6 @@
 	<target name="war" depends="compile-gwt" description="Create a war file">
 		 <copy todir="www/WEB-INF/lib">
 		 	<fileset dir="${lib.dir}">
-		 		 <include name="gwt-servlet.jar"/>
 		 		<include name="xml-apis.jar"/>
 		 		<include name="xercesImpl.jar"/>
 		 		<include name="log4j.jar"/>
@@ -129,6 +128,9 @@
 		 		<include name="commons-io.jar"/>
 		 		<include name="mail.jar"/>
 		 	 </fileset>
+		 	<fileset dir="${gwt.dir}">
+		 		<include name="gwt-servlet.jar"/>
+		 	</fileset>
 		  </copy>
 		 <copy todir="www/3rdparty">
 			<fileset dir="war/3rdparty"/>

@@ -104,14 +104,14 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 	{
 		currentPage = pageToShow;
 
-		updateButtons();
-
 		// Clear any errors as we are moving to a new page
 		setErrorMessage(null);
 
 		wizardContentPanel.clear();
 		wizardContentPanel.add(currentPage.getWizardUI());
 
+		updateButtons();
+		
 		m_caption.setText(currentPage.getPageTitle());
 
 		if (pageToShow.getWidgetToFocus() != null)
@@ -171,7 +171,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		if (configPage.getDeploymentType().equals("upgrade"))
 		{
 			showStatusIndicator(AppUtil.getAppResource().upgradePleaseWait());
-			importPage.upgrade();
+			configPage.performUpdate(false, false);
 		}
 		else
 		{
@@ -187,16 +187,17 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		if (currentPage.getPreviousPage() == null)
 		{
 			previousButton.setEnabled(false);
-			nextButton.setEnabled(true);
 		}
-		else if (currentPage.getNextPage() == null)
-		{
+		else {
 			previousButton.setEnabled(true);
+		}
+		
+		if (currentPage.getNextPage() == null)
+		{
 			nextButton.setEnabled(false);
 		}
 		else
 		{
-			previousButton.setEnabled(true);
 			nextButton.setEnabled(true);
 		}
 
