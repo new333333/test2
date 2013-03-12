@@ -35,9 +35,7 @@ package org.kablink.teaming.gwt.server.util;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -65,6 +63,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.IdentityInfo;
+import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
@@ -72,6 +71,7 @@ import org.kablink.teaming.domain.User.ExtProvState;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtPublic;
 import org.kablink.teaming.gwt.client.GwtRole;
+import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.ZoneShareRights;
@@ -841,46 +841,6 @@ public class GwtShareHelper
 			}
 			
 			return null;
-		}
-
-	/**
-	 * Return true iff the user is an external user and has logged in using OpenID at least once.
-	 * It doesn't matter whether the user is self provisioned or not. 
-	 */
-	private static boolean getExternalUserLoggedInWithOpenIdAtLeastOnce(
-			AllModulesInjected ami,
-			Long userId )
-		{
-			try
-			{
-				ArrayList<Long> ids;
-				SortedSet<Principal> principals;
-				
-				ids = new ArrayList<Long>();
-				ids.add( userId );
-				principals = ami.getProfileModule().getPrincipals( ids );
-				if ( principals != null && principals.size() == 1 )
-				{
-					Principal principal;
-					
-					// 
-					principal = principals.first();
-					if ( principal instanceof User )
-					{
-						User user;
-
-						user = (User) principal;
-						if ( user.getIdentityInfo().isInternal() == false )
-							return user.getIdentityInfo().isFromOpenid();
-					}
-				}
-			}
-			catch ( AccessControlException acEx )
-			{
-				// Nothing to do
-			}
-			
-			return false;
 		}
 
 	/**
@@ -1817,109 +1777,99 @@ public class GwtShareHelper
 	}
 
 	/**
-	 * Send an email to the given recipient
+	 * Send a notification email for each of the given share items
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static List<SendMailErrorWrapper> sendEmailToRecipient(
+	public static GwtSendShareNotificationEmailResults sendShareNotificationEmail(
 		AllModulesInjected ami,
-		ShareItem shareItem,
-		GwtShareItem gwtShareItem,
-		User currentUser )
+		ArrayList<Long> listOfShareItemIds )
 	{
-		List emailErrors;
-		Set<Long> principalIds;
-		Set<Long> teamIds;
-		Set<Long> bccIds;
-		String bccEmailAddress;
-		EntityId entityId;
-		DefinableEntity sharedEntity;
-
-		if ( ami == null || currentUser == null || gwtShareItem == null )
-		{
-			m_logger.error( "invalid parameter in sendEmailToRecipient()" );
-			return null;
-		}
+		List<SendMailErrorWrapper> emailErrors;
+		GwtSendShareNotificationEmailResults results;
+		User currentUser;
 		
-		principalIds = new HashSet<Long>();
-		teamIds = new HashSet<Long>();
-		
-		switch ( gwtShareItem.getRecipientType() )
-		{
-		case GROUP:
-		case USER:
-		case EXTERNAL_USER:
-			principalIds.add( gwtShareItem.getRecipientId() );
-			break;
-		
-		case TEAM:
-			teamIds.add( gwtShareItem.getRecipientId() );
-			break;
-		
-		default:
-			m_logger.error( "unknow recipient type in sendEmailToRecipient()" );
-			break;
-		}
-		
-		entityId = gwtShareItem.getEntityId();
-		if ( entityId.isBinder() )
-			sharedEntity = ami.getBinderModule().getBinder( entityId.getEntityId() );
-		else
-			sharedEntity = ami.getFolderModule().getEntry( entityId.getBinderId(), entityId.getEntityId() );
-		
-		// Does this user want to be BCC'd on all mail sent out?
-		bccEmailAddress = currentUser.getBccEmailAddress();
-		if ( MiscUtil.hasString( bccEmailAddress ) )
-		{
-			// Yes!
-			// Add them to a BCC list.
-			bccIds = new HashSet<Long>();
-			bccIds.add( currentUser.getId() );
-		}
-		else
-		{
-			bccIds = null;
-		}
-		
+		results = new GwtSendShareNotificationEmailResults();
 		emailErrors = null;
-		try
+		
+		if ( ami == null || listOfShareItemIds == null || listOfShareItemIds.size() == 0 )
+			return results;
+		
+		currentUser = GwtServerHelper.getCurrentUser();
+		
+		for ( Long nextShareItemId : listOfShareItemIds )
 		{
-			Map<String,Object> errorMap;
-			
-			if ( gwtShareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER &&
-				 getExternalUserAccountState( ami, gwtShareItem.getRecipientId() ) == ExtProvState.initial &&
-				 !getExternalUserLoggedInWithOpenIdAtLeastOnce( ami, gwtShareItem.getRecipientId()))
+			try
 			{
-				errorMap = null;
+				ShareItem shareItem;
+				List<SendMailErrorWrapper> entityEmailErrors = null;
+				boolean isExternal;
+
+				// Get the ShareItem.
+				shareItem = ami.getSharingModule().getShareItem( nextShareItemId );
 				
-				errorMap = EmailHelper.sendShareInviteToExternalUser(
+				// See if the recipient is an external user.
+				isExternal = false;
+				{
+			        try
+			        {
+			            ArrayList<Long> ids;
+			            SortedSet<Principal> principals;
+
+			            ids = new ArrayList<Long>();
+			            ids.add( shareItem.getRecipientId() );
+			            principals = ami.getProfileModule().getPrincipals( ids );
+			            if ( principals != null && principals.size() == 1 )
+			            {
+			                Principal principal;
+
+			                principal = principals.first();
+			                if ( principal instanceof User )
+			                {
+			                    User user;
+
+			                    user = (User) principal;
+			                    if ( user.getIdentityInfo().isInternal() == false )
+			                    	isExternal = true;
+			                }
+			            }
+			        }
+			        catch ( AccessControlException acEx )
+			        {
+			            // Nothing to do
+			        }
+				}
+
+				// Send an email to the recipient of this share.
+				entityEmailErrors = EmailHelper.sendEmailToRecipient(
 														ami,
 														shareItem,
-														sharedEntity,
-														gwtShareItem.getRecipientId() );
+														isExternal,
+														currentUser );
+				
+				if ( entityEmailErrors != null )
+				{
+					if ( emailErrors == null )
+					{
+						emailErrors = entityEmailErrors;
+					}
+					else
+					{
+						emailErrors.addAll( entityEmailErrors );
+					}
+				}
 			}
-			else
+			catch ( NoShareItemByTheIdException ex )
 			{
-				errorMap = EmailHelper.sendShareNotification(
-														ami,
-														shareItem,
-														sharedEntity,
-														principalIds,
-														teamIds,
-														null,	// null -> No stand alone email addresses.
-														null,	// null -> No CC'ed users.
-														bccIds );
-			}
-			
-			if ( errorMap != null )
-			{
-				emailErrors = ((List<SendMailErrorWrapper>) errorMap.get( ObjectKeys.SENDMAIL_ERRORS ));
+				m_logger.info( "In GwtShareHelper.sendShareNotificationEmail(), could not find share item: " + nextShareItemId );
 			}
 		}
-		catch ( Exception ex )
+		
+		// Add any errors that happened to the results.
+		if ( null != emailErrors )
 		{
-			m_logger.error( "GwtEmailHelper.sendShareNotification() threw an exception: " + ex.toString() );
+			results.addErrors( SendMailErrorWrapper.getErrorMessages( emailErrors ) );
 		}
-		return emailErrors;
+
+		return results;
 	}
 		
 	/**
@@ -1933,7 +1883,6 @@ public class GwtShareHelper
 		GwtShareEntryResults results;
 		ArrayList<GwtShareItem> listOfGwtShareItems;
 		ArrayList<GwtShareItem> listOfGwtShareItemsToDelete;
-		List<SendMailErrorWrapper> emailErrors;
 
 		sharingModule = ami.getSharingModule();
 
@@ -1951,8 +1900,6 @@ public class GwtShareHelper
 		{
 			return results;
 		}
-		
-		emailErrors = null;
 		
 		// Delete ShareItems that the user removed.
 		listOfGwtShareItemsToDelete = sharingData.getListOfToBeDeletedShareItems();
@@ -2188,42 +2135,16 @@ public class GwtShareHelper
 					}
 				}
 				
-				// Send an email to this recipient
-				if ( sendEmail )
+				// Did we successfully create/modify a share?
+				if ( shareItem != null )
 				{
-					List<SendMailErrorWrapper> entityEmailErrors = null;
-					User currentUser;
-
-					currentUser = GwtServerHelper.getCurrentUser();
 					
-					// Send an email to each of the recipients
-					entityEmailErrors = EmailHelper.sendEmailToRecipient(
-															ami,
-															shareItem,
-															nextGwtShareItem.getRecipientType()==GwtRecipientType.EXTERNAL_USER,
-															currentUser );
-					
-					if ( emailErrors == null )
-					{
-						emailErrors = entityEmailErrors;
-					}
-					else
-					{
-						if ( entityEmailErrors != null )
-						{
-							emailErrors.addAll( entityEmailErrors );
-						}
-					}
+					// Yes
+					results.addSuccess( shareItem.getId(), nextGwtShareItem, sendEmail );
 				}
 			}
 		}// end for()
 
-		// Add any errors that happened to the results.
-		if ( null != emailErrors )
-		{
-			results.addErrors( SendMailErrorWrapper.getErrorMessages( emailErrors ) );
-		}
-		
 		return results;
 	}
 

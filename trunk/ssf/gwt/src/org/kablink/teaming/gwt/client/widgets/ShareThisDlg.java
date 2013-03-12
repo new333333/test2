@@ -51,7 +51,9 @@ import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
+import org.kablink.teaming.gwt.client.GwtShareItemResult;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -64,6 +66,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSharingInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SendShareNotificationEmailCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
@@ -171,6 +174,7 @@ public class ShareThisDlg extends DlgBox
 	private AsyncCallback<VibeRpcResponse> m_readTeamsCallback;
 	private AsyncCallback<VibeRpcResponse> m_shareEntryCallback;
 	private AsyncCallback<VibeRpcResponse> m_getSharingInfoCallback;
+	private AsyncCallback<VibeRpcResponse> m_sendNotificationEmailCallback;
 	private UIObject m_target;
 	private ShareExpirationValue m_defaultShareExpirationValue;
 	private ShareExpirationDlg m_shareExpirationDlg;
@@ -1574,6 +1578,53 @@ public class ShareThisDlg extends DlgBox
 								}
 							}
 							
+							// Get a list of the successful shares we did
+							{
+								ArrayList<GwtShareItemResult> listOfSuccesses;
+								
+								listOfSuccesses = result.getSuccesses();
+								if ( listOfSuccesses != null )
+								{
+									ArrayList<Long> emailNeeded;
+									
+									emailNeeded = null;
+									
+									// Create a list of the ids of the share items we need to send an email for.
+									for ( GwtShareItemResult nextSuccess : listOfSuccesses )
+									{
+										int row;
+
+										// Find the recipient in the table.
+										row = findShareItem( nextSuccess.getGwtShareItem() );
+										if ( row >= 0 )
+										{
+											GwtShareItem shareItem;
+											
+											shareItem = getShareItem( row );
+											if ( shareItem != null )
+												shareItem.setIsDirty( false );
+										}
+										
+										// Is an email needed?
+										if ( nextSuccess.getEmailNeeded() )
+										{
+											// Yes
+											if ( emailNeeded == null )
+												emailNeeded = new ArrayList<Long>();
+											
+											emailNeeded.add( nextSuccess.getId() );
+										}
+									}
+									
+									// Do we need to send any emails?
+									if ( emailNeeded != null && emailNeeded.size() > 0 )
+									{
+										// Yes
+										sendNotificationEmails( emailNeeded );
+									}
+								}
+							}
+							
 							// Do we have any errors to display?
 							if ( haveErrors )
 							{
@@ -2054,6 +2105,29 @@ public class ShareThisDlg extends DlgBox
 		return shareRights;
 	}
 	
+	/**
+	 * Return the GwtShareItem from the given row in the table that holds the recipients.
+	 */
+	private GwtShareItem getShareItem( int row )
+	{
+		GwtShareItem shareItem;
+
+		shareItem = null;
+		
+		if ( row >= 1 )
+		{
+			Widget widget;
+			
+			// Get the RemoveRecipientWidget from the last column.
+			widget = m_shareTable.getWidget( row, m_numCols-1 );
+			if ( widget != null && widget instanceof RemoveShareWidget )
+				shareItem = ((RemoveShareWidget) widget).getShareItem();
+		}
+		
+		return shareItem;
+	}
+	
+
 	/**
 	 * Return the ShareRightsWidget associated with the given share item.
 	 */
@@ -2665,6 +2739,99 @@ public class ShareThisDlg extends DlgBox
 			
 			adjustShareTablePanelHeight();
 		}
+	}
+	
+	/**
+	 * Issue an rpc request to send an email for each of the given share item ids.
+	 */
+	private void sendNotificationEmails( ArrayList<Long> listOfShareItemIds )
+	{
+		SendShareNotificationEmailCmd cmd;
+
+		if ( listOfShareItemIds == null || listOfShareItemIds.size() == 0 )
+			return;
+	
+		if ( m_sendNotificationEmailCallback == null )
+		{
+			m_sendNotificationEmailCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( Throwable caught )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+													caught,
+													GwtTeaming.getMessages().rpcFailure_SendNotificationEmail() );
+					
+					hideStatusMsg();
+				}
+
+				@Override
+				public void onSuccess( final VibeRpcResponse vibeResult )
+				{
+					Scheduler.ScheduledCommand cmd;
+
+					hideStatusMsg();
+
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							GwtSendShareNotificationEmailResults result = (GwtSendShareNotificationEmailResults) vibeResult.getResponseData();
+							String[] errorMessages;
+							FlowPanel errorPanel;
+							
+							boolean haveErrors;
+							
+							haveErrors = false;
+							
+							// Get the panel that holds the errors.
+							errorPanel = getErrorPanel();
+							errorPanel.clear();
+							
+							// Were there any errors?
+							errorMessages = result.getErrors();
+							if ( errorMessages != null && errorMessages.length > 0 )
+							{
+								// Yes
+								haveErrors = true;
+
+								// Add each error message to the error panel.
+								{
+									Label label;
+									
+									label = new Label( GwtTeaming.getMessages().shareErrors() );
+									label.addStyleName( "dlgErrorLabel" );
+									errorPanel.add( label );
+									
+									for ( String nextErrMsg : errorMessages )
+									{
+										label = new Label( nextErrMsg );
+										label.addStyleName( "bulletListItem" );
+										errorPanel.add( label );
+									}
+								}
+							}
+							
+							// Do we have any errors to display?
+							if ( haveErrors )
+							{
+								// Yes
+								// Make the error panel visible.
+								showErrorPanel();
+							}
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}				
+			};
+		}
+
+		showStatusMsg( GwtTeaming.getMessages().shareDlg_sendingNotificationEmail() );
+
+		// Issue an ajax request to send the share notification emails.
+		cmd = new SendShareNotificationEmailCmd( listOfShareItemIds );
+		GwtClientHelper.executeCommand( cmd, m_sendNotificationEmailCallback );
 	}
 	
 	/*
