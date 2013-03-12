@@ -314,9 +314,10 @@ public class FileResource extends AbstractFileResource {
         if (!(entity instanceof FolderEntry)) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Only files that are contained in an entry can be moved.");
         }
-        getFolderModule().moveEntry(null, entity.getId(), newFolderId, null, null);
+        FolderEntry newEntry = getFolderModule().moveEntry(null, entity.getId(), newFolderId, null, null);
+        FileAttachment newAttachment = newEntry.getFileAttachment(fa.getFileItem().getName());
 
-        FileProperties fileProperties = ResourceUtil.buildFileProperties(fa);
+        FileProperties fileProperties = ResourceUtil.buildFileProperties(newAttachment);
         if (finalParentId!=null) {
             fileProperties.setBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
         }

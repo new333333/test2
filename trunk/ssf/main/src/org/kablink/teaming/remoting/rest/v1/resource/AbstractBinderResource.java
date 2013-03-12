@@ -130,7 +130,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                              @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
         if (newBinderId ==null) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'folder_id' form parameter");
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'binder_id' form parameter");
         }
         Long finalParentId = null;
         if (newBinderId.equals(ObjectKeys.MY_FILES_ID)) {
@@ -143,9 +143,9 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
 
         org.kablink.teaming.domain.Binder parentBinder = _getBinderImpl(newBinderId);
-        getBinderModule().moveBinder(binder.getId(), parentBinder.getId(), null);
+        org.kablink.teaming.domain.Binder newBinder = getBinderModule().moveBinder(binder.getId(), parentBinder.getId(), null);
 
-        Binder modifiedBinder = ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
+        Binder modifiedBinder = ResourceUtil.buildBinder(newBinder, includeAttachments, textDescriptions);
         if (finalParentId!=null) {
             modifiedBinder.setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
         }

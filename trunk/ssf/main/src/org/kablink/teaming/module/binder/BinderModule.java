@@ -577,7 +577,7 @@ public interface BinderModule {
 	 * @param toId - destination id
      * @param options - processing options or null
 	 */
-	public void moveBinder(Long binderId, Long toId, Map options)
+	public Binder moveBinder(Long binderId, Long toId, Map options)
 		throws AccessControlException;  
     /**
      * Modify the list of definitions and workflows assocated with a binder
