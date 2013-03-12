@@ -559,7 +559,7 @@ public interface FolderModule {
      * @param options - processing options or null
      * @throws AccessControlException
      */
-    public void moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) 
+    public FolderEntry moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options)
     	throws AccessControlException;
 
     /**

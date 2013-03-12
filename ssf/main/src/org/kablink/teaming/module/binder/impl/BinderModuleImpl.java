@@ -1404,22 +1404,24 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	
 	// inside write transaction
 	@Override
-	public void moveBinder(Long fromId, Long toId, Map options) throws NotSupportedException {
+	public Binder moveBinder(Long fromId, Long toId, Map options) throws NotSupportedException {
 		Binder source = loadBinder(fromId);
 		Binder sourceParent = source.getParentBinder();
 		checkAccess(source, BinderOperation.moveBinder);
 		Binder destination = loadBinder(toId);
-		
+
+        Binder newBinder;
 		//See if moving from a regular folder to a mirrored folder
 		if (!source.isMirrored() && destination.isMirrored()) {
 			//This is a special case move. Do it by copying the folder then deleting it
-			Binder copiedBinder = copyBinder(fromId, toId, true, options);
+			newBinder = copyBinder(fromId, toId, true, options);
 			//Note that if the delete fails, the copied binder will still remain
 			//However, some of the original source binders may also be left behind
 			//It was felt that it is better to leave everything to the user to clean up.
 			deleteBinder(source.getId(), false, null);
 			
 		} else {
+            newBinder = source;
 			if (loadBinderProcessor(source).checkMoveBinderQuota(source, destination)) {
 				if (source.getEntityType().equals(EntityType.folder)) {
 					getAccessControlManager().checkOperation(destination,
@@ -1439,6 +1441,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
 			}
 		}
+        return newBinder;
 	}
 
 	// no transaction

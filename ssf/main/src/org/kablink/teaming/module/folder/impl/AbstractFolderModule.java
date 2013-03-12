@@ -1086,7 +1086,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     }
     //inside write transaction    
     @Override
-	public void moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) {
+	public FolderEntry moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) {
         FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.moveEntry);
         Folder folder = entry.getParentFolder();
@@ -1110,17 +1110,21 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			throw new BinderQuotaException(entry.getTitle());
 		}
 
-		if ((folder.isMirrored() || destination.isMirrored())) {
+        FolderEntry newEntry;
+        if ((folder.isMirrored() || destination.isMirrored())) {
 			//To move to and from mirrored folders, copy the entry to the destination folder then delete the original entry
-			processor.copyEntry(folder, entry, destination, toFileNames, options);
+			newEntry = (FolderEntry) processor.copyEntry(folder, entry, destination, toFileNames, options);
 			processor.deleteEntry(folder, entry, true, options);
 		} else {
 			processor.moveEntry(folder, entry, destination, toFileNames, options);
+            newEntry = entry;
 		}
         
 		updateModificationTime(folder, options);
         if(destination != folder)
         	updateModificationTime(destination, options);
+
+        return newEntry;
     }
     
 	private void checkFileUploadSizeLimit(Binder binder, Long fileSize, String fileName) 
