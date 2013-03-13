@@ -73,6 +73,7 @@ public interface ReportModule {
 	public static final String USER = "user";
 	public static final String USER_ID = "user_id";
 	public static final String USER_TITLE = "user_title";
+	public static final String USER_TYPE = "user_type";
 	public static final String LAST_LOGIN = "last_login";
 	public static final String LOGIN_DATE = "login_date";
 	public static final String LOGIN_COUNT = "login_count";

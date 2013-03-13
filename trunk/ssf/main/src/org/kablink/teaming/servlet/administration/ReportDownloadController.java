@@ -95,6 +95,7 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(ReportModule.FOLDER, "report.columns.folder");
 		columnNames.put(ReportModule.USER_ID, "report.columns.user");
 		columnNames.put(ReportModule.USER_TITLE, "report.columns.user");
+		columnNames.put(ReportModule.USER_TYPE, "report.columns.userType");
 		columnNames.put(AuditTrail.AuditType.add.name(), "report.columns.add");
 		columnNames.put(AuditTrail.AuditType.view.name(), "report.columns.view");
 		columnNames.put(AuditTrail.AuditType.modify.name(), "report.columns.modify");
@@ -121,6 +122,10 @@ public class ReportDownloadController extends  SAbstractController {
 
 	static private boolean isUserColumn(String column) {
 		return column.equals(ReportModule.USER_ID);
+	}
+	
+	static private boolean isUserTypeColumn(String column) {
+		return column.equals(ReportModule.USER_TYPE);
 	}
 	
 	protected FileTypeMap getFileTypeMap() {
@@ -202,9 +207,9 @@ public class ReportDownloadController extends  SAbstractController {
 						sortType, sortType2, memberIds);
 				
 				if(optionType.equals(WebKeys.URL_REPORT_OPTION_TYPE_SHORT))
-					columns = new String[] {ReportModule.USER_ID, ReportModule.LOGIN_COUNT, ReportModule.LAST_LOGIN};
+					columns = new String[] {ReportModule.USER_ID, ReportModule.USER_TYPE, ReportModule.LOGIN_COUNT, ReportModule.LAST_LOGIN};
 				else if(optionType.equals(WebKeys.URL_REPORT_OPTION_TYPE_LONG))
-					columns = new String[] {ReportModule.USER_ID, ReportModule.LOGIN_DATE};
+					columns = new String[] {ReportModule.USER_ID, ReportModule.USER_TYPE, ReportModule.LOGIN_DATE};
 			} else if ("workflow".equals(reportType)) {
 				if(ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, "").equals("averages")) {
 					//Get the list of binders for reporting
@@ -320,12 +325,16 @@ public class ReportDownloadController extends  SAbstractController {
         dateFormat.setTimeZone(requestor.getTimeZone());
         
 		HashSet userIds = new HashSet();
+		HashSet userTypes = new HashSet();
 		HashSet<String> definitionIds = new HashSet<String>();
 		HashSet<Long> binderIds = new HashSet<Long>();
 		HashSet<Long> entryIds = new HashSet<Long>();
 		for(Map<String, Object> row : report) {
 			if(row.containsKey(ReportModule.USER_ID)) {
 				userIds.add(row.get(ReportModule.USER_ID));
+			}
+			if(row.containsKey(ReportModule.USER_TYPE)) {
+				userTypes.add(row.get(ReportModule.USER_TYPE));
 			}
 			if(row.containsKey(ReportModule.DEFINITION_ID)) {
 				definitionIds.add((String) row.get(ReportModule.DEFINITION_ID));
@@ -340,6 +349,12 @@ public class ReportDownloadController extends  SAbstractController {
 		}
 		if(userIds.size() > 0) {
 			SortedSet<Principal> principals = getProfileModule().getPrincipals(userIds);
+			for(Principal p : principals) {
+				userMap.put(p.getId(), p);
+			}
+		}
+		if(userTypes.size() > 0 && userIds.size() == 0) {
+			SortedSet<Principal> principals = getProfileModule().getPrincipals(userTypes);
 			for(Principal p : principals) {
 				userMap.put(p.getId(), p);
 			}
@@ -368,7 +383,7 @@ public class ReportDownloadController extends  SAbstractController {
 
 		for(int i = 0; i < columns.length; i++) {
 			String name = columns[i];
-			if(!isUserColumn(name) || hasUsers) {
+			if((!isUserColumn(name) && !isUserTypeColumn(name)) || hasUsers) {
 				String nltKey;
 				String columnName;
 				
@@ -420,12 +435,12 @@ public class ReportDownloadController extends  SAbstractController {
 			}
 			for(int i = 0; i < columns.length; i++) {
 				String name = columns[i];
-				if (!isUserColumn(name) || hasUsers) {
+				if ((!isUserColumn(name) && !isUserTypeColumn(name)) || hasUsers) {
 					if(i > 0) {
 						out.write(",".getBytes());
 					}
 				}
-				if (! isUserColumn(name)) {
+				if (!isUserColumn(name) && !isUserTypeColumn(name)) {
 					if(row.containsKey(name)) {
 						String colValue;
 						
@@ -456,7 +471,7 @@ public class ReportDownloadController extends  SAbstractController {
 							out.write( doubleQuote );
 						}
 					}
-				} else if (hasUsers && row.containsKey(name)) {
+				} else if (isUserColumn(name) && hasUsers && row.containsKey(name)) {
 					Long userId = (Long) row.get(name);
 					Principal user = null;
 					if (userId != null) user = userMap.get(userId);
@@ -473,6 +488,30 @@ public class ReportDownloadController extends  SAbstractController {
 						}
 
 						out.write( userName.getBytes() );
+
+						// Does the user's name have a ',' in it?
+						if ( indexOfComma >= 0 )
+						{
+							// Yes, enclose the user's name in quotes.
+							out.write( doubleQuote );
+						}
+					}
+				} else if (isUserTypeColumn(name) && hasUsers && row.containsKey(name)) {
+					Long userId = (Long) row.get(name);
+					Principal user = null;
+					if (userId != null) user = userMap.get(userId);
+					if(user != null) {
+						String userType = "";
+						if (user.getIdentityInfo().isFromLocal() && user.getIdentityInfo().isInternal()) {
+							userType = NLT.get("login.type.local");
+						} else if (user.getIdentityInfo().isFromLdap()) {
+							userType = NLT.get("login.type.ldap");
+						} else if (user.getIdentityInfo().isFromOpenid()) {
+							userType = NLT.get("login.type.openId");
+						} else if (user.getIdentityInfo().isFromLocal() && !user.getIdentityInfo().isInternal()) {
+							userType = NLT.get("login.type.self");
+						}
+						out.write( userType.getBytes() );
 
 						// Does the user's name have a ',' in it?
 						if ( indexOfComma >= 0 )
