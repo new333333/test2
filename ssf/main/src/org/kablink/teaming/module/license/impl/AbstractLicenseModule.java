@@ -177,6 +177,38 @@ implements LicenseModule, ZoneSchedule {
 		return getCoreDao().countObjects(Principal.class, filterControls, zoneId);
 	}
 	
+	protected long countOpenIdUsers(Long zoneId)
+	{
+		FilterControls	filterControls;
+		
+		// Find all users that are not disabled and not deleted and who have a password.
+		// If a user has been sync'd from an ldap source they won't have a password.
+		filterControls = new FilterControls();
+		filterControls.add(Restrictions.eq("type", "user"));
+		filterControls.add(Restrictions.eq("disabled", Boolean.FALSE));
+		filterControls.add(Restrictions.eq("deleted", Boolean.FALSE));
+	 	filterControls.add(Restrictions.eq("identityInfo.internal", Boolean.FALSE));
+	 	filterControls.add(Restrictions.eq("identityInfo.fromOpenid", Boolean.TRUE));
+		
+		return getCoreDao().countObjects(Principal.class, filterControls, zoneId);
+	}
+	
+	protected long countOtherExtUsers(Long zoneId)
+	{
+		FilterControls	filterControls;
+		
+		// Find all users that are not disabled and not deleted and who have a password.
+		// If a user has been sync'd from an ldap source they won't have a password.
+		filterControls = new FilterControls();
+		filterControls.add(Restrictions.eq("type", "user"));
+		filterControls.add(Restrictions.eq("disabled", Boolean.FALSE));
+		filterControls.add(Restrictions.eq("deleted", Boolean.FALSE));
+	 	filterControls.add(Restrictions.eq("identityInfo.internal", Boolean.FALSE));
+	 	filterControls.add(Restrictions.eq("identityInfo.fromOpenid", Boolean.FALSE));
+		
+		return getCoreDao().countObjects(Principal.class, filterControls, zoneId);
+	}
+	
 
 	public void recordCurrentUsage()
 	{

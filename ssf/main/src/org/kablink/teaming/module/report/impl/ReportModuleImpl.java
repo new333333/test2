@@ -553,7 +553,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					.setProjection(Projections.projectionList()
 							.add(Projections.max("internalUserCount"))
 							.add(Projections.max("externalUserCount"))
-							.add(Projections.max("openIdUserCount")))
+							.add(Projections.max("openIdUserCount"))
+							.add(Projections.max("otherExtUserCount")))
 							.list();
 				} 
 				catch (Exception ex) {
@@ -570,6 +571,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				Long openIdCount = (Long) cols[2];
 				if (openIdCount == null) openIdCount = 0L;
 				stats.setOpenIdUserCount(openIdCount.longValue());
+				Long otherExtCount = (Long) cols[3];
+				if (otherExtCount == null) otherExtCount = 0L;
+				stats.setOtherExtUserCount(otherExtCount.longValue());
 			}
 		} catch(Exception e) {
 			// Ignore problems at startup that cause cols[] to have nulls

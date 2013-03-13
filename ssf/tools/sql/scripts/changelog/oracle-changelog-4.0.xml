@@ -622,4 +622,13 @@ update SS_PRINCIPALS set FOREIGNNAME=LOWER(FOREIGNNAME);
         </addColumn>
     </changeSet>
 
+    <changeSet author="peter" context="schema" failOnError="true" id="72">
+        <comment>Count of other external user accounts</comment>
+        <addColumn tableName="SS_LICENSESTATS">
+            <column name="OTHEREXTUSERCOUNT" type="NUMERIC(19,0)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

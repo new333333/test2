@@ -12,6 +12,7 @@
     <property name="internalUserCount"/>
     <property name="externalUserCount"/>
     <property name="openIdUserCount"/>
+    <property name="otherExtUserCount"/>
     <property name="activeUserCount"/>
  	<property name="checksum"/>
   </class>

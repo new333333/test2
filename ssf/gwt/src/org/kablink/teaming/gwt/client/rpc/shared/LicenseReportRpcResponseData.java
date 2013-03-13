@@ -144,13 +144,14 @@ public class LicenseReportRpcResponseData implements IsSerializable, VibeRpcResp
 	 * statistic.
 	 */
 	public static class LicenseStatsItem implements IsSerializable {
-		private long	m_checksum;				//
-		private long	m_externalUserCount;	//
-		private long	m_internalUserCount;	//
-		private Long	m_activeUserCount;		//
-		private Long	m_openIdUserCount;		//
-		private String	m_id;					//
-	    private String	m_snapshotDate;			//
+		private long	m_checksum;					//
+		private long	m_externalUserCount;		//LDAP users
+		private long	m_internalUserCount;		//Local internal
+		private Long	m_activeUserCount;			//
+		private Long	m_openIdUserCount;			//OpenId users
+		private Long	m_otherExtUserCount;	    //Self-registered users
+		private String	m_id;						//
+	    private String	m_snapshotDate;				//
 		
 		/**
 		 * Constructor method. 
@@ -168,26 +169,28 @@ public class LicenseReportRpcResponseData implements IsSerializable, VibeRpcResp
 		 * 
 		 * @return
 		 */
-		public long   getCheckSum()          {return m_checksum;         }
-		public long   getExternalUserCount() {return m_externalUserCount;}
-		public long   getInternalUserCount() {return m_internalUserCount;}
-		public Long   getActiveUserCount()   {return m_activeUserCount;  }
-		public Long   getOpenIdUserCount()   {return m_openIdUserCount;  }
-		public String getId()                {return m_id;               } 
-		public String getSnapshotDate()      {return m_snapshotDate;     }
+		public long   getCheckSum()          		{return m_checksum;         }
+		public long   getExternalUserCount() 		{return m_externalUserCount;}
+		public long   getInternalUserCount() 		{return m_internalUserCount;}
+		public Long   getActiveUserCount()   		{return m_activeUserCount;  }
+		public Long   getOpenIdUserCount()   		{return m_openIdUserCount;  }
+		public Long   getOtherExtUserCount()        {return m_otherExtUserCount;}
+		public String getId()                		{return m_id;               } 
+		public String getSnapshotDate()      		{return m_snapshotDate;     }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setCheckSum(         long   checksum)          {m_checksum          = checksum;         }
-		public void setExternalUserCount(long   externalUserCount) {m_externalUserCount = externalUserCount;}
-		public void setInternalUserCount(long   internalUserCount) {m_internalUserCount = internalUserCount;}
-		public void setActiveUserCount(  Long   activeUserCount)   {m_activeUserCount   = activeUserCount;  }
-		public void setOpenIdUserCount(  Long   openIdUserCount)   {m_openIdUserCount   = openIdUserCount;  }
-		public void setId(               String id)                {m_id                = id;               }
-		public void setSnapshotDate(     String snapshotDate)      {m_snapshotDate      = snapshotDate;     }
+		public void setCheckSum(         long   checksum)          {m_checksum               = checksum;         }
+		public void setExternalUserCount(long   externalUserCount) {m_externalUserCount      = externalUserCount;}
+		public void setInternalUserCount(long   internalUserCount) {m_internalUserCount      = internalUserCount;}
+		public void setActiveUserCount(  Long   activeUserCount)   {m_activeUserCount        = activeUserCount;  }
+		public void setOpenIdUserCount(  Long   openIdUserCount)   {m_openIdUserCount        = openIdUserCount;  }
+		public void setOtherExtUserCount( Long otherExtUserCount)  {m_otherExtUserCount      = otherExtUserCount;}
+		public void setId(               String id)                {m_id                     = id;               }
+		public void setSnapshotDate(     String snapshotDate)      {m_snapshotDate           = snapshotDate;     }
 	}
 	
 	/**
