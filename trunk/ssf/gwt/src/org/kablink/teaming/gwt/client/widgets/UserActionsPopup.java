@@ -55,6 +55,7 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -139,6 +140,7 @@ public class UserActionsPopup extends TeamingPopupPanel
 				imgPanel.add( img );
 				
 				table.setHTML( 0, 0, imgPanel.toString() );
+				table.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP );
 			}
 			
 			// Create a panel for the name to live in.
