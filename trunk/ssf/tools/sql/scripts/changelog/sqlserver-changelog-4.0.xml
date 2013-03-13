@@ -617,5 +617,14 @@ update SS_Principals set foreignName=LOWER(foreignName);
 			<column name="right_renameEntries" type="TINYINT"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="71">
+        <comment>Count of other external user accounts</comment>
+        <addColumn tableName="SS_LicenseStats">
+            <column name="otherExtUserCount" type="NUMERIC(19,0)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
     
 </databaseChangeLog>

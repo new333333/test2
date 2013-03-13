@@ -289,9 +289,10 @@ public class GwtReportsHelper {
 					
 					lsi.setId(               ls.getId()                                         );
 				    lsi.setSnapshotDate(     GwtServerHelper.getDateString(ls.getSnapshotDate()));
-					lsi.setInternalUserCount(ls.getInternalUserCount()                          );
-					lsi.setExternalUserCount(ls.getExternalUserCount()                          );
-					lsi.setOpenIdUserCount(  ls.getOpenIdUserCount()                            );
+					lsi.setInternalUserCount(ls.getInternalUserCount()                          );	//Local internal
+					lsi.setExternalUserCount(ls.getExternalUserCount()                          );	//LDAP synced
+					lsi.setOpenIdUserCount(  ls.getOpenIdUserCount()                            );	//OpenId users
+					lsi.setOtherExtUserCount(  ls.getOtherExtUserCount()              			);	//Self-registered users
 					lsi.setActiveUserCount(  ls.getActiveUserCount()                            );
 					lsi.setCheckSum(         ls.getChecksum()                                   );
 					

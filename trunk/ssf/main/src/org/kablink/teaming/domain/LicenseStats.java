@@ -46,9 +46,10 @@ import java.util.Date;
 public class LicenseStats extends ZonedObject {
 	protected String id;
     protected Date snapshotDate;
-	protected long internalUserCount;
-	protected long externalUserCount;
-	protected Long openIdUserCount;
+	protected long internalUserCount;		//Local internal users 
+	protected long externalUserCount;		//Ldap users
+	protected Long openIdUserCount;			//OpenId users
+	protected Long otherExtUserCount;		//Self-registered external local users
 	protected Long activeUserCount;
 	protected long checksum;
 
@@ -66,13 +67,14 @@ public class LicenseStats extends ZonedObject {
 	 * @param checksum
 	 */
 	public LicenseStats(Long zoneId, Date snapshotDate, long internalUserCount, long externalUserCount, 
-			long openIdUserCount, long activeUserCount, long checksum) {
+			long openIdUserCount, long otherExtUserCount, long activeUserCount, long checksum) {
 		super();
 		setZoneId(zoneId);
 		setSnapshotDate(snapshotDate);
 		setInternalUserCount(internalUserCount);
 		setExternalUserCount(externalUserCount);
 		setOpenIdUserCount(openIdUserCount);
+		setOtherExtUserCount(otherExtUserCount);
 		setActiveUserCount(activeUserCount);
 		setChecksum(checksum);
 	}
@@ -165,6 +167,15 @@ public class LicenseStats extends ZonedObject {
 
 	public void setOpenIdUserCount(Long openIdUserCount) {
 		this.openIdUserCount = openIdUserCount;
+	}
+
+	public long getOtherExtUserCount() {
+		if (otherExtUserCount == null) return 0;
+		return otherExtUserCount;
+	}
+
+	public void setOtherExtUserCount(Long otherExtUserCount) {
+		this.otherExtUserCount = otherExtUserCount;
 	}
 
 	/**

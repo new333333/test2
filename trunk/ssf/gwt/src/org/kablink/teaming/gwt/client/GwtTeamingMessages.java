@@ -2438,6 +2438,7 @@ public interface GwtTeamingMessages extends Messages
 	String licenseReportReport_StatsCol_Local();
 	String licenseReportReport_StatsCol_LDAP();
 	String licenseReportReport_StatsCol_OpenId();
+	String licenseReportReport_StatsCol_OtherExt();
 	String licenseReportReport_StatsCol_365();
 	String licenseReportRunReport();
 	
