@@ -163,6 +163,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private static final String OBJECT_GUID_ATTRIBUTE = "objectGUID";
 	private static final String SAM_ACCOUNT_NAME_ATTRIBUTE = "sAMAccountName";
 	private static final String NDS_HOME_DIR_ATTRIBUTE = "ndsHomeDirectory";
+	private static final String HOME_DIR_ATTRIBUTE = "homeDirectory";
 	private static final String HOST_RESOURCE_NAME_ATTRIBUTE = "hostResourceName";
 	private static final String HOST_SERVER_ATTRIBUTE = "hostServer";
 	private static final String NETWORK_ADDRESS_ATTRIBUTE = "networkAddress";
@@ -431,6 +432,72 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 
 	/**
+	 * Read the "ndsHomeDirectory" attribute from eDir.  If the "ndsHomeDirectory" attribute does not exist
+	 * or does not contain a value, read the "homeDirectory" attribute.
+	 */
+	private Object readHomeDirectoryAttributeFromEdir( LdapContext ldapContext, String userDn )
+	{
+		Object value = null;
+		
+		if ( ldapContext == null || userDn == null )
+		{
+			logger.error( "Invalid arguments passed to readHomeDirectoryAttributeFromEdir()" );
+			return null;
+		}
+		
+		try
+		{
+			String[] attributeNames;
+			Attributes attrs;
+			Attribute attrib;
+
+			// Read the "ndsHomeDirectory" attribute.
+			attributeNames = new String[1];
+			attributeNames[0] = NDS_HOME_DIR_ATTRIBUTE;
+			attrs = ldapContext.getAttributes( userDn, attributeNames );
+			if ( attrs != null )
+			{
+				attrib = attrs.get( NDS_HOME_DIR_ATTRIBUTE );
+				if ( attrib != null )
+				{
+					Object tmpValue;
+					
+					tmpValue = attrib.get();
+					if ( tmpValue != null && tmpValue instanceof byte[] )
+						value = tmpValue;
+				}
+			}
+			
+			// Did we find an "ndsHomeDirectory" attribute value?
+			if ( value == null )
+			{
+				// No
+				// Read the "homeDirectory" attribute.
+				attributeNames[0] = HOME_DIR_ATTRIBUTE;
+				attrs = ldapContext.getAttributes( userDn, attributeNames );
+				if ( attrs != null )
+				{
+					attrib = attrs.get( HOME_DIR_ATTRIBUTE );
+					if ( attrib != null )
+					{
+						Object tmpValue;
+						
+						tmpValue = attrib.get();
+						if ( tmpValue != null && tmpValue instanceof byte[] )
+							value = tmpValue;
+					}
+				}
+			}
+		}
+		catch ( Exception ex )
+		{
+			logger.error( "Error reading ndsHomeDirectory attribute for user: " + userDn + " " + ex.toString() );
+		}
+		
+		return value;
+	}
+	
+	/**
 	 * Read all of the information about the given user's home directory; server
 	 * address, volume and path from the ldap directory
 	 */
@@ -443,101 +510,88 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		if ( dirType == LdapDirType.EDIR )
 		{
-			String[] attributeNames;
-			Attributes attrs;
-			Attribute attrib;
-			
-			// Read the "home directory" attribute.
-			attributeNames = new String[1];
-			attributeNames[0] = NDS_HOME_DIR_ATTRIBUTE;
-			
 			try
 			{
-				attrs = ldapContext.getAttributes( userDn, attributeNames );
-				if ( attrs != null )
+				Object value;
+				
+				// Read the "ndsHomeDirectory" attribute
+				value = readHomeDirectoryAttributeFromEdir( ldapContext, userDn );
+				
+				// Does the "ndsHomeDirectory" attribute have a value?
+				if ( value != null && value instanceof byte[] )
 				{
-					attrib = attrs.get( NDS_HOME_DIR_ATTRIBUTE );
-					if ( attrib != null )
+					int i;
+					byte[] bytes;
+					StringBuffer strBuffer;
+					
+					homeDirInfo = new HomeDirInfo();
+					strBuffer = new StringBuffer();
+					bytes = (byte[]) value;
+					
+					// Get the dn of the volume object
 					{
-						Object value;
-						
-						value = attrib.get();
-						if ( value != null && value instanceof byte[] )
+						String volumeDn;
+
+						i = 0;
+						while ( i < bytes.length )
 						{
-							int i;
-							byte[] bytes;
-							StringBuffer strBuffer;
+							char ch;
 							
-							homeDirInfo = new HomeDirInfo();
-							strBuffer = new StringBuffer();
-							bytes = (byte[]) value;
+							ch = (char) bytes[i];
+							++i;
 							
-							// Get the dn of the volume object
-							{
-								String volumeDn;
-
-								i = 0;
-								while ( i < bytes.length )
-								{
-									char ch;
-									
-									ch = (char) bytes[i];
-									++i;
-									
-									if ( ch == '#' )
-										break;
-									
-									strBuffer.append( ch );
-								}
-								
-								volumeDn = strBuffer.toString();
-								if ( volumeDn != null && volumeDn.length() > 0 )
-								{
-									readVolumeAndServerInfoFromLdap( ldapContext, dirType, volumeDn, homeDirInfo );
-								}
-							}
+							if ( ch == '#' )
+								break;
 							
-							// Skip over the namespace value
-							{
-								while ( i < bytes.length )
-								{
-									char ch;
-									
-									ch = (char) bytes[i];
-									++i;
-									
-									if ( ch == '#' )
-										break;
-								}
-							}
-							
-							// Get the name of the user's home directory
-							{
-								String dirName;
-								int numChars;
-								
-								strBuffer = new StringBuffer();
-								numChars = 0;
-
-								while ( i < bytes.length )
-								{
-									char ch;
-									
-									ch = (char) bytes[i];
-									++i;
-									
-									// We don't want a \ as the first character in the name
-									if ( numChars == 0 && ch == '\\' )
-										continue;
-									
-									strBuffer.append( ch );
-									++numChars;
-								}
-								
-								dirName = strBuffer.toString();
-								homeDirInfo.setPath( dirName );
-							}
+							strBuffer.append( ch );
 						}
+						
+						volumeDn = strBuffer.toString();
+						if ( volumeDn != null && volumeDn.length() > 0 )
+						{
+							readVolumeAndServerInfoFromLdap( ldapContext, dirType, volumeDn, homeDirInfo );
+						}
+					}
+					
+					// Skip over the namespace value
+					{
+						while ( i < bytes.length )
+						{
+							char ch;
+							
+							ch = (char) bytes[i];
+							++i;
+							
+							if ( ch == '#' )
+								break;
+						}
+					}
+					
+					// Get the name of the user's home directory
+					{
+						String dirName;
+						int numChars;
+						
+						strBuffer = new StringBuffer();
+						numChars = 0;
+
+						while ( i < bytes.length )
+						{
+							char ch;
+							
+							ch = (char) bytes[i];
+							++i;
+							
+							// We don't want a \ as the first character in the name
+							if ( numChars == 0 && ch == '\\' )
+								continue;
+							
+							strBuffer.append( ch );
+							++numChars;
+						}
+						
+						dirName = strBuffer.toString();
+						homeDirInfo.setPath( dirName );
 					}
 				}
 			}
@@ -4026,6 +4080,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			// Specify that we want the ldap guid and the objectSid attibute returned as binary data.
 			attrNames = ldapGuidAttributeName + " " + OBJECT_SID_ATTRIBUTE;
 			attrNames += " " + NDS_HOME_DIR_ATTRIBUTE;
+			attrNames += " " + HOME_DIR_ATTRIBUTE;
 			attrNames += " " + NETWORK_ADDRESS_ATTRIBUTE;
 			env.put( "java.naming.ldap.attributes.binary", attrNames );
 		}
