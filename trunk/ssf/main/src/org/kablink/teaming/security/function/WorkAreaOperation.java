@@ -115,6 +115,7 @@ public class WorkAreaOperation {
 		WorkAreaOperation.MODIFY_ENTRY_FIELDS,
 		WorkAreaOperation.RENAME_ENTRIES,
 		WorkAreaOperation.DELETE_ENTRIES,
+		WorkAreaOperation.ADD_REPLIES,
 		WorkAreaOperation.CREATE_ENTRY_ACLS,
 		WorkAreaOperation.CHANGE_ACCESS_CONTROL,
 		WorkAreaOperation.CREATE_WORKSPACES,
