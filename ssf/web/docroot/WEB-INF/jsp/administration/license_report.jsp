@@ -222,6 +222,26 @@
 										<td>${ssLicenseExternalUsers}</td>
 									</c:if>
 								</tr>
+								<tr>
+									  <c:if test="${!empty ssLicenseOptionsList}">
+										<td><ssf:nlt tag="license.options"/></td>
+										<td>
+											<c:forEach var="option" items="${ssLicenseOptionsList}">
+									 	 		<span style="padding-left:20px;">${option}</span>
+										 		<br/>
+									  		</c:forEach>
+									  	</td>
+									  </c:if>
+									  <c:if test="${!empty ssLicenseExternalAccessList}">
+										<td><ssf:nlt tag="license.externalaccess"/></td>
+										<td>
+											<c:forEach var="prop" items="${ssLicenseExternalAccessList}">
+									 	 		<span style="padding-left:20px;">${prop}</span>
+										 		<br/>
+									  		</c:forEach>
+									  	</td>
+									  </c:if>
+								</tr>
 							</table>
 							<br/>
 							<br/>

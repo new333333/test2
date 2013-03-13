@@ -1297,6 +1297,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			Map<String, Object> row = new HashMap<String, Object>();
 			report.add(row);
 			row.put(ReportModule.USER_ID, cols[0]);
+			row.put(ReportModule.USER_TYPE, cols[0]);
 			
 			Timestamp temp = ((Timestamp) cols[1]);
 			
@@ -1316,6 +1317,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			Map<String, Object> row = new HashMap<String, Object>();
 			report.add(row);
 			row.put(ReportModule.USER_ID, cols[0]);
+			row.put(ReportModule.USER_TYPE, cols[0]);
 			
 			Timestamp temp = ((Timestamp) cols[1]);
 			
