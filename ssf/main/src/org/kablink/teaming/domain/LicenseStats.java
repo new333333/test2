@@ -50,6 +50,7 @@ public class LicenseStats extends ZonedObject {
 	protected long externalUserCount;		//Ldap users
 	protected Long openIdUserCount;			//OpenId users
 	protected Long otherExtUserCount;		//Self-registered external local users
+	protected Boolean guestAccessEnabled;	//Guest access enabled
 	protected Long activeUserCount;
 	protected long checksum;
 
@@ -67,7 +68,8 @@ public class LicenseStats extends ZonedObject {
 	 * @param checksum
 	 */
 	public LicenseStats(Long zoneId, Date snapshotDate, long internalUserCount, long externalUserCount, 
-			long openIdUserCount, long otherExtUserCount, long activeUserCount, long checksum) {
+			long openIdUserCount, long otherExtUserCount, boolean guestAccessEnabled, long activeUserCount, 
+			long checksum) {
 		super();
 		setZoneId(zoneId);
 		setSnapshotDate(snapshotDate);
@@ -75,6 +77,7 @@ public class LicenseStats extends ZonedObject {
 		setExternalUserCount(externalUserCount);
 		setOpenIdUserCount(openIdUserCount);
 		setOtherExtUserCount(otherExtUserCount);
+		setGuestAccessEnabled(guestAccessEnabled);
 		setActiveUserCount(activeUserCount);
 		setChecksum(checksum);
 	}
@@ -176,6 +179,15 @@ public class LicenseStats extends ZonedObject {
 
 	public void setOtherExtUserCount(Long otherExtUserCount) {
 		this.otherExtUserCount = otherExtUserCount;
+	}
+
+	public boolean getGuestAccessEnabled() {
+		if (guestAccessEnabled == null) return false;
+		return guestAccessEnabled;
+	}
+
+	public void setGuestAccessEnabled(Boolean guestAccessEnabled) {
+		this.guestAccessEnabled = guestAccessEnabled;
 	}
 
 	/**

@@ -150,6 +150,7 @@ public class LicenseReportRpcResponseData implements IsSerializable, VibeRpcResp
 		private Long	m_activeUserCount;			//
 		private Long	m_openIdUserCount;			//OpenId users
 		private Long	m_otherExtUserCount;	    //Self-registered users
+		private Boolean	m_guestAccessEnabled;	    //Guest Access Enabled (0 or 1)
 		private String	m_id;						//
 	    private String	m_snapshotDate;				//
 		
@@ -175,6 +176,7 @@ public class LicenseReportRpcResponseData implements IsSerializable, VibeRpcResp
 		public Long   getActiveUserCount()   		{return m_activeUserCount;  }
 		public Long   getOpenIdUserCount()   		{return m_openIdUserCount;  }
 		public Long   getOtherExtUserCount()        {return m_otherExtUserCount;}
+		public Boolean getGuestAccessEnabled()      {return m_guestAccessEnabled;}
 		public String getId()                		{return m_id;               } 
 		public String getSnapshotDate()      		{return m_snapshotDate;     }
 		
@@ -189,6 +191,7 @@ public class LicenseReportRpcResponseData implements IsSerializable, VibeRpcResp
 		public void setActiveUserCount(  Long   activeUserCount)   {m_activeUserCount        = activeUserCount;  }
 		public void setOpenIdUserCount(  Long   openIdUserCount)   {m_openIdUserCount        = openIdUserCount;  }
 		public void setOtherExtUserCount( Long otherExtUserCount)  {m_otherExtUserCount      = otherExtUserCount;}
+		public void setGuestAccessEnabled(Boolean guestAccessEnabled) {m_guestAccessEnabled  = guestAccessEnabled;}
 		public void setId(               String id)                {m_id                     = id;               }
 		public void setSnapshotDate(     String snapshotDate)      {m_snapshotDate           = snapshotDate;     }
 	}

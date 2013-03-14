@@ -626,5 +626,14 @@ update SS_Principals set foreignName=LOWER(foreignName);
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="72">
+        <comment>is guest access enabled</comment>
+        <addColumn tableName="SS_LicenseStats">
+            <column name="guestAccessEnabled" type="TINYINT">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
     
 </databaseChangeLog>

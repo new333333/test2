@@ -293,6 +293,7 @@ public class GwtReportsHelper {
 					lsi.setExternalUserCount(ls.getExternalUserCount()                          );	//LDAP synced
 					lsi.setOpenIdUserCount(  ls.getOpenIdUserCount()                            );	//OpenId users
 					lsi.setOtherExtUserCount(  ls.getOtherExtUserCount()              			);	//Self-registered users
+					lsi.setGuestAccessEnabled(  ls.getGuestAccessEnabled()              		);	//Guest Access Enabled
 					lsi.setActiveUserCount(  ls.getActiveUserCount()                            );
 					lsi.setCheckSum(         ls.getChecksum()                                   );
 					
