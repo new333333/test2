@@ -113,7 +113,7 @@ public class DefaultLocalePage extends ConfigPageDlgBox
 	public HelpData getHelpData()
 	{
 		HelpData helpData = new HelpData();
-		helpData.setPageId("defaultlocale");
+		helpData.setPageId("language");
 
 		return helpData;
 	}
