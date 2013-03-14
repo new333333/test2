@@ -137,6 +137,7 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
    					job.getTriggerGroup(), schedule.getQuartzSchedule(), job.getTimeZone());
    		trigger.setMisfireInstruction(job.getMisfireInstruction());
    		trigger.setVolatility(false);
+   		trigger.setPriority(job.getPriority());
  
 		return trigger;    	
     }
@@ -156,6 +157,7 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
 		protected Long zoneId;
 		protected String jobName, jobGroup, jobDescription;
 		boolean durability = true;
+		int priority = 5;
 		CronJobDescription(Long zoneId) {
 			this.zoneId = zoneId;
 		}
@@ -168,6 +170,11 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
 		CronJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, boolean durability) {
 			this(zoneId, jobName, jobGroup, jobDescription);
 			this.durability = durability;
+		}
+		CronJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, boolean durability, int priority) {
+			this(zoneId, jobName, jobGroup, jobDescription);
+			this.durability = durability;
+			this.priority = priority;
 		}
 		protected Long getZoneId() {
 			return zoneId;
@@ -208,6 +215,9 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
 		}
 		protected boolean getDurability() {
 			return durability;
+		}
+		protected int getPriority() {
+			return priority;
 		}
 	}
 }

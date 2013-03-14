@@ -42,6 +42,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -125,7 +126,9 @@ public class DefaultNetFolderContentIndexing extends SimpleTriggerJob implements
 					folderId.toString(), 
 					NET_FOLDER_CONTENT_INDEXING_GROUP, 
 					NET_FOLDER_CONTENT_INDEXING_DESCRIPTION + folderId, 
-					intervalInMinutes*60);
+					intervalInMinutes*60,
+					false,
+					SPropsUtil.getInt("job.net.folder.content.indexing.priority", 4));
 			this.startDate = startDate;
 			this.data = data;
 		}

@@ -39,6 +39,7 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -69,7 +70,8 @@ public class DefaultNetFolderServerSynchronization extends SSCronTriggerJob
 				serverId.toString(),
 				SYNCHRONIZATION_GROUP,
 				SYNCHRONIZATION_DESCRIPTION + serverId,
-				false );
+				false,
+				SPropsUtil.getInt("job.net.folder.server.synchronization.priority", 4));
 			this.m_serverId = serverId;
 		}
 		
