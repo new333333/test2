@@ -33,6 +33,8 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import java.util.Date;
+
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -328,6 +330,7 @@ public class ShareExpirationDlg extends DlgBox
 		else if ( expirationType == ShareExpirationType.ON_DATE )
 		{
 			Long date;
+			Long today;
 			
 			// The user selected "on date".
 			// Did they enter a date?
@@ -336,6 +339,15 @@ public class ShareExpirationDlg extends DlgBox
 			{
 				// No, tell the user they need to enter the expiration date.
 				Window.alert( GwtTeaming.getMessages().shareExpirationDlg_noDateEntered() );
+				return null;
+			}
+			
+			// Did the user enter a date from the past?
+			today = getToday();
+			if ( date < today )
+			{
+				// Yes, tell them not to do that.
+				Window.alert( GwtTeaming.getMessages().shareExpirationDlg_cantEnterPriorDate() );
 				return null;
 			}
 			
@@ -395,6 +407,23 @@ public class ShareExpirationDlg extends DlgBox
 	public FocusWidget getFocusWidget()
 	{
 		return m_listbox;
+	}
+	
+	/**
+	 * 
+	 */
+	private Long getToday()
+	{
+		Date today;
+		Long value;
+		
+		today = new Date();
+		value = today.getTime();
+		
+		// Convert the time to GMT
+		value += (GwtTeaming.m_requestInfo.getTimeZoneOffsetHour() * 60 * 60 * 1000);
+		
+		return value;
 	}
 
 	/**
