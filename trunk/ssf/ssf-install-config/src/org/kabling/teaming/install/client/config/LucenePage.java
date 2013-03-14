@@ -42,6 +42,8 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 	private VibePasswordTextBox luceneUserPasswordTextBox;
 	private int luceneServerPasswordRow;
 	private int luceneServerNameRow;
+	private int hostNameRow;
+	private int rmiPortRow;
 	private FlexTable hostTable;
 
 	private static final String LOCAL = "local";
@@ -112,6 +114,7 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 
 		{
 			row++;
+			hostNameRow = row;
 			// Host Name or IP Address
 			InlineLabel keyLabel = new InlineLabel(RBUNDLE.hostNameColon());
 			hostTable.setWidget(row, 0, keyLabel);
@@ -125,6 +128,7 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 
 		{
 			row++;
+			rmiPortRow = row;
 			// RMI Port
 			InlineLabel keyLabel = new InlineLabel(RBUNDLE.rmiPortColon());
 			hostTable.setWidget(row, 0, keyLabel);
@@ -332,6 +336,12 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 		rmiPortSpinner.setValue(1199);
 		rmiPortSpinner.setEnabled(false);
 		
+		hostTable.getWidget(hostNameRow, 0).setVisible(true);
+		hostTable.getWidget(hostNameRow, 1).setVisible(true);
+		
+		hostTable.getWidget(rmiPortRow, 0).setVisible(true);
+		hostTable.getWidget(rmiPortRow, 1).setVisible(true);
+		
 		hostTable.getWidget(luceneServerNameRow, 0).setVisible(false);
 		hostTable.getWidget(luceneServerNameRow, 1).setVisible(false);
 		
@@ -352,6 +362,12 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 		hostAddrTextBox.setEnabled(true);
 		rmiPortSpinner.setEnabled(true);
 		
+		hostTable.getWidget(hostNameRow, 0).setVisible(true);
+		hostTable.getWidget(hostNameRow, 1).setVisible(true);
+		
+		hostTable.getWidget(rmiPortRow, 0).setVisible(true);
+		hostTable.getWidget(rmiPortRow, 1).setVisible(true);
+		
 		hostTable.getWidget(luceneServerNameRow, 0).setVisible(true);
 		hostTable.getWidget(luceneServerNameRow, 1).setVisible(true);
 		
@@ -369,6 +385,12 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 		hostAddrTextBox.setText(config.getLucene().getIndexHostName());
 		rmiPortSpinner.setValue(config.getLucene().getRmiPort());
 
+		hostTable.getWidget(hostNameRow, 0).setVisible(false);
+		hostTable.getWidget(hostNameRow, 1).setVisible(false);
+		
+		hostTable.getWidget(rmiPortRow, 0).setVisible(false);
+		hostTable.getWidget(rmiPortRow, 1).setVisible(false);
+		
 		hostTable.getWidget(luceneServerNameRow, 0).setVisible(false);
 		hostTable.getWidget(luceneServerNameRow, 1).setVisible(false);
 		

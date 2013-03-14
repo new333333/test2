@@ -1,5 +1,7 @@
 package org.kabling.teaming.install.client.config;
 
+import java.util.List;
+
 import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigModifiedEvent;
 import org.kabling.teaming.install.client.ConfigModifiedEvent.ConfigModifiedEventHandler;
@@ -13,6 +15,7 @@ import org.kabling.teaming.install.shared.DatabaseConfig;
 import org.kabling.teaming.install.shared.DatabaseConfig.DatabaseType;
 import org.kabling.teaming.install.shared.EmailSettings;
 import org.kabling.teaming.install.shared.EmailSettings.EmailProtocol;
+import org.kabling.teaming.install.shared.HASearchNode;
 import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.InstallerConfig.WebDAV;
 import org.kabling.teaming.install.shared.Lucene;
@@ -29,13 +32,17 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
-public class ConfigSummaryPage extends Composite implements ConfigModifiedEventHandler,RevertChangesEventHandler
+public class ConfigSummaryPage extends Composite implements ConfigModifiedEventHandler, RevertChangesEventHandler
 {
 	private GetConfigInformationCallback getConfigCallback = new GetConfigInformationCallback();
 	private FlowPanel content;
 	private AppResource RBUNDLE = AppUtil.getAppResource();
 	private InstallerConfig config;
 	private WizardFinishType wizardFinishType;
+
+	private static final String LOCAL = "local";
+	private static final String SERVER = "server";
+	private static final String HIGH_AVAILABILITY = "ha";
 
 	public ConfigSummaryPage(WizardFinishType wizFinishType)
 	{
@@ -50,7 +57,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		// Get the configuration data
 		AppUtil.getInstallService().getConfiguration(getConfigCallback);
 	}
-	
+
 	public ConfigSummaryPage()
 	{
 		this(null);
@@ -59,34 +66,34 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 	private void buildUI()
 	{
 
-		//General sucess information
+		// General sucess information
 		HTML configFinishedLabel = null;
-		
-		String ipAddr ="https://" + AppUtil.getProductInfo().getLocalIpAddress() + ":"+ config.getNetwork().getSecureListenPort();
-		
+
+		String ipAddr = "https://" + AppUtil.getProductInfo().getLocalIpAddress() + ":" + config.getNetwork().getSecureListenPort();
+
 		if (wizardFinishType == null)
 			configFinishedLabel = new HTML(RBUNDLE.filrServerInfo(ipAddr));
 		else if (wizardFinishType.equals(WizardFinishType.LOCAL_SUCESS) || wizardFinishType.equals(WizardFinishType.REMOTE_SUCESS))
 			configFinishedLabel = new HTML(RBUNDLE.configFinishedMsg(ipAddr));
 		else if (wizardFinishType.equals(WizardFinishType.UPGRADE))
 			configFinishedLabel = new HTML(RBUNDLE.upgradeFinishedMsg(ipAddr));
-		
+
 		configFinishedLabel.addStyleName("configFinishedLabel");
 		content.add(configFinishedLabel);
-		
+
 		Label titleLabel = new Label(RBUNDLE.configurationSummary());
 		titleLabel.addStyleName("configSummaryTitle");
 		content.add(titleLabel);
-		
+
 		// Network Section
 		content.add(buildNetworkSection());
 
 		// Database Section
 		content.add(buildDatabaseSection());
-		
+
 		// Lucene Section
 		content.add(buildLuceneSection());
-				
+
 		// WebDav Section
 		content.add(buildWebDavSection());
 
@@ -103,7 +110,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		content.add(buildOutboundEmailSection());
 
 		// Inbound
-		//content.add(buildInboundEmailSection());
+		// content.add(buildInboundEmailSection());
 
 		// Clustering
 		content.add(buildClusteringSection());
@@ -114,6 +121,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 
 	/**
 	 * Show the network information (2 in each row)
+	 * 
 	 * @return
 	 */
 	private FlowPanel buildNetworkSection()
@@ -130,7 +138,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		{
 			int row = 0;
 			{
-				
+
 				// KeyStore
 				InlineLabel keyLabel = new InlineLabel(RBUNDLE.keyStoreFileColon());
 				table.setWidget(row, 0, keyLabel);
@@ -140,7 +148,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				InlineLabel valueLabel = new InlineLabel(network.getKeystoreFile());
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 				table.setWidget(row, 1, valueLabel);
-				
+
 				// Listen Port
 				keyLabel = new InlineLabel(RBUNDLE.httpPortColon());
 				table.setWidget(row, 2, keyLabel);
@@ -165,7 +173,6 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 				table.setWidget(row, 1, valueLabel);
 
-				
 				// Session Time out
 				keyLabel = new InlineLabel(RBUNDLE.sessionTimeOutColon());
 				table.setWidget(row, 2, keyLabel);
@@ -242,7 +249,8 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 	}
 
 	/**
-	 * WebDAV Authentication 
+	 * WebDAV Authentication
+	 * 
 	 * @return
 	 */
 	private FlowPanel buildWebDavSection()
@@ -270,6 +278,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 
 	/**
 	 * JAVA/JDK Summary information
+	 * 
 	 * @return
 	 */
 	private FlowPanel buildJavaJDKSection()
@@ -291,9 +300,9 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		content.add(valueLabel);
 		return sectionPanel;
 	}
-	
+
 	/**
-	 *Lucene
+	 * Lucene
 	 * 
 	 * @return
 	 */
@@ -311,7 +320,20 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		{
 			int row = 0;
 			{
-				// Host 
+				// Type
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.configurationTypeColon());
+				table.setWidget(row, 0, keyLabel);
+				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+				InlineLabel valueLabel = new InlineLabel(getLuceneConfigurationType(lucene.getLocation()));
+				table.setWidget(row, 1, valueLabel);
+				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			}
+
+			if (!lucene.getLocation().equals(HIGH_AVAILABILITY))
+			{
+				row++;
+				// Host
 				InlineLabel keyLabel = new InlineLabel(RBUNDLE.hostNameColon());
 				table.setWidget(row, 0, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
@@ -319,16 +341,31 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				InlineLabel valueLabel = new InlineLabel(String.valueOf(lucene.getIndexHostName()));
 				table.setWidget(row, 1, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-			}
 
-			row++;
-			{
+				row++;
 				// RMI Port
-				InlineLabel keyLabel = new InlineLabel(RBUNDLE.rmiPortColon());
+				keyLabel = new InlineLabel(RBUNDLE.rmiPortColon());
 				table.setWidget(row, 0, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-				InlineLabel valueLabel = new InlineLabel(String.valueOf(lucene.getRmiPort()));
+				valueLabel = new InlineLabel(String.valueOf(lucene.getRmiPort()));
+				table.setWidget(row, 1, valueLabel);
+				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			}
+
+			if (lucene.getLocation().equals(HIGH_AVAILABILITY))
+			{
+				row++;
+				// High Availability Nodes
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.highAvailabilityNodesColon());
+				table.setWidget(row, 0, keyLabel);
+				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+				List<HASearchNode> nodes = lucene.getSearchNodesList();
+				int size = 0;
+				if (nodes != null)
+					size = nodes.size();
+				InlineLabel valueLabel = new InlineLabel(String.valueOf(size));
 				table.setWidget(row, 1, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 			}
@@ -336,7 +373,6 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 
 		return sectionPanel;
 	}
-	
 
 	/**
 	 * Request and Connections
@@ -396,7 +432,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 	}
 
 	/**
-	 * Web Service 
+	 * Web Service
 	 * 
 	 * @return
 	 */
@@ -587,6 +623,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 
 	/**
 	 * Inbound EMail Settings
+	 * 
 	 * @return
 	 */
 	private FlowPanel buildInboundEmailSection()
@@ -726,7 +763,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 3, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
 			}
-			
+
 			if (config.getNetwork() != null)
 			{
 				row++;
@@ -744,7 +781,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		}
 		return sectionPanel;
 	}
-	
+
 	private FlowPanel buildReverseProxySection()
 	{
 		FlowPanel sectionPanel = createSection(RBUNDLE.reverseProxy());
@@ -758,7 +795,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		int row = 0;
 		if (sso != null)
 		{
-			
+
 			{
 				// Enabled
 				InlineLabel keyLabel = new InlineLabel(RBUNDLE.enabledColon());
@@ -779,7 +816,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 3, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
 			}
-			
+
 			row++;
 			{
 				// Use Access Gateway for WebDav Connections
@@ -802,8 +839,8 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
 			}
 		}
-		
-		//We are displaying network http port and secure port as part of reverse proxy
+
+		// We are displaying network http port and secure port as part of reverse proxy
 		Network network = config.getNetwork();
 		if (network != null)
 		{
@@ -818,7 +855,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				InlineLabel valueLabel = new InlineLabel(String.valueOf(network.getPort()));
 				table.setWidget(row, 1, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-				
+
 				// Secure HTTP Port
 				keyLabel = new InlineLabel(RBUNDLE.reverseProxySecureHttpPortColon());
 				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
@@ -828,10 +865,10 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				valueLabel = new InlineLabel(String.valueOf(network.getSecurePort()));
 				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
 				table.setWidget(row, 3, valueLabel);
-				
+
 			}
 		}
-		
+
 		return sectionPanel;
 	}
 
@@ -850,8 +887,8 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 			if (result != null)
 			{
 				config = result;
-				
-				//Clear existing UI and rebuild the UI
+
+				// Clear existing UI and rebuild the UI
 				content.clear();
 				buildUI();
 			}
@@ -879,7 +916,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 	@Override
 	public void onEvent(ConfigModifiedEvent event)
 	{
-		//If the configuration has been changed, we will rebuild the UI
+		// If the configuration has been changed, we will rebuild the UI
 		if (event.isModified())
 		{
 			AppUtil.getInstallService().getConfiguration(getConfigCallback);
@@ -893,5 +930,15 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		{
 			AppUtil.getInstallService().getConfiguration(getConfigCallback);
 		}
+	}
+
+	private String getLuceneConfigurationType(String type)
+	{
+		if (type.equals(HIGH_AVAILABILITY))
+			return RBUNDLE.highAvailablity();
+		else if (type.equals(SERVER))
+			return RBUNDLE.server();
+
+		return RBUNDLE.local();
 	}
 }
