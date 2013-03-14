@@ -793,7 +793,7 @@ public class GwtViewHelper {
 			reply.setFamily(GwtServerHelper.getFolderEntityFamily(bs, feTop));
 	
 			// ...set the entry's title... 
-			reply.setTitle(getFolderEntryTitle(fe));
+			reply.setTitle(GwtServerHelper.getFolderEntryTitle(fe));
 			
 			// If we get here, reply refers to the ViewFolderEntryInfo
 			// for the user to view the entry.  Return it.
@@ -3329,7 +3329,7 @@ public class GwtViewHelper {
 			reply.setContributors(ListFolderHelper.collectContributorIds(fe));
 			
 			// ...set the entry's title...
-			String feTitle = getFolderEntryTitle(fe);
+			String feTitle = GwtServerHelper.getFolderEntryTitle(fe);
 			reply.setTitle(feTitle);
 			
 			// ...set information about the entry's comments...
@@ -3441,20 +3441,6 @@ public class GwtViewHelper {
 		}
 	}
 
-	/*
-	 * Returns the string to use as the title of a folder entry.
-	 */
-	private static String getFolderEntryTitle(FolderEntry fe) {
-		String reply = fe.getTitle();
-		if (!(MiscUtil.hasString(reply))) {
-			FolderEntry feParent = fe.getParentEntry();
-			if (null == feParent)
-			     reply = ("--" + NLT.get("entry.noTitle") + "--");
-			else reply = NLT.get("reply.re.title", new String[]{getFolderEntryTitle(feParent)});
-		}
-		return reply;
-	}
-	
 	/**
 	 * Reads the row data from a folder and returns it as a
 	 * FolderRowsRpcResponseData.

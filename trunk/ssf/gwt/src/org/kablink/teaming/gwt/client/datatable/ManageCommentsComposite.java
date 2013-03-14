@@ -144,7 +144,7 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 		SafeHtmlBuilder builder = new SafeHtmlBuilder();
 		builder = builder.appendEscapedLines(comment);
 		
-		ReplyToEntryCmd cmd = new ReplyToEntryCmd(m_commentsInfo.getEntityId().getEntityId(), builder.toSafeHtml().asString(), "");
+		ReplyToEntryCmd cmd = new ReplyToEntryCmd(m_commentsInfo.getEntityId().getEntityId(), builder.toSafeHtml().asString(), null);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
