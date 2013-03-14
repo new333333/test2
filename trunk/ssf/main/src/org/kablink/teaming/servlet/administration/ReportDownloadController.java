@@ -479,7 +479,9 @@ public class ReportDownloadController extends  SAbstractController {
 						String userName;
 						
 						// Does the user's name have a ',' in it?
-						userName = Utils.getUserTitle(user) + " (" + user.getName() + ")";
+						String userTitle = Utils.getUserTitle(user);
+						if (userTitle.trim().equals("")) userTitle = user.getName();
+						userName = userTitle + " (" + user.getName() + ")";
 						indexOfComma = userName.indexOf( ',' ); 
 						if ( indexOfComma >= 0 )
 						{
