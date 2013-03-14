@@ -945,89 +945,64 @@ public class GwtServerHelper {
 	
 	/**
 	 * Add a reply to the given entry.
+	 * 
+	 * @param bs
+	 * @param entryId
+	 * @param title
+	 * @param desc
 	 */
-	public static FolderEntry addReply( AllModulesInjected bs, String entryId, String title, String desc )
-		throws WriteEntryDataException, WriteFilesException
-	{
-		FolderModule folderModule;
-		FolderEntry entry;
-		Long entryIdL;
-		Long binderIdL;
-		String replyDefId;
-		Map fileMap;
-		Map<String, String> inputMap;
-		MapInputData inputData;
-
-		folderModule = bs.getFolderModule();
-		entryIdL = new Long( entryId );
-		
+	public static FolderEntry addReply(AllModulesInjected bs, String entryId, String title, String desc) throws WriteEntryDataException, WriteFilesException {
 		// Get the id of the binder the given entry lives in.
-		entry = folderModule.getEntry( null, entryIdL );
-		binderIdL = entry.getParentBinder().getId();
+		FolderModule folderModule = bs.getFolderModule();
+		Long entryIdL = new Long(entryId);
+		FolderEntry entry = folderModule.getEntry(null, entryIdL);
+		Long binderIdL = entry.getParentBinder().getId();
 		
 		// Get the entry's reply definition id.
-		{
-			Document entryDefDoc = null;
-
-			replyDefId = null;
-			entryDefDoc = entry.getEntryDefDoc();
-			if ( entryDefDoc != null )
-			{
-				List replyStyles = null;
-
-				// Get the reply styles for this entry.
-				replyStyles = DefinitionUtils.getPropertyValueList( entryDefDoc.getRootElement(), "replyStyle" );
-
-				// Do we have any reply styles?
-				if ( MiscUtil.hasItems( replyStyles ) )
-				{
-					int i;
-
-					// Yes, find the one whose name is "_comment"
-					for (i = 0; i < replyStyles.size() && replyDefId == null; i++)
-					{
-						String replyStyleId;
-
-						replyStyleId = (String)replyStyles.get(i);
-						
-						try
-						{
-							Definition replyDef;
-							String replyName;
-
-							replyDef = bs.getDefinitionModule().getDefinition( replyStyleId );
-							replyName = replyDef.getName();
-							if ( replyName != null && replyName.equalsIgnoreCase( "_comment" ) )
-								replyDefId = replyStyleId;
-						}
-						catch ( NoDefinitionByTheIdException e )
-						{
-							continue;
+		String replyDefId = null;
+		Document entryDefDoc = entry.getEntryDefDoc();
+		if (null != entryDefDoc) {
+			// Do we have any reply styles?
+			List replyStyles = DefinitionUtils.getPropertyValueList(entryDefDoc.getRootElement(), "replyStyle");
+			if (MiscUtil.hasItems(replyStyles)) {
+				// Yes, find the one whose name is "_comment"
+				for (int i = 0; ((i < replyStyles.size()) && (null == replyDefId)); i += 1) {
+					String replyStyleId = ((String) replyStyles.get(i));
+					
+					try {
+						Definition replyDef = bs.getDefinitionModule().getDefinition(replyStyleId);
+						String replyName = replyDef.getName();
+						if ((null != replyName) && replyName.equalsIgnoreCase("_comment")) {
+							replyDefId = replyStyleId;
 						}
 					}
-					
-					if ( replyDefId == null )
-					{
-						// use the first one.
-						replyDefId = (String) replyStyles.get( 0 );
+					catch (NoDefinitionByTheIdException e) {
+						continue;
 					}
 				}
+				
+				if (null == replyDefId) {
+					// Use the first one.
+					replyDefId = ((String) replyStyles.get(0));
+				}
 			}
+		}
 
-			if ( replyDefId == null || replyDefId.length() == 0 )
-				replyDefId = entry.getEntryDefId();
+		if ((null == replyDefId) || (0 == replyDefId.length())) {
+			replyDefId = entry.getEntryDefId();
 		}
 		
-		// Create an empty file map.
-		fileMap = new HashMap();
+		if (null == title) {
+			title = NLT.get("reply.re.title", new String[]{getFolderEntryTitle(entry)});
+		}
+		
+		Map<String, String> inputMap = new HashMap<String, String>();
+		inputMap.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
+		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc);
+		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_HTML));
+		MapInputData inputData = new MapInputData(inputMap);
 
-		inputMap = new HashMap<String, String>();
-		inputMap.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
-		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
-		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_HTML ) );
-		inputData = new MapInputData( inputMap );
-
-    	return folderModule.addReply( binderIdL, entryIdL, replyDefId, inputData, fileMap, null );
+    	return folderModule.addReply(binderIdL, entryIdL, replyDefId, inputData, new HashMap(), null);
 	}
 
 	/**
@@ -4844,6 +4819,24 @@ public class GwtServerHelper {
 		boolean   userHasWS     = (null != userWS); 
 		boolean   userWSInTrash = (userHasWS && userWS.isPreDeleted());
 		return new EmailAddressInfo(userEMA, userHasWS, userWSInTrash);
+	}
+	
+	/**
+	 * Returns the string to use as the title of a folder entry.
+	 * 
+	 * @param fe
+	 * 
+	 * @return
+	 */
+	public static String getFolderEntryTitle(FolderEntry fe) {
+		String reply = fe.getTitle();
+		if (!(MiscUtil.hasString(reply))) {
+			FolderEntry feParent = fe.getParentEntry();
+			if (null == feParent)
+			     reply = ("--" + NLT.get("entry.noTitle") + "--");
+			else reply = NLT.get("reply.re.title", new String[]{getFolderEntryTitle(feParent)});
+		}
+		return reply;
 	}
 	
 	/**
