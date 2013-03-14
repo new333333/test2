@@ -50,6 +50,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 	UpgradeAppliancePage importPage;
 	// PasswordPage pwdPage;
 	LocalDatabaseConfigPage dbLocalPage;
+	LocalePage localePage;
 
 	public ConfigWizard(InstallerConfig config)
 	{
@@ -80,6 +81,8 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		// Initial Page
 		configPage = new InitialConfigPage(this, config);
 
+		localePage = new LocalePage(this,config);
+		
 		// Local Db Page
 		dbLocalPage = new LocalDatabaseConfigPage(this, config);
 
@@ -178,6 +181,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 			List<LeftNavItemType> sectionsToUpdate = new ArrayList<LeftNavItemType>();
 			sectionsToUpdate.add(LeftNavItemType.DATABASE);
 			sectionsToUpdate.add(LeftNavItemType.LUCENE);
+			sectionsToUpdate.add(LeftNavItemType.ENVIRONMENT);
 			AppUtil.getInstallService().saveConfiguration(config, sectionsToUpdate, new SaveConfigCallback());
 		}
 	}

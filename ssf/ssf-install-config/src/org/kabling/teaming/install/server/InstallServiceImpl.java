@@ -1,7 +1,10 @@
 package org.kabling.teaming.install.server;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -21,6 +24,7 @@ import org.kabling.teaming.install.shared.ConfigurationSaveException;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.EmailSettings;
 import org.kabling.teaming.install.shared.EmailSettings.EmailProtocol;
+import org.kabling.teaming.install.shared.FilrLocale;
 import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.LicenseInformation;
 import org.kabling.teaming.install.shared.LoginException;
@@ -171,7 +175,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	{
 		Properties props = new Properties();
 		final String protocol = settings.getTransportProtocol().equals(EmailProtocol.SMTP) ? "smtp" : "smtps";
-		
+
 		if (protocol.equals("smtp"))
 		{
 			props.put("mail.transport.protocol", "smtp");
@@ -179,8 +183,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			if (settings.isSmtpAuthEnabled())
 				props.put("mail.smtp.auth", "true");
 			props.put("mail.smtp.port", settings.getSmtpPort());
-//			props.put("mail.smtp.user", settings.getSmtpUser());
-//			props.put("mail.smtp.password", settings.getSmtpPassword());
+			// props.put("mail.smtp.user", settings.getSmtpUser());
+			// props.put("mail.smtp.password", settings.getSmtpPassword());
 		}
 		else
 		{
@@ -192,7 +196,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			props.put("mail.smtps.port", settings.getSmtpsPort());
 		}
 
-		//Create a session with the password authenticator
+		// Create a session with the password authenticator
 		Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator()
 		{
 			protected PasswordAuthentication getPasswordAuthentication()
@@ -209,8 +213,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		try
 		{
 			Transport transport = session.getTransport(protocol);
-			
-			//See if you can connect
+
+			// See if you can connect
 			if (protocol.equals("smtp"))
 			{
 				transport.connect(settings.getSmtpHost(), settings.getSmtpUser(), settings.getSmtpPassword());
@@ -227,13 +231,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		}
 		catch (MessagingException e)
 		{
-			//AuthenticationFailureException will also go through this
-			logger.debug("smtp connection failed with "+e.getMessage());
+			// AuthenticationFailureException will also go through this
+			logger.debug("smtp connection failed with " + e.getMessage());
 			return false;
 		}
 
-		
-		//Able to connect
+		// Able to connect
 		return true;
 	}
 
@@ -247,5 +250,38 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	public ProductInfo getProductInfoFromZipFile()
 	{
 		return UpdateService.getProductInfoFromZipFile();
+	}
+
+	@Override
+	public List<FilrLocale> getFilrLocales()
+	{
+		Locale[] localeList = Locale.getAvailableLocales();
+		List<FilrLocale> filrLocaleList = new ArrayList<FilrLocale>();
+		for (Locale loc : localeList)
+		{
+			if (isSupported(loc))
+				filrLocaleList.add(new FilrLocale(loc.getLanguage(), loc.getCountry(), loc.getDisplayName()));
+		}
+
+		Collections.sort(filrLocaleList);
+
+		return filrLocaleList;
+	}
+
+	private boolean isSupported(Locale locale)
+	{
+		if (locale.getCountry() == null)
+			return false;
+		
+		String language = locale.getLanguage();
+
+		if (language.equals("fr") || language.equals("en") || language.equals("zh") || language.equals("da") || language.equals("de")
+				|| language.equals("nl") || language.equals("hu") || language.equals("it") || language.equals("ja")
+				|| language.equals("pl") || language.equals("pt") || language.equals("ru") || language.equals("es")
+				|| language.equals("sv"))
+		{
+			return true;
+		}
+		return false;
 	}
 }

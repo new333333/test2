@@ -21,6 +21,7 @@ public class LeftNavContentPanel extends Composite
 			leftNavContent.add(getLeftNavItem(appResource.network(), LeftNavItemType.NETWORK));
 			leftNavContent.add(getLeftNavItem(appResource.database(), LeftNavItemType.DATABASE));
 			leftNavContent.add(getLeftNavItem(appResource.lucene(), LeftNavItemType.LUCENE));
+			leftNavContent.add(getLeftNavItem(appResource.defaultLocale(), LeftNavItemType.ENVIRONMENT));
 			leftNavContent.add(getLeftNavItem(appResource.clustering(), LeftNavItemType.CLUSTERING));
 			leftNavContent.add(getLeftNavItem(appResource.reverseProxy(), LeftNavItemType.NOVELL_ACCESS_MANAGER));
 			leftNavContent.add(getLeftNavItem(appResource.outboundEmail(), LeftNavItemType.OUTBOUND_EMAIL));
