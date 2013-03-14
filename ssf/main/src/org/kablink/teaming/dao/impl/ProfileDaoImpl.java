@@ -2582,6 +2582,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    			.add(Projections.property("recipientType"))
 	                    			.add(Projections.property("recipientId")));
 	                    	crit.add(Restrictions.eq("latest", Boolean.TRUE));
+	                    	crit.add(Restrictions.isNull("deletedDate"));
                     		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
                     		disjunction.add(Restrictions.isNull("endDate"));
                     		disjunction.add(Restrictions.gt("endDate", new Date()));
