@@ -1360,6 +1360,7 @@ public interface GwtTeamingMessages extends Messages
 	String usersWithoutRights();
 	
 	// The following strings are using in the "share expiration" dialog
+	String shareExpirationDlg_cantEnterPriorDate();
 	String shareExpirationDlg_caption();
 	String shareExpirationDlg_days();
 	String shareExpirationDlg_expiresAfter();
