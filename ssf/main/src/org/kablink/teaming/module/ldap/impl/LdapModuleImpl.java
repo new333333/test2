@@ -4080,8 +4080,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			// Specify that we want the ldap guid and the objectSid attibute returned as binary data.
 			attrNames = ldapGuidAttributeName + " " + OBJECT_SID_ATTRIBUTE;
 			attrNames += " " + NDS_HOME_DIR_ATTRIBUTE;
-			attrNames += " " + HOME_DIR_ATTRIBUTE;
 			attrNames += " " + NETWORK_ADDRESS_ATTRIBUTE;
+			
+			if ( getLdapDirType( ldapGuidAttributeName ) == LdapDirType.EDIR )
+				attrNames += " " + HOME_DIR_ATTRIBUTE;
+			
 			env.put( "java.naming.ldap.attributes.binary", attrNames );
 		}
 		
