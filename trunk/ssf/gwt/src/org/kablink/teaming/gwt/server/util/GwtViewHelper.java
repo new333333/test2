@@ -5762,17 +5762,19 @@ public class GwtViewHelper {
 
 						// Is the folder this entry is located in
 						// accessible to the user?
-						BinderInfo bi = vi.getBinderInfo();
-						if (!(bi.isBinderAccessible())) {
+						//
+						// Checks:
+						// - Is workspace (initVIFromBinderId() will
+						//   have overridden if the folder was
+						//   inaccessible) or
+						// - Can't access the folder.
+						viBI = vi.getBinderInfo();
+						if (viBI.isBinderWorkspace() || (null == GwtUIHelper.getBinderSafely(bs.getBinderModule(), viBI.getBinderIdAsLong()))) {
 							// No!  Set the entry view's underlying
 							// context to the user's Shared With Me
 							// view.
-							bi = GwtServerHelper.getBinderInfo(bs, request, user.getWorkspaceId());
-							bi.setWorkspaceType( WorkspaceType.NOT_A_WORKSPACE);
-							bi.setFolderType(    FolderType.NOT_A_FOLDER      );
-							bi.setBinderType(    BinderType.COLLECTION        );
-							bi.setCollectionType(CollectionType.SHARED_WITH_ME);
-							vi.setBinderInfo(    bi                           );
+							vi.setBinderInfo(GwtServerHelper.buildCollectionBI(CollectionType.SHARED_WITH_ME, user.getWorkspaceId()));							
+							vi.setOverrideUrl(GwtServerHelper.getCollectionPointUrl(request, GwtServerHelper.getUserWorkspace(user), CollectionType.SHARED_WITH_ME));
 						}
 					}
 				}

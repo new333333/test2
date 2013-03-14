@@ -125,74 +125,70 @@ public class GwtProfileHelper {
 		ProfileInfo profile = new ProfileInfo();
 
 		//get the binder
-		Binder binder = bs.getBinderModule().getBinder(Long.valueOf(binderId));
+		Binder binder = bs.getBinderModule().getBinder(Long.valueOf(binderId), true);
 		Principal owner = binder.getCreation().getPrincipal(); //creator is user
 		owner = Utils.fixProxy(owner);
 		
 		if (owner != null) {
-			//User u = user;
-			User u;
-			//if (!user.getId().equals(owner.getId())) {
-				u = (User) bs.getProfileModule().getEntry(owner.getId());
-				u = (User)Utils.fixProxy(u);
-				profile.setUserId(u.getId().toString());
+			User u = (User)owner;
+			profile.setUserId(String.valueOf(u.getId()));
+			
+			Document doc = u.getEntryDefDoc();
+			Element configElement = doc.getRootElement();
+			
+			Element item = (Element)configElement.selectSingleNode("//definition/item[@name='profileEntryStandardView']");
+			if(item != null) {
+				List<Element> itemList = getProfileCategoriesFromDefinition(item);
 				
-				Document doc = u.getEntryDefDoc();
-				Element configElement = doc.getRootElement();
-				
-				Element item = (Element)configElement.selectSingleNode("//definition/item[@name='profileEntryStandardView']");
-				if(item != null) {
-					List<Element> itemList = getProfileCategoriesFromDefinition(item);
-					
-					//for each section header create a profile Info object to hold the information 
-					for(Element catItem: itemList){
-							ProfileCategory cat = new ProfileCategory();
-							String caption = catItem.attributeValue("caption", "");
-							Element captionEle = (Element)catItem.selectSingleNode("properties/property[@name='caption']");
-							if (captionEle != null) {
-								caption = captionEle.attributeValue("value", "");
-							}
-							String name = catItem.attributeValue("name", "");
-							String title = NLT.getDef(caption);
-							
-							cat.setTitle(title);
-							cat.setName(name);
-							profile.add(cat);
-							
-							List<Element> attrElements = catItem.selectNodes("item[@name]");
-							for(Element attrElement: attrElements) {
-								ProfileAttribute attr = new ProfileAttribute();
-								
-								//Get the Elements name - which is the attribute name
-								String attrName = attrElement.attributeValue("name");
-								attr.setName(attrName);
-								
-								Element captionElement = (Element) attrElement.selectSingleNode("properties/property[@name='caption']");
-								if(captionElement != null) {
-
-									String attrTitle = captionElement.attributeValue("value");
-
-									//Now get the title for this attribute
-									attr.setTitle(NLT.getDef(attrTitle));
-								}
-
-								Element nameElement = (Element) attrElement.selectSingleNode("properties/property[@name='name']");
-								if(nameElement != null) {
-									String dataName = nameElement.attributeValue("value");
-									attr.setDataName(dataName);
-									
-									if(attr.getTitle() == null){
-										attr.setTitle(NLT.get("profile.element."+dataName, dataName));
-									}
-								}
-								
-								cat.add(attr);
-							}
-							
-							//Get the value for this attribute
-							buildAttributeInfo(request, u, cat, profile);
+				//for each section header create a profile Info object to hold the information 
+				for(Element catItem: itemList) {
+					ProfileCategory cat = new ProfileCategory();
+					String caption = catItem.attributeValue("caption", "");
+					Element captionEle = (Element)catItem.selectSingleNode("properties/property[@name='caption']");
+					if (captionEle != null) {
+						caption = captionEle.attributeValue("value", "");
 					}
+					String name = catItem.attributeValue("name", "");
+					String title = NLT.getDef(caption);
+					
+					cat.setTitle(title);
+					cat.setName(name);
+					profile.add(cat);
+					
+					List<Element> attrElements = catItem.selectNodes("item[@name]");
+					for(Element attrElement: attrElements) {
+						ProfileAttribute attr = new ProfileAttribute();
+						
+						//Get the Elements name - which is the attribute name
+						String attrName = attrElement.attributeValue("name");
+						attr.setName(attrName);
+						
+						Element captionElement = (Element) attrElement.selectSingleNode("properties/property[@name='caption']");
+						if(captionElement != null) {
+
+							String attrTitle = captionElement.attributeValue("value");
+
+							//Now get the title for this attribute
+							attr.setTitle(NLT.getDef(attrTitle));
+						}
+
+						Element nameElement = (Element) attrElement.selectSingleNode("properties/property[@name='name']");
+						if(nameElement != null) {
+							String dataName = nameElement.attributeValue("value");
+							attr.setDataName(dataName);
+							
+							if(attr.getTitle() == null){
+								attr.setTitle(NLT.get("profile.element."+dataName, dataName));
+							}
+						}
+						
+						cat.add(attr);
+					}
+					
+					//Get the value for this attribute
+					buildAttributeInfo(request, u, cat, profile);
 				}
+			}
 		}
 		
 		return profile;

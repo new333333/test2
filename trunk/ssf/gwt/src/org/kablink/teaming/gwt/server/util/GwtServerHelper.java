@@ -4483,20 +4483,17 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Return the url needed to display the given collection point
+	 * Return the URL needed to display the given collection point
+	 * 
+	 * @param request
+	 * @param userWS
+	 * @param ct
+	 * 
+	 * @return
 	 */
-	private static String getCollectionPointUrl(
-		HttpServletRequest request,
-		Workspace userWS,
-		CollectionType collectionType )
-	{
-		String url;
-		
-		url = PermaLinkUtil.getPermalink( request, userWS );
-		url = GwtUIHelper.appendUrlParam(
-										url,
-										WebKeys.URL_SHOW_COLLECTION,
-										String.valueOf( collectionType.ordinal() ) );
+	public static String getCollectionPointUrl(HttpServletRequest request, Workspace userWS, CollectionType ct) {
+		String url = PermaLinkUtil.getPermalink(request, userWS);
+		url = GwtUIHelper.appendUrlParam(url, WebKeys.URL_SHOW_COLLECTION, String.valueOf(ct.ordinal()));
 		return url;
 	}
 
