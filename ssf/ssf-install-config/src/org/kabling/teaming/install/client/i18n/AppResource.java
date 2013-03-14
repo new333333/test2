@@ -332,4 +332,6 @@ public interface AppResource extends Messages
 	String defaultLocale();
 	
 	String defaultLocaleDesc();
+
+	String highAvailabilityNodesColon();
 }

@@ -74,66 +74,72 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler, C
 			table = new CellTable<HASearchNode>(5, res);
 			table.setWidth("400px");
 			content.add(table);
+
+			// Name Column
+			AnchorCell anchorCell = new AnchorCell();
+			Column<HASearchNode, String> nameColumn = new Column<HASearchNode, String>(anchorCell)
+			{
+				@Override
+				public String getValue(HASearchNode haSearchNode)
+				{
+					return haSearchNode.getName();
+				}
+			};
+
+			nameColumn.setFieldUpdater(new FieldUpdater<HASearchNode, String>()
+			{
+
+				@Override
+				public void update(int index, HASearchNode object, String value)
+				{
+					// editing an existing one
+					newCreation = false;
+
+					// Show the dialog to edit
+					NewLuceneHANodeDialog dlg = new NewLuceneHANodeDialog(object, dataProvider.getList());
+					dlg.createAllDlgContent(RBUNDLE.newSearchNode(), LuceneHighAvailabilityPanel.this, null, null);
+					dlg.show(true);
+				}
+			});
+
+			// Host Name Column
+			TextColumn<HASearchNode> hostNameColumn = new TextColumn<HASearchNode>()
+			{
+				@Override
+				public String getValue(HASearchNode haSearchNode)
+				{
+					return haSearchNode.getHostName();
+				}
+			};
+
+			// Port Column
+			TextColumn<HASearchNode> portColumn = new TextColumn<HASearchNode>()
+			{
+				@Override
+				public String getValue(HASearchNode haSearchNode)
+				{
+					return String.valueOf(haSearchNode.getRmiPort());
+				}
+			};
+
+			// Add the columns.
+			table.addColumn(nameColumn, RBUNDLE.name());
+			table.addColumn(hostNameColumn, RBUNDLE.hostName());
+			table.addColumn(portColumn, RBUNDLE.rmiPort());
+
+			// Create a data provider.
+			dataProvider = new ListDataProvider<HASearchNode>();
+
+			// Connect the table to the data provider.
+			dataProvider.addDataDisplay(table);
+
+			selectionModel = new MultiSelectionModel<HASearchNode>();
+			table.setSelectionModel(selectionModel);
+			selectionModel.addSelectionChangeHandler(this);
 		}
 
-		// Name Column
-		AnchorCell anchorCell = new AnchorCell();
-		Column<HASearchNode, String> nameColumn = new Column<HASearchNode, String>(anchorCell)
-		{
-			@Override
-			public String getValue(HASearchNode haSearchNode)
-			{
-				return haSearchNode.getName();
-			}
-		};
-
-		nameColumn.setFieldUpdater(new FieldUpdater<HASearchNode, String>()
-		{
-
-			@Override
-			public void update(int index, HASearchNode object, String value)
-			{
-				// editing an existing one
-				newCreation = false;
-
-				// Show the dialog to edit
-				NewLuceneHANodeDialog dlg = new NewLuceneHANodeDialog(object, dataProvider.getList());
-				dlg.createAllDlgContent(RBUNDLE.newSearchNode(), LuceneHighAvailabilityPanel.this, null, null);
-				dlg.show(true);
-			}
-		});
-
-		// Host Name Column
-		TextColumn<HASearchNode> hostNameColumn = new TextColumn<HASearchNode>()
-		{
-			@Override
-			public String getValue(HASearchNode haSearchNode)
-			{
-				return haSearchNode.getHostName();
-			}
-		};
-
-		// Port Column
-		TextColumn<HASearchNode> portColumn = new TextColumn<HASearchNode>()
-		{
-			@Override
-			public String getValue(HASearchNode haSearchNode)
-			{
-				return String.valueOf(haSearchNode.getRmiPort());
-			}
-		};
-
-		// Add the columns.
-		table.addColumn(nameColumn, RBUNDLE.name());
-		table.addColumn(hostNameColumn, RBUNDLE.hostName());
-		table.addColumn(portColumn, RBUNDLE.rmiPort());
-
-		// Create a data provider.
-		dataProvider = new ListDataProvider<HASearchNode>();
-
-		// Connect the table to the data provider.
-		dataProvider.addDataDisplay(table);
-
+		dataProvider.setList(new ArrayList<HASearchNode>());
+		
 		// Add the data to the data provider, which automatically pushes it to the
 		// widget.
 		List<HASearchNode> list = dataProvider.getList();
@@ -163,10 +169,6 @@ public class LuceneHighAvailabilityPanel extends Composite implements Handler, C
 		{
 			table.setEmptyTableWidget(new Label(RBUNDLE.noAvailabilityNodesExists()));
 		}
-
-		selectionModel = new MultiSelectionModel<HASearchNode>();
-		table.setSelectionModel(selectionModel);
-		selectionModel.addSelectionChangeHandler(this);
 
 	}
 
