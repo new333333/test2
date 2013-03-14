@@ -57,11 +57,11 @@ padding:0 10px 10px;
 }
 
 .column-r  {
-background:none repeat scroll 0 0 #E6E6E4;
-padding:0 0 10px 0;
-width:220px;
-text-align:left;
-position: relative;
+	background: none repeat scroll 0 0 #ededed;
+	padding: 0 0 10px 0;
+	width: 280px;
+	text-align:left;
+	position: relative;
 }
 .column-r .content {
 clear:both;
@@ -190,9 +190,9 @@ clear:both;
 padding-bottom: 20px;
 }
 .user_stats {
-float: left;
-font-size: 1.1em;
-height: 105px;
+	float: left;
+	font-size: 1.3em;
+	height: 105px;
 }
 .stats_error_msg {
 color: RED;
@@ -203,8 +203,7 @@ margin-bottom: 10px;
 border-bottom:0 solid transparent;
 border-left:0 solid transparent;
 border-right:0 solid transparent;
-margin-top:0.5em;
-padding-bottom:0.5em;
+margin:0.5em;
 }
 .statsTable td {
 background-color:transparent;
@@ -217,6 +216,7 @@ padding:3px;
 }
 .profilePhotoMain {
 float: left;
+padding-left:5px;
 padding-top:10px;
 padding-bottom: 10px;
 }
@@ -442,6 +442,7 @@ color: #666666;
 font-size: 0.9em;
 text-transform: uppercase;
 float: left;
+clear: both;
 }
 .aboutLabel {
 padding-right: 10px;

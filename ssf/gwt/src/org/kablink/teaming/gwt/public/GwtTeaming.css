@@ -5025,6 +5025,11 @@ td.datePickerMonth {
 	white-space: nowrap;
 }
 
+.userActionsPopup_NamePanel .statsTable
+{
+	margin: .5em .5em .5em 0;
+}
+
 .userActionsPopup_SignOutLabel
 {
 	display: inline-block;
