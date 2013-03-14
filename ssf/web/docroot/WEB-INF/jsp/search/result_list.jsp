@@ -307,7 +307,7 @@ isFilr = false;		//I turned off the way Filr sorted its hits. (pmh)
 										      <%
 										      	String docNum = (String)entry.get("_docNum");
 										      	if (docNum.indexOf(".") > 0) {
-										    		docNum = docNum.substring(docNum.indexOf("."));
+										    		docNum = docNum.substring(docNum.indexOf(".")+1);
 										    	}
 										      %>
 										      <%= docNum %>&nbsp;&nbsp;
