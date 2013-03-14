@@ -326,4 +326,10 @@ public interface AppResource extends Messages
 	String default250();
 
 	String schedulerThreadsColon();
+
+	String defaultLocaleColon();
+
+	String defaultLocale();
+	
+	String defaultLocaleDesc();
 }

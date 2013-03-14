@@ -1071,6 +1071,10 @@ public final class ConfigService
 
 			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.NETWORK))
 				saveNetworkConfiguration(config, document);
+			
+
+			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.ENVIRONMENT))
+				saveEnvironmentData(config, document);
 
 			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.WEB_SERVICES))
 				saveWebServiceConfiguration(config, document);
@@ -1156,6 +1160,23 @@ public final class ConfigService
 				throw new ConfigurationSaveException();
 			}
 		}
+	}
+
+	private static void saveEnvironmentData(InstallerConfig config, Document document)
+	{
+		Environment environment = config.getEnvironment();
+
+		if (environment == null)
+			return;
+
+		Element envElement = getElement(document.getDocumentElement(), "Environment");
+		Element localeElement = getElement(envElement, "DefaultLocale");
+		
+		if (environment.getDefaultCountry() != null)
+			localeElement.setAttribute("country", environment.getDefaultCountry());
+		
+		if (environment.getDefaultLanguage() != null)
+			localeElement.setAttribute("language", environment.getDefaultLanguage());
 	}
 
 	@SuppressWarnings("rawtypes")

@@ -142,7 +142,7 @@ public class LocalDatabaseConfigPage implements IWizardPage<InstallerConfig>
 	@Override
 	public boolean canFinish()
 	{
-		return true;
+		return false;
 	}
 
 	public void initUIWithData()
@@ -207,7 +207,7 @@ public class LocalDatabaseConfigPage implements IWizardPage<InstallerConfig>
 	@Override
 	public IWizardPage<InstallerConfig> getNextPage()
 	{
-		return null;
+		return wizard.localePage;
 	}
 
 	@Override

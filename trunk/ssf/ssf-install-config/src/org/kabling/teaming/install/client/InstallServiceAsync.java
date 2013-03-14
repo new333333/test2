@@ -7,6 +7,7 @@ import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.shared.ConfigurationSaveException;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.EmailSettings;
+import org.kabling.teaming.install.shared.FilrLocale;
 import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.LicenseInformation;
 import org.kabling.teaming.install.shared.LoginException;
@@ -57,4 +58,6 @@ public interface InstallServiceAsync
 	void updateFilr(boolean ignoreDataDrive, boolean ignoreHostNameNotMatch, AsyncCallback<UpdateStatus> callback);
 
 	void getProductInfoFromZipFile(AsyncCallback<ProductInfo> callback);
+
+	void getFilrLocales(AsyncCallback<List<FilrLocale>> callback);
 }

@@ -124,7 +124,7 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 	@Override
 	public boolean canFinish()
 	{
-		return true;
+		return false;
 	}
 
 	@Override
@@ -210,7 +210,7 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 
 	@Override
 	public IWizardPage<InstallerConfig> getNextPage() {
-		return null;
+		return wizard.localePage;
 	}
 
 	@Override

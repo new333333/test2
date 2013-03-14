@@ -969,3 +969,6 @@ td.table-value {
 	height: 28px;
 }
 
+.defaultLocaleLabel {
+	padding-right: 5px;
+}
