@@ -54,11 +54,14 @@ import org.kablink.teaming.license.LicenseException;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.report.ReportModule;
+import org.kablink.teaming.module.rss.RssModule;
+import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -97,6 +100,15 @@ implements LicenseModule, ZoneSchedule {
  	   	LicenseMonitor job =getProcessor(zone);
    		job.remove(zone.getId());
 	}
+	
+	private ZoneModule zoneModule;
+	/**
+	 * @return the zoneModule
+	 */
+	public ZoneModule getZoneModule() {
+		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
+	}
+
 	private ReportModule reportModule;
 	/**
 	 * @return the reportModule
@@ -207,6 +219,10 @@ implements LicenseModule, ZoneSchedule {
 	 	filterControls.add(Restrictions.eq("identityInfo.fromOpenid", Boolean.FALSE));
 		
 		return getCoreDao().countObjects(Principal.class, filterControls, zoneId);
+	}
+	
+	protected boolean isGuestAccessEnabled(long zoneId) {
+		return getZoneModule().getZoneConfig(zoneId).getAuthenticationConfig().isAllowAnonymousAccess();
 	}
 	
 

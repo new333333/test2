@@ -290,9 +290,10 @@ public class LicenseReportComposite extends ReportCompositeBase {
 			ft.setText(0, 1, m_messages.licenseReportReport_StatsCol_Local()   ); fcf.addStyleName(0, 1, "vibe-licenseReportComposite-reportDataStatsHC");
 			ft.setText(0, 2, m_messages.licenseReportReport_StatsCol_LDAP()    ); fcf.addStyleName(0, 2, "vibe-licenseReportComposite-reportDataStatsHC");
 			ft.setText(0, 3, m_messages.licenseReportReport_StatsCol_OpenId()  ); fcf.addStyleName(0, 3, "vibe-licenseReportComposite-reportDataStatsHC");
-			ft.setText(0, 4, m_messages.licenseReportReport_StatsCol_OtherExt()  ); fcf.addStyleName(0, 3, "vibe-licenseReportComposite-reportDataStatsHC");
-			ft.setText(0, 5, m_messages.licenseReportReport_StatsCol_365()     ); fcf.addStyleName(0, 4, "vibe-licenseReportComposite-reportDataStatsHC");
-			ft.setText(0, 6, m_messages.licenseReportReport_StatsCol_Checksum()); fcf.addStyleName(0, 5, "vibe-licenseReportComposite-reportDataStatsHC");
+			ft.setText(0, 4, m_messages.licenseReportReport_StatsCol_OtherExt()  ); fcf.addStyleName(0, 4, "vibe-licenseReportComposite-reportDataStatsHC");
+			ft.setText(0, 5, m_messages.licenseReportReport_StatsCol_GuestAccessEnabled()  ); fcf.addStyleName(0, 5, "vibe-licenseReportComposite-reportDataStatsHC");
+			ft.setText(0, 6, m_messages.licenseReportReport_StatsCol_365()     ); fcf.addStyleName(0, 6, "vibe-licenseReportComposite-reportDataStatsHC");
+			ft.setText(0, 7, m_messages.licenseReportReport_StatsCol_Checksum()); fcf.addStyleName(0, 7, "vibe-licenseReportComposite-reportDataStatsHC");
 			ft.getRowFormatter().addStyleName(0, "vibe-licenseReportComposite-reportDataStatsHR");
 
 			// ...scan the license snapshots....
@@ -303,9 +304,14 @@ public class LicenseReportComposite extends ReportCompositeBase {
 				ft.setText(row, 1, String.valueOf(      lsi.getInternalUserCount())); fcf.setHorizontalAlignment(row, 1, HasHorizontalAlignment.ALIGN_CENTER);
 				ft.setText(row, 2, String.valueOf(      lsi.getExternalUserCount())); fcf.setHorizontalAlignment(row, 2, HasHorizontalAlignment.ALIGN_CENTER);
 				ft.setText(row, 3, String.valueOf(safeL(lsi.getOpenIdUserCount())) ); fcf.setHorizontalAlignment(row, 3, HasHorizontalAlignment.ALIGN_CENTER);
-				ft.setText(row, 4, String.valueOf(safeL(lsi.getOtherExtUserCount())) ); fcf.setHorizontalAlignment(row, 3, HasHorizontalAlignment.ALIGN_CENTER);
-				ft.setText(row, 5, String.valueOf(safeL(lsi.getActiveUserCount())) ); fcf.setHorizontalAlignment(row, 4, HasHorizontalAlignment.ALIGN_CENTER);
-				ft.setText(row, 6, String.valueOf(      lsi.getCheckSum())         ); fcf.setHorizontalAlignment(row, 5, HasHorizontalAlignment.ALIGN_CENTER);
+				ft.setText(row, 4, String.valueOf(safeL(lsi.getOtherExtUserCount())) ); fcf.setHorizontalAlignment(row, 4, HasHorizontalAlignment.ALIGN_CENTER);
+				if (lsi.getGuestAccessEnabled()) {
+					ft.setText(row, 5, m_messages.licenseReportGuestAccessEnabledYes() ); fcf.setHorizontalAlignment(row, 5, HasHorizontalAlignment.ALIGN_CENTER);
+				} else {
+					ft.setText(row, 5, m_messages.licenseReportGuestAccessEnabledNo() ); fcf.setHorizontalAlignment(row, 5, HasHorizontalAlignment.ALIGN_CENTER);
+				}
+				ft.setText(row, 6, String.valueOf(safeL(lsi.getActiveUserCount())) ); fcf.setHorizontalAlignment(row, 6, HasHorizontalAlignment.ALIGN_CENTER);
+				ft.setText(row, 7, String.valueOf(      lsi.getCheckSum())         ); fcf.setHorizontalAlignment(row, 7, HasHorizontalAlignment.ALIGN_CENTER);
 			}
 		}
 		

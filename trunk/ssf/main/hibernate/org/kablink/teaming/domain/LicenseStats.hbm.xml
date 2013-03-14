@@ -13,6 +13,7 @@
     <property name="externalUserCount"/>
     <property name="openIdUserCount"/>
     <property name="otherExtUserCount"/>
+    <property name="guestAccessEnabled"/>
     <property name="activeUserCount"/>
  	<property name="checksum"/>
   </class>

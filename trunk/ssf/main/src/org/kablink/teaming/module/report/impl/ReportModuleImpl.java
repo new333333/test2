@@ -554,7 +554,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 							.add(Projections.max("internalUserCount"))
 							.add(Projections.max("externalUserCount"))
 							.add(Projections.max("openIdUserCount"))
-							.add(Projections.max("otherExtUserCount")))
+							.add(Projections.max("otherExtUserCount"))
+							.add(Projections.max("guestAccessEnabled")))
 							.list();
 				} 
 				catch (Exception ex) {
@@ -574,6 +575,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				Long otherExtCount = (Long) cols[3];
 				if (otherExtCount == null) otherExtCount = 0L;
 				stats.setOtherExtUserCount(otherExtCount.longValue());
+				Boolean guestAccessEnabled = (Boolean) cols[4];
+				if (guestAccessEnabled == null) guestAccessEnabled = Boolean.FALSE;
+				stats.setGuestAccessEnabled(guestAccessEnabled);
 			}
 		} catch(Exception e) {
 			// Ignore problems at startup that cause cols[] to have nulls
