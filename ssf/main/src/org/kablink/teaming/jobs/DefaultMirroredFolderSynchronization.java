@@ -37,6 +37,7 @@ import java.util.Date;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -103,7 +104,8 @@ public class DefaultMirroredFolderSynchronization extends SSCronTriggerJob
 	public class SyncJobDescription extends CronJobDescription {
 		private Long folderId;
 		public SyncJobDescription(Long zoneId, Long folderId) {
-			super(zoneId, folderId.toString(), SYNCHRONIZATION_GROUP, SYNCHRONIZATION_DESCRIPTION + folderId, false);
+			super(zoneId, folderId.toString(), SYNCHRONIZATION_GROUP, SYNCHRONIZATION_DESCRIPTION + folderId, false, 
+					SPropsUtil.getInt("job.mirrored.folder.synchronization.priority", 4));
 			this.folderId = folderId;
 		}
 		public Long getFolderId() {

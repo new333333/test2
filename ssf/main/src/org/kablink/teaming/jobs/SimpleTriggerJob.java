@@ -73,6 +73,7 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 				trigger.setMisfireInstruction(job.getMisfireInstruction());
 				trigger.setDescription(job.getTriggerDescription());
 				trigger.setVolatility(false);
+				trigger.setPriority(job.getPriority());
 				scheduler.scheduleJob(trigger);				
 		
 			} else {
@@ -103,6 +104,7 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 		protected String jobName, jobGroup, jobDescription;
 		int seconds;
 		boolean durability = false;
+		int priority = 5;
 		SimpleJobDescription(Long zoneId) {
 			this.zoneId = zoneId;
 		}
@@ -117,6 +119,11 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 		SimpleJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, int seconds, boolean durability) {
 			this(zoneId, jobName, jobGroup, jobDescription, seconds);
 			this.durability = durability;
+		}
+		SimpleJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, int seconds, boolean durability, int priority) {
+			this(zoneId, jobName, jobGroup, jobDescription, seconds);
+			this.durability = durability;
+			this.priority = priority;
 		}
 		protected String getJobName() {
 			return jobName;
@@ -160,6 +167,9 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 		}
 		protected boolean getDurability() {
 			return durability;
+		}
+		protected int getPriority() {
+			return priority;
 		}
 	}
 	
