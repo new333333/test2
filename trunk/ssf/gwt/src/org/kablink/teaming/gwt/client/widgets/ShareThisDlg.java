@@ -2899,6 +2899,7 @@ public class ShareThisDlg extends DlgBox
 		
 		if ( m_entityIds == null )
 		{
+			m_headerImg.setVisible( false );
 			return;
 		}
 		
@@ -2942,6 +2943,7 @@ public class ShareThisDlg extends DlgBox
 			m_headerPathLabel.setText( "" );
 		}
 
+		m_headerImg.setVisible( true );
 		m_headerImg.setResource( imgResource );
 	}
 	
