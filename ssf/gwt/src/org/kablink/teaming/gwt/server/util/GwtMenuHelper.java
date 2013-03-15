@@ -3400,13 +3400,13 @@ public class GwtMenuHelper {
 				reply.add(dropdownTBI);
 			}
 			
-
 			// - - - - //
 			// Reports //
 			// - - - - //
 			
-			// Can the user perform reports on this entry?
-			if (fm.testAccess(fe, FolderOperation.report)) {
+			// Are we not in Filr and can the user perform reports on
+			// this entry?
+			if ((!isFilr) && fm.testAccess(fe, FolderOperation.report)) {
 				// Yes!  Construct the Reports menu drop down Toolbar
 				// menu items.
 				dropdownTBI = new ToolbarItem(REPORTS);
