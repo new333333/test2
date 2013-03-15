@@ -63,6 +63,10 @@ import com.google.gwt.user.client.ui.UIObject;
 public abstract class DlgBox extends PopupPanel
 	implements ClickHandler
 {
+	private final static boolean	DEBUG_SHOW_STATE = false;	// true -> Show alerts to help debug show state problems.  false -> Don't.
+	
+	private boolean					m_superHide;				// true while performing a super.hide().
+	private boolean					m_superShow;				// true while performing a super.center() or super.show().
 	private EditSuccessfulHandler	m_editSuccessfulHandler;	// Handler to call when the user presses Ok.
 	private EditCanceledHandler		m_editCanceledHandler;		// Handler to call when the user presses Cancel.
 	private DlgButtonMode			m_dlgBtnMode;				//
@@ -78,11 +82,11 @@ public abstract class DlgBox extends PopupPanel
 	private Label 					m_caption;					//
 	private FlowPanel				m_captionImagePanel;		//
 	private Panel					m_headerPanel;				//
-	private FlowPanel				m_bodyPanel;
+	private FlowPanel				m_bodyPanel;				//
 	private FlowPanel 				m_errorPanel;				//
 	private Panel 					m_contentPanel;				//
 	private FlowPanel				m_footerPanel;				//
-	private FlowPanel				m_statusPanel;
+	private FlowPanel				m_statusPanel;				//
 	private InlineLabel 			m_statusLabel;				//
 	private Image					m_statusImg;				//
 	private int 					m_id;						//
@@ -626,13 +630,42 @@ public abstract class DlgBox extends PopupPanel
 	@Override
 	public void hide()
 	{
-		if ( m_visible )
+		hideImpl();
+		
+		boolean wasSuperHide = m_superHide;
+		m_superHide = true;
+		super.hide();
+		m_superHide = wasSuperHide;
+	}// end hide()
+	
+	@Override
+	public void hide(boolean autoClosed)
+	{
+		hideImpl();
+		
+		boolean wasSuperHide = m_superHide;
+		m_superHide = true;
+		super.hide(autoClosed);
+		m_superHide = wasSuperHide;
+	}// end hide()
+
+	/*
+	 * 
+	 */
+	private void hideImpl()
+	{
+		if ( m_visible && ( 0 < m_numDlgsVisible ) )
+		{
 			--m_numDlgsVisible;
+		}
+		
+		if ( !m_superHide )
+		{
+			showDebugAlert("hide:"+m_numDlgsVisible);
+		}
 		
 		m_visible = false;
-		
-		super.hide();
-	}// end hide()
+	}// end hideImpl()
 	
 	/**
 	 * Hide the close image.
@@ -878,21 +911,37 @@ public abstract class DlgBox extends PopupPanel
 	 */
 	public void show( boolean centered )
 	{
-		// Is this dialog suppose to be modal
-		if ( m_modal )
+		if ( !m_superShow )
 		{
-			// Yes
-			// If there is already a dialog visible then the glass panel is already visible.
-			// We don't want 2 glass panels.
-			if ( m_numDlgsVisible == 0 )
+			// Is this dialog suppose to be modal
+			if ( m_modal )
 			{
+				// Yes
+				// Ensure as dialogs nest, that we maintain the glass
+				// one top of any others.  The teamingDlgBox_GlassClearX
+				// styles are all about z-index.
 				setGlassEnabled( true );
-				setGlassStyleName( "teamingDlgBox_Glass" );
+				String glassStyle;
+				switch ( m_numDlgsVisible )
+				{
+				case 0:  glassStyle = "teamingDlgBox_Glass";                                break;
+				case 1:  glassStyle = "teamingDlgBox_GlassClear teamingDlgBox_GlassClear1"; break;
+				case 2:  glassStyle = "teamingDlgBox_GlassClear teamingDlgBox_GlassClear2"; break;
+				case 3:  glassStyle = "teamingDlgBox_GlassClear teamingDlgBox_GlassClear3"; break;
+				case 4:  glassStyle = "teamingDlgBox_GlassClear teamingDlgBox_GlassClear4"; break;
+				default:
+				case 5:  glassStyle = "teamingDlgBox_GlassClear teamingDlgBox_GlassClear5"; break;
+				}
+				setGlassStyleName( glassStyle );
+				showDebugAlert("modal glass:"+m_numDlgsVisible);
+			}
+		
+			if ( !m_visible )
+			{
+				++m_numDlgsVisible;
 			}
 		}
 		
-		if ( m_visible == false )
-			++m_numDlgsVisible;
 		
 		m_visible = true;
 		
@@ -901,9 +950,17 @@ public abstract class DlgBox extends PopupPanel
 		GwtClientHelper.scrollUIForPopup( this );
 		
 		// Show this dialog.
+		boolean wasSuperShow = m_superShow;
+		m_superShow = true;
 		if ( centered )
 		     super.center();
 		else super.show();
+		m_superShow = wasSuperShow;
+		
+		if ( !m_superShow )
+		{
+			showDebugAlert("show:"+m_numDlgsVisible+(centered?" centered" : " positioned"));
+		}
 		
 		// Get the widget that should be given the focus when this dialog is displayed.
 		m_focusWidget = getFocusWidget();
@@ -928,6 +985,16 @@ public abstract class DlgBox extends PopupPanel
 		// Always use the initial form of the method.
 		show( false );
 	}// end show()
+	
+	/**
+	 * 
+	 */
+	@Override
+	public void center()
+	{
+		// Always use the show method.
+		show( true );
+	}// end center()
 	
 	/**
 	 * 
@@ -1028,5 +1095,17 @@ public abstract class DlgBox extends PopupPanel
 	{
 		void onSuccess( DlgBox dlg );
 		void onUnavailable();
+	}
+	
+	/*
+	 * Shows a debug message to help with debugging dialog show issues.
+	 */
+	private void showDebugAlert(String msg) {
+		// If we're debugging the show state...
+		if ( DEBUG_SHOW_STATE )
+		{
+			// ...display the alert.
+			Window.alert(msg);
+		}
 	}
 }
