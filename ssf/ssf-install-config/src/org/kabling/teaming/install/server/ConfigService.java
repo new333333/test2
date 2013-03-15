@@ -119,7 +119,7 @@ public final class ConfigService
 
 			}
 		}
-		
+
 		File upgradeFile = new File("/vastorage/conf/vaconfig.zip");
 		config.setUpdateMode(upgradeFile.exists());
 		return config;
@@ -427,7 +427,7 @@ public final class ConfigService
 		requestAndConnections.setMaxThreads(getIntegerValue(rootNode.getAttribute("maxThreads")));
 		requestAndConnections.setMaxActive(getIntegerValue(rootNode.getAttribute("maxActive")));
 		requestAndConnections.setSchedulerThreads(getIntegerValue(rootNode.getAttribute("schedulerThreads")));
-		//requestAndConnections.setMaxIdle(getIntegerValue(rootNode.getAttribute("maxIdle")));
+		// requestAndConnections.setMaxIdle(getIntegerValue(rootNode.getAttribute("maxIdle")));
 
 		return requestAndConnections;
 	}
@@ -1071,7 +1071,6 @@ public final class ConfigService
 
 			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.NETWORK))
 				saveNetworkConfiguration(config, document);
-			
 
 			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.ENVIRONMENT))
 				saveEnvironmentData(config, document);
@@ -1171,10 +1170,10 @@ public final class ConfigService
 
 		Element envElement = getElement(document.getDocumentElement(), "Environment");
 		Element localeElement = getElement(envElement, "DefaultLocale");
-		
+
 		if (environment.getDefaultCountry() != null)
 			localeElement.setAttribute("country", environment.getDefaultCountry());
-		
+
 		if (environment.getDefaultLanguage() != null)
 			localeElement.setAttribute("language", environment.getDefaultLanguage());
 	}
@@ -1451,6 +1450,90 @@ public final class ConfigService
 			clusteredElement.setAttribute("memcachedAddresses", clustered.getMemCachedAddress());
 			clusteredElement.setAttribute("jvmRoute", clustered.getJvmRoute());
 		}
+
+		if (clustered.isEnabled())
+		{
+
+			// Update memecached file
+			updateMemcachedFile();
+			
+			executeCommand("chkconfig memcached on", true);
+			executeCommand("memcached rcmemcached start", true);
+
+			// If memcache is enabled, enable port 11211
+			if (config.getClustered().getCachingProvider().equals("memcache"))
+			{
+				executeCommand("sudo SuSEfirewall2 open EXT TCP 11211", true);
+				executeCommand("sudo SuSEfirewall2 open EXT TCP 4446", true);
+			}
+		}
+		else
+		{
+
+			executeCommand("rcmemcached stop", true);
+			executeCommand("chkconfig memcached off", true);
+
+			executeCommand("sudo SuSEfirewall2 close EXT TCP 11211", true);
+			executeCommand("sudo SuSEfirewall2 close EXT TCP 4446", true);
+		}
+	}
+
+	private static void updateMemcachedFile()
+	{
+		File file = new File("/etc/sysconfig/memcached");
+
+		Properties prop = new Properties();
+		try
+		{
+			prop.load(new FileInputStream(file));
+			String paramsProperty = prop.getProperty("MEMCACHED_PARAMS");
+
+			String[] tokens = paramsProperty.split(" ");
+			if (tokens != null)
+			{
+				for (int i = 0; i < tokens.length; i++)
+				{
+					String token = tokens[i];
+
+					if (!token.equals("-l"))
+						continue;
+
+					if (i < tokens.length-1)
+					{
+						String hostName = getHostName();
+						tokens[i + 1] = hostName;
+					}
+					break;
+				}
+
+				StringBuilder builder = new StringBuilder();
+				for (String str : tokens)
+				{
+					builder.append(str);
+					builder.append(" ");
+				}
+				builder.deleteCharAt(builder.length() - 1);
+				prop.setProperty("MEMCACHED_PARAMS", builder.toString());
+				store(prop, file);
+			}
+		}
+		catch (Exception e)
+		{
+
+		}
+
+	}
+
+	private static String getHostName()
+	{
+		ShellCommandInfo info = executeCommand("sudo hostname -f", false);
+
+		List<String> outputList = info.getOutput();
+		if (info.getExitValue() == 0 && outputList != null && outputList.get(0) != null)
+		{
+			return info.getOutput().get(0);
+		}
+		return "localhost";
 	}
 
 	private static void saveSSOConfiguration(InstallerConfig config, Document document)
@@ -1685,26 +1768,26 @@ public final class ConfigService
 	private static String getProductVersion()
 	{
 		File file = new File("/vastorage/conf/Novell-VA-release");
-		
 
-			// File does not exist, no match
-			if (!file.exists())
-			{
-				return null;
-			}
-
-			Properties prop = new Properties();
-			try
-			{
-				prop.load(new FileInputStream(file));
-				return prop.getProperty("version");
-			}
-			catch(Exception e)
-			{
-				
-			}
+		// File does not exist, no match
+		if (!file.exists())
+		{
 			return null;
+		}
+
+		Properties prop = new Properties();
+		try
+		{
+			prop.load(new FileInputStream(file));
+			return prop.getProperty("version");
+		}
+		catch (Exception e)
+		{
+
+		}
+		return null;
 	}
+
 	private static String getLocalIpAddr()
 	{
 
@@ -2002,7 +2085,7 @@ public final class ConfigService
 				throw new ConfigurationSaveException();
 			}
 		}
-		
+
 		ShellCommandInfo info = executeCommand("sudo hostname -f", true);
 		String hostName = null;
 		List<String> outputList = info.getOutput();
@@ -2011,21 +2094,21 @@ public final class ConfigService
 			hostName = info.getOutput().get(0);
 		}
 		DatabaseConfig config = database.getDatabaseConfig("MySQL_Default");
-		
+
 		StringBuilder commandToRun = new StringBuilder();
 		commandToRun.append("mysql -h " + config.getHostNameFromUrl());
 		commandToRun.append(" -u" + config.getResourceUserName());
 		commandToRun.append(" -p'" + config.getResourcePassword() + "'");
-		commandToRun.append(" -D"+config.getResourceDatabase() );
+		commandToRun.append(" -D" + config.getResourceDatabase());
 		commandToRun.append(" -e \"update SS_ZoneConfig set fsaAutoUpdateUrl='");
-		commandToRun.append("https://"+hostName+ "/desktopapp'");
+		commandToRun.append("https://" + hostName + "/desktopapp'");
 		commandToRun.append(" where zoneId=1 and (fsaAutoUpdateUrl is null or fsaAutoUpdateUrl='')\"");
-		
-		//W
+
+		// W
 		int exitValue = executeCommand(commandToRun.toString(), false).getExitValue();
-		
-		logger.debug("Update SS_ZoneConfig update url exitValue "+exitValue);
-			
+
+		logger.debug("Update SS_ZoneConfig update url exitValue " + exitValue);
+
 	}
 
 	public static void reconfigure(boolean restartServer) throws ConfigurationSaveException
@@ -2102,18 +2185,18 @@ public final class ConfigService
 		{
 			logger.debug("Does not exists for deletion /filrinstall/installer.xml.orig ");
 		}
-		
-		//Save filrconfig locally to /vastorage/conf/vaconfig.zip
+
+		// Save filrconfig locally to /vastorage/conf/vaconfig.zip
 		saveFilrConfigLocally();
-		
+
 		if (restartServer)
 			startFilrServer();
 	}
 
 	private static void saveFilrConfigLocally()
 	{
-		
-		executeCommand("sudo python /opt/novell/base_config/zipVAConfig.py", true);	
+
+		executeCommand("sudo python /opt/novell/base_config/zipVAConfig.py", true);
 	}
 
 	public static void stopFilrServer()
@@ -2205,9 +2288,9 @@ public final class ConfigService
 
 		String ipAddr = getLocalIpAddr();
 
-		//Turn on secure port 
+		// Turn on secure port
 		executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getSecureListenPort(), true);
-		
+
 		// Http 8080 disabled
 		if (network.getListenPort() == 0)
 		{
@@ -2229,8 +2312,6 @@ public final class ConfigService
 			executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getListenPort(), true);
 		}
 
-		
-		
 		if (network.isPortRedirect())
 		{
 			executeCommand("sudo python /opt/novell/filr_config/updateFirewallRedirect.py " + ipAddr + " " + network.getSecureListenPort()
@@ -2248,17 +2329,6 @@ public final class ConfigService
 
 			// Enable the firewall for this port 80 443
 			executeCommand("sudo SuSEfirewall2 close EXT TCP 80 443", true);
-		}
-
-		// If memcache is enabled, enable port 11211
-		if (config.getClustered().getCachingProvider().equals("memcache"))
-		{
-			executeCommand("sudo SuSEfirewall2 open EXT TCP 11211", true);
-		}
-		// Don't enable the port 11211
-		else
-		{
-			executeCommand("sudo SuSEfirewall2 close EXT TCP 11211", true);
 		}
 
 		// Restart the firewall after the changes
