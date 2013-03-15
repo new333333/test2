@@ -3017,6 +3017,17 @@ body, table td, select
 	z-index: 1000;
 }
 
+.teamingDlgBox_GlassClear
+{
+	background-color: transparent;
+	overflow: hidden;
+}
+.teamingDlgBox_GlassClear1 {z-index: 1001;}
+.teamingDlgBox_GlassClear2 {z-index: 1002;}
+.teamingDlgBox_GlassClear3 {z-index: 1003;}
+.teamingDlgBox_GlassClear4 {z-index: 1004;}
+.teamingDlgBox_GlassClear5 {z-index: 1005;}
+
 .teamingDlgBox .popupContent
 {
 	background-color: #fafafa;
