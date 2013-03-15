@@ -42,8 +42,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
@@ -51,6 +54,8 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
+import org.kablink.teaming.jobs.MirroredFolderSynchronization;
+import org.kablink.teaming.jobs.NetFolderServerSynchronization;
 import org.kablink.teaming.jobs.Schedule;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -59,6 +64,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.resourcedriver.RDException;
@@ -72,8 +78,10 @@ import org.kablink.teaming.runasync.RunAsyncCallback;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -1020,4 +1028,36 @@ public class NetFolderHelper
 			}
 		}
 	}
+	
+
+	// This method is moved from FolderModule which is transactional proxy that automatically defines
+	// read transaction around this method boundary, which can cause deadlock situation as the internal
+	// quartz code attempts to obtain database connection under extremely loaded situation.
+	public static ScheduleInfo getMirroredFolderSynchronizationSchedule(Long folderId) {
+  		return getMirroredFolderSynchronizationScheduleObject().getScheduleInfo(folderId);
+	}
+	
+	public static MirroredFolderSynchronization getMirroredFolderSynchronizationScheduleObject() {
+		String className = SPropsUtil.getString("job.mirrored.folder.synchronization.class", "org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization");
+		return (MirroredFolderSynchronization)ReflectHelper.getInstance(className);
+    }    
+
+	/**
+	 * Get the sync schedule for the given driver.
+	 */
+	// This method is moved from ResourceDriverModule which is transactional proxy that automatically 
+	// defines read transaction around this method boundary, which can cause deadlock situation as the 
+	// internal quartz code attempts to obtain database connection under extremely loaded situation.
+	public static ScheduleInfo getNetFolderServerSynchronizationSchedule( Long driverId )
+	{
+  		return getNetFolderServerSynchronizationScheduleObject().getScheduleInfo( driverId );
+	}
+
+	public static NetFolderServerSynchronization getNetFolderServerSynchronizationScheduleObject() 
+	{
+		String className = SPropsUtil.getString("job.net.folder.server.synchronization.class", "org.kablink.teaming.jobs.DefaultNetFolderServerSynchronization");
+
+		return (NetFolderServerSynchronization)ReflectHelper.getInstance(className);
+    }    
+
 }

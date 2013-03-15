@@ -477,27 +477,8 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		
 		// Finally, delete the background job associated with this driver
 		
-		NetFolderServerSynchronization job = getSynchronizationScheduleObject();
+		NetFolderServerSynchronization job = NetFolderHelper.getNetFolderServerSynchronizationScheduleObject();
 		job.deleteJob(driverId);
-	}
-
-	/**
-	 * 
-	 */
-	private NetFolderServerSynchronization getSynchronizationScheduleObject() 
-	{
-		String className = SPropsUtil.getString("job.net.folder.server.synchronization.class", "org.kablink.teaming.jobs.DefaultNetFolderServerSynchronization");
-
-		return (NetFolderServerSynchronization)ReflectHelper.getInstance(className);
-    }    
-
-	/**
-	 * Get the sync schedule for the given driver.
-	 */
-	@Override
-	public ScheduleInfo getSynchronizationSchedule( Long driverId )
-	{
-  		return getSynchronizationScheduleObject().getScheduleInfo( driverId );
 	}
 
 	/**
@@ -509,7 +490,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		checkAccess( ResourceDriverOperation.manageResourceDrivers );
     
     	// data is stored with job
-        getSynchronizationScheduleObject().setScheduleInfo( config, driverId );
+		NetFolderHelper.getNetFolderServerSynchronizationScheduleObject().setScheduleInfo( config, driverId );
     }    
 
 	/**
@@ -554,7 +535,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 					ScheduleInfo scheduleInfo;
 					
 					// Does this net folder have a sync schedule that is enabled?
-					scheduleInfo = folderModule.getSynchronizationSchedule( binderId );
+					scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( binderId );
 					if ( excludeFoldersWithSchedule == false || scheduleInfo == null || scheduleInfo.isEnabled() == false )
 					{
 						try {

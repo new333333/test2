@@ -123,14 +123,6 @@ public interface ResourceDriverModule {
          	throws AccessControlException, RDException;
 
     /**
-     * Get the synchronization schedule
-     * 
-     * @param driverId
-     * @return
-     */
-    public ScheduleInfo getSynchronizationSchedule( Long driverId );
-    
-    /**
      * Set the sync schedule
      * @param config
      * @param driverId
