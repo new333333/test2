@@ -691,7 +691,6 @@ public interface FolderModule {
 	public boolean fullSynchronize(Long folderId, StatusTicket statusTicket)
 		throws AccessControlException, FIException, UncheckedIOException, ConfigurationException;
 	
-	public ScheduleInfo getSynchronizationSchedule(Long folderId);	
 	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId);
 	
 	public ScheduleInfo getNotificationSchedule(Long zoneId, Long folderId);	
