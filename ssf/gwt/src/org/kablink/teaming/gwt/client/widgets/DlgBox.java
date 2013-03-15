@@ -748,6 +748,33 @@ public abstract class DlgBox extends PopupPanel
 		$wnd.jQuery( "#teamingDlgBox-" + id ).draggable( { handle : '#teamingDlgBoxHeader-' + id } );
 	}-*/;
 
+
+    /**
+     * 
+     */
+    protected void okBtnPressed()
+    {
+		Object props;
+		
+		// Yes
+		// Get the data from the controls in the dialog box.
+		props = getDataFromDlg();
+		
+		// If getDataFromDlg() returns null it means that the data entered by the user
+		// is not valid.  getDataFromDlg() will notify the user of problems.
+		// Is the data valid?
+		if ( props != null )
+		{
+			// Yes
+			// Do we have a handler we need to call?
+			if ( m_editSuccessfulHandler != null )
+			{
+				// Yes
+				if ( m_editSuccessfulHandler.editSuccessful( props ) )
+					hide();
+			}
+		}
+    }
     
     /*
 	 * This method gets called when the user clicks on the ok or cancel button.
@@ -763,27 +790,17 @@ public abstract class DlgBox extends PopupPanel
 		// Did the user click on ok?
 		if ( source == m_okBtn )
 		{
-			Object props;
+			Scheduler.ScheduledCommand cmd;
 			
-			// Yes
-			// Get the data from the controls in the dialog box.
-			props = getDataFromDlg();
-			
-			// If getDataFromDlg() returns null it means that the data entered by the user
-			// is not valid.  getDataFromDlg() will notify the user of problems.
-			// Is the data valid?
-			if ( props != null )
+			cmd = new Scheduler.ScheduledCommand()
 			{
-				// Yes
-				// Do we have a handler we need to call?
-				if ( m_editSuccessfulHandler != null )
+				@Override
+				public void execute() 
 				{
-					// Yes
-					if ( m_editSuccessfulHandler.editSuccessful( props ) )
-						hide();
+					okBtnPressed();
 				}
-			}
-			
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 			return;
 		}
 		

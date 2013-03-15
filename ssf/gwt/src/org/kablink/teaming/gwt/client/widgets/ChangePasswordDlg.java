@@ -50,6 +50,9 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -120,6 +123,7 @@ public class ChangePasswordDlg extends DlgBox
 		FlowPanel mainPanel;
 		FlowPanel tmpPanel;
 		Label label;
+		KeyPressHandler keyPressHandler;
 		
 		messages = GwtTeaming.getMessages();
 		
@@ -134,8 +138,37 @@ public class ChangePasswordDlg extends DlgBox
 		label.addStyleName( "changePasswordDlg_Label" );
 		mainPanel.add( label );
 		
+		keyPressHandler = new KeyPressHandler()
+		{
+			@Override
+			public void onKeyPress( KeyPressEvent event )
+			{
+		        int keyCode;
+		    	
+		        // Get the key the user pressed
+		        keyCode = event.getNativeEvent().getKeyCode();
+		        
+		        // Did the user press the enter key?
+		        if ( keyCode == KeyCodes.KEY_ENTER )
+		        {
+		        	Scheduler.ScheduledCommand cmd;
+		        	
+		        	cmd = new Scheduler.ScheduledCommand()
+		        	{
+						@Override
+						public void execute()
+						{
+							okBtnPressed();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+		        }
+			}
+		};
+		
 		tmpPanel = new FlowPanel();
 		m_currentPwdTxtBox = new PasswordTextBox();
+		m_currentPwdTxtBox.addKeyPressHandler( keyPressHandler );
 		tmpPanel.add( m_currentPwdTxtBox );
 		mainPanel.add( tmpPanel );
 		
@@ -145,6 +178,7 @@ public class ChangePasswordDlg extends DlgBox
 		
 		tmpPanel = new FlowPanel();
 		m_pwd1TxtBox = new PasswordTextBox();
+		m_pwd1TxtBox.addKeyPressHandler( keyPressHandler );
 		tmpPanel.add( m_pwd1TxtBox );
 		mainPanel.add( tmpPanel );
 		
@@ -154,6 +188,7 @@ public class ChangePasswordDlg extends DlgBox
 		
 		tmpPanel = new FlowPanel();
 		m_pwd2TxtBox = new PasswordTextBox();
+		m_pwd2TxtBox.addKeyPressHandler( keyPressHandler );
 		tmpPanel.add( m_pwd2TxtBox );
 		mainPanel.add( tmpPanel );
 		
@@ -247,6 +282,7 @@ public class ChangePasswordDlg extends DlgBox
 		if ( pwd1 == null || pwd1.length() == 0 )
 		{
 			Window.alert( GwtTeaming.getMessages().changePasswordDlg_EnterCurrentPwd() );
+			m_currentPwdTxtBox.setFocus( true );
 			return false;
 		}
 		
@@ -267,12 +303,14 @@ public class ChangePasswordDlg extends DlgBox
 			if ( equal == false )
 			{
 				Window.alert( GwtTeaming.getMessages().changePasswordDlg_PasswordsDoNotMatch() );
+				m_pwd1TxtBox.setFocus( true );
 				return false;
 			}
 		}
 		else
 		{
 			Window.alert( GwtTeaming.getMessages().changePasswordDlg_PasswordCannotBeEmpty() );
+			m_pwd1TxtBox.setFocus( true );
 			return false;
 		}
 		
@@ -373,7 +411,7 @@ public class ChangePasswordDlg extends DlgBox
 		super.onDetach();
 		unregisterEvents();
 	}
-
+	
 	/*
 	 * Registers any global event handlers that need to be registered.
 	 */
