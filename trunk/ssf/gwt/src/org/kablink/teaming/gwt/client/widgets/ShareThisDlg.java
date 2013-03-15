@@ -791,6 +791,7 @@ public class ShareThisDlg extends DlgBox
 			{
 				GwtUser user;
 				String userId;
+				String recipientId;
 				
 				// Yes
 				user = (GwtUser) gwtTeamingItem;
@@ -822,7 +823,10 @@ public class ShareThisDlg extends DlgBox
 					shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 				else
 					shareItem.setRecipientType( GwtRecipientType.USER );
-				shareItem.setRecipientId( Long.valueOf( user.getUserId() ) );
+				
+				recipientId = user.getUserId();
+				if ( recipientId != null && recipientId.length() > 0 )
+					shareItem.setRecipientId( Long.valueOf( recipientId ) );
 			}
 			// Are we dealing with a group?
 			else if ( gwtTeamingItem instanceof GwtGroup )
@@ -2510,6 +2514,7 @@ public class ShareThisDlg extends DlgBox
 				ShareRights highestRightsPossible;
 				UIObject showRelativeTo = null;
 				GwtShareItem shareItem;
+				boolean recipientIsExternal = false;
 
 				shareItem = listOfShareItems.get( 0 );
 				
@@ -2519,15 +2524,41 @@ public class ShareThisDlg extends DlgBox
 				// Are we dealing with only 1 share item?
 				if ( listOfShareItems.size() == 1 )
 				{
-					
 					// Yes
 					highestRightsPossible = m_sharingInfo.getShareRights( shareItem.getEntityId() );
+
+					// Is the recipient an external user?
+					if ( shareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
+					{
+						// Yes
+						recipientIsExternal = true;
+					}
 				}
 				else
 				{
 					// Look at each item being shared and return the highest rights possible
 					// that is available on all items being shared.
 					highestRightsPossible = calculateHighestRightsPossible( listOfShareItems );
+					
+					// Go through the list of share items and see if a recipient is an external user.
+					for ( GwtShareItem nextShareItem : listOfShareItems )
+					{
+						if ( nextShareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
+						{
+							recipientIsExternal = true;
+							break;
+						}
+					}
+				}
+
+				// Is the recipient of the share an external user?
+				if ( recipientIsExternal )
+				{
+					// Yes, don't let the external user do any re-share
+					highestRightsPossible.setCanShareForward( false );
+					highestRightsPossible.setCanShareWithExternalUsers( false );
+					highestRightsPossible.setCanShareWithInternalUsers( false );
+					highestRightsPossible.setCanShareWithPublic( false );
 				}
 				
 				m_editShareRightsDlg.init( listOfShareItems, highestRightsPossible, m_editShareRightsHandler );
@@ -3608,33 +3639,25 @@ public class ShareThisDlg extends DlgBox
 						// Should we add the email address to the list of recipients?
 						if ( addToRecipientList )
 						{
+							ArrayList<GwtShareItem> listOfShareItems;
+							GwtUser gwtUser;
+							Long userId = null;
+
 							// Yes
-							// Create a GwtShareItem for every entity we are sharing with.
-							for ( EntityId nextEntityId : m_entityIds )
+							gwtUser = new GwtUser();
+							gwtUser.setInternal( false );
+							gwtUser.setName( emailAddress );
+							gwtUser.setUserId( userId );
+							
+							listOfShareItems = addShare( gwtUser );
+
+							if ( listOfShareItems != null )
 							{
-								GwtShareItem shareItem;
+								InvokeEditShareRightsDlgEvent event;
 
-								shareItem = new GwtShareItem();
-								shareItem.setSharedById( Long.valueOf( GwtTeaming.m_requestInfo.getUserId() ) );
-								shareItem.setEntityId( nextEntityId );
-								shareItem.setEntityName( getEntityName( nextEntityId ) );
-								shareItem.setRecipientName( emailAddress );
-								shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
-								shareItem.setShareRights( getDefaultShareRights() );
-								shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
-								shareItem.setComments( getDefaultComment() );
-
-								// Is this external user already in the list?
-								if ( findShareItem( shareItem ) == -1 )
-								{
-									// No, add it
-									addShare( shareItem, true );
-								}
-								else
-								{
-									// Tell the user the item has already been shared with the external user.
-									Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( emailAddress ) );
-								}
+								// Fire an event to invoke the "edit share rights" dialog.
+								event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
+								GwtTeaming.fireEvent( event );
 							}
 						}
 					}
