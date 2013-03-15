@@ -227,7 +227,10 @@ public class GwtUser extends GwtPrincipal
 	 * @param userId
 	 */
 	public void setUserId(Long userId) {
-		setUserId(String.valueOf(userId));
+		if ( userId != null )
+			setUserId(String.valueOf(userId));
+		else
+			m_userId = null;
 	}
 	
 	/**

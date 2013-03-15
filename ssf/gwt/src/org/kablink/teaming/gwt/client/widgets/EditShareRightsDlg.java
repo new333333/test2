@@ -63,6 +63,7 @@ public class EditShareRightsDlg extends DlgBox
 	private RadioButton m_viewerRb;
 	private RadioButton m_editorRb;
 	private RadioButton m_contributorRb;
+	private Label m_canShareLabel;
 	private CheckBox m_canShareExternalCkbox;
 	private CheckBox m_canShareInternalCkbox;
 	private CheckBox m_canSharePublicCkbox;
@@ -110,7 +111,6 @@ public class EditShareRightsDlg extends DlgBox
 		VibeFlowPanel mainPanel;
 		VibeFlowPanel rbPanel;
 		VibeFlowPanel tmpPanel;
-		Label label;
 		
 		messages = GwtTeaming.getMessages();
 		
@@ -137,9 +137,9 @@ public class EditShareRightsDlg extends DlgBox
 		tmpPanel.add( m_contributorRb );
 		rbPanel.add( tmpPanel );
 		
-		label = new Label( messages.editShareRightsDlg_CanShareLabel() );
-		label.addStyleName( "margintop2" );
-		rbPanel.add( label );
+		m_canShareLabel = new Label( messages.editShareRightsDlg_CanShareLabel() );
+		m_canShareLabel.addStyleName( "margintop2" );
+		rbPanel.add( m_canShareLabel );
 		
 		// Add the "allow share internal checkbox.
 		m_canShareInternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareInternalLabel() );
@@ -346,6 +346,8 @@ public class EditShareRightsDlg extends DlgBox
 		}
 		
 		canShareForward = highestRightsPossible.getCanShareForward();
+		
+		m_canShareLabel.setVisible( canShareForward );
 		
 		// Show/hide the "share internal" checkbox depending on whether the user has "share internal" rights.
 		m_canShareInternalCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithInternalUsers() );
