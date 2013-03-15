@@ -3208,7 +3208,7 @@ public class GwtServerHelper {
 			}
 
 			// Does the user have rights to "Access Control for Zone Administration functions"?
-			if ( adminModule.testAccess( AdminOperation.manageFunctionMembership ) )
+			if ( isFilr == false && adminModule.testAccess( AdminOperation.manageFunctionMembership ) )
 			{
 				ZoneConfig zoneConfig;
 				
