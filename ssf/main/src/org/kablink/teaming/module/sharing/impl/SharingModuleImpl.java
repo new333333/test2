@@ -53,6 +53,8 @@ import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
@@ -1039,19 +1041,33 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	}
 	
 	//Routine to re-index an entity after a change in sharing
-	protected void indexSharedEntity(ShareItem shareItem) {
-		DefinableEntity entity = getSharedEntity(shareItem);
-		if (entity.getEntityType() == EntityType.folderEntry) {
-			folderModule.indexEntry((FolderEntry) entity, Boolean.TRUE);
-		}
-		else if (entity.getEntityType() == EntityIdentifier.EntityType.folder || 
-				entity.getEntityType() == EntityIdentifier.EntityType.workspace) {
-			// Sharing a binder can give the recipient access not only to the binder being explicitly
-			// shared but also to the sub-binders as long as those sub-binders inherit ACLs from
-			// their parents. 
-			Binder binder = (Binder) entity;
-			loadBinderProcessor(binder).indexFunctionMembership(binder, true, Boolean.FALSE, false);
-		}
+	protected void indexSharedEntity(final ShareItem shareItem) {
+		// Indexing a binder requires 'binderAdministration' right that most users do not have unless
+		// they own the binder. Indexing of a share entity takes place only as side effect of some
+		// changes to sharing. Appropriate access checking is performed at the higher level as user
+		// attempts some changes to sharing. Consequently, we can safely run this method in admin
+		// context so that this method won't throw access violation without compromising security.
+		
+		RunasCallback callback = new RunasCallback() {
+			@Override
+			public Object doAs() {
+				DefinableEntity entity = getSharedEntity(shareItem);
+				if (entity.getEntityType() == EntityType.folderEntry) {
+					folderModule.indexEntry((FolderEntry) entity, Boolean.TRUE);
+				}
+				else if (entity.getEntityType() == EntityIdentifier.EntityType.folder || 
+						entity.getEntityType() == EntityIdentifier.EntityType.workspace) {
+					// Sharing a binder can give the recipient access not only to the binder being explicitly
+					// shared but also to the sub-binders as long as those sub-binders inherit ACLs from
+					// their parents. 
+					Binder binder = (Binder) entity;
+					loadBinderProcessor(binder).indexFunctionMembership(binder, true, Boolean.FALSE, false);
+				}
+				return null;
+			}
+		};
+		
+		RunasTemplate.runasAdmin(callback, RequestContextHolder.getRequestContext().getZoneName());
 	}
 
 	protected ExpiredShareHandler getExpiredShareHandler(Workspace zone) {
