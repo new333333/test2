@@ -21,7 +21,7 @@ import com.google.gwt.user.client.ui.Panel;
 public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 {
 	private GwValueSpinner maxThreadsSpinner;
-	//private GwValueSpinner maxIdleSpinner;
+	private GwValueSpinner maxIdleSpinner;
 	private GwValueSpinner maxActiveSpinner;
 	private GwValueSpinner schedulerThreadsSpinner;
 
@@ -75,7 +75,20 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 		
 		{
 			row++;
-			// Max Active
+			// Max Idle
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.maxIdleColon());
+			table.setWidget(row, 0, keyLabel);
+			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			maxIdleSpinner = new GwValueSpinner(20, 20, 100, RBUNDLE.default20());
+			maxIdleSpinner.getValSpinnerLabel().addStyleName("infoLabel");
+			table.setWidget(row, 1, maxIdleSpinner);
+			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
+		
+		{
+			row++;
+			// Scheduler Threads
 			InlineLabel keyLabel = new InlineLabel(RBUNDLE.schedulerThreadsColon());
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
@@ -86,18 +99,7 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
-//		{
-//			row++;
-//			// Max Idle
-//			InlineLabel keyLabel = new InlineLabel(RBUNDLE.maxIdleColon());
-//			table.setWidget(row, 0, keyLabel);
-//			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-//
-//			maxIdleSpinner = new GwValueSpinner(20, 20, 100, RBUNDLE.default20());
-//			maxIdleSpinner.getValSpinnerLabel().addStyleName("infoLabel");
-//			table.setWidget(row, 1, maxIdleSpinner);
-//			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-//		}
+		
 
 		return fPanel;
 	}
@@ -108,7 +110,10 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 		//Nothing to validate here..Fill up the object and return
 		RequestsAndConnections req = config.getRequestsAndConnections();
 		req.setMaxActive(maxActiveSpinner.getValueAsInt());
-		//req.setMaxIdle(maxIdleSpinner.getValueAsInt());
+		
+		if (maxIdleSpinner.getValueAsInt() != 0)
+			req.setMaxIdle(maxIdleSpinner.getValueAsInt());
+		
 		req.setMaxThreads(maxThreadsSpinner.getValueAsInt());
 		req.setSchedulerThreads(schedulerThreadsSpinner.getValueAsInt());
 		return config;
@@ -127,7 +132,8 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 		if (req != null)
 		{
 			maxActiveSpinner.setValue(req.getMaxActive());
-			//maxIdleSpinner.setValue(req.getMaxIdle());
+			if (req.getMaxIdle() > 0)
+				maxIdleSpinner.setValue(req.getMaxIdle());
 			maxThreadsSpinner.setValue(req.getMaxThreads());
 			schedulerThreadsSpinner.setValue(req.getSchedulerThreads());
 		}

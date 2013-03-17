@@ -34,6 +34,8 @@ public interface InstallServiceAsync
 	void reconfigure(boolean restartServer,AsyncCallback<Void> callback);
 
 	void startFilrServer(AsyncCallback<Void> callback);
+	
+	void updateDbUrlAndstartFilrServer(AsyncCallback<Void> callback);
 
 	void authenticateDbCredentials(String url, String userName, String password, AsyncCallback<Void> callback);
 
