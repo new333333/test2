@@ -134,11 +134,34 @@ public class DatabaseConfig implements Serializable
 
 	public String getResourceDatabase()
 	{
-		return resourceDatabase;
+		if (resourceDatabase != null)
+			return resourceDatabase;
+		
+		return getDbName(resourceUrl);
 	}
 
 	public void setResourceDatabase(String resourceDatabase)
 	{
 		this.resourceDatabase = resourceDatabase;
 	}
+	
+	private String getDbName(String url)
+	{
+		// url example jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor
+		String pattern = "//";
+		int startIndex = url.indexOf(pattern) + pattern.length();
+		
+		//Should give the url from localhost/
+		url = url.substring(startIndex);
+		
+		//Get the starting from the end of address
+		startIndex = url.indexOf("/") +1;
+		
+		//Ends with ?
+		int endIndex = url.indexOf("?", startIndex);
+	
+		url = url.substring(startIndex, endIndex);
+		return url;
+	}
+
 }

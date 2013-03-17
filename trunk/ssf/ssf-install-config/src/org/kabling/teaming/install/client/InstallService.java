@@ -118,4 +118,6 @@ public interface InstallService extends RemoteService
 	ProductInfo getProductInfoFromZipFile();
 	
 	List<FilrLocale> getFilrLocales();
+
+	void updateDbUrlAndstartFilrServer();
 }

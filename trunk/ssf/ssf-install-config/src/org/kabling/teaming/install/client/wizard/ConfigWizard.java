@@ -397,7 +397,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler
 		public void onSuccess(Void coid)
 		{
 			loadingWidget.setText(AppUtil.getAppResource().startingServer());
-			AppUtil.getInstallService().startFilrServer(new StartFilrCallback());
+			AppUtil.getInstallService().updateDbUrlAndstartFilrServer(new StartFilrCallback());
 
 			if (configPage.getDeploymentType() != null)
 				AppUtil.getInstallService().markConfigurationDone(configPage.getDeploymentType(), new MarkDeploymentDoneCallback());

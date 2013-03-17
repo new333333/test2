@@ -427,7 +427,7 @@ public final class ConfigService
 		requestAndConnections.setMaxThreads(getIntegerValue(rootNode.getAttribute("maxThreads")));
 		requestAndConnections.setMaxActive(getIntegerValue(rootNode.getAttribute("maxActive")));
 		requestAndConnections.setSchedulerThreads(getIntegerValue(rootNode.getAttribute("schedulerThreads")));
-		// requestAndConnections.setMaxIdle(getIntegerValue(rootNode.getAttribute("maxIdle")));
+		requestAndConnections.setMaxIdle(getIntegerValue(rootNode.getAttribute("maxIdle")));
 
 		return requestAndConnections;
 	}
@@ -2085,14 +2085,15 @@ public final class ConfigService
 				throw new ConfigurationSaveException();
 			}
 		}
-
-		ShellCommandInfo info = executeCommand("sudo hostname -f", true);
-		String hostName = null;
-		List<String> outputList = info.getOutput();
-		if (info.getExitValue() == 0 && outputList != null && outputList.get(0) != null)
-		{
-			hostName = info.getOutput().get(0);
-		}
+	}
+	
+	public static void updateFsaUpdateUrl()
+	{
+		InstallerConfig installerConfig = getConfiguration();
+		Database database = installerConfig.getDatabase();
+		
+		String hostName = getHostName();
+		
 		DatabaseConfig config = database.getDatabaseConfig("MySQL_Default");
 
 		StringBuilder commandToRun = new StringBuilder();
@@ -2108,7 +2109,6 @@ public final class ConfigService
 		int exitValue = executeCommand(commandToRun.toString(), false).getExitValue();
 
 		logger.debug("Update SS_ZoneConfig update url exitValue " + exitValue);
-
 	}
 
 	public static void reconfigure(boolean restartServer) throws ConfigurationSaveException
