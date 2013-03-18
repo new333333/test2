@@ -3000,7 +3000,6 @@ body, table td, select
 	border-radius: 6px;
 	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
-	z-index: 1001;
 }
 
 .teamingDlgBox_NoClip, .teamingPopupPanel_NoClip
@@ -3011,10 +3010,9 @@ body, table td, select
 .teamingDlgBox_Glass
 {
 	background-color: #000;
-	filter: alpha(opacity=50);
+	filter: alpha(opacity=40);
 	opacity: 0.4;
 	overflow: hidden;
-	z-index: 1000;
 }
 
 .teamingDlgBox_GlassClear
@@ -3022,11 +3020,6 @@ body, table td, select
 	background-color: transparent;
 	overflow: hidden;
 }
-.teamingDlgBox_GlassClear1 {z-index: 1001;}
-.teamingDlgBox_GlassClear2 {z-index: 1002;}
-.teamingDlgBox_GlassClear3 {z-index: 1003;}
-.teamingDlgBox_GlassClear4 {z-index: 1004;}
-.teamingDlgBox_GlassClear5 {z-index: 1005;}
 
 .teamingDlgBox .popupContent
 {
