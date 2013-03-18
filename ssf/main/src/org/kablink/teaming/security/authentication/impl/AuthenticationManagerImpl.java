@@ -410,69 +410,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				{
 					// The Teaming user name and the ldap user name may not be the same name.
 					ldapModule.syncUser( user.getName(), userName );
-
-					// Are we running Filr and are we dealing with a user imported from ldap?
-					if ( createUser && Utils.checkIfFilr() && user.getIdentityInfo().isFromLdap() )
-					{
-						HomeDirInfo homeDirInfo;
-						
-						// Yes
-						try
-						{
-							// Does this user have a home directory attribute in ldap?
-							homeDirInfo = ldapModule.readHomeDirInfoFromDirectory( user.getName(), userName );
-							if ( homeDirInfo != null )
-							{
-								// Yes
-								// Create/update the home directory net folder for this user.
-								try
-								{
-									NetFolderHelper.createHomeDirNetFolder(
-																		getProfileModule(),
-																		getTemplateModule(),
-																		getBinderModule(),
-																		getFolderModule(),
-																		getAdminModule(),
-																		getResourceDriverModule(),
-																		getRunAsyncManager(),
-																		homeDirInfo,
-																		user );
-								}
-								catch ( Exception ex )
-								{
-									logger.error( "Unable to create home directory net folder, server: " + homeDirInfo.getServerAddr() + " error: " + ex.toString() );
-								}
-							}
-							else
-							{
-								Binder netFolderBinder;
-								
-								// The user does not have a home directory attribute.
-								// Does the user already have a home dir net folder?
-								// Does a net folder already exist for this user's home directory
-								netFolderBinder = NetFolderHelper.findHomeDirNetFolder(
-																					binderModule,
-																					user.getWorkspaceId() );
-								if ( netFolderBinder != null )
-								{
-									// Yes
-									// Delete the home net folder.
-									try
-									{
-										NetFolderHelper.deleteNetFolder( getFolderModule(), netFolderBinder.getId(), false );
-									}
-									catch ( Exception e )
-									{
-										logger.error( "Error deleting home net folder: " + netFolderBinder.getName(), e );
-									}
-								}
-							}
-						}
-						catch ( NamingException ex )
-						{
-							logger.error( "Unable to read home directory information for user: " + user.getName() );
-						}
-					}
 				}
 				catch (NamingException ex)
 				{
@@ -481,6 +418,69 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			}
 		}
 		
+		// Are we running Filr and are we dealing with a user imported from ldap?
+		if ( createUser && Utils.checkIfFilr() && user.getIdentityInfo().isFromLdap() )
+		{
+			HomeDirInfo homeDirInfo;
+			
+			// Yes
+			try
+			{
+				// Does this user have a home directory attribute in ldap?
+				homeDirInfo = ldapModule.readHomeDirInfoFromDirectory( user.getName(), userName );
+				if ( homeDirInfo != null )
+				{
+					// Yes
+					// Create/update the home directory net folder for this user.
+					try
+					{
+						NetFolderHelper.createHomeDirNetFolder(
+															getProfileModule(),
+															getTemplateModule(),
+															getBinderModule(),
+															getFolderModule(),
+															getAdminModule(),
+															getResourceDriverModule(),
+															getRunAsyncManager(),
+															homeDirInfo,
+															user );
+					}
+					catch ( Exception ex )
+					{
+						logger.error( "Unable to create home directory net folder, server: " + homeDirInfo.getServerAddr() + " error: " + ex.toString() );
+					}
+				}
+				else
+				{
+					Binder netFolderBinder;
+					
+					// The user does not have a home directory attribute.
+					// Does the user already have a home dir net folder?
+					// Does a net folder already exist for this user's home directory
+					netFolderBinder = NetFolderHelper.findHomeDirNetFolder(
+																		binderModule,
+																		user.getWorkspaceId() );
+					if ( netFolderBinder != null )
+					{
+						// Yes
+						// Delete the home net folder.
+						try
+						{
+							NetFolderHelper.deleteNetFolder( getFolderModule(), netFolderBinder.getId(), false );
+						}
+						catch ( Exception e )
+						{
+							logger.error( "Error deleting home net folder: " + netFolderBinder.getName(), e );
+						}
+					}
+				}
+			}
+			catch ( NamingException ex )
+			{
+				logger.error( "Unable to read home directory information for user: " + user.getName() );
+			}
+		}
+
 		// If still here, it means that authentication was successful.
 		// Has the user logged in before?
 		if( user.getFirstLoginDate() == null )
