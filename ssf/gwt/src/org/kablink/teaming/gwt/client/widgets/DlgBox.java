@@ -53,6 +53,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
 
 /**
@@ -60,7 +61,7 @@ import com.google.gwt.user.client.ui.UIObject;
  * 
  * @author jwootton
  */
-public abstract class DlgBox extends PopupPanel
+public abstract class DlgBox extends TeamingPopupPanel
 	implements ClickHandler
 {
 	private final static boolean	DEBUG_SHOW_STATE = false;	// true -> Show alerts to help debug show state problems.  false -> Don't.
@@ -232,8 +233,8 @@ public abstract class DlgBox extends PopupPanel
 		boolean showFooter,
 		boolean useOverflowAutoOnContent )
 	{
-		// Since we are providing the modal behavior, always pass false into super()
-		super( autoHide, false );
+		// Note that we never allow a modal dialog to be auto hide.
+		super( ( autoHide && (!modal) ), modal );
 		
 		m_useOverflowAutoOnContent = useOverflowAutoOnContent;
 		m_fixedSize = false;
@@ -924,22 +925,23 @@ public abstract class DlgBox extends PopupPanel
 				String glassStyle;
 				switch ( m_numDlgsVisible )
 				{
-				case 0:  glassStyle = "teamingDlgBox_Glass";                                break;
-				case 1:  glassStyle = "teamingDlgBox_GlassClear teamingDlgBox_GlassClear1"; break;
-				case 2:  glassStyle = "teamingDlgBox_GlassClear teamingDlgBox_GlassClear2"; break;
-				case 3:  glassStyle = "teamingDlgBox_GlassClear teamingDlgBox_GlassClear3"; break;
-				case 4:  glassStyle = "teamingDlgBox_GlassClear teamingDlgBox_GlassClear4"; break;
 				default:
-				case 5:  glassStyle = "teamingDlgBox_GlassClear teamingDlgBox_GlassClear5"; break;
+				case 1:  glassStyle = "teamingDlgBox_GlassClear"; break;
+				case 0:  glassStyle = "teamingDlgBox_Glass";      break;
 				}
 				setGlassStyleName( glassStyle );
 				showDebugAlert("modal glass:"+m_numDlgsVisible);
+				
+				getPopupGlassElement().getStyle().setZIndex(1000 + (m_numDlgsVisible * 2));
 			}
+			
+			getElement().getStyle().setZIndex(1001 + (m_numDlgsVisible * 2));
 		
 			if ( !m_visible )
 			{
 				++m_numDlgsVisible;
 			}
+			
 		}
 		
 		
