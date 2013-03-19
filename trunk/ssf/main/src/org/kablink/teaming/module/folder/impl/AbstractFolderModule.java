@@ -647,19 +647,15 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         		!inputData.getSingleValue("title").equals(entry.getTitle())) { 
         	// This is renaming of a Net Folder entry, which means that the user is attempting to rename a file.
 			// Do the checking in a way that is consistent with the file system semantic.
-        	// Renaming a file (a -> b) is like deleting a file (a) and then adding another with a different name
-        	// (b) when looking at it from the directory membership point of view. So, we require the user to
-        	// have CREATE_ENTRIES right on the parent folder to allow for this operation.
-			getAccessControlManager().checkOperation(entry.getParentFolder(), WorkAreaOperation.CREATE_ENTRIES);
+			getAccessControlManager().checkOperation(entry.getParentFolder(), WorkAreaOperation.RENAME_ENTRIES);
         }
-        else {
-			try {
-				checkAccess(entry, FolderOperation.modifyEntry);
-			} catch (AccessControlException e) {
-				checkAccess(entry, FolderOperation.modifyEntryFields);
-				inputData.setFieldsOnly(true);
-			}
-        }
+        //Must have modify rights, too
+		try {
+			checkAccess(entry, FolderOperation.modifyEntry);
+		} catch (AccessControlException e) {
+			checkAccess(entry, FolderOperation.modifyEntryFields);
+			inputData.setFieldsOnly(true);
+		}
         Folder folder = entry.getParentFolder();
 		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
 				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
