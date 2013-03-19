@@ -551,6 +551,7 @@ public class GwtMainPage extends ResizeComposite
 		list = new ArrayList<ActionMenuItem>();
 		list.add(ActionMenuItem.REPLY );
 		list.add( ActionMenuItem.SHARE );
+		list.add( ActionMenuItem.VIEW_DETAILS );
 		list.add( ActionMenuItem.SUBSCRIBE );
 		if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
 			list.add( ActionMenuItem.TAG );

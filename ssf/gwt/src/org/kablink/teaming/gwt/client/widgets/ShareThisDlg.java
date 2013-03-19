@@ -1871,9 +1871,18 @@ public class ShareThisDlg extends DlgBox
 							@Override
 							public void execute()
 							{
+								String imgUrl;
+								
 								// Update the name of the entity in the header.
 								m_headerNameLabel.setText( gwtFolderEntry.getEntryName() );
 								m_headerPathLabel.setText( gwtFolderEntry.getParentBinderName() );
+								
+								// Do we have a url for the file image?
+								imgUrl = gwtFolderEntry.getFileImgUrl();
+								if ( imgUrl != null && imgUrl.length() > 0 )
+								{
+									m_headerImg.setUrl( GwtClientHelper.getRequestInfo().getImagesPath() + imgUrl );
+								}
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );

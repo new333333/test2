@@ -55,6 +55,7 @@ public class GwtFolderEntry extends GwtTeamingItem
 	private String m_authorId;
 	private String m_authorWsId;		// Id of the author's workspace
 	private String m_modificationDate;
+	private String m_fileImgUrl;
 	
 	private Long m_parentBinderId;
 	private String m_parentBinderName;
@@ -80,6 +81,7 @@ public class GwtFolderEntry extends GwtTeamingItem
 		m_viewUrl = null;
 		m_replyIds = null;
 		m_fileAttachments = null;
+		m_fileImgUrl = null;
 	}// end GwtFolderEntry()
 	
 	/**
@@ -161,6 +163,14 @@ public class GwtFolderEntry extends GwtTeamingItem
 	}
 	
 	/**
+	 * Return the url that points to an image that corresponds to the file type
+	 */
+	public String getFileImgUrl()
+	{
+		return m_fileImgUrl;
+	}
+	
+	/**
 	 * 
 	 */
 	public String getModificationDate()
@@ -171,6 +181,7 @@ public class GwtFolderEntry extends GwtTeamingItem
 	/**
 	 * 
 	 */
+	@Override
 	public String getName()
 	{
 		return getEntryName();
@@ -204,6 +215,7 @@ public class GwtFolderEntry extends GwtTeamingItem
 	/**
 	 * Return the name of the parent binder.
 	 */
+	@Override
 	public String getSecondaryDisplayText()
 	{
 		String name;
@@ -220,6 +232,7 @@ public class GwtFolderEntry extends GwtTeamingItem
 	/**
 	 * Return the name that should be displayed when this entry is displayed.
 	 */
+	@Override
 	public String getShortDisplayName()
 	{
 		return m_entryName;
@@ -229,6 +242,7 @@ public class GwtFolderEntry extends GwtTeamingItem
 	/**
 	 * 
 	 */
+	@Override
 	public String getTitle()
 	{
 		return m_entryName;
@@ -291,6 +305,14 @@ public class GwtFolderEntry extends GwtTeamingItem
 	{
 		m_entryName = entryName;
 	}// end setEntryName()
+	
+	/**
+	 * Set the url that points to the image that corresponds to file type
+	 */
+	public void setFileImgUrl( String url )
+	{
+		m_fileImgUrl = url;
+	}
 	
 	/**
 	 * 
