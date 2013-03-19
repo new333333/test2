@@ -54,6 +54,7 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.FileAttachment;
@@ -187,6 +188,8 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.FileIconsHelper;
+import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
@@ -3771,6 +3774,30 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					    	folderEntry.addAttachment( gwtAttachment );
 			    		}
 			    	}
+				}
+				
+				// Is this entry a file?
+				if ( GwtServerHelper.isFamilyFile( Definition.FAMILY_FILE ) )
+				{
+					SortedSet<FileAttachment> fileAttachments;
+					
+					// Yes
+					fileAttachments = entry.getFileAttachments();
+					if ( fileAttachments != null && fileAttachments.size() > 0 )
+					{
+						String fileName = null;
+						
+						fileName = fileAttachments.first().getFileItem().getName();
+						if ( fileName != null && fileName.length() > 0 )
+						{
+							String fileImgUrl;
+							
+							fileImgUrl = FileIconsHelper.getFileIconFromFileName(
+																			fileName,
+																			IconSize.MEDIUM );
+							folderEntry.setFileImgUrl( fileImgUrl );
+						}
+					}
 				}
 			}
 		}

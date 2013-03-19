@@ -48,13 +48,17 @@ import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
 import org.kablink.teaming.gwt.client.event.MarkEntryUnreadEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.EventValidationListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEntryEventsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.Agent;
 import org.kablink.teaming.gwt.client.util.AgentBase;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.GWT;
@@ -82,7 +86,8 @@ public class ActionsPopupMenu extends PopupMenu
 		SEND_TO_FRIEND,
 		SHARE,
 		SUBSCRIBE,
-		TAG;
+		TAG,
+		VIEW_DETAILS;
 	}
 	
 	private VibeMenuItem m_replyMenuItem;
@@ -93,6 +98,7 @@ public class ActionsPopupMenu extends PopupMenu
 	private VibeMenuItem m_markReadMenuItem;
 	private VibeMenuItem m_markUnreadMenuItem;
 	private VibeMenuItem m_deleteMenuItem;
+	private VibeMenuItem m_viewDetailsMenuItem;
 	private AsyncCallback<VibeRpcResponse> m_checkRightsCallback = null;
 	private List<EventValidation> m_eventValidations;
 	private ActivityStreamUIEntry m_entry;
@@ -162,6 +168,11 @@ public class ActionsPopupMenu extends PopupMenu
 					m_tagMenuItem = addMenuItem( new InvokeTagEvent(), null, messages.tag() );
 					break;
 					
+				case VIEW_DETAILS:
+					// Create the "View Details" menu item.
+					m_viewDetailsMenuItem = addMenuItem( new ViewForumEntryEvent( "" ), null, messages.viewDetails() );
+					break;
+				
 				default:
 					Window.alert( "Unknown menu item in ActionsPopupMenu()" );
 					break;
@@ -277,6 +288,11 @@ public class ActionsPopupMenu extends PopupMenu
 									case DELETE_ENTRY:
 										if ( m_deleteMenuItem != null )
 											m_deleteMenuItem.setVisible( false );
+										break;
+										
+									case VIEW_FORUM_ENTRY:
+										if ( m_viewDetailsMenuItem != null )
+											m_viewDetailsMenuItem.setVisible( false );
 										break;
 									}
 								}
@@ -432,6 +448,52 @@ public class ActionsPopupMenu extends PopupMenu
 				m_markReadMenuItem.setVisible( false );
 		}
 
+		if ( m_viewDetailsMenuItem != null )
+		{
+			if ( entry instanceof ActivityStreamTopEntry )
+			{
+				final EntityId entityId;
+				GetViewFolderEntryUrlCmd cmd;
+
+				m_viewDetailsMenuItem.setVisible( true );
+
+				entityId = m_entry.getEntryEntityId();
+
+				cmd = new GetViewFolderEntryUrlCmd( entityId.getBinderId(), entityId.getEntityId() );
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+				{
+					@Override
+					public void onFailure( Throwable caught )
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+													caught,
+													GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
+													String.valueOf( entityId.getEntityId() ) );
+					}
+
+					@Override
+					public void onSuccess( VibeRpcResponse response )
+					{
+						ViewForumEntryEvent viewEntryEvent;
+						StringRpcResponseData responseData;
+						String viewUrl;
+
+						viewEntryEvent = (ViewForumEntryEvent) m_viewDetailsMenuItem.getEvent();
+						viewEntryEvent.setViewForumEntryUrl( "" );
+						
+						responseData = (StringRpcResponseData) response.getResponseData();
+						viewUrl = responseData.getStringValue();
+						if ( GwtClientHelper.hasString( viewUrl ) )
+						{
+							viewEntryEvent.setViewForumEntryUrl( viewUrl );
+						}
+					}
+				} );
+			}
+			else
+				m_viewDetailsMenuItem.setVisible( false );
+		}
+		
 		// Make an ajax request to see what rights the user has for the given entry.
 		// After the ajax request returns we will display this menu.
 		checkRights();

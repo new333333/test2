@@ -1417,6 +1417,7 @@ public interface GwtTeamingMessages extends Messages
 	String share();
 	String subscribe();
 	String tag();
+	String viewDetails();
 	
 	// The following strings are used in the "Subscribe to Entry" dialog.
 	String cantSubscribeNoEmailAddresses();

@@ -11266,6 +11266,10 @@ public class GwtServerHelper {
 							// Nothing to do.
 							break;
 						
+						case VIEW_SELECTED_ENTRY:
+							// Nothing to do.
+							break;
+							
 						default:
 							m_logger.info( "Unknown event in GwtServerHelper.validateEntryEvents() - " + teamingEvent.toString() );
 							break;
