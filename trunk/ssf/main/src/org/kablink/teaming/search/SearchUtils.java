@@ -1063,12 +1063,11 @@ public class SearchUtils {
         // ...and issue the query and return the entries.
         Binder nfBinder = getNetFoldersRootBinder();
         return
-            mods.getBinderModule().searchFolderOneLevelWithInferredAccess(
+            mods.getBinderModule().executeSearchQuery(
                 crit,
-                Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
+                Constants.SEARCH_MODE_NORMAL,
                 getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
-                getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
-                nfBinder);
+                getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS));
     }
 
     /**
