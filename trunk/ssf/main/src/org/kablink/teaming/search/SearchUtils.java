@@ -898,26 +898,8 @@ public class SearchUtils {
 	public static void removeNetFoldersWithNoRootAccess(Map netFolderSearchResults) {
 		//Filter out any folders that don't have the AllowAccessToNetFolder right
 		List netFolderMapList = (List)netFolderSearchResults.get(ObjectKeys.SEARCH_ENTRIES); 
-		User user = RequestContextHolder.getRequestContext().getUser();
-		
-		List newNetFolderMapList = new ArrayList();
-		int itemsRemoved = 0;
-      	for (Iterator iter=netFolderMapList.iterator(); iter.hasNext();) {
-      		Map entryMap = (Map) iter.next();
-      		String docId = (String)entryMap.get(Constants.DOCID_FIELD);
-      		String entityType = (String)entryMap.get(Constants.ENTITY_FIELD);
-      		if (EntityIdentifier.EntityType.folder.name().equals(entityType)) {
-      			//See if the user has access to this root folder
-	 			if (AccessUtils.checkIfUserHasAccessToRootId(user, docId) || user.isSuper()) {
-	  				//This user has access to this item in the search results, so allow this result
-	  				newNetFolderMapList.add(entryMap);
-	  			} else {
-	  				itemsRemoved++;
-	  			}
-      		} else {
-      			itemsRemoved++;
-      		}
-      	}
+		List newNetFolderMapList = removeNetFoldersWithNoRootAccess(netFolderMapList);
+		int itemsRemoved = netFolderMapList.size() - newNetFolderMapList.size();
       	if (itemsRemoved > 0) {
       		//We had to remove some. Store the new list and fix up the counts.
 	      	netFolderSearchResults.put(ObjectKeys.SEARCH_ENTRIES, newNetFolderMapList);
@@ -940,6 +922,25 @@ public class SearchUtils {
       			netFolderSearchResults.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, count); 
       		}
       	}
+	}
+	public static List removeNetFoldersWithNoRootAccess(List netFolderMapList) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		List newNetFolderMapList = new ArrayList();
+		
+		Iterator iter = netFolderMapList.iterator();
+      	while (iter.hasNext()) {
+      		Map entryMap = (Map) iter.next();
+      		String docId = (String)entryMap.get(Constants.DOCID_FIELD);
+      		String entityType = (String)entryMap.get(Constants.ENTITY_FIELD);
+      		if (EntityIdentifier.EntityType.folder.name().equals(entityType)) {
+      			//See if the user has access to this root folder
+	 			if (AccessUtils.checkIfUserHasAccessToRootId(user, docId) || user.isSuper()) {
+	  				//This user has access to this item in the search results, so keep this result
+	 				newNetFolderMapList.add(entryMap);
+	  			}
+      		}
+      	}
+      	return newNetFolderMapList;
 	}
 
 	/**
