@@ -1249,8 +1249,8 @@ body, table td, select
 	cursor: pointer;
 	padding: 2px;
 	position: absolute;
-	right: 8px;
-	top: 9px;
+	right: 20px;
+	top: 4px;
 }
 
 /* Styles used for the error panel in a dialog. */
