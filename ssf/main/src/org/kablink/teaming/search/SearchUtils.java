@@ -50,6 +50,7 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.TitleException;
@@ -903,25 +904,18 @@ public class SearchUtils {
 		int itemsRemoved = 0;
       	for (Iterator iter=netFolderMapList.iterator(); iter.hasNext();) {
       		Map entryMap = (Map) iter.next();
-      		if (entryMap.containsKey(Constants.ROOT_FOLDER_ACL_FIELD)) {
-      			//See if the user has access to the root folder
-      			Object rootAcl = entryMap.get(Constants.ROOT_FOLDER_ACL_FIELD);
-      			Set<String> rootAclSet = new HashSet<String>();
-      			if (rootAcl instanceof String) {
-      				rootAclSet.add((String)rootAcl);
-      			} else if (rootAcl instanceof SearchFieldResult) {
-      				rootAclSet = ((SearchFieldResult)rootAcl).getValueSet();
-      			}
-     			if (AccessUtils.checkIfUserHasAccessToRootId(user, rootAclSet) || user.isSuper()) {
-      				//This user does have access to this item in the search results, so allow this result
-      				newNetFolderMapList.add(entryMap);
-      			} else {
-      				itemsRemoved++;
-      			}
+      		String docId = (String)entryMap.get(Constants.DOCID_FIELD);
+      		String entityType = (String)entryMap.get(Constants.ENTITY_FIELD);
+      		if (EntityIdentifier.EntityType.folder.name().equals(entityType)) {
+      			//See if the user has access to this root folder
+	 			if (AccessUtils.checkIfUserHasAccessToRootId(user, docId) || user.isSuper()) {
+	  				//This user has access to this item in the search results, so allow this result
+	  				newNetFolderMapList.add(entryMap);
+	  			} else {
+	  				itemsRemoved++;
+	  			}
       		} else {
-      			//This index may not have been re-indexed or there is no rootAcl field. 
-      			//Assume it is visible since the search did return it.
-      			newNetFolderMapList.add(entryMap);
+      			itemsRemoved++;
       		}
       	}
       	if (itemsRemoved > 0) {

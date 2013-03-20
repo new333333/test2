@@ -533,15 +533,19 @@ public class AccessUtils  {
 	}
 	
 	//Routine to see if the current user has access to at least one id in a list of user or group ids (as returned from a search)
-	public static boolean checkIfUserHasAccessToRootId(User user, Set<String> rootIds) {
-		if (rootIds.contains(Constants.ROOT_FOLDER_ALL)) return true;
-		Set principalIds = getInstance().getProfileDao().getAllPrincipalIds(user);
-		for (String sId : rootIds) {
-			try {
-				Long id = Long.valueOf(sId);
-				if (principalIds.contains(id)) return true;
-			} catch(Exception e) {}
-		}
+	public static boolean checkIfUserHasAccessToRootId(User user, String binderId) {
+		try {
+			DefinableEntity binder = getInstance().getBinderModule().getBinder(Long.valueOf(binderId));
+			Set<String> rootIds = getRootIds(binder);
+			if (rootIds.contains(Constants.ROOT_FOLDER_ALL)) return true;
+			Set principalIds = getInstance().getProfileDao().getAllPrincipalIds(user);
+			for (String sId : rootIds) {
+				try {
+					Long id = Long.valueOf(sId);
+					if (principalIds.contains(id)) return true;
+				} catch(Exception e) {}
+			}
+		} catch(Exception e) {}
 		return false;
 	}
 	
