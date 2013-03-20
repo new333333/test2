@@ -6,6 +6,7 @@ import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
+import org.kablink.teaming.module.file.FileList;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.BinderUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
@@ -462,12 +463,19 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         if (fileName!=null) {
             criterion.add(buildFileNameCriterion(fileName));
         }
-        List<FileIndexData> files = getFileModule().getFileDataFromIndex(new Criteria().add(criterion));
+        if (offset==null) {
+            offset = 0;
+        }
+        if (maxCount==null) {
+            maxCount = Integer.MAX_VALUE;
+        }
+        FileList files = getFileModule().getFileDataFromIndex(new Criteria().add(criterion), offset, maxCount);
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>(0, binder.getModificationDate());
-        results.setFirst(0);
-        results.setCount(files.size());
-        results.setTotal(files.size());
-        for (FileIndexData file : files) {
+        results.setFirst(offset);
+        results.setCount(files.getCount());
+        results.setTotal(files.getTotal());
+        results.setNextIfNecessary(nextUrl, nextParams);
+        for (FileIndexData file : files.getFiles()) {
             results.append(ResourceUtil.buildFileProperties(file));
             results.updateLastModified(file.getModifiedDate());
         }
