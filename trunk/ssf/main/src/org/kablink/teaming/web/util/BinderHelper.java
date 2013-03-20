@@ -3568,11 +3568,15 @@ public class BinderHelper {
 			Criteria crit = SearchUtils.getNetFoldersSearchCriteria(bs);
 			// Perform the search for the binders to search...
 			int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
-			Map searchResults = bs.getBinderModule().executeSearchQuery(
-				crit,
-				Constants.SEARCH_MODE_NORMAL,
-				0,
-				maxResults);
+			Binder nfBinder = SearchUtils.getNetFoldersRootBinder();
+			Map searchResults = bs.getBinderModule().searchFolderOneLevelWithInferredAccess(
+					crit,
+					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+					nfBinder);
+			//Now, remove any results where the current user does not have AllowNetFolderAccess rights
+			SearchUtils.removeNetFoldersWithNoRootAccess(searchResults);
 			
 			// Get the binder hits
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
