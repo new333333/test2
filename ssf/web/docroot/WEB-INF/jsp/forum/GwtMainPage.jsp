@@ -372,10 +372,10 @@
 			<tbody>
 				<tr>
 					<td>
-						<span class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2 subhead-control-bg1 roundcornerSM" style="display: none;" id="forgottenPwdSpan"></span>
+						<span class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2" style="display: none;" id="forgottenPwdSpan"></span>
 					</td>
 					<td>
-						<span class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2 subhead-control-bg1 roundcornerSM" style="display: none;" id="createNewAccountSpan"></span>
+						<span class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2" style="display: none;" id="createNewAccountSpan"></span>
 					</td>
 				</tr>
 			</tbody>
