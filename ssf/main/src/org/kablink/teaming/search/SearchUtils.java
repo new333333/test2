@@ -35,6 +35,7 @@ package org.kablink.teaming.search;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,6 +56,7 @@ import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.runwith.RunWithCallback;
 import org.kablink.teaming.security.runwith.RunWithTemplate;
@@ -891,6 +893,60 @@ public class SearchUtils {
 		// Always use the initial form of the method.
 		return getNetFoldersSearchCriteria(bs, true);	// true -> Default to the top workspace.
 	}
+	
+	public static void removeNetFoldersWithNoRootAccess(Map netFolderSearchResults) {
+		//Filter out any folders that don't have the AllowAccessToNetFolder right
+		List netFolderMapList = (List)netFolderSearchResults.get(ObjectKeys.SEARCH_ENTRIES); 
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		List newNetFolderMapList = new ArrayList();
+		int itemsRemoved = 0;
+      	for (Iterator iter=netFolderMapList.iterator(); iter.hasNext();) {
+      		Map entryMap = (Map) iter.next();
+      		if (entryMap.containsKey(Constants.ROOT_FOLDER_ACL_FIELD)) {
+      			//See if the user has access to the root folder
+      			Object rootAcl = entryMap.get(Constants.ROOT_FOLDER_ACL_FIELD);
+      			Set<String> rootAclSet = new HashSet<String>();
+      			if (rootAcl instanceof String) {
+      				rootAclSet.add((String)rootAcl);
+      			} else if (rootAcl instanceof SearchFieldResult) {
+      				rootAclSet = ((SearchFieldResult)rootAcl).getValueSet();
+      			}
+     			if (AccessUtils.checkIfUserHasAccessToRootId(user, rootAclSet) || user.isSuper()) {
+      				//This user does have access to this item in the search results, so allow this result
+      				newNetFolderMapList.add(entryMap);
+      			} else {
+      				itemsRemoved++;
+      			}
+      		} else {
+      			//This index may not have been re-indexed or there is no rootAcl field. 
+      			//Assume it is visible since the search did return it.
+      			newNetFolderMapList.add(entryMap);
+      		}
+      	}
+      	if (itemsRemoved > 0) {
+      		//We had to remove some. Store the new list and fix up the counts.
+	      	netFolderSearchResults.put(ObjectKeys.SEARCH_ENTRIES, newNetFolderMapList);
+      		Integer count = (Integer)netFolderSearchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL); 
+      		if (count != null) {
+      			count = count - itemsRemoved;
+      			if (count < 0) count = 0;
+      			netFolderSearchResults.put(ObjectKeys.SEARCH_COUNT_TOTAL, count); 
+      		}
+      		count = (Integer)netFolderSearchResults.get(ObjectKeys.TOTAL_SEARCH_COUNT); 
+      		if (count != null) {
+      			count = count - itemsRemoved;
+      			if (count < 0) count = 0;
+      			netFolderSearchResults.put(ObjectKeys.TOTAL_SEARCH_COUNT, count); 
+      		}
+      		count = (Integer)netFolderSearchResults.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED); 
+      		if (count != null) {
+      			count = count - itemsRemoved;
+      			if (count < 0) count = 0;
+      			netFolderSearchResults.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, count); 
+      		}
+      	}
+	}
 
 	/**
 	 * Returns the search criteria used to find all the entries in a
@@ -1062,12 +1118,15 @@ public class SearchUtils {
 
         // ...and issue the query and return the entries.
         Binder nfBinder = getNetFoldersRootBinder();
-        return
-            mods.getBinderModule().executeSearchQuery(
+        Map netFolderResults = mods.getBinderModule().searchFolderOneLevelWithInferredAccess(
                 crit,
-                Constants.SEARCH_MODE_NORMAL,
+                Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
                 getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
-                getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS));
+                getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+                nfBinder);
+		//Remove any results where the current user does not have AllowNetFolderAccess rights
+		SearchUtils.removeNetFoldersWithNoRootAccess(netFolderResults);
+		return netFolderResults;
     }
 
     /**

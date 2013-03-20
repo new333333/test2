@@ -818,7 +818,7 @@ public class EntityIndexUtils {
     private static void addRootAcl(Document doc, DefinableEntity entity) {
     	Set<String> rootIds = AccessUtils.getRootIds(entity);
     	for (String id : rootIds) {
-    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ROOT_FOLDER_ACL_FIELD, id));
+    		doc.add(FieldFactory.createFieldStoredNotAnalyzed(Constants.ROOT_FOLDER_ACL_FIELD, id));
     	}
     }
     private static void addRootAcl(org.dom4j.Element parent, DefinableEntity entity) {

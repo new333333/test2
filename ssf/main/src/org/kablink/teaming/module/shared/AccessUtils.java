@@ -532,6 +532,19 @@ public class AccessUtils  {
         return rootIds;
 	}
 	
+	//Routine to see if the current user has access to at least one id in a list of user or group ids (as returned from a search)
+	public static boolean checkIfUserHasAccessToRootId(User user, Set<String> rootIds) {
+		if (rootIds.contains(Constants.ROOT_FOLDER_ALL)) return true;
+		Set principalIds = getInstance().getProfileDao().getAllPrincipalIds(user);
+		for (String sId : rootIds) {
+			try {
+				Long id = Long.valueOf(sId);
+				if (principalIds.contains(id)) return true;
+			} catch(Exception e) {}
+		}
+		return false;
+	}
+	
 	public static void readCheck(User user, DefinableEntity entity) throws AccessControlException {
 		if (entity.getEntityType().equals(EntityIdentifier.EntityType.workspace) || 
 				entity.getEntityType().equals(EntityIdentifier.EntityType.folder) || 

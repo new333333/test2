@@ -2553,13 +2553,15 @@ public class GwtViewHelper {
 			
 			// ...and issue the query and return the entries.
 			Binder nfBinder = SearchUtils.getNetFoldersRootBinder();
-			return
-				bs.getBinderModule().executeSearchQuery(
+			Map netFolderResults = bs.getBinderModule().searchFolderOneLevelWithInferredAccess(
 					crit,
-					Constants.SEARCH_MODE_NORMAL,
+					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
 					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
-					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS));
-
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+					nfBinder);
+			//Remove any results where the current user does not have AllowNetFolderAccess rights
+			SearchUtils.removeNetFoldersWithNoRootAccess(netFolderResults);
+			return netFolderResults;
 			
 		case SHARED_BY_ME:
 		case SHARED_WITH_ME:
