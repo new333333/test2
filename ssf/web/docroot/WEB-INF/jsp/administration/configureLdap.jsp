@@ -1329,6 +1329,26 @@ ssPage = {
 		
 		return count == 0;
 	},
+	
+	/**
+	 * This function gets called when the user clicks on the "Delete users that are not in LDAP" checkbox.
+	 * If the user is checking this checkbox we will warn them about the consequences.
+	 */
+	onClickDeleteUsersNotInLdap : function()
+	{
+		var msg;
+		var input;
+		
+		// Is the "delete users that are not in ldap" checkbox checked?
+		input = document.getElementById( 'userDelete' );
+		if ( input.checked )
+		{
+			// Yes
+			// Tell the user that selecting this option is dangerous.
+			msg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.delete.users.not.in.ldap.warning"><ssf:param name="value" value="${productName}" /></ssf:nlt></ssf:escapeJavaScript>';
+			alert( msg );
+		}
+	},
 
 	/**
 	 * Select the given ldap configuration.
@@ -1402,6 +1422,8 @@ ssPage = {
 
 jQuery(document).ready(function() {
 	jQuery('#ldapAddConnection').click(ssPage.addConnection);
+	
+	jQuery( '#userDelete' ).click( ssPage.onClickDeleteUsersNotInLdap );
 	
 	jQuery("form").submit(function() {
 		var ldapDoc="<ldapConfigs>";
