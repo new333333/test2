@@ -2372,8 +2372,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		session.checkout(binder, entity, relativeFilePath);
     		// Update the file content
     		InputStream in = fui.getInputStream();
-    		SizeMd5Pair sizeMd5Pair = fui.makeReentrant();
+    		SizeMd5Pair sizeMd5Pair = null;
     		try {
+    			sizeMd5Pair = fui.makeReentrant();
     			updateWithInputData(session, binder, entity, relativeFilePath, in, sizeMd5Pair.getSize(), sizeMd5Pair.getMd5());
     		}
     		finally {
@@ -2398,8 +2399,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		}
     		else {
     			// auto-commit = false
-    			updateInfo.fileLength = sizeMd5Pair.getSize();
-                updateInfo.fileMd5 = sizeMd5Pair.getMd5();
+    			if(sizeMd5Pair != null) {
+	    			updateInfo.fileLength = sizeMd5Pair.getSize();
+	                updateInfo.fileMd5 = sizeMd5Pair.getMd5();
+    			}
     		}
 		}
 		else { // This condition can occur only for mirrored folder when synching inbound from the source 
