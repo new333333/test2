@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -40,6 +43,7 @@ import org.kablink.teaming.gwt.client.util.HelpData;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -95,8 +99,13 @@ public abstract class DlgBox extends TeamingPopupPanel
 	private Integer					m_height;					//
 	private boolean					m_useOverflowAutoOnContent = true;
     	
-	protected static int			m_numDlgsVisible = 0;		// Number of dialogs that are currently visible.
-	private   static int			m_uniqueId       = 100;		//
+	private static int				m_uniqueId       = 100;						//
+	private static List<DlgBox>		m_visibleDialogs = new ArrayList<DlgBox>();	//
+	
+	// The following define the base z-index values used for dialogs
+	// and modal dialog glass panels.
+	private final static int DIALOG_BASE_Z_INDEX      = 1001;
+	private final static int MODAL_GLASS_BASE_Z_INDEX = 1000;
 	
 	public enum DlgButtonMode {
 		Cancel,
@@ -233,8 +242,10 @@ public abstract class DlgBox extends TeamingPopupPanel
 		boolean showFooter,
 		boolean useOverflowAutoOnContent )
 	{
-		// Note that we never allow a modal dialog to be auto hide.
-		super( ( autoHide && (!modal) ), modal );
+		// We always pass false to super() as the modal flag since we
+		// manage modality using a glass panel.  Also note that we
+		// never allow a modal dialog to be auto hide.
+		super( ( autoHide && (!modal) ), false );
 		
 		m_useOverflowAutoOnContent = useOverflowAutoOnContent;
 		m_fixedSize = false;
@@ -655,16 +666,11 @@ public abstract class DlgBox extends TeamingPopupPanel
 	 */
 	private void hideImpl()
 	{
-		if ( m_visible && ( 0 < m_numDlgsVisible ) )
-		{
-			--m_numDlgsVisible;
-		}
-		
+		m_visibleDialogs.remove( this );
 		if ( !m_superHide )
 		{
-			showDebugAlert("hide:"+m_numDlgsVisible);
+			showDebugAlert( "hide: " + m_visibleDialogs.size() + " now visible." );
 		}
-		
 		m_visible = false;
 	}// end hideImpl()
 	
@@ -915,6 +921,7 @@ public abstract class DlgBox extends TeamingPopupPanel
 		if ( !m_superShow )
 		{
 			// Is this dialog suppose to be modal
+			int numDlgs = m_visibleDialogs.size();
 			if ( m_modal )
 			{
 				// Yes
@@ -923,28 +930,28 @@ public abstract class DlgBox extends TeamingPopupPanel
 				// styles are all about z-index.
 				setGlassEnabled( true );
 				String glassStyle;
-				switch ( m_numDlgsVisible )
+				switch ( numDlgs )
 				{
 				default:
 				case 1:  glassStyle = "teamingDlgBox_GlassClear"; break;
 				case 0:  glassStyle = "teamingDlgBox_Glass";      break;
 				}
 				setGlassStyleName( glassStyle );
-				showDebugAlert("modal glass:"+m_numDlgsVisible);
+				showDebugAlert( "modal glass: " + " covering " + numDlgs + " visible." );
 				
-				getPopupGlassElement().getStyle().setZIndex(1000 + (m_numDlgsVisible * 2));
+				Element glassElement = getPopupGlassElement();
+				glassElement.getStyle().setZIndex( MODAL_GLASS_BASE_Z_INDEX + (numDlgs * 2) );
+				for (DlgBox dlg:  m_visibleDialogs)
+				{
+					dlg.addAutoHidePartner( glassElement );
+				}
 			}
 			
-			getElement().getStyle().setZIndex(1001 + (m_numDlgsVisible * 2));
+			getElement().getStyle().setZIndex( DIALOG_BASE_Z_INDEX + (numDlgs * 2) );
 		
-			if ( !m_visible )
-			{
-				++m_numDlgsVisible;
-			}
-			
+			m_visibleDialogs.add( this );
+			showDebugAlert( "show: " + m_visibleDialogs.size() + " now visible, " + (centered ? " centered." : " positioned.") );
 		}
-		
-		
 		m_visible = true;
 		
 		// Add a vertical scroll bar to the outer most frame to address
@@ -958,11 +965,6 @@ public abstract class DlgBox extends TeamingPopupPanel
 		     super.center();
 		else super.show();
 		m_superShow = wasSuperShow;
-		
-		if ( !m_superShow )
-		{
-			showDebugAlert("show:"+m_numDlgsVisible+(centered?" centered" : " positioned"));
-		}
 		
 		// Get the widget that should be given the focus when this dialog is displayed.
 		m_focusWidget = getFocusWidget();

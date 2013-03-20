@@ -61,6 +61,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private List<ToolbarItem>	m_configBucket;			// List of configuration  items for the context based menu.
 	private List<ToolbarItem>	m_ignoreBucket;			// List of ignored        items for the context based menu.
 	private List<ToolbarItem>	m_miscBucket;			// List of miscellaneous  items for the context based menu.
+	private List<ToolbarItem>	m_primaryBucket;		// List of primary        items for the context based menu.
 	private List<ToolbarItem>	m_teamAndEmailBucket;	// List of team and email items for the context based menu.
 	private List<ToolbarItem>	m_toolbarItemList;		// The context based toolbar requirements.
 	private List<ToolbarItem>	m_filrBucket;			// List of Filr specific  items for the context based menu.
@@ -210,10 +211,14 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		m_filrBucket         = new ArrayList<ToolbarItem>();
 		m_ignoreBucket       = new ArrayList<ToolbarItem>();
 		m_miscBucket         = new ArrayList<ToolbarItem>();
+		m_primaryBucket      = new ArrayList<ToolbarItem>();
 		m_teamAndEmailBucket = new ArrayList<ToolbarItem>();
 
 		// File the buckets in the order things will appear in the
 		// menu.  Start with the actions section...
+		if (null != m_shareThisTBI) {
+			m_primaryBucket.add(m_shareThisTBI);
+		}
 		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_folder"        );
 		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_subFolder"     );
 		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_workspace"     );
@@ -275,7 +280,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		// ...then the miscellaneous section...
 		if (null != m_trackPersonTBI) m_miscBucket.add(m_trackPersonTBI);
 		if (null != m_trackBinderTBI) m_miscBucket.add(m_trackBinderTBI);
-		if (null != m_shareThisTBI)   m_miscBucket.add(m_shareThisTBI);
 		
 		// ...then the configuration section...
 		if (null != m_brandingTBI) {
@@ -503,8 +507,16 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	public void populateMenu() {
 		// Have we constructed the menu's contents yet?
 		if (!(hasContent())) {
-			// No!  We need to construct it now.  First the actions
+			// No!  We need to construct it now.  First the primary
 			// section.
+			addContextMenuItemsFromList(IDBASE, m_primaryBucket);
+			
+			// Then the actions section.
+			boolean hasPrimarySection = (!(m_primaryBucket.isEmpty()));
+			if (hasPrimarySection && isSpacerNeeded()) {
+				// ...and add a spacer when required.
+				addSpacerMenuItem();
+			}
 			addContextMenuItemsFromList(IDBASE, m_actionsBucket);
 			
 			// Then the team and email section...

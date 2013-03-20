@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -59,8 +59,6 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -68,9 +66,6 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Event.NativePreviewEvent;
-import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -82,14 +77,13 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This is the QuickView Dialog
  * 
  * @author nbjensen
  */
-public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
+public class GwtQuickViewDlg extends DlgBox {
 
 	private String binderId;
 	private Grid grid;
@@ -113,19 +107,14 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private GwtQuickViewDlg(boolean autoHide, boolean modal, int pos,
-			int pos2, String binderId, String userName, Element element) {
-		super(autoHide, modal, pos, pos2);
+	private GwtQuickViewDlg(int pos, int pos2, String binderId, String userName, Element element) {
+		super(true, false, pos, pos2);
 
 		this.binderId = binderId;
 		this.userName = userName;
 		this.clientElement = element;
 
 		createAllDlgContent("", null, null, null);
-		
-		// Register a preview-event handler.  We do this so we can see the mouse-down event
-		// in and out side of the widget.
-		Event.addNativePreviewHandler( this );
 	}
 
 	/**
@@ -766,103 +755,6 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		}
 	}
 	
-	/**
-	 * Show this dialog.
-	 */
-	@Override
-	public void show()
-	{
-		// Is this dialog suppose to be modal
-		if ( m_modal )
-		{
-			// Yes
-			// If there is already a dialog visible then the glass panel is already visible.
-			// We don't want 2 glass panels.
-			if ( m_numDlgsVisible == 0 )
-			{
-				setGlassEnabled( true );
-				setGlassStyleName( "n-Transparent-Black-Div" );
-			}
-		}
-		
-		if ( m_visible == false )
-			++m_numDlgsVisible;
-		
-		m_visible = true;
-		
-		// Show this dialog.
-		super.show();
-		
-		// Get the widget that should be given the focus when this dialog is displayed.
-		m_focusWidget = getFocusWidget();
-		
-		// We need to set the focus after the dialog has been shown.  That is why we use a timer. 
-		if ( m_focusWidget != null )
-		{
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				@Override
-				public void execute()
-				{
-					if ( m_focusWidget != null )
-						m_focusWidget.setFocus( true );
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-		}
-	}// end show()
-	
-	/**
-	 * Using this onPreviewNativeEvent to check if the mouse click is in the input widget 
-	 */
-	@Override
-	public void onPreviewNativeEvent(NativePreviewEvent previewEvent) {
-
-
-		int eventType = previewEvent.getTypeInt();
-		
-		// We are only interested in mouse-down events.
-		if ( eventType != Event.ONMOUSEDOWN )
-			return;
-		
-		NativeEvent nativeEvent = previewEvent.getNativeEvent();
-		//EventTarget target = event.getEventTarget();
-		
-		if ( isMouseOver(this, nativeEvent.getClientX(), nativeEvent.getClientY())) {
-			return;
-		} else {
-			hide();
-			return;
-		}
-	}
-	
-	/**
-	 * Determine if the given coordinates are over this control.
-	 */
-	public boolean isMouseOver( Widget widget, int mouseX, int mouseY )
-	{
-		int left;
-		int top;
-		int width;
-		int height;
-		
-		// Get the position and dimensions of this control.
-		left = widget.getAbsoluteLeft() - widget.getElement().getOwnerDocument().getScrollLeft();
-		top = widget.getAbsoluteTop() - widget.getElement().getOwnerDocument().getScrollTop();
-		height = widget.getOffsetHeight();
-		width = widget.getOffsetWidth();
-		
-		//Window.alert("mouseX: "+ mouseX + " mouseY: "+ mouseY + " left: "+ left + " top: "+ top + " height: "+ height + " width: "+ width + " ScrollTop: "+widget.getElement().getOwnerDocument().getScrollTop());
-		
-		// Is the mouse over this control?
-		if ( mouseY >= top && mouseY <= (top + height) && mouseX >= left && (mouseX <= left + width) )
-			return true;
-		
-		return false;
-	}// end isMouseOver()
-	
 	private class QuickViewAction extends Anchor {
 
 		private Label label;
@@ -975,8 +867,6 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	 * Loads the GwtQuickViewDlg split point and returns an
 	 * instance of it via the callback.
 	 * 
-	 * @param autoHide
-	 * @param modal
 	 * @param pos
 	 * @param pos2
 	 * @param binderId
@@ -985,8 +875,6 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	 * @param qvdClient
 	 */
 	public static void createAsync(
-			final boolean autoHide,
-			final boolean modal,
 			final int pos,
 			final int pos2,
 			final String binderId,
@@ -996,7 +884,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		GWT.runAsync(GwtQuickViewDlg.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				GwtQuickViewDlg qvd = new GwtQuickViewDlg(autoHide, modal, pos, pos2, binderId, userName, element);
+				GwtQuickViewDlg qvd = new GwtQuickViewDlg(pos, pos2, binderId, userName, element);
 				qvdClient.onSuccess(qvd);
 			}
 			
