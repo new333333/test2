@@ -108,6 +108,7 @@ import org.kablink.teaming.module.file.ContentFilter;
 import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.file.DeleteVersionException;
 import org.kablink.teaming.module.file.FileIndexData;
+import org.kablink.teaming.module.file.FileList;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
@@ -1410,6 +1411,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 
     public List<FileIndexData> getFileDataFromIndex(Criteria crit) {
+        return getFileDataFromIndex(crit, 0, Integer.MAX_VALUE).getFiles();
+    }
+
+    public FileList getFileDataFromIndex(Criteria crit, int offset, int size) {
         QueryBuilder qb = new QueryBuilder(true, false);
         org.dom4j.Document qTree = crit.toQuery(); //save for debug
         SearchObject so = qb.buildQuery(qTree);
@@ -1427,7 +1432,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         Hits hits = null;
         try {
 	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-	        		so.getAclQueryStr(), Constants.SEARCH_MODE_NORMAL, soQuery, null, 0, Integer.MAX_VALUE);
+	        		so.getAclQueryStr(), Constants.SEARCH_MODE_NORMAL, soQuery, null, offset, size);
         }
         finally {
             luceneSession.close();
@@ -1451,7 +1456,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         	}
         }
 
-        return result;
+        return new FileList(result, offset, hits.getTotalHits());
     }
 
 	public Map<String,Long> getChildrenFileNamesUsingDatabaseWithoutAccessCheck(Long binderId) {

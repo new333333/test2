@@ -478,6 +478,8 @@ public interface FileModule {
 
     public List<FileIndexData> getFileDataFromIndex(Criteria crit);
 
+    public FileList getFileDataFromIndex(Criteria crit, int offset, int size);
+
     /**
 	 * Returns a map of names of the files contained in the specified binder
 	 * to its enclosing entry ids using the information in the search index.
