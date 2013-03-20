@@ -67,10 +67,6 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -1761,8 +1757,8 @@ public class LoginDlg extends DlgBox
 		// Create a "Forgot Your Password?" link.
 		{
 			ClickHandler clickHandler;
-			MouseOverHandler mouseOverHandler;
-			MouseOutHandler mouseOutHandler;
+//			MouseOverHandler mouseOverHandler;
+//			MouseOutHandler mouseOutHandler;
 			Element forgotPwdElement;
 			
 			forgotPwdElement = Document.get().getElementById( "forgottenPwdSpan" );
@@ -1794,43 +1790,6 @@ public class LoginDlg extends DlgBox
 				}
 			};
 			m_forgotPwdLink.addClickHandler( clickHandler );
-
-			// Add a mouse-over handler
-//			mouseOverHandler = new MouseOverHandler()
-//			{
-//				/**
-//				 * 
-//				 */
-//				@Override
-//				public void onMouseOver( MouseOverEvent event )
-//				{
-//					Widget widget;
-//					
-//					widget = (Widget)event.getSource();
-//					widget.removeStyleName( "subhead-control-bg1" );
-//					widget.addStyleName( "subhead-control-bg2" );
-//				}// end onMouseOver()
-//			};
-//			m_forgotPwdLink.addMouseOverHandler( mouseOverHandler );
-//
-//			// Add a mouse-out handler
-//			mouseOutHandler = new MouseOutHandler()
-//			{
-//				/**
-//				 * 
-//				 */
-//				@Override
-//				public void onMouseOut( MouseOutEvent event )
-//				{
-//					Widget widget;
-//					
-//					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
-//					widget = (Widget)event.getSource();
-//					widget.removeStyleName( "subhead-control-bg2" );
-//					widget.addStyleName( "subhead-control-bg1" );
-//				}// end onMouseOut()
-//			};
-//			m_forgotPwdLink.addMouseOutHandler( mouseOutHandler );
 		}
 
 		// Create a "Create new account" link that will initially be hidden.
@@ -1838,8 +1797,6 @@ public class LoginDlg extends DlgBox
 		// self registration info and self registration is allowed.
 		{
 			ClickHandler clickHandler;
-			MouseOverHandler mouseOverHandler;
-			MouseOutHandler mouseOutHandler;
 			Element selfRegElement;
 			
 			selfRegElement = Document.get().getElementById( "createNewAccountSpan" );
@@ -1877,43 +1834,6 @@ public class LoginDlg extends DlgBox
 				}//end onClick()
 			};
 			m_selfRegLink.addClickHandler( clickHandler );
-			
-			// Add a mouse-over handler
-//			mouseOverHandler = new MouseOverHandler()
-//			{
-//				/**
-//				 * 
-//				 */
-//				@Override
-//				public void onMouseOver( MouseOverEvent event )
-//				{
-//					Widget widget;
-//					
-//					widget = (Widget)event.getSource();
-//					widget.removeStyleName( "subhead-control-bg1" );
-//					widget.addStyleName( "subhead-control-bg2" );
-//				}// end onMouseOver()
-//			};
-//			m_selfRegLink.addMouseOverHandler( mouseOverHandler );
-//
-//			// Add a mouse-out handler
-//			mouseOutHandler = new MouseOutHandler()
-//			{
-//				/**
-//				 * 
-//				 */
-//				@Override
-//				public void onMouseOut( MouseOutEvent event )
-//				{
-//					Widget widget;
-//					
-//					// Remove the background color we added to the anchor when the user moved the mouse over the anchor.
-//					widget = (Widget)event.getSource();
-//					widget.removeStyleName( "subhead-control-bg2" );
-//					widget.addStyleName( "subhead-control-bg1" );
-//				}// end onMouseOut()
-//			};
-//			m_selfRegLink.addMouseOutHandler( mouseOutHandler );
 		}
 		
 		m_mainPanel.add( m_formPanel );
