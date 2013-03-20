@@ -75,6 +75,7 @@ public class BinderResource extends AbstractResource {
                                                     @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         boolean skipSearch = true;
         List<Long> specialIds = new ArrayList<Long>();
+        Set<Long> missingIds = new HashSet<Long>();
         Junction criterion = Restrictions.conjunction();
         criterion.add(buildBindersCriterion());
         if (ids!=null) {
@@ -82,6 +83,7 @@ public class BinderResource extends AbstractResource {
             for (Long id : ids) {
                 if (id>0) {
                     or.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
+                    missingIds.add(id);
                     skipSearch = false;
                 } else {
                     specialIds.add(id);
@@ -94,6 +96,21 @@ public class BinderResource extends AbstractResource {
             Document queryDoc = buildQueryDocument("<query/>", criterion);
             Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
             SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/binders", null, offset);
+            Set<Long> foundIds = new HashSet<Long>();
+            for (BinderBrief binder : results.getResults()) {
+                missingIds.remove(binder.getId());
+            }
+
+            // The user might have inferred access to binders that did not come back in the search results.
+            for (Long id : missingIds) {
+                try{
+                    org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(id, false, true);
+                    if (binder!=null) {
+                        results.append(ResourceUtil.buildBinderBrief(binder));
+                    }
+                } catch (NoBinderByTheIdException e) {
+                }
+            }
         }
         for (Long id : specialIds) {
             if (id.equals(ObjectKeys.SHARED_BY_ME_ID)) {
@@ -106,6 +123,7 @@ public class BinderResource extends AbstractResource {
                 results.append(getFakeNetFolders());
             }
         }
+
         if (libraryInfo) {
             populateLibraryInfo(results);
         } else if (libraryModTimes) {
