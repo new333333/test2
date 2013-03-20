@@ -248,7 +248,7 @@ public class ReleaseInfo {
 			file = new File( filePath );
 			if ( file.exists() )
 			{
-				FileInputStream fileInputStream;
+				FileInputStream fileInputStream = null;
 				DataInputStream inputStream;
 				InputStreamReader inputStreamReader;
 				BufferedReader reader;
@@ -295,6 +295,20 @@ public class ReleaseInfo {
 				{
 					// Nothing to do
 					m_logger.error( "In ReleaseInfo.getFilrApplianceReleaseInfo(), error reading from /etc/Novell-VA-release" );
+				}
+				finally
+				{
+					if ( fileInputStream != null )
+					{
+						try
+						{
+							fileInputStream.close();
+						}
+						catch ( IOException ex )
+						{
+							m_logger.error( "In ReleaseInfo.getFilrApplianceReleaseInfo(), error closing fileInputStream" );
+						}
+					}
 				}
 			}
 			else
