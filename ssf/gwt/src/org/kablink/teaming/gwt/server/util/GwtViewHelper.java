@@ -7727,24 +7727,32 @@ public class GwtViewHelper {
 			}
 			
 			else {
+				FileOutputStream fo = null;
 				try {
 					// Yes!  The MD5 hashes match!  Can we write the
 					// data from this blob to the file?
-					FileOutputStream fo = new FileOutputStream(tempFile, (!firstBlob));
+					fo = new FileOutputStream(tempFile, (!firstBlob));
 					byte[] blobData = fileBlob.getBlobData().getBytes();
 					if (fileBlob.isBlobBase64Encoded()) {
 						blobData = Base64.decodeBase64(blobData);
 					}
 					fo.write(blobData);
-					fo.close();
 				}
 				
 				catch (Exception e) {
-					// No!  Return the error to the user.
+					// Return the error to the user.
 					reply = new StringRpcResponseData();
 					reply.setStringValue(NLT.get("binder.add.files.html5.upload.error", new String[]{e.getLocalizedMessage()}));
 					try {tempFile.delete();}
 					catch (Throwable t) {/* Ignored. */}
+				}
+				
+				finally {
+					// Ensure we've closed the stream.
+					if (null != fo) {
+						fo.close();
+						fo = null;
+					}
 				}
 			}
 
@@ -7793,9 +7801,8 @@ public class GwtViewHelper {
     	    	}
     	    	
     	    	finally {
-    	    		// If we have an input stream open...
+					// Ensure we've closed the stream.
     	    		if (null != fi) {
-    	    			// ...close it...
     	    			fi.close();
     	    			fi = null;
     	    		}
