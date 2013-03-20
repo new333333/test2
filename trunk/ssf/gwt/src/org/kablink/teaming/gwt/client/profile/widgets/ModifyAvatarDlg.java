@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.ArrayList;
@@ -45,16 +44,12 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Event.NativePreviewEvent;
-import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -63,10 +58,14 @@ import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
-public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, SubmitCompleteHandler  {
+/**
+ * ?
+ * 
+ * @author nbjensen@novell.com
+ */
+public class ModifyAvatarDlg extends DlgBox implements SubmitCompleteHandler  {
 
 	ProfileAttributeListElement attrEle;
 	private ProfileAttributeAttachment attach;
@@ -74,8 +73,8 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 	private ProfileRequestInfo profileRequestInfo;
 	private FlowPanel photoPanel;
 	
-	public ModifyAvatarDlg(boolean autoHide, boolean modal, int pos, int pos2, ProfileAttributeListElement attrItem, ProfileRequestInfo requestInfo, EditSuccessfulHandler editSuccessfulHandler) {
-		super(autoHide, modal, pos, pos2);
+	public ModifyAvatarDlg(int pos, int pos2, ProfileAttributeListElement attrItem, ProfileRequestInfo requestInfo, EditSuccessfulHandler editSuccessfulHandler) {
+		super(true, false, pos, pos2);
 		
 		this.attrEle = attrItem;
 		this.editSuccessfulHandler=editSuccessfulHandler;
@@ -84,10 +83,6 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 		attach = (ProfileAttributeAttachment) attrEle.getValue();
 		
 		createAllDlgContent("", null, null, null);
-		
-		// Register a preview-event handler.  We do this so we can see the mouse-down event
-		// in and out side of the widget.
-		Event.addNativePreviewHandler( this );
 	}
 
 	/**
@@ -335,54 +330,6 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 		return null;
 	}
 
-	
-	/**
-	 * Using this onPreviewNativeEvent to check if the mouse click is in the input widget 
-	 */
-	@Override
-	public void onPreviewNativeEvent(NativePreviewEvent previewEvent) {
-
-
-		int eventType = previewEvent.getTypeInt();
-		
-		// We are only interested in mouse-down events.
-		if ( eventType != Event.ONMOUSEDOWN )
-			return;
-		
-		NativeEvent nativeEvent = previewEvent.getNativeEvent();
-		//EventTarget target = event.getEventTarget();
-		
-		if ( isMouseOver(this, nativeEvent.getClientX(), nativeEvent.getClientY())) {
-			return;
-		} else {
-			hide();
-			return;
-		}
-	}
-	
-	/**
-	 * Determine if the given coordinates are over this control.
-	 */
-	public boolean isMouseOver( Widget widget, int mouseX, int mouseY )
-	{
-		int left;
-		int top;
-		int width;
-		int height;
-		
-		// Get the position and dimensions of this control.
-		left = widget.getAbsoluteLeft() - widget.getElement().getOwnerDocument().getScrollLeft();
-		top = widget.getAbsoluteTop() - widget.getElement().getOwnerDocument().getScrollTop();
-		height = widget.getOffsetHeight();
-		width = widget.getOffsetWidth();
-		
-		// Is the mouse over this control?
-		if ( mouseY >= top && mouseY <= (top + height) && mouseX >= left && (mouseX <= left + width) )
-			return true;
-		
-		return false;
-	}// end isMouseOver()
-	
 	/**
 	 * This method will get called when we get the response to our "modify binder" request.
 	 */

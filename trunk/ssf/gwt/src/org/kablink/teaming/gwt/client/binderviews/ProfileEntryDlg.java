@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,14 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.rpc.shared.GetProfileEntryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData.ProfileAttribute;
@@ -52,12 +49,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Event.NativePreviewEvent;
-import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -68,20 +61,17 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Implements Vibe's profile entry dialog.
  *  
  * @author drfoster@novell.com
  */
-public class ProfileEntryDlg extends DlgBox implements NativePreviewHandler {
-	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
-	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private Long							m_userId;					// The user whose profile entry we're dealing with.
-	private ProfileEntryInfoRpcResponseData	m_profileEntryInfo;			//
-	private VibeFlowPanel					m_fp;						// The panel holding the dialog's content.
+public class ProfileEntryDlg extends DlgBox {
+	private GwtTeamingMessages				m_messages;			// Access to Vibe's messages.
+	private Long							m_userId;			// The user whose profile entry we're dealing with.
+	private ProfileEntryInfoRpcResponseData	m_profileEntryInfo;	//
+	private VibeFlowPanel					m_fp;				// The panel holding the dialog's content.
 
 	/*
 	 * Class constructor.
@@ -92,7 +82,7 @@ public class ProfileEntryDlg extends DlgBox implements NativePreviewHandler {
 	 */
 	private ProfileEntryDlg() {
 		// Initialize the superclass...
-		super(false, true, DlgButtonMode.Close);
+		super(true, false, DlgButtonMode.Close);
 
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
@@ -103,10 +93,6 @@ public class ProfileEntryDlg extends DlgBox implements NativePreviewHandler {
 			getSimpleSuccessfulHandler(),		// The dialog's EditSuccessfulHandler.
 			getSimpleCanceledHandler(),			// The dialog's EditCanceledHandler.
 			null);								// Create callback data.  Unused.
-		
-		// Register a preview-event handler.  We do this so we can see
-		// the mouse-down event in and out side of the widget.
-		Event.addNativePreviewHandler(this);
 	}
 
 	/**
@@ -151,24 +137,6 @@ public class ProfileEntryDlg extends DlgBox implements NativePreviewHandler {
 		return null;
 	}
 
-	/*
-	 * Determine if the given coordinates are over this control.
-	 */
-	private boolean isMouseOver(Widget widget, int mouseX, int mouseY) {
-		// Get the position and dimensions of this control.
-		int left   = (widget.getAbsoluteLeft() - widget.getElement().getOwnerDocument().getScrollLeft());
-		int top    = (widget.getAbsoluteTop()  - widget.getElement().getOwnerDocument().getScrollTop() );
-		int height =  widget.getOffsetHeight();
-		int width  =  widget.getOffsetWidth();
-		
-		// Window.alert("mouseX: "+ mouseX + " mouseY: "+ mouseY + " left: "+ left + " top: "+ top + " height: "+ height + " width: "+ width + " ScrollTop: "+widget.getElement().getOwnerDocument().getScrollTop());
-		
-		// Return true if the mouse over this control.
-		return (
-			(mouseY >= top)  && (mouseY <= (top + height)) &&
-			(mouseX >= left) && (mouseX <= (left + width)));
-	}
-	
 	/*
 	 * Ensures a string being used for label ends with a ':'.
 	 */
@@ -216,53 +184,6 @@ public class ProfileEntryDlg extends DlgBox implements NativePreviewHandler {
 				populateDlgAsync();
 			}
 		});
-	}
-	
-	/**
-	 * Called when the data table is attached.
-	 * 
-	 * Overrides the Widget.onAttach() method.
-	 */
-	@Override
-	public void onAttach() {
-		// Let the widget attach and then register our event handlers.
-		super.onAttach();
-		registerEvents();
-	}
-	
-	/**
-	 * Called when the data table is detached.
-	 * 
-	 * Overrides the Widget.onDetach() method.
-	 */
-	@Override
-	public void onDetach() {
-		// Let the widget detach and then unregister our event
-		// handlers.
-		super.onDetach();
-		unregisterEvents();
-	}
-
-	/**
-	 * Use the onPreviewNativeEvent to check if the mouse click is in
-	 * the dialog widget.
-	 * 
-	 * Implements the NativePreviewHandler.onPreviewNativeEvent() method.
-	 */
-	@Override
-	public void onPreviewNativeEvent(NativePreviewEvent previewEvent) {
-		// If this isn't a mouse down event...
-		if (Event.ONMOUSEDOWN != previewEvent.getTypeInt()) {
-			// ...ignore it since that all we're interested in.
-			return;
-		}
-
-		// If the mouse down is not over the dialog...
-		NativeEvent nativeEvent = previewEvent.getNativeEvent();
-		if (!(isMouseOver(this, nativeEvent.getClientX(), nativeEvent.getClientY()))) {
-			// ...hide it.
-			hide();
-		}
 	}
 	
 	/*
@@ -392,26 +313,6 @@ public class ProfileEntryDlg extends DlgBox implements NativePreviewHandler {
 	}
 	
 	/*
-	 * Registers any global event handlers that need to be registered.
-	 */
-	private void registerEvents() {
-		// If we having allocated a list to track events we've
-		// registered yet...
-		if (null == m_registeredEventHandlers) {
-			// ...allocate one now.
-			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
-		}
-
-		// If the list of registered events is empty...
-		if (m_registeredEventHandlers.isEmpty()) {
-			// ...register the events.
-			m_registeredEventHandlers.add(
-				Event.addNativePreviewHandler(
-					this));
-		}
-	}
-
-	/*
 	 * Asynchronously runs the given instance of the profile entry
 	 * dialog.
 	 */
@@ -435,23 +336,11 @@ public class ProfileEntryDlg extends DlgBox implements NativePreviewHandler {
 		loadPart1Async();
 	}
 
-	/*
-	 * Unregisters any global event handlers that may be registered.
-	 */
-	private void unregisterEvents() {
-		// If we have a non-empty list of registered events...
-		if (GwtClientHelper.hasItems(m_registeredEventHandlers)) {
-			// ...unregister them.  (Note that this will also empty the
-			// ...list.)
-			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
-		}
-	}
-	
+
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the profile entry dialog and perform some operation on it.    */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-	
 	
 	/**
 	 * Callback interface to interact with the profile entry dialog

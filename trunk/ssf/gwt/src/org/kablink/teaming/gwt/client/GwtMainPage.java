@@ -3041,10 +3041,7 @@ public class GwtMainPage extends ResizeComposite
 	private void runQuickViewDlgNow( final String binderId, final String userName, final Element element )
 	{
 		GwtQuickViewDlg.createAsync(
-				false,
-				true,
-				0,
-				0,
+				0, 0,
 				binderId,
 				userName,
 				element,
