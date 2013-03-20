@@ -84,34 +84,43 @@ public class FileCharsetDetectorUtil {
 			in = new FileInputStream(infile);
 		else
 			in = System.in;
-		OutputStream out;
-		outfile.createNewFile();
-		if (outfile != null)
-			out = new FileOutputStream(outfile);
-		else
-			out = System.out;
-
-		// Use default encoding if no encoding is specified.
-		if (from == null)
-			from = System.getProperty("file.encoding");
-		if (to == null)
-			to = "Unicode";
-
-		// Set up character streams.
-		Reader r = new BufferedReader(new InputStreamReader(in, from));
-		Writer w = new BufferedWriter(new OutputStreamWriter(out, to));
-
-		// Copy characters from input to output. The InputStreamReader
-		// converts from the input encoding to Unicode, and the
-		// OutputStreamWriter writes the file out in Unicode.
-		// Characters that cannot be represented in the output encoding are
-		// output as '?'
-		char[] buffer = new char[4096];
-		int len;
-		while ((len = r.read(buffer)) != -1)
-			// Read a block of input.
-			w.write(buffer, 0, len); // And write it out.
-		r.close(); // Close the input.
-		w.close(); // Flush and close output.
+		
+		try {
+			OutputStream out;
+			outfile.createNewFile();
+			if (outfile != null)
+				out = new FileOutputStream(outfile);
+			else
+				out = System.out;
+	
+			try {
+				// Use default encoding if no encoding is specified.
+				if (from == null)
+					from = System.getProperty("file.encoding");
+				if (to == null)
+					to = "Unicode";
+		
+				// Set up character streams.
+				Reader r = new BufferedReader(new InputStreamReader(in, from));
+				Writer w = new BufferedWriter(new OutputStreamWriter(out, to));
+		
+				// Copy characters from input to output. The InputStreamReader
+				// converts from the input encoding to Unicode, and the
+				// OutputStreamWriter writes the file out in Unicode.
+				// Characters that cannot be represented in the output encoding are
+				// output as '?'
+				char[] buffer = new char[4096];
+				int len;
+				while ((len = r.read(buffer)) != -1)
+					// Read a block of input.
+					w.write(buffer, 0, len); // And write it out.
+			}
+			finally {
+				out.close(); // Flush and close output.
+			}
+		}
+		finally {
+			in.close(); // Close the input.
+		}
 	}
 }

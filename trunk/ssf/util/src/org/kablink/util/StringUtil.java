@@ -469,27 +469,6 @@ public class StringUtil {
 		return r.randomize(s);
 	}
 
-	public static String read(ClassLoader classLoader, String name)
-		throws IOException {
-
-		return read(classLoader.getResourceAsStream(name));
-	}
-
-	public static String read(InputStream is) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-		StringBuffer sb = new StringBuffer();
-		String line = null;
-
-		while ((line = br.readLine()) != null) {
-			sb.append(line).append('\n');
-		}
-
-		br.close();
-
-		return sb.toString().trim();
-	}
-
 	public static String remove(String s, String remove) {
 		return remove(s, remove, StringPool.COMMA);
 	}

@@ -213,7 +213,7 @@ public class SearchObject {
 		} else {
 			if (queryParserHEBREW.get() == null) {
 				logger.debug("QueryParser instantiating new HEBREW QP");
-				Analyzer analyzer = VibeQueryAnalyzer.getInstance();
+				Analyzer analyzer = null;
 				String aName = SPropsUtil.getString("lucene.hebrew.analyzer", "");
 				if (!aName.equalsIgnoreCase("")) {
 					//load the hebrew analyzer here
@@ -224,6 +224,9 @@ public class SearchObject {
 						logger.error("Could not initialize hebrew analyzer class: " + e.toString());
 					}
 				}
+				// If could not get hebrew analyzer, get the default one.
+				if(analyzer == null)
+					analyzer = VibeQueryAnalyzer.getInstance();
 				QueryParser qp =  QueryParserFactory.createQueryParser(analyzer, getTermQueryOnlyFields());
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserHEBREW.set(qp);

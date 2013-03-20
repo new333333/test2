@@ -425,35 +425,42 @@ public class WebHelper {
 			throw new UncheckedIOException(new IOException("Illegal file name [" + fileName + "]"));
 		BufferedReader breader = new BufferedReader(new InputStreamReader (mpfile.getInputStream()));
 		
-		// Encode the original file name into the prefix.
-		String prefix = String.valueOf(fileName.length()) + "-" + fileName + "_";
-		
-		File destFile = TempFileUtil.createTempFile(prefix);
-		
-		BufferedWriter bwriter = new BufferedWriter(new FileWriter (destFile));
-		
-		while(breader.ready()) {
-			String line = breader.readLine();
+		try {
+			// Encode the original file name into the prefix.
+			String prefix = String.valueOf(fileName.length()) + "-" + fileName + "_";
 			
-			if(line.endsWith("=")) {
-				while(line.endsWith("=") && breader.ready()) {
-					String temp = line.substring(0, line.length() - 1);
-					bwriter.write(temp);
+			File destFile = TempFileUtil.createTempFile(prefix);
+			
+			BufferedWriter bwriter = new BufferedWriter(new FileWriter (destFile));
+			
+			try {
+				while(breader.ready()) {
+					String line = breader.readLine();
 					
-					line = breader.readLine();
+					if(line.endsWith("=")) {
+						while(line.endsWith("=") && breader.ready()) {
+							String temp = line.substring(0, line.length() - 1);
+							bwriter.write(temp);
+							
+							line = breader.readLine();
+						}
+						bwriter.write(line);
+					}
+					else {	
+						bwriter.write(line);
+					}
+					bwriter.newLine();
 				}
-				bwriter.write(line);
 			}
-			else {	
-				bwriter.write(line);
+			finally {
+				bwriter.close();
 			}
-			bwriter.newLine();
+						
+			return destFile.getName();
 		}
-		
-		breader.close();
-		bwriter.close();
-		
-		return destFile.getName();
+		finally {
+			breader.close();
+		}
 	}
 	
 	/**

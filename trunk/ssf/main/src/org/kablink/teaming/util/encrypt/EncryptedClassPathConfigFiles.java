@@ -167,20 +167,21 @@ public class EncryptedClassPathConfigFiles extends PropertiesClassPathConfigFile
     		throws IOException
     {
 	    BufferedWriter aWriter;
-	    FileOutputStream outputStream;
-	    Enumeration keys;
 	    
-	    outputStream = new FileOutputStream( file );
-	    aWriter = new BufferedWriter( new OutputStreamWriter( outputStream, "8859_1" ) );
+	    aWriter = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( file ), "8859_1" ) );
 
-	    // Write the date and time to the file.
-        aWriter.write( "#" + new Date().toString() );
-        aWriter.newLine();
-
-        aWriter.write(content);
-        
-	    aWriter.flush();
-	    aWriter.close();
+	    try {
+		    // Write the date and time to the file.
+	        aWriter.write( "#" + new Date().toString() );
+	        aWriter.newLine();
+	
+	        aWriter.write(content);
+	        
+		    aWriter.flush();
+	    }
+	    finally {
+	    	aWriter.close();
+	    }
     }// end writePropertiesToFile()
  
 }

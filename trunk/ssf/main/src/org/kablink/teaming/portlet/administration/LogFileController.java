@@ -80,19 +80,22 @@ public class LogFileController extends  SAbstractController {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		File tempFile = TempFileUtil.createTempFile("logfiles");
-		FileOutputStream fo = new FileOutputStream(tempFile);
-		ZipOutputStream zipOut = new ZipOutputStream(fo);
-		FilterOutputStream wrapper = new FilterOutputStream(zipOut) {
-			public void close() {}  // FileCopyUtils will try to close this too soon
-		};
-		File logDirectory = new File(SpringContextUtil.getServletContext().getRealPath("/WEB-INF/logs"));
-		for(String logFile : logDirectory.list(new FilenameFilter() {
-			public boolean accept(File file, String filename) { return filename.startsWith("ssf.log"); }})) {
-			zipOut.putNextEntry(new ZipEntry(logFile));
-			FileCopyUtils.copy(new FileInputStream(new File(logDirectory, logFile)), wrapper);
+		ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(tempFile));
+		try {
+			FilterOutputStream wrapper = new FilterOutputStream(zipOut) {
+				public void close() {}  // FileCopyUtils will try to close this too soon
+			};
+			File logDirectory = new File(SpringContextUtil.getServletContext().getRealPath("/WEB-INF/logs"));
+			for(String logFile : logDirectory.list(new FilenameFilter() {
+				public boolean accept(File file, String filename) { return filename.startsWith("ssf.log"); }})) {
+				zipOut.putNextEntry(new ZipEntry(logFile));
+				FileCopyUtils.copy(new FileInputStream(new File(logDirectory, logFile)), wrapper);
+			}
+			zipOut.finish();
 		}
-		zipOut.finish();
-
+		finally {
+			zipOut.close();
+		}
 
 		model.put(WebKeys.DOWNLOAD_URL, WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?viewType=zipped&fileId=" +
 				tempFile.getName() + "&" + WebKeys.URL_FILE_TITLE + "=logfiles.zip");
