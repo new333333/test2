@@ -51,6 +51,7 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.TitleException;
@@ -58,7 +59,9 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
+import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.runwith.RunWithCallback;
 import org.kablink.teaming.security.runwith.RunWithTemplate;
@@ -68,6 +71,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.util.search.*;
 import org.kablink.util.search.Junction.Conjunction;
 import org.kablink.util.search.Junction.Disjunction;
@@ -599,16 +603,70 @@ public class SearchUtils {
 		return getUserProperties(bs, userId, null);
 	}
 	
-	/**
+    /**
+   	 * If the user has a folder that's recognized as their My Files
+   	 * folder, it's ID is returned.  Otherwise, null is returned.
+   	 *
+   	 * Uses the user's properties to locate an existing My Files
+   	 * folder.
+   	 * 
+   	 * @param bs
+   	 * @param user
+   	 * @param createIfNecessary
+   	 *
+   	 * @return
+   	 */
+   	public static Long getMyFilesFolderId(AllModulesInjected bs, User user, boolean createIfNecessary) {
+   		// Are we looking for Guest's My Files folder?
+   		Long userWSId = user.getWorkspaceId();
+   		if (user.isShared()) {
+   			// Yes!  Since guest's user properties aren't persistent,
+   			// we can't use that to find it.  We must do a search.
+   			return getMyFilesFolderIdUsingSearch(bs, userWSId, createIfNecessary);
+   		}
+
+   		// Is there a My Files folder ID stored in the user's
+   		// properties?
+   		Long userId = user.getId();
+   		ProfileModule pm = bs.getProfileModule();
+   		UserProperties userProperties = pm.getUserProperties(userId);
+   		Long mfId = ((Long) userProperties.getProperty(ObjectKeys.USER_PROPERTY_MYFILES_DIR));
+   		if (null != mfId) {
+   			// Yes!  Is it a valid Folder ID?
+			Folder mf;
+			try                 {mf = bs.getFolderModule().getFolderWithoutAccessCheck(mfId);}
+			catch (Exception e) {mf = null;}
+			if (null == mf) {
+				// No!  Ignore it.
+				mfId = null;
+		   		pm.setUserProperty(userId, ObjectKeys.USER_PROPERTY_MYFILES_DIR, null);
+			}
+   		}
+   		
+   		// If the user's properties has an ID stored or we're not
+   		// supposed to create one if they don't... 
+ 	   	if ((null != mfId) || (!createIfNecessary)) {
+ 	   		// ...return what we found.
+   			return mfId;
+   		}
+
+ 	   	// Create a My Files folder, store it's ID in the user's
+ 	   	// properties and return it.
+   		mfId = createMyFilesFolder(bs, userWSId);
+   		pm.setUserProperty(userId, ObjectKeys.USER_PROPERTY_MYFILES_DIR, mfId);
+   		return mfId;
+   	}
+
+   	public static Long getMyFilesFolderId(AllModulesInjected bs, boolean createIfNecessary) {
+   		// Always use the initial form of the method.
+   		return getMyFilesFolderId(bs, RequestContextHolder.getRequestContext().getUser(), createIfNecessary);
+   	}
+
+	/*
 	 * Returns a List<Long> of the IDs of the 'My Files Storage'
 	 * folders contained in a user workspace, given its ID.
-	 * 
-	 * @param bs
-	 * @param userWSId
-	 * 
-	 * @return
 	 */
-	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs, Long userWSId) {
+	private static List<Long> getMyFilesFolderIdsUsingSearch(AllModulesInjected bs, Long userWSId) {
 		// Build a search for the user's binders...
 		Criteria crit = new Criteria();
 		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
@@ -644,19 +702,34 @@ public class SearchUtils {
 		return reply;
 	}
 	
-	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs) {
+	private static List<Long> getMyFilesFolderIdsUsingSearch(AllModulesInjected bs) {
 		// Always use the initial form of the method.
 		User user     = RequestContextHolder.getRequestContext().getUser();
 		Long userWSId = user.getWorkspaceId();
-		return getMyFilesFolderIds(bs, userWSId);
+		return getMyFilesFolderIdsUsingSearch(bs, userWSId);
 	}
 
-	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs, User user) {
-		// Always use the initial form of the method.
-		Long userWSId = user.getWorkspaceId();
-		return getMyFilesFolderIds(bs, userWSId);
-	}
-
+    /*
+   	 * If the user has a folder that's recognized as their My Files
+   	 * folder, it's ID is returned.  Otherwise, null is returned.
+   	 * 
+   	 * Uses a search to locate an existing My Files folder.
+   	 */
+   	private static Long getMyFilesFolderIdUsingSearch(AllModulesInjected bs, Long userWorkspaceId, boolean createIfNecessary) {
+   		Long reply;
+   		List<Long> mfFolderIds = getMyFilesFolderIdsUsingSearch(bs);
+   		if ((null != mfFolderIds) && (!(mfFolderIds.isEmpty()))) {
+   			reply = mfFolderIds.get(0);
+   		}
+   		else if (createIfNecessary) {
+   			reply = createMyFilesFolder(bs, userWorkspaceId);
+   		}
+   		else {
+   			reply = null;
+   		}
+   		return reply;
+   	}
+   	
     public static boolean userCanAccessMyFiles(AllModulesInjected bs, User user) {
         // For Filr, we don't support My Files for the guest or
         // external users.
@@ -717,28 +790,21 @@ public class SearchUtils {
         String myFilesRootIdS = String.valueOf(mfRootId);
 
         // Do we have a folder to use as a My Files container?
-        String[] mfContainerIdStrings = null;
         Long mfContainerId;
-        if (usingHomeAsMF) {
-            mfContainerId = mfRootId;
+        if (usingHomeAsMF)
+             mfContainerId = mfRootId;
+        else mfContainerId = getMyFilesFolderId(bs, false);
+        boolean  hasMFContainerId = (null != mfContainerId);
+        String   mfContainerIdS;
+        String[] mfContainerIdStrings;
+        if (hasMFContainerId) {
+            mfContainerIdS       = String.valueOf(mfContainerId);
+            mfContainerIdStrings = new String[]{mfContainerIdS};
         }
         else {
-            List<Long> mfContainerIds = getMyFilesFolderIds(bs);
-            if ((null != mfContainerIds) && (!(mfContainerIds.isEmpty()))) {
-                mfContainerId = mfContainerIds.get(0);
-
-                int c = mfContainerIds.size();
-                mfContainerIdStrings = new String[c];
-                for (int i = 0; i < c; i += 1) {
-                    mfContainerIdStrings[i] = String.valueOf(mfContainerIds.get(i));
-                }
-            }
-            else {
-                mfContainerId = null;
-            }
+        	mfContainerIdS       = null;
+        	mfContainerIdStrings = new String[0];
         }
-        boolean	hasMFContainerId = (null != mfContainerId);
-        String	mfContainerIdS   = (hasMFContainerId ? String.valueOf(mfContainerId) : null);
 
         // Search for file folders within the binder...
         Disjunction	root = disjunction();
@@ -994,39 +1060,15 @@ public class SearchUtils {
 		return getBinderEntriesSearchCriteria(bs, binderIds, entriesOnly, true);
 	}	
 
-    /**
-   	 * If the user has a folder that's recognized as their My Files
-   	 * folder, it's ID is returned.  Otherwise, null is returned.
-   	 *
-   	 * @param bs
-   	 * @param userWorkspaceId
-   	 * @param createIfNecessary
-   	 *
-   	 * @return
-   	 */
-   	public static Long getMyFilesFolderId(AllModulesInjected bs, Long userWorkspaceId, boolean createIfNeccessary) {
-   		Long reply;
-   		List<Long> mfFolderIds = getMyFilesFolderIds(bs);
-   		if ((null != mfFolderIds) && (!(mfFolderIds.isEmpty()))) {
-   			reply = mfFolderIds.get(0);
-   		}
-   		else if (createIfNeccessary) {
-   			reply = createMyFilesFolder(bs, userWorkspaceId);
-   		}
-   		else {
-   			reply = null;
-   		}
-   		return reply;
-   	}
-
 	/*
 	 * Creates a user's My Files container and returns its ID.
 	 */
 	private static Long createMyFilesFolder(AllModulesInjected bs, Long userWorkspaceId) {
 		// Can we determine the template to use for the My Files
 		// folder?
-		TemplateBinder	mfFolderTemplate   = bs.getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY);
-		Long			mfFolderTemplateId = ((null == mfFolderTemplate) ? null : mfFolderTemplate.getId());
+		final TemplateModule	tm                 = bs.getTemplateModule();
+		final TemplateBinder	mfFolderTemplate   = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY);
+		final Long				mfFolderTemplateId = ((null == mfFolderTemplate) ? null : mfFolderTemplate.getId());
 		if (null == mfFolderTemplateId) {
 			// No!  Then we can't create it.
 			return null;
@@ -1045,8 +1087,30 @@ public class SearchUtils {
 					mfTitle += ("-" + tries);
 				}
 
+				// Is there a binder that already exists by that name? 
+				Binder existingMF;
+				try                 {existingMF = bm.getBinderByParentAndTitle(userWorkspaceId, mfTitle);}
+				catch (Exception e) {existingMF = null;}
+				if (null != existingMF) {
+					// Yes!  Is it a My Files Storage folder?
+					if (BinderHelper.isBinderMyFilesStorage(existingMF)) {
+						// Yes!  Re-index it (if it had been properly
+						// indexed, we should have found it with a
+						// search) and return its ID.
+						Long existingMFFolderId = existingMF.getId();
+						bm.indexBinder(existingMFFolderId);
+						return existingMFFolderId;
+					}
+					
+					// Cycle the try loop.  We cycle it because we know
+					// there's a file with the current name that's NOT
+					// a My Files Storage folder so we'll need to
+					// synthesize a new name.
+					continue;
+				}
+
 				// Can we create a folder with this name?
-				final Long		mfFolderId = bs.getTemplateModule().addBinder(mfFolderTemplateId, userWorkspaceId, mfTitle, null).getId();
+				final Long		mfFolderId = tm.addBinder(mfFolderTemplateId, userWorkspaceId, mfTitle, null).getId();
 				final Binder	mfFolder   = bm.getBinder(mfFolderId);
 				if (null != mfFolder) {
 					// Yes!  Mark it as being the My Files folder...
@@ -1055,14 +1119,14 @@ public class SearchUtils {
 
 					// ...and to inherit its team membership.
 					RunWithTemplate.runWith(new RunWithCallback() {
-                        @Override
-                        public Object runWith() {
-                            bm.setTeamMembershipInherited(mfFolderId, true);
-                            return null;
-                        }
-                    },
-                            new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION},
-                            null);
+	                        @Override
+	                        public Object runWith() {
+	                            bm.setTeamMembershipInherited(mfFolderId, true);
+	                            return null;
+	                        }
+	                    },
+                        new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION},
+                        null);
 
 					// Return the ID of the folder we created.
 					reply = mfFolderId;

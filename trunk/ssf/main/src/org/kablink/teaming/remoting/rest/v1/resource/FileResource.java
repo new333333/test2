@@ -303,7 +303,7 @@ public class FileResource extends AbstractFileResource {
             if (SearchUtils.useHomeAsMyFiles(this)) {
                 newFolderId = SearchUtils.getHomeFolderId(this);
             } else {
-                newFolderId = SearchUtils.getMyFilesFolderId(this, this.getLoggedInUser().getWorkspaceId(), true);
+                newFolderId = SearchUtils.getMyFilesFolderId(this, this.getLoggedInUser(), true);
             }
         }
         Binder binder = getBinderModule().getBinder(newFolderId, false, true);

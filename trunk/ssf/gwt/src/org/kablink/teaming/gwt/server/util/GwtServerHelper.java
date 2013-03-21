@@ -116,8 +116,6 @@ import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
-import org.kablink.teaming.domain.TemplateBinder;
-import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.User.ExtProvState;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -272,9 +270,6 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
-import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.security.runwith.RunWithCallback;
-import org.kablink.teaming.security.runwith.RunWithTemplate;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
@@ -1950,78 +1945,6 @@ public class GwtServerHelper {
 		}
 		
 		return newGroup;
-	}
-
-	/*
-	 * Creates a user's My Files container and returns its ID.
-	 */
-	private static Long createMyFilesFolder(AllModulesInjected bs, User user) {
-		// Can we determine the template to use for the My Files
-		// folder?
-		TemplateBinder	mfFolderTemplate   = bs.getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY);
-		Long			mfFolderTemplateId = ((null == mfFolderTemplate) ? null : mfFolderTemplate.getId());
-		if (null == mfFolderTemplateId) {
-			// No!  Then we can't create it.
-			return null;
-		}
-
-		// Generate a unique name for the folder.
-		Long				reply       = null;
-		final String		mfTitleBase = NLT.get("collection.myFiles.folder");
-		final BinderModule	bm          = bs.getBinderModule();
-		for (int tries = 0; true; tries += 1) {
-			try {
-				// For tries beyond the first, we simply bump a counter
-				// until we find a name to use.
-				String mfTitle = mfTitleBase;
-				if (0 < tries) {
-					mfTitle += ("-" + tries);
-				}
-				
-				// Can we create a folder with this name?
-				final Long		mfFolderId = bs.getTemplateModule().addBinder(mfFolderTemplateId, user.getWorkspaceId(), mfTitle, null).getId();
-				final Binder	mfFolder   = bm.getBinder(mfFolderId); 
-				if (null != mfFolder) {
-					// Yes!  Mark it as being the My Files folder...
-					bm.setProperty(mfFolderId, ObjectKeys.BINDER_PROPERTY_MYFILES_DIR, Boolean.TRUE);
-					bm.indexBinder(mfFolderId                                                      );
-					
-					// ...and to inherit its team membership.
-					RunWithTemplate.runWith(new RunWithCallback() {
-							@Override
-							public Object runWith() {
-								bm.setTeamMembershipInherited(mfFolderId, true);			
-								return null;
-							}
-						},
-						new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION},
-						null);
-					
-					// Return the ID of the folder we created.
-					reply = mfFolderId;
-					break;
-				}
-			}
-			
-			catch (Exception e) {
-				// If the create fails because of a naming conflict...
-				if (e instanceof TitleException) {
-					// ...simply try again with a new name.
-					continue;
-				}
-				break;
-			}
-		}
-
-		// If we get here, reply is null or refers to the ID of the
-		// newly created folder.  Return it.
-		return reply;
-	}
-	
-	@SuppressWarnings("unused")
-	private static Long createMyFilesFolder(AllModulesInjected bs) {
-		// Always use the initial form of the method.
-		return createMyFilesFolder(bs, getCurrentUser());
 	}
 
 	/**
@@ -6761,7 +6684,6 @@ public class GwtServerHelper {
 		return gwtMobileAppsConfig;
 	}
 	
-	
 	/**
 	 * Returns the ID of the folder that a user will use as their My
 	 * Files container.
@@ -6776,10 +6698,11 @@ public class GwtServerHelper {
 		     reply = getHomeFolderId(bs, user);
 		else reply = null;
 		if (null == reply) {
-			reply = getMyFilesFolderId(bs, user, true);	// true -> Create it if it doesn't exist.
+			reply = SearchUtils.getMyFilesFolderId(bs, user, true);	// true -> Create it if it doesn't exist.
 		}
 		return reply;
 	}
+	
 	public static Long getMyFilesContainerId(AllModulesInjected bs) {
 		// Always use the initial form of the method.
 		return getMyFilesContainerId(bs, getCurrentUser());
@@ -6802,50 +6725,6 @@ public class GwtServerHelper {
 		return reply;
 	}
 		
-	/**
-	 * Returns a List<Long> of the current user's My Files folder IDs.
-	 * 
-	 * @param bs
-	 * @param user
-	 */
-	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs, User user) {
-		return SearchUtils.getMyFilesFolderIds(bs, user);
-	}
-	
-	public static List<Long> getMyFilesFolderIds(AllModulesInjected bs) {
-		// Always use the initial form of the method.
-		return getMyFilesFolderIds(bs, getCurrentUser());
-	}
-	
-	/**
-	 * If the user has a folder that's recognized as their My Files
-	 * folder, it's ID is returned.  Otherwise, null is returned.
-	 * 
-	 * @param bs
-	 * @param user
-	 * 
-	 * @return
-	 */
-	public static Long getMyFilesFolderId(AllModulesInjected bs, User user, boolean createIfNeccessary) {
-		Long reply;
-		List<Long> mfFolderIds = getMyFilesFolderIds(bs, user);
-		if ((null != mfFolderIds) && (!(mfFolderIds.isEmpty()))) {
-			reply = mfFolderIds.get(0);
-		}
-		else if (createIfNeccessary) {
-			reply = createMyFilesFolder(bs, user);
-		}
-		else {
-			reply = null;
-		}
-		return reply;
-	}
-	
-	public static Long getMyFilesFolderId(AllModulesInjected bs, boolean createIfNeccessary) {
-		// Always use the initial form of the method.
-		return getMyFilesFolderId(bs, getCurrentUser(), createIfNeccessary);
-	}
-	
 	/**
 	 * Returns information about the groups the current user is a member of.
 	 * 

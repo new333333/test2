@@ -1164,9 +1164,9 @@ public class GwtActivityStreamHelper {
 				String	id     = ctFolderId;
 				Binder	binder = td.getBinder(id);
 				if (null != binder) {
-					// Yes!  If this is other than a My Files Storage
-					// folder...
-			    	if (!(BinderHelper.isBinderMyFilesStorage(binder))) {
+					// Yes!  If this is other than the user's active My
+					// Files Storage folder...
+			    	if (!(BinderHelper.isBinderUsersActiveMyFilesStorage(bs, binder))) {
 						// ...add an appropriate TreeInfo for it.
 						asIdsList.add(id);					
 						TreeInfo asTIChild = buildASTI(

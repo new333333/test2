@@ -157,7 +157,7 @@ public class MyFilesResource extends ContainerResource
 	public Resource createNew(String newName, InputStream inputStream,
 			Long length, String contentType) throws IOException,
 			ConflictException, NotAuthorizedException, BadRequestException {
-		Long folderId =  SearchUtils.getMyFilesFolderId(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), true);
+		Long folderId =  SearchUtils.getMyFilesFolderId(this, RequestContextHolder.getRequestContext().getUser(), true);
 		Folder folder = getFolder(folderId);
 		FolderEntry entry = writeFileWithModDate(folder, newName, inputStream, null);
 		return makeResourceFromFile(entry.getFileAttachment(newName));
