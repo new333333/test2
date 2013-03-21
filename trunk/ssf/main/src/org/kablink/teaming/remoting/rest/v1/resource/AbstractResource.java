@@ -959,28 +959,32 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 maxDate = max(maxDate, item.getDeletedDate());
             } else {
                 maxDate = max(maxDate, item.getStartDate());
-                EntityIdentifier entityId = item.getSharedEntityIdentifier();
-                if (entityId.getEntityType()== EntityIdentifier.EntityType.folderEntry) {
-                    FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(item);
-                    if (entry.isPreDeleted()) {
-                        maxDate = max(maxDate, new Date(entry.getPreDeletedWhen()));
-                    } else {
-                        maxDate = max(maxDate, entry.getModificationDate());
-                    }
-                    for (Attachment att : entry.getAttachments()) {
-                        if (att instanceof FileAttachment) {
-                            files++;
-                            diskSpace += ((FileAttachment)att).getFileItem().getLength();
+                try {
+                    EntityIdentifier entityId = item.getSharedEntityIdentifier();
+                    if (entityId.getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+                        FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(item);
+                        if (entry.isPreDeleted()) {
+                            maxDate = max(maxDate, new Date(entry.getPreDeletedWhen()));
+                        } else {
+                            maxDate = max(maxDate, entry.getModificationDate());
+                        }
+                        for (Attachment att : entry.getAttachments()) {
+                            if (att instanceof FileAttachment) {
+                                files++;
+                                diskSpace += ((FileAttachment)att).getFileItem().getLength();
+                            }
+                        }
+                    } else if (entityId.getEntityType()== EntityIdentifier.EntityType.folder || entityId.getEntityType()== EntityIdentifier.EntityType.workspace) {
+                        Binder binder = (Binder) getSharingModule().getSharedEntity(item);
+                        if (isBinderPreDeleted(binder)) {
+                            maxDate = max(maxDate, getPreDeletedDate(binder));
+                        } else {
+                            binderList.add(binder.getId());
+                            folders++;
                         }
                     }
-                } else if (entityId.getEntityType()== EntityIdentifier.EntityType.folder || entityId.getEntityType()== EntityIdentifier.EntityType.workspace) {
-                    Binder binder = (Binder) getSharingModule().getSharedEntity(item);
-                    if (isBinderPreDeleted(binder)) {
-                        maxDate = max(maxDate, getPreDeletedDate(binder));
-                    } else {
-                        binderList.add(binder.getId());
-                        folders++;
-                    }
+                } catch (NoBinderByTheIdException e) {
+                } catch (NoFolderEntryByTheIdException e) {
                 }
             }
         }
