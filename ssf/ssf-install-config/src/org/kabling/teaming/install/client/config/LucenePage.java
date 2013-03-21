@@ -48,7 +48,7 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 
 	private static final String LOCAL = "local";
 	private static final String SERVER = "server";
-	private static final String HIGH_AVAILABILITY = "ha";
+	private static final String HIGH_AVAILABILITY = "high availability";
 
 	@Override
 	public Panel createContent(Object propertiesObj)

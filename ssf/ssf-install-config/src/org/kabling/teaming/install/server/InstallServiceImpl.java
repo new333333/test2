@@ -288,8 +288,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	@Override
 	public void updateDbUrlAndstartFilrServer()
 	{
-		ConfigService.updateFsaUpdateUrl();
-		
 		ConfigService.startFilrServer();
+		
+		ConfigService.updateFsaUpdateUrl();
 	}
 }

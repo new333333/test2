@@ -42,7 +42,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 
 	private static final String LOCAL = "local";
 	private static final String SERVER = "server";
-	private static final String HIGH_AVAILABILITY = "ha";
+	private static final String HIGH_AVAILABILITY = "high availability";
 
 	public ConfigSummaryPage(WizardFinishType wizFinishType)
 	{
