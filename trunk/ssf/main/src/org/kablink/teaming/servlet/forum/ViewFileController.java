@@ -323,8 +323,8 @@ public class ViewFileController extends SAbstractController {
 		int n;
 		byte[] buf = new byte[1024];
 		
+		java.io.InputStream in = null;
 		try {
-			java.io.InputStream in;
 			OutputStream out;
 			File tmpFile;
 
@@ -339,11 +339,16 @@ public class ViewFileController extends SAbstractController {
 				out.write( buf, 0, n );
 			}
 			in.close();
+			in = null;
 			
-		}
-		catch( Exception e )
-		{
+		} catch( Exception e ) {
 			response.getOutputStream().print( NLT.get( "file.error" ) + ": " + e.getLocalizedMessage() );
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch(Exception e) {}
+			}
 		}
 
 		try
@@ -363,8 +368,9 @@ public class ViewFileController extends SAbstractController {
 		int n;
 		byte[] buf = new byte[1024];
 		
+		java.io.InputStream in = null;
 		try {
-			java.io.InputStream in = TempFileUtil.openTempFile(fileId);
+			in = TempFileUtil.openTempFile(fileId);
 
 			response.setContentType("application/zip");
 			response.setHeader("Cache-Control", "private");
@@ -379,9 +385,16 @@ public class ViewFileController extends SAbstractController {
 				out.write(buf, 0, n);
 			}
 			in.close();
+			in = null;
 			
 		} catch(Exception e) {
 			response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch(Exception e) {}
+			}
 		}
 
 		try {
