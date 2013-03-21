@@ -133,6 +133,7 @@ public class PostFiles extends Thread {
     private  void writeFile(String localFileName, OutputStream out, String boundary, TopFrame topFrame, String topDir, String strFormFieldName) throws Exception {
         String localfn;
         String localRelFileName;
+        FileInputStream fis = null;
         try {
           System.gc();
           File localFile = new File(localFileName);
@@ -168,7 +169,7 @@ public class PostFiles extends Thread {
           //out.write(new String("content-disposition: attachment; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
           out.write(new String("content-disposition: form-data; name=\""+strFormFieldName+"\"; filename=\"" + strUTF8EncodedFileName + "\"\r\n\r\n").getBytes());
 
-          FileInputStream fis = new FileInputStream(localFileName);
+          fis = new FileInputStream(localFileName);
           if (localFile.length() != 0) {
             int amountRead=0;
             while (true) {
@@ -182,15 +183,23 @@ public class PostFiles extends Thread {
             }
           }
           fis.close();
+          fis = null;
           out.write(new String("\r\n" + "--" + boundary + "\r\n").getBytes());
         } catch (java.io.FileNotFoundException fnfe) {
         } catch (java.io.IOException ioe) {
+        } finally {
+        	if (fis != null) {
+        		try {
+        			fis.close();
+        		} catch(Exception e) {}
+        	}
         }
       }
     
     private  void writeFile(String localFileName, OutputStream out, String boundary, TopFrame topFrame, String topDir) {
       String localfn;
       String localRelFileName;
+      FileInputStream fis = null;
       try {
         System.gc();
         File localFile = new File(localFileName);
@@ -224,7 +233,7 @@ public class PostFiles extends Thread {
         //out.write(new String("content-disposition: attachment; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
         out.write(new String("content-disposition: form-data; name=\""+ topFrame.getParameter("appletFileName") +"\"; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
 
-        FileInputStream fis = new FileInputStream(localFileName);
+        fis = new FileInputStream(localFileName);
         if (localFile.length() != 0) {
           int amountRead=0;
           while (true) {
@@ -238,9 +247,16 @@ public class PostFiles extends Thread {
           }
         }
         fis.close();
+        fis = null;
         out.write(new String("\r\n" + "--" + boundary + "\r\n").getBytes());
       } catch (java.io.FileNotFoundException fnfe) {
       } catch (java.io.IOException ioe) {
+      } finally {
+    	  if (fis != null) {
+    		  try {
+    			  fis.close();
+    		  } catch(Exception e) {}
+    	  }
       }
     }
 
