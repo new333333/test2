@@ -5203,7 +5203,7 @@ td.datePickerMonth {
 
 .AdminConsoleHomePage_mainPanel
 {
-	background: #fff url(images/blends/vert_lines_bg_f6f6f6.png) repeat;
+	background-color: #f6f6f6;
 	border-radius: 5px;
 	overflow: auto;
 	position: absolute;
