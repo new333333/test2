@@ -2354,6 +2354,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the Edit Net Folder Rights dialog
 	String editNetFolderRightsDlg_AllowAccessLabel();
+	String editNetFolderRightsDlg_CanShareLabel();
 	String editNetFolderRightsDlg_Caption();
 	String editNetFolderRightsDlg_Instructions();
 	String editNetFolderRightsDlg_ReShareLabel();
