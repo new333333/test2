@@ -8,5 +8,6 @@
     </id>
     <property name="zoneId" access="field"/>
     <property name="lastSyncTime"/>
+    <property name="lastFullSyncTime"/>
   </class>
 </hibernate-mapping>

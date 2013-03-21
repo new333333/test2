@@ -46,10 +46,23 @@ public class BinderState extends ZonedObject {
 	private Long binderId;
 	/*
 	 * Last time sync completed on this particular binder.
-	 * This does NOT tell whether the sync was full (whole branch) or JIT (single level only), 
-	 * or whether the sync was successful or not.
+	 * This does NOT tell whether the sync was full (whole branch) or JIT 
+	 * (single level only), or whether the sync was successful or not.
 	 */
 	private Date lastSyncTime; 
+	
+	/*
+	 * Last time full sync initiated on this binder completed.
+	 * This property is relevant only to those binders on which full sync starts,
+	 * which are almost always net folder roots (currently, Filr does not allow
+	 * starting full sync on any folder other than net folder roots).
+	 * Those binders that are synchronized indirectly from a full sync triggered 
+	 * on one of their ancestor binders do not get this property value set.
+	 * This property value is set if and only if full sync completes, which is
+	 * defined by whether the sync process was able to enumerate all the members
+	 * of the data tree starting from the top all the way down to leaves.
+	 */
+	private Date lastFullSyncTime;
 
 	protected BinderState() {
 		// Use by Hibernate only
@@ -73,5 +86,13 @@ public class BinderState extends ZonedObject {
 
 	public void setLastSyncTime(Date lastSyncTime) {
 		this.lastSyncTime = lastSyncTime;
+	}
+
+	public Date getLastFullSyncTime() {
+		return lastFullSyncTime;
+	}
+
+	public void setLastFullSyncTime(Date lastFullSyncTime) {
+		this.lastFullSyncTime = lastFullSyncTime;
 	}
 }

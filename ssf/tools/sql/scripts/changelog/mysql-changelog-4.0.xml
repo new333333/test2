@@ -669,4 +669,13 @@ update SS_Principals set foreignName=LOWER(foreignName);
         </addColumn>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="79">
+        <comment>Last time full sync completed</comment>
+        <addColumn tableName="SS_BinderState">
+            <column name="lastFullSyncTime" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
