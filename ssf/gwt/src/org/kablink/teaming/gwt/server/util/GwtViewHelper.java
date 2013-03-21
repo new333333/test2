@@ -364,11 +364,10 @@ public class GwtViewHelper {
 			else if (BinderHelper.isBinderUserWorkspace(targetBinder)) {
 				// Yes!  Can we find any 'My Files Storage' folders
 				// within that?
-				List<Long> mfIDs = SearchUtils.getMyFilesFolderIds(bs, targetBinderId);
-				if (MiscUtil.hasItems(mfIDs)) {
-					// Yes!  Use the first one as the target for
-					// entries.
-					setEntryTargetId(mfIDs.get(0));
+				Long mfId = SearchUtils.getMyFilesFolderId(bs, getWorkspaceUser(bs, targetBinderId), false);	// false -> Don't create if not there.
+				if (null != mfId) {
+					// Yes!  Use it for the target for entries.
+					setEntryTargetId(mfId);
 				}
 			}
 		}
@@ -6133,6 +6132,29 @@ public class GwtViewHelper {
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
+
+	/*
+	 * Returns the User associated with the given Workspace.
+	 */
+	private static User getWorkspaceUser(AllModulesInjected bs, Workspace ws) {
+		Principal wsOwner = ws.getOwner();
+		if (wsOwner.isReserved() && ObjectKeys.SUPER_USER_INTERNALID.equals(wsOwner.getInternalId())) {
+			User guest = bs.getProfileModule().getGuestUser();
+			Long guestWSId = guest.getWorkspaceId();
+			if ((null != guestWSId) && guestWSId.equals(ws.getId())) {
+				return guest;
+			}
+		}
+		return ((User) Utils.fixProxy(wsOwner));
+	}
+	
+	private static User getWorkspaceUser(AllModulesInjected bs, Long workspaceId) {
+		Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(workspaceId);
+		if ((null != binder) && (binder instanceof Workspace)) {
+			return getWorkspaceUser(bs, ((Workspace) binder));
+		}
+		return null;
+	}
 	
 	/**
 	 * Marks the selected shared entities as being hidden.
@@ -6214,10 +6236,10 @@ public class GwtViewHelper {
 		else if (bi.isBinderFolder()) {
 			// Yes!  Is it a 'My Files Storage' folder?
 			Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(binderId);
-			if ((null != binder) && BinderHelper.isBinderMyFilesStorage(binder)) {
+			if ((null != binder) && BinderHelper.isBinderUsersActiveMyFilesStorage(bs, user, binder)) {
 				// Yes!  Is it the current user's?
 				Binder userWS          = binder.getParentBinder();
-				Long   currentUserWSId = GwtServerHelper.getCurrentUser().getWorkspaceId();
+				Long   currentUserWSId = user.getWorkspaceId();
 				if (currentUserWSId.equals(userWS.getId())) {
 					// Yes!  Are we supposed to redirect requests by
 					// the owner of a 'My Files Storage' folder to

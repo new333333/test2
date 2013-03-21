@@ -123,7 +123,7 @@ public class SelfResource extends AbstractFileResource {
         user.addAdditionalPermaLink("shared_with_me", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_SHARED_WITH_ME));
         user.addAdditionalPermaLink("shared_by_me", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_SHARED_BY_ME));
         user.addAdditionalPermaLink("recent_activity", PermaLinkUtil.getUserWhatsNewPermalink(null, entry.getId().toString()));
-        Long myFilesFolderId = SearchUtils.getMyFilesFolderId(this, entry.getWorkspaceId(), true);
+        Long myFilesFolderId = SearchUtils.getMyFilesFolderId(this, (org.kablink.teaming.domain.User) entry, true);
         if (myFilesFolderId!=null) {
             user.setHiddenFilesFolder(new LongIdLinkPair(myFilesFolderId, LinkUriUtil.getFolderLinkUri(myFilesFolderId)));
         }
@@ -518,7 +518,12 @@ public class SelfResource extends AbstractFileResource {
         if (SearchUtils.useHomeAsMyFiles(this, user)) {
             return SearchUtils.getHomeFolderIds(this, user);
         } else {
-            return SearchUtils.getMyFilesFolderIds(this, user);
+        	List<Long> reply = new ArrayList<Long>();
+        	Long mfId = SearchUtils.getMyFilesFolderId(this, user, false);
+        	if (null != mfId) {
+        		reply.add(mfId);
+        	}
+        	return reply;
         }
     }
 

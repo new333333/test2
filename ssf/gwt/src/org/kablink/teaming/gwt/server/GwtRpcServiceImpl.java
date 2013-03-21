@@ -5277,11 +5277,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private String getDefaultStorageId() {
 		Long	mfRootId;
-		Long	userWSId      = RequestContextHolder.getRequestContext().getUser().getWorkspaceId();
+		User	user          = RequestContextHolder.getRequestContext().getUser();
+		Long	userWSId      = user.getWorkspaceId();
 		boolean	usingHomeAsMF = SearchUtils.useHomeAsMyFiles(this);
         if (usingHomeAsMF)
-             mfRootId = SearchUtils.getHomeFolderId(   this                 );
-        else mfRootId = SearchUtils.getMyFilesFolderId(this, userWSId, false);
+             mfRootId = SearchUtils.getHomeFolderId(   this             );
+        else mfRootId = SearchUtils.getMyFilesFolderId(this, user, false);
         String defaultStorageId;
         if (null == mfRootId)
         	 defaultStorageId = String.valueOf(userWSId);

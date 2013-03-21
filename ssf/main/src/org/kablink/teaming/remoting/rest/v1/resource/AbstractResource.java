@@ -141,7 +141,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     }
 
     protected org.kablink.teaming.domain.Folder _getHiddenFilesFolder() {
-        Long folderId = SearchUtils.getMyFilesFolderId(this, getLoggedInUser().getWorkspaceId(), true);
+        Long folderId = SearchUtils.getMyFilesFolderId(this, getLoggedInUser(), true);
         if (folderId!=null) {
             return _getFolder(folderId);
         }
@@ -1118,7 +1118,11 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             }
             ids = homeFolderIds.toArray(new Long[homeFolderIds.size()]);
         } else {
-            List<Long> hiddenFolderIds = SearchUtils.getMyFilesFolderIds(this, getLoggedInUser());
+            List<Long> hiddenFolderIds = new ArrayList<Long>();
+        	Long mfId = SearchUtils.getMyFilesFolderId(this, getLoggedInUser(), false);
+            if (null != mfId) {
+            	hiddenFolderIds.add(mfId);
+            }
             hiddenFolderIds.add(getMyFilesFolderParent().getId());
             ids = hiddenFolderIds.toArray(new Long[hiddenFolderIds.size()]);
         }
@@ -1133,7 +1137,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             ids = homeFolderIds.toArray(new Long[homeFolderIds.size()]);
         } else {
             ids = new Long[] {getMyFilesFolderParent().getId()};
-            hiddenFolders = SearchUtils.getMyFilesFolderIds(this, getLoggedInUser()).size();
+            Long mfId = SearchUtils.getMyFilesFolderId(this, getLoggedInUser(), false);
+            hiddenFolders = ((null == mfId) ? 0 : 1);
         }
         LibraryInfo libraryInfo = getLibraryInfo(ids);
         libraryInfo.setFolderCount(libraryInfo.getFolderCount() - hiddenFolders);
