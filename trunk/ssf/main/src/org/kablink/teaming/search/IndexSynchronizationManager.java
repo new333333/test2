@@ -166,8 +166,16 @@ public class IndexSynchronizationManager {
         // we would be working with fresh new thread local object. 
         // However, because containers tend to re-use threads (thread pooling),
         // we must ensure that the thread context is clear when we start a
-        // new session for index synchronization. 
-        clear();
+        // new session for index synchronization.
+    	// 
+    	// 03/21/2013 Update: It turns out this is more harmful than useful.
+    	// After many years of production, we never had a use case where we
+    	// had to roll back or abandon index update requests in a particular
+    	// thread context. As such, just blindly flushing everything would
+    	// not have negative affect. Besides, clearing context here causes
+    	// serious problem (e.g bug #807665), so we would rather NOT clear
+    	// the context here.
+        //clear();
     }
     
     public static void applyChanges(int threshold) {
