@@ -218,7 +218,6 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 				DefaultSpringSecurityContextSource contextSource = null;
 				try {
 					String url;
-					String derefAliases;
 					Map<String,String> baseEnvironmentProperties; 
 					
 					// The call to new DefaultSpringSecurityContextSource() will fail if
@@ -240,9 +239,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 					contextSource = new DefaultSpringSecurityContextSource( url );
 					
 					// Set the property that tells ldap whether or not to dereference aliases.
-					derefAliases = SPropsUtil.getString( "java.naming.ldap.derefAliases", "never" );
 					baseEnvironmentProperties = new HashMap<String, String>();
-					baseEnvironmentProperties.put( "java.naming.ldap.derefAliases", "never" );
+					baseEnvironmentProperties.put( "java.naming.ldap.derefAliases", SPropsUtil.getString( "java.naming.ldap.derefAliases", "never" ) );
 					contextSource.setBaseEnvironmentProperties( baseEnvironmentProperties );
 					
 				} catch(Exception e) {
