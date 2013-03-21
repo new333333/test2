@@ -167,14 +167,22 @@ public abstract class Converter<T>
 	}
 
 	private void shortenConvertedFile(String convertedFilePath, long maxLength) {
+		RandomAccessFile raf = null;
 		try {
 
-			RandomAccessFile raf = new RandomAccessFile(convertedFilePath, "rw");
+			raf = new RandomAccessFile(convertedFilePath, "rw");
 			raf.setLength(maxLength); // truncate file
 			raf.close();
+			raf = null;
 		}
 		catch (java.io.IOException ex) {
 			//truncation didn't work, don't do anything
+		} finally {
+			if (raf != null) {
+				try {
+					raf.close();
+				} catch(Exception e) {}
+			}
 		}
 	}
 	
