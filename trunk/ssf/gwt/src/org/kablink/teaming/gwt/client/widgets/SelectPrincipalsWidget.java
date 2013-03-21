@@ -920,10 +920,13 @@ public class SelectPrincipalsWidget extends Composite
 		{
 			String colName;
 			String width;
+			InlineLabel label;
 			
 			colName = getColName( col );
+			label = new InlineLabel( colName );
+			label.addStyleName( "gwtUI_nowrap" );
 			width = getColWidth( col );
-			m_principalsTable.setText( 0, col, colName );
+			m_principalsTable.setWidget( 0, col, label );
 			DOM.setElementAttribute( m_principalsCellFormatter.getElement( 0, col ), "width", width );
 		}
 		
