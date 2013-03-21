@@ -108,7 +108,7 @@ public class NetFoldersResource extends ContainerResource implements
 
 		List<BinderIndexData> bidList = getBinderDataFromIndex(netFoldersCrit, true, SearchUtils.getNetFoldersRootBinder());
 		//Remove any net folder that the user does not have direct access to
-		SearchUtils.removeNetFoldersWithNoRootAccess(bidList);
+		SearchUtils.removeNetFoldersWithNoRootAccess2(bidList);
 		
 		for (BinderIndexData bid : bidList) {
 			if (bid.getTitle().equals(childName))
@@ -128,7 +128,7 @@ public class NetFoldersResource extends ContainerResource implements
 
 		List<BinderIndexData> bidList = getBinderDataFromIndex(netFoldersCrit, true, SearchUtils.getNetFoldersRootBinder());
 		//Remove any net folder that the user does not have direct access to
-		SearchUtils.removeNetFoldersWithNoRootAccess(bidList);
+		SearchUtils.removeNetFoldersWithNoRootAccess2(bidList);
 		
 		for (BinderIndexData bid : bidList) {
 			resource = makeResourceFromBinder(bid);

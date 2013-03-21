@@ -56,6 +56,7 @@ import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -897,8 +898,8 @@ public class SearchUtils {
 	
 	public static void removeNetFoldersWithNoRootAccess(Map netFolderSearchResults) {
 		//Filter out any folders that don't have the AllowAccessToNetFolder right
-		List netFolderMapList = (List)netFolderSearchResults.get(ObjectKeys.SEARCH_ENTRIES); 
-		List newNetFolderMapList = removeNetFoldersWithNoRootAccess(netFolderMapList);
+		List<Map> netFolderMapList = (List)netFolderSearchResults.get(ObjectKeys.SEARCH_ENTRIES); 
+		List<Map> newNetFolderMapList = removeNetFoldersWithNoRootAccess(netFolderMapList);
 		int itemsRemoved = netFolderMapList.size() - newNetFolderMapList.size();
       	if (itemsRemoved > 0) {
       		//We had to remove some. Store the new list and fix up the counts.
@@ -923,7 +924,7 @@ public class SearchUtils {
       		}
       	}
 	}
-	public static List removeNetFoldersWithNoRootAccess(List netFolderMapList) {
+	public static List<Map> removeNetFoldersWithNoRootAccess(List<Map> netFolderMapList) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		List newNetFolderMapList = new ArrayList();
 		
@@ -937,6 +938,25 @@ public class SearchUtils {
 	 			if (AccessUtils.checkIfUserHasAccessToRootId(user, docId) || user.isSuper()) {
 	  				//This user has access to this item in the search results, so keep this result
 	 				newNetFolderMapList.add(entryMap);
+	  			}
+      		}
+      	}
+      	return newNetFolderMapList;
+	}
+	public static List<BinderIndexData> removeNetFoldersWithNoRootAccess2(List<BinderIndexData> netFolderMapList) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		List<BinderIndexData> newNetFolderMapList = new ArrayList();
+		
+		Iterator iter = netFolderMapList.iterator();
+      	while (iter.hasNext()) {
+      		BinderIndexData bid = (BinderIndexData)iter.next();
+      		Long docId = bid.getId();
+      		String entityType = bid.getEntityType().name();
+      		if (EntityIdentifier.EntityType.folder.name().equals(entityType)) {
+      			//See if the user has access to this root folder
+	 			if (AccessUtils.checkIfUserHasAccessToRootId(user, String.valueOf(docId)) || user.isSuper()) {
+	  				//This user has access to this item in the search results, so keep this result
+	 				newNetFolderMapList.add(bid);
 	  			}
       		}
       	}
