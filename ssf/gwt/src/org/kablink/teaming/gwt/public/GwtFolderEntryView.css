@@ -20,7 +20,7 @@
 		.vibe-feView-headerContentPersonModified      {padding-left: 10px; font-size: .8em; color: #505354; font-weight: normal;}
 		.vibe-feView-headerContentPersonModifiedLabel {padding-left: 5px;}
 		.vibe-feView-headerContentPanel               {margin-left: 50px; margin-top: 0.3em; display: block;}
-		.vibe-feView-headerContentPath                {color: gray; padding-left: 2px; font-size: 0.75em; line-height: 1.1em; display: block;}
+		.vibe-feView-headerContentPath                {color: #505354; padding-top: 2px; font-size: 13px; line-height: 16px; display: block;}
 		.vibe-feView-headerContentTitleAsAnchor       {cursor: pointer; text-decoration: none;}
 		.vibe-feView-headerContentTitleAsAnchor:hover {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-feView-headerContentTitleAsLabel        {font-size: 1.2em;}

@@ -596,9 +596,9 @@
 /* End:  Profile entry dialog styles. */
 
 /* Start:  Empty widget styles. */
-	.vibe-emptyWidget-head      {font-size: 1.8em; font-style: oblique; color: #5691A6;}
-	.vibe-emptyWidget-headImage {position: absolute; top: 0px; right: 0px; padding: 10px 20px; background: linear-gradient(to bottom ,#505354 0%,#1f1f1f 100%);	background: -webkit-linear-gradient(top, #505354, #1f1f1f); background: -moz-linear-gradient(top, #505354, #1f1f1f); border-bottom-left-radius: 10px; border-top-right-radius: 10px; }
-	.vibe-emptyWidget-headSub   {font-size: 1.2em; color: #949494; width: 380px;}
-	.vibe-emptyWidget-info      {font-size: 1em; color: #353838; margin-top: 10px; line-height: 1.4em; width: 380px;}	
-	.vibe-emptyWidget-rootPanel {position:relative; background-color: #fafafa; margin: 20px 40px; border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 500px; font-size: 1.15em;}
+	.vibe-emptyWidget-head      {font-size: 1.8em; color: #5691A6; margin-left: 90px;}
+	.vibe-emptyWidget-headImage {position: absolute; top: 0px; left: 0px; padding: 10px 20px; }
+	.vibe-emptyWidget-headSub   {font-size: 14px; color: #949494; margin-bottom: 20px; margin-left: 90px; }
+	.vibe-emptyWidget-info      {font-size: 16px; color: #353838; margin-top: 10px; line-height: 24px;}	
+	.vibe-emptyWidget-rootPanel {position:relative; background-color: #fafafa; margin: 20px 40px; border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 450px; font-size: 1.15em;}
 /* End:  Empty widget styles. */
