@@ -52,17 +52,23 @@ public class BinderState extends ZonedObject {
 	private Date lastSyncTime; 
 	
 	/*
-	 * Last time full sync initiated on this binder completed.
-	 * This property is relevant only to those binders on which full sync starts,
-	 * which are almost always net folder roots (currently, Filr does not allow
-	 * starting full sync on any folder other than net folder roots).
-	 * Those binders that are synchronized indirectly from a full sync triggered 
-	 * on one of their ancestor binders do not get this property value set.
-	 * This property value is set if and only if full sync completes, which is
-	 * defined by whether the sync process was able to enumerate all the members
-	 * of the data tree starting from the top all the way down to leaves.
+	 * Last time full sync initiated on this binder completed successfully.
+	 * This property is relevant only to those binders on which full sync is initiated
+	 * which are almost always net folder roots (currently, Filr does not allow starting
+	 * full sync on any folder other than net folder roots).
+	 * Those binders that are synchronized indirectly from a full sync triggered on 
+	 * one of their ancestor binders do not get this property value set.
+	 * This property value is set if and only if full sync completes successfully,
+	 * where a successful sync is defined as one where the sync process was able
+	 * to enumerate all children of successfully processed folders within the data
+	 * hierarchy starting from the top all the way down to leaves. Failure to process
+	 * individual files and sub-folders do not count towards overall failure. 
+	 * With this definition, there is NO guarantee that the sync process has actually
+	 * visited and enumerated ALL files and sub-folders that exist on the file system,
+	 * because a failure to process a particular folder can most likely result in 
+	 * aborting that part of the tree all together. 
 	 */
-	private Date lastFullSyncTime;
+	private Date lastFullSyncCompletionTime;
 
 	protected BinderState() {
 		// Use by Hibernate only
@@ -88,11 +94,11 @@ public class BinderState extends ZonedObject {
 		this.lastSyncTime = lastSyncTime;
 	}
 
-	public Date getLastFullSyncTime() {
-		return lastFullSyncTime;
+	public Date getLastFullSyncCompletionTime() {
+		return lastFullSyncCompletionTime;
 	}
 
-	public void setLastFullSyncTime(Date lastFullSyncTime) {
-		this.lastFullSyncTime = lastFullSyncTime;
+	public void setLastFullSyncCompletionTime(Date lastFullSyncCompletionTime) {
+		this.lastFullSyncCompletionTime = lastFullSyncCompletionTime;
 	}
 }
