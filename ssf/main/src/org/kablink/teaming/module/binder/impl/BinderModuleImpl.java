@@ -3385,7 +3385,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// system rather than user), there is no need for access checking. 
 		// In order to make sure that this code can run without failure caused by access checking,
 		// we run this in admin context.
-		if(binder != null && !(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))) {
+		if(binder != null && 
+				!ObjectKeys.PROFILE_ROOT_INTERNALID.equals(binder.getInternalId()) && 
+				!(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))) {
 			RunasTemplate.runasAdmin(new RunasCallback() {
 				@Override
 				public Object doAs() {
