@@ -389,8 +389,7 @@ isFilr = false;		//I turned off the way Filr sorted its hits. (pmh)
 												isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>" isFile="yes">
 												
 											<ssf:param name="url" useBody="true">
-												<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-						      						action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+												<ssf:fileUrl search="${entry}"/>
 											</ssf:param>
 												
 										    	<c:out value="${entry._fileName}"/>
@@ -403,6 +402,25 @@ isFilr = false;		//I turned off the way Filr sorted its hits. (pmh)
 							<div class="ss_clear">&nbsp;</div>
 											
 							<div id="details_${status.count}" class="ss_entryDetails">
+								<div>
+									<ssf:titleLink 
+										entryId="${entry._docId}" 
+										binderId="${entry._binderId}" 
+										entityType="${entry._entityType}"  
+										namespace="${ss_namespace}" 
+										useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+										
+										<ssf:param name="url" useBody="true">
+											<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+											action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+										</ssf:param>
+									
+									    <c:if test="${empty entry.title}">
+									    	(<ssf:nlt tag="entry.noTitle"/>)
+									    </c:if>
+								    	<c:out value="${entry.title}"/>
+									</ssf:titleLink>
+								</div>
 								<c:if test="${!empty entryBinderTitle}">
 									<p>
 										<a 
