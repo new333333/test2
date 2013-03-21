@@ -1293,7 +1293,7 @@ public final class ConfigService
 			resourceElement.setAttribute("lucene.server.password", lucene.getServerPassword());
 		}
 
-		if (lucene.getLocation().equals("ha"))
+		if (lucene.getLocation().equals("high availability"))
 		{
 			// Delete high availability nodes
 			NodeList nodeList = resourceElement.getElementsByTagName("HASearchNode");
@@ -1513,6 +1513,7 @@ public final class ConfigService
 					builder.append(" ");
 				}
 				builder.deleteCharAt(builder.length() - 1);
+				builder.append("\"");
 				prop.setProperty("MEMCACHED_PARAMS", builder.toString());
 				store(prop, file);
 			}
