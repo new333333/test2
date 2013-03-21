@@ -493,32 +493,26 @@ public class UserActionsPopup extends TeamingPopupPanel
 		if ( quotaInfo.isEnabled() )
 		{
 			String quotaTitle;
-			String end = " MB";
 			String usedTitle;
 			Label quotaTitleLabel;
 			Label quotaUsedLabel;
 			InlineLabel quotaValueLabel;
 			InlineLabel quotaUsedValueLabel;
-			InlineLabel endLabel2;
 
 			// Yes, display the quota and how much has been used.
 			// Add the Data quota in the first row.
 			quotaTitle = GwtTeaming.getMessages().profileDataQuota();
 			quotaTitleLabel = new Label( quotaTitle );
-			quotaValueLabel = new InlineLabel( quotaInfo.getMaxQuota() );
+			quotaValueLabel = new InlineLabel( GwtTeaming.getMessages().profileQuotaMegaBytes( quotaInfo.getMaxQuota() ) );
 			quotaValueLabel.addStyleName( "bold" );
-			InlineLabel endLabel = new InlineLabel( end );
-			quotaValueLabel.getElement().appendChild( endLabel.getElement() );
 			m_quotaTable.setHTML( 0, 0, quotaTitleLabel.toString() );
 			m_quotaTable.setHTML( 0, 1, quotaValueLabel.toString() );
 			
 			// Add the Quota used in the 2nd row.
 			usedTitle = GwtTeaming.getMessages().profileQuotaUsed();
 			quotaUsedLabel = new Label( usedTitle );
-			quotaUsedValueLabel = new InlineLabel( quotaInfo.getUsedQuota() );
+			quotaUsedValueLabel = new InlineLabel( GwtTeaming.getMessages().profileQuotaMegaBytes( quotaInfo.getUsedQuota() ) );
 			quotaUsedValueLabel.addStyleName( "bold" );
-			endLabel2 = new InlineLabel( end );
-			quotaUsedValueLabel.getElement().appendChild(endLabel2.getElement());
 			m_quotaTable.setHTML( 1, 0, quotaUsedLabel.toString() );
 			m_quotaTable.setHTML( 1, 1, quotaUsedValueLabel.toString() );
 			
@@ -558,4 +552,3 @@ public class UserActionsPopup extends TeamingPopupPanel
 		}
 	}	
 }
-

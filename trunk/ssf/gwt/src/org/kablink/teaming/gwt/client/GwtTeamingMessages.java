@@ -1221,6 +1221,7 @@ public interface GwtTeamingMessages extends Messages
 	String profileFollowing();
 	String profileAboutMe();
 	String profileDataQuota();
+	String profileQuotaMegaBytes(String size);
 	String profileQuotaUsed();
 	String profileSetDefaultAvatar();
 	String profileRemoveAvatar();
