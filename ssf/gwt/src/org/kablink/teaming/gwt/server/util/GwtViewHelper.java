@@ -6669,16 +6669,10 @@ public class GwtViewHelper {
 					}
 					
 					try {
-						// Does this user have a workspace ID?
-						Long wsId = user.getWorkspaceId();
-						if (null != wsId) {
-							// Yes!  Purge the workspace...
-							bs.getBinderModule().deleteBinder(wsId, purgeMirrored, null);
-						}
-						
-						// ...and purge the user.
+						// Purge the user and their workspace, if they have one.
 						Map options = new HashMap();
-						options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, false);
+						options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE,         new Boolean(null != user.getWorkspaceId()));
+						options.put(ObjectKeys.INPUT_OPTION_DELETE_MIRRORED_FOLDER_SOURCE, new Boolean(purgeMirrored                ));
 						bs.getProfileModule().deleteEntry(userId, options);
 					}
 
