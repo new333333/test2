@@ -57,6 +57,7 @@ import org.kablink.teaming.domain.Dashboard;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityDashboard;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
@@ -902,10 +903,12 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			//See if this binder is in the personal workspace tree
 			boolean personal = Utils.isWorkareaInProfilesTree((WorkArea)binder);
 			if (personal) {
-				//Make sure the owner of this new binder starts out as the owner its parent binder
-				//We want binders in a user's workspace to be manageable by the workspace owner
-				//The owner can explicitly change the ownership, then the new owner propagates as new biders are added
-				//binder.setOwner(parentBinder.getOwner());
+				//Make sure the owner of a new folder starts out as the owner its parent folder
+				//We want folders in a user's workspace to be manageable by the workspace owner
+				//The owner can explicitly change the ownership later, then the new owner propagates as new folders are added
+				if (parentBinder instanceof Folder) {
+					binder.setOwner(parentBinder.getOwner());
+				}
 			}
 	   } catch (WriteFilesException wf) {
 		   //don't fail, but log it
