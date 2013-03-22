@@ -405,12 +405,12 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 			}
 			catch(AuthenticationException e) {
 				Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
-				logger.warn("Authentication failure for zone " + zone + ": " + e.toString());
+				logger.warn("Authentication failure for [" + authentication.getName() + "] " + e.toString());
 				throw e;
 			}
 			catch(RuntimeException e) {
 				Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
-				logger.error("Authentication failure for zone " + zone, e);
+				logger.error("Authentication failure for [" + authentication.getName() + "]", e);
 				throw e;	
 			}
 		}
