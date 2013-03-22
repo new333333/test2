@@ -1696,7 +1696,7 @@ body, table td, select
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 	background: url(images/slice_blend_teal_27.png) repeat-x scroll 0 0 #81B2Bd;
-	border: 1px solid #60919C;
+	border: 1px solid #81B2Bd;
 	color: #FFFFFF;
 	display: inline-block;
 	font-size: 12px !important;
@@ -2661,6 +2661,7 @@ body, table td, select
 	border: 1px solid transparent;
 	color: #FFFFFF;
 	font-size: 12px;
+	margin-left: 5px;
 	margin-right: 5px;
 	padding: 0px;
 	text-align: center;
@@ -2677,25 +2678,49 @@ body, table td, select
 
 .mastheadFilr_PeoplePanel
 {
-	left: 10px;
 	position: absolute;
+	left: 10px;
 	bottom: 0px;
+	background-image: url(images/trans30_black.png);
+	background-repeat: repeat;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;	
+	-webkit-border-top-right-radius: 5px;	
 	z-index: 400;
 }
 
 .mastheadFilr_WhatsNewPanel
 {
-	left: 60px;
 	position: absolute;
+	left: 60px;
 	bottom: 0px;
+	background-image: url(images/trans30_black.png);
+	background-repeat: repeat;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;	
+	-webkit-border-top-right-radius: 5px;	
 	z-index: 400;
 }
 
 .mastheadFilr_BrowseFilrPanel
 {
-	left: 110px;
 	position: absolute;
+	left: 110px;
 	bottom: 0px;
+	background-image: url(images/trans30_black.png);
+	background-repeat: repeat;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;	
+	-webkit-border-top-right-radius: 5px;	
 	z-index: 400;
 }
 
@@ -2989,6 +3014,8 @@ body, table td, select
 	font-size: 12px;
 	padding: 5px;
 	background-color: #fff;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 /* Styles for dialog boxes */
@@ -4685,15 +4712,25 @@ td.datePickerMonth {
 {
 	background: url(images/trans20_91daf2.png) repeat;
     border: 1px solid #3C4143;
-    border-radius: 2px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;	
+	-webkit-border-top-right-radius: 5px;	
     cursor: pointer;
 }
 
 .FilrAction_Selected
 {
-	background: url(images/trans30_black.png) repeat;
-	border-radius: 3px;
-	box-shadow:	0 1px 1px #1F1F1F inset;
+	background: url(images/trans50_black.png) repeat;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;	
+	-webkit-border-top-right-radius: 5px;	
+	box-shadow:	0 1px 1px #000 inset;
 }
 
 .FilrAction_Selected .FilrAction_Text
@@ -4980,7 +5017,7 @@ td.datePickerMonth {
 .userActionsPopup_ActionPanel
 {
 	color: #505354;
-	font-size: 16px;
+	font-size: 14px;
 	margin-bottom: 5px;
 	margin-left: 18px;
 	margin-right: 18px;

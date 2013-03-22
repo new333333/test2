@@ -599,6 +599,6 @@
 	.vibe-emptyWidget-head      {font-size: 1.8em; color: #5691A6; margin-left: 90px;}
 	.vibe-emptyWidget-headImage {position: absolute; top: 0px; left: 0px; padding: 10px 20px; }
 	.vibe-emptyWidget-headSub   {font-size: 14px; color: #949494; margin-bottom: 20px; margin-left: 90px; }
-	.vibe-emptyWidget-info      {font-size: 16px; color: #353838; margin-top: 10px; line-height: 24px;}	
+	.vibe-emptyWidget-info      {font-size: 16px; color: #505354; margin-top: 10px; line-height: 24px;}	
 	.vibe-emptyWidget-rootPanel {position:relative; background-color: #fafafa; margin: 20px 40px; border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 450px; font-size: 1.15em;}
 /* End:  Empty widget styles. */
