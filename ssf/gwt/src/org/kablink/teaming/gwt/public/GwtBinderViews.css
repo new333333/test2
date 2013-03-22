@@ -165,6 +165,7 @@
 		.vibe-dataTableComments-bubble            {color: #135c8f; font-size: 12px; font-weight: bold; padding-top: 4px; padding-bottom: 5px; padding-left: 8px; padding-right: 8px; text-align: center; display: inline;}
 		.vibe-dataTableComments-bubbleBig         {background: url(images/comments_25_wide.png) no-repeat scroll center center transparent;}
 		.vibe-dataTableComments-bubbleSmall       {background: url(images/comments_25.png)      no-repeat scroll center center transparent;}
+		.vibe-dataTableComments-headerBubble      {color: #135c8f; font-size: 12px; font-weight: bold; padding-top: 4px; padding-bottom: 5px; padding-left: 8px; padding-right: 8px; text-align: center; display: inline; background: url(images/comments_25.png) no-repeat scroll center center transparent;}
 		.vibe-dataTableComments-panel             {text-align: center; display: block;}
 		.vibe-dataTableComments-panel0            {}
 		.vibe-dataTableCustom-anchor              {}
