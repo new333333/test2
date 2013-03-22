@@ -30,7 +30,7 @@
 	overflow: hidden;
 	white-space: nowrap;
 	font-weight: normal;
-	text-shadow: 0px 0px 0 #DDDDFF;
+	text-shadow: 0px 0px 0 transparent;
 	height: 22px;
 }
 
