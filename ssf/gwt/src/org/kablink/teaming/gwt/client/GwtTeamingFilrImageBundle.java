@@ -148,7 +148,7 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource netFolders_transparent_48();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/netfolder_72.png")
+	@Source("org/kablink/teaming/gwt/public/images/Filr/netfolders_transparent_72.png")
 	public ImageResource netFolders_transparent_72();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
