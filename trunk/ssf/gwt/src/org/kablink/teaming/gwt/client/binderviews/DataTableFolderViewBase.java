@@ -863,6 +863,21 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
+	 * Constructs a SafeHtml object containing the HTML for the comment
+	 * column's header.
+	 */
+	private SafeHtml buildCommentHeaderHtml(FolderColumn fc) {
+		VibeFlowPanel commentBubble = new VibeFlowPanel();
+		commentBubble.addStyleName("vibe-dataTableComments-bubble");
+		commentBubble.addStyleName("vibe-dataTableComments-bubbleSmall");
+		commentBubble.setTitle(    fc.getColumnTitle());
+		commentBubble.getElement().setInnerHTML("&nbsp;&nbsp;");
+		VibeFlowPanel html = new VibeFlowPanel();
+		html.add(commentBubble);
+		return SafeHtmlUtils.fromTrustedString(html.getElement().getInnerHTML());
+	}
+	
+	/*
 	 * Returns true if entries can be pinned in the current view and
 	 * false otherwise.
 	 */
@@ -1300,10 +1315,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// For some columns (e.g., entry titles), we define a 2nd,
 			// support column for it.  These variables are used to
 			// define that.
-			ColumnWidth					supportColumnWidth    = null;
-			String						supportColumnTitle    = null;
-			String						supportColumnStyles   = null;
-			VibeColumn<FolderRow, ?>	supportColumn         = null;
+			ColumnWidth					supportColumnWidth  = null;
+			String						supportColumnTitle  = null;
+			String						supportColumnStyles = null;
+			VibeColumn<FolderRow, ?>	supportColumn       = null;
+			SafeHtml					columnHeaderHtml    = null;
+			String						columnHeaderStyle   = null;
 			
 			// We need to define a VibeColumn<FolderRow, ?> of some
 			// sort for each one.  Is this a column that should show
@@ -1556,6 +1573,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						return reply;
 					}
 				};
+				column.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+				columnHeaderHtml = buildCommentHeaderHtml(fc);
+				columnHeaderStyle = "vibe-dataTableFolderColumn-headerCenter";
 			}
 			
 			// No, this column isn't a comments count either!  Is it a
@@ -1582,11 +1602,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			}
 
 			// Complete the initialization of the column.
-			fc.setDisplayIndex(   colIndex                       );
-			column.setSortable(   fc.isColumnSortable()          );
-			m_dataTable.addColumn(column, fc.getColumnTitle()    );
-		    setColumnStyles(      column, cName, colIndex++      );
-		    setColumnWidth(               cName, column, pctTotal);
+			fc.setDisplayIndex(   colIndex                                    );
+			column.setSortable(   fc.isColumnSortable()                       );
+			if (null == columnHeaderHtml)
+			     m_dataTable.addColumn(column, fc.getColumnTitle()            );
+			else m_dataTable.addColumn(column, columnHeaderHtml               );
+		    setColumnStyles(      column, cName, colIndex++, columnHeaderStyle);
+		    setColumnWidth(               cName, column, pctTotal             );
 
 		    // Do we have a support column for the column we just
 		    // added?
@@ -3033,7 +3055,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Sets the style on a column in the data table based on the
 	 * column's name.
 	 */
-	private void setColumnStyles(Column<FolderRow, ?> column, String columnName, int colIndex) {
+	private void setColumnStyles(Column<FolderRow, ?> column, String columnName, int colIndex, String addedHeaderStyles) {
 		if (!(FolderColumn.isColumnTitle(columnName))) {
 			column.setCellStyleNames("gwtUI_nowrap");
 		}
@@ -3043,6 +3065,20 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	    styles.append("-");
 	    styles.append(columnName.equals(FolderColumn.COLUMN_SELECT) ? STYLE_COL_SELECT : columnName);
 	    m_dataTable.addColumnStyleName(colIndex, styles.toString());
+	    
+	    if (GwtClientHelper.hasString(addedHeaderStyles)) {
+	    	Header<?> h = m_dataTable.getHeader(colIndex);
+	    	String baseStyles = h.getHeaderStyleNames();
+	    	if (GwtClientHelper.hasString(baseStyles))
+	    	     baseStyles += " ";
+	    	else baseStyles = "";
+	    	h.setHeaderStyleNames(baseStyles + addedHeaderStyles);
+	    }
+	}
+	
+	private void setColumnStyles(Column<FolderRow, ?> column, String columnName, int colIndex) {
+		// Always use the initial form of the method.
+		setColumnStyles(column, columnName, colIndex, null);
 	}
 
 	/*
