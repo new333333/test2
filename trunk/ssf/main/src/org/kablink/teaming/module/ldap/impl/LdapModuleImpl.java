@@ -1670,7 +1670,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	{
 		Workspace zone;
 
-		logger.info( "Reading home directory attribute for user: " + teamingUserName );
+		if(logger.isDebugEnabled())
+			logger.debug( "Reading home directory attribute for user: " + teamingUserName );
 		
 		zone = RequestContextHolder.getRequestContext().getZone();
 
