@@ -60,11 +60,12 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                             @QueryParam("library_info") @DefaultValue("false") boolean libraryInfo,
                             @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
                             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
-        Binder binder = ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
+        org.kablink.teaming.domain.Binder binder = _getBinder(id);
+        Binder model = ResourceUtil.buildBinder(binder, includeAttachments, textDescriptions);
         if (libraryInfo) {
-            binder.setLibraryInfo(getLibraryInfo(new Long[]{id}));
+            model.setLibraryInfo(getLibraryInfo(new Long[]{id}, binder.isMirrored()));
         }
-        return binder;
+        return model;
     }
 
     @PUT
@@ -277,7 +278,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public LibraryInfo getBinderLibraryInfo(@PathParam("id") long id) {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
-        return getLibraryInfo(new Long[] {id});
+        return getLibraryInfo(new Long[] {id}, binder.isMirrored());
 	}
 
     @GET
