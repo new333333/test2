@@ -868,9 +868,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private SafeHtml buildCommentHeaderHtml(FolderColumn fc) {
 		VibeFlowPanel commentBubble = new VibeFlowPanel();
-		commentBubble.addStyleName("vibe-dataTableComments-bubble");
-		commentBubble.addStyleName("vibe-dataTableComments-bubbleSmall");
-		commentBubble.setTitle(    fc.getColumnTitle());
+		commentBubble.addStyleName("vibe-dataTableComments-headerBubble");
+		commentBubble.setTitle(fc.getColumnTitle());
 		commentBubble.getElement().setInnerHTML("&nbsp;&nbsp;");
 		VibeFlowPanel html = new VibeFlowPanel();
 		html.add(commentBubble);
