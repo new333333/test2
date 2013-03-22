@@ -137,14 +137,15 @@
 	/* ...End:  Generic folder view styles. */
 	
 	/* ...Start:  Generic data table folder view styles. */
-		.vibe-dataTableFolderColumn            {}
-		.vibe-dataTableFolderColumn-select     {}
-		.vibe-dataTableFolderDataTableBase     {}
-		.vibe-dataTableFolderFlowPanelBase     {}
-		.vibe-dataTableFolderRow               {}
-		.vibe-dataTableFolderRow-select        {}
-		.vibe-dataTableFolderViewBase          {}
-		.vibe-dataTableFolderVerticalPanelBase {}
+		.vibe-dataTableFolderColumn              {}
+		.vibe-dataTableFolderColumn-headerCenter {text-align: center !important;}
+		.vibe-dataTableFolderColumn-select       {}
+		.vibe-dataTableFolderDataTableBase       {}
+		.vibe-dataTableFolderFlowPanelBase       {}
+		.vibe-dataTableFolderRow                 {}
+		.vibe-dataTableFolderRow-select          {}
+		.vibe-dataTableFolderViewBase            {}
+		.vibe-dataTableFolderVerticalPanelBase   {}
 	/* ...End:  Generic data table folder view styles. */
 	
 	/* ...Start:  Data table cell styles. */
