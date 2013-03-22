@@ -200,7 +200,7 @@ public class BinderResource extends AbstractResource {
             } else if (id.equals(ObjectKeys.MY_FILES_ID)) {
                 binder.setLibraryInfo(getMyFilesLibraryInfo());
             } else if (id>0) {
-                binder.setLibraryInfo(getLibraryInfo(new Long[]{id}));
+                binder.setLibraryInfo(getLibraryInfo(new Long[]{id}, binder.getMirrored()));
             }
         }
     }

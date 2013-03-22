@@ -1018,6 +1018,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     }
 
     protected LibraryInfo getLibraryInfo(Long [] binderIds) {
+        return getLibraryInfo(binderIds, false);
+    }
+
+    protected LibraryInfo getLibraryInfo(Long [] binderIds, boolean mirrored) {
         if (binderIds.length==0) {
             return new LibraryInfo(0L, 0, 0, null);
         }
@@ -1058,6 +1062,11 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         info.setFileCount(files);
         info.setFolderCount(folders);
         info.setModifiedDate(modDate);
+        if (mirrored) {
+            populateMirroredLibraryInfo(info, idSet);
+        } else {
+            info.setMirrored(Boolean.FALSE);
+        }
         return info;
     }
 
@@ -1132,8 +1141,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     protected LibraryInfo getMyFilesLibraryInfo() {
         int hiddenFolders = 0;
         Long [] ids;
+        List<Long> homeFolderIds = SearchUtils.getHomeFolderIds(this, getLoggedInUser());
         if (SearchUtils.useHomeAsMyFiles(this)) {
-            List<Long> homeFolderIds = SearchUtils.getHomeFolderIds(this, getLoggedInUser());
             ids = homeFolderIds.toArray(new Long[homeFolderIds.size()]);
         } else {
             ids = new Long[] {getMyFilesFolderParent().getId()};
@@ -1142,7 +1151,19 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
         LibraryInfo libraryInfo = getLibraryInfo(ids);
         libraryInfo.setFolderCount(libraryInfo.getFolderCount() - hiddenFolders);
+        if (homeFolderIds.size()>0) {
+            populateMirroredLibraryInfo(libraryInfo, homeFolderIds);
+        }
         return libraryInfo;
+    }
+
+    private void populateMirroredLibraryInfo(LibraryInfo libraryInfo, Iterable<Long> binderIds) {
+        libraryInfo.setMirrored(Boolean.TRUE);
+        Date syncDate = null;
+        for (Long id : binderIds) {
+            syncDate = max(syncDate, getFolderModule().getLastFullSyncCompletionTime(id));
+        }
+        libraryInfo.setLastMirroredSyncDate(syncDate);
     }
 
     protected Binder getMyFilesFolderParent() {

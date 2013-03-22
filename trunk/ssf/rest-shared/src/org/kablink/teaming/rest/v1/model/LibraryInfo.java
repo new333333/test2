@@ -47,6 +47,8 @@ public class LibraryInfo {
     private Integer fileCount;
     private Integer folderCount;
     private Long diskSpace;
+    private Boolean mirrored;
+    private Date lastMirroredSyncDate;
 
     public LibraryInfo() {
     }
@@ -92,5 +94,22 @@ public class LibraryInfo {
 
     public void setFolderCount(Integer folderCount) {
         this.folderCount = folderCount;
+    }
+
+    @XmlElement(name = "mirrored_sync_date")
+    public Date getLastMirroredSyncDate() {
+        return lastMirroredSyncDate;
+    }
+
+    public void setLastMirroredSyncDate(Date lastMirroredSyncDate) {
+        this.lastMirroredSyncDate = lastMirroredSyncDate;
+    }
+
+    public Boolean getMirrored() {
+        return mirrored;
+    }
+
+    public void setMirrored(Boolean mirrored) {
+        this.mirrored = mirrored;
     }
 }

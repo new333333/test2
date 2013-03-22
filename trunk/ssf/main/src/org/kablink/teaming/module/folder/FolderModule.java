@@ -34,6 +34,7 @@ package org.kablink.teaming.module.folder;
 
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -699,7 +700,8 @@ public interface FolderModule {
 	public Long getZoneEntryId(Long entryId, String zoneUUID);
 	
     public boolean jitSynchronize(Folder folder);
-    
+
+    public Date getLastFullSyncCompletionTime(Long folderId);
     /**
      * This method is meant to be used only from the background job that indexes file content
      * in coordination with file sync process. Must NOT be used directly by the application layer.

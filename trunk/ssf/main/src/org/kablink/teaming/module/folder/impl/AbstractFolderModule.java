@@ -69,6 +69,7 @@ import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.AverageRating;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -1811,8 +1812,32 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 		}
 		return ids.get(0);
 	}
-	
-	private void updateModificationTime(final Folder folder, Map options) {
+
+    public Date getLastFullSyncCompletionTime(Long folderId) {
+        Folder folder = getTopMostMirroredFolder(getFolder(folderId));
+        if (folder!=null) {
+            BinderState binderState = getCoreDao().loadBinderState(folder.getId());
+            if (binderState!=null) {
+                return binderState.getLastFullSyncCompletionTime();
+            }
+        }
+        return null;
+    }
+
+    protected Folder getTopMostMirroredFolder(Folder folder) {
+        Folder top = folder;
+        Binder parent;
+        while(true) {
+            parent = top.getParentBinder();
+            if(parent == null) break;
+            if(!parent.isMirrored()) break;
+            if(!parent.getResourceDriverName().equals(top.getResourceDriverName())) break;
+            top = (Folder) parent;
+        }
+        return top;
+    }
+
+    private void updateModificationTime(final Folder folder, Map options) {
 		// Since this method is invoked only as a necessary side-effect of some other operation
 		// user invoked for which access checking was already done (that is, this is invoked by
 		// system rather than user), there is no need for access checking. 
