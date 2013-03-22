@@ -123,6 +123,16 @@ public class MyFilesResource extends ContainerResource
 		List<Resource> childrenResources = new ArrayList<Resource>();
 		Resource resource;
 		
+		if(SearchUtils.useHomeAsMyFiles(this)) {
+            List<Long> homeFolderIds = SearchUtils.getHomeFolderIds(this, RequestContextHolder.getRequestContext().getUser());
+            try {
+                for (Long id : homeFolderIds) {
+                    Folder folder = getFolderModule().getFolder(id);
+                    getFolderModule().jitSynchronize(folder);
+                }
+            } catch (Exception e) {}
+		}
+		
 		// Get folders
         Criteria myFoldersCrit = SearchUtils.getMyFilesSearchCriteria(this, RequestContextHolder.getRequestContext().getUser().getWorkspaceId(), true, false, false, false);
         List<BinderIndexData> bidList = getBinderDataFromIndex(myFoldersCrit, false, null);
