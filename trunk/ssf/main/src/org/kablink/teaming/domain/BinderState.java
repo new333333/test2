@@ -55,7 +55,7 @@ public class BinderState extends ZonedObject {
 	 * Last time full sync initiated on this binder completed successfully.
 	 * This property is relevant only to those binders on which full sync is initiated
 	 * which are almost always net folder roots (currently, Filr does not allow starting
-	 * full sync on any folder other than net folder roots).
+	 * full sync on any folder other than net folder roots, but that may change in the future).
 	 * Those binders that are synchronized indirectly from a full sync triggered on 
 	 * one of their ancestor binders do not get this property value set.
 	 * This property value is set if and only if full sync completes successfully,
