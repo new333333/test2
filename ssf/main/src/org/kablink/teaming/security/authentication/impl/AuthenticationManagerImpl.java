@@ -45,6 +45,7 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.IdentityInfo;
+import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
@@ -72,6 +73,7 @@ import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.security.authentication.UserMismatchException;
+import org.kablink.teaming.spring.security.AuthenticationThreadLocal;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SessionUtil;
@@ -530,7 +532,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			
 			if(AuthenticationServiceProvider.LOCAL != authenticationServiceProvider)
 			{
-				LdapModule ldapModule;
 				Binder top;
 				Long zoneId;
 
@@ -540,8 +541,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		    	zoneId = top.getZoneId();
 
 		    	// Read this user's ldap guid from the ldap directory.
-				ldapModule = getLdapModule();
-				ldapGuid = ldapModule.readLdapGuidFromDirectory( username, zoneId );
+				ldapGuid = readLdapGuidFromDirectory( username, zoneId );
 				
 				// Did we find an ldap guid for this user?
 				if ( ldapGuid != null && ldapGuid.length() > 0 )
@@ -738,5 +738,32 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	private void validateZone(String zoneName) throws ZoneException {
 		if(!zoneName.equals(RequestContextHolder.getRequestContext().getZoneName()))
 			throw new ZoneException("Authentication is permitted only against the context zone"); 
+	}
+	
+	private String readLdapGuidFromDirectory(String username, Long zoneId) {
+		String ldapGuid;
+		
+		LdapConnectionConfig ldapConnectionConfig = null;
+		
+		String ldapConnectionConfigId = (String) AuthenticationThreadLocal.get("ldapConnectionConfigId");
+		
+		if(ldapConnectionConfigId != null) {
+			try {
+				ldapConnectionConfig = (LdapConnectionConfig) getCoreDao().load(LdapConnectionConfig.class, ldapConnectionConfigId);
+			}
+			catch(Exception e) {
+				logger.warn("Error loading LDAP connection config object by ID [" + ldapConnectionConfigId + "]");
+			}
+		}
+		
+		if(ldapConnectionConfig != null) {
+			// Limit search in LDAP only to the specific LDAP source identified by this configuration object.
+			ldapGuid = ldapModule.readLdapGuidFromDirectory( username, zoneId, ldapConnectionConfig);
+		}
+		else {
+			ldapGuid = ldapModule.readLdapGuidFromDirectory( username, zoneId );
+		}
+		
+		return ldapGuid;
 	}
 }

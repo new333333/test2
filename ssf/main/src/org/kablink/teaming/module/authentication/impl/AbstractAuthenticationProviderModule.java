@@ -56,11 +56,12 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
+import org.kablink.teaming.spring.security.ldap.LdapAuthenticationProvider;
+import org.kablink.teaming.spring.security.AuthenticationThreadLocal;
 import org.kablink.teaming.spring.security.OpenIDAuthenticationProvider;
 import org.kablink.teaming.spring.security.SsfContextMapper;
 import org.kablink.teaming.spring.security.SynchNotifiableAuthentication;
 import org.kablink.teaming.spring.security.ZoneAwareLocalAuthenticationProvider;
-import org.kablink.teaming.spring.security.ldap.LdapAuthenticationProvider;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedAuthenticator;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedFilterBasedLdapUserSearch;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedLdapAuthenticationProvider;
@@ -84,6 +85,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
@@ -261,8 +263,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 
 				for (LdapConnectionConfig.SearchInfo us : config
 						.getUserSearches()) {
-					providers.add(createLdapAuthenticationProvider(contextSource, contextMapper, us, search));
-					providers.add(createPreAuthenticatedLdapAuthenticationProvider(contextSource, contextMapper, us, search));
+					providers.add(createLdapAuthenticationProvider(contextSource, contextMapper, config.getId(), us, search));
+					providers.add(createPreAuthenticatedLdapAuthenticationProvider(contextSource, contextMapper, config.getId(), us, search));
 				}
 			}
 		}
@@ -292,6 +294,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	protected AuthenticationProvider createLdapAuthenticationProvider
 		(DefaultSpringSecurityContextSource contextSource, 
 			SsfContextMapper contextMapper, 
+			String configId,
 			LdapConnectionConfig.SearchInfo us, 
 			String search) {
 		BindAuthenticator authenticator = new BindAuthenticator(
@@ -307,6 +310,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		}
 		authenticator.setUserSearch(userSearch);
 		LdapAuthenticationProvider ldap = new LdapAuthenticationProvider(
+				configId,
 				authenticator);
 		ldap.setUseAuthenticationRequestCredentials(true);
 		ldap.setUserDetailsContextMapper(contextMapper);
@@ -316,6 +320,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	protected AuthenticationProvider createPreAuthenticatedLdapAuthenticationProvider
 	(DefaultSpringSecurityContextSource contextSource,
 		SsfContextMapper contextMapper, 
+		String configId,
 		LdapConnectionConfig.SearchInfo us, 
 		String search) {
 		PreAuthenticatedAuthenticator authenticator = new PreAuthenticatedAuthenticator(
@@ -331,6 +336,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		}
 		authenticator.setUserSearch(userSearch);
 		PreAuthenticatedLdapAuthenticationProvider ldap = new PreAuthenticatedLdapAuthenticationProvider(
+				configId,
 				authenticator);
 		ldap.setUseAuthenticationRequestCredentials(true);
 		ldap.setUserDetailsContextMapper(contextMapper);
@@ -359,6 +365,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException
     {
 		long begin = System.nanoTime();
+		
+		AuthenticationThreadLocal.init();
 		
 		try {
 			// The following hack(?) is necessary to handle the pre-authentication situation where
@@ -415,6 +423,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 			}
 		}
 		finally {
+			AuthenticationThreadLocal.clear();
+			
 			if(logger.isDebugEnabled())
 				logger.debug("Authenticating '" + authentication.getName() + "' - " +
 					((System.nanoTime() - begin)/1000000.0) + " ms");
@@ -718,7 +728,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 					logger.debug("External authentication failed: " + e.toString());
 				exc = e;
 				if((authenticateLdapMatchingUsersUsingLdapOnly && (e instanceof BadCredentialsException) && !(e instanceof UsernameNotFoundException))
-						|| (authentication instanceof OpenIDAuthenticationToken))
+						|| (authentication instanceof OpenIDAuthenticationToken)
+						|| (e instanceof AccountStatusException))
 					mustSkipLocalAuthentication = true;
 			}
 		}
