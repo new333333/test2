@@ -418,6 +418,18 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 			row++;
 			{
 				// Max Scheduler
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.maxIdleColon());
+				table.setWidget(row, 0, keyLabel);
+				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+				InlineLabel valueLabel = new InlineLabel(String.valueOf(reqConnections.getMaxIdle()));
+				table.setWidget(row, 1, valueLabel);
+				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			}
+			
+			row++;
+			{
+				// Max Scheduler
 				InlineLabel keyLabel = new InlineLabel(RBUNDLE.schedulerThreadsColon());
 				table.setWidget(row, 0, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
@@ -733,17 +745,17 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.setWidget(row, 1, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 
-				// host name
-				keyLabel = new InlineLabel(RBUNDLE.hostNameColon());
+				// memcache address
+				keyLabel = new InlineLabel(RBUNDLE.memcacheAddressColon());
 				table.setWidget(row, 2, keyLabel);
 				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
 
-				valueLabel = new InlineLabel(clustered.getCacheService());
+				valueLabel = new InlineLabel(clustered.getMemCachedAddress());
 				table.setWidget(row, 3, valueLabel);
 				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
 			}
 
-			{
+			if (clustered.getCachingProvider().equals("ehcache")){
 				row++;
 				// Group Address
 				InlineLabel keyLabel = new InlineLabel(RBUNDLE.multicastGroupAddrColon());

@@ -74,6 +74,7 @@ public class InstallerConfig implements Serializable
 	private boolean advancedConfiguration;
 	private boolean localPostfix;
 	private boolean updateMode;
+	private boolean shareAvailable;
 
 	public InstallerConfig()
 	{
@@ -288,4 +289,15 @@ public class InstallerConfig implements Serializable
 	{
 		this.updateMode = updateMode;
 	}
+
+	public boolean isShareAvailable()
+	{
+		return shareAvailable;
+	}
+
+	public void setShareAvailable(boolean shareAvailable)
+	{
+		this.shareAvailable = shareAvailable;
+	}
+	
 }

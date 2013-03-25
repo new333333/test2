@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kabling.teaming.install.client.AppUtil;
+import org.kabling.teaming.install.client.ConfigModifiedEvent;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.ValueRequiredBasedOnBoolValidator;
@@ -19,12 +20,14 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 
@@ -48,7 +51,11 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 	private FlexTable memcacheTable;
 	private ValueRequiredBasedOnBoolValidator memcachedAddrValidator;
 	private VibeTextBox hostTextBox;
-
+	private boolean initialClusteringState;
+	private String initialJvmWorkerName;
+	private Label shareNotAvailableWarnLabel;
+	
+	
 	@Override
 	public Panel createContent(Object propertiesObj)
 	{
@@ -63,7 +70,12 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 		contentPanel = new FlowPanel();
 		fPanel.add(contentPanel);
 		contentPanel.addStyleName("clusteringPageContent");
-
+		
+		shareNotAvailableWarnLabel = new Label(RBUNDLE.shareNotAvailableWarnMsg());
+		shareNotAvailableWarnLabel.setVisible(false);
+		shareNotAvailableWarnLabel.addStyleName("clusteringShareNotAvailableLabel");
+		contentPanel.add(shareNotAvailableWarnLabel);
+		
 		// Enable clustering environment
 		enableClusteredCheckBox = new CheckBox(RBUNDLE.enableClusteredEnvironment());
 		enableClusteredCheckBox.addClickHandler(this);
@@ -125,6 +137,7 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 	@Override
 	public Object getDataFromDlg()
 	{
+		
 		if (enableClusteredCheckBox.getValue())
 		{
 			//Host Name is required
@@ -185,9 +198,12 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 	public void initUIWithData()
 	{
 		Clustered clustered = config.getClustered();
-
+		
 		if (clustered != null)
 		{
+			initialClusteringState = clustered.isEnabled();
+			initialJvmWorkerName = clustered.getJvmRoute();
+			
 			enableClusteredCheckBox.setValue(clustered.isEnabled());
 
 			// Set the validator state based on if clustering is enabled
@@ -215,6 +231,15 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 		Network network = config.getNetwork();
 		if (network != null)
 			hostTextBox.setText(network.getHost());
+		
+		if (!config.isShareAvailable())
+		{
+			shareNotAvailableWarnLabel.setVisible(true);
+			enableClusteredCheckBox.setEnabled(false);
+			enableClusteredCheckBox.setValue(false);
+			jvmRouteTextBox.setEnabled(false);
+			memcachedAddressesTextBox.setEnabled(false);
+		}
 	}
 
 	@Override
@@ -373,4 +398,34 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 		return false;
 	}
 
+	class SaveConfigInformationCallback implements AsyncCallback<Void>
+	{
+
+		@Override
+		public void onFailure(Throwable caught)
+		{
+			setErrorMessage(RBUNDLE.unableToSaveConfiguration());
+		}
+
+		@Override
+		public void onSuccess(Void coid)
+		{
+			boolean changedClusteringState = enableClusteredCheckBox.getValue();
+			String changedJvmRoute = jvmRouteTextBox.getText().equals("") ?  null : jvmRouteTextBox.getText();
+			
+			
+			//Restart tomcat if jvm route name or clustering state has changed
+			if (initialClusteringState != changedClusteringState || !initialJvmWorkerName.equals(changedJvmRoute))
+			{
+					
+				AppUtil.getEventBus().fireEvent(new ConfigModifiedEvent(true,true));
+			}
+			else
+			{
+				AppUtil.getEventBus().fireEvent(new ConfigModifiedEvent(true,false));	
+			}
+			hide();
+		}
+	}
+	
 }

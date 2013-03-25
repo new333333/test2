@@ -122,6 +122,9 @@ public final class ConfigService
 
 		File upgradeFile = new File("/vastorage/conf/vaconfig.zip");
 		config.setUpdateMode(upgradeFile.exists());
+		
+		File shareFile = new File("/vashare/filr/conf/memcached.properties");
+		config.setShareAvailable(shareFile.exists());
 		return config;
 	}
 
@@ -935,7 +938,12 @@ public final class ConfigService
 		clustered.setCacheService(rootNode.getAttribute("cacheService"));
 		clustered.setCacheGroupAddress(rootNode.getAttribute("cacheGroupAddress"));
 		clustered.setCacheGroupPort(getIntegerValue(rootNode.getAttribute("cacheGroupPort")));
-		clustered.setMemCachedAddress(rootNode.getAttribute("memcachedAddresses"));
+		
+		String memcachedServers = readSharedMemcachedPropertiesFile();
+		if (memcachedServers == null)
+			memcachedServers = rootNode.getAttribute("memcachedAddresses");
+			clustered.setMemCachedAddress(memcachedServers);
+			
 		clustered.setJvmRoute(rootNode.getAttribute("jvmRoute"));
 
 		return clustered;
@@ -1449,14 +1457,17 @@ public final class ConfigService
 			clusteredElement.setAttribute("cacheGroupPort", String.valueOf(clustered.getCacheGroupPort()));
 			clusteredElement.setAttribute("memcachedAddresses", clustered.getMemCachedAddress());
 			clusteredElement.setAttribute("jvmRoute", clustered.getJvmRoute());
+
+			updateSharedMemcachedPropertiesFile(clustered.getMemCachedAddress());
 		}
 
+		updateMemcachedFile();
 		if (clustered.isEnabled())
 		{
 
 			// Update memecached file
 			updateMemcachedFile();
-			
+
 			executeCommand("chkconfig memcached on", true);
 			executeCommand("rcmemcached start", true);
 
@@ -1476,6 +1487,45 @@ public final class ConfigService
 			executeCommand("sudo SuSEfirewall2 close EXT TCP 11211", true);
 			executeCommand("sudo SuSEfirewall2 close EXT TCP 4446", true);
 		}
+	}
+
+	private static void updateSharedMemcachedPropertiesFile(String memcachedAddress)
+	{
+		File file = new File("/vashare/filr/conf/memcached.properties");
+		
+		if (!file.exists())
+			return;
+		
+		Properties prop = new Properties();
+		try
+		{
+			prop.load(new FileInputStream(file));
+
+			prop.setProperty("memcached.servers", memcachedAddress);
+			store(prop, file);
+		}
+		catch (Exception e)
+		{
+
+		}
+	}
+	
+	private static String readSharedMemcachedPropertiesFile()
+	{
+		File file = new File("/vashare/filr/conf/memcached.properties");
+
+		Properties prop = new Properties();
+		try
+		{
+			prop.load(new FileInputStream(file));
+
+			return prop.getProperty("memcached.servers");
+		}
+		catch (Exception e)
+		{
+
+		}
+		return null;
 	}
 
 	private static void updateMemcachedFile()
@@ -1498,7 +1548,7 @@ public final class ConfigService
 					if (!token.equals("-l"))
 						continue;
 
-					if (i < tokens.length-1)
+					if (i < tokens.length - 1)
 					{
 						String hostName = getHostName();
 						tokens[i + 1] = hostName;
@@ -2087,14 +2137,14 @@ public final class ConfigService
 			}
 		}
 	}
-	
+
 	public static void updateFsaUpdateUrl()
 	{
 		InstallerConfig installerConfig = getConfiguration();
 		Database database = installerConfig.getDatabase();
-		
+
 		String hostName = getHostName();
-		
+
 		DatabaseConfig config = database.getDatabaseConfig("MySQL_Default");
 
 		StringBuilder commandToRun = new StringBuilder();
