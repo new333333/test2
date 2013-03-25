@@ -1458,10 +1458,10 @@ public final class ConfigService
 			updateMemcachedFile();
 			
 			executeCommand("chkconfig memcached on", true);
-			executeCommand("memcached rcmemcached start", true);
+			executeCommand("rcmemcached start", true);
 
 			// If memcache is enabled, enable port 11211
-			if (config.getClustered().getCachingProvider().equals("memcache"))
+			if (config.getClustered().getCachingProvider().equals("memcached"))
 			{
 				executeCommand("sudo SuSEfirewall2 open EXT TCP 11211", true);
 				executeCommand("sudo SuSEfirewall2 open EXT TCP 4446", true);

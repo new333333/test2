@@ -112,7 +112,8 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 
 			cacheProviderListBox = new ListBox(false);
 			cacheProviderListBox.addItem("ehcache");
-			cacheProviderListBox.addItem("memcache");
+			cacheProviderListBox.addItem("memcached");
+			cacheProviderListBox.setEnabled(false);
 			cacheProviderListBox.addChangeHandler(this);
 			table.setWidget(row, 1, cacheProviderListBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
