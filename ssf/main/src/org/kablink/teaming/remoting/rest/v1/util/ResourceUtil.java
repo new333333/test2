@@ -371,7 +371,7 @@ public class ResourceUtil {
         desktopAppConfig.setAutoUpdateUrl(config.getFsaAutoUpdateUrl());
         desktopAppConfig.setEnabled(config.getFsaEnabled());
         desktopAppConfig.setSyncInterval(config.getFsaSynchInterval());
-        desktopAppConfig.setMaxFileSize(config.getFsaMaxFileSize() * 1024 * 1024);
+        desktopAppConfig.setMaxFileSize(((long)config.getFsaMaxFileSize()) * 1024 * 1024);
         desktopAppConfig.setAllowCachedPassword(config.getFsaAllowCachePwd());
         modelConfig.setDesktopAppConfig(desktopAppConfig);
 
