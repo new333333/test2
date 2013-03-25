@@ -46,7 +46,7 @@ public class DesktopAppConfig {
     private Boolean allowCachedPassword;
    	private Integer syncInterval;
    	private String autoUpdateUrl;
-   	private Integer maxFileSize;
+   	private Long maxFileSize;
 
     @XmlElement(name="auto_update_url")
     public String getAutoUpdateUrl() {
@@ -76,11 +76,11 @@ public class DesktopAppConfig {
     }
 
     @XmlElement(name="max_file_size")
-    public Integer getMaxFileSize() {
+    public Long getMaxFileSize() {
         return maxFileSize;
     }
 
-    public void setMaxFileSize(Integer maxFileSize) {
+    public void setMaxFileSize(Long maxFileSize) {
         this.maxFileSize = maxFileSize;
     }
 
