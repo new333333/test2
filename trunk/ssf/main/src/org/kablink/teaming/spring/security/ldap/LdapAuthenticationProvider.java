@@ -32,6 +32,11 @@
  */
 package org.kablink.teaming.spring.security.ldap;
 
+import org.kablink.teaming.spring.security.AuthenticationThreadLocal;
+import org.springframework.security.authentication.AccountStatusException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.ldap.authentication.LdapAuthenticator;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 
@@ -41,16 +46,63 @@ import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
  */
 public class LdapAuthenticationProvider extends org.springframework.security.ldap.authentication.LdapAuthenticationProvider {
 
+	private String ldapConnectionConfigId;
+	
 	/**
 	 * @param authenticator
 	 */
-	public LdapAuthenticationProvider(LdapAuthenticator authenticator) {
+	public LdapAuthenticationProvider(String ldapConnectionConfigId, LdapAuthenticator authenticator) {
 		super(authenticator);
 		this.setHideUserNotFoundExceptions(false);
+		this.ldapConnectionConfigId = ldapConnectionConfigId;
 	}
 
-    public LdapAuthenticationProvider(LdapAuthenticator authenticator, LdapAuthoritiesPopulator authoritiesPopulator) {
+    public LdapAuthenticationProvider(String ldapConnectionConfigId, LdapAuthenticator authenticator, LdapAuthoritiesPopulator authoritiesPopulator) {
     	super(authenticator, authoritiesPopulator);
     	this.setHideUserNotFoundExceptions(false);
+    	this.ldapConnectionConfigId = ldapConnectionConfigId;
     }
+
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    	try {
+    		Authentication result = super.authenticate(authentication);
+    		
+    		// If still here, it means that the authentication was successful.
+    		AuthenticationThreadLocal.put("ldapConnectionConfigId", ldapConnectionConfigId);
+    		
+    		return result;
+    	}
+    	catch(AuthenticationException e) {
+    		if(e instanceof BadCredentialsException)
+    			throw new LdapBadCredentialsException((BadCredentialsException)e);
+    		else
+    			throw e;
+    	}
+    }
+    
+	public String getLdapConnectionConfigId() {
+		return ldapConnectionConfigId;
+	}
+    
+	
+	/**
+	 * This class wraps Spring's <code>BadCredentialsException</code> conceptually, while
+	 * extending physically from <code>AccountStatusException</code> class instead.
+	 * This allows us to carry the same semantics as BadCredentialsException, while
+	 * forcing Spring's ProviderManager to propagate this exception up the call stack
+	 * immediately without proceeding to the next providers in the authentication chain
+	 * (see Bug 801715).
+	 * 
+	 * @author jong
+	 *
+	 */
+	public static class LdapBadCredentialsException extends AccountStatusException {
+		
+		private static final long serialVersionUID = 1L;
+
+		public LdapBadCredentialsException(BadCredentialsException source) {
+			super("Bad credential for LDAP user", source);
+		}
+	}
 }

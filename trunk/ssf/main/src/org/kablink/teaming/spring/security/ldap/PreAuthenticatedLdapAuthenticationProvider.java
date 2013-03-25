@@ -54,13 +54,13 @@ public class PreAuthenticatedLdapAuthenticationProvider extends LdapAuthenticati
     private LdapAuthenticator authenticator;
     private UserDetailsContextMapper userDetailsContextMapper;
     
-    public PreAuthenticatedLdapAuthenticationProvider(LdapAuthenticator authenticator, LdapAuthoritiesPopulator authoritiesPopulator) {
-    	super(authenticator, authoritiesPopulator);
+    public PreAuthenticatedLdapAuthenticationProvider(String ldapConnectionConfigId, LdapAuthenticator authenticator, LdapAuthoritiesPopulator authoritiesPopulator) {
+    	super(ldapConnectionConfigId, authenticator, authoritiesPopulator);
     	this.authenticator = authenticator;
     }
 
-    public PreAuthenticatedLdapAuthenticationProvider(LdapAuthenticator authenticator) {
-    	super(authenticator);
+    public PreAuthenticatedLdapAuthenticationProvider(String ldapConnectionConfigId, LdapAuthenticator authenticator) {
+    	super(ldapConnectionConfigId, authenticator);
     	this.authenticator = authenticator;
     }
 

@@ -37,6 +37,7 @@ import java.util.HashSet;
 
 import javax.naming.NamingException;
 
+import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
@@ -65,7 +66,9 @@ public interface LdapModule {
 	
     public String readLdapGuidFromDirectory( String userName, Long zoneId );
 
-	public void syncAll( boolean syncUsersAndGroups, String[] listOfLdapConfigsToSyncGuid, LdapSyncResults syncResults ) throws LdapSyncException;
+    public String readLdapGuidFromDirectory(String userName, Long zoneId, LdapConnectionConfig config);
+
+    	public void syncAll( boolean syncUsersAndGroups, String[] listOfLdapConfigsToSyncGuid, LdapSyncResults syncResults ) throws LdapSyncException;
 
 	public void syncUser( String teamingUserName, String ldapUserName ) throws NoUserByTheNameException,NamingException;
 	
