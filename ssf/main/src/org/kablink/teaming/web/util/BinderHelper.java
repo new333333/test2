@@ -3723,7 +3723,7 @@ public class BinderHelper {
 		//Getting the entries per page from the user properties
 		User user = RequestContextHolder.getRequestContext().getUser();
 		UserProperties userProp = bs.getProfileModule().getUserProperties(user.getId());
-		String entriesPerPage = (String) userProp.getProperty(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE);
+		String entriesPerPage = (String) userProp.getProperty(ObjectKeys.PAGE_ENTRIES_PER_PAGE);
 		if (entriesPerPage == null || "".equals(entriesPerPage)) {
 			entriesPerPage = SPropsUtil.getString("search.records.listed");
 		}
