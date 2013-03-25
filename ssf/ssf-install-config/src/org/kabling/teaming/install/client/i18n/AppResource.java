@@ -334,4 +334,8 @@ public interface AppResource extends Messages
 	String defaultLocaleDesc();
 
 	String highAvailabilityNodesColon();
+
+	String shareNotAvailableWarnMsg();
+
+	String memcacheAddressColon();
 }
