@@ -211,7 +211,7 @@
 	  		title="<ssf:nlt tag="sunburst.click"/>"
 	  		onClick="ss_hideSunburst('${entry1._docId}', '${ssBinder.id}');return false;"
 		><img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
-	  	  align="absmiddle" border="0" <ssf:alt tag="sunburst.click"/> />
+	  	  align="absmiddle" border="0" style="height:12px !important; width:12px !important; line-height:12px !important;" <ssf:alt tag="sunburst.click"/> />
 	    </a>
 	  </c:if>
       <a class="wiki-page-a <c:if test="${entry1._docId == ss_wikiHomepageEntryId}"> wiki-homepage-a</c:if>"
@@ -235,7 +235,7 @@
         ><ssf:textFormat formatAction="limitedCharacters" 
     		textMaxChars="folder.title.charCount"><c:out value="${entry1.title}"/></ssf:textFormat>
         <c:if test="${entry1._docId == ss_wikiHomepageEntryId}">
-          <img border="0" align="absmiddle" width="14" height="14" src="<html:rootPath/>images/pics/wiki/home16.png" 
+          <img border="0" align="absmiddle" style="height:16px !important; width:16px !important; line-height:16px !important;" src="<html:rootPath/>images/pics/wiki/home16.png" 
             alt="<ssf:nlt tag="wiki.homePage"/>" style="padding-bottom:4px;">
         </c:if>
       </span></a>
