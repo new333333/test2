@@ -66,11 +66,15 @@
 		 ><ssf:nlt tag="folder.column.Title"/>
 	    	<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
 				<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
-				value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+				value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" 
+				style="height:8px !important; width:10px !important; line-height:8px !important;"
+				src="<html:imagesPath/>pics/menudown.gif"/>
 			</c:if>
 			<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
 				<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
-				value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+				value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" 
+				style="height:8px !important; width:10px !important; line-height:8px !important;"
+				src="<html:imagesPath/>pics/menuup.gif"/>
 			</c:if>
 	    </a>
     </ssf:slidingTableColumn>
