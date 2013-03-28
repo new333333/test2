@@ -577,11 +577,11 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource upMouseOver16();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/warning32.gif")
+	@Source("org/kablink/teaming/gwt/public/images/warning_36.png")
 	public ImageResource warning32();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/warn_icon16.gif")
+	@Source("org/kablink/teaming/gwt/public/images/warning_25.png")
 	public ImageResource warningIcon16();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -715,6 +715,18 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/admin_72.png")
 	public ImageResource adminConsoleHomePage();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/admin_36.png")
+	public ImageResource adminConsole36();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/admin_system_36.png")
+	public ImageResource adminSystem36();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/admin_system_72.png")
+	public ImageResource adminSystem72();
 	
 
 }// end GwtTeamingImageBundle
