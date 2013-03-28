@@ -63,11 +63,13 @@ import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.ExtendedMultipartFile;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -287,18 +289,21 @@ public class FolderUtils {
 		if(def != null) {
 			Map data = new HashMap(); // Input data
 			// Title field, not name, is used as the name of the folder. Weird...
-			data.put(ObjectKeys.FIELD_ENTITY_TITLE, folderName); 
+			data.put(ObjectKeys.FIELD_ENTITY_TITLE, folderName);
 			//data.put("description", "This folder was created through WebDAV");
 			data.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.TRUE.toString());
 			Map params = new HashMap();
 			params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-	
-			Binder binder = getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
+            if (Utils.isWorkareaInProfilesTree(parentBinder) && parentBinder.getOwner()!=null) {
+			    params.put(ObjectKeys.INPUT_OPTION_OWNER_ID, parentBinder.getOwner().getId());
+            }
+
+			Binder binder = getBinderModule().addBinder(parentBinder.getId(), def.getId(),
 						new MapInputData(data), null, params);
-			
+
 			// Inherit configuration.
 			inheritAll(binder.getId());
-			
+
 			return binder;
 		}
 		else {
