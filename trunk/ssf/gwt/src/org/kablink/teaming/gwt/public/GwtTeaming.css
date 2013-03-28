@@ -61,8 +61,9 @@
 {
 	top: 8px !important;
 	background: #fff;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	overflow: hidden;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -118,7 +119,7 @@
 .activityStreamSearchingPanel
 {
 	font-size: 14px;
-	background-color: #EBECA5;
+	background-color: #fafad5;
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
@@ -134,7 +135,7 @@
 .activityStreamNoEntriesFoundPanel
 {
 	font-size: 14px;
-	background-color: #EBECA5;
+	background-color: #fafad5;
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
@@ -149,8 +150,8 @@
 
 .activityStreamCtrlFooter
 {
-	background-color: #EFEEEC;
-	border-top: 1px solid #BABDB6;
+	background-color: #ededed;
+	border-top: 1px solid #e0e0e0;
 	padding: 3px;
 	vertical-align: middle;
 	width: 100%;
@@ -413,8 +414,8 @@
 {
 	background: #f6f6f6;
 	border-top: 1px solid #ededed;
-	padding-right: 65px;
-	padding-left: 55px;
+	padding-right: 95px;
+	padding-left: 50px;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
 	border-bottom-left-radius: 3px;
@@ -436,7 +437,7 @@
 {
 	font-size: 13px;
 	margin-top: 5px;
-	margin-left: 55px;
+	margin-left: 50px;
 	position: relative;
 	white-space: normal;
 }
@@ -935,7 +936,7 @@ a, a:visited, a:hover {
 .adminActionControl
 {
 	display: inline-block;
-	font-size: 15px;
+	font-size: 13px;
 	margin: 0px;
 	padding: 3px;
 	padding-left: 2px;
@@ -944,7 +945,7 @@ a, a:visited, a:hover {
 
 .adminActionControlMouseOver
 {
-	color: #3E6978;
+	color: #135c8f;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
 	-webkit-border-radius: 3px;
@@ -963,7 +964,7 @@ a, a:visited, a:hover {
 .adminActionsTreeControl
 {
 	left: 8px;
-	background-color: #EAEBE8;
+	background-color: transparent;
 	padding: 0 0 8px;
 	position: absolute;
 	overflow: auto;
@@ -979,24 +980,19 @@ a, a:visited, a:hover {
 .adminActionsTreeControlHeader
 {
 	color: #fff;
-	font-size: 0.85em;
-	font-weight: bold;
-	letter-spacing: 0.02em;
+	background-color: transparent;
 	width: 100%;
 	padding: 4px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-top-left-radius: 5px;
-	-webkit-border-top-right-radius: 5px;
-	background-color: #949494;
 }
 
 /* Style used for the header in the AdminActionsTreeControl */
 .adminActionsTreeControlHeader2
 {
-	margin: 5px;
+	font-size: 18px;
+	font-weight: normal;
+	text-shadow: 0 2px 8px #949494;
+	margin-right: 5px;
+	margin-bottom: 5px;
 }
 
 /* Style used for the table that holds all the administration categories. */
@@ -1020,7 +1016,7 @@ a, a:visited, a:hover {
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
-}
+	}
 
 /* Style used for the iframe in the content control that holds the administration content. */
 .adminContentControl iframe.gwt-Frame
@@ -1031,10 +1027,11 @@ a, a:visited, a:hover {
 .adminControl_CloseLabel
 {
     border-radius: 15px 15px 15px 15px;
-    color: #FFFFFF !important;
-    background: #505354;
+    color: #353838 !important;
+    background: transparent;
 	border: 1px solid transparent;
     font-size: 12px;
+	font-weight: normal;
 	margin-right: 5px;
     padding-left: 10px;
     padding-right: 10px;
@@ -1612,13 +1609,13 @@ body, table td, select
 
 
 /* Styles used by the WorkspaceTreeControl. */
-.workspaceTreeBinderAnchor            {color: #353838; text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-size: 14px; margin-bottom: 5px;}
+.workspaceTreeBinderAnchor            {color: #353838; text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-size: 13px; padding: 3px 0;}
 .workspaceTreeBinderAnchor_collection {font-size: 14px; padding-left: 2px; color: #000;}
 
 .workspaceTreeBinderAnchor:hover            {color: #135c8f;}
 .workspaceTreeBinderAnchor_collection:hover {color: #135c8f;}
 
-.workspaceTreeBinderExpanderImg            {cursor: pointer; margin-top: 4px; margin-left: 2px;}
+.workspaceTreeBinderExpanderImg            {cursor: pointer; margin-top: 8px; margin-left: 0px;}
 .workspaceTreeBinderExpanderImg_collection {}
 
 .workspaceTreeBinderImg            {padding-right: 2px;}
@@ -1630,17 +1627,17 @@ body, table td, select
 /* Must match the definition of GwtConstants.WORKSPACE_TREE_WIDTH. */
 .workspaceTreeWidth {width: 250px !important;}
 
-.workspaceTreeControlBorderTop {border-top: 1px solid #e0e0e0 !important; margin-top: 2px; padding-top: 5px !important;}
+.workspaceTreeControlBorderTop {border-top: 1px solid transparent !important; padding-top: 4px !important;}
 
 .workspaceTreeControl
 {
-	background-color: #f6f6f6;
+	position: relative;
+	background-color: transparent;
 	padding: 0 0 8px;
+	overflow: auto;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
-	overflow: auto;
-	position: relative;
 }
 
 .workspaceTreeControl_blankContent {display: block; margin: 10px; color: #666666; font-size: 1.1em;}
@@ -1660,31 +1657,21 @@ body, table td, select
 }
 .workspaceTreeControlHeader_as
 {
-	background: #949494 url(images/blends/gray_blend3_75.png) repeat-x scroll center bottom;
+	background: transparent;
 	cursor: default;
 	height: 64px;
 }
 .workspaceTreeControlHeader_as td div
 {
-	font-size: 18px;
+	font-size: 20px;
 	font-weight: normal;
-	padding-left: 8px;
-	margin-top: 5px;
+	text-shadow: 0 2px 8px #949494;
 }
 .workspaceTreeControlHeader_base
 {
-	background-position:bottom;
 	color: #fff;
-	font-size: 0.85em;
-	font-weight: bold;
-	letter-spacing: 0.02em;
+	font-weight: normal;
 	padding: 5px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-top-left-radius: 5px;
-	-webkit-border-top-right-radius: 5px;
 }
 .workspaceTreeControlHeader_closeA
 {
@@ -1692,27 +1679,25 @@ body, table td, select
 }
 .workspaceTreeControlHeader_closeButton
 {
+	background: transparent;
+	border: 1px solid transparent;
+	color: #505354;
+	display: inline-block;
+	font-size: 12px !important;
+	margin-top: 5px;
+	padding: 2px 8px !important;
+	text-shadow: 0 0 0 transparent !important;
 	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
-	background: url(images/slice_blend_teal_27.png) repeat-x scroll 0 0 #81B2Bd;
-	border: 1px solid #81B2Bd;
-	color: #FFFFFF;
-	display: inline-block;
-	font-size: 12px !important;
-	margin: 5px;
-	padding: 2px 12px !important;
 }
-.workspaceTreeControlHeader_closeButton:hover
-{
-	border: 1px solid #D9EAF0;
-}
+
 .workspaceTreeControlHeader_nav
 {
 	background: #85BCC3 url(images/header_blend_grey_bg.png) repeat-x scroll center bottom;
 	cursor: pointer;
 }
-.workspaceTreeControlRow            {padding: 2px; margin-bottom: 1px;}
+.workspaceTreeControlRow            {padding: 2px; margin-bottom: 5px;}
 .workspaceTreeControlRow_collection {margin-left: -10px;}
 
 .workspaceTreeControlRow_configureImg   {padding-top: 1px; cursor: pointer;}
@@ -1724,7 +1709,7 @@ body, table td, select
 .workspaceTreeControlRowHover            {color: #5691a6; background: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
 .workspaceTreeControlRowHover_collection {border-radius: 3px; }
 
-.workspaceTreeControlRowSelected            {-moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; background: #fff; font-weight: bold;}
+.workspaceTreeControlRowSelected            {-moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; background: #ededed; font-weight: bold;}
 .workspaceTreeControlRowSelected_collection {border-radius: 3px; background: #cce9ee !important;}
 
 
@@ -2604,8 +2589,7 @@ body, table td, select
 /* Style for the main Teaming page. */
 .mainTeamingPage
 {
-	background-color: #b8b8b8;
-	background-repeat: repeat;
+	background-color: #cccccc;
 	font-family: Arial,Helvetica,sans-serif;
 	font-style: normal;
 	font-size: medium;
@@ -2681,7 +2665,7 @@ body, table td, select
 	position: absolute;
 	left: 10px;
 	bottom: 0px;
-	background-image: url(images/trans30_black.png);
+	background-image: url(images/trans15_black.png);
 	background-repeat: repeat;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
@@ -2697,7 +2681,7 @@ body, table td, select
 	position: absolute;
 	left: 60px;
 	bottom: 0px;
-	background-image: url(images/trans30_black.png);
+	background-image: url(images/trans15_black.png);
 	background-repeat: repeat;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
@@ -2713,7 +2697,7 @@ body, table td, select
 	position: absolute;
 	left: 110px;
 	bottom: 0px;
-	background-image: url(images/trans30_black.png);
+	background-image: url(images/trans15_black.png);
 	background-repeat: repeat;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
@@ -2933,7 +2917,9 @@ body, table td, select
     text-align: center !important;
 }
 
-.teamingDlgBoxFooter .gwt-Button:hover {
+.teamingDlgBoxFooter .gwt-Button:hover, 
+.workspaceTreeControlHeader_closeButton:hover
+{
 	color: #135c8f !important;
     white-space: nowrap !important;
     text-decoration: none !important;
@@ -3456,7 +3442,9 @@ top:100px;
 /* Next and Previous Page buttons */
 
 #viewNextPageOfResults, #viewPreviousPageOfResults, .viewNextDisabledImg, .viewPreviousDisabledImg {
-	vertical-align: middle;
+	vertical-align: top;
+	margin-left: 5px;
+	margin-right: 5px;
 	}
 
 /* Styles for the task disposition dialog. */
@@ -4723,7 +4711,7 @@ td.datePickerMonth {
 
 .FilrAction_Selected
 {
-	background: url(images/trans50_black.png) repeat;
+	background: url(images/trans30_black.png) repeat;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;

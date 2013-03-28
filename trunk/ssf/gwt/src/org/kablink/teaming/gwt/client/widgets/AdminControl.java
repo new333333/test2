@@ -328,7 +328,7 @@ public class AdminControl extends TeamingPopupPanel
 				categoryType = category.getCategoryType();
 				if ( categoryType == GwtAdminCategory.GwtAdminCategoryType.MANAGEMENT )
 				{
-					imgResource = GwtTeaming.getImageBundle().management16();
+					imgResource = GwtTeaming.getImageBundle().adminConsole36();
 					img = new Image( imgResource );
 				}
 				else if ( categoryType == GwtAdminCategory.GwtAdminCategoryType.REPORTS )
@@ -338,7 +338,7 @@ public class AdminControl extends TeamingPopupPanel
 				}
 				else if ( categoryType == GwtAdminCategory.GwtAdminCategoryType.SYSTEM )
 				{
-					imgResource = GwtTeaming.getImageBundle().system16();
+					imgResource = GwtTeaming.getImageBundle().adminSystem36();
 					img = new Image( imgResource );
 				}
 				else
@@ -348,6 +348,7 @@ public class AdminControl extends TeamingPopupPanel
 				}
 				
 				m_mainTable.setWidget( row, 1, img );
+				cellFormatter.setWidth( row, 1, "20px" );
 				
 				// Add the category name
 				categoryName = new InlineLabel( category.getLocalizedName() );
