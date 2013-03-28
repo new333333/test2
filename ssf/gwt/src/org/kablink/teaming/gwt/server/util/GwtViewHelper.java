@@ -3145,7 +3145,9 @@ public class GwtViewHelper {
 
 			// Finally, use the data we obtained to create a
 			// FolderColumnsRpcResponseData and return that. 
-			return new FolderColumnsRpcResponseData(fcList, fcListAll);
+			FolderColumnsRpcResponseData reply = new FolderColumnsRpcResponseData(fcList, fcListAll);
+			reply.setFolderAdmin(bs.getBinderModule().testAccess(binder, BinderOperation.manageConfiguration));
+			return reply;
 		}
 		
 		catch (Exception e) {
