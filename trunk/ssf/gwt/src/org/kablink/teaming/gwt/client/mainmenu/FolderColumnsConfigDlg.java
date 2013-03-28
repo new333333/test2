@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -57,7 +57,6 @@ import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
@@ -96,6 +95,7 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
  */
 public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHandler {
 	private BinderInfo						m_binderInfo;				// The binder the folder columns dialog is running against.
+	private boolean							m_folderAdmin;				// true -> Logged in user is a folder admin.  false -> They're not.
 	private Button							m_folderDefaultBtn;			// Restore default settings
 	private CheckBox						m_folderDefaultCheckBox;	// Set the folder default columns.
 	private FlexCellFormatter				m_folderColumnsGridCF;		//
@@ -363,7 +363,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	public Panel createContent(Object ignored) {
 		// Create the panels to hold the dialog's content...
 		m_vp = new VibeVerticalPanel(null, null);
-		m_vp.setStyleName( "teamingDlgBoxContent" );
+		m_vp.setStyleName("teamingDlgBoxContent");
 		
 		addMenu();
 		
@@ -405,11 +405,19 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			     m_sp.addStyleName(   "folderColumnsDlg_ScrollLimit");
 			else m_sp.removeStyleName("folderColumnsDlg_ScrollLimit");
 			
-			// Add the option to set the folder default.
+			// If the user's a folder administrator...
 			FlexTable ft = new VibeFlexTable();
-			m_folderDefaultCheckBox = new CheckBox();
-			ft.setWidget(0, 0, m_folderDefaultCheckBox);
-			ft.setText(0, 1, m_messages.folderColumnsDlgSetAsDefault());
+			int folderDefaultRow;
+			if (m_folderAdmin) {
+				// ...add the option to set the folder default.
+				m_folderDefaultCheckBox = new CheckBox();
+				ft.setWidget(0, 0, m_folderDefaultCheckBox);
+				ft.setText(0, 1, m_messages.folderColumnsDlgSetAsDefault());
+				folderDefaultRow = 1;
+			}
+			else {
+				folderDefaultRow = 0;
+			}
 			
 			// Add a button to restore factory defaults.
 			m_folderDefaultBtn = new Button(m_messages.folderColumnsDlgRestoreDefaults());
@@ -420,8 +428,8 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 				}
 			});
 			
-			ft.getFlexCellFormatter().setColSpan(1, 0, 2);
-			ft.setWidget(1, 0, m_folderDefaultBtn);
+			ft.getFlexCellFormatter().setColSpan(folderDefaultRow, 0, 2);
+			ft.setWidget(folderDefaultRow, 0, m_folderDefaultBtn);
 			ft.addStyleName("folderColumnsDlg_OptionsGrid");
 			m_vp.add(ft);			
 		}
@@ -449,7 +457,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		// Save the new folder column info
 		@SuppressWarnings("unchecked")
 		List<FolderColumn> fcList = ((List<FolderColumn>) callbackData);
-		Boolean isDefault = m_folderDefaultCheckBox.getValue();
+		Boolean isDefault = ((null != m_folderDefaultCheckBox) && m_folderDefaultCheckBox.getValue());
 		SaveFolderColumnsCmd cmd = new SaveFolderColumnsCmd(m_binderInfo.getBinderId(), fcList, isDefault);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
@@ -462,7 +470,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(m_binderInfo.getBinderId());
-				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 					@Override
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
@@ -477,7 +485,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 						String binderUrl = responseData.getStringValue();
 						OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(m_binderInfo, binderUrl, Instigator.FORCE_FULL_RELOAD);
 						if (GwtClientHelper.validateOSBI(osbInfo)) {
-							GwtTeaming.fireEvent( new ChangeContextEvent(osbInfo));
+							GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
 						}
 						
 						hide();
@@ -691,13 +699,12 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 * Asynchronously populates the dialog.
 	 */
 	private void populateDlgAsync(final BinderInfo binderInfo, final List<FolderColumn> folderColumnsList, final List<FolderColumn> folderColumnsListAll) {
-		ScheduledCommand doRun = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow(binderInfo, folderColumnsList, folderColumnsListAll);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		});
 	}
 
 	/*
@@ -731,13 +738,12 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 * panel again.
 	 */
 	private void relaunchViewAsync(final boolean hideOnRelaunch) {
-		ScheduledCommand doLaunch = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				relaunchViewNow(hideOnRelaunch);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLaunch);
+		});
 	}
 	
 	/*
@@ -748,7 +754,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(m_binderInfo.getBinderId());
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure( Throwable t ) {
+			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
@@ -775,57 +781,52 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 * Asynchronously runs the given instance of the dialog.
 	 */
 	private static void runDlgAsync(final FolderColumnsConfigDlg fccDlg, final BinderInfo bi) {
-		ScheduledCommand doRun = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				fccDlg.runDlgNow(bi);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		});
 	}
 	
 	/*
 	 * Synchronously runs the dialog.
 	 */
 	private void runDlgNow(final BinderInfo bi) {
-		// Create a callback that will be called when we get the folder columns.
-		AsyncCallback<VibeRpcResponse> rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
-		{
-			@Override
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetFolderColumns(),
-					bi.getBinderIdAsLong() );
-			}// end onFailure()
-	
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				// We successfully retrieved the folder's columns.
-				// Use it to populate the dialog.
-				FolderColumnsRpcResponseData cData = ((FolderColumnsRpcResponseData)response.getResponseData());
-				populateDlgAsync(bi, cData.getFolderColumns(), cData.getFolderColumnsAll());
-			} // end onSuccess()
-		};
-		
 		// Issue an RPC request to get the personal preferences from the DB.
 		GetFolderColumnsCmd cmd = new GetFolderColumnsCmd(bi, Boolean.TRUE);
-		GwtClientHelper.executeCommand( cmd, rpcReadCallback );
+		GwtClientHelper.executeCommand(
+			cmd,
+			new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetFolderColumns(),
+						bi.getBinderIdAsLong() );
+				}
+		
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// We successfully retrieved the folder's columns.
+					// Use it to populate the dialog.
+					FolderColumnsRpcResponseData cData = ((FolderColumnsRpcResponseData)response.getResponseData());
+					m_folderAdmin = cData.isFolderAdmin(); 
+					populateDlgAsync(bi, cData.getFolderColumns(), cData.getFolderColumnsAll());
+				}
+			});
 	}
 	
 	/*
 	 * Asynchronously restores the factory default column settings.
 	 */
 	private void setFactoryDefaultsAsync() {
-		ScheduledCommand doSet = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				setFactoryDefaultsNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doSet);
+		});
 	}
 	
 	/*

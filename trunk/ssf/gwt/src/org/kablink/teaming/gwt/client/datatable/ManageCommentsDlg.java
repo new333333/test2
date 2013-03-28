@@ -254,11 +254,10 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 			// ...create it and add it now...
 			m_commentsCountLabel = new Label();
 			String bgStyle;
-//			if (GwtClientHelper.jsIsIE())
-//			     bgStyle = "teamingDlgBoxHeaderBG_IE";
-//			else bgStyle = "teamingDlgBoxHeaderBG_NonIE";
-//			m_commentsCountLabel.addStyleName("vibe-manageCommentsDlg-captionCount " + bgStyle);
-			m_commentsCountLabel.addStyleName("vibe-manageCommentsDlg-captionCount ");
+			if (GwtClientHelper.jsIsIE())
+			     bgStyle = "teamingDlgBoxHeaderBG_IE";
+			else bgStyle = "teamingDlgBoxHeaderBG_NonIE";
+			m_commentsCountLabel.addStyleName("vibe-manageCommentsDlg-captionCount " + bgStyle);
 			getHeaderPanel().add(m_commentsCountLabel);
 		}
 		
