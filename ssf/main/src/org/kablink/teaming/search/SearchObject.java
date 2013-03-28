@@ -192,7 +192,7 @@ public class SearchObject {
 		} else if (lang.equalsIgnoreCase(LanguageTaster.ARABIC)) {
 			if (queryParserARABIC.get() == null) {
 				logger.debug("QueryParser instantiating new ARABIC QP");
-				Analyzer analyzer = VibeQueryAnalyzer.getInstance();
+				Analyzer analyzer = null;
 				String aName = SPropsUtil.getString("lucene.arabic.analyzer", "");
 				if (!aName.equalsIgnoreCase("")) {
 					//load the arabic analyzer here
@@ -203,6 +203,8 @@ public class SearchObject {
 						logger.error("Could not initialize arabic analyzer class: " + e.toString());
 					}
 				}
+				if(analyzer == null)
+					analyzer = VibeQueryAnalyzer.getInstance();
 				QueryParser qp =  QueryParserFactory.createQueryParser(analyzer, getTermQueryOnlyFields());
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserARABIC.set(qp);
