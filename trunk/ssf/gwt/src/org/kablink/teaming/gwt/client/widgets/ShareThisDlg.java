@@ -3497,6 +3497,7 @@ public class ShareThisDlg extends DlgBox
 
 		m_shareRowFormatter = m_shareTable.getRowFormatter();
 		m_shareRowFormatter.addStyleName( 0, "oltHeader" );
+		m_shareRowFormatter.addStyleName( 0, "whitespace-normal" );
 
 		m_shareCellFormatter = m_shareTable.getFlexCellFormatter();
 
@@ -3565,7 +3566,6 @@ public class ShareThisDlg extends DlgBox
 			m_shareCellFormatter.addStyleName( 0, col, "oltHeaderBorderTop" );
 			m_shareCellFormatter.addStyleName( 0, col, "oltHeaderBorderBottom" );
 			m_shareCellFormatter.addStyleName( 0, col, "oltHeaderPadding" );
-			m_shareCellFormatter.addStyleName( 0, col, "shareThisDlg_RecipientTable_Cell" );
 		}
 		m_shareCellFormatter.addStyleName( 0, m_numCols-1, "oltBorderRight" );
 	}
