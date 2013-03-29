@@ -146,7 +146,10 @@ public class GwtWebStatusTicket implements StatusTicket
 	@Override
 	public void done()
 	{
-		m_session.removeAttribute( m_id );
+		try {
+			m_session.removeAttribute( m_id );
+		}
+		catch(Exception ignore) {}
 		m_doneFlag = true;
 	}
 	
