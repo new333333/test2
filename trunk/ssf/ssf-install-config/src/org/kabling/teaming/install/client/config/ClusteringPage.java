@@ -43,7 +43,6 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 	private VibeTextBox multicastGroupAddrTextBox;
 	private GwValueSpinner multicastGroupPortSpinner;
 	private CheckBox enableClusteredCheckBox;
-	private ValueRequiredBasedOnBoolValidator jvmRouteValidator;
 	private ValueRequiredBasedOnBoolValidator multicastHostValidator;
 	private FlowPanel contentPanel;
 	private VibeTextBox memcachedAddressesTextBox;
@@ -109,8 +108,6 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 			jvmRouteTextBox = new VibeTextBox();
-			jvmRouteValidator = new ValueRequiredBasedOnBoolValidator(true, jvmRouteTextBox);
-			jvmRouteTextBox.setValidator(jvmRouteValidator);
 			table.setWidget(row, 1, jvmRouteTextBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -206,10 +203,6 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 			
 			enableClusteredCheckBox.setValue(clustered.isEnabled());
 
-			// Set the validator state based on if clustering is enabled
-			jvmRouteValidator.setRequired(enableClusteredCheckBox.getValue());
-			jvmRouteTextBox.setText(clustered.getJvmRoute());
-
 			if (clustered.getCachingProvider().equals("ehcache"))
 			{
 				cacheProviderListBox.setSelectedIndex(0);
@@ -249,7 +242,6 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 
 		if (event.getSource() == enableClusteredCheckBox)
 		{
-			jvmRouteValidator.setRequired(enableClusteredCheckBox.getValue());
 			if (multicastHostValidator != null)
 				multicastHostValidator.setRequired(enableClusteredCheckBox.getValue());
 			
