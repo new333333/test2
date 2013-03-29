@@ -97,10 +97,12 @@ import org.kablink.teaming.security.impl.AccessControlManagerImpl;
 import org.kablink.teaming.util.FileStore;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.LocaleUtils;
+import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.util.Validator;
@@ -111,7 +113,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 @SuppressWarnings({ "unchecked", "unused", "deprecation" })
 public abstract class AbstractZoneModule extends CommonDependencyInjection implements ZoneModule,InitializingBean {
+	protected TempFileUtil.OITTempCleanupThread m_oitTempCleanupThread;
 	protected DefinitionModule definitionModule;
+	
 	/**
 	 * Setup by spring
 	 * @param definitionModule
@@ -185,11 +189,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
      * Called after bean is initialized.  
      * Check on zones
      */
- 	public void afterPropertiesSet() {
+ 	@Override
+	public void afterPropertiesSet() {
  		// Do nothing
  	}
 	
- 	public void initZones() {
+ 	@Override
+	public void initZones() {
 		boolean closeSession = false;
 		if (!SessionUtil.sessionActive()) {
 			SessionUtil.sessionStartup();	
@@ -206,7 +212,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
         			final Workspace zone = (Workspace)companies.get(i);
         			try {
 	    				getTransactionTemplate().execute(new TransactionCallback() {
-	    					public Object doInTransaction(TransactionStatus status) {
+	    					@Override
+							public Object doInTransaction(TransactionStatus status) {
 	    						upgradeZoneTx(zone);
 	    						return null;
 	    					}
@@ -218,7 +225,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
         		}
 				//make sure zone is setup correctly
 				getTransactionTemplate().execute(new TransactionCallback() {
-		        	public Object doInTransaction(TransactionStatus status) {
+		        	@Override
+					public Object doInTransaction(TransactionStatus status) {
 		        		for (int i=0; i<companies.size(); ++i) {
 		        			Workspace zone = (Workspace)companies.get(i);
 		        			try {
@@ -258,10 +266,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		DefinitionCache.clear();
  	}
  	
+	@Override
 	public Long getZoneIdByZoneName(String zoneName) {
 		Workspace top = getCoreDao().findTopWorkspace(zoneName);
 		return top.getId();
 	}
+	@Override
 	public ZoneConfig getZoneConfig(Long zoneId) throws ZoneException {
 		return getCoreDao().loadZoneConfig(zoneId);
 	}
@@ -525,6 +535,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			ScheduleInfo info = getAdminModule().getFileVersionAgingSchedule();
 			getAdminModule().setFileVersionAgingSchedule(info);
 
+			// Initialize a Thread used to cleanup Oracle Outside-in
+			// temporary files.
+			if (null == m_oitTempCleanupThread) {
+				m_oitTempCleanupThread = TempFileUtil.initOITTempCleanupThread();
+			}
 			
 			//If not configured yet,  check old config
 			if (getCoreDao().loadObjects(LdapConnectionConfig.class, null, top.getId()).isEmpty()) {				
@@ -952,6 +967,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		ScheduleInfo info = getAdminModule().getFileVersionAgingSchedule();
 		getAdminModule().setFileVersionAgingSchedule(info);
 
+		// Initialize a Thread used to cleanup Oracle Outside-in
+		// temporary files.
+		if (null == m_oitTempCleanupThread) {
+			m_oitTempCleanupThread = TempFileUtil.initOITTempCleanupThread();
+		}
+		
 		//Enable/Disable access control rights
 		if (!SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 			WorkAreaOperation.deleteInstance("viewBinderTitle");
@@ -1184,6 +1205,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			info = getAdminModule().getFileVersionAgingSchedule();
 			getAdminModule().setFileVersionAgingSchedule(info);
 			
+			// Initialize a Thread used to cleanup Oracle Outside-in
+			// temporary files.
+			if (null == m_oitTempCleanupThread) {
+				m_oitTempCleanupThread = TempFileUtil.initOITTempCleanupThread();
+			}
+			
 			setupInitialOpenIDProviderList();
 
     		return top;
@@ -1198,7 +1225,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			IndexSynchronizationManager.setForceSequential();
 			try {		
 	  	        zone =  (Workspace) getTransactionTemplate().execute(new TransactionCallback() {
-		        	public Object doInTransaction(TransactionStatus status) {
+		        	@Override
+					public Object doInTransaction(TransactionStatus status) {
 		    			IndexSynchronizationManager.begin();
 	
 		        		Workspace zone = addZoneTx(name, adminName, virtualHost);
