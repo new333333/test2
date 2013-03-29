@@ -428,11 +428,9 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		if (title != null) 
 			sb.append(title.stringValue());
 		
-		if(sb.length() == 0) {
-			Fieldable desc = doc.getFieldable(Constants.DESC_TEXT_FIELD);
-			if(desc != null)
-				sb.append(desc.stringValue());
-		}
+		Fieldable desc = doc.getFieldable(Constants.DESC_TEXT_FIELD);
+		if(desc != null)
+			sb.append(desc.stringValue());
 		
 		if(sb.length() == 0) {
 			sb.append(getTastingTextFromGeneralTextField(doc));			
