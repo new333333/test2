@@ -71,6 +71,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.StatusTicket;
+import org.kablink.teaming.web.servlet.listener.ContextListenerPostSpring;
 import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.search.Constants;
 import org.springframework.transaction.TransactionStatus;
@@ -539,8 +540,15 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 					if ( excludeFoldersWithSchedule == false || scheduleInfo == null || scheduleInfo.isEnabled() == false )
 					{
 						try {
-							// No, sync this net folder
-							folderModule.fullSynchronize( binderId, statusTicket );
+							// No, sync this net folder ... only if system shutdown is not in progress
+							if(!ContextListenerPostSpring.isShutdownInProgress()) {
+								folderModule.fullSynchronize( binderId, statusTicket );
+							}
+							else {
+								// System shutting down. Abort the remaining work and return.
+								logger.info("System shutting down. Skipping full sync of net folder '" + binderId + "' and the rest.");
+								break;
+							}
 						}
 						catch(Exception e) {
 							logger.error("Error during synchronization of net folder '" + binderId + "'", e);

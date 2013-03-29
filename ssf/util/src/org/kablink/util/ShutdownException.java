@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,38 +30,16 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.spring.web.context;
-
-import javax.servlet.ServletContextEvent;
+package org.kablink.util;
 
 /**
- * A wrapper around Spring's context loader listener. This class maintains a global
- * flag which can be queried by threads in the system to determine whether the primary
- * Spring context inside the primary web app (ssf) is in the process of being initialized.
- * 
- * IMPORTANT: Never use this wrapper class for other web apps in Teaming such as ssfs
- * and ssr. This custom class is reserved only for the primary web app ssf.
+ * Marker exception signaling that system is shut down.
  * 
  * @author jong
  *
  */
-public class ContextLoaderListener extends org.springframework.web.context.ContextLoaderListener {
+public class ShutdownException extends RuntimeException {
 
-	private static volatile boolean initializationInProgress = false;
-	
-	@Override
-	public void contextInitialized(ServletContextEvent event) {
-		initializationInProgress = true;
-		super.contextInitialized(event);
-		initializationInProgress = false;
-	}
-	
-	@Override
-	public void contextDestroyed(ServletContextEvent event) {
-		super.contextDestroyed(event);
-	}
-	
-	public static boolean isInitializationInProgress() {
-		return initializationInProgress;
-	}
+	private static final long serialVersionUID = 1L;
+
 }
