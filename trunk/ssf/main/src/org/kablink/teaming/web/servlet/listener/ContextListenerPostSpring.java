@@ -48,6 +48,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 public class ContextListenerPostSpring implements ServletContextListener {
 
+	private static volatile boolean shutdownInProgress = false;
+
+	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		// This should be the first thing in this method. Don't place anything before this.
 		initZones();
@@ -62,12 +65,18 @@ public class ContextListenerPostSpring implements ServletContextListener {
 			SimpleProfiler.disable();
 	}
 
+	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
+		shutdownInProgress = true;
 		/// For simple profiler ///
 		SimpleProfiler.dumpToLog();
 		SimpleProfiler.clear();
 	}
 
+	public static boolean isShutdownInProgress() {
+		return shutdownInProgress;
+	}
+	
 	private void initAccessTokens() {
 		/// For access token manager ///
 		
