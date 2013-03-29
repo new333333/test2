@@ -3794,7 +3794,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 							
 							fileImgUrl = FileIconsHelper.getFileIconFromFileName(
 																			fileName,
-																			IconSize.MEDIUM );
+																			IconSize.LARGE );
 							folderEntry.setFileImgUrl( fileImgUrl );
 						}
 					}
