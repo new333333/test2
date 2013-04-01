@@ -263,6 +263,7 @@ public class WorkspaceResource extends AbstractBinderResource {
                                                   @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        _getWorkspace(id);
         return searchForLibraryEntities(keyword, buildSearchBinderCriterion(id, recursive), recursive, offset, maxCount,
                 includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, textDescriptions,
                 "/workspaces/" + id + "/library_entities");
