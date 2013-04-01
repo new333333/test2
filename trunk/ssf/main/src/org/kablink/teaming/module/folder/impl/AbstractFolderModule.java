@@ -643,12 +643,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     	long begin = System.nanoTime();
     	meCount.incrementAndGet();
         FolderEntry entry = loadEntryStrict(folderId, entryId);   	
-        if(entry.isAclExternallyControlled() && 
-        		inputData.exists("title") &&
+        if (inputData.exists("title") &&
         		!inputData.getSingleValue("title").equals(entry.getTitle())) { 
-        	// This is renaming of a Net Folder entry, which means that the user is attempting to rename a file.
-			// Do the checking in a way that is consistent with the file system semantic.
-			getAccessControlManager().checkOperation(entry.getParentFolder(), WorkAreaOperation.RENAME_ENTRIES);
+        	// This is a request to rename the entry. We must also check that the user has the right to rename it
+        	checkAccess(entry, FolderOperation.renameEntry);
         }
         //Must have modify rights, too
 		try {
