@@ -55,6 +55,8 @@
 
 package org.kablink.util;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -227,9 +229,10 @@ public class Html {
 		}
 
 		String reply = sb.toString();
-		reply = reply.replaceAll("&nbsp;", " ");
-		reply = reply.replaceAll("&#39;",  "'");
-		return reply;
+        reply = reply.replaceAll("&nbsp;", " ");
+        reply = reply.replaceAll("&#39;",  "'");
+        reply = StringEscapeUtils.unescapeHtml(reply);
+        return reply;
 	}
 
 	//This method is similar to the stripHTML, but does not strip the img tag
