@@ -50,8 +50,8 @@ public abstract class PrincipalBriefBuilder extends DefinableEntityBriefBuilder 
     protected PrincipalBriefBuilder() {
     }
 
-    protected PrincipalBriefBuilder(boolean textDescriptions) {
-        super(textDescriptions);
+    protected PrincipalBriefBuilder(int descriptionFormat) {
+        super(descriptionFormat);
     }
 
     public void populatePrincipalBrief(PrincipalBrief model, Map entry) {

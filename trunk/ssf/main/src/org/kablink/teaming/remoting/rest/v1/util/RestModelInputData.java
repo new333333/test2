@@ -134,9 +134,7 @@ public class RestModelInputData implements InputDataAccessor {
 		try {
 			// Try static fields first
 			obj = InvokeUtil.invokeGetter(entity, key);
-            if (obj instanceof Description) {
-                obj = ((Description)obj).getText();
-            } else if (obj instanceof Locale) {
+            if (obj instanceof Locale) {
                 obj = ((Locale)obj).getCode();
             }
 
@@ -215,7 +213,26 @@ public class RestModelInputData implements InputDataAccessor {
 	}
 
 	public org.kablink.teaming.domain.Description getDescriptionValue(String key) {
-		return new org.kablink.teaming.domain.Description(getSingleValue(key));
+        Object obj = getSingleObject(key);
+        if (obj instanceof Description) {
+            int fmt = org.kablink.teaming.domain.Description.FORMAT_NONE;
+            String formatStr = ((Description) obj).getFormatString();
+            if ("text".equals(formatStr)) {
+                fmt = org.kablink.teaming.domain.Description.FORMAT_NONE;
+            } else if ("html".equals(formatStr)) {
+                fmt = org.kablink.teaming.domain.Description.FORMAT_HTML;
+            } else {
+                Integer format = ((Description) obj).getFormat();
+                if (format!=null) {
+                    if (format==org.kablink.teaming.domain.Description.FORMAT_NONE ||
+                            format==org.kablink.teaming.domain.Description.FORMAT_HTML) {
+                        fmt = format;
+                    }
+                }
+            }
+            return new org.kablink.teaming.domain.Description(((Description) obj).getText(), fmt);
+        }
+        return null;
 	}
 
 	public String[] getValues(String key) {

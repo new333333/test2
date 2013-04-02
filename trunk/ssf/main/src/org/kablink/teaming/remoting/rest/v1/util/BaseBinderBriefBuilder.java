@@ -56,8 +56,8 @@ public class BaseBinderBriefBuilder extends DefinableEntityBriefBuilder {
     public BaseBinderBriefBuilder() {
     }
 
-    public BaseBinderBriefBuilder(boolean textDescriptions) {
-        super(textDescriptions);
+    public BaseBinderBriefBuilder(int descriptionFormat) {
+        super(descriptionFormat);
     }
 
     public void populateBinderBrief(BinderBrief binder, Map entry) {

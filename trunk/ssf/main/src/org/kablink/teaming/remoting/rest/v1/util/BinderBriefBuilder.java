@@ -53,8 +53,8 @@ public class BinderBriefBuilder extends BaseBinderBriefBuilder implements Contai
     public BinderBriefBuilder() {
     }
 
-    public BinderBriefBuilder(boolean textDescriptions) {
-        super(textDescriptions);
+    public BinderBriefBuilder(int descriptionFormat) {
+        super(descriptionFormat);
     }
 
     public BinderBrief[] factoryArray(int length) {

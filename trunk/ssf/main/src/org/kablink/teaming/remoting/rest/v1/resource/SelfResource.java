@@ -104,10 +104,11 @@ public class SelfResource extends AbstractFileResource {
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public User getSelf(@QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
-                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+                        @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         Principal entry = getLoggedInUser();
 
-        User user = ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry, includeAttachments, textDescriptions);
+        User user = ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry, includeAttachments,
+                toDomainFormat(descriptionFormatStr));
         user.setDiskSpaceQuota(getProfileModule().getMaxUserQuota(entry.getId()));
         user.addAdditionalLink("password", user.getLink() + "/password");
         user.setLink("/self");
@@ -240,7 +241,7 @@ public class SelfResource extends AbstractFileResource {
     @Path("/my_files/library_folders")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Response getMyFileLibraryFolders(
-            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("-1") Integer maxCount,
             @Context HttpServletRequest request) {
@@ -253,7 +254,8 @@ public class SelfResource extends AbstractFileResource {
         if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        SearchResultList<BinderBrief> results = _getMyFilesLibraryFolders(textDescriptions, offset, maxCount, lastModified);
+        SearchResultList<BinderBrief> results = _getMyFilesLibraryFolders(toDomainFormat(descriptionFormatStr), offset,
+                maxCount, lastModified);
         if (lastModified!=null) {
             return Response.ok(results).lastModified(lastModified).build();
         } else {
@@ -267,7 +269,7 @@ public class SelfResource extends AbstractFileResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public org.kablink.teaming.rest.v1.model.Folder createLibraryFolder(
                                       org.kablink.teaming.rest.v1.model.BinderBrief newBinder,
-                                      @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
+                                      @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
             throws WriteFilesException, WriteEntryDataException {
         if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             throw new AccessControlException("Personal storage is not allowed.", null);
@@ -277,7 +279,8 @@ public class SelfResource extends AbstractFileResource {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No folder title was supplied in the POST data.");
         }
         org.kablink.teaming.domain.Binder binder = FolderUtils.createLibraryFolder(parent, newBinder.getTitle());
-        org.kablink.teaming.rest.v1.model.Folder folder = (org.kablink.teaming.rest.v1.model.Folder) ResourceUtil.buildBinder(binder, true, textDescriptions);
+        org.kablink.teaming.rest.v1.model.Folder folder =
+                (org.kablink.teaming.rest.v1.model.Folder) ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
         folder.setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
         return folder;
    	}
@@ -286,12 +289,13 @@ public class SelfResource extends AbstractFileResource {
     @Path("/my_files/library_tree")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public BinderTree getMyFileLibraryTree(
-            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
         BinderTree results = new BinderTree();
-        SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(false, 0, -1, null);
+        int descriptionFormat = toDomainFormat(descriptionFormatStr);
+        SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(descriptionFormat, 0, -1, null);
         if (folders.getCount()>0) {
             Criteria crit = new Criteria();
             crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
@@ -302,7 +306,7 @@ public class SelfResource extends AbstractFileResource {
             crit.add(Restrictions.in(Constants.ENTRY_ANCESTRY, idList));
             Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
             SearchResultBuilderUtil.buildSearchResultsTree(results, folders.getResults().toArray(new BinderBrief[folders.getCount()]),
-                    new BinderBriefBuilder(textDescriptions), resultMap);
+                    new BinderBriefBuilder(descriptionFormat), resultMap);
             for (SearchResultTreeNode<BinderBrief> node : results.getChildren()) {
                 node.getItem().setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
             }
@@ -322,15 +326,16 @@ public class SelfResource extends AbstractFileResource {
               @QueryParam("replies") @DefaultValue("true") boolean includeReplies,
               @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
               @QueryParam("keyword") String keyword,
-              @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+              @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
               @QueryParam("first") @DefaultValue("0") Integer offset,
               @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
+        int descriptionFormat = toDomainFormat(descriptionFormatStr);
         Criteria subContextSearch = null;
         if (recursive) {
-            SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(false, 0, -1, null);
+            SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(descriptionFormat, 0, -1, null);
             if (folders.getCount()>0) {
                 subContextSearch = new Criteria();
                 Junction searchContext = Restrictions.disjunction();
@@ -353,7 +358,9 @@ public class SelfResource extends AbstractFileResource {
             searchContext = myFilesCrit.asJunction();
         }
 
-        SearchResultList<SearchableObject> results = searchForLibraryEntities(keyword, searchContext, recursive, offset, maxCount, includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, textDescriptions, "/self/my_files/library_entities");
+        SearchResultList<SearchableObject> results = searchForLibraryEntities(keyword, searchContext, recursive, offset,
+                maxCount, includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths,
+                descriptionFormat, "/self/my_files/library_entities");
         setMyFilesParents(results);
         return results;
     }
@@ -424,7 +431,7 @@ public class SelfResource extends AbstractFileResource {
     public SearchResultList<RecentActivityEntry> getMyFileRecentActivity(
             @QueryParam("file_name") String fileName,
             @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
-            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("20") Integer maxCount) {
         if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
@@ -435,11 +442,12 @@ public class SelfResource extends AbstractFileResource {
             nextParams.put("recursive", fileName);
         }
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        nextParams.put("description_format", descriptionFormatStr);
 
         List<String> binders = null;
         List<String> entries = null;
-        SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(false, 0, -1, null);
+        int descriptionFormat = toDomainFormat(descriptionFormatStr);
+        SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(descriptionFormat, 0, -1, null);
         if (folders.getCount()>0) {
             binders = new ArrayList<String>();
             for (BinderBrief binder : folders.getResults()) {
@@ -457,16 +465,21 @@ public class SelfResource extends AbstractFileResource {
             return new SearchResultList<RecentActivityEntry>();
         }
         Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binders, entries, null, true, Constants.LASTACTIVITY_FIELD);
-        SearchResultList<RecentActivityEntry> resultList = _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, "/self/my_files/recent_activity", nextParams);
+        SearchResultList<RecentActivityEntry> resultList = _getRecentActivity(includeParentPaths, descriptionFormat,
+                offset, maxCount, criteria, "/self/my_files/recent_activity", nextParams);
         setMyFilesParents(resultList);
         return resultList;
     }
 
-    private SearchResultList<BinderBrief> _getMyFilesLibraryFolders(boolean textDescriptions, Integer offset, Integer maxCount, Date parentModTime) {
+    private SearchResultList<BinderBrief> _getMyFilesLibraryFolders(int descriptionFormat, Integer offset, Integer maxCount, Date parentModTime) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", textDescriptions);
+        if (descriptionFormat==Description.FORMAT_HTML) {
+            nextParams.put("description_format", "html");
+        } else {
+            nextParams.put("description_format", "text");
+        }
         Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), true, false, false, false);
-        SearchResultList<BinderBrief> results = lookUpBinders(crit, textDescriptions, offset, maxCount, "/self/my_files/library_folders", nextParams, parentModTime);
+        SearchResultList<BinderBrief> results = lookUpBinders(crit, descriptionFormat, offset, maxCount, "/self/my_files/library_folders", nextParams, parentModTime);
         setMyFilesParents(results);
         return results;
     }
@@ -541,7 +554,7 @@ public class SelfResource extends AbstractFileResource {
         crit.add(buildLibraryCriterion(true));
         Junction searchContexts = null;
         if (recursive) {
-            SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(false, 0, -1, null);
+            SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(Description.FORMAT_NONE, 0, -1, null);
             if (folders.getCount()>0) {
                 searchContexts = Restrictions.disjunction();
                 for (BinderBrief folder : folders.getResults()) {

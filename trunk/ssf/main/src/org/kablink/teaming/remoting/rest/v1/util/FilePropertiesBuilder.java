@@ -48,7 +48,7 @@ import java.util.Map;
  * Time: 3:16 PM
  */
 public class FilePropertiesBuilder implements SearchResultBuilder<FileProperties> {
-    public void setTextDescriptions(boolean textDescriptions) {
+    public void setDescriptionFormat(int descriptionFormat) {
     }
 
     public FileProperties build(Map doc) {

@@ -16,8 +16,8 @@ public class RecentActivityFolderEntryBuilder extends BaseFolderEntryBriefBuilde
     public RecentActivityFolderEntryBuilder() {
     }
 
-    public RecentActivityFolderEntryBuilder(boolean textDescriptions) {
-        super(textDescriptions);
+    public RecentActivityFolderEntryBuilder(int descriptionFormat) {
+        super(descriptionFormat);
     }
 
     public RecentActivityEntry build(Map entry) {

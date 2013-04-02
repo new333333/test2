@@ -17,8 +17,8 @@ public class FolderEntryBriefBuilder extends BaseFolderEntryBriefBuilder impleme
     public FolderEntryBriefBuilder() {
     }
 
-    public FolderEntryBriefBuilder(boolean textDescriptions) {
-        super(textDescriptions);
+    public FolderEntryBriefBuilder(int descriptionFormat) {
+        super(descriptionFormat);
     }
 
     public FolderEntryBrief build(Map entry) {

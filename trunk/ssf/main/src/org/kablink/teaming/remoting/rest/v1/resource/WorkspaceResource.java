@@ -35,6 +35,7 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import com.sun.jersey.spi.resource.Singleton;
 import org.dom4j.Document;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
@@ -85,7 +86,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 
     @GET
     public SearchResultList<BinderBrief> getWorkspaces(@QueryParam("id") Set<Long> ids,
-                                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                       @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                        @QueryParam("first") @DefaultValue("0") Integer offset,
                                                        @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Junction criterion = Restrictions.conjunction();
@@ -101,15 +102,16 @@ public class WorkspaceResource extends AbstractBinderResource {
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/workspaces", nextParams, offset);
+        nextParams.put("description_format", descriptionFormatStr);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(toDomainFormat(descriptionFormatStr)),
+                resultsMap, "/workspaces", nextParams, offset);
         return results;
     }
 
     @POST
     @Path("/legacy_query")
    	public SearchResultList<BinderBrief> getWorkspacesViaLegacyQuery(@Context HttpServletRequest request,
-                                                                     @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                                     @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                                      @QueryParam("first") @DefaultValue("0") Integer offset,
                                                                      @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
@@ -117,8 +119,9 @@ public class WorkspaceResource extends AbstractBinderResource {
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/workspaces/legacy_query", nextParams, offset);
+        nextParams.put("description_format", descriptionFormatStr);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(toDomainFormat(descriptionFormatStr)),
+                resultsMap, "/workspaces/legacy_query", nextParams, offset);
         return results;
     }
 
@@ -131,18 +134,19 @@ public class WorkspaceResource extends AbstractBinderResource {
     @Path("{id}/binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getSubBinders(@PathParam("id") long id,
-                                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
-                                                       @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount,
-                                                       @Context HttpServletRequest request) {
+                                  @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+                                  @QueryParam("first") @DefaultValue("0") Integer offset,
+                                  @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                  @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        nextParams.put("description_format", descriptionFormatStr);
         Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, offset, maxCount, "/workspaces/" + id + "/binders", nextParams, textDescriptions, ifModifiedSince);
+        SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, offset, maxCount, "/workspaces/" + id + "/binders",
+                nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
     }
 
@@ -152,7 +156,7 @@ public class WorkspaceResource extends AbstractBinderResource {
         org.kablink.teaming.domain.Workspace parent = _getWorkspace(parentId);
         Binder binder = getBinderModule().getBinderByParentAndTitle(parentId, name);
         if (binder instanceof org.kablink.teaming.domain.Workspace) {
-            return (Workspace) ResourceUtil.buildBinder(binder, true, false);
+            return (Workspace) ResourceUtil.buildBinder(binder, true, Description.FORMAT_NONE);
         }
         throw new NoWorkspaceByTheNameException(name);
     }
@@ -162,12 +166,12 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@Path("{id}/workspaces")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Response getSubWorkspaces(@PathParam("id") long id,
-                                                          @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
-			@QueryParam("first") @DefaultValue("0") Integer offset,
-			@QueryParam("count") @DefaultValue("-1") Integer maxCount,
-            @Context HttpServletRequest request) {
+                                     @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+			                         @QueryParam("first") @DefaultValue("0") Integer offset,
+			                         @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                     @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        nextParams.put("description_format", descriptionFormatStr);
 
         Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
@@ -175,7 +179,7 @@ public class WorkspaceResource extends AbstractBinderResource {
             throw new NotModifiedException();
         }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_WORKSPACE),
-                offset, maxCount, "/workspaces/" + id + "/workspaces", nextParams, textDescriptions, ifModifiedSince);
+                offset, maxCount, "/workspaces/" + id + "/workspaces", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
 	}
 
@@ -185,7 +189,7 @@ public class WorkspaceResource extends AbstractBinderResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public org.kablink.teaming.rest.v1.model.Workspace createSubWorkspace(@PathParam("id") long id, org.kablink.teaming.rest.v1.model.Workspace workspace,
                                                                           @QueryParam("template") Long templateId,
-                                                                          @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
+                                                                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
                throws WriteFilesException, WriteEntryDataException {
         if (templateId!=null) {
             TemplateBinder template = getTemplateModule().getTemplate(templateId);
@@ -193,7 +197,7 @@ public class WorkspaceResource extends AbstractBinderResource {
                 throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The specified 'template' parameter must be a workspace template.");
             }
         }
-        return (Workspace) createBinder(id, workspace, templateId, textDescriptions);
+        return (Workspace) createBinder(id, workspace, templateId, toDomainFormat(descriptionFormatStr));
     }
 
     // Read subfolders
@@ -201,12 +205,12 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@Path("{id}/folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Response getSubFolders(@PathParam("id") long id,
-                                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
-			@QueryParam("first") @DefaultValue("0") int offset,
-			@QueryParam("count") @DefaultValue("-1") int maxCount,
-            @Context HttpServletRequest request) {
+                                  @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+			                      @QueryParam("first") @DefaultValue("0") int offset,
+			                      @QueryParam("count") @DefaultValue("-1") int maxCount,
+                                  @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        nextParams.put("description_format", descriptionFormatStr);
 
         Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
@@ -214,7 +218,7 @@ public class WorkspaceResource extends AbstractBinderResource {
             throw new NotModifiedException();
         }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
-                offset, maxCount, "/workspaces/" + id + "/folders", nextParams, textDescriptions, ifModifiedSince);
+                offset, maxCount, "/workspaces/" + id + "/folders", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
 	}
 
@@ -225,7 +229,7 @@ public class WorkspaceResource extends AbstractBinderResource {
    	public org.kablink.teaming.rest.v1.model.Folder createSubFolder(@PathParam("id") long id,
                                                                     org.kablink.teaming.rest.v1.model.Binder binder,
                                                                     @QueryParam("template") Long templateId,
-                                                                    @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
+                                                                    @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
                throws WriteFilesException, WriteEntryDataException {
         if (templateId==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing required 'template' query string parameter.");
@@ -234,7 +238,7 @@ public class WorkspaceResource extends AbstractBinderResource {
         if (EntityIdentifier.EntityType.folder != template.getEntityType()) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The specified 'template' parameter must be a folder template.");
         }
-        return (Folder) createBinder(id, binder, templateId, textDescriptions);
+        return (Folder) createBinder(id, binder, templateId, toDomainFormat(descriptionFormatStr));
     }
 
     @GET
@@ -243,7 +247,7 @@ public class WorkspaceResource extends AbstractBinderResource {
         _getWorkspace(parentId);
         Binder binder = getBinderModule().getBinderByParentAndTitle(parentId, name);
         if (binder instanceof org.kablink.teaming.domain.Folder) {
-            return (Folder) ResourceUtil.buildBinder(binder, true, false);
+            return (Folder) ResourceUtil.buildBinder(binder, true, Description.FORMAT_NONE);
         }
         throw new NoWorkspaceByTheNameException(name);
     }
@@ -260,12 +264,12 @@ public class WorkspaceResource extends AbstractBinderResource {
                                                   @QueryParam("replies") @DefaultValue("true") boolean includeReplies,
                                                   @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                   @QueryParam("keyword") String keyword,
-                                                  @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                  @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         _getWorkspace(id);
         return searchForLibraryEntities(keyword, buildSearchBinderCriterion(id, recursive), recursive, offset, maxCount,
-                includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, textDescriptions,
+                includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, toDomainFormat(descriptionFormatStr),
                 "/workspaces/" + id + "/library_entities");
 	}
 

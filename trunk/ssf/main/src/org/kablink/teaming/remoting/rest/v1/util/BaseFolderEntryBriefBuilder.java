@@ -21,8 +21,8 @@ abstract public class BaseFolderEntryBriefBuilder extends DefinableEntityBriefBu
     public BaseFolderEntryBriefBuilder() {
     }
 
-    public BaseFolderEntryBriefBuilder(boolean textDescriptions) {
-        super(textDescriptions);
+    public BaseFolderEntryBriefBuilder(int descriptionFormat) {
+        super(descriptionFormat);
     }
 
     protected void populateBaseFolderEntryBrief(BaseFolderEntryBrief model, Map entry, String parentBinderField) {

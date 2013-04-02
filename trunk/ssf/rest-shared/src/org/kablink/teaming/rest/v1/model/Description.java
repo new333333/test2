@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -42,6 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement (name="description")
 public class Description {
     private String text;
+    private String formatString;
     private Integer format;
 
     public Integer getFormat() {
@@ -58,5 +60,14 @@ public class Description {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    @XmlElement(name="format_str")
+    public String getFormatString() {
+        return formatString;
+    }
+
+    public void setFormatString(String formatString) {
+        this.formatString = formatString;
     }
 }

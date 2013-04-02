@@ -49,8 +49,8 @@ public class UserBriefBuilder extends PrincipalBriefBuilder implements SearchRes
     public UserBriefBuilder() {
     }
 
-    public UserBriefBuilder(boolean textDescriptions) {
-        super(textDescriptions);
+    public UserBriefBuilder(int descriptionFormat) {
+        super(descriptionFormat);
     }
 
     public UserBrief build(Map entry) {

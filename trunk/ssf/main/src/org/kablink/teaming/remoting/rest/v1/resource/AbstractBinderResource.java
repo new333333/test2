@@ -59,9 +59,9 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     public Binder getBinder(@PathParam("id") long id,
                             @QueryParam("library_info") @DefaultValue("false") boolean libraryInfo,
                             @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
-                            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+                            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
-        Binder model = ResourceUtil.buildBinder(binder, includeAttachments, textDescriptions);
+        Binder model = ResourceUtil.buildBinder(binder, includeAttachments, toDomainFormat(descriptionFormatStr));
         if (libraryInfo) {
             model.setLibraryInfo(getLibraryInfo(new Long[]{id}, binder.isMirrored()));
         }
@@ -73,12 +73,12 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Binder updateBinder(@PathParam("id") long id, Binder binder,
                                @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
-                               @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
+                               @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
             throws WriteFilesException, WriteEntryDataException {
         _getBinder(id);
         getBinderModule().modifyBinder(id,
                 new RestModelInputData(binder), null, null, null);
-        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
+        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments, toDomainFormat(descriptionFormatStr));
     }
 
     /**
@@ -107,7 +107,8 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     public Binder renameBinder(@PathParam("id") Long id,
                                      @FormParam("title") String name,
                                      @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
-                                     @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
+                                     @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
+            throws WriteFilesException, WriteEntryDataException {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
         if (name==null || name.length()==0) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'title' form parameter");
@@ -119,7 +120,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
         getBinderModule().modifyBinder(id, inputData, null, null, null);
 
-        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
+        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments, toDomainFormat(descriptionFormatStr));
     }
 
     @POST
@@ -129,7 +130,8 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     public Binder moveBinder(@PathParam("id") Long id,
                              @FormParam("binder_id") Long newBinderId,
                              @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
-                             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
+                             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
+            throws WriteFilesException, WriteEntryDataException {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
         if (newBinderId ==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'binder_id' form parameter");
@@ -147,7 +149,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         org.kablink.teaming.domain.Binder parentBinder = _getBinderImpl(newBinderId);
         org.kablink.teaming.domain.Binder newBinder = getBinderModule().moveBinder(binder.getId(), parentBinder.getId(), null);
 
-        Binder modifiedBinder = ResourceUtil.buildBinder(newBinder, includeAttachments, textDescriptions);
+        Binder modifiedBinder = ResourceUtil.buildBinder(newBinder, includeAttachments, toDomainFormat(descriptionFormatStr));
         if (finalParentId!=null) {
             modifiedBinder.setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
         }
@@ -168,43 +170,44 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Binder createSubBinder(@PathParam("id") long id, Binder binder, @QueryParam("template") Long templateId,
-                                  @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
+                                  @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
             throws WriteFilesException, WriteEntryDataException {
-        return createBinder(id, binder, templateId, textDescriptions);
+        return createBinder(id, binder, templateId, toDomainFormat(descriptionFormatStr));
 	}
 
 	@GET
 	@Path("{id}/binder_tree")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public BinderTree getSubBinderTree(@PathParam("id") long id,
-                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
-        return getSubBinderTree(id, null, textDescriptions);
+                                       @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        return getSubBinderTree(id, null, toDomainFormat(descriptionFormatStr));
 	}
 
 	@GET
 	@Path("{id}/library_tree")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public BinderTree getLibraryTree(@PathParam("id") long id,
-                                     @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
-        return getSubBinderTree(id, buildLibraryTreeCriterion(), textDescriptions);
+                                     @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        return getSubBinderTree(id, buildLibraryTreeCriterion(), toDomainFormat(descriptionFormatStr));
 	}
 
     @GET
    	@Path("{id}/library_folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public Response getLibraryFolders(@PathParam("id") long id,
-                                         @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                         @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                          @QueryParam("first") @DefaultValue("0") Integer offset,
                                          @QueryParam("count") @DefaultValue("-1") Integer maxCount,
                                          @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        nextParams.put("description_format", descriptionFormatStr);
         Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        SearchResultList<BinderBrief> subBinders = getSubBinders(id, SearchUtils.libraryFolders(), offset, maxCount, getBasePath() + id + "/library_folders", nextParams, textDescriptions, ifModifiedSince);
+        SearchResultList<BinderBrief> subBinders = getSubBinders(id, SearchUtils.libraryFolders(), offset, maxCount,
+                getBasePath() + id + "/library_folders", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
    	}
 
@@ -214,9 +217,9 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public Folder createLibraryFolder(@PathParam("id") long id,
                                       org.kablink.teaming.rest.v1.model.BinderBrief binder,
-                                      @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
+                                      @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
             throws WriteFilesException, WriteEntryDataException {
-        return (Folder) _createLibraryFolder(id, binder, textDescriptions);
+        return (Folder) _createLibraryFolder(id, binder, toDomainFormat(descriptionFormatStr));
    	}
 
     // Read entries
@@ -286,17 +289,18 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<RecentActivityEntry> getRecentActivity(@PathParam("id") Long id,
                                                                 @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
-                                                                @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                 @QueryParam("first") @DefaultValue("0") Integer offset,
                 @QueryParam("count") @DefaultValue("20") Integer maxCount) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        nextParams.put("description_format", descriptionFormatStr);
 
         List<String> binders = new ArrayList<String>();
         binders.add(id.toString());
         Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binders, null, null, true, Constants.LASTACTIVITY_FIELD);
-        return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, this.getBasePath() + id + "/recent_activity", nextParams);
+        return _getRecentActivity(includeParentPaths, toDomainFormat(descriptionFormatStr), offset, maxCount, criteria,
+                this.getBasePath() + id + "/recent_activity", nextParams);
     }
 
     @GET
@@ -423,22 +427,22 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         getFolderModule().deleteTag(null, id, tagId);
     }
 
-    protected Binder _createLibraryFolder(long parentId, BinderBrief newBinder, boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
+    protected Binder _createLibraryFolder(long parentId, BinderBrief newBinder, int descriptionFormat) throws WriteFilesException, WriteEntryDataException {
         org.kablink.teaming.domain.Binder parent = _getBinderImpl(parentId);
         if (newBinder.getTitle()==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No folder title was supplied in the POST data.");
         }
         org.kablink.teaming.domain.Binder binder = FolderUtils.createLibraryFolder(parent, newBinder.getTitle());
-        return ResourceUtil.buildBinder(binder, true, textDescriptions);
+        return ResourceUtil.buildBinder(binder, true, descriptionFormat);
     }
 
-    protected Binder createBinder(long parentId, Binder newBinder, Long templateId, boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
+    protected Binder createBinder(long parentId, Binder newBinder, Long templateId, int descriptionFormat) throws WriteFilesException, WriteEntryDataException {
         _getBinderImpl(parentId);
         if (newBinder.getTitle()==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No binder title was supplied in the POST data.");
         }
         org.kablink.teaming.domain.Binder binder = BinderUtils.createBinder(parentId, newBinder.getTitle(), null, templateId);
-        return ResourceUtil.buildBinder(binder, true, textDescriptions);
+        return ResourceUtil.buildBinder(binder, true, descriptionFormat);
     }
 
     protected void _deleteBinder(long id, boolean purge) {
@@ -493,7 +497,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     protected SearchResultList<BinderBrief> getSubBinders(long id, Criterion filter, Integer offset, Integer maxCount,
-                                                          String nextUrl, Map<String, Object> nextParams, boolean textDescriptions,
+                                                          String nextUrl, Map<String, Object> nextParams, int descriptionFormat,
                                                           Date modifiedSince) {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
         if (offset==null) {
@@ -510,14 +514,14 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         crit.add(Restrictions.eq(Constants.BINDERS_PARENT_ID_FIELD, ((Long) id).toString()));
         Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount, binder);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset, binder.getModificationDate());
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultMap, nextUrl, nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(descriptionFormat), resultMap, nextUrl, nextParams, offset);
         if (modifiedSince!=null && !modifiedSince.before(results.getLastModified())) {
             throw new NotModifiedException();
         }
         return results;
     }
 
-    protected BinderTree getSubBinderTree(long id, Criterion filter, boolean textDescriptions) {
+    protected BinderTree getSubBinderTree(long id, Criterion filter, int descriptionFormat) {
         _getBinder(id);
         Criteria crit = new Criteria();
         if (filter!=null) {
@@ -527,7 +531,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         crit.add(buildAncentryCriterion(id));
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
         BinderTree results = new BinderTree();
-        SearchResultBuilderUtil.buildSearchResultsTree(this, results, id, new BinderBriefBuilder(textDescriptions), resultMap);
+        SearchResultBuilderUtil.buildSearchResultsTree(this, results, id, new BinderBriefBuilder(descriptionFormat), resultMap);
         results.setItem(null);
         return results;
     }

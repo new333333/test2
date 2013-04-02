@@ -70,12 +70,12 @@ import static org.kablink.util.search.Restrictions.in;
 public class NetFoldersResource extends AbstractResource {
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<NetFolderBrief> getNetFolders(@QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
-                                                           @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                           @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+    public SearchResultList<NetFolderBrief> getNetFolders(@QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+                                                          @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                          @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        return _getNetFolders(textDescriptions, offset, maxCount, "/net_folders", nextParams);
+        nextParams.put("description_format", descriptionFormatStr);
+        return _getNetFolders(toDomainFormat(descriptionFormatStr), offset, maxCount, "/net_folders", nextParams);
     }
 
     @GET
@@ -87,12 +87,12 @@ public class NetFoldersResource extends AbstractResource {
                                                                  @QueryParam("files") @DefaultValue("true") boolean includeFiles,
                                                                  @QueryParam("replies") @DefaultValue("true") boolean includeReplies,
                                                                  @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
-                                                                 @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                                  @QueryParam("keyword") String keyword,
                                                                  @QueryParam("first") @DefaultValue("0") Integer offset,
                                                                  @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         SearchResultList<SearchableObject> results;
-        SearchResultList<NetFolderBrief> netFolders = getNetFolders(textDescriptions, 0, -1);
+        SearchResultList<NetFolderBrief> netFolders = getNetFolders(descriptionFormatStr, 0, -1);
         if (netFolders.getCount()>0) {
             Junction searchContext = Restrictions.disjunction();
             for (BinderBrief binder : netFolders.getResults()) {
@@ -105,8 +105,8 @@ public class NetFoldersResource extends AbstractResource {
                 searchContext.add(shareCrit);
             }
             results = searchForLibraryEntities(keyword, searchContext, recursive, offset, maxCount,
-                    includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, textDescriptions,
-                    "/net_folders/library_entities");
+                    includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths,
+                    toDomainFormat(descriptionFormatStr), "/net_folders/library_entities");
         } else {
             results = new SearchResultList<SearchableObject>();
         }
@@ -118,14 +118,14 @@ public class NetFoldersResource extends AbstractResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<RecentActivityEntry> getRecentActivity(
             @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
-            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("20") Integer maxCount) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        nextParams.put("description_format", descriptionFormatStr);
 
-        SearchResultList<NetFolderBrief> folders = getNetFolders(true, 0, -1);
+        SearchResultList<NetFolderBrief> folders = getNetFolders(descriptionFormatStr, 0, -1);
         if (folders.getCount()==0) {
             return new SearchResultList<RecentActivityEntry>();
         }
@@ -134,13 +134,14 @@ public class NetFoldersResource extends AbstractResource {
             binders.add(binder.getId().toString());
         }
         Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binders, null, null, true, Constants.LASTACTIVITY_FIELD);
-        return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, "/net_folders/recent_activity", nextParams);
+        return _getRecentActivity(includeParentPaths, toDomainFormat(descriptionFormatStr), offset, maxCount, criteria,
+                "/net_folders/recent_activity", nextParams);
     }
 
-    protected SearchResultList<NetFolderBrief> _getNetFolders(boolean textDescriptions, int offset, int maxCount, String nextUrl, Map<String, Object> nextParams) {
+    protected SearchResultList<NetFolderBrief> _getNetFolders(int descriptionFormat, int offset, int maxCount, String nextUrl, Map<String, Object> nextParams) {
         Map map = SearchUtils.searchForNetFolders(this, null, new HashMap());
         SearchResultList<NetFolderBrief> results = new SearchResultList<NetFolderBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new NetFolderBriefBuilder(textDescriptions), map, nextUrl, nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new NetFolderBriefBuilder(descriptionFormat), map, nextUrl, nextParams, offset);
         for (NetFolderBrief binder : results.getResults()) {
             binder.setParentBinder(new ParentBinder(ObjectKeys.NET_FOLDERS_ID, "/self/net_folders"));
         }

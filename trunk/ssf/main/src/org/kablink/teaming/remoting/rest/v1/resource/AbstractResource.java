@@ -51,6 +51,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
@@ -108,6 +109,14 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected ServletContext getServletContext() {
         return context;
+    }
+
+    protected int toDomainFormat(String descriptionFormatStr) {
+        if ("html".equals(descriptionFormatStr)) {
+            return Description.FORMAT_HTML;
+        } else {
+            return Description.FORMAT_NONE;
+        }
     }
 
     protected Long getLoggedInUserId() {
@@ -194,7 +203,11 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return (org.kablink.teaming.domain.User) entry;
     }
 
-    protected SearchResultList<SearchableObject> searchForLibraryEntities(String keyword, Criterion searchContext, boolean recursive, Integer offset, Integer maxCount, boolean includeBinders, boolean includeFolderEntries, boolean includeReplies, boolean includeFiles, boolean includeParentPaths, boolean textDescriptions, String nextUrl) {
+    protected SearchResultList<SearchableObject> searchForLibraryEntities(String keyword, Criterion searchContext,
+                                                                          boolean recursive, Integer offset, Integer maxCount,
+                                                                          boolean includeBinders, boolean includeFolderEntries,
+                                                                          boolean includeReplies, boolean includeFiles,
+                                                                          boolean includeParentPaths, int descriptionFormat, String nextUrl) {
         keyword = SearchUtils.validateSearchText(keyword);
         Criteria crit = new Criteria();
         crit.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
@@ -215,7 +228,11 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 // Ignore
             }
         }
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        if (descriptionFormat==Description.FORMAT_HTML) {
+            nextParams.put("description_format", "html");
+        } else {
+            nextParams.put("description_format", "text");
+        }
         SearchFilter searchFilter = new SearchFilter(true);
         if (keyword!=null) {
             keyword = keyword.trim();
@@ -235,7 +252,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
         Map resultsMap = getBinderModule().executeSearchQuery(searchFilter.getFilter(), Constants.SEARCH_MODE_NORMAL, options);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat), resultsMap,
                 nextUrl, nextParams, offset);
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -243,15 +260,15 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return results;
     }
 
-    protected SearchResultList<RecentActivityEntry> _getRecentActivity(boolean includeParentPaths, boolean textDescriptions,
+    protected SearchResultList<RecentActivityEntry> _getRecentActivity(boolean includeParentPaths, int descriptionFormat,
                                                                     Integer offset, Integer maxCount, Criteria criteria,
                                                                     String nextUrl, Map<String, Object> nextParams) {
         Map resultsMap = getBinderModule().executeSearchQuery(criteria, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<RecentActivityEntry> results = new SearchResultList<RecentActivityEntry>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new RecentActivityFolderEntryBuilder(textDescriptions), resultsMap,
+        SearchResultBuilderUtil.buildSearchResults(results, new RecentActivityFolderEntryBuilder(descriptionFormat), resultsMap,
                 nextUrl, nextParams, offset);
 
-        populateComments(results.getResults(), textDescriptions);
+        populateComments(results.getResults(), descriptionFormat);
 
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -260,7 +277,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return results;
     }
 
-    protected void populateComments(List<RecentActivityEntry> entries, boolean textDescriptions) {
+    protected void populateComments(List<RecentActivityEntry> entries, int descriptionFormat) {
         String[] topEntryIds = new String[entries.size()];
         int i = 0;
         for (RecentActivityEntry entry:  entries) {
@@ -279,7 +296,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             return;
         }
 
-        ReplyBriefBuilder replyBuilder = new ReplyBriefBuilder(textDescriptions);
+        ReplyBriefBuilder replyBuilder = new ReplyBriefBuilder(descriptionFormat);
 
         // Scan the comment entry search results Map's
         for (Map commentEntryMap:  searchEntries) {
@@ -772,7 +789,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return binderPaths;
     }
 
-    protected SearchResultList<BinderBrief> lookUpBinders(Criteria crit, boolean textDescriptions, Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams, Date lastModified) {
+    protected SearchResultList<BinderBrief> lookUpBinders(Criteria crit, int descriptionFormat, Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams, Date lastModified) {
         if (offset==null) {
             offset = 0;
         }
@@ -783,7 +800,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         results.setLastModified(lastModified);
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultMap, nextUrl, nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(descriptionFormat), resultMap, nextUrl, nextParams, offset);
         return results;
     }
 
@@ -1013,7 +1030,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
         Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(false), resultsMap, null, null, 0);
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(Description.FORMAT_NONE), resultsMap, null, null, 0);
         return results.getLastModified();
     }
 

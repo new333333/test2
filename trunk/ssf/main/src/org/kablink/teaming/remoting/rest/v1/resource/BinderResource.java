@@ -70,7 +70,7 @@ public class BinderResource extends AbstractResource {
     public SearchResultList<BinderBrief> getBinders(@QueryParam("id") Set<Long> ids,
                                                     @QueryParam("library_mod_times") @DefaultValue("false") boolean libraryModTimes,
                                                     @QueryParam("library_info") @DefaultValue("false") boolean libraryInfo,
-                                                    @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                    @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
                                                     @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         boolean skipSearch = true;
@@ -95,7 +95,7 @@ public class BinderResource extends AbstractResource {
         if (!skipSearch) {
             Document queryDoc = buildQueryDocument("<query/>", criterion);
             Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-            SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/binders", null, offset);
+            SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(toDomainFormat(descriptionFormatStr)), resultsMap, "/binders", null, offset);
             Set<Long> foundIds = new HashSet<Long>();
             for (BinderBrief binder : results.getResults()) {
                 missingIds.remove(binder.getId());
@@ -135,7 +135,7 @@ public class BinderResource extends AbstractResource {
     @POST
     @Path("/legacy_query")
    	public SearchResultList<BinderBrief> getBindersViaLegacyQuery(@Context HttpServletRequest request,
-                                                                  @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                                  @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
@@ -143,8 +143,8 @@ public class BinderResource extends AbstractResource {
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/binders/legacy_query", nextParams, offset);
+        nextParams.put("description_format", descriptionFormatStr);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(toDomainFormat(descriptionFormatStr)), resultsMap, "/binders/legacy_query", nextParams, offset);
         return results;
    	}
 
@@ -159,8 +159,8 @@ public class BinderResource extends AbstractResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Binder getBinder(@PathParam("id") long id,
                             @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
-                            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
-        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
+                            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments, toDomainFormat(descriptionFormatStr));
     }
 
     protected org.kablink.teaming.domain.Binder _getBinder(long id) {

@@ -89,7 +89,7 @@ public class UserResource extends AbstractPrincipalResource {
             @QueryParam("keyword") String keyword,
             @QueryParam("name") String name,
             @QueryParam("email") String email,
-            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
 
@@ -118,11 +118,11 @@ public class UserResource extends AbstractPrincipalResource {
         }
 
         String nextUrl = "/users";
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        nextParams.put("description_format", descriptionFormatStr);
         Document queryDoc = buildQueryDocument("<query/>", criterion);
         Map resultMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<UserBrief> results = new SearchResultList<UserBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new UserBriefBuilder(textDescriptions), resultMap, nextUrl, nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new UserBriefBuilder(toDomainFormat(descriptionFormatStr)), resultMap, nextUrl, nextParams, offset);
 		return results;
 	}
 	
@@ -131,7 +131,7 @@ public class UserResource extends AbstractPrincipalResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public User createUser(User user, @QueryParam ("password") String password,
-                           @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
+                           @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
             throws WriteFilesException, WriteEntryDataException {
         if (user.getName()==null || user.getName().length()==0) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No name specified for the user to be created.");
@@ -149,19 +149,19 @@ public class UserResource extends AbstractPrincipalResource {
             defId = user.getDefinition().getId();
         }
 
-        return ResourceUtil.buildUser(getProfileModule().addUser(defId, inputData, null, null), true, textDescriptions);
+        return ResourceUtil.buildUser(getProfileModule().addUser(defId, inputData, null, null), true, toDomainFormat(descriptionFormatStr));
 	}
 
     @GET
     @Path("/name/{name}")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public User getUser(@PathParam("name") String name,
+    public User getUserByName(@PathParam("name") String name,
                         @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
-                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+                        @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         if (name==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing name query parameter.");
         }
-        return ResourceUtil.buildUser(getProfileModule().getUser(name), includeAttachments, textDescriptions);
+        return ResourceUtil.buildUser(getProfileModule().getUser(name), includeAttachments, toDomainFormat(descriptionFormatStr));
     }
 
     @GET
@@ -169,8 +169,8 @@ public class UserResource extends AbstractPrincipalResource {
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public User getUser(@PathParam("id") long userId,
                         @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
-                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
-        return ResourceUtil.buildUser(_getUser(userId), includeAttachments, textDescriptions);
+                        @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        return ResourceUtil.buildUser(_getUser(userId), includeAttachments, toDomainFormat(descriptionFormatStr));
     }
 
     @PUT
@@ -178,14 +178,14 @@ public class UserResource extends AbstractPrincipalResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public User updateUser(@PathParam("id") long id, User user,
                            @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
-                           @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
+                           @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
             throws WriteFilesException, WriteEntryDataException {
         org.kablink.teaming.domain.User existing = _getUser(id);
         if (user.isDisabled()!=null && user.isDisabled()!=existing.isDisabled()) {
             getProfileModule().disableEntry(id, user.isDisabled());
         }
         getProfileModule().modifyEntry(id, new RestModelInputData(user));
-        return getUser(id, includeAttachments, textDescriptions);
+        return getUser(id, includeAttachments, descriptionFormatStr);
     }
 
     @POST
