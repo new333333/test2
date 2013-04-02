@@ -104,7 +104,7 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		content.add(buildReqAndConnectionsSection());
 
 		// Web Services
-		content.add(buildWebServiceSection());
+		//content.add(buildWebServiceSection());
 
 		// Outbound
 		content.add(buildOutboundEmailSection());
@@ -829,27 +829,27 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
 			}
 
-			row++;
-			{
-				// Use Access Gateway for WebDav Connections
-				InlineLabel keyLabel = new InlineLabel(RBUNDLE.useAccessGatewayForWebDav());
-				table.setWidget(row, 0, keyLabel);
-				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-
-				boolean value = sso.isiChainWebDAVProxyEnabled();
-				InlineLabel valueLabel = new InlineLabel(value ? RBUNDLE.trueStr() : RBUNDLE.falseStr());
-				table.setWidget(row, 1, valueLabel);
-				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-
-				// Web Dav Host
-				keyLabel = new InlineLabel(RBUNDLE.webDavAccessGatewayAddrColon());
-				table.setWidget(row, 2, keyLabel);
-				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
-
-				valueLabel = new InlineLabel(sso.getiChainWebDAVProxyHost());
-				table.setWidget(row, 3, valueLabel);
-				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
-			}
+//			row++;
+//			{
+//				// Use Access Gateway for WebDav Connections
+//				InlineLabel keyLabel = new InlineLabel(RBUNDLE.useAccessGatewayForWebDav());
+//				table.setWidget(row, 0, keyLabel);
+//				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+//
+//				boolean value = sso.isiChainWebDAVProxyEnabled();
+//				InlineLabel valueLabel = new InlineLabel(value ? RBUNDLE.trueStr() : RBUNDLE.falseStr());
+//				table.setWidget(row, 1, valueLabel);
+//				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+//
+//				// Web Dav Host
+//				keyLabel = new InlineLabel(RBUNDLE.webDavAccessGatewayAddrColon());
+//				table.setWidget(row, 2, keyLabel);
+//				table.getFlexCellFormatter().addStyleName(row, 2, "table-key");
+//
+//				valueLabel = new InlineLabel(sso.getiChainWebDAVProxyHost());
+//				table.setWidget(row, 3, valueLabel);
+//				table.getFlexCellFormatter().addStyleName(row, 3, "table-value");
+//			}
 		}
 
 		// We are displaying network http port and secure port as part of reverse proxy
