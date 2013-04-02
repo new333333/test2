@@ -2556,6 +2556,10 @@ public final class ConfigService
 				+ " /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf.disabled", true);
 
 		executeCommand("sudo rcmysql stop", true);
+		
+		executeCommand("sudo rcnovell-gmetad restart", true);
+		executeCommand("sudo rcnovell-gmond restart", true);
+		executeCommand("sudo chkconfig mysql off", true);
 	}
 
 	public static void reverConfiguration() throws IOException
