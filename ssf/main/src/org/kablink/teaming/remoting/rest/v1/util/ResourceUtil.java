@@ -102,8 +102,11 @@ public class ResourceUtil {
     };
 
     public static Calendar toCalendar(Date date) {
-   		Calendar cal = Calendar.getInstance();
-   		cal.setTime(date);
+   		Calendar cal = null;
+        if (date!=null) {
+            cal = Calendar.getInstance();
+            cal.setTime(date);
+        }
    		return cal;
    	}
 
@@ -683,7 +686,7 @@ public class ResourceUtil {
     public static Description buildDescription(org.kablink.teaming.domain.Description description, boolean textDescriptions){
         Description model = new Description();
         if (textDescriptions) {
-            model.setText(description.getStrippedText());
+            model.setText(description.getStrippedText(true));
             model.setFormat(org.kablink.teaming.domain.Description.FORMAT_NONE);
         } else {
             model.setText(description.getText());
