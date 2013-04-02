@@ -2153,7 +2153,7 @@ public final class ConfigService
 		commandToRun.append(" -p'" + config.getResourcePassword() + "'");
 		commandToRun.append(" -D" + config.getResourceDatabase());
 		commandToRun.append(" -e \"update SS_ZoneConfig set fsaAutoUpdateUrl='");
-		commandToRun.append("https://" + hostName + "/desktopapp'");
+		commandToRun.append("https://" + hostName + ":9080/desktopapp'");
 		commandToRun.append(" where zoneId=1 and (fsaAutoUpdateUrl is null or fsaAutoUpdateUrl='')\"");
 
 		// W
@@ -2187,14 +2187,6 @@ public final class ConfigService
 				throw new ConfigurationSaveException();
 			}
 
-			// Setup Encoding on /etc/init.d/teaming file
-			info = executeCommand("sudo sed -i -e's/ISO8859-1/UTF-8/' /etc/init.d/teaming", true);
-			if (info.getExitValue() != 0)
-			{
-				logger.debug("Error setting up UTF-8 Encoding " + info.getExitValue());
-				throw new ConfigurationSaveException();
-			}
-
 			// Replace Novell Vibe with Novell Filr on ssf-ext.properties
 			info = executeCommand(
 					"sudo sed -i \"s/Novell Vibe/Novell Filr/g\" /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties",
@@ -2214,15 +2206,6 @@ public final class ConfigService
 				logger.debug("Error setting up data.luceneindex.root.dir=/vastorage/search" + info.getExitValue());
 				throw new ConfigurationSaveException();
 			}
-
-			// If the configuration is not done, add this to restart filr after reboot
-			File file = new File("/filrinstall/configured");
-			// If it exists, ignore
-			if (!file.exists())
-			{
-				// Setup chkconfig so that teaming starts always
-				info = executeCommand("sudo chkconfig teaming on", true);
-			}
 		}
 
 		// Delete the backup copy
@@ -2240,6 +2223,13 @@ public final class ConfigService
 		// Save filrconfig locally to /vastorage/conf/vaconfig.zip
 		saveFilrConfigLocally();
 
+		//Delete /etc/init.d/teaming file if it exists
+		File file = new File("/etc/init.d/teaming");
+		if (file.exists())
+		{
+			logger.debug("Deleting /etc/init.d/teaming " + file.delete());
+		}
+		
 		if (restartServer)
 			startFilrServer();
 	}
