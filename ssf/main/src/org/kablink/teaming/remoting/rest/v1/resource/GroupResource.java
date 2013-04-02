@@ -61,7 +61,7 @@ public class GroupResource extends AbstractPrincipalResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<GroupBrief> getGroups(
 		@QueryParam("name") String name,
-        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+        @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
 		@QueryParam("first") Integer offset,
 		@QueryParam("count") Integer maxCount) {
         Map<String, Object> options = new HashMap<String, Object>();
@@ -80,10 +80,10 @@ public class GroupResource extends AbstractPrincipalResource {
         if (maxCount!=null) {
             options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
         }
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        nextParams.put("description_format", descriptionFormatStr);
         Map resultMap = getProfileModule().getGroups(options);
         SearchResultList<GroupBrief> results = new SearchResultList<GroupBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new GroupBriefBuilder(textDescriptions), resultMap, "/groups", nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new GroupBriefBuilder(toDomainFormat(descriptionFormatStr)), resultMap, "/groups", nextParams, offset);
 		return results;
 	}
 	
@@ -91,7 +91,8 @@ public class GroupResource extends AbstractPrincipalResource {
 	@POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public Group createGroup(Group group, @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
+	public Group createGroup(Group group,
+                             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
             throws WriteFilesException, WriteEntryDataException {
 		// optionally accept initial password
         String defId = null;
@@ -99,7 +100,8 @@ public class GroupResource extends AbstractPrincipalResource {
             defId = group.getDefinition().getId();
         }
 
-        return ResourceUtil.buildGroup(getProfileModule().addGroup(defId, new RestModelInputData(group), null, null), true, textDescriptions);
+        return ResourceUtil.buildGroup(getProfileModule().addGroup(defId, new RestModelInputData(group), null, null),
+                true, toDomainFormat(descriptionFormatStr));
 	}
 
     @GET
@@ -107,11 +109,11 @@ public class GroupResource extends AbstractPrincipalResource {
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Group getGroup(@PathParam("name") String name,
                           @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
-                          @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         if (name==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing name query parameter.");
         }
-        return ResourceUtil.buildGroup(getProfileModule().getGroup(name), includeAttachments, textDescriptions);
+        return ResourceUtil.buildGroup(getProfileModule().getGroup(name), includeAttachments, toDomainFormat(descriptionFormatStr));
     }
 
     @GET
@@ -119,8 +121,8 @@ public class GroupResource extends AbstractPrincipalResource {
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Group getGroup(@PathParam("id") long id,
                         @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
-                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
-        return ResourceUtil.buildGroup(_getGroup(id), includeAttachments, textDescriptions);
+                        @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        return ResourceUtil.buildGroup(_getGroup(id), includeAttachments, toDomainFormat(descriptionFormatStr));
     }
 
     @PUT

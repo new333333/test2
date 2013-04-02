@@ -48,17 +48,17 @@ import java.util.Map;
  * Time: 11:15 AM
  */
 abstract public class DefinableEntityBriefBuilder {
-    private boolean textDescriptions;
+    private int descriptionFormat;
 
     protected DefinableEntityBriefBuilder() {
     }
 
-    protected DefinableEntityBriefBuilder(boolean textDescriptions) {
-        this.textDescriptions = textDescriptions;
+    protected DefinableEntityBriefBuilder(int descriptionFormat) {
+        this.descriptionFormat = descriptionFormat;
     }
 
-    public void setTextDescriptions(boolean textDescriptions) {
-        this.textDescriptions = textDescriptions;
+    public void setDescriptionFormat(int descriptionFormat) {
+        this.descriptionFormat = descriptionFormat;
     }
 
     public void populateDefinableEntityBrief(DefinableEntityBrief model, Map entry, String parentBinderField) {
@@ -70,7 +70,7 @@ abstract public class DefinableEntityBriefBuilder {
 
         String descText = (String) entry.get(Constants.DESC_FIELD);
         String descFormat = (String) entry.get(Constants.DESC_FORMAT_FIELD);
-        model.setDescription(ResourceUtil.buildDescription(descText, descFormat, textDescriptions));
+        model.setDescription(ResourceUtil.buildDescription(descText, descFormat, descriptionFormat));
 
         model.setEntityType((String) entry.get(Constants.ENTITY_FIELD));
         model.setFamily((String) entry.get(Constants.FAMILY_FIELD));

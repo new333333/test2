@@ -18,8 +18,8 @@ public class ReplyBriefBuilder extends BaseFolderEntryBriefBuilder implements Se
     public ReplyBriefBuilder() {
     }
 
-    public ReplyBriefBuilder(boolean textDescriptions) {
-        super(textDescriptions);
+    public ReplyBriefBuilder(int descriptionFormat) {
+        super(descriptionFormat);
     }
 
     public ReplyBrief build(Map entry) {

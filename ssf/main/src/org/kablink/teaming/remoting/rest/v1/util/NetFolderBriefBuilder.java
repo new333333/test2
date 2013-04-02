@@ -45,8 +45,8 @@ public class NetFolderBriefBuilder extends BaseBinderBriefBuilder implements Sea
         super();
     }
 
-    public NetFolderBriefBuilder(boolean textDescriptions) {
-        super(textDescriptions);
+    public NetFolderBriefBuilder(int descriptionFormat) {
+        super(descriptionFormat);
     }
 
     public NetFolderBrief build(Map entry) {

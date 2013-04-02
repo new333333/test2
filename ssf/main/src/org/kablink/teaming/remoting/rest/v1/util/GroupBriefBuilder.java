@@ -48,8 +48,8 @@ public class GroupBriefBuilder extends PrincipalBriefBuilder implements SearchRe
     public GroupBriefBuilder() {
     }
 
-    public GroupBriefBuilder(boolean textDescriptions) {
-        super(textDescriptions);
+    public GroupBriefBuilder(int descriptionFormat) {
+        super(descriptionFormat);
     }
 
     public GroupBrief build(Map entry) {

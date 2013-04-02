@@ -98,7 +98,7 @@ public class FolderResource extends AbstractBinderResource {
     // Read sub-folders
     @GET
     public SearchResultList<BinderBrief> getFolders(@QueryParam("id") Set<Long> ids,
-            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Junction criterion = Restrictions.conjunction();
@@ -114,8 +114,8 @@ public class FolderResource extends AbstractBinderResource {
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/folders", nextParams, offset);
+        nextParams.put("description_format", descriptionFormatStr);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(toDomainFormat(descriptionFormatStr)), resultsMap, "/folders", nextParams, offset);
         return results;
     }
 
@@ -123,7 +123,7 @@ public class FolderResource extends AbstractBinderResource {
     @POST
     @Path("/legacy_query")
    	public SearchResultList<BinderBrief> getFoldersViaLegacyQuery(@Context HttpServletRequest request,
-                                                                  @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                                  @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
    			                                        @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
@@ -131,8 +131,8 @@ public class FolderResource extends AbstractBinderResource {
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/folders/legacy_query", nextParams, offset);
+        nextParams.put("description_format", descriptionFormatStr);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(toDomainFormat(descriptionFormatStr)), resultsMap, "/folders/legacy_query", nextParams, offset);
         return results;
     }
 
@@ -198,18 +198,19 @@ public class FolderResource extends AbstractBinderResource {
     @Path("{id}/binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getSubBinders(@PathParam("id") long id,
-                                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
-                                                       @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount,
-                                                       @Context HttpServletRequest request) {
+                                  @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+                                  @QueryParam("first") @DefaultValue("0") Integer offset,
+                                  @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                  @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        nextParams.put("description_format", descriptionFormatStr);
         Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, offset, maxCount, "/folders/" + id + "/binders", nextParams, textDescriptions, ifModifiedSince);
+        SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, offset, maxCount, "/folders/" + id + "/binders",
+                nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
     }
 
@@ -218,19 +219,19 @@ public class FolderResource extends AbstractBinderResource {
 	@Path("{id}/folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Response getSubFolders(@PathParam("id") long id,
-                                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                  @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
 			@QueryParam("first") @DefaultValue("0") Integer offset,
 			@QueryParam("count") @DefaultValue("-1") Integer maxCount,
             @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        nextParams.put("description_format", descriptionFormatStr);
         Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
-                offset, maxCount, "/folders/" + id + "/folders", nextParams, textDescriptions, ifModifiedSince);
+                offset, maxCount, "/folders/" + id + "/folders", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
 	}
 
@@ -240,7 +241,7 @@ public class FolderResource extends AbstractBinderResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public org.kablink.teaming.rest.v1.model.Binder createSubFolder(@PathParam("id") long id, org.kablink.teaming.rest.v1.model.Binder binder,
                                                                     @QueryParam("template") Long templateId,
-                                                                    @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
+                                                                    @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
                throws WriteFilesException, WriteEntryDataException {
         if (templateId!=null) {
             TemplateBinder template = getTemplateModule().getTemplate(templateId);
@@ -248,7 +249,7 @@ public class FolderResource extends AbstractBinderResource {
                 throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The specified 'template' parameter must be a folder template.");
             }
         }
-        return createBinder(id, binder, templateId, textDescriptions);
+        return createBinder(id, binder, templateId, toDomainFormat(descriptionFormatStr));
     }
 
 	// Read entries
@@ -257,7 +258,7 @@ public class FolderResource extends AbstractBinderResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<FolderEntryBrief> getFolderEntries(@PathParam("id") long id,
                                                                @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
-                                                               @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                               @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                             @QueryParam("first") Integer offset,
                                                             @QueryParam("count") Integer maxCount,
                                                             @QueryParam("file_name") String fileName) {
@@ -286,8 +287,8 @@ public class FolderResource extends AbstractBinderResource {
             results.setFirst(offset);
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-            params.put("text_descriptions", Boolean.toString(textDescriptions));
-            SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(textDescriptions), resultMap, "/folders/" + id + "/entries", params, offset);
+            params.put("description_format", descriptionFormatStr);
+            SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(toDomainFormat(descriptionFormatStr)), resultMap, "/folders/" + id + "/entries", params, offset);
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -301,7 +302,7 @@ public class FolderResource extends AbstractBinderResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public FolderEntry createFolderEntry(@PathParam("id") long id,
                                          @QueryParam("file_entry") @DefaultValue("false") boolean fileEntry,
-                                         @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                         @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                          FolderEntry entry) throws WriteFilesException, WriteEntryDataException {
         Folder folder = _getFolder(id);
 
@@ -329,7 +330,7 @@ public class FolderResource extends AbstractBinderResource {
         populateTimestamps(options, entry);
         org.kablink.teaming.domain.FolderEntry result = getFolderModule().addEntry(id, defId, new RestModelInputData(entry), null, options);
         SimpleProfiler.stop("REST_folder_createFolderEntry");
-        return ResourceUtil.buildFolderEntry(result, true, textDescriptions);
+        return ResourceUtil.buildFolderEntry(result, true, toDomainFormat(descriptionFormatStr));
     }
 
 // Read entries
@@ -344,12 +345,12 @@ public class FolderResource extends AbstractBinderResource {
                                                   @QueryParam("replies") @DefaultValue("true") boolean includeReplies,
                                                   @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                   @QueryParam("keyword") String keyword,
-                                                  @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                  @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         _getFolder(id);
         return searchForLibraryEntities(keyword, buildSearchBinderCriterion(id, recursive), recursive, offset, maxCount,
-                includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, textDescriptions,
+                includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, toDomainFormat(descriptionFormatStr),
                 "/folders/" + id + "/library_entities");
 	}
 

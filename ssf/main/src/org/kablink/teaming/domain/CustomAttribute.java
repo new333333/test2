@@ -541,15 +541,17 @@ public class CustomAttribute extends ZonedObject {
  	    }
 	    return null;
 	}
-	public Object getRawValue(boolean textDescriptions) {
+	public Object getRawValue(int descriptionFormat) {
 	    switch(getValueType()) {
     		case STRING:
             case DESCRIPTION:
     		    if (!Validator.isNull(stringValue))
     		        return stringValue;
     		    else if (description != null)
-                    if (textDescriptions) {
+                    if (descriptionFormat==Description.FORMAT_NONE) {
                         return description.getStrippedText();
+                    } else if (descriptionFormat==Description.FORMAT_HTML) {
+                        return description.getHtmlText();
                     } else {
                         return description.getText();
                     }
@@ -584,11 +586,11 @@ public class CustomAttribute extends ZonedObject {
     	    	Set v = new LinkedHashSet();
     	    	if (iValues == null) {//probably not in order if bulk loaded, but not a problem for indexing
     	    		for (Iterator iter=values.iterator(); iter.hasNext();) {
-    	    			v.add(((CustomAttributeListElement)iter.next()).getRawValue(textDescriptions));
+    	    			v.add(((CustomAttributeListElement)iter.next()).getRawValue(descriptionFormat));
     	    		}
     	    	} else {
     	    		for (Iterator iter=iValues.iterator(); iter.hasNext();) {
-    	    			v.add(((CustomAttributeListElement)iter.next()).getRawValue(textDescriptions));
+    	    			v.add(((CustomAttributeListElement)iter.next()).getRawValue(descriptionFormat));
     	    		}
     	    	}
     	    	return v;
@@ -596,11 +598,11 @@ public class CustomAttribute extends ZonedObject {
     	    	Set s = new TreeSet();  // order naturally
     	    	if (iValues == null) {
     	    		for (Iterator iter=values.iterator(); iter.hasNext();) {
-    	    			s.add(((CustomAttributeListElement)iter.next()).getRawValue(textDescriptions));
+    	    			s.add(((CustomAttributeListElement)iter.next()).getRawValue(descriptionFormat));
     	    		}
     	    	} else {
     	    		for (Iterator iter=iValues.iterator(); iter.hasNext();) {
-    	    			s.add(((CustomAttributeListElement)iter.next()).getRawValue(textDescriptions));
+    	    			s.add(((CustomAttributeListElement)iter.next()).getRawValue(descriptionFormat));
     	    		}
     	    	}
     	    	return s;

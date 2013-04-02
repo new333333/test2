@@ -83,24 +83,24 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
     @GET
     @Path("{id}/reply_tree")
     public SearchResultTree<Reply> getReplyTree(@PathParam("id") Long id,
-                                                      @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+                                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
         SearchResultTree<Reply> tree = new SearchResultTree<Reply>();
-        populateReplies(entry, tree, textDescriptions);
+        populateReplies(entry, tree, toDomainFormat(descriptionFormatStr));
         return tree;
     }
 
     @GET
     @Path("{id}/replies")
     public SearchResultList<Reply> getReplies(@PathParam("id") Long id,
-                                              @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+                                              @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
         List replies = entry.getReplies();
         SearchResultList<Reply> results = new SearchResultList<Reply>();
         for (Object o : replies) {
             org.kablink.teaming.domain.FolderEntry reply = (org.kablink.teaming.domain.FolderEntry) o;
             if (!reply.isPreDeleted()) {
-                results.append(ResourceUtil.buildReply(reply, false, textDescriptions));
+                results.append(ResourceUtil.buildReply(reply, false, toDomainFormat(descriptionFormatStr)));
             }
         }
         return results;
@@ -112,7 +112,8 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Reply addReply(@PathParam("id") Long id,
                           Reply entry,
-                          @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
+                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
+            throws WriteFilesException, WriteEntryDataException {
         org.kablink.teaming.domain.FolderEntry parent = _getFolderEntry(id);
         String defId = null;
         if (entry.getDefinition()!=null) {
@@ -121,7 +122,7 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
         Map options = new HashMap();
       	populateTimestamps(options, entry);
         org.kablink.teaming.domain.FolderEntry newEntry = getFolderModule().addReply(null, id, defId, new RestModelInputData(entry), null, options);
-        return ResourceUtil.buildReply(newEntry, true, textDescriptions);
+        return ResourceUtil.buildReply(newEntry, true, toDomainFormat(descriptionFormatStr));
     }
 
 
@@ -175,13 +176,13 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
         getFolderModule().deleteTag(null, id, tagId);
     }
 
-    private void populateReplies(org.kablink.teaming.domain.FolderEntry entry, SearchResultTreeNode<Reply> node, boolean textDescriptions) {
+    private void populateReplies(org.kablink.teaming.domain.FolderEntry entry, SearchResultTreeNode<Reply> node, int descriptionFormat) {
         List replies = entry.getReplies();
         for (Object o : replies) {
             org.kablink.teaming.domain.FolderEntry reply = (org.kablink.teaming.domain.FolderEntry) o;
             if (!reply.isPreDeleted()) {
-                SearchResultTreeNode<Reply> childNode = node.addChild(ResourceUtil.buildReply(reply, false, textDescriptions));
-                populateReplies(reply, childNode, textDescriptions);
+                SearchResultTreeNode<Reply> childNode = node.addChild(ResourceUtil.buildReply(reply, false, descriptionFormat));
+                populateReplies(reply, childNode, descriptionFormat);
             }
         }
     }

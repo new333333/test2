@@ -136,9 +136,18 @@ public class Description {
 
     public String getStrippedText(boolean withNewLines) {
     	if (getFormat() != FORMAT_HTML) return getText();
-    	return HtmlToTextParser.htmlToText(getText());
-
+        if (withNewLines) {
+    	    return HtmlToTextParser.htmlToText(getText());
+        } else {
+            return Html.stripHtml(getText());
+        }
     }
+
+    public String getHtmlText() {
+        if (getFormat() != FORMAT_NONE) return getText();
+        return Html.plainTextToHTML2(getText());
+    }
+
     public String toString() {
     	return getText();
     }

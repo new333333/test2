@@ -118,9 +118,9 @@ public class ShareResource extends AbstractResource {
     public BinderTree getSharedByUserBinderTree(@PathParam("id") Long userId,
                                                 @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                 @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
-                                                @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+                                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         SharedBinderBrief [] sharedBinders = getSharedByBinders(userId, false, false, showHidden, showUnhidden);
-        return getSubBinderTree(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", sharedBinders, null, textDescriptions);
+        return getSubBinderTree(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", sharedBinders, null, toDomainFormat(descriptionFormatStr));
     }
 
     @GET
@@ -175,14 +175,14 @@ public class ShareResource extends AbstractResource {
                                                                                @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                                @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                                @QueryParam("keyword") String keyword,
-                                                                               @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                                               @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                                                @QueryParam("first") @DefaultValue("0") Integer offset,
                                                                                @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedBySpec(userId);
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.SHARED_BY_ME_ID, null, recursive,
                 includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword,
-                textDescriptions, offset, maxCount, "/shares/by_user/" + userId + "/library_entities", spec,
+                toDomainFormat(descriptionFormatStr), offset, maxCount, "/shares/by_user/" + userId + "/library_entities", spec,
                 showHidden, showUnhidden);
         return results;
     }
@@ -214,15 +214,15 @@ public class ShareResource extends AbstractResource {
             @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
             @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
             @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
-            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("20") Integer maxCount) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        nextParams.put("description_format", descriptionFormatStr);
 
         ShareItemSelectSpec spec = getSharedBySpec(userId);
-        return _getRecentActivity(ObjectKeys.SHARED_BY_ME_ID, includeParentPaths, textDescriptions, offset, maxCount, spec,
+        return _getRecentActivity(ObjectKeys.SHARED_BY_ME_ID, includeParentPaths, toDomainFormat(descriptionFormatStr), offset, maxCount, spec,
                 null, "/shares/by_user/" + userId + "/recent_activity", nextParams, showHidden, showUnhidden);
     }
 
@@ -254,9 +254,9 @@ public class ShareResource extends AbstractResource {
     public BinderTree getSharedWithUserBinderTree(@PathParam("id") Long userId,
                                                   @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                   @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
-                                                  @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+                                                  @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, false, false, showHidden, showUnhidden);
-        return getSubBinderTree(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", sharedBinders, null, textDescriptions);
+        return getSubBinderTree(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", sharedBinders, null, toDomainFormat(descriptionFormatStr));
     }
 
     @GET
@@ -298,14 +298,14 @@ public class ShareResource extends AbstractResource {
                                                       @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                       @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                       @QueryParam("keyword") String keyword,
-                                                      @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                      @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                       @QueryParam("first") @DefaultValue("0") Integer offset,
                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.SHARED_WITH_ME_ID, userId, recursive,
                 includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword,
-                textDescriptions, offset, maxCount, "/shares/with_user/" + userId + "/library_entities", spec,
+                toDomainFormat(descriptionFormatStr), offset, maxCount, "/shares/with_user/" + userId + "/library_entities", spec,
                 showHidden, showUnhidden);
         return results;
     }
@@ -384,9 +384,10 @@ public class ShareResource extends AbstractResource {
     public BinderTree getSharedWithUserLibraryTree(@PathParam("id") Long userId,
                                                    @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                    @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
-                                                   @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+                                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, true, false, showHidden, showUnhidden);
-        return getSubBinderTree(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", sharedBinders, buildLibraryTreeCriterion(), textDescriptions);
+        return getSubBinderTree(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", sharedBinders,
+                buildLibraryTreeCriterion(), toDomainFormat(descriptionFormatStr));
     }
 
     @GET
@@ -397,19 +398,20 @@ public class ShareResource extends AbstractResource {
             @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
             @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
             @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
-            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("20") Integer maxCount) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        nextParams.put("description_format", descriptionFormatStr);
 
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
-        return _getRecentActivity(ObjectKeys.SHARED_WITH_ME_ID, includeParentPaths, textDescriptions, offset, maxCount,
-                spec, userId, "/shares/with_user/" + userId + "/recent_activity", nextParams, showHidden, showUnhidden);
+        return _getRecentActivity(ObjectKeys.SHARED_WITH_ME_ID, includeParentPaths, toDomainFormat(descriptionFormatStr),
+                offset, maxCount, spec, userId, "/shares/with_user/" + userId + "/recent_activity", nextParams,
+                showHidden, showUnhidden);
     }
 
-    private SearchResultList<RecentActivityEntry> _getRecentActivity(Long topId, boolean includeParentPaths, boolean textDescriptions,
+    private SearchResultList<RecentActivityEntry> _getRecentActivity(Long topId, boolean includeParentPaths, int descriptionFormat,
                                                                   Integer offset, Integer maxCount, ShareItemSelectSpec spec,
                                                                   Long excludedSharerId, String nextUrl, Map<String, Object> nextParams,
                                                                   boolean showHidden, boolean showUnhidden) {
@@ -434,7 +436,7 @@ public class ShareResource extends AbstractResource {
             }
         }
         Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binderIds, entryIds, null, true, Constants.LASTACTIVITY_FIELD);
-        return _getRecentActivity(includeParentPaths, textDescriptions, offset, maxCount, criteria, nextUrl, nextParams);
+        return _getRecentActivity(includeParentPaths, descriptionFormat, offset, maxCount, criteria, nextUrl, nextParams);
     }
 
     protected SharedBinderBrief [] getSharedByBinders(Long userId, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
@@ -598,7 +600,7 @@ public class ShareResource extends AbstractResource {
         return showUnhidden;
     }
 
-    protected BinderTree getSubBinderTree(Long topId, String topHref, SharedBinderBrief [] sharedBinders, Criterion filter, boolean textDescriptions) {
+    protected BinderTree getSubBinderTree(Long topId, String topHref, SharedBinderBrief [] sharedBinders, Criterion filter, int descriptionFormat) {
         BinderTree results = new BinderTree();
         if (sharedBinders.length>0) {
             ParentBinder topParent = new ParentBinder(topId, topHref);
@@ -609,7 +611,7 @@ public class ShareResource extends AbstractResource {
             crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
             crit.add(entryAncentryCriterion(sharedBinders));
             Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
-            SearchResultBuilderUtil.buildSearchResultsTree(results, sharedBinders, new BinderBriefBuilder(textDescriptions), resultMap);
+            SearchResultBuilderUtil.buildSearchResultsTree(results, sharedBinders, new BinderBriefBuilder(descriptionFormat), resultMap);
             results.setItem(null);
             for (SearchResultTreeNode<BinderBrief> child : results.getChildren()) {
                 child.getItem().setParentBinder(topParent);
@@ -651,7 +653,7 @@ public class ShareResource extends AbstractResource {
                                                                    boolean includeBinders, boolean includeFolderEntries,
                                                                    boolean includeFiles, boolean includeReplies,
                                                                    boolean includeParentPaths, String keyword,
-                                                                   boolean textDescriptions, Integer offset,
+                                                                   int descriptionFormat, Integer offset,
                                                                    Integer maxCount, String nextUrl,
                                                                    ShareItemSelectSpec spec, boolean showHidden, boolean showUnhidden) {
         List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID);
@@ -683,7 +685,7 @@ public class ShareResource extends AbstractResource {
                 searchContext.add(shareCrit);
             }
             results = searchForLibraryEntities(keyword, searchContext, recursive, offset, maxCount, includeBinders,
-                    includeFolderEntries, includeReplies, includeFiles, includeParentPaths, textDescriptions, nextUrl);
+                    includeFolderEntries, includeReplies, includeFiles, includeParentPaths, descriptionFormat, nextUrl);
         } else {
             results = new SearchResultList<SearchableObject>();
         }

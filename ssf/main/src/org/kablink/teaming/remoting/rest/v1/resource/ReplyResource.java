@@ -89,7 +89,7 @@ public class ReplyResource extends AbstractFolderEntryResource {
 
 	@GET
 	public SearchResultList<ReplyBrief> getReply(@QueryParam("id") Set<Long> ids,
-                                                 @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                  @QueryParam("first") @DefaultValue("0") Integer offset,
 			                                     @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Junction criterion = Restrictions.conjunction();
@@ -105,8 +105,9 @@ public class ReplyResource extends AbstractFolderEntryResource {
         Map replies = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<ReplyBrief> results = new SearchResultList<ReplyBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        SearchResultBuilderUtil.buildSearchResults(results, new ReplyBriefBuilder(textDescriptions), replies, "/replies", nextParams, offset);
+        nextParams.put("description_format", descriptionFormatStr);
+        SearchResultBuilderUtil.buildSearchResults(results, new ReplyBriefBuilder(toDomainFormat(descriptionFormatStr)),
+                replies, "/replies", nextParams, offset);
         return results;
 	}
 
@@ -117,9 +118,9 @@ public class ReplyResource extends AbstractFolderEntryResource {
 	public Reply getReply(
 			@PathParam("id") long id,
             @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
-            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         org.kablink.teaming.domain.FolderEntry hEntry = _getFolderEntry(id);
-		return ResourceUtil.buildReply(hEntry, includeAttachments, textDescriptions);
+		return ResourceUtil.buildReply(hEntry, includeAttachments, toDomainFormat(descriptionFormatStr));
 	}
 
     // Update folder entry
@@ -128,7 +129,7 @@ public class ReplyResource extends AbstractFolderEntryResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Reply putReply(@PathParam("id") long id, Reply entry,
-                                      @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
+                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
             throws WriteFilesException, WriteEntryDataException {
         SimpleProfiler.start("folderService_modifyEntry");
         HashMap options = new HashMap();
@@ -137,7 +138,7 @@ public class ReplyResource extends AbstractFolderEntryResource {
         // Read it back from the database
         org.kablink.teaming.domain.Entry dEntry = getFolderModule().getEntry(null, id);
         SimpleProfiler.stop("folderService_modifyEntry");
-        return ResourceUtil.buildReply((org.kablink.teaming.domain.FolderEntry) dEntry, true, textDescriptions);
+        return ResourceUtil.buildReply((org.kablink.teaming.domain.FolderEntry) dEntry, true, toDomainFormat(descriptionFormatStr));
 	}
 
     protected org.kablink.teaming.domain.FolderEntry _getFolderEntry(long id) {

@@ -47,8 +47,8 @@ public class ApplicationBriefBuilder extends PrincipalBriefBuilder implements Se
     public ApplicationBriefBuilder() {
     }
 
-    public ApplicationBriefBuilder(boolean textDescriptions) {
-        super(textDescriptions);
+    public ApplicationBriefBuilder(int descriptionFormat) {
+        super(descriptionFormat);
     }
 
     public ApplicationBrief build(Map entry) {

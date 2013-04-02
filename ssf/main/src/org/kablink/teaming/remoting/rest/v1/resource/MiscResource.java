@@ -144,7 +144,7 @@ public class MiscResource extends AbstractResource {
     @POST
     @Path("/legacy_query")
    	public SearchResultList<SearchableObject> legacySearch(@Context HttpServletRequest request,
-                                                           @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                           @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                          @QueryParam("first") @DefaultValue("0") Integer offset,
                                                          @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
@@ -152,8 +152,9 @@ public class MiscResource extends AbstractResource {
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap, "/legacy_query", nextParams, offset);
+        nextParams.put("description_format", descriptionFormatStr);
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(toDomainFormat(descriptionFormatStr)),
+                resultsMap, "/legacy_query", nextParams, offset);
         return results;
     }
 }

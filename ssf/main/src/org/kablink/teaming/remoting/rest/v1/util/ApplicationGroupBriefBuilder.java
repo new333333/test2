@@ -47,8 +47,8 @@ public class ApplicationGroupBriefBuilder extends PrincipalBriefBuilder implemen
     public ApplicationGroupBriefBuilder() {
     }
 
-    public ApplicationGroupBriefBuilder(boolean textDescriptions) {
-        super(textDescriptions);
+    public ApplicationGroupBriefBuilder(int descriptionFormat) {
+        super(descriptionFormat);
     }
 
     public ApplicationGroupBrief build(Map entry) {
