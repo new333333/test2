@@ -223,7 +223,9 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 				{
 					if (config.getId().equals("MySQL_Default"))
 					{
-						userTextBox.setText(config.getResourceUserName());
+						//userTextBox.setText(config.getResourceUserName());
+						//For filr large deployment default to filr, don't read from installer.xml
+						userTextBox.setText("filr");
 
 						String portStr = getHostPort(config.getResourceUrl());
 						if (portStr != null)
