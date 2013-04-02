@@ -38,6 +38,7 @@
  */
 package org.kablink.teaming.domain;
 import org.kablink.util.Html;
+import org.kablink.util.HtmlToTextParser;
 import org.kablink.util.Validator;
 /**
  * @author janet
@@ -127,10 +128,15 @@ public class Description {
        	int hash = getFormat();
     	hash = 31*hash + getText().hashCode();
     	return hash;
-    }    
+    }
+
     public String getStrippedText() {
+        return getStrippedText(false);
+    }
+
+    public String getStrippedText(boolean withNewLines) {
     	if (getFormat() != FORMAT_HTML) return getText();
-    	return Html.stripHtml(getText());
+    	return HtmlToTextParser.htmlToText(getText());
 
     }
     public String toString() {
