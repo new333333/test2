@@ -201,12 +201,20 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		{
 			protected PasswordAuthentication getPasswordAuthentication()
 			{
-
+				
 				if (protocol.equals("smtp"))
 				{
-					return new PasswordAuthentication(settings.getSmtpUser(), settings.getSmtpPassword());
+					String password = settings.getSmtpPassword();
+					if (password != null && password.equals(""))
+						password = null;
+					return new PasswordAuthentication(settings.getSmtpUser(), password);
 				}
-				return new PasswordAuthentication(settings.getSmtpsUser(), settings.getSmtpsPassword());
+				
+				String password = settings.getSmtpsPassword();
+				if (password != null && password.equals(""))
+					password = null;
+				
+				return new PasswordAuthentication(settings.getSmtpsUser(), password);
 			}
 		});
 
@@ -217,12 +225,20 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 			// See if you can connect
 			if (protocol.equals("smtp"))
 			{
-				transport.connect(settings.getSmtpHost(), settings.getSmtpUser(), settings.getSmtpPassword());
+				String password = settings.getSmtpPassword();
+				if (password != null && password.equals(""))
+					password = null;
+				
+				transport.connect(settings.getSmtpHost(), settings.getSmtpUser(), password);
 				logger.debug("smtp connection success ");
 			}
 			else
 			{
-				transport.connect(settings.getSmtpsHost(), settings.getSmtpsUser(), settings.getSmtpsPassword());
+				String password = settings.getSmtpsPassword();
+				if (password != null && password.equals(""))
+					password = null;
+				
+				transport.connect(settings.getSmtpsHost(), settings.getSmtpsUser(), password);
 			}
 		}
 		catch (NoSuchProviderException e)
