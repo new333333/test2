@@ -9,6 +9,7 @@ import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.LocalHostNotAllowedValidator;
+import org.kabling.teaming.install.client.ValueRequiredBasedOnBoolValidator;
 import org.kabling.teaming.install.client.ValueRequiredValidator;
 import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
@@ -44,6 +45,7 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 	private CheckBox allowSendEmailUsersCheckBox;
 	private GwValueSpinner connectionTimeOutSpinner;
 	private CheckBox localPostfixCheckBox;
+	private ValueRequiredBasedOnBoolValidator passwordRequiredValidator;
 	private static Map<String, String> timezones;
 
 	@Override
@@ -159,7 +161,8 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 			passwordTextBox = new VibePasswordTextBox();
-			passwordTextBox.setValidator(new ValueRequiredValidator(passwordTextBox));
+			passwordRequiredValidator= new ValueRequiredBasedOnBoolValidator(false,passwordTextBox);
+			passwordTextBox.setValidator(passwordRequiredValidator);
 			table.setWidget(row, 1, passwordTextBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -170,6 +173,16 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			authRequiredCheckBox = new CheckBox(RBUNDLE.authRequired());
 			table.setWidget(row, 1, authRequiredCheckBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			
+			authRequiredCheckBox.addClickHandler(new ClickHandler()
+			{
+				
+				@Override
+				public void onClick(ClickEvent event)
+				{
+					passwordRequiredValidator.setRequired(authRequiredCheckBox.getValue());
+				}
+			});
 		}
 
 		{
@@ -206,8 +219,11 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 				@Override
 				public void onClick(ClickEvent event)
 				{
-					testConnButton.setEnabled(false);
+					
 					InstallerConfig config = (InstallerConfig) getDataFromDlg();
+					if (config == null)
+						return;
+					testConnButton.setEnabled(false);
 					AppUtil.getInstallService().testSmtpConnection(config.getEmailSettings(), new AsyncCallback<Boolean>()
 					{
 
@@ -310,10 +326,16 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
-
-		if (!(hostTextBox.isValid() & usernameTextBox.isValid()))
+		if (!usernameTextBox.isValid())
 		{
 			setErrorMessage(RBUNDLE.allFieldsRequired());
+			return null;
+		}
+
+		if (!hostTextBox.isValid())
+		{
+			if (!localPostfixCheckBox.getValue() && hostTextBox.getText().toLowerCase().equals("localhost"))
+			setErrorMessage(RBUNDLE.localHostNotValid());
 			return null;
 		}
 		
@@ -418,6 +440,8 @@ public class OutboundEmailPage extends ConfigPageDlgBox
 			}
 			
 			allowSendEmailUsersCheckBox.setValue(emailSettings.isAllowSendToAllUsers());
+			
+			passwordRequiredValidator.setRequired(authRequiredCheckBox.getValue());
 		}
 		
 		setLocalPostfixEnabled(localPostfixCheckBox.getValue());
