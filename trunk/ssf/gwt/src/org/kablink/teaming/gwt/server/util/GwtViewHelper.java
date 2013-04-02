@@ -7877,8 +7877,9 @@ public class GwtViewHelper {
 				Long			userFileSizeLimitMB = null;
 				
 				// What do we need to check?
-				boolean	checkBinderQuotas      = bm.isBinderDiskQuotaEnabled();
-				boolean	checkUserQuotas        = am.isQuotaEnabled();
+				boolean	enforceQuotas          = ((!(folder.isMirrored())) && (!(folder.isAclExternallyControlled())));
+				boolean	checkBinderQuotas      = (enforceQuotas && bm.isBinderDiskQuotaEnabled());
+				boolean	checkUserQuotas        = (enforceQuotas && am.isQuotaEnabled());
 				boolean	checkUserFileSizeLimit = ((null != userFileSizeLimit) && (0 < userFileSizeLimit));
 				if (checkUserFileSizeLimit) {
 					userFileSizeLimitMB = (userFileSizeLimit * MEGABYTES);
