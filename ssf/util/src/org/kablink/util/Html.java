@@ -231,7 +231,6 @@ public class Html {
 		String reply = sb.toString();
         reply = reply.replaceAll("&nbsp;", " ");
         reply = reply.replaceAll("&#39;",  "'");
-        reply = StringEscapeUtils.unescapeHtml(reply);
         return reply;
 	}
 
