@@ -2142,6 +2142,7 @@ public final class ConfigService
 	{
 		InstallerConfig installerConfig = getConfiguration();
 		Database database = installerConfig.getDatabase();
+		Network network = installerConfig.getNetwork();
 
 		String hostName = getHostName();
 
@@ -2153,7 +2154,10 @@ public final class ConfigService
 		commandToRun.append(" -p'" + config.getResourcePassword() + "'");
 		commandToRun.append(" -D" + config.getResourceDatabase());
 		commandToRun.append(" -e \"update SS_ZoneConfig set fsaAutoUpdateUrl='");
-		commandToRun.append("https://" + hostName + ":9080/desktopapp'");
+		commandToRun.append("https://" + hostName);
+		commandToRun.append(":");
+		commandToRun.append(network.getSecureListenPort());
+		commandToRun.append("/desktopapp'");
 		commandToRun.append(" where zoneId=1 and (fsaAutoUpdateUrl is null or fsaAutoUpdateUrl='')\"");
 
 		// W
