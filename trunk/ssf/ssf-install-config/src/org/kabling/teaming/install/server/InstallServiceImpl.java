@@ -286,7 +286,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 	private boolean isSupported(Locale locale)
 	{
-		if (locale.getCountry() == null)
+		if (locale.getCountry() == null || locale.getCountry().equals(""))
 			return false;
 		
 		String language = locale.getLanguage();
