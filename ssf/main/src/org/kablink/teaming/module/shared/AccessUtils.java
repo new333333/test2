@@ -479,8 +479,8 @@ public class AccessUtils  {
 	//Routine to get the expanded list of ids who can read an entity (including function conditions)
 	public static Set<String> getRootIds(DefinableEntity entity) {
 		Set<String> rootIds = new HashSet<String>();
-		if (!((WorkArea)entity).isAclExternallyControlled() || Utils.isWorkareaInProfilesTree((WorkArea) entity)) {
-			//If this is not a net folder or it is in the personal area (such as a Home directory), then allow all
+		if (!((WorkArea)entity).isAclExternallyControlled()) {
+			//If this is not a net folder, then allow all
 			rootIds.add(Constants.ROOT_FOLDER_ALL);
 			return rootIds;
 		}
