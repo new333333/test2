@@ -7,6 +7,7 @@ import org.kabling.teaming.install.client.AppUtil;
 import org.kabling.teaming.install.client.ConfigPageDlgBox;
 import org.kabling.teaming.install.client.HelpData;
 import org.kabling.teaming.install.client.ValueRequiredBasedOnBoolValidator;
+import org.kabling.teaming.install.client.ValueRequiredValidator;
 import org.kabling.teaming.install.client.leftnav.LeftNavItemType;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.client.widgets.VibeTextBox;
@@ -36,6 +37,7 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 	private GwValueSpinner httpSpinner;
 	private GwValueSpinner httpSecureSpinner;
 	private CheckBox httpEnabledCheckBox;
+	private VibeTextBox hostTextBox;
 
 	@Override
 	public Panel createContent(Object propertiesObj)
@@ -43,25 +45,45 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 		FlowPanel fPanel = new FlowPanel();
 		fPanel.addStyleName("configPage");
 
+		Label label = new Label(RBUNDLE.reverseProxyHostNameDesc());
+		label.addStyleName("configPageTitleDescLabel");
+		fPanel.add(label);
+		
 		FlexTable portTable = new FlexTable();
 		portTable.addStyleName("reverProxyPortTable");
 		fPanel.add(portTable);
 		
 		int row = 0;
 		{
+
+			// Host Name
+			InlineLabel keyLabel = new InlineLabel(RBUNDLE.hostColon());
+			portTable.setWidget(row, 0, keyLabel);
+			portTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+			hostTextBox = new VibeTextBox();
+			hostTextBox.setValidator(new ValueRequiredValidator(hostTextBox));
+			portTable.setWidget(row, 1, hostTextBox);
+			portTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+		}
+		
+		{
+			row++;
 			// Http Port
 			InlineLabel keyLabel = new InlineLabel(RBUNDLE.reverseProxyHttpPortColon());
 			portTable.setWidget(row, 0, keyLabel);
 			portTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
+			FlowPanel httpPortPanel = new FlowPanel();
 			httpSpinner = new GwValueSpinner(8080, 80, 9999, null);
-			portTable.setWidget(row, 1, httpSpinner);
-			portTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			httpPortPanel.add(httpSpinner);
 			
 			httpEnabledCheckBox = new CheckBox(RBUNDLE.enabled());
 			httpEnabledCheckBox.addClickHandler(this);
-			portTable.setWidget(row, 2, httpEnabledCheckBox);
-			portTable.getFlexCellFormatter().addStyleName(row, 2, "table-value");
+			httpPortPanel.add(httpEnabledCheckBox);
+			
+			portTable.setWidget(row, 1, httpPortPanel);
+			portTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
 
 		{
@@ -142,6 +164,13 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 	public Object getDataFromDlg()
 	{
 
+		//Host Name is required
+		if (!(hostTextBox.isValid()))
+		{
+			setErrorMessage(RBUNDLE.requiredField());
+			return null;
+		}
+		
 		//If access gateway is enabled, we need to have the address and log off url
 		if (enableAccessGatewayCheckBox.getValue())
 		{
@@ -170,6 +199,8 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			network.setPort(httpSpinner.getValueAsInt());
 		else
 			network.setPort(0);
+		
+		network.setHost(hostTextBox.getText());
 		
 		return config;
 	}
@@ -213,6 +244,8 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			}
 			httpEnabledCheckBox.setValue(network.getPort() != 0);
 			httpSecureSpinner.setValue(network.getSecurePort());
+			
+			hostTextBox.setText(network.getHost());
 		}
 	}
 

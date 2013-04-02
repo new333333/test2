@@ -140,7 +140,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 				table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 				userTextBox = new TextBox();
-				userTextBox.setText("root");
+				userTextBox.setText("filr");
 				table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 				table.setWidget(row, 1, userTextBox);
 			}

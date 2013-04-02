@@ -13,9 +13,9 @@ public class WarningDialog extends DlgBox
 {
 	private String warningMsg;
 
-	public WarningDialog(String warningMsg)
+	public WarningDialog(String warningMsg,DlgButtonMode mode)
 	{
-		super(false, true, DlgButtonMode.OkCancel);
+		super(false, true, mode);
 		this.warningMsg = warningMsg;
 	}
 
