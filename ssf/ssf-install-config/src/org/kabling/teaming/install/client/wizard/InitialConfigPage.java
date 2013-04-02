@@ -6,6 +6,7 @@ import org.kabling.teaming.install.client.ConfigWizardSucessEvent.WizardFinishTy
 import org.kabling.teaming.install.client.EditCanceledHandler;
 import org.kabling.teaming.install.client.EditSuccessfulHandler;
 import org.kabling.teaming.install.client.widgets.WarningDialog;
+import org.kabling.teaming.install.client.widgets.DlgBox.DlgButtonMode;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.DatabaseConfig;
 import org.kabling.teaming.install.shared.InstallerConfig;
@@ -15,6 +16,7 @@ import org.kabling.teaming.install.shared.UpdateStatus;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -23,7 +25,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
 
-public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHandler, EditSuccessfulHandler, EditCanceledHandler
+public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHandler, EditCanceledHandler
 {
 
 	private RadioButton useDefaultsRB;
@@ -234,8 +236,8 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 
 							builder.append(AppUtil.getAppResource().wishToContinueUpgrade());
 
-							WarningDialog dlg = new WarningDialog(builder.toString());
-							dlg.createAllDlgContent(AppUtil.getAppResource().warning(), InitialConfigPage.this, InitialConfigPage.this,
+							WarningDialog dlg = new WarningDialog(builder.toString(),DlgButtonMode.Close);
+							dlg.createAllDlgContent(AppUtil.getAppResource().warning(), null, InitialConfigPage.this,
 									null);
 							dlg.show(true);
 						}
@@ -268,13 +270,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	{
 		wizard.getFinishButton().setEnabled(true);
 		wizard.hideStatusIndicator();
-		return true;
-	}
-
-	@Override
-	public boolean editSuccessful(Object obj)
-	{
-		performUpdate(true, true);
+		Window.Location.assign("/");
 		return true;
 	}
 }

@@ -338,4 +338,6 @@ public interface AppResource extends Messages
 	String shareNotAvailableWarnMsg();
 
 	String memcacheAddressColon();
+
+	String reverseProxyHostNameDesc();
 }

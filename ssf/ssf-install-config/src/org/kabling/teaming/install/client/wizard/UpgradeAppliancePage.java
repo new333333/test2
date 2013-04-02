@@ -7,10 +7,12 @@ import org.kabling.teaming.install.client.EditCanceledHandler;
 import org.kabling.teaming.install.client.EditSuccessfulHandler;
 import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.client.widgets.WarningDialog;
+import org.kabling.teaming.install.client.widgets.DlgBox.DlgButtonMode;
 import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -26,7 +28,7 @@ import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
-public class UpgradeAppliancePage implements IWizardPage<InstallerConfig>, EditSuccessfulHandler, EditCanceledHandler
+public class UpgradeAppliancePage implements IWizardPage<InstallerConfig>, EditCanceledHandler
 {
 
 	private FlowPanel fPanel;
@@ -164,8 +166,8 @@ public class UpgradeAppliancePage implements IWizardPage<InstallerConfig>, EditS
 								
 								builder.append(RBUNDLE.wishToContinueUpgrade());
 								
-								WarningDialog dlg = new WarningDialog(builder.toString());
-								dlg.createAllDlgContent(RBUNDLE.warning(), UpgradeAppliancePage.this, UpgradeAppliancePage.this, null);
+								WarningDialog dlg = new WarningDialog(builder.toString(),DlgButtonMode.Close);
+								dlg.createAllDlgContent(RBUNDLE.warning(),null, UpgradeAppliancePage.this, null);
 								dlg.show(true);
 							}
 						}
@@ -218,18 +220,11 @@ public class UpgradeAppliancePage implements IWizardPage<InstallerConfig>, EditS
 	}
 
 	@Override
-	public boolean editSuccessful(Object obj)
-	{
-		updgradeOvewritePanel.setValue(String.valueOf("true"));
-		form.submit();
-		return true;
-	}
-
-	@Override
 	public boolean editCanceled()
 	{
 		wizard.getFinishButton().setEnabled(true);
 		wizard.hideStatusIndicator();
+		Window.Location.assign("/");
 		return true;
 	}
 
