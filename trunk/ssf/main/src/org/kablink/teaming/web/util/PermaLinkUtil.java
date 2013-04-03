@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
@@ -109,18 +110,31 @@ public class PermaLinkUtil {
 		getPermalinkURL(url, entity.getId(), entity.getEntityType());
 		return url.toString();
 	}
+	
 	public static String getPermalink(PortletRequest request, DefinableEntity entity) {
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true, true);
 		getPermalinkURL(url, entity.getId(), entity.getEntityType());
 		return url.toString();
 	}
-	public static String getPermalinkForEmail(DefinableEntity entity) {
-		String reply = getPermalink(entity);
+	
+	public static String getPermalinkForEmail(DefinableEntity entity, boolean crawler) {
+		// For the permalink to be built using the static information
+		// from the properties files.
+		Boolean oldUseRTContext = ZoneContextHolder.getUseRuntimeContext();
+		ZoneContextHolder.setUseRuntimeContext(Boolean.FALSE);
+		String reply = getPermalink(entity, crawler);
+		ZoneContextHolder.setUseRuntimeContext(oldUseRTContext);
+		
 		if (forceSecureLinksInEmail()) {
 			reply = forceHTTPSInUrl(reply);
 		}
 		return reply;
 	}
+	
+	public static String getPermalinkForEmail(DefinableEntity entity) {
+		return getPermalinkForEmail(entity, false);
+	}
+	
 	public static String getPermalink(DefinableEntity entity) {
 		AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		getPermalinkURL(url, entity.getId(), entity.getEntityType());
