@@ -14,6 +14,7 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.log4j.Logger;
 import org.jvnet.libpam.PAM;
 import org.jvnet.libpam.PAMException;
@@ -276,7 +277,9 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		for (Locale loc : localeList)
 		{
 			if (isSupported(loc))
-				filrLocaleList.add(new FilrLocale(loc.getLanguage(), loc.getCountry(), loc.getDisplayName()));
+			{
+				filrLocaleList.add(new FilrLocale(loc.getLanguage(), getCountryFromLocale(loc.toString()), loc.getDisplayName()));
+			}
 		}
 
 		Collections.sort(filrLocaleList);
@@ -287,7 +290,10 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	private boolean isSupported(Locale locale)
 	{
 		if (locale.getCountry() == null || locale.getCountry().equals(""))
+		{
 			return false;
+		}
+		
 		
 		String language = locale.getLanguage();
 
@@ -307,5 +313,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		ConfigService.startFilrServer();
 		
 		ConfigService.updateFsaUpdateUrl();
+	}
+	
+	public String getCountryFromLocale(String localeString)
+	{
+		int index = localeString.indexOf("_");
+		
+		return localeString.substring(index+1);
 	}
 }
