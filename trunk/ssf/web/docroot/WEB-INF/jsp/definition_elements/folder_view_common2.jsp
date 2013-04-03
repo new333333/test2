@@ -299,12 +299,16 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	    <c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
 			<span class="ss_col_sorted">${ss_colHeaderText}</span>
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			value="${ss_colHeaderText}" /></ssf:alt> border="0" 
+			style="height:8px !important; width:10px !important; line-height:8px !important;" 
+			src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false' }">
 			<span class="ss_col_sorted">${ss_colHeaderText}</span>
 			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			value="${ss_colHeaderText}" /></ssf:alt> border="0" 
+			style="height:8px !important; width:10px !important; line-height:8px !important;" 
+			src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
 
     </a>
@@ -775,8 +779,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   title="<ssf:nlt tag="sunburst.click"/>"
   onClick="ss_hideSunburst('${entry1._docId}', '${ssBinder.id}');return false;"
 >
-  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
-  	align="absmiddle" border="0" <ssf:alt tag="sunburst.click"/> />
+  	<img height="12" width="12" src="<html:rootPath/>images/pics/discussion/sunburst.png" 
+  	align="absmiddle" border="0" 
+  	style="height:12px !important; width:12px !important; line-height:12px !important;" 
+  	<ssf:alt tag="sunburst.click"/> />
   </a>
     
 	</c:if>
