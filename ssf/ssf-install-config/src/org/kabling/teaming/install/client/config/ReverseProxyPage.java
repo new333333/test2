@@ -75,7 +75,7 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			portTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 			FlowPanel httpPortPanel = new FlowPanel();
-			httpSpinner = new GwValueSpinner(8080, 80, 9999, null);
+			httpSpinner = new GwValueSpinner(80, 80, 9999, null);
 			httpPortPanel.add(httpSpinner);
 			
 			httpEnabledCheckBox = new CheckBox(RBUNDLE.enabled());
@@ -93,7 +93,7 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			portTable.setWidget(row, 0, keyLabel);
 			portTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			httpSecureSpinner = new GwValueSpinner(8443, 80, 9999, null);
+			httpSecureSpinner = new GwValueSpinner(443, 80, 9999, null);
 			portTable.setWidget(row, 1, httpSecureSpinner);
 			portTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}

@@ -91,7 +91,7 @@ public class DefaultLocalePage extends ConfigPageDlgBox
 					int i = 0;
 					for (FilrLocale locale : result)
 					{
-						defaultLocaleListBox.addItem(locale.getDisplayName() + " "+locale.getLanguage() + "_"+locale.getCountry());
+						defaultLocaleListBox.addItem(locale.getDisplayName());
 						
 						if (locale.getCountry().equals(country) && locale.getLanguage().equals(language))
 							defaultLocaleListBox.setSelectedIndex(i);
