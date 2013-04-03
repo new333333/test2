@@ -572,6 +572,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					String timeZone = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE);
 					//Will be sorted by owningBinderkey
 					List<NotifyStatus> uStatus = getCoreDao().loadNotifyStatus("lastFullSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());
+					logger.debug("MailModuleImpl.fillSubscriptions():  List<NotifiyStatus> size:" + ((null == uStatus) ? "<null>" : uStatus.size()));
 					List ids = new ArrayList();
 					while (!uStatus.isEmpty()) {
 						//get Ids to log folderEntries
@@ -591,6 +592,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 								}
 							}
 							if (entry == null) continue;
+							logger.debug("MailModuleImpl.fillSubscriptions(): Sending notification for: '" + entry.getTitle() + "', ID: " + entry.getId());
 							if (!entry.getRootFolder().equals(currentFolder)) {
 								currentFolder = entry.getRootFolder();
 								folderSubscriptions = getCoreDao().loadSubscriptionByEntity(currentFolder.getEntityIdentifier());  					
