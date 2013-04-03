@@ -17,7 +17,6 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.LicenseInformation;
 import org.kabling.teaming.install.shared.ProductInfo;
 import org.kabling.teaming.install.shared.ShellCommandInfo;
@@ -87,7 +86,7 @@ public final class UpdateService
 				boolean validHostNameFound = hostNameNotValidContinue;
 				if (!hostNameNotValidContinue)
 				{
-					if (isHostNameMatch(tempDir.getAbsolutePath() + File.separator + "filrinstall/installer.xml"))
+					if (isHostNameMatch(tempDir.getAbsolutePath() + File.separator + "etc/sysconfig/novell/NvlVAinit"))
 					{
 						validHostNameFound = true;
 					}
@@ -257,8 +256,29 @@ public final class UpdateService
 	private static boolean isHostNameMatch(String newFilePath)
 	{
 
-		InstallerConfig config = ConfigService.getConfiguration(newFilePath);
-		String hostName = config.getNetwork().getHost();
+		String hostName = null;
+		File file = new File(newFilePath);
+		
+		if (file.exists())
+		{
+			logger.info("isHostNameMatch() File Path"+ newFilePath);
+			Properties prop = new Properties();
+			try
+			{
+				prop.load(new FileInputStream(file));
+				hostName = prop.getProperty("CONFIG_VAINIT_HOSTNAME");
+				if (hostName.startsWith("\""))
+					hostName = hostName.substring(1,hostName.length()-1);
+			}
+			catch (Exception e)
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
 
 		ShellCommandInfo info = ConfigService.executeCommand("sudo hostname -f", true);
 		if (info.getExitValue() == 0)
@@ -322,7 +342,7 @@ public final class UpdateService
 			String entryName = entry.getName();
 
 			// These files have already been copied
-			if (entryName.endsWith("filrinstall/installer.xml") || entryName.equals("filrinstall/db/mysql-liquibase.properties") || entryName.endsWith("Novell-VA-release"))
+			if (entryName.endsWith("filrinstall/installer.xml") || entryName.equals("filrinstall/db/mysql-liquibase.properties") || entryName.endsWith("Novell-VA-release") || entryName.endsWith("NvlVAinit"))
 			{
 				continue;
 			}
