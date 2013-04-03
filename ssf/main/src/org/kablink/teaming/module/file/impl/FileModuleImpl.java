@@ -896,6 +896,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 					fa.setFileLock(null); // Clear the lock
 					
 					triggerUpdateTransaction(newObjs);
+					
+		    		//Go prune the minor versions
+		    		pruneFileVersions(binder, entity);
 				}
 				else {
 					// The lock id doesn't match.
@@ -2968,7 +2971,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 						updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, fa.getFileItem().getMd5(), null, null, null);
 						metadataDirty = true;
 		            	// add the size of the file to the users disk usage
-		            	incrementDiskSpaceUsed(fa);		
+		            	incrementDiskSpaceUsed(fa);
 		            	ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
 		            	ChangeLogUtils.buildLog(changes, fa);
 		            	newObjs.add(changes);
