@@ -801,9 +801,8 @@
 
 .shareThisDlg_MakePublicDiv
 {
-	position: absolute;
-	right: 8px;
-	top: 44px;
+	margin-left: 5px;
+	margin-bottom: 15px;
 	z-index: 100;
 }		
 
