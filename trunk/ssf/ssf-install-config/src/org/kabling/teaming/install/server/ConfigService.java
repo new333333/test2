@@ -525,6 +525,13 @@ public final class ConfigService
 						config.setArchiveStorePath(currentElement.getAttribute("path"));
 					}
 
+					// Database Log Store
+					currentElement = getElement(configElement, "DatabaseLogStore");
+					if (currentElement != null)
+					{
+						config.setDatabaseLogStorePath(currentElement.getAttribute("path"));
+					}
+
 					// Cache Store
 					currentElement = getElement(configElement, "CacheStore");
 					if (currentElement != null)
