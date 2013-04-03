@@ -3468,32 +3468,7 @@ public class GwtServerHelper {
 			
 			// Exclude allUsers and allExtUsers from the search
 			{
-				Document searchFilter;
-				Element rootElement, orElement;
-				Element field;
-		    	Element child;
-	
-				searchFilter = DocumentHelper.createDocument();
-				rootElement = searchFilter.addElement( Constants.NOT_ELEMENT );
-				orElement = rootElement.addElement(Constants.OR_ELEMENT);
-				
-				field = orElement.addElement( Constants.FIELD_ELEMENT );
-		    	field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.GROUPNAME_FIELD );
-		    	child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
-		    	child.setText( "allusers" );
-		    	
-		    	field = orElement.addElement( Constants.FIELD_ELEMENT );
-		    	field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.GROUPNAME_FIELD );
-		    	child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
-		    	child.setText( "allextusers" );
-		    	
-		    	// Don't include "ldap container" groups.
-		    	field = orElement.addElement( Constants.FIELD_ELEMENT );
-		    	field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.IS_LDAP_CONTAINER_FIELD );
-		    	child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
-		    	child.setText( Constants.TRUE );
-		    	
-		    	options.put( ObjectKeys.SEARCH_FILTER_AND, searchFilter );
+		    	options.put( ObjectKeys.SEARCH_FILTER_AND, SearchUtils.buildExcludeUniversalAndContainerGroupFilter() );
 			}
 	
 			// Get the list of all the groups.

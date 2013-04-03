@@ -43,6 +43,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.document.DateTools;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SearchWildCardException;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -1454,6 +1457,34 @@ public class SearchUtils {
 		else reply = Boolean.TRUE;
 		return reply;
 	}
+
+    public static Document buildExcludeUniversalAndContainerGroupFilter() {
+        Document searchFilter;
+        Element rootElement, orElement;
+        Element field;
+        Element child;
+
+        searchFilter = DocumentHelper.createDocument();
+        rootElement = searchFilter.addElement( Constants.NOT_ELEMENT );
+        orElement = rootElement.addElement(Constants.OR_ELEMENT);
+
+        field = orElement.addElement( Constants.FIELD_ELEMENT );
+        field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.GROUPNAME_FIELD );
+        child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
+        child.setText( "allusers" );
+
+        field = orElement.addElement( Constants.FIELD_ELEMENT );
+        field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.GROUPNAME_FIELD );
+        child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
+        child.setText( "allextusers" );
+
+        // Don't include "ldap container" groups.
+        field = orElement.addElement( Constants.FIELD_ELEMENT );
+        field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.IS_LDAP_CONTAINER_FIELD );
+        child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
+        child.setText( Constants.TRUE );
+        return searchFilter;
+    }
 	
 	/**
 	 * Returns an Integer based value from an options Map.  If a value
