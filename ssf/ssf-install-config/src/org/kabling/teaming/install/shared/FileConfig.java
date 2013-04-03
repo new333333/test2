@@ -14,6 +14,7 @@ public class FileConfig implements Serializable
 	private String jackRabbitRepPath;
 	private String extensionRepPath;
 	private String archiveStorePath;
+	private String databaseLogStorePath;
 	private String cacheStorePath;
 	//private ?? luceneIndex;
 	
@@ -114,5 +115,14 @@ public class FileConfig implements Serializable
 
 	public void setArchiveStorePath(String archiveStorePath) {
 		this.archiveStorePath = archiveStorePath;
+	}
+
+	public String getDatabaseLogStorePath() {
+		return databaseLogStorePath;
+	}
+
+
+	public void setDatabaseLogStorePath(String databaseLogStorePath) {
+		this.databaseLogStorePath = databaseLogStorePath;
 	}
 }
