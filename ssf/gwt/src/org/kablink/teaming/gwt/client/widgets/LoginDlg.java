@@ -138,6 +138,7 @@ public class LoginDlg extends DlgBox
 	private String m_openIdProviderUrl;
 	private boolean m_useOpenIdAuth = false;
 	private boolean m_initialized = false;
+	private int m_numAttempts = 0;
 
 	/**
 	 * 
@@ -402,6 +403,7 @@ public class LoginDlg extends DlgBox
 		MastHead mastHead;
 		boolean useDefaultImg = true;
 		String imgUrl = null;
+		Scheduler.ScheduledCommand cmd;
 		
 		// Get the branding data.
 		mastHead = GwtTeaming.getMainPage().getMastHead();
@@ -409,6 +411,27 @@ public class LoginDlg extends DlgBox
 		{
 			GwtBrandingData brandingData;
 			
+			// Has the site branding already been retrieved?
+			if ( mastHead.hasSiteBrandingBeenRetrieved() == false && m_numAttempts < 8 )
+			{
+				Timer timer;
+				
+				// No
+				// We need to wait until the masthead has read the branding data
+				timer = new Timer()
+				{
+					@Override
+					public void run()
+					{
+						createHeaderNow();
+					}
+				};
+				
+				++m_numAttempts;
+				timer.schedule( 150 );
+				return;
+			}
+
 			brandingData = mastHead.getSiteBrandingData();
 			if ( brandingData != null )
 			{
@@ -471,6 +494,16 @@ public class LoginDlg extends DlgBox
 			img = new Image( imgUrl );
 			m_headerPanel.add( img );
 		}
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				centerAndShow();
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}
 	
 	/**
@@ -1109,6 +1142,7 @@ public class LoginDlg extends DlgBox
 	{
 		debugAlert( "In LoginDlg.showDlg()" );
 		
+		m_numAttempts = 0;
 		if ( m_initialized )
 		{
 			centerAndShow();
@@ -1147,23 +1181,9 @@ public class LoginDlg extends DlgBox
 
 		setAllowCancel( allowCancel );
 
-		// We need to wait until the masthead has read the branding data
-		{
-			Timer timer;
-			
-			timer = new Timer()
-			{
-				@Override
-				public void run()
-				{
-					m_initialized = true;
-					createHeaderNow();
-					centerAndShow();
-				}
-			};
-			
-			timer.schedule( 150 );
-		}
+		// Create the header.  createHeaderNow() will show the dialog when it is finished.
+		m_initialized = true;
+		createHeaderNow();
 
 		// Issue an ajax request to get self registration info and a list of open id providers
 		if ( loginStatus != LoginStatus.RegistrationRequired &&

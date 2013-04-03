@@ -110,6 +110,7 @@ public class MastHead extends Composite
 	private FlowPanel m_browsePanel = null;
 
 	private GwtBrandingData m_siteBrandingData = null;
+	private boolean m_siteBrandingRetrieved = false;
 	private GwtBrandingData m_binderBrandingData = null;
 	
 	// m_rpcGetSiteBrandingCallback is our callback that gets called when the ajax request to get the site branding data completes.
@@ -445,6 +446,7 @@ public class MastHead extends Composite
 				Scheduler.ScheduledCommand cmd;
 				
 				m_siteBrandingData = (GwtBrandingData) response.getResponseData();
+				m_siteBrandingRetrieved = true;
 				
 				cmd = new Scheduler.ScheduledCommand()
 				{
@@ -738,6 +740,14 @@ public class MastHead extends Composite
 	}// end getBinderBrandingDataFromServer()
 
 
+	/**
+	 * Return whether or not we have retrieved the site branding
+	 */
+	public boolean hasSiteBrandingBeenRetrieved()
+	{
+		return m_siteBrandingRetrieved;
+	}
+	
 	/**
 	 * Return the height of the masthead
 	 */
