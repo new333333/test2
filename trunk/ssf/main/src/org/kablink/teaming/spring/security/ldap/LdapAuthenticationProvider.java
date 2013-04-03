@@ -32,7 +32,9 @@
  */
 package org.kablink.teaming.spring.security.ldap;
 
+import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.spring.security.AuthenticationThreadLocal;
+import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -66,6 +68,18 @@ public class LdapAuthenticationProvider extends org.springframework.security.lda
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
     	try {
+    		LdapModule ldapModule;
+
+    		ldapModule = WebHelper.getLdapModule();
+    		if ( ldapModule != null )
+    		{
+    			// Has the user's password expired?
+    			if ( ldapModule.hasPasswordExpired( authentication.getName(), ldapConnectionConfigId ) )
+    			{
+    				throw new BadCredentialsException( "Expired password" );
+    			}
+    		}
+
     		Authentication result = super.authenticate(authentication);
     		
     		// If still here, it means that the authentication was successful.

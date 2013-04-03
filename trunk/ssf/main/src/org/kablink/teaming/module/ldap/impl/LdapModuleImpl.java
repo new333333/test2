@@ -32,10 +32,14 @@
  */
 
 package org.kablink.teaming.module.ldap.impl;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -70,6 +74,7 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.hibernate.SessionFactory;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.FilterControls;
@@ -170,7 +175,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private static final String HOME_DRIVE_ATTRIBUTE = "homeDrive";
 	private static final String AD_HOME_DIR_ATTRIBUTE = "homeDirectory";
 	private static final String LOGIN_DISABLED_ATTRIBUTE = "loginDisabled";
-	private static final String USER_ACCOUNT_CONTROL_ATTRIBUTE = "userAccountControl"; 
+	private static final String USER_ACCOUNT_CONTROL_ATTRIBUTE = "userAccountControl";
+	private static final String PASSWORD_EXPIRATION_TIME_ATTRIBUTE = "passwordExpirationTime";
 
 	private static int ADDR_TYPE_TCP = 9;
 	private static int AD_DISABLED_BIT = 0x02;
@@ -1896,6 +1902,207 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		return null;
     }// end readLdapGuidFromDirectory()
     
+
+    /**
+     * Determine if the user's password in the ldap directory has expired
+     */
+    private boolean hasPasswordExpired( String userName, Long zoneId, LdapConnectionConfig ldapConfig )
+    {
+    	boolean expired;
+		LdapContext ctx;
+		LdapDirType dirType;
+		
+		dirType = getLdapDirType( ldapConfig.getLdapGuidAttribute() );
+		if ( dirType != LdapDirType.AD && dirType != LdapDirType.EDIR )
+			return false;
+
+    	expired = false;
+
+    	try
+		{
+			ctx = getUserContext( zoneId, ldapConfig );
+		}
+		catch ( NamingException ex )
+		{
+			return false;
+		}
+		
+		for ( LdapConnectionConfig.SearchInfo searchInfo : ldapConfig.getUserSearches() )
+		{
+			try
+			{
+				Attributes lAttrs;
+				int scope;
+				SearchControls sch;
+				String search;
+				String filter;
+				NamingEnumeration ctxSearch;
+				Binding bd;
+				String userIdAttributeName[] = { ldapConfig.getUserIdAttribute() };
+				String attributesToRead[] = { PASSWORD_EXPIRATION_TIME_ATTRIBUTE };
+				Attribute attrib;
+
+				scope = (searchInfo.isSearchSubtree() ? SearchControls.SUBTREE_SCOPE : SearchControls.ONELEVEL_SCOPE);
+				sch = new SearchControls( scope, 1, 0, userIdAttributeName, false, false );
+	
+				search = "(" + ldapConfig.getUserIdAttribute() + "=" + userName + ")";
+				filter = searchInfo.getFilterWithoutCRLF();
+				if(!Validator.isNull(filter))
+				{
+					search = "(&"+search+filter+")";
+				}
+				
+				ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
+				if (!ctxSearch.hasMore() )
+				{
+					continue;
+				}
+				
+				bd = (Binding)ctxSearch.next();
+
+				// Read the "passwordExpirationTime" attribute from the directory.
+				lAttrs = ctx.getAttributes( bd.getNameInNamespace(), attributesToRead );
+				
+				if ( dirType == LdapDirType.EDIR )
+				{
+					// Get the value of the "passwordExpirationTime" attribute
+					attrib = lAttrs.get( PASSWORD_EXPIRATION_TIME_ATTRIBUTE );
+					if ( attrib != null )
+					{
+						try
+						{
+							Object value;
+							
+							value = attrib.get();
+							if ( value != null && value instanceof String )
+							{
+								String dateStr;
+								
+								dateStr = (String) value;
+								
+								try
+								{
+									SimpleDateFormat dateFormat;
+									Date expirationDate;
+									Date today;
+									String strValue;
+									char ch;
+									
+									// An example of an expiration date is 20130327204900Z
+									// Is the last character of the expiration date a 'Z'?
+									ch = dateStr.charAt( dateStr.length() - 1 );
+									if ( ch == 'Z' || ch == 'z' )
+									{
+										// Yes
+										// Exclude the 'Z' from the expiration date.
+										// SimpleDateFormat.parse() does not know how to parse it.
+										strValue = dateStr.substring( 0, dateStr.length()-1 );
+									}
+									else
+									{
+										// No
+										strValue = dateStr;
+									}
+									
+									today = new Date();
+									dateFormat = new SimpleDateFormat( "yyyyMMddHHmmss" );
+									expirationDate = dateFormat.parse( strValue );
+								
+									if ( today.after( expirationDate ) )
+									{
+										expired = true;
+									}
+								}
+								catch ( ParseException ex )
+								{
+									logger.info( "In hasPasswordExpired(), unable to parse expiration date: " + dateStr );
+								}
+							}
+						}
+						catch ( NamingException ex )
+						{
+							// Nothing to do.
+						}
+					}
+				}
+				
+				if ( ctx != null )
+				{
+					try
+					{
+						ctx.close();
+						ctx = null;
+					}
+					catch ( NamingException ex )
+					{
+						// Nothing to do
+					}
+				}
+
+				// We found the user, no need to continue searching.
+				break;
+			}
+			catch (NamingException ex)
+			{
+				// Nothing to do.
+			}
+		}// end for()
+
+		if ( ctx != null )
+		{
+			try
+			{
+				ctx.close();
+			}
+			catch ( NamingException ex )
+			{
+				// Nothing to do
+			}
+		}
+		
+    	return expired;
+    }
+    
+    /**
+     * Determine if the user's password in the ldap directory has expired
+     */
+    @Override
+    public boolean hasPasswordExpired( String userName, String ldapConfigId )
+    {
+    	boolean expired;
+    	LdapConnectionConfig ldapConnectionConfig = null;
+    	Long zoneId = null;
+    	
+    	expired = false;
+    	
+		try
+		{
+			ZoneModule zoneModule;
+			
+			ldapConnectionConfig = (LdapConnectionConfig) getCoreDao().load(
+																		LdapConnectionConfig.class,
+																		ldapConfigId );
+			
+			zoneModule = (ZoneModule) SpringContextUtil.getBean( "zoneModule" );
+			if ( zoneModule != null )
+			{
+				zoneId = zoneModule.getZoneIdByVirtualHost( ZoneContextHolder.getServerName() );
+			}
+
+		}
+		catch( Exception e )
+		{
+			logger.warn("Error loading LDAP connection config object by ID [" + ldapConfigId + "]");
+		}
+	
+		if( ldapConnectionConfig != null && zoneId != null )
+		{
+			// Limit search in LDAP only to the specific LDAP source identified by this configuration object.
+			expired = hasPasswordExpired( userName, zoneId, ldapConnectionConfig );
+		}
+		
+    	return expired;
+    }
     
 	/**
 	 * Update a ssf user with an ldap person.  

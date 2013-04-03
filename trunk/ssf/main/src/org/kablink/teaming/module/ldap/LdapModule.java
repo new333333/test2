@@ -58,6 +58,8 @@ public interface LdapModule {
 	
 	public LdapSchedule getLdapSchedule();
 
+	public boolean hasPasswordExpired( String userName, String ldapConfigId );
+	
 	public boolean isGuidConfigured();
 	
 	public void setLdapSchedule(LdapSchedule schedule);
