@@ -14,7 +14,6 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 
-import org.apache.commons.lang.LocaleUtils;
 import org.apache.log4j.Logger;
 import org.jvnet.libpam.PAM;
 import org.jvnet.libpam.PAMException;
@@ -300,7 +299,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		if (language.equals("fr") || language.equals("en") || language.equals("zh") || language.equals("da") || language.equals("de")
 				|| language.equals("nl") || language.equals("hu") || language.equals("it") || language.equals("ja")
 				|| language.equals("pl") || language.equals("pt") || language.equals("ru") || language.equals("es")
-				|| language.equals("sv"))
+				|| language.equals("sv") || language.equals("cs"))
 		{
 			return true;
 		}
