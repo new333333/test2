@@ -64,6 +64,12 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 	}
 
 	@Override
+	public boolean hasPasswordExpired( String userName, String ldapConfigId )
+	{
+		return false;
+	}
+	
+	@Override
 	public boolean isGuidConfigured()
 	{
 		return false;

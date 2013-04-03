@@ -614,7 +614,7 @@ public class WebHelper {
 	 * 
 	 * @return
 	 */
-	private static LdapModule getLdapModule()
+	public static LdapModule getLdapModule()
 	{
 		return (LdapModule) SpringContextUtil.getBean( "ldapModule" );
 	}// end getLdapModule()
