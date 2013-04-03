@@ -2,15 +2,11 @@ package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchResultTree;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.search.SearchFieldResult;
-import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -34,6 +30,27 @@ public class SearchResultBuilderUtil {
             this.entry = entry;
             this.obj = obj;
         }
+    }
+
+    private static Map<Object, Map> findEntryParents(AllModulesInjected ami, Object [] rootIds) {
+        Criteria crit = new Criteria();
+        crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY));
+        crit.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_ENTRY}));
+        Junction or = Restrictions.disjunction();
+        for (Object id : rootIds) {
+            crit.add(Restrictions.eq(Constants.ENTRY_ANCESTRY, id.toString()));
+        }
+        crit.add(or);
+        Map<Object, Map> keys = new HashMap<Object, Map>();
+        Map resultMap = ami.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1);
+        List<Map> entries = (List<Map>)resultMap.get(ObjectKeys.SEARCH_ENTRIES);
+        for (Map entry : entries) {
+            String parentIdStr = (String)entry.get(Constants.BINDER_ID_FIELD);
+            if (parentIdStr!=null) {
+                keys.put(Long.parseLong(parentIdStr), entry);
+            }
+        }
+        return keys;
     }
 
     public static <T> void buildSearchResultsTree(AllModulesInjected ami, SearchResultTree<T> tree, Object rootId, ContainerSearchResultBuilder<T> builder, Map resultMap) {
@@ -63,23 +80,20 @@ public class SearchResultBuilderUtil {
                 }
             }
         }
+        Map<Object, Map> entryParents = findEntryParents(ami, new Object[]{rootId});
         for (Object id : nodesById.keySet()) {
             parentIds.remove(id);
+            entryParents.remove(id);
         }
         for (List<MapObjectPair<T>> children : parentIds.values()) {
             // Only get the first object...if there are multiple children in the list, their ancestry is the same
             // because they share the same parent.
             MapObjectPair<T> first = children.iterator().next();
-            T [] parents = getAncestryFromEntryMap(ami, builder, builder.getId(first.obj), builder.getType(first.obj), first.entry);
-            boolean foundRoot = false;
-            for (T parent : parents) {
-                Object id = builder.getId(parent);
-                if (foundRoot && !nodesById.containsKey(id)) {
-                    nodesById.put(id, builder.factoryTreeNode(parent));
-                } else if (id.equals(rootId)) {
-                    foundRoot = true;
-                }
-            }
+            addAncestryNodesWithInferredAccess(ami, nodesById, rootId, builder, builder.getId(first.obj), builder.getType(first.obj), first.entry);
+        }
+        for (Map.Entry<Object, Map> entry : entryParents.entrySet()) {
+            addAncestryNodesWithInferredAccess(ami, nodesById, rootId, builder, entry.getKey(),
+                    EntityIdentifier.EntityType.folderEntry, entry.getValue());
         }
         for (SearchResultTreeNode<T> node : nodesById.values()) {
             T item = node.getItem();
@@ -88,6 +102,21 @@ public class SearchResultBuilderUtil {
                 if (parentNode!=null) {
                     parentNode.addChild(node);
                 }
+            }
+        }
+    }
+
+    private static <T> void addAncestryNodesWithInferredAccess(AllModulesInjected ami, Map<Object, SearchResultTreeNode<T>> nodesById,
+                                                               Object rootId, ContainerSearchResultBuilder<T> builder,
+                                                               Object entryId, EntityIdentifier.EntityType entryType, Map entryMap) {
+        T [] parents = getAncestryFromEntryMap(ami, builder, entryId, entryType, entryMap);
+        boolean foundRoot = false;
+        for (T parent : parents) {
+            Object id = builder.getId(parent);
+            if (foundRoot && !nodesById.containsKey(id)) {
+                nodesById.put(id, builder.factoryTreeNode(parent));
+            } else if (id.equals(rootId)) {
+                foundRoot = true;
             }
         }
     }
