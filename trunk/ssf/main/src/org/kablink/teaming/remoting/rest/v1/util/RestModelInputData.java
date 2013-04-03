@@ -48,6 +48,7 @@ import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 
 import java.io.IOException;
@@ -161,6 +162,11 @@ public class RestModelInputData implements InputDataAccessor {
 	    			obj = entity;
 	    			for(String keyElem:keyElems) {
 	    				try {
+                            if (keyElem.equals("format")) {
+                                // description.format is handled by getDescriptionValue()
+                                obj = null;
+                                break;
+                            }
 		    				obj = InvokeUtil.invokeGetter(obj, keyElem);
 		    				if(obj == null)
 		    					break;
@@ -230,7 +236,11 @@ public class RestModelInputData implements InputDataAccessor {
                     }
                 }
             }
-            return new org.kablink.teaming.domain.Description(((Description) obj).getText(), fmt);
+            String text = ((Description) obj).getText();
+            if (fmt==org.kablink.teaming.domain.Description.FORMAT_NONE) {
+                text = Html.plainTextToHTML2(text);
+            }
+            return new org.kablink.teaming.domain.Description(text, org.kablink.teaming.domain.Description.FORMAT_HTML);
         }
         return null;
 	}
