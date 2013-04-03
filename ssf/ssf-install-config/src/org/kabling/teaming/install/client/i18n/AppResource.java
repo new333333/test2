@@ -340,4 +340,6 @@ public interface AppResource extends Messages
 	String memcacheAddressColon();
 
 	String reverseProxyHostNameDesc();
+	
+	String portRedirectionReverseProxyPortDesc();
 }

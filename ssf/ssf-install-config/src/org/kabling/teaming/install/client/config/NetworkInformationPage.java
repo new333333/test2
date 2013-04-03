@@ -21,7 +21,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHandler
 {
@@ -35,6 +37,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 	private CheckBox portRedirectCheckBox;
 	private InlineLabel port80RedirectLabel;
 	private InlineLabel port443RedirectLabel;
+	private Widget portRedirectReverseProxyLabel;
 
 	@Override
 	public Panel createContent(Object propertiesObj)
@@ -167,6 +170,10 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 			table.setWidget(row, 1, keyStoreFileTextBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
+		
+		portRedirectReverseProxyLabel = new Label(RBUNDLE.portRedirectionReverseProxyPortDesc());
+		portRedirectReverseProxyLabel.addStyleName("networkPagePortRedirectProxyDescLabel");
+		fPanel.add(portRedirectReverseProxyLabel);
 		return fPanel;
 	}
 
@@ -213,6 +220,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 
 			port443RedirectLabel.setVisible(portRedirect);
 			port80RedirectLabel.setVisible(portRedirect);
+			portRedirectReverseProxyLabel.setVisible(portRedirect);
 
 			secureListenSpinner.setValue(network.getSecureListenPort());
 
@@ -249,6 +257,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 		{
 			port443RedirectLabel.setVisible(portRedirectCheckBox.getValue());
 			port80RedirectLabel.setVisible(portRedirectCheckBox.getValue());
+			portRedirectReverseProxyLabel.setVisible(portRedirectCheckBox.getValue());
 		}
 	}
 
