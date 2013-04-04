@@ -33,12 +33,15 @@
 package org.kablink.teaming.jobs;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -54,15 +57,31 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
 	@Override
 	protected void doExecute(JobExecutionContext context)
 			throws JobExecutionException {
+    	AdminModule adminModule = (AdminModule)SpringContextUtil.getBean("adminModule");
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
   		Date now = new Date();
   		
-  		int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, new Date(now.getTime() - zoneConfig.getAuditTrailKeepDays()*1000*60*60*24));
-  		logger.info("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
+  		//This has been turned off until Filr V1.1
+  		if (zoneConfig.getAuditTrailKeepDays() > 0) {
+  			//Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getAuditTrailKeepDays()*1000*60*60*24);
+  			//List entriesToBeDeleted = getCoreDao().getAuditTrailEntries(zoneId, purgeBeforeDate);
+  			//if (adminModule.writeAuditTrailLogFile(entriesToBeDeleted)) {
+  				//The entries to be purged were safely logged to disk, so we can delete them from the database
+		  		//int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
+		  		//logger.info("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
+  			//}
+  		}
   		
-  		int changeLogsPurgeCount = getCoreDao().purgeChangeLogs(zoneId, new Date(now.getTime() - zoneConfig.getChangeLogsKeepDays()*1000*60*60*24));
-  		logger.info("Purged " + changeLogsPurgeCount + " records from the SS_ChangeLogs table");
+  		if (zoneConfig.getChangeLogsKeepDays() > 0) {
+  			//Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getChangeLogsKeepDays()*1000*60*60*24);
+  			//List entriesToBeDeleted = getCoreDao().getChangeLogEntries(zoneId, purgeBeforeDate);
+  			//if (adminModule.writeChangeLogLogFile(entriesToBeDeleted)) {
+  				//The entries to be purged were safely logged to disk, so we can delete them from the database
+  				//int changeLogsPurgeCount = getCoreDao().purgeChangeLogs(zoneId, purgeBeforeDate);
+  				//logger.info("Purged " + changeLogsPurgeCount + " records from the SS_ChangeLogs table");
+  			//}
+  		}
 	}
 
 	@Override
