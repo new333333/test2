@@ -1299,7 +1299,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		try {
 	    			f.delete();
 	    		}
-	    		catch(IOException ignore) {}
+	    		catch(IOException ignore) {
+	    			logger.debug(ignore.getMessage());
+	    		}
 	    	}
     	}
 	}
