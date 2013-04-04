@@ -33,11 +33,16 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.text.Collator;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -54,6 +59,11 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TimeZone;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.portlet.PortletRequest;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -350,6 +360,12 @@ public class GwtServerHelper {
 	private static final String CACHED_MANAGE_USERS_SHOW_ENABLED	= "manageUsersShowEnabled";
 	private static final String CACHED_MANAGE_USERS_SHOW_DISABLED	= "manageUsersShowDisabled";
 	private static final String CACHED_MANAGE_USERS_SHOW_INTERNAL	= "manageUsersShowInternal";
+
+	// Default value for whether we ignore SSL certificates when
+	// dealing with download the desktop application.  The value
+	// will be used if an 'ignore.ssl.certs.on.desktop.app.download'
+	// is not defined in the ssf*.properties file.
+	private static final boolean IGNORE_SSL_CERTS_ON_DESKTOP_APP_DOWNLOAD_DEFAULT	= true;
 	
 	/**
 	 * Inner class used to compare two AssignmentInfo's.
@@ -2069,7 +2085,7 @@ public class GwtServerHelper {
 		
 		try {
 			// Open the HTTP connection.
-			urlConnection = ((HttpURLConnection) new URL(httpUrl).openConnection());
+			urlConnection = ((HttpURLConnection) openUrlConnection(httpUrl));
 			urlConnection.setRequestMethod("GET");
 			urlConnection.setInstanceFollowRedirects(false);
 			urlConnection.connect();
@@ -5340,7 +5356,7 @@ public class GwtServerHelper {
 		
 		try {
 			// Open the HTTP connection.
-			urlConnection = ((HttpURLConnection) new URL(httpUrl).openConnection());
+			urlConnection = ((HttpURLConnection) openUrlConnection(httpUrl));
 			urlConnection.setRequestMethod("GET");
 			urlConnection.setInstanceFollowRedirects(false);
 			urlConnection.connect();
@@ -9188,6 +9204,57 @@ public class GwtServerHelper {
 				Utils.reIndexPrincipals( ami.getProfileModule(), changes );
 			}
 		}
+	}
+
+	/*
+	 * Opens a URL connection, optionally ignoring any SSL
+	 * certificates.
+	 * 
+	 * Note:  The algorithm used to ignore SSL certificates was
+	 * obtained from https://code.google.com/p/misc-utils/wiki/JavaHttpsUrl
+	 */
+	private static URLConnection openUrlConnection(String url, boolean ignoreSSLCerts) throws IOException, KeyManagementException, NoSuchAlgorithmException {
+		// Create the URLConnection object.
+		final URLConnection reply = new URL(url).openConnection();
+		
+		if (ignoreSSLCerts && (reply instanceof HttpsURLConnection)) {
+			// Create a trust manager that does not validate certificate chains
+			final TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+		        @Override
+		        public void checkClientTrusted(final X509Certificate[] chain, final String authType) {
+		        }
+		        @Override
+		        public void checkServerTrusted(final X509Certificate[] chain, final String authType) {
+		        }
+		        @Override
+		        public X509Certificate[] getAcceptedIssuers() {
+		            return null;
+		        }
+		    }};
+		    
+			// Install the all-trusting trust manager.
+		    final SSLContext sslContext = SSLContext.getInstance("SSL");
+		    sslContext.init( null, trustAllCerts, new java.security.SecureRandom() );
+		    
+		    // Create an SSL socket factory with our all-trusting
+		    // manager and use it for the socket factory which bypasses
+		    // security checks.
+		    final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+			((HttpsURLConnection) reply).setSSLSocketFactory(sslSocketFactory);		
+		}
+	    
+	    // Finally, return the URLConnection.
+		return reply;
+	}
+	
+	private static URLConnection openUrlConnection(String url) throws IOException, KeyManagementException, NoSuchAlgorithmException {
+		// Always use the initial form of the method.
+		return
+			openUrlConnection(
+				url,
+				SPropsUtil.getBoolean(
+					"ignore.ssl.certs.on.desktop.app.download",
+					IGNORE_SSL_CERTS_ON_DESKTOP_APP_DOWNLOAD_DEFAULT));
 	}
 	
 	/**
