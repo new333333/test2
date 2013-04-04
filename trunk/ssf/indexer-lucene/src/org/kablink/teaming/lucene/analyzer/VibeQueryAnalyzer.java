@@ -47,7 +47,7 @@ import java.util.Set;
 
 public class VibeQueryAnalyzer extends VibeAnalyzer {
 
-	private static Log logger = LogFactory.getLog(VibeIndexAnalyzer.class);
+	private static Log logger = LogFactory.getLog(VibeQueryAnalyzer.class);
 	
 	private static boolean inited = false;
 	private static Set queryStopWords;
