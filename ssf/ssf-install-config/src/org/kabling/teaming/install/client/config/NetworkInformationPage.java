@@ -34,10 +34,11 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 	private GwValueSpinner sessionTimeOutSpinner;
 	private VibeTextBox keyStoreFileTextBox;
 	private CheckBox httpEnabledCheckBox;
+	private CheckBox forceSecureCheckBox;
 	private CheckBox portRedirectCheckBox;
-	private InlineLabel port80RedirectLabel;
 	private InlineLabel port443RedirectLabel;
 	private Widget portRedirectReverseProxyLabel;
+	private InlineLabel httpPortLabel;
 
 	@Override
 	public Panel createContent(Object propertiesObj)
@@ -78,11 +79,8 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 			// Listen Port
 			FlowPanel labelWrapper = new FlowPanel();
 
-			port80RedirectLabel = new InlineLabel("Port 80 -> ");
-			labelWrapper.add(port80RedirectLabel);
-
-			InlineLabel keyLabel1 = new InlineLabel(RBUNDLE.httpPortColon());
-			labelWrapper.add(keyLabel1);
+			httpPortLabel = new InlineLabel(RBUNDLE.httpPortColon());
+			labelWrapper.add(httpPortLabel);
 
 			table.setWidget(row, 0, labelWrapper);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
@@ -96,9 +94,15 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 			httpEnabledCheckBox = new CheckBox(RBUNDLE.enabled());
 			httpEnabledCheckBox.addStyleName("networkPageHttpEnabledCheckBox");
 			httpEnabledCheckBox.addClickHandler(this);
-
+			
 			portEnablePanel.add(listenSpinner);
 			portEnablePanel.add(httpEnabledCheckBox);
+			
+			forceSecureCheckBox = new CheckBox(RBUNDLE.forceSecureConnection());
+			forceSecureCheckBox.setEnabled(false);
+			forceSecureCheckBox.addStyleName("networkPageHttpEnabledCheckBox");
+			forceSecureCheckBox.addClickHandler(this);
+			portEnablePanel.add(forceSecureCheckBox);
 		}
 
 		{
@@ -194,9 +198,13 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 		network.setKeystoreFile(keyStoreFileTextBox.getText());
 
 		if (httpEnabledCheckBox.getValue())
+		{
 			network.setListenPort(listenSpinner.getValueAsInt());
+		}
 		else
 			network.setListenPort(0);
+		
+		network.setForceSecure(forceSecureCheckBox.getValue());
 
 		return config;
 	}
@@ -219,7 +227,6 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 			portRedirectCheckBox.setValue(portRedirect);
 
 			port443RedirectLabel.setVisible(portRedirect);
-			port80RedirectLabel.setVisible(portRedirect);
 			portRedirectReverseProxyLabel.setVisible(portRedirect);
 
 			secureListenSpinner.setValue(network.getSecureListenPort());
@@ -240,10 +247,41 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 			{
 				listenSpinner.setEnabled(false);
 			}
+			
+			forceSecureCheckBox.setValue(network.isForceSecure());
+			forceSecureCheckBox.setEnabled(network.getListenPort() > 0);
 			httpEnabledCheckBox.setValue(network.getListenPort() != 0);
+			httpEnabledCheckBox.setEnabled(!network.isForceSecure());
+			updateHttpPortLabel();
 		}
 	}
 
+	private void updateHttpPortLabel()
+	{
+		if (portRedirectCheckBox.getValue())
+		{
+			if (forceSecureCheckBox.getValue())
+			{
+				httpPortLabel.setText(RBUNDLE.port80ToSecureHttpPortLabel());
+			}
+			else if (httpEnabledCheckBox.getValue())
+			{
+				httpPortLabel.setText(RBUNDLE.port80ToHttpPortLabel());
+			}
+			else
+			{
+				httpPortLabel.setText(RBUNDLE.httpPortColon());
+			}
+		}
+		else if (forceSecureCheckBox.getValue())
+		{
+			httpPortLabel.setText(RBUNDLE.httpPortToSecurePortLabel());
+		}
+		else
+		{
+			httpPortLabel.setText(RBUNDLE.httpPortColon());
+		}
+	}
 	@Override
 	public void onClick(ClickEvent event)
 	{
@@ -252,12 +290,23 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 		if (event.getSource() == httpEnabledCheckBox)
 		{
 			listenSpinner.setEnabled(httpEnabledCheckBox.getValue());
+			forceSecureCheckBox.setEnabled(httpEnabledCheckBox.getValue());
+			
+			updateHttpPortLabel();
 		}
 		else if (event.getSource() == portRedirectCheckBox)
 		{
 			port443RedirectLabel.setVisible(portRedirectCheckBox.getValue());
-			port80RedirectLabel.setVisible(portRedirectCheckBox.getValue());
 			portRedirectReverseProxyLabel.setVisible(portRedirectCheckBox.getValue());
+			
+			updateHttpPortLabel();
+		}
+		else if (event.getSource() == forceSecureCheckBox)
+		{
+			httpEnabledCheckBox.setEnabled(!forceSecureCheckBox.getValue());
+			listenSpinner.setEnabled(!forceSecureCheckBox.getValue());
+			
+			updateHttpPortLabel();
 		}
 	}
 
