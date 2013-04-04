@@ -2018,7 +2018,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 		
-		if ((Utils.checkIfVibe() || Utils.checkIfKablink()) && 
+		if ((Utils.checkIfVibe() || Utils.checkIfKablink() || Utils.checkIfFilrAndVibe()) && 
 				!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_EXTERNAL_INTERNALID)) {
 			//Don't create this role in Filr
 			function = new Function();
