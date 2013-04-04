@@ -1458,7 +1458,7 @@ public class SearchUtils {
 		return reply;
 	}
 
-    public static Document buildExcludeUniversalAndContainerGroupFilter() {
+    public static Document buildExcludeUniversalAndContainerGroupFilter(boolean excludeAllInternal) {
         Document searchFilter;
         Element rootElement, orElement;
         Element field;
@@ -1468,10 +1468,12 @@ public class SearchUtils {
         rootElement = searchFilter.addElement( Constants.NOT_ELEMENT );
         orElement = rootElement.addElement(Constants.OR_ELEMENT);
 
-        field = orElement.addElement( Constants.FIELD_ELEMENT );
-        field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.GROUPNAME_FIELD );
-        child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
-        child.setText( "allusers" );
+        if (excludeAllInternal) {
+            field = orElement.addElement( Constants.FIELD_ELEMENT );
+            field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.GROUPNAME_FIELD );
+            child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
+            child.setText( "allusers" );
+        }
 
         field = orElement.addElement( Constants.FIELD_ELEMENT );
         field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.GROUPNAME_FIELD );

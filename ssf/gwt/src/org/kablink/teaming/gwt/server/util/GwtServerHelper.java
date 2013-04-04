@@ -3468,7 +3468,7 @@ public class GwtServerHelper {
 			
 			// Exclude allUsers and allExtUsers from the search
 			{
-		    	options.put( ObjectKeys.SEARCH_FILTER_AND, SearchUtils.buildExcludeUniversalAndContainerGroupFilter() );
+		    	options.put( ObjectKeys.SEARCH_FILTER_AND, SearchUtils.buildExcludeUniversalAndContainerGroupFilter(true) );
 			}
 	
 			// Get the list of all the groups.
