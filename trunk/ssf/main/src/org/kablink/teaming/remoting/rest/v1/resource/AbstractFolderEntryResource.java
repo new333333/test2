@@ -36,6 +36,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.rest.v1.model.Reply;
@@ -43,6 +44,7 @@ import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchResultTree;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.Tag;
+import org.kablink.util.api.ApiErrorCode;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -115,6 +117,15 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
                           @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
             throws WriteFilesException, WriteEntryDataException {
         org.kablink.teaming.domain.FolderEntry parent = _getFolderEntry(id);
+        if (entry==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The request body must contain a 'Reply' object.");
+        }
+        if (entry.getDescription()==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'description' value");
+        }
+        if (entry.getDescription().getText()==null || entry.getDescription().getText().length()==0) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'description.text' value");
+        }
         String defId = null;
         if (entry.getDefinition()!=null) {
             defId = entry.getDefinition().getId();
