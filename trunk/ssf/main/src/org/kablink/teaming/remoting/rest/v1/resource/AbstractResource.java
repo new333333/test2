@@ -575,13 +575,16 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                     .add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
     }
 
-    protected Criterion buildUsersCriterion() {
-        return Restrictions.conjunction()
+    protected Criterion buildUsersCriterion(boolean allowExternal) {
+        Junction crit = Restrictions.conjunction()
                 .add(Restrictions.eq(Constants.PERSONFLAG_FIELD, Boolean.TRUE.toString()))
-                .add(Restrictions.eq(Constants.IDENTITY_INTERNAL_FIELD, Boolean.TRUE.toString()))
                 .add(Restrictions.eq(Constants.DISABLED_USER_FIELD, Boolean.FALSE.toString()))
                 .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
                 .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER));
+        if (!allowExternal) {
+            crit.add(Restrictions.eq(Constants.IDENTITY_INTERNAL_FIELD, Boolean.TRUE.toString()));
+        }
+        return crit;
     }
 
     protected Criterion buildBindersCriterion() {
