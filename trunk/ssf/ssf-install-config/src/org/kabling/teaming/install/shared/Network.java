@@ -44,6 +44,7 @@ public class Network implements Serializable
 	private WebService webService;
 	private int sessionTimeoutMinutes;
 	private boolean portRedirect;
+	private boolean forceSecure;
 
 	public Network()
 	{
@@ -156,5 +157,14 @@ public class Network implements Serializable
 	{
 		this.portRedirect = portRedirect;
 	}
-	
+
+	public boolean isForceSecure()
+	{
+		return forceSecure;
+	}
+
+	public void setForceSecure(boolean forceSecure)
+	{
+		this.forceSecure = forceSecure;
+	}
 }

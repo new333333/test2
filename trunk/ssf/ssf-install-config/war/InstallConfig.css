@@ -967,6 +967,7 @@ td.table-value {
 	display:inline-block;
 	vertical-align: middle;
 	height: 28px;
+	margin-right: 5px;
 }
 
 .defaultLocaleLabel {

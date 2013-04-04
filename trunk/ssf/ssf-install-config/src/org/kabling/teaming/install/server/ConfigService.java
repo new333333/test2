@@ -285,6 +285,7 @@ public final class ConfigService
 			network.setAjpPort(getIntegerValue(hostNode.getAttribute("ajpPort")));
 			network.setKeystoreFile(hostNode.getAttribute("keystoreFile"));
 			network.setPortRedirect(getBooleanValue(hostNode.getAttribute("portRedirect")));
+			network.setForceSecure(getBooleanValue(hostNode.getAttribute("forceSecure")));
 
 		}
 
@@ -1394,6 +1395,7 @@ public final class ConfigService
 			hostElement.setAttribute("ajpPort", String.valueOf(network.getAjpPort()));
 			hostElement.setAttribute("keystoreFile", network.getKeystoreFile());
 			hostElement.setAttribute("portRedirect", String.valueOf(network.isPortRedirect()));
+			hostElement.setAttribute("forceSecure",String.valueOf(network.isForceSecure()));
 		}
 	}
 
@@ -2343,14 +2345,16 @@ public final class ConfigService
 		// Turn on secure port
 		executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getSecureListenPort(), true);
 
-		// Http 8080 disabled
-		if (network.getListenPort() == 0)
+		//Force secure connection
+		if (network.isForceSecure())
 		{
 			// Call addSecurityConstraint.py pointing to web.xml, we need to update all the 4 web.xml
 			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py " + WEB_XML1, true);
 			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py " + WEB_XML2, true);
 			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py " + WEB_XML3, true);
 			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py " + WEB_XML4, true);
+			
+			executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getListenPort(), true);
 		}
 		else
 		{
@@ -2359,9 +2363,11 @@ public final class ConfigService
 			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py " + WEB_XML2, true);
 			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py " + WEB_XML3, true);
 			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py " + WEB_XML4, true);
-
-			// Enable the firewall for this port
-			executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getListenPort(), true);
+			
+			if (network.getListenPort() > 0)
+				executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getListenPort(), true);
+			else
+				executeCommand("sudo SuSEfirewall2 close EXT TCP "+network.getListenPort(), true);
 		}
 
 		if (network.isPortRedirect())
@@ -2377,7 +2383,7 @@ public final class ConfigService
 		}
 		else
 		{
-			executeCommand("sudo python /opt/novell/filr_config/updateFirewallRedirect.py " + ipAddr + " 443 80", true);
+			executeCommand("sudo python /opt/novell/filr_config/disableFirewallRedirect.py", true);
 
 			// Enable the firewall for this port 80 443
 			executeCommand("sudo SuSEfirewall2 close EXT TCP 80 443", true);
