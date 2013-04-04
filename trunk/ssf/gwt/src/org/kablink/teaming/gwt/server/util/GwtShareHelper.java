@@ -1484,9 +1484,11 @@ public class GwtShareHelper
 		role = new GwtRole();
 		role.setType( GwtRoleType.EnableSharePublic );
 		listOfRoles.add( role );
-		role = new GwtRole();
-		role.setType( GwtRoleType.EnableShareWithAllExternal );
-		listOfRoles.add( role );
+		if (Utils.checkIfKablink() || Utils.checkIfVibe()) {
+			role = new GwtRole();
+			role.setType( GwtRoleType.EnableShareWithAllExternal );
+			listOfRoles.add( role );
+		}
 		role = new GwtRole();
 		role.setType( GwtRoleType.EnableShareWithAllInternal );
 		listOfRoles.add( role );
