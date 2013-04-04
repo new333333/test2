@@ -125,6 +125,9 @@ public final class ConfigService
 		
 		File shareFile = new File("/vashare/filr/conf/memcached.properties");
 		config.setShareAvailable(shareFile.exists());
+		
+		File vaShareFile = new File("/vashare");
+		config.setVashareAvailable(vaShareFile.exists());
 		return config;
 	}
 

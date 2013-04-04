@@ -75,6 +75,7 @@ public class InstallerConfig implements Serializable
 	private boolean localPostfix;
 	private boolean updateMode;
 	private boolean shareAvailable;
+	private boolean vashareAvailable;
 
 	public InstallerConfig()
 	{
@@ -298,6 +299,16 @@ public class InstallerConfig implements Serializable
 	public void setShareAvailable(boolean shareAvailable)
 	{
 		this.shareAvailable = shareAvailable;
+	}
+
+	public boolean isVashareAvailable()
+	{
+		return vashareAvailable;
+	}
+
+	public void setVashareAvailable(boolean vashareAvailable)
+	{
+		this.vashareAvailable = vashareAvailable;
 	}
 	
 }

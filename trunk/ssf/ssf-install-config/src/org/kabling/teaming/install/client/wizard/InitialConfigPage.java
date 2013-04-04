@@ -5,6 +5,7 @@ import org.kabling.teaming.install.client.ConfigWizardSucessEvent;
 import org.kabling.teaming.install.client.ConfigWizardSucessEvent.WizardFinishType;
 import org.kabling.teaming.install.client.EditCanceledHandler;
 import org.kabling.teaming.install.client.EditSuccessfulHandler;
+import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.client.widgets.WarningDialog;
 import org.kabling.teaming.install.client.widgets.DlgBox.DlgButtonMode;
 import org.kabling.teaming.install.shared.Database;
@@ -34,7 +35,8 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	private InstallerConfig config;
 	private ConfigWizard wizard;
 	private HTML upgradeDesc;
-
+	protected AppResource RBUNDLE = AppUtil.getAppResource();
+	private HTML vashareNotAvailableLabel;
 	public InitialConfigPage(ConfigWizard wizard, InstallerConfig config)
 	{
 		this.config = config;
@@ -95,8 +97,20 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 						"Set up a scalable infrastructure. <br> The Lucene search server and MySQL database will run separately.");
 				customConfigDescLabel.addStyleName("configDescLabel");
 				radioPanel.add(customConfigDescLabel);
+				customConfigDescLabel.addStyleName("configDescLabel");
+				radioPanel.add(customConfigDescLabel);
+				
+				vashareNotAvailableLabel = new HTML(RBUNDLE.vashareNotAvailableDesc());
+				vashareNotAvailableLabel.setVisible(false);
+				vashareNotAvailableLabel.addStyleName("vashareNotAvailableLabel");
+				radioPanel.add(vashareNotAvailableLabel);
 
-				customRB.setValue(true);
+				if (config.isVashareAvailable())
+					customRB.setValue(true);
+				else
+				{
+					useDefaultsRB.setValue(true);
+				}
 			}
 		}
 
@@ -146,10 +160,13 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 		if (event.getSource() == useDefaultsRB)
 		{
 			config.setAdvancedConfiguration(false);
+			vashareNotAvailableLabel.setVisible(false);
 		}
 		else if (event.getSource() == customRB)
 		{
 			config.setAdvancedConfiguration(true);
+			if (!config.isVashareAvailable())
+				vashareNotAvailableLabel.setVisible(true);
 		}
 		wizard.getFinishButton().setEnabled(false);
 		wizard.getNextButton().setEnabled(true);
