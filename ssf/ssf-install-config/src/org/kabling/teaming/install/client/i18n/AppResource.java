@@ -353,4 +353,6 @@ public interface AppResource extends Messages
 	String httpPortToSecurePortLabel();
 	
 	String port80ToSecureHttpPortLabel();
+	
+	String vashareNotAvailableDesc();
 }

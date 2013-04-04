@@ -983,7 +983,7 @@ td.table-value {
     color: #505354;
 }
 
-.networkPagePortRedirectProxyDescLabel {
+.networkPagePortRedirectProxyDescLabel,.vashareNotAvailableLabel {
 	background: none repeat scroll 0 0 #FAFAFA;
     color: #505354;
     font-size: 12px;
@@ -992,4 +992,8 @@ td.table-value {
     width: 450px;
     border-radius: 4px;
     border: 1px solid #ccc;
+}
+
+.vashareNotAvailableLabel {
+	margin: 0px 0 0 20px;
 }
