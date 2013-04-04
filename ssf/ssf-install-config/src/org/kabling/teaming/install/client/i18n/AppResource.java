@@ -342,4 +342,6 @@ public interface AppResource extends Messages
 	String reverseProxyHostNameDesc();
 	
 	String portRedirectionReverseProxyPortDesc();
+
+	String default300();
 }

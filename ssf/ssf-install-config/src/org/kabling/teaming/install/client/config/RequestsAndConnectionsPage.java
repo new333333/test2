@@ -67,7 +67,7 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			maxActiveSpinner = new GwValueSpinner(100, 10, 500, RBUNDLE.default100());
+			maxActiveSpinner = new GwValueSpinner(300, 10, 500, RBUNDLE.default300());
 			maxActiveSpinner.getValSpinnerLabel().addStyleName("infoLabel");
 			table.setWidget(row, 1, maxActiveSpinner);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
@@ -80,7 +80,7 @@ public class RequestsAndConnectionsPage extends ConfigPageDlgBox
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			maxIdleSpinner = new GwValueSpinner(20, 20, 100, RBUNDLE.default20());
+			maxIdleSpinner = new GwValueSpinner(50, 20, 100, RBUNDLE.default50());
 			maxIdleSpinner.getValSpinnerLabel().addStyleName("infoLabel");
 			table.setWidget(row, 1, maxIdleSpinner);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
