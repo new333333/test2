@@ -94,16 +94,18 @@ public class UserResource extends AbstractPrincipalResource {
             @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
 
         Map<String, Object> nextParams = new HashMap<String, Object>();
+        boolean allowExternal = false;
         Junction criterion = Restrictions.conjunction();
-        criterion.add(buildUsersCriterion());
         if (ids!=null) {
             Junction or = Restrictions.disjunction();
             for (Long id : ids) {
                 or.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
+                allowExternal = true;
             }
             criterion.add(or);
             nextParams.put("id", ids);
         }
+        criterion.add(buildUsersCriterion(allowExternal));
         if (name!=null) {
             criterion.add(Restrictions.like(Constants.LOGINNAME_FIELD, name));
             nextParams.put("name", name);
