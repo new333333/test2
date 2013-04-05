@@ -1056,6 +1056,24 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_DATE_STR:
+		{
+			GetDateStrCmd gdCmd;
+			String result = "";
+			
+			gdCmd = (GetDateStrCmd) cmd;
+			if ( gdCmd.getDate() != null )
+			{
+				Date date;
+				
+				date = new Date( gdCmd.getDate() );
+				result = GwtServerHelper.getDateString( date, gdCmd.getFormat() );
+			}
+			
+			response = new VibeRpcResponse( new StringRpcResponseData( result ) );
+			return response;
+		}
+		
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		{
 			GetDefaultActivityStreamCmd gdasCmd = ((GetDefaultActivityStreamCmd) cmd);

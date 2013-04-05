@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -61,12 +62,14 @@ import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDateStrCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSharingInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SendShareNotificationEmailCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
@@ -418,7 +421,8 @@ public class ShareThisDlg extends DlgBox
 		private InlineLabel m_expiresLabel;
 		private Image m_img;
 		private EditSuccessfulHandler m_editShareExpirationHandler;
-		
+		private AsyncCallback<VibeRpcResponse> m_getDateStrCallback = null;
+
 		/**
 		 * 
 		 */
@@ -485,7 +489,7 @@ public class ShareThisDlg extends DlgBox
 				m_shareExpirationDlg.showRelativeToTarget( m_expiresLabel );
 			}
 		}
-
+		
 		/**
 		 * 
 		 */
@@ -531,9 +535,109 @@ public class ShareThisDlg extends DlgBox
 		{
 			if ( m_shareItem != null )
 			{
-				m_expiresLabel.setText( m_shareItem.getShareExpirationValueAsString() );
+				// Get the appropriate string that represents the expiration value
+				{
+					ShareExpirationValue expirationValue;
+					
+					expirationValue = m_shareItem.getShareExpirationValue();
+					if ( expirationValue != null )
+					{
+						String after;
+						Long value;
+						
+						value = expirationValue.getValue();
+						
+						switch ( expirationValue.getExpirationType() )
+						{
+						case NEVER:
+							m_expiresLabel.setText( GwtTeaming.getMessages().shareDlg_expiresNever() );
+							break;
+						
+						case AFTER_DAYS:
+							after = "";
+							if ( value != null )
+							{
+								if ( value < 0 )
+									value = Long.valueOf( 0 );
+								
+								after = value.toString();
+							}
+							
+							m_expiresLabel.setText( GwtTeaming.getMessages().shareDlg_expiresAfter( after ) );
+							break;
+						
+						case ON_DATE:
+							if ( value != null )
+								updateExpirationLabel( value );
+							else
+								m_expiresLabel.setText( GwtTeaming.getMessages().shareDlg_expiresOn( "" ) );
+							
+							break;
+							
+						case UNKNOWN:
+						default:
+							m_expiresLabel.setText( "Unknown expiration type" );
+							break;
+						}
+					}
+					else
+						m_expiresLabel.setText( "" );
+				}
+				
 				m_expiresLabel.getElement().appendChild( m_img.getElement() );
 			}
+		}
+		
+		/**
+		 * Issue an rpc request to get the date/time string for the given expiration value.
+		 * Then update the given label.
+		 */
+		private void updateExpirationLabel( Long value )
+		{
+			GetDateStrCmd cmd;
+			
+			if ( m_getDateStrCallback == null )
+			{
+				m_getDateStrCallback = new AsyncCallback<VibeRpcResponse>()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void onFailure( Throwable t )
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+													t,
+													GwtTeaming.getMessages().rpcFailure_GetDateStr() );
+					}
+			
+					/**
+					 * 
+					 * @param result
+					 */
+					@Override
+					public void onSuccess( VibeRpcResponse response )
+					{
+						StringRpcResponseData responseData = null;
+						
+						if ( response.getResponseData() instanceof StringRpcResponseData )
+							responseData = (StringRpcResponseData) response.getResponseData();
+						
+						if ( responseData != null )
+						{
+							String dateTimeStr;
+							
+							dateTimeStr = responseData.getStringValue();
+							if ( dateTimeStr != null )
+								m_expiresLabel.setText( dateTimeStr );
+						}
+					}
+				};
+			}
+			
+			// Issue an rpc request to get the date/time string.
+			cmd = new GetDateStrCmd( value, DateFormat.SHORT );
+			GwtClientHelper.executeCommand( cmd, m_getDateStrCallback );
 		}
 	}
 	
@@ -1532,6 +1636,7 @@ public class ShareThisDlg extends DlgBox
 						GwtTeaming.getMessages().rpcFailure_ShareEntry() );
 					
 					// Enable the Ok button.
+					Window.alert( GwtTeaming.getMessages().rpcFailure_ShareEntry() );
 					hideStatusMsg();
 					setOkEnabled( true );
 				}// end onFailure()

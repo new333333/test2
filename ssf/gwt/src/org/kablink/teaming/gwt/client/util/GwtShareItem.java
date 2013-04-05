@@ -294,17 +294,6 @@ public class GwtShareItem
 	/**
 	 * 
 	 */
-	public String getShareExpirationValueAsString()
-	{
-		if ( m_shareExpirationValue != null )
-			return m_shareExpirationValue.getValueAsString();
-		
-		return "";
-	}
-	
-	/**
-	 * 
-	 */
 	public ShareRights getShareRights()
 	{
 		return m_shareRights;
