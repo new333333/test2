@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,90 +30,85 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.util;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+package org.kablink.teaming.gwt.client.rpc.shared;
+
 
 /**
- * This class represents a share expiration value
+ * This class holds all of the information necessary to execute the 'get date string' command.
+ * 
+ * @author jwootton@novell.com
  */
-public class ShareExpirationValue
-	implements IsSerializable
+public class GetDateStrCmd extends VibeRpcCmd
 {
-	private ShareExpirationType m_expirationType;
-	private Long m_value;
+	private Long m_date;
+	private int m_format;
+
 	
 	/**
-	 * This class represents the different share expiration values
+	 * Class constructor.
+	 * 
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
 	 */
-	public enum ShareExpirationType implements IsSerializable
+	public GetDateStrCmd()
 	{
-		AFTER_DAYS,
-		NEVER,
-		ON_DATE,
-		
-		UNKNOWN
+		super();		
 	}
 
 	/**
-	 * 
+	 * Class constructor.
 	 */
-	public ShareExpirationValue()
+	public GetDateStrCmd( Long date, int format )
 	{
-		m_expirationType = ShareExpirationType.NEVER;
-		m_value = null;
+		this();
+
+		setDate( date );
+		setFormat( format );
 	}
 	
 	/**
 	 * 
 	 */
-	public ShareExpirationValue( ShareExpirationValue value )
+	public Long getDate()
 	{
-		set( value );
+		return m_date;
 	}
 	
 	/**
 	 * 
 	 */
-	public ShareExpirationType getExpirationType()
+	public int getFormat()
 	{
-		return m_expirationType;
+		return m_format;
 	}
 	
 	/**
 	 * 
 	 */
-	public Long getValue()
+	public void setDate( Long date )
 	{
-		return m_value;
+		m_date = date;
 	}
 	
 	/**
 	 * 
 	 */
-	public void set( ShareExpirationValue value )
+	public void setFormat( int format )
 	{
-		if ( value != null )
-		{
-			m_expirationType = value.getExpirationType();
-			m_value = value.getValue();
-		}
+		m_format = format;
 	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
-	 */
-	public void setType( ShareExpirationType type )
-	{
-		m_expirationType = type;
-	}
-	
-	/**
+	 * Implements VibeRpcCmd.getCmdType()
 	 * 
+	 * @return
 	 */
-	public void setValue( Long value )
+	@Override
+	public int getCmdType()
 	{
-		m_value = value;
+		return VibeRpcCmdType.GET_DATE_STR.ordinal();
 	}
 }
-
