@@ -247,9 +247,13 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			//check access to folder/entry and build lists of users to receive mail
 			List checkList = new ArrayList();
 			for (Map.Entry<User, String[]> me:userMap.entrySet()) {
-				AclChecker check = new AclChecker(me.getKey(), me.getValue());
-				check.checkEntries(entries);
-				checkList.add(check);
+				User u = me.getKey();
+				boolean limitedView = Utils.canUserOnlySeeCommonGroupMembers(u);
+				if ((redacted && limitedView) || (!redacted && !limitedView)) {
+					AclChecker check = new AclChecker(u, me.getValue());
+					check.checkEntries(entries);
+					checkList.add(check);
+				}
 			}
 			//	get a map containing a list of users mapped to a list of entries
 			while (!checkList.isEmpty()) {

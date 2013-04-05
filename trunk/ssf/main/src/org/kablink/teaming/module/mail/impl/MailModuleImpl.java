@@ -142,7 +142,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	protected boolean useAliases=false;
 	protected boolean sendVTODO = true;
 	protected int rcptToLimit = 500;
-//	protected Map<String,String> mailAccounts = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 	
 	public MailModuleImpl() {
 	}
@@ -207,14 +206,18 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 */
 	@Override
 	public void afterPropertiesSet() {
-		//Get alias setting
+		// Get alias setting.
 		useAliases = SPropsUtil.getBoolean("mail.posting.useAliases", false);
-		//Get send tasks in email
+		
+		// Get send tasks in email.
 		sendVTODO = SPropsUtil.getBoolean("mail.sendVTODO", true);
 		rcptToLimit = SPropsUtil.getInt("mail.rcpt.limit", 500);
-		//preload mailSenders so retry mail will work.  Needs name available.  Posters are also senders, when replying on failures.
+		
+		// Preload mailSenders so retry mail will work.  Needs name
+		// available.  Posters are also senders, when replying on
+		// failures.
 		List<Element> senders = SZoneConfig.getAllElements("//mailConfiguration/notify | //mailConfiguration/posting");
-		for (Element sEle:senders) {
+		for (Element sEle:  senders) {
 			String jndiName = sEle.attributeValue("session");
 			if (Validator.isNotNull(jndiName)) {
 				try {
@@ -223,14 +226,15 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					SpringContextUtil.applyDependencies(sender, "mailSender");
 					Object jndiObj = jndiAccessor.getJndiTemplate().lookup(jndiName);
 					
-					//System.out.println(ClassLoaderUtils.showClassLoaderHierarchy(jndiObj, "jndi")); // $$$ TODO
-					//System.out.println(ClassLoaderUtils.showClassLoaderHierarchy(javax.mail.Session.class.getClassLoader()));
+					// System.out.println(ClassLoaderUtils.showClassLoaderHierarchy(jndiObj, "jndi")); // $$$ TODO
+					// System.out.println(ClassLoaderUtils.showClassLoaderHierarchy(javax.mail.Session.class.getClassLoader()));
 					
 					sender.setName(jndiName); //set the name first so session properties can be found		
 					sender.setSession((javax.mail.Session) jndiObj);
 					mailSenders.put(jndiName, sender);
 				
-				} catch (Exception ex) {
+				}
+				catch (Exception ex) {
 					logger.error("EXCEPTION:  Error locating " + jndiName + " " + getMessage(ex));
 					logger.debug("EXCEPTION", ex);
 				}
@@ -245,7 +249,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     	if (Validator.isNotNull(jobClass)) {
     		try {
     			return (FillEmailSubscription)ReflectHelper.getInstance(jobClass);
-    		} catch (Exception e) {
+    		}
+    		catch (Exception e) {
  			   logger.error("EXCEPTION:  Cannot instantiate FillEmailSubscription custom class", e);
     		}
     	}
@@ -258,7 +263,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     	if (Validator.isNotNull(jobClass)) {
     		try {
     			return (SendEmail)ReflectHelper.getInstance(jobClass);
-    		} catch (Exception e) {
+    		}
+    		catch (Exception e) {
  			   logger.error("EXCEPTION:  Cannot instantiate SendEmail custom class", e);
     		}
     	}
@@ -266,24 +272,36 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     	return (SendEmail)ReflectHelper.getInstance(className);
 	}
 	
-	//called on zone delete
+	/**
+	 * Called on zone delete.
+	 * 
+	 * @param zone
+	 */
 	@Override
 	public void stopScheduledJobs(Workspace zone) {
 		FillEmailSubscription sub = getSubscriptionJob(zone);
 		sub.remove(zone.getId());
 	}
 	
-	//called on zone startup
+	/**
+	 * Called on zone startup.
+	 * 
+	 * @param zone
+	 */
 	@Override
 	public void startScheduledJobs(Workspace zone) {
-		if (zone.isDeleted()) return;
-		//make sure a delete job is scheduled for the zone
+		if (zone.isDeleted()) {
+			return;
+		}
+		
+		// Make sure a delete job is scheduled for the zone.
 		FillEmailSubscription sub = getSubscriptionJob(zone);
 		String minString = (String)getMailProperty(zone.getName(), MailModule.Property.SUBSCRIPTION_MINUTES);
 		int minutes = 5;
 		try {
 			minutes = Integer.parseInt(minString);
-		} catch (Exception ex) {};
+		}
+		catch (Exception ex) {};
 		sub.schedule(zone.getId(), null, minutes);
 	}
 
@@ -308,23 +326,18 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	@Override
 	public String getMailAttribute(String zoneName, String node, String name) {
 		Element result = SZoneConfig.getElement(zoneName, "mailConfiguration/" + node);
-		if (result == null) return null;
+		if (null == result) {
+			return null;
+		}
 		return result.attributeValue(name);
 	}
 
-//	Think this is overkill
-//	public String getMailAttribute(Binder binder, String node, String name) {
-//		String result = getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), "binder[@id='" + binder.getId().toString() +"']/" + node, name);
-//		if (result != null) return result;
-//		if (!binder.isRoot()) return getMailAttribute(binder.getParentBinder(), node, name);
-//		return getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), node, name);
-
-//	}
-	
 	protected JavaMailSender getMailSender(String jndiName) {
 		JavaMailSender sender=null;
 		sender = mailSenders.get(jndiName);
-		if (sender == null) throw new ConfigurationException("Missing JavaMailSender bean");
+		if (null == sender) {
+			throw new ConfigurationException("Missing JavaMailSender bean");
+		}
 		return sender;
 	}
 	
@@ -342,22 +355,26 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		String jndiName;
 		if (binder.isZone()) jndiName = PortabilityUtil.getJndiName(getMailAttribute(binder.getName(), "notify", "session"));
 		else jndiName = PortabilityUtil.getJndiName(getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), "notify", "session"));
-//		else jndiName = PortabilityUtil.getJndiName(getMailAttribute(binder, "notify", "session"));
 		return jndiName;
 	}
 
 	protected List<String> getMailPosters(String zoneName) {
-		//posting map is indexed by zoneName.  
+		// Posting map is indexed by zoneName.  
 		List<String> result = mailPosters.get(zoneName);
-	    if (result != null) return result;
+	    if (null != result) {
+	    	return result;
+	    }
 		List<Element> posters = SZoneConfig.getElements("mailConfiguration/posting");
-		if (posters == null) posters = new ArrayList();
+		if (null == posters) {
+			posters = new ArrayList();
+		}
 		result = new ArrayList();
-		for (Element nElement:posters) {
+		for (Element nElement:  posters) {
 			String jndiName = PortabilityUtil.getJndiName(nElement.attributeValue("session"));
 			if (mailSenders.containsKey(jndiName)) {
 				result.add(jndiName); 
-			} else {
+			}
+			else {
 				logger.error("Error locating mail poster " + jndiName);
 			}
 		}
@@ -374,42 +391,61 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		String prefix, auth;
 		List<String> posters = getMailPosters(RequestContextHolder.getRequestContext().getZoneName());
 		List<PostingDef> allPostings = getCoreDao().loadPostings(RequestContextHolder.getRequestContext().getZoneId());
-		/* There are 2 types of posting
-		 * 1. Using aliases, where mail is sent to different address which are aliases for the address configured in ssf.xml
-		 * 	  This works as long as the mail server doesn't convert the alias to the real email address, as does GroupWise!
-		 * 2. Each posting definition defines a userName/password that is used to connect to the store as configured in ssf.xml
+		
+		/*
+		 * There are 2 types of posting:
+		 * 
+		 * 1. Using aliases, where mail is sent to different address
+		 *    which are aliases for the address configured in ssf.xml
+		 * 	  This works as long as the mail server doesn't convert the
+		 *    alias to the real email address, as does GroupWise!
+		 *    
+		 * 2. Each posting definition defines a userName/password that
+		 *    is used to connect to the store as configured in ssf.xml
 		 */
+		
 		List<PostingDef>aliases = new ArrayList();
 		List<PostingDef>useUserNamePwd = new ArrayList();
-		for (PostingDef p:allPostings) {
-			if (!p.isEnabled()) continue;
-			if (p.getBinder() == null) continue;
-			if (useAliases) aliases.add(p);
+		for (PostingDef p:  allPostings) {
+			if (!p.isEnabled()) {
+				continue;
+			}
+			
+			if (null == p.getBinder()) {
+				continue;
+			}
+			
+			if (useAliases)
+			     aliases.add(       p);
 			else useUserNamePwd.add(p);
 		}
 		
 		SearchTerm[] aliasSearch = new SearchTerm[2];
 		
-		for (String jndiName:posters) {  //multiple aren't tested
+		for (String jndiName:  posters) {  // Multiple aren't tested.
 			JavaMailSender sender;
 			try {
 				sender = getMailSender(jndiName);
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				continue;
 			}
 			Session session = sender.getSession();
 			String protocol = session.getProperty("mail.store.protocol");
-			// see if need password
+			
+			// See if need password.
 			prefix = "mail." + protocol + ".";
 			auth = session.getProperty(prefix + "auth");
-			if (Validator.isNull(auth)) 
+			if (Validator.isNull(auth)) { 
 				auth = session.getProperty("mail.auth");
-			String password=null;
+			}
+			String password = null;
 			if ("true".equals(auth)) {
 				password = session.getProperty(prefix + "password");
-				if (Validator.isNull(password)) 
+				if (Validator.isNull(password)) { 
 					password = session.getProperty("mail.password");
-				if (Validator.isNull(password)) {//see if moved to properties file
+				}
+				if (Validator.isNull(password)) { // See if moved to properties file.
 					String [] pieces = sender.getName().split("/");
 					password = SPropsUtil.getString("mail." + pieces[pieces.length-1].trim() + ".in.password", "");
 				}
@@ -423,56 +459,79 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			Store store=null;
 			try {				
 				store = session.getStore(protocol);
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				logger.error("EXCEPTION:  Error posting mail from [" + hostName + "]", ex);
 				continue;
 			}
 			try {				
 				if (!aliases.isEmpty()) {
 					if (Validator.isNotNull(password)) {
-						//rest of defaults from jndi setting
+						// Rest of defaults from jndi setting.
 						store.connect(null, null, password);
-					} else {
+					}
+					else {
 						store.connect();
 					}
 					mFolder = store.getFolder(folderName);				
 					mFolder.open(javax.mail.Folder.READ_WRITE);
 					
-					//	determine which alias a message belongs to and post it
+					// Determine which alias a message belongs to and
+					// post it.
 					for (PostingDef postingDef: aliases) {
 						try {
 							aliasSearch[0] = new RecipientStringTerm(Message.RecipientType.TO,postingDef.getEmailAddress());
 							aliasSearch[1] = new RecipientStringTerm(Message.RecipientType.CC,postingDef.getEmailAddress());
 							Message aliasMsgs[]=mFolder.search(new OrTerm(aliasSearch));
-							if (aliasMsgs.length == 0) continue;
-							Folder folder = (Folder)postingDef.getBinder();
+							if (0 == aliasMsgs.length) {
+								continue;
+							}
+							Folder folder = ((Folder) postingDef.getBinder());
 							EmailPoster processor = (EmailPoster)processorManager.getProcessor(folder,EmailPoster.PROCESSOR_KEY);
 							sendErrors(folder, postingDef, sender, processor.postMessages(folder,postingDef.getEmailAddress(), aliasMsgs, session, null));
-						} catch (Exception ex) {
+						}
+						catch (Exception ex) {
 							logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
 						}
 					}				
-					try {mFolder.close(true);} catch (Exception ex) {};
+					try {
+						mFolder.close(true);
+					}
+					catch (Exception ex) {};
 				}
 					
-			} catch (AuthenticationFailedException ax) {
+			}
+			catch (AuthenticationFailedException ax) {
 				logger.error("EXCEPTION:  Error posting mail from [" + hostName + "] " + getMessage(ax));
 				logger.debug("EXCEPTION", ax);
 				continue;
-			} catch (MessagingException mx) {
+			}
+			catch (MessagingException mx) {
 				logger.error("EXCEPTION:  Error posting mail from [" + hostName + "] " + getMessage(mx));
 				logger.debug("EXCEPTION", mx);
 				continue;
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				logger.error("EXCEPTION:  Error posting mail from [" + hostName + "]", ex);
 				logger.debug("EXCEPTION", ex);
-			} finally  {
-				//Close folder and expunge
-				if (mFolder != null && mFolder.isOpen()) try {mFolder.close(true);} catch (Exception ex1) {};
-				//Close connection 
-				try {store.close();} catch (Exception ex) {};
 			}
-			//Now try connecting by user/password
+			finally  {
+				// Close folder and expunge.
+				if ((null != mFolder) && mFolder.isOpen()) {
+					try {
+						mFolder.close(true);
+					}
+					catch (Exception ex1) {};
+				}
+				
+				// Close connection. 
+				try {
+					store.close();
+				}
+				catch (Exception ex) {};
+			}
+			
+			// Now try connecting by user/password.
 			for (PostingDef postingDef: useUserNamePwd) {
 				mFolder = null;
 				Folder folder = (Folder)postingDef.getBinder();
@@ -482,21 +541,34 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					mFolder = store.getFolder(folderName);				
 					mFolder.open(javax.mail.Folder.READ_WRITE);
 					sendErrors(folder, postingDef, sender, processor.postMessages(folder, postingDef.getEmailAddress(), mFolder.getMessages(), session, null));							
-				} catch (AuthenticationFailedException ax) {
+				}
+				catch (AuthenticationFailedException ax) {
 					logger.error("EXCEPTION:  Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress() + " " + getMessage(ax));
 					logger.debug("EXCEPTION", ax);
 					continue;
-				} catch (MessagingException mx) {
+				}
+				catch (MessagingException mx) {
 					logger.error("EXCEPTION:  Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress() + " " + getMessage(mx));
 					logger.debug("EXCEPTION", mx);
 					continue;
-				} catch (Exception ex) {
+				}
+				catch (Exception ex) {
 					logger.error("EXCEPTION:  Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
 					logger.debug("EXCEPTION", ex);
 					continue;
-				} finally {
-					if (mFolder != null) try {mFolder.close(true);} catch (Exception ex) {};
-					try {store.close();} catch (Exception ex) {};
+				}
+				finally {
+					if (null != mFolder) {
+						try {
+							mFolder.close(true);
+						}
+						catch (Exception ex) {};
+					}
+					
+					try {
+						store.close();
+					}
+					catch (Exception ex) {};
 				}
 				
 			}
@@ -505,7 +577,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	}
 	
 	private String getMessage(Exception ex) {
-		if (Validator.isNotNull(ex.getLocalizedMessage())) return ex.getLocalizedMessage();
+		if (Validator.isNotNull(ex.getLocalizedMessage())) {
+			return ex.getLocalizedMessage();
+		}
 		return ex.getMessage();
 	}
 	
@@ -514,32 +588,38 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			try	{
 				JavaMailSender sender;
 				if (!useAliases)  {
-					//need our own sender, so we can change the username/password
-					 sender = (JavaMailSender)mailSender.getClass().newInstance();				
-					 SpringContextUtil.applyDependencies(sender, "mailSender");	
-					 sender.setSession(srcSender.getSession(), postingDef.getEmailAddress(), postingDef.getCredentials());
-				} else {
+					// Need our own sender, so we can change the
+					// username/password.
+					sender = (JavaMailSender)mailSender.getClass().newInstance();				
+					SpringContextUtil.applyDependencies(sender, "mailSender");	
+					sender.setSession(srcSender.getSession(), postingDef.getEmailAddress(), postingDef.getCredentials());
+				}
+				else {
 					sender = srcSender;
 				}
 				sender.send((MimeMessage[])errors.toArray(new MimeMessage[errors.size()]));
-			} catch (MailAuthenticationException ax) {
+			}
+			catch (MailAuthenticationException ax) {
 				logger.error("EXCEPTION:  Authentication Exception:" + getMessage(ax));
 				logger.debug("EXCEPTION", ax);
-			} catch (MailSendException ms) {
+			}
+			catch (MailSendException ms) {
 				logger.error("EXCEPTION:  Error sending posting reject:" + getMessage(ms));
 				logger.debug("EXCEPTION", ms);
-				if ((binder != null) && ms.getFailedMessages().isEmpty()) {  //if not empty, trouble unreachable users; will have sent to some
+				if ((null != binder) && ms.getFailedMessages().isEmpty()) {  // If not empty, trouble unreachable users; will have sent to some.
 					logger.error("Error sending posting reject:" + getMessage(ms));						
 					SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
-					for (int i=0; i<errors.size(); ++i) {
+					for (int i = 0; i < errors.size(); ++i) {
 						if (!useAliases && !Validator.isNull(postingDef.getCredentials()))  {
 							job.schedule(srcSender, postingDef.getEmailAddress(), postingDef.getCredentials(), (MimeMessage)errors.get(i), binder.getTitle(), getMailDirPath(binder), false);
-						} else {
+						}
+						else {
 							job.schedule(srcSender, (MimeMessage)errors.get(i), binder.getTitle(), getMailDirPath(binder), false);							
 						}
 					}
 				}
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				logger.error("EXCEPTION:  Error sending posting reject:" + getMessage(ex));
 				logger.debug("EXCEPTION", ex);
 			}
@@ -547,18 +627,25 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		
 	}
 
-    /*
-     * Fill any subscriptions to modified entries.  Handles user requested subscriptions and administrator notifications that are not digest.
-     * Begin represents the last time we got through this without errors and used as a query optimization.
+    /**
+     * Fill any subscriptions to modified entries.  Handles user
+     * requested subscriptions and administrator notifications that
+     * are not digest.
+     * 
+     * @param begin		Represents the last time we got through this without errors and used as a query optimization.
+     * 
+     * @return
      */
 	@Override
 	public Date fillSubscriptions(final Date begin)  {
 		final String updateString="update org.kablink.teaming.domain.NotifyStatus set lastFullSent=:p1 where ownerId in (:p2)";
  		final JavaMailSender mailSender = getMailSender(RequestContextHolder.getRequestContext().getZone());
- 		if (mailSender == null) return null;
+ 		if (null == mailSender) {
+ 			return null;
+ 		}
 		Date last = null;
 		try {
-			last = (Date)mailSender.send(new ConnectionCallback() {
+			last = ((Date) mailSender.send(new ConnectionCallback() {
 				@Override
 				public Object doWithConnection(Transport transport) throws MailException {
 					final Map values = new HashMap();
@@ -570,20 +657,23 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					EmailFormatter processor=null;
 					MimeNotifyPreparator mHelper = null;
 					String timeZone = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE);
-					//Will be sorted by owningBinderkey
+					
+					// Will be sorted by owningBinderkey.
 					List<NotifyStatus> uStatus = getCoreDao().loadNotifyStatus("lastFullSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());
 					logger.debug("MailModuleImpl.fillSubscriptions():  List<NotifiyStatus> size:" + ((null == uStatus) ? "<null>" : uStatus.size()));
 					List ids = new ArrayList();
 					while (!uStatus.isEmpty()) {
-						//get Ids to log folderEntries
+						// Get IDs to log folderEntries.
 						ids.clear();
 						for (NotifyStatus status: uStatus) {
 							ids.add(status.getOwnerId());
 						}
 						params.put("ids", ids);
+						
 						List<FolderEntry> entries = getCoreDao().loadObjects("from org.kablink.teaming.domain.FolderEntry where id in (:ids)", params);
 						for (NotifyStatus eStatus:uStatus) {
-							//find corresponding folderEntry; attempting to keep in folder order
+							// Find corresponding folderEntry,
+							// attempting to keep in folder order.
 							FolderEntry entry = null;
 							for (FolderEntry fEntry:entries) {
 								if (fEntry.getId().equals(eStatus.getOwnerId())) {
@@ -591,85 +681,113 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 									break;
 								}
 							}
-							if (entry == null) continue;
-							logger.debug("MailModuleImpl.fillSubscriptions(): Sending notification for: '" + entry.getTitle() + "', ID: " + entry.getId());
-							if (!entry.getRootFolder().equals(currentFolder)) {
+							if (null == entry) {
+								continue;
+							}
+							logger.debug("MailModuleImpl.fillSubscriptions(): Checking subscriptions for: '" + entry.getTitle() + "', ID: " + entry.getId());
+							
+							// Get the subscriptions from the entry's
+							// folder.
+							folderSubscriptions = getFolderSubscriptions(entry.getParentFolder());
+							
+							// We base the notification off the entry's root folder.
+							if (!(entry.getRootFolder().equals(currentFolder))) {
 								currentFolder = entry.getRootFolder();
-								folderSubscriptions = getCoreDao().loadSubscriptionByEntity(currentFolder.getEntityIdentifier());  					
-								processor = (EmailFormatter)processorManager.getProcessor(currentFolder,EmailFormatter.PROCESSOR_KEY);
+								processor = ((EmailFormatter) processorManager.getProcessor(currentFolder,EmailFormatter.PROCESSOR_KEY));
 								mHelper = new MimeNotifyPreparator(processor, currentFolder, begin, logger, sendVTODO);
 								mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
 								mHelper.setTimeZone(timeZone);
 							}
+
+							// We need to be the top level entry to
+							// deal with entry subscriptions.
 							FolderEntry parent = entry.getTopEntry();
-							if (parent == null) parent = entry;
+							if (null == parent) {
+								parent = entry;
+							}
 							
 							// Set the X-* fields required for GW integration.
 							mHelper.setEntryPermalinkUrl(PermaLinkUtil.getPermalinkForEmail(entry,  true));
 							mHelper.setRootPermalinkUrl( PermaLinkUtil.getPermalinkForEmail(parent, true));
 							
-							//Handle subscriptions plus notifications for 3 types 
+							// Handle subscriptions plus notifications for 3 types. 
 							List subscriptions;
 							if (parent.isSubscribed()) {
+								// Make sure entry subscription is
+								// first in list so overrides folder
+								// subscriptions for the same user.
 								subscriptions = getCoreDao().loadSubscriptionByEntity(parent.getEntityIdentifier());
-								//	make sure entry subscription is 1st in list so overrides folder subscription for same user
 								subscriptions.addAll(folderSubscriptions);
-							} else {
+							}
+							
+							else {
 								subscriptions = folderSubscriptions;
 							}
-							//still have to add in notifications, so continue event if subscriptions is empty
-							// Users wanting individual, message style email with attachments
+							
+							// We still have to add in notifications,
+							// so continue even if subscriptions is
+							// empty.
+							
+							// Users wanting individual, message style
+							// email with attachments.
 							Map<Locale, Collection> messageResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION, false);
 							Map<Locale, Collection> messageResultsRedacted = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION, true);
-							// Users wanting individual, message style email without attachments
+							
+							// Users wanting individual, message style
+							// email without attachments.
 							Map<Locale, Collection> messageNoAttsResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION, false);
 							Map<Locale, Collection> messageNoAttsResultsRedacted = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION, true);
-							// Users wanting individual, text message email
+							
+							// Users wanting individual, text message
+							// email.
 							Map<Locale, Collection> messageTxtResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION, false);
 							Map<Locale, Collection> messageTxtResultsRedacted = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION, true);
+							
 							mHelper.setEntry(entry);
 							mHelper.setStartDate(eStatus.getLastFullSent());
 							if (!messageTxtResults.isEmpty()) {
 								mHelper.setType(Notify.NotifyType.text);
 								mHelper.setRedacted(false);
 								mHelper.setSendAttachments(false);
-								doSubscription (transport, currentFolder, mailSender, mHelper, messageTxtResults);
+								doSubscription(transport, currentFolder, mailSender, mHelper, messageTxtResults);
 							}	
 							if (!messageNoAttsResults.isEmpty()) {
 								mHelper.setType(Notify.NotifyType.full);
 								mHelper.setRedacted(false);
 								mHelper.setSendAttachments(false);
-								doSubscription (transport, currentFolder, mailSender, mHelper, messageNoAttsResults);
+								doSubscription(transport, currentFolder, mailSender, mHelper, messageNoAttsResults);
 							}
-				   		   					
 							if (!messageResults.isEmpty()) {
 								mHelper.setType(Notify.NotifyType.full);
 								mHelper.setRedacted(false);
 								mHelper.setSendAttachments(true);
-								doSubscription (transport, currentFolder, mailSender, mHelper, messageResults);
+								doSubscription(transport, currentFolder, mailSender, mHelper, messageResults);
 							}
+							
 							if (!messageTxtResultsRedacted.isEmpty()) {
 								mHelper.setType(Notify.NotifyType.text);
 								mHelper.setRedacted(true);
 								mHelper.setSendAttachments(false);
-								doSubscription (transport, currentFolder, mailSender, mHelper, messageTxtResultsRedacted);
+								doSubscription(transport, currentFolder, mailSender, mHelper, messageTxtResultsRedacted);
 							}	
 							if (!messageNoAttsResultsRedacted.isEmpty()) {
 								mHelper.setType(Notify.NotifyType.full);
 								mHelper.setRedacted(true);
 								mHelper.setSendAttachments(false);
-								doSubscription (transport, currentFolder, mailSender, mHelper, messageNoAttsResultsRedacted);
+								doSubscription(transport, currentFolder, mailSender, mHelper, messageNoAttsResultsRedacted);
 							}
-				   		   					
 							if (!messageResultsRedacted.isEmpty()) {
 								mHelper.setType(Notify.NotifyType.full);
 								mHelper.setRedacted(true);
 								mHelper.setSendAttachments(true);
-								doSubscription (transport, currentFolder, mailSender, mHelper, messageResultsRedacted);
+								doSubscription(transport, currentFolder, mailSender, mHelper, messageResultsRedacted);
 							}
 						}
+
+						// Update the NotifyStatus objects we just
+						// processed.
 						values.put("p2", ids);
-						for (int count=0; count<10; ++count) {
+						for (int count = 0; count < 10; ++count) {
 							try {
 								getTransactionTemplate().execute(new TransactionCallback() {
 									@Override
@@ -677,85 +795,110 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 										getCoreDao().executeUpdate(updateString, values);
 										return null;
 									}});
-							} catch (org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException ol) {
-								continue;
-							} catch (org.springframework.dao.DataIntegrityViolationException di) {
-								continue;
-							} catch (StaleObjectStateException so) {
+							}
+							catch (org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException ol) {
 								continue;
 							}
-							break;  //assume we got through
+							catch (org.springframework.dao.DataIntegrityViolationException di) {
+								continue;
+							}
+							catch (StaleObjectStateException so) {
+								continue;
+							}
+							
+							// Assume we got through.
+							break;
 						}
 						getCoreDao().evict(uStatus);
 						getCoreDao().evict(entries);
-						uStatus = getCoreDao().loadNotifyStatus("lastFullSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());
+						
+						// See if there any more NotifyStatus objects
+						// waiting.
+						uStatus = getCoreDao().loadNotifyStatus(
+							"lastFullSent",
+							begin,
+							end,
+							100,
+							RequestContextHolder.getRequestContext().getZoneId());
 					}
+					
 					return end;
-				}});
-		} catch(Exception ex) {
-			logger.error("EXCEPTION:  Could not fill e-mail subscriptions: " +getMessage(ex));
+				}}));
+		}
+		catch(Exception ex) {
+			logger.error("EXCEPTION:  Could not fill e-mail subscriptions: " + getMessage(ex));
 			logger.debug("EXCEPTION", ex);
 		}
+		
 		return last;
 	}
 	
-	private void doSubscription (Transport transport, Folder folder, JavaMailSender mailSender, 
-			MimeNotifyPreparator mHelper, Map<Locale, Collection> results) {
-		for (Iterator iter=results.entrySet().iterator(); iter.hasNext();) {			
-			//Use spring callback to wrap exceptions into something more useful than javas 
+	/*
+	 * Returns a List<Subscription> containing the Subscription's from
+	 * an Entry's Folder up the Folder hierarchy.
+	 */
+	private List<Subscription> getFolderSubscriptions(Folder folder) {
+		List<Subscription> reply = new ArrayList<Subscription>();
+		while (null != folder) {
+			reply.addAll(getCoreDao().loadSubscriptionByEntity(folder.getEntityIdentifier()));
+			folder = folder.getParentFolder();
+		}
+		return reply;
+	}
+
+	/*
+	 */
+	private void doSubscription(Transport transport, Folder folder, JavaMailSender mailSender, MimeNotifyPreparator mHelper, Map<Locale, Collection> results) {
+		for (Iterator iter = results.entrySet().iterator(); iter.hasNext();) {			
+			// Use spring callback to wrap exceptions into something
+			// more useful than Java's. 
 			Map.Entry<Locale, Collection> e = (Map.Entry)iter.next();
 			mHelper.setLocale(e.getKey());
 			
 			ArrayList<String> rcpts = new ArrayList<String>(e.getValue());
 			
-	 		//Add an entry into the email log for this request
+	 		// Add an entry into the email log for this request.
 	 		Date now = new Date();
 	  		String fromAddress = "";
-			try {
-				fromAddress = mailSender.getDefaultFrom();
-			} catch (Exception e2) {
-				fromAddress = NLT.get("mail.noFromAddress");
-			}
+			try                  {fromAddress = mailSender.getDefaultFrom();  }
+			catch (Exception e2) {fromAddress = NLT.get("mail.noFromAddress");}
 	  		EmailLogType logType = EmailLogType.binderNotification;
-	  		EmailLog emailLog = new EmailLog(logType, now, rcpts, fromAddress, 
-	  				EmailLogStatus.queued);
+	  		EmailLog emailLog = new EmailLog(logType, now, rcpts, fromAddress, EmailLogStatus.queued);
 	  		mHelper.setEmailLog(emailLog);
 	  		
-	  		//break to list into pieces if big
-			for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
+	  		// Break to list into pieces if big.
+			for (int i = 0; i < rcpts.size(); i += rcptToLimit) {
 				try {
 					List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
-					if (SPropsUtil.getBoolean("mail.notifyAsBCC", true)) {
-						mHelper.setBccAddrs(subList);
-					} else {
-						mHelper.setToAddrs( subList);
-					}
+					if (SPropsUtil.getBoolean("mail.notifyAsBCC", true))
+					     mHelper.setBccAddrs(subList);
+					else mHelper.setToAddrs( subList);
 					MimeMessage mimeMessage = new VibeMimeMessage(mailSender.getSession());
 					mHelper.prepare(mimeMessage);
-					if (mimeMessage.getSentDate() == null) {
+					if (null == mimeMessage.getSentDate()) {
 						mimeMessage.setSentDate(new Date());
 					}
 					mimeMessage.saveChanges();
-			  		try {
-			  			emailLog.setSubj((String)mimeMessage.getSubject());
-					} catch (Exception e1) {
-						emailLog.setSubj(NLT.get("mail.noSubject"));
-					}
+			  		try                  {emailLog.setSubj((String)mimeMessage.getSubject());}
+			  		catch (Exception e1) {emailLog.setSubj(NLT.get("mail.noSubject"));       }
 					mailSender.send(transport, mimeMessage);
-				} catch (MailSendException sx) {
+				}
+				catch (MailSendException sx) {
 		    		logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
 					logger.debug("EXCEPTION", sx);
 					emailLog.setComments("Error sending mail:" + getMessage(sx));
 					emailLog.setStatus(EmailLogStatus.error);
 		 			Exception[] exceptions = sx.getMessageExceptions();
-		 			if (exceptions != null && exceptions.length > 0) {
+		 			if ((null != exceptions) && (0 < exceptions.length)) {
 		 				logger.error(sx.toString());
-		 			} else {
+		 			}
+		 			else {
 		 				SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 		 				job.schedule(mailSender, mHelper.getMessage(), folder.getTitle(), getMailDirPath(folder), false);
 		 			}
-			   	} catch (Exception ex) {
-			   		//message gets thrown away here
+			   	}
+				catch (Exception ex) {
+			   		// Message gets thrown away here.
 		       		logger.error("EXCEPTION:  " + getMessage(ex));
 					logger.debug("EXCEPTION", ex);
 					emailLog.setComments("Error handling subscriptions:" + getMessage(ex));
@@ -765,18 +908,27 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			getReportModule().addEmailLog(emailLog);
 		}
 	}
-	
+
 	/**
-	 * Send email notifications for recent changes.  Only used for digest style messages
+	 * Send email notifications for recent changes.  Only used for
+	 * digest style messages.
+	 * 
+	 * @param binderId
+     * @param begin		Represents the last time we got through this without errors and used as a query optimization.
+	 * 
+	 * @return
 	 */
     @Override
 	public Date sendNotifications(final Long binderId, final Date begin) {
 		final String updateString="update org.kablink.teaming.domain.NotifyStatus set lastDigestSent=:p1 where ownerId in (:p2)";
-   		final Map values = new HashMap();
 		final JavaMailSender mailSender = getMailSender(RequestContextHolder.getRequestContext().getZone());
-		Date last = (Date)mailSender.send(new ConnectionCallback() {
+		if (null == mailSender) {
+			return null;
+		}
+		Date last = ((Date) mailSender.send(new ConnectionCallback() {
 			@Override
 			public Object doWithConnection(Transport transport) throws MailException {
+		   		final Map values = new HashMap();
 				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 				Binder binder = coreDao.loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId()); 
 				Date end = new Date();
@@ -787,51 +939,61 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				EmailFormatter processor=null;
 				MimeNotifyPreparator mHelper = null;
 				String timeZone = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE);
-				List ids = new ArrayList();
-				//Will be sorted by owningBinderkey
+				
+				// Will be sorted by owningBinderkey.
 				List<NotifyStatus> uStatus;
-				if (binder.isRoot()) {
-					uStatus = getCoreDao().loadNotifyStatus("lastDigestSent", begin, end, 100, zoneId);
-				} else {
-					uStatus = getCoreDao().loadNotifyStatus(binder, "lastDigestSent", begin, end, 100, zoneId);				
-				}
+				if (binder.isRoot())
+				     uStatus = getCoreDao().loadNotifyStatus(        "lastDigestSent", begin, end, 100, zoneId);
+				else uStatus = getCoreDao().loadNotifyStatus(binder, "lastDigestSent", begin, end, 100, zoneId);				
+				List ids = new ArrayList();
 				while (!uStatus.isEmpty()) {
-					//get Ids to log folderEntries
+					// Get IDs to log folderEntries.
 					ids.clear();
 					NotifyStatus current = uStatus.get(0);
 					uStatus.remove(0);
-					currentFolder = (Folder)coreDao.loadBinder(current.getOwningBinderId(), RequestContextHolder.getRequestContext().getZoneId()); 
-					currentFolder = currentFolder.getRootFolder();
-					//If doing global notification, make sure this binder doesn't have its own schedule
+					Folder notifyFolder = ((Folder) coreDao.loadBinder(current.getOwningBinderId(), RequestContextHolder.getRequestContext().getZoneId())); 
+					currentFolder = notifyFolder.getRootFolder();
+					
+					// If doing global notification, make sure this
+					// binder doesn't have its own schedule.
 					if (binder.isRoot()) {
-						//Skip any folders that have their own schedule
+						// Skip any folders that have their own
+						// schedule.
 						ScheduleInfo config = getFolderModule().getNotificationSchedule(zoneId, currentFolder.getId());
-						if (config != null && config.isEnabled() && config.getSchedule() != null) {
-							//This folder has its own schedule, so leave its entries un-notified during global notifications
+						if ((null != config) && config.isEnabled() && (null != config.getSchedule())) {
+							// This folder has its own schedule, so
+							// leave its entries along during global
+							// notifications.
 							continue;
 						}
 					}
-					//find other entries for same folder tree.  Ordered by owingBinderKey
+					
+					// Find other entries for same folder tree.
+					// Ordered by owingBinderKey.
 					List<NotifyStatus>currentStatus = new ArrayList();
 					currentStatus.add(current);
 					ids.add(current.getOwnerId());
 					for (NotifyStatus eStatus: uStatus) {
-						if (eStatus.getOwningBinderId().equals(current.getOwningBinderId()) ||
-								eStatus.getOwningBinderId().equals(currentFolder.getId())) {
+						if (eStatus.getOwningBinderId().equals(current.getOwningBinderId()) || eStatus.getOwningBinderId().equals(currentFolder.getId())) {
 							currentStatus.add(eStatus);
 							ids.add(eStatus.getOwnerId());
 							continue;
 						}
-						Folder parent = (Folder)coreDao.loadBinder(eStatus.getOwningBinderId(), RequestContextHolder.getRequestContext().getZoneId()); 
+						
+						Folder parent = ((Folder) coreDao.loadBinder(eStatus.getOwningBinderId(), RequestContextHolder.getRequestContext().getZoneId())); 
 						if (parent.getRootFolder().equals(currentFolder)) {
 							currentStatus.add(eStatus);
 							ids.add(eStatus.getOwnerId());
 							continue;
 						}
-						break; //done with this folder tree				
+						
+						// Done with this folder tree.
+						break;				
 					}
-					//remove from pending list
+					
+					// Remove from pending list
 					uStatus.removeAll(currentStatus);
+					
 					params.put("ids", ids);
 					List<FolderEntry> entriesFull = getCoreDao().loadObjects("from org.kablink.teaming.domain.FolderEntry where id in (:ids) order by HKey.sortKey", params);
 					List<FolderEntry> entries = new ArrayList<FolderEntry>();
@@ -840,38 +1002,51 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 							entries.add(fe);
 						}
 					}
+					
 					if (!entries.isEmpty()) {
-						//Handle digest subscriptions and notifications 
-						//get folder specific helper to build message
-						processor = (EmailFormatter)processorManager.getProcessor(currentFolder,EmailFormatter.PROCESSOR_KEY);
-						folderSubscriptions = getCoreDao().loadSubscriptionByEntity(currentFolder.getEntityIdentifier());
-						List<Object[]> digestResults = processor.buildDistributionList(currentFolder, entries, folderSubscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION, false);		
-						List<Object[]> digestResultsRedacted = processor.buildDistributionList(currentFolder, entries, folderSubscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION, true);		
+						// Handle digest subscriptions and
+						// notifications get folder specific helper to
+						// build message
+						processor = ((EmailFormatter) processorManager.getProcessor(currentFolder, EmailFormatter.PROCESSOR_KEY));
+						folderSubscriptions = getFolderSubscriptions(notifyFolder);
+						List<Object[]> digestResults         = processor.buildDistributionList(currentFolder, entries, folderSubscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION, false);		
+						List<Object[]> digestResultsRedacted = processor.buildDistributionList(currentFolder, entries, folderSubscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION, true );
+						
 						mHelper = new MimeNotifyPreparator(processor, currentFolder, begin, logger, sendVTODO);
 						mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
 						mHelper.setTimeZone(timeZone);
-						for (int i=0; i<digestResults.size(); ++i) {
-							Object row[] = (Object [])digestResults.get(i);
-							Collection msgs = (Collection)row[0];
-							if (msgs.isEmpty()) continue; //didn't have access
+						
+						for (int i = 0; i < digestResults.size(); ++i) {
+							Object row[] = ((Object []) digestResults.get(i));
+							Collection msgs = ((Collection) row[0]);
+							if (msgs.isEmpty()) {
+								// Didn't have access.
+								continue;
+							}
 							mHelper.setEntries(msgs);
 							mHelper.setType(Notify.NotifyType.summary);
 							mHelper.setRedacted(false);
 							mHelper.setSendAttachments(false);
 							doSubscription(transport, currentFolder, mailSender, mHelper, (Map)row[1]);
 						}
-						for (int i=0; i<digestResultsRedacted.size(); ++i) {
-							Object row[] = (Object [])digestResultsRedacted.get(i);
-							Collection msgs = (Collection)row[0];
-							if (msgs.isEmpty()) continue; //didn't have access
+						
+						for (int i = 0; i < digestResultsRedacted.size(); ++i) {
+							Object row[] = ((Object []) digestResultsRedacted.get(i));
+							Collection msgs = ((Collection) row[0]);
+							if (msgs.isEmpty()) {
+								// Didn't have access.
+								continue;
+							}
 							mHelper.setEntries(msgs);
 							mHelper.setType(Notify.NotifyType.summary);
 							mHelper.setRedacted(true);
 							mHelper.setSendAttachments(false);
 							doSubscription(transport, currentFolder, mailSender, mHelper, (Map)row[1]);
 						}
-			   				
 					}
+					
+					// Update the NotifyStatus objects we just 
+					// processed.
 					values.put("p2", ids);
 					for (int count=0; count<10; ++count) {
 						try {
@@ -881,43 +1056,57 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 									getCoreDao().executeUpdate(updateString, values);
 									return null;
 								}});
-						} catch (org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException ol) {
-							continue;
-						} catch (org.springframework.dao.DataIntegrityViolationException di) {
-							continue;
-						} catch (StaleObjectStateException so) {
+						}
+						catch (org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException ol) {
 							continue;
 						}
-						break;  //assume we got through
+						catch (org.springframework.dao.DataIntegrityViolationException di) {
+							continue;
+						}
+						catch (StaleObjectStateException so) {
+							continue;
+						}
+						
+						// Assume we got through.
+						break;
 					}
 					getCoreDao().evict(currentStatus);
 					getCoreDao().evict(entries);
+					
 					if (uStatus.isEmpty()) {
-						if (binder.isRoot()) {
-							uStatus = getCoreDao().loadNotifyStatus("lastDigestSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());
-						} else {
-							uStatus = getCoreDao().loadNotifyStatus(binder, "lastDigestSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());				
-						}
+						// See if there are more NotifyStatus objects
+						// waiting.
+						if (binder.isRoot())
+						     uStatus = getCoreDao().loadNotifyStatus(        "lastDigestSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());
+						else uStatus = getCoreDao().loadNotifyStatus(binder, "lastDigestSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());				
 					}
 				}
+				
 				return end;
-			}});
+			}}));
+		
 		return last;    
     }
  
-    //used for re-try mail.  MimeMessage has been serialized 
+    /**
+     * Used for re-try mail.  MimeMessage has been serialized.
+     * 
+     * @param mailSenderName
+     * @param input
+     */
     @Override
 	public void sendMail(String mailSenderName, java.io.InputStream input) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);
  		
-    	//Add an entry into the email log for this request
+    	// Add an entry into the email log for this request.
   		EmailLog emailLog = new EmailLog(EmailLogType.retry, EmailLogStatus.sent);
 		try {
         	MimeMessage mailMsg = new MimeMessage(mailSender.getSession(), input);
         	emailLog.fillFromMimeMessage(mailMsg);
 
 			mailSender.send(mailMsg);
- 		} catch (MessagingException mx) {
+ 		}
+		catch (MessagingException mx) {
  			emailLog.setComments(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
  			emailLog.setStatus(EmailLogStatus.error);
  			getReportModule().addEmailLog(emailLog);
@@ -926,21 +1115,29 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
  		getReportModule().addEmailLog(emailLog);
     }
     
-    //used for re-try mail.  MimeMessage has been serialized 
+    /**
+     * Used for re-try mail.  MimeMessage has been serialized.
+     * 
+     * @param mailSenderName
+     * @param account
+     * @param password
+     * @param input
+     */
     @Override
 	public void sendMail(String mailSenderName, String account, String password, java.io.InputStream input) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);
 
-    	//Add an entry into the email log for this request
+    	// Add an entry into the email log for this request.
   		EmailLog emailLog = new EmailLog(EmailLogType.retry, EmailLogStatus.sent);
   		try {
     	   	if (Validator.isNotNull(account)) {
-    			//need to get our own sender, so the account/password can be changed
-				//need our own sender, so we can change the username/password
+    			// Need to get our own sender, so the account/password
+    	   		// can be changed.
     	   		Session session = mailSender.getSession();
     	   		try {
     	   			mailSender = (JavaMailSender)mailSender.getClass().newInstance();				
-    	   		} catch (Exception ia) {
+    	   		}
+    	   		catch (Exception ia) {
     	   			logger.error("EXCEPTION:  Cannot create sender");
     				logger.debug("EXCEPTION", ia);
     	   			return;
@@ -951,7 +1148,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
         	MimeMessage mailMsg = new MimeMessage(mailSender.getSession(), input);
         	emailLog.fillFromMimeMessage(mailMsg);
 			mailSender.send(mailMsg);
- 		} catch (MessagingException mx) {
+ 		}
+  		catch (MessagingException mx) {
  			emailLog.setComments(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
  			emailLog.setStatus(EmailLogStatus.error);
  			getReportModule().addEmailLog(emailLog);
@@ -960,21 +1158,29 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
  		getReportModule().addEmailLog(emailLog);
     }
     
-    //prepare mail and send it - caller must retry if desired
+    /**
+     * Prepare mail and send it - caller must retry if desired.
+     * 
+     * @param mailSenderName
+     * @param mHelper
+     */
     @Override
 	public void sendMail(String mailSenderName, MimeMessagePreparator mHelper) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());
-		//Use spring callback to wrap exceptions into something more useful than javas 
-    	//Add an entry into the email log for this request
+		
+		// Use spring callback to wrap exceptions into something more
+		// useful than Java's.  Add an entry into the email log for
+		// this request
  		MimeMessage msg = mailSender.createMimeMessage();
    		EmailLog emailLog = new EmailLog(EmailLogType.sendMail, EmailLogStatus.sent);
 		try {
 			mHelper.prepare(msg);
 			emailLog = new EmailLog(EmailLogType.sendMail, new Date(), getMessageRecipients(msg),
 					mailSender.getDefaultFrom(), EmailLogStatus.sent);
-	   	} catch (Exception ex) {
-	   		//message gets thrown away here
+	   	}
+		catch (Exception ex) {
+	   		// Message gets thrown away here.
        		logger.error("EXCEPTION:  " + getMessage(ex));
 			logger.debug("EXCEPTION", ex);
 			emailLog.setComments("Error in sendMail:" + getMessage(ex));
@@ -999,34 +1205,55 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     	return reply;
     }
     
-    //used to send prepared mail now.
+    /**
+     * Used to send prepared mail now..
+     * 
+     * @param mailMsg
+     */
     @Override
 	public void sendMail(MimeMessage mailMsg) {
        	Binder zone = RequestContextHolder.getRequestContext().getZone();
         sendMail(getMailSender(zone).getName(), mailMsg);
     }
     
-    //used to send prepared mail now.    
+    /**
+     * Used to send prepared mail now.
+     * 
+     * @param mailSenderName
+     * @param mailMsg
+     */
     @Override
 	public void sendMail(String mailSenderName, MimeMessage mailMsg) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);
-    	//Add an entry into the email log for this request
+    	
+    	// Add an entry into the email log for this request.
   		EmailLog emailLog = new EmailLog(EmailLogType.retry, mailMsg, EmailLogStatus.sent);
 		mailSender.send(mailMsg);
 		getReportModule().addEmailLog(emailLog);
     }
- 
+
+    /**
+     * ?
+     * 
+     * @param binder
+     * @param message
+     * @param comment
+     */
     @Override
 	public MailSentStatus sendMail(Binder binder, Map message, String comment) {
   		JavaMailSender mailSender = getMailSender(binder);
-		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
-		//Add in the BCC addresses since we now send everything via BCC
-		if ((Collection)message.get(MailModule.BCC) != null) addrs.addAll((Collection)message.get(MailModule.BCC));
-		if ((addrs == null) || addrs.isEmpty()) {
+		Collection<InternetAddress> addrs = ((Collection) message.get(MailModule.TO));
+		
+		// Add in the BCC addresses since we now send everything via
+		// BCC.
+		if (null != ((Collection) message.get(MailModule.BCC))) {
+			addrs.addAll((Collection) message.get(MailModule.BCC));
+		}
+		if ((null == addrs) || addrs.isEmpty()) {
 			throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
 		}
 
-  		//Add an entry into the email log for this request
+  		// Add an entry into the email log for this request.
 		Date now = new Date();
   		InternetAddress from = (InternetAddress)message.get(MailModule.FROM);
   		EmailLogType logType = EmailLogType.sendMail;
@@ -1034,47 +1261,56 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
   		emailLog.setSubj((String)message.get(MailModule.SUBJECT));
 
 		MailStatus status = new MailStatus(message);
-		Map currentMessage = new HashMap(message); //make changeable copy
- 		currentMessage.remove(MailModule.BCC);  //These are already added to addrs
- 		currentMessage.remove(MailModule.TO);  //These will be put in the BCC field
-		//handle large recipient list by breaking into pieces 
+		Map currentMessage = new HashMap(message); // Make changeable copy.
+ 		currentMessage.remove(MailModule.BCC);  // These are already added to addrs.
+ 		currentMessage.remove(MailModule.TO );	// These will be put in the BCC field.
+		// Handle large recipient list by breaking into pieces. 
 		ArrayList rcpts = new ArrayList(addrs);
-		for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
-			List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
-			//Always use BCC to hide mail addresses from other recipients
+		for (int i = 0; i < rcpts.size(); i += rcptToLimit) {
+			List subList = rcpts.subList(i, Math.min(rcpts.size(), i + rcptToLimit));
+			
+			// Always use BCC to hide mail addresses from other
+			// recipients.
 			currentMessage.put(MailModule.BCC, subList);
 	 		MimeMessagePreparator helper = new MimeMapPreparator(currentMessage, logger, sendVTODO);
 	 		try {
 	 			helper.setDefaultFrom(mailSender.getDefaultFrom());		
 	 			mailSender.send(helper);
-	 		} catch (MailSendException sx) {
+	 		}
+	 		catch (MailSendException sx) {
 	 			logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
 				logger.debug("EXCEPTION", sx);
 				String emailLogComment = emailLog.getComments();
-				if (emailLogComment == null) emailLogComment = "";
+				if (null == emailLogComment) {
+					emailLogComment = "";
+				}
 				if (!emailLogComment.equals("")) emailLogComment += "\n";
 				emailLogComment += "Error sending mail:" + getMessage(sx);
 				emailLog.setComments(emailLogComment);
 				emailLog.setStatus(EmailLogStatus.error);
 
 				Exception[] exceptions = sx.getMessageExceptions();
-	 			if (exceptions != null && exceptions.length > 0 && exceptions[0] instanceof SendFailedException) {
-	 				SendFailedException sf = (SendFailedException)exceptions[0];
-	 				//if sent to anyone; or only 1 recipient and couldn't send don't try again
+	 			if ((null != exceptions) && (0 < exceptions.length) && (exceptions[0] instanceof SendFailedException)) {
+	 				// If sent to anyone; or only 1 recipient and
+	 				// couldn't send don't try again.
+	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
 	 				status.addFailures(sf.getInvalidAddresses());
 	 				status.addFailures(sf.getValidUnsentAddresses());	 				
-	 			} else {
+	 			}
+	 			else {
 	 				SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 	 				job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
 	 				try {
 	 					status.addQueued(helper.getMessage().getAllRecipients());
-	 				} catch (MessagingException ignore) {}
+	 				}
+	 				catch (MessagingException ignore) {}
 	 			}
-	 	   	} catch (MailAuthenticationException ax) {
+	 	   	}
+	 		catch (MailAuthenticationException ax) {
 	       		logger.error("EXCEPTION:  Authentication Exception:" + getMessage(ax));				
 				logger.debug("EXCEPTION", ax);
 				String emailLogComment = emailLog.getComments();
-				if (emailLogComment == null) emailLogComment = "";
+				if (null == emailLogComment)     emailLogComment = "";
 				if (!emailLogComment.equals("")) emailLogComment += "\n";
 				emailLogComment += "Authentication Exception:" + getMessage(ax);
 				emailLog.setComments(emailLogComment);
@@ -1084,25 +1320,38 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
 	       		try {
 	       			status.addQueued(helper.getMessage().getAllRecipients());
-	       		} catch (MessagingException ignore) {}
+	       		}
+	       		catch (MessagingException ignore) {}
 	 		} 
-	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
+	 		currentMessage.remove(MailModule.CC);	// If these are to long, don't have a solution.
 		}
 		getReportModule().addEmailLog(emailLog);
 		return status;
     }
- 
+
+    /**
+     * ?
+     * 
+     * @param entry
+     * @param message
+     * @param comment
+     * @param sendAttachments
+     * 
+     * @return
+     */
     @Override
 	public MailSentStatus sendMail(Entry entry, Map message, String comment, boolean sendAttachments) {
   		JavaMailSender mailSender = getMailSender(entry.getParentBinder());
-		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
-		if ((Collection)message.get(MailModule.BCC) != null) {
-			//Add in the BCC users. Send all mail as BCC
-			addrs.addAll((Collection)message.get(MailModule.BCC));
+		Collection<InternetAddress> addrs = ((Collection) message.get(MailModule.TO));
+		if (null != ((Collection) message.get(MailModule.BCC))) {
+			// Add in the BCC users. Send all mail as BCC.
+			addrs.addAll((Collection) message.get(MailModule.BCC));
 		}
-		if ((addrs == null) || addrs.isEmpty()) throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
+		if ((null == addrs) || addrs.isEmpty()) {
+			throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
+		}
 
-  		//Add an entry into the email log for this request
+  		// Add an entry into the email log for this request.
 		Date now = new Date();
   		InternetAddress from = (InternetAddress)message.get(MailModule.FROM);
   		EmailLogType logType = EmailLogType.sendMail;
@@ -1119,15 +1368,16 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 
   		MailStatus status = new MailStatus(message);
 		EmailFormatter	processor = (EmailFormatter)processorManager.getProcessor(entry.getParentBinder(), EmailFormatter.PROCESSOR_KEY);
-		//handle large recipient list 
+		
+		// Handle large recipient list. 
 		ArrayList rcpts = new ArrayList(addrs);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map currentMessage = new HashMap(message);
- 		currentMessage.remove(MailModule.BCC);  //These are already added to addrs
- 		currentMessage.remove(MailModule.TO);   //These get sent as BCC
+ 		currentMessage.remove(MailModule.BCC);	// These are already added to addrs.
+ 		currentMessage.remove(MailModule.TO );	// These get sent as BCC.
 		
-		for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
-			List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
+		for (int i = 0; i < rcpts.size(); i += rcptToLimit) {
+			List subList = rcpts.subList(i, Math.min(rcpts.size(), i + rcptToLimit));
 			currentMessage.put(MailModule.BCC, subList);
 			MimeEntryPreparator helper = new MimeEntryPreparator(processor, entry, currentMessage, logger, sendVTODO);
 	 		helper.setDefaultFrom(mailSender.getDefaultFrom());		
@@ -1139,33 +1389,37 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 
 	 		try {
 	 			mailSender.send(helper);
-	 		} catch (MailSendException sx) {
+	 		}
+	 		catch (MailSendException sx) {
 	 			logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
 				logger.debug("EXCEPTION", sx);
 				String emailLogComment = emailLog.getComments();
-				if (emailLogComment == null) emailLogComment = "";
+				if (null == emailLogComment)     emailLogComment = "";
 				if (!emailLogComment.equals("")) emailLogComment += "\n";
 				emailLogComment += "Error sending mail:" + getMessage(sx);
 				emailLog.setComments(emailLogComment);
 				emailLog.setStatus(EmailLogStatus.error);
 				
 	 			Exception[] exceptions = sx.getMessageExceptions();
-	 			if (exceptions != null && exceptions.length > 0 && exceptions[0] instanceof SendFailedException) {
+	 			if ((null != exceptions) && (0 < exceptions.length) && (exceptions[0] instanceof SendFailedException)) {
 	 				SendFailedException sf = (SendFailedException)exceptions[0];
 	 				status.addFailures(sf.getInvalidAddresses());
 	 				status.addFailures(sf.getValidUnsentAddresses());
-	 			} else {
+	 			}
+	 			else {
 	 				SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 	 				job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(entry.getParentBinder()), false);
 	 				try {
 	 					status.addQueued(helper.getMessage().getAllRecipients());
-	 				} catch (MessagingException ignore) {}
+	 				}
+	 				catch (MessagingException ignore) {}
 	 			}
-	 	   	} catch (MailAuthenticationException ax) {
+	 	   	}
+	 		catch (MailAuthenticationException ax) {
 	       		logger.error("EXCEPTION:  Authentication Exception:" + getMessage(ax));				
 				logger.debug("EXCEPTION", ax);
 				String emailLogComment = emailLog.getComments();
-				if (emailLogComment == null) emailLogComment = "";
+				if (null == emailLogComment)     emailLogComment = "";
 				if (!emailLogComment.equals("")) emailLogComment += "\n";
 				emailLogComment += "Authentication Exception:" + getMessage(ax);
 				emailLog.setComments(emailLogComment);
@@ -1175,100 +1429,137 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(entry.getParentBinder()), false);
 	       		try {
 	       			status.addQueued(helper.getMessage().getAllRecipients());
-	       		} catch (MessagingException ignore) {}
+	       		}
+	       		catch (MessagingException ignore) {}
 	 		}
-	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
+	 		currentMessage.remove(MailModule.CC);	// If these are to long, don't have a solution.
 		}
 		getReportModule().addEmailLog(emailLog);
 		return status;
     }
-    
-    // schedule mail delivery - 
+
+    /**
+     * Schedule mail delivery.
+     * 
+     * @param binder
+     * @param message
+     * @param comment
+     * 
+     * @throws Exception
+     */
     @Override
 	public void scheduleMail(Binder binder, Map message, String comment) throws Exception {
   		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
   		JavaMailSender mailSender = getMailSender(binder);
- 		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
- 		if ((Collection)message.get(MailModule.BCC) != null) {
- 			//We now send all mail using BCC, so combine the two lists
- 			addrs.addAll((Collection)message.get(MailModule.BCC));
+ 		Collection<InternetAddress> addrs = ((Collection) message.get(MailModule.TO));
+ 		if (null != ((Collection) message.get(MailModule.BCC))) {
+ 			// We now send all mail using BCC, so combine the two
+ 			// lists.
+ 			addrs.addAll((Collection) message.get(MailModule.BCC));
  		}
- 		if ((addrs == null) || addrs.isEmpty()) return;
+ 		if ((null == addrs) || addrs.isEmpty()) {
+ 			return;
+ 		}
   		
- 		//Add an entry into the email log for this request
+ 		// Add an entry into the email log for this request.
  		Date now = new Date();
   		InternetAddress from = (InternetAddress)message.get(MailModule.FROM);
   		EmailLogType logType = (EmailLogType) message.get(MailModule.LOG_TYPE);
   		EmailLog emailLog = new EmailLog(logType, now, addrs, from, EmailLogStatus.queued);
   		emailLog.setSubj((String)message.get(MailModule.SUBJECT));
   		
-		//handle large recipient list 
+		// Handle large recipient list. 
 		ArrayList rcpts = new ArrayList(addrs);
 		Map currentMessage = new HashMap(message);
- 		currentMessage.remove(MailModule.BCC);  //These are added to addrs
- 		currentMessage.remove(MailModule.TO);   //These get sent as BCC now
-		for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
-			List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
+ 		currentMessage.remove(MailModule.BCC);	// These are added to addrs.
+ 		currentMessage.remove(MailModule.TO );	// These get sent as BCC now.
+		for (int i = 0; i < rcpts.size(); i += rcptToLimit) {
+			List subList = rcpts.subList(i, Math.min(rcpts.size(), i + rcptToLimit));
 			currentMessage.put(MailModule.BCC, subList);
 	 		MimeMessagePreparator helper = new MimeMapPreparator(currentMessage, logger, sendVTODO);
 	 		helper.setDefaultFrom(mailSender.getDefaultFrom());
 	 		MimeMessage msg = mailSender.createMimeMessage();
 			helper.prepare(msg);
 			job.schedule(mailSender, msg, comment, getMailDirPath(binder), true);
-	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
+	 		currentMessage.remove(MailModule.CC);	// If these are to long, don't have a solution.
 		}
 		getReportModule().addEmailLog(emailLog);
 	}
-    
+
+    /*
+     * Inner class used to ...
+     */
     class MailStatus implements MailSentStatus {
     	Set<Address> failures;
     	Set<Address> queuedTo;
        	Set<Address> sentTo = new HashSet();
+       	
        	protected MailStatus(Map message) {
-    		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
-    		if (addrs != null) sentTo.addAll(addrs);
-    		addrs = (Collection)message.get(MailModule.CC);
-       		if (addrs != null) sentTo.addAll(addrs);
-    		addrs = (Collection)message.get(MailModule.BCC);
-       		if (addrs != null) sentTo.addAll(addrs);
+    		Collection<InternetAddress> addrs = ((Collection) message.get(MailModule.TO));
+    		if (null != addrs) {
+    			sentTo.addAll(addrs);
+    		}
+    		
+    		addrs = ((Collection) message.get(MailModule.CC));
+       		if (null != addrs) {
+       			sentTo.addAll(addrs);
+       		}
+       		
+    		addrs = ((Collection) message.get(MailModule.BCC));
+       		if (null != addrs) {
+       			sentTo.addAll(addrs);
+       		}
        	 
        	}
        	
     	@Override
 		public Collection<Address> getFailedToSend() {
-    		if (failures == null) return Collections.EMPTY_SET;
+    		if (null == failures) {
+    			return Collections.EMPTY_SET;
+    		}
     		return failures;
     	}
     	
     	@Override
 		public Collection<Address> getQueuedToSend() {
-    		if (queuedTo == null) return Collections.EMPTY_SET;
+    		if (null == queuedTo) {
+    			return Collections.EMPTY_SET;
+    		}
     		return queuedTo;
     	}
     	
     	@Override
 		public Collection<Address> getSentTo() {
-    		if (sentTo == null) return Collections.EMPTY_SET;
+    		if (null == sentTo) {
+    			return Collections.EMPTY_SET;
+    		}
     		sentTo.removeAll(getQueuedToSend());
     		sentTo.removeAll(getFailedToSend());
     		return sentTo;
     	}
     	
     	protected void addFailures(Address[] addrs) {
-    		if (addrs == null) return;
-    		if (failures == null) failures = new HashSet();
-    		for (int i=0; i<addrs.length; ++i) {
+    		if (null == addrs) {
+    			return;
+    		}
+    		if (null == failures) {
+    			failures = new HashSet();
+    		}
+    		for (int i = 0; i < addrs.length; ++i) {
     			failures.add(addrs[i]);
     		}
     	}
     	
     	protected void addQueued(Address[] addrs) {
-    		if (addrs == null) return;
-       		if (queuedTo == null) queuedTo = new HashSet();
-    		for (int i=0; i<addrs.length; ++i) {
+    		if (null == addrs) {
+    			return;
+    		}
+       		if (null == queuedTo) {
+       			queuedTo = new HashSet();
+       		}
+    		for (int i = 0; i < addrs.length; ++i) {
     			queuedTo.add(addrs[i]);
     		}
-     		
     	}
     }
 }
