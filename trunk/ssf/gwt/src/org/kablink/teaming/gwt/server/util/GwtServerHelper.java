@@ -5381,8 +5381,12 @@ public class GwtServerHelper {
 				break;
 				
 			case HttpURLConnection.HTTP_OK:
+            case HttpURLConnection.HTTP_NOT_FOUND:
 				// No, the connection isn't being redirected!
 				// Everything is fine.  Return it.
+                // A 404 (Not Found) response getting the base URL is acceptable depending on how the the auto-update
+                // server is set up.  The base URL can return a 404 but the full URL to the desktop application files
+                // will still succeed.
 				reply = httpUrl;
 				break;
 				
