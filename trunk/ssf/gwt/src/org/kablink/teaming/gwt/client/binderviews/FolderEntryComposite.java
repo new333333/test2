@@ -455,9 +455,10 @@ public class FolderEntryComposite extends ResizeComposite
 		inner.getElement().setAttribute("align", "right");
 
 		// ...create the <IFRAME>...
+		int eipFrameSize = (GwtClientHelper.jsIsIE() ? 1 : 0); 
 		NamedFrame eipFrame = new NamedFrame(EDIT_IN_PLACE_FRAME_ID);
 		eipFrame.getElement().setId(         EDIT_IN_PLACE_FRAME_ID);
-		eipFrame.setPixelSize(0, 0);
+		eipFrame.setPixelSize(eipFrameSize, eipFrameSize);
 		eipFrame.setUrl(GwtClientHelper.getRequestInfo().getJSPath() + "forum/null.html");
 		eipFrame.setTitle(GwtClientHelper.isLicenseFilr() ? m_messages.novellFilr() : m_messages.novellTeaming());
 
