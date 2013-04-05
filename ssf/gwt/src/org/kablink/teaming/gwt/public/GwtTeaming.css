@@ -3002,12 +3002,16 @@ body, table td, select
 .gwt-TextBox, .gwt-PasswordTextBox, .gwt-DateBox, .gwt-FileUpload {
 	border: 1px solid #949494;
 	border-radius: 3px;
-	font-size: 12px;
+	font-size: 13px;
 	padding: 5px;
 	background-color: #fff;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
+
+#loginFormId input {
+	font-size: 15px;
+	}
 
 /* Styles for dialog boxes */
 .teamingDlgBox
