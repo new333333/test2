@@ -111,10 +111,13 @@ public class TraceableInputStreamWrapper extends InputStream implements Comparab
 		if(logger.isDebugEnabled())
 			logger.debug("close() on [" + path + "]");
 		
-		original.close();
-		
-		synchronized(openStreamHandles) {
-			openStreamHandles.remove(this);
+		try {
+			original.close();
+		}
+		finally {
+			synchronized(openStreamHandles) {
+				openStreamHandles.remove(this);
+			}
 		}
     }
 
