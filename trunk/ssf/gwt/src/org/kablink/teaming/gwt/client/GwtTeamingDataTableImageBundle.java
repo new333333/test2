@@ -124,7 +124,7 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource grayStar();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/public16.png")
+	@Source("org/kablink/teaming/gwt/public/images/public25.png")
 	public ImageResource groupAssignee();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
