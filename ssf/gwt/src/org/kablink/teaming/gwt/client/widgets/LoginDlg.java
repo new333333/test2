@@ -67,6 +67,10 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ErrorEvent;
+import com.google.gwt.event.dom.client.ErrorHandler;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -403,7 +407,6 @@ public class LoginDlg extends DlgBox
 		MastHead mastHead;
 		boolean useDefaultImg = true;
 		String imgUrl = null;
-		Scheduler.ScheduledCommand cmd;
 		
 		// Get the branding data.
 		mastHead = GwtTeaming.getMainPage().getMastHead();
@@ -492,18 +495,52 @@ public class LoginDlg extends DlgBox
 
 			// Yes
 			img = new Image( imgUrl );
-			m_headerPanel.add( img );
-		}
-		
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			@Override
-			public void execute()
+			img.addLoadHandler( new LoadHandler()
 			{
-				centerAndShow();
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+				@Override
+				public void onLoad(LoadEvent event)
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							centerAndShow();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			img.addErrorHandler( new ErrorHandler()
+			{
+				@Override
+				public void onError( ErrorEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							centerAndShow();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			m_headerPanel.add( img );
+
+			// Set the dialog to be hidden and show it.  This will add everything into the DOM
+			// and the onLoad() method will be called.  If we don't show the dialog now, the onLoad()
+			// method will never get called.
+			setVisible( false );
+			show();
+		}
+		else
+			centerAndShow();
 	}
 	
 	/**
