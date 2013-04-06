@@ -5154,6 +5154,26 @@ public class BinderHelper {
 		// user's workspace and false otherwise.  Return it.
 		return reply;
 	}
+	
+	/**
+	 * Returns true if a binder is a Home folder and false otherwise.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static boolean isBinderHomeFolder(Binder binder) {
+		// Is the binder a folder?
+		boolean reply = false;
+		if (binder.getEntityType().name().equals(EntityType.folder.name())) {
+			// Yes!  Is it a Home folder?
+			reply = ((Folder) binder).isHomeDir();
+		}
+		
+		// If we get here, reply is true if binder is a Home folder
+		// and false otherwise.  Return it.
+		return reply;
+	}
 
 	/**
 	 * Returns true if the specified binder is a My Files Storage
