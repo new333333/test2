@@ -2009,12 +2009,26 @@ public class GwtServerHelper {
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// Scan the entry IDs...
+			BinderModule bm = bs.getBinderModule();
 			for (EntityId entityId:  entityIds) {
 				try {
 					// ...deleting each entity...
-					if (entityId.isBinder())
-					     TrashHelper.preDeleteBinder(bs,                         entityId.getEntityId());
-					else TrashHelper.preDeleteEntry( bs, entityId.getBinderId(), entityId.getEntityId());
+					if (entityId.isBinder()) {
+						Long binderId = entityId.getEntityId();
+						if (BinderHelper.isBinderHomeFolder(bm.getBinder(binderId))) {
+							// ...except Home folders which cannot...
+							// ...be deleted...
+							String entryTitle = getEntityTitle(bs, entityId);
+							reply.addError(NLT.get("deleteEntryError.AccssControlException", new String[]{entryTitle}));
+						}
+						else {
+							TrashHelper.preDeleteBinder(bs, entityId.getEntityId());
+						}
+					}
+					
+					else {
+						TrashHelper.preDeleteEntry(bs, entityId.getBinderId(), entityId.getEntityId());
+					}
 				}
 
 				catch (Exception e) {
@@ -9767,9 +9781,22 @@ public class GwtServerHelper {
 			for (EntityId entityId:  entityIds) {
 				try {
 					// ...purging each entity...
-					if (entityId.isBinder())
-					     bm.deleteBinder(                       entityId.getEntityId(), deleteMirroredSource, null);
-					else fm.deleteEntry(entityId.getBinderId(), entityId.getEntityId()                            );
+					if (entityId.isBinder()) {
+						Long binderId = entityId.getEntityId();
+						if (BinderHelper.isBinderHomeFolder(bm.getBinder(binderId))) {
+							// ...except Home folders which cannot...
+							// ...be purged...
+							String entryTitle = getEntityTitle(bs, entityId);
+							reply.addError(NLT.get("purgeEntryError.AccssControlException", new String[]{entryTitle}));
+						}
+						else {
+							bm.deleteBinder(binderId, deleteMirroredSource, null);
+						}
+					}
+					
+					else {
+						fm.deleteEntry(entityId.getBinderId(), entityId.getEntityId()                            );
+					}
 				}
 				
 				catch (Exception e) {

@@ -1591,7 +1591,7 @@ public class GwtMenuHelper {
 				Integer wsDefType = binder.getDefinitionType();
 				allowCopyMove = ((null == wsDefType) || 
 					((Definition.USER_WORKSPACE_VIEW != wsDefType.intValue()) &&
-						(Definition.EXTERNAL_USER_WORKSPACE_VIEW != wsDefType.intValue())));
+					 (Definition.EXTERNAL_USER_WORKSPACE_VIEW != wsDefType.intValue())));
 			}
 			else {
 				allowCopyMove = true;
@@ -1739,9 +1739,10 @@ public class GwtMenuHelper {
 		// Is this a binder we can possibly delete or purge?
 		if ((isFolder || isWorkspace) && (!isWorkspaceReserved)) {
 			// Yes!  Is the binder other than a system user's or the
-			// current user's workspace?
+			// current user's workspace or a Home folder?
 			if ((!(BinderHelper.isBinderSystemUserWS(  binder))) &&
-				(!(BinderHelper.isBinderCurrentUsersWS(binder)))) {
+				(!(BinderHelper.isBinderCurrentUsersWS(binder))) &&
+				(!(BinderHelper.isBinderHomeFolder(    binder)))) {
 				// Yes!  Is this a binder the user can move to the
 				// trash?
 				if (bm.testAccess(binder, BinderOperation.preDeleteBinder) && isBinderTrashEnabled(binder)) {
