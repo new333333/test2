@@ -130,6 +130,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
@@ -1742,7 +1743,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_PARENT_BINDER_PERMALINK:
 		{
 			GetParentBinderPermalinkCmd gpbpCmd = ((GetParentBinderPermalinkCmd) cmd);
-			String permalink = getParentBinderPermalink( ri, gpbpCmd.getBinderId() );
+			String permalink = getParentBinderPermalink( ri, gpbpCmd.getBinderId(), gpbpCmd.isShowCollectionOnUserWS() );
 			StringRpcResponseData responseData = new StringRpcResponseData( permalink );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -4071,7 +4072,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Returns the "binder permalink" URL of a binder's parent.
 	 */
-	private String getParentBinderPermalink( HttpRequestInfo ri, Long binderId )
+	private String getParentBinderPermalink( HttpRequestInfo ri, Long binderId, boolean showCollectionOnUserWS )
 	{
 		// Can we access this binder?
 		String			reply  = null;
@@ -4107,6 +4108,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			{
 				// Yes!  Return a permalink to it.
 				reply = getBinderPermalink( ri, String.valueOf( binder.getId() ) );
+				if ( showCollectionOnUserWS && BinderHelper.isBinderCurrentUsersWS( binder ) )
+				{
+					CollectionType ct;
+					if ( SearchUtils.userCanAccessMyFiles( this, RequestContextHolder.getRequestContext().getUser() ) )
+					     ct = CollectionType.MY_FILES;
+					else ct = CollectionType.SHARED_WITH_ME;
+					reply = GwtUIHelper.appendUrlParam( reply, WebKeys.URL_SHOW_COLLECTION, String.valueOf( ct.ordinal() ) );
+				}
 			}
 		}
 

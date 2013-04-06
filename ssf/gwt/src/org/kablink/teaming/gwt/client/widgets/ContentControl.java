@@ -1351,6 +1351,7 @@ public class ContentControl extends Composite
 					// Yes!  After deleting it, we'll need to load its
 					// parent.  Can we get a URL to it? 
 					GetParentBinderPermalinkCmd cmd = new GetParentBinderPermalinkCmd( biId );
+					cmd.setShowCollectionOnUserWS( GwtClientHelper.isLicenseFilr() );
 					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 					{
 						@Override
@@ -1531,6 +1532,7 @@ public class ContentControl extends Composite
 					// Yes!  After purging it, we'll need to load its
 					// parent.  Can we get a URL to it? 
 					GetParentBinderPermalinkCmd cmd = new GetParentBinderPermalinkCmd( biId );
+					cmd.setShowCollectionOnUserWS( GwtClientHelper.isLicenseFilr() );
 					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 					{
 						@Override
