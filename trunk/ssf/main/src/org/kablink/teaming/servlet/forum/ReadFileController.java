@@ -47,6 +47,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
@@ -253,6 +254,12 @@ public class ReadFileController extends AbstractReadFileController {
 					}
 				} else {
 					fa = getAttachment(entity, args[WebUrlUtil.FILE_URL_NAME], args[WebUrlUtil.FILE_URL_VERSION], args[WebUrlUtil.FILE_URL_FILE_ID]);
+				}
+				
+				// If the entity is an Entry...
+				if ((null != entity) && (entity instanceof Entry)) {
+					// ...mark it as having been seen.
+					getProfileModule().setSeen(null, ((Entry) entity));
 				}
 	
 				if (fa != null) {
