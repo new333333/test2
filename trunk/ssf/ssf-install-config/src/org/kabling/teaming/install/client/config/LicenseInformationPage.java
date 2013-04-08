@@ -7,7 +7,6 @@ import org.kabling.teaming.install.client.LicensePageDlgBox;
 import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -238,10 +237,13 @@ public class LicenseInformationPage extends LicensePageDlgBox
 		return true;
 	}
 
+
 	@Override
 	public HelpData getHelpData()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		HelpData helpData =  new HelpData();
+		helpData.setPageId("license");
+		
+		return helpData;
 	}
 }

@@ -1526,16 +1526,19 @@ public final class ConfigService
 	{
 		File file = new File("/vashare/filr/conf/memcached.properties");
 
-		Properties prop = new Properties();
-		try
+		if (file.exists())
 		{
-			prop.load(new FileInputStream(file));
-
-			return prop.getProperty("memcached.servers");
-		}
-		catch (Exception e)
-		{
-
+			Properties prop = new Properties();
+			try
+			{
+				prop.load(new FileInputStream(file));
+	
+				return prop.getProperty("memcached.servers");
+			}
+			catch (Exception e)
+			{
+	
+			}
 		}
 		return null;
 	}
@@ -2390,6 +2393,11 @@ public final class ConfigService
 
 			// Enable the firewall for this port 80 443
 			executeCommand("sudo SuSEfirewall2 close EXT TCP 80 443", true);
+			
+			if (network.getListenPort() > 0)
+				executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getListenPort(), true);
+			else
+				executeCommand("sudo SuSEfirewall2 close EXT TCP "+network.getListenPort(), true);
 		}
 
 		// Restart the firewall after the changes
