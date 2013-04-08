@@ -2611,7 +2611,7 @@ public class ShareThisDlg extends DlgBox
 									@Override
 									public void execute() 
 									{
-										updateRightsLabel( listOfShareItems );
+										updateRightsLabel( m_editShareRightsDlg.getListOfShareItems() );
 									}
 								};
 								Scheduler.get().scheduleDeferred( cmd );
