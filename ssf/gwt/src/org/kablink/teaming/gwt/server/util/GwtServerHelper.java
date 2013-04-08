@@ -59,8 +59,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TimeZone;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -9258,7 +9260,13 @@ public class GwtServerHelper {
 		    // manager and use it for the socket factory which bypasses
 		    // security checks.
 		    final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-			((HttpsURLConnection) reply).setSSLSocketFactory(sslSocketFactory);		
+			((HttpsURLConnection) reply).setSSLSocketFactory(sslSocketFactory);
+			((HttpsURLConnection) reply).setHostnameVerifier(new HostnameVerifier() {
+				@Override
+				public boolean verify(String hostname, SSLSession session) {
+					return true;
+				}
+			});
 		}
 	    
 	    // Finally, return the URLConnection.
