@@ -69,7 +69,7 @@ public class EditShareRightsDlg extends DlgBox
 	private CheckBox m_canSharePublicCkbox;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private ArrayList<GwtShareItem> m_listOfShareItems;
-	
+
 	/**
 	 * Callback interface to interact with the "Edit Share Rights" dialog asynchronously after it loads. 
 	 */
@@ -253,6 +253,14 @@ public class EditShareRightsDlg extends DlgBox
 		return null;
 	}
 
+	/**
+	 * Return the list of GwtShareItems we are working with.
+	 */
+	public ArrayList<GwtShareItem> getListOfShareItems()
+	{
+		return m_listOfShareItems;
+	}
+	
 	/**
 	 * Initialize the controls in the dialog with the values from the properties
 	 */
