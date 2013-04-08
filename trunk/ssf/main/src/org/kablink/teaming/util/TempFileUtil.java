@@ -312,7 +312,7 @@ public class TempFileUtil {
 		String oitTempPath = getOITTempDirPath();
 		File oitTempDir = new File(oitTempPath);
 		if ((!(oitTempDir.exists())) && createIfNecessary) {
-			oitTempDir.mkdir();
+			oitTempDir.mkdirs();
 		}
 		return oitTempDir;
 	}
