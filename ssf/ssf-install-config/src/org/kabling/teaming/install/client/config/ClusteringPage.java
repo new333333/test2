@@ -152,7 +152,7 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 		}
 		else
 		{
-			clustered.setCachingProvider("memcache");
+			clustered.setCachingProvider("memcached");
 			clustered.setMemCachedAddress(memcachedAddressesTextBox.getText());
 		}
 		
