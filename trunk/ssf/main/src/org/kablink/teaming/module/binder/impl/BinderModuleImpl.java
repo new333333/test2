@@ -640,7 +640,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				// proxy, instead of local
 				// invocation.
 				((BinderModule) SpringContextUtil.getBean("binderModule"))
-						.setDefinitionsInherited(binder.getId(), true);
+						.setDefinitionsInherited(binder.getId(), true, false);
 			}
 		} else {
 			if (!(parentBinder instanceof Workspace))
@@ -1542,10 +1542,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	// inside write transaction
 	@Override
-	public Binder setDefinitionsInherited(Long binderId,
-			boolean inheritFromParent) {
+	public Binder setDefinitionsInherited(Long binderId, boolean inheritFromParent) {
+		return setDefinitionsInherited(binderId, inheritFromParent, true);
+	}
+	// inside write transaction
+	@Override
+	public Binder setDefinitionsInherited(Long binderId, boolean inheritFromParent, boolean doAccessCheck) {
 		Binder binder = loadBinder(binderId);
-		checkAccess(binder, BinderOperation.manageConfiguration);
+		if (doAccessCheck) {
+			checkAccess(binder, BinderOperation.manageConfiguration);
+		}
 		boolean oldInherit = binder.isDefinitionsInherited();
 		if (inheritFromParent != oldInherit) {
 			if (inheritFromParent) {
