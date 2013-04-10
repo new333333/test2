@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -680,13 +681,15 @@ public class MarkupUtil {
 		if (startDate != null) {
 			DateFormat df1 = DateFormat.getDateInstance(DateFormat.MEDIUM, user.getLocale());
 			df1.setTimeZone(user.getTimeZone());
+			DateFormat df1GMT = DateFormat.getDateInstance(DateFormat.MEDIUM, user.getLocale());
+			df1GMT.setTimeZone(TimeZone.getTimeZone("GMT"));
 			DateFormat df2 = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
 			df2.setTimeZone(user.getTimeZone());
 			DateFormat df3 = DateFormat.getTimeInstance(DateFormat.SHORT, user.getLocale());
 			df3.setTimeZone(user.getTimeZone());
 			if (allDayEvent) {
 				//This is an all day event, just show the start date
-				result = df1.format(startDate.getTime()) + " (" + NLT.get("event.allDay") + ")";
+				result = df1GMT.format(startDate.getTime()) + " (" + NLT.get("event.allDay") + ")";
 			} else if (startDate.equals(endDate)) {
 				//This is just a date and time
 				result = df2.format(startDate.getTime());
