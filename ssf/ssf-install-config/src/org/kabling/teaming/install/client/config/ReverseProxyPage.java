@@ -75,7 +75,7 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			portTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 			FlowPanel httpPortPanel = new FlowPanel();
-			httpSpinner = new GwValueSpinner(80, 80, 9999, null);
+			httpSpinner = new GwValueSpinner(8080, 80, 9999, null);
 			httpPortPanel.add(httpSpinner);
 			
 			httpEnabledCheckBox = new CheckBox(RBUNDLE.enabled());
@@ -93,7 +93,7 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			portTable.setWidget(row, 0, keyLabel);
 			portTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			httpSecureSpinner = new GwValueSpinner(443, 80, 9999, null);
+			httpSecureSpinner = new GwValueSpinner(8443, 80, 9999, null);
 			portTable.setWidget(row, 1, httpSecureSpinner);
 			portTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -195,13 +195,11 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 		//Save HTTP Port info
 		Network network = config.getNetwork();
 		network.setSecurePort(httpSecureSpinner.getValueAsInt());
-		if (httpEnabledCheckBox.getValue())
-			network.setPort(httpSpinner.getValueAsInt());
-		else
-			network.setPort(0);
+		network.setPort(httpSpinner.getValueAsInt());
+		
 		
 		network.setHost(hostTextBox.getText());
-		
+		network.setPortEnabled(httpEnabledCheckBox.getValue());
 		return config;
 	}
 
@@ -234,15 +232,10 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 		//Initialize the UI with the data
 		if (network != null)
 		{
-			if (network.getPort() != 0)
-			{
-				httpSpinner.setValue(network.getPort());
-			}
-			else
-			{
-				httpSpinner.setEnabled(false);
-			}
-			httpEnabledCheckBox.setValue(network.getPort() != 0);
+			
+			httpSpinner.setValue(network.getPort());
+			httpSpinner.setEnabled(network.isPortEnabled());
+			httpEnabledCheckBox.setValue(network.isPortEnabled());
 			httpSecureSpinner.setValue(network.getSecurePort());
 			
 			hostTextBox.setText(network.getHost());
