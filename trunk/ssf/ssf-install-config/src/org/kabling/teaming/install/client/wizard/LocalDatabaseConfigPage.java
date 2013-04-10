@@ -107,7 +107,7 @@ public class LocalDatabaseConfigPage implements IWizardPage<InstallerConfig>
 						if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
 						{
 							if (!userPwdConfirmTextBox.getText().equals("") && !userPwdTextBox.getText().equals(""))
-								wizard.finish();
+								wizard.nextPage();
 						}
 					}
 				});

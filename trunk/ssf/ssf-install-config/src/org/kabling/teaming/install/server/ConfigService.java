@@ -291,6 +291,7 @@ public final class ConfigService
 			network.setPortRedirect(getBooleanValue(hostNode.getAttribute("portRedirect")));
 			network.setForceSecure(getBooleanValue(hostNode.getAttribute("forceSecure")));
 			network.setListenPortEnabled(getBooleanValue(hostNode.getAttribute("listenPortEnabled")));
+			network.setPortEnabled(getBooleanValue(hostNode.getAttribute("portEnabled")));
 
 		}
 
@@ -1402,6 +1403,7 @@ public final class ConfigService
 			hostElement.setAttribute("portRedirect", String.valueOf(network.isPortRedirect()));
 			hostElement.setAttribute("forceSecure", String.valueOf(network.isForceSecure()));
 			hostElement.setAttribute("listenPortEnabled", String.valueOf(network.isListenPortEnabled()));
+			hostElement.setAttribute("portEnabled", String.valueOf(network.isPortEnabled()));
 		}
 	}
 
@@ -2522,7 +2524,7 @@ public final class ConfigService
 			else
 				closeFireWallPort(String.valueOf(network.getListenPort()));
 		}
-
+		
 		// Restart the firewall after the changes
 		executeCommand("sudo SuSEfirewall2 stop", true);
 		executeCommand("sudo SuSEfirewall2 start", true);

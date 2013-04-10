@@ -46,6 +46,7 @@ public class Network implements Serializable
 	private boolean portRedirect;
 	private boolean forceSecure;
 	private boolean listenPortEnabled;
+	private boolean portEnabled;
 
 	public Network()
 	{
@@ -177,5 +178,15 @@ public class Network implements Serializable
 	public void setListenPortEnabled(boolean listenPortEnabled)
 	{
 		this.listenPortEnabled = listenPortEnabled;
+	}
+
+	public boolean isPortEnabled()
+	{
+		return portEnabled;
+	}
+
+	public void setPortEnabled(boolean portEnabled)
+	{
+		this.portEnabled = portEnabled;
 	}
 }
