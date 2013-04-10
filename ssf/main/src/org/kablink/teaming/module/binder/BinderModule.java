@@ -597,7 +597,8 @@ public interface BinderModule {
 	 */
     public Binder setDefinitionsInherited(Long binderId, boolean inheritFromParent)
     	throws AccessControlException;
-
+    public Binder setDefinitionsInherited(Long binderId, boolean inheritFromParent, boolean doAccessCheck) 
+		throws AccessControlException;
 	/**
      * Set this inherited.
      * 

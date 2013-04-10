@@ -243,7 +243,7 @@ public class FolderUtils {
 		
 		
 		if(parentBinder.getEntityType() == EntityType.folder) {
-			getBinderModule().setDefinitionsInherited(binder.getId(), true);
+			getBinderModule().setDefinitionsInherited(binder.getId(), true, false);
 		}
 		return binder;
 	}
