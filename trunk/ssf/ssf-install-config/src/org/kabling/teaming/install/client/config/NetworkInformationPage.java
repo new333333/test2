@@ -15,6 +15,7 @@ import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -197,12 +198,8 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 		network.setSessionTimeoutMinutes(sessionTimeOutSpinner.getValueAsInt());
 		network.setKeystoreFile(keyStoreFileTextBox.getText());
 
-		if (httpEnabledCheckBox.getValue())
-		{
-			network.setListenPort(listenSpinner.getValueAsInt());
-		}
-		else
-			network.setListenPort(0);
+		network.setListenPort(listenSpinner.getValueAsInt());
+		network.setListenPortEnabled(httpEnabledCheckBox.getValue());
 		
 		network.setForceSecure(forceSecureCheckBox.getValue());
 
@@ -243,15 +240,20 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 			{
 				listenSpinner.setValue(network.getListenPort());
 			}
-			else
+			
+			if (network.getListenPort() == 0 || !network.isListenPortEnabled())
 			{
 				listenSpinner.setEnabled(false);
 			}
 			
-			forceSecureCheckBox.setValue(network.isForceSecure());
-			forceSecureCheckBox.setEnabled(network.getListenPort() > 0);
-			httpEnabledCheckBox.setValue(network.getListenPort() != 0);
+			
+			
+			boolean httpEnabled = network.isListenPortEnabled();
+			httpEnabledCheckBox.setValue(httpEnabled);
 			httpEnabledCheckBox.setEnabled(!network.isForceSecure());
+			
+			forceSecureCheckBox.setValue(network.isForceSecure());
+			forceSecureCheckBox.setEnabled(httpEnabled);
 			updateHttpPortLabel();
 		}
 	}

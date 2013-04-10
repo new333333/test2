@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -122,10 +123,10 @@ public final class ConfigService
 
 		File upgradeFile = new File("/vastorage/conf/vaconfig.zip");
 		config.setUpdateMode(upgradeFile.exists());
-		
+
 		File shareFile = new File("/vashare/filr/conf/memcached.properties");
 		config.setShareAvailable(shareFile.exists());
-		
+
 		File vaShareFile = new File("/vashare");
 		config.setVashareAvailable(vaShareFile.exists());
 		return config;
@@ -289,6 +290,7 @@ public final class ConfigService
 			network.setKeystoreFile(hostNode.getAttribute("keystoreFile"));
 			network.setPortRedirect(getBooleanValue(hostNode.getAttribute("portRedirect")));
 			network.setForceSecure(getBooleanValue(hostNode.getAttribute("forceSecure")));
+			network.setListenPortEnabled(getBooleanValue(hostNode.getAttribute("listenPortEnabled")));
 
 		}
 
@@ -949,12 +951,12 @@ public final class ConfigService
 		clustered.setCacheService(rootNode.getAttribute("cacheService"));
 		clustered.setCacheGroupAddress(rootNode.getAttribute("cacheGroupAddress"));
 		clustered.setCacheGroupPort(getIntegerValue(rootNode.getAttribute("cacheGroupPort")));
-		
+
 		String memcachedServers = readSharedMemcachedPropertiesFile();
 		if (memcachedServers == null)
 			memcachedServers = rootNode.getAttribute("memcachedAddresses");
-			clustered.setMemCachedAddress(memcachedServers);
-			
+		clustered.setMemCachedAddress(memcachedServers);
+
 		clustered.setJvmRoute(rootNode.getAttribute("jvmRoute"));
 
 		return clustered;
@@ -1398,7 +1400,8 @@ public final class ConfigService
 			hostElement.setAttribute("ajpPort", String.valueOf(network.getAjpPort()));
 			hostElement.setAttribute("keystoreFile", network.getKeystoreFile());
 			hostElement.setAttribute("portRedirect", String.valueOf(network.isPortRedirect()));
-			hostElement.setAttribute("forceSecure",String.valueOf(network.isForceSecure()));
+			hostElement.setAttribute("forceSecure", String.valueOf(network.isForceSecure()));
+			hostElement.setAttribute("listenPortEnabled", String.valueOf(network.isListenPortEnabled()));
 		}
 	}
 
@@ -1486,8 +1489,7 @@ public final class ConfigService
 			// If memcache is enabled, enable port 11211
 			if (config.getClustered().getCachingProvider().equals("memcached"))
 			{
-				executeCommand("sudo SuSEfirewall2 open EXT TCP 11211", true);
-				executeCommand("sudo SuSEfirewall2 open EXT TCP 4446", true);
+				openFireWallPort(new String[] { "11211", "4446" });
 			}
 		}
 		else
@@ -1496,18 +1498,19 @@ public final class ConfigService
 			executeCommand("rcmemcached stop", true);
 			executeCommand("chkconfig memcached off", true);
 
-			executeCommand("sudo SuSEfirewall2 close EXT TCP 11211", true);
-			executeCommand("sudo SuSEfirewall2 close EXT TCP 4446", true);
+			// executeCommand("sudo SuSEfirewall2 close EXT TCP 11211", true);
+			// executeCommand("sudo SuSEfirewall2 close EXT TCP 4446", true);
+			closeFireWallPort(new String[] { "11211", "4446" });
 		}
 	}
 
 	private static void updateSharedMemcachedPropertiesFile(String memcachedAddress)
 	{
 		File file = new File("/vashare/filr/conf/memcached.properties");
-		
+
 		if (!file.exists())
 			return;
-		
+
 		Properties prop = new Properties();
 		try
 		{
@@ -1521,7 +1524,120 @@ public final class ConfigService
 
 		}
 	}
-	
+
+	private static boolean closeFireWallPort(String portToClose)
+	{
+		return closeFireWallPort(new String[] { portToClose });
+	}
+
+	private static boolean closeFireWallPort(String[] portsToClose)
+	{
+		File file = new File("/etc/sysconfig/SuSEfirewall2");
+
+		if (file.exists())
+		{
+			CommentedProperties prop = new CommentedProperties();
+			try
+			{
+				prop.load(new FileInputStream(file));
+				String portsOpen = prop.getProperty("FW_SERVICES_EXT_TCP");
+
+				if (portsOpen == null)
+				{
+					logger.debug("FW_SERVICES_EXT_TCP is empty, exiting ");
+					return false;
+				}
+				portsOpen = portsOpen.substring(1, portsOpen.length() - 1);
+
+				logger.debug("FW_SERVICES_EXT_TCP= " + portsOpen);
+
+				// Space separated list
+				String[] ports = portsOpen.split(" ");
+				if (ports != null)
+				{
+					StringBuilder builder = new StringBuilder("\"");
+					for (String port : ports)
+					{
+						boolean found = false;
+						for (String portToClose : portsToClose)
+						{
+							if (port.equals(portToClose))
+							{
+								found = true;
+								break;
+							}
+						}
+
+						// We did not find the close port, we need to keep in the file
+						if (!found)
+						{
+							builder.append(port);
+							builder.append(" ");
+						}
+					}
+					builder.deleteCharAt(builder.length() - 1);
+					builder.append("\"");
+
+					logger.debug("SuseFirewall ports " + builder.toString());
+
+					prop.setProperty("FW_SERVICES_EXT_TCP", builder.toString());
+					prop.store(new FileOutputStream(file), null);
+				}
+				return true;
+			}
+			catch (Exception e)
+			{
+
+			}
+		}
+		return false;
+	}
+
+	private static boolean openFireWallPort(String portToClose)
+	{
+		return openFireWallPort(new String[] { portToClose });
+	}
+
+	private static boolean openFireWallPort(String[] portsToOpen)
+	{
+		File file = new File("/etc/sysconfig/SuSEfirewall2");
+
+		if (file.exists())
+		{
+			CommentedProperties prop = new CommentedProperties();
+			try
+			{
+				prop.load(new FileInputStream(file));
+				String servicesExtTcp = prop.getProperty("FW_SERVICES_EXT_TCP");
+
+				if (servicesExtTcp == null)
+				{
+					logger.debug("FW_SERVICES_EXT_TCP is empty, exiting ");
+					return false;
+				}
+				servicesExtTcp = servicesExtTcp.substring(1, servicesExtTcp.length() - 1);
+
+				String[] portTokens = servicesExtTcp.split(" ");
+				for (String portToOpen : portsToOpen)
+				{
+					if (!Arrays.asList(portTokens).contains(portToOpen))
+					{
+						servicesExtTcp = servicesExtTcp + " " + portToOpen;
+					}
+				}
+				logger.debug("SuseFirewall ports " + "\"" + servicesExtTcp + "\"");
+
+				prop.setProperty("FW_SERVICES_EXT_TCP", "\"" + servicesExtTcp + "\"");
+				prop.store(new FileOutputStream(file), null);
+			}
+			catch (Exception e)
+			{
+
+			}
+		}
+		return false;
+	}
+
 	private static String readSharedMemcachedPropertiesFile()
 	{
 		File file = new File("/vashare/filr/conf/memcached.properties");
@@ -1532,12 +1648,12 @@ public final class ConfigService
 			try
 			{
 				prop.load(new FileInputStream(file));
-	
+
 				return prop.getProperty("memcached.servers");
 			}
 			catch (Exception e)
 			{
-	
+
 			}
 		}
 		return null;
@@ -2242,13 +2358,13 @@ public final class ConfigService
 		// Save filrconfig locally to /vastorage/conf/vaconfig.zip
 		saveFilrConfigLocally();
 
-		//Delete /etc/init.d/teaming file if it exists
+		// Delete /etc/init.d/teaming file if it exists
 		File file = new File("/etc/init.d/teaming");
 		if (file.exists())
 		{
 			logger.debug("Deleting /etc/init.d/teaming " + file.delete());
 		}
-		
+
 		if (restartServer)
 			startFilrServer();
 	}
@@ -2349,9 +2465,9 @@ public final class ConfigService
 		String ipAddr = getLocalIpAddr();
 
 		// Turn on secure port
-		executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getSecureListenPort(), true);
+		openFireWallPort(String.valueOf(network.getSecureListenPort()));
 
-		//Force secure connection
+		// Force secure connection will have listen port automatically enabled
 		if (network.isForceSecure())
 		{
 			// Call addSecurityConstraint.py pointing to web.xml, we need to update all the 4 web.xml
@@ -2359,8 +2475,8 @@ public final class ConfigService
 			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py " + WEB_XML2, true);
 			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py " + WEB_XML3, true);
 			executeCommand("sudo python /opt/novell/filr_config/addSecurityConstraint.py " + WEB_XML4, true);
-			
-			executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getListenPort(), true);
+
+			openFireWallPort(String.valueOf(network.getListenPort()));
 		}
 		else
 		{
@@ -2369,11 +2485,14 @@ public final class ConfigService
 			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py " + WEB_XML2, true);
 			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py " + WEB_XML3, true);
 			executeCommand("sudo python /opt/novell/filr_config/removeSecurityConstraint.py " + WEB_XML4, true);
-			
-			if (network.getListenPort() > 0)
-				executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getListenPort(), true);
+
+			// Enable Listen port (8080) if it is enabled
+			if (network.isListenPortEnabled())
+				openFireWallPort(String.valueOf(network.getListenPort()));
 			else
-				executeCommand("sudo SuSEfirewall2 close EXT TCP "+network.getListenPort(), true);
+			{
+				closeFireWallPort(String.valueOf(network.getListenPort()));
+			}
 		}
 
 		if (network.isPortRedirect())
@@ -2382,22 +2501,26 @@ public final class ConfigService
 					+ " " + network.getListenPort(), true);
 
 			// Enable the firewall for this port 80 443
-			executeCommand("sudo SuSEfirewall2 open EXT TCP 80 443", true);
+			openFireWallPort(new String[] { "80", "443" });
 
-			// We need to open up both 8080 and 8443 for port redirection to work
-			executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getListenPort() + " " + network.getSecureListenPort(), true);
+			// Enable Listen port (8080) if it is enabled
+			if (network.isListenPortEnabled())
+				openFireWallPort(String.valueOf(network.getListenPort()));
+			else
+				closeFireWallPort(String.valueOf(network.getListenPort()));
 		}
 		else
 		{
 			executeCommand("sudo python /opt/novell/filr_config/disableFirewallRedirect.py", true);
 
-			// Enable the firewall for this port 80 443
-			executeCommand("sudo SuSEfirewall2 close EXT TCP 80 443", true);
-			
-			if (network.getListenPort() > 0)
-				executeCommand("sudo SuSEfirewall2 open EXT TCP " + network.getListenPort(), true);
+			// Disabled the firewall for this port 80 443
+			closeFireWallPort(new String[] { "80", "443" });
+
+			// Enable Listen port (8080) if it is enabled
+			if (network.isListenPortEnabled())
+				openFireWallPort(String.valueOf(network.getListenPort()));
 			else
-				executeCommand("sudo SuSEfirewall2 close EXT TCP "+network.getListenPort(), true);
+				closeFireWallPort(String.valueOf(network.getListenPort()));
 		}
 
 		// Restart the firewall after the changes
@@ -2574,7 +2697,7 @@ public final class ConfigService
 				+ " /etc/opt/novell/ganglia/monitor/conf.d/mysql.pyconf.disabled", true);
 
 		executeCommand("sudo rcmysql stop", true);
-		
+
 		executeCommand("sudo rcnovell-gmetad restart", true);
 		executeCommand("sudo rcnovell-gmond restart", true);
 		executeCommand("sudo chkconfig mysql off", true);

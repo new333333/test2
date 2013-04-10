@@ -45,6 +45,7 @@ public class Network implements Serializable
 	private int sessionTimeoutMinutes;
 	private boolean portRedirect;
 	private boolean forceSecure;
+	private boolean listenPortEnabled;
 
 	public Network()
 	{
@@ -166,5 +167,15 @@ public class Network implements Serializable
 	public void setForceSecure(boolean forceSecure)
 	{
 		this.forceSecure = forceSecure;
+	}
+
+	public boolean isListenPortEnabled()
+	{
+		return listenPortEnabled;
+	}
+
+	public void setListenPortEnabled(boolean listenPortEnabled)
+	{
+		this.listenPortEnabled = listenPortEnabled;
 	}
 }
