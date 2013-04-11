@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -162,6 +162,11 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 
+/**
+ * ? 
+ * 
+ * @author ?
+ */
 @SuppressWarnings("unchecked")
 public class BinderHelper {
 	// The following control aspects of code in Vibe OnPrem that has
@@ -2071,24 +2076,32 @@ public class BinderHelper {
 			this.action = action;
 			this.page = page;
 		}
+		@Override
 		public boolean supportsType(int type, Object source) {
 			if (type == DomTreeBuilder.TYPE_TEMPLATE) {return true;}
 			return false;
 		}
+		@Override
 		public boolean hasChildren(AllModulesInjected bs, Object source, int type) {
 			TemplateBinder config = (TemplateBinder)source;
 			return !config.getBinders().isEmpty();
 		}
 	
+		@Override
 		public String getAction(int type, Object source) {
 			return action;
 		}
+		@Override
 		public String getURL(int type, Object source) {return null;}
+		@Override
 		public String getDisplayOnly(int type, Object source) {
 			return "false";
 		}
+		@Override
 		public String getTreeNameKey() {return null;}
+		@Override
 		public String getPage() {return page;}
+		@Override
 		public void customize(AllModulesInjected bs, Object source, int type, Element element) {};
 		
 	}
@@ -3234,7 +3247,7 @@ public class BinderHelper {
 	private static String notifyAttendeeCBox(MapInputData inputData, String cBox) {
 		String reply;
 		String cBoxData = inputData.getSingleValue(cBox);
-		if ((null != cBoxData) && (cBoxData.equalsIgnoreCase("true") || cBoxData.equalsIgnoreCase(cBox))) {
+		if ((null != cBoxData) && (cBoxData.equalsIgnoreCase("true") || cBoxData.equalsIgnoreCase("on") || cBoxData.equalsIgnoreCase(cBox))) {
 			reply = cBox;
 		}
 		else {
@@ -3944,6 +3957,7 @@ public class BinderHelper {
 			return this.user;
 		}
 		
+		@Override
 		public int compareTo(Object o) {
 			Person p = (Person) o;
 			int result = this.getCount() < p.getCount() ? 1 : 0;
@@ -3973,6 +3987,7 @@ public class BinderHelper {
 			return this.id;
 		}
 		
+		@Override
 		public int compareTo(Object o) {
 			Place p = (Place) o;
 			int result = this.getCount() < p.getCount() ? 1 : 0;
@@ -4697,5 +4712,4 @@ public class BinderHelper {
 	private static ProfileModule getProfileModule() {
 		return (ProfileModule) SpringContextUtil.getBean("profileModule");
 	}
-	
 }
