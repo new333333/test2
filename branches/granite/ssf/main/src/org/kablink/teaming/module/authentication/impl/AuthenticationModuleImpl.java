@@ -52,9 +52,11 @@ import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
+import org.kablink.teaming.spring.security.AuthenticationThreadLocal;
 import org.kablink.teaming.spring.security.SsfContextMapper;
 import org.kablink.teaming.spring.security.SynchNotifiableAuthentication;
 import org.kablink.teaming.spring.security.ZoneAwareLocalAuthenticationProvider;
+import org.kablink.teaming.spring.security.ldap.LdapAuthenticationProvider;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedAuthenticator;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedFilterBasedLdapUserSearch;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedLdapAuthenticationProvider;
@@ -71,6 +73,7 @@ import org.kablink.teaming.module.authentication.UserIdNotActiveException;
 import org.kablink.teaming.module.authentication.UserIdNotUniqueException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.security.AccountStatusException;
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.AuthenticationServiceException;
@@ -79,7 +82,6 @@ import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.providers.AuthenticationProvider;
 import org.springframework.security.providers.ProviderManager;
-import org.springframework.security.providers.ldap.LdapAuthenticationProvider;
 import org.springframework.security.providers.ldap.authenticator.BindAuthenticator;
 import org.springframework.security.providers.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.userdetails.UsernameNotFoundException;
@@ -240,7 +242,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 
 				for (LdapConnectionConfig.SearchInfo us : config
 						.getUserSearches()) {
-					providers.add(createLdapAuthenticationProvider(contextSource, contextMapper, us, search));
+					providers.add(createLdapAuthenticationProvider(contextSource, contextMapper, config.getId(), us, search));
 					providers.add(createPreAuthenticatedLdapAuthenticationProvider(contextSource, contextMapper, us, search));
 				}
 			}
@@ -264,6 +266,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	protected AuthenticationProvider createLdapAuthenticationProvider
 		(DefaultSpringSecurityContextSource contextSource, 
 			SsfContextMapper contextMapper, 
+			String configId,
 			LdapConnectionConfig.SearchInfo us, 
 			String search) {
 		BindAuthenticator authenticator = new BindAuthenticator(
@@ -279,6 +282,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		}
 		authenticator.setUserSearch(userSearch);
 		LdapAuthenticationProvider ldap = new LdapAuthenticationProvider(
+				configId,
 				authenticator);
 		ldap.setUseAuthenticationRequestCredentials(true);
 		ldap.setUserDetailsContextMapper(contextMapper);
@@ -332,6 +336,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     {
 		long begin = System.nanoTime();
 		
+		AuthenticationThreadLocal.init();
+
 		try {
 			// The following hack(?) is necessary to handle the pre-authentication situation where
 			// initial authentication request is made in the context of no user, yet at least one
@@ -387,6 +393,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 			}
 		}
 		finally {
+			AuthenticationThreadLocal.clear();
+			
 			if(logger.isDebugEnabled())
 				logger.debug("Authenticating '" + authentication.getName() + "' - " +
 					((System.nanoTime() - begin)/1000000.0) + " ms");
@@ -563,7 +571,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 				if(logger.isDebugEnabled())	
 					logger.debug("External authentication failed: " + e.toString());
 				exc = e;
-				if(authenticateLdapMatchingUsersUsingLdapOnly && (e instanceof BadCredentialsException) && !(e instanceof UsernameNotFoundException)) 
+				if((authenticateLdapMatchingUsersUsingLdapOnly && (e instanceof BadCredentialsException) && !(e instanceof UsernameNotFoundException))
+						|| (e instanceof AccountStatusException))
 					mustSkipLocalAuthentication = true;
 			}
 		}

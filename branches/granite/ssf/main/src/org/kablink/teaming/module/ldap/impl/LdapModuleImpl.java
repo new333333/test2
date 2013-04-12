@@ -957,6 +957,103 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}// end for()
     }// end syncGuidAttributeForAllUsersAndGroups()
     
+    @Override
+    public String readLdapGuidFromDirectory(String userName, Long zoneId, LdapConnectionConfig config) {
+		String ldapGuidAttribute;
+		
+		// Does this ldap configuration have an ldap guid attribute defined?
+		ldapGuidAttribute = config.getLdapGuidAttribute();
+		if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
+		{
+			// Yes
+			LdapContext ctx;
+
+			try
+			{
+				ctx = getUserContext( zoneId, config);
+			}
+			catch (NamingException ex)
+			{
+				return null;
+			}
+			
+			for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches())
+			{
+				try
+				{
+					Attributes lAttrs;
+					int scope;
+					SearchControls sch;
+					String search;
+					String filter;
+					NamingEnumeration ctxSearch;
+					Binding bd;
+					String ldapGuid;
+					String userIdAttributeName[] = {config.getUserIdAttribute()};
+					String attributesToRead[] = {ldapGuidAttribute};
+
+					scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
+					sch = new SearchControls(scope, 1, 0, userIdAttributeName, false, false);
+		
+					search = "(" + config.getUserIdAttribute() + "=" + userName + ")";
+					filter = searchInfo.getFilterWithoutCRLF();
+					if(!Validator.isNull(filter))
+					{
+						search = "(&"+search+filter+")";
+					}
+					
+					ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
+					if (!ctxSearch.hasMore() )
+					{
+						continue;
+					}
+					
+					bd = (Binding)ctxSearch.next();
+
+					// Read the ldap guid from the directory.
+					lAttrs = ctx.getAttributes( bd.getNameInNamespace(), attributesToRead );
+					
+					// Get the guid from what we read from the directory.
+					ldapGuid = getLdapGuid( lAttrs, ldapGuidAttribute );
+
+					if ( ctx != null )
+					{
+						try
+						{
+							ctx.close();
+						}
+						catch ( NamingException ex )
+						{
+							// Nothing to do
+						}
+					}
+
+					return ldapGuid;
+				}
+				catch (NamingException ex)
+				{
+					// Nothing to do.
+				}
+			}// end for()
+
+			if ( ctx != null )
+			{
+				try
+				{
+					ctx.close();
+				}
+				catch ( NamingException ex )
+				{
+					// Nothing to do
+				}
+			}
+			
+			return null;
+		}
+		else {
+			return null;
+		}
+    }
     
     /**
      * If the ldap configuration has the name of the ldap attribute that holds the guid then
@@ -964,7 +1061,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * @param userName
      * @return
      */
-    public String readLdapGuidFromDirectory( String userName, Long zoneId )
+    @Override
+	public String readLdapGuidFromDirectory( String userName, Long zoneId )
     {
 		LdapSchedule schedule;
 		String zoneName;
@@ -974,103 +1072,17 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		zoneName = zoneInfo.getZoneName();
 		
 		schedule = new LdapSchedule( getSyncObject( zoneName ).getScheduleInfo( zoneId ) );
+		String result;
 		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs( zoneId ))
 		{
-			String ldapGuidAttribute;
-			
-			// Does this ldap configuration have an ldap guid attribute defined?
-			ldapGuidAttribute = config.getLdapGuidAttribute();
-			if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
-			{
-				// Yes
-				LdapContext ctx;
-
-				try
-				{
-					ctx = getUserContext( zoneId, config);
-				}
-				catch (NamingException ex)
-				{
-					continue;
-				}
-				
-				for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches())
-				{
-					try
-					{
-						Attributes lAttrs;
-						int scope;
-						SearchControls sch;
-						String search;
-						String filter;
-						NamingEnumeration ctxSearch;
-						Binding bd;
-						String ldapGuid;
-						String userIdAttributeName[] = {config.getUserIdAttribute()};
-						String attributesToRead[] = {ldapGuidAttribute};
-
-						scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
-						sch = new SearchControls(scope, 1, 0, userIdAttributeName, false, false);
-			
-						search = "(" + config.getUserIdAttribute() + "=" + userName + ")";
-						filter = searchInfo.getFilterWithoutCRLF();
-						if(!Validator.isNull(filter))
-						{
-							search = "(&"+search+filter+")";
-						}
-						
-						ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
-						if (!ctxSearch.hasMore() )
-						{
-							continue;
-						}
-						
-						bd = (Binding)ctxSearch.next();
-
-						// Read the ldap guid from the directory.
-						lAttrs = ctx.getAttributes( bd.getNameInNamespace(), attributesToRead );
-						
-						// Get the guid from what we read from the directory.
-						ldapGuid = getLdapGuid( lAttrs, ldapGuidAttribute );
-
-						if ( ctx != null )
-						{
-							try
-							{
-								ctx.close();
-							}
-							catch ( NamingException ex )
-							{
-								// Nothing to do
-							}
-						}
-
-						return ldapGuid;
-					}
-					catch (NamingException ex)
-					{
-						// Nothing to do.
-					}
-				}// end for()
-
-				if ( ctx != null )
-				{
-					try
-					{
-						ctx.close();
-					}
-					catch ( NamingException ex )
-					{
-						// Nothing to do
-					}
-				}
-			}
+			result = readLdapGuidFromDirectory(userName, zoneId, config);
+			if(result != null)
+				return result;
 		}// end for()
 		
 		// If we get here we either didn't find the user or we didn't read the ldap guid.
 		return null;
-    }// end readLdapGuidFromDirectory()
-    
+    }// end readLdapGuidFromDirectory()    
     
 	/**
 	 * Update a ssf user with an ldap person.  
