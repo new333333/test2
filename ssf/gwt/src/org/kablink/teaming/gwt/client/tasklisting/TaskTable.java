@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -3014,9 +3014,12 @@ public class TaskTable extends Composite
 		if (ti.isTaskOverdue()) {
 			il.addStyleName("gwtTaskList_task-overdue-color");
 		}
+		boolean parentWithDurationError = TaskListItemHelper.isParentWithDurationError(task);
 		if (tie.getEndIsCalculated() && hasDueDate) {
 			il.addStyleName("gwtTaskList_calculatedDate");
-			il.setTitle(m_messages.taskAltDateCalculated());
+			if (!parentWithDurationError) {
+				il.setTitle(m_messages.taskAltDateCalculated());
+			}
 		}
 		Widget dueDateWidget;
 		if (ti.getCanModify() && ti.isTaskActive()) {
@@ -3031,7 +3034,20 @@ public class TaskTable extends Composite
 		else {
 			dueDateWidget = il;
 		}
-		m_flexTable.setWidget(row, getColumnIndex(Column.DUE_DATE), dueDateWidget);
+		dueDateWidget.addStyleName("marginleft5px");
+		int col = getColumnIndex(Column.DUE_DATE);
+		m_flexTable.setWidget(row, col, dueDateWidget);
+		
+		// Is this a parent task with a calculated due date?
+		if (parentWithDurationError) {
+			// Yes!  Style it accordingly.
+			m_flexTableCF.addStyleName(row, col, "gwtTaskList_parentDurationError");
+			m_flexTableCF.getElement(row, col).setTitle(m_messages.taskAltParentWithDurationError());
+		}
+		else {
+			m_flexTableCF.removeStyleName(row, col, "gwtTaskList_parentDurationError");
+			m_flexTableCF.getElement(row, col).setTitle("");
+		}
 	}
 	
 	/*
@@ -3226,14 +3242,9 @@ public class TaskTable extends Composite
 		}
 		
 		// Add an Anchor for it to the TaskTable.
-		m_flexTable.setWidget(
-			row,
-			getColumnIndex(Column.STATUS),
-			buildOptionColumn(
-				task,
-				m_statusMenu,
-				status,
-				"status-icon"));
+		Widget statusWidget = buildOptionColumn(task, m_statusMenu, status, "status-icon");
+		statusWidget.addStyleName("marginleft5px");
+		m_flexTable.setWidget(row, getColumnIndex(Column.STATUS), statusWidget);
 	}
 	
 	/*
@@ -3873,8 +3884,10 @@ public class TaskTable extends Composite
 						// ...storing their new logical end dates...
 						TaskDate     dueDate = updatedTaskInfo.get(entryId);
 						TaskListItem task = TaskListItemHelper.findTask(m_taskBundle, entryId);
-						TaskInfo     ti = task.getTask();
-						ti.getEvent().setLogicalEnd(dueDate);
+						TaskInfo     ti   = task.getTask();
+						TaskEvent    tie  = ti.getEvent();
+						tie.setLogicalEnd(dueDate);
+						tie.setEndIsCalculated(true);
 						
 						// ...if the task's overdue state changed... 
 						long dueMS = (((null == dueDate) || (!(GwtClientHelper.hasString(dueDate.getDateDisplay())))) ? Long.MAX_VALUE : dueDate.getDate().getTime()); 
