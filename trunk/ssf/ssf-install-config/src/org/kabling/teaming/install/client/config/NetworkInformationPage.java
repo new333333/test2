@@ -185,9 +185,18 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 	@Override
 	public Object getDataFromDlg()
 	{
+
+        int listenPort = listenSpinner.getValueAsInt();
+        int secureListenPort = secureListenSpinner.getValueAsInt();
+
+        if (listenPort == secureListenPort)
+        {
+            setErrorMessage(RBUNDLE.listenPortSecureNotEqual());
+            return null;
+        }
 		// Save the configuration
 		Network network = config.getNetwork();
-		network.setSecureListenPort(secureListenSpinner.getValueAsInt());
+		network.setSecureListenPort(secureListenPort);
 		network.setPortRedirect(portRedirectCheckBox.getValue());
 
 		if (shutDownPortSpinner != null)
@@ -198,7 +207,7 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 		network.setSessionTimeoutMinutes(sessionTimeOutSpinner.getValueAsInt());
 		network.setKeystoreFile(keyStoreFileTextBox.getText());
 
-		network.setListenPort(listenSpinner.getValueAsInt());
+		network.setListenPort(listenPort);
 		network.setListenPortEnabled(httpEnabledCheckBox.getValue());
 		
 		network.setForceSecure(forceSecureCheckBox.getValue());

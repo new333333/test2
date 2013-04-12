@@ -203,9 +203,9 @@ public class ConfigSummaryPage extends Composite implements ConfigModifiedEventH
 		Database db = config.getDatabase();
 
 		// We only need to display the Installed configuration
-		if (db != null && db.getDatabaseConfig("MySQL_Default") != null)
+		if (db != null && db.getDatabaseConfig("Installed") != null)
 		{
-			DatabaseConfig dbConfig = db.getDatabaseConfig("MySQL_Default");
+			DatabaseConfig dbConfig = db.getDatabaseConfig("Installed");
 			int row = 0;
 			{
 				// Host Name

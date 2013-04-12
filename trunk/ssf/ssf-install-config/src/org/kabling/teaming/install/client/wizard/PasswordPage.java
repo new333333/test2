@@ -122,7 +122,7 @@ public class PasswordPage implements IWizardPage<InstallerConfig>
 				// We only need to go through the data in "Installed" configuration
 				for (DatabaseConfig config : configList)
 				{
-					if (config.getId().equals("MySQL_Default"))
+					if (config.getId().equals("Installed"))
 					{
 						userTextBox.setText(config.getResourceUserName());
 					}
@@ -143,7 +143,7 @@ public class PasswordPage implements IWizardPage<InstallerConfig>
 		{
 			for (DatabaseConfig config : configList)
 			{
-				if (config.getId().equals("MySQL_Default"))
+				if (config.getId().equals("Installed"))
 				{
 					config.setResourcePassword(userPwdTextBox.getText());
 					config.setResourceUserName(userTextBox.getText());

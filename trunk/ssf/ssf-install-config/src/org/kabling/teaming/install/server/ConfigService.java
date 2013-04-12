@@ -1154,6 +1154,12 @@ public final class ConfigService
 				LSSerializer serializer = impl.createLSSerializer();
 
 				serializer.write(document, lsOutput);
+				
+//				//TEMP - RAJESH - DELETE
+//				lsOutput.setByteStream(new FileOutputStream("/filrinstall/rajesh.xml"));
+//				serializer = impl.createLSSerializer();
+//
+//				serializer.write(document, lsOutput);
 			}
 			catch (IOException e)
 			{
@@ -1225,6 +1231,8 @@ public final class ConfigService
 
 		if (db.getConfigName() != null)
 		{
+			dbElement.setAttribute("configName", db.getConfigName());
+			logger.debug("Database configName "+db.getConfigName());
 			DatabaseConfig config = null;
 
 			for (DatabaseConfig dbConfig : db.getConfig())
@@ -1237,9 +1245,10 @@ public final class ConfigService
 			}
 
 			NodeList configList = dbElement.getElementsByTagName("Config");
-
+			
 			if (configList != null)
 			{
+				boolean updated = false;
 				for (int i = 0; i < configList.getLength(); i++)
 				{
 					Element configElement = (Element) configList.item(i);
@@ -1262,12 +1271,47 @@ public final class ConfigService
 						resourceElement.setAttribute("url", config.getResourceUrl());
 						resourceElement.setAttribute("for", config.getResourceFor());
 						resourceElement.setAttribute("driverClassName", config.getResourceDriverClassName());
+						
+						updated = true;
 					}
+				}
+				
+				if (!updated)
+				{
+					Element newInstallElement = document.createElement("Config");
+
+					newInstallElement.setAttribute("id", config.getId());
+					newInstallElement.setAttribute("type", getDbType(config.getType()));
+					
+					Element resourceElement = document.createElement("Resource");
+					newInstallElement.appendChild(resourceElement);
+					
+					resourceElement.setAttribute("url", config.getResourceUrl());
+					resourceElement.setAttribute("for", config.getResourceFor());
+					resourceElement.setAttribute("driverClassName", config.getResourceDriverClassName());
+					
+					resourceElement.setAttribute("username", config.getResourceUserName());
+					if (config.getResourcePassword() != null && !config.getResourcePassword().isEmpty())
+						resourceElement.setAttribute("password", config.getResourcePassword());
+					
+					
+					logger.debug("Adding to dbElement");
+					dbElement.appendChild(newInstallElement);
 				}
 			}
 		}
 	}
 
+	private static String getDbType(DatabaseType dbType)
+	{
+		if (dbType.equals(DatabaseType.MYSQL))
+			return "MySql";
+		else if (dbType.equals(DatabaseType.ORACLE))
+			return "Oracle";
+		else if (dbType.equals(DatabaseType.SQLSERVER))
+			return "SQLServer";
+		return "MySql";
+	}
 	private static void saveLuceneConfiguration(InstallerConfig config, Document document)
 	{
 		Lucene lucene = config.getLucene();
@@ -1918,7 +1962,7 @@ public final class ConfigService
 
 		productInfo.setProductVersion(getProductVersion());
 
-		productInfo.setCopyRight("© Copyright 1993-2012 Novell, Inc. All rights reserved.");
+		productInfo.setCopyRight("ï¿½ Copyright 1993-2012 Novell, Inc. All rights reserved.");
 
 		File file = new File("/filrinstall/configured");
 		productInfo.setConfigured(file.exists());
@@ -2097,7 +2141,7 @@ public final class ConfigService
 		{
 
 			// Update the mysql-liquibase.properties
-			DatabaseConfig dbConfig = database.getDatabaseConfig("MySQL_Default");
+			DatabaseConfig dbConfig = database.getDatabaseConfig("Installed");
 
 			String resourceName = "root";
 			String resourcePassword = "root";
@@ -2161,7 +2205,7 @@ public final class ConfigService
 			updateMySqlLiquiBaseProperties(database);
 
 			// Update the mysql-liquibase.properties
-			DatabaseConfig dbConfig = database.getDatabaseConfig("MySQL_Default");
+			DatabaseConfig dbConfig = database.getDatabaseConfig("Installed");
 
 			// Check to see if database exists
 			String resourceName = "root";
@@ -2279,7 +2323,7 @@ public final class ConfigService
 
 		String hostName = getHostName();
 
-		DatabaseConfig config = database.getDatabaseConfig("MySQL_Default");
+		DatabaseConfig config = database.getDatabaseConfig("Installed");
 
 		StringBuilder commandToRun = new StringBuilder();
 		commandToRun.append("mysql -h " + config.getHostNameFromUrl());
@@ -2722,7 +2766,7 @@ public final class ConfigService
 
 	public static void setupLocalMySqlUserPassword(Database db)
 	{
-		DatabaseConfig config = db.getDatabaseConfig("MySQL_Default");
+		DatabaseConfig config = db.getDatabaseConfig("Installed");
 		ShellCommandInfo info = executeCommand("mysqladmin -uroot -proot password '" + config.getResourcePassword() + "'", false);
 
 		logger.debug("mysqladmin setting up admin password exit Value" + info.getExitValue());

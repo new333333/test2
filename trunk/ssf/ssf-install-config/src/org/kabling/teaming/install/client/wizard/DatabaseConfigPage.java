@@ -11,6 +11,7 @@ import org.kabling.teaming.install.shared.DatabaseConfig.DatabaseType;
 import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -212,6 +213,11 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 	public void initUIWithData()
 	{
 		Database db = config.getDatabase();
+		DatabaseConfig installConfig = db.getDatabaseConfig("Installed");
+		
+		if (installConfig == null)
+			addInstalledConfigFromMySqlDefault();
+		
 		if (db != null)
 		{
 			List<DatabaseConfig> configList = db.getConfig();
@@ -221,7 +227,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 				// We only need to go through the data in "Installed" configuration
 				for (DatabaseConfig config : configList)
 				{
-					if (config.getId().equals("MySQL_Default"))
+					if (config.getId().equals("Installed"))
 					{
 						//userTextBox.setText(config.getResourceUserName());
 						//For filr large deployment default to filr, don't read from installer.xml
@@ -247,6 +253,30 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 		}
 	}
 
+	private void addInstalledConfigFromMySqlDefault()
+	{
+		Database db = config.getDatabase();
+		DatabaseConfig installedConfig = db.getDatabaseConfig("Installed");
+		
+		if (installedConfig == null)
+		{
+			DatabaseConfig mysqlConfig = db.getDatabaseConfig("MySQL_Default");
+			installedConfig = new DatabaseConfig();
+			
+			installedConfig.setId("Installed");
+			installedConfig.setResourceDatabase(mysqlConfig.getResourceDatabase());
+			installedConfig.setResourceDriverClassName(mysqlConfig.getResourceDriverClassName());
+			installedConfig.setResourceFor(mysqlConfig.getResourceFor());
+			installedConfig.setResourceHost(mysqlConfig.getResourceHost());
+			installedConfig.setResourceUrl(mysqlConfig.getResourceUrl());
+			installedConfig.setResourceUserName(mysqlConfig.getResourceUserName());
+			installedConfig.setType(DatabaseType.MYSQL);
+			db.getConfig().add(installedConfig);
+			
+			//Set the default to be Installed in the Database
+			db.setConfigName("Installed");
+		}
+	}
 	@Override
 	public void save()
 	{
@@ -256,12 +286,13 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 		if (db == null)
 		{
 			db = new Database();
-
+			db.setConfigName("Installed");
+			
 			List<DatabaseConfig> configList = db.getConfig();
 			DatabaseConfig config = new DatabaseConfig();
 			configList.add(config);
-
-			config.setId("MySQL_Default");
+			
+			config.setId("Installed");
 			config.setResourcePassword(userPwdTextBox.getText());
 			config.setResourceUserName(userTextBox.getText());
 			config.setResourceDatabase(dbNameTextBox.getText());
@@ -281,7 +312,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 			{
 				for (DatabaseConfig config : configList)
 				{
-					if (config.getId().equals("MySQL_Default"))
+					if (config.getId().equals("Installed"))
 					{
 						config.setResourcePassword(userPwdTextBox.getText());
 						config.setResourceUserName(userTextBox.getText());

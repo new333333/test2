@@ -179,7 +179,24 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 		if (!config.isUpdateMode() && useDefaultsRB.getValue())
 		{
 			Database db = config.getDatabase();
-			DatabaseConfig dbConfig = db.getDatabaseConfig("MySQL_Default");
+			DatabaseConfig dbConfig = db.getDatabaseConfig("Installed");
+			if (dbConfig == null)
+			{
+				DatabaseConfig mysqlConfig = db.getDatabaseConfig("MySQL_Default");
+				dbConfig = new DatabaseConfig();
+				
+				dbConfig.setId("Installed");
+				dbConfig.setResourceDatabase(mysqlConfig.getResourceDatabase());
+				dbConfig.setResourceDriverClassName(mysqlConfig.getResourceDriverClassName());
+				dbConfig.setResourceFor(mysqlConfig.getResourceFor());
+				dbConfig.setResourceHost(mysqlConfig.getResourceHost());
+				dbConfig.setResourceUrl(mysqlConfig.getResourceUrl());
+				dbConfig.setResourceUserName(mysqlConfig.getResourceUserName());
+				db.getConfig().add(dbConfig);
+				
+				//Set the default to be Installed in the Database
+				db.setConfigName("Installed");
+			}
 			dbConfig.setResourcePassword("root");
 		}
 	}
