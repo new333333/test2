@@ -3124,6 +3124,10 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 {
 	font-style: italic;
 }
+.gwtTaskList_parentDurationError
+{
+	border: 1px solid red !important;
+}
 .gwtTaskList_loading
 {
 	margin-top: 5px;
