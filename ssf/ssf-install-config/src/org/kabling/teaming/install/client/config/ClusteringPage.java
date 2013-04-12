@@ -174,7 +174,7 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 		{
 			initialClusteringState = clustered.isEnabled();
 			initialJvmWorkerName = clustered.getJvmRoute();
-			
+			jvmRouteTextBox.setText(initialJvmWorkerName);
 			enableClusteredCheckBox.setValue(clustered.isEnabled());
 
 			if (clustered.getCachingProvider().equals("ehcache"))

@@ -137,7 +137,7 @@ public class LocalePage implements IWizardPage<InstallerConfig>
 	}
 
 	@Override
-	public IWizardPage<InstallerConfig> getNextPage()
+	public IWizardPage<InstallerConfig> getNextPage()				
 	{
 		return null;
 	}
@@ -145,6 +145,6 @@ public class LocalePage implements IWizardPage<InstallerConfig>
 	@Override
 	public FocusWidget getWidgetToFocus()
 	{
-		return null;
+		return wizard.getFinishButton();
 	}
 }

@@ -12,6 +12,7 @@ import org.kabling.teaming.install.shared.InstallerConfig;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -164,7 +165,7 @@ public class LocalDatabaseConfigPage implements IWizardPage<InstallerConfig>
 			DatabaseConfig config = new DatabaseConfig();
 			configList.add(config);
 
-			config.setId("MySQL_Default");
+			config.setId("Installed");
 			config.setResourcePassword(userPwdTextBox.getText());
 			config.setResourceUserName(DB_USER);
 			config.setResourceDatabase(DB_NAME);
@@ -181,11 +182,15 @@ public class LocalDatabaseConfigPage implements IWizardPage<InstallerConfig>
 
 			if (configList != null)
 			{
+				boolean found = false;
 				for (DatabaseConfig config : configList)
 				{
-					if (config.getId().equals("MySQL_Default"))
+					
+					if (config.getId().equals("Installed"))
 					{
+						found = true;
 						config.setResourcePassword(userPwdTextBox.getText());
+						config.setType(DatabaseType.MYSQL);
 						config.setResourceUserName(DB_USER);
 						config.setResourceHost("localhost");
 						config.setResourceDatabase(DB_NAME);
@@ -193,6 +198,21 @@ public class LocalDatabaseConfigPage implements IWizardPage<InstallerConfig>
 						break;
 					}
 				}
+				
+				if (!found)
+				{
+					DatabaseConfig newDbConfig = new DatabaseConfig();
+					newDbConfig.setId("Installed");
+					newDbConfig.setResourcePassword(userPwdTextBox.getText());
+					newDbConfig.setResourceUserName(DB_USER);
+					newDbConfig.setResourceHost("localhost");
+					newDbConfig.setResourceDatabase(DB_NAME);
+					newDbConfig.setResourceUrl("jdbc:mysql://localhost:3306/" + DB_NAME + "?useUnicode=true&amp;characterEncoding=UTF-8");
+				
+					
+					configList.add(newDbConfig);
+				}
+				
 			}
 		}
 
