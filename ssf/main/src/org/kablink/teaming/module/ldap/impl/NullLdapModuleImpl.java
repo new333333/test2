@@ -36,6 +36,7 @@ import java.util.HashSet;
 
 import javax.naming.NamingException;
 
+import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
@@ -86,6 +87,12 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 	
 	public Integer testGroupMembershipCriteria( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
 	{
+		return null;
+	}
+
+	@Override
+	public String readLdapGuidFromDirectory(String userName, Long zoneId,
+			LdapConnectionConfig config) {
 		return null;
 	}
 }
