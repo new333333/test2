@@ -1154,12 +1154,12 @@ public final class ConfigService
 				LSSerializer serializer = impl.createLSSerializer();
 
 				serializer.write(document, lsOutput);
-				
-//				//TEMP - RAJESH - DELETE
-//				lsOutput.setByteStream(new FileOutputStream("/filrinstall/rajesh.xml"));
-//				serializer = impl.createLSSerializer();
-//
-//				serializer.write(document, lsOutput);
+
+				// //TEMP - RAJESH - DELETE
+				// lsOutput.setByteStream(new FileOutputStream("/filrinstall/rajesh.xml"));
+				// serializer = impl.createLSSerializer();
+				//
+				// serializer.write(document, lsOutput);
 			}
 			catch (IOException e)
 			{
@@ -1232,7 +1232,7 @@ public final class ConfigService
 		if (db.getConfigName() != null)
 		{
 			dbElement.setAttribute("configName", db.getConfigName());
-			logger.debug("Database configName "+db.getConfigName());
+			logger.debug("Database configName " + db.getConfigName());
 			DatabaseConfig config = null;
 
 			for (DatabaseConfig dbConfig : db.getConfig())
@@ -1245,7 +1245,7 @@ public final class ConfigService
 			}
 
 			NodeList configList = dbElement.getElementsByTagName("Config");
-			
+
 			if (configList != null)
 			{
 				boolean updated = false;
@@ -1271,30 +1271,29 @@ public final class ConfigService
 						resourceElement.setAttribute("url", config.getResourceUrl());
 						resourceElement.setAttribute("for", config.getResourceFor());
 						resourceElement.setAttribute("driverClassName", config.getResourceDriverClassName());
-						
+
 						updated = true;
 					}
 				}
-				
+
 				if (!updated)
 				{
 					Element newInstallElement = document.createElement("Config");
 
 					newInstallElement.setAttribute("id", config.getId());
 					newInstallElement.setAttribute("type", getDbType(config.getType()));
-					
+
 					Element resourceElement = document.createElement("Resource");
 					newInstallElement.appendChild(resourceElement);
-					
+
 					resourceElement.setAttribute("url", config.getResourceUrl());
 					resourceElement.setAttribute("for", config.getResourceFor());
 					resourceElement.setAttribute("driverClassName", config.getResourceDriverClassName());
-					
+
 					resourceElement.setAttribute("username", config.getResourceUserName());
 					if (config.getResourcePassword() != null && !config.getResourcePassword().isEmpty())
 						resourceElement.setAttribute("password", config.getResourcePassword());
-					
-					
+
 					logger.debug("Adding to dbElement");
 					dbElement.appendChild(newInstallElement);
 				}
@@ -1312,6 +1311,7 @@ public final class ConfigService
 			return "SQLServer";
 		return "MySql";
 	}
+
 	private static void saveLuceneConfiguration(InstallerConfig config, Document document)
 	{
 		Lucene lucene = config.getLucene();
@@ -1644,7 +1644,7 @@ public final class ConfigService
 		return openFireWallPort(new String[] { portToClose });
 	}
 
-	private static boolean openFireWallPort(String[] portsToOpen)
+	public static boolean openFireWallPort(String[] portsToOpen)
 	{
 		File file = new File("/etc/sysconfig/SuSEfirewall2");
 
@@ -1705,7 +1705,7 @@ public final class ConfigService
 		return null;
 	}
 
-	private static void updateMemcachedFile()
+	public static void updateMemcachedFile()
 	{
 		File file = new File("/etc/sysconfig/memcached");
 
@@ -2343,81 +2343,89 @@ public final class ConfigService
 		logger.debug("Update SS_ZoneConfig update url exitValue " + exitValue);
 	}
 
+    public static void reconfigure(boolean restartServer, boolean backupConfiguration)
+    {
+        // Stop the server
+        stopFilrServer();
+
+        // Do the reconfigure which takes the changes from installer.xml and
+        // reconfigures
+        if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
+        {
+            // Run the reconfigure
+            ShellCommandInfo info = executeCommand("cd /filrinstall;sudo ./installer-filr.linux --silent --reconfigure", true);
+
+            if (info.getExitValue() != 0)
+            {
+                if (info.getOutput() != null)
+                {
+                    for (String debugStr : info.getOutput())
+                    {
+                        logger.info(debugStr);
+                    }
+                }
+                logger.debug("Error reconfiguring installer in silent mode,Error code " + info.getExitValue());
+                throw new ConfigurationSaveException();
+            }
+
+            // Replace Novell Vibe with Novell Filr on ssf-ext.properties
+            info = executeCommand(
+                    "sudo sed -i \"s/Novell Vibe/Novell Filr/g\" /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties",
+                    true);
+            if (info.getExitValue() != 0)
+            {
+                logger.debug("Error setting up Novell Filr string on ssf-ext.properties" + info.getExitValue());
+                throw new ConfigurationSaveException();
+            }
+
+            // Setup luceneindex.root.dir on ssf-ext.properties
+            info = executeCommand(
+                    "sudo sed -i  -e 's|data.luceneindex.root.dir=/vastorage/filr|data.luceneindex.root.dir=/vastorage/search|' /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties",
+                    true);
+            if (info.getExitValue() != 0)
+            {
+                logger.debug("Error setting up data.luceneindex.root.dir=/vastorage/search" + info.getExitValue());
+                throw new ConfigurationSaveException();
+            }
+        }
+
+        // Delete the backup copy
+        File srcFile = new File("/filrinstall/installer.xml.orig");
+        if (srcFile.exists())
+        {
+            boolean deleteOrigStatus = srcFile.delete();
+            logger.debug("Deleted Backup /filrinstall/installer.xml.orig " + deleteOrigStatus);
+        }
+        else
+        {
+            logger.debug("Does not exists for deletion /filrinstall/installer.xml.orig ");
+        }
+
+        // Save filrconfig locally to /vastorage/conf/vaconfig.zip
+        logger.debug("Back up configuration - turned on"+backupConfiguration);
+        if (backupConfiguration)
+        {
+            saveFilrConfigLocally();
+        }
+
+        // Delete /etc/init.d/teaming file if it exists
+        File file = new File("/etc/init.d/teaming");
+        if (file.exists())
+        {
+            logger.debug("Deleting /etc/init.d/teaming " + file.delete());
+        }
+
+        if (restartServer)
+            startFilrServer();
+    }
+
 	public static void reconfigure(boolean restartServer) throws ConfigurationSaveException
 	{
-		// Stop the server
-		stopFilrServer();
-
-		// Do the reconfigure which takes the changes from installer.xml and
-		// reconfigures
-		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
-		{
-			// Run the reconfigure
-			ShellCommandInfo info = executeCommand("cd /filrinstall;sudo ./installer-filr.linux --silent --reconfigure", true);
-
-			if (info.getExitValue() != 0)
-			{
-				if (info.getOutput() != null)
-				{
-					for (String debugStr : info.getOutput())
-					{
-						logger.info(debugStr);
-					}
-				}
-				logger.debug("Error reconfiguring installer in silent mode,Error code " + info.getExitValue());
-				throw new ConfigurationSaveException();
-			}
-
-			// Replace Novell Vibe with Novell Filr on ssf-ext.properties
-			info = executeCommand(
-					"sudo sed -i \"s/Novell Vibe/Novell Filr/g\" /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties",
-					true);
-			if (info.getExitValue() != 0)
-			{
-				logger.debug("Error setting up Novell Filr string on ssf-ext.properties" + info.getExitValue());
-				throw new ConfigurationSaveException();
-			}
-
-			// Setup luceneindex.root.dir on ssf-ext.properties
-			info = executeCommand(
-					"sudo sed -i  -e 's|data.luceneindex.root.dir=/vastorage/filr|data.luceneindex.root.dir=/vastorage/search|' /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties",
-					true);
-			if (info.getExitValue() != 0)
-			{
-				logger.debug("Error setting up data.luceneindex.root.dir=/vastorage/search" + info.getExitValue());
-				throw new ConfigurationSaveException();
-			}
-		}
-
-		// Delete the backup copy
-		File srcFile = new File("/filrinstall/installer.xml.orig");
-		if (srcFile.exists())
-		{
-			boolean deleteOrigStatus = srcFile.delete();
-			logger.debug("Deleted Backup /filrinstall/installer.xml.orig " + deleteOrigStatus);
-		}
-		else
-		{
-			logger.debug("Does not exists for deletion /filrinstall/installer.xml.orig ");
-		}
-
-		// Save filrconfig locally to /vastorage/conf/vaconfig.zip
-		saveFilrConfigLocally();
-
-		// Delete /etc/init.d/teaming file if it exists
-		File file = new File("/etc/init.d/teaming");
-		if (file.exists())
-		{
-			logger.debug("Deleting /etc/init.d/teaming " + file.delete());
-		}
-
-		if (restartServer)
-			startFilrServer();
+       reconfigure(restartServer,true);
 	}
 
 	private static void saveFilrConfigLocally()
 	{
-
 		executeCommand("sudo python /opt/novell/base_config/zipVAConfig.py", true);
 	}
 
@@ -2568,7 +2576,7 @@ public final class ConfigService
 			else
 				closeFireWallPort(String.valueOf(network.getListenPort()));
 		}
-		
+
 		// Restart the firewall after the changes
 		executeCommand("sudo SuSEfirewall2 stop", true);
 		executeCommand("sudo SuSEfirewall2 start", true);
@@ -2733,7 +2741,32 @@ public final class ConfigService
 		}
 	}
 
-	private static void disableMySqlAndLucene()
+	public static boolean isLargeDeployment()
+	{
+		// Also create configurationDetails.properties file to store if this is small or large deployment
+		File configurationDetailsFile = new File("/filrinstall/configurationDetails.properties");
+
+		if (!configurationDetailsFile.exists())
+			return false;
+
+		// During upgrade process, this file may exists, in that case, we don't want to overwrite
+
+		try
+		{
+			Properties prop = new Properties();
+			prop.load(new FileInputStream(configurationDetailsFile));
+			String type = prop.getProperty("type");
+			if (type.equals("large"))
+				return true;
+		}
+		catch (IOException e)
+		{
+
+		}
+		return false;
+	}
+
+	public static void disableMySqlAndLucene()
 	{
 		// Disable filrsearch and mysql for large deployment
 		executeCommand("sudo mv /etc/opt/novell/ganglia/monitor/conf.d/filrsearch.pyconf "

@@ -17,11 +17,7 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.kabling.teaming.install.shared.LicenseInformation;
-import org.kabling.teaming.install.shared.ProductInfo;
-import org.kabling.teaming.install.shared.ShellCommandInfo;
-import org.kabling.teaming.install.shared.UpdateStatus;
-
+import org.kabling.teaming.install.shared.*;
 
 public final class UpdateService
 {
@@ -37,7 +33,7 @@ public final class UpdateService
 		UpdateStatus updateStatus = new UpdateStatus();
 		// First, extract to temp directory
 		File tempDir = createTempDir();
-		
+
 		try
 		{
 			zipStream = new ZipInputStream(new FileInputStream("/vastorage/conf/vaconfig.zip"));
@@ -96,7 +92,7 @@ public final class UpdateService
 				{
 					updateStatus.setValidDataDrive(validDataDriveFound);
 					updateStatus.setValidHostName(validHostNameFound);
-					
+
 					deleteTempDir(tempDir.getAbsolutePath());
 					return updateStatus;
 				}
@@ -156,7 +152,7 @@ public final class UpdateService
 				return updateStatus;
 			}
 
-			ConfigService.reconfigure(false);
+			ConfigService.reconfigure(false,false);
 
 			// Copy files (we have already copied installer.xml and mysql-liquibase.properties)
 			extractZipContent(overrideLicense);
@@ -186,13 +182,41 @@ public final class UpdateService
 				updateStatus.setMessage("Error starting gmontd service");
 				updateStatus.setReturnCode(result);
 				updateStatus.setSuccess(false);
-				
+
 				deleteTempDir(tempDir.getAbsolutePath());
 				return updateStatus;
 			}
 
-			// Delete temp files
-			deleteTempDir(tempDir.getAbsolutePath());
+			// If clustering is currently enabled, we need to start the memcached service
+			InstallerConfig config = ConfigService.getConfiguration();
+            logger.debug("Clustering enabled during upgrade "+config.getClustered().isEnabled());
+			if (config != null && config.getClustered().isEnabled())
+			{
+                // If memcache is enabled, enable port 11211
+                if (config.getClustered().getCachingProvider().equals("memcached"))
+                {
+                    ConfigService.openFireWallPort(new String[] { "11211", "4446" });
+                }
+
+                //Update memcached properties file
+                ConfigService.updateMemcachedFile();
+
+                // Restart the firewall after the changes
+                ConfigService.executeCommand("sudo SuSEfirewall2 stop", true);
+                ConfigService.executeCommand("sudo SuSEfirewall2 start", true);
+
+                logger.debug("Starting memcached service");
+				ConfigService.executeCommand("chkconfig memcached on", true);
+				ConfigService.executeCommand("rcmemcached start", true);
+
+
+			}
+
+
+
+            // Delete temp files
+            deleteTempDir(tempDir.getAbsolutePath());
+
 			ConfigService.startFilrServer();
 
 			updateStatus.setMessage("success");
@@ -217,9 +241,9 @@ public final class UpdateService
 
 	private static void deleteTempDir(String path)
 	{
-		ConfigService.executeCommand("sudo rm -rf "+path, true);
+		ConfigService.executeCommand("sudo rm -rf " + path, true);
 	}
-	
+
 	private static boolean isVAReleaseMatch(String newFilePath)
 	{
 		File oldFile = new File("/vastorage/conf/Novell-VA-release");
@@ -258,17 +282,17 @@ public final class UpdateService
 
 		String hostName = null;
 		File file = new File(newFilePath);
-		
+
 		if (file.exists())
 		{
-			logger.info("isHostNameMatch() File Path"+ newFilePath);
+			logger.info("isHostNameMatch() File Path" + newFilePath);
 			Properties prop = new Properties();
 			try
 			{
 				prop.load(new FileInputStream(file));
 				hostName = prop.getProperty("CONFIG_VAINIT_HOSTNAME");
 				if (hostName.startsWith("\""))
-					hostName = hostName.substring(1,hostName.length()-1);
+					hostName = hostName.substring(1, hostName.length() - 1);
 			}
 			catch (Exception e)
 			{
@@ -342,7 +366,8 @@ public final class UpdateService
 			String entryName = entry.getName();
 
 			// These files have already been copied
-			if (entryName.endsWith("filrinstall/installer.xml") || entryName.equals("filrinstall/db/mysql-liquibase.properties") || entryName.endsWith("Novell-VA-release") || entryName.endsWith("NvlVAinit"))
+			if (entryName.endsWith("filrinstall/installer.xml") || entryName.equals("filrinstall/db/mysql-liquibase.properties")
+					|| entryName.endsWith("Novell-VA-release") || entryName.endsWith("NvlVAinit"))
 			{
 				continue;
 			}
@@ -395,7 +420,7 @@ public final class UpdateService
 						outStream.write(buf, 0, bytesRead);
 					}
 					outStream.close();
-					
+
 					Properties prop = new Properties();
 					prop.load(new ByteArrayInputStream(outStream.toByteArray()));
 					productInfo.setProductVersion(prop.getProperty("version"));
