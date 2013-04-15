@@ -1726,7 +1726,7 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 			}
 		}
 		if(folders != null && folders.size() > 0)
-			logger.info("Folders cleaned up: success=" + success + ", fail=" + fail);
+			logger.debug("Folders cleaned up: success=" + success + ", fail=" + fail);
 	}
 
 
