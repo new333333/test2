@@ -207,9 +207,18 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 		network.setSessionTimeoutMinutes(sessionTimeOutSpinner.getValueAsInt());
 		network.setKeystoreFile(keyStoreFileTextBox.getText());
 
-		network.setListenPort(listenPort);
+		network.setListenPort(httpEnabledCheckBox.getValue() ? listenPort : 0);
 		network.setListenPortEnabled(httpEnabledCheckBox.getValue());
-		
+        network.setListenPortDisabled(listenPort);
+
+        //Override this to be 0 if http is not enabled
+        if (!httpEnabledCheckBox.getValue())
+        {
+            if (network.getPort() != 0)
+                network.setPortDisabled(network.getPort());
+
+		    network.setPort(0);
+        }
 		network.setForceSecure(forceSecureCheckBox.getValue());
 
 		return config;
@@ -249,6 +258,10 @@ public class NetworkInformationPage extends ConfigPageDlgBox implements ClickHan
 			{
 				listenSpinner.setValue(network.getListenPort());
 			}
+            else if (network.getListenPortDisabled() != 0)
+            {
+                listenSpinner.setValue(network.getListenPortDisabled());
+            }
 			
 			if (network.getListenPort() == 0 || !network.isListenPortEnabled())
 			{
