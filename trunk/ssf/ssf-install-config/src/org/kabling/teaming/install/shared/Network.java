@@ -46,7 +46,8 @@ public class Network implements Serializable
 	private boolean portRedirect;
 	private boolean forceSecure;
 	private boolean listenPortEnabled;
-	private boolean portEnabled;
+	private int listenPortDisabled;
+	private int portDisabled;
 
 	public Network()
 	{
@@ -142,11 +143,13 @@ public class Network implements Serializable
 		this.webService = webService;
 	}
 
-	public int getSessionTimeoutMinutes() {
+	public int getSessionTimeoutMinutes()
+	{
 		return sessionTimeoutMinutes;
 	}
 
-	public void setSessionTimeoutMinutes(int sessionTimeoutMinutes) {
+	public void setSessionTimeoutMinutes(int sessionTimeoutMinutes)
+	{
 		this.sessionTimeoutMinutes = sessionTimeoutMinutes;
 	}
 
@@ -180,13 +183,23 @@ public class Network implements Serializable
 		this.listenPortEnabled = listenPortEnabled;
 	}
 
-	public boolean isPortEnabled()
+	public int getListenPortDisabled()
 	{
-		return portEnabled;
+		return listenPortDisabled;
 	}
 
-	public void setPortEnabled(boolean portEnabled)
+	public void setListenPortDisabled(int listenPortDisabled)
 	{
-		this.portEnabled = portEnabled;
+		this.listenPortDisabled = listenPortDisabled;
+	}
+
+	public int getPortDisabled()
+	{
+		return portDisabled;
+	}
+
+	public void setPortDisabled(int portDisabled)
+	{
+		this.portDisabled = portDisabled;
 	}
 }

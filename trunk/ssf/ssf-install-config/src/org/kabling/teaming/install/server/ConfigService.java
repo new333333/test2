@@ -291,8 +291,8 @@ public final class ConfigService
 			network.setPortRedirect(getBooleanValue(hostNode.getAttribute("portRedirect")));
 			network.setForceSecure(getBooleanValue(hostNode.getAttribute("forceSecure")));
 			network.setListenPortEnabled(getBooleanValue(hostNode.getAttribute("listenPortEnabled")));
-			network.setPortEnabled(getBooleanValue(hostNode.getAttribute("portEnabled")));
-
+            network.setListenPortDisabled(getIntegerValue(hostNode.getAttribute("listenPortDisabled")));
+            network.setPortDisabled(getIntegerValue(hostNode.getAttribute("portDisabled")));
 		}
 
 		WebService webService = new WebService();
@@ -1447,7 +1447,8 @@ public final class ConfigService
 			hostElement.setAttribute("portRedirect", String.valueOf(network.isPortRedirect()));
 			hostElement.setAttribute("forceSecure", String.valueOf(network.isForceSecure()));
 			hostElement.setAttribute("listenPortEnabled", String.valueOf(network.isListenPortEnabled()));
-			hostElement.setAttribute("portEnabled", String.valueOf(network.isPortEnabled()));
+            hostElement.setAttribute("listenPortDisabled", String.valueOf(network.getListenPortDisabled()));
+            hostElement.setAttribute("portDisabled", String.valueOf(network.getPortDisabled()));
 		}
 	}
 
@@ -2545,7 +2546,7 @@ public final class ConfigService
 				openFireWallPort(String.valueOf(network.getListenPort()));
 			else
 			{
-				closeFireWallPort(String.valueOf(network.getListenPort()));
+				closeFireWallPort(String.valueOf(network.getListenPortDisabled()));
 			}
 		}
 
@@ -2561,7 +2562,7 @@ public final class ConfigService
 			if (network.isListenPortEnabled())
 				openFireWallPort(String.valueOf(network.getListenPort()));
 			else
-				closeFireWallPort(String.valueOf(network.getListenPort()));
+				closeFireWallPort(String.valueOf(network.getListenPortDisabled()));
 		}
 		else
 		{
@@ -2574,7 +2575,7 @@ public final class ConfigService
 			if (network.isListenPortEnabled())
 				openFireWallPort(String.valueOf(network.getListenPort()));
 			else
-				closeFireWallPort(String.valueOf(network.getListenPort()));
+				closeFireWallPort(String.valueOf(network.getListenPortDisabled()));
 		}
 
 		// Restart the firewall after the changes

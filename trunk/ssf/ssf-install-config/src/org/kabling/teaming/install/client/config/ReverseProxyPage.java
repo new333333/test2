@@ -36,7 +36,6 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 	private ValueRequiredBasedOnBoolValidator accessGatewayLogOffValidator;
 	private GwValueSpinner httpSpinner;
 	private GwValueSpinner httpSecureSpinner;
-	private CheckBox httpEnabledCheckBox;
 	private VibeTextBox hostTextBox;
 
 	@Override
@@ -48,11 +47,11 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 		Label label = new Label(RBUNDLE.reverseProxyHostNameDesc());
 		label.addStyleName("configPageTitleDescLabel");
 		fPanel.add(label);
-		
+
 		FlexTable portTable = new FlexTable();
 		portTable.addStyleName("reverProxyPortTable");
 		fPanel.add(portTable);
-		
+
 		int row = 0;
 		{
 
@@ -66,7 +65,7 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			portTable.setWidget(row, 1, hostTextBox);
 			portTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
-		
+
 		{
 			row++;
 			// Http Port
@@ -77,11 +76,7 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			FlowPanel httpPortPanel = new FlowPanel();
 			httpSpinner = new GwValueSpinner(8080, 80, 9999, null);
 			httpPortPanel.add(httpSpinner);
-			
-			httpEnabledCheckBox = new CheckBox(RBUNDLE.enabled());
-			httpEnabledCheckBox.addClickHandler(this);
-			httpPortPanel.add(httpEnabledCheckBox);
-			
+
 			portTable.setWidget(row, 1, httpPortPanel);
 			portTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
@@ -97,17 +92,15 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			portTable.setWidget(row, 1, httpSecureSpinner);
 			portTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
-		
+
 		Label nameTitleLabel = new Label(RBUNDLE.reverseProxyIntegration());
 		nameTitleLabel.addStyleName("namContentPanelHeader");
 		fPanel.add(nameTitleLabel);
-		
+
 		FlowPanel namContentPanel = new FlowPanel();
 		namContentPanel.addStyleName("namContentPanel");
 		fPanel.add(namContentPanel);
-		
-		
-		
+
 		HTML titleDescLabel = new HTML(RBUNDLE.reverseProxyPageTitleDesc());
 		titleDescLabel.addStyleName("configPageTitleDescLabel");
 		namContentPanel.add(titleDescLabel);
@@ -164,14 +157,14 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 	public Object getDataFromDlg()
 	{
 
-		//Host Name is required
+		// Host Name is required
 		if (!(hostTextBox.isValid()))
 		{
 			setErrorMessage(RBUNDLE.requiredField());
 			return null;
 		}
-		
-		//If access gateway is enabled, we need to have the address and log off url
+
+		// If access gateway is enabled, we need to have the address and log off url
 		if (enableAccessGatewayCheckBox.getValue())
 		{
 			if (!(accessGatewayAddrTextBox.isValid() & logoutUrlTextBox.isValid()))
@@ -180,8 +173,8 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 				return null;
 			}
 		}
-		
-		//Save the changes
+
+		// Save the changes
 		SSO sso = config.getSso();
 
 		if (sso != null)
@@ -191,15 +184,22 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			sso.setiChainLogoffUrl(logoutUrlTextBox.getText());
 
 		}
-		
-		//Save HTTP Port info
+
+		// Save HTTP Port info
 		Network network = config.getNetwork();
 		network.setSecurePort(httpSecureSpinner.getValueAsInt());
-		network.setPort(httpSpinner.getValueAsInt());
-		
-		
+
+		if (network.isListenPortEnabled())
+		{
+			network.setPort(httpSpinner.getValueAsInt());
+		}
+		else
+		{
+			network.setPortDisabled(httpSpinner.getValueAsInt());
+			network.setPort(0);
+		}
+
 		network.setHost(hostTextBox.getText());
-		network.setPortEnabled(httpEnabledCheckBox.getValue());
 		return config;
 	}
 
@@ -218,26 +218,28 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 		if (sso != null)
 		{
 			enableAccessGatewayCheckBox.setValue(sso.isiChainEnabled());
-			
+
 			accessGatewayAddrValidator.setRequired(enableAccessGatewayCheckBox.getValue());
 			accessGatewayLogOffValidator.setRequired(enableAccessGatewayCheckBox.getValue());
-			
+
 			accessGatewayAddrTextBox.setText(sso.getiChainProxyAddr());
-			
+
 			logoutUrlTextBox.setText(sso.getiChainLogoffUrl());
 		}
-		
+
 		Network network = config.getNetwork();
 
-		//Initialize the UI with the data
+		// Initialize the UI with the data
 		if (network != null)
 		{
-			
-			httpSpinner.setValue(network.getPort());
-			httpSpinner.setEnabled(network.isPortEnabled());
-			httpEnabledCheckBox.setValue(network.isPortEnabled());
+            if (network.getPort() != 0)
+			    httpSpinner.setValue(network.getPort());
+            else if (network.getPortDisabled() != 0)
+                httpSpinner.setValue(network.getPortDisabled());
+
+			httpSpinner.setEnabled(network.isListenPortEnabled());
 			httpSecureSpinner.setValue(network.getSecurePort());
-			
+
 			hostTextBox.setText(network.getHost());
 		}
 	}
@@ -251,29 +253,24 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 		{
 			accessGatewayAddrValidator.setRequired(enableAccessGatewayCheckBox.getValue());
 			accessGatewayLogOffValidator.setRequired(enableAccessGatewayCheckBox.getValue());
-			
+
 			if (!enableAccessGatewayCheckBox.getValue())
 			{
 				accessGatewayAddrTextBox.clearError();
 				logoutUrlTextBox.clearError();
 			}
 		}
-		else if (event.getSource() == httpEnabledCheckBox)
-		{
-			httpSpinner.setEnabled(httpEnabledCheckBox.getValue());
-		}
-
 	}
 
 	@Override
 	public HelpData getHelpData()
 	{
-		HelpData helpData =  new HelpData();
+		HelpData helpData = new HelpData();
 		helpData.setPageId("access_manager");
-		
+
 		return helpData;
 	}
-	
+
 	@Override
 	public boolean editSuccessful(Object obj)
 	{
@@ -281,7 +278,7 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 		sectionsToUpdate.add(LeftNavItemType.NOVELL_ACCESS_MANAGER);
 		sectionsToUpdate.add(LeftNavItemType.NETWORK);
 		// Save the configuration
-		AppUtil.getInstallService().saveConfiguration((InstallerConfig) obj, sectionsToUpdate,saveConfigCallback);
+		AppUtil.getInstallService().saveConfiguration((InstallerConfig) obj, sectionsToUpdate, saveConfigCallback);
 
 		// Return false, we will close if the save is successful
 		return false;
