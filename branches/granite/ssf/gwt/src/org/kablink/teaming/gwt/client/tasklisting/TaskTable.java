@@ -664,8 +664,9 @@ public class TaskTable extends Composite
 	 * @param disposition
 	 * @param newTaskId
 	 * @param selectedTaskId
+	 * @param updateAllDates
 	 */
-	public void applyTaskDisposition(TaskDisposition disposition, Long newTaskId, Long selectedTaskId) {		
+	public void applyTaskDisposition(TaskDisposition disposition, Long newTaskId, Long selectedTaskId, boolean updateAllDates) {		
 		switch (disposition) {
 		default:
 		case APPEND:
@@ -695,10 +696,21 @@ public class TaskTable extends Composite
 			}
 			
 			// ...and refresh the list.
-			List<TaskListItem> newTaskList = new ArrayList<TaskListItem>();
-			newTaskList.add(newTask);
+			List<TaskListItem> newTaskList;
+			if (updateAllDates) {
+				newTaskList = null;
+			}
+			else {
+				newTaskList = new ArrayList<TaskListItem>();
+				newTaskList.add(newTask);
+			}
 			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), newTaskList);
 		}		
+	}
+	
+	public void applyTaskDisposition(TaskDisposition disposition, Long newTaskId, Long selectedTaskId) {
+		// Always use the initial form of the method.
+		applyTaskDisposition(disposition, newTaskId, selectedTaskId, false);	// false -> Don't update all dates, just specific ones.
 	}
 	
 	/**
@@ -3764,7 +3776,8 @@ public class TaskTable extends Composite
 		jsSetSelectedTaskId(    "");
 		
 		// Render the tasks from the bundle.
-		m_renderTime = renderTaskBundle(tb, m_taskListing.getUpdateCalculatedDates());
+		boolean disposeWillUpdate = ((null != newTaskId) && (null != taskDisposition) && (!(TaskDisposition.APPEND.equals(taskDisposition))));
+		m_renderTime = renderTaskBundle(tb, ((!disposeWillUpdate) && m_taskListing.getUpdateCalculatedDates()));
 
 		// Did we just add a new task?
 		if (null != newTaskId) {
@@ -3774,7 +3787,8 @@ public class TaskTable extends Composite
 				applyTaskDisposition(
 					taskDisposition,
 					newTaskId,
-					selectedTaskId);		
+					selectedTaskId,
+					m_taskListing.getUpdateCalculatedDates());		
 			}
 
 			// No, we don't know where the new task should be placed!
