@@ -1211,15 +1211,15 @@ img.ss_sliding_table_column_image {
   background-color: transparent;
 }
 .ss_sliding_table_row0 {
-  height:26px;
+  height:26px !important;
   background-color: ${ss_sliding_table_row0_background_color}; 
-  line-height:18px;
+  line-height:18px !important;
   font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_sliding_table_row1 {
-  height:26px;
+  height:26px !important;
   background-color: ${ss_sliding_table_row1_background_color}; 
-  line-height:18px;
+  line-height:18px !important;
   font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_highlightEntry {
@@ -1332,7 +1332,7 @@ table.ss_mouseOverInfo {
 	border: 2px solid #72AEB6;
 	border-top: 1px solid #72AEB6;
 	}	
-.ss_tableheader_style, th.ss_sliding_table_row0, #findThisTable2 tr.ss_sliding_table_row0 td {
+.ss_tableheader_style, th.ss_sliding_table_row0 {
 	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
 	background-position:bottom;
 	text-decoration: none;
@@ -5019,6 +5019,8 @@ span.ss_infoDivValue {
 	color: #353838;
 }
 .ss_muster_users:hover {
+	font-size: 11px !important;
+	font-weight: normal; 
 	color: #135c8f;
 }
 .ss_tasks_list .ss_muster_users {
