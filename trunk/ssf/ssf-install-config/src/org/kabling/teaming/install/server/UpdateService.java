@@ -75,6 +75,7 @@ public final class UpdateService
 				{
 					if (isVAReleaseMatch(tempDir.getAbsolutePath() + File.separator + "etc/Novell-VA-release"))
 					{
+                        updateStatus.setValidDataDrive(true);
 						validDataDriveFound = true;
 					}
 				}
@@ -84,6 +85,7 @@ public final class UpdateService
 				{
 					if (isHostNameMatch(tempDir.getAbsolutePath() + File.separator + "etc/sysconfig/novell/NvlVAinit"))
 					{
+                        updateStatus.setValidHostName(true);
 						validHostNameFound = true;
 					}
 				}
@@ -118,7 +120,7 @@ public final class UpdateService
 			// We got an error ( 0 for success, 107 for database exists)
 			if (result != 0)
 			{
-				updateStatus.setMessage("Error updating database");
+				updateStatus.setMessage("Error updating database, make sure the database server is running");
 				updateStatus.setReturnCode(result);
 				updateStatus.setSuccess(false);
 
