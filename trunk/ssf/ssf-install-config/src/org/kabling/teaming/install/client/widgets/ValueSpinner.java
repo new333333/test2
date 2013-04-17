@@ -48,12 +48,9 @@
  */
 package org.kabling.teaming.install.client.widgets;
 
+import com.google.gwt.event.dom.client.*;
 import org.kabling.teaming.install.client.images.SpinnerResources;
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -112,6 +109,12 @@ public class ValueSpinner extends HorizontalPanel
 		@Override
 		public void onKeyPress(KeyPressEvent event)
 		{
+            //If user enters tab, lets get out, on blur will do the validation
+            if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_TAB)
+            {
+                return;
+            }
+
 			int index = valueBox.getCursorPos();
 			String previousText = valueBox.getText();
 			String newText;
@@ -149,7 +152,7 @@ public class ValueSpinner extends HorizontalPanel
 		{
 			try
 			{
-				if (spinner.isConstrained())
+    			if (spinner.isConstrained())
 				{
 					double value = parseValue(valueBox.getText());
 					if (value > spinner.getMax() || value < spinner.getMin())
@@ -161,6 +164,10 @@ public class ValueSpinner extends HorizontalPanel
 						else
 							spinner.setValue(spinner.getMin(), true);
 					}
+                    else
+                    {
+                       spinner.setValue(value,true);
+                    }
 				}
 			}
 			catch (Exception e)

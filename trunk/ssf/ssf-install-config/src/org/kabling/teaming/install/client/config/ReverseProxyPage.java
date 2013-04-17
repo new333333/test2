@@ -88,7 +88,7 @@ public class ReverseProxyPage extends ConfigPageDlgBox implements ClickHandler
 			portTable.setWidget(row, 0, keyLabel);
 			portTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
-			httpSecureSpinner = new GwValueSpinner(8443, 80, 9999, null);
+			httpSecureSpinner = new GwValueSpinner(8443, 443, 9999, null);
 			portTable.setWidget(row, 1, httpSecureSpinner);
 			portTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 		}
