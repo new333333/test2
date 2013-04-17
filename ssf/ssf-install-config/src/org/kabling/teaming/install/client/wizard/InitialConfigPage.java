@@ -252,7 +252,6 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 
 				if (!result.isSuccess())
 				{
-					{
 						{
 							StringBuilder builder = new StringBuilder();
 
@@ -268,14 +267,21 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 								builder.append("<br><br>");
 							}
 
-							builder.append(AppUtil.getAppResource().wishToContinueUpgrade());
+                            if (result.getMessage() != null)
+                            {
+                                builder.append(result.getMessage());
+                                builder.append("<br><br>");
+                            }
+                            else
+                            {
+							    builder.append(AppUtil.getAppResource().wishToContinueUpgrade());
+                            }
 
 							WarningDialog dlg = new WarningDialog(builder.toString(),DlgButtonMode.Close);
 							dlg.createAllDlgContent(AppUtil.getAppResource().warning(), null, InitialConfigPage.this,
 									null);
 							dlg.show(true);
 						}
-					}
 				}
 				else
 				{

@@ -149,7 +149,7 @@ public class NewLuceneHANodeDialog extends DlgBox
 			table.setWidget(row, 1, luceneUserNameTextBox);
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 			
-			luceneUserNameTextBox.setText("lucense service");
+			luceneUserNameTextBox.setText("lucene service");
 		}
 		
 		{
