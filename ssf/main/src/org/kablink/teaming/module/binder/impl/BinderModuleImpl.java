@@ -3242,7 +3242,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	protected void deleteBinderPhase2() {
-		if(SPropsUtil.getBoolean("binder.delete.immediate", true)) {
+		if(SPropsUtil.getBoolean("binder.delete.immediate", false)) {
 			// Initiate the phase 2 of the process needed for deleting a binder hierarchy. 
 			// This part is executed asynchronously and we do not check its outcome.
 			getRunAsyncManager().execute(new RunAsyncCallback() {
