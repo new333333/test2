@@ -264,12 +264,12 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     	if (zone.isDeleted()) return;
     	//make sure a delete job is scheduled for the zone
 		FolderDelete job = getDeleteProcessor(zone);
-		String hrsString = (String)SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_HOURS + "']");
-    	int hours = 2;
+		String minutesString = (String)SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_MINUTES + "']");
+    	int minutes = 10;
     	try {
-    		hours = Integer.parseInt(hrsString);
+    		minutes = Integer.parseInt(minutesString);
     	} catch (Exception ex) {};
-    	job.schedule(zone.getId(), hours*60*60);
+    	job.schedule(zone.getId(), minutes*60);
    }
 
 	@Override
