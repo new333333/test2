@@ -1383,12 +1383,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	@Override
 	public void deleteBinder(Long binderId, boolean deleteMirroredSource,
 			Map options, boolean phase1Only) {
+		deleteBinder(binderId, deleteMirroredSource, options, phase1Only, false);
+	}
+	
+	// no transaction
+	@Override
+	public void deleteBinder(Long binderId, boolean deleteMirroredSource,
+			Map options, boolean phase1Only, boolean createDbLogForTopBinderOnly) {
 		Binder binder = loadBinder(binderId);
 		Binder parentBinder = null;
 		if(binder != null)
 			parentBinder = binder.getParentBinder();
 		
-		deleteBinderPhase1(binderId, deleteMirroredSource, options);
+		deleteBinderPhase1(binderId, deleteMirroredSource, options, createDbLogForTopBinderOnly);
 		if (!phase1Only) {
 			deleteBinderPhase2();
 		}
@@ -3166,7 +3173,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	
 	// no transaction
 	protected void deleteBinderPhase1(Long binderId, final boolean deleteMirroredSource,
-			final Map options) {
+			final Map options, final boolean createDbLogForTopBinderOnly) {
 		final Binder top = loadBinder(binderId);
 		if (BinderHelper.isBinderSystemUserWS(top)) {
 			throw new NotSupportedException("errorcode.notsupported.deleteBinder.systemUserWS");
@@ -3215,7 +3222,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					@Override
 					public Object doInTransaction(TransactionStatus status) {
 						loadBinderProcessor(child).deleteBinder(child,
-								doMirrored, options);
+								doMirrored, options, (createDbLogForTopBinderOnly)? true:false);
 						return null;
 					}
 				});
@@ -3234,7 +3241,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				loadBinderProcessor(top).deleteBinder(top,
-						deleteMirroredSource, options);
+						deleteMirroredSource, options, false);
 				return null;
 			}
 		});
@@ -3440,4 +3447,5 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
             luceneSession.close();
         }
 	}
+
 }

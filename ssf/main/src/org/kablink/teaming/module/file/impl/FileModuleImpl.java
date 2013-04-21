@@ -317,6 +317,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	public FilesErrors deleteFiles(final Binder binder, 
 			final DefinableEntity entry, boolean deleteMirroredSource, 
 			FilesErrors errors) {
+		return deleteFiles(binder, entry, deleteMirroredSource, errors, false);
+	}
+	
+	public FilesErrors deleteFiles(final Binder binder, 
+			final DefinableEntity entry, boolean deleteMirroredSource, 
+			FilesErrors errors, boolean skipDbLog) {
 		if(errors == null)
 			errors = new FilesErrors();
 		
@@ -328,7 +334,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
 				try {
 					ChangeLog changeLog = deleteFileInternal(binder, entry, fAtt, 
-							deleteMirroredSource, errors, updateMetadata);
+							deleteMirroredSource, errors, updateMetadata, skipDbLog);
 					if(changeLog != null)
 						changeLogs.add(changeLog);
 				}
@@ -409,7 +415,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			errors = new FilesErrors();
 		
 		try {
-			deleteFileInternal(binder, entry, fAtt, true, errors, true);
+			deleteFileInternal(binder, entry, fAtt, true, errors, true, false);
 		}
 		catch(Exception e) {
 			logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
@@ -1591,13 +1597,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private ChangeLog deleteFileInternal(Binder binder, DefinableEntity entry,
 			FileAttachment fAtt, boolean deleteMirroredSource, 
-			FilesErrors errors, boolean updateMetadata) {
-		return deleteFileInternal2(binder, entry, fAtt, deleteMirroredSource, errors, updateMetadata);
+			FilesErrors errors, boolean updateMetadata, boolean skipDbLog) {
+		return deleteFileInternal2(binder, entry, fAtt, deleteMirroredSource, errors, updateMetadata, skipDbLog);
 	}
 	
 	private ChangeLog deleteFileInternal2(Binder binder, DefinableEntity entry,
 			FileAttachment fAtt, boolean deleteMirroredSource, 
-			FilesErrors errors, boolean updateMetadata) {
+			FilesErrors errors, boolean updateMetadata, boolean skipDbLog) {
 		String relativeFilePath = fAtt.getFileItem().getName();
 		String repositoryName = fAtt.getRepositoryName();
 		
@@ -1698,17 +1704,20 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// No primary file to delete.
 		}
 				
-   		ChangeLog changeLog = new ChangeLog(entry, ChangeLog.FILEDELETE);
-   		Element parent = ChangeLogUtils.buildLog(changeLog, fAtt);
-   		if(archiveURIs.size() > 0) {
-   			Element fileElem = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_FILEARCHIVE);
-   			if(archiveStoreName != null)
-   				fileElem.addAttribute(ObjectKeys.XTAG_FILE_ARCHIVE_STORE_NAME, archiveStoreName);
-   			for(KeyValuePair pair : archiveURIs) {
-   				Element verElem = fileElem.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_VERSIONARCHIVE);
-   				verElem.addAttribute(ObjectKeys.XTAG_FILE_VERSION_NUMBER, pair.getKey()); 
-   				verElem.addAttribute(ObjectKeys.XTAG_FILE_ARCHIVE_URI, pair.getValue());
-   			}
+   		ChangeLog changeLog = null;
+   		if(!skipDbLog) {
+	   		changeLog = new ChangeLog(entry, ChangeLog.FILEDELETE);
+	   		Element parent = ChangeLogUtils.buildLog(changeLog, fAtt);
+	   		if(archiveURIs.size() > 0) {
+	   			Element fileElem = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_FILEARCHIVE);
+	   			if(archiveStoreName != null)
+	   				fileElem.addAttribute(ObjectKeys.XTAG_FILE_ARCHIVE_STORE_NAME, archiveStoreName);
+	   			for(KeyValuePair pair : archiveURIs) {
+	   				Element verElem = fileElem.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_VERSIONARCHIVE);
+	   				verElem.addAttribute(ObjectKeys.XTAG_FILE_VERSION_NUMBER, pair.getKey()); 
+	   				verElem.addAttribute(ObjectKeys.XTAG_FILE_ARCHIVE_URI, pair.getValue());
+	   			}
+	   		}
    		}
    		
    		// If this attachment has a relevance UUID...
@@ -1768,7 +1777,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		// Remove metadata and log change
 	       getTransactionTemplate().execute(new TransactionCallback() {
 	       	public Object doInTransaction(TransactionStatus status) {  
-	       		getCoreDao().save(changeLog);
+	       		if(changeLog != null)
+	       			getCoreDao().save(changeLog);
             	
 				entry.removeAttachment(fAtt);
 				//file names on binders are not registered

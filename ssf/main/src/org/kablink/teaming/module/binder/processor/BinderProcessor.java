@@ -61,7 +61,7 @@ public interface BinderProcessor {
     public Binder addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException, WriteEntryDataException;
     public Binder copyBinder(Binder source, Binder destination, Map options);
-    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) throws AccessControlException;
+    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options, boolean skipDbLog) throws AccessControlException;
   	//return search results
   	public Map getBinders(Binder binder, Map options);
   	public Map getBinders(Binder binder, List binderIds, Map options);

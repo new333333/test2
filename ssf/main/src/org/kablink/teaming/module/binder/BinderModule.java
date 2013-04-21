@@ -232,10 +232,14 @@ public interface BinderModule {
 	 * @throws AccessControlException
 	 */
 	public void deleteBinder(Long binderId, boolean deleteMirroredSource, Map options) 
-		throws AccessControlException;
+			throws AccessControlException;
+		
 	public void deleteBinder(Long binderId, boolean deleteMirroredSource, Map options, boolean phase1Only) 
-		throws AccessControlException;
-	
+			throws AccessControlException;
+		
+	public void deleteBinder(Long binderId, boolean deleteMirroredSource, Map options, boolean phase1Only, boolean createDbLogForTopBinderOnly) 
+			throws AccessControlException;
+		
 	/**
 	 * Performs phase2 of deleting a binder.  Must be called after calling
 	 * deleteBinder(...) one or more times and specifying to only do phase
@@ -842,5 +846,4 @@ public interface BinderModule {
      */
     public boolean testInferredAccessToBinder(Binder binder);
     public boolean testInferredAccessToBinder(User user, Binder binder);
-
 }

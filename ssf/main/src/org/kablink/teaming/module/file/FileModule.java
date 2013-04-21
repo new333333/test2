@@ -104,6 +104,9 @@ public interface FileModule {
 	public FilesErrors deleteFiles(Binder binder, DefinableEntity entity,
 			boolean deleteMirroredSource, FilesErrors errors);
 
+	public FilesErrors deleteFiles(Binder binder, DefinableEntity entity,
+			boolean deleteMirroredSource, FilesErrors errors, boolean skipDbLog);
+
 	public void deleteCachedFiles(Binder binder, DefinableEntity entry);
 	
 	
