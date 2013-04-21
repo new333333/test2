@@ -72,11 +72,12 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
     		InputDataAccessor inputData, List fileUploadItems,
     		Collection<FileAttachment> filesToIndex, Map ctx) {
     }
-    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
+    @Override
+    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options, boolean skipDbLog) {
     	//Delete the template.  The interalId isn't meant
     	// to force the template allways exist
     	binder.setInternalId(null); 
-    	super.deleteBinder(binder, deleteMirroredSource, options);
+    	super.deleteBinder(binder, deleteMirroredSource, options, skipDbLog);
     		
     }
   	//not supported

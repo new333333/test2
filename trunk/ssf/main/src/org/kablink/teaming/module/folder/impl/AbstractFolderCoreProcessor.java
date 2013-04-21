@@ -718,11 +718,12 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
     //***********************************************************************************************************
     //inside write transaction    
    @Override
-public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
+public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options, final boolean skipDbLog) {
     	if(logger.isDebugEnabled())
     		logger.debug("Deleting binder [" + binder.getPathName() + "]");
     	//mark deleted first, saving real work for later
-    	if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource, options);
+    	if (!binder.isDeleted()) 
+    		super.deleteBinder(binder, deleteMirroredSource, options, skipDbLog);
     	else {
     		//if binder is marked deleted, we are called from cleanup code without a transaction 
     		final Folder folder = (Folder)binder;
@@ -749,15 +750,17 @@ public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map option
 			 					if(logger.isDebugEnabled())
 			 						logger.debug("Deleting entry [" + entry.getTitle() + "], id=" + entry.getId());
 					    		//create history - using timestamp and version from folder delete
-								try {
-									entry.setModification(folder.getModification());
-									entry.incrLogVersion();
-									processChangeLog(entry, ChangeLog.DELETEENTRY);
-								} catch (Exception ex) {
-									logger.warn("Error logging entry " + entry.toString(), ex);
+								if(!skipDbLog) {
+									try {
+										entry.setModification(folder.getModification());
+										entry.incrLogVersion();
+										processChangeLog(entry, ChangeLog.DELETEENTRY);
+									} catch (Exception ex) {
+										logger.warn("Error logging entry " + entry.toString(), ex);
+									}
 								}
 								
-								getFileModule().deleteFiles(folder, entry, false, null);
+								getFileModule().deleteFiles(folder, entry, false, null, skipDbLog);
 
 								entries.add(entry);
 								++count;
@@ -772,7 +775,7 @@ public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map option
 							}
 							//	finally delete the binder and its associations
 							try {
-								getFileModule().deleteFiles(folder, folder, false, null);
+								getFileModule().deleteFiles(folder, folder, false, null, skipDbLog);
 							} catch (Exception ex) {
 								logger.warn("Error delete files: " + folder.getPathName(), ex);
 							}

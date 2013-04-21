@@ -1717,7 +1717,8 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 				Folder f = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext()
 						.getZoneId());
 				FolderCoreProcessor processor = loadProcessor(f);
-				processor.deleteBinder(f, true, null);
+				// (Bug 815697) Don't add change log for entry deletion when it is caused by deletion of parent folder
+				processor.deleteBinder(f, true, null, true);
 				getCoreDao().evict(f);
 				success++;
 			} catch (Exception ex) {

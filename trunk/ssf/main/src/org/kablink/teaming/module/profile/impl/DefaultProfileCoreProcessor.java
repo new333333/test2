@@ -107,10 +107,10 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	DateFormat dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, NLT.getTeamingLocale() );
 	//inside write transaction    
 	@Override
-	public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
+	public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options, boolean skipDbLog) {
 		if(logger.isDebugEnabled())
 			logger.debug("Deleting binder [" + binder.getPathName() + "]");
-		if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource, options);
+		if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource, options, skipDbLog);
 		else {
 			//if binder is marked deleted, we are called from cleanup code without a transaction 
 			final ProfileBinder pBinder = (ProfileBinder)binder;

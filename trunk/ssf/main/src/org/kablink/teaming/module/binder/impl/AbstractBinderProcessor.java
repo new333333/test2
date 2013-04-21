@@ -1009,7 +1009,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //***********************************************************************************************************
     //inside write transaction    
     @Override
-	public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
+	public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options, boolean skipDbLog) {
     	if (binder.isReserved() && !binder.getRoot().isDeleted()) 
     		throw new NotSupportedException(
     				"errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()});
@@ -1017,7 +1017,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
      	deleteBinder_setCtx(binder, ctx);
-        deleteBinder_preDelete(binder,ctx);
+        deleteBinder_preDelete(binder,ctx, skipDbLog);
         SimpleProfiler.stop("deleteBinder_preDelete");
         
         SimpleProfiler.start("deleteBinder_processFiles");
@@ -1058,14 +1058,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
     //inside write transaction    
-   protected void deleteBinder_preDelete(Binder binder, Map ctx) { 
+   protected void deleteBinder_preDelete(Binder binder, Map ctx, boolean skipDbLog) { 
      	//create history - using timestamp and version from fillIn
         User user = RequestContextHolder.getRequestContext().getUser();
         binder.setModification(new HistoryStamp(user));
         binder.incrLogVersion();
-    	processChangeLog(binder, ChangeLog.DELETEBINDER);
-   		// Make sure that the audit trail's timestamp is identical to the modification time of the binder. 
-    	getReportModule().addAuditTrail(AuditType.delete, binder, binder.getModification().getDate());
+        if(!skipDbLog) {
+        	processChangeLog(binder, ChangeLog.DELETEBINDER);
+        	// Make sure that the audit trail's timestamp is identical to the modification time of the binder. 
+        	getReportModule().addAuditTrail(AuditType.delete, binder, binder.getModification().getDate());
+        }
     	if ((binder.getDefinitionType() != null) &&
     			(binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW ||
     				binder.getDefinitionType() == Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
