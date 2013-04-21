@@ -1080,7 +1080,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
     			RequestContextHolder.getRequestContext().getZoneId(), binder);
 	    
-
+    	//remove share items associated with this binder or with any entries within this binder
+    	getCoreDao().purgeShares(binder, true);
     }
   
     

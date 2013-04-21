@@ -3054,4 +3054,46 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 
 	}
+
+	@Override
+	public void purgeShares(final Binder binder, final boolean includeEntryShares) {
+		long begin = System.nanoTime();
+		try {
+		   	getHibernateTemplate().execute(
+		    	new HibernateCallback() {
+		    		@Override
+					public Object doInHibernate(Session session) throws HibernateException {
+			   			//delete share items where shared entity is this binder
+			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
+                    	.setInteger("sharedEntityType", binder.getEntityType().getValue())
+                    	.setLong("sharedEntityId", binder.getId())
+		   				.executeUpdate();
+			   			
+			   			//delete share items where recipient is this team
+			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where recipient_type=:recipientType AND recipient_id=:recipientId")
+                    	.setShort("recipientType", ShareItem.RecipientType.team.getValue())
+                    	.setLong("recipientId", binder.getId())
+		   				.executeUpdate();
+			   					
+			   			if(includeEntryShares && EntityIdentifier.EntityType.folder == binder.getEntityType()) {
+		 		   			//delete share items whose shared entities are entries in the specified binder
+		 		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_id in " + 
+		 			   				"(select p.id from org.kablink.teaming.domain.FolderEntry p where " +
+				   			  			" p.parentBinder=:folder) and sharedEntity_type=:sharedEntityType")
+				   			  	.setEntity("folder", binder)
+				   			  	.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.getValue())
+				   				.executeUpdate(); 	
+			   			}
+
+			   			return null;
+	    	   		}
+	    	   	}
+	    	 );    	
+    	}
+    	finally {
+    		end(begin, "purgeShares");
+    	}	         
+
+	}
+
  }
