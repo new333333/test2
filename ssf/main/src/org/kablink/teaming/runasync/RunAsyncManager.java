@@ -37,6 +37,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -52,93 +53,121 @@ import org.springframework.beans.factory.InitializingBean;
 
 public class RunAsyncManager implements InitializingBean, DisposableBean {
 
+	public enum TaskType {
+		JITS, // Just-In-Time Sync on net folder
+		FULL_SYNC, // Full Sync on net folder
+		OTHER // All others
+	}
+	
 	private Log logger = LogFactory.getLog(getClass());
 	
-	private ExecutorService executorServiceLight;
-	private ExecutorService executorServiceHeavy;
+	private ExecutorService executorService_JITS;
+	private ExecutorService executorService_FULL_SYNC;
+	private ExecutorService executorService_OTHER;
 
 	private int executorTerminationTimeout;
 	
 	public void afterPropertiesSet() throws Exception {
-		// Create a thread pool that creates new threads as needed up to the specified size.
-		// The threads will operate off of a shared bounded queue. This means that the application
-		// can queue up requests up to the specified limit for asynchronous execution, however,
-		// only up to the specified number of threads can execute the tasks concurrently.
-		// Any attempt to submit a task after the queue reaches its limit will cause a runtime
-		// exception to be thrown to the caller.
 
-		int lightMaximumPoolSize = SPropsUtil.getInt("runasync.executor.light.maximum.pool.size", 300);
-		int lightMaximumQueueSize = SPropsUtil.getInt("runasync.executor.light.maximum.queue.size", 3000);
-		ThreadPoolExecutor lightExecutor = new ThreadPoolExecutor(
-        		lightMaximumPoolSize,
-        		lightMaximumPoolSize,
+		// With this pool, the caller will get an exception immediately if there's no thread available to take the request.
+		// That is perfectly OK, given the nature of the JITS.
+		int jitsMaximumPoolSize = SPropsUtil.getInt("runasync.executor.jits.maximum.pool.size", 300);
+		ThreadPoolExecutor jitsExecutor = new ThreadPoolExecutor(
+				jitsMaximumPoolSize,
+				jitsMaximumPoolSize,
                 60L, 
                 TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(lightMaximumQueueSize));
-		executorServiceLight = lightExecutor;
+                new SynchronousQueue<Runnable>());
+		jitsExecutor.allowCoreThreadTimeOut(true);
+		executorService_JITS = jitsExecutor;
 
-		// Create a thread pool that creates new threads as needed up to the specified size.
-		// The threads will operate off a shared unbounded queue. This means that the
-		// application can queue up unlimited number of requests for asynchronous execution,
-		// but only up to the specified number of threads can execute the tasks concurrently.
 
-        int heavyMaximumPoolSize = SPropsUtil.getInt("runasync.executor.heavy.maximum.pool.size", 30);
-		int heavyMaximumQueueSize = SPropsUtil.getInt("runasync.executor.heavy.maximum.queue.size", 3000);
-        ThreadPoolExecutor heavyExecutor = new ThreadPoolExecutor(
-        		heavyMaximumPoolSize,
-        		heavyMaximumPoolSize,
+        int fullSyncMaximumPoolSize = SPropsUtil.getInt("runasync.executor.fullsync.maximum.pool.size", 10);
+		int fullSyncMaximumQueueSize = SPropsUtil.getInt("runasync.executor.fullsync.maximum.queue.size", 1000);
+        ThreadPoolExecutor fullSyncExecutor = new ThreadPoolExecutor(
+        		fullSyncMaximumPoolSize,
+        		fullSyncMaximumPoolSize,
                 60L, 
                 TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(heavyMaximumQueueSize));
-        heavyExecutor.allowCoreThreadTimeOut(true);
-		executorServiceHeavy = heavyExecutor;
+                new LinkedBlockingQueue<Runnable>(fullSyncMaximumQueueSize));
+        fullSyncExecutor.allowCoreThreadTimeOut(true);
+		executorService_FULL_SYNC = fullSyncExecutor;
+
+		
+		int otherMaximumPoolSize = SPropsUtil.getInt("runasync.executor.other.maximum.pool.size", 100);
+		int otherMaximumQueueSize = SPropsUtil.getInt("runasync.executor.other.maximum.queue.size", 10000);
+		ThreadPoolExecutor otherExecutor = new ThreadPoolExecutor(
+				otherMaximumPoolSize,
+				otherMaximumPoolSize,
+                60L, 
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(otherMaximumQueueSize));
+		otherExecutor.allowCoreThreadTimeOut(true);
+		executorService_OTHER = otherExecutor;
+
 
 		executorTerminationTimeout = SPropsUtil.getInt("runasync.executor.termination.timeout", 20);
 	}
 
 	public void destroy() throws Exception {
 		// Initiate shutdown
-		if(executorServiceHeavy != null)
-			executorServiceHeavy.shutdown();
-		if(executorServiceLight != null)
-			executorServiceLight.shutdown();
+		if(executorService_FULL_SYNC != null)
+			executorService_FULL_SYNC.shutdown();
+		if(executorService_JITS != null)
+			executorService_JITS.shutdown();
+		if(executorService_OTHER != null)
+			executorService_OTHER.shutdown();
 		
-		// Wait on the heavy-duty executor service first.
+		// Wait on the FULL_SYNC executor service first.
 		long start = System.currentTimeMillis();
-		if(executorServiceHeavy != null) {
+		if(executorService_FULL_SYNC != null) {
 			try {
-				executorServiceHeavy.awaitTermination(executorTerminationTimeout*1000, TimeUnit.MILLISECONDS);
+				executorService_FULL_SYNC.awaitTermination(executorTerminationTimeout*1000, TimeUnit.MILLISECONDS);
 			}
 			catch(InterruptedException e) {
 				Thread.currentThread().interrupt(); // Restore the interrupt
 			}
-			executorServiceHeavy = null;
+			executorService_FULL_SYNC = null;
 		}
 		
-		// If we still have remaining time available, wait on the light-duty executor service.
-		if(executorServiceLight != null) {
+		// If we still have remaining time available, wait on the JITS executor service.
+		if(executorService_JITS != null) {
 			long remainingTime = start + executorTerminationTimeout*1000 - System.currentTimeMillis();
 			if(remainingTime > 0) {
 				try {
-					executorServiceLight.awaitTermination(remainingTime, TimeUnit.MILLISECONDS);
+					executorService_JITS.awaitTermination(remainingTime, TimeUnit.MILLISECONDS);
 				}
 				catch(InterruptedException e) {
 					Thread.currentThread().interrupt(); // Restore the interrupt
 				}
-				executorServiceLight = null;
+				executorService_JITS = null;
+			}
+		}
+		
+		// If we still have remaining time available, wait on the OTHER executor service.
+		if(executorService_OTHER != null) {
+			long remainingTime = start + executorTerminationTimeout*1000 - System.currentTimeMillis();
+			if(remainingTime > 0) {
+				try {
+					executorService_OTHER.awaitTermination(remainingTime, TimeUnit.MILLISECONDS);
+				}
+				catch(InterruptedException e) {
+					Thread.currentThread().interrupt(); // Restore the interrupt
+				}
+				executorService_OTHER = null;
 			}
 		}
 	}
 
-	public <V> Future<V> execute(final RunAsyncCallback<V> action, boolean lightDuty) throws RejectedExecutionException {
-		return _execute(action, lightDuty, RequestContextHolder.getRequestContext());
+	public <V> Future<V> execute(final RunAsyncCallback<V> action, TaskType taskType) throws RejectedExecutionException {
+		return _execute(action, taskType, RequestContextHolder.getRequestContext());
 	}
 
-	public <V> Future<V> execute(final RunAsyncCallback<V> action, boolean lightDuty, User contextUser) throws RejectedExecutionException {
-		return _execute(action, lightDuty, new RequestContext(contextUser, null).resolve());
+	public <V> Future<V> execute(final RunAsyncCallback<V> action, TaskType taskType, User contextUser) throws RejectedExecutionException {
+		return _execute(action, taskType, new RequestContext(contextUser, null).resolve());
 	}
 
-	private <V> Future<V> _execute(final RunAsyncCallback<V> action, final boolean lightDuty, final RequestContext parentRequestContext) throws RejectedExecutionException {
+	private <V> Future<V> _execute(final RunAsyncCallback<V> action, final TaskType taskType, final RequestContext parentRequestContext) throws RejectedExecutionException {
 		Callable<V> task = new Callable<V>() {
 			public V call() throws Exception {
 				boolean hadSession = SessionUtil.sessionActive();
@@ -176,10 +205,13 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 				}				
 			}
 		};
-		if(lightDuty)
-			return executorServiceLight.submit(task);
+		
+		if(taskType == TaskType.JITS)
+			return executorService_JITS.submit(task);
+		else if(taskType == TaskType.FULL_SYNC)
+			return executorService_FULL_SYNC.submit(task);
 		else
-			return executorServiceHeavy.submit(task);
+			return executorService_OTHER.submit(task);
 	}
 	
 }
