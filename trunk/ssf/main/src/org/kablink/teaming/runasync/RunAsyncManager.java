@@ -34,9 +34,9 @@ package org.kablink.teaming.runasync;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -60,19 +60,39 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 	private int executorTerminationTimeout;
 	
 	public void afterPropertiesSet() throws Exception {
-		// Create a thread pool that creates new threads as needed with no upper bound.
-		executorServiceLight = Executors.newCachedThreadPool();
+		// Create a thread pool that creates new threads as needed up to the specified size.
+		// The threads will operate off of a shared bounded queue. This means that the application
+		// can queue up requests up to the specified limit for asynchronous execution, however,
+		// only up to the specified number of threads can execute the tasks concurrently.
+		// Any attempt to submit a task after the queue reaches its limit will cause a runtime
+		// exception to be thrown to the caller.
+
+		int lightMaximumPoolSize = SPropsUtil.getInt("runasync.executor.light.maximum.pool.size", 300);
+		int lightMaximumQueueSize = SPropsUtil.getInt("runasync.executor.light.maximum.queue.size", 3000);
+		ThreadPoolExecutor lightExecutor = new ThreadPoolExecutor(
+        		lightMaximumPoolSize,
+        		lightMaximumPoolSize,
+                60L, 
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(lightMaximumQueueSize));
+		executorServiceLight = lightExecutor;
 
 		// Create a thread pool that creates new threads as needed up to the specified size.
 		// The threads will operate off a shared unbounded queue. This means that the
 		// application can queue up unlimited number of requests for asynchronous execution,
 		// but only up to the specified number of threads can execute the tasks concurrently.
-		
-		executorServiceHeavy = new ThreadPoolExecutor(0, 
-				SPropsUtil.getInt("runasync.executor.heavy.maximum.pool.size", 30),
-                60L, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>());
-		
+
+        int heavyMaximumPoolSize = SPropsUtil.getInt("runasync.executor.heavy.maximum.pool.size", 30);
+		int heavyMaximumQueueSize = SPropsUtil.getInt("runasync.executor.heavy.maximum.queue.size", 3000);
+        ThreadPoolExecutor heavyExecutor = new ThreadPoolExecutor(
+        		heavyMaximumPoolSize,
+        		heavyMaximumPoolSize,
+                60L, 
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(heavyMaximumQueueSize));
+        heavyExecutor.allowCoreThreadTimeOut(true);
+		executorServiceHeavy = heavyExecutor;
+
 		executorTerminationTimeout = SPropsUtil.getInt("runasync.executor.termination.timeout", 20);
 	}
 
@@ -110,15 +130,15 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 		}
 	}
 
-	public <V> Future<V> execute(final RunAsyncCallback<V> action, boolean lightDuty) {
+	public <V> Future<V> execute(final RunAsyncCallback<V> action, boolean lightDuty) throws RejectedExecutionException {
 		return _execute(action, lightDuty, RequestContextHolder.getRequestContext());
 	}
 
-	public <V> Future<V> execute(final RunAsyncCallback<V> action, boolean lightDuty, User contextUser) {
+	public <V> Future<V> execute(final RunAsyncCallback<V> action, boolean lightDuty, User contextUser) throws RejectedExecutionException {
 		return _execute(action, lightDuty, new RequestContext(contextUser, null).resolve());
 	}
 
-	private <V> Future<V> _execute(final RunAsyncCallback<V> action, final boolean lightDuty, final RequestContext parentRequestContext) {
+	private <V> Future<V> _execute(final RunAsyncCallback<V> action, final boolean lightDuty, final RequestContext parentRequestContext) throws RejectedExecutionException {
 		Callable<V> task = new Callable<V>() {
 			public V call() throws Exception {
 				boolean hadSession = SessionUtil.sessionActive();
@@ -161,5 +181,5 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 		else
 			return executorServiceHeavy.submit(task);
 	}
-
+	
 }
