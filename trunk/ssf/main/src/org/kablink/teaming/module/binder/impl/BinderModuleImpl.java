@@ -3264,7 +3264,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				public String toString() {
 					return "folderModule.cleanupFolders()";
 				}
-			}, true);
+			}, RunAsyncManager.TaskType.OTHER);
 		}
 	}
 

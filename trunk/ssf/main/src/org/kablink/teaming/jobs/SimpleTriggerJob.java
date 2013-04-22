@@ -96,7 +96,7 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 				schedule(job);
 				return null;
 			}
-		}, true);
+		}, RunAsyncManager.TaskType.OTHER);
 	}
 	
 	public class SimpleJobDescription {

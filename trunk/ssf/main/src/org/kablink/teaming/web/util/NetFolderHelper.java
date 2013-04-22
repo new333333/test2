@@ -385,7 +385,7 @@ public class NetFolderHelper
 							{
 								return "folderModule.synchronize()";
 							}
-						}, false);
+						}, RunAsyncManager.TaskType.FULL_SYNC);
 					}
 					catch ( Exception e )
 					{
