@@ -949,6 +949,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	setWorkAreaFunctionMemberships(workArea, functionMemberships, doCheckAccess, Boolean.FALSE, 
     			ObjectKeys.ROLE_TYPE_FILR);
     }
+    
     /*
      * Routine to set the functions (roles) and function memberships for a workarea.
      * 
@@ -964,6 +965,24 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	public void setWorkAreaFunctionMemberships(final WorkArea workArea, 
     		final Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess, 
     		final boolean justThisScope, final String scope) {
+    	setWorkAreaFunctionMemberships(workArea, functionMemberships, doCheckAccess, justThisScope, scope, false);
+    }
+    
+    /*
+     * Routine to set the functions (roles) and function memberships for a workarea.
+     * 
+     * Depending on the "justThisScope" flag, this routine will skip any function with the 
+     * specified scope or it will only change functions with the specified scope. The other 
+     * functions are left unchanged. This capability is used to support workareas that have 
+     * functions (roles) that are being controlled externally, such as with Filr ACLs. 
+     * 
+     * If "justThisScope" is true, then modify only those functions with the specified scope
+     * If "justThisScope" is false, then modify all functions except the ones with the specified scope
+     */
+    @Override
+	public void setWorkAreaFunctionMemberships(final WorkArea workArea, 
+    		final Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess, 
+    		final boolean justThisScope, final String scope, boolean skipFileContentIndexing) {
     	if (doCheckAccess) {
     		checkAccess(workArea, AdminOperation.manageFunctionMembership);
     	}
@@ -1096,18 +1115,18 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		if ((!originalRead.equals(currentRead) || !originalVBT.equals(currentVBT) || !originalNFA.equals(currentNFA) ||
 				conditionsExist || conditionsExistInOrigianl) && (workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
-			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null, true);
+			loadBinderProcessor(binder).indexFunctionMembership(binder, true, false, true, skipFileContentIndexing);
 		} else if (!originalRead.equals(currentRead) && workArea instanceof Entry) {
 			Entry entry = (Entry)workArea;
-			indexEntry(entry);
+			indexEntry(entry, skipFileContentIndexing);
 		}
 	}
 
-    private void indexEntry(Entry entry) {
+    private void indexEntry(Entry entry, boolean skipFileContentIndexing) {
 		List entries = new ArrayList();
 		entries.add(entry);
 		entries.addAll(entry.getChildWorkAreas());
-		loadEntryProcessor(entry).indexEntries(entries);
+		loadEntryProcessor(entry).indexEntries(entries, skipFileContentIndexing);
     }
 
 	//no transaction
@@ -1269,6 +1288,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 */
 	@Override
 	public void resetWorkAreaFunctionMemberships(WorkArea wa, Long functionId, Collection<Long> memberIds) {
+		resetWorkAreaFunctionMemberships(wa, functionId, memberIds, false);
+	}
+	
+	@Override
+	public void resetWorkAreaFunctionMemberships(WorkArea wa, Long functionId, Collection<Long> memberIds, boolean skipFileContentIndexing) {
 		// Ensure that this WorkArea is NOT inheriting membership.
 		setWorkAreaFunctionMembershipInherited(wa, false);
 		
@@ -1377,7 +1401,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// need to re-index an entry?
 		else if ((!(originalRead.equals(currentRead))) && wa instanceof Entry) {
 			// Yes!  Re-index it.
-			indexEntry((Entry)wa);
+			indexEntry((Entry)wa, skipFileContentIndexing);
 		}
 	}
 
@@ -1533,6 +1557,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	@Override
 	public void setWorkAreaFunctionMembershipInherited(final WorkArea workArea, final boolean inherit,
 			final boolean justThisScope, final String scope) throws AccessControlException {
+		setWorkAreaFunctionMembershipInherited(workArea, inherit, justThisScope, scope, false);
+	}
+	
+	@Override
+	public void setWorkAreaFunctionMembershipInherited(final WorkArea workArea, final boolean inherit,
+			final boolean justThisScope, final String scope, boolean skipFileContentIndexing) throws AccessControlException {
     	checkAccess(workArea, AdminOperation.manageFunctionMembership);
     	final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
         Boolean index = (Boolean) getTransactionTemplate().execute(new TransactionCallback() {
@@ -1591,7 +1621,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         //index outside of transaction
         if (index && (workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
-			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null, true);
+			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null, true, skipFileContentIndexing);
 		}
      }
 	
@@ -1643,6 +1673,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
 	@Override
 	public void setEntryHasExternalAcl(final WorkArea workArea, final Boolean hasExternalAcl) {
+		setEntryHasExternalAcl(workArea, hasExternalAcl, false);
+	}
+	
+	@Override
+	public void setEntryHasExternalAcl(final WorkArea workArea, final Boolean hasExternalAcl, boolean skipFileContentIndexing) {
         //Make sure this user is allowed to do this
 		if (workArea instanceof Entry && ((Entry)workArea).isTop()) {
 			try {
@@ -1673,7 +1708,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			           		entry.setHasEntryExternalAcl(hasExternalAcl);
 							return null;
 			        	}});
-			        indexEntry(entry);
+			        indexEntry(entry, skipFileContentIndexing);
 				}
 			}
 		}
