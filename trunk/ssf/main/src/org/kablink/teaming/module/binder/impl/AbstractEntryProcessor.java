@@ -1335,19 +1335,24 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      */
     @Override
 	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
+    	return indexBinder(binder, includeEntries, deleteIndex, tags, false);
+    }
+    
+    @Override
+	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
     	IndexErrors errors = super.indexBinder(binder, includeEntries, deleteIndex, tags);
     	if (includeEntries == false) return errors;
-    	IndexErrors entryErrors = indexEntries(binder, deleteIndex, false);
+    	IndexErrors entryErrors = indexEntries(binder, deleteIndex, false, skipFileContentIndexing);
     	errors.add(entryErrors);
     	return errors;
     }
     
     
     // This method indexes a binder and it's entries by deleting and reindexing each entry one at a time.
-    public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
+    public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
     	IndexErrors errors = super.indexBinder(binder, includeEntries, deleteIndex, tags);
     	if (includeEntries == false) return errors;
-    	IndexErrors entryErrors = indexEntries(binder, deleteIndex, true);
+    	IndexErrors entryErrors = indexEntries(binder, deleteIndex, true, skipFileContentIndexing);
     	errors.add(entryErrors);
     	IndexSynchronizationManager.applyChanges(0);
     	return errors;
@@ -1356,6 +1361,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //If called from write transaction, make sure session is flushed cause this bypasses
     //hibernate loading of collections and goes to database directly.
     protected IndexErrors indexEntries(Binder binder, boolean deleteIndex, boolean deleteEntries) {
+    	return indexEntries(binder, deleteIndex, deleteEntries, false);
+    }
+    
+    //If called from write transaction, make sure session is flushed cause this bypasses
+    //hibernate loading of collections and goes to database directly.
+    protected IndexErrors indexEntries(Binder binder, boolean deleteIndex, boolean deleteEntries, boolean skipFileContentIndexing) {
     	IndexErrors errors = new IndexErrors();
     	SimpleProfiler.start("indexEntries");
     	//may already have been handled with an optimized query
@@ -1407,7 +1418,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        					// Entry already deleted from index, so pretend we are new
        	       			SimpleProfiler.start("indexEntries_indexEntryWithAttachments");
        				   	try {
-       				   		IndexErrors entryErrors = indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags, false);
+       				   		IndexErrors entryErrors = indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags, skipFileContentIndexing);
        				   		errors.add(entryErrors);
        				   	} catch(Exception e) {
        				   		logger.error("Error indexing entry: (" + entry.getId().toString() + ") " + entry.getTitle(), e);
@@ -1465,6 +1476,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		for (Iterator iter=entries.iterator(); iter.hasNext();) {
    			Entry entry = (Entry)iter.next();
    			IndexErrors entryErrors = indexEntry(entry);
+   			errors.add(entryErrors);
+   		}
+   		return errors;
+   	}
+	
+   	@Override
+	public IndexErrors indexEntries(Collection entries, boolean skipFileContentIndexing) {
+   		IndexErrors errors = new IndexErrors();
+   		for (Iterator iter=entries.iterator(); iter.hasNext();) {
+   			Entry entry = (Entry)iter.next();
+   			IndexErrors entryErrors = indexEntry(entry, skipFileContentIndexing);
    			errors.add(entryErrors);
    		}
    		return errors;

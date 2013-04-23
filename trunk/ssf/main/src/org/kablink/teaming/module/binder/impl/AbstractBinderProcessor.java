@@ -1640,6 +1640,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  
     @Override
 	public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground, boolean indexEntries) {
+    	indexFunctionMembership(binder, cascade, runInBackground, indexEntries, false);
+    }
+    
+    @Override
+	public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
 		String value = EntityIndexUtils.getFolderAclString(binder);
     	if (cascade) {
     		Map params = new HashMap();
@@ -1651,7 +1656,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        		List<Long>ids = pruneUpdateList(binder, notBinders);
     		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
     		if (ids.size() <= limit) {
-    			doFieldUpdate(binder, ids, Constants.FOLDER_ACL_FIELD, value, runInBackground, indexEntries);
+    			doFieldUpdate(binder, ids, Constants.FOLDER_ACL_FIELD, value, runInBackground, indexEntries, skipFileContentIndexing);
     			doRssUpdate(binder);
     		} else {
     			//revert to walking the tree
@@ -1679,7 +1684,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			doRssUpdate(binders);
     		}
     	} else {
-       		doFieldUpdate(binder, Constants.FOLDER_ACL_FIELD, value, runInBackground, indexEntries);
+       		doFieldUpdate(binder, Constants.FOLDER_ACL_FIELD, value, runInBackground, indexEntries, skipFileContentIndexing);
        		doRssUpdate(binder);
        	    		
     	}
@@ -1764,6 +1769,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      }
 
      private void executeUpdateQuery(Criteria crit, String field, String value, Boolean runInBackground, boolean indexEntries) {
+    	 executeUpdateQuery(crit, field, value, runInBackground, indexEntries, false);
+     }
+     
+     private void executeUpdateQuery(Criteria crit, String field, String value, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
 
 		org.apache.lucene.document.Document doc;
 		List<Long> binders = new ArrayList<Long>();
@@ -1798,7 +1807,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		if(Boolean.FALSE.equals(runInBackground)) {
 	    	for (Long id:binders) {
 				try {
-					getBinderModule().indexBinderIncremental(id, indexEntries);
+					getBinderModule().indexBinderIncremental(id, indexEntries, skipFileContentIndexing);
 				} catch (NoObjectByTheIdException ex) {
 					//gone, skip it
 				} catch (Exception ex) {
@@ -1821,6 +1830,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      // this will update the binder, its attachments and entries, and
 		// subfolders and entries that inherit
      private void doFieldUpdate(Binder binder, List<Long>notBinderIds, String field, String value, Boolean runInBackground, boolean indexEntries) {
+    	 doFieldUpdate(binder, notBinderIds, field, value, runInBackground, indexEntries, false);
+     }
+     
+      private void doFieldUpdate(Binder binder, List<Long>notBinderIds, String field, String value, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
  		// Now, create a query which can be used by the index update method to modify all the
 		// entries, replies, attachments, and binders(workspaces) in the index 
  		Criteria crit = new Criteria()
@@ -1831,12 +1844,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				.add(in(Constants.ENTRY_ANCESTRY, LongIdUtil.getIdsAsStringSet(notBinderIds)))
 			);
  		}
-		executeUpdateQuery(crit, field, value, runInBackground, indexEntries);
+		executeUpdateQuery(crit, field, value, runInBackground, indexEntries, skipFileContentIndexing);
     }
 
-
+    //this will update just the binder, its attachments and entries only
+    private void doFieldUpdate(Binder binder, String field, String value, Boolean runInBackground, boolean indexEntries) {
+    	doFieldUpdate(binder, field, value, runInBackground, indexEntries, false);
+    }
+    
   	//this will update just the binder, its attachments and entries only
-     private void doFieldUpdate(Binder binder, String field, String value, Boolean runInBackground, boolean indexEntries) {
+     private void doFieldUpdate(Binder binder, String field, String value, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
   		// Now, create a query which can be used by the index update method to modify all the
  		// entries, replies, attachments, and binders(workspaces) in the index 
     	//_binderId= OR (_docId= AND (_docType=binder OR _attType=binder)) 
@@ -1851,7 +1868,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			)
     		)
     	);
-		executeUpdateQuery(crit, field, value, runInBackground, indexEntries);
+		executeUpdateQuery(crit, field, value, runInBackground, indexEntries, skipFileContentIndexing);
      }
  
     private void doFieldUpdate(Collection<Binder>binders, String field, String value, boolean indexEntries) {
@@ -1906,16 +1923,27 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     @Override
 	public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries) {
-    	//call overloaded methods
-    	IndexErrors errors = loadIndexTreeIncremental(binder, includeEntries);   
-   		return errors;
+    	return indexBinderIncremental(binder, includeEntries, false);
     }
+    
+    @Override
+	public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries, boolean skipFileContentIndexing) {
+    	//call overloaded methods
+    	IndexErrors errors = loadIndexTreeIncremental(binder, includeEntries, skipFileContentIndexing);   
+   		return errors;
+    } 
     
     @Override
 	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
     	IndexErrors errors = indexBinder(binder, null, null, !deleteIndex, tags);    	
    		return errors;
     	
+    }
+    
+    @Override
+	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
+    	// Ignore skipFileContentIndexing arg
+    	return indexBinder(binder, includeEntries, deleteIndex, tags);
     }
     //***********************************************************************************************************
     //It is assumed that the index has been deleted for each binder to be index
@@ -1980,7 +2008,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
    	}
 
-   	private IndexErrors loadIndexTreeIncremental(Binder binder, boolean includeEntries) {
+   	private IndexErrors loadIndexTreeIncremental(Binder binder, boolean includeEntries, boolean skipFileContentIndexing) {
 		IndexErrors errors = new IndexErrors();
 		// load the binder
 		Map params = new HashMap();
@@ -2004,7 +2032,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			IndexErrors binderErrors = null;
 			if (processor instanceof AbstractEntryProcessor) {
 				binderErrors = ((AbstractEntryProcessor) processor)
-						.indexBinderIncremental(b, includeEntries, false, tags);
+						.indexBinderIncremental(b, includeEntries, false, tags, skipFileContentIndexing);
 			} else {
 				binderErrors = processor.indexBinder(b, includeEntries, false, tags);
 			}

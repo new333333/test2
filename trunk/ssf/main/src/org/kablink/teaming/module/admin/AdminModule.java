@@ -224,6 +224,7 @@ public interface AdminModule {
     public void setEntryHasAcl(final WorkArea workArea, final Boolean hasAcl, final Boolean checkFolderAcl);
     
     public void setEntryHasExternalAcl(final WorkArea workArea, final Boolean hasExternalAcl);
+    public void setEntryHasExternalAcl(final WorkArea workArea, final Boolean hasExternalAcl, boolean skipFileContentIndexing);
     
 	/**
 	 * Send a mail message to a collection of users and/or explicit email addresses.  Includes attachments from entries if specified.
@@ -330,11 +331,14 @@ public interface AdminModule {
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess) throws AccessControlException;
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess, boolean justThisScope, String scope) throws AccessControlException;
+ 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess, boolean justThisScope, String scope, boolean skipFileContentIndexing) throws AccessControlException;
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit, boolean justThisScope, String scope) throws AccessControlException;
+    public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit, boolean justThisScope, String scope, boolean skipFileContentIndexing) throws AccessControlException;
 	public void updateWorkAreaFunctionMemberships(WorkArea wa, Long functionId, boolean add, Collection<Long> memberIds);
 	public void updateWorkAreaFunctionMembership( WorkArea wa, Long functionId, boolean add, Long             memberId );
 	public void resetWorkAreaFunctionMemberships( WorkArea wa, Long functionId,              Collection<Long> memberIds);
+	public void resetWorkAreaFunctionMemberships( WorkArea wa, Long functionId,              Collection<Long> memberIds, boolean skipFileContentIndexing);
 	public void resetWorkAreaFunctionMembership(  WorkArea wa, Long functionId,              Long             memberId );
     public void setWorkAreaOwner(WorkArea workArea, Long userId, boolean propagate) throws AccessControlException;
     public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly);

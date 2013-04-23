@@ -803,10 +803,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	@Override
 	public IndexErrors indexBinderIncremental(Long binderId,
 			boolean includeEntries) {
+		return indexBinderIncremental(binderId, includeEntries, false);
+	}
+	
+	@Override
+	public IndexErrors indexBinderIncremental(Long binderId,
+			boolean includeEntries, boolean skipFileContentIndexing) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.indexBinder);
 		return loadBinderProcessor(binder).indexBinderIncremental(binder,
-				includeEntries);
+				includeEntries, skipFileContentIndexing);
 	}
 	
 	//Routine to look through all binders and validate that the quota data is correct

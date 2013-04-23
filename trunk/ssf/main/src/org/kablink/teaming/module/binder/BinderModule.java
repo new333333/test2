@@ -507,6 +507,7 @@ public interface BinderModule {
 	 * @param includeEntries
 	 */
     public IndexErrors indexBinderIncremental(Long binderId, boolean includeEntries) throws AccessControlException;
+    public IndexErrors indexBinderIncremental(Long binderId, boolean includeEntries, boolean skipFileContentIndexing) throws AccessControlException;
     /**
      * Index a binder and its child binders, including all entries
      * @param binderId
