@@ -517,6 +517,9 @@ public class ModifyNetFolderDlg extends DlgBox
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_allowMobileAppsToSync );
 		ckboxPanel.add( tmpPanel );
+		
+		// Hidden as per bug#816823.
+		m_allowMobileAppsToSync.setVisible(false);
 
 		return mainPanel;
 	}

@@ -1114,7 +1114,7 @@ public class GwtNetFolderHelper
 	/**
 	 * Save the data sync settings for the given net folder binder
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({ "unchecked", "unused" })
 	private static void saveDataSyncSettings(
 		AllModulesInjected ami,
 		Long binderId,
@@ -1133,9 +1133,13 @@ public class GwtNetFolderHelper
 	   		formData.put(
 	   					ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA,
 	   					Boolean.toString( settings.getAllowDesktopAppToSyncData() ) );
-	   		formData.put(
-   					ObjectKeys.FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA,
-   					Boolean.toString( settings.getAllowMobileAppsToSyncData() ) );
+	   		if ( false )
+	   		{
+	   			// Not writing anything as per bug 816823.
+		   		formData.put(
+	   					ObjectKeys.FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA,
+	   					Boolean.toString( settings.getAllowMobileAppsToSyncData() ) );
+	   		}
 			mid = new MapInputData( formData );
 
 			try
