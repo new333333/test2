@@ -368,6 +368,15 @@ public class GwtServerHelper {
 	// will be used if an 'ignore.ssl.certs.on.desktop.app.download'
 	// is not defined in the ssf*.properties file.
 	private static final boolean IGNORE_SSL_CERTS_ON_DESKTOP_APP_DOWNLOAD_DEFAULT	= true;
+	private static final String  IGNORE_SSL_CERTS_ON_DESKTOP_APP_DOWNLOAD_KEY		= "ignore.ssl.certs.on.desktop.app.download";
+	
+	// Default value for whether we allow the system to follow
+	// redirects when connecting to a desktop application download URL.
+	// The value will be used if a
+	// 'follow.desktop.app.download.url.redirects' is not defined in
+	// the ssf*.properties file.
+	private static final boolean FOLLOW_DESKTOP_APP_DOWNLOAD_URL_REDIRECTS	= true;
+	private static final String  FOLLOW_DESKTOP_APP_DOWNLOAD_URL_KEY		= "follow.desktop.app.download.url.redirects";
 	
 	/**
 	 * Inner class used to compare two AssignmentInfo's.
@@ -1809,6 +1818,31 @@ public class GwtServerHelper {
 		return true;
 	}
 	
+	/*
+	 * Connects to an HTTP URL.
+	 */
+	private static HttpURLConnection connectToHttpUrl(String url) throws IOException, KeyManagementException, NoSuchAlgorithmException {
+		// Open the connection to URL...
+		HttpURLConnection reply =
+			((HttpURLConnection) openUrlConnection(
+				url,
+				SPropsUtil.getBoolean(
+					IGNORE_SSL_CERTS_ON_DESKTOP_APP_DOWNLOAD_KEY,
+					IGNORE_SSL_CERTS_ON_DESKTOP_APP_DOWNLOAD_DEFAULT)));
+
+		// ...initialize it as we need to to access the desktop
+		// ...application...
+		reply.setRequestMethod("GET");
+		reply.setInstanceFollowRedirects(
+			SPropsUtil.getBoolean(
+				FOLLOW_DESKTOP_APP_DOWNLOAD_URL_KEY,
+				FOLLOW_DESKTOP_APP_DOWNLOAD_URL_REDIRECTS));
+		reply.connect();
+	
+		// ...and return it.
+		return reply;
+	}
+	
 	/**
 	 * Create a group from the given information
 	 * @throws WriteEntryDataException 
@@ -2100,13 +2134,10 @@ public class GwtServerHelper {
 		String				reply         = null;
 		
 		try {
-			// Open the HTTP connection.
-			urlConnection = ((HttpURLConnection) openUrlConnection(httpUrl));
-			urlConnection.setRequestMethod("GET");
-			urlConnection.setInstanceFollowRedirects(false);
-			urlConnection.connect();
+			// Make the HTTP connection...
+			urlConnection = connectToHttpUrl(httpUrl);
 
-			// Read the content from the HTTP connection.
+			// ...and read the content from it.
 			String			line;
 			StringBuffer	result = new StringBuffer();
 			reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
@@ -5371,11 +5402,8 @@ public class GwtServerHelper {
 		String				reply         = null;
 		
 		try {
-			// Open the HTTP connection.
-			urlConnection = ((HttpURLConnection) openUrlConnection(httpUrl));
-			urlConnection.setRequestMethod("GET");
-			urlConnection.setInstanceFollowRedirects(false);
-			urlConnection.connect();
+			// Make the HTTP connection.
+			urlConnection = connectToHttpUrl(httpUrl);
 
 			// Is the connection being redirected?
 			int status = urlConnection.getResponseCode();
@@ -5399,10 +5427,13 @@ public class GwtServerHelper {
 			case HttpURLConnection.HTTP_OK:
             case HttpURLConnection.HTTP_NOT_FOUND:
 				// No, the connection isn't being redirected!
-				// Everything is fine.  Return it.
-                // A 404 (Not Found) response getting the base URL is acceptable depending on how the the auto-update
-                // server is set up.  The base URL can return a 404 but the full URL to the desktop application files
-                // will still succeed.
+            	// Everything is fine.  Return it.
+            	//
+                // Note that a 404 (Not Found) response getting the
+            	//    base URL is acceptable depending on how the
+            	//    auto-update server is set up.  The base URL can
+            	//    return a 404 while the full URL to the desktop
+            	//    application files still succeeds.
 				reply = httpUrl;
 				break;
 				
@@ -9271,16 +9302,6 @@ public class GwtServerHelper {
 	    
 	    // Finally, return the URLConnection.
 		return reply;
-	}
-	
-	private static URLConnection openUrlConnection(String url) throws IOException, KeyManagementException, NoSuchAlgorithmException {
-		// Always use the initial form of the method.
-		return
-			openUrlConnection(
-				url,
-				SPropsUtil.getBoolean(
-					"ignore.ssl.certs.on.desktop.app.download",
-					IGNORE_SSL_CERTS_ON_DESKTOP_APP_DOWNLOAD_DEFAULT));
 	}
 	
 	/**
