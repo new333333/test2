@@ -96,7 +96,6 @@ public interface BinderModule {
 		manageSimpleName,
 		export,
 		deleteEntries,
-		updateModificationTime,
 		allowSharing,
 		allowSharingExternal,
 		allowSharingPublic,
@@ -815,8 +814,6 @@ public interface BinderModule {
 	public void deleteFileVersion(Binder binder, DefinableEntity entity, FileAttachment fa);
 	
 	public void setFileVersionStatus(DefinableEntity entity, FileAttachment fa, int status);
-	
-	public void updateModificationTime(Binder binder);
 
 	/**
 	 * Return immediate children entities (entries and binders) of the specified 

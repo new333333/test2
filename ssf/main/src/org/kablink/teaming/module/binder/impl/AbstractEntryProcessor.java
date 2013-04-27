@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -90,6 +91,8 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
@@ -609,6 +612,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			Event event = it.next();
 			event.generateUid(entry);
 		}
+		
+		updateParentModTime(binder, ctx);
 		
 		processChangeLog(entry, ChangeLog.ADDENTRY);
     	getReportModule().addAuditTrail(AuditType.add, entry);
@@ -1155,6 +1160,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     //inside write transaction
     protected void deleteEntry_postDelete(Binder parentBinder, Entry entry, Map ctx) {
+    	this.updateParentModTime(parentBinder, ctx);
    }
     //no transaction
     protected void deleteEntry_indexDel(Binder parentBinder, Entry entry, Map ctx) {

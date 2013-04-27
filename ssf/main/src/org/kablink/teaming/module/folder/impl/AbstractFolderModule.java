@@ -575,8 +575,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         
         FolderEntry entry = (FolderEntry) processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
         
-		updateModificationTime(folder, options);
-        
         end(begin, "addEntry");
         return entry;
     }
@@ -929,6 +927,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options) throws WriteEntryDataException, WriteFilesException {
     	restoreEntry(folderId, entryId, renameData,deleteMirroredSource, options, true);
     }
+	
+	// in write transaction
 	@Override
 	public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws WriteEntryDataException, WriteFilesException {
     	deCount.incrementAndGet();
@@ -982,7 +982,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         		getRssModule().updateRssFeed(entry); 
         	}
         	
-    		updateModificationTime(folder, options);
+        	processor.updateParentModTime(folder, options);
         }
     }
     
@@ -1000,6 +1000,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	public void preDeleteEntry(Long folderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options) {
     	preDeleteEntry(folderId, entryId, userId, deleteMirroredSource, options, true);
     }
+	
+	// in write transaction
 	@Override
 	public void preDeleteEntry(Long folderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options, boolean reindex) {
     	deCount.incrementAndGet();
@@ -1036,7 +1038,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         	}
         	getRssModule().updateRssFeed(entry);
         	
-    		updateModificationTime(folder, options);
+        	processor.updateParentModTime(folder, options);
         }
     }
     
@@ -1077,7 +1079,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         Folder folder = entry.getParentFolder();
         FolderCoreProcessor processor=loadProcessor(folder);
         processor.deleteEntry(folder, entry, deleteMirroredSource, options);
-		updateModificationTime(folder, options);
     }
     //inside write transaction    
     @Override
@@ -1115,9 +1116,9 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
             newEntry = entry;
 		}
         
-		updateModificationTime(folder, options);
+        processor.updateParentModTime(folder, options);
         if(destination != folder)
-        	updateModificationTime(destination, options);
+        	processor.updateParentModTime(destination, options);
 
         return newEntry;
     }
@@ -1185,7 +1186,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 
 		FolderEntry entryCopy = (FolderEntry) processor.copyEntry(folder, entry, destination, toFileNames, options);
 		
-		updateModificationTime(destination, options);
+		processor.updateParentModTime(destination, options);
 		
 		return entryCopy;
     }
@@ -1836,20 +1837,4 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
         return top;
     }
 
-    private void updateModificationTime(final Folder folder, Map options) {
-		// Since this method is invoked only as a necessary side-effect of some other operation
-		// user invoked for which access checking was already done (that is, this is invoked by
-		// system rather than user), there is no need for access checking. 
-		// In order to make sure that this code can run without failure caused by access checking,
-		// we run this in admin context.
-		if(folder != null && !(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))) {
-			RunasTemplate.runasAdmin(new RunasCallback() {
-				@Override
-				public Object doAs() {
-					getBinderModule().updateModificationTime(folder);
-					return null;
-				}
-			}, RequestContextHolder.getRequestContext().getZoneName());
-		}
-	}
 }
