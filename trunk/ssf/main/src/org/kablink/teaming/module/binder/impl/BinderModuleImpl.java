@@ -317,7 +317,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			case manageConfiguration:
 			case manageSimpleName:
 			case changeEntryTimestamps:
-			case updateModificationTime:
 				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.BINDER_ADMINISTRATION);
 				break;
@@ -661,9 +660,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			binder = loadBinderProcessor(parentBinder).addBinder(parentBinder,
 					def, Workspace.class, inputData, fileItems, options);
 		}
-		
-		if(binder != null)
-	        updateModificationTimeIfNecessary(parentBinder, options);
 		
 		end(begin, "addBinder");
 		return binder;
@@ -1041,6 +1037,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		restoreBinder(binderId, renameData, deleteMirroredSource, options, true);
 	}
 	@Override
+	// in write transaction
 	public void restoreBinder(Long binderId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws WriteEntryDataException, WriteFilesException {
 		// Can we access the Binder as a non-mirrored binder?
 		Binder binder = loadBinder(binderId);
@@ -1092,8 +1089,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			        // ...re-index the Binder.
 		        	processor.indexBinder(binder, true);
 		        }
-		        
-		        updateModificationTimeIfNecessary(binder.getParentBinder(), options);
+		        processor.updateParentModTime(binder.getParentBinder(), options);
 			}
 		}
 	}
@@ -1335,6 +1331,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		preDeleteBinder(binderId, userId, deleteMirroredSource, options, true);
 	}
 	@Override
+	// in write transaction
 	public void preDeleteBinder(Long binderId, Long userId, boolean deleteMirroredSource, Map options, boolean reindex) {
 		Binder binder = loadBinder(binderId);
 		if (BinderHelper.isBinderSystemUserWS(binder)) {
@@ -1367,7 +1364,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        if (reindex) {
 		        	processor.indexBinder(binder, true);
 		        }
-		        updateModificationTimeIfNecessary(parentBinder, options);
+		        processor.updateParentModTime(parentBinder, options);
 			}
 		}
 	}
@@ -1405,8 +1402,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if (!phase1Only) {
 			deleteBinderPhase2();
 		}
-		
-		updateModificationTimeIfNecessary(parentBinder, options);
 	}
 
 	// no transaction
@@ -1446,9 +1441,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				// move whole tree at once
 				loadBinderProcessor(source).moveBinder(source, destination, options);
 				
-				updateModificationTimeIfNecessary(sourceParent, options);
+				if(sourceParent != null)
+					loadBinderProcessor(sourceParent).updateParentModTime(sourceParent, options);
+				
 				if(sourceParent != destination)
-					updateModificationTimeIfNecessary(destination, options);
+					loadBinderProcessor(destination).updateParentModTime(destination, options);
 				
 			} else {
 				throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
@@ -1506,7 +1503,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					destinationParent, params);
 			if (cascade)
 				doCopyChildren(source, binder);
-	        updateModificationTimeIfNecessary(destinationParent, options);
+
 			return binder;
 		} else {
 			throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
@@ -3246,8 +3243,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		getTransactionTemplate().execute(new TransactionCallback() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				loadBinderProcessor(top).deleteBinder(top,
-						deleteMirroredSource, options, false);
+				BinderProcessor processor = loadBinderProcessor(top);
+				// Need to save reference to parent binder before it gets nullified.
+				Binder parentBinder = top.getParentBinder();
+				processor.deleteBinder(top, deleteMirroredSource, options, false);
+				processor.updateParentModTime(parentBinder, options);			
 				return null;
 			}
 		});
@@ -3376,49 +3376,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			throw new AccessControlException();
 		}
 	}
-
-	// No Transaction
-	@Override
-	public void updateModificationTime(final Binder binder) {
-		checkAccess(binder, BinderOperation.updateModificationTime);
-
-		if(logger.isDebugEnabled())
-			logger.debug("Updating mod time on the binder [" + binder.getPathName() + "]");
 		
-		// Update modification time
-        getTransactionTemplate().execute(new TransactionCallback<Object>() {
-        	@Override
-			public Object doInTransaction(final TransactionStatus status) {
-        		// Set the modification time to the "current" time.
-        		binder.getModification().setDate(new Date());
-                return null;
-        	}
-        });
-        
-		// Re-index it
-		this.indexBinder(binder.getId(), false);
-	}
-	
-	private void updateModificationTimeIfNecessary(final Binder binder, Map options) {
-		// Since this method is invoked only as a necessary side-effect of some other operation
-		// user invoked for which access checking was already done (that is, this is invoked by
-		// system rather than user), there is no need for access checking. 
-		// In order to make sure that this code can run without failure caused by access checking,
-		// we run this in admin context.
-		if(binder != null && 
-				binder.getInternalId() == null &&
-				!(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))) {
-			RunasTemplate.runasAdmin(new RunasCallback() {
-				@Override
-				public Object doAs() {
-					updateModificationTime(binder);
-
-					return null;
-				}
-			}, RequestContextHolder.getRequestContext().getZoneName());
-		}
-	}
-	
 	@Override
     public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder) {
 		// No access checking in this method, because we expect the caller to check access on the parent binder before calling this method.	

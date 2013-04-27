@@ -627,6 +627,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		bq.setDiskSpaceUsedCumulative(0L);
     		getCoreDao().save(bq);
     	}
+    	
+    	updateParentModTime(parent, ctx);
     }
 
     //inside write transaction    
@@ -2795,4 +2797,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		}
 		entity.setModification(new HistoryStamp(user, date.getTime()));
 	}
+	
+    public void updateParentModTime(final Binder parentBinder, Map options) {
+		if(parentBinder != null && 
+				parentBinder.getInternalId() == null &&
+				!(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))) {
+    		// Set the modification time to the "current" time.
+			parentBinder.getModification().setDate(new Date());
+			// Reindex
+			indexBinder(parentBinder, false);
+		}
+	}
+
 }
