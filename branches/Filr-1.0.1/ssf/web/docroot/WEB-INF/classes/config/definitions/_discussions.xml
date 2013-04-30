@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_discussions" caption="__template_discussions_workspace" type="8" nextId="15" definitionType="8" databaseId="402880e619c6250f0119c62794b9000c"> 
+  <item name="workspaceForm" caption="__workspace_form" type="form" id="1" display="form"> 
+    <properties/>  
+    <item name="title" caption="__title" type="data" id="2"> 
+      <properties> 
+        <property name="caption" value="__title"/>  
+        <property name="name" value="title"/>  
+        <property name="width" value="60"/>  
+        <property name="generated" value=""/>  
+        <property name="itemSource" value=""/> 
+      </properties> 
+    </item>  
+    <item name="description" caption="__description" type="data" id="3"> 
+      <properties> 
+        <property name="caption" value="__description"/>  
+        <property name="name" value="description"/>  
+        <property name="height" value=""/>  
+        <property name="required" value=""/> 
+      </properties> 
+    </item>  
+    <item name="mashupCanvas" caption="__mashup_canvas" category="generalLayout" type="data" display="form" id="10"> 
+      <properties> 
+        <property name="caption" value="__mashup_canvas"/>  
+        <property name="name" value="mashup"/> 
+      </properties> 
+    </item>  
+    <item name="workspaceIcon" caption="__icon" type="data" id="4"> 
+      <properties> 
+        <property name="caption" value="__icon"/>  
+        <property name="name" value="iconName"/> 
+      </properties> 
+    </item>  
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="14"> 
+      <properties>
+        <property name="caption" value="__attach_files"/>
+        <property name="name" value="ss_attachFile"/>
+        <property name="width" value="60"/>
+        <property name="number" value=""/>
+        <property name="storage" value="simpleFileRepository"/>
+        <property name="hide" value="false"/>
+      </properties>
+    </item> 
+  </item>  
+  <item name="workspaceView" caption="__workspace_view" id="5" display="view"> 
+    <item name="workspaceTitleView" caption="__title" category="workspaceViewData" display="view" id="12"> 
+      <item name="workspaceTitleDescriptionView" caption="__description" category="folderViewData" display="view" id="13"> 
+        <properties> 
+          <property name="caption" value="__description"/> 
+        </properties> 
+      </item> 
+    </item>  
+    <item name="workspaceDataItem" type="dataView" caption="__workspace_data_item" category="workspaceViewData" display="view" id="11" formItem="mashupCanvas"> 
+      <properties> 
+        <property name="caption" value="__mashup_canvas"/>  
+        <property name="name" value="mashup"/> 
+      </properties> 
+    </item>  
+    <item name="dashboardCanvas" caption="__dashboard_canvas" id="6"> 
+      <properties> 
+        <property name="caption" value="__dashboard_canvas"/> 
+      </properties> 
+    </item>  
+    <item name="workspaceBinderList" caption="__workspace_binder_list" category="workspaceViewData" display="view" id="7"/>  
+    <properties> 
+      <property name="type" value="discussion"/> 
+    </properties> 
+  </item>  
+  <properties> 
+    <property name="caption" value="__template_discussions_workspace"/>  
+    <property name="name" value="_discussions"/>  
+    <property name="family" value="discussion"/> 
+  </properties>  
+  <export-mappings/>
+</definition>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_EmailLog" name="org.kablink.teaming.domain.EmailLog">
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <property name="zoneId" not-null="true" access="field" index="sendDate_emaillog"/>
+    <property name="sendDate" not-null="true" index="sendDate_emaillog"/>
+    <property name="from" column="fromField" length="255"/>
+    <property name="subj" length="255"/>
+    <property name="comments" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
+    <property name="statusStr" column="status" length="16" not-null="true"/>
+    <property name="typeStr" column="type" length="32" not-null="true"/>
+    <!-- use length to force medium text in mysql -->
+    <property name="toEmailAddressesStr" column="toEmailAddresses" length="2000000" type="org.springframework.orm.hibernate3.support.ClobStringType"/>   
+    <property name="fileAttachmentsStr" column="fileAttachments" type="org.springframework.orm.hibernate3.support.ClobStringType"/>   
+  </class>
+</hibernate-mapping>

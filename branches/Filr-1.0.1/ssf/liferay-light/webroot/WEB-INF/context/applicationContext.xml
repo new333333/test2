@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../dtd/spring-beans.dtd">
+
+<beans>
+
+	<!-- =========================== Basic Infrastructural Beans ========================== -->
+
+	<!-- Configurer that replaces ${...} placeholders with values from ssf 
+	     properties file(s) that are accessed through propsUtil bean. -->
+	<bean id="propertyPlaceholderConfigurer" 
+		class="org.kablink.teaming.spring.beans.factory.config.PropertyPlaceholderConfigurer" 
+		depends-on="propsUtil">	
+		<!-- As explained above, this custom configurer gets properties values
+		     from SPropsUtil, NOT from the properties file specified below.
+		     In other words, the following 'location' property is ignored,
+		     but nevertheless present here to satisfy initialization requirement. -->
+		<property name="location"><value>config/ssf.properties</value></property>								
+	</bean>
+
+	<!-- Message source for this context, loaded from localized "messages_xx" files -->
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>/WEB-INF/messages/messages-ext</value>
+				<value>/WEB-INF/messages/messages</value>
+				<value>/WEB-INF/messages/help-messages-ext</value>
+				<value>/WEB-INF/messages/help-messages</value>
+			</list>
+		</property>	
+		<property name="defaultEncoding"><value>UTF-8</value></property>
+		<!-- The factory setting for this property is -1, which indicates to cache forever.
+		     Change it to a positive number (eg. 1) to enable automatic reloading, which
+		     should not be used in a production environment. -->
+		<!--<property name="cacheSeconds"><value>5</value></property>-->
+	</bean>
+
+	<!-- Default View Resolver -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="cache"><value>true</value></property>
+		<property name="viewClass"><value>org.springframework.web.servlet.view.JstlView</value></property>
+		<property name="prefix"><value>/WEB-INF/jsp/</value></property>
+		<property name="suffix"><value>.jsp</value></property>
+	</bean>
+	
+	<bean id="propsUtil" class="org.kablink.teaming.util.SPropsUtil">
+		<property name="config">
+			<bean class="org.kablink.teaming.util.PropertiesClassPathConfigFiles">
+				<property name="configFiles">
+					<list>
+						<value>config/ssf.properties</value>
+						<value>optional:config/ssf-ext.properties</value>
+					</list>		
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- ========================= Portlet Common Infrastructural Beans ======================== -->
+	
+	<bean id="localeResolver" class="org.kablink.teaming.portletadapter.support.RequestLocaleResolver" />	
+	
+	<!-- Portlet Parameter-based Mapping Interceptor -->
+	<bean id="portletParameterMappingInterceptor" class="org.springframework.web.portlet.handler.ParameterMappingInterceptor"/>
+
+	<!-- Template for the Portlet Mode - Parameter Handler Mapping Beans -->
+	<bean id="portletModeParameterHandlerMappingTemplate" class="org.springframework.web.portlet.handler.PortletModeParameterHandlerMapping" lazy-init="true" abstract="true">
+        <property name="order"><value>10</value></property>
+		<property name="applyWebRequestInterceptorsToRenderPhaseOnly"><value>false</value></property>
+		<property name="interceptors">
+			<list>
+				<ref bean="portletParameterMappingInterceptor"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Template for the Portlet Mode Handler Mapping Beans -->
+	<bean id="portletModeHandlerMappingTemplate" class="org.springframework.web.portlet.handler.PortletModeHandlerMapping" lazy-init="true" abstract="true">
+        <property name="order"><value>20</value></property>
+		<property name="applyWebRequestInterceptorsToRenderPhaseOnly"><value>false</value></property>
+		<property name="interceptors">
+			<list>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="portletUrlToStringHelper" class="org.kablink.teaming.portletadapter.NullPortletUrlToStringHelper"/>
+	
+	<bean id="messageUtil" class="org.kablink.teaming.liferaylight.portlet.MessageUtil">
+		<property name="localeResolver"><ref local="localeResolver"/></property>
+	</bean>
+	
+</beans>

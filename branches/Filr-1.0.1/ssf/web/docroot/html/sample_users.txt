@@ -1,0 +1,33 @@
+<profiles>
+    <!-- Add a user account -->  
+    <user>
+    <attribute name="name" type="string">peter</attribute>
+    <attribute name="firstName" type="string">Peter</attribute>
+    <attribute name="lastName" type="string">Hurley</attribute>
+    <attribute name="emailAddress" type="string">hurley@acme.com</attribute>
+    <attribute name="password" type="string">secret</attribute>
+  </user>
+
+  <user>
+    <attribute name="name" type="string">charlie</attribute>
+    <attribute name="firstName" type="string">Charlie</attribute>
+    <attribute name="lastName" type="string">Brown</attribute>
+    <attribute name="emailAddress" type="string">charlie@acme.com</attribute>
+    <attribute name="password" type="string">snoopy</attribute>
+  </user>
+
+  <!-- Delete a user account -->
+  <user operation="delete">
+    <attribute name="name" type="string">badboy</attribute>
+    <attribute name="firstName" type="string">Bad</attribute>
+    <attribute name="lastName" type="string">User</attribute>
+  </user>
+
+  <!-- Add a group -->
+  <group>
+    <attribute name="name" type="string">acme_employees</attribute>
+    <property name="memberName">charlie</property>
+    <property name="memberName">peter</property>
+   </group>
+
+</profiles>

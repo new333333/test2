@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="1.0" >
+	<title>Video Extension</title>
+	<author>Kablink Contributor</author>
+	<creationDate>August 27 2009</creationDate>
+	<license>http://www.opensource.org/licenses/cpal_1.0</license>
+	<authorEmail>nbjensen@novell.com</authorEmail>
+	<authorUrl>www.kablink.org</authorUrl>
+	<version>1.0.0</version>
+	<description>This Plugin is made of a Video folder and a video entry for flash videos.</description>
+	<usage><H1>Using the Video Extension plugin.</H1>
+		Create a Video Folder or configure a folder to allow Video Entries. Then add a Video Entry to the folder.
+	</usage>
+</extension>

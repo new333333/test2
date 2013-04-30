@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_calendar_workflow" caption="__calendar_workflow" type="2" nextId="6" definitionType="2" databaseId="402881e523232b3b012328bed460007f"> 
+  <item name="workflowProcess" caption="__workflow_process" id="1"> 
+    <item name="state" caption="__state" type="data" id="2"> 
+      <properties> 
+        <property name="caption" value="__calendar_state_scheduled"/>  
+        <property name="name" value="scheduled"/>  
+        <property name="description"/> 
+      </properties>  
+      <item name="transitions" caption="__transitions" id="3"> 
+        <properties/> 
+      </item>  
+      <item name="accessControls" caption="__accessControls" unique="./item[@name='accessControls']" multipleAllowedInParent="false" id="4"> 
+        <item name="readAccess" caption="__readAccess" category="accessControlsLayout" multipleAllowedInParent="false" id="5"> 
+          <properties>
+            <property name="folderDefault" value="true"/>
+            <property name="entryCreator" value="true"/>
+            <property name="team" value="true"/>
+            <property name="userGroupAccess" value=""/>
+            <property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList">
+              <workflowEntryDataUserList definitionId="402883c6115753d80111577dbe29000d" elementName="user_list:attendee"/>
+              <workflowEntryDataUserList definitionId="402883c6115753d80111577dbe29000d" elementName="group_list:attendee_groups"/>
+              <workflowEntryDataUserList definitionId="402883c6115753d80111577dbe29000d" elementName="team_list:attendee_teams"/>
+            </property>
+          </properties>
+        </item> 
+      </item> 
+    </item>  
+    <properties> 
+      <property name="initialState" value="scheduled"/>  
+      <property name="endState" value="scheduled"/>  
+      <property name="runAs" value="binderowner"/> 
+    </properties> 
+  </item>  
+  <properties> 
+    <property name="caption" value="__calendar_workflow"/>  
+    <property name="name" value="_calendar_workflow"/> 
+  </properties>  
+  <export-mappings>
+    <export definitionId="402883c6115753d80111577dbe29000d">_calendarEntry</export>
+  </export-mappings>
+</definition>
