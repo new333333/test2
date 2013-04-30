@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+
+<project name="jboss-portal" basedir=".">
+	<!-- This setting will override the value in the properties file -->
+	<property name="portal.type" value="jbossportal"/>
+	<property name="app.server.type" value="jboss-tomcat"/>
+
+	<import file="../build-common.xml" />
+	
+	<import file="../deploy-support.xml" />
+	
+	<property name="jar.file" value="kablink-teaming-jbossportal.jar" />
+
+	<target name="clean">
+	</target>
+	
+	<!-- Incremental deploy for kablink-teaming-jbossportal.jar -->
+	<target name="deploy" depends="jar">
+		<antcall target="deploy-jar-into-portal">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+
+	<target name="clean-app-server">
+		<delete failonerror="false">
+			<fileset dir="${app.server.shared.lib.dir}" includes="ssf-*.jar" />
+			<fileset dir="${app.server.lib.dir}" includes="ssf-*.jar" />
+		</delete>		
+		
+		<delete dir="${app.server.ssf.dir}"/>
+		<delete dir="${app.server.ssfs.dir}"/>
+	</target>
+	
+	<target name="init-jboss-portal">
+		<if>
+			<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
+			<then>
+			</then>
+		</if>	
+	</target>
+	
+	<target name="full-deploy">
+		<if>
+			<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
+			<then>
+				<antcall target="deploy-jboss-jboss-tomcat" />
+			</then>
+		</if>
+	</target>
+	
+	<!-- Deploy additional components that are not part of ssf web app -->
+	<target name="deploy-additional-components">
+		<!-- AS core component is deployed into the app server's shared area -->
+		<ant dir="${project.dir}/as-common" target="deploy" inheritAll="false" />
+		<ant dir="${project.dir}/as-shared" target="deploy" inheritAll="false" />
+		<ant dir="${project.dir}/portal-module" target="deploy" inheritAll="false" />
+		<ant dir="${project.dir}/jboss-portal" target="deploy" inheritAll="false" />
+		<!-- ssfs component is deployed into its own web app -->
+		<ant dir="${project.dir}/ssfs" target="deploy" inheritAll="false" />
+		<!-- Modified IFrame portlet -->
+		<ant dir="${project.dir}/iframe-portlet" target="deploy" inheritAll="false" />
+		<copy file="${project.dir}/iframe-portlet/iframeportlet.war" todir="${app.server.dir}/server/all/deploy" overwrite="true"/>
+	</target>
+		
+	<target name="deploy-jboss-jboss-tomcat" depends="clean, init-jboss-portal, clean-app-server">	
+		<unwar src="${project.dir}/war/ssf.war" dest="${app.server.ssf.dir}" />
+		
+		<antcall target="deploy-jboss-portal-specific-ssf-artifacts"/>
+
+		<antcall target="deploy-additional-components" />
+				
+		<!--<echo file="${app.server.deploy.dir}/liferay-portal.ear/portal-web.war/META-INF/MANIFEST.MF" append="true" message=" lib/kablink-teaming-liferay.jar lib/kablink-teaming-portalmodule.jar" />-->
+				
+		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.server.dir}/lib" />
+		<copy file="${project.dir}/lib/mysql-connector.jar" todir="${app.server.server.dir}/lib" />
+		<copy file="${project.dir}/lib/ojdbc14.jar" todir="${app.server.server.dir}/lib" />
+		
+		<!-- 1. JBoss 4.0.2+ classloader does not work properly if the application 
+		     comes with its own log4j archive. (You get the following error -
+		     log4j:ERROR A "org.jboss.logging.util.OnlyOnceErrorHandler" object is not assignable to a "org.apache.log4j.spi.ErrorHandler" variable.)
+		     So, we should remove the jar file from our lib area so that it uses
+		     the one that JBoss has.
+		     2. JBoss Portal, of course, comes with its own portlet API archive 
+		     (named porlet-api-lib.jar NOT portlet.jar). If we have our own portlet.jar
+		     in our lib directory, the Portal fails to load our portlets at startup.
+		     So we must remove that too. 
+		     3. If we have our own mail.jar (javax.mail) in our lib directory, 
+		     ClassCastException occurs at startup during initialization of mail
+		     module due to class loader conflict. So we must remove that.
+		     4. If we have our own jta.jar in our lib directory, we get the following error at startup:
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'transactionManager' defined in ServletContext resource [/WEB-INF/context/applicationContext.xml]: Initialization of bean failed; nested exception is org.springframework.transaction.TransactionSystemException: JTA UserTransaction is not available at JNDI location [java:comp/UserTransaction]; nested exception is org.springframework.jndi.TypeMismatchNamingException: Object [org.jboss.tm.usertx.client.ServerVMClientUserTransaction@19fbe63] available at JNDI location [java:comp/UserTransaction] is not assignable to [javax.transaction.UserTransaction]
+org.springframework.transaction.TransactionSystemException: JTA UserTransaction is not available at JNDI location [java:comp/UserTransaction]; nested exception is org.springframework.jndi.TypeMismatchNamingException: Object [org.jboss.tm.usertx.client.ServerVMClientUserTransaction@19fbe63] available at JNDI location [java:comp/UserTransaction] is not assignable to [javax.transaction.UserTransaction]
+org.springframework.jndi.TypeMismatchNamingException: Object [org.jboss.tm.usertx.client.ServerVMClientUserTransaction@19fbe63] available at JNDI location [java:comp/UserTransaction] is not assignable to [javax.transaction.UserTransaction]		     
+			(reported in http://www.jroller.com/raible/entry/spring_s_jtatransactionmanager_on_jboss)
+			5. If we have our own hibernate3.jar in our lib directory, we can get intermittent
+			ClassCastException depending on the order in which classes are loaded.
+			So we remove ours and instead use the shared one in JBoss.
+		-->
+		<delete>
+			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,commons-logging*.jar,portlet.jar,mail.jar,jta.jar,hibernate3.jar"/> 
+		</delete>		
+	</target>		
+
+	<target name="deploy-jboss-portal-specific-ssf-artifacts">
+		<copy overwrite="true" 
+			file="${project.dir}/web/docroot/WEB-INF/jboss-portal.web.xml"
+			tofile="${app.server.ssf.dir}/WEB-INF/web.xml"/>
+		<copy overwrite="true" 
+			file="${project.dir}/web/docroot/WEB-INF/jboss-portal.jboss-web.xml"
+			tofile="${app.server.ssf.dir}/WEB-INF/jboss-web.xml"/>
+	</target>
+	
+</project>

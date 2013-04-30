@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <xsd:annotation>
+    <xsd:documentation xml:lang="en">
+     Definition Builder schema
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="definitions" type="definitionsType"/>
+  <xsd:element name="definition" type="definitionType"/>
+
+  <xsd:element name="comment" type="xsd:string"/>
+
+  <xsd:complexType name="definitionsType">
+    <xsd:sequence>
+      <xsd:element name="definition" type="definitionType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="item" type="itemType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="properties" type="propertiesType"  minOccurs="0" maxOccurs="1"/>
+   </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="definitionType">
+    <xsd:sequence>
+      <xsd:element name="item" type="itemType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="operations" type="operationsType" minOccurs="0" maxOccurs="1"/>
+   </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="caption" type="xsd:string"/>
+    <xsd:attribute name="type" type="xsd:string"/>
+    <xsd:attribute name="nextId" type="xsd:unsignedInt"/>
+    <xsd:attribute name="canBeDeleted" type="xsd:string"/>
+    <xsd:attribute name="definitionType" type="xsd:unsignedInt"/>
+    <xsd:attribute name="replyStyle" type="xsd:string"/>
+    <xsd:attribute name="databaseId" type="xsd:string"/>
+    <xsd:attribute name="internalId" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="operationsType">
+    <xsd:sequence>
+      <xsd:element name="operation" type="operationType"  minOccurs="0" maxOccurs="unbounded"/>
+   </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="operationType">
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="caption" type="xsd:string"/>
+    <xsd:attribute name="item" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="itemType">
+    <xsd:sequence>
+      <xsd:element name="properties" type="propertiesType"  minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="operations" type="operationsType"  minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="options" type="optionsType"  minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="option_entry_data" type="option_select_dataType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="jsps" type="jspsType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="item" type="itemType" minOccurs="0" maxOccurs="unbounded"/>
+	  <xsd:element name="help" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="index" type="indexType"  minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="webService" type="webServiceType"  minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="export" type="exportType"  minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="notify" type="notifyType"  minOccurs="0" maxOccurs="1"/>
+   </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="caption" type="xsd:string"/>
+    <xsd:attribute name="category" type="xsd:string"/>
+    <xsd:attribute name="id" type="xsd:unsignedInt"/>
+    <xsd:attribute name="definitionType" type="xsd:unsignedInt"/>
+    <xsd:attribute name="type" type="xsd:string"/>
+    <xsd:attribute name="dataType" type="xsd:string"/>
+    <xsd:attribute name="formItem" type="xsd:string"/>
+    <xsd:attribute name="unique" type="xsd:string"/>
+    <xsd:attribute name="multipleAllowed" type="xsd:boolean"/>
+    <xsd:attribute name="multipleAllowedInParent" type="xsd:boolean"/>
+    <xsd:attribute name="canBeDeleted" type="xsd:boolean"/>
+    <xsd:attribute name="x" type="xsd:unsignedInt"/>
+    <xsd:attribute name="y" type="xsd:unsignedInt"/>
+	<xsd:attribute name="feature" type="xsd:string"/>
+    <xsd:attribute name="display" type="xsd:string"/>
+    <xsd:attribute name="license" type="xsd:string"/>
+    <xsd:attribute name="notLicense" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="propertiesType">
+    <xsd:sequence>
+      <xsd:element name="property" type="propertyType" minOccurs="1" maxOccurs="unbounded"/>
+   </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="propertyType">
+    <xsd:sequence>
+      <xsd:element name="option" type="optionType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="option_entry_data" type="option_select_dataType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="workflowCondition" type="workflowConditionType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="help" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+   </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="caption" type="xsd:string" use="required"/>
+    <xsd:attribute name="type" type="xsd:string" use="required"/>
+    <xsd:attribute name="commandName" type="xsd:string"/>
+    <xsd:attribute name="default" type="xsd:string"/>
+    <xsd:attribute name="value" type="xsd:string"/>
+    <xsd:attribute name="setAttribute" type="xsd:string"/>
+    <xsd:attribute name="inline" type="xsd:boolean"/>
+    <xsd:attribute name="readonly" type="xsd:boolean"/>
+    <xsd:attribute name="width" type="xsd:string"/>
+    <xsd:attribute name="characterMask" type="xsd:string"/>
+    <xsd:attribute name="characterLength" type="xsd:string"/>
+    <xsd:attribute name="path" type="xsd:string"/>
+    <xsd:attribute name="unique" type="xsd:string"/>
+    <xsd:attribute name="multipleAllowed" type="xsd:boolean"/>
+    <xsd:attribute name="definitionType" type="xsd:unsignedInt"/>
+    <xsd:attribute name="status" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="optionsType">
+    <xsd:sequence>
+      <xsd:element name="option" type="optionType" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="option_select" type="option_selectType" minOccurs="0" maxOccurs="unbounded"/>
+ 
+    </xsd:sequence>
+    <xsd:attribute name="optionCaption" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="optionType">
+     <xsd:sequence>
+		<xsd:element name="help" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="caption" type="xsd:string"/>
+    <xsd:attribute name="definitionType" type="xsd:string"/>
+    <xsd:attribute name="initial" type="xsd:boolean"/>
+    <xsd:attribute name="default" type="xsd:boolean"/>
+    <xsd:attribute name="multipleAllowed" type="xsd:boolean"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="option_selectType">
+    <xsd:sequence>
+      <xsd:element name="exclude" type="excludeType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="definitionType" type="xsd:string"/>
+    <xsd:attribute name="path" type="xsd:string"/>
+    <xsd:attribute name="optionCaption" type="xsd:string"/>
+    <xsd:attribute name="initial" type="xsd:boolean"/>
+    <xsd:attribute name="default" type="xsd:boolean"/>
+  </xsd:complexType>
+
+
+  <xsd:complexType name="option_select_dataType">
+    <xsd:sequence>
+      <xsd:element name="exclude" type="excludeType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="select_type" type="xsd:string"/>
+    <xsd:attribute name="path" type="xsd:string"/>
+    <xsd:attribute name="optionCaption" type="xsd:string"/>
+    <xsd:attribute name="initial" type="xsd:boolean"/>
+    <xsd:attribute name="default" type="xsd:boolean"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="workflowConditionType">
+     <xsd:sequence>
+		<xsd:element name="value" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+     </xsd:sequence>
+    <xsd:attribute name="definitionId" type="xsd:string"/>
+    <xsd:attribute name="elementName" type="xsd:string"/>
+    <xsd:attribute name="operation" type="xsd:string"/>
+    <xsd:attribute name="duration" type="xsd:string"/>
+    <xsd:attribute name="durationType" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="excludeType">
+     <xsd:sequence/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="jspsType">
+    <xsd:sequence>
+      <xsd:element name="jsp" type="jspType" minOccurs="0" maxOccurs="unbounded"/>
+   </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="jspType">
+     <xsd:sequence/>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="value" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="indexType">
+	<xsd:sequence>
+	  <xsd:element name="args" type="optionalArgsType" minOccurs="0" maxOccurs="1"/>
+	</xsd:sequence>
+	<xsd:attribute name="apply" type="xsd:boolean" use="required" />
+	<xsd:attribute name="fieldBuilder" type="xsd:string" use="required" />
+  </xsd:complexType>
+  
+
+ <xsd:complexType name="notifyType">
+	<xsd:sequence>
+	  <xsd:element name="args" type="optionalArgsType" minOccurs="0" maxOccurs="1"/>
+	</xsd:sequence>
+	<xsd:attribute name="notifyBuilder" type="xsd:string"/>
+	<xsd:attribute name="velocity" type="xsd:string"/>
+  </xsd:complexType>
+  
+ <xsd:complexType name="webServiceType">
+	<xsd:sequence>
+	  <xsd:element name="args" type="optionalArgsType" minOccurs="0" maxOccurs="1"/>
+	</xsd:sequence>
+	<xsd:attribute name="apply" type="xsd:boolean" use="required" />
+	<xsd:attribute name="elementBuilder" type="xsd:string" use="required" />
+  </xsd:complexType>
+  
+   <xsd:complexType name="exportType">
+	<xsd:sequence>
+	  <xsd:element name="args" type="optionalArgsType" minOccurs="0" maxOccurs="1"/>
+	</xsd:sequence>
+	<xsd:attribute name="apply" type="xsd:boolean" use="required" />
+	<xsd:attribute name="elementBuilder" type="xsd:string" use="required" />
+  </xsd:complexType>
+  
+  <xsd:complexType name="optionalArgsType">
+	<xsd:sequence>
+		<xsd:element name="arg" type="optionalArgType" minOccurs="0" maxOccurs="unbounded" />
+	</xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="optionalArgType">
+	<xsd:attribute name="name" type="xsd:string" use="required" />	
+	<xsd:attribute name="type" type="optionalArgDataType" use="required" />	
+	<xsd:attribute name="value" type="xsd:string" use="required" />	
+  </xsd:complexType>
+
+  <xsd:simpleType name="optionalArgDataType">
+	<xsd:restriction base="xsd:string">
+		<xsd:enumeration value="boolean"/>
+		<xsd:enumeration value="string"/>
+	</xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>
