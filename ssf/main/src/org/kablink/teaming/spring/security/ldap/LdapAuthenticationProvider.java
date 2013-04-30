@@ -7,6 +7,7 @@ import org.springframework.security.AuthenticationException;
 import org.springframework.security.BadCredentialsException;
 import org.springframework.security.ldap.LdapAuthoritiesPopulator;
 import org.springframework.security.providers.ldap.LdapAuthenticator;
+import org.springframework.security.userdetails.UsernameNotFoundException;
 
 public class LdapAuthenticationProvider extends org.springframework.security.providers.ldap.LdapAuthenticationProvider {
 
@@ -33,7 +34,7 @@ public class LdapAuthenticationProvider extends org.springframework.security.pro
     		return result;
     	}
     	catch(AuthenticationException e) {
-    		if(e instanceof BadCredentialsException)
+    		if((e instanceof BadCredentialsException) && !(e instanceof UsernameNotFoundException))
     			throw new LdapBadCredentialsException((BadCredentialsException)e);
     		else
     			throw e;
