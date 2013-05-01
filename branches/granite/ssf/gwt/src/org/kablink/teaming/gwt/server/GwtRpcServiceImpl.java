@@ -141,6 +141,8 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.presence.PresenceManager;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
@@ -162,6 +164,7 @@ import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.search.Constants;
 
@@ -2803,27 +2806,46 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	private GwtBrandingData getSiteBrandingData( HttpRequestInfo ri ) throws GwtTeamingException
+	private GwtBrandingData getSiteBrandingData( final HttpRequestInfo ri ) throws GwtTeamingException
 	{
-		Binder topWorkspace;
 		GwtBrandingData brandingData;
+		final AbstractAllModulesInjected allModules;
+		RunasCallback callback;
 		
-		try
-		{
-			String binderId;
-			
-			// Get the top workspace.
-			topWorkspace = getWorkspaceModule().getTopWorkspace();				
+		allModules = this;
 		
-			// Get the branding data from the top workspace.
-			binderId = topWorkspace.getId().toString();
-			brandingData = GwtServerHelper.getBinderBrandingData( this, binderId, getRequest( ri ) );
-		}
-		catch (Exception e)
+		// We need to read the site branding as admin.
+		callback = new RunasCallback()
 		{
-			brandingData = new GwtBrandingData();
-		}
+			@Override
+			public Object doAs()
+			{
+				Binder topWorkspace;
+				GwtBrandingData siteBrandingData;
 
+				try
+				{
+					String binderId;
+					
+					// Get the top workspace.
+					topWorkspace = getWorkspaceModule().getTopWorkspace();				
+				
+					// Get the branding data from the top workspace.
+					binderId = topWorkspace.getId().toString();
+					siteBrandingData = GwtServerHelper.getBinderBrandingData( allModules, binderId, getRequest( ri ) );
+				}
+				catch (Exception e)
+				{
+					siteBrandingData = new GwtBrandingData();
+				}
+
+				return siteBrandingData;
+			}
+		};
+		brandingData = (GwtBrandingData) RunasTemplate.runasAdmin(
+																callback,
+																WebHelper.getRequiredZoneName( getRequest( ri ) ) ); 
+		
 		brandingData.setIsSiteBranding( true );
 
 		return brandingData;
