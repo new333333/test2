@@ -59,6 +59,7 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 	<a href="javascript: ;"
 		onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}', '', '');return false;"><img
 		border="0" align="absmiddle"
+		style="height:14px !important; width:14px !important; line-height:14px !important;" 
 		src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
 		alt="<c:out value="${presenceAltText}"/>" /></a>
 </c:if>
@@ -123,6 +124,7 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 		class="ss_presence_dude"
 		onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><img
 		border="0" align="absmiddle"
+		style="height:14px !important; width:14px !important; line-height:14px !important;" 
 		src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
 		alt="<c:out value="${presenceAltText}"/>" /></a>
 	<c:if test="${ss_presence_show_title}">

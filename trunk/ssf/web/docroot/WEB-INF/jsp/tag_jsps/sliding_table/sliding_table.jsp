@@ -104,17 +104,20 @@ ss_colWidthsUser[<%= String.valueOf(i) %>] = '<%= columnPositions[i] %>';
 %>
 
 <%
-	String browserType = request.getHeader("User-Agent");
-	String sizingTableHeaderCellStyle;
-	String sizingTableRowCellStyle;
-	if ((null != browserType) && ((-1) != browserType.toLowerCase().indexOf("safari"))) {
-		sizingTableHeaderCellStyle = "padding-bottom: 3px;";
-		sizingTableRowCellStyle    = "padding-bottom: 10px;";
-	}
-	else {
-		sizingTableHeaderCellStyle = "";
-		sizingTableRowCellStyle    = "";
-	}
+		String browserType = request.getHeader("User-Agent");
+		String sizingTableHeaderCellStyle;
+		String sizingTableRowCellStyle;
+		String sizingDivMargin;
+		if ((null != browserType) && ((-1) != browserType.toLowerCase().indexOf("safari"))) {
+			sizingTableHeaderCellStyle = "padding-bottom: 3px;";
+			sizingTableRowCellStyle    = "padding-bottom: 2px;";
+			sizingDivMargin = "margin:1px;";
+		}
+		else {
+			sizingTableHeaderCellStyle = "";
+			sizingTableRowCellStyle    = "";
+			sizingDivMargin = "margin:0px;";
+		}
 %>
 <script type="text/javascript">
 var ss_columnCount = <%= String.valueOf(colSize) %>;
@@ -122,7 +125,7 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
   <ssHelpSpot helpId="workspaces_folders/misc_tools/folder_table" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.folderTable"/>"></ssHelpSpot>
 <div id="${ss_slidingTableId}_2" 
- style="margin:1px; padding-bottom:2px;
+ style="<%= sizingDivMargin %> padding-bottom:2px;
  " width="100%"
  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 
@@ -139,10 +142,17 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 		for (int iRow = 0; iRow < slidingTableRows.size(); iRow++) {
 			rowStyle = "ss_sliding_table_row0";
 			if ((rowCount % 2) == 0) rowStyle = "ss_sliding_table_row1";
-			rowCount++;
+			if (rowCount == 1) {
+				rowStyle = "ss_tableheader_style";
 %>
-<tr class="<%= rowStyle %>"><td nowrap width="100%" style="<%= sizingTableRowCellStyle %>">&nbsp;</td></tr>
+<tr class="ss_tableheader_style"><th nowrap width="100%" style="<%= sizingTableRowCellStyle %>">&nbsp;</th></tr>
 <%
+			} else {
+%>
+<tr class="<%= rowStyle %>"><td nowrap width="100%" >&nbsp;</td></tr>
+<%
+			}
+			rowCount++;
 		}		
 %>
 </table>
@@ -211,7 +221,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th class="<%= rowStyle %>" align="left" 
+<th class="<%= rowStyle %>" align="left" nowrap width="2000"
   onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnText %>&nbsp;</th>
 <%
 					} else {
@@ -254,7 +264,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th class="<%= rowStyle %>" align="left" 
+<th class="<%= rowStyle %>" align="left" nowrap width="2000"
   onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnText %>&nbsp;</th>
 <%
 					} else {
@@ -281,7 +291,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 <%
 					if (headerRow.booleanValue()) {
 %>
-<th class="<%= rowStyle %>" align="left" 
+<th class="<%= rowStyle %>" align="left" nowrap width="2000"
   onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">&nbsp;<%= columnText %>&nbsp;</th>
 <%
 					} else {
