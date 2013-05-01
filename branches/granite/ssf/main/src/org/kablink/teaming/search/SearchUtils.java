@@ -519,4 +519,11 @@ public class SearchUtils {
 		// Always use the initial form of the method.
 		return getUserProperties(bs, userId, null);
 	}
+	
+	public static Criteria userType(String userType) {
+		Criteria crit = new Criteria();
+		crit.add(in(USER_TYPE_FIELD, new String[] {userType}));
+		return crit;
+	}
+	
 }

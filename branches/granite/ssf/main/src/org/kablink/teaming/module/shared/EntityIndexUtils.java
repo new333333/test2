@@ -301,6 +301,15 @@ public class EntityIndexUtils {
     	} else if (entry instanceof User) {
         	Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         	doc.add(entryTypeField);
+        	
+        	//TODO fix this to use the right user type
+        	Field userTypeField = new Field(Constants.USER_TYPE_FIELD, Constants.USER_TYPE_LOCAL, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        	doc.add(userTypeField);
+        	userTypeField = new Field(Constants.USER_TYPE_FIELD, Constants.USER_TYPE_LDAP, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        	doc.add(userTypeField);
+        	userTypeField = new Field(Constants.USER_TYPE_FIELD, Constants.USER_TYPE_EXTERNAL, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        	doc.add(userTypeField);
+    	
     	} else if (entry instanceof Group) {
     		Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_GROUP, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     		doc.add(entryTypeField);

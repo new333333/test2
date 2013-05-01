@@ -35,7 +35,9 @@ package org.kablink.teaming.module.license.impl;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.dom4j.Document;
 import org.kablink.teaming.ConfigurationException;
@@ -50,14 +52,19 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.jobs.LicenseMonitor;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.license.LicenseException;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.report.ReportModule;
+import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 import org.springframework.beans.factory.InitializingBean;
 
 
@@ -94,6 +101,23 @@ implements LicenseModule, ZoneSchedule {
  	   	LicenseMonitor job =getProcessor(zone);
    		job.remove(zone.getId());
 	}
+
+	private ZoneModule zoneModule;
+	/**
+	 * @return the zoneModule
+	 */
+	public ZoneModule getZoneModule() {
+		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
+	}
+
+	private BinderModule binderModule;
+	/**
+	 * @return the binderModule
+	 */
+	public BinderModule getBinderModule() {
+		return (BinderModule) SpringContextUtil.getBean("binderModule");
+	}
+
 	private ReportModule reportModule;
 	/**
 	 * @return the reportModule
@@ -121,17 +145,7 @@ implements LicenseModule, ZoneSchedule {
 	
 	protected long countInternalUsers(Long zoneId)
 	{
-		FilterControls	filterControls;
-		
-		// Find all users that are not disabled and not deleted and who have a password.
-		// If a user has been sync'd from an ldap source they won't have a password.
-		filterControls = new FilterControls();
-		filterControls.add(Restrictions.eq("type", "user"));
-		filterControls.add(Restrictions.eq("disabled", Boolean.FALSE));
-		filterControls.add(Restrictions.eq("deleted", Boolean.FALSE));
-		StringBuffer buf = new StringBuffer(" and x.name = x.foreignName");
-		
-		return getCoreDao().countObjects(Principal.class, filterControls, zoneId, buf);
+		return countUserTypes(zoneId, Constants.USER_TYPE_LOCAL);
 	}
 	
 	
@@ -140,18 +154,56 @@ implements LicenseModule, ZoneSchedule {
 	 */
 	protected long countSyncdUsers( Long zoneId )
 	{
-		FilterControls	filterControls;
+		return countUserTypes(zoneId, Constants.USER_TYPE_LDAP);
+	}
+	
+	protected long countOpenIdUsers(Long zoneId)
+	{
+		return countUserTypes(zoneId, Constants.USER_TYPE_OPEN_ID);
+	}
+	
+	protected long countOtherExtUsers(Long zoneId)
+	{
+		return countUserTypes(zoneId, Constants.USER_TYPE_EXTERNAL);
+	}
+	
+	protected long countUserTypes(Long zoneId, String userType)
+	{
+		Map options = new HashMap();
+		String page = "0";
+		int returnCount = 1000000;
 		
-		// Find all users that are not disabled and not deleted and who do NOT have a password.
-		// If a user has been sync'd from an ldap source they won't have a password.
-		filterControls = new FilterControls();
-	 	filterControls.add( Restrictions.eq( "type", "user" ) );
-	 	filterControls.add( Restrictions.eq( "disabled", Boolean.FALSE ) );
-	 	filterControls.add( Restrictions.eq( "deleted", Boolean.FALSE ) );
-	 	StringBuffer buf = new StringBuffer(" and x.name <> x.foreignName");
+		String entriesPerPage = String.valueOf(returnCount);
+		options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(100000));
+		
+		Integer searchUserOffset = 0;
+		Integer searchLuceneOffset = 0;
+		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
+		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
+		
+		Integer maxHits = new Integer(entriesPerPage);
+		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
+		
+		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits;
+		if (searchUserOffset > 0) {
+			intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
+		}
+		options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
 
-	 	return getCoreDao().countObjects( Principal.class, filterControls, zoneId, buf );
-	}// end countUsersSyncdFromLdapSource()
+		options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf("0"));
+		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+		
+		org.kablink.util.search.Criteria crit = SearchUtils.userType(userType);
+		Map results = getBinderModule().executeSearchQuery(crit, offset, maxResults);
+
+    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+    	return items.size();
+	}
+	
+	protected boolean isGuestAccessEnabled(long zoneId) {
+		return getZoneModule().getZoneConfig(zoneId).getAuthenticationConfig().isAllowAnonymousAccess();
+	}
 	
 
 	public void recordCurrentUsage()
