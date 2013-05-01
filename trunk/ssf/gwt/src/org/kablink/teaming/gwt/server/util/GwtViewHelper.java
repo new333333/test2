@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -115,6 +116,7 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow.PrincipalInfoId;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
@@ -289,6 +291,12 @@ public class GwtViewHelper {
 	// Used in various file size calculations, ...
 	private final static long MEGABYTES = (1024l * 1024l);
 	
+	// The following control whether profiling information is tracked
+	// per row and/or per column and per user (i.e., author.)
+	private final static boolean PROFILE_PER_ROW	= SPropsUtil.getBoolean("gwt.profile.listview.per.row",    false);
+	private final static boolean PROFILE_PER_COLUMN	= SPropsUtil.getBoolean("gwt.profile.listview.per.column", false);
+	private final static boolean PROFILE_PER_USER	= SPropsUtil.getBoolean("gwt.profile.listview.per.user",   false);
+	
 	/*
 	 * Inner class used to compare two AccessInfo's.
 	 * 
@@ -388,6 +396,45 @@ public class GwtViewHelper {
 		public void setBinderTargetId(Long binderTargetId) {m_binderTargetId = binderTargetId;}
 		public void setEntryTargetId( Long entryTargetId)  {m_entryTargetId  = entryTargetId; }
 	}
+
+	/*
+	 * Inner class that encapsulated a User with their Workspace.
+	 */
+	private static class UserWorkspacePair {
+		private User		m_user;	//
+		private Workspace	m_ws;	//
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param user
+		 * @param ws
+		 */
+		public UserWorkspacePair(User user, Workspace ws) {
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameters.
+			setUser(user);
+			setWorkspace(ws);
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public User      getUser()      {return m_user;}
+		public Workspace getWorkspace() {return m_ws;  }
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setUser(     User      user) {m_user = user;}
+		public void setWorkspace(Workspace ws)   {m_ws   = ws;  }
+	}
 	
 	/*
 	 * Class constructor that prevents this class from being
@@ -436,10 +483,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.abortFileUpload( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.abortFileUpload( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -492,7 +540,7 @@ public class GwtViewHelper {
 			}
 
 			catch (Exception e) {
-				// No!  Add an error  to the error list.
+				// No!  Add an error to the error list...
 				String messageKey;
 				if      (e instanceof AccessControlException)          messageKey = "addNewFolderError.AccssControlException";
 				else if (e instanceof IllegalCharacterInNameException) messageKey = "addNewFolderError.IllegalCharacterInNameException";
@@ -500,6 +548,9 @@ public class GwtViewHelper {
 				else if (e instanceof TitleException)		           messageKey = "addNewFolderError.TitleException";
 				else                                                   messageKey = "addNewFolderError.OtherException";
 				reply.addError(NLT.get(messageKey, new String[]{folderName}));
+				
+				// ...and log it.
+				GwtLogHelper.error(m_logger, "GwtViewHelper.addNewFolder( Name:  '" + folderName + "', EXCEPTION ):  ", e);
 			}
 
 			// If we get here, reply refers to an
@@ -511,10 +562,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.addNewFolder( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.addNewFolder( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -626,86 +678,93 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Map buildSearchMapFromSharedMeList(AllModulesInjected bs, List<GwtSharedMeItem> shareItems, boolean sortDescend, String sortBy) {
-		List<Map> searchEntries = new ArrayList<Map>();
-		for (GwtSharedMeItem si:  shareItems) {
-			// Create an entry Map for this GwtSharedMeItem.
-			Map entryMap = new HashMap();
-			searchEntries.add(entryMap);
-
-			// Are we processing an entry?
-			DefinableEntity	entity = si.getEntity();
-			Description entityDesc = entity.getDescription();
-			if (null != entityDesc) {
-				entryMap.put(Constants.DESC_FIELD,        entityDesc.getText());
-				entryMap.put(Constants.DESC_FORMAT_FIELD, entityDesc.getFormat());
-			}
-			entryMap.put(Constants.DOCID_FIELD,  String.valueOf(entity.getId()));
-			entryMap.put(Constants.ENTITY_FIELD, entity.getEntityType().name());
-			entryMap.put(Constants.TITLE_FIELD,  entity.getTitle());
-			String binderIdField;
-			if (entity instanceof FolderEntry) {
-				// Yes!  Can we find a filename for this entity?
-				String fName = GwtServerHelper.getFileEntrysFilename(bs, ((FolderEntry) entity), false);
-	        	if (MiscUtil.hasString(fName)) {
-	        		// Yes!  Store it in the Map.
-					entryMap.put(Constants.FILENAME_FIELD, fName);
-	        	}
-
-		        // Store the total replies, last activity and
-		        // modification date for this entry in the Map.
-		        FolderEntry fe = ((FolderEntry) entity);
-		        entryMap.put(Constants.TOTALREPLYCOUNT_FIELD,   String.valueOf(fe.getTotalReplyCount()));
-		        entryMap.put(Constants.LASTACTIVITY_FIELD,      fe.getLastActivity()                   );
-		        entryMap.put(Constants.MODIFICATION_DATE_FIELD, fe.getModification()                   );
-				FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
-				if (null != fa) {
-			        entryMap.put(Constants.FILE_TIME_FIELD,  String.valueOf(fa.getModification().getDate().getTime()));
-			        entryMap.put(Constants.IS_LIBRARY_FIELD, String.valueOf(Boolean.TRUE)                            );
+		SimpleProfiler.start("GwtViewHelper.buildSearchMapFromSharedMeList()");
+		try {
+			List<Map> searchEntries = new ArrayList<Map>();
+			for (GwtSharedMeItem si:  shareItems) {
+				// Create an entry Map for this GwtSharedMeItem.
+				Map entryMap = new HashMap();
+				searchEntries.add(entryMap);
+	
+				// Are we processing an entry?
+				DefinableEntity	entity = si.getEntity();
+				Description entityDesc = entity.getDescription();
+				if (null != entityDesc) {
+					entryMap.put(Constants.DESC_FIELD,        entityDesc.getText());
+					entryMap.put(Constants.DESC_FORMAT_FIELD, entityDesc.getFormat());
+				}
+				entryMap.put(Constants.DOCID_FIELD,  String.valueOf(entity.getId()));
+				entryMap.put(Constants.ENTITY_FIELD, entity.getEntityType().name());
+				entryMap.put(Constants.TITLE_FIELD,  entity.getTitle());
+				String binderIdField;
+				if (entity instanceof FolderEntry) {
+					// Yes!  Can we find a filename for this entity?
+					String fName = GwtServerHelper.getFileEntrysFilename(bs, ((FolderEntry) entity), false);
+		        	if (MiscUtil.hasString(fName)) {
+		        		// Yes!  Store it in the Map.
+						entryMap.put(Constants.FILENAME_FIELD, fName);
+		        	}
+	
+			        // Store the total replies, last activity and
+			        // modification date for this entry in the Map.
+			        FolderEntry fe = ((FolderEntry) entity);
+			        entryMap.put(Constants.TOTALREPLYCOUNT_FIELD,   String.valueOf(fe.getTotalReplyCount()));
+			        entryMap.put(Constants.LASTACTIVITY_FIELD,      fe.getLastActivity()                   );
+			        entryMap.put(Constants.MODIFICATION_DATE_FIELD, fe.getModification()                   );
+					FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
+					if (null != fa) {
+				        entryMap.put(Constants.FILE_TIME_FIELD,  String.valueOf(fa.getModification().getDate().getTime()));
+				        entryMap.put(Constants.IS_LIBRARY_FIELD, String.valueOf(Boolean.TRUE)                            );
+					}
+					
+					// Store the entry's parent binder's ID in the Map.
+					binderIdField = Constants.BINDER_ID_FIELD;
 				}
 				
-				// Store the entry's parent binder's ID in the Map.
-				binderIdField = Constants.BINDER_ID_FIELD;
+				else {
+					// No, we aren't processing an entry!  It must be a
+					// binder!  Store the binder's path and
+					// modification date...
+					Binder binder = ((Binder) entity);
+					entryMap.put(Constants.ENTITY_PATH,             binder.getPathName()    );
+			        entryMap.put(Constants.MODIFICATION_DATE_FIELD, binder.getModification());
+			        
+					// ...and store its parent's ID in the Map.
+					binderIdField = Constants.BINDERS_PARENT_ID_FIELD;
+				}
+				
+				// Store the binder ID in the Map.
+				entryMap.put(
+					binderIdField,
+					String.valueOf(entity.getParentBinder().getId()));
+	
+				// If the entity has a family...
+				String family = si.getEntityFamily();
+				if (MiscUtil.hasString(family)) {
+					// ...store it in the entry map.
+					entryMap.put(Constants.FAMILY_FIELD, family);
+				}
 			}
 			
-			else {
-				// No, we aren't processing an entry!  It must be a
-				// binder!  Store the binder's path and modification
-				// date...
-				Binder binder = ((Binder) entity);
-				entryMap.put(Constants.ENTITY_PATH,             binder.getPathName()    );
-		        entryMap.put(Constants.MODIFICATION_DATE_FIELD, binder.getModification());
-		        
-				// ...and store its parent's ID in the Map.
-				binderIdField = Constants.BINDERS_PARENT_ID_FIELD;
-			}
+			// Finally, apply the sorting to the search entries...
+			searchEntries = postProcessSharedMeMap(
+				bs,
+				searchEntries,
+				shareItems,
+				sortDescend,
+				sortBy);
 			
-			// Store the binder ID in the Map.
-			entryMap.put(
-				binderIdField,
-				String.valueOf(entity.getParentBinder().getId()));
-
-			// If the entity has a family...
-			String family = si.getEntityFamily();
-			if (MiscUtil.hasString(family)) {
-				// ...store it in the entry map.
-				entryMap.put(Constants.FAMILY_FIELD, family);
-			}
+			// ...and use them to construct the search results Map and
+			// ...return that.
+			Map reply = new HashMap();
+			reply.put(ObjectKeys.SEARCH_ENTRIES,                 searchEntries        );
+			reply.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(searchEntries.size()));
+			return reply;
 		}
 		
-		// Finally, apply the sorting to the search entries...
-		searchEntries = postProcessSharedMeMap(
-			bs,
-			searchEntries,
-			shareItems,
-			sortDescend,
-			sortBy);
-		
-		// ...and use them to construct the search results Map and
-		// ...return that.
-		Map reply = new HashMap();
-		reply.put(ObjectKeys.SEARCH_ENTRIES,                 searchEntries        );
-		reply.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(searchEntries.size()));
-		return reply;
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.buildSearchMapFromSharedMeList()");
+		}
 	}
 
 	/*
@@ -736,6 +795,8 @@ public class GwtViewHelper {
 					reply.setViewFileUrl(GwtServerHelper.getViewFileUrl(request, reply));
 				}
 				catch (GwtTeamingException ex) {
+					// Log the error.
+					GwtLogHelper.error(m_logger, "GwtViewHelper.buildViewFileInfo( Entry title:  '" + fe.getTitle() + "', EXCEPTION ):  ", ex);
 					reply = null;
 				}
     		}
@@ -820,146 +881,153 @@ public class GwtViewHelper {
 	 * each assignee's title, ...
 	 */
 	private static void completeAIs(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> folderRows) {
-		// If we don't have any FolderRows's to complete...
-		if (!(MiscUtil.hasItems(folderRows))) {
-			// ..bail.
-			return;
+		SimpleProfiler.start("GwtViewHelper.completeAIs()");
+		try {
+			// If we don't have any FolderRows's to complete...
+			if (!(MiscUtil.hasItems(folderRows))) {
+				// ..bail.
+				return;
+			}
+	
+			// Allocate List<Long>'s to track the assignees that need
+			// to be completed.
+			List<Long> principalIds = new ArrayList<Long>();
+			List<Long> teamIds      = new ArrayList<Long>();
+	
+			// Scan the List<FolderRow>'s.
+			for (FolderRow fr:  folderRows) {
+				// Scan this FolderRow's individual assignees tracking
+				// each unique ID.
+				for (AssignmentInfo ai:  getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME)) {
+					ListUtil.addLongToListLongIfUnique((ai.getAssigneeType().isTeam() ? teamIds : principalIds), ai.getId());
+				}
+				for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
+					ListUtil.addLongToListLongIfUnique((ai.getAssigneeType().isTeam() ? teamIds : principalIds), ai.getId());
+				}
+				for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
+					ListUtil.addLongToListLongIfUnique((ai.getAssigneeType().isTeam() ? teamIds : principalIds), ai.getId());
+				}
+				
+				// Scan this FolderRow's group assignees tracking each
+				// unique ID.
+				for (AssignmentInfo ai:  getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME)) {
+					ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				}
+				for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
+					ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				}
+				for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
+					ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				}
+				
+				// Scan this FolderRow's team assignees tracking each
+				// unique ID.
+				for (AssignmentInfo ai:  getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME)) {
+					ListUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+				}
+				for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
+					ListUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+				}
+				for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
+					ListUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+				}
+				
+				// Scan this FolderRow's shared by/with's tracking each
+				// unique ID.
+				for (AssignmentInfo ai:  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)) {
+					ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				}
+				for (AssignmentInfo ai:  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)) {
+					ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				}
+			}
+	
+			// If we don't have any assignees to complete...
+			boolean hasPrincipals = (!(principalIds.isEmpty()));
+			boolean hasTeams      = (!(teamIds.isEmpty()));		
+			if ((!hasPrincipals) && (!hasTeams)) {
+				// ...bail.
+				return;
+			}
+	
+			// Construct Maps, mapping the IDs to their titles,
+			// membership counts, ...
+			Map<Long, String>			avatarUrls        = new HashMap<Long, String>();
+			Map<Long, String>			principalEMAs     = new HashMap<Long, String>();
+			Map<Long, String>			principalTitles   = new HashMap<Long, String>();
+			Map<Long, Integer>			groupCounts       = new HashMap<Long, Integer>();
+			Map<Long, GwtPresenceInfo>	userPresence      = new HashMap<Long, GwtPresenceInfo>();
+			Map<Long, Long>				presenceUserWSIds = new HashMap<Long, Long>();
+			Map<Long, String>			teamTitles        = new HashMap<Long, String>();
+			Map<Long, Integer>			teamCounts        = new HashMap<Long, Integer>();
+			GwtEventHelper.readEventStuffFromDB(
+				// Uses these...
+				bs,
+				request,
+				principalIds,
+				teamIds,
+	
+				// ...to complete these.
+				principalEMAs,
+				principalTitles,
+				groupCounts,
+				userPresence,
+				presenceUserWSIds,
+				
+				teamTitles,
+				teamCounts,
+				
+				avatarUrls);
+	
+			// Scan the List<FolderRow>'s again...
+			for (FolderRow fr:  folderRows) {
+				// ...this time, fixing the assignee lists.
+				fixupAIUsers( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
+				fixupAIGroups(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, groupCounts                                               );
+				fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             teamTitles,      teamCounts                                                );
+				fixupAIUsers( getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
+				fixupAIGroups(getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, groupCounts                                               );
+				fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        teamTitles,      teamCounts                                                );
+				fixupAIUsers( getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
+				fixupAIGroups(getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, groupCounts                                               );
+				fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  teamTitles,      teamCounts                                                );
+				
+				fixupAIGroups(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, groupCounts                                               );
+				fixupAIGroups(getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, groupCounts                                               );
+				fixupAIGroups(getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME),           principalTitles, groupCounts                                               );
+				
+				fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       teamTitles,      teamCounts                                                );
+				fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                                                );
+				fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            teamTitles,      teamCounts                                                );
+				
+				fixupAIUsers(  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                        principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
+				fixupAIUsers(  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                      principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
+				fixupAIGroups( getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                      principalTitles, groupCounts                                               );
+				fixupAIPublics(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)                                                                                                    );
+				fixupAIPublics(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)                                                                                                  );
+				fixupAITeams(  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                      teamTitles,      teamCounts                                                );
+			}		
+	
+			// Finally, one last scan through the List<FolderRow>'s...
+			Comparator<AssignmentInfo> comparator = new GwtServerHelper.AssignmentInfoComparator(true);
+			for (FolderRow fr:  folderRows) {
+				// ...this time, to sort the assignee lists.
+				Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             comparator);
+				Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        comparator);
+				Collections.sort(getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  comparator);
+				
+				Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      comparator);
+				Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), comparator);
+				Collections.sort(getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME),           comparator);
+				
+				Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       comparator);
+				Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  comparator);
+				Collections.sort(getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            comparator);
+			}
 		}
-
-		// Allocate List<Long>'s to track the assignees that need to be
-		// completed.
-		List<Long> principalIds = new ArrayList<Long>();
-		List<Long> teamIds      = new ArrayList<Long>();
-
-		// Scan the List<FolderRow>'s.
-		for (FolderRow fr:  folderRows) {
-			// Scan this FolderRow's individual assignees tracking each
-			// unique ID.
-			for (AssignmentInfo ai:  getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME)) {
-				ListUtil.addLongToListLongIfUnique((ai.getAssigneeType().isTeam() ? teamIds : principalIds), ai.getId());
-			}
-			for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
-				ListUtil.addLongToListLongIfUnique((ai.getAssigneeType().isTeam() ? teamIds : principalIds), ai.getId());
-			}
-			for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
-				ListUtil.addLongToListLongIfUnique((ai.getAssigneeType().isTeam() ? teamIds : principalIds), ai.getId());
-			}
-			
-			// Scan this FolderRow's group assignees tracking each
-			// unique ID.
-			for (AssignmentInfo ai:  getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME)) {
-				ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
-			}
-			for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
-				ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
-			}
-			for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
-				ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
-			}
-			
-			// Scan this FolderRow's team assignees tracking each
-			// unique ID.
-			for (AssignmentInfo ai:  getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME)) {
-				ListUtil.addLongToListLongIfUnique(teamIds, ai.getId());
-			}
-			for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
-				ListUtil.addLongToListLongIfUnique(teamIds, ai.getId());
-			}
-			for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
-				ListUtil.addLongToListLongIfUnique(teamIds, ai.getId());
-			}
-			
-			// Scan this FolderRow's shared by/with's tracking each unique
-			// ID.
-			for (AssignmentInfo ai:  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)) {
-				ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
-			}
-			for (AssignmentInfo ai:  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)) {
-				ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
-			}
-		}
-
-		// If we don't have any assignees to complete...
-		boolean hasPrincipals = (!(principalIds.isEmpty()));
-		boolean hasTeams      = (!(teamIds.isEmpty()));		
-		if ((!hasPrincipals) && (!hasTeams)) {
-			// ...bail.
-			return;
-		}
-
-		// Construct Maps, mapping the IDs to their titles, membership
-		// counts, ...
-		Map<Long, String>			avatarUrls        = new HashMap<Long, String>();
-		Map<Long, String>			principalEMAs     = new HashMap<Long, String>();
-		Map<Long, String>			principalTitles   = new HashMap<Long, String>();
-		Map<Long, Integer>			groupCounts       = new HashMap<Long, Integer>();
-		Map<Long, GwtPresenceInfo>	userPresence      = new HashMap<Long, GwtPresenceInfo>();
-		Map<Long, Long>				presenceUserWSIds = new HashMap<Long, Long>();
-		Map<Long, String>			teamTitles        = new HashMap<Long, String>();
-		Map<Long, Integer>			teamCounts        = new HashMap<Long, Integer>();
-		GwtEventHelper.readEventStuffFromDB(
-			// Uses these...
-			bs,
-			request,
-			principalIds,
-			teamIds,
-
-			// ...to complete these.
-			principalEMAs,
-			principalTitles,
-			groupCounts,
-			userPresence,
-			presenceUserWSIds,
-			
-			teamTitles,
-			teamCounts,
-			
-			avatarUrls);
-
-		// Scan the List<FolderRow>'s again...
-		for (FolderRow fr:  folderRows) {
-			// ...this time, fixing the assignee lists.
-			fixupAIs(     getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, userPresence, presenceUserWSIds, avatarUrls);
-			fixupAIGroups(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, groupCounts                                );
-			fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             teamTitles,      teamCounts                                 );
-			fixupAIs(     getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, userPresence, presenceUserWSIds, avatarUrls);
-			fixupAIGroups(getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, groupCounts                                );
-			fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        teamTitles,      teamCounts                                 );
-			fixupAIs(     getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, userPresence, presenceUserWSIds, avatarUrls);
-			fixupAIGroups(getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, groupCounts                                );
-			fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  teamTitles,      teamCounts                                 );
-			
-			fixupAIGroups(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, groupCounts                                );
-			fixupAIGroups(getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, groupCounts                                );
-			fixupAIGroups(getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME),           principalTitles, groupCounts                                );
-			
-			fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       teamTitles,      teamCounts                                 );
-			fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                                 );
-			fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            teamTitles,      teamCounts                                 );
-			
-			fixupAIs(      getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                         principalTitles, userPresence, presenceUserWSIds, avatarUrls);
-			fixupAIs(      getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       principalTitles, userPresence, presenceUserWSIds, avatarUrls);
-			fixupAIGroups( getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       principalTitles, groupCounts                                );
-			fixupAIPublics(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)                                                                                      );
-			fixupAIPublics(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)                                                                                    );
-			fixupAITeams(  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       teamTitles,      teamCounts                                 );
-		}		
-
-		// Finally, one last scan through the List<FolderRow>'s...
-		Comparator<AssignmentInfo> comparator = new GwtServerHelper.AssignmentInfoComparator(true);
-		for (FolderRow fr:  folderRows) {
-			// ...this time, to sort the assignee lists.
-			Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             comparator);
-			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        comparator);
-			Collections.sort(getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  comparator);
-			
-			Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      comparator);
-			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), comparator);
-			Collections.sort(getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME),           comparator);
-			
-			Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       comparator);
-			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  comparator);
-			Collections.sort(getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            comparator);
+		
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.completeAIs()");
 		}
 	}
 
@@ -997,12 +1065,15 @@ public class GwtViewHelper {
 						fm.changeEntryType(entityId.getEntityId(), defId);
 					}
 					catch (Exception e) {
-						// No!  Add an error  to the error list.
+						// No!  Add an error to the error list...
 						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
 						if (e instanceof AccessControlException) messageKey = "changeEntryTypeError.AccssControlException";
 						else                                     messageKey = "changeEntryTypeError.OtherException";
 						reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtViewHelper.changeEntryTypes( Entry title:  '" + entryTitle + "', EXCEPTION ):  ", e);
 					}
 				}
 			}
@@ -1016,10 +1087,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.changeEntryTypes( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.changeEntryTypes( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -1145,115 +1217,124 @@ public class GwtViewHelper {
 	 * representing the 'Shared with Me' items.
 	 */
 	private static List<GwtSharedMeItem> convertItemListToWithMeList(AllModulesInjected bs, HttpServletRequest request, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups, String sortBy, boolean sortDescend) {
-		// Allocate a List<GwtSharedMeItem> to hold the converted
-		// List<ShareItem> information.
-		List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
-		
-		// If we don't have any share items to convert...
-		if (!(MiscUtil.hasItems(shareItems))) {
-			// ...return the empty reply list.
-			return reply;
-		}
-
-		// Get the state of the shared view.
-		SharedViewState svs;
-		try                  {svs = getSharedViewState(bs, request, CollectionType.SHARED_WITH_ME).getSharedViewState();}
-		catch (Exception ex) {svs = new SharedViewState(true, false);                                                   }
-
-		// Scan the share items.
-		boolean			sharedFiles = getUserViewSharedFiles(request, CollectionType.SHARED_WITH_ME);
-		SharingModule	sm          = bs.getSharingModule();
-		for (ShareItem si:  shareItems) {
-			// Is this share item expired or not the latest share for
-			// the entity?
-			if (si.isExpired() || (!(si.isLatest()))) {
-				// Yes!  Skip it.
-				continue;
-			}
-
-			// Did user somehow share the item with themselves?
-			if (si.getSharerId().equals(userId)) {
-				// Yes!  Skip it.
-				continue;
-			}
+		SimpleProfiler.start("GwtViewHelper.convertItemListToWithMeList()");
+		try {
+			// Allocate a List<GwtSharedMeItem> to hold the converted
+			// List<ShareItem> information.
+			List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
 			
-			// Is this share item's entity in the trash?
-			DefinableEntity siEntity = sm.getSharedEntity(si);
-			if (GwtServerHelper.isEntityPreDeleted(siEntity)) {
-				// Yes!  Skip it.
-				continue;
+			// If we don't have any share items to convert...
+			if (!(MiscUtil.hasItems(shareItems))) {
+				// ...return the empty reply list.
+				return reply;
 			}
-
-			// Are we showing everything?
-			boolean showHidden     = svs.isShowHidden();
-			boolean showNonHidden  = svs.isShowNonHidden();
-			boolean isEntityHidden = isSharedEntityHidden(bs, CollectionType.SHARED_WITH_ME, siEntity);
-			if ((!showHidden) || (!showNonHidden)) {
-				// No!  Are we supposed to show entities in this hide
-				// state?
-				boolean showIt = ((isEntityHidden && showHidden) || ((!isEntityHidden) && showNonHidden));
-				if (!showIt) {
+	
+			// Get the state of the shared view.
+			SharedViewState svs;
+			try                  {svs = getSharedViewState(bs, request, CollectionType.SHARED_WITH_ME).getSharedViewState();}
+			catch (Exception ex) {svs = new SharedViewState(true, false);                                                   }
+	
+			// Scan the share items.
+			boolean			sharedFiles = getUserViewSharedFiles(request, CollectionType.SHARED_WITH_ME);
+			SharingModule	sm          = bs.getSharingModule();
+			for (ShareItem si:  shareItems) {
+				// Is this share item expired or not the latest share
+				// for the entity?
+				if (si.isExpired() || (!(si.isLatest()))) {
 					// Yes!  Skip it.
 					continue;
 				}
-			}
-
-			// Is this entity other than a file entity while we're only
-			// showing files in the collection?
-			String siEntityFamily = GwtServerHelper.getFolderEntityFamily(bs, siEntity);
-			if (sharedFiles && (!(GwtServerHelper.isFamilyFile(siEntityFamily)))) {
-				// Yes!  Skip it.
-				continue;
+	
+				// Did user somehow share the item with themselves?
+				if (si.getSharerId().equals(userId)) {
+					// Yes!  Skip it.
+					continue;
+				}
+				
+				// Is this share item's entity in the trash?
+				DefinableEntity siEntity = sm.getSharedEntity(si);
+				if (GwtServerHelper.isEntityPreDeleted(siEntity)) {
+					// Yes!  Skip it.
+					continue;
+				}
+	
+				// Are we showing everything?
+				boolean showHidden     = svs.isShowHidden();
+				boolean showNonHidden  = svs.isShowNonHidden();
+				boolean isEntityHidden = isSharedEntityHidden(bs, CollectionType.SHARED_WITH_ME, siEntity);
+				if ((!showHidden) || (!showNonHidden)) {
+					// No!  Are we supposed to show entities in this
+					// hide state?
+					boolean showIt = ((isEntityHidden && showHidden) || ((!isEntityHidden) && showNonHidden));
+					if (!showIt) {
+						// Yes!  Skip it.
+						continue;
+					}
+				}
+	
+				// Is this entity other than a file entity while we're
+				// only showing files in the collection?
+				String siEntityFamily = GwtServerHelper.getFolderEntityFamily(bs, siEntity);
+				if (sharedFiles && (!(GwtServerHelper.isFamilyFile(siEntityFamily)))) {
+					// Yes!  Skip it.
+					continue;
+				}
+				
+				// Create a new GwtSharedMeItem?
+				GwtSharedMeItem meItem = GwtSharedMeItem.findShareMeInList(siEntity, reply);
+				boolean newMeItem = (null == meItem);
+				if (newMeItem) {
+					meItem = new GwtSharedMeItem(
+						isEntityHidden,		// true -> The entity is hidden.  false -> It isn't.
+						siEntity,			// The entity being shared.
+						siEntityFamily);	// The family of the entity.
+				}
+	
+				// Is this share directed to this user, one of the
+				// user's groups or one of the user's teams?  Well use
+				// the item (break) if it does and skip it (continue)
+				// if it doesn't.
+				Long rId = si.getRecipientId();
+				switch (si.getRecipientType()) {
+				case user:   if (userId.equals(  rId)) break; continue;	// Checks the user...
+				case group:  if (groups.contains(rId)) break; continue;	// ...check the user's groups...
+				case team:   if (teams.contains( rId)) break; continue;	// ...and check the user's teams.
+				default:                                      continue;
+				}
+						
+				// The share recipient belongs with this user!  Add the
+				// information about it to the GwtSharedMeItem.
+				String recipientTitle;
+				if (si.getIsPartOfPublicShare())
+				     recipientTitle = NLT.get("share.recipientType.title.public");
+				else recipientTitle = getRecipientTitle(bs, si.getRecipientType(), si.getRecipientId());
+				meItem.addPerShareInfo(
+					si,
+					recipientTitle,
+					getRecipientTitle(bs, RecipientType.user, si.getSharerId()));
+	
+				// Has the GwtSharedMeItem actually been shared with
+				// the current user?
+				if (meItem.isShared() && newMeItem) {
+					// Yes!  Add it to the reply
+					// List<GwtSharedMeItem> we're building to return.
+					reply.add(meItem);
+				}
 			}
 			
-			// Create a new GwtSharedMeItem?
-			GwtSharedMeItem meItem = GwtSharedMeItem.findShareMeInList(siEntity, reply);
-			boolean newMeItem = (null == meItem);
-			if (newMeItem) {
-				meItem = new GwtSharedMeItem(
-					isEntityHidden,		// true -> The entity is hidden.  false -> It isn't.
-					siEntity,			// The entity being shared.
-					siEntityFamily);	// The family of the entity.
-			}
-
-			// Is this share directed to this user, one of the user's
-			// groups or one of the user's teams?  Well use the item
-			// (break) if it does and skip it (continue) if it doesn't.
-			Long rId = si.getRecipientId();
-			switch (si.getRecipientType()) {
-			case user:   if (userId.equals(  rId)) break; continue;	// Checks the user...
-			case group:  if (groups.contains(rId)) break; continue;	// ...check the user's groups...
-			case team:   if (teams.contains( rId)) break; continue;	// ...and check the user's teams.
-			default:                                      continue;
-			}
-					
-			// The share recipient belongs with this user!  Add the
-			// information about it to the GwtSharedMeItem.
-			String recipientTitle;
-			if (si.getIsPartOfPublicShare())
-			     recipientTitle = NLT.get("share.recipientType.title.public");
-			else recipientTitle = getRecipientTitle(bs, si.getRecipientType(), si.getRecipientId());
-			meItem.addPerShareInfo(
-				si,
-				recipientTitle,
-				getRecipientTitle(bs, RecipientType.user, si.getSharerId()));
-
-			// Has the GwtSharedMeItem actually been shared with
-			// the current user?
-			if (meItem.isShared() && newMeItem) {
-				// Yes!  Add it to the reply
-				// List<GwtSharedMeItem> we're building to return.
-				reply.add(meItem);
-			}
+			// Sort the GwtPerShareInfo's attached to the
+			// List<GwtSharedMeItem> we're going to return.
+			PerShareInfoComparator.sortPerShareInfoLists(bs, CollectionType.SHARED_WITH_ME, reply, sortBy, sortDescend);
+			
+			// If we get here, reply refers to the
+			// List<GwtSharedMeItem> built from condensing the
+			// List<ShareItem>.  Return it.
+			return reply;
 		}
 		
-		// Sort the GwtPerShareInfo's attached to the
-		// List<GwtSharedMeItem> we're going to return.
-		PerShareInfoComparator.sortPerShareInfoLists(bs, CollectionType.SHARED_WITH_ME, reply, sortBy, sortDescend);
-		
-		// If we get here, reply refers to the List<GwtSharedMeItem>
-		// built from condensing the List<ShareItem>.  Return it.
-		return reply;
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.convertItemListToWithMeList()");
+		}
 	}
 	
 	/**
@@ -1284,13 +1365,22 @@ public class GwtViewHelper {
 				for (EntityId entityId:  entityIds) {
 					try {
 						// Can we copy this entity?
-						if (entityId.isBinder())
-						     bm.copyBinder(                        entityId.getEntityId(), tis.getBinderTargetId(), true, null);
-						else fm.copyEntry( entityId.getBinderId(), entityId.getEntityId(), tis.getEntryTargetId(),  null, null);
+						if (entityId.isBinder()) {
+							if (BinderHelper.isBinderHomeFolder(bm.getBinder(entityId.getEntityId()))) {
+								String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
+								reply.addError(NLT.get("copyEntryError.cantCopyHome", new String[]{entryTitle}));
+							}
+							else {
+								bm.copyBinder(entityId.getEntityId(), tis.getBinderTargetId(), true, null);
+							}
+						}
+						else {
+							fm.copyEntry(entityId.getBinderId(), entityId.getEntityId(), tis.getEntryTargetId(), null, null);
+						}
 					}
 
 					catch (Exception e) {
-						// No!  Add an error  to the error list.
+						// No!  Add an error to the error list...
 						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
 						NotSupportedException nse = null;
@@ -1312,6 +1402,9 @@ public class GwtViewHelper {
 							messageArgs = new String[]{entryTitle, messagePatch};
 						}
 						reply.addError(NLT.get(messageKey, messageArgs));
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtViewHelper.copyEntries( Entry title:  '" + entryTitle + "', EXCEPTION ):  ", e);
 					}
 				}
 			}
@@ -1325,10 +1418,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.copyEntries( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.copyEntries( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -1336,13 +1430,13 @@ public class GwtViewHelper {
 	 * Writes debug information about a file blob to the system log.
 	 */
 	private static void debugTraceBlob(FileBlob fileBlob, String methodName, String traceHead, String traceTail, boolean lastBlob) {
-		if (m_logger.isDebugEnabled()) {
+		if (GwtLogHelper.isDebugEnabled(m_logger)) {
 			String	dump  = (traceHead + ":  '" + fileBlob.getFileName() + "' (fSize:" + fileBlob.getFileSize() + ", bStart:" + fileBlob.getBlobStart() + ", bSize:" + fileBlob.getBlobSize() + ", last:" + lastBlob + ", md5Hash:" + fileBlob.getBlobMD5Hash() + ", uploadId:" + fileBlob.getUploadId() + ")");
 			boolean hasTail = MiscUtil.hasString(traceTail);
 			dump = ("GwtViewHelper." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
 			String data = fileBlob.getBlobData();
 			dump += ("\n\nData Uploaded:  " + ((null == data) ? 0 : data.length()) + (fileBlob.isBlobBase64Encoded() ? " base64 encoded" : "") + " bytes."); 
-			m_logger.debug(dump);
+			GwtLogHelper.debug(m_logger, dump);
 		}
 	}
 	
@@ -1403,12 +1497,15 @@ public class GwtViewHelper {
 					}
 
 					catch (Exception e) {
-						// No!  Add an error  to the error list.
+						// No!  Add an error to the error list...
 						String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
 						String messageKey;
 						if      (e instanceof AccessControlException) messageKey = "deleteUserWorkspaceError.AccssControlException";
 						else                                          messageKey = "deleteUserWorkspaceError.OtherException";
 						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtViewHelper.deleteUserWorkspaces( User:  '" + user.getTitle() + "', EXCEPTION ):  ", e);
 					}
 				}
 			}
@@ -1422,10 +1519,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.deleteUserWorkspaces( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.deleteUserWorkspaces( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -1486,11 +1584,14 @@ public class GwtViewHelper {
 					}
 
 					catch (Exception e) {
-						// No!  Add an error  to the error list.
+						// No!  Add an error to the error list...
 						String messageKey;
 						if (e instanceof AccessControlException) messageKey = "disableUserError.AccssControlException";
 						else                                     messageKey = "disableUserError.OtherException";
 						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtViewHelper.disableUsers( User:  '" + user.getTitle() + "', EXCEPTION ):  ", e);
 					}
 				}
 			}
@@ -1504,10 +1605,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.disableUsers( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.disableUsers( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -1516,7 +1618,7 @@ public class GwtViewHelper {
 	 */
 	private static void dumpViewInfo(ViewInfo vi) {
 		// If debug tracing isn't enabled...
-		if (!(m_logger.isDebugEnabled())) {
+		if (!(GwtLogHelper.isDebugEnabled(m_logger))) {
 			// ...bail.
 			return;
 		}
@@ -1524,42 +1626,42 @@ public class GwtViewHelper {
 		// If we weren't given a ViewInfo to dump...
 		if (null == vi) {
 			// ...trace that fact and bail.
-			m_logger.debug("...dumpViewInfo( null ):  No ViewInfo to dump.");
+			GwtLogHelper.debug(m_logger, "...dumpViewInfo( null ):  No ViewInfo to dump.");
 			return;
 		}
 		
 		ViewType vt = vi.getViewType();
-		m_logger.debug("...dumpViewInfo( " + vt.name() + " )");
+		GwtLogHelper.debug(m_logger, "...dumpViewInfo( " + vt.name() + " )");
 		switch (vt) {
 		case BINDER:
 			BinderInfo bi = vi.getBinderInfo();
 			BinderType bt = bi.getBinderType();
-			m_logger.debug(".....dumpViewInfo( BINDER ):  " + bt.name());
+			GwtLogHelper.debug(m_logger, ".....dumpViewInfo( BINDER ):  " + bt.name());
 			switch (bt) {
 			case COLLECTION:
-				m_logger.debug("........dumpViewInfo( BINDER:COLLECTION  ):  " + bi.getCollectionType().name());
+				GwtLogHelper.debug(m_logger, "........dumpViewInfo( BINDER:COLLECTION  ):  " + bi.getCollectionType().name());
 				break;
 				
 			case FOLDER:
-				m_logger.debug("........dumpViewInfo( BINDER:FOLDER      ):  " + bi.getFolderType().name());
+				GwtLogHelper.debug(m_logger, "........dumpViewInfo( BINDER:FOLDER      ):  " + bi.getFolderType().name());
 				break;
 				
 			case WORKSPACE:
-				m_logger.debug("........dumpViewInfo( BINDER:WORKSPACE   ):  " + bi.getWorkspaceType().name());
+				GwtLogHelper.debug(m_logger, "........dumpViewInfo( BINDER:WORKSPACE   ):  " + bi.getWorkspaceType().name());
 				break;
 			
 			case OTHER:
-				m_logger.debug("........dumpViewInfo( BINDER:OTHER       )");
+				GwtLogHelper.debug(m_logger, "........dumpViewInfo( BINDER:OTHER       )");
 				break;
 				
 			default:
-				m_logger.debug("........dumpViewInfo( BINDER:Not Handled ):  This BinderType is not implemented by the dumper.");
+				GwtLogHelper.debug(m_logger, "........dumpViewInfo( BINDER:Not Handled ):  This BinderType is not implemented by the dumper.");
 				break;
 			}
 			
-			m_logger.debug("........dumpViewInfo( BINDER:Id         ):  " + bi.getBinderId());
-			m_logger.debug("........dumpViewInfo( BINDER:Title      ):  " + bi.getBinderTitle());
-			m_logger.debug("........dumpViewInfo( BINDER:EntityType ):  " + bi.getEntityType());
+			GwtLogHelper.debug(m_logger, "........dumpViewInfo( BINDER:Id         ):  " + bi.getBinderId());
+			GwtLogHelper.debug(m_logger, "........dumpViewInfo( BINDER:Title      ):  " + bi.getBinderTitle());
+			GwtLogHelper.debug(m_logger, "........dumpViewInfo( BINDER:EntityType ):  " + bi.getEntityType());
 			
 			break;
 			
@@ -1573,7 +1675,7 @@ public class GwtViewHelper {
 			break;
 			
 		default:
-			m_logger.debug("......dumpViewInfo( Not Handled ):  This ViewType is not implemented by the dumper.");
+			GwtLogHelper.debug(m_logger, "......dumpViewInfo( Not Handled ):  This ViewType is not implemented by the dumper.");
 			break;
 		}
 	}
@@ -1619,11 +1721,14 @@ public class GwtViewHelper {
 					}
 
 					catch (Exception e) {
-						// No!  Add an error  to the error list.
+						// No!  Add an error to the error list...
 						String messageKey;
 						if (e instanceof AccessControlException) messageKey = "enableUserError.AccssControlException";
 						else                                     messageKey = "enableUserError.OtherException";
 						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtViewHelper.enableUsers( User:  '" + user.getTitle() + "', EXCEPTION ):  ", e);
 					}
 				}
 			}
@@ -1637,10 +1742,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.enableUsers( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.enableUsers( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -1721,91 +1827,98 @@ public class GwtViewHelper {
 	 * returned.
 	 */
 	public static List<FolderRow> filterSharedMeFolderRows(List<FolderColumn> folderColumns, List<FolderRow> folderRows, String quickFilter) {
-		// Do we have a string to filter with and some FolderRow's to
-		// be filtered?
-		if (null != quickFilter) {
-			quickFilter = quickFilter.trim().toLowerCase();
-		}
-		if (MiscUtil.hasString(quickFilter) && MiscUtil.hasItems(folderRows)) {
-			// Yes!  Yes!  Scan the rows.
-			List<FolderRow> reply = new ArrayList<FolderRow>();
-			for (FolderRow fr:  folderRows) {
-				// Scan the columns.
-				for (FolderColumn fc:  folderColumns) {
-					// What column is this?
-					String cName = fc.getColumnName();
-					if (FolderColumn.isColumnTitle(cName)) {
-						// The title column!  If the title contains the
-						// quick filter...
-						EntryTitleInfo eti = fr.getColumnValueAsEntryTitle(fc);
-						if (null != eti) {
-							if (valueContainsQuickFilter(eti.getTitle(), quickFilter)) {
-								// ...add it to the reply list.
-								reply.add(fr);
-								break;
+		SimpleProfiler.start("GwtViewHelper.filterSharedMeFolderRows()");
+		try {
+			// Do we have a string to filter with and some FolderRow's
+			// to be filtered?
+			if (null != quickFilter) {
+				quickFilter = quickFilter.trim().toLowerCase();
+			}
+			if (MiscUtil.hasString(quickFilter) && MiscUtil.hasItems(folderRows)) {
+				// Yes!  Yes!  Scan the rows.
+				List<FolderRow> reply = new ArrayList<FolderRow>();
+				for (FolderRow fr:  folderRows) {
+					// Scan the columns.
+					for (FolderColumn fc:  folderColumns) {
+						// What column is this?
+						String cName = fc.getColumnName();
+						if (FolderColumn.isColumnTitle(cName)) {
+							// The title column!  If the title contains
+							// the quick filter...
+							EntryTitleInfo eti = fr.getColumnValueAsEntryTitle(fc);
+							if (null != eti) {
+								if (valueContainsQuickFilter(eti.getTitle(), quickFilter)) {
+									// ...add it to the reply list.
+									reply.add(fr);
+									break;
+								}
 							}
 						}
-					}
+							
+						else if (FolderColumn.isColumnSharedBy(cName) || FolderColumn.isColumnSharedWith(cName)) {
+							// A shared by/with column!  Are there any
+							// values for that?
+							List<AssignmentInfo> aiList = fr.getColumnValueAsAssignmentInfos(fc);
+							if (MiscUtil.hasItems(aiList)) {
+								// Yes!  Scan them...
+								boolean found = false;
+								for (AssignmentInfo ai:  aiList) {
+									// ...if this value contains the
+									// ...quick filter...
+									if (valueContainsQuickFilter(ai.getTitle(), quickFilter)) {
+										// ...add it to the reply list.
+										reply.add(fr);
+										found = true;
+										break;
+									}
+								}
+								
+								// Once we move the row to the reply...
+								if (found) {
+									// ...stop scanning the columns.
+									break;
+								}
+							}
+						}
 						
-					else if (FolderColumn.isColumnSharedBy(cName) || FolderColumn.isColumnSharedWith(cName)) {
-						// A shared by/with column!  Are there any
-						// values for that?
-						List<AssignmentInfo> aiList = fr.getColumnValueAsAssignmentInfos(fc);
-						if (MiscUtil.hasItems(aiList)) {
-							// Yes!  Scan them...
-							boolean found = false;
-							for (AssignmentInfo ai:  aiList) {
-								// ...if this value contains the quick
-								// ...filter...
-								if (valueContainsQuickFilter(ai.getTitle(), quickFilter)) {
-									// ...add it to the reply list.
-									reply.add(fr);
-									found = true;
+						else if (FolderColumn.isColumnShareMessage(cName)) {
+							// The share message column!  Are there any
+							// values for that?
+							List<ShareStringValue> svList = fr.getColumnValueAsShareMessageInfos(fc);
+							if (MiscUtil.hasItems(svList)) {
+								// Yes!  Scan them...
+								boolean found = false;
+								for (ShareStringValue sv:  svList) {
+									// ...if this value contains the
+									// ...quick filter...
+									if (valueContainsQuickFilter(sv.getValue(), quickFilter)) {
+										// ...add it to the reply list.
+										reply.add(fr);
+										found = true;
+										break;
+									}
+								}
+								
+								// Once we move the row to the reply...
+								if (found) {
+									// ...stop scanning the columns.
 									break;
 								}
-							}
-							
-							// Once we move the row to the reply...
-							if (found) {
-								// ...stop scanning the columns.
-								break;
-							}
-						}
-					}
-					
-					else if (FolderColumn.isColumnShareMessage(cName)) {
-						// The share message column!  Are there any
-						// values for that?
-						List<ShareStringValue> svList = fr.getColumnValueAsShareMessageInfos(fc);
-						if (MiscUtil.hasItems(svList)) {
-							// Yes!  Scan them...
-							boolean found = false;
-							for (ShareStringValue sv:  svList) {
-								// ...if this value contains the quick
-								// ...filter...
-								if (valueContainsQuickFilter(sv.getValue(), quickFilter)) {
-									// ...add it to the reply list.
-									reply.add(fr);
-									found = true;
-									break;
-								}
-							}
-							
-							// Once we move the row to the reply...
-							if (found) {
-								// ...stop scanning the columns.
-								break;
 							}
 						}
 					}
 				}
+				folderRows = reply;
 			}
-			folderRows = reply;
+			
+			// If we get here, searchEntries refers to the filtered
+			// list of entry maps.  Return it. 
+			return folderRows;
 		}
 		
-		// If we get here, searchEntries refers to the filtered list of
-		// entry maps.  Return it. 
-		return folderRows;
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.filterSharedMeFolderRows()");
+		}
 	}
 
 	/**
@@ -1853,10 +1966,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getAccessoryStatus( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getAccessoryStatus( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -1971,7 +2085,7 @@ public class GwtViewHelper {
 	/*
 	 * Fixes up the individual assignees in an List<AssignmentInfo>'s.
 	 */
-	private static void fixupAIs(List<AssignmentInfo> aiList, Map<Long, String> principalTitles, Map<Long, GwtPresenceInfo> userPresence, Map<Long, Long> presenceUserWSIds, Map<Long, String> avatarUrls) {
+	private static void fixupAIUsers(List<AssignmentInfo> aiList, Map<Long, String> principalTitles, Map<Long, String> principalEMAs, Map<Long, GwtPresenceInfo> userPresence, Map<Long, Long> presenceUserWSIds, Map<Long, String> avatarUrls) {
 		// If don't have a list to fixup...
 		if (!(MiscUtil.hasItems(aiList))) {
 			// ...bail.
@@ -1995,6 +2109,7 @@ public class GwtViewHelper {
 				GwtEventHelper.setAssignmentInfoPresence(        ai, userPresence     );
 				GwtEventHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
 				GwtEventHelper.setAssignmentInfoAvatarUrl(       ai, avatarUrls       );
+				GwtEventHelper.setAssignmentInfoHover(           ai, principalEMAs    );
 			}
 			else {
 				removeList.add(ai);
@@ -2109,103 +2224,184 @@ public class GwtViewHelper {
 	 * Scans the List<FolderRow> and sets the access rights for the
 	 * current user for each row.
 	 */
-	private static void fixupFRs(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> frList) {
-		// If we don't have any FolderRow's to complete...
-		if (!(MiscUtil.hasItems(frList))) {
-			// ..bail.
-			return;
-		}
-
-		// Collect the entity IDs of the rows from the List<FolderRow>.
-		List<Long> entryIds  = new ArrayList<Long>();
-		List<Long> binderIds = new ArrayList<Long>();
-		for (FolderRow fr:  frList) {
-			Long id = fr.getEntityId().getEntityId();
-			if (fr.isBinder())
-			     binderIds.add(id);
-			else entryIds.add( id);
-		}
-		
+	private static void fixupFRs(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> frList, boolean isManageUsers, boolean isFilr) {
+		SimpleProfiler.start("GwtViewHelper.fixupFRs()");
 		try {
-			// Read the FolderEntry's for the rows...
-			FolderModule fm = bs.getFolderModule();
-			SortedSet<FolderEntry> entries = fm.getEntries(entryIds);
-			
-			// ...mapping each FolderEntry to its ID.
-			Map<Long, FolderEntry> entryMap = new HashMap<Long, FolderEntry>();
-			for (FolderEntry entry: entries) {
-				entryMap.put(entry.getId(), entry);
+			// If we don't have any FolderRow's to complete...
+			if (!(MiscUtil.hasItems(frList))) {
+				// ..bail.
+				return;
 			}
-
-			// Scan the List<FolderRow> again.
-			FolderColumn commentsCol = new FolderColumn("comments");
-			for (FolderRow fr:  frList) {
-				// Skipping any binders.
-				if (fr.isBinder()) {
-					continue;
-				}
-				
-				// Do we have the FolderEntry for this row?
-				FolderEntry entry = entryMap.get(fr.getEntityId().getEntityId());
-				if (null != entry) {
-					// Yes!  Store the user's rights to that
-					// FolderEntry.
-					fr.setCanModify(fm.testAccess(entry, FolderOperation.modifyEntry   ));
-					fr.setCanPurge( fm.testAccess(entry, FolderOperation.deleteEntry   ));
-					fr.setCanTrash( fm.testAccess(entry, FolderOperation.preDeleteEntry));
-					fr.setCanShare( GwtShareHelper.isEntitySharable(bs, entry          ));
+	
+			List<Long> entryIds     = new ArrayList<Long>();
+			List<Long> binderIds    = new ArrayList<Long>();
+			List<Long> principalIds = new ArrayList<Long>();
+			SimpleProfiler.start("GwtViewHelper.fixupFRs(Collect IDs)");
+			try {
+				// Collect the entity IDs of the rows from the
+				// List<FolderRow>.
+				for (FolderRow fr:  frList) {
+					Long id = fr.getEntityId().getEntityId();
+					if (fr.isBinder())
+					     binderIds.add(id);
+					else entryIds.add( id);
 					
-					// If the user can't add replies to this entry...
-					if (!(fm.testAccess(entry, FolderOperation.addReply))) {
-						// ...and we have a CommentsInfo for it...
-						CommentsInfo ci = fr.getColumnValueAsComments(commentsCol);
-						if (null != ci) {
-							// ...update its can add replies field
-							// ...accordingly.
-							ci.setCanAddReplies(false);
-						}
+					Map<String, PrincipalInfoId> pIdsMap = fr.getRowPrincipalIdsMap();
+					for (String k:  pIdsMap.keySet()) {
+						ListUtil.addLongToListLongIfUnique(principalIds, pIdsMap.get(k).getId());
 					}
 				}
 			}
-
-			// Read the Binder's for the rows (including those intermediate sub-binders that might be inaccessible)...
-			BinderModule bm = bs.getBinderModule();
-			SortedSet<Binder> binders = bm.getBinders(binderIds, Boolean.FALSE);
-
-			// ...mapping each Binder to its ID.
-			Map<Long, Binder> binderMap = new HashMap<Long, Binder>();
-			for (Binder binder:  binders) {
-				binderMap.put(binder.getId(), binder);
+			
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.fixupFRs(Collect IDs)");
 			}
-
-			// Scan the List<FolderRow> again.
-			for (FolderRow fr:  frList) {
-				// Skipping any entries.
-				if (!(fr.isBinder())) {
-					continue;
-				}
-
-				// Do we have the Binder for this row?
-				Binder binder = binderMap.get(fr.getEntityId().getEntityId());
-				if (null != binder) {
-					// Yes!  Store its icon names...
-					fr.setBinderIcon(binder.getIconName(),                BinderIconSize.SMALL );
-					fr.setBinderIcon(binder.getIconName(IconSize.MEDIUM), BinderIconSize.MEDIUM);
-					fr.setBinderIcon(binder.getIconName(IconSize.LARGE ), BinderIconSize.LARGE );
+			
+			try {
+				SimpleProfiler.start("GwtViewHelper.fixupFRs(Fixup Entries)");
+				try {
+					// Read the FolderEntry's for the rows...
+					FolderModule fm = bs.getFolderModule();
+					SortedSet<FolderEntry> entries = fm.getEntries(entryIds);
 					
-					// ...store a BinderInfo for it...
-					fr.setBinderInfo(GwtServerHelper.getBinderInfo(request, bs, binder));
-
-					// ...and the user's rights to that Binder.
-					fr.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
-					fr.setCanPurge( bm.testAccess(binder, BinderOperation.deleteBinder   ));
-					fr.setCanTrash( bm.testAccess(binder, BinderOperation.preDeleteBinder));
-					fr.setCanShare( GwtShareHelper.isEntitySharable(bs, binder           ));
+					// ...mapping each FolderEntry to its ID.
+					Map<Long, FolderEntry> entryMap = new HashMap<Long, FolderEntry>();
+					for (FolderEntry entry: entries) {
+						entryMap.put(entry.getId(), entry);
+					}
+		
+					// Scan the List<FolderRow> again.
+					FolderColumn commentsCol = new FolderColumn("comments");
+					for (FolderRow fr:  frList) {
+						// Skipping any binders.
+						if (fr.isBinder()) {
+							continue;
+						}
+						
+						// Do we have the FolderEntry for this row?
+						FolderEntry entry = entryMap.get(fr.getEntityId().getEntityId());
+						if (null != entry) {
+							// Yes!  Store the user's rights to that
+							// FolderEntry.
+							fr.setCanModify(fm.testAccess(entry, FolderOperation.modifyEntry   ));
+							fr.setCanPurge( fm.testAccess(entry, FolderOperation.deleteEntry   ));
+							fr.setCanTrash( fm.testAccess(entry, FolderOperation.preDeleteEntry));
+							fr.setCanShare( GwtShareHelper.isEntitySharable(bs, entry          ));
+							
+							// If the user can't add replies to this
+							// entry...
+							if (!(fm.testAccess(entry, FolderOperation.addReply))) {
+								// ...and we have a CommentsInfo for it...
+								CommentsInfo ci = fr.getColumnValueAsComments(commentsCol);
+								if (null != ci) {
+									// ...update its can add replies field
+									// ...accordingly.
+									ci.setCanAddReplies(false);
+								}
+							}
+						}
+					}
+				}
+				
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.fixupFRs(Fixup Entries)");
+				}
+	
+				SimpleProfiler.start("GwtViewHelper.fixupFRs(Fixup Folders)");
+				try {
+					// Read the Binder's for the rows (including those
+					// intermediate sub-binders that might be
+					// inaccessible)...
+					BinderModule bm = bs.getBinderModule();
+					SortedSet<Binder> binders = bm.getBinders(binderIds, Boolean.FALSE);
+		
+					// ...mapping each Binder to its ID.
+					Map<Long, Binder> binderMap = new HashMap<Long, Binder>();
+					for (Binder binder:  binders) {
+						binderMap.put(binder.getId(), binder);
+					}
+		
+					// Scan the List<FolderRow> again.
+					for (FolderRow fr:  frList) {
+						// Skipping any entries.
+						if (!(fr.isBinder())) {
+							continue;
+						}
+		
+						// Do we have the Binder for this row?
+						Binder binder = binderMap.get(fr.getEntityId().getEntityId());
+						if (null != binder) {
+							// Yes!  Store its icon names...
+							fr.setBinderIcon(binder.getIconName(),                BinderIconSize.SMALL );
+							fr.setBinderIcon(binder.getIconName(IconSize.MEDIUM), BinderIconSize.MEDIUM);
+							fr.setBinderIcon(binder.getIconName(IconSize.LARGE ), BinderIconSize.LARGE );
+							
+							// ...store a BinderInfo for it...
+							fr.setBinderInfo(GwtServerHelper.getBinderInfo(request, bs, binder));
+		
+							// ...and the user's rights to that Binder.
+							fr.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
+							fr.setCanPurge( bm.testAccess(binder, BinderOperation.deleteBinder   ));
+							fr.setCanTrash( bm.testAccess(binder, BinderOperation.preDeleteBinder));
+							fr.setCanShare( GwtShareHelper.isEntitySharable(bs, binder           ));
+						}
+					}
+				}
+				
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.fixupFRs(Fixup Folders)");
+				}
+				
+				SimpleProfiler.start("GwtViewHelper.fixupFRs(Fixup Principals)");
+				try {
+					// Build a List<PrincipalInfo> from the List<Long> of
+					// principal IDs. 
+					List<PrincipalInfo> piList = getPIsFromPIds(bs, request, principalIds);
+					for (PrincipalInfo pi:  piList) {
+						if (pi.isUserPerson() || isManageUsers || (!isFilr)) {
+							continue;
+						}
+						piList.remove(pi);
+					}
+					
+					// Scan the List<FolderRow> again.
+					for (FolderRow fr:  frList) {
+						// Scan this row's PrincipalInfoId's.
+						Map<String, PrincipalInfo>   piMap   = fr.getRowPrincipalsMap();
+						Map<String, PrincipalInfoId> pIdsMap = fr.getRowPrincipalIdsMap();
+						for (String k:  pIdsMap.keySet()) {
+							// Scan the List<PrincipalInfo> map.
+							PrincipalInfoId pId = pIdsMap.get(k);
+							for (PrincipalInfo pi:  piList) {
+								// Is this the PrincipalInfo for the
+								// PrincipalInfoId?
+								if (pId.getId().equals(pi.getId())) {
+									// Yes!  Add it to the principals map
+									// and break out of the inner loop.
+									piMap.put(k, pi);
+									break;
+								}
+							}
+						}
+						
+						// Once we've processed all the
+						// PrincipalInfoId's in the row, we clear the
+						// map of them since we won't need them again. 
+						pIdsMap.clear();
+					}
+				}
+				
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.fixupFRs(Fixup Principals)");
 				}
 			}
+			
+			catch (Exception ex) {/* Ignored. */}
 		}
 		
-		catch (Exception ex) {/* Ignored. */}
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.fixupFRs()");
+		}
 	}
 
 	/*
@@ -2303,10 +2499,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getBinderDescription( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getBinderDescription( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -2429,10 +2626,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getBinderFilters( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getBinderFilters( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -2467,10 +2665,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getBinderOwnerAvatarInfo( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getBinderOwnerAvatarInfo( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -2499,10 +2698,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getBinderRegionState( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getBinderRegionState( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -2527,23 +2727,85 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Map getCollectionEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, CollectionType ct, List<GwtSharedMeItem> shareItems) {
-		// Construct the search Criteria...
-		Criteria crit;
-		switch (ct) {
-		default:
-		case MY_FILES:
-			// Use the common criteria builder for My Files.
-            crit = SearchUtils.getMyFilesSearchCriteria(bs, binder.getId());
-			break;
-
-		case NET_FOLDERS:
-			// Create the criteria for top level mirrored file folders
-			// that have been configured.
-			crit = SearchUtils.getNetFoldersSearchCriteria(bs, false);	// false -> Don't default to the top workspace.
-			
+		SimpleProfiler.start("GwtViewHelper.getCollectionEntries()");
+		try {
+			// Construct the search Criteria...
+			Criteria crit;
+			switch (ct) {
+			default:
+			case MY_FILES:
+				// Use the common criteria builder for My Files.
+	            crit = SearchUtils.getMyFilesSearchCriteria(bs, binder.getId());
+				break;
+	
+			case NET_FOLDERS:
+				// Create the criteria for top level mirrored file
+				// folders that have been configured.
+				crit = SearchUtils.getNetFoldersSearchCriteria(bs, false);	// false -> Don't default to the top workspace.
+				
+				// Factor in any quick filter we've got.
+				addQuickFilterToCriteria(quickFilter, crit);
+	
+				// Add in the sort information...
+				boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
+				String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
+				crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
+				crit.addOrder(new Order(sortBy,                 sortAscend));
+				
+				// ...and issue the query and return the entries.
+				Binder nfBinder = SearchUtils.getNetFoldersRootBinder();
+				Map netFolderResults = bs.getBinderModule().searchFolderOneLevelWithInferredAccess(
+						crit,
+						Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
+						GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+						GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+						nfBinder);
+				// Remove any results where the current user does not
+				// have AllowNetFolderAccess rights
+				SearchUtils.removeNetFoldersWithNoRootAccess(netFolderResults);
+				return netFolderResults;
+				
+			case SHARED_BY_ME:
+			case SHARED_WITH_ME:
+				// Do we have any shares to analyze?
+				if (!(MiscUtil.hasItems(shareItems))) {
+					// No!  Bail.
+					return buildEmptyEntryMap();
+				}
+				
+				// Scan the items that have been shared by/with the
+				// current user...
+				List<String>	sharedBinderIds = new ArrayList<String>();
+				List<String>	sharedEntryIds  = new ArrayList<String>();
+				for (GwtSharedMeItem si:  shareItems) {
+					// ...tracking each as a binder or entry.
+					DefinableEntity	entity   = si.getEntity();
+					String			entityId = String.valueOf(entity.getId());
+					if (entity.getEntityType().equals(EntityType.folderEntry))
+					     sharedEntryIds.add( entityId);
+					else sharedBinderIds.add(entityId);
+				}
+				
+				// Do we have any binders or entries that have been
+				// shared by/with the current user?
+				boolean hasSharedBinders = (!(sharedBinderIds.isEmpty()));
+				boolean hasSharedEntries = (!(sharedEntryIds.isEmpty()));
+				if ((!hasSharedBinders) && (!hasSharedEntries)) {
+					// No!  Bail.
+					return buildEmptyEntryMap();
+				}
+				
+				return
+					buildSearchMapFromSharedMeList(
+						bs,
+						shareItems,
+						GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false),
+						GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD));
+			}
+	
 			// Factor in any quick filter we've got.
 			addQuickFilterToCriteria(quickFilter, crit);
-
+	
 			// Add in the sort information...
 			boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
 			String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
@@ -2551,71 +2813,17 @@ public class GwtViewHelper {
 			crit.addOrder(new Order(sortBy,                 sortAscend));
 			
 			// ...and issue the query and return the entries.
-			Binder nfBinder = SearchUtils.getNetFoldersRootBinder();
-			Map netFolderResults = bs.getBinderModule().searchFolderOneLevelWithInferredAccess(
-					crit,
-					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
-					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
-					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
-					nfBinder);
-			//Remove any results where the current user does not have AllowNetFolderAccess rights
-			SearchUtils.removeNetFoldersWithNoRootAccess(netFolderResults);
-			return netFolderResults;
-			
-		case SHARED_BY_ME:
-		case SHARED_WITH_ME:
-			// Do we have any shares to analyze?
-			if (!(MiscUtil.hasItems(shareItems))) {
-				// No!  Bail.
-				return buildEmptyEntryMap();
-			}
-			
-			// Scan the items that have been shared by/with the current
-			// user...
-			List<String>	sharedBinderIds = new ArrayList<String>();
-			List<String>	sharedEntryIds  = new ArrayList<String>();
-			for (GwtSharedMeItem si:  shareItems) {
-				// ...tracking each as a binder or entry.
-				DefinableEntity	entity   = si.getEntity();
-				String			entityId = String.valueOf(entity.getId());
-				if (entity.getEntityType().equals(EntityType.folderEntry))
-				     sharedEntryIds.add( entityId);
-				else sharedBinderIds.add(entityId);
-			}
-			
-			// Do we have any binders or entries that have been shared
-			// by/with the current user?
-			boolean hasSharedBinders = (!(sharedBinderIds.isEmpty()));
-			boolean hasSharedEntries = (!(sharedEntryIds.isEmpty()));
-			if ((!hasSharedBinders) && (!hasSharedEntries)) {
-				// No!  Bail.
-				return buildEmptyEntryMap();
-			}
-			
 			return
-				buildSearchMapFromSharedMeList(
-					bs,
-					shareItems,
-					GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false),
-					GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD));
+				bs.getBinderModule().executeSearchQuery(
+					crit,
+					Constants.SEARCH_MODE_NORMAL,
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS));
 		}
-
-		// Factor in any quick filter we've got.
-		addQuickFilterToCriteria(quickFilter, crit);
-
-		// Add in the sort information...
-		boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
-		String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
-		crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
-		crit.addOrder(new Order(sortBy,                 sortAscend));
 		
-		// ...and issue the query and return the entries.
-		return
-			bs.getBinderModule().executeSearchQuery(
-				crit,
-				Constants.SEARCH_MODE_NORMAL,
-				GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
-				GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS));
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.getCollectionEntries()");
+		}
 	}
 	
 	/*
@@ -2662,10 +2870,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getColumnWidths( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getColumnWidths( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -2765,10 +2974,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getEntryTypes( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getEntryTypes( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -2827,10 +3037,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getFileConflictsInfo( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getFileConflictsInfo( SOURCE EXCEPTION ):  ");
 		}
 		
 	}
@@ -2874,6 +3085,7 @@ public class GwtViewHelper {
 	
 	@SuppressWarnings("unchecked")
 	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, Boolean includeConfigurationInfo) throws GwtTeamingException {
+		SimpleProfiler.start("GwtViewHelper.getFolderColumns()");
 		try {
 			Long			folderId             = folderInfo.getBinderIdAsLong();
 			Binder			binder               = bs.getBinderModule().getBinder(folderId);
@@ -3153,10 +3365,15 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getFolderColumns( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getFolderColumns( SOURCE EXCEPTION ):  ");
+		}
+		
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.getFolderColumns()");
 		}
 	}
 
@@ -3171,6 +3388,7 @@ public class GwtViewHelper {
 	 * @return
 	 */
 	public static FolderDisplayDataRpcResponseData getFolderDisplayData(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
+		SimpleProfiler.start("GwtViewHelper.getFolderDisplayData()");
 		try {
 			Long			folderId             = folderInfo.getBinderIdAsLong();
 			User			user                 = GwtServerHelper.getCurrentUser();
@@ -3262,10 +3480,15 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getFolderDisplayData( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getFolderDisplayData( SOURCE EXCEPTION ):  ");
+		}
+		
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.getFolderDisplayData()");
 		}
 	}
 	
@@ -3433,10 +3656,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getFolderEntryDetails( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getFolderEntryDetails( SOURCE EXCEPTION ):  ");
 		}
 		
 		finally {
@@ -3460,6 +3684,7 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter) throws GwtTeamingException {
+		SimpleProfiler.start("GwtViewHelper.getFolderRows()");
 		try {
 			// Is this a binder the user can view?
 			if (!(GwtServerHelper.canUserViewBinder(bs, folderInfo))) {
@@ -3473,6 +3698,7 @@ public class GwtViewHelper {
 			}
 			
 			// Access the binder/folder.
+			boolean	isFilr   = Utils.checkIfFilr();
 			Long	folderId = folderInfo.getBinderIdAsLong();
 			Binder	binder   = bs.getBinderModule().getBinder(folderId);
 			Folder	folder   = ((binder instanceof Folder) ? ((Folder) binder) : null);
@@ -3509,6 +3735,8 @@ public class GwtViewHelper {
 			User			user                 = GwtServerHelper.getCurrentUser();
 			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
 			SeenMap			seenMap              = bs.getProfileModule().getUserSeenMap(null);
+			NumberFormat	userNF               = NumberFormat.getInstance(user.getLocale());
+			String			userKBTail           = (" " + NLT.get("file.sizeKB"));
 
 			// Setup the current search filter the user has selected
 			// on the folder.
@@ -3624,12 +3852,19 @@ public class GwtViewHelper {
 				else if (isProfilesRootWS) searchResults = getUserEntries(      bs, request, binder, quickFilter, options                            );
 				else if (isCollection)     searchResults = getCollectionEntries(bs, request, binder, quickFilter, options, collectionType, shareItems);
 				else {
-					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
-					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);
-					options.put(ObjectKeys.SEARCH_SORT_DESCEND,           sortDescend           );
-					options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      fdd.getFolderSortBy() );
-					options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, sortDescend           );
-					searchResults = bs.getFolderModule().getEntries(folderId, options);
+					SimpleProfiler.start("GwtViewHelper.getFolderRows(Basic Folder Search)");
+					try {
+						options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
+						options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);
+						options.put(ObjectKeys.SEARCH_SORT_DESCEND,           sortDescend           );
+						options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      fdd.getFolderSortBy() );
+						options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, sortDescend           );
+						searchResults = bs.getFolderModule().getEntries(folderId, options);
+					}
+					
+					finally {
+						SimpleProfiler.stop("GwtViewHelper.getFolderRows(Basic Folder Search)");
+					}
 				}
 				searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 				totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
@@ -3640,508 +3875,494 @@ public class GwtViewHelper {
 			List<FolderRow> folderRows       = new ArrayList<FolderRow>();
 			List<Long>      contributorIds   = new ArrayList<Long>();
 			for (Map entryMap:  searchEntries) {
-				// Is this an entry or folder?
-				String  entityType          = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD);
-				boolean isEntityFolderEntry = EntityType.folderEntry.name().equals(entityType);
-				boolean isLibraryEntry;
-				if (isEntityFolderEntry)
-				     isLibraryEntry = GwtServerHelper.getBooleanFromEntryMap(entryMap, Constants.IS_LIBRARY_FIELD);
-				else isLibraryEntry = false;
-				
-				String locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD);
-				if (!(MiscUtil.hasString(locationBinderId))) {
-					locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDERS_PARENT_ID_FIELD);
+				// Initiate per row profiling.
+				String docIdS = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
+				Long   docId  = Long.parseLong(docIdS);
+				String perRowProfile;
+				if (PROFILE_PER_ROW) {
+					perRowProfile = ("GwtViewHelper.getFolderRows(Row:  " + docIdS + ")");
+					SimpleProfiler.start(perRowProfile);
+				}
+				else {
+					perRowProfile = null;
 				}
 				
-				// Have we already process this entry's ID?
-				String   docIdS   = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
-				Long     docId    = Long.parseLong(docIdS);
-				EntityId entityId = new EntityId(Long.parseLong(locationBinderId), docId, entityType);
-				if ((!isCollectionSharedWithMe) && isEntityInList(entityId, folderRows)) {
-					// Yes!  Skip it now.  Note that we may have
-					// duplicates because of pinning.
-					continue;
-				}
-				
-				// Extract the contributors from this entry.
-				collectContributorIds(entryMap, contributorIds);
-				
-				// Create a FolderRow for each entry.
-				FolderRow fr = new FolderRow(entityId, folderColumns);
-				if (isEntityFolderEntry && pinnedEntryIds.contains(entityId.getEntityId())) {
-					fr.setPinned(true);
-				}
-				
-				// Scan the columns.
-				for (FolderColumn fc:  folderColumns) {
-					// Is this a custom column?
-					if (fc.isCustomColumn()) {
-						// Yes!  Generate a value for it.
-						setValueForCustomColumn(bs, entryMap, fr, fc);
+				try {
+					// Is this an entry or folder?
+					String  entityType          = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD);
+					boolean isEntityFolderEntry = EntityType.folderEntry.name().equals(entityType);
+					boolean isLibraryEntry;
+					if (isEntityFolderEntry)
+					     isLibraryEntry = GwtServerHelper.getBooleanFromEntryMap(entryMap, Constants.IS_LIBRARY_FIELD);
+					else isLibraryEntry = false;
+					
+					String locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD);
+					if (!(MiscUtil.hasString(locationBinderId))) {
+						locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDERS_PARENT_ID_FIELD);
 					}
 					
-					else {
-						// No, this isn't a custom column!
-						String	cn        = fc.getColumnName();
-						String	csk       = fc.getColumnSearchKey();
-						Object	emValue   = GwtServerHelper.getValueFromEntryMap(entryMap, csk);
-						boolean	isModDate = csk.equals(Constants.MODIFICATION_DATE_FIELD);
+					// Have we already process this entry's ID?
+					EntityId entityId = new EntityId(Long.parseLong(locationBinderId), docId, entityType);
+					if ((!isCollectionSharedWithMe) && isEntityInList(entityId, folderRows)) {
+						// Yes!  Skip it now.  Note that we may have
+						// duplicates because of pinning.
+						continue;
+					}
+					
+					// Extract the contributors from this entry.
+					collectContributorIds(entryMap, contributorIds);
+					
+					// Create a FolderRow for each entry.
+					FolderRow fr = new FolderRow(entityId, folderColumns);
+					if (isEntityFolderEntry && pinnedEntryIds.contains(entityId.getEntityId())) {
+						fr.setPinned(true);
+					}
+					
+					// Scan the columns.
+					for (FolderColumn fc:  folderColumns) {
+						// Initiate per column profiling.
+						String perColProfile;
+						String perRowColProfile;
+						if (PROFILE_PER_COLUMN) {
+							perColProfile = ("GwtViewHelper.getFolderRows(Col:  " + fc.getColumnName() + ")");
+							SimpleProfiler.start(perColProfile);
+							
+							perRowColProfile = ("GwtViewHelper.getFolderRows(Row:  " + docIdS + ", Col:  " + fc.getColumnName() + ")");
+							SimpleProfiler.start(perRowColProfile);
+						}
+						else {
+							perColProfile    =
+							perRowColProfile = null;
+						}
 						
-						// Is it the modification date on a library entry?
-						if (isModDate && isLibraryEntry) {
-							// Yes!  Does the entry map have a file time?
-							Object ftValue = GwtServerHelper.getValueFromEntryMap(entryMap, Constants.FILE_TIME_FIELD);
-							if (null != ftValue) {
-								// Yes!  Is it a single string value?
-								if (ftValue instanceof String) {
-									// Yes!  Then we use that as the
-									// modification time.
-									emValue   = new Date(Long.parseLong((String) ftValue));
-									csk       = Constants.FILE_TIME_FIELD;
-									isModDate = false;
-								}
+						try {
+							// Is this a custom column?
+							if (fc.isCustomColumn()) {
+								// Yes!  Generate a value for it.
+								setValueForCustomColumn(bs, entryMap, fr, fc);
+							}
+							
+							else {
+								// No, this isn't a custom column!
+								String	cn        = fc.getColumnName();
+								String	csk       = fc.getColumnSearchKey();
+								Object	emValue   = GwtServerHelper.getValueFromEntryMap(entryMap, csk);
+								boolean	isModDate = csk.equals(Constants.MODIFICATION_DATE_FIELD);
 								
-								// No, it's not a single string value!
-								// Is it a SearchFieldResult?
-								else if (ftValue instanceof SearchFieldResult) {
-									// Yes!  Then it's multi-valued
-									// (more than one file attachment.)
-									// If we can get the file entry's
-									// primary attachment...
-									FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, entityId);
-									if (null != fa) {
-										// ...then we'll use it modification time.
-										emValue   = fa.getModification().getDate();
-										csk       = Constants.FILE_TIME_FIELD;
+								// Is it the modification date on a library entry?
+								if (isModDate && isLibraryEntry) {
+									// Yes!  Does the entry map have a file time?
+									Object ftValue = GwtServerHelper.getValueFromEntryMap(entryMap, Constants.FILE_TIME_FIELD);
+									if (null != ftValue) {
+										// Yes!  Is it a single string value?
+										if (ftValue instanceof String) {
+											// Yes!  Then we use that as the modification time.
+											emValue   = new Date(Long.parseLong((String) ftValue));
+											csk       = Constants.FILE_TIME_FIELD;
+											isModDate = false;
+										}
+										
+										// No, it's not a single string value!  Is it a
+										// SearchFieldResult?
+										else if (ftValue instanceof SearchFieldResult) {
+											// Yes!  Then it's multi-valued (more than one file
+											// attachment.)  If we can get the file entry's primary
+											// attachment...
+											FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, entityId);
+											if (null != fa) {
+												// ...then we'll use it modification time.
+												emValue   = fa.getModification().getDate();
+												csk       = Constants.FILE_TIME_FIELD;
+												isModDate = false;
+											}
+		
+										}
+									}
+								}
+								if ((null == emValue) && isModDate) {
+									emValue = GwtServerHelper.getValueFromEntryMap(entryMap, Constants.CREATION_DATE_FIELD);
+									if (null != emValue) {
+										csk       = Constants.CREATION_DATE_FIELD;
 										isModDate = false;
 									}
-
-								}
-							}
-						}
-						if ((null == emValue) && isModDate) {
-							emValue = GwtServerHelper.getValueFromEntryMap(entryMap, Constants.CREATION_DATE_FIELD);
-							if (null != emValue) {
-								csk       = Constants.CREATION_DATE_FIELD;
-								isModDate = false;
-							}
-						}
-						
-						// Are we working on a 'Shared by/with Me'
-						// collection?
-						GwtSharedMeItem smItem;
-						if (isCollectionSharedByMe || isCollectionSharedWithMe) {
-							// Yes!  Find the GwtSharedMeItem for this row.
-							smItem = GwtSharedMeItem.findShareMeInList(
-								docId,
-								entityType,
-								shareItems);
-							
-							// Is this the sharedBy/With column?
-							if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_BY) ||
-								csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_WITH)) {
-								// Yes!  Build a
-								// List<AssignmentInfo> for this row...
-								List<AssignmentInfo> aiList;
-								if (null == smItem) {
-									aiList = new ArrayList<AssignmentInfo>();
-								}
-								else {
-									if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_BY))
-									     aiList = getAIListFromSharers(   smItem.getPerShareInfos());
-									else aiList = getAIListFromRecipients(smItem.getPerShareInfos());
-								}
-								addedAssignments = (!(aiList.isEmpty()));
-								fr.setColumnValue_AssignmentInfos(fc, aiList);
-	
-								// ...and continue with the next
-								// ...column.
-								continue;
-							}
-							
-							// No, this isn't the sharedBy/With column!
-							// Is it the sharedMessage column?
-							else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_MESSAGE)) {
-								// Yes!  Build a
-								// List<ShareMessageInfo> for this
-								// row...
-								List<ShareMessageInfo> smiList;
-								if (null == smItem)
-								     smiList = new ArrayList<ShareMessageInfo>();
-								else smiList = getShareMessageListFromShares(smItem.getPerShareInfos());
-								fr.setColumnValue_ShareMessageInfos(fc, smiList);
-								
-								// ...and continue with the next
-								// ...column.
-								continue;
-							}
-							
-							// No, this isn't the sharedMessage column
-							// either!  Is it the sharedDate column?
-							else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_DATE)) {
-								// Yes!  Build a
-								// List<ShareDateInfo> for this row...
-								List<ShareDateInfo> sdiList;
-								if (null == smItem)
-								     sdiList = new ArrayList<ShareDateInfo>();
-								else sdiList = getShareDateListFromShares(smItem.getPerShareInfos());
-								fr.setColumnValue_ShareDateInfos(fc, sdiList);
-								
-								// ...and continue with the next
-								// ...column.
-								continue;
-							}
-							
-							// No, this isn't the sharedDate column
-							// either!  Is it the sharedExpiration
-							// column?
-							else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_EXPIRATION)) {
-								// Yes!  Build a
-								// List<ShareExpirationInfo> for this
-								// row...
-								List<ShareExpirationInfo> seiList;
-								if (null == smItem)
-								     seiList = new ArrayList<ShareExpirationInfo>();
-								else seiList = getShareExpirationListFromShares(smItem.getPerShareInfos());
-								fr.setColumnValue_ShareExpirationInfos(fc, seiList);
-								
-								// ...and continue with the next
-								// ...column.
-								continue;
-							}
-							
-							// No, this isn't the sharedExpiration
-							// column either!  Is it the sharedAccess
-							// column?
-							else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_ACCESS)) {
-								// Yes!  Build a
-								// List<ShareAccessInfo> for this
-								// row...
-								List<ShareAccessInfo> saiList;
-								if (null == smItem)
-								     saiList = new ArrayList<ShareAccessInfo>();
-								else saiList = getShareAccessListFromShares(smItem.getPerShareInfos());
-								fr.setColumnValue_ShareAccessInfos(fc, saiList);
-								
-								// ...and continue with the next
-								// ...column.
-								continue;
-							}
-						}
-						
-						else {
-							// No, we aren't working on a
-							// 'Shared by/with Me' collection!
-							smItem = null;
-						}
-						
-						GuestInfo     gi = null;
-						PrincipalInfo pi = null;
-						if (emValue instanceof Principal) {
-							// Yes!  Are we looking at the 'guest'
-							// column in a guest book folder?
-							Principal p = ((Principal) emValue);
-							if (isGuestbook && cn.equals("guest")) {
-								// Yes!  If the entity is a folder
-								// entry...
-								if (isEntityFolderEntry) {
-									// ...use the principal to generate
-									// ...a GuestInfo for the column...
-									gi = getGuestInfoFromPrincipal(bs, request, p);
-									fr.setColumnValue(fc, gi);
-								}
-								else {
-									// ...otherwise, don't store a
-									// ...value for the column.
-									fr.setColumnValue(fc, "");
-								}
-							}
-							
-							else {
-								// No, we aren't looking at the 
-								// guest' column in a guest book
-								// folder!  If we can create a
-								// PrincipalInfo for the principal...
-								pi = getPIFromPId(bs, request, p.getId());
-								if (null != pi) {
-									// ...store it directly.
-									if (pi.isUserPerson() || isManageUsers || (!(Utils.checkIfFilr()))) {
-										fr.setColumnValue(fc, pi);
-									}
-								}
-							}
-						}
-					
-						if ((null == pi) && (null == gi)) {
-							// No!  Does the column contain assignment
-							// information?
-							if (AssignmentInfo.isColumnAssigneeInfo(csk)) {
-								// Yes!  Read its
-								// List<AssignmentInfo>'s.
-								AssigneeType ait = AssignmentInfo.getColumnAssigneeType(csk);
-								List<AssignmentInfo> assignmentList = GwtEventHelper.getAssignmentInfoListFromEntryMap(entryMap, csk, ait);
-								
-								// Is this column for an individual
-								// assignee?
-								if (ait.isIndividual()) {
-									// Yes!  If we don't have columns
-									// for group or team assignments,
-									// factor those in as well.
-									factorInGroupAssignments(entryMap, folderColumns, csk, assignmentList);
-									factorInTeamAssignments( entryMap, folderColumns, csk, assignmentList);
 								}
 								
-								// Add the column data to the list.
-								addedAssignments = true;
-								fr.setColumnValue_AssignmentInfos(fc, assignmentList);
-							}
-							
-							// No, the column doesn't contain
-							// assignment information either!  Does
-							// it contain a collection of task folders?
-							else if (csk.equals("tasks")) {
-								// Yes!  Create a List<TaskFolderInfo>
-								// from the IDs it contains and set
-								// that as the column value.
-								List<TaskFolderInfo> taskFolderList = GwtServerHelper.getTaskFolderInfoListFromEntryMap(bs, request, entryMap, csk);
-								fr.setColumnValue_TaskFolderInfos(fc, taskFolderList);
-							}
-							
-							// No, the column doesn't contain a
-							// collection of task folders either!
-							// Does it contain an email address?
-							else if (csk.equals("emailAddress")) {
-								// Yes!  Construct an EmailAddressInfo
-								// from the entry map.
-								EmailAddressInfo emai = GwtServerHelper.getEmailAddressInfoFromEntryMap(bs, entryMap);
-								fr.setColumnValue(fc, emai);
-							}
-							
-							else {
-								// No, the column doesn't contain an
-								// email address either!  Extract its
-								// String value.
-								String value = GwtServerHelper.getStringFromEntryMapValue(
-									emValue,
-									DateFormat.MEDIUM,
-									DateFormat.SHORT);
-								
-								// Are we working on a title field?
-								if (csk.equals(Constants.TITLE_FIELD)) {
-									// Yes!  Construct an
-									// EntryTitleInfo for it.
-									EntryTitleInfo  eti = new EntryTitleInfo();
-									eti.setHidden((null != smItem) && smItem.isHidden());
-									eti.setSeen(isEntityFolderEntry ? seenMap.checkIfSeen(entryMap) : true);
-									eti.setTrash(isTrash);
-									eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
-									eti.setEntityId(entityId);
-									String description = getEntryDescriptionFromMap(request, entryMap, ((null == smItem) ? null : smItem.getEntity()));
-									if (MiscUtil.hasString(description)) {
-										eti.setDescription(description);
-										String descriptionFormat = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DESC_FORMAT_FIELD);
-										eti.setDescriptionIsHtml(MiscUtil.hasString(descriptionFormat) && descriptionFormat.equals(String.valueOf(Description.FORMAT_HTML)));
-									}
-									else if (!isEntityFolderEntry) {
-										description = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_PATH);
-										if (MiscUtil.hasString(description)) {
-											eti.setDescription(      description);
-											eti.setDescriptionIsHtml(false      );
+								// Are we working on a 'Shared by/with Me' collection?
+								GwtSharedMeItem smItem;
+								if (isCollectionSharedByMe || isCollectionSharedWithMe) {
+									// Yes!  Find the GwtSharedMeItem for this row.
+									smItem = GwtSharedMeItem.findShareMeInList(
+										docId,
+										entityType,
+										shareItems);
+									
+									// Is this the sharedBy/With column?
+									if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_BY) ||
+										csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_WITH)) {
+										// Yes!  Build a List<AssignmentInfo> for this row...
+										List<AssignmentInfo> aiList;
+										if (null == smItem) {
+											aiList = new ArrayList<AssignmentInfo>();
 										}
-									}
-									if (isEntityFolderEntry && GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD))) {
-										String fName = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
-										if (MiscUtil.hasString(fName)) {
-											eti.setFile(true);
-											eti.setFileDownloadUrl(
-												GwtServerHelper.getDownloadFileUrl(
-													request,
-													bs,
-													entityId.getBinderId(),
-													entityId.getEntityId()));
-											eti.setFileIcon(
-												FileIconsHelper.getFileIconFromFileName(
-													fName,
-													mapBISToIS(
-														BinderIconSize.getListViewIconSize())));
+										else {
+											if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_BY))
+											     aiList = getAIListFromSharers(   smItem.getPerShareInfos());
+											else aiList = getAIListFromRecipients(smItem.getPerShareInfos());
 										}
+										addedAssignments = (!(aiList.isEmpty()));
+										fr.setColumnValue_AssignmentInfos(fc, aiList);
+			
+										// ...and continue with the next column.
+										continue;
 									}
-									fr.setColumnValue(fc, eti);
+									
+									// No, this isn't the sharedBy/With column!  Is it the
+									// sharedMessage column?
+									else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_MESSAGE)) {
+										// Yes!  Build a List<ShareMessageInfo> for this row...
+										List<ShareMessageInfo> smiList;
+										if (null == smItem)
+										     smiList = new ArrayList<ShareMessageInfo>();
+										else smiList = getShareMessageListFromShares(smItem.getPerShareInfos());
+										fr.setColumnValue_ShareMessageInfos(fc, smiList);
+										
+										// ...and continue with the next column.
+										continue;
+									}
+									
+									// No, this isn't the sharedMessage column either!  Is it the
+									// sharedDate column?
+									else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_DATE)) {
+										// Yes!  Build a List<ShareDateInfo> for this row...
+										List<ShareDateInfo> sdiList;
+										if (null == smItem)
+										     sdiList = new ArrayList<ShareDateInfo>();
+										else sdiList = getShareDateListFromShares(smItem.getPerShareInfos());
+										fr.setColumnValue_ShareDateInfos(fc, sdiList);
+										
+										// ...and continue with the next column.
+										continue;
+									}
+									
+									// No, this isn't the sharedDate column either!  Is it the
+									// sharedExpiration column?
+									else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_EXPIRATION)) {
+										// Yes!  Build a List<ShareExpirationInfo> for this row...
+										List<ShareExpirationInfo> seiList;
+										if (null == smItem)
+										     seiList = new ArrayList<ShareExpirationInfo>();
+										else seiList = getShareExpirationListFromShares(smItem.getPerShareInfos());
+										fr.setColumnValue_ShareExpirationInfos(fc, seiList);
+										
+										// ...and continue with the next column.
+										continue;
+									}
+									
+									// No, this isn't the sharedExpiration column either!  Is it
+									// the sharedAccess column?
+									else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_ACCESS)) {
+										// Yes!  Build a List<ShareAccessInfo> for this row...
+										List<ShareAccessInfo> saiList;
+										if (null == smItem)
+										     saiList = new ArrayList<ShareAccessInfo>();
+										else saiList = getShareAccessListFromShares(smItem.getPerShareInfos());
+										fr.setColumnValue_ShareAccessInfos(fc, saiList);
+										
+										// ...and continue with the next column.
+										continue;
+									}
 								}
 								
-								// No, we aren't working on a title
-								// field!  Are we working on a file ID
-								// field?
-								else if (csk.equals(Constants.FILE_ID_FIELD)) {
-									// Yes!  Do we have a single file
-									// ID?
-									if ((!(MiscUtil.hasString(value))) || ((-1) != value.indexOf(','))) {
-										// No!  Ignore the value.
-										value = null;
+								else {
+									// No, we aren't working on a 'Shared by/with Me' collection!
+									smItem = null;
+								}
+								
+								GuestInfo       gi  = null;
+								PrincipalInfoId pId = null;
+								if (emValue instanceof Principal) {
+									// Yes!  Are we looking at the 'guest' column in a guest book
+									// folder?
+									Principal p = ((Principal) emValue);
+									if (isGuestbook && cn.equals("guest")) {
+										// Yes!  If the entity is a folder entry...
+										if (isEntityFolderEntry) {
+											// ...use the principal to generate a GuestInfo for the
+											// ...column...
+											gi = getGuestInfoFromPrincipal(bs, request, p);
+											fr.setColumnValue(fc, gi);
+										}
+										else {
+											// ...otherwise, don't store a value for the column.
+											fr.setColumnValue(fc, "");
+										}
 									}
 									
 									else {
-										// Yes, we have a single file
-										// ID!  Do we have a file path
-										// that we support viewing of?
-										String relativeFilePath = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
-										if ((!(MiscUtil.hasString(relativeFilePath))) || (!(SsfsUtil.supportsViewAsHtml(relativeFilePath)))) {
-											// No!  Ignore the value.
-											value = null;
+										// No, we aren't looking at the 'guest' column in a guest
+										// book folder!  Simply track the principal's ID.  We'll
+										// resolve it later to a PrincipalInfo in fixupFRs().
+										pId = new PrincipalInfoId(p.getId());
+										fr.setColumnValue(fc, pId);
+									}
+								}
+							
+								if ((null == pId) && (null == gi)) {
+									// No!  Does the column contain assignment information?
+									if (AssignmentInfo.isColumnAssigneeInfo(csk)) {
+										// Yes!  Read its List<AssignmentInfo>'s.
+										AssigneeType ait = AssignmentInfo.getColumnAssigneeType(csk);
+										List<AssignmentInfo> assignmentList = GwtEventHelper.getAssignmentInfoListFromEntryMap(entryMap, csk, ait);
+										
+										// Is this column for an individual assignee?
+										if (ait.isIndividual()) {
+											// Yes!  If we don't have columns for group or team
+											// assignments, factor those in as well.
+											factorInGroupAssignments(entryMap, folderColumns, csk, assignmentList);
+											factorInTeamAssignments( entryMap, folderColumns, csk, assignmentList);
 										}
+										
+										// Add the column data to the list.
+										addedAssignments = true;
+										fr.setColumnValue_AssignmentInfos(fc, assignmentList);
 									}
 									
-									// Do we have a file ID to work
-									// with?
-									if (MiscUtil.hasString(value)) {
-										// Yes!  Construct a
-										// ViewFileInfo for it.
-										ViewFileInfo vfi = new ViewFileInfo();
-										vfi.setFileId(     value);
-										vfi.setEntityId(   entityId);
-										vfi.setFileTime(   GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILE_TIME_FIELD));
-										vfi.setViewFileUrl(GwtServerHelper.getViewFileUrl(request, vfi));
-										fr.setColumnValue(fc, vfi);
-									}
-								}
-
-								// No, we aren't working on a file ID
-								// field either!  Are we working on an
-								// HTML description field?
-								else if (csk.equals(Constants.DESC_FIELD) && cn.equals("descriptionHtml")) {
-									// Yes!  Check if the description
-									// is in HTML format and store it.
-									String descFmt = GwtServerHelper. getStringFromEntryMap(entryMap, Constants.DESC_FORMAT_FIELD);
-									boolean isHtml = ((null != descFmt) && "1".equals(descFmt));
-									fr.setColumnValue(fc, new DescriptionHtml(value, isHtml));
-								}
-								
-								// No, we aren't working on an HTML
-								// description field either!  Are we
-								// working on a family specification
-								// field?
-								else if (csk.equals(Constants.FAMILY_FIELD)) {
-									// Yes!  Do we have a value for the
-									// column?
-									if (MiscUtil.hasString(value)) {
-										// Yes!  Load any localized
-										// name we might have for it.
-										String nltKeyBase;
-										if (entityType.equals(EntityType.folderEntry.name()))
-										     nltKeyBase = "__entry_";
-										else nltKeyBase = "__folder_";
-										value = NLT.get((nltKeyBase + value), value);
+									// No, the column doesn't contain assignment information
+									// either!  Does it contain a collection of task folders?
+									else if (csk.equals("tasks")) {
+										// Yes!  Create a List<TaskFolderInfo> from the IDs it
+										// contains and set that as the column value.
+										List<TaskFolderInfo> taskFolderList = GwtServerHelper.getTaskFolderInfoListFromEntryMap(bs, request, entryMap, csk);
+										fr.setColumnValue_TaskFolderInfos(fc, taskFolderList);
 									}
 									
-									// Use what ever String value we
-									// arrived at.
-									fr.setColumnValue(fc, (null == (value) ? "" : value));
-								}
-								
-								// No, we aren't working on a family
-								// specification field either!  Are we
-								// working on a comments count field?
-								else if (csk.equals(Constants.TOTALREPLYCOUNT_FIELD)) {
-									// Yes!  Store a CommentsInfo for
-									// it.
-									String commentCount = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.TOTALREPLYCOUNT_FIELD);
-									if (!(MiscUtil.hasString(commentCount))) {
-										commentCount = "0";
+									// No, the column doesn't contain a collection of task folders
+									// either!  Does it contain an email address?
+									else if (csk.equals("emailAddress")) {
+										// Yes!  Construct an EmailAddressInfo from the entry map.
+										EmailAddressInfo emai = GwtServerHelper.getEmailAddressInfoFromEntryMap(bs, entryMap);
+										fr.setColumnValue(fc, emai);
 									}
-									String entityTitle = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.TITLE_FIELD);
-									if (!(MiscUtil.hasString(entityTitle))) {
-										entityTitle = ("--" + NLT.get("entry.noTitle") + "--");
-									}
-									fr.setColumnValue(
-										fc,
-										new CommentsInfo(
-											entityId,
-											entityTitle,
-											Integer.parseInt(commentCount)));
-								}
-								
-								// No, we aren't working a comments
-								// count field either!  Are we working
-								// on the internal/external flag of a
-								// user?
-								else if (csk.equals(Constants.IDENTITY_INTERNAL_FIELD)) {
-									// Yes!  Store a user type for it.
-									fr.setColumnValue(fc, getUserType(bs, request, entityId));
-								}
-								
-								else {
-									// No, we aren't working on a
-									// comments count field either!
-									// Are we working on a field whose
-									// value is a Date?
-									if (emValue instanceof Date) {
-										// Yes!  Is that Date overdue?
-										if (DateComparer.isOverdue((Date) emValue)) {
-											// Yes!  Mark that column
-											// as being an overdue
-											// date, and if this a
-											// due date...
-											if (csk.equals(Constants.DUE_DATE_FIELD)) {
-												// ...that's not...
-												// ...completed...
-												String status = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.STATUS_FIELD);
-												boolean completed = (MiscUtil.hasString(status) && status.equals("completed"));
-												if (!completed) {
-													// ...show it as
-													// ...being
-													// ...overdue.
-													fr.setColumnOverdueDate(fc, Boolean.TRUE);
-													if      (isSurvey)    value += (" " + NLT.get("survey.overdue"   ));
-													else if (isMilestone) value += (" " + NLT.get("milestone.overdue"));
+									
+									else {
+										// No, the column doesn't contain an email address either!
+										// Extract its String value.
+										String value = GwtServerHelper.getStringFromEntryMapValue(
+											emValue,
+											DateFormat.MEDIUM,
+											DateFormat.SHORT);
+										
+										// Are we working on a title field?
+										if (csk.equals(Constants.TITLE_FIELD)) {
+											// Yes!  Construct an EntryTitleInfo for it.
+											EntryTitleInfo  eti = new EntryTitleInfo();
+											eti.setHidden((null != smItem) && smItem.isHidden());
+											eti.setSeen(isEntityFolderEntry ? seenMap.checkIfSeen(entryMap) : true);
+											eti.setTrash(isTrash);
+											eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
+											eti.setEntityId(entityId);
+											String description = getEntryDescriptionFromMap(request, entryMap, ((null == smItem) ? null : smItem.getEntity()));
+											if (MiscUtil.hasString(description)) {
+												eti.setDescription(description);
+												String descriptionFormat = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DESC_FORMAT_FIELD);
+												eti.setDescriptionIsHtml(MiscUtil.hasString(descriptionFormat) && descriptionFormat.equals(String.valueOf(Description.FORMAT_HTML)));
+											}
+											else if (!isEntityFolderEntry) {
+												description = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_PATH);
+												if (MiscUtil.hasString(description)) {
+													eti.setDescription(      description);
+													eti.setDescriptionIsHtml(false      );
 												}
 											}
+											if (isEntityFolderEntry && GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD))) {
+												String fName = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
+												if (MiscUtil.hasString(fName)) {
+													eti.setFile(true);
+													eti.setFileDownloadUrl(
+														GwtServerHelper.getDownloadFileUrl(
+															request,
+															bs,
+															entityId.getBinderId(),
+															entityId.getEntityId()));
+													eti.setFileIcon(
+														FileIconsHelper.getFileIconFromFileName(
+															fName,
+															mapBISToIS(
+																BinderIconSize.getListViewIconSize())));
+												}
+											}
+											fr.setColumnValue(fc, eti);
 										}
-										fr.setColumnValue(fc, (null == (value) ? "" : value));
-									}
-									
-									// No, we aren't working on a Date
-									// field!  Are we working on a file
-									// size field?
-									else if (csk.equals(Constants.FILE_SIZE_FIELD)) {
-										// Yes!  Trim any leading 0's
-										// from the value.
-										if (isEntityFolderEntry) {
-											value = trimFileSize(value);
+										
+										// No, we aren't working on a title field!  Are we working
+										// on a file ID field?
+										else if (csk.equals(Constants.FILE_ID_FIELD)) {
+											// Yes!  Do we have a single file ID?
+											if ((!(MiscUtil.hasString(value))) || ((-1) != value.indexOf(','))) {
+												// No!  Ignore the value.
+												value = null;
+											}
+											
+											else {
+												// Yes, we have a single file ID!  Do we have a
+												// file path that we support viewing of?
+												String relativeFilePath = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
+												if ((!(MiscUtil.hasString(relativeFilePath))) || (!(SsfsUtil.supportsViewAsHtml(relativeFilePath)))) {
+													// No!  Ignore the value.
+													value = null;
+												}
+											}
+											
+											// Do we have a file ID to work with?
 											if (MiscUtil.hasString(value)) {
-												value += " KB";
+												// Yes!  Construct a ViewFileInfo for it.
+												ViewFileInfo vfi = new ViewFileInfo();
+												vfi.setFileId(     value);
+												vfi.setEntityId(   entityId);
+												vfi.setFileTime(   GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILE_TIME_FIELD));
+												vfi.setViewFileUrl(GwtServerHelper.getViewFileUrl(request, vfi));
+												fr.setColumnValue(fc, vfi);
 											}
 										}
+		
+										// No, we aren't working on a file ID field either!  Are we
+										// working on an HTML description field?
+										else if (csk.equals(Constants.DESC_FIELD) && cn.equals("descriptionHtml")) {
+											// Yes!  Check if the description is in HTML format and
+											// store it.
+											String descFmt = GwtServerHelper. getStringFromEntryMap(entryMap, Constants.DESC_FORMAT_FIELD);
+											boolean isHtml = ((null != descFmt) && "1".equals(descFmt));
+											fr.setColumnValue(fc, new DescriptionHtml(value, isHtml));
+										}
+										
+										// No, we aren't working on an HTML description field
+										// either!  Are we working on a family specification
+										// field?
+										else if (csk.equals(Constants.FAMILY_FIELD)) {
+											// Yes!  Do we have a value for the column?
+											if (MiscUtil.hasString(value)) {
+												// Yes!  Load any localized name we might have for
+												// it.
+												String nltKeyBase;
+												if (entityType.equals(EntityType.folderEntry.name()))
+												     nltKeyBase = "__entry_";
+												else nltKeyBase = "__folder_";
+												value = NLT.get((nltKeyBase + value), value);
+											}
+											
+											// Use what ever String value we arrived at.
+											fr.setColumnValue(fc, (null == (value) ? "" : value));
+										}
+										
+										// No, we aren't working on a family specification field
+										// either!  Are we working on a comments count field?
+										else if (csk.equals(Constants.TOTALREPLYCOUNT_FIELD)) {
+											// Yes!  Store a CommentsInfo for it.
+											String commentCount = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.TOTALREPLYCOUNT_FIELD);
+											if (!(MiscUtil.hasString(commentCount))) {
+												commentCount = "0";
+											}
+											String entityTitle = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.TITLE_FIELD);
+											if (!(MiscUtil.hasString(entityTitle))) {
+												entityTitle = ("--" + NLT.get("entry.noTitle") + "--");
+											}
+											fr.setColumnValue(
+												fc,
+												new CommentsInfo(
+													entityId,
+													entityTitle,
+													Integer.parseInt(commentCount)));
+										}
+										
+										// No, we aren't working a comments count field either!
+										// Are we working on the internal/external flag of a user?
+										else if (csk.equals(Constants.IDENTITY_INTERNAL_FIELD)) {
+											// Yes!  Store a user type for it.
+											fr.setColumnValue(fc, getUserType(bs, request, entityId));
+										}
+										
 										else {
-											value = "";
+											// No, we aren't working on an internal/external flag
+											// field either! Are we working on a field whose value
+											// is a Date?
+											if (emValue instanceof Date) {
+												// Yes!  Is that Date overdue?
+												if (DateComparer.isOverdue((Date) emValue)) {
+													// Yes!  Mark that column as being an overdue
+													// date, and if this a due date...
+													if (csk.equals(Constants.DUE_DATE_FIELD)) {
+														// ...that's not completed...
+														String status = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.STATUS_FIELD);
+														boolean completed = (MiscUtil.hasString(status) && status.equals("completed"));
+														if (!completed) {
+															// ...show it as being overdue.
+															fr.setColumnOverdueDate(fc, Boolean.TRUE);
+															if      (isSurvey)    value += (" " + NLT.get("survey.overdue"   ));
+															else if (isMilestone) value += (" " + NLT.get("milestone.overdue"));
+														}
+													}
+												}
+												fr.setColumnValue(fc, (null == (value) ? "" : value));
+											}
+											
+											// No, we aren't working on a Date field!  Are we
+											// working on a file size field?
+											else if (csk.equals(Constants.FILE_SIZE_FIELD)) {
+												// Yes!  Trim any leading 0's from the value.
+												if (isEntityFolderEntry) {
+													value = trimFileSize(value);
+													try {
+														long vl = Long.parseLong(value);
+														value = userNF.format(vl);
+													}
+													catch (Exception ex) {}
+		
+													if (MiscUtil.hasString(value)) {
+														value += userKBTail;
+													}
+												}
+												else {
+													value = "";
+												}
+											}
+		
+											// No, we aren't working on a file size field!  Are we
+											// working on the status field of a milestone?
+											else if (csk.equals(Constants.STATUS_FIELD) && isMilestone) {
+												// Yes!  Do we have a status value for it?
+												if (MiscUtil.hasString(value)) {
+													// Yes!  Pull its localized string from the
+													// resources.
+													value = NLT.get(("__milestone_status_" + value), value);
+												}
+											}
+											
+											// Use what ever String value we arrived at.
+											fr.setColumnValue(fc, (null == (value) ? "" : value));
 										}
 									}
-
-									// No, we aren't working on a file
-									// size field!  Are we working on
-									// the status field of a milestone?
-									else if (csk.equals(Constants.STATUS_FIELD) && isMilestone) {
-										// Yes!  Do we have a status
-										// value for it?
-										if (MiscUtil.hasString(value)) {
-											// Yes!  Pull its localized
-											// string from the
-											// resources.
-											value = NLT.get(("__milestone_status_" + value), value);
-										}
-									}
-									
-									// Use what ever String value we
-									// arrived at.
-									fr.setColumnValue(fc, (null == (value) ? "" : value));
 								}
 							}
 						}
+						
+						finally {
+							if (PROFILE_PER_COLUMN) {
+								SimpleProfiler.stop(perColProfile   );
+								SimpleProfiler.stop(perRowColProfile);
+							}
+						}
 					}
+					
+					// Add the FolderRow we just built to the
+					// List<FolderRow> of them.
+					folderRows.add(fr);
 				}
 				
-				// Add the FolderRow we just built to the
-				// List<FolderRow> of them.
-				folderRows.add(fr);
+				finally {
+					if (PROFILE_PER_ROW) {
+						SimpleProfiler.stop(perRowProfile);
+					}
+				}
 			}
 
 			// Did we add any rows with assignment information?
@@ -4158,7 +4379,7 @@ public class GwtViewHelper {
 			
 			// Walk the List<FolderRow>'s performing any remaining
 			// fixups on each as necessary.
-			fixupFRs(bs, request, folderRows);
+			fixupFRs(bs, request, folderRows, isManageUsers, isFilr);
 
 			// Is the user viewing pinned entries?
 			if (viewPinnedEntries) {
@@ -4198,10 +4419,15 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getFolderRows( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getFolderRows( SOURCE EXCEPTION ):  ");
+		}
+		
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.getFolderRows()");
 		}
 	}
 
@@ -4214,7 +4440,7 @@ public class GwtViewHelper {
 			pId,
 			p.getTitle(),
 			PermaLinkUtil.getUserPermalink(request, String.valueOf(pId)));
-		reply.setAvatarUrl(GwtServerHelper.getUserAvatarUrl(bs, request, p));
+		reply.setAvatarUrl(GwtServerHelper.getPrincipalAvatarUrl(bs, request, p));
 		reply.setEmailAddress(      p.getEmailAddress()      );
 		reply.setMobileEmailAddress(p.getMobileEmailAddress());
 		reply.setTextEmailAddress(  p.getTxtEmailAddress()   );
@@ -4224,139 +4450,6 @@ public class GwtViewHelper {
 		return reply;
 	}
 
-	/*
-	 * Extracts a Long value from a entry Map.
-	 */
-	@SuppressWarnings("unchecked")
-	public static Long getLongFromMap(Map entryMap, String key) {
-		Object v = entryMap.get(key);
-		Long reply;
-		if      (v instanceof String) reply = Long.parseLong((String) v);
-		else if (v instanceof Long)   reply = ((Long) v);
-		else                          reply = -1L;
-		return reply;
-	}
-
-	/**
-	 * Returns a ViewFolderEntryInfoRpcResponseData corresponding to
-	 * the previous/next folder entry to the given EntityId.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param entityId
-	 * @param previous
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	@SuppressWarnings("unchecked")
-	public static ViewFolderEntryInfoRpcResponseData getNextPreviousFolderInfo(AllModulesInjected bs, HttpServletRequest request, EntityId entityId, boolean previous) throws GwtTeamingException {
-		try {
-			// Allocate a ViewFolderEntryInfoRpcResponseData we can
-			// return.
-			ViewFolderEntryInfoRpcResponseData reply = new ViewFolderEntryInfoRpcResponseData();
-
-			// Setup an options Map with the sorting information
-			// current in effect for the folder.
-			Long								folderId   = entityId.getBinderId();
-			BinderInfo							folderInfo = GwtServerHelper.getBinderInfo(bs, request, folderId  );
-			FolderDisplayDataRpcResponseData	fdd        = getFolderDisplayData(         bs, request, folderInfo);
-			Map options = new HashMap();
-			options.put(ObjectKeys.SEARCH_SORT_BY,                     fdd.getFolderSortBy()      );
-			options.put(ObjectKeys.SEARCH_SORT_DESCEND, String.valueOf(fdd.getFolderSortDescend()));
-			
-			// Can we get the ID of the previous/next folder entry?
-			Folder	folder        = bs.getFolderModule().getFolder(folderId);
-			Long	targetEntryId = BinderHelper.getNextPrevEntry(bs, folder, entityId.getEntityId(), (!previous), options);
-			if (null != targetEntryId) {
-				// Yes!  Create a ViewFolderEntryInfo for it and store
-				// it in the reply.
-				reply.setViewFolderEntryInfo(
-					buildViewFolderEntryInfo(
-						bs,
-						request,
-						folderId,
-						targetEntryId));
-			}
-			
-			// If we get here, reply refers to the
-			// ViewFolderEntryInfoRpcResponseData for the previous/next
-			// folder entry.  Return it.
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getNextPreviousFolderInfo( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
-		}
-	}
-	
-	/*
-	 * Given a Principal's ID read from an entry map, returns an
-	 * equivalent PrincipalInfo object.
-	 */
-	@SuppressWarnings("unchecked")
-	private static PrincipalInfo getPIFromPId(AllModulesInjected bs, HttpServletRequest request, Long pId) {
-		// Can we resolve the ID to an actual Principal object?
-		PrincipalInfo reply = null;
-		List<Long> principalIds = new ArrayList<Long>();
-		principalIds.add(pId);
-		List principals = null;
-		try {principals = ResolveIds.getPrincipals(principalIds, false);}
-		catch (Exception ex) {/* Ignored. */}
-		if (MiscUtil.hasItems(principals)) {
-			for (Object o:  principals) {
-				// Yes!  Is it a User?
-				Principal p = ((Principal) o);
-				boolean isUser = (p instanceof UserPrincipal);
-				if (isUser) {
-					// Yes!  Construct the rest of the PrincipalInfo
-					// required.
-					pId   = p.getId();
-					reply = PrincipalInfo.construct(pId);
-					reply.setTitle(p.getTitle());
-					User      user          = ((User) p);
-					Workspace userWS        = GwtServerHelper.getUserWorkspace(user);
-					boolean   userHasWS     = (null != userWS);
-					boolean   userWSInTrash = (userHasWS && userWS.isPreDeleted());
-					reply.setUserDisabled( user.isDisabled());
-					reply.setUserHasWS(    userHasWS        );
-					reply.setUserPerson(   user.isPerson()  );
-					reply.setUserWSInTrash(userWSInTrash    );
-					reply.setViewProfileEntryUrl(getViewProfileEntryUrl(bs, request, pId));
-					reply.setPresenceUserWSId(user.getWorkspaceId());
-					reply.setAvatarUrl(GwtServerHelper.getUserAvatarUrl(bs, request, user));
-					
-					// Setup an appropriate GwtPresenceInfo for the
-					// Vibe environment?
-					GwtPresenceInfo presenceInfo;
-					if (GwtServerHelper.isPresenceEnabled())
-					     presenceInfo = GwtServerHelper.getPresenceInfo(user);
-					else presenceInfo = null;
-					if (null == presenceInfo) {
-						presenceInfo = GwtServerHelper.getPresenceInfoDefault();
-					}
-					if (null != presenceInfo) {
-						reply.setPresence(presenceInfo);
-						reply.setPresenceDude(GwtServerHelper.getPresenceDude(presenceInfo));
-					}
-				}
-				
-				// There can only ever be one ID.
-				break;
-			}
-		}
-		
-		// If we get here, reply refers to the PrincipalInfo object
-		// for the principal ID we received or is null.  Return it.
-		return reply;
-	}
-	
 	/*
 	 * Returns a map containing the search filter to use to read the
 	 * rows from a folder.
@@ -4460,13 +4553,12 @@ public class GwtViewHelper {
 				}
 				
 				catch(Exception e) {
-					if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-					     m_logger.debug("GwtViewHelper.getJspHtml( SOURCE EXCEPTION ):  ", e);
-					}
-					
-					// Return an error back to the user.
+					// Return an error back to the user...
 					String[] args = new String[]{e.getMessage()};
 					html = NLT.get("errorcode.dashboardComponentViewFailure", args);
+					
+					// ...and log the error.
+					GwtLogHelper.error(m_logger, "GwtViewHelper.getJspHtml( EXCEPTION:1 ):  ", e);
 				}
 			}
 			
@@ -4502,12 +4594,12 @@ public class GwtViewHelper {
 				}
 				
 				catch(Exception e) {
-					if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-					     m_logger.debug("GwtViewHelper.getJspHtml( SOURCE EXCEPTION ):  ", e);
-					}
-					// Return an error back to the user.
+					// Return an error back to the user...
 					String[] args = new String[]{e.getMessage()};
 					html = NLT.get("errorcode.dashboardComponentViewFailure", args);
+					
+					// ...and log the error.
+					GwtLogHelper.error(m_logger, "GwtViewHelper.getJspHtml( EXCEPTION:2 ):  ", e);
 				}
 			}
 			
@@ -4618,10 +4710,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getJspHtml( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getJspHtml( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -4655,9 +4748,7 @@ public class GwtViewHelper {
 			}
 		}
 		catch (ParseException e) {
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getLastUserLogin( SOURCE EXCEPTION ):  ", e);
-			}
+			GwtLogHelper.error(m_logger, "GwtViewHelper.getLastUserLogin( SOURCE EXCEPTION ):  ", e);
 			reply = null;
 		}
 
@@ -4667,6 +4758,79 @@ public class GwtViewHelper {
 		return reply;
 	}
 
+	/*
+	 * Extracts a Long value from a entry Map.
+	 */
+	@SuppressWarnings("unchecked")
+	public static Long getLongFromMap(Map entryMap, String key) {
+		Object v = entryMap.get(key);
+		Long reply;
+		if      (v instanceof String) reply = Long.parseLong((String) v);
+		else if (v instanceof Long)   reply = ((Long) v);
+		else                          reply = -1L;
+		return reply;
+	}
+
+	/**
+	 * Returns a ViewFolderEntryInfoRpcResponseData corresponding to
+	 * the previous/next folder entry to the given EntityId.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entityId
+	 * @param previous
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	@SuppressWarnings("unchecked")
+	public static ViewFolderEntryInfoRpcResponseData getNextPreviousFolderInfo(AllModulesInjected bs, HttpServletRequest request, EntityId entityId, boolean previous) throws GwtTeamingException {
+		try {
+			// Allocate a ViewFolderEntryInfoRpcResponseData we can
+			// return.
+			ViewFolderEntryInfoRpcResponseData reply = new ViewFolderEntryInfoRpcResponseData();
+
+			// Setup an options Map with the sorting information
+			// current in effect for the folder.
+			Long								folderId   = entityId.getBinderId();
+			BinderInfo							folderInfo = GwtServerHelper.getBinderInfo(bs, request, folderId  );
+			FolderDisplayDataRpcResponseData	fdd        = getFolderDisplayData(         bs, request, folderInfo);
+			Map options = new HashMap();
+			options.put(ObjectKeys.SEARCH_SORT_BY,                     fdd.getFolderSortBy()      );
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, String.valueOf(fdd.getFolderSortDescend()));
+			
+			// Can we get the ID of the previous/next folder entry?
+			Folder	folder        = bs.getFolderModule().getFolder(folderId);
+			Long	targetEntryId = BinderHelper.getNextPrevEntry(bs, folder, entityId.getEntityId(), (!previous), options);
+			if (null != targetEntryId) {
+				// Yes!  Create a ViewFolderEntryInfo for it and store
+				// it in the reply.
+				reply.setViewFolderEntryInfo(
+					buildViewFolderEntryInfo(
+						bs,
+						request,
+						folderId,
+						targetEntryId));
+			}
+			
+			// If we get here, reply refers to the
+			// ViewFolderEntryInfoRpcResponseData for the previous/next
+			// folder entry.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getNextPreviousFolderInfo( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
 	/*
 	 * Get the parent container's DN.  May be null.
 	 * 
@@ -4702,64 +4866,177 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static List<Map> getPinnedEntries(AllModulesInjected bs, Folder folder, UserProperties userFolderProperties, List<Long> pinnedEntryIds, boolean returnEntries) {
-		// Allocate a List<Map> for the search results for the entries
-		// pinned in this folder.
-		List<Map> pinnedEntrySearchMaps = new ArrayList<Map>();
-
-		// Are there any pinned entries stored in the user's folder
-		// properties on this folder?
-		Map properties = userFolderProperties.getProperties();
-		String pinnedEntries;
-		if ((null != properties) && properties.containsKey(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES))
-		     pinnedEntries = ((String) properties.get(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES));
-		else pinnedEntries = null;
-		if (MiscUtil.hasString(pinnedEntries)) {
-			// Yes!  Parse them converting the String ID's to Long's.
-			if (pinnedEntries.lastIndexOf(",") == (pinnedEntries.length() - 1)) { 
-				pinnedEntries = pinnedEntries.substring(0, (pinnedEntries.length() - 1));
-			}
-			String[] peArray = pinnedEntries.split(",");
-			List<Long> peSet = new ArrayList();
-			for (int i = 0; i < peArray.length; i += 1) {
-				String pe = peArray[i];
-				if (MiscUtil.hasString(pe)) {
-					peSet.add(Long.valueOf(pe));
+		SimpleProfiler.start("GwtViewHelper.getPinnedEntries()");
+		try {
+			// Allocate a List<Map> for the search results for the
+			// entries pinned in this folder.
+			List<Map> pinnedEntrySearchMaps = new ArrayList<Map>();
+	
+			// Are there any pinned entries stored in the user's folder
+			// properties on this folder?
+			Map properties = userFolderProperties.getProperties();
+			String pinnedEntries;
+			if ((null != properties) && properties.containsKey(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES))
+			     pinnedEntries = ((String) properties.get(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES));
+			else pinnedEntries = null;
+			if (MiscUtil.hasString(pinnedEntries)) {
+				// Yes!  Parse them converting the String ID's to
+				// Long's.
+				if (pinnedEntries.lastIndexOf(",") == (pinnedEntries.length() - 1)) { 
+					pinnedEntries = pinnedEntries.substring(0, (pinnedEntries.length() - 1));
 				}
-			}
-
-			// Scan the pinned entries.
-			FolderModule fm = bs.getFolderModule();
-			List<org.apache.lucene.document.Document> pinnedFolderEntriesList = new ArrayList<org.apache.lucene.document.Document>();
-			SortedSet<FolderEntry> pinnedFolderEntriesSet = fm.getEntries(peSet);
-			for (FolderEntry entry:  pinnedFolderEntriesSet) {
-				// Is this entry still viable in this folder?
-				if (!(entry.isPreDeleted()) && entry.getParentBinder().equals(folder)) {
-					// Yes!  Track its ID.
-					pinnedEntryIds.add(entry.getId());
-
-					// Are we returning the entries too?
-					if (returnEntries) {
-						// Yes!  Save its indexDoc.
-						org.apache.lucene.document.Document indexDoc = fm.buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
-						pinnedFolderEntriesList.add(indexDoc);
+				String[] peArray = pinnedEntries.split(",");
+				List<Long> peSet = new ArrayList();
+				for (int i = 0; i < peArray.length; i += 1) {
+					String pe = peArray[i];
+					if (MiscUtil.hasString(pe)) {
+						peSet.add(Long.valueOf(pe));
 					}
 				}
+	
+				// Scan the pinned entries.
+				FolderModule fm = bs.getFolderModule();
+				List<org.apache.lucene.document.Document> pinnedFolderEntriesList = new ArrayList<org.apache.lucene.document.Document>();
+				SortedSet<FolderEntry> pinnedFolderEntriesSet = fm.getEntries(peSet);
+				for (FolderEntry entry:  pinnedFolderEntriesSet) {
+					// Is this entry still viable in this folder?
+					if (!(entry.isPreDeleted()) && entry.getParentBinder().equals(folder)) {
+						// Yes!  Track its ID.
+						pinnedEntryIds.add(entry.getId());
+	
+						// Are we returning the entries too?
+						if (returnEntries) {
+							// Yes!  Save its indexDoc.
+							org.apache.lucene.document.Document indexDoc = fm.buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
+							pinnedFolderEntriesList.add(indexDoc);
+						}
+					}
+				}
+	
+				// Are we returning the entries too?
+				if (returnEntries) {
+					// Construct search Map's from the indexDoc's for
+					// the pinned entries.
+					pinnedEntrySearchMaps = org.kablink.teaming.module.shared.SearchUtils.getSearchEntries(pinnedFolderEntriesList);
+					bs.getFolderModule().getEntryPrincipals(pinnedEntrySearchMaps);
+				}
 			}
-
-			// Are we returning the entries too?
-			if (returnEntries) {
-				// Construct search Map's from the indexDoc's for the
-				// pinned entries.
-				pinnedEntrySearchMaps = org.kablink.teaming.module.shared.SearchUtils.getSearchEntries(pinnedFolderEntriesList);
-				bs.getFolderModule().getEntryPrincipals(pinnedEntrySearchMaps);
-			}
+			
+			// If we get here, pinnedEntrySearchMaps refers to a
+			// List<Map> of search Map's for the pinned entries.
+			// Return it.
+			return pinnedEntrySearchMaps;
 		}
 		
-		// If we get here, pinnedEntrySearchMaps refers to a List<Map>
-		// search Map's for the pinned entries.  Return it.
-		return pinnedEntrySearchMaps;
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.getPinnedEntries()");
+		}
 	}
 
+	/*
+	 * Given a List<Long> of principal IDs read from entry maps,
+	 * returns an equivalent List<PrincipalInfo> object.
+	 */
+	private static List<PrincipalInfo> getPIsFromPIds(AllModulesInjected bs, HttpServletRequest request, List<Long> principalIds) {
+		SimpleProfiler.start("GwtViewHelper.getPIsFromPIds()");
+		try {
+			// Allocate the List<PrincipalInfo> we'll return.
+			List<PrincipalInfo> reply = new ArrayList<PrincipalInfo>();
+			
+			// Can we map the List<Long> of principal IDs to any
+			// UserWorkspacePair's?
+			List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(principalIds);
+			if (MiscUtil.hasItems(uwsPairs)) {
+				// Yes!  Scan them.
+				Long profileBinderId = bs.getProfileModule().getProfileBinderId();
+				for (UserWorkspacePair uwsPair:  uwsPairs) {
+					User user = uwsPair.getUser();
+					Long pId  = user.getId();
+					String perUserProfile;
+					if (PROFILE_PER_USER) {
+						perUserProfile = "GwtViewHelper.getPIsFromPIds(Process User:  " + pId + ")";
+						SimpleProfiler.start(perUserProfile);
+					}
+					else {
+						perUserProfile = null;
+					}
+					PrincipalInfo pi = PrincipalInfo.construct(pId);
+					try {
+						// Construct a PrincipalInfo for each...
+						pi.setTitle(user.getTitle());
+						Workspace userWS        = uwsPair.getWorkspace();
+						boolean   userHasWS     = (null != userWS);
+						boolean   userWSInTrash = (userHasWS && userWS.isPreDeleted());
+						pi.setUserDisabled( user.isDisabled()     );
+						pi.setUserHasWS(    userHasWS             );
+						pi.setUserPerson(   user.isPerson()       );
+						pi.setUserWSInTrash(userWSInTrash         );
+						pi.setEmailAddress( user.getEmailAddress());
+						pi.setViewProfileEntryUrl(getViewProfileEntryUrl(bs, request, pId, profileBinderId));
+						pi.setPresenceUserWSId(user.getWorkspaceId());
+						pi.setAvatarUrl(GwtServerHelper.getUserAvatarUrl(bs, request, user));
+					}
+					finally {
+						if (PROFILE_PER_USER) {
+							SimpleProfiler.stop(perUserProfile);
+						}
+					}
+					
+					if (PROFILE_PER_USER) {
+						perUserProfile = "GwtViewHelper.getPIsFromPIds(Process User Presence:  " + pId + ")";
+						SimpleProfiler.start(perUserProfile);
+					}
+					try {
+						// ...setup an appropriate GwtPresenceInfo...
+						GwtPresenceInfo presenceInfo;
+						if (GwtServerHelper.isPresenceEnabled())
+						     presenceInfo = GwtServerHelper.getPresenceInfo(user);
+						else presenceInfo = null;
+						if (null == presenceInfo) {
+							presenceInfo = GwtServerHelper.getPresenceInfoDefault();
+						}
+						if (null != presenceInfo) {
+							pi.setPresence(presenceInfo);
+							pi.setPresenceDude(GwtServerHelper.getPresenceDude(presenceInfo));
+						}
+					}
+					finally {
+						if (PROFILE_PER_USER) {
+							SimpleProfiler.stop(perUserProfile);
+						}
+					}
+					
+					// ...and add the PrincipalInfo to the reply list.
+					reply.add(pi);
+				}
+			}
+			
+			// If we get here, reply refers to the List<PrincipalInfo>
+			// objects for the principal IDs we received or is an empty
+			// list.  Return it.
+			return reply;
+		}
+		
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.getPIsFromPIds()");
+		}
+	}
+	
+	/*
+	 * Given a Principal's ID read from an entry map, returns an
+	 * equivalent PrincipalInfo object.
+	 */
+	private static PrincipalInfo getPIFromPId(AllModulesInjected bs, HttpServletRequest request, Long pId) {
+		List<Long> pIds = new ArrayList<Long>();
+		pIds.add(pId);
+		List<PrincipalInfo> piList = getPIsFromPIds(bs, request, pIds);
+		PrincipalInfo reply;
+		if (MiscUtil.hasItems(piList))
+		     reply = piList.get(0);	// There will only ever be one.
+		else reply = null;
+		return reply;
+	}
+	
 	/**
 	 * Returns a ProfileEntryInfoRpcRequestData containing information
 	 * about a user's profile.
@@ -4862,10 +5139,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getProfileEntryInfo( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getProfileEntryInfo( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -4880,7 +5158,7 @@ public class GwtViewHelper {
 			uri = new URI(url);
 		} catch (URISyntaxException e) {
 			// No!  Log the error and bail.
-			m_logger.error("GwtViewHelper.getQueryParameters( URL Parsing Exception ):  ", e);
+			GwtLogHelper.error(m_logger, "GwtViewHelper.getQueryParameters( URL:  '" + url + "', URL Parsing Exception ):  ", e);
 			return null;
 		}
 		
@@ -5058,21 +5336,28 @@ public class GwtViewHelper {
 	 * current user.
 	 */
 	private static List<GwtSharedMeItem> getSharedByMeItems(AllModulesInjected bs, HttpServletRequest request, String sortBy, boolean sortDescend) throws Exception {
-		// Construct a list containing just this user's ID...
-		Long		userId = GwtServerHelper.getCurrentUserId();
-		List<Long>	users  = new ArrayList<Long>();
-		users.add(userId);
-
-		// ...get the List<ShareItem> of those things shared by the
-		// ...user...
-		ShareItemSelectSpec	spec = new ShareItemSelectSpec();
-		spec.setSharerIds(users);
-		List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
-
-		// ...and finally, convert the List<ShareItem> into a
-		// ...List<GwtShareMeItem> and return that.
-		List<GwtSharedMeItem> siList = convertItemListToByMeList(bs, request, shareItems, userId, sortBy, sortDescend);
-		return siList;
+		SimpleProfiler.start("GwtViewHelper.getSharedByMeItems()");
+		try {
+			// Construct a list containing just this user's ID...
+			Long		userId = GwtServerHelper.getCurrentUserId();
+			List<Long>	users  = new ArrayList<Long>();
+			users.add(userId);
+	
+			// ...get the List<ShareItem> of those things shared by the
+			// ...user...
+			ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+			spec.setSharerIds(users);
+			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+	
+			// ...and finally, convert the List<ShareItem> into a
+			// ...List<GwtShareMeItem> and return that.
+			List<GwtSharedMeItem> siList = convertItemListToByMeList(bs, request, shareItems, userId, sortBy, sortDescend);
+			return siList;
+		}
+		
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.getSharedByMeItems()");
+		}
 	}
 	
 	/*
@@ -5080,26 +5365,33 @@ public class GwtViewHelper {
 	 * current user.
 	 */
 	private static List<GwtSharedMeItem> getSharedWithMeItems(AllModulesInjected bs, HttpServletRequest request, String sortBy, boolean sortDescend) {
-		// Construct a list containing just this user's ID...
-		Long		userId = GwtServerHelper.getCurrentUserId();
-		List<Long>	users  = new ArrayList<Long>();
-		users.add(userId);
-
-		// ...get ID's of the groups and teams the user is a member
-		// ...of...
-		List<Long>	groups = GwtServerHelper.getGroupIds(request, bs, userId);
-		List<Long>	teams  = GwtServerHelper.getTeamIds( request, bs, userId);
+		SimpleProfiler.start("GwtViewHelper.getSharedWithMeItems()");
+		try {
+			// Construct a list containing just this user's ID...
+			Long		userId = GwtServerHelper.getCurrentUserId();
+			List<Long>	users  = new ArrayList<Long>();
+			users.add(userId);
+	
+			// ...get ID's of the groups and teams the user is a member
+			// ...of...
+			List<Long>	groups = GwtServerHelper.getGroupIds(request, bs, userId);
+			List<Long>	teams  = GwtServerHelper.getTeamIds( request, bs, userId);
+			
+			// ...get the List<ShareItem> of those things shared with
+			// ...the user...
+			ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+			spec.setRecipients(users, groups, teams);
+			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+	
+			// ...and finally, convert the List<ShareItem> into a
+			// ...List<GwtShareMeItem> and return that.
+			List<GwtSharedMeItem> siList = convertItemListToWithMeList(bs, request, shareItems, userId, teams, groups, sortBy, sortDescend);
+			return siList;
+		}
 		
-		// ...get the List<ShareItem> of those things shared with the
-		// ...user...
-		ShareItemSelectSpec	spec = new ShareItemSelectSpec();
-		spec.setRecipients(users, groups, teams);
-		List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
-
-		// ...and finally, convert the List<ShareItem> into a
-		// ...List<GwtShareMeItem> and return that.
-		List<GwtSharedMeItem> siList = convertItemListToWithMeList(bs, request, shareItems, userId, teams, groups, sortBy, sortDescend);
-		return siList;
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.getSharedWithMeItems()");
+		}
 	}
 	
 	/*
@@ -5223,10 +5515,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getSharedViewState( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getSharedViewState( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -5280,10 +5573,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getTrashUrl( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getTrashUrl( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -5293,7 +5587,14 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Map getUserEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options) {
-		return bs.getProfileModule().getUsers(options);
+		SimpleProfiler.start("GwtViewHelper.getUserEntries()");
+		try {
+			return bs.getProfileModule().getUsers(options);
+		}
+		
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.getUserEntries()");
+		}
 	}
 	
 	/**
@@ -5490,10 +5791,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getUserProperties( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getUserProperties( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -5554,9 +5856,7 @@ public class GwtViewHelper {
 		
 		catch (Exception ex) {
 			// Log the exception.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getUserType( SOURCE EXCEPTION ):  ", ex);
-			}
+			GwtLogHelper.debug(m_logger, "GwtViewHelper.getUserType( SOURCE EXCEPTION ):  ", ex);
 		}
 		
 		// If we get here, reply refers to the UserType of the
@@ -5593,6 +5893,104 @@ public class GwtViewHelper {
 		Boolean viewSharedFiles = ((Boolean) session.getAttribute(CACHED_VIEW_SHARED_FILES_BASE + collectionType.ordinal()));
 		return ((null == viewSharedFiles) || viewSharedFiles);
 	}
+
+	/*
+	 * Given a List<Long> of userIds, returns the corresponding
+	 * List<UserWorkspacePair> of the User/Workspace pairs for the IDs.
+	 */
+	@SuppressWarnings("unchecked")
+	private static List<UserWorkspacePair> getUserWorkspacePairs(List<Long> principalIds) {
+		SimpleProfiler.start("GwtViewHelper.getUserWorkspacePairs()");
+		try {
+			SimpleProfiler.start("GwtViewHelper.getUserWorkspacePairs(Resolve Users)");
+			List<User> users = new ArrayList<User>();
+			List<Long> wsIds = new ArrayList<Long>();
+			try {
+				// Can we resolve the List<Long> to a list of Principal
+				// objects?
+				List principals;
+				try                  {principals = ResolveIds.getPrincipals(principalIds, false);}
+				catch (Exception ex) {principals = null;                                         }
+				if (MiscUtil.hasItems(principals)) {
+					// Yes!  Scan them.
+					for (Object o:  principals) {
+						// Is this Principal a User?
+						Principal p = ((Principal) o);
+						boolean isUser = (p instanceof UserPrincipal);
+						if (isUser) {
+							// Yes!  Add it to the List<User>.
+							User user = ((User) p);
+							users.add(user);
+							
+							// Does this User have a Workspace ID?
+							Long wsId = user.getWorkspaceId();
+							if (null != wsId) {
+								// Yes!  Added it to the List<Long> of
+								// Workspace IDs.
+								wsIds.add(wsId);
+							}
+						}
+					}
+				}
+			}
+			
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserWorkspacePairs(Resolve Users)");
+			}
+	
+			SimpleProfiler.start("GwtViewHelper.getUserWorkspacePairs(Resolve Workspaces)");
+			Map<Long, Workspace> wsMap = new HashMap<Long, Workspace>();
+			try {
+				// Do we have any Workspace IDs?
+				if (MiscUtil.hasItems(wsIds)) {
+					// Yes!  Can we resolve them to a Set of Workspace
+					// objects?
+					Set userWSSet = ResolveIds.getBinders(wsIds);
+					if (MiscUtil.hasItems(userWSSet)) {
+						// Yes!  Scan them...
+						for (Object o:  userWSSet) {
+							// ...adding each to the Workspace map.
+							Workspace ws = ((Workspace) o);
+							wsMap.put(ws.getId(), ws);
+						}
+					}
+				}
+			}
+			
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserWorkspacePairs(Resolve Workspaces)");
+			}
+	
+			List<UserWorkspacePair> reply = new ArrayList<UserWorkspacePair>();
+			SimpleProfiler.start("GwtViewHelper.getUserWorkspacePairs(Collate Results)");
+			try {
+				// Scan the List<User> we collected...
+				for (User user:  users) {
+					// ...adding a UserWorkspacePair object for each to
+					// ...the reply list.
+					Workspace ws;
+					Long wsId = user.getWorkspaceId();
+					if (null != wsId)
+					     ws = wsMap.get(wsId);
+					else ws = null;
+					reply.add(new UserWorkspacePair(user, ws));
+				}
+			}
+			
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserWorkspacePairs(Collate Results)");
+			}
+			
+			// If we get here, reply refers to a
+			// List<UserWorkspacePair> corresponding to the List<Long>
+			// of user IDs we were given.  Return it.
+			return reply;
+		}
+		
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.getUserWorkspacePairs()");
+		}
+	}
 	
 	/**
 	 * Returns a ViewInfo used to control folder views based on a URL.
@@ -5608,13 +6006,13 @@ public class GwtViewHelper {
 	@SuppressWarnings("unchecked")
 	public static ViewInfo getViewInfo(AllModulesInjected bs, HttpServletRequest request, String url) throws GwtTeamingException {
 		// Trace the URL we're working with.
-		m_logger.debug("GwtViewHelper.getViewInfo():  " + url);
+		GwtLogHelper.debug(m_logger, "GwtViewHelper.getViewInfo():  " + url);
 
 		// Can we parse the URL?
 		Map<String, String> nvMap = getQueryParameters(url);
 		if (!(MiscUtil.hasItems(nvMap))) {
 			// No!  Then we can't get a ViewInfo.
-			m_logger.debug("GwtViewHelper.getViewInfo():  1:Could not determine a view.");
+			GwtLogHelper.debug(m_logger, "GwtViewHelper.getViewInfo():  1:Could not determine a view.");
 			return null;
 		}
 
@@ -5637,7 +6035,7 @@ public class GwtViewHelper {
 				// A user!  Can we access the user?
 				Long entryId = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID);			
 				if (!(initVIFromUser(request, bs, GwtServerHelper.getUserFromId(bs, entryId), vi))) {
-					m_logger.debug("GwtViewHelper.getViewInfo():  2:Could not determine a view.");
+					GwtLogHelper.debug(m_logger, "GwtViewHelper.getViewInfo():  2:Could not determine a view.");
 					return null;
 				}
 			}
@@ -5653,7 +6051,7 @@ public class GwtViewHelper {
 					
 					// Setup a binder view based on the binder ID.
 					else if (!(initVIFromBinderId(request, bs, nvMap, WebKeys.URL_BINDER_ID, vi))) {
-						m_logger.debug("GwtViewHelper.getViewInfo():  3:Could not determine a view.");
+						GwtLogHelper.debug(m_logger, "GwtViewHelper.getViewInfo():  3:Could not determine a view.");
 						return null;
 					}
 				}
@@ -5690,7 +6088,7 @@ public class GwtViewHelper {
 				
 				// Setup a binder view based on the binder ID.
 				if (!(initVIFromBinderId(request, bs, nvMap, WebKeys.URL_BINDER_ID, vi))) {
-					m_logger.debug("GwtViewHelper.getViewInfo():  4:Could not determine a view.");
+					GwtLogHelper.debug(m_logger, "GwtViewHelper.getViewInfo():  4:Could not determine a view.");
 					return null;
 				}
 	
@@ -5889,7 +6287,7 @@ public class GwtViewHelper {
 		
 		// If we get here reply refers to the BinderInfo requested or
 		// is null.  Return it.
-		if (m_logger.isDebugEnabled()) {
+		if (GwtLogHelper.isDebugEnabled(m_logger)) {
 			dumpViewInfo(vi);
 		}
 		return vi;
@@ -5898,14 +6296,20 @@ public class GwtViewHelper {
 	/*
 	 * Returns the URL to use to view a user's profile entry.
 	 */
-	private static String getViewProfileEntryUrl(AllModulesInjected bs, HttpServletRequest request, Long userId) {
+	private static String getViewProfileEntryUrl(AllModulesInjected bs, HttpServletRequest request, Long userId, Long profileBinderId) {
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
-		url.setParameter(WebKeys.URL_BINDER_ID,        String.valueOf(bs.getProfileModule().getProfileBinderId()));
-		url.setParameter(WebKeys.URL_ACTION,           WebKeys.ACTION_VIEW_PROFILE_ENTRY                         );
-		url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL                         );
-		url.setParameter(WebKeys.URL_NEW_TAB,          "1"                                                       );
-		url.setParameter(WebKeys.URL_ENTRY_ID,         String.valueOf(userId)                                    );
+		url.setParameter(WebKeys.URL_BINDER_ID,        String.valueOf(profileBinderId)  );
+		url.setParameter(WebKeys.URL_ACTION,           WebKeys.ACTION_VIEW_PROFILE_ENTRY);
+		url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL);
+		url.setParameter(WebKeys.URL_NEW_TAB,          "1"                              );
+		url.setParameter(WebKeys.URL_ENTRY_ID,         String.valueOf(userId)           );
 		return url.toString();
+	}
+	
+	@SuppressWarnings("unused")
+	private static String getViewProfileEntryUrl(AllModulesInjected bs, HttpServletRequest request, Long userId) {
+		// Always use the initial form ofthe method.
+		return getViewProfileEntryUrl(bs, request, userId, bs.getProfileModule().getProfileBinderId());
 	}
 
 	/**
@@ -6128,10 +6532,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.getWhoHasAccess( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getWhoHasAccess( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -6191,10 +6596,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.hideShares( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.hideShares( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -6419,7 +6825,7 @@ public class GwtViewHelper {
 					}
 
 					catch (Exception e) {
-						// No!  Add an error  to the error list.
+						// No!  Add an error to the error list...
 						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
 						if      (e instanceof AccessControlException)           messageKey = "lockEntryError.AccssControlException";
@@ -6427,6 +6833,9 @@ public class GwtViewHelper {
 						else if (e instanceof FilesLockedByOtherUsersException) messageKey = "lockEntryError.FilesLockedByOtherUsersException";
 						else                                                    messageKey = "lockEntryError.OtherException";
 						reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtViewHelper.lockEntryEntries( Entry title:  '" + entryTitle + "', EXCEPTION ):  ", e);
 					}
 				}
 			}
@@ -6440,10 +6849,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.lockEntries( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.lockEntries( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -6494,13 +6904,22 @@ public class GwtViewHelper {
 				for (EntityId entityId:  entityIds) {
 					try {
 						// Can we move this entity?
-						if (entityId.isBinder())
-						     bm.moveBinder(                       entityId.getEntityId(), tis.getBinderTargetId(),      null);
-						else fm.moveEntry(entityId.getBinderId(), entityId.getEntityId(), tis.getEntryTargetId(), null, null);
+						if (entityId.isBinder()) {
+							if (BinderHelper.isBinderHomeFolder(bm.getBinder(entityId.getEntityId()))) {
+								String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
+								reply.addError(NLT.get("moveEntryError.cantMoveHome", new String[]{entryTitle}));
+							}
+							else {
+								bm.moveBinder(entityId.getEntityId(), tis.getBinderTargetId(), null);
+							}
+						}
+						else {
+							fm.moveEntry(entityId.getBinderId(), entityId.getEntityId(), tis.getEntryTargetId(), null, null);
+						}
 					}
 
 					catch (Exception e) {
-						// No!  Add an error  to the error list.
+						// No!  Add an error to the error list...
 						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
 						NotSupportedException nse = null;
@@ -6522,6 +6941,9 @@ public class GwtViewHelper {
 							messageArgs = new String[]{entryTitle, messagePatch};
 						}
 						reply.addError(NLT.get(messageKey, messageArgs));
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtViewHelper.moveEntries( Entry title:  '" + entryTitle + "', EXCEPTION ):  ", e);
 					}
 				}
 			}
@@ -6535,10 +6957,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.moveEntries( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.moveEntries( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -6679,12 +7102,15 @@ public class GwtViewHelper {
 					}
 
 					catch (Exception e) {
-						// No!  Add an error  to the error list.
+						// No!  Add an error to the error list...
 						String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
 						String messageKey;
 						if      (e instanceof AccessControlException) messageKey = "purgeUserError.AccssControlException";
 						else                                          messageKey = "purgeUserError.OtherException";
 						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtViewHelper.purgeUsers( User:  '" + user.getTitle() + "', EXCEPTION ):  ", e);
 					}
 				}
 			}
@@ -6698,10 +7124,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.purgeUsers( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.purgeUsers( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -6758,12 +7185,15 @@ public class GwtViewHelper {
 					}
 
 					catch (Exception e) {
-						// No!  Add an error  to the error list.
+						// No!  Add an error to the error list...
 						String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
 						String messageKey;
 						if      (e instanceof AccessControlException) messageKey = "purgeUserWorkspaceError.AccssControlException";
 						else                                          messageKey = "purgeUserWorkspaceError.OtherException";
 						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtViewHelper.purgeUserWorkspaces( User:  '" + userTitle + "', EXCEPTION ):  ", e);
 					}
 				}
 			}
@@ -6777,10 +7207,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.purgeUserWorkspaces( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.purgeUserWorkspaces( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -6804,31 +7235,45 @@ public class GwtViewHelper {
 
 			// Are we renaming a binder?
 			if (eid.isBinder()) {
-				// Yes!  Can we perform the rename?
-				HashMap rdMap = new HashMap();
-				rdMap.put(ObjectKeys.FIELD_ENTITY_TITLE, entityName);
-				MapInputData mid = new MapInputData(rdMap);
-				try {
-					bs.getBinderModule().modifyBinder(
-						eid.getEntityId(),
-						mid,			// Input data.
-						new HashMap(),	// No file items.
-						new HashSet(),	// No delete attachments.
-						null);			// No options.
+				// Yes!  Is this a 'Home' folder?
+				BinderModule bm = bs.getBinderModule();
+				if (BinderHelper.isBinderHomeFolder(bm.getBinder(eid.getEntityId()))) {
+					// Yes!  They can't be renamed.
+					String entryTitle = GwtServerHelper.getEntityTitle(bs, eid);
+					reply.setStringValue(NLT.get("renameEntityError.cantRenameHome", new String[]{entryTitle}));
 				}
 				
-				catch (Exception e) {
-					// No!  Return the reason why in the string response.
-					String messageKey;
-					if      (e instanceof AccessControlException)          messageKey = "renameEntityError.AccssControlException.";
-					else if (e instanceof IllegalCharacterInNameException) messageKey = "renameEntityError.IllegalCharacterInNameException.";
-					else if (e instanceof WriteFilesException)             messageKey = "renameEntityError.WriteFilesException.";
-					else if (e instanceof TitleException)		           messageKey = "renameEntityError.TitleException.";
-					else                                                   messageKey = "renameEntityError.OtherException.";
-					if (eid.isFolder())
-					     messageKey += "folder";
-					else messageKey += "workspace";
-					reply.setStringValue(NLT.get(messageKey, new String[]{entityName}));
+				else {
+					// No, this isn't a 'Home' folder!  Can we perform
+					// the rename?
+					HashMap rdMap = new HashMap();
+					rdMap.put(ObjectKeys.FIELD_ENTITY_TITLE, entityName);
+					MapInputData mid = new MapInputData(rdMap);
+					try {
+						bm.modifyBinder(
+							eid.getEntityId(),
+							mid,			// Input data.
+							new HashMap(),	// No file items.
+							new HashSet(),	// No delete attachments.
+							null);			// No options.
+					}
+					
+					catch (Exception e) {
+						// No!  Return the reason why in the string response...
+						String messageKey;
+						if      (e instanceof AccessControlException)          messageKey = "renameEntityError.AccssControlException.";
+						else if (e instanceof IllegalCharacterInNameException) messageKey = "renameEntityError.IllegalCharacterInNameException.";
+						else if (e instanceof WriteFilesException)             messageKey = "renameEntityError.WriteFilesException.";
+						else if (e instanceof TitleException)		           messageKey = "renameEntityError.TitleException.";
+						else                                                   messageKey = "renameEntityError.OtherException.";
+						if (eid.isFolder())
+						     messageKey += "folder";
+						else messageKey += "workspace";
+						reply.setStringValue(NLT.get(messageKey, new String[]{entityName}));
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtViewHelper.renameEntity( Entity title:  '" + entityName + "', EXCEPTION:1 ):  ", e);
+					}
 				}
 			}
 			
@@ -6899,7 +7344,7 @@ public class GwtViewHelper {
 				}
 				
 				catch (Exception e) {
-					// No!  Return the reason why in the string response.
+					// No!  Return the reason why in the string response...
 					String messageKey;
 					if      (e instanceof AccessControlException)          messageKey = "renameEntityError.AccssControlException.file";
 					else if (e instanceof IllegalCharacterInNameException) messageKey = "renameEntityError.IllegalCharacterInNameException.file";
@@ -6908,6 +7353,9 @@ public class GwtViewHelper {
 					else if (e instanceof WriteEntryDataException)         messageKey = "renameEntityError.WriteEntryDataException.file";
 					else                                                   messageKey = "renameEntityError.OtherException.file";
 					reply.setStringValue(NLT.get(messageKey, new String[]{entityName}));
+					
+					// ...and log it.
+					GwtLogHelper.error(m_logger, "GwtViewHelper.renameEntity( Entity title:  '" + entityName + ", EXCEPTION:2 ):  ", e);
 				}
 			}
 
@@ -6920,10 +7368,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.renameEntity( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.renameEntity( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -7003,13 +7452,16 @@ public class GwtViewHelper {
 					}
 
 					catch (Exception e) {
-						// No!  Add an error  to the error list.
+						// No!  Add an error to the error list...
 						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
 						if      (e instanceof AccessControlException)         messageKey = "unlockEntryError.AccssControlException";
 						else if (e instanceof ReservedByAnotherUserException) messageKey = "unlockEntryError.ReservedByAnotherUserException";
 						else                                                  messageKey = "unlockEntryError.OtherException";
 						reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtViewHelper.unlockEntries( Entry title:  '" + entryTitle + "', EXCEPTION ):  ", e);
 					}
 				}
 			}
@@ -7023,10 +7475,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.unlockEntries( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.unlockEntries( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -7059,10 +7512,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.saveAccessoryStatus( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.saveAccessoryStatus( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -7087,10 +7541,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.saveBinderRegionState( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.saveBinderRegionState( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -7126,10 +7581,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.saveColumnWidths( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.saveColumnWidths( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -7174,10 +7630,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.saveFolderEntryDlgPosition( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.saveFolderEntryDlgPosition( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -7363,10 +7820,10 @@ public class GwtViewHelper {
 		
 		catch (Exception ex) {
 			// Log the exception...
-			m_logger.debug("GwtViewHelper.setValueForCustomColumn( EXCEPTION ):  ", ex);
-			m_logger.debug("...Element:  " + fc.getColumnEleName());
-			m_logger.debug("...Column:  "  + fc.getColumnName());
-			m_logger.debug("...Row:  "     + fr.getEntityId().getEntityId());
+			GwtLogHelper.debug(m_logger, "GwtViewHelper.setValueForCustomColumn( EXCEPTION ):  ", ex);
+			GwtLogHelper.debug(m_logger, "...Element:  " + fc.getColumnEleName());
+			GwtLogHelper.debug(m_logger, "...Column:  "  + fc.getColumnName());
+			GwtLogHelper.debug(m_logger, "...Row:  "     + fr.getEntityId().getEntityId());
 
 			// ...and store something for the column to display.
 			fr.setColumnValue(
@@ -7401,10 +7858,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.saveSharedViewState( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.saveSharedViewState( SOURCE EXCEPTION ):  ");
 		}		
 	}
 
@@ -7467,10 +7925,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.showShares( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.showShares( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -7507,10 +7966,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.trashPurgeAll( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.trashPurgeAll( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -7557,10 +8017,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.trashPurgeSelectedEntries( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.trashPurgeSelectedEntries( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -7596,10 +8057,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.trashRestoreAll( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.trashRestoreAll( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -7645,10 +8107,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.trashRestoreSelectedEntries( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.trashRestoreSelectedEntries( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -7758,11 +8221,14 @@ public class GwtViewHelper {
 				}
 				
 				catch (Exception e) {
-					// Return the error to the user.
+					// Return the error to the user...
 					reply = new StringRpcResponseData();
 					reply.setStringValue(NLT.get("binder.add.files.html5.upload.error", new String[]{e.getLocalizedMessage()}));
 					try {tempFile.delete();}
 					catch (Throwable t) {/* Ignored. */}
+					
+					// ...and log it.
+					GwtLogHelper.error(m_logger, "GwtViewHelper.uploadFileBlob( File name:  '" + fileBlob.getFileName() + "', EXCEPTION:1 ):  ", e);
 				}
 				
 				finally {
@@ -7816,6 +8282,9 @@ public class GwtViewHelper {
 	    	    	else                                           errMsg = NLT.get("entry.uploadError.unknownError",        new String[]{ex.getLocalizedMessage()});
     				reply = new StringRpcResponseData();
     				reply.setStringValue(errMsg);
+    				
+    				// Log the error.
+					GwtLogHelper.error(m_logger, "GwtViewHelper.uploadFileBlob( File name:  '" + fileBlob.getFileName() + "', EXCEPTION:2 ):  ", ex);
     	    	}
     	    	
     	    	finally {
@@ -7840,10 +8309,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.uploadFileBlob( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.uploadFileBlob( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -8006,10 +8476,11 @@ public class GwtViewHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtViewHelper.validateUploads( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.validateUploads( SOURCE EXCEPTION ):  ");
 		}
 	}
 	

@@ -95,6 +95,9 @@ import com.google.gwt.event.dom.client.DropHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.typedarrays.client.Int8ArrayNative;
+import com.google.gwt.typedarrays.shared.ArrayBuffer;
+import com.google.gwt.typedarrays.shared.Int8Array;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -143,6 +146,19 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private ProgressBar						m_pbPerItem;				// Displays a per item progress bar as items are uploaded to the server.
 	private ProgressBar						m_pbTotal;					// Displays a total    progress bar as items are uploaded to the server.
 
+	// The following are used to convert an Int8Array to a base64
+	// encoded string in the method toBase64().
+	private static final char[] BASE64_CHARS = {
+		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 
+		'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 
+		'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 
+		'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 
+		'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 
+		'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', 
+		'8', '9', '+', '/'
+	};
+	private static final char BASE64_PADDING = '=';
+	
 	// true -> Information about file blobs being uploaded is displayed
 	// via alerts.  false -> They're not.
 	private static boolean TRACE_BLOBS	= false;	//
@@ -152,7 +168,12 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	
 	// Defines the default type of HTML5 file read used to upload
 	// files.
-	private static ReadType DEFAULT_READ_TYPE	= ReadType.BINARY_STRING;
+	//
+	// Note:  IE10 (the only version of IE that supports uploading
+	//    files using HTML5) only supports ARRAY_BUFFER.  Setting this
+	//    to anything else will break uploading files using this widget
+	//    there.
+	private static ReadType DEFAULT_READ_TYPE	= ReadType.ARRAY_BUFFER;
 	
 	// The minimum height and width of the popup.
 	private static int MIN_HEIGHT	= 250;	//
@@ -210,7 +231,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	private void abortUpload() {
 		// If the reader's loading...
-		if (State.LOADING == m_reader.getReadyState()) {
+		if (State.LOADING.equals(m_reader.getReadyState())) {
 			// ...abort it...
 			m_reader.abort();
 		}
@@ -792,9 +813,18 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private void processBlobNow() {
 		// Extract the data for the blob we just read...
 		final boolean lastBlob = ((m_fileBlob.getBlobStart() + m_fileBlob.getBlobSize()) >= m_fileBlob.getFileSize());
-		String blobData = m_reader.getStringResult();
-		if (m_fileBlob.isBlobBase64Encoded()) {
-			blobData = FileUtils.base64encode(blobData);
+		String blobData;
+		if (DEFAULT_READ_TYPE.equals(ReadType.ARRAY_BUFFER)) {
+			ArrayBuffer buffer = m_reader.getArrayBufferResult();
+			Int8Array array = Int8ArrayNative.create(buffer);
+			blobData = toBase64(array);
+			m_fileBlob.setBlobBase64Encoded(true);
+		}
+		else {
+			blobData = m_reader.getStringResult();
+			if (m_fileBlob.isBlobBase64Encoded()) {
+				blobData = FileUtils.base64encode(blobData);
+			}
 		}
 		m_fileBlob.setBlobData(              blobData );
 		m_fileBlob.setBlobMD5Hash(getMD5Hash(blobData));
@@ -1027,6 +1057,48 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			m_pbPanel.setVisible(  false);
 		}
 	}
+	
+	/*
+	 * Manually converts an Int8Array to a base64 encoded string.
+	 */
+	private static String toBase64(Int8Array array) {
+		StringBuilder builder = new StringBuilder();
+		int length = array.length();
+		if (0 < length) {
+			char[] charArray = new char[4];
+			int ix = 0;
+			while (3 <= length) {
+				int i = ((array.get(ix)   & 0xff) << 16)
+				      + ((array.get(ix+1) & 0xff) << 8)
+				      +  (array.get(ix+2) & 0xff);
+				charArray[0] = BASE64_CHARS[ i >> 18];
+				charArray[1] = BASE64_CHARS[(i >> 12) & 0x3f];
+				charArray[2] = BASE64_CHARS[(i >>  6) & 0x3f];
+				charArray[3] = BASE64_CHARS[ i & 0x3f];
+				builder.append(charArray);
+				ix     += 3;
+				length -= 3;
+			}
+			if (1 == length) {
+				int i = array.get(ix)&0xff;
+				charArray[0] = BASE64_CHARS[ i >> 2];
+				charArray[1] = BASE64_CHARS[(i << 4) & 0x3f];
+				charArray[2] = BASE64_PADDING;
+				charArray[3] = BASE64_PADDING;
+				builder.append(charArray);
+			}
+			else if (2 == length) {
+				int i = ((array.get(ix)     & 0xff) << 8)
+				       + (array.get(ix + 1) & 0xff);
+				charArray[0] = BASE64_CHARS[ i >> 10];
+				charArray[1] = BASE64_CHARS[(i >>  4) & 0x3f];
+				charArray[2] = BASE64_CHARS[(i <<  2) & 0x3f];
+				charArray[3] = BASE64_PADDING;
+				builder.append(charArray);
+			}
+		}
+		return builder.toString();
+	 }
 	
 	/*
 	 * Unregisters any global event handlers that may be registered.

@@ -207,7 +207,7 @@ public class GwtEmailHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}
 	}
 
@@ -347,10 +347,11 @@ public class GwtEmailHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtEmailHelper.saveEmailNotificationInfo( SOURCE EXCEPTION ):  ", ex);
-			}
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					ex,
+					"GwtEmailHelper.saveEmailNotificationInfo( SOURCE EXCEPTION ):  ");
 		}
 	}
 }

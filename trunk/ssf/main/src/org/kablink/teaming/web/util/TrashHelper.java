@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -74,6 +74,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.util.TrashTraverser;
 import org.kablink.teaming.web.util.TrashTraverser.TraverseCallback;
 import org.kablink.teaming.web.util.TrashTraverser.TraversalMode;
@@ -1236,29 +1237,36 @@ public class TrashHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static Map getTrashEntries(AllModulesInjected bs, Map<String, Object> model, Binder binder, Map options) {
-		// Construct the search Criteria...
-		Criteria crit = new Criteria();
-		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_BINDER}))
-		    .add(in(Constants.ENTRY_ANCESTRY, new String[] {String.valueOf(binder.getId())}));
-
-		// ...if sorting is enabled...
-		boolean sortDisabled = GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_NONE, false);
-		if (!sortDisabled) {
-			// ...add in the sort information...
-			boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
-			String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
-			crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
-			crit.addOrder(new Order(sortBy,                 sortAscend));
+		SimpleProfiler.start("GwtTrashHelper.getTrashEntries()");
+		try {
+			// Construct the search Criteria...
+			Criteria crit = new Criteria();
+			crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_BINDER}))
+			    .add(in(Constants.ENTRY_ANCESTRY, new String[] {String.valueOf(binder.getId())}));
+	
+			// ...if sorting is enabled...
+			boolean sortDisabled = GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_NONE, false);
+			if (!sortDisabled) {
+				// ...add in the sort information...
+				boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
+				String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
+				crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
+				crit.addOrder(new Order(sortBy,                 sortAscend));
+			}
+			
+			// ...and issue the query and return the entries.
+			return
+				bs.getBinderModule().executeSearchQuery(
+					crit,
+					Constants.SEARCH_MODE_NORMAL,
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+					true);	// true -> Search deleted entries.
 		}
 		
-		// ...and issue the query and return the entries.
-		return
-			bs.getBinderModule().executeSearchQuery(
-				crit,
-				Constants.SEARCH_MODE_NORMAL,
-				GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
-				GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
-				true);	// true -> Search deleted entries.
+		finally {
+			SimpleProfiler.stop("GwtTrashHelper.getTrashEntries()");
+		}
 	}
 	
 	@SuppressWarnings("unchecked")

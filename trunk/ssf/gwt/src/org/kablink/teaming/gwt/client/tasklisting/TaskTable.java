@@ -699,8 +699,9 @@ public class TaskTable extends Composite
 	 * @param disposition
 	 * @param newTaskId
 	 * @param selectedTaskId
+	 * @param updateAllDates
 	 */
-	public void applyTaskDisposition(TaskDisposition disposition, Long newTaskId, Long selectedTaskId) {		
+	public void applyTaskDisposition(TaskDisposition disposition, Long newTaskId, Long selectedTaskId, boolean updateAllDates) {		
 		switch (disposition) {
 		default:
 		case APPEND:
@@ -730,10 +731,21 @@ public class TaskTable extends Composite
 			}
 			
 			// ...and refresh the list.
-			List<TaskListItem> newTaskList = new ArrayList<TaskListItem>();
-			newTaskList.add(newTask);
+			List<TaskListItem> newTaskList;
+			if (updateAllDates) {
+				newTaskList = null;
+			}
+			else {
+				newTaskList = new ArrayList<TaskListItem>();
+				newTaskList.add(newTask);
+			}
 			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), newTaskList);
 		}		
+	}
+	
+	public void applyTaskDisposition(TaskDisposition disposition, Long newTaskId, Long selectedTaskId) {
+		// Always use the initial form of the method.
+		applyTaskDisposition(disposition, newTaskId, selectedTaskId, false);	// false -> Don't update all dates, just specific ones.
 	}
 	
 	/**
@@ -3457,10 +3469,15 @@ public class TaskTable extends Composite
 		if (ti.isTaskOverdue()) {
 			il.addStyleName("gwtTaskList_task-overdue-color");
 		}
+		
+		boolean parentWithDurationError = TaskListItemHelper.isParentWithDurationError(task);
 		if (tie.getEndIsCalculated() && hasDueDate) {
 			il.addStyleName("gwtTaskList_calculatedDate");
-			il.setTitle(m_messages.taskAltDateCalculated());
+			if (!parentWithDurationError) {
+				il.setTitle(m_messages.taskAltDateCalculated());
+			}
 		}
+		
 		Widget dueDateWidget;
 		if (ti.getCanModify() && ti.isTaskActive()) {
 			Anchor a = GwtClientHelper.buildAnchor();
@@ -3474,7 +3491,20 @@ public class TaskTable extends Composite
 		else {
 			dueDateWidget = il;
 		}
-		m_flexTable.setWidget(row, getColumnIndex(Column.DUE_DATE), dueDateWidget);
+		dueDateWidget.addStyleName("marginleft5px");
+		int col = getColumnIndex(Column.DUE_DATE);
+		m_flexTable.setWidget(row, col, dueDateWidget);
+		
+		// Is this a parent task with a calculated due date?
+		if (parentWithDurationError) {
+			// Yes!  Style it accordingly.
+			m_flexTableCF.addStyleName(row, col, "gwtTaskList_parentDurationError");
+			m_flexTableCF.getElement(row, col).setTitle(m_messages.taskAltParentWithDurationError());
+		}
+		else {
+			m_flexTableCF.removeStyleName(row, col, "gwtTaskList_parentDurationError");
+			m_flexTableCF.getElement(row, col).setTitle("");
+		}
 	}
 	
 	/*
@@ -3688,14 +3718,9 @@ public class TaskTable extends Composite
 		}
 		
 		// Add an Anchor for it to the TaskTable.
-		m_flexTable.setWidget(
-			row,
-			getColumnIndex(Column.STATUS),
-			buildOptionColumn(
-				task,
-				m_statusMenu,
-				status,
-				"status-icon"));
+		Widget statusWidget = buildOptionColumn(task, m_statusMenu, status, "status-icon");
+		statusWidget.addStyleName("marginleft5px");
+		m_flexTable.setWidget(row, getColumnIndex(Column.STATUS), statusWidget);
 	}
 	
 	/*
@@ -4236,7 +4261,8 @@ public class TaskTable extends Composite
 		jsSetSelectedTaskId(    "");
 		
 		// Render the tasks from the bundle.
-		m_renderTime = renderTaskBundle(tb, m_taskListing.getUpdateCalculatedDates());
+		boolean disposeWillUpdate = ((null != newTaskId) && (null != taskDisposition) && (!(TaskDisposition.APPEND.equals(taskDisposition))));
+		m_renderTime = renderTaskBundle(tb, ((!disposeWillUpdate) && m_taskListing.getUpdateCalculatedDates()));
 
 		// Did we just add a new task?
 		if (null != newTaskId) {
@@ -4246,7 +4272,8 @@ public class TaskTable extends Composite
 				applyTaskDisposition(
 					taskDisposition,
 					newTaskId,
-					selectedTaskId);		
+					selectedTaskId,
+					m_taskListing.getUpdateCalculatedDates());		
 			}
 
 			// No, we don't know where the new task should be placed!
@@ -4369,7 +4396,9 @@ public class TaskTable extends Composite
 						TaskDate     dueDate = updatedTaskInfo.get(entryId);
 						TaskListItem task = TaskListItemHelper.findTask(m_taskBundle, entryId);
 						TaskInfo     ti = task.getTask();
-						ti.getEvent().setLogicalEnd(dueDate);
+						TaskEvent    tie  = ti.getEvent();
+						tie.setLogicalEnd(dueDate);
+						tie.setEndIsCalculated(true);
 						
 						// ...if the task's overdue state changed... 
 						long dueMS = (((null == dueDate) || (!(GwtClientHelper.hasString(dueDate.getDateDisplay())))) ? Long.MAX_VALUE : dueDate.getDate().getTime()); 

@@ -91,7 +91,6 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 
-import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.calendar.TimeZoneHelper;
@@ -120,7 +119,6 @@ import org.kablink.teaming.domain.MobileAppsConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
-import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.Principal;
@@ -161,7 +159,6 @@ import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
 import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
-import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
@@ -261,7 +258,6 @@ import org.kablink.teaming.module.license.LicenseModule.LicenseOperation;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
-import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -280,7 +276,6 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.Function;
-import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper.FilterType;
@@ -796,7 +791,7 @@ public class GwtServerHelper {
 			
 			// For all other users, convert this to a
 			// GwtTeamingExcepton and throw that.
-			throw getGwtTeamingException(e);
+			throw GwtLogHelper.getGwtClientException(m_logger, e);
 		}
 		
 		// If we get here, we have access to the user's workspace!  Add
@@ -834,7 +829,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception e) {
-			throw getGwtTeamingException(e);
+			throw GwtLogHelper.getGwtClientException(m_logger, e);
 		}
 	}
 	
@@ -891,7 +886,7 @@ public class GwtServerHelper {
 			// There are already too many favorites, some must be
 			// deleted first Construct a GwtTeamingException for this
 			// error condition.
-			throw getGwtTeamingException(flee);
+			throw GwtLogHelper.getGwtClientException(m_logger, flee);
 		}
 		
 		bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
@@ -906,57 +901,65 @@ public class GwtServerHelper {
 	 * @param filterUserList
 	 */
 	public static void addQuickFilterToSearch(Map options, String quickFilter, boolean filterUserList) {
-		// If we weren't given a quick filter to add...
-	    quickFilter = ((null == quickFilter) ? "" : quickFilter.trim());
-		if (0 == quickFilter.length()) {
-			// ...there's nothing to do.  Bail.
-			return;
+		SimpleProfiler.start("GwtServerHelper.addQuickFilterToSearch()");
+			try {
+			// If we weren't given a quick filter to add...
+		    quickFilter = ((null == quickFilter) ? "" : quickFilter.trim());
+			if (0 == quickFilter.length()) {
+				// ...there's nothing to do.  Bail.
+				return;
+			}
+			
+			// If the quick filter doesn't end with an '*'...
+			if (!(quickFilter.endsWith("*"))) {
+				// ...add one.
+				quickFilter += "*";
+			}
+	
+			// Create a SearchFilter from whatever filter is already in
+			// affect...
+			SearchFilter sf = new SearchFilter(true);
+			Document sfDoc = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
+			if (null != sfDoc) {
+				sf.appendFilter(sfDoc);
+			}
+	
+			// ...add in the quick filter...
+			SearchFilter sfQF = new SearchFilter(true);
+	    	sfQF.newCurrentFilterTermsBlock(true);
+	    	if (filterUserList) {
+	    		SearchFilter sfUserQF = new SearchFilter(false);
+	    		if (quickFilter.startsWith("@")) {
+	        		sfUserQF.addEmailDomainFilter(quickFilter.substring(1), true);
+	    		}
+	    		else {
+		    		sfUserQF.addTitleFilter(      quickFilter, true);
+		    		sfUserQF.addEmailFilter(      quickFilter, true);
+		    		sfUserQF.addEmailDomainFilter(quickFilter, true);
+		    		sfUserQF.addLoginNameFilter(  quickFilter, true);
+	    		}
+	    		sfQF.appendFilter(sfUserQF.getFilter());
+	    	}
+	    	else {
+	    		sfQF.addTitleFilter(quickFilter, true);
+	    	}
+	    	sf.appendFilter(sfQF.getFilter());
+	
+			// ...store the new filter's XML Document in the options
+	    	// ...Map...
+			sfDoc = sf.getFilter();
+			options.put(ObjectKeys.SEARCH_SEARCH_FILTER, sfDoc);
+	
+			// ...and if we logging debug messages...
+			if (GwtLogHelper.isDebugEnabled(m_logger)) {
+				// ...dump the search filter XML.
+				GwtLogHelper.debug(m_logger, "GwtServerHelper.addQuickFilterToSearch( '" + quickFilter + "'):  Search Filter:");
+				GwtLogHelper.debug(m_logger, "\n" + getXmlString(sfDoc));
+			}
 		}
 		
-		// If the quick filter doesn't end with an '*'...
-		if (!(quickFilter.endsWith("*"))) {
-			// ...add one.
-			quickFilter += "*";
-		}
-
-		// Create a SearchFilter from whatever filter is already in
-		// affect...
-		SearchFilter sf = new SearchFilter(true);
-		Document sfDoc = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
-		if (null != sfDoc) {
-			sf.appendFilter(sfDoc);
-		}
-
-		// ...add in the quick filter...
-		SearchFilter sfQF = new SearchFilter(true);
-    	sfQF.newCurrentFilterTermsBlock(true);
-    	if (filterUserList) {
-    		SearchFilter sfUserQF = new SearchFilter(false);
-    		if (quickFilter.startsWith("@")) {
-        		sfUserQF.addEmailDomainFilter(quickFilter.substring(1), true);
-    		}
-    		else {
-	    		sfUserQF.addTitleFilter(      quickFilter,              true);
-	    		sfUserQF.addEmailFilter(      quickFilter,              true);
-	    		sfUserQF.addEmailDomainFilter(quickFilter,              true);
-	    		sfUserQF.addLoginNameFilter(  quickFilter,              true);
-    		}
-    		sfQF.appendFilter(sfUserQF.getFilter());
-    	}
-    	else {
-    		sfQF.addTitleFilter(quickFilter, true);
-    	}
-    	sf.appendFilter(sfQF.getFilter());
-
-		// ...store the new filter's XML Document in the options Map...
-		sfDoc = sf.getFilter();
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, sfDoc);
-
-		// ...and if we logging debug messages...
-		if (m_logger.isDebugEnabled()) {
-			// ...dump the search filter XML.
-			m_logger.debug("GwtServerHelper.addQuickFilterToSearch( '" + quickFilter + "'):  Search Filter:");
-			m_logger.debug("\n" + getXmlString(sfDoc));
+		finally {
+			SimpleProfiler.stop("GwtServerHelper.addQuickFilterToSearch()");
 		}
 	}
 	
@@ -1647,18 +1650,25 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static boolean canUserViewBinder(AllModulesInjected bs, User user, BinderInfo bi) {
-		boolean	reply;
-		if (bi.isBinderCollection()) {
-			reply = canUserAccessCollection(bs, user, bi.getCollectionType());
+		SimpleProfiler.start("GwtServerHelper.canUserViewBinder()");
+		try {
+			boolean	reply;
+			if (bi.isBinderCollection()) {
+				reply = canUserAccessCollection(bs, user, bi.getCollectionType());
+			}
+			else if (bi.isBinderProfilesRootWS()) {
+				boolean isGuestOrExternal = (user.isShared() || (!(user.getIdentityInfo().isInternal())));
+				reply = (!isGuestOrExternal);
+			}
+			else {
+				reply = true;
+			}
+			return reply;
 		}
-		else if (bi.isBinderProfilesRootWS()) {
-			boolean isGuestOrExternal = (user.isShared() || (!(user.getIdentityInfo().isInternal())));
-			reply = (!isGuestOrExternal);
+		
+		finally {
+			SimpleProfiler.stop("GwtServerHelper.canUserViewBinder()");
 		}
-		else {
-			reply = true;
-		}
-		return reply;
 	}
 	
 	public static boolean canUserViewBinder(AllModulesInjected bs, Long userId, BinderInfo bi) {
@@ -1719,7 +1729,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 	}
 	
@@ -1757,7 +1767,7 @@ public class GwtServerHelper {
 		{
 			GwtTeamingException gwtEx;
 			
-			gwtEx = getGwtTeamingException( ex );
+			gwtEx = GwtLogHelper.getGwtClientException(m_logger, ex );
 			gwtEx.setAdditionalDetails( ex.getLocalizedMessage() );
 			
 			throw gwtEx;
@@ -1993,7 +2003,7 @@ public class GwtServerHelper {
 		}
 		catch( Exception ex)
 		{
-			throw getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException(m_logger, ex );
 		}
 		
 		return newGroup;
@@ -2074,6 +2084,8 @@ public class GwtServerHelper {
 					if (e instanceof AccessControlException) messageKey = "deleteEntryError.AccssControlException";
 					else                                     messageKey = "deleteEntryError.OtherException";
 					reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+					
+					GwtLogHelper.error(m_logger, "GwtServerHelper.deleteFolderEntries( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);
 				}
 			}
 
@@ -2084,7 +2096,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 	}
 
@@ -2117,7 +2129,7 @@ public class GwtServerHelper {
 	   			}
 	   			catch ( Exception ex )
 	   			{
-	   				throw getGwtTeamingException( ex );
+	   				throw GwtLogHelper.getGwtClientException(m_logger, ex );
 	   			} 
 	   		}
 		}
@@ -2148,7 +2160,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			m_logger.error("GwtServerHelper.doHTTPGet( '" + httpUrl + "' )", ex);
+			GwtLogHelper.error(m_logger, "GwtServerHelper.doHTTPGet( '" + httpUrl + "' )", ex);
 			reply = null;
 		}
 		
@@ -2431,6 +2443,8 @@ public class GwtServerHelper {
 			
 			errorArgs = new String[] { e.getLocalizedMessage() };
 			results = NLT.get( errorTag, errorArgs );
+			
+			GwtLogHelper.error(m_logger, "GwtServerHelper.executeJsp( EXCEPTION ):  ", e);
 		}
 		
 		return results;
@@ -3584,7 +3598,7 @@ public class GwtServerHelper {
 		}
 		catch ( Exception ex )
 		{
-			throw getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException(m_logger, ex );
 		} 
 		
 		return reply;
@@ -3858,7 +3872,7 @@ public class GwtServerHelper {
 			    		}
 			    		catch(Exception e)
 			    		{
-			    			m_logger.warn( "Unable to parse branding ext " + xmlStr );
+			    			GwtLogHelper.warn( m_logger, "Unable to parse branding ext " + xmlStr, e );
 			    		}
 					}
 					
@@ -3969,7 +3983,7 @@ public class GwtServerHelper {
 			reply = getBinderForWorkspaceTree(bs, binderIdL, defaultToTop);
 		}
 		catch (NumberFormatException nfe) {
-			m_logger.debug("GwtServerHelper.getBinderForWorkspaceTree( Can't Access Binder (NumberFormatException) ):  '" + ((null == binderId) ? "<nul>" : binderId) + "'");
+			GwtLogHelper.debug(m_logger, "GwtServerHelper.getBinderForWorkspaceTree( Can't Access Binder (NumberFormatException) ):  '" + ((null == binderId) ? "<nul>" : binderId) + "'");
 			reply = null;
 		}
 		
@@ -3988,7 +4002,7 @@ public class GwtServerHelper {
 			reply = bs.getBinderModule().getBinder(binderId);
 		}
 		catch (Exception e) {
-			m_logger.debug("GwtServerHelper.getBinderForWorkspaceTree( Can't Access Binder (AccessControlException) ):  '" + String.valueOf(binderId) + "'");
+			GwtLogHelper.debug(m_logger, "GwtServerHelper.getBinderForWorkspaceTree( Can't Access Binder (AccessControlException) ):  '" + String.valueOf(binderId) + "'");
 			reply = null;
 		}
 
@@ -4006,7 +4020,7 @@ public class GwtServerHelper {
 				reply = bs.getWorkspaceModule().getTopWorkspace();
 			}
 			catch (Exception e) {
-				m_logger.debug("GwtServerHelper.getBinderForWorkspaceTree( Can't Default to Top Workspace ) ");
+				GwtLogHelper.debug(m_logger, "GwtServerHelper.getBinderForWorkspaceTree( Can't Default to Top Workspace ) ");
 				reply = null;
 			}
 		}
@@ -4166,7 +4180,7 @@ public class GwtServerHelper {
 					
 					catch (Exception ignore) {
 						// Log the exception...
-						m_logger.debug("GwtServerHelperHelper.addSearchFiltersToOptions(Exception:  '" + MiscUtil.exToString(ignore) + "')");
+						GwtLogHelper.error(m_logger, "GwtServerHelperHelper.addSearchFiltersToOptions(Exception:  '" + MiscUtil.exToString(ignore) + "')", ignore);
 						
 						// ...get rid of the bogus filter.
 						if (isGlobal) {
@@ -4309,7 +4323,7 @@ public class GwtServerHelper {
 		else                                  reply = BinderType.OTHER;
 
 		if (BinderType.OTHER == reply) {
-			m_logger.debug("GwtServerHelper.getBinderType( 'Could not determine binder type' ):  " + binder.getPathName());
+			GwtLogHelper.debug(m_logger, "GwtServerHelper.getBinderType( 'Could not determine binder type' ):  " + binder.getPathName());
 		}
 		return reply;
 	}
@@ -4343,7 +4357,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 	}
 	
@@ -4376,7 +4390,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 	}
 	
@@ -4414,7 +4428,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 	}
 
@@ -4483,7 +4497,7 @@ public class GwtServerHelper {
 			
 			// For all other users, convert this to a
 			// GwtTeamingExcepton and throw that.
-			throw getGwtTeamingException( e );
+			throw GwtLogHelper.getGwtClientException(m_logger, e );
 		}
 		
 		return results;
@@ -4603,7 +4617,7 @@ public class GwtServerHelper {
 			return reply;
 		}
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}		
 	}
 
@@ -4664,7 +4678,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}		
 	}
 	
@@ -4757,7 +4771,7 @@ public class GwtServerHelper {
 	    		}
 	    		catch(Exception e)
 	    		{
-	    			m_logger.warn( "Unable to parse dynamic group membership criteria" + ldapQueryXml );
+	    			GwtLogHelper.warn( m_logger, "Unable to parse dynamic group membership criteria" + ldapQueryXml, e );
 	    		}
 			}
 		}
@@ -4813,7 +4827,7 @@ public class GwtServerHelper {
 
 		if ( role == null )
 		{
-			m_logger.error( "In GwtNetFolderHelper.getFunctionIdFromRole(), invalid parameter" );
+			GwtLogHelper.error( m_logger, "In GwtNetFolderHelper.getFunctionIdFromRole(), invalid parameter" );
 			return null;
 		}
 		
@@ -4823,7 +4837,7 @@ public class GwtServerHelper {
 		if ( fnInternalId == null )
 		{
 			// No
-			m_logger.error( "In GwtServerHelper.getFunctionIdFromRole(), could not find internal function id for role: " + role.getType() );
+			GwtLogHelper.error( m_logger, "In GwtServerHelper.getFunctionIdFromRole(), could not find internal function id for role: " + role.getType() );
 			return null;
 		}
 
@@ -4857,7 +4871,7 @@ public class GwtServerHelper {
 
 		if ( role == null )
 		{
-			m_logger.error( "In GwtNetFolderHelper.getFunctionInternalIdFromRole(), invalid parameter" );
+			GwtLogHelper.error( m_logger, "In GwtNetFolderHelper.getFunctionInternalIdFromRole(), invalid parameter" );
 			return null;
 		}
 		
@@ -4913,7 +4927,7 @@ public class GwtServerHelper {
 		if ( fnInternalId == null )
 		{
 			// No
-			m_logger.error( "In GwtServerHelper.getFunctionInternalIdFromRole(), could not find internal function id for role: " + role.getType() );
+			GwtLogHelper.error( m_logger, "In GwtServerHelper.getFunctionInternalIdFromRole(), could not find internal function id for role: " + role.getType() );
 		}
 
 		return fnInternalId;
@@ -5233,7 +5247,7 @@ public class GwtServerHelper {
 		// ...and return it's ID or if we can't find it, return an
 		// ...empty string.
 		String reply = ((null == def) ? "" : def.getId());
-		m_logger.debug("GwtServerHelper.getDefaultFolderDefinitionId( binderId:  '" + binderIdS + "' ):  '" + reply);
+		GwtLogHelper.debug(m_logger, "GwtServerHelper.getDefaultFolderDefinitionId( binderId:  '" + binderIdS + "' ):  '" + reply);
 		return reply;
 	}
 	
@@ -5419,8 +5433,8 @@ public class GwtServerHelper {
 				}
 				
 				// ...and log the fact that it's being redirected.
-				m_logger.debug("GwtServerHelper.getFinalHttpUrl( '" + httpUrl + "' ):  " + usageForLog + "...");
-				m_logger.debug("...is being redirected to:  '" + reply + "'");
+				GwtLogHelper.debug(m_logger, "GwtServerHelper.getFinalHttpUrl( '" + httpUrl + "' ):  " + usageForLog + "...");
+				GwtLogHelper.debug(m_logger, "...is being redirected to:  '" + reply + "'");
 				
 				break;
 				
@@ -5440,7 +5454,7 @@ public class GwtServerHelper {
 			default:
 				// Log any other connection status as an error and
 				// return null.
-				m_logger.error("GwtServerHelper.getFinalHttpUrl( '" + httpUrl + "' ):  Connection status:  " + status);
+				GwtLogHelper.error(m_logger, "GwtServerHelper.getFinalHttpUrl( '" + httpUrl + "' ):  Connection status:  " + status);
 				reply = null;
 				break;
 			}
@@ -5448,7 +5462,7 @@ public class GwtServerHelper {
 		
 		catch (Exception ex) {
 			// Log any exceptions as an error and return null.
-			m_logger.error("GwtServerHelper.getFinalHttpUrl( '" + httpUrl + "' )", ex);
+			GwtLogHelper.error(m_logger, "GwtServerHelper.getFinalHttpUrl( '" + httpUrl + "' )", ex);
 			reply = null;
 		}
 		
@@ -5591,7 +5605,7 @@ public class GwtServerHelper {
 			}
 		}
 		catch (Exception e) {
-			throw getGwtTeamingException(e);
+			throw GwtLogHelper.getGwtClientException(m_logger, e);
 		}
 		
 		return folder;
@@ -5635,16 +5649,16 @@ public class GwtServerHelper {
 				folderSortSetting.setSortDescending( Boolean.valueOf( value ).booleanValue() );
 			}
 			
-			if ( m_logger.isDebugEnabled() )
+			if ( GwtLogHelper.isDebugEnabled(m_logger) )
 			{
-				m_logger.debug( "GwtServerHelper.getFolderSortSetting( Retrieved folder sort for binder ):  Binder:  " + binderId.longValue() + ", Sort Key:  '" + folderSortSetting.getSortKey() + "', Sort Descending:  " + folderSortSetting.getSortDescending() );
+				GwtLogHelper.debug(m_logger, "GwtServerHelper.getFolderSortSetting( Retrieved folder sort for binder ):  Binder:  " + binderId.longValue() + ", Sort Key:  '" + folderSortSetting.getSortKey() + "', Sort Descending:  " + folderSortSetting.getSortDescending() );
 			}
 			
 			return folderSortSetting;
 		}
 		catch ( Exception ex )
 		{
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 	}
 
@@ -5708,7 +5722,7 @@ public class GwtServerHelper {
 				reply = FolderType.GUESTBOOK;
 			}				
 			else {
-				m_logger.debug("GwtServerHelper.getFolderTypeFromDefFamily( 'Could not determine folder type' ):  " + folder.getPathName());
+				GwtLogHelper.debug(m_logger, "GwtServerHelper.getFolderTypeFromDefFamily( 'Could not determine folder type' ):  " + folder.getPathName());
 			}				
 			break;
 		
@@ -5875,7 +5889,7 @@ public class GwtServerHelper {
 		}
 		catch (Exception ex)
 		{
-			throw getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
 		return totalNumberOfMembers;
@@ -5900,75 +5914,6 @@ public class GwtServerHelper {
 		info.setMembershipInfo( isDynamic, externalAllowed );
 		
 		return info;
-	}
-
-	/**
-	 * Returns a GwtTeamingException from a generic Exception.
-	 * 
-	 * Note:  The mappings between an instance of an exception and the
-	 *    exception type of the GwtTeamingException returned was based
-	 *    on the code originally constructing these in
-	 *    GwtRpcServiceImpl.
-	 * 
-	 * @param ex
-	 * 
-	 * @return
-	 */
-	public static GwtTeamingException getGwtTeamingException(Exception ex) {
-		// If we were given a GwtTeamingException...
-		GwtTeamingException reply;
-		if ((null != ex) && (ex instanceof GwtTeamingException)) {
-			// ...simply return it.
-			reply = ((GwtTeamingException) ex);
-		}
-		
-		else {
-			// Otherwise, construct an appropriate GwtTeamingException.
-			reply = new GwtTeamingException();
-			if (null != ex) {
-				ExceptionType exType;
-				
-				if      (ex instanceof AccessControlException               ) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
-				else if (ex instanceof ExtensionDefinitionInUseException    ) exType = ExceptionType.EXTENSION_DEFINITION_IN_USE;
-				else if (ex instanceof FavoritesLimitExceededException      ) exType = ExceptionType.FAVORITES_LIMIT_EXCEEDED;
-				else if (ex instanceof NoBinderByTheIdException             ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
-				else if (ex instanceof NoFolderEntryByTheIdException        ) exType = ExceptionType.NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION;
-				else if (ex instanceof NoUserByTheIdException               ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
-				else if (ex instanceof OperationAccessControlExceptionNoName) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
-				else if ( ex instanceof GroupExistsException )
-				{
-					exType = ExceptionType.GROUP_ALREADY_EXISTS;
-				}
-				else if ( ex instanceof RDException )
-				{
-					exType = ExceptionType.NET_FOLDER_ROOT_ALREADY_EXISTS;
-				}
-				else if ( ex instanceof PasswordMismatchException )
-				{
-					exType = ExceptionType.CHANGE_PASSWORD_EXCEPTION;
-				}
-				else                                                          exType = ExceptionType.UNKNOWN;
-				
-				reply.setExceptionType(exType);
-			}
-		}
-
-		// If debug logging is enabled...
-		if (m_logger.isDebugEnabled()) {
-			// ...log the exception that got us here.
-			if (null != ex)
-			     m_logger.debug("GwtServerHelper.getGwtTeamingException( SOURCE EXCEPTION ):  ", ex   );
-			else m_logger.debug("GwtServerHelper.getGwtTeamingException( GWT EXCEPTION ):  ",    reply);
-		}
-
-		// If we get here, reply refers to the GwtTeamingException that
-		// was requested.  Return it.
-		return reply;
-	}
-	
-	public static GwtTeamingException getGwtTeamingException() {
-		// Always use the initial form of the method.
-		return getGwtTeamingException(null);
 	}
 
 	/*
@@ -6055,7 +6000,7 @@ public class GwtServerHelper {
 		}
 		catch (Exception ex)
 		{
-			throw getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
 		return lpProperties;
@@ -6165,7 +6110,7 @@ public class GwtServerHelper {
 		}
 		catch (Exception ex)
 		{
-			throw getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
 		return configData;
@@ -6313,7 +6258,7 @@ public class GwtServerHelper {
 		}
 		catch (Exception ex)
 		{
-			throw getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
 		return lpProperties;
@@ -6570,7 +6515,7 @@ public class GwtServerHelper {
 			}
 			
 			else {
-				m_logger.debug("GwtServerHelper.getMainPageInfo():  The file synchronization application auto update URL is not available.");
+				GwtLogHelper.debug(m_logger, "GwtServerHelper.getMainPageInfo():  The file synchronization application auto update URL is not available.");
 			}
 			
 			// Does the current user's Home folder serve as their My Files repository?
@@ -6611,7 +6556,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 	}
 	
@@ -6632,7 +6577,7 @@ public class GwtServerHelper {
 			// object we'll fill in and return.
 			BinderInfo bi = getBinderInfo(bs, request, bs.getProfileModule().getProfileBinderId());
 			if (!(bi.getWorkspaceType().isProfileRoot())) {
-				m_logger.error("GwtServerHelper.getManageUsersInformation():  The workspace type of the profile root binder was incorrect.  Found:  " + bi.getWorkspaceType().name() + ", Expected:  " + WorkspaceType.PROFILE_ROOT.name());
+				GwtLogHelper.error(m_logger, "GwtServerHelper.getManageUsersInformation():  The workspace type of the profile root binder was incorrect.  Found:  " + bi.getWorkspaceType().name() + ", Expected:  " + WorkspaceType.PROFILE_ROOT.name());
 			}
 			bi.setWorkspaceType(WorkspaceType.PROFILE_ROOT_MANAGEMENT);
 			ManageUsersInfoRpcResponseData reply =
@@ -6647,7 +6592,7 @@ public class GwtServerHelper {
 			return reply;
 		}
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}		
 	}
 
@@ -6686,7 +6631,7 @@ public class GwtServerHelper {
 			return reply;
 		}
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}		
 	}
 
@@ -6812,10 +6757,10 @@ public class GwtServerHelper {
 		}
 		catch (Exception ex)
 		{
-			throw getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
-		m_logger.debug( "number of users in the group: " + String.valueOf( count ) );
+		GwtLogHelper.debug(m_logger, "number of users in the group: " + String.valueOf( count ) );
 		
 		return count;
 	}
@@ -6862,46 +6807,51 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static GwtPresenceInfo getPresenceInfo(User user)
-	{
-		GwtPresenceInfo gwtPresence = new GwtPresenceInfo();
-		
+	public static GwtPresenceInfo getPresenceInfo(User user) {
+		SimpleProfiler.start("GwtServerHelper.getPresenceInfo()");
 		try {
-			// Guest user can't get presence information.
-			User userAsking = getCurrentUser();
-			if (!(ObjectKeys.GUEST_USER_INTERNALID.equals(userAsking.getInternalId()))) {
-				PresenceManager presenceService = ((PresenceManager) SpringContextUtil.getBean("presenceService"));
-				if (null != presenceService) {
-					PresenceInfo pi = null;
-					int userStatus = PresenceInfo.STATUS_UNKNOWN;
-
-					CustomAttribute attr = user.getCustomAttribute("presenceID");
-					String userID = ((null != attr) ? ((String) attr.getValue()) : null);
-					  
-					attr = userAsking.getCustomAttribute("presenceID");
-					String userIDAsking = ((null != attr) ? ((String) attr.getValue()) : null);
-
-					if (MiscUtil.hasString(userID) && MiscUtil.hasString(userIDAsking)) {
-						pi = presenceService.getPresenceInfo(userIDAsking, userID);
-						if (null != pi) {
-							gwtPresence.setStatusText(pi.getStatusText());
-							userStatus = pi.getStatus();
-						}	
-					}
-					
-					switch (userStatus) {
-					case PresenceInfo.STATUS_AVAILABLE:  gwtPresence.setStatus(GwtPresenceInfo.STATUS_AVAILABLE); break;
-					case PresenceInfo.STATUS_AWAY:       gwtPresence.setStatus(GwtPresenceInfo.STATUS_AWAY);      break;
-					case PresenceInfo.STATUS_IDLE:       gwtPresence.setStatus(GwtPresenceInfo.STATUS_IDLE);      break;
-					case PresenceInfo.STATUS_BUSY:       gwtPresence.setStatus(GwtPresenceInfo.STATUS_BUSY);      break;
-					case PresenceInfo.STATUS_OFFLINE:    gwtPresence.setStatus(GwtPresenceInfo.STATUS_OFFLINE);   break;
-					default:                             gwtPresence.setStatus(GwtPresenceInfo.STATUS_UNKNOWN);   break;
+			GwtPresenceInfo gwtPresence = new GwtPresenceInfo();
+			try {
+				// Guest user can't get presence information.
+				User userAsking = getCurrentUser();
+				if (!(ObjectKeys.GUEST_USER_INTERNALID.equals(userAsking.getInternalId()))) {
+					PresenceManager presenceService = ((PresenceManager) SpringContextUtil.getBean("presenceService"));
+					if (null != presenceService) {
+						PresenceInfo pi = null;
+						int userStatus = PresenceInfo.STATUS_UNKNOWN;
+	
+						CustomAttribute attr = user.getCustomAttribute("presenceID");
+						String userID = ((null != attr) ? ((String) attr.getValue()) : null);
+						  
+						attr = userAsking.getCustomAttribute("presenceID");
+						String userIDAsking = ((null != attr) ? ((String) attr.getValue()) : null);
+	
+						if (MiscUtil.hasString(userID) && MiscUtil.hasString(userIDAsking)) {
+							pi = presenceService.getPresenceInfo(userIDAsking, userID);
+							if (null != pi) {
+								gwtPresence.setStatusText(pi.getStatusText());
+								userStatus = pi.getStatus();
+							}	
+						}
+						
+						switch (userStatus) {
+						case PresenceInfo.STATUS_AVAILABLE:  gwtPresence.setStatus(GwtPresenceInfo.STATUS_AVAILABLE); break;
+						case PresenceInfo.STATUS_AWAY:       gwtPresence.setStatus(GwtPresenceInfo.STATUS_AWAY);      break;
+						case PresenceInfo.STATUS_IDLE:       gwtPresence.setStatus(GwtPresenceInfo.STATUS_IDLE);      break;
+						case PresenceInfo.STATUS_BUSY:       gwtPresence.setStatus(GwtPresenceInfo.STATUS_BUSY);      break;
+						case PresenceInfo.STATUS_OFFLINE:    gwtPresence.setStatus(GwtPresenceInfo.STATUS_OFFLINE);   break;
+						default:                             gwtPresence.setStatus(GwtPresenceInfo.STATUS_UNKNOWN);   break;
+						}
 					}
 				}
 			}
+			catch (Exception e) {}
+			return gwtPresence;
 		}
-		catch (Exception e) {}
-		return gwtPresence;
+		
+		finally {
+			SimpleProfiler.stop("GwtServerHelper.getPresenceInfo()");
+		}
 	}
 
 	/**
@@ -7021,6 +6971,8 @@ public class GwtServerHelper {
 					
 					error = NLT.get( "send.forgotten.pwd.send.email.failed", new String[]{ex.toString()} );
 					responseData.addError( error );
+					
+					GwtLogHelper.error(m_logger, "GwtServerHelper.SendForgottenPwdEmail( EXCEPTION ):  ", ex);
 				}
 
 				return null;
@@ -7187,7 +7139,7 @@ public class GwtServerHelper {
 		}
 		catch (Exception ex)
 		{
-			throw getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 	}
 	
@@ -7397,7 +7349,7 @@ public class GwtServerHelper {
 						numEntriesPerPage = Integer.parseInt(value);
 					}
 					catch (NumberFormatException nfe) {
-						m_logger.warn("GwtServerHelper.getPersonalPreferences():  num entries per page is not an integer.");
+						GwtLogHelper.warn(m_logger, "GwtServerHelper.getPersonalPreferences():  num entries per page is not an integer.", nfe);
 					}
 				}
 				personalPrefs.setNumEntriesPerPage(numEntriesPerPage);
@@ -7408,18 +7360,18 @@ public class GwtServerHelper {
 			}
 			
 			else {
-				m_logger.warn("GwtServerHelper.getPersonalPreferences():  User is guest.");
+				GwtLogHelper.warn(m_logger, "GwtServerHelper.getPersonalPreferences():  User is guest.");
 			}
 		}
 		
 		catch (AccessControlException acEx) {
 			// Nothing to do.
-			m_logger.warn("GwtServerHelper.getPersonalPreferences():  AccessControlException");
+			GwtLogHelper.warn(m_logger, "GwtServerHelper.getPersonalPreferences():  AccessControlException", acEx);
 		}
 		
 		catch (Exception e) {
 			// Nothing to do.
-			m_logger.warn("GwtServerHelper.getPersonalPreferences():  Unknown exception");
+			GwtLogHelper.warn(m_logger, "GwtServerHelper.getPersonalPreferences():  Unknown exception", e);
 		}
 		
 		return personalPrefs;
@@ -7746,7 +7698,7 @@ public class GwtServerHelper {
 			catch (Exception ex) {
 				// No, we couldn't create their workspace!  Log the
 				// exception.
-				m_logger.debug("GwtServerHelper.getUserWorkspaceId( SOURCE EXCEPTION ):  ", ex);
+				GwtLogHelper.error(m_logger, "GwtServerHelper.getUserWorkspaceId( SOURCE EXCEPTION ):  ", ex);
 			}
 		}
 		
@@ -8003,7 +7955,7 @@ public class GwtServerHelper {
 		if (null == hSession) {
 			// ...we can't access the cached top ranked items to build
 			// ...the list from.  Bail.
-			m_logger.debug("GwtServerHelper.getTopRanked( 'Could not access the current HttpSession' )");
+			GwtLogHelper.debug(m_logger, "GwtServerHelper.getTopRanked( 'Could not access the current HttpSession' )");
 			return triList;
 		}
 
@@ -8018,7 +7970,7 @@ public class GwtServerHelper {
 		
 		if (0 == (people + places)) {
 			// ...we can't build a list.  Bail.
-			m_logger.debug("GwtServerHelper.getTopRanked( 'Could not access any cached items' )");
+			GwtLogHelper.debug(m_logger, "GwtServerHelper.getTopRanked( 'Could not access any cached items' )");
 			return triList;
 		}
 		
@@ -8120,31 +8072,64 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns the URL for a principal's avatar.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param p
+	 * 
+	 * @return
+	 */
+	public static String getPrincipalAvatarUrl(AllModulesInjected bs, HttpServletRequest request, Principal p) {
+		return getAvatarUrlImpl(bs, request, p, null);
+	}
+
+	/**
 	 * Returns the URL for a user's avatar.
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param user
+	 * @param u
 	 * 
 	 * @return
 	 */
-	public static String getUserAvatarUrl(AllModulesInjected bs, HttpServletRequest request, Principal user) {
-		// Can we access any avatars for the user?
-		String reply = null;
-		ProfileAttribute pa;
-		try                  {pa = GwtProfileHelper.getProfileAvatars(request, bs, user);}
-		catch (Exception ex) {pa = null;                                                 }
-		List<ProfileAttributeListElement> paValue = ((null == pa) ? null : ((List<ProfileAttributeListElement>) pa.getValue()));
-		if (MiscUtil.hasItems(paValue)) {
-			// Yes!  We'll use the first one as the URL.  Does it
-			// have a URL?
-			ProfileAttributeListElement paValueItem = paValue.get(0);
-			reply = GwtProfileHelper.fixupAvatarUrl(paValueItem.getValue().toString());
+	public static String getUserAvatarUrl(AllModulesInjected bs, HttpServletRequest request, User u) {
+		return getAvatarUrlImpl(bs, request, null, u);
+	}
+
+	/*
+	 * Returns the URL for a principal's avatar.
+	 */
+	private static String getAvatarUrlImpl(AllModulesInjected bs, HttpServletRequest request, Principal p, User u) {
+		SimpleProfiler.start("GwtServerHelper.getAvatarUrlImpl()");
+		try {
+			// Can we access any avatars for the Principal or User?
+			String reply = null;
+			ProfileAttribute pa;
+			try {
+				if (null == p)
+				     pa = GwtProfileHelper.getProfileAvatars(request,     u);
+				else pa = GwtProfileHelper.getProfileAvatars(request, bs, p);
+			}
+			catch (Exception ex) {
+				pa = null;
+			}
+			List<ProfileAttributeListElement> paValue = ((null == pa) ? null : ((List<ProfileAttributeListElement>) pa.getValue()));
+			if (MiscUtil.hasItems(paValue)) {
+				// Yes!  We'll use the first one as the URL.  Does it
+				// have a URL?
+				ProfileAttributeListElement paValueItem = paValue.get(0);
+				reply = GwtProfileHelper.fixupAvatarUrl(paValueItem.getValue().toString());
+			}
+			
+			// If we get here, reply refers to the user's avatar URL or is
+			// null.  Return it.
+			return reply;
 		}
 		
-		// If we get here, reply refers to the user's avatar URL or is
-		// null.  Return it.
-		return reply;
+		finally {
+			SimpleProfiler.stop("GwtServerHelper.getAvatarUrlImpl()");
+		}
 	}
 
 	/**
@@ -8371,7 +8356,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}		
 	}
 	
@@ -8466,7 +8451,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}		
 	}
 	
@@ -8503,7 +8488,7 @@ public class GwtServerHelper {
 			return adapterUrl.toString();
 		}
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}		
 	}
 	
@@ -8606,6 +8591,7 @@ public class GwtServerHelper {
 				catch (net.fortuna.ical4j.data.ParserException e) {
 					// No, we couldn't parse the data as iCal entries!
 					reply.setError(FailureReason.PARSE_EXCEPTION, e.getLocalizedMessage());
+					GwtLogHelper.error(m_logger, "GwtServerHelper.importIcalByUrl( EXCEPTION:1 ):  ", e);
 				}
 				
 				// Close the input string.
@@ -8620,6 +8606,7 @@ public class GwtServerHelper {
 		catch (Exception e) {
 			// No, we couldn't parse the URL!
 			reply.setError(FailureReason.URL_EXCEPTION, e.getLocalizedMessage());
+			GwtLogHelper.error(m_logger, "GwtServerHelper.importIcalByUrl( EXCEPTION:2 ):  ", e);
 		}
 		
 		finally {
@@ -8677,7 +8664,7 @@ public class GwtServerHelper {
 					String view = BinderHelper.getBinderDefaultViewName(binder);
 					if (MiscUtil.hasString(view)) {
 						// Yes!  Check for those that we know.
-						m_logger.debug("GwtServerHelper.getWorkspaceType( " + binder.getTitle() + "'s:  'Workspace View' ):  " + view);
+						GwtLogHelper.debug(m_logger, "GwtServerHelper.getWorkspaceType( " + binder.getTitle() + "'s:  'Workspace View' ):  " + view);
 						if      (view.equals(VIEW_WORKSPACE_DISCUSSIONS)) reply = WorkspaceType.DISCUSSIONS;
 						else if (view.equals(VIEW_WORKSPACE_PROJECT))     reply = WorkspaceType.PROJECT_MANAGEMENT;
 						else if (view.equals(VIEW_WORKSPACE_TEAM))        reply = WorkspaceType.TEAM;
@@ -8693,7 +8680,7 @@ public class GwtServerHelper {
 		}
 		
 		if (WorkspaceType.OTHER == reply) {
-			m_logger.debug("GwtServerHelper.getWorkspaceType( 'Could not determine workspace type' ):  " + binder.getPathName());
+			GwtLogHelper.debug(m_logger, "GwtServerHelper.getWorkspaceType( 'Could not determine workspace type' ):  " + binder.getPathName());
 		}
 		return reply;
 	}
@@ -8723,7 +8710,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
 		// If we get here the group is not the "all users" group.
@@ -8946,7 +8933,7 @@ public class GwtServerHelper {
 			}
 			catch (Exception e)
 			{
-				throw getGwtTeamingException( e );
+				throw GwtLogHelper.getGwtClientException(m_logger, e);
 			}
 		}
 		
@@ -9020,7 +9007,7 @@ public class GwtServerHelper {
 				{
 					currentMembers.add( ami.getProfileModule().getEntry( nextMember.getId() ) );
 				}
-				m_logger.debug( "GwtServerHelper.modifyGroup(), number of members in current group membership: " + String.valueOf( currentMembers.size() ) );
+				GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroup(), number of members in current group membership: " + String.valueOf( currentMembers.size() ) );
 			}
 			
 			// Is the group membership dynamic?
@@ -9112,7 +9099,7 @@ public class GwtServerHelper {
 
 				principals = ami.getProfileModule().getPrincipals( membershipIds );
 
-				m_logger.debug( "GwtServerHelper.modifyGroup(), number of members in new group membership: " + String.valueOf( principals.size() ) );
+				GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroup(), number of members in new group membership: " + String.valueOf( principals.size() ) );
 			
 				updates = new HashMap();
 				updates.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
@@ -9129,7 +9116,7 @@ public class GwtServerHelper {
 				}
 	   			catch ( Exception ex )
 	   			{
-	   				throw getGwtTeamingException( ex );
+	   				throw GwtLogHelper.getGwtClientException(m_logger, ex);
 	   			}
 	   			finally
 	   			{
@@ -9191,8 +9178,8 @@ public class GwtServerHelper {
 				finally
 				{
 					gsp.end();
-					m_logger.debug( "GwtServerHelper.modifyGroup(), number of users removed from group: " + String.valueOf( usersRemovedFromGroup.size() ) );
-					m_logger.debug( "GwtServerHelper.modifyGroup(), number of groups removed from group: " + String.valueOf( groupsRemovedFromGroup.size() ) );
+					GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroup(), number of users removed from group: " + String.valueOf( usersRemovedFromGroup.size() ) );
+					GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroup(), number of groups removed from group: " + String.valueOf( groupsRemovedFromGroup.size() ) );
 				}
 				
 				// Get a list of the users and groups that were added to the group.
@@ -9235,11 +9222,11 @@ public class GwtServerHelper {
 				finally
 				{
 					gsp.end();
-					m_logger.debug( "GwtServerHelper.modifyGroup(), number of users added to group: " + String.valueOf( usersAddedToGroup.size() ) );
-					m_logger.debug( "GwtServerHelper.modifyGroup(), number of groups added to group: " + String.valueOf( groupsAddedToGroup.size() ) );
+					GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroup(), number of users added to group: " + String.valueOf( usersAddedToGroup.size() ) );
+					GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroup(), number of groups added to group: " + String.valueOf( groupsAddedToGroup.size() ) );
 				}
 
-				m_logger.debug( "GwtServerHelper.modifyGroup(), number of changes to the group: " + String.valueOf( changes.size() ) );
+				GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroup(), number of changes to the group: " + String.valueOf( changes.size() ) );
 
 				// Update the disk quotas and file size limits for users that were added
 				// or removed from the group.
@@ -9694,7 +9681,7 @@ public class GwtServerHelper {
 			
 		default:
 			// Log an error that we encountered an unhandled command.
-			m_logger.error("GwtServerHelper.performXSSCheckOnRpcCmd( Unhandled Command ):  " + cmd.getClass().getName());
+			GwtLogHelper.error(m_logger, "GwtServerHelper.performXSSCheckOnRpcCmd( Unhandled Command ):  " + cmd.getClass().getName());
 			break;
 		}
 	}
@@ -9835,6 +9822,8 @@ public class GwtServerHelper {
 					if (e instanceof AccessControlException) messageKey = "purgeEntryError.AccssControlException";
 					else                                     messageKey = "purgeEntryError.OtherException";
 					reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+					
+					GwtLogHelper.error(m_logger, "GwtServerHelper.purgeFolderEntries( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);
 				}
 			}
 			
@@ -9845,7 +9834,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 	}
 	
@@ -10002,6 +9991,8 @@ public class GwtServerHelper {
 							
 							error = NLT.get( "request.pwd.reset.send.email.failed", new String[]{ex.toString()} );
 							responseData.addError( error );
+							
+							GwtLogHelper.error(m_logger, "GwtServerHelper.requestResetPwd( EXCEPTION ):  ", ex);
 						}
 
 						if ( errorMap != null )
@@ -10071,7 +10062,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 	}
 	
@@ -10107,7 +10098,7 @@ public class GwtServerHelper {
 				GwtTeamingException gtEx;
 				
 				// No
-				gtEx = getGwtTeamingException();
+				gtEx = GwtLogHelper.getGwtClientException(m_logger);
 				gtEx.setExceptionType( ExceptionType.INVALID_AUTO_UPDATE_URL );
 				throw gtEx;				
 			}
@@ -10171,7 +10162,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 	}
 
@@ -10205,14 +10196,14 @@ public class GwtServerHelper {
 			pm.setUserProperty(userId, binderId, propSortBy,                      sortKey       );
 			pm.setUserProperty(userId, binderId, propSortDescend, String.valueOf(!sortAscending));
 			
-			if (m_logger.isDebugEnabled()) {
-				m_logger.debug("GwtServerHelper.saveFolderSort( Stored folder sort for binder ):  Binder:  " + binderId.longValue() + ", Sort Key:  '" + sortKey + "', Sort Ascending:  " + sortAscending);
+			if (GwtLogHelper.isDebugEnabled(m_logger)) {
+				GwtLogHelper.debug(m_logger, "GwtServerHelper.saveFolderSort( Stored folder sort for binder ):  Binder:  " + binderId.longValue() + ", Sort Key:  '" + sortKey + "', Sort Ascending:  " + sortAscending);
 			}
 			return Boolean.FALSE;
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 	}
 
@@ -10253,7 +10244,7 @@ public class GwtServerHelper {
 			return Boolean.TRUE;
 		}
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}		
 	}
 
@@ -10383,10 +10374,10 @@ public class GwtServerHelper {
 		catch (Exception e)
 		{
 			if (e instanceof AccessControlException)
-			     m_logger.warn( "GwtServerHelper.saveSubscriptionData() AccessControlException" );
-			else m_logger.warn( "GwtServerHelper.saveSubscriptionData() unknown exception"      );
+			     GwtLogHelper.warn( m_logger, "GwtServerHelper.saveSubscriptionData() AccessControlException", e );
+			else GwtLogHelper.warn( m_logger, "GwtServerHelper.saveSubscriptionData() unknown exception",      e );
 			
-			throw getGwtTeamingException( e );
+			throw GwtLogHelper.getGwtClientException( m_logger, e );
 		}
 		
 		return Boolean.TRUE;
@@ -10506,6 +10497,8 @@ public class GwtServerHelper {
 				errMsg = NLT.get( errorTag, errorArgs );
 
 				responseData.addError( errMsg );
+				
+				GwtLogHelper.error(m_logger, "GwtServerHelper.saveUserFileSyncAppConfig( EXCEPTION ):  ", ex);
 			}
 		}
 		
@@ -10593,6 +10586,8 @@ public class GwtServerHelper {
 				errMsg = NLT.get( errorTag, errorArgs );
 
 				responseData.addError( errMsg );
+				
+				GwtLogHelper.error(m_logger, "GwtServerHelper.saveUserMobileAppConfig( EXCEPTION ):  ", ex);
 			}
 		}
 		
@@ -10700,7 +10695,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}		
 	}
 	
@@ -10863,6 +10858,8 @@ public class GwtServerHelper {
 							if (e instanceof AccessControlException) messageKey = "setUserSharingRightsError.AccssControlException";
 							else                                     messageKey = "setUserSharingRightsError.OtherException";
 							reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+							
+							GwtLogHelper.error(m_logger, "GwtServerHelper.setUserSharingRightsInfo( User:  '" + userTitle + "', EXCEPTION ):  ", e);
 						}
 					}
 				}
@@ -10875,7 +10872,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}		
 	}
 	
@@ -10937,7 +10934,7 @@ public class GwtServerHelper {
 					}
 					catch ( Exception ex )
 					{
-						m_logger.error( "Unable to set the user's timezone: " + ex.toString() );
+						GwtLogHelper.error( m_logger, "Unable to set the user's timezone: " + ex );
 					}
 				}
 			}
@@ -10969,7 +10966,7 @@ public class GwtServerHelper {
 			}
 			catch (Exception ex)
 			{
-				throw getGwtTeamingException( ex );
+				throw GwtLogHelper.getGwtClientException( m_logger, ex );
 			}
 		}
 		else
@@ -10977,7 +10974,7 @@ public class GwtServerHelper {
 			GwtTeamingException ex;
 			
 			// No, throw an exception
-			ex = getGwtTeamingException();
+			ex = GwtLogHelper.getGwtClientException(m_logger);
 			ex.setExceptionType( ExceptionType.LDAP_GUID_NOT_CONFIGURED );
 			throw ex;
 		}
@@ -11253,7 +11250,7 @@ public class GwtServerHelper {
 							break;
 							
 						default:
-							m_logger.info( "Unknown event in GwtServerHelper.validateEntryEvents() - " + teamingEvent.toString() );
+							GwtLogHelper.info(m_logger, "Unknown event in GwtServerHelper.validateEntryEvents() - " + teamingEvent.toString());
 							break;
 					}
 

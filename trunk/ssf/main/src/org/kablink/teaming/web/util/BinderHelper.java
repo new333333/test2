@@ -3327,7 +3327,7 @@ public class BinderHelper {
 	private static String notifyAttendeeCBox(MapInputData inputData, String cBox) {
 		String reply;
 		String cBoxData = inputData.getSingleValue(cBox);
-		if ((null != cBoxData) && (cBoxData.equalsIgnoreCase("true") || cBoxData.equalsIgnoreCase(cBox))) {
+		if ((null != cBoxData) && (cBoxData.equalsIgnoreCase("true") || cBoxData.equalsIgnoreCase("on") || cBoxData.equalsIgnoreCase(cBox))) {
 			reply = cBox;
 		}
 		else {

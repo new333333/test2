@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.util.MiscUtil;
 
 /**
@@ -278,15 +279,23 @@ public class GwtPerShareInfo {
 		 * @param sortDescend
 		 */
 		public static void sortPerShareInfoLists(AllModulesInjected bs, CollectionType ct, List<GwtSharedMeItem> shareItems, String sortBy, boolean sortDescend) {
-			// Scan the List<GwtSharedMeItem>.
-			Comparator<GwtPerShareInfo> psiComparator = new PerShareInfoComparator(ct, sortBy, sortDescend);
-			for (GwtSharedMeItem meItem:  shareItems) {
-				// If this GwtSharedMeItem has any GwtPerShareInfo's...
-				List<GwtPerShareInfo> psiList = meItem.getPerShareInfos();
-				if (MiscUtil.hasItems(psiList)) {
-					// ...sort them.
-					Collections.sort(psiList, psiComparator);
+			SimpleProfiler.start("GwtViewHelper.sortPerShareInfoLists()");
+			try {
+				// Scan the List<GwtSharedMeItem>.
+				Comparator<GwtPerShareInfo> psiComparator = new PerShareInfoComparator(ct, sortBy, sortDescend);
+				for (GwtSharedMeItem meItem:  shareItems) {
+					// If this GwtSharedMeItem has any
+					// GwtPerShareInfo's...
+					List<GwtPerShareInfo> psiList = meItem.getPerShareInfos();
+					if (MiscUtil.hasItems(psiList)) {
+						// ...sort them.
+						Collections.sort(psiList, psiComparator);
+					}
 				}
+			}
+			
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.sortPerShareInfoLists()");
 			}
 		}
 	}

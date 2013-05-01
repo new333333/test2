@@ -208,33 +208,40 @@ public class GwtProfileHelper {
 			//User u = user;
 			User u = (User) bs.getProfileModule().getEntry(principal.getId());
 			u = (User)Utils.fixProxy(u);
-			
-			//Get the Elements name - which is the attribute name
-			String attrName = "picture";
-			attribute.setName(attrName);
-			
-			String dataName = "picture";
-			attribute.setDataName(dataName);
-			
-			//Read the custom attribute
-			Document defDoc = ((DefinableEntity)u).getEntryDefDoc();
-			CustomAttribute cAttr = u.getCustomAttribute(attribute.getDataName());
-			
-			if(cAttr == null) {
-				return attribute;
-			}
-			
-			//Get the actual caption
-			String caption = DefinitionHelper.findCaptionForAttribute(cAttr.getName(), defDoc);
-			attribute.setTitle(NLT.getDef(caption));
-			
-			if(attribute.getTitle() == null){
-				attribute.setTitle(NLT.get("profile.element."+dataName, dataName));
-			}
-			
-			//Convert the Custom Attribute to a Profile Attribute for serialization purposes
-			convertCustomAttrToProfileAttr(request, u, cAttr, attribute, attribute.getDataName(), null);
+			attribute = getProfileAvatars(request, u);
 		}
+		
+		return attribute;
+	}
+	
+	public static ProfileAttribute getProfileAvatars(HttpServletRequest request, User u) {
+		ProfileAttribute attribute = new ProfileAttribute();
+		
+		//Get the Elements name - which is the attribute name
+		String attrName = "picture";
+		attribute.setName(attrName);
+		
+		String dataName = "picture";
+		attribute.setDataName(dataName);
+		
+		//Read the custom attribute
+		Document defDoc = ((DefinableEntity)u).getEntryDefDoc();
+		CustomAttribute cAttr = u.getCustomAttribute(attribute.getDataName());
+		
+		if(cAttr == null) {
+			return attribute;
+		}
+		
+		//Get the actual caption
+		String caption = DefinitionHelper.findCaptionForAttribute(cAttr.getName(), defDoc);
+		attribute.setTitle(NLT.getDef(caption));
+		
+		if(attribute.getTitle() == null){
+			attribute.setTitle(NLT.get("profile.element."+dataName, dataName));
+		}
+		
+		//Convert the Custom Attribute to a Profile Attribute for serialization purposes
+		convertCustomAttrToProfileAttr(request, u, cAttr, attribute, attribute.getDataName(), null);
 		
 		return attribute;
 	}

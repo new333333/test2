@@ -1480,6 +1480,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskAltMoveLeft();
 	String taskAltMoveRight();
 	String taskAltMoveUp();
+	String taskAltParentWithDurationError();;
 	String taskAltPurge();
 	String taskAltTaskActions();
 	String taskAltTaskClosed();

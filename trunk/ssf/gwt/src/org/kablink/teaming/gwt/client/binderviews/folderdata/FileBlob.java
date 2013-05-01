@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.binderviews.folderdata;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -59,7 +58,9 @@ public class FileBlob implements IsSerializable {
 	private String	m_fileUTC;				//
 
 	// The following controls whether file blobs sent to the server
-	// are base64 encoded.
+	// are base64 encoded.  Note that when the files are read
+	// using an ArrayBuffer, they are ALWAYS base64 encoded regardless
+	// of this setting.
 	private final static boolean BASE64_ENCODE_BLOBS	= true;
 	
 	// The following defines the size a blob read and sent to the
