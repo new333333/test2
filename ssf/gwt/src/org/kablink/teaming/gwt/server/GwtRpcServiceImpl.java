@@ -163,6 +163,7 @@ import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
 import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
+import org.kablink.teaming.gwt.server.util.GwtLogHelper;
 import org.kablink.teaming.gwt.server.util.GwtNetFolderHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
@@ -639,7 +640,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			{
 				GwtTeamingException gtEx;
 				
-				gtEx = GwtServerHelper.getGwtTeamingException( ex );
+				gtEx = GwtLogHelper.getGwtClientException( ex );
 				throw gtEx;				
 			}
 			
@@ -2480,7 +2481,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			{
 				GwtTeamingException gtEx;
 				
-				gtEx = GwtServerHelper.getGwtTeamingException( ex );
+				gtEx = GwtLogHelper.getGwtClientException( ex );
 				throw gtEx;				
 			}
 
@@ -3289,7 +3290,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		
 		String details = ("Unknown command: " + cmdEnum.name() + " (" +cmd.getClass().getName() + ")");
-		m_logger.warn( "In GwtRpcServiceImpl.executeCommand():  " + details);
+		GwtLogHelper.warn( m_logger, "In GwtRpcServiceImpl.executeCommand():  " + details );
 		throw new GwtTeamingException(ExceptionType.NO_RPC_HANDLER, details);
 	}
 	
@@ -3554,7 +3555,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			throw GwtLogHelper.getGwtClientException( e );
 		}
 		
 		return baseUrl;
@@ -3822,7 +3823,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			throw GwtLogHelper.getGwtClientException( e );
 		}
 		
 		
@@ -3905,7 +3906,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			throw GwtLogHelper.getGwtClientException( e );
 		}
 
         return fileNames;
@@ -3996,7 +3997,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			throw GwtLogHelper.getGwtClientException( e );
 		}
 		
 		return entries;
@@ -4178,7 +4179,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch ( Exception ex )
 		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException( ex );
 		}		
 
 
@@ -4213,7 +4214,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		GwtTeamingException ex;
 		
-		ex = GwtServerHelper.getGwtTeamingException();
+		ex = GwtLogHelper.getGwtClientException();
 		ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
 		throw ex;
 	}// end getSiteAdministrationUrl()
@@ -5084,7 +5085,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			catch (Exception e)
 			{
-				throw GwtServerHelper.getGwtTeamingException( e );
+				throw GwtLogHelper.getGwtClientException( e );
 			}
 		}
 		
@@ -5245,7 +5246,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			else
 			{
-				m_logger.warn( "In GwtRpcServiceImpl.getAdminActions(), binderIdL is null" );
+				GwtLogHelper.warn( m_logger, "In GwtRpcServiceImpl.getAdminActions(), binderIdL is null" );
 				adminActions = new ArrayList<GwtAdminCategory>();
 			}
 			
@@ -5253,7 +5254,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			throw GwtLogHelper.getGwtClientException( e );
 		}
 		
 	}// end getAdminActions()
@@ -5394,12 +5395,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 			GwtTeamingException ex;
 			
-			ex = GwtServerHelper.getGwtTeamingException();
+			ex = GwtLogHelper.getGwtClientException();
 			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
 			throw ex;
 			
 		} catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException( ex );
 		} 
 		
 	}// end getSiteAdministrationUrl()
@@ -5456,12 +5457,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			GwtTeamingException ex;
 
-			ex = GwtServerHelper.getGwtTeamingException();
+			ex = GwtLogHelper.getGwtClientException();
 			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
 			throw ex;
 			
 		} catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException( ex );
 		} 
 	}// end getImUrl
 
@@ -5556,7 +5557,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 			return gwtPresence;
 		} catch (Exception e) {
-			throw GwtServerHelper.getGwtTeamingException( e );
+			throw GwtLogHelper.getGwtClientException( e );
 		}
 	}// end getPresenceInfo
 
@@ -5764,7 +5765,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch ( Exception ex )
 		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException( ex );
 		}
 		
 		return asEntry;
@@ -5828,7 +5829,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			throw GwtLogHelper.getGwtClientException( e );
 		}
 		
 		return Boolean.TRUE;
@@ -5903,15 +5904,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			else
 			{
-				m_logger.warn( "GwtRpcServiceImpl.getPersonalPreferences(), user is guest." );
+				GwtLogHelper.warn( m_logger, "GwtRpcServiceImpl.getPersonalPreferences(), user is guest." );
 			}
 		}
 		catch (Exception e)
 		{
 			if (e instanceof AccessControlException)
-				 m_logger.warn( "GwtRpcServiceImpl.savePersonalPreferences() AccessControlException" );
-			else m_logger.warn( "GwtRpcServiceImpl.savePersonalPreferences() unknown exception" );
-			throw GwtServerHelper.getGwtTeamingException( e );
+				 GwtLogHelper.warn( m_logger, "GwtRpcServiceImpl.savePersonalPreferences() AccessControlException" );
+			else GwtLogHelper.warn( m_logger, "GwtRpcServiceImpl.savePersonalPreferences() unknown exception" );
+			throw GwtLogHelper.getGwtClientException( e );
 		}
 		
 		return Boolean.TRUE;
@@ -5937,7 +5938,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			throw GwtLogHelper.getGwtClientException( e );
 		}
 	}
 	
@@ -5964,7 +5965,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		} 
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			throw GwtLogHelper.getGwtClientException( e );
 		}
 	}
 
@@ -6009,7 +6010,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			return GwtServerHelper.getGroups( getRequest( ri ), this, userId );
 		} catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException( ex );
 		} 
 		
 	}
@@ -6040,7 +6041,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			return GwtServerHelper.getTeams( getRequest( ri ), this, userId );
 		} catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException( ex );
 		} 
 		
 	}// end getMyTeams()
@@ -6064,7 +6065,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			throw GwtLogHelper.getGwtClientException( e );
 		}
 	}
 
@@ -6144,7 +6145,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			catch ( Exception e )
 			{
-				throw GwtServerHelper.getGwtTeamingException( e );
+				throw GwtLogHelper.getGwtClientException( e );
 			}
 		}
 		return new UserWorkspaceInfoRpcResponseData( canAccessUserWorkspace, userId );
@@ -6173,7 +6174,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			if ( ( e instanceof AccessControlException ) ||
 				 ( e instanceof NoUserByTheIdException ) )
 			{
-				throw GwtServerHelper.getGwtTeamingException( e );
+				throw GwtLogHelper.getGwtClientException( e );
 			}
 			
 			//Log other errors
@@ -6220,7 +6221,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		} 
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			throw GwtLogHelper.getGwtClientException( e );
 		}
 	}
 	
@@ -6269,7 +6270,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		catch ( Exception ex )
 		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
+			throw GwtLogHelper.getGwtClientException( ex );
 		}
 	}//end isSeen()
 	

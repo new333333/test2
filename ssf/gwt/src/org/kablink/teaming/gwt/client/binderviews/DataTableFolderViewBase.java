@@ -1404,7 +1404,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					@Override
 					public EntryTitleInfo getValue(FolderRow fr) {
 						EntryTitleInfo reply = fr.getColumnValueAsEntryTitle(fc);
-						if (null != reply) {
+						if ((null != reply) && showEntryTitleIcon()) {
 							// Create the rows's Image widget...
 							Image rowImg = new Image();
 							rowImg.getElement().setAttribute("align", "absmiddle");
@@ -3155,6 +3155,17 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private void shareSelectedEntitiesNow(List<EntityId> selectedEntities) {
 		BinderViewsHelper.shareEntities(selectedEntities);
+	}
+	
+	/**
+	 * Allows the view's that extend this to decide whether or not they
+	 * want an entry icon on their title cell.
+	 * 
+	 * @return
+	 */
+	protected boolean showEntryTitleIcon() {
+		// By default, we show entry title icons.
+		return true;
 	}
 	
 	/*

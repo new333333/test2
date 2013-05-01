@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SimpleName;
@@ -769,15 +770,17 @@ public class GwtMenuHelper {
 		markTBIEvent(manageUserTBI, TeamingEvents.INVOKE_USER_PROPERTIES_DLG);
 		entryToolbar.addNestedItem(manageUserTBI);
 		
-		// Are we re in filr mode?
-		if (Utils.checkIfFilr()) {
+		// Are we dealing with an internal user in filr mode?
+		User			user   = ((User) bs.getProfileModule().getEntry(userId));
+		IdentityInfo	userII = user.getIdentityInfo();
+		if (userII.isInternal() && Utils.checkIfFilr()) {
 			try {
 				// Yes!  Can we determine the user's current adHoc folder
 				// access?
 				UserPropertiesRpcResponseData	upData = GwtViewHelper.getUserProperties(bs, request, userId);
 				AccountInfo						ai     = upData.getAccountInfo();
 				
-				// Yes! Add a separator after the user properties item...
+				// Add a separator after the user properties item...
 				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
 
 				// ...and if they have adHoc folders...
@@ -1150,8 +1153,9 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem to rename a folder.
 	 */
 	private static void constructEntryRenameFolder(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
-		// Does the user have rights to rename this folder?
-		if (bs.getBinderModule().testAccess(folder, BinderOperation.modifyBinder)) {
+		// Does the user have rights to rename this folder?  Note that
+		// even with rights, they can't rename a 'Home' folder.
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.modifyBinder) && (!(BinderHelper.isBinderHomeFolder(folder)))) {
 			// Yes!  Add a Rename ToolbarItem.
 			ToolbarItem renameTBI = new ToolbarItem(RENAME);
 			markTBITitle(renameTBI, "toolbar.menu.rename_folder"      );
@@ -1562,8 +1566,9 @@ public class GwtMenuHelper {
 			}
 
 			// Does the user have rights to add a new workspace to this
-			// binder?
-			if (isWorkspace && bm.testAccess(binder, BinderOperation.addWorkspace)) {
+			// binder?  (Note we don't support adding workspaces
+			// anywhere in Filr.)
+			if ((!isFilr) && isWorkspace && bm.testAccess(binder, BinderOperation.addWorkspace)) {
 				// Yes!  Add a ToolbarItem for it.
 				addMenuCreated   =
 				adminMenuCreated = true;
@@ -2325,7 +2330,7 @@ public class GwtMenuHelper {
 	 */
 	private static void dumpString(String dumpThis) {
 		// Simply dump the string.
-		m_logger.debug(dumpThis);
+		GwtLogHelper.debug(m_logger, dumpThis);
 	}
 	
 	private static void dumpString(String dumpStart, String dumpThis) {
@@ -2366,7 +2371,7 @@ public class GwtMenuHelper {
 	 */
 	private static void dumpToolbarItems(List<ToolbarItem> tbiList, String dumpStart) {
 		// If debug logging is enabled...
-		if (m_logger.isDebugEnabled()) {
+		if (GwtLogHelper.isDebugEnabled(m_logger)) {
 			// ...scan the toolbar items...
 			for (ToolbarItem tbi:  tbiList) {
 				// ...dumping the contents of each.
@@ -2618,7 +2623,7 @@ public class GwtMenuHelper {
 			// If we get here, reply refers to the 
 			// GetToolbarItemsRpcResponseData containing the
 			// ToolbarItem's for the entity.  Return it.
-			m_logger.debug("GwtMenuHelper.getEntityToolbarItems():");
+			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getEntityToolbarItems():");
 			dumpToolbarItems(toolbarItems, "...");
 			return reply;
 		}
@@ -2829,7 +2834,7 @@ public class GwtMenuHelper {
 			// If we get here, reply refers to the
 			// GetFolderToolbarItemsRpcResponseData containing the
 			// ToolbarItem's for the folder.  Return it.
-			m_logger.debug("GwtMenuHelper.getFolderToolbarItems():");
+			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getFolderToolbarItems():");
 			dumpToolbarItems(configureToolbarItems, "...");
 			dumpToolbarItems(toolbarItems,          "...");
 			return reply;
@@ -2884,7 +2889,7 @@ public class GwtMenuHelper {
 
 			// If we get here, reply refers to the List<ToolbarItem>
 			// for the footer toolbar.  Return it.
-			m_logger.debug("GwtMenuHelper.getFooterToolbarItems():");
+			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getFooterToolbarItems():");
 			dumpToolbarItems(reply, "...");
 			return reply;
 		}
@@ -2904,7 +2909,7 @@ public class GwtMenuHelper {
 		        InetAddress addr = InetAddress.getLocalHost();
 		        hostname = addr.getHostName();
 		    } catch (UnknownHostException e) {
-				m_logger.debug("GwtMenuHelper.getHostName( UnknownHostException ):  Using localhost");
+				GwtLogHelper.debug(m_logger, "GwtMenuHelper.getHostName( UnknownHostException ):  Using localhost");
 				hostname = "localhost";
 		    }
 		}
@@ -2975,10 +2980,11 @@ public class GwtMenuHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtMenuHelper.getSignGuestbookUrl( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtMenuHelper.getSignGuestbookUrl( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -3094,7 +3100,7 @@ public class GwtMenuHelper {
 			
 			// If we get here, reply refers to the List<ToolbarItem> of
 			// the ToolbarItem's for the binder.  Return it.
-			m_logger.debug("GwtMenuHelper.getToolbarItems():");
+			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getToolbarItems():");
 			dumpToolbarItems(reply, "...");
 			return reply;
 		}

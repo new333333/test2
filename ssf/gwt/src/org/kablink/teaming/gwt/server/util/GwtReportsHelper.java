@@ -205,10 +205,10 @@ public class GwtReportsHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtReportsHelper.createEmailReport( SOURCE EXCEPTION ):  ", ex);
+			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
+			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.createEmailReport( SOURCE EXCEPTION ):  ", ex);
 			}
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}		
 	}
 	
@@ -407,10 +407,10 @@ public class GwtReportsHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtReportsHelper.createLicenseReport( SOURCE EXCEPTION ):  ", ex);
+			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
+			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.createLicenseReport( SOURCE EXCEPTION ):  ", ex);
 			}
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}		
 	}
 	
@@ -473,10 +473,10 @@ public class GwtReportsHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtReportsHelper.createLoginReport( SOURCE EXCEPTION ):  ", ex);
+			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
+			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.createLoginReport( SOURCE EXCEPTION ):  ", ex);
 			}
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}		
 	}
 	
@@ -525,10 +525,10 @@ public class GwtReportsHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtReportsHelper.createUserAccessReport( SOURCE EXCEPTION ):  ", ex);
+			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
+			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.createUserAccessReport( SOURCE EXCEPTION ):  ", ex);
 			}
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}		
 	}
 	
@@ -587,10 +587,10 @@ public class GwtReportsHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtReportsHelper.createUserActivityReport( SOURCE EXCEPTION ):  ", ex);
+			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
+			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.createUserActivityReport( SOURCE EXCEPTION ):  ", ex);
 			}
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}		
 	}
 	
@@ -666,10 +666,10 @@ public class GwtReportsHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtReportsHelper.getReportsInfo( SOURCE EXCEPTION ):  ", ex);
+			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
+			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.getReportsInfo( SOURCE EXCEPTION ):  ", ex);
 			}
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}		
 	}
 
@@ -732,10 +732,10 @@ public class GwtReportsHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtReportsHelper.getSystemErrorLogUrl( SOURCE EXCEPTION ):  ", ex);
+			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
+			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.getSystemErrorLogUrl( SOURCE EXCEPTION ):  ", ex);
 			}
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}
 		
 		finally {

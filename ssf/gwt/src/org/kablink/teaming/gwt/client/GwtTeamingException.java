@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,24 +30,25 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.rpc.SerializationException;
 
 /**
- * This can be used for all GWT Teaming exceptions.
- * @author jwootton
- *
+ * Used to communicate exceptions from the server to the client via GWT
+ * RPC calls.
+ * 
+ * @author jwootton@novell.com
  */
 public class GwtTeamingException extends SerializationException
 	implements IsSerializable
 {
-	/**
-	 * This class defines all the possible types of exceptions that GwtTeamingException knows about.
-	 * @author jwootton
-	 *
+	private boolean m_wrapped;	// true -> Wraps a non-GwtTeamingException.  false -> A GwtTeamingException created from scratch. 
+
+	/*
+	 * This enumeration defines all the possible types of exceptions
+	 * that GwtTeamingException knows about.
 	 */
 	public enum ExceptionType implements IsSerializable
 	{
@@ -65,7 +66,7 @@ public class GwtTeamingException extends SerializationException
 		USER_NOT_LOGGED_IN,
 		FOLDER_EXPECTED,
 		INVALID_AUTO_UPDATE_URL,
-		UNKNOWN;
+		UNKNOWN,
 	}// end ExceptionType
 	
 
@@ -84,6 +85,7 @@ public class GwtTeamingException extends SerializationException
 		super();
 		
 		// ...and store the parameters.
+		setWrapped(           false             );
 		setExceptionType(     type              );
 		setAdditionalDetails( additionalDetails );
 	}// end GwtTeamingException()
@@ -123,42 +125,21 @@ public class GwtTeamingException extends SerializationException
 	}// end GwtTeamingException()
 	
 	/**
-	 * Return the type of exception we are dealing with.
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public ExceptionType getExceptionType()
-	{
-		return m_type;
-	}// end getExceptionType()
-	
-	/**
-	 * Returns the addition details string, if any.
-	 * 
-	 * @return
-	 */
-	public String getAdditionalDetails() {
-		return m_additionalDetails;
-	}
+	public boolean       isWrapped()            {return m_wrapped;          }
+	public ExceptionType getExceptionType()     {return m_type;             }
+	public String        getAdditionalDetails() {return m_additionalDetails;}
 
 	
 	/**
-	 * Set the type of exception we are dealing with.
+	 * Set'er methods.
 	 * 
-	 * @param type
+	 * @param
 	 */
-	public void setExceptionType( ExceptionType type )
-	{
-		m_type = type;
-	}// end setExceptionType()
-
-	/**
-	 * Stores an additional details string.
-	 * 
-	 * @param additionalDetails
-	 */
-	public void setAdditionalDetails( String additionalDetails )
-	{
-		m_additionalDetails = additionalDetails;
-	}// end setAdditionalDetails()
+	public void setWrapped(           boolean       wrapped)            {m_wrapped           = wrapped;          }
+	public void setExceptionType(     ExceptionType type )              {m_type              = type;             }
+	public void setAdditionalDetails( String        additionalDetails ) {m_additionalDetails = additionalDetails;}
 }// end GwtTeamingException

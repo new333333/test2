@@ -317,7 +317,7 @@ public class GwtTaskHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}
 	}
 	
@@ -698,7 +698,7 @@ public class GwtTaskHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}
 	}
 	
@@ -707,7 +707,7 @@ public class GwtTaskHelper {
 	 */
 	private static void dumpTaskInfoList(List<TaskInfo> tasks) {		
 		// If debug logging is disabled...
-		if (!(m_logger.isDebugEnabled())) {
+		if (!(GwtLogHelper.isDebugEnabled(m_logger))) {
 			// ...bail.
 			return;
 		}
@@ -715,12 +715,12 @@ public class GwtTaskHelper {
 		// If there are no TaskInfo's in the list...
 		if (tasks.isEmpty()) {
 			// ...log that fact and bail.
-			m_logger.debug("GwtTaskHelper.dumpTaskInfoList( EMPTY )");
+			GwtLogHelper.debug(m_logger, "GwtTaskHelper.dumpTaskInfoList( EMPTY )");
 			return;
 		}
 
 		// Dump the tasks.
-		m_logger.debug("GwtTaskHelper.dumpTaskInfoList( START: " + String.valueOf(tasks.size()) + " )");
+		GwtLogHelper.debug(m_logger, "GwtTaskHelper.dumpTaskInfoList( START: " + String.valueOf(tasks.size()) + " )");
 		for (TaskInfo ti:  tasks) {
 			StringBuffer buf = new StringBuffer("");
 			buf.append(GwtEventHelper.buildDumpString("\n\tTask ID",            ti.getTaskId().getEntityId()   ));
@@ -741,9 +741,9 @@ public class GwtTaskHelper {
 			buf.append(GwtEventHelper.buildDumpString("\n\t\tStatus",           ti.getStatus()                 ));
 			buf.append(GwtEventHelper.buildDumpString("\n\t\tOverdue",          ti.getOverdue()                ));
 			buf.append(               buildDumpString("\n\t\tEvent: ",          ti.getEvent()                  ));
-			m_logger.debug("GwtTaskHelper.dumpTaskInfoList()" + buf.toString());
+			GwtLogHelper.debug(m_logger, "GwtTaskHelper.dumpTaskInfoList()" + buf.toString());
 		}
-		m_logger.debug("GwtTaskHelper.dumpTaskInfoList( END )");
+		GwtLogHelper.debug(m_logger, "GwtTaskHelper.dumpTaskInfoList( END )");
 	}
 
 	/*
@@ -751,7 +751,7 @@ public class GwtTaskHelper {
 	 */
 	private static void dumpTaskLinkage(TaskLinkage linkage) {
 		// If debug logging is disabled...
-		if (!(m_logger.isDebugEnabled())) {
+		if (!(GwtLogHelper.isDebugEnabled(m_logger))) {
 			// ...bail.
 			return;
 		}
@@ -760,17 +760,17 @@ public class GwtTaskHelper {
 		List<TaskLink> taskOrder = linkage.getTaskOrder();
 		if (taskOrder.isEmpty()) {
 			// ...log that fact and bail.
-			m_logger.debug("GwtTaskHelper.dumpTaskLinkage( EMPTY )");
+			GwtLogHelper.debug(m_logger, "GwtTaskHelper.dumpTaskLinkage( EMPTY )");
 			return;
 		}
 
 		// Scan the TaskLink's in the task order list...
-		m_logger.debug("GwtTaskHelper.dumpTaskLinkage( START: " + String.valueOf(taskOrder.size()) + " )");
+		GwtLogHelper.debug(m_logger, "GwtTaskHelper.dumpTaskLinkage( START: " + String.valueOf(taskOrder.size()) + " )");
 		for (TaskLink tl:  taskOrder) {
 			// ...logging each of them.
 			dumpTaskLink(tl, 0);
 		}
-		m_logger.debug("GwtTaskHelper.dumpTaskLinkage( END )");
+		GwtLogHelper.debug(m_logger, "GwtTaskHelper.dumpTaskLinkage( END )");
 	}
 
 	/*
@@ -788,7 +788,7 @@ public class GwtTaskHelper {
 		logBuffer.append(String.valueOf(tl.getEntryId()));
 		
 		// ...and write it.
-		m_logger.debug(logBuffer.toString());
+		GwtLogHelper.debug(m_logger, logBuffer.toString());
 		
 		// Scan this TaskLink's subtasks...
 		int subtaskDepth = (depth + 1);
@@ -821,7 +821,7 @@ public class GwtTaskHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}
 	}
 
@@ -1006,7 +1006,7 @@ public class GwtTaskHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}
 	}
 
@@ -1207,13 +1207,19 @@ public class GwtTaskHelper {
 		}
 		
 		catch (Exception ex) {
-			m_logger.debug("GwtTaskHelper.getTaskBinder( " + String.valueOf(binderId) + ": EXCEPTION ): ", ex);
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					ex,
+					"GwtTaskHelper.getTaskBinder( " + String.valueOf(binderId) + ": EXCEPTION ): ");
 		}
 
 		if (null == reply) {
-			m_logger.debug("GwtTaskHelper.getTaskBinder( " + String.valueOf(binderId) + ": Could not access binder. )");
-			throw GwtServerHelper.getGwtTeamingException();
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					null,
+					"GwtTaskHelper.getTaskBinder( " + String.valueOf(binderId) + ": Could not access binder. )");
 		}
 		
 		return reply; 
@@ -1372,10 +1378,11 @@ public class GwtTaskHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtTaskHelper.getTaskDisplayData( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtTaskHelper.getTaskDisplayData( SOURCE EXCEPTION ):  ");
 		}
 		
 	}
@@ -1395,8 +1402,8 @@ public class GwtTaskHelper {
 		Map serializationMap = ((Map) binder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
 		TaskLinkage reply = TaskLinkage.loadSerializationMap(serializationMap);
 		
-		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("GwtTaskHelper.getTaskLinkage( Read TaskLinkage for binder ): " + String.valueOf(binder.getId()));
+		if (GwtLogHelper.isDebugEnabled(m_logger)) {
+			GwtLogHelper.debug(m_logger, "GwtTaskHelper.getTaskLinkage( Read TaskLinkage for binder ): " + String.valueOf(binder.getId()));
 			dumpTaskLinkage(reply);
 		}
 		
@@ -1438,7 +1445,7 @@ public class GwtTaskHelper {
 						Integer t = ((Integer) completeMap.get(Statistics.TOTAL_KEY));
 						if ((null != t) && (t != totalThisDef)) {
 							if ((-1) != totalThisDef) {
-								m_logger.error("GwtTaskHelper.getTaskStatistics():  Inconsistent total for 'Complete'");
+								GwtLogHelper.error(m_logger, "GwtTaskHelper.getTaskStatistics():  Inconsistent total for 'Complete'");
 							}
 							totalThisDef = t;
 						}
@@ -1474,7 +1481,7 @@ public class GwtTaskHelper {
 						Integer t = ((Integer) completeMap.get(Statistics.TOTAL_KEY));
 						if ((null != t) && (t != totalThisDef)) {
 							if ((-1) != totalThisDef) {
-								m_logger.error("GwtTaskHelper.getTaskStatistics():  Inconsistent total for 'Priority'");
+								GwtLogHelper.error(m_logger, "GwtTaskHelper.getTaskStatistics():  Inconsistent total for 'Priority'");
 							}
 							totalThisDef = t;
 						}
@@ -1505,7 +1512,7 @@ public class GwtTaskHelper {
 						Integer t = ((Integer) completeMap.get(Statistics.TOTAL_KEY));
 						if ((null != t) && (t != totalThisDef)) {
 							if ((-1) != totalThisDef) {
-								m_logger.error("GwtTaskHelper.getTaskStatistics():  Inconsistent total for 'Status'");
+								GwtLogHelper.error(m_logger, "GwtTaskHelper.getTaskStatistics():  Inconsistent total for 'Status'");
 							}
 							totalThisDef = t;
 						}
@@ -1558,10 +1565,11 @@ public class GwtTaskHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtTaskHelper.getTaskStatistics( SOURCE EXCEPTION ):  ", e);
-			}
-			throw GwtServerHelper.getGwtTeamingException(e);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtTaskHelper.getTaskStatistics( SOURCE EXCEPTION ):  ");
 		}
 	}
 	
@@ -1630,7 +1638,7 @@ public class GwtTaskHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}
 	}
 
@@ -1664,7 +1672,7 @@ public class GwtTaskHelper {
 		catch (Exception ex) {
 			// If we can't access the TaskLink's FolderEntry, it's not
 			// valid.
-			m_logger.debug("GwtTaskHelper.isTaskLinkValid( EXCEPTION ): ", ex);
+			GwtLogHelper.debug(m_logger, "GwtTaskHelper.isTaskLinkValid( EXCEPTION ): ", ex);
 			reply = false;
 		}
 		
@@ -1758,7 +1766,7 @@ public class GwtTaskHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}
 	}
 	
@@ -1884,8 +1892,8 @@ public class GwtTaskHelper {
 				options);
 		}
 		catch (Exception ex) {
-			m_logger.error("GwtTaskHelper.readTasks( EXCEPTION ): ", ex);
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			GwtLogHelper.error(m_logger, "GwtTaskHelper.readTasks( EXCEPTION ): ", ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}		
     	List<Map> taskEntriesList = ((List) taskEntriesMap.get(ObjectKeys.SEARCH_ENTRIES));
 
@@ -1949,13 +1957,13 @@ public class GwtTaskHelper {
 		// that we only have to perform a single DB read for each type
 		// of information we need to complete the TaskInfo details.
 		completeTaskRights(         bs,          reply);
-		if (clientBundle || m_logger.isDebugEnabled()) {
+		if (clientBundle || GwtLogHelper.isDebugEnabled(m_logger)) {
 			completeBinderLocations(bs,          reply);
 			completeAIs(            bs, request, reply);
 		}
 				
-		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("GwtTaskHelper.readTasks( Read List<TaskInfo> for binder ): " + String.valueOf(binderId));
+		if (GwtLogHelper.isDebugEnabled(m_logger)) {
+			GwtLogHelper.debug(m_logger, "GwtTaskHelper.readTasks( Read List<TaskInfo> for binder ): " + String.valueOf(binderId));
 			dumpTaskInfoList(reply);
 		}
 		
@@ -2038,7 +2046,7 @@ public class GwtTaskHelper {
 			}
 			
 			catch (Exception ex) {
-				throw GwtServerHelper.getGwtTeamingException(ex);
+				throw GwtLogHelper.getGwtClientException(ex);
 			}
 		}
 
@@ -2145,8 +2153,15 @@ public class GwtTaskHelper {
 			reply = new TaskEvent(true);
 			reply.setActualStart(getTDFromC(     event.getDtStart(), event.isAllDayEvent())); reply.setLogicalStart(getTDFromC(event.getLogicalStart(), event.isAllDayEvent()));
 			reply.setActualEnd(  getTDFromC(     event.getDtEnd(),   event.isAllDayEvent())); reply.setLogicalEnd(  getTDFromC(event.getLogicalEnd(),   event.isAllDayEvent()));			
-			reply.setDuration(   getTDurFromEDur(event.getDuration()));				
+			reply.setDuration(   getTDurFromEDur(event.getDuration()));
 			reply.setAllDayEvent(event.isAllDayEvent());
+			if (!(reply.getAllDayEvent())) {
+				TaskDuration tD = reply.getDuration();
+				if (tD.hasDaysOnly()) {
+					boolean hasStartAndEnd = (reply.hasActualEnd() && reply.hasActualStart());
+					reply.setEndIsCalculated(!hasStartAndEnd);
+				}
+			}
 			
 			// If we get here, reply refers to the modified TaskEvent or is
 			// null.  Return it.
@@ -2154,10 +2169,11 @@ public class GwtTaskHelper {
 		}
 		
 		catch (Exception ex) {
-			m_logger.debug("GwtTaskHelper.saveTaskDueDate( Can't Save Due Date on task:  '" + taskId.getEntityId() + "' )");
-			m_logger.debug("GwtTaskHelper.saveTaskDueDate( EXCEPTION ):  ", ex);
-			
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					ex,
+					"GwtTaskHelper.saveTaskDueDate( Can't Save Due Date on task:  '" + taskId.getEntityId() + "', EXCEPTION )");
 		}
 	}
 
@@ -2181,7 +2197,7 @@ public class GwtTaskHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}
 	}
 	
@@ -2205,12 +2221,12 @@ public class GwtTaskHelper {
 					null      :
 					tl.getSerializationMap()));
 			
-			if (m_logger.isDebugEnabled()) {
+			if (GwtLogHelper.isDebugEnabled(m_logger)) {
 				if (null == tl) {
-					m_logger.debug("GwtTaskHelper.setTaskLinkage( Removed TaskLinkage for binder ): " + String.valueOf(binder.getId()));
+					GwtLogHelper.debug(m_logger, "GwtTaskHelper.setTaskLinkage( Removed TaskLinkage for binder ): " + String.valueOf(binder.getId()));
 				}
 				else {
-					m_logger.debug("GwtTaskHelper.setTaskLinkage( Stored TaskLinkage for binder ): " + String.valueOf(binder.getId()));
+					GwtLogHelper.debug(m_logger, "GwtTaskHelper.setTaskLinkage( Stored TaskLinkage for binder ): " + String.valueOf(binder.getId()));
 					dumpTaskLinkage(tl);
 				}
 			}
@@ -2218,7 +2234,7 @@ public class GwtTaskHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}
 	}
 
@@ -2263,7 +2279,7 @@ public class GwtTaskHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw GwtLogHelper.getGwtClientException(ex);
 		}
 	}
 
@@ -2342,7 +2358,7 @@ public class GwtTaskHelper {
 			}
 			
 			catch (Exception ex) {
-				throw GwtServerHelper.getGwtTeamingException(ex);
+				throw GwtLogHelper.getGwtClientException(ex);
 			}
 		}
 
@@ -2511,8 +2527,8 @@ public class GwtTaskHelper {
 				
 				else if (hasActualStart && (!hasActualEnd)) {
 					// Has start, no end!  Calculate an end.
-					if (m_logger.isDebugEnabled()) {
-						m_logger.debug("GwtTaskHelper.updateCalculatedDatesImpl( 1:Adjusting Start ):  " + ti.getTitle());
+					if (GwtLogHelper.isDebugEnabled(m_logger)) {
+						GwtLogHelper.debug(m_logger, "GwtTaskHelper.updateCalculatedDatesImpl( 1:Adjusting Start ):  " + ti.getTitle());
 					}
 					newCalcEnd      = EventHelper.adjustDate(tiSD.getActualStart().getDate(), durDays);
 					removeCalcStart = true;
@@ -2520,8 +2536,8 @@ public class GwtTaskHelper {
 				
 				else if ((!hasActualStart) && hasActualEnd) {
 					// No start, has end!  Calculate a start.
-					if (m_logger.isDebugEnabled()) {
-						m_logger.debug("GwtTaskHelper.updateCalculatedDatesImpl( 2:Adjusting End ):  " + ti.getTitle());
+					if (GwtLogHelper.isDebugEnabled(m_logger)) {
+						GwtLogHelper.debug(m_logger, "GwtTaskHelper.updateCalculatedDatesImpl( 2:Adjusting End ):  " + ti.getTitle());
 					}
 					newCalcStart  = EventHelper.adjustDate(tiSD.getActualEnd().getDate(), (-durDays));
 					removeCalcEnd = true;
@@ -2563,8 +2579,8 @@ public class GwtTaskHelper {
 						else {
 							// ...otherwise, use its start to calculate
 							// ...its end.
-							if (m_logger.isDebugEnabled()) {
-								m_logger.debug("GwtTaskHelper.updateCalculatedDatesImpl( 3:Adjusting End ):  " + ti.getTitle());
+							if (GwtLogHelper.isDebugEnabled(m_logger)) {
+								GwtLogHelper.debug(m_logger, "GwtTaskHelper.updateCalculatedDatesImpl( 3:Adjusting End ):  " + ti.getTitle());
 							}
 							newCalcEnd = EventHelper.adjustDate(newCalcStart, durDays);
 						}
@@ -2790,15 +2806,15 @@ public class GwtTaskHelper {
 			}
 			
 			catch (Exception ex) {
-				m_logger.debug("GwtTaskHelper.updateCalculatedDatesOnTask( Update failed on:  '" + ti.getTitle() + "' )");
-				m_logger.debug("GwtTaskHelper.updateCalculatedDatesOnTask( EXCEPTION ):  ", ex);
+				GwtLogHelper.error(m_logger, "GwtTaskHelper.updateCalculatedDatesOnTask( Update failed on:  '" + ti.getTitle() + "' )");
+				GwtLogHelper.error(m_logger, "GwtTaskHelper.updateCalculatedDatesOnTask( EXCEPTION ):  ", ex);
 			}
 		}
 		
 		else {
 			// No, the user doesn't have rights to modify the task.
-			m_logger.debug("GwtTaskHelper.updateCalculatedDatesOnTask( Update failed on:  '" + ti.getTitle() + "' )");
-			m_logger.debug("GwtTaskHelper.updateCalculatedDatesOnTask( Insufficient Rights )");
+			GwtLogHelper.debug(m_logger, "GwtTaskHelper.updateCalculatedDatesOnTask( Update failed on:  '" + ti.getTitle() + "' )");
+			GwtLogHelper.debug(m_logger, "GwtTaskHelper.updateCalculatedDatesOnTask( Insufficient Rights )");
 		}
 		
 		// If we get here, reply is true if we modified task's
@@ -2813,16 +2829,16 @@ public class GwtTaskHelper {
 	 * @param tl
 	 */
 	public static void validateTaskLinkage(AllModulesInjected bs, TaskLinkage tl) {
-		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("GwtTaskHelper.validateTaskLinkage( BEFORE ):");
+		if (GwtLogHelper.isDebugEnabled(m_logger)) {
+			GwtLogHelper.debug(m_logger, "GwtTaskHelper.validateTaskLinkage( BEFORE ):");
 			dumpTaskLinkage(tl);
 		}
 		
 		// Simply validate the List<TaskLink> of the task ordering.
 		validateTaskLinkList(bs, tl.getTaskOrder());
 		
-		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("GwtTaskHelper.validateTaskLinkage( AFTER ):");
+		if (GwtLogHelper.isDebugEnabled(m_logger)) {
+			GwtLogHelper.debug(m_logger, "GwtTaskHelper.validateTaskLinkage( AFTER ):");
 			dumpTaskLinkage(tl);
 		}
 	}

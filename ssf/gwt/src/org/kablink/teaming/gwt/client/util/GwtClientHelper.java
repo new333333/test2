@@ -967,6 +967,7 @@ public class GwtClientHelper {
 	 * otherwise.
 	 */
 	public static native boolean jsBrowserSupportsHtml5FileAPIs() /*-{
+//!		alert("HTML5 support: $wnd.File: " + $wnd.File + ", $wnd.FileReader: " + $wnd.FileReader + ", $wnd.FileList: " + $wnd.FileList + ", $wnd.Blob: " + $wnd.Blob);
 		if ($wnd.File && $wnd.FileReader && $wnd.FileList && $wnd.Blob) {
 			return true;
 		}

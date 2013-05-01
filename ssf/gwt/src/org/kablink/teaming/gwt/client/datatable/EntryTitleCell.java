@@ -223,11 +223,14 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			e.getStyle().setDisplay(Display.NONE);
 		}
 
-		// ...and take the bold off the title.
+		// ...take the bold off the title...
 		e = DOM.getElementById(VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL + "_" + entryIdS);
 		if (null != e) {
 			e.removeClassName("bold");
 		}
+		
+		// ...and mark the entry as having been seen.
+		eti.setSeen(true);
 	}
 	
 	/**
