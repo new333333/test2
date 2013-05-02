@@ -328,6 +328,50 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * Inner class used to track item rights while fixing up folder row
+	 * data for streaming to the client.
+	 * 
+	 * See fixupFRs().
+	 */
+	private static class ItemRights {
+		private boolean	m_canAddReplies;	//
+		private boolean	m_canModify;		//
+		private boolean	m_canPurge;			//
+		private boolean	m_canShare;			//
+		private boolean	m_canTrash;			//
+
+		/**
+		 * Constructor method.
+		 */
+		public ItemRights() {
+			// Simply initialize the super class.
+			super();
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isCanAddReplies() {return m_canAddReplies;}
+		public boolean isCanModify()     {return m_canModify    ;}
+		public boolean isCanPurge()      {return m_canPurge     ;}
+		public boolean isCanShare()      {return m_canShare     ;}
+		public boolean isCanTrash()      {return m_canTrash     ;}
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setCanAddReplies(boolean canAddReplies) {m_canAddReplies = canAddReplies;}
+		public void setCanModify(    boolean canModify)     {m_canModify     = canModify;    }
+		public void setCanPurge(     boolean canPurge)      {m_canPurge      = canPurge;     }
+		public void setCanShare(     boolean canShare)      {m_canShare      = canShare;     }
+		public void setCanTrash(     boolean canTrash)      {m_canTrash      = canTrash;     }
+	}
+	
+	/*
 	 * Inner class used to track the target binder's for entries and
 	 * binders given the ID of an initial target binder.
 	 * 
@@ -2269,8 +2313,9 @@ public class GwtViewHelper {
 					for (FolderEntry entry: entries) {
 						entryMap.put(entry.getId(), entry);
 					}
-		
+					
 					// Scan the List<FolderRow> again.
+					Map<Long, ItemRights> inheritedRights = new HashMap<Long, ItemRights>();
 					FolderColumn commentsCol = new FolderColumn("comments");
 					for (FolderRow fr:  frList) {
 						// Skipping any binders.
@@ -2281,23 +2326,49 @@ public class GwtViewHelper {
 						// Do we have the FolderEntry for this row?
 						FolderEntry entry = entryMap.get(fr.getEntityId().getEntityId());
 						if (null != entry) {
-							// Yes!  Store the user's rights to that
-							// FolderEntry.
-							fr.setCanModify(fm.testAccess(entry, FolderOperation.modifyEntry   ));
-							fr.setCanPurge( fm.testAccess(entry, FolderOperation.deleteEntry   ));
-							fr.setCanTrash( fm.testAccess(entry, FolderOperation.preDeleteEntry));
-							fr.setCanShare( GwtShareHelper.isEntitySharable(bs, entry          ));
+							// Yes!  Do we have cached rights we can
+							// use for this entry?
+							Long       entryParentId = entry.getParentFolder().getId();
+							boolean    entryInherits = ((!(entry.hasEntryAcl())) && (!(entry.hasEntryExternalAcl())));
+							ItemRights entryRights;
+							if (entryInherits)
+							     entryRights = inheritedRights.get(entryParentId);
+							else entryRights = null;
+							boolean newIR = (null == entryRights);
+							if (newIR){
+								// No!  Determine the rights for this entry now.
+								entryRights = new ItemRights();
+								entryRights.setCanAddReplies( fm.testAccess(entry, FolderOperation.addReply      ));
+								entryRights.setCanModify(     fm.testAccess(entry, FolderOperation.modifyEntry   ));
+								entryRights.setCanPurge(      fm.testAccess(entry, FolderOperation.deleteEntry   ));
+								entryRights.setCanTrash(      fm.testAccess(entry, FolderOperation.preDeleteEntry));
+								entryRights.setCanShare(      GwtShareHelper.isEntitySharable(bs, entry          ));
+							}
+							
+							// Transfer the ItemRights to the
+							// FolderRow.
+							fr.setCanModify(entryRights.isCanModify());
+							fr.setCanPurge( entryRights.isCanPurge());
+							fr.setCanTrash( entryRights.isCanTrash());
+							fr.setCanShare( entryRights.isCanShare());
 							
 							// If the user can't add replies to this
 							// entry...
-							if (!(fm.testAccess(entry, FolderOperation.addReply))) {
+							if (!(entryRights.isCanAddReplies())) {
 								// ...and we have a CommentsInfo for it...
 								CommentsInfo ci = fr.getColumnValueAsComments(commentsCol);
 								if (null != ci) {
-									// ...update its can add replies field
-									// ...accordingly.
+									// ...update its can add replies
+									// ...field accordingly.
 									ci.setCanAddReplies(false);
 								}
+							}
+
+							// If this entry inherits its rights and we
+							// have a new ItemRights object for it...
+							if (entryInherits && newIR) {
+								// ...add it to the cache.
+								inheritedRights.put(entryParentId, entryRights);
 							}
 						}
 					}
@@ -2322,6 +2393,7 @@ public class GwtViewHelper {
 					}
 		
 					// Scan the List<FolderRow> again.
+					Map<Long, ItemRights> inheritedRights = new HashMap<Long, ItemRights>();
 					for (FolderRow fr:  frList) {
 						// Skipping any entries.
 						if (!(fr.isBinder())) {
@@ -2336,14 +2408,40 @@ public class GwtViewHelper {
 							fr.setBinderIcon(binder.getIconName(IconSize.MEDIUM), BinderIconSize.MEDIUM);
 							fr.setBinderIcon(binder.getIconName(IconSize.LARGE ), BinderIconSize.LARGE );
 							
-							// ...store a BinderInfo for it...
+							// ...and store a BinderInfo for it.
 							fr.setBinderInfo(GwtServerHelper.getBinderInfo(request, bs, binder));
-		
-							// ...and the user's rights to that Binder.
-							fr.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
-							fr.setCanPurge( bm.testAccess(binder, BinderOperation.deleteBinder   ));
-							fr.setCanTrash( bm.testAccess(binder, BinderOperation.preDeleteBinder));
-							fr.setCanShare( GwtShareHelper.isEntitySharable(bs, binder           ));
+							
+							// Do we have cached rights we can use for
+							// this binder?
+							Long    binderParentId = binder.getParentBinder().getId();
+							boolean binderInherits = (binder.isFunctionMembershipInherited() || binder.isExtFunctionMembershipInherited());
+							ItemRights binderRights;
+							if (binderInherits)
+							     binderRights = inheritedRights.get(binderParentId);
+							else binderRights = null;
+							boolean newIR = (null == binderRights);
+							if (newIR) {
+								binderRights = new ItemRights();
+								binderRights.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
+								binderRights.setCanPurge( bm.testAccess(binder, BinderOperation.deleteBinder   ));
+								binderRights.setCanTrash( bm.testAccess(binder, BinderOperation.preDeleteBinder));
+								binderRights.setCanShare( GwtShareHelper.isEntitySharable(bs, binder           ));
+							}
+							
+							// Transfer the ItemRights to the
+							// FolderRow.
+							fr.setCanModify(binderRights.isCanModify());
+							fr.setCanPurge( binderRights.isCanPurge());
+							fr.setCanTrash( binderRights.isCanTrash());
+							fr.setCanShare( binderRights.isCanShare());
+
+							// If this binder inherits its rights and
+							// we have a new ItemRights object for
+							// it...
+							if (binderInherits && newIR) {
+								// ...add it to the cache.
+								inheritedRights.put(binderParentId, binderRights);
+							}
 						}
 					}
 				}
