@@ -667,9 +667,8 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
         fEntry.setModification(new HistoryStamp(user));
         fEntry.incrLogVersion();
         //just log new location
-    	ChangeLog changes = new ChangeLog(fEntry, ChangeLog.MOVEENTRY);
-    	changes.getEntityRoot();
-    	getCoreDao().save(changes);
+    	ChangeLog changes = ChangeLogUtils.create(fEntry, ChangeLog.MOVEENTRY);
+    	ChangeLogUtils.save(changes);
 
     	List ids = new ArrayList();
     	for (int i=0; i<entries.size(); ++i) {
@@ -682,9 +681,8 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
             //just log new location
           	e.setModification(fEntry.getModification());
           	e.incrLogVersion();
-        	changes = new ChangeLog(e, ChangeLog.MOVEENTRY);
-        	changes.getEntityRoot();
-        	getCoreDao().save(changes);
+        	changes = ChangeLogUtils.create(e, ChangeLog.MOVEENTRY);
+        	ChangeLogUtils.save(changes);
          	ids.add(e.getId());
     	}
     	//add top entry to list of entries
@@ -1170,8 +1168,8 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 	@Override
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
 		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
-		ChangeLog changes = new ChangeLog(entry, operation);
-		Element element = ChangeLogUtils.buildLog(changes, entry);
+		ChangeLog changes = ChangeLogUtils.createAndBuild(entry, operation);
+		Element element = changes.getEntityRoot();
 		//add folderEntry fields
 		if (entry instanceof FolderEntry) {
 			FolderEntry fEntry = (FolderEntry)entry;
@@ -1186,7 +1184,7 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 			if (fEntry.getParentEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_PARENTENTRY, fEntry.getParentEntry().getId());
 			if (!Validator.isNull(fEntry.getPostedBy())) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_POSTEDBY, fEntry.getPostedBy());
 		}
-		getCoreDao().save(changes);
+		ChangeLogUtils.save(changes);
 		return changes;
 	}
 	//***********************************************************************************************************

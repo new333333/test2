@@ -1026,8 +1026,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	getConvertedFileModule().deleteCacheImageFile(binder, entity, fa);
     	setEntityModification(entity);
     	entity.incrLogVersion();
-    	ChangeLog changes = new ChangeLog(entity, changeLogCause);
-		ChangeLogUtils.buildLog(changes, newTopVa.getParentAttachment());
+    	ChangeLog changes = ChangeLogUtils.createAndBuild(entity, changeLogCause, newTopVa.getParentAttachment());
 		saveChangeLogTransactional(changes);
 	}
 
@@ -1041,8 +1040,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		setEntityModification(entity);
 		entity.incrLogVersion();
-		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_SET_COMMENT);
-		ChangeLogUtils.buildLog(changes, fileAtt);
+		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMODIFY_SET_COMMENT, fileAtt);
 		saveChangeLogTransactional(changes);
 	}
 	
@@ -1056,8 +1054,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		setEntityModification(entity);
 		entity.incrLogVersion();
-		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_SET_STATUS);
-		ChangeLogUtils.buildLog(changes, fileAtt);
+		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMODIFY_SET_STATUS, fileAtt);
 		saveChangeLogTransactional(changes);
 	}
 	
@@ -1084,15 +1081,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		FileUtils.setFileVersionAging(entity);	//Set the agingEnabled flag appropriately for all file attachments
 		setEntityModification(entity);
 		entity.incrLogVersion();
-		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_INCR_MAJOR_VERSION);
-		ChangeLogUtils.buildLog(changes, fileAtt);
+		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMODIFY_INCR_MAJOR_VERSION, fileAtt);
 		saveChangeLogTransactional(changes);
 	}
 	
 	private void saveChangeLogTransactional(final ChangeLog changeLog) {
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {  
-                getCoreDao().save(changeLog);
+        		ChangeLogUtils.save(changeLog);
             	return null;
         	}
         });	
@@ -1138,9 +1134,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			v.getFileItem().setName(newName);
 		}
 		entity.incrLogVersion();
-		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILERENAME);
-		ChangeLogUtils.buildLog(changes, fa);
-		getCoreDao().save(changes);
+		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILERENAME, fa);
+		ChangeLogUtils.save(changes);
 	}
 	
 	public void moveFiles(Binder binder, DefinableEntity entity, 
@@ -1187,9 +1182,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
        		else { // mirrored repository
        			moveMirroredFile(binder, entity, destBinder, destEntity, fa, toFileName);
        		}
-   			ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMOVE);
-			ChangeLogUtils.buildLog(changes, fa);
-			getCoreDao().save(changes);
+   			ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMOVE, fa);
+   			ChangeLogUtils.save(changes);
 			// Now that we're done with the existing fa object (hence we don't need access to
 			// the previous name), we can finally change its name to the new name if different.
 			fa.getFileItem().setName(toFileName);
@@ -1372,8 +1366,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
    		// Update the metadata
 		entity.incrLogVersion();
-		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEVERSIONDELETE);
-		ChangeLogUtils.buildLog(changes, va);
+		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEVERSIONDELETE, va);
 
 		fa.removeFileVersion(va);
 		
@@ -1569,7 +1562,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         	public Object doInTransaction(TransactionStatus status) {
         		if(newObjs != null) {
         			for(Object newObj:newObjs)
-        				getCoreDao().save(newObj);
+        				if(newObj instanceof ChangeLog)
+        					ChangeLogUtils.save((ChangeLog)newObj);
+        				else
+        					getCoreDao().save(newObj);
         		}
                 return null;
         	}
@@ -1706,8 +1702,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				
    		ChangeLog changeLog = null;
    		if(!skipDbLog) {
-	   		changeLog = new ChangeLog(entry, ChangeLog.FILEDELETE);
-	   		Element parent = ChangeLogUtils.buildLog(changeLog, fAtt);
+	   		changeLog = ChangeLogUtils.createAndBuild(entry, ChangeLog.FILEDELETE, fAtt);
+	   		Element parent = changeLog.getEntityRoot();
 	   		if(archiveURIs.size() > 0) {
 	   			Element fileElem = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_FILEARCHIVE);
 	   			if(archiveStoreName != null)
@@ -1778,7 +1774,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	       getTransactionTemplate().execute(new TransactionCallback() {
 	       	public Object doInTransaction(TransactionStatus status) {  
 	       		if(changeLog != null)
-	       			getCoreDao().save(changeLog);
+	       			ChangeLogUtils.save(changeLog);
             	
 				entry.removeAttachment(fAtt);
 				//file names on binders are not registered
@@ -1811,7 +1807,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {  
                 for(ChangeLog changeLog : changeLogs) {
-                	getCoreDao().save(changeLog);
+                	ChangeLogUtils.save(changeLog);
                 }
             	return null;
         	}
@@ -1936,21 +1932,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		} 
    		//add file name so not null
     	if (Validator.isNull(entry.getTitle())) entry.setTitle(fAtt.getFileItem().getName());
-		ChangeLog changes = null;
-    	if (isNew)
-    		changes = new ChangeLog(entry, ChangeLog.FILEADD);
-    	else if(versionCreated)
-    		changes = new ChangeLog(entry, ChangeLog.FILEMODIFY);
     	
     	if(versionCreated) {
     		// The content was committed creating a new version. Increment disk usage for the user.
     		incrementDiskSpaceUsed(fAtt);
     	}
     	
-    	if(changes != null) {
-        	ChangeLogUtils.buildLog(changes, fAtt);
-    		getCoreDao().save(changes);
-    	}
+		ChangeLog changes = null;
+    	if (isNew)
+    		changes = ChangeLogUtils.createAndBuild(entry, ChangeLog.FILEADD, fAtt);
+    	else if(versionCreated)
+    		changes = ChangeLogUtils.createAndBuild(entry, ChangeLog.FILEMODIFY, fAtt);
+    	if(changes != null)
+        	ChangeLogUtils.save(changes);
     }
 
 	/*
@@ -2984,8 +2978,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 						metadataDirty = true;
 		            	// add the size of the file to the users disk usage
 		            	incrementDiskSpaceUsed(fa);
-		            	ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
-		            	ChangeLogUtils.buildLog(changes, fa);
+		            	ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMODIFY, fa);
 		            	newObjs.add(changes);
 					}
 				}  

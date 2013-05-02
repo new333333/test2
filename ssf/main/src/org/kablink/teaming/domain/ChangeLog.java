@@ -112,7 +112,7 @@ public class ChangeLog extends ZonedObject {
 		this(entity, operation, (Principal)null);
 	}
 	
-	public ChangeLog(DefinableEntity entity, String operation, Principal principal) {	
+	protected ChangeLog(DefinableEntity entity, String operation, Principal principal) {	
 		Binder binder;
 		if (entity instanceof Binder) {
 			binder = (Binder)entity;
