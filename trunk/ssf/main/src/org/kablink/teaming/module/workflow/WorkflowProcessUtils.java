@@ -571,9 +571,8 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	
 	public static void processChangeLog(String toState, String change, WorkflowSupport entry) {
 		if (Validator.isNotNull(toState)) {
-			ChangeLog changes = new ChangeLog((DefinableEntity)entry, change);
-			ChangeLogUtils.buildLog(changes, (DefinableEntity)entry);
-			getInstance().getCoreDao().save(changes);
+			ChangeLog changes = ChangeLogUtils.createAndBuild((DefinableEntity)entry, change);
+			ChangeLogUtils.save(changes);
 		}
 	}
 

@@ -1386,9 +1386,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void moveBinder_log(Binder binder, HistoryStamp stamp) {
     	binder.setModification(stamp);
  		binder.incrLogVersion();
- 		ChangeLog changes = new ChangeLog(binder, ChangeLog.MOVEBINDER);
-    	changes.getEntityRoot();
-    	getCoreDao().save(changes);
+ 		ChangeLog changes = ChangeLogUtils.create(binder, ChangeLog.MOVEBINDER);
+ 		ChangeLogUtils.save(changes);
 
     }
     //inside write transaction    
@@ -2682,9 +2681,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
 	@Override
 	public ChangeLog processChangeLog(Binder binder, String operation) {
-		ChangeLog changes = new ChangeLog(binder, operation);
 		//any changes here should be considered to template export
-		Element element = ChangeLogUtils.buildLog(changes, binder);
+		ChangeLog changes = ChangeLogUtils.createAndBuild(binder, operation);
+		Element element = changes.getEntityRoot();
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_BINDER_NAME, ObjectKeys.XTAG_TYPE_STRING, binder.getName());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP, binder.isFunctionMembershipInherited());
@@ -2699,7 +2698,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				wfm.addChangeLog(element);
 			}
 		}
-		getCoreDao().save(changes);
+		ChangeLogUtils.save(changes);
 		return changes;
 	}
 	/*************************************************************************************************/

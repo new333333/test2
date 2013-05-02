@@ -902,8 +902,8 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	@Override
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
 		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
-		ChangeLog changes = new ChangeLog(entry, operation);
-		Element element = ChangeLogUtils.buildLog(changes, entry);
+		ChangeLog changes = ChangeLogUtils.createAndBuild(entry, operation);
+		Element element = changes.getEntityRoot();
 		//add principal fields
 		Principal prin = (Principal)entry;
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_PRINCIPAL_NAME, ObjectKeys.XTAG_TYPE_STRING, prin.getName());
@@ -946,7 +946,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 			ApplicationGroup group = (ApplicationGroup)prin;
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_APPLICATION_GROUP_MEMBERS, LongIdUtil.getIdsAsString(group.getMembers()));			
 		}
-		getCoreDao().save(changes);
+		ChangeLogUtils.save(changes);
 		return changes;
 	}    
 	

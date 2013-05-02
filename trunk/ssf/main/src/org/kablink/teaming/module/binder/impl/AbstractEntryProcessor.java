@@ -1102,7 +1102,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     			deleteEntry_postDelete(parentBinder, entry, ctx);
     			SimpleProfiler.stop("deleteEntry_postDelete");
     			for (ChangeLog changeLog:changeLogs) {
-    				getCoreDao().save(changeLog);
+    				ChangeLogUtils.save(changeLog);
     			}
         
     			return null;
@@ -1875,9 +1875,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	}
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation, boolean saveIt) {
 		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
-		ChangeLog changes = new ChangeLog(entry, operation);
-		ChangeLogUtils.buildLog(changes, entry);
-		if (saveIt) getCoreDao().save(changes);
+		ChangeLog changes = ChangeLogUtils.createAndBuild(entry, operation);
+		if (saveIt) 
+			ChangeLogUtils.save(changes);
 		return changes;
 	}
 
