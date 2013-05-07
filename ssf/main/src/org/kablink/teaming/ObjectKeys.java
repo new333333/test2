@@ -449,6 +449,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_UPGRADE_SEARCH_INDEX = "upgradeSearchIndex";
     public static final String USER_PROPERTY_WHATS_NEW_SHOW_SETTING = "whatsNewShowSetting";
     public static final String USER_PROPERTY_EXPANDED_BINDERS_LIST = "expandedBindersList";
+    public static final String USER_PROPERTY_EXTERNAL_USER = "externalUser";
     public static final String USER_PROPERTY_DEFAULT_ACTIVITY_STREAM = "defaultActivityStream";
     public static final String USER_PROPERTY_COLLAPSE_SUBTASKS = "collapsedSubtasks";
     public static final String USER_THEME_DEFAULT="default";

@@ -2083,5 +2083,26 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		Set<Long> groupIds = getProfileDao().getAllGroupMembership(userId, RequestContextHolder.getRequestContext().getZoneId());
 		return getProfileDao().loadGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
 	}
+	
+	/**
+	 * Return whether the given user is marked as an external user.
+	 */
+	public boolean isUserExternal( Long userId )
+	{
+		UserProperties userProperties;
+		boolean isExternal = false;
+
+		userProperties = getUserProperties( userId );
+		if ( userProperties != null )
+		{
+			String value;
+			
+			value = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_EXTERNAL_USER );
+			if ( value != null && value.equalsIgnoreCase( "true" ) )
+				isExternal = true;
+		}
+		
+		return isExternal;
+	}
 }
 

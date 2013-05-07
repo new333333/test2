@@ -769,6 +769,7 @@ public class WebKeys {
     public static final String CALENDAR_MODE_PREF="calendarModePreference";
 	public static final String CAN_DELETE_USER = "ss_canDeleteUser";
 	public static final String CAN_FORCE_FILE_UNLOCK="ss_canForceFileUnlock";
+	public static final String CAN_MAKE_EXTERNAL_USER = "ssCanMakeExternalUser";
 	public static final String CAN_VIEW_USER_PROFILES="ss_canViewUserProfiles";
 	public static final String CAPTIVE="ss_captive";
 	public static final String CHANGE_LOGS="ss_changeLogs";

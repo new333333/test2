@@ -214,6 +214,33 @@ public final class MiscUtil
 	
 	
 	/**
+	 * Return whether the given email address is a valid internet address
+	 */
+	public static boolean isEmailAddressValid( String emailAddress )
+	{
+		InternetAddress ia;
+		boolean valid = false;
+		
+		if ( emailAddress == null )
+			return false;
+		
+		ia = new InternetAddress();
+		try
+		{
+			ia.setAddress( emailAddress );
+			ia.validate();
+			
+			valid = true;
+		}
+		catch ( Exception ex )
+		{
+			// Nothing to do.
+		}
+		
+		return valid;
+	}
+	
+	/**
 	 * Returns true if nativeMobileApp mode is set, based on the
 	 * RenderRequest and false otherwise.
 	 * 

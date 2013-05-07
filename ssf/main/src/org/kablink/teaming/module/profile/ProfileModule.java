@@ -776,4 +776,8 @@ public interface ProfileModule {
      */
 	public List<Group> getUserGroups(Long userId) throws AccessControlException;
 
+	/**
+	 * Return whether the given user is marked as an external user.
+	 */
+	public boolean isUserExternal( Long userId );
 }
