@@ -120,6 +120,9 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		<span class="ss_labelRight ss_normal">
 			<ssf:nlt tag="__profile_external_user" />
 		</span>
+		<span style="margin-left: 8px;">
+			<ssf:showHelp guideName="admin" pageId="external_user" />
+		</span>
 		<br/>
 	</label>
 </c:if>
