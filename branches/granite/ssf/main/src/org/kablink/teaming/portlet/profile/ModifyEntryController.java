@@ -50,6 +50,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
@@ -60,6 +61,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.GetterUtil;
@@ -175,6 +177,33 @@ public class ModifyEntryController extends SAbstractController {
 	            
 				getProfileModule().modifyEntry(entryId, inputData, fileMap, deleteAtts, null, null);
 	
+				// Update the user's "is external user" property
+				{
+					String isExternalUser;
+					
+					// Should we mark this user as an external user?
+		        	isExternalUser = inputData.getSingleValue( "externalUserCB" );
+		        	if ( isExternalUser != null &&
+		        		 (isExternalUser.equalsIgnoreCase( "true" ) || isExternalUser.equalsIgnoreCase( "on" )) )
+		        	{
+		        		// Yes
+		        		// Set the "external user" property to true.
+		        		getProfileModule().setUserProperty(
+		        										entryId,
+		        										ObjectKeys.USER_PROPERTY_EXTERNAL_USER,
+		        										"true" );
+		        	}
+		        	else
+		        	{
+		        		// No
+		        		// Set the "external user" property to false.
+		        		getProfileModule().setUserProperty(
+		        										entryId,
+		        										ObjectKeys.USER_PROPERTY_EXTERNAL_USER,
+		        										"false" );
+		        	}
+				}
+				
 				//See if there was a request to reorder the graphic files
 				String graphicFileIds = PortletRequestUtils.getStringParameter(request, "_graphic_id_order", "");
 	        }
@@ -260,6 +289,36 @@ public class ModifyEntryController extends SAbstractController {
 			{
 				// Yes, don't let the user change the password.
 				readOnly.put( "password", Boolean.TRUE );
+				model.put( WebKeys.CAN_MAKE_EXTERNAL_USER, "false" );
+			}
+			else
+			{
+				User currentUser;
+				
+				// Is the admin editing the user's profile?
+				currentUser = RequestContextHolder.getRequestContext().getUser();
+	 	 		if ( ObjectKeys.SUPER_USER_INTERNALID.equals( currentUser.getInternalId() ) )
+				{
+					boolean isEmailAddress;
+					boolean isExternal;
+					
+					// Yes
+					// Is this user already marked as external?
+					isExternal = getProfileModule().isUserExternal( entryId );
+
+					// Is the user's name a valid email address?
+					isEmailAddress = MiscUtil.isEmailAddressValid( entry.getName() );
+					
+					// Is the user already marked as external or is the user's name a valid email address?
+					if ( isExternal || isEmailAddress )
+					{
+						// Yes, let the admin change the user to an external user.
+						model.put( WebKeys.CAN_MAKE_EXTERNAL_USER, "true" );
+						
+						// Add the flag that indicates whether this user is an external user
+						model.put( "ssIsExternalUser", Boolean.toString( isExternal ) );
+					}
+				}
 			}
 			
 			model.put(WebKeys.READ_ONLY, readOnly);

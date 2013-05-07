@@ -44,7 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.dom4j.Document;
 import org.kablink.teaming.IllegalCharacterInNameException;
-import org.kablink.teaming.NameMissingException;
+import org.kablink.teaming.InvalidExternalUserNameException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.TextVerificationException;
@@ -69,6 +69,7 @@ import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
@@ -103,6 +104,8 @@ public class AddEntryController extends SAbstractController {
 		String context = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CONTEXT, "");				
 		//See if the add entry form was submitted
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
+			boolean markUserAsExternal = false;
+			
 			//The form was submitted. Go process it
 			//If no entryType is given, then the default definition will be used when adding the user account
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
@@ -138,6 +141,23 @@ public class AddEntryController extends SAbstractController {
         	if (!password.equals(password2)) {
         		throw new PasswordMismatchException("errorcode.password.mismatch");
         	}
+        	
+			// Should we mark this user as an external user?
+        	String value = inputData.getSingleValue( "externalUserCB" );
+        	if ( value != null &&
+        		 (value.equalsIgnoreCase( "true" ) || value.equalsIgnoreCase( "on" )) )
+        	{
+        		// Yes
+        		// Is the user's name an email address?
+    			if ( MiscUtil.isEmailAddressValid( name ) == false )
+    			{
+    				// No, tell the user that an external user's name must be an email address.
+    				throw new InvalidExternalUserNameException();
+    			}
+        		
+        		markUserAsExternal = true;
+        	}
+
     		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
     		if (operation.equals(WebKeys.OPERATION_RELOAD_OPENER) ) {
     			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
@@ -185,6 +205,17 @@ public class AddEntryController extends SAbstractController {
     			{
     				// No
     				if (context.equals("adminMenu")) {
+    					// Should we mark this user as an external user?
+    		        	if ( markUserAsExternal )
+    		        	{
+    		        		// Yes
+    		        		// Set the "external user" property to true.
+    		        		getProfileModule().setUserProperty(
+    		        										newUser.getId(),
+    		        										ObjectKeys.USER_PROPERTY_EXTERNAL_USER,
+    		        										"true" );
+    		        	}
+    					
     					setupShowSuccess(response, binderId, newUser.getId());
     				} else {
     					setupReloadBinder(response, binderId);
@@ -243,7 +274,10 @@ public class AddEntryController extends SAbstractController {
 			{
 				// Yes, set the flag that will enable the text verification controls in the page.
 				model.put( WebKeys.URL_DO_TEXT_VERIFICATION, "true" );
+				model.put( WebKeys.CAN_MAKE_EXTERNAL_USER, "false" );
 			}
+			else
+				model.put( WebKeys.CAN_MAKE_EXTERNAL_USER, "true" );
 			
 			//Make sure the requested definition is legal
 			if (folderEntryDefs.containsKey(entryType)) {

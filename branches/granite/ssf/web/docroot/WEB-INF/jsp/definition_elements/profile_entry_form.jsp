@@ -99,7 +99,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 
 <%-- Show the ok and cancel buttons at top right --%>
 <div class="ss_Tinybutton margintop2" align="right" style="width:100%; padding-right:10px;">
-  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
+  <input type="submit" class="ss_submit" name="okBtn" id="okBtn" value="<ssf:nlt tag="button.ok" />"/>
   <input type="button" class="ss_submit" 
     name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" 
     onClick="ss_cancelButtonCloseWindow();return false;"/>
@@ -110,7 +110,22 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 <div class="ss_entryContent">
 <div class="needed-because-of-ie-bug"><div id="ss_titleCheck2" style="display:none; visibility:hidden;" 
       ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
+
+<!-- Is it ok to show the "mark this user as an external user" checkbox? -->
+<c:if test="${ssCanMakeExternalUser == 'true'}">
+	<!-- Yes -->
+	<!-- Add the "Mark this user as an external user" checkbox. -->
+	<input type="checkbox" id="externalUserCB" name="externalUserCB" <c:if test="${ssIsExternalUser}">checked</c:if> />
+	<label for="externalUserCB">
+		<span class="ss_labelRight ss_normal">
+			<ssf:nlt tag="__profile_external_user" />
+		</span>
+		<br/>
+	</label>
+</c:if>
+
 <div class="ss_labelAbove"><label for="name"><ssf:nlt tag="__profile_name"/></label></div>
+
 <c:if test="${empty ssDefinitionEntry.name}">
   <input type="text" size="40" name="name" id="name" class="ss_text" autocomplete="off"
   onchange="ss_ajaxValidate(ss_checkTitleUrl, this, 'name', 'ss_titleCheck2');"/>
