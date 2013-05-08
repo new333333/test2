@@ -722,7 +722,7 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Map buildSearchMapFromSharedMeList(AllModulesInjected bs, List<GwtSharedMeItem> shareItems, boolean sortDescend, String sortBy) {
-		SimpleProfiler.start("GwtViewHelper.buildSearchMapFromSharedMeList()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.buildSearchMapFromSharedMeList()");
 		try {
 			List<Map> searchEntries = new ArrayList<Map>();
 			for (GwtSharedMeItem si:  shareItems) {
@@ -807,7 +807,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.buildSearchMapFromSharedMeList()");
+			gsp.stop();
 		}
 	}
 
@@ -857,7 +857,7 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static ViewFolderEntryInfo buildViewFolderEntryInfo(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long entryId) {
-		SimpleProfiler.start("GwtViewHelper.buildViewFolderEntryInfo()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.buildViewFolderEntryInfo()");
 		try {
 			// Create the ViewFolderEntryInfo to return...
 			ViewFolderEntryInfo	reply  = new ViewFolderEntryInfo(binderId, entryId);
@@ -905,7 +905,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.buildViewFolderEntryInfo()");
+			gsp.stop();
 		}
 	}
 
@@ -925,7 +925,7 @@ public class GwtViewHelper {
 	 * each assignee's title, ...
 	 */
 	private static void completeAIs(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> folderRows) {
-		SimpleProfiler.start("GwtViewHelper.completeAIs()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.completeAIs()");
 		try {
 			// If we don't have any FolderRows's to complete...
 			if (!(MiscUtil.hasItems(folderRows))) {
@@ -1071,7 +1071,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.completeAIs()");
+			gsp.stop();
 		}
 	}
 
@@ -1261,7 +1261,7 @@ public class GwtViewHelper {
 	 * representing the 'Shared with Me' items.
 	 */
 	private static List<GwtSharedMeItem> convertItemListToWithMeList(AllModulesInjected bs, HttpServletRequest request, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups, String sortBy, boolean sortDescend) {
-		SimpleProfiler.start("GwtViewHelper.convertItemListToWithMeList()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.convertItemListToWithMeList()");
 		try {
 			// Allocate a List<GwtSharedMeItem> to hold the converted
 			// List<ShareItem> information.
@@ -1377,7 +1377,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.convertItemListToWithMeList()");
+			gsp.stop();
 		}
 	}
 	
@@ -1871,7 +1871,7 @@ public class GwtViewHelper {
 	 * returned.
 	 */
 	public static List<FolderRow> filterSharedMeFolderRows(List<FolderColumn> folderColumns, List<FolderRow> folderRows, String quickFilter) {
-		SimpleProfiler.start("GwtViewHelper.filterSharedMeFolderRows()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.filterSharedMeFolderRows()");
 		try {
 			// Do we have a string to filter with and some FolderRow's
 			// to be filtered?
@@ -1961,7 +1961,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.filterSharedMeFolderRows()");
+			gsp.stop();
 		}
 	}
 
@@ -2269,7 +2269,7 @@ public class GwtViewHelper {
 	 * current user for each row.
 	 */
 	private static void fixupFRs(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> frList, boolean isManageUsers, boolean isFilr) {
-		SimpleProfiler.start("GwtViewHelper.fixupFRs()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.fixupFRs()");
 		try {
 			// If we don't have any FolderRow's to complete...
 			if (!(MiscUtil.hasItems(frList))) {
@@ -2302,7 +2302,7 @@ public class GwtViewHelper {
 			}
 			
 			try {
-				SimpleProfiler.start("GwtViewHelper.fixupFRs(Fixup Entries)");
+				SimpleProfiler.start("GwtViewHelper.fixupFRs(Fixup Entry Rights)");
 				try {
 					// Read the FolderEntry's for the rows...
 					FolderModule fm = bs.getFolderModule();
@@ -2329,7 +2329,10 @@ public class GwtViewHelper {
 							// Yes!  Do we have cached rights we can
 							// use for this entry?
 							Long       entryParentId = entry.getParentFolder().getId();
-							boolean    entryInherits = ((!(entry.hasEntryAcl())) && (!(entry.hasEntryExternalAcl())));
+							boolean    entryInherits;
+							if (entry.isAclExternallyControlled())
+								 entryInherits = (!(entry.hasEntryExternalAcl()));
+							else entryInherits = (!(entry.hasEntryAcl()));
 							ItemRights entryRights;
 							if (entryInherits)
 							     entryRights = inheritedRights.get(entryParentId);
@@ -2375,10 +2378,10 @@ public class GwtViewHelper {
 				}
 				
 				finally {
-					SimpleProfiler.stop("GwtViewHelper.fixupFRs(Fixup Entries)");
+					SimpleProfiler.stop("GwtViewHelper.fixupFRs(Fixup Entry Rights)");
 				}
 	
-				SimpleProfiler.start("GwtViewHelper.fixupFRs(Fixup Folders)");
+				SimpleProfiler.start("GwtViewHelper.fixupFRs(Fixup Folder Rights)");
 				try {
 					// Read the Binder's for the rows (including those
 					// intermediate sub-binders that might be
@@ -2413,8 +2416,11 @@ public class GwtViewHelper {
 							
 							// Do we have cached rights we can use for
 							// this binder?
-							Long    binderParentId = binder.getParentBinder().getId();
-							boolean binderInherits = (binder.isFunctionMembershipInherited() || binder.isExtFunctionMembershipInherited());
+							Long    binderParentId    = binder.getParentBinder().getId();
+							boolean binderInherits;
+							if (binder.isAclExternallyControlled())
+							     binderInherits = binder.isExtFunctionMembershipInherited();
+							else binderInherits = binder.isFunctionMembershipInherited();
 							ItemRights binderRights;
 							if (binderInherits)
 							     binderRights = inheritedRights.get(binderParentId);
@@ -2447,7 +2453,7 @@ public class GwtViewHelper {
 				}
 				
 				finally {
-					SimpleProfiler.stop("GwtViewHelper.fixupFRs(Fixup Folders)");
+					SimpleProfiler.stop("GwtViewHelper.fixupFRs(Fixup Folder Rights)");
 				}
 				
 				SimpleProfiler.start("GwtViewHelper.fixupFRs(Fixup Principals)");
@@ -2498,7 +2504,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.fixupFRs()");
+			gsp.stop();
 		}
 	}
 
@@ -2825,7 +2831,7 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Map getCollectionEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, CollectionType ct, List<GwtSharedMeItem> shareItems) {
-		SimpleProfiler.start("GwtViewHelper.getCollectionEntries()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getCollectionEntries()");
 		try {
 			// Construct the search Criteria...
 			Criteria crit;
@@ -2920,7 +2926,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.getCollectionEntries()");
+			gsp.stop();
 		}
 	}
 	
@@ -3183,7 +3189,7 @@ public class GwtViewHelper {
 	
 	@SuppressWarnings("unchecked")
 	public static FolderColumnsRpcResponseData getFolderColumns(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, Boolean includeConfigurationInfo) throws GwtTeamingException {
-		SimpleProfiler.start("GwtViewHelper.getFolderColumns()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderColumns()");
 		try {
 			Long			folderId             = folderInfo.getBinderIdAsLong();
 			Binder			binder               = bs.getBinderModule().getBinder(folderId);
@@ -3471,7 +3477,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.getFolderColumns()");
+			gsp.stop();
 		}
 	}
 
@@ -3486,7 +3492,7 @@ public class GwtViewHelper {
 	 * @return
 	 */
 	public static FolderDisplayDataRpcResponseData getFolderDisplayData(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
-		SimpleProfiler.start("GwtViewHelper.getFolderDisplayData()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderDisplayData()");
 		try {
 			Long			folderId             = folderInfo.getBinderIdAsLong();
 			User			user                 = GwtServerHelper.getCurrentUser();
@@ -3586,7 +3592,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.getFolderDisplayData()");
+			gsp.stop();
 		}
 	}
 	
@@ -3604,7 +3610,7 @@ public class GwtViewHelper {
 	 * @throws GwtTeamingException
 	 */
 	public static FolderEntryDetails getFolderEntryDetails(AllModulesInjected bs, HttpServletRequest request, EntityId entityId, boolean markRead) throws GwtTeamingException {
-		SimpleProfiler.start("GwtViewHelper.getFolderEntryDetails()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderEntryDetails()");
 		try {
 			// Create the ViewFolderEntryInfo to return...
 			Long				userId = GwtServerHelper.getCurrentUserId();
@@ -3762,7 +3768,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.getFolderEntryDetails()");
+			gsp.stop();
 		}
 	}
 
@@ -3782,7 +3788,7 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter) throws GwtTeamingException {
-		SimpleProfiler.start("GwtViewHelper.getFolderRows()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderRows()");
 		try {
 			// Is this a binder the user can view?
 			if (!(GwtServerHelper.canUserViewBinder(bs, folderInfo))) {
@@ -4525,7 +4531,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.getFolderRows()");
+			gsp.stop();
 		}
 	}
 
@@ -4964,7 +4970,7 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static List<Map> getPinnedEntries(AllModulesInjected bs, Folder folder, UserProperties userFolderProperties, List<Long> pinnedEntryIds, boolean returnEntries) {
-		SimpleProfiler.start("GwtViewHelper.getPinnedEntries()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getPinnedEntries()");
 		try {
 			// Allocate a List<Map> for the search results for the
 			// entries pinned in this folder.
@@ -5027,7 +5033,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.getPinnedEntries()");
+			gsp.stop();
 		}
 	}
 
@@ -5036,7 +5042,7 @@ public class GwtViewHelper {
 	 * returns an equivalent List<PrincipalInfo> object.
 	 */
 	private static List<PrincipalInfo> getPIsFromPIds(AllModulesInjected bs, HttpServletRequest request, List<Long> principalIds) {
-		SimpleProfiler.start("GwtViewHelper.getPIsFromPIds()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getPIsFromPIds()");
 		try {
 			// Allocate the List<PrincipalInfo> we'll return.
 			List<PrincipalInfo> reply = new ArrayList<PrincipalInfo>();
@@ -5116,7 +5122,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.getPIsFromPIds()");
+			gsp.stop();
 		}
 	}
 	
@@ -5434,7 +5440,7 @@ public class GwtViewHelper {
 	 * current user.
 	 */
 	private static List<GwtSharedMeItem> getSharedByMeItems(AllModulesInjected bs, HttpServletRequest request, String sortBy, boolean sortDescend) throws Exception {
-		SimpleProfiler.start("GwtViewHelper.getSharedByMeItems()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getSharedByMeItems()");
 		try {
 			// Construct a list containing just this user's ID...
 			Long		userId = GwtServerHelper.getCurrentUserId();
@@ -5454,7 +5460,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.getSharedByMeItems()");
+			gsp.stop();
 		}
 	}
 	
@@ -5463,7 +5469,7 @@ public class GwtViewHelper {
 	 * current user.
 	 */
 	private static List<GwtSharedMeItem> getSharedWithMeItems(AllModulesInjected bs, HttpServletRequest request, String sortBy, boolean sortDescend) {
-		SimpleProfiler.start("GwtViewHelper.getSharedWithMeItems()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getSharedWithMeItems()");
 		try {
 			// Construct a list containing just this user's ID...
 			Long		userId = GwtServerHelper.getCurrentUserId();
@@ -5488,7 +5494,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.getSharedWithMeItems()");
+			gsp.stop();
 		}
 	}
 	
@@ -5685,13 +5691,13 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Map getUserEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options) {
-		SimpleProfiler.start("GwtViewHelper.getUserEntries()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getUserEntries()");
 		try {
 			return bs.getProfileModule().getUsers(options);
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.getUserEntries()");
+			gsp.stop();
 		}
 	}
 	
@@ -5998,7 +6004,7 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static List<UserWorkspacePair> getUserWorkspacePairs(List<Long> principalIds) {
-		SimpleProfiler.start("GwtViewHelper.getUserWorkspacePairs()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getUserWorkspacePairs()");
 		try {
 			SimpleProfiler.start("GwtViewHelper.getUserWorkspacePairs(Resolve Users)");
 			List<User> users = new ArrayList<User>();
@@ -6086,7 +6092,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.getUserWorkspacePairs()");
+			gsp.stop();
 		}
 	}
 	
