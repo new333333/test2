@@ -254,7 +254,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //no transaction    
     @Override
 	public Binder addBinder(final Binder parent, Definition def, Class clazz, 
-    		final InputDataAccessor inputData, Map fileItems, Map options) 
+    		final InputDataAccessor inputData, Map fileItems, Map options, final boolean skipDbLog) 
     	throws AccessControlException, WriteFilesException, WriteEntryDataException {
         // This default implementation is coded after template pattern. 
       	if (parent.isZone())
@@ -311,7 +311,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	
 	                addBinder_save(parent, binder, inputData, entryData, ctx);      
 	                
-	                addBinder_postSave(parent, binder, inputData, entryData, ctx);
+	                addBinder_postSave(parent, binder, inputData, entryData, ctx, skipDbLog);
 	                //register title for uniqueness for webdav; always ensure binder titles are unique in parent
 	                getCoreDao().updateFileName(binder.getParentBinder(), binder, null, binder.getTitle());
 	                if (binder.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(binder.getParentBinder(), binder, null, binder.getNormalTitle());
@@ -571,7 +571,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
    //inside write transaction    
-    protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
+    protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx, boolean skipDbLog) {
   		if (inputData.exists(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS)) {
   			List<WorkAreaFunctionMembership> wfms = (List)inputData.getSingleObject(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS);
   			if (wfms != null && !wfms.isEmpty()) { 
@@ -603,9 +603,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			event.generateUid(binder);
 		}
 		
- 		//create history - using timestamp and version from fillIn
-    	processChangeLog(binder, ChangeLog.ADDBINDER);
-    	getReportModule().addAuditTrail(AuditType.add, binder);
+		if(!skipDbLog) {
+	 		//create history - using timestamp and version from fillIn
+	    	processChangeLog(binder, ChangeLog.ADDBINDER);
+	    	getReportModule().addAuditTrail(AuditType.add, binder);
+		}
     	
     	
     	// Should have a BinderQuota for the newly created binder.
@@ -1450,7 +1452,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        InputDataAccessor inputData = new MapInputData(data);
        Binder binder = null;
        try {
-			binder = addBinder(destination, sampleBinder.getEntryDef(), sampleBinder.getClass(), inputData, null, null);
+			binder = addBinder(destination, sampleBinder.getEntryDef(), sampleBinder.getClass(), inputData, null, null, false);
        } catch (Exception e) {}
        
        return binder;

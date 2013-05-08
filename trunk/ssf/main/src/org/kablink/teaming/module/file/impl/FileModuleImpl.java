@@ -510,11 +510,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
     		List fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException {
-		return writeFiles(binder, entry, fileUploadItems, errors, Boolean.TRUE);
+		return writeFiles(binder, entry, fileUploadItems, errors, Boolean.TRUE, false);
+    }
+    
+    public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
+    		List fileUploadItems, FilesErrors errors, boolean skipDbLog) 
+    	throws ReservedByAnotherUserException {
+		return writeFiles(binder, entry, fileUploadItems, errors, Boolean.TRUE, skipDbLog);
     }
     
 	private FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
-    		List fileUploadItems, FilesErrors errors, Boolean prune) 
+    		List fileUploadItems, FilesErrors errors, Boolean prune, boolean skipDbLog) 
     	throws ReservedByAnotherUserException {
 		if(errors == null)
     		errors = new FilesErrors();
@@ -531,7 +537,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		try {
     			// Unlike deleteFileInternal, writeFileTransactional is transactional.
     			// See the comment in writeFileMetadataTransactional for reason. 
-    			if (this.writeFileTransactional(binder, entry, fui, errors)) {
+    			if (this.writeFileTransactional(binder, entry, fui, errors, skipDbLog)) {
     				//	only advance on success
     				++i;
     				GangliaMonitoring.incrementFileWrites();
@@ -565,30 +571,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		return errors;
     }
-	
-	// No transaction - The caller will manage transaction demarcation
-	@Override
-    public FileAttachment _addNetFolderFileInSync(Folder folder, FolderEntry entry, FileUploadItem fui) 
-    throws UncheckedIOException {
-    	FileAttachment fAtt = createFileAttachment(entry, fui);
-    	String versionName;
-		try {
-			versionName = createVersionedFile(null, folder, entry, fui);
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-    	long fileSize = fui.getCallerSpecifiedContentLength();
-    	fAtt.getFileItem().setLength(fileSize);
-    	createVersionAttachment(fAtt, versionName);
-    	getCoreDao().save(fAtt);
-    	
-    	writeFileMetadataNonTransactional(folder, entry, fui, fAtt, true, true);
-    	
-    	GangliaMonitoring.incrementFileWrites();
-    	
-    	return fAtt;
-    }
-    
+	    
 	public FilesErrors writeFilesValidationOnly(Binder binder, DefinableEntity entry, 
     		List fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException {
@@ -1859,17 +1842,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void writeFileMetadataTransactional(final Binder binder, final DefinableEntity entry, 
-    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated) {	
+    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated, final boolean skipDbLog) {	
 		getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
-        		writeFileMetadataNonTransactional(binder, entry, fui, fAtt, isNew, versionCreated);
+        		writeFileMetadataNonTransactional(binder, entry, fui, fAtt, isNew, versionCreated, skipDbLog);
                 return null;
        	}
        });
 	}
 	
 	private void writeFileMetadataNonTransactional(final Binder binder, final DefinableEntity entry, 
-    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated) {	
+    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated, boolean skipDbLog) {	
 		//Copy the "description" into the file attachment
 		fAtt.getFileItem().setDescription(fui.getDescription());
 		if(isNew) {
@@ -1939,10 +1922,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	}
     	
 		ChangeLog changes = null;
-    	if (isNew)
-    		changes = ChangeLogUtils.createAndBuild(entry, ChangeLog.FILEADD, fAtt);
-    	else if(versionCreated)
-    		changes = ChangeLogUtils.createAndBuild(entry, ChangeLog.FILEMODIFY, fAtt);
+		if(!skipDbLog) {
+	    	if (isNew)
+	    		changes = ChangeLogUtils.createAndBuild(entry, ChangeLog.FILEADD, fAtt);
+	    	else if(versionCreated)
+	    		changes = ChangeLogUtils.createAndBuild(entry, ChangeLog.FILEMODIFY, fAtt);
+		}
     	if(changes != null)
         	ChangeLogUtils.save(changes);
     }
@@ -2030,7 +2015,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	 * return false or throw exception if either primary not written or metadata update failed.
 	 */
     private boolean writeFileTransactional(Binder binder, DefinableEntity entry, 
-    		FileUploadItem fui, FilesErrors errors) {
+    		FileUploadItem fui, FilesErrors errors, boolean skipDbLog) {
 		String relativeFilePath = fui.getOriginalFilename();
 		String repositoryName = fui.getRepositoryName();
 		FileAttachment fAtt = entry.getFileAttachment(relativeFilePath);
@@ -2138,7 +2123,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	// using JTA. But that's not always available, and this version of
 	    	// the system does not try to address that. 
     		SimpleProfiler.start("writeFile_MetadataTransactional");
-	    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew, versionCreated);
+	    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew, versionCreated, skipDbLog);
     		SimpleProfiler.stop("writeFile_MetadataTransactional");
 	    	
         	//SimpleProfiler.done(logger);
