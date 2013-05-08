@@ -1736,7 +1736,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			Object[] row2 = null;
 			String ldapGuid = null;
 			boolean foundLocalUser = false;
-			
+
 			if (logger.isDebugEnabled())
 				logger.debug("Recording user: '" + dn + "'");
 
@@ -1978,7 +1978,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			
 			//if disable is enabled, remove users that were not found in ldap
-			if (delete && !notInLdap.isEmpty()) {
+			// If "Synchronize User Profiles" and "Register ldap User Profiles Automatically" are
+			// both turned off then don't delete anyone because we never issued an ldap query which
+			// would have caused us to call userCoordinator.record() which would have updated
+			// notInLdap.
+			if (delete && !notInLdap.isEmpty() && (sync != false || create != false) ) {
 				PartialLdapSyncResults	syncResults	= null;
 				
 				if (logger.isInfoEnabled()) {
@@ -1999,7 +2003,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			//!!! Can we use the ldap guid as a better way of doing the following?
 			//Set foreign names of users to self; needed to recognize synced names and mark attributes read-only
-			if (!delete && !notInLdap.isEmpty()) {
+			// If "Synchronize User Profiles" and "Register ldap User Profiles Automatically" are
+			// both turned off then don't disable anyone because we never issued an ldap query which
+			// would have caused us to call userCoordinator.record() which would have updated
+			// notInLdap.
+			if (!delete && !notInLdap.isEmpty() && (sync != false || create != false) ) {
 		    	Map users = new HashMap();
 				if (logger.isDebugEnabled())
 					logger.debug("Users not found in ldap:");
@@ -2046,6 +2054,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		String[] attributesToRead;
 	 
 		logger.info( "Starting to sync users, syncUsers()" );
+		
+		// If "sync user profiles" is off and "register ldap user profiles automatically" is off
+		// then there is nothing to do here.
+		if ( userCoordinator.sync == false && userCoordinator.create == false )
+		{
+			logger.info( "In syncUsers(), 'Synchronize User Profiles' and 'Register LDAP User Profiles Automatically' are both off.  Nothing to do." );
+			return;
+		}
 
 		// Get the mapping of ldap attributes to Teaming field names
 		Map userAttributes = config.getMappings();
@@ -2061,7 +2077,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		la.add(userIdAttribute);
 
 		for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) {
-			if(Validator.isNotNull(searchInfo.getFilterWithoutCRLF())) {
+			String filter;
+			
+			filter = searchInfo.getFilterWithoutCRLF();
+			if ( Validator.isNotNull( filter ) )
+			{
 				String ldapGuidAttribute;
 
 				// Get the ldap attribute name that we will use for a guid.
@@ -2072,7 +2092,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	
 				logger.info( "Searching for users in base dn: " + searchInfo.getBaseDn() );
 				
-				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch);
+				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), filter, sch);
 				while (ctxSearch.hasMore()) {
 					String	userName;
 					String	fixedUpUserName;
@@ -2122,6 +2142,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					userCoordinator.record(dn, ssName, lAttrs, ldapGuidAttribute );
 				}
 			}
+			else
+				logger.info( "In syncUsers(), a user filter was not specified.  This can result in existing users being disabled or deleted." );
 		}
 	}
 
