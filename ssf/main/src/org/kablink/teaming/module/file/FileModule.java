@@ -176,6 +176,10 @@ public interface FileModule {
     		List<FileUploadItem> fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException;
     
+    public FilesErrors writeFiles(Binder binder, DefinableEntity entity, 
+    		List<FileUploadItem> fileUploadItems, FilesErrors errors, boolean skipDbLog) 
+    	throws ReservedByAnotherUserException;
+    
     public FilesErrors writeFilesValidationOnly(Binder binder, DefinableEntity entity, 
     		List<FileUploadItem> fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException;
@@ -546,7 +550,4 @@ public interface FileModule {
 	 */
 	public int checkQuotaAndFileSizeLimit(Long userId, Binder binder, long fileSize, String fileName);
 
-    public FileAttachment _addNetFolderFileInSync(Folder folder, FolderEntry entry, FileUploadItem fui)
-    throws UncheckedIOException;
-    
 }	

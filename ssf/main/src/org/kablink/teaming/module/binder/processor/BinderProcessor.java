@@ -58,7 +58,7 @@ import org.kablink.teaming.util.StatusTicket;
 public interface BinderProcessor {
     public static final String PROCESSOR_KEY = "processorKey_binderCoreProcessor";
 
-    public Binder addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options) 
+    public Binder addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options, boolean skipDbLog) 
     	throws AccessControlException, WriteFilesException, WriteEntryDataException;
     public Binder copyBinder(Binder source, Binder destination, Map options);
     public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options, boolean skipDbLog) throws AccessControlException;

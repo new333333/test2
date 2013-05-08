@@ -131,7 +131,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
 	@Override
 	public Entry addEntry(final Binder binder, Definition def, Class clazz, 
-    		final InputDataAccessor inputData, Map fileItems, Map options) 
+    		final InputDataAccessor inputData, Map fileItems, Map options, final boolean skipDbLog) 
     	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException {
         // This default implementation is coded after template pattern. 
         SimpleProfiler.start("addEntry");
@@ -178,7 +178,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         			addEntry_save(binder, entry, inputData, entryData,ctx);
         			SimpleProfiler.stop("addEntry_save");
                 	SimpleProfiler.start("addEntry_postSave");
-         			addEntry_postSave(binder, entry, inputData, entryData, ctx);
+         			addEntry_postSave(binder, entry, inputData, entryData, ctx, skipDbLog);
                 	SimpleProfiler.stop("addEntry_postSave");
        			return null;
         		}
@@ -194,7 +194,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	SimpleProfiler.start("addEntry_processFiles");
         	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
-        	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
+        	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx, skipDbLog);
         	
         	getTransactionTemplate().execute(new TransactionCallback() {
         		@Override
@@ -292,119 +292,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     protected void addEntry_setCtx(Binder binder, Map ctx) {
     }
-
-    @Override
-	public List<FolderEntry> _addNetFolderEntriesInSync(final Folder folder, final Definition def, 
-			final List<InputDataAccessor> inputDataList, final List<Map> fileItemsList, final List<Map> optionsList) 
-    	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException {
-		final ArrayList<FolderEntry> result = new ArrayList<FolderEntry>(inputDataList.size());
-				
-		// Start a transaction
-    	getTransactionTemplate().execute(new TransactionCallback() {
-    		@Override
-			public Object doInTransaction(TransactionStatus status) {
-    			InputDataAccessor inputData;
-    			Map fileItems;
-    			Map options;
-    			String title;
-    			FileUploadItem fui;
-    			FolderEntry entry;
-    			FileAttachment fAtt;
-	            getCoreDao().lock(folder);
-    			for(int i = 0; i < inputDataList.size(); i++) {
-    				inputData = inputDataList.get(i);
-    				fileItems = fileItemsList.get(i);
-    				options = optionsList.get(i);
-    				title = inputDataList.get(i).getSingleValue("title");
-    				fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, (String) fileItems.keySet().iterator().next(), (MultipartFile) fileItems.values().iterator().next(), ObjectKeys.FI_ADAPTER);
-    				fui.setSynchToRepository(false);
-    				
-    				
-    				
-    				entry = new FolderEntry();
-    				entry.setEntryDef(def);
-    	    		entry.setDefinitionType(new Integer(def.getType()));
-
-    	    		
-    	            folder.addEntry((FolderEntry)entry);
-    	            
-    	            User user;
-    				Calendar cdate = (Calendar)options.get(ObjectKeys.INPUT_OPTION_CREATION_DATE);
-    				Long cid = (Long)options.get(ObjectKeys.INPUT_OPTION_CREATION_ID);
-    				String cname = (String)options.get(ObjectKeys.INPUT_OPTION_CREATION_NAME);
-    				processCreationTimestamp(entry, cdate, cid, cname);
-
-    	            
-    				
-    				Calendar mdate = (Calendar)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE);
-    				Long mid = (Long)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_ID);
-    				String mname = (String)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME);
-    				processModificationTimestamp(entry, mdate, mid, mname);
-
-    	            
-    			    entry.setParentBinder(folder);
-    			    entry.setLogVersion(Long.valueOf(1));
-
-    	            
-    		        //initialize collections, or else hibernate treats any new 
-    		        //empty collections as a change and attempts a version update which
-    		        //may happen outside the transaction
-    		        entry.getAttachments();
-    		        entry.getEvents();
-    		        entry.getCustomAttributes();
-    		        
-    		        entry.setTitle(title);
-    		        entry.updateLastActivity(entry.getModification().getDate());
-
-    		        // Do we really need this?
-    		        /* 
-    	    		Statistics statistics = getFolderStatistics(folder);
-    		    	statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
-    		    	setFolderStatistics(folder, statistics);
-    		    	*/
-
-    		        getCoreDao().save(entry);
-
-    		        
-    				if (folder.isUniqueTitles()) 
-    					getCoreDao().updateTitle(folder, entry, null, entry.getNormalTitle());
-
-
-    				processChangeLog(entry, ChangeLog.ADDENTRY);
-    		    	getReportModule().addAuditTrail(AuditType.add, entry);
-    		    	
-    		    	
-    		    	
-	    			getCoreDao().registerFileName(folder, entry, fui.getOriginalFilename());
-	    			fui.setRegistered(true);
-
-
-	    			// Create file metadata
-	    			fAtt = getFileModule()._addNetFolderFileInSync(folder, entry, fui);
-
-	    			// Since we are not indexing file content (which also implies that we are not reading
-	    			// file content) and the entry is initially tiny (it only has a title), we can afford
-	    			// performing indexing within the database transaction.
-	    			
-	    			// Index the entry
-	    	        IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntry(folder, entry, Collections.EMPTY_LIST));
-	    	        // Index the file
-	    			IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntryFile(folder, entry, fAtt, Collections.EMPTY_LIST, true));
-
-	    			result.add(entry); // entry may be null
-	    			
-	    			logger.debug("(" + (i+1) + ") Added a new entry (id=" + entry.getId() + ")");
-    			}    			
-   			return null;
-    		}
-    	}); // End the transaction
-				
-    	
-    	// Do this outside of database transaction
-    	
-		return result;
-	}
-
     
     private void checkInputFilesForNonMirroredBinder(List fileUploadItems, FilesErrors errors) {
 		for (int i = 0; i < fileUploadItems.size();) {
@@ -503,8 +390,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
 
     protected FilesErrors addEntry_processFiles(Binder binder, 
-    		Entry entry, List fileUploadItems, FilesErrors filesErrors, Map ctx) {
-    	return getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors);
+    		Entry entry, List fileUploadItems, FilesErrors filesErrors, Map ctx, boolean skipDbLog) {
+    	return getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors, skipDbLog);
     }
     
     protected Map addEntry_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems, Map ctx) {
@@ -602,7 +489,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
     //inside write transaction
-    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx, boolean skipDbLog) {
     	//create history - using timestamp and version from fillIn
 		if (binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, null, entry.getNormalTitle());
     	
@@ -615,8 +502,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		
 		updateParentModTime(binder, ctx);
 		
-		processChangeLog(entry, ChangeLog.ADDENTRY);
-    	getReportModule().addAuditTrail(AuditType.add, entry);
+		if(!skipDbLog) {
+			processChangeLog(entry, ChangeLog.ADDENTRY);
+	    	getReportModule().addAuditTrail(AuditType.add, entry);
+		}
     }
 
     protected void addEntry_indexAdd(Binder binder, Entry entry, 

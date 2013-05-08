@@ -573,7 +573,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         	def = folder.getDefaultEntryDef();
         }
         
-        FolderEntry entry = (FolderEntry) processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
+        boolean skipDbLog = false;
+        if(options != null && options.containsKey(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG))
+        	skipDbLog = ((Boolean)options.get(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG)).booleanValue();
+        FolderEntry entry = (FolderEntry) processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options, skipDbLog);
         
         end(begin, "addEntry");
         return entry;
