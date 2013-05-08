@@ -547,67 +547,6 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Inner class used within the GWT server code to dump profiling
-	 * information to the system log.
-	 */
-	public static class GwtServerProfiler {
-		private boolean m_debugEnabled;	// true m_debugLogger has debugging enabled.  false -> It doesn't.
-		private Log     m_debugLogger;	// The Log that profiling information is written to.
-		private long    m_debugBegin;	// If m_debugEnabled is true, contains the system time in MS that start() was called.
-		private String  m_debugFrom;	// Contains information about where the profile is being used from.
-
-		/*
-		 * Class constructor.
-		 */
-		private GwtServerProfiler(Log logger) {
-			m_debugLogger  = logger;
-			m_debugEnabled = m_debugLogger.isDebugEnabled();
-		}
-		
-		/**
-		 * If the logger has debugging enabled, dumps a message
-		 * to the log regarding how long an operation took.
-		 */
-		public void end() {			
-			if (m_debugEnabled) {
-				long diff = System.currentTimeMillis() - m_debugBegin;
-				m_debugLogger.debug(m_debugFrom + ":  Ended in " + diff + "ms");
-			}
-			
-			SimpleProfiler.stop(m_debugFrom);
-		}
-		
-		/**
-		 * Creates a GwtServerProfiler object based on a Log and called
-		 * from string.  If the logger has debugging enabled, dumps a
-		 * message to the log regarding the profiling being started.
-		 * 
-		 * @param logger
-		 * @param from
-		 * 
-		 * @return
-		 */
-		public static GwtServerProfiler start(Log logger, String from) {			
-			GwtServerProfiler reply = new GwtServerProfiler(logger);
-			reply.m_debugFrom = from;
-			
-			if (reply.m_debugEnabled) {
-				reply.m_debugBegin = System.currentTimeMillis();
-				
-				reply.m_debugLogger.debug(from + ":  Starting...");
-			}
-			
-			SimpleProfiler.start(reply.m_debugFrom);
-			return reply;
-		}
-		
-		public static GwtServerProfiler start(String from) {
-			// Always use the initial form of the method.
-			return start(m_logger, from);
-		}
-	}
-	
-	/**
 	 * Inner class used compare two SavedSearchInfo objects.
 	 */
 	private static class SavedSearchInfoComparator implements Comparator<SavedSearchInfo> {
@@ -1207,7 +1146,7 @@ public class GwtServerHelper {
 			childTIList.add(bucketTI);
 		}
 		finally {
-			gsp.end();
+			gsp.stop();
 		}
 	}
 	
@@ -1224,7 +1163,7 @@ public class GwtServerHelper {
 			} catch(NoBinderByTheIdException nbe) {}
 		}
 		finally {
-			gsp.end();
+			gsp.stop();
 		}
 		
 		gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.buildChildTIs( PROCESS )");
@@ -1253,7 +1192,7 @@ public class GwtServerHelper {
 			}
 		}
 		finally {
-			gsp.end();
+			gsp.stop();
 		}
 	}
 
@@ -9064,7 +9003,7 @@ public class GwtServerHelper {
 					}
 					finally
 					{
-						gsp.end();
+						gsp.stop();
 					}
 				}
 				else
@@ -9120,7 +9059,7 @@ public class GwtServerHelper {
 	   			}
 	   			finally
 	   			{
-	   				gsp.end();
+	   				gsp.stop();
 	   			}
 			}
 			
@@ -9177,7 +9116,7 @@ public class GwtServerHelper {
 				}
 				finally
 				{
-					gsp.end();
+					gsp.stop();
 					GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroup(), number of users removed from group: " + String.valueOf( usersRemovedFromGroup.size() ) );
 					GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroup(), number of groups removed from group: " + String.valueOf( groupsRemovedFromGroup.size() ) );
 				}
@@ -9221,7 +9160,7 @@ public class GwtServerHelper {
 				}
 				finally
 				{
-					gsp.end();
+					gsp.stop();
 					GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroup(), number of users added to group: " + String.valueOf( usersAddedToGroup.size() ) );
 					GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroup(), number of groups added to group: " + String.valueOf( groupsAddedToGroup.size() ) );
 				}
