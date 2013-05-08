@@ -1183,6 +1183,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_ENTITY_RIGHTS:
+		{
+			GetEntityRightsCmd gerCmd = ((GetEntityRightsCmd) cmd);
+			EntityRightsRpcResponseData responseData = GwtViewHelper.getEntityRights( this, getRequest( ri ), gerCmd.getEntityIds() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_ENTRY:
 		{
 			GetEntryCmd geCmd;
