@@ -125,6 +125,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseDat
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ColumnWidthsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateFolderRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.EntryType;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
@@ -161,6 +162,7 @@ import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
@@ -327,50 +329,6 @@ public class GwtViewHelper {
 		}
 	}
 
-	/*
-	 * Inner class used to track item rights while fixing up folder row
-	 * data for streaming to the client.
-	 * 
-	 * See fixupFRs().
-	 */
-	private static class ItemRights {
-		private boolean	m_canAddReplies;	//
-		private boolean	m_canModify;		//
-		private boolean	m_canPurge;			//
-		private boolean	m_canShare;			//
-		private boolean	m_canTrash;			//
-
-		/**
-		 * Constructor method.
-		 */
-		public ItemRights() {
-			// Simply initialize the super class.
-			super();
-		}
-
-		/**
-		 * Get'er methods.
-		 * 
-		 * @return
-		 */
-		public boolean isCanAddReplies() {return m_canAddReplies;}
-		public boolean isCanModify()     {return m_canModify    ;}
-		public boolean isCanPurge()      {return m_canPurge     ;}
-		public boolean isCanShare()      {return m_canShare     ;}
-		public boolean isCanTrash()      {return m_canTrash     ;}
-		
-		/**
-		 * Set'er methods.
-		 * 
-		 * @param
-		 */
-		public void setCanAddReplies(boolean canAddReplies) {m_canAddReplies = canAddReplies;}
-		public void setCanModify(    boolean canModify)     {m_canModify     = canModify;    }
-		public void setCanPurge(     boolean canPurge)      {m_canPurge      = canPurge;     }
-		public void setCanShare(     boolean canShare)      {m_canShare      = canShare;     }
-		public void setCanTrash(     boolean canTrash)      {m_canTrash      = canTrash;     }
-	}
-	
 	/*
 	 * Inner class used to track the target binder's for entries and
 	 * binders given the ID of an initial target binder.
@@ -2315,7 +2273,7 @@ public class GwtViewHelper {
 					}
 					
 					// Scan the List<FolderRow> again.
-					Map<Long, ItemRights> inheritedRights = new HashMap<Long, ItemRights>();
+					Map<Long, EntityRights> inheritedRights = new HashMap<Long, EntityRights>();
 					FolderColumn commentsCol = new FolderColumn("comments");
 					for (FolderRow fr:  frList) {
 						// Skipping any binders.
@@ -2333,14 +2291,14 @@ public class GwtViewHelper {
 							if (entry.isAclExternallyControlled())
 								 entryInherits = (!(entry.hasEntryExternalAcl()));
 							else entryInherits = (!(entry.hasEntryAcl()));
-							ItemRights entryRights;
+							EntityRights entryRights;
 							if (entryInherits)
 							     entryRights = inheritedRights.get(entryParentId);
 							else entryRights = null;
 							boolean newIR = (null == entryRights);
 							if (newIR){
 								// No!  Determine the rights for this entry now.
-								entryRights = new ItemRights();
+								entryRights = new EntityRights();
 								entryRights.setCanAddReplies( fm.testAccess(entry, FolderOperation.addReply      ));
 								entryRights.setCanModify(     fm.testAccess(entry, FolderOperation.modifyEntry   ));
 								entryRights.setCanPurge(      fm.testAccess(entry, FolderOperation.deleteEntry   ));
@@ -2348,7 +2306,7 @@ public class GwtViewHelper {
 								entryRights.setCanShare(      GwtShareHelper.isEntitySharable(bs, entry          ));
 							}
 							
-							// Transfer the ItemRights to the
+							// Transfer the EntityRights to the
 							// FolderRow.
 							fr.setCanModify(entryRights.isCanModify());
 							fr.setCanPurge( entryRights.isCanPurge());
@@ -2368,7 +2326,7 @@ public class GwtViewHelper {
 							}
 
 							// If this entry inherits its rights and we
-							// have a new ItemRights object for it...
+							// have a new EntityRights object for it...
 							if (entryInherits && newIR) {
 								// ...add it to the cache.
 								inheritedRights.put(entryParentId, entryRights);
@@ -2396,7 +2354,7 @@ public class GwtViewHelper {
 					}
 		
 					// Scan the List<FolderRow> again.
-					Map<Long, ItemRights> inheritedRights = new HashMap<Long, ItemRights>();
+					Map<Long, EntityRights> inheritedRights = new HashMap<Long, EntityRights>();
 					for (FolderRow fr:  frList) {
 						// Skipping any entries.
 						if (!(fr.isBinder())) {
@@ -2421,20 +2379,20 @@ public class GwtViewHelper {
 							if (binder.isAclExternallyControlled())
 							     binderInherits = binder.isExtFunctionMembershipInherited();
 							else binderInherits = binder.isFunctionMembershipInherited();
-							ItemRights binderRights;
+							EntityRights binderRights;
 							if (binderInherits)
 							     binderRights = inheritedRights.get(binderParentId);
 							else binderRights = null;
 							boolean newIR = (null == binderRights);
 							if (newIR) {
-								binderRights = new ItemRights();
+								binderRights = new EntityRights();
 								binderRights.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
 								binderRights.setCanPurge( bm.testAccess(binder, BinderOperation.deleteBinder   ));
 								binderRights.setCanTrash( bm.testAccess(binder, BinderOperation.preDeleteBinder));
 								binderRights.setCanShare( GwtShareHelper.isEntitySharable(bs, binder           ));
 							}
 							
-							// Transfer the ItemRights to the
+							// Transfer the EntityRights to the
 							// FolderRow.
 							fr.setCanModify(binderRights.isCanModify());
 							fr.setCanPurge( binderRights.isCanPurge());
@@ -2442,7 +2400,7 @@ public class GwtViewHelper {
 							fr.setCanShare( binderRights.isCanShare());
 
 							// If this binder inherits its rights and
-							// we have a new ItemRights object for
+							// we have a new EntityRights object for
 							// it...
 							if (binderInherits && newIR) {
 								// ...add it to the cache.
@@ -2987,6 +2945,146 @@ public class GwtViewHelper {
 	 */
 	private static CoreDao getCoreDao() {
 		return ((CoreDao) SpringContextUtil.getBean("coreDao"));
+	}
+
+	/**
+	 * Returns a Map<String, EntityRights> of the current users rights
+	 * to the specified entities.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entityIds
+	 * 
+	 * @return
+	 */
+	public static EntityRightsRpcResponseData getEntityRights(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getEntityRights()");
+		try {
+			EntityRightsRpcResponseData reply = new EntityRightsRpcResponseData();
+			
+			// If we don't have any entities whose rights are being
+			// requested...
+			if (!(MiscUtil.hasItems(entityIds))) {
+				// ..bail.
+				return reply;
+			}
+	
+			List<Long> entryIds  = new ArrayList<Long>();
+			List<Long> binderIds = new ArrayList<Long>();
+			SimpleProfiler.start("GwtViewHelper.getEntityRights(Collect IDs)");
+			try {
+				// Collect the entity IDs of the entities from the
+				// List<EntityIds>.
+				for (EntityId eid:  entityIds) {
+					Long id = eid.getEntityId();
+					if (eid.isBinder())
+					     binderIds.add(id);
+					else entryIds.add( id);
+				}
+			}
+			
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getEntityRights(Collect IDs)");
+			}
+			
+			try {
+				SimpleProfiler.start("GwtViewHelper.getEntityRights(Fixup Entry Rights)");
+				try {
+					// Read the FolderEntry's for the rows...
+					FolderModule fm = bs.getFolderModule();
+					SortedSet<FolderEntry> entries = fm.getEntries(entryIds);
+					
+					// ...mapping each FolderEntry to its ID.
+					Map<Long, FolderEntry> entryMap = new HashMap<Long, FolderEntry>();
+					for (FolderEntry entry: entries) {
+						entryMap.put(entry.getId(), entry);
+					}
+					
+					// Scan the List<EntityId> again.
+					for (EntityId eid:  entityIds) {
+						// Skipping any binders.
+						if (eid.isBinder()) {
+							continue;
+						}
+						
+						// Do we have the FolderEntry for this row?
+						FolderEntry entry = entryMap.get(eid.getEntityId());
+						if (null != entry) {
+							// Yes!  Create the EntityRights for the
+							// entry. 
+							EntityRights entryRights = new EntityRights();
+							entryRights.setCanAddReplies( fm.testAccess(entry, FolderOperation.addReply      ));
+							entryRights.setCanModify(     fm.testAccess(entry, FolderOperation.modifyEntry   ));
+							entryRights.setCanPurge(      fm.testAccess(entry, FolderOperation.deleteEntry   ));
+							entryRights.setCanTrash(      fm.testAccess(entry, FolderOperation.preDeleteEntry));
+							entryRights.setCanShare(      GwtShareHelper.isEntitySharable(bs, entry          ));
+							reply.setEntityRights(eid, entryRights);
+						}
+					}
+				}
+				
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.getEntityRights(Fixup Entry Rights)");
+				}
+	
+				SimpleProfiler.start("GwtViewHelper.getEntityRights(Fixup Folder Rights)");
+				try {
+					// Read the Binder's for the rows (including those
+					// intermediate sub-binders that might be
+					// inaccessible)...
+					BinderModule bm = bs.getBinderModule();
+					SortedSet<Binder> binders = bm.getBinders(binderIds, Boolean.FALSE);
+		
+					// ...mapping each Binder to its ID.
+					Map<Long, Binder> binderMap = new HashMap<Long, Binder>();
+					for (Binder binder:  binders) {
+						binderMap.put(binder.getId(), binder);
+					}
+		
+					// Scan the List<EntityId> again.
+					for (EntityId eid:  entityIds) {
+						// Skipping any entries.
+						if (!(eid.isBinder())) {
+							continue;
+						}
+		
+						// Do we have the Binder for this row?
+						Binder binder = binderMap.get(eid.getEntityId());
+						if (null != binder) {
+							// Yes!  Create the EntityRights for the
+							// binder. 
+							EntityRights binderRights = new EntityRights();
+							binderRights.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
+							binderRights.setCanPurge( bm.testAccess(binder, BinderOperation.deleteBinder   ));
+							binderRights.setCanTrash( bm.testAccess(binder, BinderOperation.preDeleteBinder));
+							binderRights.setCanShare( GwtShareHelper.isEntitySharable(bs, binder           ));
+						}
+					}
+				}
+				
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.getEntityRights(Fixup Folder Rights)");
+				}
+			}
+			
+			catch (Exception ex) {/* Ignored. */}
+			
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getEntityRights( SOURCE EXCEPTION ):  ");
+		}
+		
+		finally {
+			gsp.stop();
+		}
 	}
 	
 	/**
