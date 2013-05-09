@@ -62,6 +62,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -879,6 +880,55 @@ public class GwtClientHelper {
 		
 		return isGuest( currentUserId );
 	}
+	
+	/**
+	 * Return true if the key that was pressed is valid in a numeric field. 
+	 */
+	public static boolean isKeyValidForNumericField( char charCode, int keyCode )
+	{
+        if ( Character.isDigit( charCode ) == false &&
+        	 keyCode != KeyCodes.KEY_TAB &&
+        	 keyCode != KeyCodes.KEY_BACKSPACE &&
+        	 keyCode != KeyCodes.KEY_DELETE &&
+        	 keyCode != KeyCodes.KEY_ENTER &&
+        	 keyCode != KeyCodes.KEY_HOME &&
+        	 keyCode != KeyCodes.KEY_END &&
+        	 keyCode != KeyCodes.KEY_LEFT &&
+        	 keyCode != KeyCodes.KEY_UP &&
+        	 keyCode != KeyCodes.KEY_RIGHT &&
+        	 keyCode != KeyCodes.KEY_DOWN )
+        {
+        	return false;
+        }
+
+        // On Chrome, the keyCode for '.' is the same as for KEY_DELETE.
+        if ( charCode == '.' )
+        	return false;
+        
+        return true;
+	}
+	
+	/**
+	 * Returns true if the given keyCode is a navigation key.
+	 */
+	public static boolean isNavigationKey( int keyCode )
+	{
+		boolean result = false;
+		
+        if ( keyCode == KeyCodes.KEY_TAB ||
+        	 keyCode == KeyCodes.KEY_HOME ||
+        	 keyCode == KeyCodes.KEY_END ||
+        	 keyCode == KeyCodes.KEY_LEFT ||
+        	 keyCode == KeyCodes.KEY_UP ||
+             keyCode == KeyCodes.KEY_RIGHT ||
+             keyCode == KeyCodes.KEY_DOWN )
+        {
+        	result = true;
+        }
+
+        return result;
+	}
+	
 	
 	/**
 	 * Returns true if we're running in Filr mode and false
