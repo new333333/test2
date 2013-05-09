@@ -2235,7 +2235,6 @@ public class GwtViewHelper {
 				return;
 			}
 	
-			List<Long> entryIds     = new ArrayList<Long>();
 			List<Long> binderIds    = new ArrayList<Long>();
 			List<Long> principalIds = new ArrayList<Long>();
 			SimpleProfiler.start("GwtViewHelper.fixupFRs(Collect IDs)");
@@ -2244,9 +2243,9 @@ public class GwtViewHelper {
 				// List<FolderRow>.
 				for (FolderRow fr:  frList) {
 					Long id = fr.getEntityId().getEntityId();
-					if (fr.isBinder())
-					     binderIds.add(id);
-					else entryIds.add( id);
+					if (fr.isBinder()) {
+						binderIds.add(id);
+					}
 					
 					Map<String, PrincipalInfoId> pIdsMap = fr.getRowPrincipalIdsMap();
 					for (String k:  pIdsMap.keySet()) {
@@ -2260,86 +2259,7 @@ public class GwtViewHelper {
 			}
 			
 			try {
-				SimpleProfiler.start("GwtViewHelper.fixupFRs(Fixup Entry Rights)");
-				try {
-					// Read the FolderEntry's for the rows...
-					FolderModule fm = bs.getFolderModule();
-					SortedSet<FolderEntry> entries = fm.getEntries(entryIds);
-					
-					// ...mapping each FolderEntry to its ID.
-					Map<Long, FolderEntry> entryMap = new HashMap<Long, FolderEntry>();
-					for (FolderEntry entry: entries) {
-						entryMap.put(entry.getId(), entry);
-					}
-					
-					// Scan the List<FolderRow> again.
-					Map<Long, EntityRights> inheritedRights = new HashMap<Long, EntityRights>();
-					FolderColumn commentsCol = new FolderColumn("comments");
-					for (FolderRow fr:  frList) {
-						// Skipping any binders.
-						if (fr.isBinder()) {
-							continue;
-						}
-						
-						// Do we have the FolderEntry for this row?
-						FolderEntry entry = entryMap.get(fr.getEntityId().getEntityId());
-						if (null != entry) {
-							// Yes!  Do we have cached rights we can
-							// use for this entry?
-							Long       entryParentId = entry.getParentFolder().getId();
-							boolean    entryInherits;
-							if (entry.isAclExternallyControlled())
-								 entryInherits = (!(entry.hasEntryExternalAcl()));
-							else entryInherits = (!(entry.hasEntryAcl()));
-							EntityRights entryRights;
-							if (entryInherits)
-							     entryRights = inheritedRights.get(entryParentId);
-							else entryRights = null;
-							boolean newIR = (null == entryRights);
-							if (newIR){
-								// No!  Determine the rights for this entry now.
-								entryRights = new EntityRights();
-								entryRights.setCanAddReplies( fm.testAccess(entry, FolderOperation.addReply      ));
-								entryRights.setCanModify(     fm.testAccess(entry, FolderOperation.modifyEntry   ));
-								entryRights.setCanPurge(      fm.testAccess(entry, FolderOperation.deleteEntry   ));
-								entryRights.setCanTrash(      fm.testAccess(entry, FolderOperation.preDeleteEntry));
-								entryRights.setCanShare(      GwtShareHelper.isEntitySharable(bs, entry          ));
-							}
-							
-							// Transfer the EntityRights to the
-							// FolderRow.
-							fr.setCanModify(entryRights.isCanModify());
-							fr.setCanPurge( entryRights.isCanPurge());
-							fr.setCanTrash( entryRights.isCanTrash());
-							fr.setCanShare( entryRights.isCanShare());
-							
-							// If the user can't add replies to this
-							// entry...
-							if (!(entryRights.isCanAddReplies())) {
-								// ...and we have a CommentsInfo for it...
-								CommentsInfo ci = fr.getColumnValueAsComments(commentsCol);
-								if (null != ci) {
-									// ...update its can add replies
-									// ...field accordingly.
-									ci.setCanAddReplies(false);
-								}
-							}
-
-							// If this entry inherits its rights and we
-							// have a new EntityRights object for it...
-							if (entryInherits && newIR) {
-								// ...add it to the cache.
-								inheritedRights.put(entryParentId, entryRights);
-							}
-						}
-					}
-				}
-				
-				finally {
-					SimpleProfiler.stop("GwtViewHelper.fixupFRs(Fixup Entry Rights)");
-				}
-	
-				SimpleProfiler.start("GwtViewHelper.fixupFRs(Fixup Folder Rights)");
+				SimpleProfiler.start("GwtViewHelper.fixupFRs(Fixup Folder Info)");
 				try {
 					// Read the Binder's for the rows (including those
 					// intermediate sub-binders that might be
@@ -2354,7 +2274,6 @@ public class GwtViewHelper {
 					}
 		
 					// Scan the List<FolderRow> again.
-					Map<Long, EntityRights> inheritedRights = new HashMap<Long, EntityRights>();
 					for (FolderRow fr:  frList) {
 						// Skipping any entries.
 						if (!(fr.isBinder())) {
@@ -2371,47 +2290,12 @@ public class GwtViewHelper {
 							
 							// ...and store a BinderInfo for it.
 							fr.setBinderInfo(GwtServerHelper.getBinderInfo(request, bs, binder));
-							
-							// Do we have cached rights we can use for
-							// this binder?
-							Long    binderParentId    = binder.getParentBinder().getId();
-							boolean binderInherits;
-							if (binder.isAclExternallyControlled())
-							     binderInherits = binder.isExtFunctionMembershipInherited();
-							else binderInherits = binder.isFunctionMembershipInherited();
-							EntityRights binderRights;
-							if (binderInherits)
-							     binderRights = inheritedRights.get(binderParentId);
-							else binderRights = null;
-							boolean newIR = (null == binderRights);
-							if (newIR) {
-								binderRights = new EntityRights();
-								binderRights.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
-								binderRights.setCanPurge( bm.testAccess(binder, BinderOperation.deleteBinder   ));
-								binderRights.setCanTrash( bm.testAccess(binder, BinderOperation.preDeleteBinder));
-								binderRights.setCanShare( GwtShareHelper.isEntitySharable(bs, binder           ));
-							}
-							
-							// Transfer the EntityRights to the
-							// FolderRow.
-							fr.setCanModify(binderRights.isCanModify());
-							fr.setCanPurge( binderRights.isCanPurge());
-							fr.setCanTrash( binderRights.isCanTrash());
-							fr.setCanShare( binderRights.isCanShare());
-
-							// If this binder inherits its rights and
-							// we have a new EntityRights object for
-							// it...
-							if (binderInherits && newIR) {
-								// ...add it to the cache.
-								inheritedRights.put(binderParentId, binderRights);
-							}
 						}
 					}
 				}
 				
 				finally {
-					SimpleProfiler.stop("GwtViewHelper.fixupFRs(Fixup Folder Rights)");
+					SimpleProfiler.stop("GwtViewHelper.fixupFRs(Fixup Folder Info)");
 				}
 				
 				SimpleProfiler.start("GwtViewHelper.fixupFRs(Fixup Principals)");
@@ -3766,8 +3650,7 @@ public class GwtViewHelper {
 				feTitle,
 				(isTop                      ?
 					fe.getTotalReplyCount() :	// For top level entries, we show all the replies.
-					fe.getReplyCount()),		// For replies themselves, we only show their direct replies.
-				fm.testAccess(fe, FolderOperation.addReply));
+					fe.getReplyCount()));		// For replies themselves, we only show their direct replies.
 			reply.setComments(ci);
 
 			// ...if this is a comment...

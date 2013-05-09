@@ -72,7 +72,7 @@ public class EntityRightsRpcResponseData implements IsSerializable, VibeRpcRespo
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameters.
+		// ...and store the parameter.
 		setEntityRightsMap(entityRightsMap);
 	}
 	
@@ -87,7 +87,7 @@ public class EntityRightsRpcResponseData implements IsSerializable, VibeRpcRespo
 		this();
 		
 		// ...and store the parameters.
-		setEntityRights(   eid,                er             );
+		setEntityRights(eid, er);
 	}
 	
 	/**
@@ -95,25 +95,14 @@ public class EntityRightsRpcResponseData implements IsSerializable, VibeRpcRespo
 	 * 
 	 * @return
 	 */
-	public Map<String, EntityRights> getEntityRightsMap()          {return m_entityRightsMap;                       }
-	public             EntityRights  getEntityRights(EntityId eid) {return m_entityRightsMap.get(getEntityKey(eid));}
+	public Map<String, EntityRights> getEntityRightsMap()          {return m_entityRightsMap;                                          }
+	public             EntityRights  getEntityRights(EntityId eid) {return m_entityRightsMap.get(EntityRights.getEntityRightsKey(eid));}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEntityRightsMap(Map<String, EntityRights> entityRightsMap)      {m_entityRightsMap = entityRightsMap;         }
-	public void setEntityRights(   EntityId                  eid, EntityRights er) {m_entityRightsMap.put(getEntityKey(eid), er);}
-	
-	/**
-	 * Returns the key to use for an entity in an entity rights map.
-	 * 
-	 * @param eid
-	 * 
-	 * @return
-	 */
-	public static String getEntityKey(EntityId eid) {
-		return (eid.getEntityType() + ":" + eid.getBinderId() + ":" + eid.getEntityId());
-	}
+	public void setEntityRightsMap(Map<String, EntityRights> entityRightsMap)      {m_entityRightsMap = entityRightsMap;                            }
+	public void setEntityRights(   EntityId                  eid, EntityRights er) {m_entityRightsMap.put(EntityRights.getEntityRightsKey(eid), er);}
 }

@@ -32,15 +32,21 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import java.util.Map;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntityRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
+import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.CommentsWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -333,14 +339,37 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 		
 		// ...initialize the comment entry widget...
 		m_addCommentTA.setText("");
-		m_addCommentPanel.setVisible(m_commentsInfo.canAddReplies());
-		
-		// ...tell the container that we're ready...
-		m_manageCallback.compositeReady();
-		scrollCommentsToBottomAsync();
-		
-		// ...and force the focus into the TextArea.
-		GwtClientHelper.setFocusDelayed(m_addCommentTA);
+
+		// ...determine whether the user has rights to add a reply...
+		final EntityId eid = m_commentsInfo.getEntityId();
+		GwtClientHelper.executeCommand(
+				new GetEntityRightsCmd(eid),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_GetEntityRights());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// ...hide/show the add comment panel based on the
+				// ...user's right to add a reply...
+				EntityRightsRpcResponseData responseData = ((EntityRightsRpcResponseData) response.getResponseData());
+				Map<String, EntityRights> entityRightsMap = responseData.getEntityRightsMap();
+				EntityRights er = entityRightsMap.get(EntityRights.getEntityRightsKey(eid));
+				boolean canAddReplies = ((null != er) && er.isCanAddReplies());
+				m_addCommentPanel.setVisible(canAddReplies);
+				
+				// ...tell the container that we're ready...
+				m_manageCallback.compositeReady();
+				scrollCommentsToBottomAsync();
+				
+				// ...and force the focus into the TextArea.
+				GwtClientHelper.setFocusDelayed(m_addCommentTA);
+			}
+		});
 	}
 
 	/*
