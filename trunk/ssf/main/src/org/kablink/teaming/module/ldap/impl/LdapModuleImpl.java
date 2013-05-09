@@ -181,7 +181,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private static int ADDR_TYPE_TCP = 9;
 	private static int AD_DISABLED_BIT = 0x02;
 
-	private static Pattern m_pattern_uncPath = Pattern.compile( "^\\\\\\\\(.*?)\\\\(.*?)\\\\", Pattern.CASE_INSENSITIVE );
+	private static Pattern m_pattern_uncPath = Pattern.compile( "^\\\\\\\\(.*?)\\\\(.*?)", Pattern.CASE_INSENSITIVE );
 
 	protected String [] principalAttrs = new String[]{
 												ObjectKeys.FIELD_PRINCIPAL_NAME,
@@ -625,7 +625,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				String homeDrive;
 				String uncPath;
 				String server = null;
-				String volume = null;
+				String share = null;
 			    Matcher matcher;
 				
 				// Read the "homeDrive" and "homeDirectory" attributes from the given user
@@ -671,22 +671,41 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					String path = null;
 					
 		    		server = matcher.group( 1 );
-		    		volume = matcher.group( 2 );
-		    		path = matcher.replaceFirst( "" );
+		    		share = matcher.replaceFirst( "" );
+		    		
+		    		if ( share != null )
+		    		{
+						int slashIndex;
+
+			    		// Does the share have a '\' in it.
+						slashIndex = share.indexOf( '\\' );
+			    		if ( slashIndex > 0 )
+			    		{
+			    			// Yes
+			    			path = share.substring( slashIndex+1 );
+			    			share = share.substring( 0, slashIndex );
+			    		}
+		    		}
+
 		    		if ( path != null && path.length() > 0 )
 		    		{
 		    			if ( path.charAt( 0 ) == '\\' )
 		    				path = path.substring( 1 );
 		    		}
 
-		    		logger.debug( "\t\t\tserver: '" + server + "' volume: '" + volume + "' path: '" + path + "'" );
+		    		// There may be a case that the unc is \\server\share with no path.
+		    		// In that case set path to \
+		    		if ( path == null || path.length() == 0 )
+		    			path = "\\";
+
+		    		logger.debug( "\t\t\tserver: '" + server + "' volume: '" + share + "' path: '" + path + "'" );
 		    		
-					if ( server != null && server.length() > 0 && volume != null && volume.length() > 0 && 
+					if ( server != null && server.length() > 0 && share != null && share.length() > 0 && 
 						 path != null && path.length() > 0 )
 					{
 						homeDirInfo = new HomeDirInfo();
 						homeDirInfo.setServerAddr( server );
-						homeDirInfo.setVolume( volume );
+						homeDirInfo.setVolume( share );
 						homeDirInfo.setPath( path );
 					}
 				}
