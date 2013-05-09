@@ -4626,6 +4626,12 @@ public class GwtServerHelper {
 		return getDownloadFileUrl(request, bs, binderId, entryId, false);
 	}
 	
+	public static String getDownloadFileUrl(HttpServletRequest request, Map entryMap) throws GwtTeamingException {
+		// Simply build a readFile URL using the information from the
+		// map.
+		return WebUrlUtil.getFileUrl(request, WebKeys.ACTION_READ_FILE, entryMap);
+	}
+	
 	/**
 	 * Return the groups ldap query
 	 */

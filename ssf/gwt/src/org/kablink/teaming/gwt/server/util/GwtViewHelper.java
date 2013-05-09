@@ -700,12 +700,17 @@ public class GwtViewHelper {
 				entryMap.put(Constants.TITLE_FIELD,  entity.getTitle());
 				String binderIdField;
 				if (entity instanceof FolderEntry) {
-					// Yes!  Can we find a filename for this entity?
-					String fName = GwtServerHelper.getFileEntrysFilename(bs, ((FolderEntry) entity), false);
-		        	if (MiscUtil.hasString(fName)) {
-		        		// Yes!  Store it in the Map.
-						entryMap.put(Constants.FILENAME_FIELD, fName);
-		        	}
+					// Yes!  Can we find an attachment for this entity?
+					FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, ((FolderEntry) entity), false);
+					if (null != fa) {
+						// Yes!  Store the information we need about
+						// its file in the Map.
+						entryMap.put(Constants.FILENAME_FIELD,                  fa.getFileItem().getName()               );
+						entryMap.put(Constants.FILE_ID_FIELD,                   fa.getId()                               );
+				        entryMap.put(Constants.FILE_TIME_FIELD,  String.valueOf(fa.getModification().getDate().getTime()));
+				        entryMap.put(Constants.IS_LIBRARY_FIELD, String.valueOf(Boolean.TRUE)                            );
+						entryMap.put(Constants.DOC_TYPE_FIELD,                  Constants.DOC_TYPE_ATTACHMENT            );
+					}
 	
 			        // Store the total replies, last activity and
 			        // modification date for this entry in the Map.
@@ -713,11 +718,6 @@ public class GwtViewHelper {
 			        entryMap.put(Constants.TOTALREPLYCOUNT_FIELD,   String.valueOf(fe.getTotalReplyCount()));
 			        entryMap.put(Constants.LASTACTIVITY_FIELD,      fe.getLastActivity()                   );
 			        entryMap.put(Constants.MODIFICATION_DATE_FIELD, fe.getModification()                   );
-					FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
-					if (null != fa) {
-				        entryMap.put(Constants.FILE_TIME_FIELD,  String.valueOf(fa.getModification().getDate().getTime()));
-				        entryMap.put(Constants.IS_LIBRARY_FIELD, String.valueOf(Boolean.TRUE)                            );
-					}
 					
 					// Store the entry's parent binder's ID in the Map.
 					binderIdField = Constants.BINDER_ID_FIELD;
@@ -4266,9 +4266,7 @@ public class GwtViewHelper {
 													eti.setFileDownloadUrl(
 														GwtServerHelper.getDownloadFileUrl(
 															request,
-															bs,
-															entityId.getBinderId(),
-															entityId.getEntityId()));
+															entryMap));
 													eti.setFileIcon(
 														FileIconsHelper.getFileIconFromFileName(
 															fName,
