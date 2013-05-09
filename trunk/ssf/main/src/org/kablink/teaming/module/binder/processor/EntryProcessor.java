@@ -62,7 +62,7 @@ public interface EntryProcessor extends BinderProcessor {
  
  	public Map getBinderEntries(Binder binder, String[] entryTypes, Map options) throws AccessControlException;
     
-    public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options, boolean skipDbLog)
+    public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options, boolean skipDbLog, boolean skipNotifyStatus)
     	throws WriteFilesException, WriteEntryDataException;
     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options);  
     public Entry copyEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options);
@@ -82,7 +82,7 @@ public interface EntryProcessor extends BinderProcessor {
   	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags);
     public void moveEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options);
 	public ChangeLog processChangeLog(DefinableEntity entity, String operation);
-	public ChangeLog processChangeLog(DefinableEntity entity, String operation, boolean skipDbLog);
+	public ChangeLog processChangeLog(DefinableEntity entity, String operation, boolean skipDbLog, boolean skipNotifyStatus);
 	
     public org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
 	(Binder binder, Entry entry, FileAttachment fa, Collection tags, boolean skipFileContentIndexing);

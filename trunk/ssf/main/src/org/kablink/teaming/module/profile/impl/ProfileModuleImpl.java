@@ -1909,7 +1909,7 @@ public Map getUsers() {
            		definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_APPLICATION_VIEW);
         }
         try {
-        	Entry newEntry = loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options, false);
+        	Entry newEntry = loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options, false, false);
 
             //Added to allow default groups to be defined for users in ssf.properties file
             if (clazz.equals(User.class))  //only do this for users not applications (maybe later;-)
@@ -2014,7 +2014,7 @@ public Map getUsers() {
 
         	}
         	
-        	return loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options, false);
+        	return loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options, false, false);
         } catch (DataIntegrityViolationException de) {
         	if(clazz.equals(Group.class))
         		throw new GroupExistsException(de);

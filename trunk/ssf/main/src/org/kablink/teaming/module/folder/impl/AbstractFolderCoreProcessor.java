@@ -129,8 +129,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //inside write transaction
     @Override
-	protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx, boolean skipDbLog) {
-    	super.addEntry_postSave(binder, entry, inputData, entryData, ctx, skipDbLog);
+	protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx, boolean skipDbLog, boolean skipNotifyStatus) {
+    	super.addEntry_postSave(binder, entry, inputData, entryData, ctx, skipDbLog, skipNotifyStatus);
     }
     //no transaction
     @Override
@@ -257,7 +257,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction
     protected void addReply_postSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//will log addEntry
-    	addEntry_postSave(parent.getParentBinder(), entry, inputData, entryData, ctx, false);
+    	addEntry_postSave(parent.getParentBinder(), entry, inputData, entryData, ctx, false, false);
 
     }
     
@@ -1166,11 +1166,11 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 
 	@Override
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
-		return processChangeLog(entry, operation, false);
+		return processChangeLog(entry, operation, false, false);
 	}
 
 	@Override
-	public ChangeLog processChangeLog(DefinableEntity entry, String operation, boolean skipDbLog) {
+	public ChangeLog processChangeLog(DefinableEntity entry, String operation, boolean skipDbLog, boolean skipNotifyStatus) {
 		// Take care of ChangeLog
 		ChangeLog changes = null;
 		
@@ -1194,13 +1194,15 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 		}
 		
 		// Take care of NotifyStatus
-		if (entry instanceof FolderEntry) {
-			FolderEntry fEntry = (FolderEntry)entry;
-			if (!ChangeLog.DELETEENTRY.equals(operation)) {
-				NotifyStatus status = getCoreDao().loadNotifyStatus(fEntry.getParentFolder(), fEntry);
-				status.setLastModified(fEntry.getModification().getDate());
-				logger.debug("AbstractFolderCoreProcessor.processChangeLog( Operation:  " + operation + " ): NotifyStatus modified: "+ ", Entity: " + fEntry.getId() + " (" + fEntry.getTitle() + ")");
-				status.traceStatus(logger);
+		if(!skipNotifyStatus) {
+			if (entry instanceof FolderEntry) {
+				FolderEntry fEntry = (FolderEntry)entry;
+				if (!ChangeLog.DELETEENTRY.equals(operation)) {
+					NotifyStatus status = getCoreDao().loadNotifyStatus(fEntry.getParentFolder(), fEntry);
+					status.setLastModified(fEntry.getModification().getDate());
+					logger.debug("AbstractFolderCoreProcessor.processChangeLog( Operation:  " + operation + " ): NotifyStatus modified: "+ ", Entity: " + fEntry.getId() + " (" + fEntry.getTitle() + ")");
+					status.traceStatus(logger);
+				}
 			}
 		}
 

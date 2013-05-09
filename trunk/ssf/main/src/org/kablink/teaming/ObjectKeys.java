@@ -642,6 +642,7 @@ public interface ObjectKeys {
     public static final String INPUT_OPTION_OWNER_ID="org.kablink.teaming.options.entity.owner.id";
     public static final String INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE="org.kablink.teaming.options.skip.parent.modtime.update";
     public static final String INPUT_OPTION_SKIP_DB_LOG="org.kablink.teaming.options.skip_db_log";
+    public static final String INPUT_OPTION_SKIP_NOTIFY_STATUS="org.kablink.teaming.options.skip_notify_status";
     
  	//Reserved data field names
     public static final String FIELD_ID="id";

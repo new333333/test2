@@ -256,13 +256,13 @@ protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inp
      }
     //inside write transaction
     @Override
-	protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx, boolean skipDbLog) {
+	protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx, boolean skipDbLog, boolean skipNotifyStatus) {
     	//make user the user is owner so create_modify access works
     	if (entry instanceof User) {
     		entry.getCreation().setPrincipal((User)entry);
     		entry.getModification().setPrincipal((User)entry);
     	}
-    	super.addEntry_postSave(binder, entry, inputData, entryData, ctx, skipDbLog);
+    	super.addEntry_postSave(binder, entry, inputData, entryData, ctx, skipDbLog, skipNotifyStatus);
     }
        
     //***********************************************************************************************************	
@@ -801,7 +801,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	}
     protected void syncNewEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
 		//don't change owner - will do in bulk to save all these updates
-		super.addEntry_postSave(binder, entry, inputData, entryData, ctx, false);
+		super.addEntry_postSave(binder, entry, inputData, entryData, ctx, false, false);
 	}
     protected void syncNewEntry_startWorkflow(Entry entry, Map ctx) {
     	addEntry_startWorkflow(entry, ctx);
