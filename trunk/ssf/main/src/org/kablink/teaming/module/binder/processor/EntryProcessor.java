@@ -82,6 +82,7 @@ public interface EntryProcessor extends BinderProcessor {
   	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags);
     public void moveEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options);
 	public ChangeLog processChangeLog(DefinableEntity entity, String operation);
+	public ChangeLog processChangeLog(DefinableEntity entity, String operation, boolean skipDbLog);
 	
     public org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
 	(Binder binder, Entry entry, FileAttachment fa, Collection tags, boolean skipFileContentIndexing);
