@@ -42,16 +42,10 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -59,7 +53,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -96,6 +89,7 @@ public class PersonalPreferencesDlg extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
+	@Override
 	public Panel createContent( Object props )
 	{
 		GwtTeamingMessages messages;
@@ -146,8 +140,6 @@ public class PersonalPreferencesDlg extends DlgBox
 		// Create a link the user can click on to invoke the "Define editor overrides" dialog.
 		{
 			ClickHandler clickHandler;
-			MouseOverHandler mouseOverHandler;
-			MouseOutHandler mouseOutHandler;
 			Label spacer;
 			
 			// Add an empty row to add some space between the "use advanced branding" radio button and the "background image" listbox.
@@ -169,6 +161,7 @@ public class PersonalPreferencesDlg extends DlgBox
 				/**
 				 * Clear all branding information.
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					invokeEditorOverridesDlg();
@@ -225,11 +218,11 @@ public class PersonalPreferencesDlg extends DlgBox
 	/**
 	 * Get the data from the controls in the dialog box and store the data in a GwtPersonalPreferences obj.
 	 */
+	@Override
 	public Object getDataFromDlg()
 	{
 		GwtPersonalPreferences personalPrefs;
 		String displayStyle;
-		Boolean value;
 		
 		personalPrefs = new GwtPersonalPreferences();
 		
@@ -301,6 +294,7 @@ public class PersonalPreferencesDlg extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
+	@Override
 	public FocusWidget getFocusWidget()
 	{
 		return null;
@@ -357,6 +351,7 @@ public class PersonalPreferencesDlg extends DlgBox
 	 * This method gets called when the user types in the "number of entries to show" text box.
 	 * We only allow the user to enter numbers.
 	 */
+	@Override
 	public void onKeyPress( KeyPressEvent event )
 	{
         int keyCode;
@@ -364,10 +359,7 @@ public class PersonalPreferencesDlg extends DlgBox
         // Get the key the user pressed
         keyCode = event.getNativeEvent().getKeyCode();
         
-        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
-            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
-            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
-            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
+        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
         {
         	TextBox txtBox;
         	Object source;
