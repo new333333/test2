@@ -502,10 +502,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		
 		updateParentModTime(binder, ctx);
 		
-		if(!skipDbLog) {
-			processChangeLog(entry, ChangeLog.ADDENTRY);
+		processChangeLog(entry, ChangeLog.ADDENTRY, skipDbLog);
+		if(!skipDbLog)
 	    	getReportModule().addAuditTrail(AuditType.add, entry);
-		}
     }
 
     protected void addEntry_indexAdd(Binder binder, Entry entry, 

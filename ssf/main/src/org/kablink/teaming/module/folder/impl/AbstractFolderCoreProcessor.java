@@ -1164,13 +1164,36 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
          
     //***********************************************************************************************************   
 
-
 	@Override
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
-		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
-		ChangeLog changes = ChangeLogUtils.createAndBuild(entry, operation);
-		Element element = changes.getEntityRoot();
-		//add folderEntry fields
+		return processChangeLog(entry, operation, false);
+	}
+
+	@Override
+	public ChangeLog processChangeLog(DefinableEntity entry, String operation, boolean skipDbLog) {
+		// Take care of ChangeLog
+		ChangeLog changes = null;
+		
+		if (entry instanceof Binder) {
+			changes = processChangeLog((Binder)entry, operation, skipDbLog);
+		}
+		else {
+			if(!skipDbLog) {
+				changes = ChangeLogUtils.createAndBuild(entry, operation);
+				Element element = changes.getEntityRoot();
+				//add folderEntry fields
+				if (entry instanceof FolderEntry) {
+					FolderEntry fEntry = (FolderEntry)entry;
+					XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_DOCNUMBER, fEntry.getDocNumber());
+					if (fEntry.getTopEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_TOPENTRY, fEntry.getTopEntry().getId());
+					if (fEntry.getParentEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_PARENTENTRY, fEntry.getParentEntry().getId());
+					if (!Validator.isNull(fEntry.getPostedBy())) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_POSTEDBY, fEntry.getPostedBy());
+				}
+				ChangeLogUtils.save(changes);
+			}
+		}
+		
+		// Take care of NotifyStatus
 		if (entry instanceof FolderEntry) {
 			FolderEntry fEntry = (FolderEntry)entry;
 			if (!ChangeLog.DELETEENTRY.equals(operation)) {
@@ -1179,12 +1202,8 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 				logger.debug("AbstractFolderCoreProcessor.processChangeLog( Operation:  " + operation + " ): NotifyStatus modified: "+ ", Entity: " + fEntry.getId() + " (" + fEntry.getTitle() + ")");
 				status.traceStatus(logger);
 			}
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_DOCNUMBER, fEntry.getDocNumber());
-			if (fEntry.getTopEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_TOPENTRY, fEntry.getTopEntry().getId());
-			if (fEntry.getParentEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_PARENTENTRY, fEntry.getParentEntry().getId());
-			if (!Validator.isNull(fEntry.getPostedBy())) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_POSTEDBY, fEntry.getPostedBy());
 		}
-		ChangeLogUtils.save(changes);
+
 		return changes;
 	}
 	//***********************************************************************************************************

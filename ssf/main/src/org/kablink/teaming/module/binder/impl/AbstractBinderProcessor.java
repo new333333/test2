@@ -602,12 +602,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			Event event = it.next();
 			event.generateUid(binder);
 		}
-		
-		if(!skipDbLog) {
-	 		//create history - using timestamp and version from fillIn
-	    	processChangeLog(binder, ChangeLog.ADDBINDER);
+	
+ 		//create history - using timestamp and version from fillIn
+    	processChangeLog(binder, ChangeLog.ADDBINDER, skipDbLog);
+
+		if(!skipDbLog)
 	    	getReportModule().addAuditTrail(AuditType.add, binder);
-		}
     	
     	
     	// Should have a BinderQuota for the newly created binder.
@@ -1067,8 +1067,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         User user = RequestContextHolder.getRequestContext().getUser();
         binder.setModification(new HistoryStamp(user));
         binder.incrLogVersion();
+    	processChangeLog(binder, ChangeLog.DELETEBINDER, skipDbLog);
         if(!skipDbLog) {
-        	processChangeLog(binder, ChangeLog.DELETEBINDER);
         	// Make sure that the audit trail's timestamp is identical to the modification time of the binder. 
         	getReportModule().addAuditTrail(AuditType.delete, binder, binder.getModification().getDate());
         }
@@ -2681,26 +2681,37 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         }
 		
 	}
+	
 	@Override
 	public ChangeLog processChangeLog(Binder binder, String operation) {
-		//any changes here should be considered to template export
-		ChangeLog changes = ChangeLogUtils.createAndBuild(binder, operation);
-		Element element = changes.getEntityRoot();
-		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_BINDER_NAME, ObjectKeys.XTAG_TYPE_STRING, binder.getName());
-		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
-		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP, binder.isFunctionMembershipInherited());
-		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
-		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS, binder.isTeamMembershipInherited());
-		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
-		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBERS, LongIdUtil.getIdsAsString(binder.getTeamMemberIds()));
-		if (!binder.isFunctionMembershipInherited()) {
-			List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
-					binder.getZoneId(), binder);
-			for (WorkAreaFunctionMembership wfm: wfms) {
-				wfm.addChangeLog(element);
+		return processChangeLog(binder, operation, false);
+	}
+	
+	@Override
+	public ChangeLog processChangeLog(Binder binder, String operation, boolean skipDbLog) {
+		ChangeLog changes = null;
+		
+		if(!skipDbLog) {
+			//any changes here should be considered to template export
+			changes = ChangeLogUtils.createAndBuild(binder, operation);
+			Element element = changes.getEntityRoot();
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_BINDER_NAME, ObjectKeys.XTAG_TYPE_STRING, binder.getName());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP, binder.isFunctionMembershipInherited());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS, binder.isTeamMembershipInherited());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBERS, LongIdUtil.getIdsAsString(binder.getTeamMemberIds()));
+			if (!binder.isFunctionMembershipInherited()) {
+				List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
+						binder.getZoneId(), binder);
+				for (WorkAreaFunctionMembership wfm: wfms) {
+					wfm.addChangeLog(element);
+				}
 			}
+			ChangeLogUtils.save(changes);
 		}
-		ChangeLogUtils.save(changes);
+		
 		return changes;
 	}
 	/*************************************************************************************************/
