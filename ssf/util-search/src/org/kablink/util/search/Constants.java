@@ -224,7 +224,6 @@ public class Constants {
 	public static final String USER_TYPE_FIELD = "_userType";
 	public static final String USER_TYPE_LOCAL = "local";
 	public static final String USER_TYPE_EXTERNAL = "external";
-	public static final String USER_TYPE_OPEN_ID = "openId";
 	public static final String USER_TYPE_LDAP = "ldap";
 
 	public Constants() {

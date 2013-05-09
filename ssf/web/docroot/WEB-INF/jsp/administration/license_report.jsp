@@ -181,6 +181,36 @@
 								<fmt:formatDate value="${ssCurrentDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="medium"/>
 							</span><br/>
 							<br/>
+							<table cellspacing="6" cellpadding="2">
+								<tr>
+									<td><ssf:nlt tag="license.report.currentLocalUsers"/></td>
+									<td>${ssLicenseDataCurrent.internalUserCount}</td>
+								</tr>
+								<tr>
+									<td><ssf:nlt tag="license.report.currentExternalUsers"/></td>
+									<td>${ssLicenseDataCurrent.otherExtUserCount}</td>
+								</tr>
+								<tr>
+									<td><ssf:nlt tag="license.report.currentSyncedUsers"/></td>
+									<td>${ssLicenseDataCurrent.externalUserCount}</td>
+								</tr>
+								<tr>
+									<td><ssf:nlt tag="license.current.users"/></td><td>${ssLicenseDataCurrent.activeUserCount}</td>
+								</tr>
+								<tr>
+									<td><ssf:nlt tag="license.report.guestAccessEnabled"/></td>
+									<td>
+										<c:if test="${ssLicenseDataCurrent.guestAccessEnabled}">
+											<ssf:nlt tag="general.Yes"/>
+										</c:if>
+										<c:if test="${!ssLicenseDataCurrent.guestAccessEnabled}">
+											<ssf:nlt tag="general.No"/>
+										</c:if>
+									</td>
+								</tr>
+							</table>
+							<br/>
+							<br/>
 							<span class="ss_bold"><ssf:nlt tag="license.current"/></span><br/>
 							<table cellspacing="6" cellpadding="2">
 								<tr>
@@ -249,26 +279,13 @@
 							&nbsp;<fmt:formatDate value="${startDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="medium"/>
 							&nbsp;<ssf:nlt tag="smallWords.and"/>&nbsp;<fmt:formatDate value="${endDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="medium"/>
 							<br/>
-			<c:if test="${not empty ssLicenseData}"><%--
-						--%><c:set var="currentUser" value="0"/><%--
-						--%><c:forEach var="datum" items="${ssLicenseData}" ><%--
-							--%><c:set var="currentUser" value="${datum.activeUserCount}"/><%--
-						--%></c:forEach>
-						
-							<table cellspacing="6" cellpadding="2">
-								<tr>
-									<td><ssf:nlt tag="license.current.users"/></td><td>${currentUser}</td>
-								</tr>
-							</table>
 							<br/>
+			<c:if test="${not empty ssLicenseData}">
 							<table cellspacing="6" cellpadding="2" >
 								<tr>
 									<th><ssf:nlt tag="license.table.date"/>&nbsp;</th>
-									<th>&nbsp;<ssf:nlt tag="license.table.localUsers"/>&nbsp;</th>
+									<th>&nbsp;<ssf:nlt tag="license.table.localAndExternalUsers"/>&nbsp;</th>
 									<th>&nbsp;<ssf:nlt tag="license.table.syncdUsers"/>&nbsp;</th>
-									<th>&nbsp;<ssf:nlt tag="license.table.openIdUsers"/>&nbsp;</th>
-									<th>&nbsp;<ssf:nlt tag="license.table.externalUsers"/>&nbsp;</th>
-									<th>&nbsp;<ssf:nlt tag="license.table.guestAccessEnabled"/>&nbsp;</th>
 									<th>&nbsp;<ssf:nlt tag="license.table.activeUsers"/>&nbsp;</th>
 									<th>&nbsp;<ssf:nlt tag="license.table.check"/>&nbsp;</th>
 								</tr>
@@ -277,14 +294,6 @@
 										<td><fmt:formatDate value="${datum.snapshotDate}" timeZone="${ssUser.timeZone.ID}" type="date" dateStyle="medium"/></td>
 										<td align="center">${datum.internalUserCount}</td>
 										<td align="center">${datum.externalUserCount}</td>
-										<td align="center">${datum.openIdUserCount}</td>
-										<td align="center">${datum.otherExtUserCount}</td>
-										<c:if test="${datum.guestAccessEnabled}">
-										  <td align="center"><ssf:nlt tag="Yes"/></td>
-										</c:if>
-										<c:if test="${!datum.guestAccessEnabled}">
-										  <td align="center"><ssf:nlt tag="No"/></td>
-										</c:if>
 										<td align="center">${datum.activeUserCount}</td>
 										<td align="center">${datum.checksum}</td>
 									</tr>

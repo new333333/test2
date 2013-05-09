@@ -76,6 +76,7 @@ import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.task.TaskHelper;
@@ -302,14 +303,18 @@ public class EntityIndexUtils {
         	Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         	doc.add(entryTypeField);
         	
-        	//TODO fix this to use the right user type
-        	Field userTypeField = new Field(Constants.USER_TYPE_FIELD, Constants.USER_TYPE_LOCAL, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
-        	doc.add(userTypeField);
-        	userTypeField = new Field(Constants.USER_TYPE_FIELD, Constants.USER_TYPE_LDAP, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
-        	doc.add(userTypeField);
-        	userTypeField = new Field(Constants.USER_TYPE_FIELD, Constants.USER_TYPE_EXTERNAL, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
-        	doc.add(userTypeField);
-    	
+        	User user = (User) entry;
+        	ProfileModule pm = ((ProfileModule) SpringContextUtil.getBean("profileModule"));
+        	if (user.isLocal() && !pm.isUserExternal(user.getId())) {
+	        	Field userTypeField = new Field(Constants.USER_TYPE_FIELD, Constants.USER_TYPE_LOCAL, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+	        	doc.add(userTypeField);
+        	} else if (user.isLocal() && pm.isUserExternal(user.getId())) {
+	        	Field userTypeField = new Field(Constants.USER_TYPE_FIELD, Constants.USER_TYPE_EXTERNAL, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+	        	doc.add(userTypeField);
+        	} else {
+	        	Field userTypeField = new Field(Constants.USER_TYPE_FIELD, Constants.USER_TYPE_LDAP, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+	        	doc.add(userTypeField);
+        	}
     	} else if (entry instanceof Group) {
     		Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_GROUP, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     		doc.add(entryTypeField);
