@@ -210,6 +210,7 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
 import org.kablink.util.search.Constants;
@@ -4236,27 +4237,46 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	private GwtBrandingData getSiteBrandingData( HttpRequestInfo ri ) throws GwtTeamingException
+	private GwtBrandingData getSiteBrandingData( final HttpRequestInfo ri ) throws GwtTeamingException
 	{
 		GwtBrandingData brandingData;
+		final AbstractAllModulesInjected allModules;
+		RunasCallback callback;
 		
-		try
-		{
-			Long topWorkspaceId;
-			String binderId;
-			
-			// Get the top workspace.
-			topWorkspaceId = getWorkspaceModule().getTopWorkspaceId();				
+		allModules = this;
 		
-			// Get the branding data from the top workspace.
-			binderId = topWorkspaceId.toString();
-			brandingData = GwtServerHelper.getBinderBrandingData( this, binderId, getRequest( ri ) );
-		}
-		catch (Exception e)
+		// We need to read the site branding as admin.
+		callback = new RunasCallback()
 		{
-			brandingData = new GwtBrandingData();
-		}
+			@Override
+			public Object doAs()
+			{
+				Binder topWorkspace;
+				GwtBrandingData siteBrandingData;
 
+				try
+				{
+					String binderId;
+					
+					// Get the top workspace.
+					topWorkspace = getWorkspaceModule().getTopWorkspace();				
+				
+					// Get the branding data from the top workspace.
+					binderId = topWorkspace.getId().toString();
+					siteBrandingData = GwtServerHelper.getBinderBrandingData( allModules, binderId, getRequest( ri ) );
+				}
+				catch (Exception e)
+				{
+					siteBrandingData = new GwtBrandingData();
+				}
+
+				return siteBrandingData;
+			}
+		};
+		brandingData = (GwtBrandingData) RunasTemplate.runasAdmin(
+																callback,
+																WebHelper.getRequiredZoneName( getRequest( ri ) ) ); 
+		
 		brandingData.setIsSiteBranding( true );
 
 		return brandingData;
