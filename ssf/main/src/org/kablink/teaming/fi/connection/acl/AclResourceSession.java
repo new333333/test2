@@ -95,28 +95,12 @@ public interface AclResourceSession extends ResourceSession {
 	 * Returns an empty list if the directory is empty.
 	 * Returns null if the path does not denote a directory, or an I/O error occurs. 
 	 * 
+	 * @param directoryOnly If <code>true</code>, only returns information about the sub-directories.
+	 * If <code>false</code> returns information about all children including sub-directories and files.
 	 * @return
 	 * @throws FIException
 	 * @throws IllegalStateException If the path is not set, etc.
 	 */
-	public List<ResourceItem> getChildren() throws FIException, IllegalStateException;
+	public List<ResourceItem> getChildren(boolean directoryOnly) throws FIException, IllegalStateException;
 	
-	/**
-	 * Returns information about the sub-directories in the directory.
-	 * 
-	 * @return
-	 * @throws FIException
-	 * @throws IllegalStateException
-	 */
-	//public List<ResourceItem> getDirectoryChildren() throws FIException, IllegalStateException;
-	
-	/**
-	 * Returns information about the files in the directory.
-	 * 
-	 * @return
-	 * @throws FIException
-	 * @throws IllegalStateException
-	 */
-	//public List<ResourceItem> getFileChildren() throws FIException, IllegalStateException;
-
 }
