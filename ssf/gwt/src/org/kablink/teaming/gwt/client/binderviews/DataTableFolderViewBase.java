@@ -115,8 +115,10 @@ import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewPinnedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntityRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyFilesContainerInfoCmd;
@@ -133,6 +135,7 @@ import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntryPinInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -2488,62 +2491,100 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			if (!(GwtClientHelper.hasItems(seList))) {
 				seList = getSelectedEntityIds();
 			}
+			
+			
 			final List<EntityId>	selectedEntities = seList;
-			final List<FolderRow>	invalidRows      = validateSelectedRows_Sharing();
-			if (!(GwtClientHelper.hasItems(invalidRows))) {
-				// Yes!  Invoke the share.
-				shareSelectedEntitiesAsync(selectedEntities);
+			GwtClientHelper.executeCommand(
+					new GetEntityRightsCmd(selectedEntities),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetEntityRights());
+				}
+
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					EntityRightsRpcResponseData responseData = ((EntityRightsRpcResponseData) response.getResponseData());
+					onShareSelectedEntriesAsync(selectedEntities, responseData.getEntityRightsMap());
+				}
+			});
+		}
+	}
+
+	/*
+	 * Asynchronously processes the share request on the selected
+	 * entries, given the current user's rights to them.
+	 */
+	private void onShareSelectedEntriesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onShareSelectedEntriesNow(selectedEntities, entityRightsMap);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously processes the share request on the selected
+	 * entries, given the current user's rights to them.
+	 */
+	private void onShareSelectedEntriesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
+		final List<FolderRow>	invalidRows      = validateSelectedRows_Sharing(entityRightsMap);
+		if (!(GwtClientHelper.hasItems(invalidRows))) {
+			// Yes!  Invoke the share.
+			shareSelectedEntitiesAsync(selectedEntities);
+		}
+		
+		else {
+			// No, they don't have rights to share everything!  Can
+			// they share any of them?
+			if (selectedEntities.size() == invalidRows.size()) {
+				// No!  Tell them about the problem and bail.
+				GwtClientHelper.deferredAlert(m_messages.vibeDataTable_Warning_ShareNoRights());
+				return;
 			}
 			
-			else {
-				// No, they don't have rights to share everything!  Can
-				// they share any of them?
-				if (selectedEntities.size() == invalidRows.size()) {
-					// No!  Tell them about the problem and bail.
-					GwtClientHelper.deferredAlert(m_messages.vibeDataTable_Warning_ShareNoRights());
-					return;
+			// Is the user sure they want to share the selections
+			// they have rights to share?
+			ConfirmDlg.createAsync(new ConfirmDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
 				}
 				
-				// Is the user sure they want to share the selections
-				// they have rights to share?
-				ConfirmDlg.createAsync(new ConfirmDlgClient() {
-					@Override
-					public void onUnavailable() {
-						// Nothing to do.  Error handled in
-						// asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess(ConfirmDlg cDlg) {
-						ConfirmDlg.initAndShow(
-							cDlg,
-							new ConfirmCallback() {
-								@Override
-								public void dialogReady() {
-									// Ignored.  We don't really care when the
-									// dialog is ready.
-								}
+				@Override
+				public void onSuccess(ConfirmDlg cDlg) {
+					ConfirmDlg.initAndShow(
+						cDlg,
+						new ConfirmCallback() {
+							@Override
+							public void dialogReady() {
+								// Ignored.  We don't really care when the
+								// dialog is ready.
+							}
 
-								@Override
-								public void accepted() {
-									// Yes, they're sure!  Remove the
-									// selection from the entries they
-									// don't have rights to share and
-									// perform the share on the rest.
-									removeRowEntities(         selectedEntities, invalidRows);
-									deselectRows(                                invalidRows);
-									shareSelectedEntitiesAsync(selectedEntities             );
-								}
+							@Override
+							public void accepted() {
+								// Yes, they're sure!  Remove the
+								// selection from the entries they
+								// don't have rights to share and
+								// perform the share on the rest.
+								removeRowEntities(         selectedEntities, invalidRows);
+								deselectRows(                                invalidRows);
+								shareSelectedEntitiesAsync(selectedEntities             );
+							}
 
-								@Override
-								public void rejected() {
-									// No, they're not sure!
-								}
-							},
-							m_messages.vibeDataTable_Confirm_CantShareSomeSelections());
-					}
-				});
-			}
+							@Override
+							public void rejected() {
+								// No, they're not sure!
+							}
+						},
+						m_messages.vibeDataTable_Confirm_CantShareSomeSelections());
+				}
+			});
 		}
 	}
 	
@@ -3255,7 +3296,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Returns a List<FolderRow> of the selected rows that the user
 	 * can't share.
 	 */
-	private List<FolderRow> validateSelectedRows_Sharing() {
+	private List<FolderRow> validateSelectedRows_Sharing(final Map<String, EntityRights> entityRightsMap) {
 		// Are there any selected rows in the table?
 		List<FolderRow> reply = new ArrayList<FolderRow>();
 		List<FolderRow> rows  = m_dataTable.getVisibleItems();
@@ -3266,7 +3307,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Is this row selected?
 				if (fsm.isSelected(row)) {
 					// Yes!  Is it sharable?
-					if (!(row.getCanShare())) {
+					EntityRights er = entityRightsMap.get(EntityRights.getEntityRightsKey(row.getEntityId()));
+					if ((null == er) || (!(er.isCanShare()))) {
 						// No!  Track it as invalid.
 						reply.add(row);
 					}

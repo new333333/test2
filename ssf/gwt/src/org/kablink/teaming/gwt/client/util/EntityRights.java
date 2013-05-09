@@ -75,4 +75,15 @@ public class EntityRights implements IsSerializable {
 	public void setCanPurge(     boolean canPurge)      {m_canPurge      = canPurge;     }
 	public void setCanShare(     boolean canShare)      {m_canShare      = canShare;     }
 	public void setCanTrash(     boolean canTrash)      {m_canTrash      = canTrash;     }
+	
+	/**
+	 * Returns the key to use for an entity in an entity rights map.
+	 * 
+	 * @param eid
+	 * 
+	 * @return
+	 */
+	public static String getEntityRightsKey(EntityId eid) {
+		return (eid.getEntityType() + ":" + eid.getBinderId() + ":" + eid.getEntityId());
+	}
 }

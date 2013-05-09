@@ -365,6 +365,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetEmailNotificationInfo();
 	String rpcFailure_GetEntityActionToolbarItems();
 	String rpcFailure_GetEntityPermalink();
+	String rpcFailure_GetEntityRights();
 	String rpcFailure_GetEntryComments();
 	String rpcFailure_GetEntryTypes();
 	String rpcFailure_getExecuteJspUrl();

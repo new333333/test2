@@ -68,10 +68,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class FolderRow implements IsSerializable {
 	private BinderIcons								m_binderIcons;				// Hold binder icons of various sizes for a binder. 
 	private BinderInfo								m_binderInfo;				// Set if the row represents a binder.
-	private boolean									m_canModify;				// true -> The user has rights to modify the row's entity.  false -> They don't.
-	private boolean									m_canPurge;					// true -> The user has rights to purge  the row's entity.  false -> They don't.
-	private boolean									m_canShare;					// true -> The user has rights to share  the row's entity.  false -> They don't.
-	private boolean									m_canTrash;					// true -> The user has rights to trash  the row's entity.  false -> They don't.
 	private boolean									m_pinned;					// true -> The row is pinned.  false -> It's not.
 	private EntityId								m_entityId;					// The entity ID of the FolderEntry this FolderRow corresponds to.
 	private List<FolderColumn>						m_columns;					// The FolderColumns that contribute to this FolderRow.
@@ -173,10 +169,6 @@ public class FolderRow implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean								getCanModify()                         {                               return m_canModify;          }
-	public boolean								getCanPurge()                          {                               return m_canPurge;           }
-	public boolean								getCanShare()                          {                               return m_canShare;           }
-	public boolean								getCanTrash()                          {                               return m_canTrash;           }
 	public boolean								getPinned()                            {                               return m_pinned;             }
 	public BinderInfo							getBinderInfo()                        {                               return m_binderInfo;         }
 	public EntityId								getEntityId()                          {                               return m_entityId;           }
@@ -203,10 +195,6 @@ public class FolderRow implements IsSerializable {
 	 * 
 	 * @param
 	 */
-	public void setCanModify( boolean            canModify)                           {m_canModify  = canModify;                         }
-	public void setCanPurge(  boolean            canPurge)                            {m_canPurge   = canPurge;                          }
-	public void setCanShare(  boolean            canShare)                            {m_canShare   = canShare;                          }
-	public void setCanTrash(  boolean            canTrash)                            {m_canTrash   = canTrash;                          }
 	public void setColumns(   List<FolderColumn> columns)                             {m_columns    = columns;                           }
 	public void setEntityId(  EntityId           entityId)                            {m_entityId   = entityId;                          }
 	public void setPinned(    boolean            pinned)                              {m_pinned     = pinned;                            }
