@@ -100,4 +100,23 @@ public interface AclResourceSession extends ResourceSession {
 	 * @throws IllegalStateException If the path is not set, etc.
 	 */
 	public List<ResourceItem> getChildren() throws FIException, IllegalStateException;
+	
+	/**
+	 * Returns information about the sub-directories in the directory.
+	 * 
+	 * @return
+	 * @throws FIException
+	 * @throws IllegalStateException
+	 */
+	//public List<ResourceItem> getDirectoryChildren() throws FIException, IllegalStateException;
+	
+	/**
+	 * Returns information about the files in the directory.
+	 * 
+	 * @return
+	 * @throws FIException
+	 * @throws IllegalStateException
+	 */
+	//public List<ResourceItem> getFileChildren() throws FIException, IllegalStateException;
+
 }
