@@ -1294,6 +1294,7 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	private void invokeEditSiteBrandingDlgImpl( GwtBrandingData brandingData, int x, int y )
 	{
+		m_editSiteBrandingDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 		m_editSiteBrandingDlg.init( brandingData );
 		m_editSiteBrandingDlg.setPopupPosition( x, y );
 		m_editSiteBrandingDlg.show();
@@ -1681,6 +1682,7 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
+			m_configureAdhocFoldersDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_configureAdhocFoldersDlg.init( null );
 			m_configureAdhocFoldersDlg.setPopupPosition( x, y );
 			m_configureAdhocFoldersDlg.show();
@@ -1777,6 +1779,7 @@ public class AdminControl extends TeamingPopupPanel
 				}
 				else
 				{
+					m_configureFileSyncAppDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 					m_configureFileSyncAppDlg.init( fileSyncAppConfiguration );
 					m_configureFileSyncAppDlg.setPopupPosition( x, y );
 					m_configureFileSyncAppDlg.show();
@@ -1859,6 +1862,7 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
+			m_configureMobileAppsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_configureMobileAppsDlg.init();
 			m_configureMobileAppsDlg.setPopupPosition( x, y );
 			m_configureMobileAppsDlg.show();
@@ -1929,6 +1933,7 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
+			m_editZoneShareRightsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_editZoneShareRightsDlg.init();
 			m_editZoneShareRightsDlg.setPopupPosition( x, y );
 			m_editZoneShareRightsDlg.show();
@@ -1999,6 +2004,7 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
+			m_configureUserAccessDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_configureUserAccessDlg.init();
 			m_configureUserAccessDlg.setPopupPosition( x, y );
 			m_configureUserAccessDlg.show();
@@ -2089,6 +2095,7 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
+			m_jitsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_jitsDlg.init();
 			m_jitsDlg.setPopupPosition( x, y );
 			m_jitsDlg.show();
@@ -2158,6 +2165,7 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
+			m_manageNetFoldersDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_manageNetFoldersDlg.init();
 			m_manageNetFoldersDlg.setPopupPosition( x, y );
 			m_manageNetFoldersDlg.show();
@@ -2227,6 +2235,7 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
+			m_manageNetFolderRootsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_manageNetFolderRootsDlg.init();
 			m_manageNetFolderRootsDlg.setPopupPosition( x, y );
 			m_manageNetFolderRootsDlg.show();
@@ -2296,6 +2305,7 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
+			m_manageGroupsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_manageGroupsDlg.init();
 			m_manageGroupsDlg.setPopupPosition( x, y );
 			m_manageGroupsDlg.show();
@@ -2339,7 +2349,7 @@ public class AdminControl extends TeamingPopupPanel
 						public void execute() 
 						{
 							m_manageUsersDlg = muDlg;
-							ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y );
+							ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y, m_dlgWidth, m_dlgHeight );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -2357,7 +2367,8 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Yes, we've already created a "Manage Users" dialog!
 			// Simply initialize and show it.
-			ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y );
+			m_manageUsersDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
+			ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y, m_dlgWidth, m_dlgHeight );
 		}
 	}
 	
@@ -2429,6 +2440,7 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Yes, we've already created a "Run a Report" dialog!
 			// Simply initialize and show it.
+			m_runAReportDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			RunAReportDlg.initAndShow( m_runAReportDlg, x, y );
 		}
 	}
@@ -2495,6 +2507,7 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
+			m_configureUserFileSyncAppDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_configureUserFileSyncAppDlg.init( userIds );
 			m_configureUserFileSyncAppDlg.setPopupPosition( x, y );
 			m_configureUserFileSyncAppDlg.show();
@@ -2563,6 +2576,7 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
+			m_configureUserMobileAppsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_configureUserMobileAppsDlg.init( userIds );
 			m_configureUserMobileAppsDlg.setPopupPosition( x, y );
 			m_configureUserMobileAppsDlg.show();
