@@ -1016,6 +1016,7 @@ public class WebKeys {
     public static final String LDAP_CONFIG="ssLdapConfig";
 	public static final String LDAP_CONNECTION_CONFIGS="ssLdapConnectionConfigs";
     public static final String LICENSE_DATA="ssLicenseData";
+    public static final String LICENSE_DATA_CURRENT="ssLicenseDataCurrent";
     public static final String LICENSE_KEY="ssLicenseKey";
     public static final String LICENSE_ISSUED="ssLicenseIssued";
     public static final String LICENSE_EFFECTIVE="ssLicenseEffective";

@@ -157,11 +157,6 @@ implements LicenseModule, ZoneSchedule {
 		return countUserTypes(zoneId, Constants.USER_TYPE_LDAP);
 	}
 	
-	protected long countOpenIdUsers(Long zoneId)
-	{
-		return countUserTypes(zoneId, Constants.USER_TYPE_OPEN_ID);
-	}
-	
 	protected long countOtherExtUsers(Long zoneId)
 	{
 		return countUserTypes(zoneId, Constants.USER_TYPE_EXTERNAL);
@@ -209,6 +204,10 @@ implements LicenseModule, ZoneSchedule {
 	public void recordCurrentUsage()
 	{
 		LicenseStats stats = createSnapshot();
+		//For Vibe 3.4 we roll Local and External users into the Internal User count
+		long localAndExternalUserCount = stats.getInternalUserCount() + stats.getOtherExtUserCount();
+		stats.setInternalUserCount(localAndExternalUserCount);
+		stats.setOtherExtUserCount(0L);
 		getReportModule().addLicenseStats(stats);
 
 		if(getLicenseManager().validLicense()) {
@@ -219,7 +218,7 @@ implements LicenseModule, ZoneSchedule {
 		}
 	}
 
-	abstract protected LicenseStats createSnapshot();
+	abstract public LicenseStats createSnapshot();
 	
 	public void updateLicense() throws AccessControlException, LicenseException
 	{
@@ -227,7 +226,7 @@ implements LicenseModule, ZoneSchedule {
 		getLicenseManager().loadLicense();
 		LicenseStats stats = getReportModule().getLicenseHighWaterMark(getLicenseManager().getEffectiveDate(),
 											      getLicenseManager().getExpirationDate());
-		getLicenseManager().recordUserCount(stats.getInternalUserCount(),
+		getLicenseManager().recordUserCount(stats.getInternalUserCount() + stats.getOtherExtUserCount(),
 											stats.getExternalUserCount(), stats.getActiveUserCount());
 	}
 	

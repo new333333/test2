@@ -103,6 +103,7 @@ public class LicenseReportController extends AbstractReportController {
 			}
 			
 			model.put(WebKeys.LICENSE_DATA, getReportModule().generateLicenseReport(startDate, endDate));
+			model.put(WebKeys.LICENSE_DATA_CURRENT, getLicenseModule().createSnapshot());
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
 			model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
 	

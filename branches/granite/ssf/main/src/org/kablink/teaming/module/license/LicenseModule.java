@@ -35,6 +35,7 @@ package org.kablink.teaming.module.license;
 import java.util.Collection;
 
 import org.dom4j.Document;
+import org.kablink.teaming.domain.LicenseStats;
 import org.kablink.teaming.license.LicenseException;
 
 
@@ -43,6 +44,7 @@ public interface LicenseModule {
 		manageLicense,
 	}
 	public void recordCurrentUsage();
+	public LicenseStats createSnapshot();
 	
 	public void updateLicense() throws LicenseException;
 	public void validateLicense() throws LicenseException;
