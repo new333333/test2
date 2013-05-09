@@ -986,7 +986,9 @@ function updateElementsTextNode(
 
 ssPage = {
 	m_invalidBaseDnMsg : '<ssf:escapeJavaScript><ssf:nlt tag="ldap.error.invalidBaseDn"/></ssf:escapeJavaScript>',
+	m_invalidUserFilterMsg : '<ssf:escapeJavaScript><ssf:nlt tag="ldap.error.invalidUserFilter"/></ssf:escapeJavaScript>',
 	m_isBaseDnValid : true,
+	m_isUserFilterValid : true,
 	m_invalidCtrl : null,
 	m_idOfInvalidConfiguration : null,
 	m_invalidMappingsMsg : null,
@@ -1172,6 +1174,7 @@ ssPage = {
 	validateAllLdapConfigurations : function()
 	{
 		var validateBaseDn;
+		var validateUserFilter;
 		var validateMappings;
 		
 		validateBaseDn = function()
@@ -1206,6 +1209,46 @@ ssPage = {
 		{
 			// No, tell the user the base dn cannot be empty.
 			alert( ssPage.m_invalidBaseDnMsg );
+
+			// Show the configuration that has the error.
+			if ( ssPage.m_idOfInvalidConfiguration != null )
+				setTimeout( ssPage.showInvalidLdapConfig, 50 );
+
+			return false;
+		}
+
+		validateUserFilter = function()
+		{
+			var $this;
+			var $userFilter;
+			var userFilter;
+
+			// If we already found an invalid user filter, there is no need to continue.
+			if ( !ssPage.m_isUserFilterValid )
+				return;
+			
+			$this = jQuery( this );
+			$userFilter = jQuery( '.ldapFilter', $this );
+			userFilter = $userFilter.val();
+
+			if ( userFilter == null || userFilter.length == 0 )
+			{
+				// Get the id of the invalid configuration
+				ssPage.m_idOfInvalidConfiguration = $this.parent().parent().parent().parent().parent().attr( "id" );				
+				ssPage.m_invalidCtrl = $userFilter;
+				ssPage.m_isUserFilterValid = false;
+			}
+		};
+		
+		// Make sure the user has entered something for every user filter.
+		ssPage.m_idOfInvalidConfiguration = null;
+		ssPage.m_isUserFilterValid = true;
+		ssPage.m_invalidCtrl = null;
+		jQuery( '#funkyDiv .ldapUserSearches .ldapSearch' ).each( validateUserFilter );
+		if ( !ssPage.m_isUserFilterValid )
+		{
+			// No, tell the user the user filter cannot be empty.
+			alert( ssPage.m_invalidUserFilterMsg );
 
 			// Show the configuration that has the error.
 			if ( ssPage.m_idOfInvalidConfiguration != null )
