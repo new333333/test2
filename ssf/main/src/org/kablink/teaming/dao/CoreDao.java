@@ -151,6 +151,7 @@ public interface CoreDao {
 	public Binder loadReservedBinder(String reservedId, Long zoneId);
 	public Definition loadReservedDefinition(String reservedId, Long zoneId);
 	public List<Subscription> loadSubscriptionByEntity(final EntityIdentifier entityId);
+	public boolean subscriptionExistsOnEntity(final EntityIdentifier entityId);
 	public Tag loadTag(String id, Long zoneId);
 	public TemplateBinder loadTemplate(Long templateId, Long zoneId);
 	public TemplateBinder loadTemplateByName(String name, Long zoneId);

@@ -2281,6 +2281,32 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 		
 	}
+	
+	@Override
+	public boolean subscriptionExistsOnEntity(final EntityIdentifier entityId) {
+		long begin = System.nanoTime();
+		try {
+			Subscription subscription = (Subscription)getHibernateTemplate().execute(
+		            new HibernateCallback() {
+		                @Override
+						public Object doInHibernate(Session session) throws HibernateException {
+		                 	return session.createCriteria(Subscription.class)
+	                 		.add(Expression.eq("id.entityId", entityId.getEntityId()))
+	       					.add(Expression.eq("id.entityType", entityId.getEntityType().getValue()))
+	       					.setMaxResults(1)
+	       					.setCacheable(true)
+		                 	.uniqueResult();
+		                }
+		            }
+		        );
+			return subscription != null;
+    	}
+    	finally {
+    		end(begin, "subscriptionExistsOnEntity(EntityIdentifier)");
+    	}	        
+		
+	}
+	
 	private List loadObjects(final ObjectControls objs, FilterControls filter, Long zoneId, final boolean cacheable) {
 	   	final FilterControls myFilter = filter==null?new FilterControls():filter;
 		if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);

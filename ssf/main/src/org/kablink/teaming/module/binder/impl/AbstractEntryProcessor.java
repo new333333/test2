@@ -131,7 +131,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
 	@Override
 	public Entry addEntry(final Binder binder, Definition def, Class clazz, 
-    		final InputDataAccessor inputData, Map fileItems, Map options, final boolean skipDbLog) 
+    		final InputDataAccessor inputData, Map fileItems, Map options, final boolean skipDbLog, final boolean skipNotifyStatus) 
     	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException {
         // This default implementation is coded after template pattern. 
         SimpleProfiler.start("addEntry");
@@ -178,7 +178,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         			addEntry_save(binder, entry, inputData, entryData,ctx);
         			SimpleProfiler.stop("addEntry_save");
                 	SimpleProfiler.start("addEntry_postSave");
-         			addEntry_postSave(binder, entry, inputData, entryData, ctx, skipDbLog);
+         			addEntry_postSave(binder, entry, inputData, entryData, ctx, skipDbLog, skipNotifyStatus);
                 	SimpleProfiler.stop("addEntry_postSave");
        			return null;
         		}
@@ -489,7 +489,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
     //inside write transaction
-    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx, boolean skipDbLog) {
+    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx, boolean skipDbLog, boolean skipNotifyStatus) {
     	//create history - using timestamp and version from fillIn
 		if (binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, null, entry.getNormalTitle());
     	
@@ -502,7 +502,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		
 		updateParentModTime(binder, ctx);
 		
-		processChangeLog(entry, ChangeLog.ADDENTRY, skipDbLog);
+		processChangeLog(entry, ChangeLog.ADDENTRY, skipDbLog, skipNotifyStatus);
 		if(!skipDbLog)
 	    	getReportModule().addAuditTrail(AuditType.add, entry);
     }
@@ -1012,7 +1012,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		entry.incrLogVersion();
    		//record current state of object, but don't save until in transaction
    		//this is setup here so the deleteFiles logs have the correct version/date
-   		changeLogs.add(processChangeLog(entry, ChangeLog.DELETEENTRY, false));
+   		changeLogs.add(processChangeLogWithSaveFlag(entry, ChangeLog.DELETEENTRY, false));
    	}
     //inside write transaction
     protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
@@ -1759,10 +1759,18 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     @Override
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
-		return processChangeLog(entry, operation, true);
+		return processChangeLogWithSaveFlag(entry, operation, true);
 	}
-	public ChangeLog processChangeLog(DefinableEntity entry, String operation, boolean saveIt) {
-		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
+    
+    @Override
+	public ChangeLog processChangeLog(DefinableEntity entity, String operation, boolean skipDbLog, boolean skipNotifyStatus) {
+    	// This implementation simply ignores skipDbLog and skipNotifyStatus arguments.
+		return processChangeLogWithSaveFlag(entity, operation, true);
+	}
+    
+	private ChangeLog processChangeLogWithSaveFlag(DefinableEntity entry, String operation, boolean saveIt) {
+		if (entry instanceof Binder) 
+			return processChangeLog((Binder)entry, operation);
 		ChangeLog changes = ChangeLogUtils.createAndBuild(entry, operation);
 		if (saveIt) 
 			ChangeLogUtils.save(changes);
