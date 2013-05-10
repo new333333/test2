@@ -728,8 +728,10 @@ public class GwtViewHelper {
 					// binder!  Store the binder's path and
 					// modification date...
 					Binder binder = ((Binder) entity);
-					entryMap.put(Constants.ENTITY_PATH,             binder.getPathName()    );
-			        entryMap.put(Constants.MODIFICATION_DATE_FIELD, binder.getModification());
+					entryMap.put(Constants.ENTITY_PATH,             binder.getPathName()                                  );
+			        entryMap.put(Constants.MODIFICATION_DATE_FIELD, binder.getModification()                              );
+			        entryMap.put(Constants.ICON_NAME_FIELD,         binder.getIconName()                                  );
+			        entryMap.put(Constants.IS_HOME_DIR_FIELD,      (binder.isHomeDir() ? Constants.TRUE : Constants.FALSE));
 			        
 					// ...and store its parent's ID in the Map.
 					binderIdField = Constants.BINDERS_PARENT_ID_FIELD;
@@ -864,6 +866,70 @@ public class GwtViewHelper {
 		
 		finally {
 			gsp.stop();
+		}
+	}
+
+	/**
+	 * Change the entry types for a collection of entries.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param defId
+	 * @param entityIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData changeEntryTypes(AllModulesInjected bs, HttpServletRequest request, String defId, List<EntityId> entityIds) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+			
+			// Were we given the IDs of any entries to change their
+			// entry types and the entry type to change them to?
+			if (MiscUtil.hasItems(entityIds) && MiscUtil.hasString(defId)) {
+				// Yes!  Scan them.
+				FolderModule fm = bs.getFolderModule();
+				for (EntityId entityId:  entityIds) {
+					// If this entity is a binder...
+					if (entityId.isBinder()) {
+						// ...skip it.
+						continue;
+					}
+					
+					try {
+						// Can we change this entry's entry type?
+						fm.changeEntryType(entityId.getEntityId(), defId);
+					}
+					catch (Exception e) {
+						// No!  Add an error to the error list...
+						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
+						String messageKey;
+						if (e instanceof AccessControlException) messageKey = "changeEntryTypeError.AccssControlException";
+						else                                     messageKey = "changeEntryTypeError.OtherException";
+						reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtViewHelper.changeEntryTypes( Entry title:  '" + entryTitle + "', EXCEPTION ):  ", e);
+					}
+				}
+			}
+
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.changeEntryTypes( SOURCE EXCEPTION ):  ");
 		}
 	}
 
@@ -1033,67 +1099,86 @@ public class GwtViewHelper {
 		}
 	}
 
-	/**
-	 * Change the entry types for a collection of entries.
-	 *
-	 * @param bs
-	 * @param request
-	 * @param defId
-	 * @param entityIds
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
+	/*
+	 * Scans the List<FolderRow> and completes the PrincipalInfo's for
+	 * each row.
 	 */
-	public static ErrorListRpcResponseData changeEntryTypes(AllModulesInjected bs, HttpServletRequest request, String defId, List<EntityId> entityIds) throws GwtTeamingException {
+	private static void completePIs(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> frList, boolean isManageUsers, boolean isFilr) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.completePIs()");
 		try {
-			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
-			
-			// Were we given the IDs of any entries to change their
-			// entry types and the entry type to change them to?
-			if (MiscUtil.hasItems(entityIds) && MiscUtil.hasString(defId)) {
-				// Yes!  Scan them.
-				FolderModule fm = bs.getFolderModule();
-				for (EntityId entityId:  entityIds) {
-					// If this entity is a binder...
-					if (entityId.isBinder()) {
-						// ...skip it.
-						continue;
-					}
-					
-					try {
-						// Can we change this entry's entry type?
-						fm.changeEntryType(entityId.getEntityId(), defId);
-					}
-					catch (Exception e) {
-						// No!  Add an error to the error list...
-						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
-						String messageKey;
-						if (e instanceof AccessControlException) messageKey = "changeEntryTypeError.AccssControlException";
-						else                                     messageKey = "changeEntryTypeError.OtherException";
-						reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
-						
-						// ...and log it.
-						GwtLogHelper.error(m_logger, "GwtViewHelper.changeEntryTypes( Entry title:  '" + entryTitle + "', EXCEPTION ):  ", e);
+			// If we don't have any FolderRow's to complete...
+			if (!(MiscUtil.hasItems(frList))) {
+				// ..bail.
+				return;
+			}
+	
+			List<Long> principalIds = new ArrayList<Long>();
+			SimpleProfiler.start("GwtViewHelper.completePIs(Collect IDs)");
+			try {
+				// Collect the principal IDs of the rows from the
+				// List<FolderRow>.
+				for (FolderRow fr:  frList) {
+					Map<String, PrincipalInfoId> pIdsMap = fr.getRowPrincipalIdsMap();
+					for (String k:  pIdsMap.keySet()) {
+						ListUtil.addLongToListLongIfUnique(principalIds, pIdsMap.get(k).getId());
 					}
 				}
 			}
-
-			// If we get here, reply refers to an
-			// ErrorListRpcResponseData containing any errors we
-			// encountered.  Return it.
-			return reply;
+			
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.completePIs(Collect IDs)");
+			}
+			
+			try {
+				SimpleProfiler.start("GwtViewHelper.completePIs(Fixup Principals)");
+				try {
+					// Build a List<PrincipalInfo> from the List<Long> of
+					// principal IDs. 
+					List<PrincipalInfo> piList = getPIsFromPIds(bs, request, principalIds);
+					for (PrincipalInfo pi:  piList) {
+						if (pi.isUserPerson() || isManageUsers || (!isFilr)) {
+							continue;
+						}
+						piList.remove(pi);
+					}
+					
+					// Scan the List<FolderRow> again.
+					for (FolderRow fr:  frList) {
+						// Scan this row's PrincipalInfoId's.
+						Map<String, PrincipalInfo>   piMap   = fr.getRowPrincipalsMap();
+						Map<String, PrincipalInfoId> pIdsMap = fr.getRowPrincipalIdsMap();
+						for (String k:  pIdsMap.keySet()) {
+							// Scan the List<PrincipalInfo> map.
+							PrincipalInfoId pId = pIdsMap.get(k);
+							for (PrincipalInfo pi:  piList) {
+								// Is this the PrincipalInfo for the
+								// PrincipalInfoId?
+								if (pId.getId().equals(pi.getId())) {
+									// Yes!  Add it to the principals map
+									// and break out of the inner loop.
+									piMap.put(k, pi);
+									break;
+								}
+							}
+						}
+						
+						// Once we've processed all the
+						// PrincipalInfoId's in the row, we clear the
+						// map of them since we won't need them again. 
+						pIdsMap.clear();
+					}
+				}
+				
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.completePIs(Fixup Principals)");
+				}
+			}
+			
+			catch (Exception ex) {/* Ignored. */}
 		}
 		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.changeEntryTypes( SOURCE EXCEPTION ):  ");
+		finally {
+			gsp.stop();
 		}
 	}
 
@@ -2223,134 +2308,6 @@ public class GwtViewHelper {
 	}
 	
 	/*
-	 * Scans the List<FolderRow> and sets the access rights for the
-	 * current user for each row.
-	 */
-	private static void fixupFRs(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> frList, boolean isManageUsers, boolean isFilr) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.fixupFRs()");
-		try {
-			// If we don't have any FolderRow's to complete...
-			if (!(MiscUtil.hasItems(frList))) {
-				// ..bail.
-				return;
-			}
-	
-			List<Long> binderIds    = new ArrayList<Long>();
-			List<Long> principalIds = new ArrayList<Long>();
-			SimpleProfiler.start("GwtViewHelper.fixupFRs(Collect IDs)");
-			try {
-				// Collect the entity IDs of the rows from the
-				// List<FolderRow>.
-				for (FolderRow fr:  frList) {
-					Long id = fr.getEntityId().getEntityId();
-					if (fr.isBinder()) {
-						binderIds.add(id);
-					}
-					
-					Map<String, PrincipalInfoId> pIdsMap = fr.getRowPrincipalIdsMap();
-					for (String k:  pIdsMap.keySet()) {
-						ListUtil.addLongToListLongIfUnique(principalIds, pIdsMap.get(k).getId());
-					}
-				}
-			}
-			
-			finally {
-				SimpleProfiler.stop("GwtViewHelper.fixupFRs(Collect IDs)");
-			}
-			
-			try {
-				SimpleProfiler.start("GwtViewHelper.fixupFRs(Fixup Folder Info)");
-				try {
-					// Read the Binder's for the rows (including those
-					// intermediate sub-binders that might be
-					// inaccessible)...
-					BinderModule bm = bs.getBinderModule();
-					SortedSet<Binder> binders = bm.getBinders(binderIds, Boolean.FALSE);
-		
-					// ...mapping each Binder to its ID.
-					Map<Long, Binder> binderMap = new HashMap<Long, Binder>();
-					for (Binder binder:  binders) {
-						binderMap.put(binder.getId(), binder);
-					}
-		
-					// Scan the List<FolderRow> again.
-					for (FolderRow fr:  frList) {
-						// Skipping any entries.
-						if (!(fr.isBinder())) {
-							continue;
-						}
-		
-						// Do we have the Binder for this row?
-						Binder binder = binderMap.get(fr.getEntityId().getEntityId());
-						if (null != binder) {
-							// Yes!  Store its icon names...
-							fr.setBinderIcon(binder.getIconName(),                BinderIconSize.SMALL );
-							fr.setBinderIcon(binder.getIconName(IconSize.MEDIUM), BinderIconSize.MEDIUM);
-							fr.setBinderIcon(binder.getIconName(IconSize.LARGE ), BinderIconSize.LARGE );
-							
-							// ...and store a BinderInfo for it.
-							fr.setBinderInfo(GwtServerHelper.getBinderInfo(request, bs, binder));
-						}
-					}
-				}
-				
-				finally {
-					SimpleProfiler.stop("GwtViewHelper.fixupFRs(Fixup Folder Info)");
-				}
-				
-				SimpleProfiler.start("GwtViewHelper.fixupFRs(Fixup Principals)");
-				try {
-					// Build a List<PrincipalInfo> from the List<Long> of
-					// principal IDs. 
-					List<PrincipalInfo> piList = getPIsFromPIds(bs, request, principalIds);
-					for (PrincipalInfo pi:  piList) {
-						if (pi.isUserPerson() || isManageUsers || (!isFilr)) {
-							continue;
-						}
-						piList.remove(pi);
-					}
-					
-					// Scan the List<FolderRow> again.
-					for (FolderRow fr:  frList) {
-						// Scan this row's PrincipalInfoId's.
-						Map<String, PrincipalInfo>   piMap   = fr.getRowPrincipalsMap();
-						Map<String, PrincipalInfoId> pIdsMap = fr.getRowPrincipalIdsMap();
-						for (String k:  pIdsMap.keySet()) {
-							// Scan the List<PrincipalInfo> map.
-							PrincipalInfoId pId = pIdsMap.get(k);
-							for (PrincipalInfo pi:  piList) {
-								// Is this the PrincipalInfo for the
-								// PrincipalInfoId?
-								if (pId.getId().equals(pi.getId())) {
-									// Yes!  Add it to the principals map
-									// and break out of the inner loop.
-									piMap.put(k, pi);
-									break;
-								}
-							}
-						}
-						
-						// Once we've processed all the
-						// PrincipalInfoId's in the row, we clear the
-						// map of them since we won't need them again. 
-						pIdsMap.clear();
-					}
-				}
-				
-				finally {
-					SimpleProfiler.stop("GwtViewHelper.fixupFRs(Fixup Principals)");
-				}
-			}
-			
-			catch (Exception ex) {/* Ignored. */}
-		}
-		
-		finally {
-			gsp.stop();
-		}
-	}
-
-	/*
 	 * Returns a non-null List<AssignmentInfo> from a folder row for a
 	 * given attribute.
 	 */
@@ -2870,84 +2827,91 @@ public class GwtViewHelper {
 			finally {
 				SimpleProfiler.stop("GwtViewHelper.getEntityRights(Collect IDs)");
 			}
-			
+
 			try {
-				SimpleProfiler.start("GwtViewHelper.getEntityRights(Fixup Entry Rights)");
-				try {
-					// Read the FolderEntry's for the rows...
-					FolderModule fm = bs.getFolderModule();
-					SortedSet<FolderEntry> entries = fm.getEntries(entryIds);
-					
-					// ...mapping each FolderEntry to its ID.
-					Map<Long, FolderEntry> entryMap = new HashMap<Long, FolderEntry>();
-					for (FolderEntry entry: entries) {
-						entryMap.put(entry.getId(), entry);
-					}
-					
-					// Scan the List<EntityId> again.
-					for (EntityId eid:  entityIds) {
-						// Skipping any binders.
-						if (eid.isBinder()) {
-							continue;
+				// Do we have any FolderEntry rights to query?
+				if (!(entryIds.isEmpty())) {
+					SimpleProfiler.start("GwtViewHelper.getEntityRights(Get Entry Rights)");
+					try {
+						// Yes!  Read the FolderEntry's for the rows...
+						FolderModule fm = bs.getFolderModule();
+						SortedSet<FolderEntry> entries = fm.getEntries(entryIds);
+						
+						// ...mapping each FolderEntry to its ID.
+						Map<Long, FolderEntry> entryMap = new HashMap<Long, FolderEntry>();
+						for (FolderEntry entry: entries) {
+							entryMap.put(entry.getId(), entry);
 						}
 						
-						// Do we have the FolderEntry for this row?
-						FolderEntry entry = entryMap.get(eid.getEntityId());
-						if (null != entry) {
-							// Yes!  Create the EntityRights for the
-							// entry. 
-							EntityRights entryRights = new EntityRights();
-							entryRights.setCanAddReplies( fm.testAccess(entry, FolderOperation.addReply      ));
-							entryRights.setCanModify(     fm.testAccess(entry, FolderOperation.modifyEntry   ));
-							entryRights.setCanPurge(      fm.testAccess(entry, FolderOperation.deleteEntry   ));
-							entryRights.setCanTrash(      fm.testAccess(entry, FolderOperation.preDeleteEntry));
-							entryRights.setCanShare(      GwtShareHelper.isEntitySharable(bs, entry          ));
-							reply.setEntityRights(eid, entryRights);
+						// Scan the List<EntityId> again.
+						for (EntityId eid:  entityIds) {
+							// Skipping any binders.
+							if (eid.isBinder()) {
+								continue;
+							}
+							
+							// Do we have the FolderEntry for this row?
+							FolderEntry entry = entryMap.get(eid.getEntityId());
+							if (null != entry) {
+								// Yes!  Create the EntityRights for the
+								// entry. 
+								EntityRights entryRights = new EntityRights();
+								entryRights.setCanAddReplies( fm.testAccess(entry, FolderOperation.addReply      ));
+								entryRights.setCanModify(     fm.testAccess(entry, FolderOperation.modifyEntry   ));
+								entryRights.setCanPurge(      fm.testAccess(entry, FolderOperation.deleteEntry   ));
+								entryRights.setCanTrash(      fm.testAccess(entry, FolderOperation.preDeleteEntry));
+								entryRights.setCanShare(      GwtShareHelper.isEntitySharable(bs, entry          ));
+								reply.setEntityRights(eid, entryRights);
+							}
 						}
 					}
-				}
-				
-				finally {
-					SimpleProfiler.stop("GwtViewHelper.getEntityRights(Fixup Entry Rights)");
+					
+					finally {
+						SimpleProfiler.stop("GwtViewHelper.getEntityRights(Get Entry Rights)");
+					}
 				}
 	
-				SimpleProfiler.start("GwtViewHelper.getEntityRights(Fixup Folder Rights)");
-				try {
-					// Read the Binder's for the rows (including those
-					// intermediate sub-binders that might be
-					// inaccessible)...
-					BinderModule bm = bs.getBinderModule();
-					SortedSet<Binder> binders = bm.getBinders(binderIds, Boolean.FALSE);
-		
-					// ...mapping each Binder to its ID.
-					Map<Long, Binder> binderMap = new HashMap<Long, Binder>();
-					for (Binder binder:  binders) {
-						binderMap.put(binder.getId(), binder);
-					}
-		
-					// Scan the List<EntityId> again.
-					for (EntityId eid:  entityIds) {
-						// Skipping any entries.
-						if (!(eid.isBinder())) {
-							continue;
+				// Do we have any Binder rights to query?
+				if (!(binderIds.isEmpty())) {
+					SimpleProfiler.start("GwtViewHelper.getEntityRights(Get Binder Rights)");
+					try {
+						// Yes!  Read the Binder's for the rows
+						// (including those intermediate sub-binders
+						// that might be inaccessible)...
+						BinderModule bm = bs.getBinderModule();
+						SortedSet<Binder> binders = bm.getBinders(binderIds, Boolean.FALSE);
+			
+						// ...mapping each Binder to its ID.
+						Map<Long, Binder> binderMap = new HashMap<Long, Binder>();
+						for (Binder binder:  binders) {
+							binderMap.put(binder.getId(), binder);
 						}
-		
-						// Do we have the Binder for this row?
-						Binder binder = binderMap.get(eid.getEntityId());
-						if (null != binder) {
-							// Yes!  Create the EntityRights for the
-							// binder. 
-							EntityRights binderRights = new EntityRights();
-							binderRights.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
-							binderRights.setCanPurge( bm.testAccess(binder, BinderOperation.deleteBinder   ));
-							binderRights.setCanTrash( bm.testAccess(binder, BinderOperation.preDeleteBinder));
-							binderRights.setCanShare( GwtShareHelper.isEntitySharable(bs, binder           ));
+			
+						// Scan the List<EntityId> again.
+						for (EntityId eid:  entityIds) {
+							// Skipping any entries.
+							if (!(eid.isBinder())) {
+								continue;
+							}
+			
+							// Do we have the Binder for this row?
+							Binder binder = binderMap.get(eid.getEntityId());
+							if (null != binder) {
+								// Yes!  Create the EntityRights for
+								// the binder. 
+								EntityRights binderRights = new EntityRights();
+								binderRights.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
+								binderRights.setCanPurge( bm.testAccess(binder, BinderOperation.deleteBinder   ));
+								binderRights.setCanTrash( bm.testAccess(binder, BinderOperation.preDeleteBinder));
+								binderRights.setCanShare( GwtShareHelper.isEntitySharable(bs, binder           ));
+								reply.setEntityRights(eid, binderRights);
+							}
 						}
 					}
-				}
-				
-				finally {
-					SimpleProfiler.stop("GwtViewHelper.getEntityRights(Fixup Folder Rights)");
+					
+					finally {
+						SimpleProfiler.stop("GwtViewHelper.getEntityRights(Get Binder Rights)");
+					}
 				}
 			}
 			
@@ -4002,6 +3966,20 @@ public class GwtViewHelper {
 					if (isEntityFolderEntry && pinnedEntryIds.contains(entityId.getEntityId())) {
 						fr.setPinned(true);
 					}
+
+					// If we working with a binder...
+					if (!isEntityFolderEntry) {
+						// ...store it's icon name...
+						String iconName = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ICON_NAME_FIELD);
+						fr.setBinderIcon(Utils.getIconNameTranslated(iconName),                  BinderIconSize.SMALL );
+						fr.setBinderIcon(Utils.getIconNameTranslated(iconName, IconSize.MEDIUM), BinderIconSize.MEDIUM);
+						fr.setBinderIcon(Utils.getIconNameTranslated(iconName, IconSize.LARGE ), BinderIconSize.LARGE );
+
+						// ...and whether it's a user's home directory
+						// ...folder in the row.
+			            String homeDirStr = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.IS_HOME_DIR_FIELD);
+						fr.setHomeDir(Constants.TRUE.equals(homeDirStr));
+					}
 					
 					// Scan the columns.
 					for (FolderColumn fc:  folderColumns) {
@@ -4186,7 +4164,7 @@ public class GwtViewHelper {
 									else {
 										// No, we aren't looking at the 'guest' column in a guest
 										// book folder!  Simply track the principal's ID.  We'll
-										// resolve it later to a PrincipalInfo in fixupFRs().
+										// resolve it later to a PrincipalInfo in completePIs().
 										pId = new PrincipalInfoId(p.getId());
 										fr.setColumnValue(fc, pId);
 									}
@@ -4462,7 +4440,7 @@ public class GwtViewHelper {
 			
 			// Walk the List<FolderRow>'s performing any remaining
 			// fixups on each as necessary.
-			fixupFRs(bs, request, folderRows, isManageUsers, isFilr);
+			completePIs(bs, request, folderRows, isManageUsers, isFilr);
 
 			// Is the user viewing pinned entries?
 			if (viewPinnedEntries) {
