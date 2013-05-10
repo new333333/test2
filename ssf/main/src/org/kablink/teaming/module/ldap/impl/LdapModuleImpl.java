@@ -3581,64 +3581,98 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 			}
 			
-			//if disable is enabled, remove users that were not found in ldap
-			if ( doCleanup && delete && !notInLdap.isEmpty()) {
-				PartialLdapSyncResults	syncResults	= null;
-				
-				if (logger.isInfoEnabled()) {
-					logger.info("Deleting users:");
-					for (String name:notInLdap.values()) {
-						logger.info("'" + name + "'");
-					}
-				}
-
-				// Do we have a place to store the sync results?
-				if ( m_ldapSyncResults != null )
-				{
-					// Yes
-					syncResults = m_ldapSyncResults.getDeletedUsers();
-				}
-				deletePrincipals(zoneId, notInLdap.keySet(), deleteWorkspace, syncResults );
-			}
-			
-			//!!! Can we use the ldap guid as a better way of doing the following?
-			//Set foreign names of users to self; needed to recognize synced names and mark attributes read-only
-			if ( doCleanup && !delete && !notInLdap.isEmpty()) {
+			// Do the work of disabling or deleting users that were not found in ldap.
+			// We will only disable or delete users that were sync'd from ldap but are no
+			// longer found in the ldap directory.
+			// We will not touch users that were created by the admin or external users.
+			if ( doCleanup )
+			{
 		    	Map users = new HashMap();
-				if (logger.isDebugEnabled())
-					logger.debug("Users not found in ldap:");
-				
-				for (Map.Entry<Long, String>me:notInLdap.entrySet()) {
+
+				for ( Map.Entry<Long, String>me:notInLdap.entrySet() )
+				{
 					Long id = me.getKey();
 					String name = me.getValue();
-					if (logger.isDebugEnabled())
-						logger.debug("\t'"+name+"'");
+					String foreignName;
+					String ldapGuid;
 					
 					Object row[] = (Object[])ssUsers.get(name);
-					if (!name.equalsIgnoreCase((String)row[PRINCIPAL_FOREIGN_NAME])) {//was synched from somewhere else	
+					ldapGuid = (String) row[PRINCIPAL_LDAP_GUID];
+					foreignName = (String) row[PRINCIPAL_FOREIGN_NAME];
+					
+					// Was this user provisioned from ldap?
+					if ( (ldapGuid != null && ldapGuid.length() > 0 ) || !name.equalsIgnoreCase( foreignName ) )
+					{	
 						Map updates = new HashMap();
+
+						// Yes
+						// If we disable the user we want to set the foreignName equal to the name
 				    	updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, name);
 			    		users.put(id, updates);
 			     	}
 				}
-				if (!users.isEmpty())
+				
+				// Do we have any users we need to disable or delete?
+				if ( !users.isEmpty() )
 				{
-					PartialLdapSyncResults	syncResults	= null;
-					
-					// Do we have a place to store the sync results?
-					if ( m_ldapSyncResults != null )
+					// Yes
+					// Should we delete the users that are no longer found in ldap?
+					if ( delete )
 					{
-						// Yes, get the list to store the modified users.
-						syncResults = m_ldapSyncResults.getModifiedUsers();
+						Set userIds;
+						Iterator iter;
+						PartialLdapSyncResults	syncResults	= null;
+						
+						// Yes
+						logger.info( "About to delete the following users:" );
+						userIds = users.keySet();
+						for ( iter = userIds.iterator(); iter.hasNext(); )
+						{
+							String userName;
+							Long userIdL;
+							HashMap values;
+							
+							// Get the id of the user.
+							userIdL = (Long) iter.next();
+							
+							// Get the name of the user.
+							values = (HashMap) users.get( userIdL );
+							userName = (String) values.get(  ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME );
+							if ( userName != null )
+								logger.info( "\tUser: " + userName );
+						}
+
+						// Do we have a place to store the sync results?
+						if ( m_ldapSyncResults != null )
+						{
+							// Yes
+							syncResults = m_ldapSyncResults.getDeletedUsers();
+						}
+
+						// Delete the users no longer found in ldap that once existed in ldap.
+						deletePrincipals(zoneId, users.keySet(), deleteWorkspace, syncResults );
 					}
-					updateUsers( m_ldapCtx, zoneId, users, null, syncResults );
-					
-					// Disable the accounts that are not in ldap
-					disableUsers( users );
+					else
+					{
+						PartialLdapSyncResults	syncResults	= null;
+						
+						// Disable the users.
+						// Do we have a place to store the sync results?
+						if ( m_ldapSyncResults != null )
+						{
+							// Yes, get the list to store the modified users.
+							syncResults = m_ldapSyncResults.getModifiedUsers();
+						}
+						
+						updateUsers( m_ldapCtx, zoneId, users, null, syncResults );
+						
+						// Disable the users no longer found in ldap that once existed in ldap.
+						disableUsers( users );
+					}
 				}
 			}
+			
 			return dnUsers;
-
 		}
 		
 	}// end UserCoordinator
