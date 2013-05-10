@@ -4576,39 +4576,12 @@ public class GwtServerHelper {
 	 */
 	public static String getDownloadFileUrl(HttpServletRequest request, AllModulesInjected bs, Long binderId, Long entryId, boolean asPermalink) throws GwtTeamingException {
 		try {
-			// Does the entry have the name of a primary file attribute
-			// stored? 
+			// Look for the entry's primary file attachment?
 			FolderEntry		entry  = bs.getFolderModule().getEntry(null, entryId);
-			FileAttachment	dlAttr = null;
-			Map				model  = new HashMap();
-			DefinitionHelper.getPrimaryFile(entry, model);
-			String attrName = ((String) model.get(WebKeys.PRIMARY_FILE_ATTRIBUTE));
-			if (MiscUtil.hasString(attrName)) {
-				// Yes!  Can we access any custom attribute values for
-				// that attribute?
-				CustomAttribute ca = entry.getCustomAttribute(attrName);
-				if (null != ca) {
-					Set values = ca.getValueSet();
-					if (MiscUtil.hasItems(values)) {
-						// Yes!  Use the first one in the set as the
-						// one to download.
-						dlAttr = ((FileAttachment) values.iterator().next());
-					}
-				}
-			}
+			FileAttachment	dlAttr = MiscUtil.getPrimaryFileAttachment(entry);
 
-			// Do we have the file attachment for the file to download?
-			if (null == dlAttr) {
-				// No!  Does the entry have any file attachments?
-				Set<FileAttachment> atts = entry.getFileAttachments();
-				if (MiscUtil.hasItems(atts)) {
-					// Yes!  Download the first one. 
-					dlAttr = atts.iterator().next();
-				}
-			}
-
-			// If we have a file attribute to download, generate a URL
-			// to download it.  Otherwise, return null.
+			// If we the primary file attachment, generate a URL to
+			// download it.  Otherwise, return null.
 			String reply;
 			if (null != dlAttr)
 				 reply = WebUrlUtil.getFileUrl(request, WebKeys.ACTION_READ_FILE, dlAttr, false, true);
@@ -5243,56 +5216,13 @@ public class GwtServerHelper {
 		// Is the FolderEntry a file entry?
 		FileAttachment reply = null;
 		if ((!validateAsFileEntry) || isFamilyFile(getFolderEntityFamily(bs, fileEntry))) {
-			// Yes!  Does it have the name of the primary file
-			// attachment attribute?
-			Map model  = new HashMap();
-			DefinitionHelper.getPrimaryFile(fileEntry, model);
-			String attrName = ((String) model.get(WebKeys.PRIMARY_FILE_ATTRIBUTE));
-			if (MiscUtil.hasString(attrName)) {
-				// Yes!  Can we access any custom attribute values for
-				// that attribute?
-				CustomAttribute ca = fileEntry.getCustomAttribute(attrName);
-				if (null != ca) {
-					Collection values = ca.getValueSet();
-					if (MiscUtil.hasItems(values)) {
-						// Yes!  Scan them.
-						Iterator vi = values.iterator();
-						while (vi.hasNext()) {
-							// Does this attachment have a filename?
-							FileAttachment fa = ((FileAttachment) vi.next());
-							String fName = fa.getFileItem().getName();
-							if (MiscUtil.hasString(fName)) {
-				        		// Return it as the filename.
-								reply = fa;
-								break;
-							}
-						}
-					}
-				}
-			}
-
-			// Do we have the file attribute for the file entry yet?
-			if (null == reply) {
-				// No!  Does the entry have any attachments?
-				Collection<FileAttachment> atts = fileEntry.getFileAttachments();
-				if (MiscUtil.hasItems(atts)) {
-					// Yes!  Scan them.
-			        for (FileAttachment fa : atts) {
-			        	// Does this attachment have a filename?
-			        	String fName = fa.getFileItem().getName();
-			        	if (MiscUtil.hasString(fName)) {
-			        		// Return it as the filename.
-							reply = fa;
-							break;
-			        	}
-			        }
-				}
-			}
+			// Yes!  Can we find its primary file attachment?
+			reply = MiscUtil.getPrimaryFileAttachment(fileEntry);
 		}
 		
 		// If we get here, reply refers to the to the file entry's
 		// FileAttachment or null if the entry isn't a file entry or an
-		// attachment with a named file can't be found.  Return it.
+		// attachment can't be found.  Return it.
         return reply;
 	}
 	
