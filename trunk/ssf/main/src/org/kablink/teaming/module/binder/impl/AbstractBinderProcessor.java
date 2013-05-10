@@ -254,7 +254,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //no transaction    
     @Override
 	public Binder addBinder(final Binder parent, Definition def, Class clazz, 
-    		final InputDataAccessor inputData, Map fileItems, Map options, final boolean skipDbLog) 
+    		final InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException, WriteEntryDataException {
         // This default implementation is coded after template pattern. 
       	if (parent.isZone())
@@ -311,7 +311,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	
 	                addBinder_save(parent, binder, inputData, entryData, ctx);      
 	                
-	                addBinder_postSave(parent, binder, inputData, entryData, ctx, skipDbLog);
+	                addBinder_postSave(parent, binder, inputData, entryData, ctx);
 	                //register title for uniqueness for webdav; always ensure binder titles are unique in parent
 	                getCoreDao().updateFileName(binder.getParentBinder(), binder, null, binder.getTitle());
 	                if (binder.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(binder.getParentBinder(), binder, null, binder.getNormalTitle());
@@ -571,7 +571,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
    //inside write transaction    
-    protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx, boolean skipDbLog) {
+    protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
+		boolean skipDbLog = false;
+		if(ctx != null && ctx.containsKey(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG))
+			skipDbLog = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG)).booleanValue();
+
   		if (inputData.exists(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS)) {
   			List<WorkAreaFunctionMembership> wfms = (List)inputData.getSingleObject(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS);
   			if (wfms != null && !wfms.isEmpty()) { 
@@ -1452,7 +1456,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        InputDataAccessor inputData = new MapInputData(data);
        Binder binder = null;
        try {
-			binder = addBinder(destination, sampleBinder.getEntryDef(), sampleBinder.getClass(), inputData, null, null, false);
+			binder = addBinder(destination, sampleBinder.getEntryDef(), sampleBinder.getClass(), inputData, null, null);
        } catch (Exception e) {}
        
        return binder;

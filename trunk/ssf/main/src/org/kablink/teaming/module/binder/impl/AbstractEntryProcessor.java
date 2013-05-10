@@ -131,7 +131,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
 	@Override
 	public Entry addEntry(final Binder binder, Definition def, Class clazz, 
-    		final InputDataAccessor inputData, Map fileItems, Map options, final boolean skipDbLog, final boolean skipNotifyStatus) 
+    		final InputDataAccessor inputData, Map fileItems, Map options) 
     	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException {
         // This default implementation is coded after template pattern. 
         SimpleProfiler.start("addEntry");
@@ -178,7 +178,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         			addEntry_save(binder, entry, inputData, entryData,ctx);
         			SimpleProfiler.stop("addEntry_save");
                 	SimpleProfiler.start("addEntry_postSave");
-         			addEntry_postSave(binder, entry, inputData, entryData, ctx, skipDbLog, skipNotifyStatus);
+         			addEntry_postSave(binder, entry, inputData, entryData, ctx);
                 	SimpleProfiler.stop("addEntry_postSave");
        			return null;
         		}
@@ -194,7 +194,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	SimpleProfiler.start("addEntry_processFiles");
         	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
-        	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx, skipDbLog);
+        	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
         	
         	getTransactionTemplate().execute(new TransactionCallback() {
         		@Override
@@ -390,7 +390,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
 
     protected FilesErrors addEntry_processFiles(Binder binder, 
-    		Entry entry, List fileUploadItems, FilesErrors filesErrors, Map ctx, boolean skipDbLog) {
+    		Entry entry, List fileUploadItems, FilesErrors filesErrors, Map ctx) {
+        boolean skipDbLog = false;
+        if(ctx != null && ctx.containsKey(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG))
+        	skipDbLog = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG)).booleanValue();
+
     	return getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors, skipDbLog);
     }
     
@@ -489,7 +493,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
     //inside write transaction
-    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx, boolean skipDbLog, boolean skipNotifyStatus) {
+    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+        boolean skipDbLog = false;
+        if(ctx != null && ctx.containsKey(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG))
+        	skipDbLog = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG)).booleanValue();
+        boolean skipNotifyStatus = false;
+        if(ctx != null && ctx.containsKey(ObjectKeys.INPUT_OPTION_SKIP_NOTIFY_STATUS))
+        	skipNotifyStatus = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_SKIP_NOTIFY_STATUS)).booleanValue();
+
     	//create history - using timestamp and version from fillIn
 		if (binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, null, entry.getNormalTitle());
     	
@@ -886,11 +897,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //inside write transaction
     protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, 
     		Map entryData, Map<FileAttachment,String> fileRenamesTo, Map ctx) {
+        boolean skipNotifyStatus = false;
+        if(ctx != null && ctx.containsKey(ObjectKeys.INPUT_OPTION_SKIP_NOTIFY_STATUS))
+        	skipNotifyStatus = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_SKIP_NOTIFY_STATUS)).booleanValue();
+
     	//create history - using timestamp and version from fillIn
   		if (entry.isTop() && binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, (String)ctx.get(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE), entry.getNormalTitle());		
     	reorderFiles(entry, inputData, entryData);
     	editFileComments(entry, inputData);
-    	processChangeLog(entry, ChangeLog.MODIFYENTRY);
+    	processChangeLog(entry, ChangeLog.MODIFYENTRY, false, skipNotifyStatus);
     	getReportModule().addAuditTrail(AuditType.modify, entry);
 
     	if(fileRenamesTo != null)
