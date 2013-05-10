@@ -56,7 +56,10 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
+import org.kablink.teaming.domain.CustomAttribute;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -83,7 +86,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public final class MiscUtil
 {
-	protected static Log m_logger = LogFactory.getLog(MiscUtil.class);
+	protected static Log m_logger = LogFactory.getLog( MiscUtil.class );
 	
 	// The following are used as the return values for the various
 	// comparators.
@@ -1024,7 +1027,7 @@ public final class MiscUtil
 	public static List<IdTriple> getIdTriplesFromMultipleEntryIds( String multipleEntityIds )
 	{
 		List<IdTriple> reply = new ArrayList<IdTriple>();
-		if ( MiscUtil.hasString( multipleEntityIds ) )
+		if ( hasString( multipleEntityIds ) )
 		{
 			String[] meIds = multipleEntityIds.split( "," );
 			for ( String meId:  meIds )
@@ -1137,4 +1140,60 @@ public final class MiscUtil
 		// Always use the initial form of the method.
 		return getMD5Hash( data.getBytes() );
 	}// end getMD5Hash()
+
+	/**
+	 * Given a DefinableEntity that's a FolderEntry, returns the
+	 * FileAttachment to use as the entity's primary file attachment,
+	 * if available.  Otherwise, returns null.
+	 * 
+	 * @param de
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static FileAttachment getPrimaryFileAttachment( DefinableEntity de )
+	{
+		// Do we have a DefinableEntity that's a FolderEntry?
+		FileAttachment reply = null;
+		if ( ( null != de ) && ( de instanceof FolderEntry ) )
+		{
+			// Yes!  Does that entry have a primary file attribute?
+			FolderEntry fe = ((FolderEntry) de);
+			Map model  = new HashMap();
+			DefinitionHelper.getPrimaryFile( fe, model );
+			String attrName = ((String) model.get( WebKeys.PRIMARY_FILE_ATTRIBUTE ) );
+			if ( hasString( attrName ) )
+			{
+				// Yes!  Can we access the custom attribute values for
+				// that attribute?
+				CustomAttribute ca = fe.getCustomAttribute( attrName );
+				if ( null != ca )
+				{
+					// Yes!  Does it contain any FileAttachment's?
+					Collection values = ca.getValueSet();
+					if ( hasItems( values ) )
+					{
+						// Yes!  Return the first one.
+						reply = ((FileAttachment) values.iterator().next());
+					}
+				}
+			}
+	
+			// Do we have the FileAttachment for the entry yet?
+			if ( null == reply )
+			{
+				// No!  Does it have any attachments?
+				Collection<FileAttachment> atts = fe.getFileAttachments();
+				if ( hasItems( atts ) ) {
+					// Yes!  Return the first one.
+					reply = ((FileAttachment) atts.iterator().next());
+				}
+			}
+		}
+
+		// If we get here, reply refers to the DefinableEntity's
+		//primary file attachment or is null if one can't be
+		//determined.  Return it.
+		return reply;
+	}
 }// end MiscUtil
