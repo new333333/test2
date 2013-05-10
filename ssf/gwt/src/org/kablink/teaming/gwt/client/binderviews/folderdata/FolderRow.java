@@ -40,7 +40,6 @@ import java.util.Map;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderIcons;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
@@ -66,9 +65,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FolderRow implements IsSerializable {
-	private BinderIcons								m_binderIcons;				// Hold binder icons of various sizes for a binder. 
-	private BinderInfo								m_binderInfo;				// Set if the row represents a binder.
-	private boolean									m_pinned;					// true -> The row is pinned.  false -> It's not.
+	private BinderIcons								m_binderIcons;				// Hold binder icons of various sizes for a binder.
+	private boolean									m_homeDir;					// true -> The row is a user's Home directory folder.  false -> It's not.
+	private boolean									m_pinned;					// true -> The row is pinned.                          false -> It's not.
 	private EntityId								m_entityId;					// The entity ID of the FolderEntry this FolderRow corresponds to.
 	private List<FolderColumn>						m_columns;					// The FolderColumns that contribute to this FolderRow.
 	private Map<String, Boolean>					m_rowOverdueDates;			// A map of column names to Boolean indicators of an overdue date possibly stored for a column.
@@ -169,8 +168,8 @@ public class FolderRow implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean								getPinned()                            {                               return m_pinned;             }
-	public BinderInfo							getBinderInfo()                        {                               return m_binderInfo;         }
+	public boolean								isHomeDir()                            {                               return m_homeDir;            }
+	public boolean								isPinned()                             {                               return m_pinned;             }
 	public EntityId								getEntityId()                          {                               return m_entityId;           }
 	public List<FolderColumn>					getColumns()                           {                               return m_columns;            }
 	public Map<String, Boolean>					getRowOverdueDates()                   {validateMapOverdueDates();     return m_rowOverdueDates;    }
@@ -197,9 +196,9 @@ public class FolderRow implements IsSerializable {
 	 */
 	public void setColumns(   List<FolderColumn> columns)                             {m_columns    = columns;                           }
 	public void setEntityId(  EntityId           entityId)                            {m_entityId   = entityId;                          }
+	public void setHomeDir(   boolean            homeDir)                             {m_homeDir    = homeDir;                           }
 	public void setPinned(    boolean            pinned)                              {m_pinned     = pinned;                            }
 	public void setBinderIcon(String             binderIcon, BinderIconSize iconSize) {m_binderIcons.setBinderIcon(binderIcon, iconSize);}
-	public void setBinderInfo(BinderInfo         binderInfo)                          {m_binderInfo = binderInfo;                        }
 	
 	/**
 	 * Clears the binder icons being tracked in this TreeInfo.

@@ -662,7 +662,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				}
 				else {
 					reply = new EntryPinInfo(
-						fr.getPinned(),
+						fr.isPinned(),
 						getFolderId(),
 						fr.getEntityId().getEntityId());
 				}
@@ -969,7 +969,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Is this row an entry that matches the requested
 				// pinned state?
 				EntityId rowEID = fr.getEntityId();
-				if (rowEID.isEntry() && (fr.getPinned() == pinned)) {
+				if (rowEID.isEntry() && (fr.isPinned() == pinned)) {
 					// Yes!  Add its entity ID to the List<EntityId>.
 					reply.add(rowEID);
 				}
@@ -1063,8 +1063,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		String			reply;
 		if (fr.isBinder()) {
 			// Yes!  Is this the user's home folder?
-			BinderInfo bi = fr.getBinderInfo();
-			if ((null != bi) && bi.isFolderHome()) {
+			if (fr.isHomeDir()) {
 				// Yes!
 				switch (bis) {
 				default:
