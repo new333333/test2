@@ -121,7 +121,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	}
     	super.addEntry_fillIn(folder, entry, inputData, entryData, ctx);
     	fEntry.updateLastActivity(fEntry.getModification().getDate());
-    	if (fEntry.isTop()) {
+    	if (!folder.isMirrored() && fEntry.isTop()) {
     		Statistics statistics = getFolderStatistics(folder);
 	    	statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
 	    	setFolderStatistics(folder, statistics);
