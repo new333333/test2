@@ -129,8 +129,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //inside write transaction
     @Override
-	protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx, boolean skipDbLog, boolean skipNotifyStatus) {
-    	super.addEntry_postSave(binder, entry, inputData, entryData, ctx, skipDbLog, skipNotifyStatus);
+	protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    	super.addEntry_postSave(binder, entry, inputData, entryData, ctx);
     }
     //no transaction
     @Override
@@ -216,7 +216,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //no transaction
     protected FilesErrors addReply_processFiles(FolderEntry parent, FolderEntry entry, 
     		List fileData, FilesErrors filesErrors, Map ctx) {
-    	return addEntry_processFiles(parent.getParentBinder(), entry, fileData, filesErrors, ctx, false);
+    	return addEntry_processFiles(parent.getParentBinder(), entry, fileData, filesErrors, ctx);
     }
     //inside write transaction
     protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
@@ -257,7 +257,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction
     protected void addReply_postSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//will log addEntry
-    	addEntry_postSave(parent.getParentBinder(), entry, inputData, entryData, ctx, false, false);
+    	addEntry_postSave(parent.getParentBinder(), entry, inputData, entryData, ctx);
 
     }
     

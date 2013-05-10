@@ -625,15 +625,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
 			checkAccess(parentBinder, BinderOperation.changeEntryTimestamps);
 
-		boolean skipDbLog = false;
-		if(options != null && options.containsKey(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG))
-			skipDbLog = ((Boolean)options.get(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG)).booleanValue();
-
 		if (def.getType() == Definition.FOLDER_VIEW) {
 			checkAccess(parentBinder, BinderOperation.addFolder);
 			binder = loadBinderProcessor(parentBinder).addBinder(
 					parentBinder, def, Folder.class, inputData, fileItems,
-					options, skipDbLog);
+					options);
 			if (parentBinder instanceof Folder && parentBinder.isMirrored()
 					&& binder.isMirrored()) {
 				// Because addBinder method is not running inside a write
@@ -663,7 +659,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				checkAccess(parentBinder, BinderOperation.addWorkspace);
 			}
 			binder = loadBinderProcessor(parentBinder).addBinder(parentBinder,
-					def, Workspace.class, inputData, fileItems, options, skipDbLog);
+					def, Workspace.class, inputData, fileItems, options);
 		}
 		
 		end(begin, "addBinder");

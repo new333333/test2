@@ -572,15 +572,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         } else {
         	def = folder.getDefaultEntryDef();
         }
-        
-        boolean skipDbLog = false;
-        if(options != null && options.containsKey(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG))
-        	skipDbLog = ((Boolean)options.get(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG)).booleanValue();
-        boolean skipNotifyStatus = false;
-        if(options != null && options.containsKey(ObjectKeys.INPUT_OPTION_SKIP_NOTIFY_STATUS))
-        	skipNotifyStatus = ((Boolean)options.get(ObjectKeys.INPUT_OPTION_SKIP_NOTIFY_STATUS)).booleanValue();
-        
-        FolderEntry entry = (FolderEntry) processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options, skipDbLog, skipNotifyStatus);
+                
+        FolderEntry entry = (FolderEntry) processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
         
         end(begin, "addEntry");
         return entry;

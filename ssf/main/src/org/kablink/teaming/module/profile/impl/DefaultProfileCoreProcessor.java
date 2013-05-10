@@ -229,7 +229,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     }
     //inside write transaction    
     @Override
-	protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx, boolean skipDbLog) {
+	protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	Integer type = binder.getDefinitionType();
     	if ((type != null) && ((type.intValue() == Definition.USER_WORKSPACE_VIEW) ||
     			type.intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
@@ -242,7 +242,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     			u.setWorkspaceId(binder.getId());
     		}
     	}
-    	super.addBinder_postSave(parent, binder, inputData, entryData, ctx, skipDbLog);
+    	super.addBinder_postSave(parent, binder, inputData, entryData, ctx);
     	
     }
     //***********************************************************************************************************
@@ -256,13 +256,13 @@ protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inp
      }
     //inside write transaction
     @Override
-	protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx, boolean skipDbLog, boolean skipNotifyStatus) {
+	protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//make user the user is owner so create_modify access works
     	if (entry instanceof User) {
     		entry.getCreation().setPrincipal((User)entry);
     		entry.getModification().setPrincipal((User)entry);
     	}
-    	super.addEntry_postSave(binder, entry, inputData, entryData, ctx, skipDbLog, skipNotifyStatus);
+    	super.addEntry_postSave(binder, entry, inputData, entryData, ctx);
     }
        
     //***********************************************************************************************************	
@@ -801,7 +801,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	}
     protected void syncNewEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
 		//don't change owner - will do in bulk to save all these updates
-		super.addEntry_postSave(binder, entry, inputData, entryData, ctx, false, false);
+		super.addEntry_postSave(binder, entry, inputData, entryData, ctx);
 	}
     protected void syncNewEntry_startWorkflow(Entry entry, Map ctx) {
     	addEntry_startWorkflow(entry, ctx);

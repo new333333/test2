@@ -1366,7 +1366,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
   				updates.put(ObjectKeys.FIELD_BINDER_NAME, entry.getName());
   				updates.put(ObjectKeys.FIELD_ENTITY_TITLE, wsTitle);
         		updates.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-  				ws = (Workspace)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null, options, false);
+  				ws = (Workspace)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null, options);
   				// the processor committed transaction, so make sure to get the index changes committed here as well
   				IndexSynchronizationManager.applyChanges();
   			}
@@ -1909,7 +1909,7 @@ public Map getUsers() {
            		definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_APPLICATION_VIEW);
         }
         try {
-        	Entry newEntry = loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options, false, false);
+        	Entry newEntry = loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options);
 
             //Added to allow default groups to be defined for users in ssf.properties file
             if (clazz.equals(User.class))  //only do this for users not applications (maybe later;-)
@@ -2014,7 +2014,7 @@ public Map getUsers() {
 
         	}
         	
-        	return loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options, false, false);
+        	return loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options);
         } catch (DataIntegrityViolationException de) {
         	if(clazz.equals(Group.class))
         		throw new GroupExistsException(de);

@@ -8344,7 +8344,7 @@ public class GwtViewHelper {
         	    	FolderEntry existingEntry = fm.getLibraryFolderEntryByFileName(folder, fileName);
     	    		if (null != existingEntry) {
     	    			// ...we modify it...
-        	    		FolderUtils.modifyLibraryEntry(existingEntry, fileName, fi, null, modDate, null, true, null);
+        	    		FolderUtils.modifyLibraryEntry(existingEntry, fileName, fi, null, modDate, null, true, null, null);
         				pm.setSeen(null, existingEntry);
         	    	}
     	    		

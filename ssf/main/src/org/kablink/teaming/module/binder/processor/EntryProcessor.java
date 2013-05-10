@@ -62,7 +62,7 @@ public interface EntryProcessor extends BinderProcessor {
  
  	public Map getBinderEntries(Binder binder, String[] entryTypes, Map options) throws AccessControlException;
     
-    public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options, boolean skipDbLog, boolean skipNotifyStatus)
+    public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options)
     	throws WriteFilesException, WriteEntryDataException;
     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options);  
     public Entry copyEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options);
