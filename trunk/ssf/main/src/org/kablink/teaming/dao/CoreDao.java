@@ -267,7 +267,5 @@ public interface CoreDao {
 
 	public boolean contains(Object obj);
 	
-	public BinderState loadBinderState(Long binderId);
-	
 	public void purgeShares(Binder binder, boolean includeEntryShares);
 }
