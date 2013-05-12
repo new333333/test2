@@ -1816,7 +1816,7 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
     public Date getLastFullSyncCompletionTime(Long folderId) {
         Folder folder = getTopMostMirroredFolder(getFolder(folderId));
         if (folder!=null) {
-            BinderState binderState = getCoreDao().loadBinderState(folder.getId());
+            BinderState binderState = (BinderState) getCoreDao().load(BinderState.class, folder.getId());
             if (binderState!=null) {
                 return binderState.getLastFullSyncCompletionTime();
             }

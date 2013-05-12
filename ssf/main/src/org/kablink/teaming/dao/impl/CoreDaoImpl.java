@@ -3059,29 +3059,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	}
 
 	@Override
-	public BinderState loadBinderState(Long binderId) {
-		long begin = System.nanoTime();
-		try {
-			BinderState bs =(BinderState)getHibernateTemplate().get(BinderState.class, binderId);
-	   		if (bs == null) {
-	   			bs = new BinderState(binderId);
-	   			//quick write
-	   			try {
-	   				bs = (BinderState)this.saveNewSession(bs);
-	   			} catch (Exception ex) {
-	   				//contension?
-	   				bs =(BinderState)getHibernateTemplate().get(BinderState.class, binderId);
-	   			}
-	   		}
-	   		return bs;
-    	}
-    	finally {
-    		end(begin, "loadBinderState(Long)");
-    	}	        
-
-	}
-
-	@Override
 	public void purgeShares(final Binder binder, final boolean includeEntryShares) {
 		long begin = System.nanoTime();
 		try {
