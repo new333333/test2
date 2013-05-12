@@ -289,9 +289,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  		super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
     	FolderEntry fEntry = (FolderEntry)entry;
 		fEntry.updateLastActivity(fEntry.getModification().getDate());
-    	Statistics statistics = getFolderStatistics((Folder)binder);
-	    statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
-	    setFolderStatistics((Folder)binder, statistics);
+		if(!binder.isMirrored()) {
+	    	Statistics statistics = getFolderStatistics((Folder)binder);
+		    statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
+		    setFolderStatistics((Folder)binder, statistics);
+		}
   }
     //no transaction
 	@Override
@@ -541,10 +543,14 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
  			myTags.add(tCopy);
  		}
     	if (entry.isTop()) {
-    		if (entry.getParentFolder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, null, entry.getNormalTitle());
-    		Statistics statistics = getFolderStatistics(entry.getParentFolder());
-    		statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
-    		setFolderStatistics(entry.getParentFolder(), statistics);
+    		if (entry.getParentFolder().isUniqueTitles()) 
+    			getCoreDao().updateTitle(entry.getParentBinder(), entry, null, entry.getNormalTitle());
+    		
+    		if(!entry.getParentFolder().isMirrored()) {
+	    		Statistics statistics = getFolderStatistics(entry.getParentFolder());
+	    		statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
+	    		setFolderStatistics(entry.getParentFolder(), statistics);
+    		}
     		
     		//Check if this entry is being added to a Filr folder
     		if (entry.getParentBinder().isMirrored() && entry.getParentBinder().isAclExternallyControlled()) {
@@ -658,9 +664,11 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
         Statistics statistics = getFolderStatistics(from);        
         statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
         setFolderStatistics(from, statistics);
-        statistics = getFolderStatistics((Folder)destination);
-        statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
-        setFolderStatistics((Folder)destination, statistics);
+        if(!destination.isMirrored()) {
+	        statistics = getFolderStatistics((Folder)destination);
+	        statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
+	        setFolderStatistics((Folder)destination, statistics);
+        }
 
     	User user = RequestContextHolder.getRequestContext().getUser();
 
