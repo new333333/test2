@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -55,8 +55,13 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.util.Validator;
 
+/**
+ * ?
+ *  
+ * @author ?
+ */
+@SuppressWarnings("unchecked")
 public class User extends UserPrincipal implements IndividualPrincipal {
-	
 	public enum ExtProvState {
 		/**
 		 * The external user account was created as result of a sharing activity
@@ -135,6 +140,8 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected Short extProvState; // applicable only to external users
     protected Long extProvSeed; // applicable only to external users 
     
+	protected Boolean workspacePreDeleted;
+	
     private static Random random = new Random(System.currentTimeMillis());
     
     // For use by Hibernate only
@@ -146,6 +153,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		super(identityInfo);
 	}
 	
+	@Override
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.user;
 	}
@@ -180,6 +188,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     	return wds;
     }
 
+	@Override
 	public String getTitle() {
 		// title is set by hibernate access=field
 		//title is only kept in the db for sql queries
@@ -189,6 +198,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     	if (Validator.isNotNull(val)) return val;
     	return getName();		
 	}
+	@Override
 	public void setTitle(String title) {
 		if (!isDeleted())
 			throw new NotSupportedException("errorcode.notsupported.setTitle");
@@ -549,7 +559,8 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 			return EncryptUtil.encryptSHA1(getId().toString(), seed.toString());
 	}
  
-    public boolean isAllIndividualMember() {
+    @Override
+	public boolean isAllIndividualMember() {
     	if (!isReserved()) return true;
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(getInternalId())) return false;
     	if (ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(getInternalId())) return false;
@@ -646,5 +657,14 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		this.extProvState = (extProvState == null)? null : extProvState.getValue();
 	}
     
-
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public Boolean isWorkspacePreDeleted() {
+    	return ((null != workspacePreDeleted) && workspacePreDeleted);
+    }
+    public void setWorkspacePreDeleted(Boolean workspacePreDeleted) {
+    	this.workspacePreDeleted = workspacePreDeleted;
+    }
 }

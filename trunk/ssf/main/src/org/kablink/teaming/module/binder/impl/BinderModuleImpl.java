@@ -120,8 +120,6 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
-import org.kablink.teaming.runas.RunasCallback;
-import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.runasync.RunAsyncCallback;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.IndexErrors;
@@ -1075,6 +1073,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        	ws.setPreDeleted(null);
 		        	ws.setPreDeletedWhen(null);
 		        	ws.setPreDeletedBy(null);
+		        	
+		        	if (BinderHelper.isBinderUserWorkspace(binder)) {
+		        		// Note:  Won't work for guest, but guest will
+		        		// never get here because of the
+		        		// isBinderSystemUserWS() check at the top of
+		        		// the method.
+		        		getProfileModule().setUserWorkspacePreDeleted(ws.getOwnerId(), false);
+		        	}
 		        }
 
 		        // ...log the restoration...
@@ -1356,6 +1362,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        	ws.setPreDeleted(Boolean.TRUE);
 		        	ws.setPreDeletedWhen(System.currentTimeMillis());
 		        	ws.setPreDeletedBy(userId);
+		        	
+		        	if (BinderHelper.isBinderUserWorkspace(binder)) {
+		        		// Note:  Won't work for guest, but guest will
+		        		// never get here because of the
+		        		// isBinderSystemUserWS() check at the top of
+		        		// the method.
+		        		getProfileModule().setUserWorkspacePreDeleted(ws.getOwnerId(), true);
+		        	}
 		        }
 
 		        Binder parentBinder = binder.getParentBinder();

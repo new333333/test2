@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -140,6 +140,11 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 @SuppressWarnings("unchecked")
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
@@ -2435,5 +2440,29 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 		user.setFirstLoginDate(new Date()); // Set it to current date/time.
     }
     
-}
 
+    /**
+     * Returns a User's workspace pre-deleted flag.
+     * 
+     * @param userId
+     */
+    //RO transaction
+    @Override
+    public Boolean getUserWorkspacePreDeleted(Long userId) {
+   		User user = getUser(userId, true);
+		return user.isWorkspacePreDeleted();
+    }
+    
+    /**
+     * Sets a User's workspace pre-deleted flag.
+     * 
+     * @param userId
+     * @param userWorkspacePreDeleted
+     */
+    //RW transaction
+    @Override
+    public void setUserWorkspacePreDeleted(Long userId, boolean userWorkspacePreDeleted) {
+   		User user = getUser(userId, true);
+		user.setWorkspacePreDeleted(userWorkspacePreDeleted);
+    }
+}
