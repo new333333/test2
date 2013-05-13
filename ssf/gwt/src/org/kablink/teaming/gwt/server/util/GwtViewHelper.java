@@ -403,8 +403,33 @@ public class GwtViewHelper {
 	 * Inner class that encapsulated a User with their Workspace.
 	 */
 	private static class UserWorkspacePair {
+		private Long		m_wsId;	//
 		private User		m_user;	//
 		private Workspace	m_ws;	//
+
+		/*
+		 * Constructor method.
+		 */
+		private UserWorkspacePair(User user, Long wsId, Workspace ws) {
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameters.
+			setUser(       user  );
+			setWorkspaceId(wsId  );
+			setWorkspace(  ws    );
+		}
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param user
+		 * @param wsId
+		 */
+		public UserWorkspacePair(User user, Long wsId) {
+			// Initialize this object.
+			this(user, wsId, null);
+		}
 
 		/**
 		 * Constructor method.
@@ -413,12 +438,8 @@ public class GwtViewHelper {
 		 * @param ws
 		 */
 		public UserWorkspacePair(User user, Workspace ws) {
-			// Initialize the super class...
-			super();
-			
-			// ...and store the parameters.
-			setUser(user);
-			setWorkspace(ws);
+			// Initialize this object.
+			this(user, ((null == ws) ? null : ws.getId()), ws);
 		}
 
 		/**
@@ -426,16 +447,19 @@ public class GwtViewHelper {
 		 * 
 		 * @return
 		 */
-		public User      getUser()      {return m_user;}
-		public Workspace getWorkspace() {return m_ws;  }
+		public Long      getWorkspaceId() {return m_wsId;}
+		public User      getUser()        {return m_user;}
+		@SuppressWarnings("unused")
+		public Workspace getWorkspace()   {return m_ws;  }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setUser(     User      user) {m_user = user;}
-		public void setWorkspace(Workspace ws)   {m_ws   = ws;  }
+		public void setWorkspaceId(Long      wsId)   {m_wsId = wsId;}
+		public void setUser(       User      user)   {m_user = user;}
+		public void setWorkspace(  Workspace ws)     {m_ws   = ws;  }
 	}
 	
 	/*
@@ -5006,7 +5030,7 @@ public class GwtViewHelper {
 			
 			// Can we map the List<Long> of principal IDs to any
 			// UserWorkspacePair's?
-			List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(principalIds);
+			List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(principalIds, false);
 			if (MiscUtil.hasItems(uwsPairs)) {
 				// Yes!  Scan them.
 				Long profileBinderId = bs.getProfileModule().getProfileBinderId();
@@ -5025,9 +5049,9 @@ public class GwtViewHelper {
 					try {
 						// Construct a PrincipalInfo for each...
 						pi.setTitle(user.getTitle());
-						Workspace userWS        = uwsPair.getWorkspace();
-						boolean   userHasWS     = (null != userWS);
-						boolean   userWSInTrash = (userHasWS && userWS.isPreDeleted());
+						Long    userWSId      = uwsPair.getWorkspaceId();
+						boolean userHasWS     = (null != userWSId);
+						boolean userWSInTrash = (userHasWS && user.isWorkspacePreDeleted());
 						pi.setUserDisabled( user.isDisabled()     );
 						pi.setUserHasWS(    userHasWS             );
 						pi.setUserPerson(   user.isPerson()       );
@@ -5960,7 +5984,7 @@ public class GwtViewHelper {
 	 * List<UserWorkspacePair> of the User/Workspace pairs for the IDs.
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<UserWorkspacePair> getUserWorkspacePairs(List<Long> principalIds) {
+	private static List<UserWorkspacePair> getUserWorkspacePairs(List<Long> principalIds, boolean resolveWorkspaces) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getUserWorkspacePairs()");
 		try {
 			SimpleProfiler.start("GwtViewHelper.getUserWorkspacePairs(Resolve Users)");
@@ -5999,27 +6023,29 @@ public class GwtViewHelper {
 				SimpleProfiler.stop("GwtViewHelper.getUserWorkspacePairs(Resolve Users)");
 			}
 	
-			SimpleProfiler.start("GwtViewHelper.getUserWorkspacePairs(Resolve Workspaces)");
 			Map<Long, Workspace> wsMap = new HashMap<Long, Workspace>();
-			try {
-				// Do we have any Workspace IDs?
-				if (MiscUtil.hasItems(wsIds)) {
-					// Yes!  Can we resolve them to a Set of Workspace
-					// objects?
-					Set userWSSet = ResolveIds.getBinders(wsIds);
-					if (MiscUtil.hasItems(userWSSet)) {
-						// Yes!  Scan them...
-						for (Object o:  userWSSet) {
-							// ...adding each to the Workspace map.
-							Workspace ws = ((Workspace) o);
-							wsMap.put(ws.getId(), ws);
+			if (resolveWorkspaces) {
+				SimpleProfiler.start("GwtViewHelper.getUserWorkspacePairs(Resolve Workspaces)");
+				try {
+					// Do we have any Workspace IDs?
+					if (MiscUtil.hasItems(wsIds)) {
+						// Yes!  Can we resolve them to a Set of Workspace
+						// objects?
+						Set userWSSet = ResolveIds.getBinders(wsIds);
+						if (MiscUtil.hasItems(userWSSet)) {
+							// Yes!  Scan them...
+							for (Object o:  userWSSet) {
+								// ...adding each to the Workspace map.
+								Workspace ws = ((Workspace) o);
+								wsMap.put(ws.getId(), ws);
+							}
 						}
 					}
 				}
-			}
-			
-			finally {
-				SimpleProfiler.stop("GwtViewHelper.getUserWorkspacePairs(Resolve Workspaces)");
+				
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.getUserWorkspacePairs(Resolve Workspaces)");
+				}
 			}
 	
 			List<UserWorkspacePair> reply = new ArrayList<UserWorkspacePair>();
@@ -6031,10 +6057,17 @@ public class GwtViewHelper {
 					// ...the reply list.
 					Workspace ws;
 					Long wsId = user.getWorkspaceId();
-					if (null != wsId)
-					     ws = wsMap.get(wsId);
-					else ws = null;
-					reply.add(new UserWorkspacePair(user, ws));
+					UserWorkspacePair uwsPair;
+					if (resolveWorkspaces) {
+						if (null != wsId)
+						     ws = wsMap.get(wsId);
+						else ws = null;
+						uwsPair = new UserWorkspacePair(user, ws);
+					}
+					else {
+						uwsPair = new UserWorkspacePair(user, wsId);
+					}
+					reply.add(uwsPair);
 				}
 			}
 			
