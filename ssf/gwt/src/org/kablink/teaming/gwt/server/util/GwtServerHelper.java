@@ -7983,8 +7983,8 @@ public class GwtServerHelper {
 			ProfileAttribute pa;
 			try {
 				if (null == p)
-				     pa = GwtProfileHelper.getProfileAvatars(request,     u);
-				else pa = GwtProfileHelper.getProfileAvatars(request, bs, p);
+				     pa = GwtProfileHelper.getProfileAvatars(request,     u, true);	// true -> Return the...
+				else pa = GwtProfileHelper.getProfileAvatars(request, bs, p, true);	// ...first value only.
 			}
 			catch (Exception ex) {
 				pa = null;
