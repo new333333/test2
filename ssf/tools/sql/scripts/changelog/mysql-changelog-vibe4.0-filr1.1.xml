@@ -8,4 +8,13 @@
             </column>
         </addColumn>
     </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="2">
+        <comment>Last time full sync started</comment>
+        <addColumn tableName="SS_BinderState">
+            <column name="lastFullSyncStartTime" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

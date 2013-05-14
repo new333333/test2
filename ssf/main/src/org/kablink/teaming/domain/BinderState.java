@@ -69,6 +69,8 @@ public class BinderState extends ZonedObject {
 	 * aborting that part of the tree all together. 
 	 */
 	private Date lastFullSyncCompletionTime;
+	
+	private Date lastFullSyncStartTime;
 
 	protected BinderState() {
 		// Use by Hibernate only
@@ -100,5 +102,13 @@ public class BinderState extends ZonedObject {
 
 	public void setLastFullSyncCompletionTime(Date lastFullSyncCompletionTime) {
 		this.lastFullSyncCompletionTime = lastFullSyncCompletionTime;
+	}
+
+	public Date getLastFullSyncStartTime() {
+		return lastFullSyncStartTime;
+	}
+
+	public void setLastFullSyncStartTime(Date lastFullSyncStartTime) {
+		this.lastFullSyncStartTime = lastFullSyncStartTime;
 	}
 }
