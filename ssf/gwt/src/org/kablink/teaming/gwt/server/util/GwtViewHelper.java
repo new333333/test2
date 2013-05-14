@@ -285,8 +285,7 @@ public class GwtViewHelper {
 	private static final String CACHED_VIEW_PINNED_ENTRIES_BASE = "viewPinnedEntries_";
 	private static final String CACHED_VIEW_SHARED_FILES_BASE	= "viewSharedFiles_";
 	
-	// Base for the keys used to store shared view state in the session
-	// cache.
+	// Base keys used to store shared view state in the session cache.
 	private static final String CACHED_SHARED_VIEW_SHOW_HIDDEN_BASE		= "sharedViewShowHidden_";
 	private static final String CACHED_SHARED_VIEW_SHOW_NON_HIDDEN_BASE	= "sharedViewShowNonHidden_";
 
