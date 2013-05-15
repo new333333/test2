@@ -139,18 +139,40 @@ var m_searchCount = 0;
 								tag="ldap.schedule.user.register" /></span></label></td>
 						</tr>
 						<tr>
-							<td><input type="checkbox" name="userDelete" id="userDelete"
-								<c:if test="${ssLdapConfig.userDelete}">checked</c:if> /> <label
-								for="userDelete"><span class="ss_labelRight ss_normal"><ssf:nlt
-								tag="ldap.schedule.user.delete" /></span></label></td>
+							<td>
+								<input type="radio" name="notInLdap" id="userDisable" value="false"
+									<c:if test="${ssLdapConfig.userDelete == 'false'}">checked</c:if> />
+								<label for="userDisable">
+									<span class="ss_labelRight ss_normal">
+										<ssf:nlt tag="ldap.schedule.user.disable" />
+									</span>
+								</label>
+							</td>
 						</tr>
 						<tr>
-							<td><input type="checkbox" name="userWorkspaceDelete"
-								id="userWorkspaceDelete"
-								<c:if test="${ssLdapConfig.userWorkspaceDelete}">checked</c:if> /> <label
-								for="userWorkspaceDelete"><span
-								class="ss_labelRight ss_normal"><ssf:nlt
-								tag="ldap.schedule.user.workspace.delete" /></span></label></td>
+							<td>
+								<input type="radio" name="notInLdap" id="userDelete" value="true"
+									<c:if test="${ssLdapConfig.userDelete}">checked</c:if> />
+								<label for="userDelete">
+									<span class="ss_labelRight ss_normal">
+										<ssf:nlt tag="ldap.schedule.user.delete" />
+									</span>
+								</label>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div style="margin-left: 34px;">
+									<input type="checkbox" name="userWorkspaceDelete"
+										id="userWorkspaceDelete"
+										<c:if test="${ssLdapConfig.userWorkspaceDelete}">checked</c:if> />
+									<label for="userWorkspaceDelete">
+										<span class="ss_labelRight ss_normal">
+											<ssf:nlt tag="ldap.schedule.user.workspace.delete" />
+										</span>
+									</label>
+								</div>
+							</td>
 						</tr>
 
 						<!-- Create a <select> control to hold the list of time zones. -->
