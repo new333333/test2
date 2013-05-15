@@ -69,9 +69,14 @@ public class BinderState extends ZonedObject {
 	 * aborting that part of the tree all together. 
 	 */
 	private Date lastFullSyncCompletionTime;
-	
-	private Date lastFullSyncStartTime;
 
+	/*
+	 * Statistics information specific to the last full synchronization instance that 
+	 * either already ended or is currently in progress. This information spans no more
+	 * than a single full synchronization instance, and no history is kept.
+	 */
+	private FullSyncStats fullSyncStats;
+	
 	protected BinderState() {
 		// Use by Hibernate only
 	}
@@ -104,11 +109,258 @@ public class BinderState extends ZonedObject {
 		this.lastFullSyncCompletionTime = lastFullSyncCompletionTime;
 	}
 
-	public Date getLastFullSyncStartTime() {
-		return lastFullSyncStartTime;
+	public FullSyncStats getFullSyncStats() {
+		if(fullSyncStats == null)
+			fullSyncStats = new FullSyncStats();
+		return fullSyncStats;
 	}
+	
+	public void setFullSyncStats(FullSyncStats fullSyncStats) {
+		this.fullSyncStats = fullSyncStats;
+	}
+	
+	public static class FullSyncStats {
+		/*
+		 * The time full sync started on this binder.
+		 */
+		Date fullSyncStartDate;
+		
+		/*
+		 * The time full sync ended on this binder.
+		 */
+		Date fullSyncEndDate;
+		
+		/*
+		 * Whether or not the full sync was directory only 
+		 */
+		Boolean dirOnly;
 
-	public void setLastFullSyncStartTime(Date lastFullSyncStartTime) {
-		this.lastFullSyncStartTime = lastFullSyncStartTime;
+		/*
+		 * Whether or not directory enumeration failed
+		 */
+		Boolean enumerationFailed;
+		
+		/*
+		 * Count of files encountered as result of enumerating source file system
+		 */
+		Integer countFiles;
+		/*
+		 * Count of files added
+		 */
+		Integer countFileAdd;
+		/*
+		 * Count of files expunged
+		 */
+		Integer countFileExpunge;
+		/*
+		 * Count of files modified
+		 */
+		Integer countFileModify;
+		/*
+		 * Count of files on which ACLs are set/updated
+		 */
+		Integer countFileSetAcl;
+		/*
+		 * Count of files on which ownership are explicitly set/updated
+		 */
+		Integer countFileSetOwnership;
+		/*
+		 * Count of folders encountered as result of enumerating source file system
+		 */
+		Integer countFolders;
+		/*
+		 * Count of folders added
+		 */
+		Integer countFolderAdd;
+		/*
+		 * Count of folders expunged
+		 */
+		Integer countFolderExpunge;
+		/*
+		 * Count of folders on which ACLs are set/updated
+		 */
+		Integer countFolderSetAcl;
+		/*
+		 * Count of folders on which ownership are explicitly set/updated
+		 */
+		Integer countFolderSetOwnership;
+		/*
+		 * Count of dangling entries expunged
+		 */
+		Integer countEntryExpunge;
+		/*
+		 * Count of failure. Note that this does NOT count the number of unique folders
+		 * and files failed to process. That is actually hard number to obtain due to
+		 * recursive nature of the processing. Instead, this count simply denotes how
+		 * many operations failed during the sync without clearing defining what those
+		 * operations are and at what granularity. 
+		 */
+		Integer countFailure;
+		/*
+		 * Count of folders synchronized. This includes both newly created folders and
+		 * existing folders that have been synchronized with the source. This number
+		 * does not include expunged folders.
+		 */
+		Integer countFolderSynchronized;
+		
+		/*
+		 * Maximum number of folders that were found in the queue at once. In other word,
+		 * an indication of how big the queue has grown at any time during the sync.
+		 */
+		Integer countFolderMaxQueue;
+		
+		public Date getFullSyncStartDate() {
+			return fullSyncStartDate;
+		}
+
+		public void setFullSyncStartDate(Date fullSyncStartDate) {
+			this.fullSyncStartDate = fullSyncStartDate;
+		}
+
+		public Date getFullSyncEndDate() {
+			return fullSyncEndDate;
+		}
+
+		public void setFullSyncEndDate(Date fullSyncEndDate) {
+			this.fullSyncEndDate = fullSyncEndDate;
+		}
+
+		public Boolean getDirOnly() {
+			return dirOnly;
+		}
+
+		public void setDirOnly(Boolean dirOnly) {
+			this.dirOnly = dirOnly;
+		}
+
+		public Integer getCountFiles() {
+			return countFiles;
+		}
+
+		public Boolean getEnumerationFailed() {
+			return enumerationFailed;
+		}
+
+		public void setEnumerationFailed(Boolean enumerationFailed) {
+			this.enumerationFailed = enumerationFailed;
+		}
+
+		public void setCountFiles(Integer countFiles) {
+			this.countFiles = countFiles;
+		}
+
+		public Integer getCountFileAdd() {
+			return countFileAdd;
+		}
+
+		public void setCountFileAdd(Integer countFileAdd) {
+			this.countFileAdd = countFileAdd;
+		}
+
+		public Integer getCountFileExpunge() {
+			return countFileExpunge;
+		}
+
+		public void setCountFileExpunge(Integer countFileExpunge) {
+			this.countFileExpunge = countFileExpunge;
+		}
+
+		public Integer getCountFileModify() {
+			return countFileModify;
+		}
+
+		public void setCountFileModify(Integer countFileModify) {
+			this.countFileModify = countFileModify;
+		}
+
+		public Integer getCountFileSetAcl() {
+			return countFileSetAcl;
+		}
+
+		public void setCountFileSetAcl(Integer countFileSetAcl) {
+			this.countFileSetAcl = countFileSetAcl;
+		}
+
+		public Integer getCountFileSetOwnership() {
+			return countFileSetOwnership;
+		}
+
+		public void setCountFileSetOwnership(Integer countFileSetOwnership) {
+			this.countFileSetOwnership = countFileSetOwnership;
+		}
+
+		public Integer getCountFolders() {
+			return countFolders;
+		}
+
+		public void setCountFolders(Integer countFolders) {
+			this.countFolders = countFolders;
+		}
+
+		public Integer getCountFolderAdd() {
+			return countFolderAdd;
+		}
+
+		public void setCountFolderAdd(Integer countFolderAdd) {
+			this.countFolderAdd = countFolderAdd;
+		}
+
+		public Integer getCountFolderExpunge() {
+			return countFolderExpunge;
+		}
+
+		public void setCountFolderExpunge(Integer countFolderExpunge) {
+			this.countFolderExpunge = countFolderExpunge;
+		}
+
+		public Integer getCountFolderSetAcl() {
+			return countFolderSetAcl;
+		}
+
+		public void setCountFolderSetAcl(Integer countFolderSetAcl) {
+			this.countFolderSetAcl = countFolderSetAcl;
+		}
+
+		public Integer getCountFolderSetOwnership() {
+			return countFolderSetOwnership;
+		}
+
+		public void setCountFolderSetOwnership(Integer countFolderSetOwnership) {
+			this.countFolderSetOwnership = countFolderSetOwnership;
+		}
+
+		public Integer getCountEntryExpunge() {
+			return countEntryExpunge;
+		}
+
+		public void setCountEntryExpunge(Integer countEntryExpunge) {
+			this.countEntryExpunge = countEntryExpunge;
+		}
+
+		public Integer getCountFailure() {
+			return countFailure;
+		}
+
+		public void setCountFailure(Integer countFailure) {
+			this.countFailure = countFailure;
+		}
+
+		public Integer getCountFolderSynchronized() {
+			return countFolderSynchronized;
+		}
+
+		public void setCountFolderSynchronized(Integer countFolderSynchronized) {
+			this.countFolderSynchronized = countFolderSynchronized;
+		}
+
+		public Integer getCountFolderMaxQueue() {
+			return countFolderMaxQueue;
+		}
+
+		public void setCountFolderMaxQueue(Integer countFolderMaxQueue) {
+			this.countFolderMaxQueue = countFolderMaxQueue;
+		}
+
+		
 	}
 }
