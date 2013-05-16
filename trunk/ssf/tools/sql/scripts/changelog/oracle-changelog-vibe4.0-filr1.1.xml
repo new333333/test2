@@ -10,9 +10,117 @@
     </changeSet>
     
     <changeSet author="jong" context="schema" failOnError="true" id="2">
-        <comment>Last time full sync started</comment>
+        <comment>Full sync start time</comment>
         <addColumn tableName="SS_BINDERSTATE">
-            <column name="LASTFULLSYNCSTARTTIME" type=TIMESTAMP(6)>
+            <column name="FULLSYNC_STARTDATE" type="TIMESTAMP(6)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Full sync end time</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_ENDDATE" type="TIMESTAMP(6)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Process directory only</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_DIRONLY" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Directory enumeration failed</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_ENUMFAILED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of files encountered</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFILES" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of files added</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFILEADD" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of files expunged</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFILEEXPUNGE" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of files modified</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFILEMODIFY" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of files for which ACLs are set</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFILESETACL" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of files for which ownership are set</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFILESETOWNER" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of folders encountered</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFOLDERS" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of folders added</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFOLDERADD" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of folders expunged</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFOLDEREXPUNGE" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of folders for which ACLs are set</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFOLDERSETACL" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of folders for which ownership are set</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFOLDERSETOWNER" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of dangling entries expunged</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTENTRYEXPUNGE" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of failure</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFAILURE" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of folders processed</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFOLDERPROCESSED" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Largest count of folders found in queue at once</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFOLDERMAXQUEUE" type="NUMBER(10,0)">
                 <constraints nullable="true" />
             </column>
         </addColumn>
