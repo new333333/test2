@@ -123,12 +123,12 @@ public class BinderState extends ZonedObject {
 		/*
 		 * The time full sync started on this binder.
 		 */
-		Date fullSyncStartDate;
+		Date startDate;
 		
 		/*
 		 * The time full sync ended on this binder.
 		 */
-		Date fullSyncEndDate;
+		Date endDate;
 		
 		/*
 		 * Whether or not the full sync was directory only 
@@ -201,7 +201,7 @@ public class BinderState extends ZonedObject {
 		 * existing folders that have been synchronized with the source. This number
 		 * does not include expunged folders.
 		 */
-		Integer countFolderSynchronized;
+		Integer countFolderProcessed;
 		
 		/*
 		 * Maximum number of folders that were found in the queue at once. In other word,
@@ -209,20 +209,20 @@ public class BinderState extends ZonedObject {
 		 */
 		Integer countFolderMaxQueue;
 		
-		public Date getFullSyncStartDate() {
-			return fullSyncStartDate;
+		public Date getStartDate() {
+			return startDate;
 		}
 
-		public void setFullSyncStartDate(Date fullSyncStartDate) {
-			this.fullSyncStartDate = fullSyncStartDate;
+		public void setStartDate(Date startDate) {
+			this.startDate = startDate;
 		}
 
-		public Date getFullSyncEndDate() {
-			return fullSyncEndDate;
+		public Date getEndDate() {
+			return endDate;
 		}
 
-		public void setFullSyncEndDate(Date fullSyncEndDate) {
-			this.fullSyncEndDate = fullSyncEndDate;
+		public void setEndDate(Date endDate) {
+			this.endDate = endDate;
 		}
 
 		public Boolean getDirOnly() {
@@ -345,12 +345,12 @@ public class BinderState extends ZonedObject {
 			this.countFailure = countFailure;
 		}
 
-		public Integer getCountFolderSynchronized() {
-			return countFolderSynchronized;
+		public Integer getCountFolderProcessed() {
+			return countFolderProcessed;
 		}
 
-		public void setCountFolderSynchronized(Integer countFolderSynchronized) {
-			this.countFolderSynchronized = countFolderSynchronized;
+		public void setCountFolderProcessed(Integer countFolderProcessed) {
+			this.countFolderProcessed = countFolderProcessed;
 		}
 
 		public Integer getCountFolderMaxQueue() {
