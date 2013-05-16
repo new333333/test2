@@ -174,9 +174,10 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 			AuthenticationConfig authConfig = zoneConfig.getAuthenticationConfig();
 			Long lastUpdateInDb = authConfig.getLastUpdate();
 			Long lastUpdateInMem = lastUpdates.get(zoneId);
+			// If the date in the db is different from the in memory date, rebuild the providers.
 			if((lastUpdateInDb != null) &&
 					((lastUpdateInMem == null) || 
-							(lastUpdateInDb.compareTo(lastUpdateInMem) > 0))) {
+							(lastUpdateInDb.compareTo(lastUpdateInMem) != 0))) {
 				try {
 					rebuildProvidersForZone(zoneConfig);
 				} catch(Exception e) {
