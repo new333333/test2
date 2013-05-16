@@ -59,6 +59,8 @@ import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.LibraryEntry;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
@@ -1470,7 +1472,7 @@ public class TrashHelper {
 		TrashPurgedBinderTracker purgedBinders = new TrashPurgedBinderTracker();
 		
 		// Scan the TrashEntry's.
-		logger.debug("TrashHelper.purgeEntries()");
+		logger.debug("TrashHelper.purgeSelectedEntries()");
 		logger.debug("...checking ACLs...");
 		for (int i = 0; i < count; i += 1) {
 			// Is this trashEntry a FolderEntry?
@@ -1497,14 +1499,23 @@ public class TrashHelper {
 				}
 				catch (Exception e) {
 					// Something choked trying to do the ACL check.
-					// Track the error.
-					logger.debug(".........check failed!");
-					if (e instanceof AccessControlException) reply.setACLViolation(trashEntry.m_docId);
-					else                                     reply.setException(e, trashEntry.m_docId);
+					// Has the entry disappeared out from under us?
+					if (e instanceof NoFolderEntryByTheIdException) {
+						// Yes!  Simply skip it.
+						trashEntries[i] = null;
+					}
+					
+					else {
+						// No, something besides the entry disappearing
+						// has happened!  Track the error.
+						logger.debug(".........check failed!");
+						if (e instanceof AccessControlException) reply.setACLViolation(trashEntry.m_docId);
+						else                                     reply.setException(e, trashEntry.m_docId);
+					}
 				}
 			}
 					
-			// No, it's not a binder!  Is it an entry?
+			// No, it's not an entry!  Is it a binder?
 			else if (trashEntry.isBinder()) {
 				try {
 					// Yes!  Is it predeleted?
@@ -1519,15 +1530,25 @@ public class TrashHelper {
 						}
 					}
 					else {
+						// No, it isn't predeleted!  Simply skip it.
 						trashEntries[i] = null;
 					}
 				}
 				catch (Exception e) {
 					// Something choked trying to do the ACL check.
-					// Track the error.
-					logger.debug(".........check failed!");
-					if (e instanceof AccessControlException) reply.setACLViolation(trashEntry.m_docId);
-					else                                     reply.setException(e, trashEntry.m_docId);
+					// Has the binder disappeared out from under us?
+					if (e instanceof NoBinderByTheIdException) {
+						// Yes!  Simply skip it.
+						trashEntries[i] = null;
+					}
+					
+					else {
+						// No, something besides the binder
+						// disappearing has happened!  Track the error.
+						logger.debug(".........check failed!");
+						if (e instanceof AccessControlException) reply.setACLViolation(trashEntry.m_docId);
+						else                                     reply.setException(e, trashEntry.m_docId);
+					}
 				}
 			}
 			
@@ -1536,7 +1557,10 @@ public class TrashHelper {
 				// ...quit processing items.
 				break;
 			}
-			logger.debug(".........entity is purgable.");
+			
+			if (null == trashEntries[i])
+			     logger.debug(".........entity skipped.  It's not predeleted or it has dissapeared.");
+			else logger.debug(".........entity is purgable.");
 		}
 
 		// Did we detect any ACL violations?
