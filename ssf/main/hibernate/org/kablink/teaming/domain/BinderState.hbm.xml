@@ -9,6 +9,5 @@
     <property name="zoneId" access="field"/>
     <property name="lastSyncTime"/>
     <property name="lastFullSyncCompletionTime"/>
-    <property name="lastFullSyncStartTime"/>
   </class>
 </hibernate-mapping>
