@@ -4817,6 +4817,15 @@ td.datePickerMonth {
 	margin-bottom: 0.5em;
 }
 
+.modifyNetFolderServerDlg_ProxyNameHint
+{
+	color: #4D6D8B;
+	font-size: 1em;
+	margin-bottom: 0.5em;
+	width: 80%;
+}
+
+
 
 /**
  * Styles used in the SelectPrincipalsWidget

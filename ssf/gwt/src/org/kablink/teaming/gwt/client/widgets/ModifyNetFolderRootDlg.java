@@ -319,6 +319,27 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			spacerPanel.getElement().getStyle().setMarginTop( 10, Unit.PX );
 			table.setWidget( nextRow, 0, spacerPanel );
 			++nextRow;
+
+			// Add some instructions on the format that should be used when entering the proxy name
+			{
+				FlowPanel panel;
+				
+				panel = new FlowPanel();
+				panel.addStyleName( "margintop1" );
+				panel.addStyleName( "modifyNetFolderServerDlg_ProxyNameHint" );
+
+				// Add a hint that describes the unc syntax
+				label = new Label( messages.modifyNetFolderServerDlg_ProxyNameHint1() );
+				panel.add( label );
+				label = new Label( messages.modifyNetFolderServerDlg_ProxyNameHint2() );
+				panel.add( label );
+				label = new Label( messages.modifyNetFolderServerDlg_ProxyNameHint3() );
+				panel.add( label );
+				
+				cellFormatter.setColSpan( nextRow, 0, 2 );
+				table.setWidget( nextRow, 0, panel );
+				++nextRow;
+			}
 			
 			label = new InlineLabel( messages.modifyNetFolderServerDlg_ProxyNameLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );

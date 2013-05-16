@@ -2128,6 +2128,9 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_NameRequired();
 	String modifyNetFolderServerDlg_NotFullyConfigured();
 	String modifyNetFolderServerDlg_PrivilegedPrincipalsHint();
+	String modifyNetFolderServerDlg_ProxyNameHint1();
+	String modifyNetFolderServerDlg_ProxyNameHint2();
+	String modifyNetFolderServerDlg_ProxyNameHint3();
 	String modifyNetFolderServerDlg_ProxyNameLabel();
 	String modifyNetFolderServerDlg_ProxyPwdLabel();
 	String modifyNetFolderServerDlg_ServerAlreadyExists();
