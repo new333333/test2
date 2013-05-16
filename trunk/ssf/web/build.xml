@@ -195,8 +195,8 @@
 		<echo>The static files will be put in "${web.static.path}"</echo>
 		<delete dir="temp"/>
 		
-		<copy todir="temp/${web.static.path}/js/tiny_mce_3_2_7/tiny_mce" overwrite="true">
-			<fileset dir="${web.dir}/js/tiny_mce_3_2_7/teaming_changes" />
+		<copy todir="temp/${web.static.path}/js/tiny_mce_3_5_8/tiny_mce" overwrite="true">
+			<fileset dir="${web.dir}/js/tiny_mce_3_5_8/teaming_changes" />
 		</copy>
 		
 		<war
@@ -391,8 +391,8 @@
 	<target name="deploy-tinymce-changes">
   		<property name="web.static.path" value="static/${web.static.dir}" />
 		<echo>The static files will be put in "${web.static.path}"</echo>
-		<copy todir="${app.server.ssf.dir}/${web.static.path}/js/tiny_mce_3_2_7/tiny_mce" overwrite="true">
-			<fileset dir="${web.dir}/js/tiny_mce_3_2_7/teaming_changes">
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/js/tiny_mce_3_5_8/tiny_mce" overwrite="true">
+			<fileset dir="${web.dir}/js/tiny_mce_3_5_8/teaming_changes">
 				<include name="**/*.*" />
 			</fileset>
 		</copy>
