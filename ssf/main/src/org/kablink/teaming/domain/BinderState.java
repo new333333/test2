@@ -40,6 +40,21 @@ import java.util.Date;
  */
 public class BinderState extends ZonedObject {
 
+	public enum FullSyncStatus {
+		/**
+		 * Full synchronization has started
+		 */
+		started,
+		/**
+		 * Full synchronization has stopped due to explicit request to stop it
+		 */
+		stopped,
+		/**
+		 * Full synchronization has run its course and finished. This doesn't tell how successfull the sync was though.
+		 */
+		finished
+	}
+	
 	/*
 	 * Owning binder ID
 	 */
@@ -76,6 +91,12 @@ public class BinderState extends ZonedObject {
 	 * than a single full synchronization instance, and no history is kept.
 	 */
 	private FullSyncStats fullSyncStats;
+	
+	/*
+	 * This flag is used to request full synchronization currently in progress to be stopped as soon as possible.
+	 * 
+	 */
+	Boolean fullSyncStopRequested;
 	
 	protected BinderState() {
 		// Use by Hibernate only
@@ -119,7 +140,20 @@ public class BinderState extends ZonedObject {
 		this.fullSyncStats = fullSyncStats;
 	}
 	
+	public Boolean getFullSyncStopRequested() {
+		return fullSyncStopRequested;
+	}
+
+	public void setFullSyncStopRequested(Boolean fullSyncStopRequested) {
+		this.fullSyncStopRequested = fullSyncStopRequested;
+	}
+
 	public static class FullSyncStats {
+		/*
+		 * Full sync status
+		 */
+		FullSyncStatus status;
+		
 		/*
 		 * The time full sync started on this binder.
 		 */
@@ -208,6 +242,37 @@ public class BinderState extends ZonedObject {
 		 * an indication of how big the queue has grown at any time during the sync.
 		 */
 		Integer countFolderMaxQueue;
+		
+		public FullSyncStatus getStatus() {
+			return status;
+		}
+
+		public void setStatus(FullSyncStatus status) {
+			this.status = status;
+		}
+
+		// Used by Hibernate only
+		protected String getStatusStr() {
+			if(status == null)
+				return null;
+			else
+				return status.name();
+		}
+		
+		// Used by Hibernate only
+		protected void setStatusStr(String statusStr) {
+			if(statusStr == null) {
+				status = null;
+			}
+			else {
+				try {
+					status = FullSyncStatus.valueOf(statusStr);
+				}
+				catch(Exception e) {
+					status = null;
+				}
+			}
+		}
 		
 		public Date getStartDate() {
 			return startDate;
