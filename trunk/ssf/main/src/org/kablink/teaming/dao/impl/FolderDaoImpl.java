@@ -782,10 +782,35 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     	}	        
    	
     }
+    
     //All of this code is dependent on the JBPM data structures.
     private void workflowDelete(Set tokenIds, Session session) {
-		//now get process instances 
+    	//now get process instances 
 		if (tokenIds.isEmpty()) return;
+
+		int start =0;
+		int totalIds = tokenIds.size();
+		
+		List<Long> tokenIdsList = new ArrayList<Long>(tokenIds);
+		if(totalIds > 1000) {
+			logger.debug("Total number of Ids exceeds 1000 ...");
+			while(start < totalIds) {
+				int subCount = ((start+100) < totalIds) ? (start+100) : (totalIds-1);
+				logger.debug("Token list start: "+start+" subCount: "+subCount);
+				List subList = tokenIdsList.subList(start, subCount);
+				workflowDelete(subList, session);
+				start = subCount +1;
+			}
+		} else {
+			workflowDelete(tokenIdsList, session);
+		}
+    }
+    
+    //All of this code is dependent on the JBPM data structures.
+    //TokenIds list must be less then 1000 in size or Oracle will throw exceptions
+    private void workflowDelete(List tokenIds, Session session) {
+
+    	if (tokenIds.isEmpty()) return;
     	Set pIs = new HashSet(session.createQuery("select p.id from org.jbpm.graph.exe.ProcessInstance p where p.rootToken.id in (:pList)")
  				.setParameterList("pList", tokenIds)
 			.list());
