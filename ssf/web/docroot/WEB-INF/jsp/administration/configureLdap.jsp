@@ -99,7 +99,7 @@ var m_searchCount = 0;
 						<td><input type="checkbox" id="enabled" name="enabled"
 							<c:if test="${ssLdapConfig.enabled}">checked</c:if> /> <label
 							for="enabled"><span class="ss_labelRight ss_normal"><ssf:nlt
-							tag="ldap.schedule.enable" /></span><br />
+							tag="ldap.schedule.enable" /></span>
 						</label></td>
 					</tr>
 					<tr>
@@ -110,7 +110,7 @@ var m_searchCount = 0;
 							<input type="checkbox" id="runnow" name="runnow"
 							<c:if test="${runnow}"> checked="checked" </c:if> /> <label
 							for="runnow"><span class="ss_labelRight ss_normal"><ssf:nlt
-							tag="ldap.schedule.now" /></span><br />
+							tag="ldap.schedule.now" /></span>
 
 						</label></td>
 					</tr>
@@ -285,7 +285,7 @@ var m_searchCount = 0;
 					<c:if test="${ssAuthenticationConfig.allowLocalLogin}">checked</c:if> />
 					<label for="allowLocalLogin"><span
 						class="ss_labelRight ss_normal"><ssf:nlt
-						tag="ldap.config.allowLocalLogin" /></span><br />
+						tag="ldap.config.allowLocalLogin" /></span>
 					</label>
 				</fieldset>
 			
