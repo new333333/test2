@@ -134,6 +134,7 @@ public class JitsZoneConfigDlg extends DlgBox
 			
 			intervalLabel = new Label( messages.jitsZoneConfigDlg_MaxWaitLabel() );
 			intervalLabel.addStyleName( "marginleft3" );
+			intervalLabel.addStyleName( "marginright5px" );
 			hPanel.add( intervalLabel );
 			
 			m_maxWaitTimeTextBox = new TextBox();
