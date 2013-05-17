@@ -10,6 +10,18 @@
     </changeSet>
     
     <changeSet author="jong" context="schema" failOnError="true" id="2">
+        <comment>Full sync stop requested</comment>
+        <addColumn tableName="SS_BinderState">
+            <column name="fullSyncStopRequested" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Full sync status</comment>
+        <addColumn tableName="SS_BinderState">
+            <column name="fullSync_status" type="VARCHAR(16)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
         <comment>Full sync start time</comment>
         <addColumn tableName="SS_BinderState">
             <column name="fullSync_startDate" type="DATETIME">

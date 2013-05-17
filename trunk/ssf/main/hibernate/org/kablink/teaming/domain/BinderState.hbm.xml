@@ -9,5 +9,28 @@
     <property name="zoneId" access="field"/>
     <property name="lastSyncTime"/>
     <property name="lastFullSyncCompletionTime"/>
+    <property name="fullSyncStopRequested"/>
+    <component name="fullSyncStats" class="org.kablink.teaming.domain.BinderState$FullSyncStats">
+      <property name="statusStr" column="status" length="16"/>
+      <property name="startDate"/>
+      <property name="endDate"/>
+      <property name="dirOnly"/>
+      <property name="enumerationFailed"/>
+      <property name="countFiles"/>
+      <property name="countFileAdd"/>
+      <property name="countFileExpunge"/>
+      <property name="countFileModify"/>
+      <property name="countFileSetAcl"/>
+      <property name="countFileSetOwnership" column="countFileSetOwner"/>
+      <property name="countFolders"/>
+      <property name="countFolderAdd"/>
+      <property name="countFolderExpunge"/>
+      <property name="countFolderSetAcl"/>
+      <property name="countFolderSetOwnership" column="countFolderSetOwner"/>
+      <property name="countEntryExpunge"/>
+      <property name="countFailure"/>
+      <property name="countFolderProcessed"/>
+      <property name="countFolderMaxQueue"/>
+    </component>
   </class>
 </hibernate-mapping>
