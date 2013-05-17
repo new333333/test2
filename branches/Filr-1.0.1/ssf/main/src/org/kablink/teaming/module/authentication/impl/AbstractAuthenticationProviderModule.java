@@ -176,7 +176,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 			Long lastUpdateInMem = lastUpdates.get(zoneId);
 			if((lastUpdateInDb != null) &&
 					((lastUpdateInMem == null) || 
-							(lastUpdateInDb.compareTo(lastUpdateInMem) > 0))) {
+							(lastUpdateInDb.compareTo(lastUpdateInMem) != 0))) {
 				try {
 					rebuildProvidersForZone(zoneConfig);
 				} catch(Exception e) {
