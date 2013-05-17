@@ -118,12 +118,19 @@ public class SelectPrincipalsWidget extends Composite
 		public PrincipalNameWidget( GwtPrincipal principal )
 		{
 			FlowPanel panel;
+			String name;
 			
 			m_principal = principal;
 			
 			panel = new FlowPanel();
 			
-			m_nameLabel = new InlineLabel( principal.getName() );
+			name = principal.getName();
+			if ( principal.getType() == PrincipalType.GROUP )
+			{
+				if ( "allusers".equalsIgnoreCase( name ) || "allextusers".equalsIgnoreCase( name ) )
+					name = principal.getTitle();
+			}
+			m_nameLabel = new InlineLabel( name );
 			m_nameLabel.setTitle( principal.getName() );
 			m_nameLabel.addStyleName( "selectPrincipalsWidget_PrincipalNameLabel" );
 			panel.add( m_nameLabel );
