@@ -110,6 +110,11 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 			getAdminModule().disableFileSyncStats();
 			reportSuccess(response);
 		}
+		else if(WebKeys.MRS_OPERATION_STOP_FILE_SYNC.equals(op)) {
+			long id = PortletRequestUtils.getLongParameter(request, "id", 0);
+			getFolderModule().requestNetFolderFullSyncStop(id);
+			reportSuccess(response);
+		}
 		else if(op.equals("")) {
 			reportNoop(response);
 		}

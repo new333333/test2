@@ -43,6 +43,7 @@ import java.util.SortedSet;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderState.FullSyncStats;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -718,4 +719,22 @@ public interface FolderModule {
     public void syncAclForNetFolderRoot(Folder netFolderRoot);
 
     public Folder createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    
+    /**
+     * Get an object containing information about the latest full synchronization run on the specified net folder.
+     * If no such object exists, this will return <code>null</code>.
+     * 
+     * @param netFolderId
+     * @return
+     */
+    public FullSyncStats getNetFolderFullSyncStats(Long netFolderId);
+    
+    /**
+     * Request full synchronization currently in progress on the specified net folder to be stopped as soon as possible.
+     * If the specified net folder has no full sync currently running on it, then this call will have no effect.
+     * Note that request to stop existing sync run will NOT affect any future run that has not yet started.
+     * 
+     * @param netFolderId
+     */
+    public void requestNetFolderFullSyncStop(Long netFolderId);
 }
