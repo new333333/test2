@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.folder.impl;
 
 import org.kablink.teaming.UncheckedIOException;
+import org.kablink.teaming.domain.BinderState.FullSyncStats;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.fi.FIException;
@@ -114,5 +115,14 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 			String name, User owner, String rootName, String path,
 			Boolean isHomeDir, boolean indexContent) throws AccessControlException, WriteFilesException, WriteEntryDataException {
 		return null;
+	}
+
+	@Override
+	public FullSyncStats getNetFolderFullSyncStats(Long netFolderId) {
+		return null;
+	}
+
+	@Override
+	public void requestNetFolderFullSyncStop(Long netFolderId) {
 	}
 }

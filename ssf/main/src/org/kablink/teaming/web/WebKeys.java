@@ -700,6 +700,7 @@ public class WebKeys {
 	public static final String MRS_OPERATION_DISABLE_FILE_SYNC_STATS = "disable_file_sync_stats";
 	public static final String MRS_OPERATION_SEARCH = "search";
 	public static final String MRS_OPERATION_CLEAR = "clear";
+	public static final String MRS_OPERATION_STOP_FILE_SYNC = "stop_file_sync";
 
 	public static final String AUTO_NOTIFY_TAIL			= "_notify";
 	public static final String AUTO_NOTIFY_GROUPS_TAIL	= "_groups";
