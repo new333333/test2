@@ -12,7 +12,7 @@
     <property name="fullSyncStopRequested"/>
     <component name="fullSyncStats" class="org.kablink.teaming.domain.BinderState$FullSyncStats">
       <property name="statusStr" column="fullSync_status" length="16"/>
-      <property name="startDate" column="fullSync_"/>
+      <property name="startDate" column="fullSync_startDate"/>
       <property name="endDate" column="fullSync_startDate"/>
       <property name="dirOnly" column="fullSync_dirOnly"/>
       <property name="enumerationFailed" column="fullSync_enumerationFailed"/>
