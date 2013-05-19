@@ -13,9 +13,9 @@
     <component name="fullSyncStats" class="org.kablink.teaming.domain.BinderState$FullSyncStats">
       <property name="statusStr" column="fullSync_status" length="16"/>
       <property name="startDate" column="fullSync_startDate"/>
-      <property name="endDate" column="fullSync_startDate"/>
+      <property name="endDate" column="fullSync_endDate"/>
       <property name="dirOnly" column="fullSync_dirOnly"/>
-      <property name="enumerationFailed" column="fullSync_enumerationFailed"/>
+      <property name="enumerationFailed" column="fullSync_enumFailed"/>
       <property name="countFiles" column="fullSync_countFiles"/>
       <property name="countFileAdd" column="fullSync_countFileAdd"/>
       <property name="countFileExpunge" column="fullSync_countFileExpunge"/>
