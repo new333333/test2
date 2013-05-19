@@ -12,25 +12,25 @@
     <property name="fullSyncStopRequested"/>
     <component name="fullSyncStats" class="org.kablink.teaming.domain.BinderState$FullSyncStats">
       <property name="statusStr" column="fullSync_status" length="16"/>
-      <property name="startDate"/>
-      <property name="endDate"/>
-      <property name="dirOnly"/>
-      <property name="enumerationFailed"/>
-      <property name="countFiles"/>
-      <property name="countFileAdd"/>
-      <property name="countFileExpunge"/>
-      <property name="countFileModify"/>
-      <property name="countFileSetAcl"/>
+      <property name="startDate" column="fullSync_"/>
+      <property name="endDate" column="fullSync_startDate"/>
+      <property name="dirOnly" column="fullSync_dirOnly"/>
+      <property name="enumerationFailed" column="fullSync_enumerationFailed"/>
+      <property name="countFiles" column="fullSync_countFiles"/>
+      <property name="countFileAdd" column="fullSync_countFileAdd"/>
+      <property name="countFileExpunge" column="fullSync_countFileExpunge"/>
+      <property name="countFileModify" column="fullSync_countFileModify"/>
+      <property name="countFileSetAcl" column="fullSync_countFileSetAcl"/>
       <property name="countFileSetOwnership" column="fullSync_countFileSetOwner"/>
-      <property name="countFolders"/>
-      <property name="countFolderAdd"/>
-      <property name="countFolderExpunge"/>
-      <property name="countFolderSetAcl"/>
+      <property name="countFolders" column="fullSync_countFolders"/>
+      <property name="countFolderAdd" column="fullSync_countFolderAdd"/>
+      <property name="countFolderExpunge" column="fullSync_countFolderExpunge"/>
+      <property name="countFolderSetAcl" column="fullSync_countFolderSetAcl"/>
       <property name="countFolderSetOwnership" column="fullSync_countFolderSetOwner"/>
-      <property name="countEntryExpunge"/>
-      <property name="countFailure"/>
-      <property name="countFolderProcessed"/>
-      <property name="countFolderMaxQueue"/>
+      <property name="countEntryExpunge" column="fullSync_countEntryExpunge"/>
+      <property name="countFailure" column="fullSync_countFailure"/>
+      <property name="countFolderProcessed" column="fullSync_countFolderProcessed"/>
+      <property name="countFolderMaxQueue" column="fullSync_countFolderMaxQueue"/>
     </component>
   </class>
 </hibernate-mapping>
