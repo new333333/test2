@@ -6124,7 +6124,7 @@ public class GwtViewHelper {
 			// A view on a permalink!  What type of entity is being
 			// viewed?
 			String entityType = getQueryParameterString(nvMap, WebKeys.URL_ENTITY_TYPE).toLowerCase();
-			if (entityType.equals(EntityType.user.name())) {
+			if (entityType.equals(EntityType.user.name().toLowerCase())) {
 				// A user!  Can we access the user?
 				Long entryId = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID);			
 				if (!(initVIFromUser(request, bs, GwtServerHelper.getUserFromId(bs, entryId), vi))) {
@@ -6133,8 +6133,8 @@ public class GwtViewHelper {
 				}
 			}
 			else {
-				boolean isProfiles = entityType.equals(EntityType.profiles.name());
-				if (entityType.equals(EntityType.folder.name()) || entityType.equals(EntityType.workspace.name()) || isProfiles) {
+				boolean isProfiles = entityType.equals(EntityType.profiles.name().toLowerCase());
+				if (entityType.equals(EntityType.folder.name().toLowerCase()) || entityType.equals(EntityType.workspace.name().toLowerCase()) || isProfiles) {
 					// A folder, workspace or the profiles binder!  Is
 					// this a request to show team members on this binder?
 					if ((!isProfiles) && op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
@@ -6147,6 +6147,35 @@ public class GwtViewHelper {
 						GwtLogHelper.debug(m_logger, "GwtViewHelper.getViewInfo():  3:Could not determine a view.");
 						return null;
 					}
+				}
+				
+				else if (entityType.equals(EntityType.folderEntry.name().toLowerCase())) {
+					// A folder entry!  Construct a ViewFolderEntryInfo
+					// for it...
+					FolderEntry	fe = null;
+					Long		entryId = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID);
+					if (null == entryId) {
+						String entryTitle = getQueryParameterString(nvMap, WebKeys.URL_ENTRY_TITLE);
+						if (MiscUtil.hasString(entryTitle)) {
+							String zoneUUID = getQueryParameterString(nvMap, WebKeys.URL_ZONE_UUID);
+							Set entries = bs.getFolderModule().getFolderEntryByNormalizedTitle(getQueryParameterLong(nvMap, WebKeys.URL_BINDER_ID), entryTitle, zoneUUID);
+							if (MiscUtil.hasItems(entries)) {
+								fe      = ((FolderEntry) entries.iterator().next());
+								entryId = fe.getId();
+							}
+						}
+					}
+					else {
+						fe = GwtUIHelper.getEntrySafely(bs.getFolderModule(), null, entryId);
+					}
+					
+					boolean				hasAccess = (null != fe);
+					Long				binderId  = (hasAccess ? fe.getParentBinder().getId() : getQueryParameterLong(nvMap, WebKeys.URL_BINDER_ID));
+					ViewFolderEntryInfo	vfei      = buildViewFolderEntryInfo(bs, request, binderId, entryId);
+					
+					// ...and mark the ViewInfo as such.
+					vi.setViewFolderEntryInfo(vfei                 );
+					vi.setViewType(           ViewType.FOLDER_ENTRY);
 				}
 			}
 		}
@@ -6349,8 +6378,23 @@ public class GwtViewHelper {
 		else if (action.equals(WebKeys.ACTION_VIEW_FOLDER_ENTRY)) {
 			// A view folder entry!  Construct a ViewFolderEntryInfo
 			// for it...
-			Long				entryId   = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID );
-			FolderEntry			fe        = GwtUIHelper.getEntrySafely(bs.getFolderModule(), null, entryId);
+			FolderEntry	fe      = null;
+			Long		entryId = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID );
+			if (null == entryId) {
+				String entryTitle = getQueryParameterString(nvMap, WebKeys.URL_ENTRY_TITLE);
+				if (MiscUtil.hasString(entryTitle)) {
+					String zoneUUID = getQueryParameterString(nvMap, WebKeys.URL_ZONE_UUID);
+					Set entries = bs.getFolderModule().getFolderEntryByNormalizedTitle(getQueryParameterLong(nvMap, WebKeys.URL_BINDER_ID), entryTitle, zoneUUID);
+					if (MiscUtil.hasItems(entries)) {
+						fe      = ((FolderEntry) entries.iterator().next());
+						entryId = fe.getId();
+					}
+				}
+			}
+			else {
+				fe = GwtUIHelper.getEntrySafely(bs.getFolderModule(), null, entryId);
+			}
+			
 			boolean				hasAccess = (null != fe);
 			Long				binderId  = (hasAccess ? fe.getParentBinder().getId() : getQueryParameterLong(nvMap, WebKeys.URL_BINDER_ID));
 			ViewFolderEntryInfo	vfei      = buildViewFolderEntryInfo(bs, request, binderId, entryId);
@@ -6703,7 +6747,8 @@ public class GwtViewHelper {
 	 * Returns true if the ViewInfo was initialized and false
 	 * otherwise.
 	 */
-	private static boolean initVIFromBinderId(HttpServletRequest request, AllModulesInjected bs, Map<String, String> nvMap, String binderIdName, ViewInfo vi) {
+	@SuppressWarnings("unchecked")
+	private static boolean initVIFromBinderId(HttpServletRequest request, AllModulesInjected bs, Map<String, String> nvMap, String binderIdName, ViewInfo vi) throws GwtTeamingException {
 		// Initialize as a binder based on the user's workspace.
 		Long binderId = getQueryParameterLong(nvMap, binderIdName);
 		BinderInfo bi = GwtServerHelper.getBinderInfo(bs, request, String.valueOf(binderId));
@@ -6793,6 +6838,33 @@ public class GwtViewHelper {
 		if (isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SUBSCRIBE, "1")) {
 			// Yes!  Mark the ViewInfo accordingly.
 			vi.setInvokeSubscribe(true);
+		}
+
+		// Are we actually to view an entry in the binder?
+		String entryTitle = getQueryParameterString(nvMap, WebKeys.URL_ENTRY_TITLE);
+		if (MiscUtil.hasString(entryTitle)) {
+			// Yes!  Can we access it?
+			String zoneUUID = getQueryParameterString(nvMap, WebKeys.URL_ZONE_UUID);
+			Set entries = bs.getFolderModule().getFolderEntryByNormalizedTitle(bi.getBinderIdAsLong(), entryTitle, zoneUUID);
+			if (MiscUtil.hasItems(entries)) {
+				// Yes!  Mark the ViewInfo as such.
+				FolderEntry         fe   = ((FolderEntry) entries.iterator().next());
+				Long                feId = fe.getId();
+				ViewFolderEntryInfo	vfei = buildViewFolderEntryInfo(bs, request, fe.getParentBinder().getId(), feId);
+				vi.setViewFolderEntryInfo(vfei);
+				vi.setEntryViewUrl(
+					GwtServerHelper.getViewFolderEntryUrl(
+						bs,
+						request,
+						binderId,
+						feId,
+						isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SHARE,     "1"),
+						isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SUBSCRIBE, "1")));
+				vi.setViewType(ViewType.BINDER_WITH_ENTRY_VIEW);
+				vi.setInvokeShare(       false);	// We'll invoke any share     on the entry, not the binder.
+				vi.setInvokeShareEnabled(false);	// We'll invoke any share     on the entry, not the binder.
+				vi.setInvokeSubscribe(   false);	// We'll invoke any subscribe on the entry, not the binder.
+			}
 		}
 
 		// Finally, return true since if we get here, the view has been
