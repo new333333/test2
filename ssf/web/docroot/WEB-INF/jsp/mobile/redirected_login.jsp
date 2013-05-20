@@ -44,7 +44,7 @@
 <!-- If there was an error logging in, show the error. -->
 <c:if test="${!empty ss_loginError}">
 <%
-	if(isIPhone) {
+	if(isIPhone || isIPad) {
 %>
 	document.location = "NovellVibe:" + "doLoginFailed:" + "${operation2}:";
 <%

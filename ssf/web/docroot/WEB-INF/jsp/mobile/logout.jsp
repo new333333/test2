@@ -40,7 +40,7 @@ function ss_mobileLogoff() {
 
 	<c:if test="${nativeMobileApp}">
 	<%
-		if(isIPhone) {
+		if(isIPhone || isIPad) {
 	%>
 	    document.location = "NovellVibe:" + "doAppLogout:" + "iphone:";
 	<%
