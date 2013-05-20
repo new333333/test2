@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
+import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.jobs.MirroredFolderSynchronization;
 import org.kablink.teaming.jobs.NetFolderServerSynchronization;
@@ -271,6 +272,7 @@ public class NetFolderHelper
 		rdConfig = findNetFolderRootByUNC( adminModule, resourceDriverModule, serverUNC );
 		if ( rdConfig == null )
 		{
+			// No, create one
 			rdConfig = NetFolderHelper.createHomeDirNetFolderServer(
 																profileModule,
 																adminModule,
@@ -300,6 +302,7 @@ public class NetFolderHelper
 			{
 				String folderName;
 	
+				// No, create one.
 				folderName = NLT.get( "netfolder.default.homedir.name" );
 				m_logger.info( "About to create a net folder called: " + folderName + ", for the users home directory for user: " + user.getName() );
 				
@@ -332,8 +335,27 @@ public class NetFolderHelper
 			}
 			else
 			{
+				String currentServerUNC = null;
+				
+				// A home dir net folder already exists for this user.
+				
+				// Get the server unc path that is currently being used by the user's home dir net folder.
+				{
+					ResourceDriver driver;
+					
+					driver = netFolderBinder.getResourceDriver();
+					if ( driver != null )
+					{
+						ResourceDriverConfig currentRdConfig;
+						
+						currentRdConfig = driver.getConfig();
+						if ( currentRdConfig != null )
+							currentServerUNC = currentRdConfig.getRootPath();
+					}
+				}
+
 				// Did any information about the home directory change?
-				if ( serverUNC.equalsIgnoreCase( rdConfig.getRootPath() ) == false ||
+				if ( serverUNC.equalsIgnoreCase( currentServerUNC ) == false ||
 					 homeDirInfo.getPath().equalsIgnoreCase( netFolderBinder.getResourcePath() ) == false )
 				{
 					Set deleteAtts;
