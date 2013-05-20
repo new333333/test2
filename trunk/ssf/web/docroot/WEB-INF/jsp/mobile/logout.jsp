@@ -40,7 +40,7 @@ function ss_mobileLogoff() {
 
 	<c:if test="${nativeMobileApp}">
 	<%
-		if(isIPhone) {
+		if(isIPhone || isIPad) {
 	%>
 	    document.location = "NovellVibe:" + "doAppLogout:" + "iphone:";
 	<%
@@ -117,5 +117,5 @@ function ss_logoff_from_sso(s) {
 
 <!-- This form is used for logging out. -->
 <!-- The value of the action attribute will be filled in at runtime. -->
-<form name="logoutForm" id="logoutForm" method="post" >
+<form name="logoutForm" id="logoutForm" method="post" action="" >
 </form> 
