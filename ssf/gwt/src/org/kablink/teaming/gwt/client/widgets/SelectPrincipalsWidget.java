@@ -326,10 +326,7 @@ public class SelectPrincipalsWidget extends Composite
 
 			m_principalsCellFormatter = m_principalsTable.getFlexCellFormatter();
 
-			rowFormatter.setVerticalAlign( nextRow, HasVerticalAlignment.ALIGN_TOP );
-			table.setWidget( nextRow, 0, m_principalsTablePanel );
-			cellFormatter.setColSpan( nextRow, 0, 2 );
-			++nextRow;
+			mainPanel.add( m_principalsTablePanel );
 
 			setColumnHeaders();
 		}
