@@ -99,6 +99,8 @@ public interface CoreDao {
 	public void lock(Object obj);
 	public Object load(Class className, String id);
 	public Object load(Class className, Long id);
+	public Object loadLocked(Class className, String id);
+	public Object loadLocked(Class className, Long id);
 	public List<Tag> loadAllTagsByEntity(EntityIdentifier entityId);
 	public Map<EntityIdentifier, List<Tag>> loadAllTagsByEntity(Collection<EntityIdentifier> entityIds);
 	/**

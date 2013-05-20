@@ -675,6 +675,27 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "load(Class,Long)");
     	}	        
     }
+    
+    @Override
+	public Object loadLocked(Class clazz, String id) {
+		long begin = System.nanoTime();
+		try {
+			return getHibernateTemplate().get(clazz, id, LockMode.PESSIMISTIC_WRITE);
+    	}
+    	finally {
+    		end(begin, "loadLocked(Class,String)");
+    	}	        
+    }
+    @Override
+	public Object loadLocked(Class clazz, Long id) {
+		long begin = System.nanoTime();
+		try {
+			return getHibernateTemplate().get(clazz, id, LockMode.PESSIMISTIC_WRITE);         
+    	}
+    	finally {
+    		end(begin, "loadLocked(Class,Long)");
+    	}	        
+    }
 	/**
 	 * Return a list containing an object array, where each object in a row representing the value of the requested attribute
 	 * This is used to return a subset of object attributes
