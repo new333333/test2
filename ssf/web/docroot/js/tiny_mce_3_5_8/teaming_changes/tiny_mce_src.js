@@ -15429,7 +15429,7 @@ tinymce.create('tinymce.ui.Toolbar:tinymce.ui.Container', {
 			},
 
 			InsertHorizontalRule : function() {
-				editor.execCommand('mceInsertContent', false, '<hr />');
+				editor.execCommand('mceInsertContent', false, '<div><hr /></div>');
 			},
 
 			mceToggleVisualAid : function() {
