@@ -38,7 +38,6 @@ package org.kablink.teaming;
  * @author Jong Kim
  */
 public interface ObjectKeys {
-	
     //Default name for the product
 	public static final String PRODUCT_NAME_DEFAULT="Kablink";
 	public static final String PRODUCT_TITLE_DEFAULT="Kablink";
@@ -481,6 +480,7 @@ public interface ObjectKeys {
     public static final String SEARCH_CRITERIA_OR = "searchCriteriaOr";
     public static final String SEARCH_DASHBOARD_CURRENT_BINDER_ID = "searchDashboardBinderId";
     public static final String PAGE_ENTRIES_PER_PAGE = "entriesPerPage";
+    public static final String FILE_LINK_ACTION = "fileLinkAction";
     public static final String SEARCH_PAGE_ENTRIES_PER_PAGE = "entriesPerSearchPage";
     public static final String SEARCH_YEAR_MONTH = "yearMonth";
     public static final String SEARCH_EVENT_DAYS = "eventDays";
