@@ -82,6 +82,14 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 		executorService_JITS = jitsExecutor;
 
 
+		// If the pool is already at the core size, the executor creates a new thread only if the work queue is full.
+		// With large queue size as this, it is not desirable since we don't want to add that many tasks in the
+		// queue before being able to create a new thread beyond the core size. For that reason, we set the core
+		// size to be the same as the max pool size, forcing the executor to create a new thread immediately as
+		// soon as a new work arrives and all existing threads are busy up to the max pool size limit.
+		// One down side of this approach is that the pool can contain as many idle threads as the max pool size
+		// even when there are no work to execute. To remedy this, we set the allowCoreThreadTimeOut to true,
+		// which will allow all the worker threads to be able to time out and eventually be torn down. 
         int fullSyncMaximumPoolSize = SPropsUtil.getInt("runasync.executor.fullsync.maximum.pool.size", 10);
 		int fullSyncMaximumQueueSize = SPropsUtil.getInt("runasync.executor.fullsync.maximum.queue.size", 1000);
         ThreadPoolExecutor fullSyncExecutor = new ThreadPoolExecutor(

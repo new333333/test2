@@ -391,23 +391,9 @@ public class NetFolderHelper
 						final Long binderId;
 						
 						binderId = netFolderBinder.getId();
-						
-						asyncManager.execute( new RunAsyncCallback()
-						{
-							@Override
-							public Object doAsynchronously() throws Exception 
-							{
-								m_logger.info( "About to sync home directory net folder: " + binderId );
-								folderModule.fullSynchronize( binderId, null );
-						    	return null;
-							}
 
-							@Override
-							public String toString()
-							{
-								return "folderModule.synchronize()";
-							}
-						}, RunAsyncManager.TaskType.FULL_SYNC);
+						m_logger.info( "About to sync home directory net folder: " + binderId );
+						folderModule.enqueueFullSynchronize( binderId );
 					}
 					catch ( Exception e )
 					{

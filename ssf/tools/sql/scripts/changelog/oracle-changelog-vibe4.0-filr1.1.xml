@@ -137,4 +137,13 @@
             </column>
         </addColumn>
     </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="3">
+        <comment>Full sync status set time</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_STATUSDATE" type="TIMESTAMP(6)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

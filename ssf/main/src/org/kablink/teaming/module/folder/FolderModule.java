@@ -735,6 +735,18 @@ public interface FolderModule {
      * Note that request to stop existing sync run will NOT affect any future run that has not yet started.
      * 
      * @param netFolderId
+     * @return <code>true</code> if full sync is currently in progress on the specified net folder 
+     * and no stop request is already in place, <code>false</code> otherwise.
      */
-    public void requestNetFolderFullSyncStop(Long netFolderId);
+    public boolean requestNetFolderFullSyncStop(Long netFolderId);
+    
+    /**
+     * Indicate that the system must start executing a full synchronization on the specified net folder
+     * as soon as necessary system resources becomes available to do so. 
+     * 
+     * @param netFolderId
+     * @return <code>true</code> if the net folder is currently in neither ready nor started state, 
+     * <code>false</code> otherwise.
+     */
+    public boolean enqueueFullSynchronize(Long netFolderId);
 }

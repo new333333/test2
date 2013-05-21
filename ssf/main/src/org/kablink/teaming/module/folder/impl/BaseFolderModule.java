@@ -123,6 +123,12 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	}
 
 	@Override
-	public void requestNetFolderFullSyncStop(Long netFolderId) {
+	public boolean requestNetFolderFullSyncStop(Long netFolderId) {
+		return false;
+	}
+
+	@Override
+	public boolean enqueueFullSynchronize(Long folderId) {
+		return false;
 	}
 }
