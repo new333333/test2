@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
+import org.kablink.teaming.gwt.client.util.FileLinkAction;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -70,18 +71,22 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
+	private FileLinkAction	m_fileLinkAction;	//
 	private HoverHintPopup	m_hoverHintPopup;	//
 	
 	/**
 	 * Constructor method.
 	 */
-	public EntryTitleCell() {
-		// Sink the events we need to process an entry title.
+	public EntryTitleCell(FileLinkAction fla) {
+		// Sink the events we need to process an entry title...
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
 			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
+		
+		// ...and store the parameter.
+		m_fileLinkAction = fla;
 	}
 
 	/*
@@ -101,6 +106,39 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		// The entry is either not a file or we don't have an icon for
 		// it.  Return the generic entry icon.
 		return images.folder_entry().getSafeUri().asString();
+	}
+
+	/*
+	 * Returns the string to use for the title URL of a file.  If the
+	 * EntryTitleInfo is not a file or no appropriate URL can be
+	 * determined, null is returned. 
+	 */
+	private String getFileLinkUrl(EntryTitleInfo eti) {
+		String reply;
+		if (eti.isFile()) {
+			String fileDownloadUrl = eti.getFileDownloadUrl();
+			switch (m_fileLinkAction) {
+			default:
+			case DOWNLOAD:
+				reply = fileDownloadUrl;
+				break;
+				
+			case VIEW_DETAILS:
+				reply = null;
+				break;
+				
+			case VIEW_HTML_ELSE_DETAILS:
+			case VIEW_HTML_ELSE_DOWNLOAD:
+				reply = eti.getFileViewAsHtmlUrl();
+				if ((!(GwtClientHelper.hasString(reply))) && m_fileLinkAction.isViewHtmlElseDownload()) {
+					reply = fileDownloadUrl;
+				}
+			}
+		}
+		else {
+			reply = null;
+		}
+		return reply;
 	}
 	
 	/*
@@ -272,7 +310,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     		if (isLabel) {
     			// Yes!  Strip off any over style.
     			hoverStyleRemove(eti, eventTarget);
-    			if (!(eti.isFile())) {
+    			if ((!(eti.isFile())) || (!(GwtClientHelper.hasString(getFileLinkUrl(eti))))) {
     				invokeViewEntry(eti, eventTarget);
     			}
     		}
@@ -423,17 +461,20 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		}
 		
 		// ...add the title link...
-		Widget  titleWidget;
+		Widget  titleWidget = null;
 		Element titleElement;
 		if (null != titleImg) {
 			if (titleIsLink && eti.isFile()) {
-				titleImg.getElement().setAttribute("border", "0");
-				Anchor a = new Anchor();
-				a.setHref(eti.getFileDownloadUrl());
-				a.setTarget("_blank");
-				titleWidget = a;
+				String titleUrl = getFileLinkUrl(eti);
+				if (GwtClientHelper.hasString(titleUrl)) {
+					titleImg.getElement().setAttribute("border", "0");
+					Anchor a = new Anchor();
+					a.setHref(titleUrl);
+					a.setTarget("_blank");
+					titleWidget = a;
+				}
 			}
-			else {
+			if (null == titleWidget) {
 				titleWidget = new VibeFlowPanel();
 			}
 			titleWidget.setStyleName("vibe-dataTableEntry-titleLinkPanel");
@@ -441,7 +482,6 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			titleElement.appendChild(titleImg.getElement());
 		}
 		else {
-			titleWidget  = null;
 			titleElement = null;
 		}
 		InlineLabel titleLabel = new InlineLabel(eti.getTitle());

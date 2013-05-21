@@ -809,6 +809,11 @@ public interface GwtTeamingMessages extends Messages
 	String numEntriesPerPageCannotBeBlank();
 	String numEntriesPerPageInvalidNum();
 	String numEntriesPerPageLabel();
+	String fileLinkActionLabel();
+	String fileLinkActionOption_Download();
+	String fileLinkActionOption_ViewDetails();
+	String fileLinkActionOption_ViewHtmlElseDetails();
+	String fileLinkActionOption_ViewHtmlElseDownload();
 	String personalPreferencesDlgHeader();
 	String showEntriesAsAnOverlay();
 	String showEntriesInNewPage();

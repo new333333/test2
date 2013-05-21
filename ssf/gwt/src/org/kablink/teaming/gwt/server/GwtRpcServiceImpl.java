@@ -5908,26 +5908,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					}
 				}
 				
-				// Save the "show tutorial panel" preference
-				{
-					@SuppressWarnings("unused")
-					String tutorialPanelState;
-					
-					if ( personalPrefs.getShowTutorialPanel() )
-						tutorialPanelState = "2";
-					else
-						tutorialPanelState = "1";
-					
-					// We don't have a tutorial panel any more (as of Durango).
-					// profileModule.setUserProperty( null, ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE, tutorialPanelState );
-				}
-				
 				// Save the "number of entries per page" preference
 				{
 					profileModule.setUserProperty(
 												user.getId(),
 												ObjectKeys.PAGE_ENTRIES_PER_PAGE,
 												String.valueOf( personalPrefs.getNumEntriesPerPage() ) );
+				}
+				
+				// Save the "file link action" preference
+				{
+					profileModule.setUserProperty(
+												user.getId(),
+												ObjectKeys.FILE_LINK_ACTION,
+												String.valueOf( personalPrefs.getFileLinkAction().ordinal() ) );
 				}
 			}
 			else

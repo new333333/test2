@@ -216,6 +216,7 @@ import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.FileLinkAction;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -7208,12 +7209,6 @@ public class GwtServerHelper {
 				String displayStyle = user.getDisplayStyle();
 				personalPrefs.setDisplayStyle(displayStyle);
 				
-				// Is the tutorial panel open?
-				String tutorialPanelState = getTutorialPanelState(bs, request);
-				if ((null != tutorialPanelState) && tutorialPanelState.equalsIgnoreCase("1"))
-				     personalPrefs.setShowTutorialPanel(false);
-				else personalPrefs.setShowTutorialPanel(true );
-				
 				// Get the number of entries per page that should be
 				// displayed when a folder is selected.
 				Integer numEntriesPerPage = Integer.valueOf(SPropsUtil.getString("folder.records.listed"));
@@ -7228,6 +7223,19 @@ public class GwtServerHelper {
 					}
 				}
 				personalPrefs.setNumEntriesPerPage(numEntriesPerPage);
+
+				// Get the action to take when a file link is
+				// activated.
+				String flaS = ((String) userProperties.getProperty(ObjectKeys.FILE_LINK_ACTION));
+				if (MiscUtil.hasString(flaS)) {
+					try {
+						int flaI = Integer.parseInt(flaS);
+						personalPrefs.setFileLinkAction(FileLinkAction.getEnum(flaI));
+					}
+					catch (NumberFormatException nfe) {
+						GwtLogHelper.warn(m_logger, "GwtServerHelper.getPersonalPreferences():  file link action is not an integer.", nfe);
+					}
+				}
 				
 				// Set the flag that indicates whether 'editor
 				// overrides; are supported.
@@ -7582,26 +7590,6 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
-    /**
-     * 
-	 * @param ri
-	 * 
-	 * @return
-     */
-    public static String getTutorialPanelState(AllModulesInjected bs, HttpServletRequest request) {
-    	ProfileModule	profileModule = bs.getProfileModule();
-    	UserProperties	userProperties = profileModule.getUserProperties( null );
-    	String			tutorialPanelState = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE );
-
-		// Do we have a tutorial panel state?
-		if (!(MiscUtil.hasString(tutorialPanelState))) {
-			// No, default to expanded.
-			tutorialPanelState = "2";
-		}
-		
-    	return tutorialPanelState;
-    }
-    
 	/**
 	 * Returns the Object from an entry map.
 	 * 

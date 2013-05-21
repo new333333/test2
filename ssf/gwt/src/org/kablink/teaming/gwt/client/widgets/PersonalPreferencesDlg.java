@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,6 +37,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.util.FileLinkAction;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -54,16 +55,16 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 
-
 /**
- * 
+ * ?
+ *  
  * @author jwootton
- *
  */
 public class PersonalPreferencesDlg extends DlgBox
 	implements KeyPressHandler
 {
 	private ListBox m_entryDisplayStyleListbox;
+	private ListBox m_fileLinkActionListbox;
 	private TextBox m_numEntriesPerPageTxtBox;
 	private Anchor m_editorOverridesAnchor;
 	
@@ -134,6 +135,22 @@ public class PersonalPreferencesDlg extends DlgBox
 			m_numEntriesPerPageTxtBox.addKeyPressHandler( this );
 			m_numEntriesPerPageTxtBox.setVisibleLength( 3 );
 			table.setWidget( nextRow, 1, m_numEntriesPerPageTxtBox );
+			++nextRow;
+		}
+		
+		// Create the controls for "File Link Action"
+		{
+			table.setText( nextRow, 0, messages.fileLinkActionLabel() );
+			
+			// Create a select widget the user can select the options from.
+			m_fileLinkActionListbox = new ListBox();
+			m_fileLinkActionListbox.setVisibleItemCount( 1 );
+			m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_Download(),             String.valueOf( FileLinkAction.DOWNLOAD.ordinal()                ) );
+			m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewDetails(),          String.valueOf( FileLinkAction.VIEW_DETAILS.ordinal()            ) );
+			m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewHtmlElseDetails(),  String.valueOf( FileLinkAction.VIEW_HTML_ELSE_DETAILS.ordinal()  ) );
+			m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewHtmlElseDownload(), String.valueOf( FileLinkAction.VIEW_HTML_ELSE_DOWNLOAD.ordinal() ) );
+
+			table.setWidget( nextRow, 1, m_fileLinkActionListbox );
 			++nextRow;
 		}
 		
@@ -223,12 +240,17 @@ public class PersonalPreferencesDlg extends DlgBox
 	{
 		GwtPersonalPreferences personalPrefs;
 		String displayStyle;
+		FileLinkAction fla;
 		
 		personalPrefs = new GwtPersonalPreferences();
 		
 		// Get the entry display style from the dialog.
 		displayStyle = getEntryDisplayStyleFromDlg();
 		personalPrefs.setDisplayStyle( displayStyle );
+		
+		// Get the file link action from the dialog.
+		fla = getFileLinkActionFromDlg();
+		personalPrefs.setFileLinkAction(fla);
 		
 		// Get the value of "number of entries per page"
 		{
@@ -292,6 +314,23 @@ public class PersonalPreferencesDlg extends DlgBox
 	
 	
 	/**
+	 * Get the selected value for "file link action"
+	 */
+	private FileLinkAction getFileLinkActionFromDlg()
+	{
+		int index;
+		FileLinkAction reply;
+		
+		index = m_fileLinkActionListbox.getSelectedIndex();
+		if ( index == -1 )
+			index = 0;
+		
+		reply = FileLinkAction.getEnum( Integer.parseInt( m_fileLinkActionListbox.getValue( index ) ) );
+		return reply;
+	}// end getEntryDisplayStyleFromDlg()
+	
+	
+	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
 	@Override
@@ -307,6 +346,7 @@ public class PersonalPreferencesDlg extends DlgBox
 	public void init( GwtPersonalPreferences personalPrefs )
 	{
 		initEntryDisplayStyleControls( personalPrefs );
+		initFileLinkActionControls( personalPrefs );
 		
 		m_numEntriesPerPageTxtBox.setValue( String.valueOf( personalPrefs.getNumEntriesPerPage() ) );
 		
@@ -317,7 +357,7 @@ public class PersonalPreferencesDlg extends DlgBox
 	}// end init()
 	
 	
-	/**
+	/*
 	 * Initialize the controls used with "Entry display style"
 	 */
 	private void initEntryDisplayStyleControls( GwtPersonalPreferences personalPrefs )
@@ -338,7 +378,28 @@ public class PersonalPreferencesDlg extends DlgBox
 	}// end initEntryDisplayStyleControls()
 
 
-	/**
+	/*
+	 * Initialize the controls used with "File Link Action"
+	 */
+	private void initFileLinkActionControls( GwtPersonalPreferences personalPrefs )
+	{
+		int index;
+		
+		m_fileLinkActionListbox.setSelectedIndex( -1 );
+		
+		// Select the appropriate item in the "file link action" listbox.
+		index = GwtClientHelper.selectListboxItemByValue( m_fileLinkActionListbox, String.valueOf( personalPrefs.getFileLinkAction().ordinal() ) );
+		
+		// Did we select an item in the listbox?
+		if ( index == -1 )
+		{
+			// No
+			m_fileLinkActionListbox.setSelectedIndex( 0 );
+		}
+	}// end initFileLinkActionControls()
+
+
+	/*
 	 * Invoke the "Editor Overrides" dialog
 	 */
 	private void invokeEditorOverridesDlg()
@@ -374,5 +435,4 @@ public class PersonalPreferencesDlg extends DlgBox
         	}
         }
 	}// end onKeyPress()
-
 }// end PersonalPreferencesDlg

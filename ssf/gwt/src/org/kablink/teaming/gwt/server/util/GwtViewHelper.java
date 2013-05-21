@@ -165,6 +165,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
+import org.kablink.teaming.gwt.client.util.FileLinkAction;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
 import org.kablink.teaming.gwt.client.util.TagInfo;
@@ -805,14 +806,7 @@ public class GwtViewHelper {
 		if (null != fa) {
 			// Yes!  Do we support viewing that type of file as HTML?
 			String fName = fa.getFileItem().getName();
-			boolean supportsViewAsHtml = SsfsUtil.supportsViewAsHtml(fName);
-			if (!supportsViewAsHtml) {
-				int pPos = fName.lastIndexOf('.');
-				if (0 < pPos) {
-					supportsViewAsHtml = fName.substring(pPos).toLowerCase().equals(".pdf");
-				}
-			}
-    		if (supportsViewAsHtml) {
+    		if (supportsViewAsHtml(fName)) {
 				try {
 	        		// Yes!  Generate a ViewFileInfo for it.
 					reply = new ViewFileInfo();
@@ -3509,6 +3503,14 @@ public class GwtViewHelper {
 			try                  {pageSize = Integer.parseInt(MiscUtil.entriesPerPage(userProperties));}
 			catch (Exception ex) {pageSize = 25;                                                       }
 			
+			// What's the action to take when a file link is activated?
+			String flaS = ((String) userProperties.getProperty(ObjectKeys.FILE_LINK_ACTION));
+			FileLinkAction fla = FileLinkAction.DOWNLOAD;
+			if (MiscUtil.hasString(flaS)) {
+				try                               {fla = FileLinkAction.getEnum(Integer.parseInt(flaS));}
+				catch (NumberFormatException nfe) {fla = FileLinkAction.DOWNLOAD;                       }
+			}
+			
 			// Has the user defined any column widths on this folder?
 			ColumnWidthsRpcResponseData cwData = getColumnWidths(bs, request, folderInfo);
 
@@ -3547,7 +3549,8 @@ public class GwtViewHelper {
 					folderSupportsPinning,
 					viewPinnedEntries,
 					viewSharedFiles,
-					folderOwnedByCurrentUser);
+					folderOwnedByCurrentUser,
+					fla);
 		}
 		
 		catch (Exception e) {
@@ -3866,11 +3869,11 @@ public class GwtViewHelper {
 					options.put(ObjectKeys.SEARCH_IS_ENABLED_USERS, Boolean.TRUE);
 				}
 			}
-
+			
 			// Factor in the user's sorting selection.
 			FolderDisplayDataRpcResponseData fdd = getFolderDisplayData(bs, request, folderInfo);
-			String	sortBy      = fdd.getFolderSortBy();
-			boolean	sortDescend = fdd.getFolderSortDescend();
+			String	sortBy           = fdd.getFolderSortBy();
+			boolean	sortDescend      = fdd.getFolderSortDescend();
 			options.put(ObjectKeys.SEARCH_SORT_BY,      sortBy     );
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, sortDescend);
 
@@ -4264,15 +4267,15 @@ public class GwtViewHelper {
 												String fName = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
 												if (MiscUtil.hasString(fName)) {
 													eti.setFile(true);
-													eti.setFileDownloadUrl(
-														GwtServerHelper.getDownloadFileUrl(
-															request,
-															entryMap));
-													eti.setFileIcon(
-														FileIconsHelper.getFileIconFromFileName(
-															fName,
-															mapBISToIS(
-																BinderIconSize.getListViewIconSize())));
+										    		if (supportsViewAsHtml(fName)) {
+														ViewFileInfo vfi = new ViewFileInfo();
+														vfi.setFileId(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILE_ID_FIELD));
+														vfi.setEntityId(entityId);
+														vfi.setFileTime(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILE_TIME_FIELD));
+														eti.setFileViewAsHtmlUrl(GwtServerHelper.getViewFileUrl(request, vfi));
+										    		}
+													eti.setFileDownloadUrl(GwtServerHelper.getDownloadFileUrl(request, entryMap));
+													eti.setFileIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.getListViewIconSize())));
 												}
 											}
 											fr.setColumnValue(fc, eti);
@@ -8096,6 +8099,26 @@ public class GwtViewHelper {
 					e,
 					"GwtViewHelper.showShares( SOURCE EXCEPTION ):  ");
 		}
+	}
+
+	/*
+	 * Returns true if the given filename supports viewing as HTML and
+	 * false otherwise.
+	 */
+	private static boolean supportsViewAsHtml(String fName) {
+		if (!(MiscUtil.hasString(fName))) {
+			return false;
+		}
+		
+		boolean reply = SsfsUtil.supportsViewAsHtml(fName);
+		if (!reply) {
+			int pPos = fName.lastIndexOf('.');
+			if (0 < pPos) {
+				reply = fName.substring(pPos).toLowerCase().equals(".pdf");
+			}
+		}
+		
+		return reply;
 	}
 	
 	/**
