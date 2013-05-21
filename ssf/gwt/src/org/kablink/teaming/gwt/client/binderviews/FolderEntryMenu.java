@@ -56,6 +56,7 @@ import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
@@ -234,6 +235,7 @@ public class FolderEntryMenu extends VibeFlowPanel {
 					case SHOW_VIEW_PERMALINKS:                event = new ShowViewPermalinksEvent();                                              break;
 					case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      eid.getBinderId(), eid);            break;
 					case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         eid.getBinderId(), eid);            break;
+					case ZIP_AND_DOWNLOAD_SELECTED_FILES:     event = new ZipAndDownloadSelectedFilesEvent(   eid.getBinderId(), eid);            break;
 					
 					case INVOKE_EDIT_IN_PLACE:
 						event = new InvokeEditInPlaceEvent(
