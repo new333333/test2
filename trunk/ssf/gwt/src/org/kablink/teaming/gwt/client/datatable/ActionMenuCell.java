@@ -64,6 +64,7 @@ import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
+import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
@@ -370,6 +371,7 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 						case SUBSCRIBE_SELECTED_ENTRIES:            event = new SubscribeSelectedEntriesEvent(        binderId, eid); break;
 						case VIEW_SELECTED_ENTRY:                   event = new ViewSelectedEntryEvent(               binderId, eid); break;
 						case VIEW_WHO_HAS_ACCESS:                   event = new ViewWhoHasAccessEvent(                binderId, eid); break;
+						case ZIP_AND_DOWNLOAD_SELECTED_FILES:       event = new ZipAndDownloadSelectedFilesEvent(     binderId, eid); break;
 						
 						case CHANGE_FAVORITE_STATE:
 							event = new ChangeFavoriteStateEvent(

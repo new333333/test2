@@ -124,9 +124,7 @@ public class DownloadPanel extends ToolPanelBase {
 	private void loadPart1Now() {
 		m_downloadForm = new FormPanel();
 		m_downloadForm.setMethod(FormPanel.METHOD_POST);
-//!		...this needs to be implemented...
 		m_fp.add(m_downloadForm);
-		
 		toolPanelReady();
 	}
 

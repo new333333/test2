@@ -190,6 +190,7 @@ public class GwtMenuHelper {
 	private final static String WHATS_NEW				= "whatsnew";
 	private final static String WHO_HAS_ACCESS			= "whohasaccess";
 	private final static String WORKFLOW_HISTORY_REPORT	= "workflowHistoryReport";
+	private final static String ZIP_AND_DOWNLOAD		= "zipAndDownload";
 	
 	// Controls whether WebDAV information shows up in footers.
 	// DRF (20130225):  Bug 805858:  Disabled these as a per a
@@ -868,6 +869,16 @@ public class GwtMenuHelper {
 			moreTBI.addNestedItem(tbi);
 		}
 		
+		// ...for My Files, Shared by/with Me lists and file folders...
+		if (isEntryContainer && (isMyFilesCollection || isSharedCollection || GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder)))) {
+			// ...allow the user to zip and download the selected
+			// ...files...
+			tbi = new ToolbarItem("1_zipAndDownloadSelected");
+			markTBITitle(tbi, "toolbar.zipAndDownload");
+			markTBIEvent(tbi, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
+			moreTBI.addNestedItem(tbi);
+		}
+		
 		BinderModule bm = bs.getBinderModule();
 		if (isFolder) {
 			// ...for the view types that support it...
@@ -918,16 +929,6 @@ public class GwtMenuHelper {
 				tbi = new ToolbarItem("1_markUnreadSelected");
 				markTBITitle(tbi, "toolbar.markUnread");
 				markTBIEvent(tbi, TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES);
-				moreTBI.addNestedItem(tbi);
-			}
-
-			// ...for file folders...
-			if (GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder))) {
-				// ...allow the user to zip and download the selected
-				// ...files...
-				tbi = new ToolbarItem("1_zipAndDownloadSelected");
-				markTBITitle(tbi, "toolbar.zipAndDownloadFiles");
-				markTBIEvent(tbi, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
 				moreTBI.addNestedItem(tbi);
 			}
 		}
@@ -1517,6 +1518,19 @@ public class GwtMenuHelper {
 		markTBITitle(whoHasAccessTBI, "toolbar.menu.who_has_access");
 		markTBIEvent(whoHasAccessTBI, TeamingEvents.VIEW_WHO_HAS_ACCESS);
 		entryToolbar.addNestedItem(whoHasAccessTBI);
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for zipping and downloading a file.
+	 */
+	private static void constructEntryZipAndDownload(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
+		if (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true)) {
+			ToolbarItem zipAndDownloadTBI = new ToolbarItem("1_zipAndDownload"              );
+			markTBITitle(   zipAndDownloadTBI, "toolbar.zipAndDownload"                     );
+			markTBIEvent(   zipAndDownloadTBI, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
+			markTBIEntryIds(zipAndDownloadTBI, fe                                           );
+			entryToolbar.addNestedItem(zipAndDownloadTBI);
+		}
 	}
 	
 	/*
@@ -2593,14 +2607,16 @@ public class GwtMenuHelper {
 					FolderEntry fe= bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
 					
 					if (GwtShareHelper.isEntitySharable(bs, fe)) {
-						constructEntryShareItem(       actionToolbar, bs, request);
-						constructEntryManageSharesItem(actionToolbar, bs         );
+						constructEntryShareItem(actionToolbar, bs, request);
 					}
+					
+					constructEntryZipAndDownload(  actionToolbar, bs, request, fe                    );					
 					constructEntryDetailsItem(     actionToolbar, bs, request, "toolbar.details.view");
 					constructEntryViewHtmlItem(    actionToolbar, bs, request, fe                    );
 					constructEntryViewWhoHasAccess(actionToolbar, bs, request                        );
 					constructEntryRenameFile(      actionToolbar, bs, request, fe                    );
 					constructEntrySubscribeItem(   actionToolbar, bs, request, true                  );
+					constructEntryManageSharesItem(actionToolbar, bs                                 );
 				}
 				
 				else if (eidType.equals(EntityType.folder.name())) {
@@ -3255,6 +3271,16 @@ public class GwtMenuHelper {
 				markTBITitle(   actionTBI, "toolbar.move"                     );
 				markTBIEvent(   actionTBI, TeamingEvents.MOVE_SELECTED_ENTRIES);
 				markTBIEntryIds(actionTBI, fe                                 );
+				dropdownTBI.addNestedItem(actionTBI);
+			}
+			
+			// Is this a file entry?
+			if (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true)) {
+				// Yes!  Allow the user to zip and download it.
+				actionTBI = new ToolbarItem(ZIP_AND_DOWNLOAD                            );
+				markTBITitle(   actionTBI, "toolbar.zipAndDownload"                     );
+				markTBIEvent(   actionTBI, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
+				markTBIEntryIds(actionTBI, fe                                           );
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 			
