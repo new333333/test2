@@ -125,6 +125,9 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		</span>
 		<br/>
 	</label>
+	<div class="ss_fineprint ss_bright">
+		<ssf:nlt tag="profile.external_user_hint" />
+	</div>
 </c:if>
 
 <div class="ss_labelAbove"><label for="name"><ssf:nlt tag="__profile_name"/></label></div>
