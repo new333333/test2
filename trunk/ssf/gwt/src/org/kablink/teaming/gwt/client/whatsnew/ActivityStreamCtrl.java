@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.whatsnew;
 
 import java.util.Date;
@@ -113,11 +112,11 @@ import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
-
 /**
- * This widget will display a list of entries that are the results from a search query.
+ * This widget will display a list of entries that are the results from
+ * a search query.
+ * 
  * @author jwootton
- *
  */
 public class ActivityStreamCtrl extends ResizeComposite
 	implements ClickHandler,
@@ -135,6 +134,17 @@ public class ActivityStreamCtrl extends ResizeComposite
 		ViewAllEntriesEvent.Handler,
 		ViewUnreadEntriesEvent.Handler
 {
+	public enum ActivityStreamCtrlUsage
+	{
+		BLOG,
+		COMMENTS,
+		UNREAD_ENTRIES,
+		STANDALONE;
+		
+		public boolean isEmbedded()   { return ( !( STANDALONE.equals( this ) ) ); }
+		public boolean isStandalone() { return      STANDALONE.equals( this );     }
+	}
+	
 	public enum DescViewFormat
 	{
 		FULL,
@@ -186,6 +196,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	private TagThisDlg m_tagThisDlg = null;
 	private ShareThisDlg m_shareThisDlg = null;
 	private ActivityStreamDataType m_showSetting = ActivityStreamDataType.OTHER;
+	private ActivityStreamCtrlUsage m_usage;	// How this ActivityStreamCtrl is being used.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
 
 	// Used to adjust the size and position of things to account for
@@ -253,8 +264,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ActivityStreamCtrl( boolean createHeader, ActionsPopupMenu actionsMenu )
+	private ActivityStreamCtrl( ActivityStreamCtrlUsage usage, boolean createHeader, ActionsPopupMenu actionsMenu )
 	{
+		m_usage = usage;
 		m_actionsPopupMenu = actionsMenu;
 		
 		FlowPanel mainPanel = new FlowPanel();
@@ -2184,10 +2196,13 @@ public class ActivityStreamCtrl extends ResizeComposite
 	@Override
 	public void onActivityStreamExit( ActivityStreamExitEvent event )
 	{
-		// Unregister all the events we have registered for.
-		unregisterEvents();
-		
-		hide();
+		if (m_usage.isStandalone())
+		{
+			// Unregister all the events we have registered for.
+			unregisterEvents();
+			
+			hide();
+		}
 	}// end onActivityStreamExit()
 
 	/**
@@ -2439,14 +2454,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * @param mainPage
 	 * @param asCtrlClient
 	 */
-	public static void createAsync( final boolean createHeader, final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
+	public static void createAsync( final ActivityStreamCtrlUsage usage, final boolean createHeader, final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
 	{
 		GWT.runAsync( ActivityStreamCtrl.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( createHeader, actionsMenu );
+				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( usage, createHeader, actionsMenu );
 				asCtrlClient.onSuccess( asCtrl );
 			}// end onSuccess()
 			
@@ -2466,14 +2481,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * @param mainPage
 	 * @param asCtrlClient
 	 */
-	public static void createAsync( final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
+	public static void createAsync( final ActivityStreamCtrlUsage usage, final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
 	{
 		GWT.runAsync( ActivityStreamCtrl.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( true, actionsMenu );
+				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( usage, true, actionsMenu );
 				asCtrlClient.onSuccess( asCtrl );
 			}// end onSuccess()
 			

@@ -140,6 +140,7 @@ import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
+import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlUsage;
 import org.kablink.teaming.gwt.client.widgets.AddNewFolderDlg;
 import org.kablink.teaming.gwt.client.widgets.AddNewFolderDlg.AddNewFolderDlgClient;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
@@ -560,7 +561,7 @@ public class GwtMainPage extends ResizeComposite
 		list.add( ActionMenuItem.MARK_UNREAD );
 		
 		actionsMenu = new ActionsPopupMenu( true, true, list.toArray( new ActionMenuItem[list.size()] ) );
-		ActivityStreamCtrl.createAsync( actionsMenu, new ActivityStreamCtrlClient()
+		ActivityStreamCtrl.createAsync( ActivityStreamCtrlUsage.STANDALONE, actionsMenu, new ActivityStreamCtrlClient()
 		{			
 			@Override
 			public void onUnavailable()
