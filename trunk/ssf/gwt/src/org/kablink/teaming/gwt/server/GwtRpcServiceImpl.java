@@ -1897,6 +1897,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_ZIP_DOWNLOAD_URL:
+		{
+			List<Long> entryIds = ((GetZipDownloadUrlCmd) cmd).getEntryIds();
+			ZipDownloadUrlRpcResponseData result = GwtViewHelper.getZipDownloadUrl( this, getRequest( ri ), entryIds );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_ZONE_SHARE_RIGHTS:
 		{
 			ZoneShareRights shareSettings;

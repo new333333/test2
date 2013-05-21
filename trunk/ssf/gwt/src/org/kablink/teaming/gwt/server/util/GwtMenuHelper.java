@@ -920,6 +920,16 @@ public class GwtMenuHelper {
 				markTBIEvent(tbi, TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES);
 				moreTBI.addNestedItem(tbi);
 			}
+
+			// ...for file folders...
+			if (GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder))) {
+				// ...allow the user to zip and download the selected
+				// ...files...
+				tbi = new ToolbarItem("1_zipAndDownloadSelected");
+				markTBITitle(tbi, "toolbar.zipAndDownloadFiles");
+				markTBIEvent(tbi, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
+				moreTBI.addNestedItem(tbi);
+			}
 		}
 
 		// ...for a 'Shared By/With Me' collection...
@@ -3307,7 +3317,7 @@ public class GwtMenuHelper {
 				markTBIEntryIds(actionTBI, fe                                      );
 				dropdownTBI.addNestedItem(actionTBI);
 			}
-
+			
 			boolean needSeparator = dropdownTBI.hasNestedToolbarItems();
 
 			// Are we in Filr mode?
