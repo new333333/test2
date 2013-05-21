@@ -135,7 +135,7 @@ public class DefaultNetFolderServerSynchronization extends SSCronTriggerJob
 			}
 			else
 			{
-				resourceDriverModule.synchronize( serverId, true, null );
+				resourceDriverModule.enqueueSynchronize( serverId, true );
 			}
 		} 
     	catch ( NoBinderByTheIdException nf )

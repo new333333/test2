@@ -60,11 +60,7 @@ public class DefaultMirroredFolderSynchronization extends SSCronTriggerJob
 			if(binderId.longValue() == -1L) {
 				deleteJob(context);
 			} else {
-				boolean result = folderModule.fullSynchronize(binderId,null);
-				if(!result) {
-					// The folder is now gone. Remove the job.
-					deleteJob(context);
-				}
+				folderModule.enqueueFullSynchronize(binderId);
 			}
 		} catch (NoFolderByTheIdException nf) {
 			// Apparently the folder on which this scheduler is defined has been removed.

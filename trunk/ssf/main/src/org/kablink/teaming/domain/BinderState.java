@@ -42,11 +42,15 @@ public class BinderState extends ZonedObject {
 
 	public enum FullSyncStatus {
 		/**
-		 * Full synchronization has started
+		 * A full sync is ready to run and is waiting for system resources specifically a thread to execute it.
+		 */
+		ready,
+		/**
+		 * Full synchronization has started and is currently running.
 		 */
 		started,
 		/**
-		 * Full synchronization has stopped due to explicit request to stop it
+		 * Full synchronization has stopped due to explicit request to stop it.
 		 */
 		stopped,
 		/**
@@ -153,6 +157,11 @@ public class BinderState extends ZonedObject {
 		 * Full sync status
 		 */
 		FullSyncStatus status;
+		
+		/*
+		 * The time 'status' value was set or cleared.
+		 */
+		Date statusDate;
 		
 		/*
 		 * The time full sync started on this binder.
@@ -274,6 +283,14 @@ public class BinderState extends ZonedObject {
 			}
 		}
 		
+		public Date getStatusDate() {
+			return statusDate;
+		}
+
+		public void setStatusDate(Date statusDate) {
+			this.statusDate = statusDate;
+		}
+
 		public Date getStartDate() {
 			return startDate;
 		}
