@@ -58,6 +58,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.EnableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HideSharesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveMultipleAdhocFolderSettingsCmd;
@@ -67,6 +68,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ShowSharesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UnlockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.ZipDownloadUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -82,6 +84,7 @@ import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.UIObject;
 
 /**
@@ -1670,5 +1673,72 @@ public class BinderViewsHelper {
 			// Simply show it.
 			showWhoHasAccessAsync(entityId);
 		}
+	}
+	
+	/**
+	 * Zips and downloads the select files based on a List<Long> of their
+	 * entity IDs.
+	 *
+	 * @param entityIds
+	 * @param reloadEvent
+	 */
+	public static void zipAndDownloadFiles(final FormPanel downloadForm, List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
+		// If we weren't given any entity IDs to be marked read...
+		if (!(GwtClientHelper.hasItems(entityIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// If there aren't any entries in the entity list...
+		if (!(validateEntriesInEntityIds(entityIds))) {
+			// ...bail.  (Note that validateEntriesInEntityIds() will
+			// ...have told the user about any errors.)
+			return;
+		}
+		
+		// Show a busy spinner while we build the information for
+		// downloading the files.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request for the zip download URL.
+		GetZipDownloadUrlCmd cmd = new GetZipDownloadUrlCmd(EntityId.getEntryLongsFromEntityIds(entityIds));
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_GetZipDownloadUrl());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// If we got any errors creating the URL to download
+				// the zip...
+				busy.hide();
+				ZipDownloadUrlRpcResponseData	zipDownloadInfo = ((ZipDownloadUrlRpcResponseData) response.getResponseData());
+				ErrorListRpcResponseData		errorList       = zipDownloadInfo.getErrors();
+				List<ErrorInfo>					errors          = errorList.getErrorList();
+				int count = ((null == errors) ? 0 : errors.size());
+				if (0 < count) {
+					// ...tell the user.
+					GwtClientHelper.displayMultipleErrors(m_messages.zipDownloadUrlError(), errors);
+				}
+
+				// If we get the URL to download the zip...
+				String zipDownloadUrl = zipDownloadInfo.getUrl();
+				if (GwtClientHelper.hasString(zipDownloadUrl)) {
+					// ...start it downloading...
+					downloadForm.setAction(zipDownloadUrl);
+					downloadForm.submit();
+				}
+			}
+		});
+	}
+	
+	public static void zipAndDownloadFiles(FormPanel downloadForm, List<EntityId> entityIds) {
+		// Always use the initial form of the method.
+		zipAndDownloadFiles(downloadForm, entityIds, null);
 	}
 }

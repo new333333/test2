@@ -151,6 +151,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData.AccessInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.ZipDownloadUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
@@ -6703,6 +6704,44 @@ public class GwtViewHelper {
 		return null;
 	}
 	
+	/**
+	 * Returns a ZipDownloadUrlRcpResponseData object containing the
+	 * URL to use to download the listed files in a zip.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entryIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ZipDownloadUrlRpcResponseData getZipDownloadUrl(AllModulesInjected bs, HttpServletRequest request, List<Long> entryIds) throws GwtTeamingException {
+		try {
+			// Allocate an ZipDownloadUrlRpcResponseData to return the URL
+			// to request downloading the files.
+			ZipDownloadUrlRpcResponseData reply = new ZipDownloadUrlRpcResponseData();
+
+//!			...this needs to be implemented...
+			reply.addError("GwtViewHelper.getZipDownloadUrl():  ...this needs to be implemented...");
+
+			// If we get here, reply refers to the
+			// WhoHasAccessInfoRpcResponseData of the entry types for
+			// the requested binders.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getZipDownloadUrl( SOURCE EXCEPTION ):  ");
+		}
+	}
+
 	/**
 	 * Marks the selected shared entities as being hidden.
 	 * 

@@ -475,6 +475,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetWhoHasAccess();
 	String rpcFailure_GetWorkspaceContributorIds();
 	String rpcFailure_GetXssHtml();
+	String rpcFailure_GetZipDownloadUrl();
 	String rpcFailure_GetZoneShareRights();
 	String rpcFailure_HideShares();
 	String rpcFailure_ImportIcalByUrl();
@@ -609,6 +610,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_DesktopAppDownloadDlg();
 	String codeSplitFailure_DiscussionFolderView();
 	String codeSplitFailure_DiscussionWSView();
+	String codeSplitFailure_DownloadPanel();
 	String codeSplitFailure_EditBrandingDlg();
 	String codeSplitFailure_EditNetFolderRightsDlg();
 	String codeSplitFailure_EditShareNoteDlg();
@@ -1870,6 +1872,9 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used by the unlock selected entries facility.
 	String unlockEntriesError();
+
+	// Strings used by the zip and download selected files facility.
+	String zipDownloadUrlError();
 	
 	// Strings used by ChangeEntryTypesDlg.
 	String changeEntryTypesDlgCurrent();

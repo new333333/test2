@@ -87,6 +87,7 @@ import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewPinnedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
+import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
@@ -1185,6 +1186,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case TRASH_RESTORE_SELECTED_ENTRIES:        event = new TrashRestoreSelectedEntriesEvent(     folderId   ); break;
 					case VIEW_PINNED_ENTRIES:                   event = new ViewPinnedEntriesEvent(               folderId   ); break;
 					case VIEW_SELECTED_ENTRY:                   event = new ViewSelectedEntryEvent(               folderId   ); break;
+					case ZIP_AND_DOWNLOAD_SELECTED_FILES:       event = new ZipAndDownloadSelectedFilesEvent(     folderId   ); break;
 					
 					case CALENDAR_SHOW:
 						int calendarShow = Integer.parseInt(simpleTBI.getQualifierValue("calendarShow"));

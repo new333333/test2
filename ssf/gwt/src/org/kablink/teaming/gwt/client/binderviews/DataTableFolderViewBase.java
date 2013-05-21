@@ -115,6 +115,7 @@ import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewPinnedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
+import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
@@ -233,7 +234,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		UnlockSelectedEntriesEvent.Handler,
 		ViewPinnedEntriesEvent.Handler,
 		ViewSelectedEntryEvent.Handler,
-		ViewWhoHasAccessEvent.Handler
+		ViewWhoHasAccessEvent.Handler,
+		ZipAndDownloadSelectedFilesEvent.Handler
 {
 	private boolean						m_fixedLayout;				//
 	private Column<FolderRow, Boolean>	m_selectColumn;				//
@@ -315,6 +317,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.VIEW_PINNED_ENTRIES,
 		TeamingEvents.VIEW_SELECTED_ENTRY,
 		TeamingEvents.VIEW_WHO_HAS_ACCESS,
+		TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES,
 	};
 	
 	/*
@@ -2858,6 +2861,27 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					return;
 				}
 			}
+		}
+	}
+	
+	/**
+	 * Handles ZipAndDownloadSelectedFilesEvent's received by this class.
+	 * 
+	 * Implements the ZipAndDownloadSelectedFilesEvent.Handler.onZipAndDownloadSelectedFiles() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onZipAndDownloadSelectedFiles(ZipAndDownloadSelectedFilesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Invoke the zip and download.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
+			BinderViewsHelper.zipAndDownloadFiles(getDownloadPanel().getDownloadForm(), selectedEntityIds);
 		}
 	}
 	

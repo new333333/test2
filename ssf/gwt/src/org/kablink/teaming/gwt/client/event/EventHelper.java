@@ -2298,6 +2298,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case ZIP_AND_DOWNLOAD_SELECTED_FILES:
+				// A ZipAndDownloadSelectedFilesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof ZipAndDownloadSelectedFilesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ZipAndDownloadSelectedFilesEvent.registerEvent(eventBus, ((ZipAndDownloadSelectedFilesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			default:
 			case UNDEFINED:
 				// Whatever it is, we can't handle it!  Tell the user
@@ -2671,6 +2680,7 @@ public class EventHelper {
 			case SUBSCRIBE_SELECTED_ENTRIES:                   hasHandler = (eventHandler instanceof SubscribeSelectedEntriesEvent.Handler);               break;
 			case TOGGLE_SHARED_VIEW:                  	       hasHandler = (eventHandler instanceof ToggleSharedViewEvent.Handler);                       break;
 			case UNLOCK_SELECTED_ENTRIES:                      hasHandler = (eventHandler instanceof UnlockSelectedEntriesEvent.Handler);                  break;
+			case ZIP_AND_DOWNLOAD_SELECTED_FILES:              hasHandler = (eventHandler instanceof ZipAndDownloadSelectedFilesEvent.Handler);            break;
 			
 			case UNDEFINED:
 				// Ignore.
