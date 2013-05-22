@@ -19,6 +19,7 @@ import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.file.FileIndexData;
@@ -51,6 +52,30 @@ import java.util.*;
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class ShareResource extends AbstractResource {
+    @POST
+    public void noopPostShare(@QueryParam("id") List<Long> ids,
+                              @QueryParam("notify") @DefaultValue("false") boolean notifyRecipient) {
+        if (notifyRecipient) {
+            User loggedInUser = getLoggedInUser();
+            for (Long id : ids) {
+                try {
+                    ShareItem shareItem = _getShareItem(id);
+                    if (shareItem.getSharerId()==loggedInUser.getId()) {
+                        try {
+                            EmailHelper.sendEmailToRecipient(this, shareItem, false, loggedInUser);
+                        } catch (Exception e) {
+                            logger.warn("Failed to send share notification email", e);
+                        }
+                    } else {
+                        logger.warn("Notify share recipients warning: share with id " + id +
+                                " was shared by someone other than the current user (" + loggedInUser.getId() + ").");
+                    }
+                } catch (NoShareItemByTheIdException e) {
+                    logger.warn("Notify share recipients warning: no share with id " + id, e);
+                }
+            }
+        }
+    }
 
     @GET
     @Path("/{id}")

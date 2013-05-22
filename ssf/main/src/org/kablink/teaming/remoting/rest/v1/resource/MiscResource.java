@@ -88,6 +88,7 @@ public class MiscResource extends AbstractResource {
         obj.addAdditionalLink("recent_activity", "/workspaces/" + getWorkspaceModule().getTopWorkspaceId() + "/recent_activity");
         obj.addAdditionalLink("release_info", "/release_info");
         obj.addAdditionalLink("self", "/self");
+        obj.addAdditionalLink("shares", "/shares");
         obj.addAdditionalLink("templates", "/templates");
         obj.addAdditionalLink("users", "/users");
         obj.addAdditionalLink("zone_config", "/zone_config");
