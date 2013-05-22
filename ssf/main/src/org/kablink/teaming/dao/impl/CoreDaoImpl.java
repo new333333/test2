@@ -3120,4 +3120,10 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
 	}
 
+	@Override
+	public Long peekFullSyncTask() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
  }
