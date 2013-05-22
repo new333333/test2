@@ -1553,12 +1553,15 @@ public class BinderViewsHelper {
 	/*
 	 * Validates a List<EntityId> for containing entry references.
 	 */
-	private static boolean validateEntriesInEntityIds(List<EntityId> entityIds) {
+	private static boolean validateEntriesInEntityIds(List<EntityId> entityIds, boolean requiresFiles) {
 		// If the list contains no entries...
 		boolean hasEntries = EntityId.areEntriesInEntityIds(entityIds);
 		if (!hasEntries) {
 			// ...tell the user about the problem and return false.
-			GwtClientHelper.deferredAlert(m_messages.vibeEntryMenu_Warning_OnlyFolders());
+			GwtClientHelper.deferredAlert(
+				(requiresFiles                                           ?
+					m_messages.vibeEntryMenu_Warning_OnlyFolders_Files() :
+					m_messages.vibeEntryMenu_Warning_OnlyFolders_Entries()));
 			return false;
 		}
 
@@ -1574,6 +1577,11 @@ public class BinderViewsHelper {
 		// If we get here, the list contained entry references.  Return
 		// true.
 		return true;
+	}
+	
+	private static boolean validateEntriesInEntityIds(List<EntityId> entityIds) {
+		// Always use the initial form of the method.
+		return validateEntriesInEntityIds(entityIds, false);
 	}
 
 	/**
@@ -1690,7 +1698,7 @@ public class BinderViewsHelper {
 		}
 		
 		// If there aren't any entries in the entity list...
-		if (!(validateEntriesInEntityIds(entityIds))) {
+		if (!(validateEntriesInEntityIds(entityIds, true))) {
 			// ...bail.  (Note that validateEntriesInEntityIds() will
 			// ...have told the user about any errors.)
 			return;

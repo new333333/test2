@@ -35,7 +35,9 @@ package org.kablink.teaming.servlet.forum;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import javax.activation.FileTypeMap;
@@ -76,10 +78,18 @@ public class ReadFileController extends AbstractReadFileController {
 	
 	private FileTypeMap mimeTypes = new ConfigurableMimeFileTypeMap();
 	
+	// Default filename used when multiple files from a list are to be
+	// downloaded in a .zip file.  Note that this matches the English
+	// translation of the file.zipListDownload.fileName string in the
+	// messages.properties file.
+	private final static String ZIPLIST_DEFAULT_FILENAME = "files.zip";
+	
 	@Override
 	@SuppressWarnings("unused")
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
+		Boolean singleByte = SPropsUtil.getBoolean("export.filename.8bitsinglebyte.only", true);
+		
 		// Assuming that the full request URL was http://localhost:8080/ssf/s/readFile/entityType/entryId/fileTime/fileVersion/filename.ext
 		// the following call returns "/readFile/entityType/entryId/fileId/fileTime/fileVersion/filename.ext" portion of the URL.
 		String pathInfo = request.getPathInfo();
@@ -95,7 +105,6 @@ public class ReadFileController extends AbstractReadFileController {
 				String.valueOf(args[WebUrlUtil.FILE_URL_FILE_ID]).equals("zip")) {
 			//The user wants a zip file of all attachments
 			try {
-				Boolean singleByte = SPropsUtil.getBoolean("export.filename.8bitsinglebyte.only", true);
 				DefinableEntity entity = getEntity(args[WebUrlUtil.FILE_URL_ENTITY_TYPE], Long.valueOf(args[WebUrlUtil.FILE_URL_ENTITY_ID]));
 				Set<Attachment> attachments = entity.getAttachments();
 				String fileName = getBinderModule().filename8BitSingleByteOnly(entity.getTitle() + ".zip", "files.zip", singleByte);
@@ -160,7 +169,6 @@ public class ReadFileController extends AbstractReadFileController {
 			//The user wants a zip file of a single attachment
 			String faId = args[WebUrlUtil.FILE_URL_ZIP_SINGLE_FILE_ID];
 			try {
-				Boolean singleByte = SPropsUtil.getBoolean("export.filename.8bitsinglebyte.only", true);
 				DefinableEntity entity = getEntity(args[WebUrlUtil.FILE_URL_ENTITY_TYPE], Long.valueOf(args[WebUrlUtil.FILE_URL_ENTITY_ID]));
 				Set<Attachment> attachments = entity.getAttachments();
 				FileAttachment fileAtt = null;
@@ -234,6 +242,83 @@ public class ReadFileController extends AbstractReadFileController {
 				return null;
 			} catch(Exception e) {
 				//Bad format of url; just return null
+				response.getOutputStream().print(NLT.get("file.error.unknownFile"));
+			}
+			return null;
+			
+		} else if ((WebUrlUtil.FILE_URL_ZIPLIST_ARG_LENGTH == args.length) && 
+					String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_ZIP]).equals("zip") &&
+					String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_OPERATION]).equals(WebKeys.OPERATION_READ_FILE_LIST)) {
+			try {
+				// Access the entries whose primary files are to be
+				// zipped.
+				String idList = String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_FILE_IDS]);
+				String[] ids = idList.split(":");
+				List<Long> feIds = new ArrayList<Long>();
+				for (String id:  ids) {
+					feIds.add(Long.parseLong(id));
+				}
+				Set<FolderEntry> fes = getFolderModule().getEntries(feIds);
+				
+				// Create the zip file for downloading.
+				String fileName = getBinderModule().filename8BitSingleByteOnly(NLT.get("file.zipListDownload.fileName"), ZIPLIST_DEFAULT_FILENAME, singleByte);
+				response.setContentType(mimeTypes.getContentType(fileName));
+				response.setHeader("Cache-Control", "private, max-age=0");
+				response.setHeader("Content-Disposition", ("attachment; filename=\"" + fileName + "\""));
+				InputStream fileStream = null;
+				ZipArchiveOutputStream zipOut = buildZipOutputStream(response.getOutputStream());
+
+				// Scan the entries whose primary files are to be
+				// zipped.
+				int fileCounter = 1;
+				for (FolderEntry entity:  fes) {
+					// Can we get this entry's primary file attachment?
+					FileAttachment fileAtt = MiscUtil.getPrimaryFileAttachment(entity);
+					if (null != fileAtt) {
+						// Yes!  Copy it to the zip.
+						String attExt  = EntityIndexUtils.getFileExtension(fileAtt.getFileItem().getName());
+						String attName = fileAtt.getFileItem().getName();	// Note: do not translate this name.
+						if (!ZIP_ENCODED_FILENAMES) {
+							attName = getBinderModule().filename8BitSingleByteOnly(
+								attName,
+								("__file" + String.valueOf(fileCounter)),	// For file names that are invalid for a zip.
+								singleByte);								// Note: do not translate this name.	
+						}
+						fileCounter += 1;
+						try {
+							fileStream = getFileModule().readFile(entity.getParentBinder(), entity, fileAtt);
+							zipOut.putArchiveEntry(new ZipArchiveEntry(attName));
+							long startTime = System.nanoTime();
+							FileUtil.copy(fileStream, zipOut);
+							/*
+							 * This was used to measure the time degradation for encrypted files
+									String loggerText = "Copying an unencrypted file of length ";
+									if (fileAtt.isEncrypted()) {
+										loggerText = "Copying an encrypted file of length ";
+									}
+									logger.info(loggerText + fileAtt.getFileItem().getLengthKB() + 
+											"KB took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
+							*/
+							zipOut.closeArchiveEntry();
+						} catch (Exception e) {
+							logger.error(e);
+						}
+						finally {
+							try {
+								if(fileStream != null) {
+									fileStream.close();
+									fileStream = null;
+								}
+							}
+							catch(IOException ignore) {}
+						}
+					}
+				}
+				zipOut.finish();
+				return null;
+			} catch(Exception e) {
+				// Bad format of url; just return null.
+				logger.error("ReadFileController.handleRequestAfterValidation( ZipList Downlaod ):  EXCEPTION:  ", e);
 				response.getOutputStream().print(NLT.get("file.error.unknownFile"));
 			}
 			return null;

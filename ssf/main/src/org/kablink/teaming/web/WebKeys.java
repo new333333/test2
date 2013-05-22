@@ -230,6 +230,8 @@ public class WebKeys {
     public static final String URL_OPERATION="operation";
     public static final String URL_OPERATION2="operation2";
     public static final String URL_OPERATION3="operation3";
+    public static final String URL_FOLDER_ENTRY="folderEntry";
+    public static final String URL_FOLDER_ENTRY_LIST="folderEntryList";
     public static final String URL_PAGE_NUMBER="pageNumber";
     public static final String URL_SEARCH_QUERY_NAME="ss_queryName";
     public static final String URL_SEARCH_SCOPE="scope";
@@ -659,6 +661,7 @@ public class WebKeys {
 	public static final String OPERATION_VIEW_FILE = "view_file";
 	public static final String OPERATION_VIEW_UPLOAD_FILE = "view_upload_file";
 	public static final String OPERATION_LIST_SAVED_QUERIES="list_saved_queries";
+	public static final String OPERATION_READ_FILE_LIST="read_file_list";
 	
 	public static final String OPERATION_REMOVE_TEAM_MEMBERS = "remove_team_members";
 	public static final String OPERATION_REMOVE_SEARCH_QUERY = "remove_search_query";
