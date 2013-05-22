@@ -523,6 +523,7 @@ public class SearchUtils {
 	public static Criteria userType(String userType) {
 		Criteria crit = new Criteria();
 		crit.add(in(USER_TYPE_FIELD, new String[] {userType}));
+		crit.add(in(DOC_TYPE_FIELD, new String[] {DOC_TYPE_ENTRY}));
 		return crit;
 	}
 	
