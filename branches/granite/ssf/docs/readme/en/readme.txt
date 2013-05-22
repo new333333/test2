@@ -1,32 +1,30 @@
-﻿Novell Vibe 3.4
+﻿Kablink Vibe 3.4
 
 1.0  Getting Started
 
      Complete system requirements and detailed software installation instructions
-     are provided for the Novell Vibe administrator in the "Vibe 3.4 Installation
-     Guide." Vibe site setup as well as ongoing site administration and
-     maintenance instructions are available in the "Vibe 3.4 Administration
+     are provided for the Kablink Vibe administrator in the "Vibe 3.4
+     Installation Guide." Vibe site setup as well as ongoing site administration
+     and maintenance instructions are available in the "Vibe 3.4 Administration
      Guide."
 
      After your Vibe site is set up, Vibe users can obtain instructions in the
-     "Vibe 3.4 User Guide" and the "Vibe 3.4 Advanced User Guide". (A "Vibe 3.4
-     Quick Start" is provided in languages where the "Vibe 3.4 User Guide" is not
-     available.)
+     "Vibe 3.4 User Guide" and the "Vibe 3.4 Advanced User Guide".
 
      You can display the Vibe online help when you log in to your Vibe site.
 
 
 2.0  Known Issues
 
-     For an up-to-date list of known issues for this release, see the full Novell
-     Vibe 3.4 product Readme located on the Novell Vibe 3.4 Documentation Web
-     site (http://www.novell.com/documentation/vibe34).
+     For an up-to-date list of known issues for this release, see the full
+     Kablink Vibe 3.4 product Readme located on the Kablink Vibe 3.4
+     Documentation Web site (http://www.novell.com/documentation/kablinkvibe34).
 
 
 3.0  Documentation
 
-     All Novell Vibe 3.4 documentation is available at the Novell Vibe 3.4
-     Documentation Web site (http://www.novell.com/documentation/vibe34):
+     All Kablink Vibe 3.4 documentation is available at the Kablink Vibe 3.4
+     Documentation Web site (http://www.novell.com/documentation/kablinkvibe34):
 
      -  Full Vibe 3.4 product Readme
 
@@ -42,32 +40,21 @@
 
      -  "Vibe Quick Start"
 
-     -  "Vibe Desktop for Windows Quick Start"
-
-     -  "Vibe Desktop for Mac Quick Start"
-
-     -  "Vibe Desktop FAQ"
-
-     -  "Vibe Add-In Quick Start"
-
-     In addition to the Novell Vibe product documentation, additional resources
-     provide information about Vibe.
-
-     -  Novell Support and Knowledgebase (http://www.novell.com/support)
-
-     -  Novell Support Forum (http://forums.novell.com/forumdisplay.php?f=989)
-
-     -  Novell Cool Solutions
-        (http://www.novell.com/communities/coolsolutions/vibe)
-
-     -  Novell Resource Library
-        (http://www.novell.com/products/vibe/resource-library/)
-
      For more information about Vibe, visit the Kablink Open Collaboration
      Project (http://www.kablink.org).
 
 
-4.0  Legal Notices
+4.0  Open Source Code
+
+     Novell, hereby, offers to give any third party a complete machine-readable
+     copy of the source code of Kablink Vibe, under the terms of Sections 1 and 2
+     of version 2 of the GNU General Public License as published by the Free
+     Software Foundation, on a medium customarily used for software interchange.
+     Please contact Novell Developer Services or visit Kablnik.org
+     (http://kablink.org) if you require a copy of the same.
+
+
+5.0  Legal Notices
 
      Novell, Inc. makes no representations or warranties with respect to the
      contents or use of this documentation, and specifically disclaims any
@@ -99,6 +86,33 @@
      Copyright © 2008-2013 Novell, Inc. All rights reserved. No part of this
      publication may be reproduced, photocopied, stored on a retrieval system, or
      transmitted without the express written consent of the publisher.
+
+     THIS DOCUMENT AND MODIFIED VERSIONS OF THIS DOCUMENT ARE PROVIDED UNDER THE
+     TERMS OF THE GNU FREE DOCUMENTATION LICENSE WITH THE FURTHER UNDERSTANDING
+     THAT:
+
+     1. THE DOCUMENT IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTY OF ANY
+     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, WITHOUT LIMITATION, WARRANTIES
+     THAT THE DOCUMENT OR MODIFIED VERSION OF THE DOCUMENT IS FREE OF DEFECTS,
+     MERCHANTABLE, FIT FOR A PARTICULAR PURPOSE, OR NON-INFRINGING. THE ENTIRE
+     RISK AS TO THE QUALITY, ACCURACY, AND PERFORMANCE OF THE DOCUMENT OR
+     MODIFIED VERSION OF THE DOCUMENT IS WITH YOU. SHOULD ANY DOCUMENT OR
+     MODIFIED VERSION PROVE DEFECTIVE IN ANY RESPECT, YOU (NOT THE INITIAL
+     WRITER, AUTHOR OR ANY CONTRIBUTOR) ASSUME THE COST OF ANY NECESSARY
+     SERVICING, REPAIR OR CORRECTION. THIS DISCLAIMER OF WARRANTY CONSTITUTES AN
+     ESSENTIAL PART OF THIS LICENSE. NO USE OF ANY DOCUMENT OR MODIFIED VERSION
+     OF THE DOCUMENT IS AUTHORIZED HEREUNDER EXCEPT UNDER THIS DISCLAIMER; AND
+
+     2. UNDER NO CIRCUMSTANCES AND UNDER NO LEGAL THEORY, WHETHER IN TORT
+     (INCLUDING NEGLIGENCE), CONTRACT, OR OTHERWISE, SHALL THE AUTHOR, INITIAL
+     WRITER, ANY CONTRIBUTOR, OR ANY DISTRIBUTOR OF THE DOCUMENT OR MODIFIED
+     VERSION OF THE DOCUMENT, OR ANY SUPPLIER OF ANY OF SUCH PARTIES, BE LIABLE
+     TO ANY PERSON FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR
+     CONSEQUENTIAL DAMAGES OF ANY CHARACTER INCLUDING, WITHOUT LIMITATION,
+     DAMAGES FOR LOSS OF GOODWILL, WORK STOPPAGE, COMPUTER FAILURE OR
+     MALFUNCTION, OR ANY AND ALL OTHER DAMAGES OR LOSSES ARISING OUT OF OR
+     RELATING TO USE OF THE DOCUMENT AND MODIFIED VERSIONS OF THE DOCUMENT, EVEN
+     IF SUCH PARTY SHALL HAVE BEEN INFORMED OF THE POSSIBILITY OF SUCH DAMAGES.
 
      For Novell trademarks, see the Novell Trademark and Service Mark list
      (http://www.novell.com/company/legal/trademarks/tmlist.html).
