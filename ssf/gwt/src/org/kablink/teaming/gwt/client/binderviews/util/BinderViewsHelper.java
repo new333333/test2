@@ -58,7 +58,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.EnableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFilesUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFolderUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HideSharesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveMultipleAdhocFolderSettingsCmd;
@@ -1710,7 +1711,7 @@ public class BinderViewsHelper {
 		busy.center();
 
 		// Send the request for the zip download URL.
-		GetZipDownloadUrlCmd cmd = new GetZipDownloadUrlCmd(EntityId.getEntryLongsFromEntityIds(entityIds));
+		GetZipDownloadFilesUrlCmd cmd = new GetZipDownloadFilesUrlCmd(EntityId.getEntryLongsFromEntityIds(entityIds));
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -1748,5 +1749,59 @@ public class BinderViewsHelper {
 	public static void zipAndDownloadFiles(FormPanel downloadForm, List<EntityId> entityIds) {
 		// Always use the initial form of the method.
 		zipAndDownloadFiles(downloadForm, entityIds, null);
+	}
+	
+	/**
+	 * Zips and downloads the files in a folder.
+	 *
+	 * @param folderId
+	 * @param recursive
+	 * @param reloadEvent
+	 */
+	public static void zipAndDownloadFolder(final FormPanel downloadForm, Long folderId, boolean recursive, final VibeEventBase<?> reloadEvent) {
+		// Show a busy spinner while we build the information for
+		// downloading the files.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request for the zip download URL.
+		GetZipDownloadFolderUrlCmd cmd = new GetZipDownloadFolderUrlCmd(folderId, recursive);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_GetZipDownloadUrl());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// If we got any errors creating the URL to download
+				// the zip...
+				busy.hide();
+				ZipDownloadUrlRpcResponseData	zipDownloadInfo = ((ZipDownloadUrlRpcResponseData) response.getResponseData());
+				ErrorListRpcResponseData		errorList       = zipDownloadInfo.getErrors();
+				List<ErrorInfo>					errors          = errorList.getErrorList();
+				int count = ((null == errors) ? 0 : errors.size());
+				if (0 < count) {
+					// ...tell the user.
+					GwtClientHelper.displayMultipleErrors(m_messages.zipDownloadUrlError(), errors);
+				}
+
+				// If we get the URL to download the zip...
+				String zipDownloadUrl = zipDownloadInfo.getUrl();
+				if (GwtClientHelper.hasString(zipDownloadUrl)) {
+					// ...start it downloading...
+					downloadForm.setAction(zipDownloadUrl);
+					downloadForm.submit();
+				}
+			}
+		});
+	}
+	
+	public static void zipAndDownloadFolder(FormPanel downloadForm, Long folderId, boolean recursive) {
+		// Always use the initial form of the method.
+		zipAndDownloadFolder(downloadForm, folderId, recursive, null);
 	}
 }

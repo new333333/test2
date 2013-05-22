@@ -64,6 +64,7 @@ import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
+import org.kablink.teaming.gwt.client.event.ZipAndDownloadFolderEvent;
 import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
@@ -389,6 +390,10 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 							
 						case INVOKE_USER_PROPERTIES_DLG:
 							event = new InvokeUserPropertiesDlgEvent(eid.getEntityId());
+							break;
+						
+						case ZIP_AND_DOWNLOAD_FOLDER:
+							event = new ZipAndDownloadFolderEvent(eid.getEntityId(), binderId, true);
 							break;
 						
 						case UNDEFINED:

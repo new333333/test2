@@ -115,6 +115,7 @@ import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewPinnedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
+import org.kablink.teaming.gwt.client.event.ZipAndDownloadFolderEvent;
 import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
@@ -235,6 +236,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		ViewPinnedEntriesEvent.Handler,
 		ViewSelectedEntryEvent.Handler,
 		ViewWhoHasAccessEvent.Handler,
+		ZipAndDownloadFolderEvent.Handler,
 		ZipAndDownloadSelectedFilesEvent.Handler
 {
 	private boolean						m_fixedLayout;				//
@@ -317,6 +319,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.VIEW_PINNED_ENTRIES,
 		TeamingEvents.VIEW_SELECTED_ENTRY,
 		TeamingEvents.VIEW_WHO_HAS_ACCESS,
+		TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER,
 		TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES,
 	};
 	
@@ -2882,6 +2885,30 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.zipAndDownloadFiles(getDownloadPanel().getDownloadForm(), selectedEntityIds);
+		}
+	}
+	
+	/**
+	 * Handles ZipAndDownloadFolderEvent's received by this class.
+	 * 
+	 * Implements the ZipAndDownloadFolderEvent.Handler.onZipAndDownloadFolder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onZipAndDownloadFolder(ZipAndDownloadFolderEvent event) {
+		// Is the event targeted to this folder?
+		Long dlFolderId    = event.getFolderId();
+		Long eventFolderId = event.getHandleByFolderId();
+		if (null == eventFolderId) {
+			eventFolderId = dlFolderId;
+		}
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Invoke the zip and download.
+			BinderViewsHelper.zipAndDownloadFolder(
+				getDownloadPanel().getDownloadForm(),
+				dlFolderId,
+				event.isRecursive());
 		}
 	}
 	

@@ -1897,10 +1897,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_ZIP_DOWNLOAD_URL:
+		case GET_ZIP_DOWNLOAD_FILES_URL:
 		{
-			List<Long> entryIds = ((GetZipDownloadUrlCmd) cmd).getEntryIds();
+			List<Long> entryIds = ((GetZipDownloadFilesUrlCmd) cmd).getEntryIds();
 			ZipDownloadUrlRpcResponseData result = GwtViewHelper.getZipDownloadUrl( this, getRequest( ri ), entryIds );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_ZIP_DOWNLOAD_FOLDER_URL:
+		{
+			GetZipDownloadFolderUrlCmd gzdfuCmd = ((GetZipDownloadFolderUrlCmd) cmd);
+			ZipDownloadUrlRpcResponseData result = GwtViewHelper.getZipDownloadUrl( this, getRequest( ri ), gzdfuCmd.getFolderId(), gzdfuCmd.isRecursive() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

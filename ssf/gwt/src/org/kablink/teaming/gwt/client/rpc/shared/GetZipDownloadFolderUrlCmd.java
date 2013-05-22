@@ -32,17 +32,15 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This class holds all of the information necessary to execute the
- * 'get zip download URL' command.
+ * 'get zip download folder URL' command.
  * 
  * @author drfoster@novell.com
  */
-public class GetZipDownloadUrlCmd extends VibeRpcCmd {
-	private List<Long> m_entryIds;
+public class GetZipDownloadFolderUrlCmd extends VibeRpcCmd {
+	private boolean	m_recursive;	//
+	private Long	m_folderId;		//
 	
 	/**
 	 * Class constructor.
@@ -50,7 +48,7 @@ public class GetZipDownloadUrlCmd extends VibeRpcCmd {
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public GetZipDownloadUrlCmd() {
+	public GetZipDownloadFolderUrlCmd() {
 		// Initialize the super class.
 		super();		
 	}
@@ -58,28 +56,16 @@ public class GetZipDownloadUrlCmd extends VibeRpcCmd {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param entryId
+	 * @param folderId
+	 * @param recursive
 	 */
-	public GetZipDownloadUrlCmd(Long entryId) {
+	public GetZipDownloadFolderUrlCmd(Long folderId, boolean recursive) {
 		// Initialize this object...
 		this();		
 		
-		// ...and store the parameter.
-		m_entryIds = new ArrayList<Long>();
-		setEntryIds(m_entryIds);
-	}
-	
-	/**
-	 * Class constructor.
-	 * 
-	 * @param entryIds
-	 */
-	public GetZipDownloadUrlCmd(List<Long> entryIds) {
-		// Initialize this object...
-		this();		
-		
-		// ...and store the parameter.
-		setEntryIds(entryIds);
+		// ...and store the parameters.
+		setFolderId( folderId );
+		setRecursive(recursive);
 	}
 	
 	/**
@@ -87,14 +73,16 @@ public class GetZipDownloadUrlCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public List<Long> getEntryIds() {return m_entryIds;}
+	public boolean isRecursive() {return m_recursive;}
+	public Long    getFolderId() {return m_folderId; }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEntryIds(List<Long> entryIds) {m_entryIds = entryIds;}
+	public void setRecursive(boolean recursive) {m_recursive = recursive;}
+	public void setFolderId( Long    folderId)  {m_folderId  = folderId; }
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -105,6 +93,6 @@ public class GetZipDownloadUrlCmd extends VibeRpcCmd {
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.GET_ZIP_DOWNLOAD_URL.ordinal();
+		return VibeRpcCmdType.GET_ZIP_DOWNLOAD_FOLDER_URL.ordinal();
 	}
 }
