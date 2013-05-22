@@ -257,6 +257,7 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Toolbar;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.teaming.web.util.TrashHelper.TrashEntry;
 import org.kablink.teaming.web.util.TrashHelper.TrashResponse;
@@ -6718,16 +6719,77 @@ public class GwtViewHelper {
 	 */
 	public static ZipDownloadUrlRpcResponseData getZipDownloadUrl(AllModulesInjected bs, HttpServletRequest request, List<Long> entryIds) throws GwtTeamingException {
 		try {
-			// Allocate an ZipDownloadUrlRpcResponseData to return the URL
-			// to request downloading the files.
+			// Allocate a ZipDownloadUrlRpcResponseData to return the
+			// URL to request downloading the files.
 			ZipDownloadUrlRpcResponseData reply = new ZipDownloadUrlRpcResponseData();
 
-//!			...this needs to be implemented...
-			reply.addError("GwtViewHelper.getZipDownloadUrl():  ...this needs to be implemented...");
+			// Can we get the entries for the IDs?
+			Map<FolderEntry, String> attachmentMap = new HashMap<FolderEntry, String>();
+			Set<FolderEntry> fes = bs.getFolderModule().getEntries(entryIds);
+			if (MiscUtil.hasItems(fes)) {
+				// Yes!  Scan them.
+				for (FolderEntry fe:  fes) {
+					// Can we access this entry's primary file
+					// attachment?
+					FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true);
+					if (null != fa) {
+						// Yes!  Add it to the attachment map.
+						attachmentMap.put(fe, fa.getId());
+					}
+					else {
+						// No, we can't get this entry's primary file
+						// attachment!  Add a warning to the reply.
+						reply.addWarning(NLT.get("zipDownloadUrlError.NoFile", fe.getTitle()));
+					}
+				}
+			}
+			
+			else {
+				// No, we can't get the entries for the IDs!  Add an
+				// error to the reply.
+				reply.addError(NLT.get("zipDownloadUrlError.NoEntries"));
+			}
 
+			// How many files are we downloading?
+			String url = null;
+			int downloads = attachmentMap.size();
+			if (1 == downloads) {
+				// One and only one!  Generate a URL to download that
+				// specific file.
+				FolderEntry fe = attachmentMap.keySet().iterator().next();;
+				url = WebUrlUtil.getFileZipUrl(
+					request,
+					WebKeys.ACTION_READ_FILE,
+					fe,
+					attachmentMap.get(fe));
+			}
+			
+			else if (1 < downloads) {
+				// More than one!  Generate a URL to download that list
+				// of files.
+				StringBuffer idBuf = new StringBuffer();
+				boolean first = true;
+				fes = attachmentMap.keySet();
+				for (FolderEntry fe:  fes) {
+					if (!first) {
+						idBuf.append(":");
+					}
+					first = false;
+					idBuf.append(String.valueOf(fe.getId()));
+				}
+				url = WebUrlUtil.getFileListZipUrl(
+					request,
+					WebKeys.ACTION_READ_FILE,
+					WebKeys.OPERATION_READ_FILE_LIST,
+					idBuf.toString());
+			}
+			
+			// Add whatever URL we built to the reply.
+			reply.setUrl(url);
+			
 			// If we get here, reply refers to the
-			// WhoHasAccessInfoRpcResponseData of the entry types for
-			// the requested binders.  Return it.
+			// ZipDownloadUrlRpcResponseData containing the URL to
+			// download the requested files.  Return it.
 			return reply;
 		}
 		

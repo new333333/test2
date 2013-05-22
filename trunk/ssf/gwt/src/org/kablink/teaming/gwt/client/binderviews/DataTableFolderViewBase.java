@@ -1161,7 +1161,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	public List<EntityId> getSelectedEntityIds() {
 		// Are there any selected rows in the table?
-		List<EntityId>   reply = new ArrayList<EntityId>();
+		List<EntityId>  reply = new ArrayList<EntityId>();
 		List<FolderRow> rows  = m_dataTable.getVisibleItems();
 		if (null != rows) {
 			// Yes!  Scan them

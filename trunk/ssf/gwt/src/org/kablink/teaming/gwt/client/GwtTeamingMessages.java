@@ -1685,7 +1685,8 @@ public interface GwtTeamingMessages extends Messages
 	String vibeEntryMenu_SharedView_NonHiddenFilter();
 	String vibeEntryMenu_SharedView_Warning_NoShares();
 	String vibeEntryMenu_Warning_FoldersIgnored();
-	String vibeEntryMenu_Warning_OnlyFolders();
+	String vibeEntryMenu_Warning_OnlyFolders_Entries();
+	String vibeEntryMenu_Warning_OnlyFolders_Files();
 		
 	// Strings used in the Folder Columns dialog
 	String folderColumnsDlgColumn();

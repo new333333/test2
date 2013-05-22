@@ -82,6 +82,10 @@ public class WebUrlUtil {
 	public static final int FILE_URL_ZIP_ARG_LENGTH = 5;
 	public static final int FILE_URL_ZIP_SINGLE_ARG_LENGTH = 6;
 	public static final int FILE_URL_ZIP_SINGLE_FILE_ID = 5;
+	public static final int FILE_URL_ZIPLIST_ARG_LENGTH = 7;
+	public static final int FILE_URL_ZIPLIST_ZIP = 6;
+	public static final int FILE_URL_ZIPLIST_FILE_IDS = 5;
+	public static final int FILE_URL_ZIPLIST_OPERATION = 3;
 	
 	private static final Log logger = LogFactory.getLog(WebUrlUtil.class);
 
@@ -409,6 +413,9 @@ public class WebUrlUtil {
 	public static String getFileZipUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileId) {
 		return getFileZipUrl(WebUrlUtil.getServletRootURL(req), action, entity, fileId);
 	}
+	public static String getFileListZipUrl(HttpServletRequest req, String action, String operation, String idList) {
+		return getFileListZipUrl(WebUrlUtil.getServletRootURL(req), action, operation, idList);
+	}
 	public static String getFileHtmlUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileName) {
 		if (entity == null) return "";
 		FileAttachment fAtt = null;
@@ -594,6 +601,17 @@ public class WebUrlUtil {
 		webUrl.append(Constants.SLASH + entityId);
 		webUrl.append(Constants.SLASH + "zip"); 
 		if (!fileId.equals("")) webUrl.append(Constants.SLASH + fileId); 
+		return webUrl.toString();
+	}
+
+	public static String getFileListZipUrl(String webPath, String action, String operation, String idList) {
+		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
+		StringBuffer webUrl = new StringBuffer(webPath + action);
+		webUrl.append(Constants.SLASH + WebKeys.URL_OPERATION);
+		webUrl.append(Constants.SLASH + operation);
+		webUrl.append(Constants.SLASH + WebKeys.URL_FOLDER_ENTRY_LIST);
+		webUrl.append(Constants.SLASH + idList);
+		webUrl.append(Constants.SLASH + "zip"); 
 		return webUrl.toString();
 	}
 
