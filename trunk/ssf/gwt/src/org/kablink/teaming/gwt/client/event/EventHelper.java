@@ -2298,6 +2298,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case ZIP_AND_DOWNLOAD_FOLDER:
+				// A ZipAndDownloadFolderFilesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof ZipAndDownloadFolderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ZipAndDownloadFolderEvent.registerEvent(eventBus, ((ZipAndDownloadFolderEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case ZIP_AND_DOWNLOAD_SELECTED_FILES:
 				// A ZipAndDownloadSelectedFilesEvent!  Can the event
 				// handler we were given handle that?
@@ -2680,6 +2689,7 @@ public class EventHelper {
 			case SUBSCRIBE_SELECTED_ENTRIES:                   hasHandler = (eventHandler instanceof SubscribeSelectedEntriesEvent.Handler);               break;
 			case TOGGLE_SHARED_VIEW:                  	       hasHandler = (eventHandler instanceof ToggleSharedViewEvent.Handler);                       break;
 			case UNLOCK_SELECTED_ENTRIES:                      hasHandler = (eventHandler instanceof UnlockSelectedEntriesEvent.Handler);                  break;
+			case ZIP_AND_DOWNLOAD_FOLDER:                      hasHandler = (eventHandler instanceof ZipAndDownloadFolderEvent.Handler);                   break;
 			case ZIP_AND_DOWNLOAD_SELECTED_FILES:              hasHandler = (eventHandler instanceof ZipAndDownloadSelectedFilesEvent.Handler);            break;
 			
 			case UNDEFINED:

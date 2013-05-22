@@ -6705,87 +6705,89 @@ public class GwtViewHelper {
 		return null;
 	}
 	
-	/**
+	/*
 	 * Returns a ZipDownloadUrlRcpResponseData object containing the
-	 * URL to use to download the listed files in a zip.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param entryIds
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
+	 * URL to use to download the listed files or all the files from a
+	 * folder in a zip.
 	 */
-	public static ZipDownloadUrlRpcResponseData getZipDownloadUrl(AllModulesInjected bs, HttpServletRequest request, List<Long> entryIds) throws GwtTeamingException {
+	private static ZipDownloadUrlRpcResponseData getZipDownloadUrlImpl(AllModulesInjected bs, HttpServletRequest request, List<Long> entryIds, Long folderId, boolean folderRecursive) throws GwtTeamingException {
 		try {
 			// Allocate a ZipDownloadUrlRpcResponseData to return the
 			// URL to request downloading the files.
 			ZipDownloadUrlRpcResponseData reply = new ZipDownloadUrlRpcResponseData();
 
-			// Can we get the entries for the IDs?
-			Map<FolderEntry, String> attachmentMap = new HashMap<FolderEntry, String>();
-			Set<FolderEntry> fes = bs.getFolderModule().getEntries(entryIds);
-			if (MiscUtil.hasItems(fes)) {
-				// Yes!  Scan them.
-				for (FolderEntry fe:  fes) {
-					// Can we access this entry's primary file
-					// attachment?
-					FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true);
-					if (null != fa) {
-						// Yes!  Add it to the attachment map.
-						attachmentMap.put(fe, fa.getId());
-					}
-					else {
-						// No, we can't get this entry's primary file
-						// attachment!  Add a warning to the reply.
-						reply.addWarning(NLT.get("zipDownloadUrlError.NoFile", fe.getTitle()));
+			// Are we downloading a folder or selected files?
+			if (null == folderId) {
+				// Selected files!  Can we get the entries for the IDs?
+				Map<FolderEntry, String> attachmentMap = new HashMap<FolderEntry, String>();
+				Set<FolderEntry> fes = bs.getFolderModule().getEntries(entryIds);
+				if (MiscUtil.hasItems(fes)) {
+					// Yes!  Scan them.
+					for (FolderEntry fe:  fes) {
+						// Can we access this entry's primary file
+						// attachment?
+						FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true);
+						if (null != fa) {
+							// Yes!  Add it to the attachment map.
+							attachmentMap.put(fe, fa.getId());
+						}
+						else {
+							// No, we can't get this entry's primary file
+							// attachment!  Add a warning to the reply.
+							reply.addWarning(NLT.get("zipDownloadUrlError.NoFile", fe.getTitle()));
+						}
 					}
 				}
+				
+				else {
+					// No, we can't get the entries for the IDs!  Add an
+					// error to the reply.
+					reply.addError(NLT.get("zipDownloadUrlError.NoEntries"));
+				}
+	
+				// How many files are we downloading?
+				String url = null;
+				int downloads = attachmentMap.size();
+				if (1 == downloads) {
+					// One and only one!  Generate a URL to download that
+					// specific file.
+					FolderEntry fe = attachmentMap.keySet().iterator().next();;
+					url = WebUrlUtil.getFileZipUrl(
+						request,
+						WebKeys.ACTION_READ_FILE,
+						fe,
+						attachmentMap.get(fe));
+				}
+				
+				else if (1 < downloads) {
+					// More than one!  Generate a URL to download that list
+					// of files.
+					StringBuffer idBuf = new StringBuffer();
+					boolean first = true;
+					fes = attachmentMap.keySet();
+					for (FolderEntry fe:  fes) {
+						if (!first) {
+							idBuf.append(":");
+						}
+						first = false;
+						idBuf.append(String.valueOf(fe.getId()));
+					}
+					url = WebUrlUtil.getFileListZipUrl(
+						request,
+						WebKeys.ACTION_READ_FILE,
+						WebKeys.OPERATION_READ_FILE_LIST,
+						idBuf.toString());
+				}
+				
+				// Add whatever URL we built to the reply.
+				reply.setUrl(url);
 			}
 			
 			else {
-				// No, we can't get the entries for the IDs!  Add an
-				// error to the reply.
-				reply.addError(NLT.get("zipDownloadUrlError.NoEntries"));
+				// A folder!
+//!				...this needs to be implemented...
+				reply.addError("GwtViewHelper.getZipDownloadUrlImpl( Download Folder ):  ...this needs to be impelemented...");
 			}
-
-			// How many files are we downloading?
-			String url = null;
-			int downloads = attachmentMap.size();
-			if (1 == downloads) {
-				// One and only one!  Generate a URL to download that
-				// specific file.
-				FolderEntry fe = attachmentMap.keySet().iterator().next();;
-				url = WebUrlUtil.getFileZipUrl(
-					request,
-					WebKeys.ACTION_READ_FILE,
-					fe,
-					attachmentMap.get(fe));
-			}
-			
-			else if (1 < downloads) {
-				// More than one!  Generate a URL to download that list
-				// of files.
-				StringBuffer idBuf = new StringBuffer();
-				boolean first = true;
-				fes = attachmentMap.keySet();
-				for (FolderEntry fe:  fes) {
-					if (!first) {
-						idBuf.append(":");
-					}
-					first = false;
-					idBuf.append(String.valueOf(fe.getId()));
-				}
-				url = WebUrlUtil.getFileListZipUrl(
-					request,
-					WebKeys.ACTION_READ_FILE,
-					WebKeys.OPERATION_READ_FILE_LIST,
-					idBuf.toString());
-			}
-			
-			// Add whatever URL we built to the reply.
-			reply.setUrl(url);
 			
 			// If we get here, reply refers to the
 			// ZipDownloadUrlRpcResponseData containing the URL to
@@ -6800,8 +6802,43 @@ public class GwtViewHelper {
 				GwtLogHelper.getGwtClientException(
 					m_logger,
 					e,
-					"GwtViewHelper.getZipDownloadUrl( SOURCE EXCEPTION ):  ");
+					"GwtViewHelper.getZipDownloadUrlImpl( SOURCE EXCEPTION ):  ");
 		}
+	}
+	
+	/**
+	 * Returns a ZipDownloadUrlRcpResponseData object containing the
+	 * URL to use to download the listed files in a zip.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entryIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ZipDownloadUrlRpcResponseData getZipDownloadUrl(AllModulesInjected bs, HttpServletRequest request, List<Long> entryIds) throws GwtTeamingException {
+		// Always use the implementation form of the method.
+		return getZipDownloadUrlImpl(bs, request, entryIds, null, false);
+	}
+
+	/**
+	 * Returns a ZipDownloadUrlRcpResponseData object containing the
+	 * URL to use to download all the files from a folder in a zip.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param recursive
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ZipDownloadUrlRpcResponseData getZipDownloadUrl(AllModulesInjected bs, HttpServletRequest request, Long folderId, boolean recursive) throws GwtTeamingException {
+		// Always use the implementation form of the method.
+		return getZipDownloadUrlImpl(bs, request, null, folderId, recursive);
 	}
 
 	/**
