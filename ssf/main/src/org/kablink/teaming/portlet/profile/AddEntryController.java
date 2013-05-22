@@ -214,6 +214,9 @@ public class AddEntryController extends SAbstractController {
     		        										newUser.getId(),
     		        										ObjectKeys.USER_PROPERTY_EXTERNAL_USER,
     		        										"true" );
+    		        		
+    		        		// Re-index the user so the "external user" info is found in the index
+    		        		getProfileModule().indexEntry( newUser );
     		        	}
     					
     					setupShowSuccess(response, binderId, newUser.getId());
