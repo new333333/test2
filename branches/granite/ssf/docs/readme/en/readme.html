@@ -9,15 +9,16 @@
 <meta http-equiv="Content-Language" content="en" />
 <meta name="Content-Date" content="Mon, 19 Jan 2010 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Friday, April 27, 2012" />
-<meta name="Copyright" content="Copyright Novell, Inc. 2012" />
+<meta name="Generation-Date" content="Tuesday, May 21, 2013" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2013" />
 
 <style type="text/css">
 body { 
-		margin-left: .2in;
+		margin-left: 18px;
+		margin-right: 18px;
 		padding:0;
 		font-family:geneva, arial, helvetica, sans-serif;
-		font-size: 75%;
+		font-size: 12px;
 		font-weight: normal;
 		color: #000000;
 		background-color: #ffffff;
@@ -109,14 +110,14 @@ body {
 	div.figure p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
 	
 /* tables */
-	table {border-collapse:collapse; margin-bottom:18px;}
+	table {border-collapse:collapse; margin:16px 0 16px 0;}
 	div.table p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
 	div.table p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
 
 	table tr.headerrow th {padding: 6px 4px 5px 0px;}
-	table tr td {padding: 0px 4px 0px 0px; }
-	table tr td:first-child {margin-top: 7px;}
-	table tr td:last-child {margin-bottom: 6px;}
+	table tr td p:first-child {margin-top: 6px;}
+	table tr td p:last-child {margin-bottom: 4px;}
+	table tr td {padding: 0px 4px 0px 0px; margin:0; }
 	
 	table tr.headerrow th p.para {font-weight: bold; margin:1px 0px 0px 0px;}
 	table.allseps, table.rowseps, table.topbot {border-spacing: 0px; border-top:1px solid #606060; border-bottom:1px solid #606060;}
@@ -166,6 +167,7 @@ body {
 	span.emphasis  {font-style: italic}
 	span.strongemphasis,span.listif {font-weight: bold; font-style: italic}
 	em.msgtext {font-weight: bold; font-style: italic}
+	span.checkcell {font-weight: bold; font-size: 150%;}
 
 /* superscript and subscript */	
 	span.subscript,span.superscript {font-size: 80%;}
@@ -177,23 +179,38 @@ body {
 	div.toc div.toc2 {font-weight: normal; margin: 8px 10px 5px 25px}
 	div.toc div.toc3 {font-weight: normal; margin: 5px 10px 2px 50px}
 	div.toc div.toc4 {font-weight: normal; margin: 0px 10px 2px 75px}
+
+/* banners and logos */
+	div.banner { background-image : url(images/banner_bkgd.png); background-repeat: repeat-x;
+		height : 40px; line-height : 40px; margin-top: 30px;
+	}
+	div.banner_logo_netiq { background-image : url(images/banner_logo_netiq.png); background-repeat: no-repeat;
+		position: relative; float: right; top: 5px; width : 98px; height : 30px; line-height : 30px;
+	}
 	
+/* collapsible sections */
+.expanded .collapsible { display: block; }
+.collapsed .collapsible {	display: none; }
+.exp_title { cursor: pointer; }
+.exp_title span { float:left; width:16px; height:15px; margin-right : 3px; margin-top : 2px; }
+.expanded .exp_title span {background-image : url(expanded.png); background-repeat: no-repeat;}
+.collapsed .exp_title span {background-image : url(collapsed.png); background-repeat: no-repeat;}
 </style>
 
-<title>Kablink Vibe 3.3</title>
+<title>Novell Vibe 3.4</title>
 </head>
 <body>
 
 <div class="chapter singlefile" id="readme">
 
-<h1 class="title">Kablink Vibe 3.3</h1>
+<h1 class="title">Novell Vibe 3.4</h1>
 
 <div class="sect1 singlefile" id="bbfxu6q">
 
 <h2 class="title"><span class="number">1.0</span> Getting Started</h2>
 
-<p class="para">Complete system requirements and detailed software installation instructions are provided for the Kablink Vibe administrator in the <span class="citetitle">Vibe 3.3 Installation Guide.</span> Vibe site setup as well as ongoing site administration and maintenance instructions are available in the <span class="citetitle">Vibe 3.3 Administration Guide.</span></p>
-<p class="para">After your Vibe site is set up, Vibe users can obtain instructions in the <span class="citetitle">Vibe 3.3 User Guide</span> and the <span class="citetitle">Vibe 3.3 Advanced User Guide</span>.</p>
+<p class="para">Complete system requirements and detailed software installation instructions are provided for the Novell Vibe administrator in the <span class="citetitle">Vibe 3.4 Installation Guide.</span> Vibe site setup as well as ongoing site administration and maintenance instructions are available in the <span class="citetitle">Vibe 3.4 Administration Guide.</span></p>
+<p class="para">After your Vibe site is set up, Vibe users can obtain instructions in the <span class="citetitle">Vibe 3.4 User Guide</span> and the <span class="citetitle">Vibe 3.4 Advanced User Guide</span>. (A <span class="citetitle">Vibe 3.4 Quick Start</span> is provided in languages where the <span class="citetitle">Vibe 3.4 User Guide</span> is not available.)</p>
 <p class="para">You can display the Vibe online help when you log in to your Vibe site.</p>
 </div>
 
@@ -201,18 +218,18 @@ body {
 
 <h2 class="title"><span class="number">2.0</span> Known Issues</h2>
 
-<p class="para">For an up-to-date list of known issues for this release, see the full Kablink Vibe 3.3 product Readme located on the <a href="http://www.novell.com/documentation/kablinkvibe33" class="ulink">Kablink Vibe 3.3 Documentation Web site</a>.</p>
+<p class="para">For an up-to-date list of known issues for this release, see the full Novell Vibe 3.4 product Readme located on the <a href="http://www.novell.com/documentation/vibe34" class="ulink">Novell Vibe 3.4 Documentation Web site</a>.</p>
 </div>
 
 <div class="sect1 singlefile" id="product_info">
 
 <h2 class="title"><span class="number">3.0</span> Documentation</h2>
 
-<p class="para">All Kablink Vibe 3.3 documentation is available at the <a href="http://www.novell.com/documentation/kablinkvibe33" class="ulink">Kablink Vibe 3.3 Documentation Web site</a>:</p>
+<p class="para">All Novell Vibe 3.4 documentation is available at the <a href="http://www.novell.com/documentation/vibe34" class="ulink">Novell Vibe 3.4 Documentation Web site</a>:</p>
 <div class="itemizedlist">
 <ul class="listbullet">
 <li class="listitem">
-<p class="listitem">Full Vibe 3.3 product Readme</p></li>
+<p class="listitem">Full Vibe 3.4 product Readme</p></li>
 <li class="listitem">
 <p class="listitem">
           <span class="citetitle">Installation Guide</span>
@@ -236,29 +253,55 @@ body {
 <li class="listitem">
 <p class="listitem">
           <span class="citetitle">Vibe Quick Start</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Vibe Desktop for Windows Quick Start</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Vibe Desktop for Mac Quick Start</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Vibe Desktop FAQ</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Vibe Add-In Quick Start</span>
+        </p></li></ul></div>
+
+<p class="para">In addition to the Novell Vibe product documentation, additional resources provide information about Vibe.</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="http://www.novell.com/support" class="ulink">Novell Support and Knowledgebase</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="http://forums.novell.com/forumdisplay.php?f=989" class="ulink">Novell Support Forum</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="http://www.novell.com/communities/coolsolutions/vibe" class="ulink">Novell Cool Solutions</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="http://www.novell.com/products/vibe/resource-library/" class="ulink">Novell Resource Library</a>
         </p></li></ul></div>
 
 <p class="para">For more information about Vibe, visit the <a href="http://www.kablink.org" class="ulink">Kablink Open Collaboration Project</a>.</p>
 </div>
 
-<div class="sect1 singlefile" id="open_source_code">
-
-<h2 class="title"><span class="number">4.0</span> Open Source Code</h2>
-
-<p class="para">Novell, hereby, offers to give any third party a complete machine-readable copy of the source code of Kablink Vibe, under the terms of Sections 1 and 2 of version 2 of the GNU General Public License as published by the Free Software Foundation, on a medium customarily used for software interchange. Please contact Novell Developer Services or visit <a href="http://kablink.org" class="ulink">Kablnik.org</a> if you require a copy of the same.</p>
-</div>
-
 <div class="sect1 singlefile" id="legal_notices">
 
-<h2 class="title"><span class="number">5.0</span> Legal Notices</h2>
+<h2 class="title"><span class="number">4.0</span> Legal Notices</h2>
 
 <p class="para">Novell, Inc. makes no representations or warranties with respect to the contents or use of this documentation, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, Novell, Inc. reserves the right to revise this publication and to make changes to its content, at any time, without obligation to notify any person or entity of such revisions or changes.</p>
 <p class="para">Further, Novell, Inc. makes no representations or warranties with respect to any software, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, Novell, Inc. reserves the right to make changes to any and all parts of Novell software, at any time, without any obligation to notify any person or entity of such changes.</p>
 <p class="para">Any products or technical information provided under this Agreement may be subject to U.S. export controls and the trade laws of other countries. You agree to comply with all export control regulations and to obtain any required licenses or classification to export, re-export, or import deliverables. You agree not to export or re-export to entities on the current U.S. export exclusion lists or to any embargoed or terrorist countries as specified in the U.S. export laws. You agree to not use deliverables for prohibited nuclear, missile, or chemical biological weaponry end uses. Please refer to the <a href="http://www.novell.com/info/exports/" class="ulink">Novell International Trade Services Web page</a> for more information on exporting Novell software. Novell assumes no responsibility for your failure to obtain any necessary export approvals.</p>
-<p class="para">Copyright © 2008-2012 Novell, Inc. All rights reserved. No part of this publication may be reproduced, photocopied, stored on a retrieval system, or transmitted without the express written consent of the publisher.</p>
-<p class="para">THIS DOCUMENT AND MODIFIED VERSIONS OF THIS DOCUMENT ARE PROVIDED UNDER THE TERMS OF THE GNU FREE DOCUMENTATION LICENSE WITH THE FURTHER UNDERSTANDING THAT:</p>
-<p class="para">1. THE DOCUMENT IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, WITHOUT LIMITATION, WARRANTIES THAT THE DOCUMENT OR MODIFIED VERSION OF THE DOCUMENT IS FREE OF DEFECTS, MERCHANTABLE, FIT FOR A PARTICULAR PURPOSE, OR NON-INFRINGING. THE ENTIRE RISK AS TO THE QUALITY, ACCURACY, AND PERFORMANCE OF THE DOCUMENT OR MODIFIED VERSION OF THE DOCUMENT IS WITH YOU. SHOULD ANY DOCUMENT OR MODIFIED VERSION PROVE DEFECTIVE IN ANY RESPECT, YOU (NOT THE INITIAL WRITER, AUTHOR OR ANY CONTRIBUTOR) ASSUME THE COST OF ANY NECESSARY SERVICING, REPAIR OR CORRECTION. THIS DISCLAIMER OF WARRANTY CONSTITUTES AN ESSENTIAL PART OF THIS LICENSE. NO USE OF ANY DOCUMENT OR MODIFIED VERSION OF THE DOCUMENT IS AUTHORIZED HEREUNDER EXCEPT UNDER THIS DISCLAIMER; AND</p>
-<p class="para">2. UNDER NO CIRCUMSTANCES AND UNDER NO LEGAL THEORY, WHETHER IN TORT (INCLUDING NEGLIGENCE), CONTRACT, OR OTHERWISE, SHALL THE AUTHOR, INITIAL WRITER, ANY CONTRIBUTOR, OR ANY DISTRIBUTOR OF THE DOCUMENT OR MODIFIED VERSION OF THE DOCUMENT, OR ANY SUPPLIER OF ANY OF SUCH PARTIES, BE LIABLE TO ANY PERSON FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES OF ANY CHARACTER INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF GOODWILL, WORK STOPPAGE, COMPUTER FAILURE OR MALFUNCTION, OR ANY AND ALL OTHER DAMAGES OR LOSSES ARISING OUT OF OR RELATING TO USE OF THE DOCUMENT AND MODIFIED VERSIONS OF THE DOCUMENT, EVEN IF SUCH PARTY SHALL HAVE BEEN INFORMED OF THE POSSIBILITY OF SUCH DAMAGES.</p>
+<p class="para">Copyright © 2008-2013 Novell, Inc. All rights reserved. No part of this publication may be reproduced, photocopied, stored on a retrieval system, or transmitted without the express written consent of the publisher.</p>
 <p class="para">For Novell trademarks, see the <a href="http://www.novell.com/company/legal/trademarks/tmlist.html" class="ulink">Novell Trademark and Service Mark list</a>.</p>
 <p class="para">All third-party trademarks are the property of their respective owners.</p>
 </div>
