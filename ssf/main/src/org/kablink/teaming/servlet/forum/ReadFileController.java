@@ -84,6 +84,12 @@ public class ReadFileController extends AbstractReadFileController {
 	// messages.properties file.
 	private final static String ZIPLIST_DEFAULT_FILENAME = "files.zip";
 	
+	// Default filename used when the files from a folder are to be
+	// downloaded in a .zip file.  Note that this matches the English
+	// translation of the file.zipFolderDownload.fileName string in the
+	// messages.properties file.
+	private final static String ZIPFOLDER_DEFAULT_FILENAME = "folder.zip";
+	
 	@Override
 	@SuppressWarnings("unused")
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
@@ -314,19 +320,40 @@ public class ReadFileController extends AbstractReadFileController {
 						}
 					}
 				}
+				
 				zipOut.finish();
-				return null;
-			} catch(Exception e) {
+			}
+			
+			catch(Exception e) {
 				// Bad format of url; just return null.
 				logger.error("ReadFileController.handleRequestAfterValidation( ZipList Downlaod ):  EXCEPTION:  ", e);
-				response.getOutputStream().print(NLT.get("file.error.unknownFile"));
+				response.getOutputStream().print(NLT.get("file.error.unknownFileList"));
 			}
+			
 			return null;
+		}
 		
-		} else if (args.length < WebUrlUtil.FILE_URL_ARG_LENGTH) {
+		else if ((WebUrlUtil.FILE_URL_ZIPFOLDER_ARG_LENGTH == args.length) && 
+				String.valueOf(args[WebUrlUtil.FILE_URL_ZIPFOLDER_ZIP]).equals("zip") &&
+				String.valueOf(args[WebUrlUtil.FILE_URL_ZIPFOLDER_OPERATION]).equals(WebKeys.OPERATION_READ_FOLDER)) {
+			try {
+//!				...this needs to be implemented...
+			}
+			
+			catch(Exception e) {
+				// Bad format of url; just return null.
+				logger.error("ReadFileController.handleRequestAfterValidation( ZipFolder Downlaod ):  EXCEPTION:  ", e);
+				response.getOutputStream().print(NLT.get("file.error.unknownFolder"));
+			}
+			
 			return null;
+		}
 		
-		} else {
+		else if (args.length < WebUrlUtil.FILE_URL_ARG_LENGTH) {
+			return null;
+		}
+		
+		else {
 			try {
 				DefinableEntity entity = getEntity(args[WebUrlUtil.FILE_URL_ENTITY_TYPE], Long.valueOf(args[WebUrlUtil.FILE_URL_ENTITY_ID]));
 				//Set up the beans needed by the jsps

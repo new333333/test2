@@ -6717,6 +6717,7 @@ public class GwtViewHelper {
 			ZipDownloadUrlRpcResponseData reply = new ZipDownloadUrlRpcResponseData();
 
 			// Are we downloading a folder or selected files?
+			String url = null;
 			if (null == folderId) {
 				// Selected files!  Can we get the entries for the IDs?
 				Map<FolderEntry, String> attachmentMap = new HashMap<FolderEntry, String>();
@@ -6746,7 +6747,6 @@ public class GwtViewHelper {
 				}
 	
 				// How many files are we downloading?
-				String url = null;
 				int downloads = attachmentMap.size();
 				if (1 == downloads) {
 					// One and only one!  Generate a URL to download that
@@ -6762,32 +6762,26 @@ public class GwtViewHelper {
 				else if (1 < downloads) {
 					// More than one!  Generate a URL to download that list
 					// of files.
-					StringBuffer idBuf = new StringBuffer();
-					boolean first = true;
-					fes = attachmentMap.keySet();
-					for (FolderEntry fe:  fes) {
-						if (!first) {
-							idBuf.append(":");
-						}
-						first = false;
-						idBuf.append(String.valueOf(fe.getId()));
-					}
 					url = WebUrlUtil.getFileListZipUrl(
 						request,
-						WebKeys.ACTION_READ_FILE,
-						WebKeys.OPERATION_READ_FILE_LIST,
-						idBuf.toString());
+						attachmentMap.keySet());
 				}
-				
-				// Add whatever URL we built to the reply.
-				reply.setUrl(url);
 			}
 			
 			else {
-				// A folder!
+				// A folder!  Generate a URL to download the files from
+				// that folder.
+				url = WebUrlUtil.getFolderZipUrl(
+					request,
+					folderId,
+					folderRecursive);
+				
 //!				...this needs to be implemented...
-				reply.addError("GwtViewHelper.getZipDownloadUrlImpl( Download Folder ):  ...this needs to be impelemented...");
+				reply.addError("GwtViewHelper.getZipDownloadUrlImpl( Download Folder ):  ...this needs to be implemented...");
 			}
+			
+			// Add whatever URL we built to the reply.
+			reply.setUrl(url);
 			
 			// If we get here, reply refers to the
 			// ZipDownloadUrlRpcResponseData containing the URL to

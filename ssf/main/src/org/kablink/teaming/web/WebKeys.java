@@ -134,6 +134,7 @@ public class WebKeys {
     public static final String URL_BINDER_PARENT_ID="binderParentId";
     public static final String URL_BINDER_IDS="binderIds";
     public static final String URL_FOLDER_ID = "folderId";
+    public static final String URL_RECURSIVE = "recursive";
     public static final String URL_IS_LIBRARY_BINDER="isLibraryBinder";
     public static final String URL_BINDER_ID_PLACE_HOLDER="ss_binder_id_place_holder";
     public static final String URL_BINDER_CONFIG_ID="binderConfigId";
@@ -662,6 +663,7 @@ public class WebKeys {
 	public static final String OPERATION_VIEW_UPLOAD_FILE = "view_upload_file";
 	public static final String OPERATION_LIST_SAVED_QUERIES="list_saved_queries";
 	public static final String OPERATION_READ_FILE_LIST="read_file_list";
+	public static final String OPERATION_READ_FOLDER="read_folder";
 	
 	public static final String OPERATION_REMOVE_TEAM_MEMBERS = "remove_team_members";
 	public static final String OPERATION_REMOVE_SEARCH_QUERY = "remove_search_query";
