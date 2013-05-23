@@ -91,12 +91,12 @@ public class WebUrlUtil {
 	public static final int FILE_URL_ZIPLIST_OPERATION	= 3;
 	
 	// Used the parse the URL returned by getFolderZipUrl().
-	public static final int FILE_URL_ZIPFOLDER_ARG_LENGTH	= 9;
-	public static final int FILE_URL_ZIPFOLDER_ZIP			= 6;
-	public static final int FILE_URL_ZIPFOLDER_FOLDER_ID	= 5;
-	public static final int FILE_URL_ZIPFOLDER_OPERATION	= 3;
-	public static final int FILE_URL_ZIPFOLDER_RECURSIVE_OP	= 7;
-	public static final int FILE_URL_ZIPFOLDER_RECURSIVE	= 8;
+	public static final int FILE_URL_ZIPFOLDER_ARG_LENGTH			= 9;
+	public static final int FILE_URL_ZIPFOLDER_ZIP					= 6;
+	public static final int FILE_URL_ZIPFOLDER_FOLDER_ID			= 5;
+	public static final int FILE_URL_ZIPFOLDER_OPERATION			= 3;
+	public static final int FILE_URL_ZIPFOLDER_RECURSIVE_OPERAND	= 7;
+	public static final int FILE_URL_ZIPFOLDER_RECURSIVE			= 8;
 	
 	private static final Log logger = LogFactory.getLog(WebUrlUtil.class);
 
@@ -618,7 +618,20 @@ public class WebUrlUtil {
 		return webUrl.toString();
 	}
 
+	/**
+	 * Returns the URL for downloading the primary files from a
+	 * specific collection of entries in a zip.
+	 * 
+	 * Note:  The URL constructed must adhere to the count and indexes
+	 * of the various FILE_URL_ZIPLIST_* definitions. 
+	 * 
+	 * @param webPath
+	 * @param fileList
+	 * 
+	 * @return
+	 */
 	public static String getFileListZipUrl(String webPath, Collection<FolderEntry> fileList) {
+		// Construct a ':' separate list of the entry IDs.
 		StringBuffer idBuf = new StringBuffer();
 		boolean first = true;
 		for (FolderEntry fe:  fileList) {
@@ -628,7 +641,8 @@ public class WebUrlUtil {
 			first = false;
 			idBuf.append(String.valueOf(fe.getId()));
 		}
-		
+
+		// Construct and return the URL.
 		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
 		StringBuffer webUrl = new StringBuffer(webPath + WebKeys.ACTION_READ_FILE);
 		webUrl.append(Constants.SLASH + WebKeys.URL_OPERATION);
@@ -639,7 +653,21 @@ public class WebUrlUtil {
 		return webUrl.toString();
 	}
 
+	/**
+	 * Returns the URL for downloading the primary files from a folder
+	 * in a zip.
+	 * 
+	 * Note:  The URL constructed must adhere to the count and indexes
+	 * of the various FILE_URL_ZIPFOLDER_* definitions. 
+	 * 
+	 * @param webPath
+	 * @param folderId
+	 * @param recursive
+	 * 
+	 * @return
+	 */
 	public static String getFolderZipUrl(String webPath, Long folderId, boolean recursive) {
+		// Construct and return the URL.
 		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
 		StringBuffer webUrl = new StringBuffer(webPath + WebKeys.ACTION_READ_FILE);
 		webUrl.append(Constants.SLASH + WebKeys.URL_OPERATION);

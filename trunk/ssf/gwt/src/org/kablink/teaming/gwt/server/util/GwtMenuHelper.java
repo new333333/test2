@@ -2273,13 +2273,12 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem to run the share binder dialog.
 	 */
-	private static ToolbarItem constructShareBinderItem(HttpServletRequest request, Binder binder, String specificResourceKey) {
-		String title;
-		if (MiscUtil.hasString(specificResourceKey))
-		     title = NLT.get(specificResourceKey);
-		else title = GwtUIHelper.buildRelevanceKey(binder, "relevance.shareThis");
+	private static ToolbarItem constructShareBinderItem(HttpServletRequest request, Binder binder, String specificTitleKey) {
+		if (!(MiscUtil.hasString(specificTitleKey))) {
+			specificTitleKey = GwtUIHelper.buildRelevanceKey(binder, "relevance.shareThis");
+		}
 		ToolbarItem     shareTBI = new ToolbarItem(SHARE);
-		markTBITitle(   shareTBI, title                            );
+		markTBITitle(   shareTBI, specificTitleKey                 );
 		markTBIEvent(   shareTBI, TeamingEvents.INVOKE_SHARE_BINDER);
 		markTBIBinderId(shareTBI, binder.getId()                   );
 		return shareTBI;
