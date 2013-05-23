@@ -2884,7 +2884,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
 				selectedEntityIds = getSelectedEntityIds();
 			}
-			BinderViewsHelper.zipAndDownloadFiles(getDownloadPanel().getDownloadForm(), selectedEntityIds);
+			BinderViewsHelper.zipAndDownloadFiles(
+				getDownloadPanel().getDownloadForm(),
+				selectedEntityIds,
+				event.isRecursive());
 		}
 	}
 	

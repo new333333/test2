@@ -1899,8 +1899,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_ZIP_DOWNLOAD_FILES_URL:
 		{
-			List<Long> entryIds = ((GetZipDownloadFilesUrlCmd) cmd).getEntryIds();
-			ZipDownloadUrlRpcResponseData result = GwtViewHelper.getZipDownloadUrl( this, getRequest( ri ), entryIds );
+			GetZipDownloadFilesUrlCmd gzdfuCmd = ((GetZipDownloadFilesUrlCmd) cmd);
+			ZipDownloadUrlRpcResponseData result = GwtViewHelper.getZipDownloadUrl( this, getRequest( ri ), gzdfuCmd.getEntityIds(), gzdfuCmd.isRecursive() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

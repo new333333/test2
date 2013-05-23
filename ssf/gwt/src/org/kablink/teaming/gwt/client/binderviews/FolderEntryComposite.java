@@ -1389,6 +1389,7 @@ public class FolderEntryComposite extends ResizeComposite
 		BinderViewsHelper.zipAndDownloadFiles(
 			m_downloadForm,
 			zipAndDownloadEntities,
+			true,
 			new FolderEntryActionCompleteEvent(
 				m_vfei.getEntityId(),
 				false));

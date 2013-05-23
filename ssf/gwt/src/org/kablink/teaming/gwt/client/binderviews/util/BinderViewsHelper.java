@@ -1685,23 +1685,17 @@ public class BinderViewsHelper {
 	}
 	
 	/**
-	 * Zips and downloads the select files based on a List<Long> of their
-	 * entity IDs.
+	 * Zips and downloads the selected files and folder based on a
+	 * List<EntityId> of their entity IDs.
 	 *
 	 * @param entityIds
+	 * @param recursive
 	 * @param reloadEvent
 	 */
-	public static void zipAndDownloadFiles(final FormPanel downloadForm, List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
-		// If we weren't given any entity IDs to be marked read...
+	public static void zipAndDownloadFiles(final FormPanel downloadForm, List<EntityId> entityIds, boolean recursive, final VibeEventBase<?> reloadEvent) {
+		// If we weren't given any entity IDs to be downloaded...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
-			return;
-		}
-		
-		// If there aren't any entries in the entity list...
-		if (!(validateEntriesInEntityIds(entityIds, true))) {
-			// ...bail.  (Note that validateEntriesInEntityIds() will
-			// ...have told the user about any errors.)
 			return;
 		}
 		
@@ -1711,7 +1705,7 @@ public class BinderViewsHelper {
 		busy.center();
 
 		// Send the request for the zip download URL.
-		GetZipDownloadFilesUrlCmd cmd = new GetZipDownloadFilesUrlCmd(EntityId.getEntryLongsFromEntityIds(entityIds));
+		GetZipDownloadFilesUrlCmd cmd = new GetZipDownloadFilesUrlCmd(entityIds, recursive);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -1746,9 +1740,9 @@ public class BinderViewsHelper {
 		});
 	}
 	
-	public static void zipAndDownloadFiles(FormPanel downloadForm, List<EntityId> entityIds) {
+	public static void zipAndDownloadFiles(FormPanel downloadForm, List<EntityId> entityIds, boolean recursive) {
 		// Always use the initial form of the method.
-		zipAndDownloadFiles(downloadForm, entityIds, null);
+		zipAndDownloadFiles(downloadForm, entityIds, recursive, null);
 	}
 	
 	/**
