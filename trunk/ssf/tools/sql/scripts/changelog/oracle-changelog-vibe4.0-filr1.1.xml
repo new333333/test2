@@ -146,4 +146,19 @@
             </column>
         </addColumn>
     </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="4">
+        <createIndex indexName="STATUSDATE_BINDERSTATE" tableName="SS_BINDERSTATE" unique="false">
+            <column name="FULLSYNC_STATUSDATE"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="5">
+        <comment>IPv4 address of the node from which full sync status is set</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_STATUSIPV4ADDRESS" type="VARCHAR2(16 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -119,6 +119,7 @@ import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.domain.BinderState.FullSyncStatus;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.SimpleName.SimpleNamePK;
 import org.kablink.teaming.util.Constants;
@@ -3122,8 +3123,26 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
 	@Override
 	public Long peekFullSyncTask() {
-		// TODO Auto-generated method stub
-		return null;
+		long begin = System.nanoTime();
+		try {
+			return getHibernateTemplate().execute(
+		            new HibernateCallback<Long>() {
+		                @Override
+						public Long doInHibernate(Session session) throws HibernateException {
+		                	return (Long) session.createCriteria(BinderState.class)
+		                			.setProjection(Projections.property("binderId"))
+		                			.add(Restrictions.eq("fullSyncStats.status", FullSyncStatus.ready))
+		                			.addOrder(Order.asc("fullSyncStats.statusDate"))
+		                			.setMaxResults(1)
+                					.setCacheable(false)
+                					.uniqueResult();
+		                }
+		            }
+		        );
+    	}
+    	finally {
+    		end(begin, "peekFullSyncTask()");
+    	}	        
 	}
 
  }
