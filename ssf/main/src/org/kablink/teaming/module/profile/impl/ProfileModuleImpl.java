@@ -1510,7 +1510,7 @@ public void deleteEntry(Long principalId, Map options) {
    //RW transaction
    @Override
 public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
-	   boolean delMirroredFolderSource = Boolean.TRUE;
+	   boolean delMirroredFolderSource = (!(Utils.checkIfFilr()));	// Only delete mirrored source by default if not Filr.
 	   
         Principal entry = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);
         checkAccess(entry, ProfileOperation.deleteEntry);
