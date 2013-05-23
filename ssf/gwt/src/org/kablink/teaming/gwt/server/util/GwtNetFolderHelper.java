@@ -95,7 +95,6 @@ import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
-import org.kablink.util.search.Constants;
 
 /**
  * Helper methods for the GWT UI server code that services requests dealing with
@@ -410,32 +409,29 @@ public class GwtNetFolderHelper
 	 * If includeHomeDirNetFolders is true we will include "home directory" net folders in our list.
 	 * If rootName is not null, we will only return net folders associated with the given net folder root. 
 	 */
-	@SuppressWarnings({ "unchecked" })
 	public static List<NetFolder> getAllNetFolders(
 		AllModulesInjected ami,
 		boolean includeHomeDirNetFolders,
 		String rootName )
 	{
-		List<Map> searchEntries;
+		List<Long> listOfNetFolderIds;
 		ArrayList<NetFolder> listOfNetFolders;
 		
 		listOfNetFolders = new ArrayList<NetFolder>();
 		
-		searchEntries = NetFolderHelper.getAllNetFolders(
+		listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
 													ami.getBinderModule(),
 													ami.getWorkspaceModule(),
 													rootName,
 													includeHomeDirNetFolders );
 
-		if ( searchEntries != null )
+		if ( listOfNetFolderIds != null )
 		{
-			for ( Map entryMap:  searchEntries )
+			for ( Long binderId:  listOfNetFolderIds )
 			{
 				NetFolder netFolder;
-				String binderId;
 				
-				binderId = GwtServerHelper.getStringFromEntryMap( entryMap, Constants.DOCID_FIELD );
-				netFolder = GwtNetFolderHelper.getNetFolder( ami, Long.valueOf( binderId ) );
+				netFolder = GwtNetFolderHelper.getNetFolder( ami, binderId );
 				
 				listOfNetFolders.add( netFolder );
 			}

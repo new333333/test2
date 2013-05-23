@@ -505,7 +505,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		)
 	{
 		FolderModule folderModule;
-		List<Map> searchEntries;
+		List<Long> listOfNetFolderIds;
 		
 		if ( rdConfig == null )
 			return false;
@@ -513,47 +513,36 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		folderModule = getFolderModule();
 
 		// Find all of the net folders that reference this net folder server.
-		searchEntries = NetFolderHelper.getAllNetFolders(
+		listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
 													getBinderModule(),
 													getWorkspaceModule(),
 													rdConfig.getName(),
 													true );
 
-		if ( searchEntries != null )
+		if ( listOfNetFolderIds != null )
 		{
-			for ( Map entryMap:  searchEntries )
+			for ( Long binderId:  listOfNetFolderIds )
 			{
-				Long binderId = null;
-				Object value;
+				ScheduleInfo scheduleInfo;
 				
-				value = entryMap.get( Constants.DOCID_FIELD );
-				if ( value != null && value instanceof String )
-					binderId = new Long( (String) value );
-				
-				if ( binderId != null )
+				// Does this net folder have a sync schedule that is enabled?
+				scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( binderId );
+				if ( excludeFoldersWithSchedule == false || scheduleInfo == null || scheduleInfo.isEnabled() == false )
 				{
-					Long zoneId;
-					ScheduleInfo scheduleInfo;
-					
-					// Does this net folder have a sync schedule that is enabled?
-					scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( binderId );
-					if ( excludeFoldersWithSchedule == false || scheduleInfo == null || scheduleInfo.isEnabled() == false )
-					{
-						try {
-							// No, sync this net folder ... only if system shutdown is not in progress
-							if(!ContextListenerPostSpring.isShutdownInProgress()) {
-								folderModule.enqueueFullSynchronize( binderId );
-							}
-							else {
-								// System shutting down. Abort the remaining work and return.
-								logger.info("System shutting down. Skipping full sync of net folder '" + binderId + "' and the rest.");
-								break;
-							}
+					try {
+						// No, sync this net folder ... only if system shutdown is not in progress
+						if(!ContextListenerPostSpring.isShutdownInProgress()) {
+							folderModule.enqueueFullSynchronize( binderId );
 						}
-						catch(Exception e) {
-							logger.error("Error during synchronization of net folder '" + binderId + "'", e);
-							continue; // Continue to the next net folder to sync.
+						else {
+							// System shutting down. Abort the remaining work and return.
+							logger.info("System shutting down. Skipping full sync of net folder '" + binderId + "' and the rest.");
+							break;
 						}
+					}
+					catch(Exception e) {
+						logger.error("Error during synchronization of net folder '" + binderId + "'", e);
+						continue; // Continue to the next net folder to sync.
 					}
 				}
 			}
