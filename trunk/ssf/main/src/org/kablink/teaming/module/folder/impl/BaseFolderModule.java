@@ -46,7 +46,7 @@ import org.kablink.teaming.util.StatusTicket;
 
 public class BaseFolderModule extends AbstractFolderModule implements BaseFolderModuleMBean {
 
-	public boolean fullSynchronize(Long folderId, StatusTicket statusTicket) throws FIException, UncheckedIOException {
+	public boolean fullSynchronize(Long folderId, Boolean dirOnly, StatusTicket statusTicket) throws FIException, UncheckedIOException {
 		return true;
 	}
 	

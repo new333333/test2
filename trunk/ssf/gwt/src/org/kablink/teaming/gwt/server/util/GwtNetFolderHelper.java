@@ -1208,7 +1208,7 @@ public class GwtNetFolderHelper
 
 				statusTicketId = "sync_net_folder_" + nextNetFolder.getId();
 				statusTicket = GwtWebStatusTicket.newStatusTicket( statusTicketId, req );
-				if( ami.getFolderModule().fullSynchronize( nextNetFolder.getId(), statusTicket ) )
+				if( ami.getFolderModule().fullSynchronize( nextNetFolder.getId(), null, statusTicket ) )
 				{
 					// The binder was not deleted (typical situation).
 					nextNetFolder.setStatus( NetFolderStatus.SYNC_IN_PROGRESS );
