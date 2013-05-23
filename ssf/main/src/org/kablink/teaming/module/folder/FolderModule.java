@@ -690,7 +690,7 @@ public interface FolderModule {
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public boolean fullSynchronize(Long folderId, StatusTicket statusTicket)
+	public boolean fullSynchronize(Long folderId, Boolean dirOnly, StatusTicket statusTicket)
 		throws AccessControlException, FIException, UncheckedIOException, ConfigurationException;
 	
 	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId);

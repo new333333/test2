@@ -116,7 +116,7 @@ public class ModifyBinderController extends AbstractBinderController {
 			// 5/20/2013 JK (Bug 818957) - We no longer allow foreground execution of full sync as of Filr 1.1.
 			// When we enable this line of code again, we need to think through all the ramification and make
 			// sure it doesn't screw up the overall design approach.
-			if(getFolderModule().fullSynchronize(binderId, statusTicket)) {
+			if(getFolderModule().fullSynchronize(binderId, null, statusTicket)) {
 				// The binder was not deleted (typical situation). 
 				// Setup the right view which will override the previous setup.
 				setupViewBinder(response, binderId, binderType);
