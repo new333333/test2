@@ -6775,9 +6775,6 @@ public class GwtViewHelper {
 					request,
 					folderId,
 					folderRecursive);
-				
-//!				...this needs to be implemented...
-				reply.addError("GwtViewHelper.getZipDownloadUrlImpl( Download Folder ):  ...this needs to be implemented...");
 			}
 			
 			// Add whatever URL we built to the reply.

@@ -32,12 +32,17 @@
  */
 package org.kablink.teaming.servlet.forum;
 
+import static org.kablink.util.search.Restrictions.in;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.activation.FileTypeMap;
@@ -46,14 +51,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.FileHelper;
@@ -63,6 +74,8 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.FileUtil;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Order;
 
 import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
 import org.springframework.web.servlet.ModelAndView;
@@ -72,6 +85,7 @@ import org.springframework.web.servlet.ModelAndView;
  * 
  * @author ?
  */
+@SuppressWarnings("unused")
 public class ReadFileController extends AbstractReadFileController {
 	private final static boolean ZIP_ENCODED_FILENAMES	= true;
 	private final static boolean UTF8_ENCODE_ZIPS		= true;
@@ -91,7 +105,6 @@ public class ReadFileController extends AbstractReadFileController {
 	private final static String ZIPFOLDER_DEFAULT_FILENAME = "folder.zip";
 	
 	@Override
-	@SuppressWarnings("unused")
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 		Boolean singleByte = SPropsUtil.getBoolean("export.filename.8bitsinglebyte.only", true);
@@ -114,14 +127,7 @@ public class ReadFileController extends AbstractReadFileController {
 				DefinableEntity entity = getEntity(args[WebUrlUtil.FILE_URL_ENTITY_TYPE], Long.valueOf(args[WebUrlUtil.FILE_URL_ENTITY_ID]));
 				Set<Attachment> attachments = entity.getAttachments();
 				String fileName = getBinderModule().filename8BitSingleByteOnly(entity.getTitle() + ".zip", "files.zip", singleByte);
-				response.setContentType(mimeTypes.getContentType(fileName));
-				response.setHeader("Cache-Control", "private, max-age=0");
-				response.setHeader(
-							"Content-Disposition",
-							"attachment; filename=\"" + fileName + "\"");
-				
-				InputStream fileStream = null;
-				ZipArchiveOutputStream zipOut = buildZipOutputStream(response.getOutputStream());
+				ZipArchiveOutputStream zipOut = buildZipAndSetupResponse(response, fileName);
 			
 				Integer fileCounter = 1;
 				for (Attachment attachment : attachments) {
@@ -133,6 +139,7 @@ public class ReadFileController extends AbstractReadFileController {
 									"__file"+fileCounter.toString(), singleByte);	//Note: do not translate this name
 						}
 						fileCounter++;
+						InputStream fileStream = null;
 						try {
 							if (entity.getEntityType().equals(EntityType.folderEntry)) {
 								fileStream = getFileModule().readFile(entity.getParentBinder(), entity, (FileAttachment)attachment);
@@ -191,21 +198,16 @@ public class ReadFileController extends AbstractReadFileController {
 				if (fileAtt != null) {
 					String fileName = EntityIndexUtils.getFileNameWithoutExtension(fileAtt.getFileItem().getName());
 					fileName = getBinderModule().filename8BitSingleByteOnly(fileName + ".zip", "download.zip", singleByte);
-					response.setContentType(mimeTypes.getContentType(fileName));
-					response.setHeader("Cache-Control", "private, max-age=0");
-					response.setHeader(
-								"Content-Disposition",
-								"attachment; filename=\"" + fileName + "\"");
+					ZipArchiveOutputStream zipOut = buildZipAndSetupResponse(response, fileName);		
 					
-					InputStream fileStream = null;
-					ZipArchiveOutputStream zipOut = buildZipOutputStream(response.getOutputStream());		
-				
 					String attExt = EntityIndexUtils.getFileExtension(fileAtt.getFileItem().getName());
 					String attName = fileAtt.getFileItem().getName();	//Note: do not translate this name
 					if (!ZIP_ENCODED_FILENAMES) {
 						attName = getBinderModule().filename8BitSingleByteOnly(attName, 
 								"file", singleByte);	//Note: do not translate this name
 					}
+					
+					InputStream fileStream = null;
 					try {
 						if (entity.getEntityType().equals(EntityType.folderEntry)) {
 							fileStream = getFileModule().readFile(entity.getParentBinder(), entity, fileAtt);
@@ -253,74 +255,30 @@ public class ReadFileController extends AbstractReadFileController {
 			return null;
 			
 		} else if ((WebUrlUtil.FILE_URL_ZIPLIST_ARG_LENGTH == args.length) && 
-					String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_ZIP]).equals("zip") &&
+					String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_ZIP      ]).equals("zip"                            ) &&
 					String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_OPERATION]).equals(WebKeys.OPERATION_READ_FILE_LIST)) {
+			// Zip and download the primary files from a specific list
+			// of entries!
 			try {
 				// Access the entries whose primary files are to be
 				// zipped.
-				String idList = String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_FILE_IDS]);
-				String[] ids = idList.split(":");
-				List<Long> feIds = new ArrayList<Long>();
+				String     idList = String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_FILE_IDS]);
+				String[]   ids    = idList.split(":");
+				List<Long> feIds  = new ArrayList<Long>();
 				for (String id:  ids) {
 					feIds.add(Long.parseLong(id));
 				}
-				Set<FolderEntry> fes = getFolderModule().getEntries(feIds);
+				Set<FolderEntry> feSet = getFolderModule().getEntries(feIds);
 				
-				// Create the zip file for downloading.
-				String fileName = getBinderModule().filename8BitSingleByteOnly(NLT.get("file.zipListDownload.fileName"), ZIPLIST_DEFAULT_FILENAME, singleByte);
-				response.setContentType(mimeTypes.getContentType(fileName));
-				response.setHeader("Cache-Control", "private, max-age=0");
-				response.setHeader("Content-Disposition", ("attachment; filename=\"" + fileName + "\""));
-				InputStream fileStream = null;
-				ZipArchiveOutputStream zipOut = buildZipOutputStream(response.getOutputStream());
+				// Create the zip file for downloading...
+				String fileName = NLT.get("file.zipListDownload.fileName");
+				fileName = getBinderModule().filename8BitSingleByteOnly(fileName, ZIPLIST_DEFAULT_FILENAME, singleByte);
+				ZipArchiveOutputStream zipOut = buildZipAndSetupResponse(response, fileName);
 
-				// Scan the entries whose primary files are to be
-				// zipped.
-				int fileCounter = 1;
-				for (FolderEntry entity:  fes) {
-					// Can we get this entry's primary file attachment?
-					FileAttachment fileAtt = MiscUtil.getPrimaryFileAttachment(entity);
-					if (null != fileAtt) {
-						// Yes!  Copy it to the zip.
-						String attExt  = EntityIndexUtils.getFileExtension(fileAtt.getFileItem().getName());
-						String attName = fileAtt.getFileItem().getName();	// Note: do not translate this name.
-						if (!ZIP_ENCODED_FILENAMES) {
-							attName = getBinderModule().filename8BitSingleByteOnly(
-								attName,
-								("__file" + String.valueOf(fileCounter)),	// For file names that are invalid for a zip.
-								singleByte);								// Note: do not translate this name.	
-						}
-						fileCounter += 1;
-						try {
-							fileStream = getFileModule().readFile(entity.getParentBinder(), entity, fileAtt);
-							zipOut.putArchiveEntry(new ZipArchiveEntry(attName));
-							long startTime = System.nanoTime();
-							FileUtil.copy(fileStream, zipOut);
-							/*
-							 * This was used to measure the time degradation for encrypted files
-									String loggerText = "Copying an unencrypted file of length ";
-									if (fileAtt.isEncrypted()) {
-										loggerText = "Copying an encrypted file of length ";
-									}
-									logger.info(loggerText + fileAtt.getFileItem().getLengthKB() + 
-											"KB took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
-							*/
-							zipOut.closeArchiveEntry();
-						} catch (Exception e) {
-							logger.error(e);
-						}
-						finally {
-							try {
-								if(fileStream != null) {
-									fileStream.close();
-									fileStream = null;
-								}
-							}
-							catch(IOException ignore) {}
-						}
-					}
-				}
+				// ...and the entry's primary files to the zip...
+				addCollectionFilesToZip(zipOut, null, feSet, singleByte);
 				
+				// ...and finish it. 
 				zipOut.finish();
 			}
 			
@@ -334,10 +292,32 @@ public class ReadFileController extends AbstractReadFileController {
 		}
 		
 		else if ((WebUrlUtil.FILE_URL_ZIPFOLDER_ARG_LENGTH == args.length) && 
-				String.valueOf(args[WebUrlUtil.FILE_URL_ZIPFOLDER_ZIP]).equals("zip") &&
-				String.valueOf(args[WebUrlUtil.FILE_URL_ZIPFOLDER_OPERATION]).equals(WebKeys.OPERATION_READ_FOLDER)) {
+				String.valueOf(args[WebUrlUtil.FILE_URL_ZIPFOLDER_ZIP              ]).equals("zip"                        ) &&
+				String.valueOf(args[WebUrlUtil.FILE_URL_ZIPFOLDER_OPERATION        ]).equals(WebKeys.OPERATION_READ_FOLDER) &&
+				String.valueOf(args[WebUrlUtil.FILE_URL_ZIPFOLDER_RECURSIVE_OPERAND]).equals(WebKeys.URL_RECURSIVE       )) {
+			// Zip and download the primary files from a folder,
+			// optionally recursively descending any sub-folders!
 			try {
-//!				...this needs to be implemented...
+				// Do we zip things recursively?
+				boolean recursive = Boolean.parseBoolean(String.valueOf(args[WebUrlUtil.FILE_URL_ZIPFOLDER_RECURSIVE]));
+				
+				// What folder are we zipping?
+				Long   folderId = Long.parseLong(String.valueOf(args[WebUrlUtil.FILE_URL_ZIPFOLDER_FOLDER_ID]));
+				Folder folder   = getFolderModule().getFolder(folderId);
+				
+				// Create the zip file for downloading...
+				String fileName = folder.getTitle();
+				if (MiscUtil.hasString(fileName))
+				     fileName += ".zip";
+				else fileName = NLT.get("file.zipFolderDownload.fileName");
+				fileName = getBinderModule().filename8BitSingleByteOnly(fileName, ZIPFOLDER_DEFAULT_FILENAME, singleByte);
+				ZipArchiveOutputStream zipOut = buildZipAndSetupResponse(response, fileName);
+
+				// ...add the folder's contents to it...
+				addFolderContentsToZip(zipOut, null, folderId, recursive, singleByte);
+
+				// ...and finish it. 
+				zipOut.finish();
 			}
 			
 			catch(Exception e) {
@@ -430,22 +410,176 @@ public class ReadFileController extends AbstractReadFileController {
 	}
 
 	/*
-	 * Constructs a ZipArchiveOutputStream from an OutputStream.
+	 * Adds the primary files from a Collection<FolderEntry> to a zip.
 	 */
-	private static ZipArchiveOutputStream buildZipOutputStream(OutputStream stream) {
+	private void addCollectionFilesToZip(ZipArchiveOutputStream zipOut, String filePath, Collection<FolderEntry> feCollection, boolean singleByte) {
+		// Get the modules we need to do the work.
+		BinderModule bm = getBinderModule();
+		FileModule   fm = getFileModule();
+		
+		// Scan the entries whose primary files are to be added to the
+		// zip.
+		int fileCounter = 1;
+		for (FolderEntry fe:  feCollection) {
+			// Can we get this entry's primary file attachment?
+			FileAttachment fileAtt = MiscUtil.getPrimaryFileAttachment(fe);
+			if (null != fileAtt) {
+				// Yes!  How do we name the file in the zip?
+				String fileName = fileAtt.getFileItem().getName();	// Note: do not translate this name.
+				if (!ZIP_ENCODED_FILENAMES) {
+					fileName = bm.filename8BitSingleByteOnly(
+						fileName,
+						("__file" + String.valueOf(fileCounter)),	// For file names that are invalid for a zip.
+						singleByte);								// Note: do not translate this name.	
+				}
+				fileCounter += 1;
+				
+				// Copy the file into the zip.
+				InputStream fileStream = null;
+				try {
+					fileStream = fm.readFile(fe.getParentBinder(), fe, fileAtt);
+					String subFilePath;
+					if (MiscUtil.hasString(filePath))
+					     subFilePath = (filePath + "/" + fileName);
+					else subFilePath = fileName;
+					zipOut.putArchiveEntry(new ZipArchiveEntry(subFilePath));
+					long startTime = System.nanoTime();
+					FileUtil.copy(fileStream, zipOut);
+					/*
+					 * This was used to measure the time degradation for encrypted files
+							String loggerText = "Copying an unencrypted file of length ";
+							if (fileAtt.isEncrypted()) {
+								loggerText = "Copying an encrypted file of length ";
+							}
+							logger.info(loggerText + fileAtt.getFileItem().getLengthKB() + 
+									"KB took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
+					*/
+					zipOut.closeArchiveEntry();
+				} catch (Exception e) {
+					logger.error(e);
+				}
+				finally {
+					try {
+						if(fileStream != null) {
+							fileStream.close();
+						}
+					}
+					catch(IOException ignore) {}
+				}
+			}
+		}
+	}
+	
+	/*
+	 * Traverses the contents of a folder and adds it to a zip file.
+	 */
+	@SuppressWarnings("unchecked")
+	private void addFolderContentsToZip(ZipArchiveOutputStream zipOut, String folderPath, Long folderId, boolean recursive, boolean singleByte) {
+		// Get the modules we need to do the work.
+		BinderModule bm = getBinderModule();
+		FolderModule fm = getFolderModule();
+		
+		// Get the entries from the folder...
+		List<Long>       feIds = getEntryIdsFromFolder(fm, folderId, null);
+		Set<FolderEntry> feSet = fm.getEntries(feIds);
+
+		// ...and add their primary files to the zip.
+		addCollectionFilesToZip(zipOut, folderPath, feSet, singleByte);
+		
+		// Are we exporting folders recursively?
+		if (recursive) {
+			// Yes!  Get the the IDs of the sub-folders.
+			List<String> folderIds = new ArrayList<String>();
+			folderIds.add(String.valueOf(folderId));
+			Criteria crit = new Criteria();
+			crit.add(in(org.kablink.util.search.Constants.DOC_TYPE_FIELD, new String[] {org.kablink.util.search.Constants.DOC_TYPE_BINDER}))
+				.add(in(org.kablink.util.search.Constants.BINDERS_PARENT_ID_FIELD, folderIds));
+			crit.addOrder(Order.asc(org.kablink.util.search.Constants.BINDER_ID_FIELD));
+			Map        sfMap  = bm.executeSearchQuery(crit, org.kablink.util.search.Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+			List       sfMaps = ((List) sfMap.get(ObjectKeys.SEARCH_ENTRIES)); 
+			List<Long> sfIds  = new ArrayList<Long>();
+	      	for (Iterator iter = sfMaps.iterator(); iter.hasNext();) {
+	      		Map nextSFMap = ((Map) iter.next());
+      			sfIds.add(Long.parseLong((String) nextSFMap.get("_docId")));
+	      	}
+
+	      	// Are there any sub-folders?
+	      	if (!(sfIds.isEmpty())) {
+	      		// Yes!  Scan them.
+	      		Collection<Folder> subFolders = fm.getFolders(sfIds);
+	      		int folderCounter = 1;
+	      		for (Folder subFolder:  subFolders) {
+	      			// Does the user has rights to read entries from
+	      			// this folder?
+	      			if (bm.testAccess(subFolder, BinderOperation.readEntries)) {
+	    				// Yes!  How do we name the folder in the zip?
+	    				String subFolderName = subFolder.getTitle();	// Note: do not translate this name.
+	    				if (MiscUtil.hasString(subFolderName)) {
+		    				if (!ZIP_ENCODED_FILENAMES) {
+		    					subFolderName = bm.filename8BitSingleByteOnly(
+		    						subFolderName,
+		    						("__folder" + String.valueOf(folderCounter)),	// For folder names that are invalid for a zip.
+		    						singleByte);									// Note: do not translate this name.	
+		    				}
+	    				}
+	    				else {
+	    					subFolderName = ("__folder" + String.valueOf(folderCounter));
+	    				}
+	    				folderCounter += 1;
+	    				
+	    				// Add the sub-folder's contents to the zip.
+	    				String subFolderPath;
+	    				if (MiscUtil.hasString(folderPath))
+	    					 subFolderPath = (folderPath + "/" + subFolderName);
+	    				else subFolderPath = subFolderName;
+	    				addFolderContentsToZip(zipOut, subFolderPath, subFolder.getId(), recursive, singleByte);
+	      			}
+	      		}
+	      	}
+		}
+	}
+	
+	/*
+	 * Constructs a ZipArchiveOutputStream from an HttpServletResponse
+	 * and fileName.
+	 */
+	private ZipArchiveOutputStream buildZipAndSetupResponse(HttpServletResponse response, String fileName) throws IOException {
+		response.setContentType(mimeTypes.getContentType(fileName));
+		response.setHeader("Cache-Control", "private, max-age=0");
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+		OutputStream stream = response.getOutputStream();
 		ZipArchiveOutputStream reply = new ZipArchiveOutputStream(stream);
 
 		if (UTF8_ENCODE_ZIPS) {
 			reply.setEncoding("UTF-8");
 		}
 		else {
-			//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
-			reply.setEncoding("cp437");
-			reply.setFallbackToUTF8(true);
-			reply.setUseLanguageEncodingFlag(true);
+			// Standard zip encoding is cp437.  (Needed when characters
+			// are outside the ASCII range.)
+			reply.setEncoding(               "cp437");
+			reply.setFallbackToUTF8(         true   );
+			reply.setUseLanguageEncodingFlag(true   );
 		}
 		reply.setCreateUnicodeExtraFields(ZipArchiveOutputStream.UnicodeExtraFieldPolicy.ALWAYS);
 		
 		return reply;
+	}
+
+	/*
+	 * Returns a List<Long> of the IDs of the entries contained in a
+	 * folder.
+	 */
+	@SuppressWarnings("unchecked")
+	private List<Long> getEntryIdsFromFolder(FolderModule fm, Long folderId, Map options) {
+		Map        folderEntries = fm.getEntries(folderId, options);
+		List       searchEntries = ((List) folderEntries.get("search_entries"));
+		List<Long> entryIds      = new ArrayList<Long>();
+		int c = searchEntries.size();
+		for (int i = 0; i < c; i += 1) {
+			Map  searchEntry = ((Map) searchEntries.get(i));
+			Long entryId     = Long.valueOf(searchEntry.get(org.kablink.util.search.Constants.DOCID_FIELD).toString());
+			entryIds.add(entryId);
+		}
+		return entryIds;
 	}
 }
