@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
@@ -75,6 +76,8 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 		// With this pool, the caller will get an exception immediately if there's no thread available to take the request.
 		// That is perfectly OK, given the nature of the JITS.
 		jitsMaximumPoolSize = SPropsUtil.getInt("runasync.executor.jits.maximum.pool.size", 300);
+		if(logger.isDebugEnabled())
+			logger.debug("Creating JITS thread pool with max pool size of " + jitsMaximumPoolSize);
 		ThreadPoolExecutor jitsExecutor = new ThreadPoolExecutor(
 				jitsMaximumPoolSize,
 				jitsMaximumPoolSize,
@@ -85,17 +88,25 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 		executorService_JITS = jitsExecutor;
 		
 		
-		// Create a thread pool that will execute full synchronization.
-		// With this pool, the caller will get an exception immediately if there's no thread available to take the request.
-		// That is perfectly OK, given the nature of the usage context.
-		this.fullSyncMaximumPoolSize = SPropsUtil.getInt("runasync.executor.fullsync.maximum.pool.size", 5);
-		ThreadPoolExecutor fullSyncExecutor = new ThreadPoolExecutor(
-				0,
-				fullSyncMaximumPoolSize,
-                120L, 
-                TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>());
-		executorService_FULL_SYNC = fullSyncExecutor;
+		if(SPropsUtil.getBoolean("nf.full.sync.coordinator.enable", true)) {
+			// Create a thread pool that will execute full synchronization.
+			// With this pool, the caller will get an exception immediately if there's no thread available to take the request.
+			// That is perfectly OK, given the nature of the usage context.
+			this.fullSyncMaximumPoolSize = SPropsUtil.getInt("runasync.executor.fullsync.maximum.pool.size", 5);
+			if(logger.isDebugEnabled())
+				logger.debug("Creating FULL SYNC thread pool with max pool size of " + fullSyncMaximumPoolSize);
+			ThreadPoolExecutor fullSyncExecutor = new ThreadPoolExecutor(
+					0,
+					fullSyncMaximumPoolSize,
+	                120L, 
+	                TimeUnit.SECONDS,
+	                new SynchronousQueue<Runnable>());
+			executorService_FULL_SYNC = fullSyncExecutor;
+		}
+		else {
+			if(logger.isDebugEnabled())
+				logger.debug("Will not create FULL SYNC thread pool since net folder full sync coordinator is disabled");			
+		}
 
 		
 		// If the pool is already at the core size, the executor creates a new thread only if the work queue is full.
@@ -108,6 +119,8 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 		// which will allow all the worker threads to be able to time out and eventually be torn down. 
 		otherMaximumPoolSize = SPropsUtil.getInt("runasync.executor.other.maximum.pool.size", 100);
 		int otherMaximumQueueSize = SPropsUtil.getInt("runasync.executor.other.maximum.queue.size", 10000);
+		if(logger.isDebugEnabled())
+			logger.debug("Creating OTHER thread pool with max pool size of " + otherMaximumPoolSize + " and max queue size of " + otherMaximumQueueSize);
 		ThreadPoolExecutor otherExecutor = new ThreadPoolExecutor(
 				otherMaximumPoolSize,
 				otherMaximumPoolSize,
@@ -189,12 +202,18 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 	}
 	
 	public int getPoolActiveCount(TaskType taskType) {
-		if(taskType == TaskType.JITS)
+		if(taskType == TaskType.JITS) {
 			return executorService_JITS.getActiveCount();
-		else if(taskType == TaskType.FULL_SYNC)
-			return executorService_FULL_SYNC.getActiveCount();
-		else
+		}
+		else if(taskType == TaskType.FULL_SYNC) {
+			if(executorService_FULL_SYNC != null)
+				return executorService_FULL_SYNC.getActiveCount();
+			else
+				return 0;
+		}
+		else {
 			return executorService_OTHER.getActiveCount();
+		}
 	}
 		
 	private <V> Future<V> _execute(final RunAsyncCallback<V> action, final TaskType taskType, final RequestContext parentRequestContext) throws RejectedExecutionException {
@@ -236,12 +255,18 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 			}
 		};
 		
-		if(taskType == TaskType.JITS)
+		if(taskType == TaskType.JITS) {
 			return executorService_JITS.submit(task);
-		else if(taskType == TaskType.FULL_SYNC)
-			return executorService_FULL_SYNC.submit(task);
-		else
+		}
+		else if(taskType == TaskType.FULL_SYNC) {
+			if(executorService_FULL_SYNC != null)
+				return executorService_FULL_SYNC.submit(task);
+			else
+				throw new ConfigurationException("No thread pool exists for full sync tasks");
+		}
+		else {
 			return executorService_OTHER.submit(task);
+		}
 	}
 	
 }

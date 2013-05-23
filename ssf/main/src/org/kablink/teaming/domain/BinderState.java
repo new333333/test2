@@ -164,6 +164,11 @@ public class BinderState extends ZonedObject {
 		Date statusDate;
 		
 		/*
+		 * The IPv4 address of the node from which 'status' value was set or cleared.
+		 */
+		String statusIpv4Address;
+		
+		/*
 		 * The time full sync started on this binder.
 		 */
 		Date startDate;
@@ -256,12 +261,13 @@ public class BinderState extends ZonedObject {
 			return status;
 		}
 
-		public void setStatus(FullSyncStatus status) {
+		// For use by Hibernate only
+		private void setStatus(FullSyncStatus status) {
 			this.status = status;
 		}
 
 		// Used by Hibernate only
-		protected String getStatusStr() {
+		private String getStatusStr() {
 			if(status == null)
 				return null;
 			else
@@ -269,7 +275,7 @@ public class BinderState extends ZonedObject {
 		}
 		
 		// Used by Hibernate only
-		protected void setStatusStr(String statusStr) {
+		private void setStatusStr(String statusStr) {
 			if(statusStr == null) {
 				status = null;
 			}
@@ -287,7 +293,8 @@ public class BinderState extends ZonedObject {
 			return statusDate;
 		}
 
-		public void setStatusDate(Date statusDate) {
+		// For use by Hibernately only
+		private void setStatusDate(Date statusDate) {
 			this.statusDate = statusDate;
 		}
 
@@ -295,6 +302,21 @@ public class BinderState extends ZonedObject {
 			return startDate;
 		}
 
+		public String getStatusIpv4Address() {
+			return statusIpv4Address;
+		}
+
+		// For use by Hibernate only
+		private void setStatusIpv4Address(String statusIpv4Address) {
+			this.statusIpv4Address = statusIpv4Address;
+		}
+
+		public void setStatus(FullSyncStatus status, String statusIpv4Address) {
+			setStatus(status);
+			setStatusDate(new Date());
+			setStatusIpv4Address(statusIpv4Address);
+		}
+		
 		public void setStartDate(Date startDate) {
 			this.startDate = startDate;
 		}

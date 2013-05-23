@@ -316,7 +316,8 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 
 	public void folder_synchronizeMirroredFolder(String accessToken, long binderId) {
-		getFolderModule().fullSynchronize(binderId, null);
+		// 5/23/2013 JK - Implementation changed to call enqueueFullSynchronize() method instead of fullSynchronize().
+		getFolderModule().enqueueFullSynchronize(binderId);
 	}
 
 	public org.kablink.teaming.remoting.ws.model.FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName, boolean includeAttachments, boolean eventAsIcalString) {
