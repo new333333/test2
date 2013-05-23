@@ -42,11 +42,11 @@ public class BinderState extends ZonedObject {
 
 	public enum FullSyncStatus {
 		/**
-		 * A full sync is ready to run and is waiting for system resources specifically a thread to execute it.
+		 * Full synchronization is ready to run and is waiting to be assigned to a thread for execution.
 		 */
 		ready,
 		/**
-		 * Full synchronization has started and is currently running.
+		 * Full synchronization has started and is currently running. Only this status indicates running state.
 		 */
 		started,
 		/**
