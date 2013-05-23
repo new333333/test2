@@ -45,7 +45,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class ZipAndDownloadFolderEvent extends VibeEventBase<ZipAndDownloadFolderEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
 
-    public boolean	m_recusive;			// true -> Recursively descends the folder's hierarchy downloading everything.  Only downloads top level files.
+    public boolean	m_recursive;		// true -> Recursively descends the folder's hierarchy downloading everything.  Only downloads top level files.
     public Long		m_folderId;			// The ID of the folder whose files are to be downloaded.
     public Long		m_handleByFolderId;	// The ID of the folder that's to handle this event, if different than m_folderId.
     
@@ -79,9 +79,9 @@ public class ZipAndDownloadFolderEvent extends VibeEventBase<ZipAndDownloadFolde
 		this();
 		
 		// ...and store the parameters.
-		setFolderId(folderId );
-		setHandleByFolderId(handleByFolderId );
-		setRecursive(recursive);
+		setFolderId(        folderId        );
+		setHandleByFolderId(handleByFolderId);
+		setRecursive(       recursive       );
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class ZipAndDownloadFolderEvent extends VibeEventBase<ZipAndDownloadFolde
 	 * 
 	 * @return
 	 */
-	public boolean isRecursive()         {return m_recusive;        }
+	public boolean isRecursive()         {return m_recursive;       }
 	public Long    getFolderId()         {return m_folderId;        }
 	public Long    getHandleByFolderId() {return m_handleByFolderId;}
 	
@@ -109,7 +109,7 @@ public class ZipAndDownloadFolderEvent extends VibeEventBase<ZipAndDownloadFolde
 	 * 
 	 * @param
 	 */
-	public void setRecursive(       boolean recursive)        {m_recusive         = recursive;       }
+	public void setRecursive(       boolean recursive)        {m_recursive         = recursive;       }
 	public void setFolderId(        Long    folderId)         {m_folderId         = folderId;        } 
 	public void setHandleByFolderId(Long    handleByFolderId) {m_handleByFolderId = handleByFolderId;} 
 	

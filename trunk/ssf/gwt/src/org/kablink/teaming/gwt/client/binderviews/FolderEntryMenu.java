@@ -222,20 +222,20 @@ public class FolderEntryMenu extends VibeFlowPanel {
 					VibeEventBase<?> event;
 					boolean fireWithSource = true;
 					switch (simpleEvent) {
-					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(eid.getBinderId(), eid);            break;
-					case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           eid.getBinderId(), eid);            break;
-					case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         eid.getBinderId(), eid);            break;
+					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(eid.getBinderId(), eid      );      break;
+					case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           eid.getBinderId(), eid      );      break;
+					case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         eid.getBinderId(), eid      );      break;
 					case INVOKE_SEND_EMAIL_TO_TEAM:           event = new InvokeSendEmailToTeamEvent(         simpleUrl); fireWithSource = false; break;
-					case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           eid.getBinderId(), eid);            break;
-					case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       eid.getBinderId(), eid);            break;
-					case MARK_UNREAD_SELECTED_ENTRIES:        event = new MarkUnreadSelectedEntriesEvent(     eid.getBinderId(), eid);            break;
-					case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           eid.getBinderId(), eid);            break;
-					case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          eid.getBinderId(), eid);            break;
-					case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          eid.getBinderId(), eid);            break;
+					case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           eid.getBinderId(), eid      );      break;
+					case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       eid.getBinderId(), eid      );      break;
+					case MARK_UNREAD_SELECTED_ENTRIES:        event = new MarkUnreadSelectedEntriesEvent(     eid.getBinderId(), eid      );      break;
+					case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           eid.getBinderId(), eid      );      break;
+					case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          eid.getBinderId(), eid      );      break;
+					case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          eid.getBinderId(), eid      );      break;
 					case SHOW_VIEW_PERMALINKS:                event = new ShowViewPermalinksEvent();                                              break;
-					case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      eid.getBinderId(), eid);            break;
-					case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         eid.getBinderId(), eid);            break;
-					case ZIP_AND_DOWNLOAD_SELECTED_FILES:     event = new ZipAndDownloadSelectedFilesEvent(   eid.getBinderId(), eid);            break;
+					case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      eid.getBinderId(), eid      );      break;
+					case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         eid.getBinderId(), eid      );      break;
+					case ZIP_AND_DOWNLOAD_SELECTED_FILES:     event = new ZipAndDownloadSelectedFilesEvent(   eid.getBinderId(), eid, true);      break;
 					
 					case INVOKE_EDIT_IN_PLACE:
 						event = new InvokeEditInPlaceEvent(

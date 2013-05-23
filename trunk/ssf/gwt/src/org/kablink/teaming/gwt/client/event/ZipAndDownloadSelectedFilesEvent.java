@@ -53,7 +53,8 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class ZipAndDownloadSelectedFilesEvent extends SelectedEntriesEventBase<ZipAndDownloadSelectedFilesEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
-    public Long	m_folderId;	//
+    public boolean	m_recursive;	// true -> Recursively descends and he folder hierarchies downloading everything.  Only downloads top level files.
+    public Long		m_folderId;		//
     
 	/**
 	 * Handler interface for this event.
@@ -75,14 +76,16 @@ public class ZipAndDownloadSelectedFilesEvent extends SelectedEntriesEventBase<Z
 	 * 
 	 * @param folderId
 	 * @param selectedEntityId
+	 * @param recursive
 	 */
-	public ZipAndDownloadSelectedFilesEvent(Long folderId, EntityId selectedEntityId) {
+	public ZipAndDownloadSelectedFilesEvent(Long folderId, EntityId selectedEntityId, boolean recursive) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
 		setFolderId(        folderId        );
 		setSelectedEntityId(selectedEntityId);
+		setRecursive(       recursive       );
 	}
 
 	/**
@@ -90,24 +93,27 @@ public class ZipAndDownloadSelectedFilesEvent extends SelectedEntriesEventBase<Z
 	 * 
 	 * @param folderId
 	 * @param selectedEntities
+	 * @param recursive
 	 */
-	public ZipAndDownloadSelectedFilesEvent(Long folderId, List<EntityId> selectedEntities) {
+	public ZipAndDownloadSelectedFilesEvent(Long folderId, List<EntityId> selectedEntities, boolean recursive) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
 		setFolderId(        folderId        );
 		setSelectedEntities(selectedEntities);
+		setRecursive(       recursive       );
 	}
 
 	/**
 	 * Class constructor.
 	 * 
 	 * @param folderId
+	 * @param recursive
 	 */
-	public ZipAndDownloadSelectedFilesEvent(Long folderId) {
+	public ZipAndDownloadSelectedFilesEvent(Long folderId, boolean recursive) {
 		// Initialize this object.
-		this(folderId, ((List<EntityId>) null));
+		this(folderId, ((List<EntityId>) null), recursive);
 	}
 
 	/**
@@ -115,14 +121,16 @@ public class ZipAndDownloadSelectedFilesEvent extends SelectedEntriesEventBase<Z
 	 * 
 	 * @return
 	 */
-	public Long getFolderId() {return m_folderId;}
+	public boolean isRecursive() {return m_recursive;}
+	public Long    getFolderId() {return m_folderId; }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderId(Long folderId) {m_folderId = folderId;} 
+	public void setRecursive(boolean recursive) {m_recursive = recursive;}
+	public void setFolderId( Long    folderId)  {m_folderId  = folderId; } 
 	
 	/**
 	 * Dispatches this event when one is triggered.

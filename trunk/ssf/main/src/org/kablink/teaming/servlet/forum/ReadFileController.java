@@ -255,28 +255,82 @@ public class ReadFileController extends AbstractReadFileController {
 			return null;
 			
 		} else if ((WebUrlUtil.FILE_URL_ZIPLIST_ARG_LENGTH == args.length) && 
-					String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_ZIP      ]).equals("zip"                            ) &&
-					String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_OPERATION]).equals(WebKeys.OPERATION_READ_FILE_LIST)) {
+					String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_ZIP               ]).equals("zip"                           ) &&
+					String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_OPERATION         ]).equals(WebKeys.OPERATION_READ_FILE_LIST) &&
+					String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_FILE_IDS_OPERAND  ]).equals(WebKeys.URL_FOLDER_ENTRY_LIST   ) &&
+					String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_FOLDER_IDS_OPERAND]).equals(WebKeys.URL_FOLDER_LIST        )) {
 			// Zip and download the primary files from a specific list
 			// of entries!
 			try {
 				// Access the entries whose primary files are to be
 				// zipped.
-				String     idList = String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_FILE_IDS]);
-				String[]   ids    = idList.split(":");
-				List<Long> feIds  = new ArrayList<Long>();
-				for (String id:  ids) {
-					feIds.add(Long.parseLong(id));
+				String feIdsPacked = String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_FILE_IDS]);
+				Collection<FolderEntry> feSet;
+				if (feIdsPacked.equals("-")) {
+					feSet = null;
 				}
-				Set<FolderEntry> feSet = getFolderModule().getEntries(feIds);
+				else {
+					String[]   feIdsList   = feIdsPacked.split(":");
+					List<Long> feIds       = new ArrayList<Long>();
+					for (String id:  feIdsList) {
+						feIds.add(Long.parseLong(id));
+					}
+					feSet = getFolderModule().getEntries(feIds);
+				}
+				
+				// Access the folders whose primary files are to be
+				// zipped.
+				String folderIdsPacked = String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_FOLDER_IDS]);
+				Collection<Folder> folderSet;
+				if (folderIdsPacked.equals("-")) {
+					folderSet = null;
+				}
+				else {
+					String[]   folderIdsList   = folderIdsPacked.split(":");
+					List<Long> folderIds       = new ArrayList<Long>();
+					for (String id:  folderIdsList) {
+						folderIds.add(Long.parseLong(id));
+					}
+					folderSet = getFolderModule().getFolders(folderIds);
+				}
 				
 				// Create the zip file for downloading...
 				String fileName = NLT.get("file.zipListDownload.fileName");
 				fileName = getBinderModule().filename8BitSingleByteOnly(fileName, ZIPLIST_DEFAULT_FILENAME, singleByte);
 				ZipArchiveOutputStream zipOut = buildZipAndSetupResponse(response, fileName);
 
-				// ...and the entry's primary files to the zip...
-				addCollectionFilesToZip(zipOut, null, feSet, singleByte);
+				// ...if we have any entries...
+				if (MiscUtil.hasItems(feSet)) {
+					// ...add their primary files to the zip...
+					addCollectionFilesToZip(zipOut, null, feSet, singleByte);
+				}
+				
+				// ...if we have any folders...
+				if (MiscUtil.hasItems(folderSet)) {
+					// ...scan them...
+					boolean recursive = Boolean.parseBoolean(String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_RECURSIVE]));
+					int folderCounter = 1;
+					for (Folder folder:  folderSet) {
+						// ...generate a name for the zip for each.
+	    				String folderName = folder.getTitle();	// Note: do not translate this name.
+	    				if (MiscUtil.hasString(folderName)) {
+		    				if (!ZIP_ENCODED_FILENAMES) {
+		    					folderName = getBinderModule().filename8BitSingleByteOnly(
+		    						folderName,
+		    						("__folder" + String.valueOf(folderCounter)),	// For folder names that are invalid for a zip.
+		    						singleByte);									// Note: do not translate this name.	
+		    				}
+	    				}
+	    				else {
+	    					folderName = ("__folder" + String.valueOf(folderCounter));
+	    				}
+	    				folderCounter += 1;
+	    				
+						// ...and add them and their contents to the
+						// ...zip...
+						addFolderContentsToZip(zipOut, folderName, folder.getId(), recursive, singleByte);
+					}
+				}
 				
 				// ...and finish it. 
 				zipOut.finish();

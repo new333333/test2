@@ -50,6 +50,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -85,10 +86,15 @@ public class WebUrlUtil {
 	public static final int FILE_URL_ZIP_SINGLE_FILE_ID = 5;
 	
 	// Used the parse the URL returned by getFileListZipUrl().
-	public static final int FILE_URL_ZIPLIST_ARG_LENGTH	= 7;
-	public static final int FILE_URL_ZIPLIST_ZIP		= 6;
-	public static final int FILE_URL_ZIPLIST_FILE_IDS	= 5;
-	public static final int FILE_URL_ZIPLIST_OPERATION	= 3;
+	public static final int FILE_URL_ZIPLIST_ARG_LENGTH			= 11;
+	public static final int FILE_URL_ZIPLIST_ZIP				=  8;
+	public static final int FILE_URL_ZIPLIST_FILE_IDS_OPERAND	=  4;
+	public static final int FILE_URL_ZIPLIST_FILE_IDS			=  5;
+	public static final int FILE_URL_ZIPLIST_FOLDER_IDS_OPERAND	=  6;
+	public static final int FILE_URL_ZIPLIST_FOLDER_IDS			=  7;
+	public static final int FILE_URL_ZIPLIST_OPERATION			=  3;
+	public static final int FILE_URL_ZIPLIST_RECURSIVE_OPERAND	=  9;
+	public static final int FILE_URL_ZIPLIST_RECURSIVE			= 10;
 	
 	// Used the parse the URL returned by getFolderZipUrl().
 	public static final int FILE_URL_ZIPFOLDER_ARG_LENGTH			= 9;
@@ -424,8 +430,8 @@ public class WebUrlUtil {
 	public static String getFileZipUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileId) {
 		return getFileZipUrl(WebUrlUtil.getServletRootURL(req), action, entity, fileId);
 	}
-	public static String getFileListZipUrl(HttpServletRequest req, Collection<FolderEntry> fileList) {
-		return getFileListZipUrl(WebUrlUtil.getServletRootURL(req), fileList);
+	public static String getFileListZipUrl(HttpServletRequest req, Collection<FolderEntry> fileList, Collection<Folder> folderList, boolean recursive) {
+		return getFileListZipUrl(WebUrlUtil.getServletRootURL(req), fileList, folderList, recursive);
 	}
 	public static String getFolderZipUrl(HttpServletRequest req, Long folderId, boolean recursive) {
 		return getFolderZipUrl(WebUrlUtil.getServletRootURL(req), folderId, recursive);
@@ -627,20 +633,41 @@ public class WebUrlUtil {
 	 * 
 	 * @param webPath
 	 * @param fileList
+	 * @param folderList
+	 * @param recursive
 	 * 
 	 * @return
 	 */
-	public static String getFileListZipUrl(String webPath, Collection<FolderEntry> fileList) {
-		// Construct a ':' separate list of the entry IDs.
-		StringBuffer idBuf = new StringBuffer();
+	public static String getFileListZipUrl(String webPath, Collection<FolderEntry> fileList, Collection<Folder> folderList, boolean recursive) {
+		// Construct a ':' separated list of the entry IDs.
+		StringBuffer entryIdsBuf = new StringBuffer();
 		boolean first = true;
 		for (FolderEntry fe:  fileList) {
 			if (!first) {
-				idBuf.append(":");
+				entryIdsBuf.append(":");
 			}
 			first = false;
-			idBuf.append(String.valueOf(fe.getId()));
+			entryIdsBuf.append(String.valueOf(fe.getId()));
 		}
+		String entryIds;
+		if (first)
+		     entryIds = "-";
+		else entryIds = entryIdsBuf.toString();
+		
+		// Construct a ':' separated list of the folder IDs.
+		StringBuffer folderIdsBuf = new StringBuffer();
+		first = true;
+		for (Folder folder:  folderList) {
+			if (!first) {
+				folderIdsBuf.append(":");
+			}
+			first = false;
+			folderIdsBuf.append(String.valueOf(folder.getId()));
+		}
+		String folderIds;
+		if (first)
+		     folderIds = "-";
+		else folderIds = folderIdsBuf.toString();
 
 		// Construct and return the URL.
 		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
@@ -648,8 +675,12 @@ public class WebUrlUtil {
 		webUrl.append(Constants.SLASH + WebKeys.URL_OPERATION);
 		webUrl.append(Constants.SLASH + WebKeys.OPERATION_READ_FILE_LIST);
 		webUrl.append(Constants.SLASH + WebKeys.URL_FOLDER_ENTRY_LIST);
-		webUrl.append(Constants.SLASH + idBuf.toString());
+		webUrl.append(Constants.SLASH + entryIds);
+		webUrl.append(Constants.SLASH + WebKeys.URL_FOLDER_LIST);
+		webUrl.append(Constants.SLASH + folderIds);
 		webUrl.append(Constants.SLASH + "zip"); 
+		webUrl.append(Constants.SLASH + WebKeys.URL_RECURSIVE);
+		webUrl.append(Constants.SLASH + recursive);
 		return webUrl.toString();
 	}
 

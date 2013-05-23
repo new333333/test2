@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.util.EntityId;
+
 /**
  * This class holds all of the information necessary to execute the
  * 'get zip download files URL' command.
@@ -42,7 +44,8 @@ import java.util.List;
  * @author drfoster@novell.com
  */
 public class GetZipDownloadFilesUrlCmd extends VibeRpcCmd {
-	private List<Long> m_entryIds;
+	private boolean			m_recursive;	// true
+	private List<EntityId>	m_entityIds;	//
 	
 	/**
 	 * Class constructor.
@@ -58,28 +61,33 @@ public class GetZipDownloadFilesUrlCmd extends VibeRpcCmd {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param entryId
+	 * @param entityId
+	 * @param recursive
 	 */
-	public GetZipDownloadFilesUrlCmd(Long entryId) {
+	public GetZipDownloadFilesUrlCmd(EntityId entityId, boolean recursive) {
 		// Initialize this object...
 		this();		
 		
-		// ...and store the parameter.
-		m_entryIds = new ArrayList<Long>();
-		setEntryIds(m_entryIds);
+		// ...and store the parameters.
+		List<EntityId> entityIds = new ArrayList<EntityId>();
+		entityIds.add(entityId );
+		setEntityIds( entityIds);
+		setRecursive( recursive);
 	}
 	
 	/**
 	 * Class constructor.
 	 * 
-	 * @param entryIds
+	 * @param entityIds
+	 * @param recursive
 	 */
-	public GetZipDownloadFilesUrlCmd(List<Long> entryIds) {
+	public GetZipDownloadFilesUrlCmd(List<EntityId> entityIds, boolean recursive) {
 		// Initialize this object...
 		this();		
 		
-		// ...and store the parameter.
-		setEntryIds(entryIds);
+		// ...and store the parameters.
+		setEntityIds(entityIds);
+		setRecursive(recursive);
 	}
 	
 	/**
@@ -87,14 +95,16 @@ public class GetZipDownloadFilesUrlCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public List<Long> getEntryIds() {return m_entryIds;}
+	public boolean        isRecursive()  {return m_recursive;}
+	public List<EntityId> getEntityIds() {return m_entityIds;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEntryIds(List<Long> entryIds) {m_entryIds = entryIds;}
+	public void setRecursive(boolean        recursive) {m_recursive = recursive;}
+	public void setEntityIds(List<EntityId> entityIds) {m_entityIds = entityIds;}
 	
 	/**
 	 * Returns the command's enumeration value.
