@@ -555,10 +555,13 @@ public class GwtMainPage extends Composite
 		
 		// Create the WorkspaceTree control.
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
+		m_wsTreeCtrl.setVisible( m_requestInfo.getShouldShowWSTreeControl() );
 		m_contentPanel.add( m_wsTreeCtrl );
 		
 		// Create the content control.
 		m_contentCtrl.addStyleName( "mainContentControl" );
+		if ( m_requestInfo.getShouldShowWSTreeControl() == false )
+			m_contentCtrl.addStyleName( "mainWorkspaceTreeControl" );
 		m_contentPanel.add( m_contentCtrl );
 		
 		// Create an activity stream control.
@@ -1102,10 +1105,10 @@ public class GwtMainPage extends Composite
 		if ( m_requestInfo.isSessionCaptive() == false )
 		{
 			boolean showMasthead;
-
+			
 			// No
 			// Save the current ui state so we can restore it when the user moves to another page.
-			saveUIState();
+			//!!!saveUIState();
 			
 			// Hide or show the sidebar.
 			if ( hideSidebar )
