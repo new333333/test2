@@ -161,4 +161,13 @@
             </column>
         </addColumn>
     </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="6">
+        <comment>Whether or not full sync should only process directories</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="fullSyncDirOnly" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
