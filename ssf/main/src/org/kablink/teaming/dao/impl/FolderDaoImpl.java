@@ -428,8 +428,10 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	        try {
 	        	Folder folder = (Folder)getHibernateTemplate().get(Folder.class, folderId);
 	        	if (folder == null) {throw new NoFolderByTheIdException(folderId);}
-	        	if (!folder.getZoneId().equals(zoneId)) {
-	        		throw new NoFolderByTheIdException(folderId);
+	        	if(zoneId != null) {
+		        	if (!folder.getZoneId().equals(zoneId)) {
+		        		throw new NoFolderByTheIdException(folderId);
+		        	}
 	        	}
 	            return folder;
 	        } catch (ClassCastException ce) {
