@@ -34,7 +34,7 @@ package org.kablink.teaming.util;
 
 import java.net.UnknownHostException;
 
-import com.liferay.util.Validator;
+import org.kablink.util.Validator;
 
 /**
  * @author jong
@@ -52,7 +52,7 @@ public class NetworkUtil {
 	 */
 	public static String getLocalHostIPv4Address() {
 		if(localHostIPv4Address == null)
-			localHostIPv4Address = getLocalHostIPv4Address();
+			localHostIPv4Address = _getLocalHostIPv4Address();
 		return localHostIPv4Address;
 	}
 	

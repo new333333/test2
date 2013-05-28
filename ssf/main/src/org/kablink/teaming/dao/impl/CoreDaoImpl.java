@@ -3131,7 +3131,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 						public Long doInHibernate(Session session) throws HibernateException {
 		                	return (Long) session.createCriteria(BinderState.class)
 		                			.setProjection(Projections.property("binderId"))
-		                			.add(Restrictions.eq("fullSyncStats.status", FullSyncStatus.ready))
+		                			.add(Restrictions.eq("fullSyncStats.statusStr", FullSyncStatus.ready.name()))
 		                			.addOrder(Order.asc("fullSyncStats.statusDate"))
 		                			.setMaxResults(1)
                 					.setCacheable(false)
