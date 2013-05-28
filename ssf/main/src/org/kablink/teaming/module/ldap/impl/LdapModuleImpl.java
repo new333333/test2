@@ -2182,9 +2182,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					mods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 
-					// We never want to change a user's name in Teaming.  Remove the "name" attribute
-					// from the list of attributes to be written to the db.
-					mods.remove( ObjectKeys.FIELD_PRINCIPAL_NAME );
+					// Make sure the name gets updated.
+					mods.put( ObjectKeys.FIELD_PRINCIPAL_NAME, ldapUserName );
 				}
 				finally
 				{
@@ -3373,15 +3372,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					// Map the attributes read from the ldap directory to Teaming attributes.
 					getUpdates( userAttributeNames, userAttributes, lAttrs, userMods, ldapGuidAttribute );
-					
+
+					// Make sure the user's name gets updated.
+					userMods.put( ObjectKeys.FIELD_PRINCIPAL_NAME, ssName );
+
 					// Did we find the ldap user in Teaming by their ldap guid?
 					if ( foundLdapGuid )
 					{
 						// Yes
-						// We never want to change a user's name in Teaming.  Remove the "name" attribute
-						// from the list of attributes to be written to the db.
-						userMods.remove( ObjectKeys.FIELD_PRINCIPAL_NAME );
-
 						// Make sure the dn stored in Teaming is updated for this user.
 						userMods.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn );
 						row[PRINCIPAL_FOREIGN_NAME] = dn;
@@ -3391,7 +3389,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// No, we found the ldap user in Teaming by their dn or their name.
 						
 						//remove this incase a mapping exists that is different than the uid attribute
-						userMods.remove(ObjectKeys.FIELD_PRINCIPAL_NAME);
 						if (row != null && row2 == null) {
 							if (!foundNames.containsKey(ssName)) { //if haven't just added it
 								if (logger.isDebugEnabled())
@@ -4911,11 +4908,27 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Map mods,
 		HomeDirInfo homeDirInfo ) throws NoUserByTheNameException 
 	{
+		String newName;
 
 		User profile = getProfileDao().findUserByName(loginName, zone.getName()); 
  		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	            	profile.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
 		processor.syncEntry(profile, new MapInputData(StringCheckUtil.check(mods)), null);
+		
+		// Did the user's name change?
+		newName = (String) mods.get( ObjectKeys.FIELD_PRINCIPAL_NAME );
+		if ( loginName != null && newName != null && loginName.equalsIgnoreCase( newName ) == false )
+		{
+   			Map<User,String> mapOfRenamedUsers;
+   			User user;
+			
+			// Yes
+   			user = getProfileDao().findUserByName( newName, zone.getName() );
+   			
+			mapOfRenamedUsers = new HashMap<User,String>();
+			mapOfRenamedUsers.put( user, loginName );
+			handleRenamedUsers( mapOfRenamedUsers );
+		}
 	}	
 	/**
 	 * Update users with their own map of updates
@@ -4932,6 +4945,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		List collections;
 	   	List foundEntries;
 	   	Map entries;
+	   	Map<Long,String> originalUserNamesMap;
    		ProfileCoreProcessor processor;
 
 		if ( users.isEmpty() )
@@ -4942,10 +4956,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		collections.add( "customAttributes" );
 	   	foundEntries = getCoreDao().loadObjects( users.keySet(), User.class, zoneId, collections );
 	   	entries = new HashMap();
+	   	originalUserNamesMap = new HashMap<Long,String>();
 	   	for (int i=0; i<foundEntries.size(); ++i)
 	   	{
 	   		User u = (User)foundEntries.get(i);
 	   		entries.put( u, new MapInputData( StringCheckUtil.check( (Map)users.get( u.getId() ) ) ) );
+	   		originalUserNamesMap.put( u.getId(), u.getName() );
 	   	}
 
    		processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
@@ -4954,9 +4970,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   	try 
 	   	{
 	   		Map changedEntries;
+   			Map<User,String> mapOfRenamedUsers;
 	   		
 	   		changedEntries = processor.syncEntries( entries, null, syncResults );
 	   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
+
+	   		// Make the necessary changes to the db tables for each user that was renamed.
+	   		mapOfRenamedUsers = getListOfRenamedUsers( originalUserNamesMap,  changedEntries );
+	   		handleRenamedUsers( mapOfRenamedUsers );
 
 	   		//flush from cache
 	   		for (int i=0; i<foundEntries.size(); ++i)
@@ -4975,6 +4996,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   		{
 			   		User user;
 			   		Map changedEntries;
+		   			Map<User,String> mapOfRenamedUsers;
 
 			   		entries.clear();
 			   		user = (User)foundEntries.get( i );
@@ -4984,6 +5006,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			   		
 			   		changedEntries = processor.syncEntries( entries, null, syncResults );
 			   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
+			   		
+			   		// Make the necessary changes to the db tables for renamed user.
+			   		mapOfRenamedUsers = getListOfRenamedUsers( originalUserNamesMap, changedEntries );
+			   		handleRenamedUsers( mapOfRenamedUsers );
 
 			   		getCoreDao().evict( user );
 		   		}
@@ -4993,6 +5019,96 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   		}
 		   	}
 	   	}
+	}
+
+	/**
+	 * Make the necessary changes to the db tables for each renamed user.
+	 * For mapOfRenamedUsers, the key is a User object and the value is the original user name
+	 */
+	private void handleRenamedUsers( Map<User,String> mapOfRenamedUsers )
+	{
+		Set setOfUsers;
+		
+		if ( mapOfRenamedUsers == null || mapOfRenamedUsers.size() == 0 )
+			return;
+		
+		setOfUsers = mapOfRenamedUsers.keySet();
+		if ( setOfUsers != null )
+		{
+			Iterator iter;
+			ProfileDao profileDao;
+
+			profileDao = getProfileDao();
+
+			iter = setOfUsers.iterator();
+			while ( iter.hasNext() )
+			{
+				User nextUser;
+				String originalName;
+				
+				nextUser = (User) iter.next();
+				
+				originalName = mapOfRenamedUsers.get( nextUser );
+				try
+				{
+					profileDao.renameUser( nextUser, originalName );
+					logger.info( "\tUser: " + originalName + " was renamed to: " + nextUser.getName() );
+				}
+				catch ( Exception ex )
+				{
+					logger.error( "Error updating db for renamed user: " + nextUser.getName() + " Exception: " + ex.toString() );
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Get a list of users that were renamed.
+	 * originalUsersMap:
+	 * 	key: user id
+	 *  value: original user name
+	 *  
+	 * The key of the returned map is the user object and the value is the old user name
+	 */
+	private Map<User,String> getListOfRenamedUsers( Map<Long,String> originalUsersMap, Map modifiedUsersMap )
+	{
+		Map<User,String> mapOfRenamedUsers;
+
+		mapOfRenamedUsers = new HashMap<User,String>();
+
+		// Do we have any modified users?
+   		if ( modifiedUsersMap != null && modifiedUsersMap.size() > 0 && originalUsersMap != null )
+   		{
+   			Set listOfModifiedUsers;
+			Iterator iter;
+			
+   			// Yes
+	   		// Go through the list of modified users and see if their name was changed.
+   			listOfModifiedUsers = modifiedUsersMap.keySet();
+   			iter = listOfModifiedUsers.iterator();
+			while ( iter.hasNext() )
+			{
+				String originalUserName = null;
+				User modifiedUser;
+				
+				// Get the next modified user
+				modifiedUser = (User) iter.next();
+				
+				// Get the original name of the user.
+				originalUserName = originalUsersMap.get( modifiedUser.getId() );
+				if ( originalUserName != null && originalUserName.length() > 0 )
+				{
+					// Did the user name change?
+					if ( originalUserName.equalsIgnoreCase( modifiedUser.getName() ) == false )
+					{
+						// Yes
+						mapOfRenamedUsers.put( modifiedUser, originalUserName );
+					}
+				}
+			}
+   		}
+   		
+   		return mapOfRenamedUsers;
 	}
 	
 	/**

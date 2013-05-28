@@ -106,7 +106,6 @@ import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -473,7 +472,46 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
        	
     }
-        
+
+    /**
+     * Make the necessary updates to the various db tables needed when a user has been renamed.
+     * At this point the user has already been renamed.
+     */
+    @Override
+	public void renameUser( final User user, final String oldName )
+    {
+		long begin = System.nanoTime();
+	
+		try
+		{
+	    	getHibernateTemplate().execute(
+	        	new HibernateCallback()
+	        	{
+	        		@Override
+					public Object doInHibernate( Session session ) throws HibernateException
+					{
+						Query query;
+						String sql;
+						
+						sql = "UPDATE org.kablink.teaming.domain.Binder"
+								+ " set name = :newName"
+								+ " where name = :oldName";
+	
+						query = session.createQuery( sql )
+				                   	.setString( "newName", user.getName() )
+				                   	.setString( "oldName", oldName );
+				        query.executeUpdate();
+	        			return null;
+	        		}
+	        	}
+	        );
+    	}
+    	finally
+    	{
+    		end( begin, "renameUser( User, String )" );
+    	}	        
+    }
+
     @Override
 	public void disablePrincipals(final Collection<Long> ids, final Long zoneId) {
 		long begin = System.nanoTime();
