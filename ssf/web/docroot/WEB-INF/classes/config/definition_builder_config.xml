@@ -3929,7 +3929,7 @@
 
 	<item name="mashupCanvas" caption="__mashup_canvas" category="generalLayout" 
 		type="data" dataType="mashupLayout" canBeDeleted="true" multipleAllowed="false" display="form"
-		notLicense="com.novell.teaming.Filr">
+		license="com.novell.teaming.Vibe kablink">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__mashup_canvas"/>
 			<property name="name" caption="__name" type="text"/>
