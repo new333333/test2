@@ -1726,7 +1726,9 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_UnpinEntry();
 	String vibeDataTable_Alt_View();
 	String vibeDataTable_ColumnResizer();
-	String vibeDataTable_Confirm_CantShareSomeSelections();
+	String vibeDataTable_Confirm_CantShareNetFolders();
+	String vibeDataTable_Confirm_CantShareNoRights();
+	String vibeDataTable_Confirm_CantShareNoRightsAndNetFolders();
 	String vibeDataTable_Download();
 	String vibeDataTable_Error_MirroredDriverNotConfigured();
 	String vibeDataTable_Empty();
@@ -1752,7 +1754,9 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_View();
 	String vibeDataTable_ViewTrash();
 	String vibeDataTable_Warning_NoEntryActions();
+	String vibeDataTable_Warning_ShareNetFolders();
 	String vibeDataTable_Warning_ShareNoRights();
+	String vibeDataTable_Warning_ShareNoRightsAndNetFolders();
 	String vibeDataTable_WhatsNew();
 	
 	// Strings used by the Vibe simple pager widget.

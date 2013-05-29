@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.binderviews.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -73,7 +74,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.ZipDownloadUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.EntityRights;
+import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
@@ -619,6 +623,31 @@ public class BinderViewsHelper {
 		enableUsersAdHocFolders(userId, null);
 	}
 
+	/**
+	 * Returns a count of the entities that can't be shared because
+	 * they're Net Folders.
+	 * 
+	 * @param entities
+	 * @param entityRightsMap
+	 * 
+	 * @return
+	 */
+	public static int getNetFolderShareFailureCount(final List<EntityId> entities, final Map<String, EntityRights> entityRightsMap) {
+		int reply = 0;
+		if (GwtClientHelper.hasItems(entities) && GwtClientHelper.hasItems(entityRightsMap)) {
+			for (EntityId eid:  entities) {
+				if (eid.isFolder()) {
+					EntityRights er = entityRightsMap.get(EntityRights.getEntityRightsKey(eid));
+					ShareRight   sr = ((null == er) ? null : er.getShareRight());
+					if ((null != sr) && sr.cantShareNetFolder()) {
+						reply += 1;
+					}
+				}
+			}
+		}
+		return reply;
+	}
+	
 	/**
 	 * Marks the shares hidden based on a List<Long> of their entity
 	 * IDs.

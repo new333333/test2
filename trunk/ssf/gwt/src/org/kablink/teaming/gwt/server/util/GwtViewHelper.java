@@ -161,6 +161,7 @@ import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
+import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntityRights;
@@ -2879,7 +2880,13 @@ public class GwtViewHelper {
 								entryRights.setCanModify(     fm.testAccess(entry, FolderOperation.modifyEntry   ));
 								entryRights.setCanPurge(      fm.testAccess(entry, FolderOperation.deleteEntry   ));
 								entryRights.setCanTrash(      fm.testAccess(entry, FolderOperation.preDeleteEntry));
-								entryRights.setCanShare(      GwtShareHelper.isEntitySharable(bs, entry          ));
+								
+								ShareRight entryShareRight;
+								if (GwtShareHelper.isEntitySharable(bs, entry))
+								     entryShareRight = ShareRight.SHARABLE;
+								else entryShareRight = ShareRight.NOT_SHARABLE_RIGHTS_VIOLATION;
+								entryRights.setShareRight(entryShareRight);
+								
 								reply.setEntityRights(eid, entryRights);
 							}
 						}
@@ -2922,7 +2929,30 @@ public class GwtViewHelper {
 								binderRights.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
 								binderRights.setCanPurge( bm.testAccess(binder, BinderOperation.deleteBinder   ));
 								binderRights.setCanTrash( bm.testAccess(binder, BinderOperation.preDeleteBinder));
-								binderRights.setCanShare( GwtShareHelper.isEntitySharable(bs, binder           ));
+								
+								ShareRight binderShareRight;
+								if (GwtShareHelper.isEntitySharable(bs, binder)) {
+									binderShareRight = ShareRight.SHARABLE;
+								}
+								else {
+									// Net folders outside of a Home
+									// folder are never sharable.
+									// Otherwise, its a rights
+									// violation.
+									if ((binder instanceof Folder) && binder.isAclExternallyControlled()) {
+										Folder  folder    = ((Folder) binder);
+										Folder  topFolder = folder.getTopFolder();
+										boolean isHome    = (folder.isHomeDir() || ((null != topFolder) && topFolder.isHomeDir()));
+										if (isHome)
+										     binderShareRight = ShareRight.NOT_SHARABLE_RIGHTS_VIOLATION;
+										else binderShareRight = ShareRight.NOT_SHARABLE_NET_FOLDER;
+									}
+									else {
+										binderShareRight = ShareRight.NOT_SHARABLE_RIGHTS_VIOLATION;
+									}
+								}
+								binderRights.setShareRight(binderShareRight);
+								
 								reply.setEntityRights(eid, binderRights);
 							}
 						}

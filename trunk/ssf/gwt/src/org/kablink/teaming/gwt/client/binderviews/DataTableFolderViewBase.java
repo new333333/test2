@@ -2536,23 +2536,41 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * entries, given the current user's rights to them.
 	 */
 	private void onShareSelectedEntriesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
-		final List<FolderRow>	invalidRows      = validateSelectedRows_Sharing(entityRightsMap);
+		final List<FolderRow> invalidRows = validateSelectedRows_Sharing(entityRightsMap);
 		if (!(GwtClientHelper.hasItems(invalidRows))) {
 			// Yes!  Invoke the share.
 			shareSelectedEntitiesAsync(selectedEntities);
 		}
 		
 		else {
-			// No, they don't have rights to share everything!  Can
-			// they share any of them?
-			if (selectedEntities.size() == invalidRows.size()) {
+			// No, they don't have rights to share everything!  What
+			// type of share failures are we dealing with?
+			int totalShareFailures = invalidRows.size();
+			int nfShareFailures    = BinderViewsHelper.getNetFolderShareFailureCount(selectedEntities, entityRightsMap);
+			int otherShareFailures = (totalShareFailures - nfShareFailures);
+			if (0 > otherShareFailures) {
+				otherShareFailures = 0;
+			}
+			boolean hasNFShareFailures    = (0 < nfShareFailures   );
+			boolean hasOtherShareFailures = (0 < otherShareFailures);
+			
+			// Can they share any of them?
+			if (selectedEntities.size() == totalShareFailures) {
 				// No!  Tell them about the problem and bail.
-				GwtClientHelper.deferredAlert(m_messages.vibeDataTable_Warning_ShareNoRights());
+				String shareAlert;
+				if      (hasNFShareFailures && hasOtherShareFailures) shareAlert = m_messages.vibeDataTable_Warning_ShareNoRightsAndNetFolders();
+				else if (hasNFShareFailures)                          shareAlert = m_messages.vibeDataTable_Warning_ShareNetFolders();
+				else                                                  shareAlert = m_messages.vibeDataTable_Warning_ShareNoRights();
+				GwtClientHelper.deferredAlert(shareAlert);
 				return;
 			}
 			
 			// Is the user sure they want to share the selections
 			// they have rights to share?
+			final String confirmPrompt;
+			if      (hasNFShareFailures && hasOtherShareFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNoRightsAndNetFolders();
+			else if (hasNFShareFailures)                          confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNetFolders();
+			else                                                  confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNoRights();
 			ConfirmDlg.createAsync(new ConfirmDlgClient() {
 				@Override
 				public void onUnavailable() {
@@ -2587,7 +2605,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 								// No, they're not sure!
 							}
 						},
-						m_messages.vibeDataTable_Confirm_CantShareSomeSelections());
+						confirmPrompt);
 				}
 			});
 		}
