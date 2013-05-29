@@ -719,7 +719,11 @@ public class NetFolderHelper
 			}
 	
 			// Are we including "home directory" net folders?
-			filterCtrls.add( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, includeHomeDirNetFolders );
+			if ( includeHomeDirNetFolders == false )
+			{
+				// No
+				filterCtrls.add( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, false );
+			}
 		}
 
 		listOfNetFolderIds = new ArrayList<Long>();
