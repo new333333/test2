@@ -478,7 +478,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
      * At this point the user has already been renamed.
      */
     @Override
-	public void renameUser( final User user, final String oldName )
+	public void renameUser( final User user )
     {
 		long begin = System.nanoTime();
 	
@@ -490,17 +490,24 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	        		@Override
 					public Object doInHibernate( Session session ) throws HibernateException
 					{
-						Query query;
-						String sql;
+	        			Long workspaceId;
 						
-						sql = "UPDATE org.kablink.teaming.domain.Binder"
-								+ " set name = :newName"
-								+ " where name = :oldName";
-	
-						query = session.createQuery( sql )
-				                   	.setString( "newName", user.getName() )
-				                   	.setString( "oldName", oldName );
-				        query.executeUpdate();
+						workspaceId = user.getWorkspaceId();
+						if ( workspaceId != null )
+						{
+							Query query;
+							String sql;
+
+							sql = "UPDATE org.kablink.teaming.domain.Binder"
+									+ " set name = :newName"
+									+ " where id = :workspaceId";
+		
+							query = session.createQuery( sql )
+					                   	.setString( "newName", user.getName() )
+					                   	.setLong( "workspaceId", workspaceId );
+					        query.executeUpdate();
+						}
+						
 	        			return null;
 	        		}
 	        	}
