@@ -117,6 +117,8 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
@@ -1802,6 +1804,52 @@ public Map getUsers() {
 			RequestContextHolder.setRequestContext(oldCtx);				
 		};
 	}
+
+    public User findOrAddExternalUser(final String emailAddress) {
+        User user;
+        try
+        {
+            // Does a Vibe account exist with the given name?
+            user = getUser( emailAddress );
+        }
+        catch ( Exception ex )
+        {
+            RunasCallback callback;
+
+            // If we get here a Vibe account does not exist for the given external user.
+            // Create one.
+            callback = new RunasCallback()
+            {
+                @Override
+                public Object doAs()
+                {
+                    HashMap updates;
+                    User user;
+
+                    updates = new HashMap();
+                    updates.put( ObjectKeys.FIELD_USER_EMAIL, emailAddress );
+                    updates.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, emailAddress );
+                    updates.put( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE, User.ExtProvState.initial );
+                    // Do NOT set the "fromOpenid" bit on initially. We will set it when the user actually
+                    // logs in and binds a valid OpenID account with the email address specified during sharing.
+                    user = profileModule.addUserFromPortal(
+                            new IdentityInfo(false, false, false, false),
+                            emailAddress,
+                            null,
+                            updates,
+                            null );
+
+                    return user;
+                }
+            };
+
+            user = (User) RunasTemplate.runasAdmin(
+                    callback,
+                    RequestContextHolder.getRequestContext().getZoneName());
+        }
+        return user;
+    }
+
 	protected class SharedSeenMap extends SeenMap {
 		public SharedSeenMap(Long principalId) {
 			super(principalId);

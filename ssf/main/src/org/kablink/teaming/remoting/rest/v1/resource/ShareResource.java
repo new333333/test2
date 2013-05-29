@@ -81,7 +81,7 @@ public class ShareResource extends AbstractResource {
     @Path("/{id}")
     public Share getShare(@PathParam("id") Long id) {
         ShareItem share = _getShareItem(id);
-        return ResourceUtil.buildShare(share);
+        return ResourceUtil.buildShare(share, buildShareRecipient(share));
     }
 
     @POST
@@ -94,7 +94,7 @@ public class ShareResource extends AbstractResource {
         // You can't change the shared entity or the recipient via this API.  Perhaps I should fail if the client supplies
         // these values and they don't match?
         share.setSharedEntity(new EntityId(origItem.getSharedEntityIdentifier().getEntityId(), origItem.getSharedEntityIdentifier().getEntityType().name(), null));
-        share.setRecipient(new EntityId(origItem.getRecipientId(), origItem.getRecipientType().name(), null));
+        share.setRecipient(buildShareRecipient(origItem));
         ShareItem shareItem = toShareItem(share);
         getSharingModule().modifyShareItem(shareItem, id);
         if (notifyRecipient) {
@@ -104,7 +104,7 @@ public class ShareResource extends AbstractResource {
                 logger.warn("Failed to send share notification email", e);
             }
         }
-        return ResourceUtil.buildShare(shareItem);
+        return ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem));
     }
 
     @DELETE
@@ -123,7 +123,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<ShareItem> shareItems = getShareItems(spec, true);
         for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem));
+            results.append(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
         }
         return results;
     }
@@ -259,7 +259,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<ShareItem> shareItems = getShareItems(spec, userId, false);
         for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem));
+            results.append(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
         }
         return results;
     }
@@ -504,9 +504,9 @@ public class ShareResource extends AbstractResource {
                     if (showToUser(entry, topId, showHidden, showUnhidden)) {
                         SharedFolderEntryBrief binderBrief = resultMap.get(entry.getId());
                         if (binderBrief!=null) {
-                            binderBrief.addShare(ResourceUtil.buildShare(shareItem));
+                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
                         } else {
-                            binderBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, entry);
+                            binderBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, buildShareRecipient(shareItem), entry);
                             binderBrief.setParentBinder(new ParentBinder(topId, topHref));
                             resultMap.put(entry.getId(), binderBrief);
                         }
@@ -534,9 +534,9 @@ public class ShareResource extends AbstractResource {
                     if (showBinderToUser(binder, onlyLibrary, topId, showHidden, showUnhidden)) {
                         SharedBinderBrief binderBrief = resultMap.get(binder.getId());
                         if (binderBrief!=null) {
-                            binderBrief.addShare(ResourceUtil.buildShare(shareItem));
+                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
                         } else {
-                            binderBrief = ResourceUtil.buildSharedBinderBrief(shareItem, binder);
+                            binderBrief = ResourceUtil.buildSharedBinderBrief(shareItem, buildShareRecipient(shareItem), binder);
                             if (topId!=null) {
                                 binderBrief.setParentBinder(new ParentBinder(topId, topHref));
                             }
@@ -566,9 +566,9 @@ public class ShareResource extends AbstractResource {
                             if (attachment instanceof FileAttachment) {
                                 SharedFileProperties fileProps = resultMap.get(attachment.getId());
                                 if (fileProps!=null) {
-                                    fileProps.addShare(ResourceUtil.buildShare(shareItem));
+                                    fileProps.addShare(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
                                 } else {
-                                    fileProps = ResourceUtil.buildSharedFileProperties(shareItem, (FileAttachment) attachment);
+                                    fileProps = ResourceUtil.buildSharedFileProperties(shareItem, buildShareRecipient(shareItem), (FileAttachment) attachment);
                                     fileProps.setBinder(new ParentBinder(topId, topHref));
                                     resultMap.put(attachment.getId(), fileProps);
                                 }

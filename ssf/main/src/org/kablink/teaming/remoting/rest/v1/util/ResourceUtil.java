@@ -763,7 +763,7 @@ public class ResourceUtil {
    		return definitionModule;
    	}
 
-    public static Share buildShare(ShareItem shareItem) {
+    public static Share buildShare(ShareItem shareItem, ShareRecipient recipient) {
         Share model = new Share();
         model.setComment(shareItem.getComment());
         model.setSharer(new LongIdLinkPair(shareItem.getSharerId(), LinkUriUtil.getUserLinkUri(shareItem.getSharerId())));
@@ -774,19 +774,8 @@ public class ResourceUtil {
         model.setEndDate(shareItem.getEndDate());
         model.setId(shareItem.getId());
 
-        Long recipientId = shareItem.getRecipientId();
-        ShareItem.RecipientType recipType = shareItem.getRecipientType();
-        String link = null;
-        if (recipType==ShareItem.RecipientType.user) {
-            link = LinkUriUtil.getDefinableEntityLinkUri(EntityIdentifier.EntityType.user, recipientId);
-        } else if (recipType==ShareItem.RecipientType.group) {
-            link = LinkUriUtil.getDefinableEntityLinkUri(EntityIdentifier.EntityType.group, recipientId);
-        } else if (recipType==ShareItem.RecipientType.team) {
-            link = LinkUriUtil.getBinderLinkUri(recipientId);
-        }
-        if (link!=null) {
-            model.setRecipient(new EntityId(recipientId, recipType.name(), link));
-        }
+        populateRecipientLink(recipient);
+        model.setRecipient(recipient);
         model.setSharedEntity(buildEntityId(shareItem.getSharedEntityIdentifier()));
 
         Access access = new Access();
@@ -811,24 +800,38 @@ public class ResourceUtil {
         return model;
     }
 
-    public static SharedBinderBrief buildSharedBinderBrief(ShareItem shareItem, org.kablink.teaming.domain.Binder binder) {
+    private static void populateRecipientLink(ShareRecipient recipient) {
+        String type = recipient.getType();
+        String link = null;
+        Long recipientId = recipient.getId();
+        if (type.equals(ShareRecipient.INTERNAL_USER) || type.equals(ShareRecipient.EXTERNAL_USER)) {
+            link = LinkUriUtil.getDefinableEntityLinkUri(EntityIdentifier.EntityType.user, recipientId);
+        } else if (type.equals(ShareRecipient.GROUP)) {
+            link = LinkUriUtil.getDefinableEntityLinkUri(EntityIdentifier.EntityType.group, recipientId);
+        } else if (type.equals(ShareRecipient.TEAM)) {
+            link = LinkUriUtil.getBinderLinkUri(recipientId);
+        }
+        recipient.setLink(link);
+    }
+
+    public static SharedBinderBrief buildSharedBinderBrief(ShareItem shareItem, ShareRecipient recipient, org.kablink.teaming.domain.Binder binder) {
         SharedBinderBrief model = new SharedBinderBrief();
         populateBinderBrief(model, binder);
-        model.addShare(buildShare(shareItem));
+        model.addShare(buildShare(shareItem, recipient));
         return model;
     }
 
-    public static SharedFileProperties buildSharedFileProperties(ShareItem shareItem, FileAttachment attachment) {
+    public static SharedFileProperties buildSharedFileProperties(ShareItem shareItem, ShareRecipient recipient, FileAttachment attachment) {
         SharedFileProperties model = new SharedFileProperties();
         populateFileProperties(model, attachment);
-        model.addShare(buildShare(shareItem));
+        model.addShare(buildShare(shareItem, recipient));
         return model;
     }
 
-    public static SharedFolderEntryBrief buildSharedFolderEntryBrief(ShareItem shareItem, org.kablink.teaming.domain.FolderEntry entry) {
+    public static SharedFolderEntryBrief buildSharedFolderEntryBrief(ShareItem shareItem, ShareRecipient recipient, org.kablink.teaming.domain.FolderEntry entry) {
         SharedFolderEntryBrief model = new SharedFolderEntryBrief();
         populateEntryBrief(model, entry);
-        model.addShare(buildShare(shareItem));
+        model.addShare(buildShare(shareItem, recipient));
         return model;
     }
 
