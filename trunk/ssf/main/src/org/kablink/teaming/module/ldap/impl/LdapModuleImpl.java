@@ -4919,15 +4919,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		newName = (String) mods.get( ObjectKeys.FIELD_PRINCIPAL_NAME );
 		if ( loginName != null && newName != null && loginName.equalsIgnoreCase( newName ) == false )
 		{
-   			Map<User,String> mapOfRenamedUsers;
+   			List<User> listOfRenamedUsers;
    			User user;
 			
 			// Yes
    			user = getProfileDao().findUserByName( newName, zone.getName() );
    			
-			mapOfRenamedUsers = new HashMap<User,String>();
-			mapOfRenamedUsers.put( user, loginName );
-			handleRenamedUsers( mapOfRenamedUsers );
+			listOfRenamedUsers = new ArrayList<User>();
+			listOfRenamedUsers.add( user );
+			handleRenamedUsers( listOfRenamedUsers );
 		}
 	}	
 	/**
@@ -4970,14 +4970,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   	try 
 	   	{
 	   		Map changedEntries;
-   			Map<User,String> mapOfRenamedUsers;
+   			List<User> listOfRenamedUsers;
 	   		
 	   		changedEntries = processor.syncEntries( entries, null, syncResults );
 	   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
 
 	   		// Make the necessary changes to the db tables for each user that was renamed.
-	   		mapOfRenamedUsers = getListOfRenamedUsers( originalUserNamesMap,  changedEntries );
-	   		handleRenamedUsers( mapOfRenamedUsers );
+	   		listOfRenamedUsers = getListOfRenamedUsers( originalUserNamesMap, changedEntries );
+	   		handleRenamedUsers( listOfRenamedUsers );
 
 	   		//flush from cache
 	   		for (int i=0; i<foundEntries.size(); ++i)
@@ -4996,7 +4996,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   		{
 			   		User user;
 			   		Map changedEntries;
-		   			Map<User,String> mapOfRenamedUsers;
+		   			List<User> listOfRenamedUsers;
 
 			   		entries.clear();
 			   		user = (User)foundEntries.get( i );
@@ -5008,8 +5008,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
 			   		
 			   		// Make the necessary changes to the db tables for renamed user.
-			   		mapOfRenamedUsers = getListOfRenamedUsers( originalUserNamesMap, changedEntries );
-			   		handleRenamedUsers( mapOfRenamedUsers );
+			   		listOfRenamedUsers = getListOfRenamedUsers( originalUserNamesMap, changedEntries );
+			   		handleRenamedUsers( listOfRenamedUsers );
 
 			   		getCoreDao().evict( user );
 		   		}
@@ -5025,39 +5025,25 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Make the necessary changes to the db tables for each renamed user.
 	 * For mapOfRenamedUsers, the key is a User object and the value is the original user name
 	 */
-	private void handleRenamedUsers( Map<User,String> mapOfRenamedUsers )
+	private void handleRenamedUsers( List<User> listOfRenamedUsers )
 	{
-		Set setOfUsers;
-		
-		if ( mapOfRenamedUsers == null || mapOfRenamedUsers.size() == 0 )
+		ProfileDao profileDao;
+
+		if ( listOfRenamedUsers == null || listOfRenamedUsers.size() == 0 )
 			return;
-		
-		setOfUsers = mapOfRenamedUsers.keySet();
-		if ( setOfUsers != null )
+
+		profileDao = getProfileDao();
+
+		for ( User nextUser : listOfRenamedUsers )
 		{
-			Iterator iter;
-			ProfileDao profileDao;
-
-			profileDao = getProfileDao();
-
-			iter = setOfUsers.iterator();
-			while ( iter.hasNext() )
+			try
 			{
-				User nextUser;
-				String originalName;
-				
-				nextUser = (User) iter.next();
-				
-				originalName = mapOfRenamedUsers.get( nextUser );
-				try
-				{
-					profileDao.renameUser( nextUser, originalName );
-					logger.info( "\tUser: " + originalName + " was renamed to: " + nextUser.getName() );
-				}
-				catch ( Exception ex )
-				{
-					logger.error( "Error updating db for renamed user: " + nextUser.getName() + " Exception: " + ex.toString() );
-				}
+				profileDao.renameUser( nextUser );
+				logger.info( "\tRenamed user: " + nextUser.getName() );
+			}
+			catch ( Exception ex )
+			{
+				logger.error( "Error updating db for renamed user: " + nextUser.getName() + " Exception: " + ex.toString() );
 			}
 		}
 	}
@@ -5070,11 +5056,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 *  
 	 * The key of the returned map is the user object and the value is the old user name
 	 */
-	private Map<User,String> getListOfRenamedUsers( Map<Long,String> originalUsersMap, Map modifiedUsersMap )
+	private List<User> getListOfRenamedUsers( Map<Long,String> originalUsersMap, Map modifiedUsersMap )
 	{
-		Map<User,String> mapOfRenamedUsers;
+		List<User> listOfRenamedUsers;
 
-		mapOfRenamedUsers = new HashMap<User,String>();
+		listOfRenamedUsers = new ArrayList<User>();
 
 		// Do we have any modified users?
    		if ( modifiedUsersMap != null && modifiedUsersMap.size() > 0 && originalUsersMap != null )
@@ -5102,13 +5088,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					if ( originalUserName.equalsIgnoreCase( modifiedUser.getName() ) == false )
 					{
 						// Yes
-						mapOfRenamedUsers.put( modifiedUser, originalUserName );
+						listOfRenamedUsers.add( modifiedUser );
 					}
 				}
 			}
    		}
    		
-   		return mapOfRenamedUsers;
+   		return listOfRenamedUsers;
 	}
 	
 	/**
