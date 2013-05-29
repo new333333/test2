@@ -1033,17 +1033,28 @@ public class GwtTaskHelper {
 	}
 
 	/*
-	 * Returns the Calendar equivalent of a TaskDate.
+	 * Returns the Calendar equivalent of a Date.
 	 */
-	private static Calendar getCFromTD(TaskDate td) {
-		GregorianCalendar reply;
-		if (null == td) {
+	private static Calendar getCalFromDate(Date d) {
+		Calendar reply;
+		if (null == d) {
 			reply = null;
 		}
 		else {
 			reply = new GregorianCalendar();
-			reply.setTime(td.getDate());
+			reply.setTime(d);
 		}
+		return reply;
+	}
+	
+	/*
+	 * Returns the Calendar equivalent of a TaskDate.
+	 */
+	private static Calendar getCalFromDate(TaskDate td) {
+		Calendar reply;
+		if (null == td)
+		     reply = null;
+		else reply = getCalFromDate(td.getDate());
 		return reply;
 	}
 
@@ -1939,8 +1950,8 @@ public class GwtTaskHelper {
 				eDuration.setDays(tDuration.getDays());
 			}
 			event.setDuration(eDuration);
-			event.setDtCalcStart((Calendar) null); event.setDtStart(getCFromTD(taskEvent.getActualStart()));			
-			event.setDtCalcEnd(  (Calendar) null); event.setDtEnd(  getCFromTD(taskEvent.getActualEnd()));
+			event.setDtCalcStart((Calendar) null); event.setDtStart(getCalFromDate(taskEvent.getActualStart()));			
+			event.setDtCalcEnd(  (Calendar) null); event.setDtEnd(  getCalFromDate(taskEvent.getActualEnd()));
 			
 			// ...check whether the user has seen this entry already...
 			ProfileModule pm = bs.getProfileModule();
@@ -2491,10 +2502,14 @@ public class GwtTaskHelper {
 						// Yes!  If we changed the calculated start...
 						if (removeCalcStart || (null != newCalcStart)) {
 							// ...update it in the task.
-							TaskDate calcTD = new TaskDate();
-							if (!removeCalcStart) {
-								calcTD.setDate(newCalcStart);
+							TaskDate calcTD;
+							if (null != newCalcStart) {
+								calcTD = new TaskDate();
+								calcTD.setDate(                                     newCalcStart                       );
 								calcTD.setDateDisplay(EventHelper.getDateTimeString(newCalcStart, tiE.getAllDayEvent()));
+							}
+							else {
+								calcTD = tiE.getActualStart();
 							}
 							tiE.setLogicalStart(calcTD);
 						}
@@ -2502,10 +2517,14 @@ public class GwtTaskHelper {
 						// If we changed the calculated end...
 						if (removeCalcEnd || (null != newCalcEnd)) {
 							// ...update it in the task...
-							TaskDate calcTD = new TaskDate();
-							if (!removeCalcEnd) {
+							TaskDate calcTD;
+							if (null != newCalcEnd) {
+								calcTD = new TaskDate();
 								calcTD.setDate(                                     newCalcEnd                       );
 								calcTD.setDateDisplay(EventHelper.getDateTimeString(newCalcEnd, tiE.getAllDayEvent()));
+							}
+							else {
+								calcTD = tiE.getActualEnd();
 							}
 							tiE.setLogicalEnd(calcTD);
 							
@@ -2630,9 +2649,7 @@ public class GwtTaskHelper {
 				}
 				else if (null != calcStart) {
 					if ((null == eventCalcStart) || (eventCalcStart.getTime().getTime() != calcStart.getTime())) {
-						Calendar cal = new GregorianCalendar();
-						cal.setTime(calcStart);
-						event.setDtCalcStart(cal);
+						event.setDtCalcStart(getCalFromDate(calcStart));
 						modifyEvent = true;
 					}
 				}
@@ -2645,9 +2662,7 @@ public class GwtTaskHelper {
 				}
 				else if (null != calcEnd) {
 					if ((null == eventCalcEnd) || (eventCalcEnd.getTime().getTime() != calcEnd.getTime())) {
-						Calendar cal = new GregorianCalendar();
-						cal.setTime(calcEnd);
-						event.setDtCalcEnd(cal);
+						event.setDtCalcEnd(getCalFromDate(calcEnd));
 						modifyEvent = true;
 					}
 				}
