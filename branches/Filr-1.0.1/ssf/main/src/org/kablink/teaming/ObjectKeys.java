@@ -682,7 +682,7 @@ public interface ObjectKeys {
 	public static final String FIELD_BINDER_INHERITDEFINITIONS = "definitionsInherited"; 
 	public static final String FIELD_BINDER_RESOURCE_DRIVER_NAME = "resourceDriverName";
 	public static final String FIELD_BINDER_RESOURCE_PATH = "resourcePath"; 
-	public static final String FIELD_IS_HOME_DIR = "homeDir";
+	public static final String FIELD_BINDER_IS_HOME_DIR = "homeDir";
 	public static final String FIELD_WS_SEARCHTITLE="searchTitle";
 
     public static final String FIELD_USER_FIRSTNAME="firstName";
