@@ -731,7 +731,7 @@ public class NetFolderHelper
 			// We only want to return top-level net folders.
 			for ( Folder nextFolder: results )
 			{
-				if ( nextFolder.isTop() )
+				if ( nextFolder.isTop() && nextFolder.isDeleted() == false )
 					listOfNetFolderIds.add( nextFolder.getId() );
 			}
 		}
