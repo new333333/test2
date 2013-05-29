@@ -194,12 +194,4 @@ public class GroupResource extends AbstractPrincipalResource {
     protected EntityIdentifier.EntityType _getEntityType() {
         return EntityIdentifier.EntityType.group;
     }
-
-    private org.kablink.teaming.domain.Group _getGroup(long id) {
-        org.kablink.teaming.domain.Principal entry = getProfileModule().getEntry(id);
-
-        if(!(entry instanceof org.kablink.teaming.domain.Group))
-            throw new NoGroupByTheIdException(id);
-        return (org.kablink.teaming.domain.Group) entry;
-    }
 }
