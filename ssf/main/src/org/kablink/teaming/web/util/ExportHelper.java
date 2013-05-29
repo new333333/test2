@@ -1239,7 +1239,7 @@ public class ExportHelper {
 		List<String> newDefIds = new ArrayList<String>();
 
 		logger.debug("Unzipping to disk temporarily...");
-		String tempDir = deploy(zIn);
+		String tempDir = deploy(zIn, reportMap);
 		logger.debug("Unzipping completed");
 
 		try {
@@ -2465,7 +2465,7 @@ public class ExportHelper {
 				.randomUUID().toString());
 	}
 
-	private static String deploy(ZipInputStream zipIn) throws IOException {
+	private static String deploy(ZipInputStream zipIn, Map reportMap) throws IOException {
 		File tempDir = getTemporaryDirectory();
 
 		FileUtil.deltree(tempDir);
@@ -2479,20 +2479,31 @@ public class ExportHelper {
 				// extract file to proper temporary directory
 				File inflated;
 				String name = entry.getName();
-				inflated = new File(tempDir, name);
-				if (entry.isDirectory()) {
-					inflated.mkdirs();
+				try {
+					inflated = new File(tempDir, name);
+					if (entry.isDirectory()) {
+						inflated.mkdirs();
+						zipIn.closeEntry();
+						continue;
+					} else {
+						inflated.getParentFile().mkdirs();
+						FileOutputStream entryOut = new FileOutputStream(inflated);
+						FileCopyUtils.copy(new ZipEntryStream(zipIn), entryOut);
+						entryOut.close();
+					}
 					zipIn.closeEntry();
-					continue;
-				} else {
-					inflated.getParentFile().mkdirs();
-					FileOutputStream entryOut = new FileOutputStream(inflated);
-					FileCopyUtils.copy(new ZipEntryStream(zipIn), entryOut);
-					entryOut.close();
+				} catch(Exception e) {
+					Integer c = (Integer)reportMap.get(errors);
+					reportMap.put(errors, ++c);
+					((List)reportMap.get(errorList)).add(e.getMessage());
+
+					logger.error(e);
 				}
-				zipIn.closeEntry();
 			}
 		} catch(Exception e) {
+			Integer c = (Integer)reportMap.get(errors);
+			reportMap.put(errors, ++c);
+			((List)reportMap.get(errorList)).add(e.getMessage());
 			logger.error(e);
 		} finally {
 			zipIn.close();
