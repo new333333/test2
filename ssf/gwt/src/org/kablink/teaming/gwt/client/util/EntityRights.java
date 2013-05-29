@@ -40,11 +40,21 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class EntityRights implements IsSerializable {
-	private boolean	m_canAddReplies;	//
-	private boolean	m_canModify;		//
-	private boolean	m_canPurge;			//
-	private boolean	m_canShare;			//
-	private boolean	m_canTrash;			//
+	private boolean		m_canAddReplies;	//
+	private boolean		m_canModify;		//
+	private boolean		m_canPurge;			//
+	private boolean		m_canTrash;			//
+	private ShareRight	m_shareRight;		//
+	
+	public enum ShareRight implements IsSerializable {
+		SHARABLE,
+		NOT_SHARABLE_RIGHTS_VIOLATION,
+		NOT_SHARABLE_NET_FOLDER;
+		
+		public boolean canShare()                 {return SHARABLE.equals(                     this);}
+		public boolean cantShareRightsViolation() {return NOT_SHARABLE_RIGHTS_VIOLATION.equals(this);}
+		public boolean cantShareNetFolder()       {return NOT_SHARABLE_NET_FOLDER.equals(      this);}
+	}
 
 	/**
 	 * Constructor method.
@@ -59,22 +69,23 @@ public class EntityRights implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean isCanAddReplies() {return m_canAddReplies;}
-	public boolean isCanModify()     {return m_canModify    ;}
-	public boolean isCanPurge()      {return m_canPurge     ;}
-	public boolean isCanShare()      {return m_canShare     ;}
-	public boolean isCanTrash()      {return m_canTrash     ;}
+	public boolean    isCanAddReplies() {return m_canAddReplies;                                    }
+	public boolean    isCanModify()     {return m_canModify;                                        }
+	public boolean    isCanPurge()      {return m_canPurge;                                         }
+	public boolean    isCanShare()      {return ((null != m_shareRight) && m_shareRight.canShare());}
+	public boolean    isCanTrash()      {return m_canTrash;                                         }
+	public ShareRight getShareRight()   {return m_shareRight;                                       }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setCanAddReplies(boolean canAddReplies) {m_canAddReplies = canAddReplies;}
-	public void setCanModify(    boolean canModify)     {m_canModify     = canModify;    }
-	public void setCanPurge(     boolean canPurge)      {m_canPurge      = canPurge;     }
-	public void setCanShare(     boolean canShare)      {m_canShare      = canShare;     }
-	public void setCanTrash(     boolean canTrash)      {m_canTrash      = canTrash;     }
+	public void setCanAddReplies(boolean    canAddReplies) {m_canAddReplies = canAddReplies;}
+	public void setCanModify(    boolean    canModify)     {m_canModify     = canModify;    }
+	public void setCanPurge(     boolean    canPurge)      {m_canPurge      = canPurge;     }
+	public void setCanTrash(     boolean    canTrash)      {m_canTrash      = canTrash;     }
+	public void setShareRight(   ShareRight shareRight)    {m_shareRight    = shareRight;   }
 	
 	/**
 	 * Returns the key to use for an entity in an entity rights map.
