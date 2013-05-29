@@ -94,8 +94,15 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 		
 		if(SPropsUtil.getBoolean("nf.full.sync.coordinator.enable", true)) {
 			// Create a thread pool that will execute full synchronization.
-			// With this pool, the caller will get an exception immediately if there's no thread available to take the request.
-			// That is perfectly OK, given the nature of the usage context.
+			// This pool is relatively small in size, and the usage context guarantees that the caller would check the
+			// active size of the pool before submitting a new task to execute to ensure that submitted task will 
+			// execute (nearly) immediately. Consequently, the associated queue doesn't require any capacity in theory
+			// (meaning that SynchronousQueue looks like a perfect one to choose for this situation). However we
+			// actually use an unbounded queue. This is because the active size that the caller uses to make the
+			// determination is only an approximation rather than absolutely accurate figure, and therefore, it's
+			// possible for the submission to fail in rare cases. We keep that from happening by supplying unbounded
+			// queue which can temporarily retain the extra tasks submitted under that rare condition. In reality 
+			// this queue will never grow beyond more than just a few elements.
 			this.fullSyncMaximumPoolSize = SPropsUtil.getInt("runasync.executor.fullsync.maximum.pool.size", 5);
 			boolean fullSyncThreadDaemon = SPropsUtil.getBoolean("runasync.executor.fullsync.thread.daemon", false);
 			int fullSyncThreadPriority = SPropsUtil.getInt("runasync.executor.fullsync.thread.priority", Thread.NORM_PRIORITY);
@@ -103,12 +110,13 @@ public class RunAsyncManager implements InitializingBean, DisposableBean {
 				logger.debug("Creating FULL SYNC thread pool: max pool size=" + fullSyncMaximumPoolSize + ", thread daemon=" + fullSyncThreadDaemon + ", thread priority=" + fullSyncThreadPriority);
 
 			ThreadPoolExecutor fullSyncExecutor = new ThreadPoolExecutor(
-					0,
+					fullSyncMaximumPoolSize,
 					fullSyncMaximumPoolSize,
 	                120L, 
 	                TimeUnit.SECONDS,
-	                new SynchronousQueue<Runnable>(),
+	                new LinkedBlockingQueue<Runnable>(),
 	                new PoolThreadFactory("fullsync", fullSyncThreadDaemon, fullSyncThreadPriority));
+			fullSyncExecutor.allowCoreThreadTimeOut(true);
 			executorService_FULL_SYNC = fullSyncExecutor;
 		}
 		else {
