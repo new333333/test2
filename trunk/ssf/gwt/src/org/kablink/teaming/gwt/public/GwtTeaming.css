@@ -3619,8 +3619,7 @@ top:100px;
 .gwtTaskListing
 {
 	font-size: 1.35em; 
-	overflow-y: auto;
-	overflow-x: hidden;
+	overflow: auto;
 	border: 1px solid #cccccc;
 }
 .gwtTaskListing_IE
