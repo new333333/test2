@@ -664,7 +664,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				//If this is a Filr Net Folder, check if sharing is allowed at the folder level
 				//Also check that the folder isn't a Net Folder. Sharing Net Folders is not allowed
 				if (!binder.isAclExternallyControlled() || 
-						SPropsUtil.getBoolean("sharing.netFolders.allowed", false)) {
+						SPropsUtil.getBoolean("sharing.netFolders.allowed", false) ||
+						Utils.isWorkareaInProfilesTree(binder)) {
 					if (binderModule.testAccess(binder, BinderOperation.allowSharingForward)) {
 						// Yes!
 						reply = true;
