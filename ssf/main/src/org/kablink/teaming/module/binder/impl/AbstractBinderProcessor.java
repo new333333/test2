@@ -1457,6 +1457,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        Binder binder = null;
        try {
 			binder = addBinder(destination, sampleBinder.getEntryDef(), sampleBinder.getClass(), inputData, null, null);
+			//Also copy the configured definitions from the sample
+			binder.setDefinitions(sampleBinder.getDefinitions());
+			getCoreDao().flush();
        } catch (Exception e) {}
        
        return binder;
