@@ -1,242 +1,328 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojox.editor.plugins.FindReplace"]){
-dojo._hasResource["dojox.editor.plugins.FindReplace"]=true;
-dojo.provide("dojox.editor.plugins.FindReplace");
-dojo.require("dijit._editor._Plugin");
-dojo.require("dijit.Toolbar");
-dojo.require("dijit.form.TextBox");
-dojo.require("dijit.form.CheckBox");
-dojo.require("dijit.form.Button");
-dojo.require("dijit.TooltipDialog");
-dojo.require("dijit.Menu");
-dojo.require("dijit.CheckedMenuItem");
-dojo.require("dojox.editor.plugins.ToolbarLineBreak");
-dojo.require("dojo.i18n");
-dojo.require("dojo.string");
-dojo.requireLocalization("dojox.editor.plugins","FindReplace",null,"ROOT");
-dojo.experimental("dojox.editor.plugins.FindReplace");
-dojo.declare("dojox.editor.plugins._FindReplaceTextBox",[dijit._Widget,dijit._Templated],{textId:"",label:"",widget:null,widgetsInTemplate:true,templateString:"<span style='white-space: nowrap' class='dijit dijitReset dijitInline findReplaceTextBox'>"+"<label class='dijitLeft dijitInline' for='${textId}'>${label}</label>"+"<input dojoType='dijit.form.TextBox' required=false intermediateChanges='true'"+"tabIndex='-1' id='${textId}' dojoAttachPoint='textBox' value='' style='width: 20em;'/>"+"</span>",postMixInProperties:function(){
+//>>built
+define("dojox/editor/plugins/FindReplace",["dojo","dijit","dojox","dijit/_base/manager","dijit/_base/popup","dijit/_Widget","dijit/_TemplatedMixin","dijit/_KeyNavContainer","dijit/_WidgetsInTemplateMixin","dijit/TooltipDialog","dijit/Toolbar","dijit/form/CheckBox","dijit/form/_TextBoxMixin","dijit/form/TextBox","dijit/_editor/_Plugin","dijit/form/Button","dijit/form/DropDownButton","dijit/form/ToggleButton","./ToolbarLineBreak","dojo/_base/connect","dojo/_base/declare","dojo/i18n","dojo/string","dojo/i18n!dojox/editor/plugins/nls/FindReplace"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a,_b,_c,_d,_e,_f){
+_1.experimental("dojox.editor.plugins.FindReplace");
+var _10=_1.declare("dojox.editor.plugins._FindReplaceCloseBox",[_6,_7,_9],{btnId:"",widget:null,widgetsInTemplate:true,templateString:"<span style='float: right' class='dijitInline' tabindex='-1'>"+"<button class='dijit dijitReset dijitInline' "+"id='${btnId}' dojoAttachPoint='button' dojoType='dijit.form.Button' tabindex='-1' iconClass='dijitEditorIconsFindReplaceClose' showLabel='false'>X</button>"+"</span>",postMixInProperties:function(){
+this.id=_2.getUniqueId(this.declaredClass.replace(/\./g,"_"));
+this.btnId=this.id+"_close";
 this.inherited(arguments);
-this.id=dijit.getUniqueId(this.declaredClass.replace(/\./g,"_"));
+},startup:function(){
+this.connect(this.button,"onClick","onClick");
+},onClick:function(){
+}});
+var _11=_1.declare("dojox.editor.plugins._FindReplaceTextBox",[_6,_7,_9],{textId:"",label:"",toolTip:"",widget:null,widgetsInTemplate:true,templateString:"<span style='white-space: nowrap' class='dijit dijitReset dijitInline dijitEditorFindReplaceTextBox' "+"title='${tooltip}' tabindex='-1'>"+"<label class='dijitLeft dijitInline' for='${textId}' tabindex='-1'>${label}</label>"+"<input dojoType='dijit.form.TextBox' intermediateChanges='true' class='focusTextBox' "+"tabIndex='0' id='${textId}' dojoAttachPoint='textBox, focusNode' value='' dojoAttachEvent='onKeyPress: _onKeyPress'/>"+"</span>",postMixInProperties:function(){
+this.id=_2.getUniqueId(this.declaredClass.replace(/\./g,"_"));
 this.textId=this.id+"_text";
 this.inherited(arguments);
 },postCreate:function(){
-this.textBox.attr("value","");
-this.disabled=this.textBox.attr("disabled");
+this.textBox.set("value","");
+this.disabled=this.textBox.get("disabled");
 this.connect(this.textBox,"onChange","onChange");
-},_setValueAttr:function(_1){
-this.value=_1;
-this.textBox.attr("value",_1);
+_1.attr(this.textBox.textbox,"formnovalidate","true");
+},_setValueAttr:function(_12){
+this.value=_12;
+this.textBox.set("value",_12);
 },focus:function(){
 this.textBox.focus();
-},_setDisabledAttr:function(_2){
-this.disabled=_2;
-this.textBox.attr("disabled",_2);
-},onChange:function(_3){
-this.value=_3;
+},_setDisabledAttr:function(_13){
+this.disabled=_13;
+this.textBox.set("disabled",_13);
+},onChange:function(val){
+this.value=val;
+},_onKeyPress:function(evt){
+var _14=0;
+var end=0;
+if(evt.target&&!evt.ctrlKey&&!evt.altKey&&!evt.shiftKey){
+if(evt.keyCode==_1.keys.LEFT_ARROW){
+_14=evt.target.selectionStart;
+end=evt.target.selectionEnd;
+if(_14<end){
+_2.selectInputText(evt.target,_14,_14);
+_1.stopEvent(evt);
+}
+}else{
+if(evt.keyCode==_1.keys.RIGHT_ARROW){
+_14=evt.target.selectionStart;
+end=evt.target.selectionEnd;
+if(_14<end){
+_2.selectInputText(evt.target,end,end);
+_1.stopEvent(evt);
+}
+}
+}
+}
 }});
-dojo.declare("dojox.editor.plugins._FindReplaceCheckBox",[dijit._Widget,dijit._Templated],{checkId:"",label:"",widget:null,widgetsInTemplate:true,templateString:"<span style='white-space: nowrap' class='dijit dijitReset dijitInline findReplaceCheckBox'>"+"<input dojoType='dijit.form.CheckBox' required=false "+"tabIndex='-1' id='${checkId}' dojoAttachPoint='checkBox' value=''/>"+"<label class='dijitLeft dijitInline' for='${checkId}'>${label}</label>"+"</span>",postMixInProperties:function(){
-this.inherited(arguments);
-this.id=dijit.getUniqueId(this.declaredClass.replace(/\./g,"_"));
+var _15=_1.declare("dojox.editor.plugins._FindReplaceCheckBox",[_6,_7,_9],{checkId:"",label:"",tooltip:"",widget:null,widgetsInTemplate:true,templateString:"<span style='white-space: nowrap' tabindex='-1' "+"class='dijit dijitReset dijitInline dijitEditorFindReplaceCheckBox' title='${tooltip}' >"+"<input dojoType='dijit.form.CheckBox' "+"tabIndex='0' id='${checkId}' dojoAttachPoint='checkBox, focusNode' value=''/>"+"<label tabindex='-1' class='dijitLeft dijitInline' for='${checkId}'>${label}</label>"+"</span>",postMixInProperties:function(){
+this.id=_2.getUniqueId(this.declaredClass.replace(/\./g,"_"));
 this.checkId=this.id+"_check";
 this.inherited(arguments);
 },postCreate:function(){
-this.checkBox.attr("checked",false);
-this.disabled=this.checkBox.attr("disabled");
+this.checkBox.set("checked",false);
+this.disabled=this.checkBox.get("disabled");
 this.checkBox.isFocusable=function(){
 return false;
 };
-},_setValueAttr:function(_4){
-this.checkBox.attr("value",_4);
+},_setValueAttr:function(_16){
+this.checkBox.set("value",_16);
 },_getValueAttr:function(){
-return this.checkBox.attr("value");
+return this.checkBox.get("value");
 },focus:function(){
 this.checkBox.focus();
-},_setDisabledAttr:function(_5){
-this.disabled=_5;
-this.checkBox.attr("disabled",_5);
+},_setDisabledAttr:function(_17){
+this.disabled=_17;
+this.checkBox.set("disabled",_17);
 }});
-dojo.declare("dojox.editor.plugins.FindReplace",[dijit._editor._Plugin],{buttonClass:dijit.form.ToggleButton,iconClassPrefix:"dijitAdditionalEditorIcon",_initButton:function(){
-var _6=dojo.i18n.getLocalization("dojox.editor.plugins","FindReplace");
-this.button=new dijit.form.ToggleButton({label:_6["findReplace"],showLabel:false,iconClass:this.iconClassPrefix+" "+this.iconClassPrefix+"FindReplace",tabIndex:"-1",onChange:dojo.hitch(this,"_toggleFindReplace")});
-if(dojo.isOpera){
-this.button.attr("disabled",true);
+var _18=_1.declare("dojox.editor.plugins._FindReplaceToolbar",_b,{postCreate:function(){
+this.connectKeyNavHandlers([],[]);
+this.connect(this.containerNode,"onclick","_onToolbarEvent");
+this.connect(this.containerNode,"onkeydown","_onToolbarEvent");
+_1.addClass(this.domNode,"dijitToolbar");
+},addChild:function(_19,_1a){
+_2._KeyNavContainer.superclass.addChild.apply(this,arguments);
+},_onToolbarEvent:function(evt){
+evt.stopPropagation();
+}});
+var _1b=_1.declare("dojox.editor.plugins.FindReplace",[_f],{buttonClass:_2.form.ToggleButton,iconClassPrefix:"dijitEditorIconsFindReplace",editor:null,button:null,_frToolbar:null,_closeBox:null,_findField:null,_replaceField:null,_findButton:null,_replaceButton:null,_replaceAllButton:null,_caseSensitive:null,_backwards:null,_promDialog:null,_promDialogTimeout:null,_strings:null,_initButton:function(){
+this._strings=_1.i18n.getLocalization("dojox.editor.plugins","FindReplace");
+this.button=new _2.form.ToggleButton({label:this._strings["findReplace"],showLabel:false,iconClass:this.iconClassPrefix+" dijitEditorIconFindString",tabIndex:"-1",onChange:_1.hitch(this,"_toggleFindReplace")});
+if(_1.isOpera){
+this.button.set("disabled",true);
 }
-this.connect(this.button,"attr",dojo.hitch(this,function(_7,_8){
-if(_7==="disabled"){
-this._toggleFindReplace((!_8&&this._displayed),true);
+this.connect(this.button,"set",_1.hitch(this,function(_1c,val){
+if(_1c==="disabled"){
+this._toggleFindReplace((!val&&this._displayed),true,true);
 }
 }));
-},setEditor:function(_9){
-this.editor=_9;
+},setEditor:function(_1d){
+this.editor=_1d;
 this._initButton();
 },toggle:function(){
-this.button.attr("checked",!this.button.attr("checked"));
-},_toggleFindReplace:function(_a,_b){
-if(_a&&!dojo.isOpera){
-dojo.style(this._frToolbar.domNode,"display","block");
-if(!_b){
+this.button.set("checked",!this.button.get("checked"));
+},_toggleFindReplace:function(_1e,_1f,_20){
+var _21=_1.marginBox(this.editor.domNode);
+if(_1e&&!_1.isOpera){
+_1.style(this._frToolbar.domNode,"display","block");
+this._populateFindField();
+if(!_1f){
 this._displayed=true;
 }
 }else{
-dojo.style(this._frToolbar.domNode,"display","none");
-if(!_b){
+_1.style(this._frToolbar.domNode,"display","none");
+if(!_1f){
 this._displayed=false;
 }
-}
-this.editor.resize();
-},setToolbar:function(_c){
-this.inherited(arguments);
-if(!dojo.isOpera){
-var _d=dojo.i18n.getLocalization("dojox.editor.plugins","FindReplace");
-this._frToolbar=new dijit.Toolbar();
-dojo.style(this._frToolbar.domNode,"display","none");
-dojo.place(this._frToolbar.domNode,_c.domNode,"after");
-this._frToolbar.startup();
-this._caseSensitive=new dojox.editor.plugins._FindReplaceCheckBox({label:_d["matchCase"]});
-this._backwards=new dojox.editor.plugins._FindReplaceCheckBox({label:_d["backwards"]});
-this._replaceAll=new dojox.editor.plugins._FindReplaceCheckBox({label:_d["replaceAll"]});
-this._findField=new dojox.editor.plugins._FindReplaceTextBox({label:_d.findLabel});
-this._frToolbar.addChild(this._findField);
-this._findButton=new dijit.form.Button({label:_d["findButton"],showLabel:true,iconClass:this.iconClassPrefix+" "+this.iconClassPrefix+"FindRun"});
-this._frToolbar.addChild(this._findButton);
-this._frToolbar.addChild(this._caseSensitive);
-this._frToolbar.addChild(this._backwards);
-this._frToolbar.addChild(new dojox.editor.plugins._ToolbarLineBreak());
-this._replaceField=new dojox.editor.plugins._FindReplaceTextBox({label:_d.replaceLabel});
-this._frToolbar.addChild(this._replaceField);
-this._replaceButton=new dijit.form.Button({label:_d["replaceButton"],showLabel:true,iconClass:this.iconClassPrefix+" "+this.iconClassPrefix+"ReplaceRun"});
-this._frToolbar.addChild(this._replaceButton);
-this._frToolbar.addChild(this._replaceAll);
-this._findButton.attr("disabled",true);
-this._replaceButton.attr("disabled",true);
-this.connect(this._findField,"onChange","_checkButtons");
-this.connect(this._replaceField,"onChange","_checkButtons");
-this.connect(this._findButton,"onClick","_find");
-this.connect(this._replaceButton,"onClick","_replace");
-this._replDialog=new dijit.TooltipDialog();
-this._replDialog.startup();
-this._replDialog.attr("content","");
-this._dialogTemplate=_d.replaceDialogText;
-}
-},_checkButtons:function(){
-var _e=this._findField.attr("value");
-var _f=this._replaceField.attr("value");
-if(_e){
-this._findButton.attr("disabled",false);
-}else{
-this._findButton.attr("disabled",true);
-}
-if(_e&&_f&&_e!==_f){
-this._replaceButton.attr("disabled",false);
-}else{
-this._replaceButton.attr("disabled",true);
-}
-},_find:function(){
-var txt=this._findField.attr("value");
-if(txt){
-var _10=this._caseSensitive.attr("value");
-var _11=this._backwards.attr("value");
-return this._findText(txt,_10,_11);
-}
-return false;
-},_replace:function(){
-var ed=this.editor;
-ed.focus();
-var txt=this._findField.attr("value");
-var _12=this._replaceField.attr("value");
-var _13=0;
-if(txt){
-if(this._replaceDialogTimeout){
-clearTimeout(this._replaceDialogTimeout);
-this._replaceDialogTimeout=null;
-dijit.popup.close(this._replDialog);
-}
-var _14=this._replaceAll.attr("value");
-var _15=this._caseSensitive.attr("value");
-var _16=this._backwards.attr("value");
-var _17=dojo.withGlobal(ed.window,"getSelectedText",dijit._editor.selection,[null]);
-if(dojo.isMoz){
-txt=dojo.trim(txt);
-_17=dojo.trim(_17);
-}
-var _18=this._filterRegexp(txt,!_15);
-if(_17&&_18.test(_17)){
-ed.execCommand("inserthtml",_12);
-_13++;
-}
-if(_14){
-var _19=this._findText(txt,_15,_16);
-var _1a=function(){
-ed.execCommand("inserthtml",_12);
-_13++;
-_19=this._findText(txt,_15,_16);
-if(_19){
-setTimeout(dojo.hitch(this,_1a),10);
-}else{
-this._replDialog.attr("content",dojo.string.substitute(this._dialogTemplate,{"0":""+_13}));
-dijit.popup.open({popup:this._replDialog,around:this._replaceButton.domNode});
-this._replaceDialogTimeout=setTimeout(dojo.hitch(this,function(){
-clearTimeout(this._replaceDialogTimeout);
-this._replaceDialogTimeout=null;
-dijit.popup.close(this._replDialog);
-}),5000);
-}
-};
-if(_19){
-var _1b=dojo.hitch(this,_1a);
-_1b();
+if(!_20){
+this.editor.focus();
 }
 }
-}
-},_findText:function(txt,_1c,_1d){
+this.editor.resize({h:_21.h});
+},_populateFindField:function(){
 var ed=this.editor;
 var win=ed.window;
-var _1e=false;
+var _22=ed._sCall("getSelectedText",[null]);
+if(this._findField&&this._findField.textBox){
+if(_22){
+this._findField.textBox.set("value",_22);
+}
+this._findField.textBox.focus();
+_2.selectInputText(this._findField.textBox.focusNode);
+}
+},setToolbar:function(_23){
+this.inherited(arguments);
+if(!_1.isOpera){
+var _24=(this._frToolbar=new _18());
+_1.style(_24.domNode,"display","none");
+_1.place(_24.domNode,_23.domNode,"after");
+_24.startup();
+this._closeBox=new _10();
+_24.addChild(this._closeBox);
+this._findField=new _11({label:this._strings["findLabel"],tooltip:this._strings["findTooltip"]});
+_24.addChild(this._findField);
+this._replaceField=new _11({label:this._strings["replaceLabel"],tooltip:this._strings["replaceTooltip"]});
+_24.addChild(this._replaceField);
+_24.addChild(new _3.editor.plugins.ToolbarLineBreak());
+this._findButton=new _2.form.Button({label:this._strings["findButton"],showLabel:true,iconClass:this.iconClassPrefix+" dijitEditorIconFind"});
+this._findButton.titleNode.title=this._strings["findButtonTooltip"];
+_24.addChild(this._findButton);
+this._replaceButton=new _2.form.Button({label:this._strings["replaceButton"],showLabel:true,iconClass:this.iconClassPrefix+" dijitEditorIconReplace"});
+this._replaceButton.titleNode.title=this._strings["replaceButtonTooltip"];
+_24.addChild(this._replaceButton);
+this._replaceAllButton=new _2.form.Button({label:this._strings["replaceAllButton"],showLabel:true,iconClass:this.iconClassPrefix+" dijitEditorIconReplaceAll"});
+this._replaceAllButton.titleNode.title=this._strings["replaceAllButtonTooltip"];
+_24.addChild(this._replaceAllButton);
+this._caseSensitive=new _15({label:this._strings["matchCase"],tooltip:this._strings["matchCaseTooltip"]});
+_24.addChild(this._caseSensitive);
+this._backwards=new _15({label:this._strings["backwards"],tooltip:this._strings["backwardsTooltip"]});
+_24.addChild(this._backwards);
+this._findButton.set("disabled",true);
+this._replaceButton.set("disabled",true);
+this._replaceAllButton.set("disabled",true);
+this.connect(this._findField,"onChange","_checkButtons");
+this.connect(this._findField,"onKeyDown","_onFindKeyDown");
+this.connect(this._replaceField,"onKeyDown","_onReplaceKeyDown");
+this.connect(this._findButton,"onClick","_find");
+this.connect(this._replaceButton,"onClick","_replace");
+this.connect(this._replaceAllButton,"onClick","_replaceAll");
+this.connect(this._closeBox,"onClick","toggle");
+this._promDialog=new _2.TooltipDialog();
+this._promDialog.startup();
+this._promDialog.set("content","");
+}
+},_checkButtons:function(){
+var _25=this._findField.get("value");
+if(_25){
+this._findButton.set("disabled",false);
+this._replaceButton.set("disabled",false);
+this._replaceAllButton.set("disabled",false);
+}else{
+this._findButton.set("disabled",true);
+this._replaceButton.set("disabled",true);
+this._replaceAllButton.set("disabled",true);
+}
+},_onFindKeyDown:function(evt){
+if(evt.keyCode==_1.keys.ENTER){
+this._find();
+_1.stopEvent(evt);
+}
+},_onReplaceKeyDown:function(evt){
+if(evt.keyCode==_1.keys.ENTER){
+if(!this._replace()){
+this._replace();
+}
+_1.stopEvent(evt);
+}
+},_find:function(_26){
+var txt=this._findField.get("value")||"";
+if(txt){
+var _27=this._caseSensitive.get("value");
+var _28=this._backwards.get("value");
+var _29=this._findText(txt,_27,_28);
+if(!_29&&_26){
+this._promDialog.set("content",_1.string.substitute(this._strings["eofDialogText"],{"0":this._strings["eofDialogTextFind"]}));
+_2.popup.open({popup:this._promDialog,around:this._findButton.domNode});
+this._promDialogTimeout=setTimeout(_1.hitch(this,function(){
+clearTimeout(this._promDialogTimeout);
+this._promDialogTimeout=null;
+_2.popup.close(this._promDialog);
+}),3000);
+setTimeout(_1.hitch(this,function(){
+this.editor.focus();
+}),0);
+}
+return _29;
+}
+return false;
+},_replace:function(_2a){
+var _2b=false;
+var ed=this.editor;
+ed.focus();
+var txt=this._findField.get("value")||"";
+var _2c=this._replaceField.get("value")||"";
+if(txt){
+var _2d=this._caseSensitive.get("value");
+var _2e=this._backwards.get("value");
+var _2f=ed._sCall("getSelectedText",[null]);
+if(_1.isMoz){
+txt=_1.trim(txt);
+_2f=_1.trim(_2f);
+}
+var _30=this._filterRegexp(txt,!_2d);
+if(_2f&&_30.test(_2f)){
+ed.execCommand("inserthtml",_2c);
+_2b=true;
+if(_2e){
+this._findText(_2c,_2d,_2e);
+ed._sCall("collapse",[true]);
+}
+}
+if(!this._find(false)&&_2a){
+this._promDialog.set("content",_1.string.substitute(this._strings["eofDialogText"],{"0":this._strings["eofDialogTextReplace"]}));
+_2.popup.open({popup:this._promDialog,around:this._replaceButton.domNode});
+this._promDialogTimeout=setTimeout(_1.hitch(this,function(){
+clearTimeout(this._promDialogTimeout);
+this._promDialogTimeout=null;
+_2.popup.close(this._promDialog);
+}),3000);
+setTimeout(_1.hitch(this,function(){
+this.editor.focus();
+}),0);
+}
+return _2b;
+}
+return null;
+},_replaceAll:function(_31){
+var _32=0;
+var _33=this._backwards.get("value");
+if(_33){
+this.editor.placeCursorAtEnd();
+}else{
+this.editor.placeCursorAtStart();
+}
+if(this._replace(false)){
+_32++;
+}
+var _34=_1.hitch(this,function(){
+if(this._replace(false)){
+_32++;
+setTimeout(_34,10);
+}else{
+if(_31){
+this._promDialog.set("content",_1.string.substitute(this._strings["replaceDialogText"],{"0":""+_32}));
+_2.popup.open({popup:this._promDialog,around:this._replaceAllButton.domNode});
+this._promDialogTimeout=setTimeout(_1.hitch(this,function(){
+clearTimeout(this._promDialogTimeout);
+this._promDialogTimeout=null;
+_2.popup.close(this._promDialog);
+}),3000);
+setTimeout(_1.hitch(this,function(){
+this._findField.focus();
+this._findField.textBox.focusNode.select();
+}),0);
+}
+}
+});
+_34();
+},_findText:function(txt,_35,_36){
+var ed=this.editor;
+var win=ed.window;
+var _37=false;
 if(txt){
 if(win.find){
-_1e=win.find(txt,_1c,_1d,false,false,false,false);
+_37=win.find(txt,_35,_36,false,false,false,false);
 }else{
 var doc=ed.document;
 if(doc.selection){
 this.editor.focus();
-var _1f=doc.body.createTextRange();
-var _20=doc.selection?doc.selection.createRange():null;
-if(_20){
-if(_1d){
-_1f.setEndPoint("EndToStart",_20);
+var _38=doc.body.createTextRange();
+var _39=doc.selection?doc.selection.createRange():null;
+if(_39){
+if(_36){
+_38.setEndPoint("EndToStart",_39);
 }else{
-_1f.setEndPoint("StartToEnd",_20);
+_38.setEndPoint("StartToEnd",_39);
 }
 }
-var _21=_1c?4:0;
-if(_1d){
-_21=_21|1;
+var _3a=_35?4:0;
+if(_36){
+_3a=_3a|1;
 }
-_1e=_1f.findText(txt,null,_21);
-if(_1e){
-_1f.select();
-}
-}
+_37=_38.findText(txt,_38.text.length,_3a);
+if(_37){
+_38.select();
 }
 }
-return _1e;
-},_filterRegexp:function(_22,_23){
+}
+}
+return _37;
+},_filterRegexp:function(_3b,_3c){
 var rxp="";
 var c=null;
-for(var i=0;i<_22.length;i++){
-c=_22.charAt(i);
+for(var i=0;i<_3b.length;i++){
+c=_3b.charAt(i);
 switch(c){
 case "\\":
 rxp+=c;
 i++;
-rxp+=_22.charAt(i);
+rxp+=_3b.charAt(i);
 break;
 case "$":
 case "^":
@@ -256,34 +342,41 @@ rxp+=c;
 }
 }
 rxp="^"+rxp+"$";
-if(_23){
+if(_3c){
 return new RegExp(rxp,"mi");
 }else{
 return new RegExp(rxp,"m");
 }
+},updateState:function(){
+this.button.set("disabled",this.get("disabled"));
 },destroy:function(){
 this.inherited(arguments);
-if(this._replaceDialogTimeout){
-clearTimeout(this._replaceDialogTimeout);
-this._replaceDialogTimeout=null;
-dijit.popup.close(this._replDialog);
+if(this._promDialogTimeout){
+clearTimeout(this._promDialogTimeout);
+this._promDialogTimeout=null;
+_2.popup.close(this._promDialog);
 }
 if(this._frToolbar){
 this._frToolbar.destroyRecursive();
 this._frToolbar=null;
 }
-if(this._replDialog){
-this._replDialog.destroyRecursive();
-this._replDialog=null;
+if(this._promDialog){
+this._promDialog.destroyRecursive();
+this._promDialog=null;
 }
 }});
-dojo.subscribe(dijit._scopeName+".Editor.getPlugin",null,function(o){
+_1b._FindReplaceCloseBox=_10;
+_1b._FindReplaceTextBox=_11;
+_1b._FindReplaceCheckBox=_15;
+_1b._FindReplaceToolbar=_18;
+_1.subscribe(_2._scopeName+".Editor.getPlugin",null,function(o){
 if(o.plugin){
 return;
 }
-var _24=o.args.name.toLowerCase();
-if(_24==="findreplace"){
-o.plugin=new dojox.editor.plugins.FindReplace({});
+var _3d=o.args.name.toLowerCase();
+if(_3d==="findreplace"){
+o.plugin=new _1b({});
 }
 });
-}
+return _1b;
+});

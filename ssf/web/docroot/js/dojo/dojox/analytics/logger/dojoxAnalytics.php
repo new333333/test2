@@ -21,9 +21,9 @@
 	
 	fclose($handle);
 
-	$response = "{'eventsRecieved': '" . sizeof($items) . "', 'id': '" . $id . "'}";
+	$response = '{"eventsReceived": "' . sizeof($items) . '", "id": "' . $id . '"}';
 	if ($_REQUEST["callback"]){
-		print $_REQUEST["callback"] . "(" . $response . ");";
+		print htmlentities($_REQUEST["callback"]) . "(" . $response . ");";
 	}else{
 		print $response;
 	}

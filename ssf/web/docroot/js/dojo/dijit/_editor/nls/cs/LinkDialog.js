@@ -1,1 +1,2 @@
-({"set":"Nastavit","text":"Popis:","insertImageTitle":"Vlastnosti obrázku","url":"Adresa URL:","createLinkTitle":"Vlastnosti odkazu","newWindow":"New Window","topWindow":"Topmost Window","target":"Target:","parentWindow":"Parent Window","currentWindow":"Current Window"})
+//>>built
+define("dijit/_editor/nls/cs/LinkDialog",({createLinkTitle:"Vlastnosti odkazu",insertImageTitle:"Vlastnosti obrázku",url:"Adresa URL:",text:"Popis:",target:"Cíl:",set:"Nastavit",currentWindow:"Aktuální okno",parentWindow:"Nadřízené okno",topWindow:"Okno nejvyšší úrovně",newWindow:"Nové okno"}));
