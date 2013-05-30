@@ -1282,6 +1282,9 @@ public class GwtMainPage extends Composite
 		boolean showLoginFailedMsg = ( loginErr != null && loginErr.length() > 0 );
 		
 		LoginDlg.initAndShow( m_loginDlg, allowCancel, showLoginFailedMsg );
+		
+		m_loginDlg.setGlassStyleName( "loginDlgBox_Glass" );
+
 	}//end involeLoginDlgImpl()
 	
 	
