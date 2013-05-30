@@ -462,6 +462,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 getSharingModule().modifyShareItem(item, existing.getId());
             } else {
                 getSharingModule().addShareItem(item);
+                notifyRecipient = true;
             }
         }
         if (notifyRecipient) {
@@ -493,17 +494,21 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     }
 
     protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, boolean includeExpired) {
-        return getShareItems(spec, null, includeExpired);
+        return getShareItems(spec, null, includeExpired, false);
     }
 
     protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired) {
+        return getShareItems(spec, excludedSharer, includeExpired, false);
+    }
+
+    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired, boolean includeAllPublic) {
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
         List<ShareItem> filteredItems = new ArrayList<ShareItem>(shareItems.size());
         boolean publicIncluded = false;
         for (ShareItem item : shareItems) {
             if ((!item.isExpired() || includeExpired) && item.isLatest() &&
                     (excludedSharer==null || !excludedSharer.equals(item.getSharerId()))) {
-                if (item.getIsPartOfPublicShare()) {
+                if (!includeAllPublic && item.getIsPartOfPublicShare()) {
                     if (!publicIncluded) {
                         filteredItems.add(item);
                         publicIncluded = true;
@@ -824,6 +829,9 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         ShareItem shareItem = new ShareItem(getLoggedInUserId(), entity, share.getComment(), share.getEndDate(), recType, recipient.getId(), rights);
         if (share.getDaysToExpire()!=null) {
             shareItem.setDaysToExpire(share.getDaysToExpire());
+        }
+        if (type.equals(ShareRecipient.PUBLIC)) {
+            shareItem.setIsPartOfPublicShare(true);
         }
         return shareItem;
     }
