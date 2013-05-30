@@ -3675,3 +3675,14 @@ td.datePickerMonth {
 }
 
 /* End of styles used with TabPanels */
+
+
+.loginDlgBox_Glass
+{
+	background-color: #E0E0E0;
+	filter: alpha(opacity=100);
+	opacity: 1;
+	overflow: hidden;
+	z-index: 1000;
+}
+
