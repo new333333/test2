@@ -72,7 +72,7 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 	public void setLdapSchedule(LdapSchedule schedule) {
 	}
 
-	public void syncAll( boolean syncUsersAndGroups, boolean syncGuids, LdapSyncResults syncResults ) throws LdapSyncException {
+	public void syncAll( boolean syncUsersAndGroups, String[] listOfLdapConfigsToSyncGuid, LdapSyncResults syncResults ) throws LdapSyncException {
 	}
 
 	/**

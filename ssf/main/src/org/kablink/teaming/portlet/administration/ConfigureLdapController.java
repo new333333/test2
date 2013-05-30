@@ -31,6 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.portlet.administration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -72,8 +73,8 @@ public class ConfigureLdapController extends  SAbstractController {
 			LdapSchedule schedule = getLdapModule().getLdapSchedule();
 			if (schedule != null)
 			{
-				boolean syncGuids;
 				boolean syncAllUsersAndGroups;
+				String listOfLdapConfigsToSyncGuid;
 				
 				schedule.getScheduleInfo().setSchedule(ScheduleHelper.getSchedule(request, null));
 				schedule.getScheduleInfo().setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
@@ -221,21 +222,23 @@ public class ConfigureLdapController extends  SAbstractController {
 				// Save the ldap configuration.
 				getLdapModule().setLdapSchedule(schedule);
 
-				// Does the user want to sync guids?
-				syncGuids = PortletRequestUtils.getBooleanParameter( request, "syncGuids", false );
-				
 				// Does the user want to sync all users and groups?
 				syncAllUsersAndGroups = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
 				
+				// Get the list of ldap configs that we need to sync the guid
+				listOfLdapConfigsToSyncGuid = PortletRequestUtils.getStringParameter( request, "listOfLdapConfigsToSyncGuid", "" );
+				
 				// Do we need to start a sync?
-				if ( syncGuids == true || syncAllUsersAndGroups == true )
+				if ( (listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length() > 0 ) ||
+						  syncAllUsersAndGroups == true )
 				{
 					// Yes
 					// Pass this fact back to the page.  When the page loads it will issue an ajax
 					// request to start the sync.
 					response.setRenderParameter( "startLdapSync", "true" );
 					response.setRenderParameter( "syncAllUsersAndGroups", Boolean.toString( syncAllUsersAndGroups ) );
-					response.setRenderParameter( "syncGuids", Boolean.toString( syncGuids ) );
+					if ( listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length() > 0 )
+						response.setRenderParameter( "listOfLdapConfigsToSyncGuid", listOfLdapConfigsToSyncGuid );
 				}
 			}
 		} else
@@ -264,7 +267,31 @@ public class ConfigureLdapController extends  SAbstractController {
 
 		model.put( "startLdapSync", request.getParameter( "startLdapSync" ) );
 		model.put( "syncAllUsersAndGroups", request.getParameter( "syncAllUsersAndGroups" ) );
-		model.put( "syncGuids", request.getParameter( "syncGuids" ) );
+
+		// Add the list of ldap configs to sync the guid
+		{
+			String commaSepList;
+			ArrayList<String> list;
+			
+			list = new ArrayList<String>();
+			commaSepList = PortletRequestUtils.getStringParameter( request,  "listOfLdapConfigsToSyncGuid", "" );
+			if ( commaSepList != null && commaSepList.length() > 0 )
+			{
+				String[] listOfLdapConfigsToSyncGuid;
+				
+				listOfLdapConfigsToSyncGuid = commaSepList.split( "," );
+				if ( listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length > 0 )
+				{
+					for ( String nextLdapUrl : listOfLdapConfigsToSyncGuid )
+					{
+						list.add( nextLdapUrl );
+					}
+				}
+				else
+					list.add( commaSepList );
+			}
+			model.put( "listOfLdapConfigsToSyncGuid", list );
+		}
 
 		model.put(WebKeys.LDAP_CONFIG, getLdapModule().getLdapSchedule());
 		model.put(WebKeys.LDAP_CONNECTION_CONFIGS, getAuthenticationModule().getLdapConnectionConfigs());
