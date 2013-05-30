@@ -148,7 +148,11 @@
 			<fileset dir="${web.dir}/css" />
 		</copy>
 		<copy todir="temp/${web.static.path}/js" overwrite="true">
-			<fileset dir="${web.dir}/js" excludes="js/dojo.changes/**"/>
+			<fileset dir="${web.dir}/js">
+				<include name="**/*.*"             />
+				<exclude name="**/dojo.changes/**" />
+				<exclude name="**/dojo_1.4.0/**"   />
+			</fileset>
 		</copy>
 		<copy todir="temp/${web.static.path}/images" overwrite="true">
 			<fileset dir="${web.dir}/images" />
@@ -370,8 +374,9 @@
 		<echo>The static files will be put in "${web.static.path}"</echo>
 		<copy todir="${app.server.ssf.dir}/${web.static.path}/js">
 			<fileset dir="${web.dir}/js">
-				<include name="**/*.*" />
-				<exclude name="dojo.changes/**" />
+				<include name="**/*.*"             />
+				<exclude name="**/dojo.changes/**" />
+				<exclude name="**/dojo_1.4.0/**"   />
 			</fileset>
 		</copy>
 		<antcall target="deploy-dojo-changes" />

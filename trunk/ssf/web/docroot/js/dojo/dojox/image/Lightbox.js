@@ -1,23 +1,14 @@
-/*
-	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojox.image.Lightbox"]){
-dojo._hasResource["dojox.image.Lightbox"]=true;
-dojo.provide("dojox.image.Lightbox");
-dojo.experimental("dojox.image.Lightbox");
-dojo.require("dijit.Dialog");
-dojo.require("dojox.fx._base");
-dojo.declare("dojox.image.Lightbox",dijit._Widget,{group:"",title:"",href:"",duration:500,modal:false,_allowPassthru:false,_attachedDialog:null,startup:function(){
+//>>built
+define("dojox/image/Lightbox",["dojo","dijit","dojox","dojo/text!./resources/Lightbox.html","dijit/Dialog","dojox/fx/_base"],function(_1,_2,_3,_4){
+_1.experimental("dojox.image.Lightbox");
+_1.getObject("image",true,_3);
+var _5=_1.declare("dojox.image.Lightbox",_2._Widget,{group:"",title:"",href:"",duration:500,modal:false,_allowPassthru:false,_attachedDialog:null,startup:function(){
 this.inherited(arguments);
-var _1=dijit.byId("dojoxLightboxDialog");
-if(_1){
-this._attachedDialog=_1;
+var _6=_2.byId("dojoxLightboxDialog");
+if(_6){
+this._attachedDialog=_6;
 }else{
-this._attachedDialog=new dojox.image.LightboxDialog({id:"dojoxLightboxDialog"});
+this._attachedDialog=new _3.image.LightboxDialog({id:"dojoxLightboxDialog"});
 this._attachedDialog.startup();
 }
 if(!this.store){
@@ -42,75 +33,82 @@ this._allowPassthru=true;
 },enable:function(){
 this._allowPassthru=false;
 },onClick:function(){
+},destroy:function(){
+this._attachedDialog.removeImage(this);
+this.inherited(arguments);
 }});
-dojo.declare("dojox.image.LightboxDialog",dijit.Dialog,{title:"",inGroup:null,imgUrl:dijit._Widget.prototype._blankGif,errorMessage:"Image not found.",adjust:true,modal:false,_groups:{XnoGroupX:[]},errorImg:dojo.moduleUrl("dojox.image","resources/images/warning.png"),templateString:dojo.cache("dojox.image","resources/Lightbox.html","<div class=\"dojoxLightbox\" dojoAttachPoint=\"containerNode\">\n\t<div style=\"position:relative\">\n\t\t<div dojoAttachPoint=\"imageContainer\" class=\"dojoxLightboxContainer\" dojoAttachEvent=\"onclick: _onImageClick\">\n\t\t\t<img dojoAttachPoint=\"imgNode\" src=\"${imgUrl}\" class=\"dojoxLightboxImage\" alt=\"${title}\">\n\t\t\t<div class=\"dojoxLightboxFooter\" dojoAttachPoint=\"titleNode\">\n\t\t\t\t<div class=\"dijitInline LightboxClose\" dojoAttachPoint=\"closeNode\"></div>\n\t\t\t\t<div class=\"dijitInline LightboxNext\" dojoAttachPoint=\"nextNode\"></div>\t\n\t\t\t\t<div class=\"dijitInline LightboxPrev\" dojoAttachPoint=\"prevNode\"></div>\n\t\t\t\t<div class=\"dojoxLightboxText\" dojoAttachPoint=\"titleTextNode\"><span dojoAttachPoint=\"textNode\">${title}</span><span dojoAttachPoint=\"groupCount\" class=\"dojoxLightboxGroupText\"></span></div>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n</div>\n"),startup:function(){
+_5.LightboxDialog=_1.declare("dojox.image.LightboxDialog",_2.Dialog,{title:"",inGroup:null,imgUrl:_2._Widget.prototype._blankGif,errorMessage:"Image not found.",adjust:true,modal:false,imageClass:"dojoxLightboxImage",errorImg:_1.moduleUrl("dojox.image","resources/images/warning.png"),templateString:_4,constructor:function(_7){
+this._groups=this._groups||(_7&&_7._groups)||{XnoGroupX:[]};
+},startup:function(){
 this.inherited(arguments);
 this._animConnects=[];
-this.connect(this.nextNode,"onclick","_nextImage");
-this.connect(this.prevNode,"onclick","_prevImage");
-this.connect(this.closeNode,"onclick","hide");
+this.connect(this.nextButtonNode,"onclick","_nextImage");
+this.connect(this.prevButtonNode,"onclick","_prevImage");
+this.connect(this.closeButtonNode,"onclick","hide");
 this._makeAnims();
-this._vp=dijit.getViewport();
+this._vp=_1.window.getBox();
 return this;
-},show:function(_2){
-var _3=this;
-this._lastGroup=_2;
-if(!_3.open){
-_3.inherited(arguments);
-this._modalconnects.push(dojo.connect(dojo.global,"onscroll",this,"_position"),dojo.connect(dojo.global,"onresize",this,"_position"),dojo.connect(dojo.body(),"onkeypress",this,"_handleKey"));
-if(!_2.modal){
-this._modalconnects.push(dojo.connect(dijit._underlay.domNode,"onclick",this,"onCancel"));
+},show:function(_8){
+var _9=this;
+this._lastGroup=_8;
+if(!_9.open){
+_9.inherited(arguments);
+_9._modalconnects.push(_1.connect(_1.global,"onscroll",this,"_position"),_1.connect(_1.global,"onresize",this,"_position"),_1.connect(_1.body(),"onkeypress",this,"_handleKey"));
+if(!_8.modal){
+_9._modalconnects.push(_1.connect(_2._underlay.domNode,"onclick",this,"onCancel"));
 }
 }
 if(this._wasStyled){
-dojo.destroy(_3.imgNode);
-_3.imgNode=dojo.create("img",null,_3.imageContainer,"first");
-_3._makeAnims();
-_3._wasStyled=false;
+var _a=_1.create("img",{className:_9.imageClass},_9.imgNode,"after");
+_1.destroy(_9.imgNode);
+_9.imgNode=_a;
+_9._makeAnims();
+_9._wasStyled=false;
 }
-dojo.style(_3.imgNode,"opacity","0");
-dojo.style(_3.titleNode,"opacity","0");
-var _4=_2.href;
-if((_2.group&&_2!=="XnoGroupX")||_3.inGroup){
-if(!_3.inGroup){
-_3.inGroup=_3._groups[(_2.group)];
-dojo.forEach(_3.inGroup,function(g,i){
-if(g.href==_2.href){
-_3._index=i;
+_1.style(_9.imgNode,"opacity","0");
+_1.style(_9.titleNode,"opacity","0");
+var _b=_8.href;
+if((_8.group&&_8!=="XnoGroupX")||_9.inGroup){
+if(!_9.inGroup){
+_9.inGroup=_9._groups[(_8.group)];
+_1.forEach(_9.inGroup,function(g,i){
+if(g.href==_8.href){
+_9._index=i;
 }
-},_3);
+});
 }
-if(!_3._index){
-_3._index=0;
-_4=_3.inGroup[_3._index].href;
+if(!_9._index){
+_9._index=0;
+var sr=_9.inGroup[_9._index];
+_b=(sr&&sr.href)||_9.errorImg;
 }
-_3.groupCount.innerHTML=" ("+(_3._index+1)+" of "+_3.inGroup.length+")";
-_3.prevNode.style.visibility="visible";
-_3.nextNode.style.visibility="visible";
+_9.groupCount.innerHTML=" ("+(_9._index+1)+" of "+Math.max(1,_9.inGroup.length)+")";
+_9.prevButtonNode.style.visibility="visible";
+_9.nextButtonNode.style.visibility="visible";
 }else{
-_3.groupCount.innerHTML="";
-_3.prevNode.style.visibility="hidden";
-_3.nextNode.style.visibility="hidden";
+_9.groupCount.innerHTML="";
+_9.prevButtonNode.style.visibility="hidden";
+_9.nextButtonNode.style.visibility="hidden";
 }
-if(!_2.leaveTitle){
-_3.textNode.innerHTML=_2.title;
+if(!_8.leaveTitle){
+_9.textNode.innerHTML=_8.title;
 }
-_3._ready(_4);
-},_ready:function(_5){
-var _6=this;
-_6._imgError=dojo.connect(_6.imgNode,"error",_6,function(){
-dojo.disconnect(_6._imgError);
-_6.imgNode.src=_6.errorImg;
-_6.textNode.innerHTML=_6.errorMessage;
+_9._ready(_b);
+},_ready:function(_c){
+var _d=this;
+_d._imgError=_1.connect(_d.imgNode,"error",_d,function(){
+_1.disconnect(_d._imgError);
+_d.imgNode.src=_d.errorImg;
+_d.textNode.innerHTML=_d.errorMessage;
 });
-_6._imgConnect=dojo.connect(_6.imgNode,"load",_6,function(e){
-_6.resizeTo({w:_6.imgNode.width,h:_6.imgNode.height,duration:_6.duration});
-dojo.disconnect(_6._imgConnect);
-if(_6._imgError){
-dojo.disconnect(_6._imgError);
+_d._imgConnect=_1.connect(_d.imgNode,"load",_d,function(e){
+_d.resizeTo({w:_d.imgNode.width,h:_d.imgNode.height,duration:_d.duration});
+_1.disconnect(_d._imgConnect);
+if(_d._imgError){
+_1.disconnect(_d._imgError);
 }
 });
-_6.imgNode.src=_5;
+_d.imgNode.src=_c;
 },_nextImage:function(){
 if(!this.inGroup){
 return;
@@ -134,38 +132,48 @@ this._loadImage();
 this._loadingAnim.play(1);
 },_prepNodes:function(){
 this._imageReady=false;
+if(this.inGroup&&this.inGroup[this._index]){
 this.show({href:this.inGroup[this._index].href,title:this.inGroup[this._index].title});
-},resizeTo:function(_7,_8){
-var _9=dojo.boxModel=="border-box"?dojo._getBorderExtents(this.domNode).w:0,_a=_8||{h:30};
-this._lastTitleSize=_a;
-if(this.adjust&&(_7.h+_a.h+_9+80>this._vp.h||_7.w+_9+60>this._vp.w)){
-this._lastSize=_7;
-_7=this._scaleToFit(_7);
-}
-this._currentSize=_7;
-var _b=dojox.fx.sizeTo({node:this.containerNode,duration:_7.duration||this.duration,width:_7.w+_9,height:_7.h+_a.h+_9});
-this.connect(_b,"onEnd","_showImage");
-_b.play(15);
-},_scaleToFit:function(_c){
-var ns={};
-if(this._vp.h>this._vp.w){
-ns.w=this._vp.w-80;
-ns.h=ns.w*(_c.h/_c.w);
 }else{
-ns.h=this._vp.h-60-this._lastTitleSize.h;
-ns.w=ns.h*(_c.w/_c.h);
+this.show({title:this.errorMessage,href:this.errorImg});
+}
+},_calcTitleSize:function(){
+var _e=_1.map(_1.query("> *",this.titleNode).position(),function(s){
+return s.h;
+});
+return {h:Math.max.apply(Math,_e)};
+},resizeTo:function(_f,_10){
+var _11=_1.boxModel=="border-box"?_1._getBorderExtents(this.domNode).w:0,_12=_10||this._calcTitleSize();
+this._lastTitleSize=_12;
+if(this.adjust&&(_f.h+_12.h+_11+80>this._vp.h||_f.w+_11+60>this._vp.w)){
+this._lastSize=_f;
+_f=this._scaleToFit(_f);
+}
+this._currentSize=_f;
+var _13=_3.fx.sizeTo({node:this.containerNode,duration:_f.duration||this.duration,width:_f.w+_11,height:_f.h+_12.h+_11});
+this.connect(_13,"onEnd","_showImage");
+_13.play(15);
+},_scaleToFit:function(_14){
+var ns={},nvp={w:this._vp.w-80,h:this._vp.h-60-this._lastTitleSize.h};
+var _15=nvp.w/nvp.h,_16=_14.w/_14.h;
+if(_16>=_15){
+ns.h=nvp.w/_16;
+ns.w=nvp.w;
+}else{
+ns.w=_16*nvp.h;
+ns.h=nvp.h;
 }
 this._wasStyled=true;
 this._setImageSize(ns);
-ns.duration=_c.duration;
+ns.duration=_14.duration;
 return ns;
-},_setImageSize:function(_d){
+},_setImageSize:function(_17){
 var s=this.imgNode;
-s.height=_d.h;
-s.width=_d.w;
+s.height=_17.h;
+s.width=_17.w;
 },_size:function(){
 },_position:function(e){
-this._vp=dijit.getViewport();
+this._vp=_1.window.getBox();
 this.inherited(arguments);
 if(e&&e.type=="resize"){
 if(this._wasStyled){
@@ -180,37 +188,50 @@ this.resizeTo({w:this.imgNode.width,h:this.imgNode.height});
 },_showImage:function(){
 this._showImageAnim.play(1);
 },_showNav:function(){
-var _e=dojo.marginBox(this.titleNode);
-if(_e.h>this._lastTitleSize.h){
-this.resizeTo(this._wasStyled?this._lastSize:this._currentSize,_e);
+var _18=_1.marginBox(this.titleNode);
+if(_18.h>this._lastTitleSize.h){
+this.resizeTo(this._wasStyled?this._lastSize:this._currentSize,_18);
 }else{
 this._showNavAnim.play(1);
 }
 },hide:function(){
-dojo.fadeOut({node:this.titleNode,duration:200,onEnd:dojo.hitch(this,function(){
+_1.fadeOut({node:this.titleNode,duration:200,onEnd:_1.hitch(this,function(){
 this.imgNode.src=this._blankGif;
 })}).play(5);
 this.inherited(arguments);
 this.inGroup=null;
 this._index=null;
-},addImage:function(_f,_10){
-var g=_10;
-if(!_f.href){
+},addImage:function(_19,_1a){
+var g=_1a;
+if(!_19.href){
 return;
 }
 if(g){
 if(!this._groups[g]){
 this._groups[g]=[];
 }
-this._groups[g].push(_f);
+this._groups[g].push(_19);
 }else{
-this._groups["XnoGroupX"].push(_f);
+this._groups["XnoGroupX"].push(_19);
+}
+},removeImage:function(_1b){
+var g=_1b.group||"XnoGroupX";
+_1.every(this._groups[g],function(_1c,i,ar){
+if(_1c.href==_1b.href){
+ar.splice(i,1);
+return false;
+}
+return true;
+});
+},removeGroup:function(_1d){
+if(this._groups[_1d]){
+this._groups[_1d]=[];
 }
 },_handleKey:function(e){
 if(!this.open){
 return;
 }
-var dk=dojo.keys;
+var dk=_1.keys;
 switch(e.charOrCode){
 case dk.ESCAPE:
 this.hide();
@@ -227,14 +248,14 @@ this._prevImage();
 break;
 }
 },_makeAnims:function(){
-dojo.forEach(this._animConnects,dojo.disconnect);
+_1.forEach(this._animConnects,_1.disconnect);
 this._animConnects=[];
-this._showImageAnim=dojo.fadeIn({node:this.imgNode,duration:this.duration});
-this._animConnects.push(dojo.connect(this._showImageAnim,"onEnd",this,"_showNav"));
-this._loadingAnim=dojo.fx.combine([dojo.fadeOut({node:this.imgNode,duration:175}),dojo.fadeOut({node:this.titleNode,duration:175})]);
-this._animConnects.push(dojo.connect(this._loadingAnim,"onEnd",this,"_prepNodes"));
-this._showNavAnim=dojo.fadeIn({node:this.titleNode,duration:225});
-},onClick:function(_11){
+this._showImageAnim=_1.fadeIn({node:this.imgNode,duration:this.duration});
+this._animConnects.push(_1.connect(this._showImageAnim,"onEnd",this,"_showNav"));
+this._loadingAnim=_1.fx.combine([_1.fadeOut({node:this.imgNode,duration:175}),_1.fadeOut({node:this.titleNode,duration:175})]);
+this._animConnects.push(_1.connect(this._loadingAnim,"onEnd",this,"_prepNodes"));
+this._showNavAnim=_1.fadeIn({node:this.titleNode,duration:225});
+},onClick:function(_1e){
 },_onImageClick:function(e){
 if(e&&e.target==this.imgNode){
 this.onClick(this._lastGroup);
@@ -243,4 +264,6 @@ this._lastGroup.onClick(this._lastGroup);
 }
 }
 }});
-}
+return _5;
+});
+require({cache:{"url:dojox/image/resources/Lightbox.html":"<div class=\"dojoxLightbox\" dojoAttachPoint=\"containerNode\">\n\t<div style=\"position:relative\">\n\t\t<div dojoAttachPoint=\"imageContainer\" class=\"dojoxLightboxContainer\" dojoAttachEvent=\"onclick: _onImageClick\">\n\t\t\t<img dojoAttachPoint=\"imgNode\" src=\"${imgUrl}\" class=\"${imageClass}\" alt=\"${title}\">\n\t\t\t<div class=\"dojoxLightboxFooter\" dojoAttachPoint=\"titleNode\">\n\t\t\t\t<div class=\"dijitInline LightboxClose\" dojoAttachPoint=\"closeButtonNode\"></div>\n\t\t\t\t<div class=\"dijitInline LightboxNext\" dojoAttachPoint=\"nextButtonNode\"></div>\t\n\t\t\t\t<div class=\"dijitInline LightboxPrev\" dojoAttachPoint=\"prevButtonNode\"></div>\n\t\t\t\t<div class=\"dojoxLightboxText\" dojoAttachPoint=\"titleTextNode\"><span dojoAttachPoint=\"textNode\">${title}</span><span dojoAttachPoint=\"groupCount\" class=\"dojoxLightboxGroupText\"></span></div>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n</div>"}});

@@ -41,7 +41,7 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 	
 	<!-- The following templates process little bits of things that can often occur in multiple contexts -->
 	
-	<xsl:template name="kill-extra-spaces" mode="kill-extra-spaces">
+	<xsl:template name="kill-extra-spaces">
 		<xsl:param name="string"/>
 		<!-- Some don't feel that SVG is verbose enough and thus add extra spaces, which when -->
 		<!-- untreated can look exactly like delimiters in point sets. -->
@@ -63,7 +63,7 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template name="arg-processor" mode="arg-processor">
+	<xsl:template name="arg-processor">
 		<xsl:param name="values"/>
 		<xsl:param name="labels"/>
 		<!-- Recursively chew through the arguments in a traditional CAR / CDR pattern -->
@@ -92,7 +92,7 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template name="background-processor" mode="background-processor">
+	<xsl:template name="background-processor">
 		<xsl:param name="background"/>
 		<xsl:choose>
 			<xsl:when test="starts-with($background,'url')">
@@ -136,7 +136,7 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template name="point-processor" mode="point-processor">
+	<xsl:template name="point-processor">
 		<xsl:param name="points"/>
 		<!-- Recursively process points in a traditional CAR / CDR pattern -->
 		<xsl:variable name="pointsCdr" select="normalize-space(substring-after($points,' '))"/>
@@ -165,7 +165,7 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		</xsl:choose>
 	</xsl:template>
 	
-	<xsl:template name="rgb-triple-processor" mode="rgb-triple-processor">
+	<xsl:template name="rgb-triple-processor">
 		<xsl:param name="triple"/>
 		<!-- Note that as SVG triples cannot contain alpha values, we hardcode it to be fully opaque -->
 		<!-- This could theoretically be better handled by watching for fill-opacity -->
@@ -181,7 +181,7 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		<xsl:text>,"a":1},</xsl:text>
 	</xsl:template>
 	
-	<xsl:template name="styles-processor" mode="styles-processor">
+	<xsl:template name="styles-processor">
 		<xsl:param name="styles"/>
 		<!-- Recursively chew through the styles in a traditional CAR / CDR pattern -->
 		<xsl:variable name="stylesCdr" select="substring-after($styles,';')"/>
@@ -206,7 +206,7 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template name="transform-processor" mode="transform-processor">
+	<xsl:template name="transform-processor">
 		<xsl:param name="transforms"/>
 		<!-- Recursively chew through the transforms in a traditional CAR / CDR pattern -->
 		<xsl:variable name="transformsCdr" select="normalize-space(substring-after($transforms,')'))"/>
@@ -323,7 +323,7 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		</xsl:if>
 	</xsl:template>
 
-	<xsl:template name="url-processor" mode="url-processor">
+	<xsl:template name="url-processor">
 		<xsl:param name="url"/>
 		<xsl:param name="groupAttrs" select="''"/>
 		<!-- We can only handle local references; that's probably all we should get anyway -->
@@ -340,7 +340,7 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 	<!-- The biggest of these is gradient transforms; when GFX natively supports it all the -->
 	<!-- kluges made to support it here (including all the following code) should be removed. -->
 	
-	<xsl:template name="gradient-transform-helper" mode="gradient-transform-helper">
+	<xsl:template name="gradient-transform-helper">
 		<!-- This nasty little routine helps gradient adjuster and can be -->
 		<!-- removed when GFX gets gradientTransform support. -->
 		<xsl:param name="cxa"/>
@@ -390,7 +390,7 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		</xsl:choose>
 	</xsl:template>
 	
-	<xsl:template name="gradient-adjuster" mode="gradient-adjuster">
+	<xsl:template name="gradient-adjuster">
 		<xsl:param name="node"/>
 		<!-- This code is awful and only meant to serve until GFX gets gradientTransform support. -->
 		<!-- Once GFX does gradientTransforms, the following should be destroyed and forgotten. -->
@@ -707,7 +707,10 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		<xsl:call-template name="transform-processor">
 			<xsl:with-param name="transforms" select="."/>
 		</xsl:call-template>
-		<xsl:text>},</xsl:text>		
+		<xsl:text>}</xsl:text>		
+		<xsl:if test="not(position()=last())"> 
+			<xsl:text >,</xsl:text> 
+		</xsl:if>
 	</xsl:template>
 
 	<!-- SVG Element Handling -->
@@ -741,7 +744,10 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		<xsl:call-template name="common-attributes">
 			<xsl:with-param name="node" select="."/>
 		</xsl:call-template>
-		<xsl:text>},</xsl:text>
+		<xsl:text>}</xsl:text>
+		<xsl:if test="not(position()=last())"> 
+			<xsl:text >,</xsl:text> 
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="svg:ellipse">
@@ -750,12 +756,15 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		<xsl:apply-templates select="@id"/>
 		<xsl:text>shape:{type:"ellipse",</xsl:text>
 		<xsl:apply-templates select="@cx|@cy|@rx|@ry"/>
-		<xsl:text>},</xsl:text>
+		<xsl:text>}</xsl:text>
 		<xsl:value-of select="$groupAttrs"/>
 		<xsl:call-template name="common-attributes">
 			<xsl:with-param name="node" select="."/>
 		</xsl:call-template>
-		<xsl:text>},</xsl:text>
+		<xsl:text>}</xsl:text>
+		<xsl:if test="not(position()=last())"> 
+			<xsl:text >,</xsl:text> 
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="svg:g">
@@ -780,13 +789,19 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		<xsl:apply-templates select="&SupportedElements;">
 			<xsl:with-param name="groupAttrs" select="$newGroupAttrs"/>
 		</xsl:apply-templates>
-		<xsl:text>],</xsl:text>
+		<xsl:text>]</xsl:text>
+		<xsl:if test="not(position()=last())"> 
+			<xsl:text >,</xsl:text> 
+		</xsl:if>
 		<!-- When GFX gets group fills etc., remove the following line and uncomment the ones below. -->
 		<xsl:apply-templates select="@transform"/>
 		<!--<xsl:call-template name="common-attributes">-->
 		<!--	<xsl:with-param name="node" select="."/>-->
 		<!--</xsl:call-template>-->
-		<xsl:text>},</xsl:text>
+		<xsl:text>}</xsl:text>
+		<xsl:if test="not(position()=last())"> 
+			<xsl:text >,</xsl:text> 
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="svg:image">
@@ -823,7 +838,10 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		<xsl:call-template name="common-attributes">
 			<xsl:with-param name="node" select="."/>
 		</xsl:call-template>
-		<xsl:text>},</xsl:text>
+		<xsl:text>}</xsl:text>
+		<xsl:if test="not(position()=last())"> 
+			<xsl:text >,</xsl:text> 
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="svg:linearGradient">
@@ -849,7 +867,10 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		<!-- Uncommenting the following would support it here. -->
 		<!-- <xsl:apply-templates select="@x1|@x2|@y1|@y2"/> -->
 		<!-- <xsl:apply-templates select="@gradientTransform"/> -->
-		<xsl:text>]},</xsl:text>
+		<xsl:text>]}</xsl:text>
+		<xsl:if test="not(position()=last())"> 
+			<xsl:text >,</xsl:text> 
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="svg:path">
@@ -875,7 +896,10 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		<!-- GFX only seems to handle image pattern type fills, so that's all we do -->
 		<xsl:text>{type:"pattern",</xsl:text>
 		<xsl:apply-templates select="@width|@height|@xlink:href"/>
-		<xsl:text>},</xsl:text>
+		<xsl:text>}</xsl:text>
+		<xsl:if test="not(position()=last())"> 
+			<xsl:text >,</xsl:text> 
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="svg:polygon|svg:polyline">
@@ -910,7 +934,10 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		<xsl:call-template name="common-attributes">
 			<xsl:with-param name="node" select="."/>
 		</xsl:call-template>
-		<xsl:text>},</xsl:text>
+		<xsl:text>}</xsl:text>
+		<xsl:if test="not(position()=last())"> 
+			<xsl:text >,</xsl:text> 
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="svg:radialGradient">
@@ -939,7 +966,10 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		<!-- Uncommenting the following would support it here. -->
 		<!-- <xsl:apply-templates select="@cx|@cy|@r"/> -->
 		<!-- <xsl:apply-templates select="@gradientTransform"/> -->
-		<xsl:text>]},</xsl:text>
+		<xsl:text>]}</xsl:text>
+		<xsl:if test="not(position()=last())"> 
+			<xsl:text >,</xsl:text> 
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="svg:rect">
@@ -959,7 +989,10 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		<xsl:call-template name="common-attributes">
 			<xsl:with-param name="node" select="."/>
 		</xsl:call-template>
-		<xsl:text>},</xsl:text>
+		<xsl:text>}</xsl:text>
+		<xsl:if test="not(position()=last())"> 
+			<xsl:text >,</xsl:text> 
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="svg:stop">
@@ -968,7 +1001,10 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		<xsl:apply-templates select="@offset"/>
 		<xsl:text>color:</xsl:text>
 		<xsl:apply-templates select="@style"/>
-		<xsl:text>},</xsl:text>
+		<xsl:text>}</xsl:text>
+		<xsl:if test="not(position()=last())"> 
+			<xsl:text >,</xsl:text> 
+		</xsl:if>
 	</xsl:template>
 
 	<xsl:template match="svg:text|svg:textPath">
@@ -1013,7 +1049,10 @@ GMail, etc.) or Eric (Saugus.net, ShellTown, etc.)
 		<xsl:call-template name="common-attributes">
 			<xsl:with-param name="node" select="."/>
 		</xsl:call-template>
-		<xsl:text>},</xsl:text>
+		<xsl:text>}</xsl:text>
+		<xsl:if test="not(position()=last())"> 
+			<xsl:text >,</xsl:text> 
+		</xsl:if>
 	</xsl:template>
 	
 	<xsl:template match="svg:use">

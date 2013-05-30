@@ -1,1 +1,2 @@
-({"set":"Festlegen","text":"Beschreibung:","insertImageTitle":"Grafikeigenschaften","url":"URL:","createLinkTitle":"Linkeigenschaften","newWindow":"New Window","topWindow":"Topmost Window","target":"Target:","parentWindow":"Parent Window","currentWindow":"Current Window"})
+//>>built
+define("dijit/_editor/nls/de/LinkDialog",({createLinkTitle:"Linkeigenschaften",insertImageTitle:"Grafikeigenschaften",url:"URL:",text:"Beschreibung:",target:"Ziel:",set:"Festlegen",currentWindow:"Aktuelles Fenster",parentWindow:"Übergeordnetes Fenster",topWindow:"Aktives Fenster",newWindow:"Neues Fenster"}));
