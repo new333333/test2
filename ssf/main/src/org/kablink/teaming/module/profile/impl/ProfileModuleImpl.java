@@ -1832,7 +1832,7 @@ public Map getUsers() {
                     updates.put( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE, User.ExtProvState.initial );
                     // Do NOT set the "fromOpenid" bit on initially. We will set it when the user actually
                     // logs in and binds a valid OpenID account with the email address specified during sharing.
-                    user = profileModule.addUserFromPortal(
+                    user = addUserFromPortal(
                             new IdentityInfo(false, false, false, false),
                             emailAddress,
                             null,
