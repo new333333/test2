@@ -51,7 +51,7 @@ public class LdapServiceImpl extends BaseService implements LdapService {
 
 	public void ldap_syncAll(String accessToken) {
 		try {
-			getLdapModule().syncAll( true, false, null );
+			getLdapModule().syncAll( true, null, null );
 		} catch (LdapSyncException ldapSyncEx) {
 			NamingException ex;
 			

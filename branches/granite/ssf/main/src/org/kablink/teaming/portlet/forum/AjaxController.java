@@ -1042,8 +1042,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String			syncId;
 		LdapSyncThread	ldapSyncThread;
 		LdapModule		ldapModule;
-		Boolean syncGuids;
 		Boolean syncUsersAndGroups;
+		String[] listOfLdapConfigsToSyncGuid;
 		
 		model = new HashMap();
 		
@@ -1052,8 +1052,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		// Get the id of the sync results we are looking for.
 		syncId = PortletRequestUtils.getStringParameter( request, "ldapSyncResultsId", "" );
 		
-		// Get the flag that tells us whether we should sync the ldap guid
-		syncGuids = PortletRequestUtils.getBooleanParameter( request, "syncGuids", false );
+		// Get the list of ldap configs that we need to sync the guid.
+		listOfLdapConfigsToSyncGuid = PortletRequestUtils.getStringParameters( request, "listOfLdapConfigsToSyncGuid" );
 		
 		// Get the flag that tells us whether we should sync all users and groups.
 		syncUsersAndGroups = PortletRequestUtils.getBooleanParameter( request, "syncUsersAndGroups", false );
@@ -1061,7 +1061,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 		// Create an LdapSyncThread object that will do the sync work.
 		// Currently doing the sync on a separate thread does not work.  When doing work on a separate thread
 		// works, replace the call to doLdapSync() with start().
-		ldapSyncThread = LdapSyncThread.createLdapSyncThread( request, syncId, ldapModule, syncUsersAndGroups.booleanValue(), syncGuids.booleanValue() );
+		ldapSyncThread = LdapSyncThread.createLdapSyncThread(
+														request,
+														syncId,
+														ldapModule,
+														syncUsersAndGroups.booleanValue(),
+														listOfLdapConfigsToSyncGuid );
+
 		if ( ldapSyncThread != null )
 		{
 			ldapSyncThread.doLdapSync();

@@ -65,7 +65,7 @@ public interface LdapModule {
 
     public String readLdapGuidFromDirectory(String userName, Long zoneId, LdapConnectionConfig config);
 
-    public void syncAll( boolean syncUsersAndGroups, boolean syncGuids, LdapSyncResults syncResults ) throws LdapSyncException;
+	public void syncAll( boolean syncUsersAndGroups, String[] listOfLdapConfigsToSyncGuid, LdapSyncResults syncResults ) throws LdapSyncException;
 
 	public void syncUser( String teamingUserName, String ldapUserName ) throws NoUserByTheNameException,NamingException;
 	
