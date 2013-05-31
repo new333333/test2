@@ -1,17 +1,17 @@
-﻿Novell Vibe 3.3
+﻿Novell Vibe 3.4
 
 1.0  Komma igång
 
      Fullständiga systemkrav och installationsanvisningar för Novell
-     Vibe-administratörer finns i "installationshandboken för Vibe 3.3."
+     Vibe-administratörer finns i "installationshandboken för Vibe 3.4."
      Anvisningar för installation av Vibe-webbplatsen samt för löpande
      administration och underhåll finns i "administrationshandboken för Vibe
-     3.3."
+     3.4."
 
      När Vibe-webbplatsen har installerats finns anvisningar för användarna i
-     "användarhandboken för Vibe 3.3" och "användarhandboken för avancerade Vibe
-     3.3-användare". (På språk där "användarhandboken för Vibe 3.3" inte är
-     tillgänglig tillhandahålls i stället en "QuickStart för Vibe 3.3".)
+     "användarhandboken för Vibe 3.4" och "användarhandboken för avancerade Vibe
+     3.4-användare". (På språk där "användarhandboken för Vibe 3.4" inte är
+     tillgänglig tillhandahålls i stället en "QuickStart för Vibe 3.4".)
 
      Du kan visa onlinehjälpen för Vibe när du loggar in på Vibe-webbplatsen.
 
@@ -19,21 +19,21 @@
 2.0  Kända problem
 
      En aktuell lista över kända problem i den här versionen finns i den
-     fullständiga Viktigt-filen för Novell Vibe 3.3, som finns på webbplatsen med
-     dokumentation för Novell Vibe 3.3
-     (http://www.novell.com/documentation/vibe33).
+     fullständiga Viktigt-filen för Novell Vibe 3.4, som finns på webbplatsen med
+     dokumentation för Novell Vibe 3.4
+     (http://www.novell.com/documentation/vibe34).
 
 
 3.0  Dokumentation
 
-     All Novell Vibe 3.3-dokumentation finns på webbplatsen med dokumentation för
-     Novell Vibe 3.3 (http://www.novell.com/documentation/vibe33):
+     All Novell Vibe 3.4-dokumentation finns på webbplatsen med dokumentation för
+     Novell Vibe 3.4 (http://www.novell.com/documentation/vibe34):
 
-     -  Fullständig Viktig-fil för Vibe 3.3
+     -  Fullständig Viktig-fil för Vibe 3.4
 
      -  "Installation Guide"
 
-     -  "Handboken Administration"
+     -  "Administrationsguide"
 
      -  "Användarhandbok för "
 
@@ -43,9 +43,13 @@
 
      -  "QuickStart för Vibe"
 
-     -  "QuickStart för Vibe Desktop"
+     -  "QuickStart för Vibe Desktop för Windows"
 
-     -  "QuickStart för Vibe Tilläggsprogram"
+     -  "QuickStart för Vibe Desktop för Mac"
+
+     -  "Vanliga frågor och svar om Vibe Desktop"
+
+     -  "QuickStart för Vibe Add-In"
 
      Utöver dokumentationen för Novell Vibe finns följande informationskällor:
 
@@ -96,7 +100,7 @@
      (http://www.novell.com/info/exports/). Novell tar inte på sig något ansvar
      för eventuella uteblivna exportgodkännanden.
 
-     Copyright © 2008–2012 Novell, Inc. Med ensamrätt. Ingen del av denna
+     Copyright © 2008–2013 Novell, Inc. Med ensamrätt. Ingen del av denna
      publikation får reproduceras, kopieras, lagras eller överföras utan
      skriftligt medgivande från utgivaren.
 

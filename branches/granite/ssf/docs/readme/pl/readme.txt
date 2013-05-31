@@ -1,18 +1,18 @@
-﻿Novell Vibe 3.3
+﻿Novell Vibe 3.4
 
 1.0  Wprowadzenie
 
      Pełne wymagania systemowe i szczegółowe instrukcje instalacji oprogramowania
-     dla administratora witryny Novell Vibe można znaleźć w podręczniku "Vibe 3.3
-     Installation Guide." Instrukcje konfiguracji witryny Vibe oraz instrukcje
-     dotyczące jej bieżącego administrowania i konserwacji są dostępne w
-     podręczniku "Vibe 3.3 Administration Guide."
+     dla administratora witryny Novell Vibe można znaleźć w "podręczniku
+     instalacji systemu Vibe 3.4." Instrukcje konfiguracji witryny Vibe oraz
+     instrukcje dotyczące jej bieżącego administrowania i konserwacji są dostępne
+     w "przewodniku administratora systemu Vibe 3.4."
 
      Użytkownicy mogą znaleźć instrukcje dotyczące korzystania ze skonfigurowanej
-     witryny Vibe w "Przewodniku użytkownika systemu Vibe 3.3" oraz w podręczniku
-     "Vibe 3.3 Advanced User Guide". (Skrócona instrukcja obsługi "Vibe 3.3 Quick
-     Start" jest udostępniana w językach, w których nie jest dostępny przewodnik
-     użytkownika "Vibe 3.3 User Guide").
+     witryny Vibe w "przewodniku użytkownika systemu Vibe 3.4" oraz w
+     "przewodniku zaawansowanego użytkownika systemu Vibe 3.4". (Skrócona
+     instrukcja obsługi "Vibe 3.4 Quick Start" jest udostępniana w językach, w
+     których nie jest dostępny "przewodnik użytkownika systemu Vibe 3.4").
 
      Po zalogowaniu do witryny Vibe można wyświetlić jej pomoc online.
 
@@ -20,18 +20,18 @@
 2.0  Znane problemy
 
      Aktualna lista znanych problemów dotyczących tego wydania znajduje się w
-     pełnej wersji pliku Readme produktu Novell Vibe 3.3, która jest dostępna w
-     witrynie internetowej z dokumentacją systemu Novell Vibe 3.3
-     (http://www.novell.com/documentation/vibe33).
+     pełnej wersji pliku Readme produktu Novell Vibe 3.4, która jest dostępna w
+     witrynie internetowej z dokumentacją systemu Novell Vibe 3.4
+     (http://www.novell.com/documentation/vibe34).
 
 
 3.0  Dokumentacja
 
-     Cała dokumentacja systemu Novell Vibe 3.3 jest dostępna w witrynie
-     internetowej z dokumentacją systemu Novell Vibe 3.3
-     (http://www.novell.com/documentation/vibe33):
+     Cała dokumentacja systemu Novell Vibe 3.4 jest dostępna w witrynie
+     internetowej z dokumentacją systemu Novell Vibe 3.4
+     (http://www.novell.com/documentation/vibe34):
 
-     -  Pełna wersja pliku Readme produktu Vibe 3.3
+     -  Pełna wersja pliku Readme produktu Vibe 3.4
 
      -  "Podręcznik instalacji"
 
@@ -45,7 +45,11 @@
 
      -  "Vibe Quick Start — skrócona instrukcja obsługi"
 
-     -  "Vibe Desktop Quick Start — skrócona instrukcja obsługi"
+     -  "Vibe Desktop for Windows Quick Start — skrócona instrukcja obsługi"
+
+     -  "Vibe Desktop for Mac Quick Start — skrócona instrukcja obsługi"
+
+     -  "Vibe Desktop — często zadawane pytania"
 
      -  "Vibe Add-In Quick Start — skrócona instrukcja obsługi"
 
@@ -102,7 +106,7 @@
      żadnej odpowiedzialności za ewentualne niepowodzenie w uzyskaniu
      jakichkolwiek wymaganych pozwoleń eksportowych.
 
-     Copyright © 2008-2012 Novell, Inc. Wszelkie prawa zastrzeżone. Żadna część
+     Copyright © 2008–2013 Novell, Inc. Wszelkie prawa zastrzeżone. Żadna część
      niniejszej publikacji nie może być powielana, kopiowana, przechowywana w
      systemach udostępniania danych ani przesyłana bez uprzedniej pisemnej zgody
      wydawcy.

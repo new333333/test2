@@ -1,36 +1,36 @@
-﻿Novell Vibe 3.3
+﻿Novell Vibe 3.4
 
 1.0  Introduktion
 
      Der findes komplette systemkrav og detaljerede instruktioner til
-     installation af softwaren til Novell Vibe-administratoren i "Vibe 3.3
+     installation af softwaren til Novell Vibe-administratoren i "Vibe 3.4
      Installation Guide (Vibe OnPrem 3 Installationsvejledning)." Du finder
      oplysninger om konfiguration af Vibe-websted og instruktioner i løbende
-     administration og vedligeholdelse af webstedet i "Vibe 3.3 Administration
+     administration og vedligeholdelse af webstedet i "Vibe 3.4 Administration
      Guide (Vibe OnPrem 3 Administrationsvejledning)."
 
      Når Vibe-webstedet er konfigureret, kan Vibe-brugere finde instruktioner i
-     "Vibe 3.3 User Guide" (Vibe 3.3 Brugervejledning) og "Vibe OnPrem 3 Advanced
+     "Vibe 3.4 User Guide" (Vibe 3.4 Brugervejledning) og "Vibe OnPrem 3 Advanced
      User Guide" (Vibe OnPrem 3 Avanceret brugervejledning). (Der findes en "Vibe
-     3.3 Quick Start (Vibe 3.3 Hurtig start)" på sprog, som "Vibe OnPrem 3 User
+     3.4 Quick Start (Vibe 3.4 Hurtig start)" på sprog, som "Vibe OnPrem 3 User
      Guide (Vibe OnPrem 3 Brugervejledning)" ikke er tilgængelig på).
 
-     Du kan åbne Vibe-onlinehjælp, når du logger på Vibe-webstedet.
+     Du kan få vist Vibe-onlinehjælp, når du logger på Vibe-webstedet.
 
 
 2.0  Kendte problemer
 
      Du kan få en opdateret oversigt over kendte problemer i denne udgave i den
-     komplette readme-fil til Novell Vibe 3.3. Filen ligger på Novell-webstedet
-     med dokumentation til Vibe 3.3 (http://www.novell.com/documentation/vibe33).
+     komplette readme-fil til Novell Vibe 3.4. Filen ligger på Novell-webstedet
+     med dokumentation til Vibe 3.4 (http://www.novell.com/documentation/vibe34).
 
 
 3.0  Dokumentation
 
-     Hele Novell Vibe 3.3-dokumentationen findes på Novell-webstedet med
-     dokumentation til Vibe 3.3 (http://www.novell.com/documentation/vibe33):
+     Hele Novell Vibe 3.4-dokumentationen findes på Novell-webstedet med
+     dokumentation til Vibe 3.4 (http://www.novell.com/documentation/vibe34):
 
-     -  Komplet Vigtigt-fil til Vibe 3.3
+     -  Komplet Vigtigt-fil til Vibe 3.4
 
      -  "Installationsvejledning"
 
@@ -44,7 +44,11 @@
 
      -  "Introduktion til Vibe"
 
-     -  "Introduktion til Vibe Desktop"
+     -  "Introduktion til Vibe Desktop for Windows"
+
+     -  "Introduktion til Vibe Desktop for Mac"
+
+     -  "Vibe Desktop Ofte stillede spørgsmål"
 
      -  "Introduktion til Vibe-tilføjelsesprogrammet"
 
@@ -97,7 +101,7 @@
      om eksport af Novell-software. Novell påtager sig intet ansvar, hvis du ikke
      indhenter de nødvendige eksportgodkendelser.
 
-     Copyright © 2008-2012 Novell, Inc. Alle rettigheder forbeholdes. Ingen dele
+     Copyright © 2008-2013 Novell, Inc. Alle rettigheder forbeholdes. Ingen dele
      af denne udgivelse må reproduceres, fotokopieres, gemmes i et
      registreringssystem eller videregives uden udgivers udtrykkelige skriftlige
      tilladelse.

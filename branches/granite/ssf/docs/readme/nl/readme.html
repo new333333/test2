@@ -9,15 +9,16 @@
 <meta http-equiv="Content-Language" content="nl" />
 <meta name="Content-Date" content="Mon, 19 Jan 2010 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Friday, May 18, 2012" />
-<meta name="Copyright" content="Copyright Novell, Inc. 2010" />
+<meta name="Generation-Date" content="Tuesday, May 28, 2013" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2013" />
 
 <style type="text/css">
 body { 
-		margin-left: .2in;
+		margin-left: 18px;
+		margin-right: 18px;
 		padding:0;
 		font-family:geneva, arial, helvetica, sans-serif;
-		font-size: 75%;
+		font-size: 12px;
 		font-weight: normal;
 		color: #000000;
 		background-color: #ffffff;
@@ -109,14 +110,14 @@ body {
 	div.figure p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
 	
 /* tables */
-	table {border-collapse:collapse; margin-bottom:18px;}
+	table {border-collapse:collapse; margin:16px 0 16px 0;}
 	div.table p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
 	div.table p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
 
 	table tr.headerrow th {padding: 6px 4px 5px 0px;}
-	table tr td {padding: 0px 4px 0px 0px; }
-	table tr td:first-child {margin-top: 7px;}
-	table tr td:last-child {margin-bottom: 6px;}
+	table tr td p:first-child {margin-top: 6px;}
+	table tr td p:last-child {margin-bottom: 4px;}
+	table tr td {padding: 0px 4px 0px 0px; margin:0; }
 	
 	table tr.headerrow th p.para {font-weight: bold; margin:1px 0px 0px 0px;}
 	table.allseps, table.rowseps, table.topbot {border-spacing: 0px; border-top:1px solid #606060; border-bottom:1px solid #606060;}
@@ -166,6 +167,7 @@ body {
 	span.emphasis  {font-style: italic}
 	span.strongemphasis,span.listif {font-weight: bold; font-style: italic}
 	em.msgtext {font-weight: bold; font-style: italic}
+	span.checkcell {font-weight: bold; font-size: 150%;}
 
 /* superscript and subscript */	
 	span.subscript,span.superscript {font-size: 80%;}
@@ -177,23 +179,38 @@ body {
 	div.toc div.toc2 {font-weight: normal; margin: 8px 10px 5px 25px}
 	div.toc div.toc3 {font-weight: normal; margin: 5px 10px 2px 50px}
 	div.toc div.toc4 {font-weight: normal; margin: 0px 10px 2px 75px}
+
+/* banners and logos */
+	div.banner { background-image : url(images/banner_bkgd.png); background-repeat: repeat-x;
+		height : 40px; line-height : 40px; margin-top: 30px;
+	}
+	div.banner_logo_netiq { background-image : url(images/banner_logo_netiq.png); background-repeat: no-repeat;
+		position: relative; float: right; top: 5px; width : 98px; height : 30px; line-height : 30px;
+	}
 	
+/* collapsible sections */
+.expanded .collapsible { display: block; }
+.collapsed .collapsible {	display: none; }
+.exp_title { cursor: pointer; }
+.exp_title span { float:left; width:16px; height:15px; margin-right : 3px; margin-top : 2px; }
+.expanded .exp_title span {background-image : url(expanded.png); background-repeat: no-repeat;}
+.collapsed .exp_title span {background-image : url(collapsed.png); background-repeat: no-repeat;}
 </style>
 
-<title>Novell Vibe 3.3</title>
+<title>Novell Vibe 3.4</title>
 </head>
 <body>
 
 <div class="chapter singlefile" id="readme">
 
-<h1 class="title">Novell Vibe 3.3</h1>
+<h1 class="title">Novell Vibe 3.4</h1>
 
 <div class="sect1 singlefile" id="bbfxu6q">
 
 <h2 class="title"><span class="number">1.0</span> Aan de slag</h2>
 
-<p class="para">De volledige systeemvereisten en gedetailleerde instructies voor de installatie van de software voor de Novell Vibe-beheerder vindt u in de <span class="citetitle">Vibe 3.3 Installatiehandleiding.</span> Instructies voor het instellen van de Vibe-website, sitebeheer en -onderhoud vindt u in de <span class="citetitle">Vibe 3.3 Beheerdershandleiding.</span></p>
-<p class="para">Wanneer uw Vibe-site is geïnstalleerd, kunnen Vibe-gebruikers instructies vinden in de <span class="citetitle">Gebruikershandleiding van Vibe 3.3</span> en de <span class="citetitle">Vibe 3.3 Geavanceerde gebruikershandleiding</span>. (Voor talen waarin de <span class="citetitle">Vibe 3.3 Gebruikershandleiding</span> niet verkrijgbaar is, kunt u gebruikmaken van de <span class="citetitle">Vibe 3.3 Aan de slag</span>.)</p>
+<p class="para">De volledige systeemvereisten en gedetailleerde instructies voor de installatie van de software voor de Novell Vibe-beheerder vindt u in de <span class="citetitle">Vibe 3.4 Installatiehandleiding.</span> Instructies voor het instellen van de Vibe-website, sitebeheer en -onderhoud vindt u in de <span class="citetitle">Vibe 3.4 Beheerdershandleiding.</span></p>
+<p class="para">Wanneer uw Vibe-site is geïnstalleerd, kunnen Vibe-gebruikers instructies vinden in de <span class="citetitle">Gebruikershandleiding van Vibe 3.4</span> en de <span class="citetitle">Vibe 3.4 Geavanceerde gebruikershandleiding</span>. (Voor talen waarin de <span class="citetitle">Vibe 3.4 Gebruikershandleiding</span> niet verkrijgbaar is, kunt u gebruikmaken van de <span class="citetitle">Vibe 3.4 Aan de slag</span>.)</p>
 <p class="para">U kunt de online help van Vibe weergeven wanneer u bent aangemeld bij uw Vibe-site</p>
 </div>
 
@@ -201,18 +218,18 @@ body {
 
 <h2 class="title"><span class="number">2.0</span> Bekende problemen</h2>
 
-<p class="para">Raadpleeg het volledige leesmij-bestand van Novell Vibe 3.3 op de <a href="http://www.novell.com/documentation/vibe33" class="ulink">website met Novell Vibe 3.3-documentatie</a> voor een bijgewerkte lijst met bekende problemen voor deze release.</p>
+<p class="para">Raadpleeg het volledige leesmij-bestand van Novell Vibe 3.4 op de <a href="http://www.novell.com/documentation/vibe34" class="ulink">website met Novell Vibe 3.4-documentatie</a> voor een bijgewerkte lijst met bekende problemen voor deze release.</p>
 </div>
 
 <div class="sect1 singlefile" id="product_info">
 
 <h2 class="title"><span class="number">3.0</span> Documentatie</h2>
 
-<p class="para">Alle Novell Vibe 3.3-documentatie is beschikbaar op de <a href="http://www.novell.com/documentation/vibe33" class="ulink">website met Novell Vibe 3.3-documentatie</a>:</p>
+<p class="para">Alle Novell Vibe 3.4-documentatie is beschikbaar op de <a href="http://www.novell.com/documentation/vibe34" class="ulink">website met Novell Vibe 3.4-documentatie</a>:</p>
 <div class="itemizedlist">
 <ul class="listbullet">
 <li class="listitem">
-<p class="listitem">Volledig leesmij-bestand voor Vibe 3.3</p></li>
+<p class="listitem">Volledig leesmij-bestand voor Vibe 3.4</p></li>
 <li class="listitem">
 <p class="listitem">
           <span class="citetitle">Installatiehandleiding</span>
@@ -239,7 +256,15 @@ body {
         </p></li>
 <li class="listitem">
 <p class="listitem">
-          <span class="citetitle">Aan de slag met Vibe Desktop</span>
+          <span class="citetitle">Aan de slag met Vibe Desktop voor Windows</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Aan de slag met Vibe Desktop voor Mac</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Veelgestelde vragen over Vibe Desktop</span>
         </p></li>
 <li class="listitem">
 <p class="listitem">
@@ -276,7 +301,7 @@ body {
 <p class="para">Novell, Inc. geeft geen garanties betreffende de inhoud of het gebruik van deze documentatie, en doet met name afstand van alle expliciete of impliciete waarborgen van verkoopbaarheid of geschiktheid voor een bepaald doel. Voorts behoudt Novell, Inc. zich het recht voor deze uitgave te allen tijde te herzien of te verbeteren zonder de verplichting tot kennisgeving van deze herzieningen of verbeteringen aan enig persoon of entiteit.</p>
 <p class="para">Bovendien levert Novell, Inc. geen garantie met betrekking tot software, en doet met name afstand van alle expliciete of impliciete waarborgen van verkoopbaarheid of geschiktheid voor een bepaald doel. Voorts behoudt Novell, Inc. zich het recht voor om de Novell-software te allen tijde geheel of gedeeltelijk te herzien zonder de verplichting tot kennisgeving van deze herzieningen of verbeteringen aan enig persoon of entiteit.</p>
 <p class="para">Op producten of technische informatie die onder deze overeenkomst vallen kunnen exportbeperkingen van de Verenigde Staten en de handelswetten van andere landen van toepassing zijn. U stemt ermee in te voldoen aan alle regelingen ten aanzien van exportbeperking en alle vereiste licenties of classificaties te verkrijgen ten behoeve van het exporteren, opnieuw exporteren of importeren van af te leveren goederen. U stemt ermee in niet te exporteren of opnieuw te exporteren naar entiteiten op de huidige lijst voor uitsluiting van export van de Verenigde Staten of naar landen die in de exportwetgeving van de Verenigde Staten als onder embargo of als terroristisch worden aangemerkt. U stemt ermee in af te leveren goederen niet te gebruiken voor verboden eindgebruik in nucleaire, raket- of chemisch-biologische wapensystemen. Raadpleeg de <a href="http://www.novell.com/info/exports/" class="ulink"> webpagina over Internationale Handelsservices van Novell </a> voor meer informatie over het exporteren van Novell-software. Novell aanvaardt geen aansprakelijkheid voor gevallen waarin u er niet in slaagt de benodigde exportvergunningen te verkrijgen.</p>
-<p class="para">Copyright © 2008-2012 Novell, Inc. Alle rechten voorbehouden. Niets uit deze uitgave mag worden verveelvoudigd, gefotokopieerd, opgeslagen in een geautomatiseerd gegevensbestand of verzonden zonder de uitdrukkelijke schriftelijke goedkeuring van de uitgever.</p>
+<p class="para">Copyright © 2008-2013 Novell, Inc. Alle rechten voorbehouden. Niets uit deze uitgave mag worden verveelvoudigd, gefotokopieerd, opgeslagen in een geautomatiseerd gegevensbestand of verzonden zonder de uitdrukkelijke schriftelijke goedkeuring van de uitgever.</p>
 <p class="para">Raadpleeg de <a href="http://www.novell.com/company/legal/trademarks/tmlist.html" class="ulink">lijst met handelsmerken en servicemerken van Novell</a> voor meer informatie over handelsmerken van Novell.</p>
 <p class="para">Alle handelsmerken van derden zijn het eigendom van hun respectieve eigenaren.</p>
 </div>

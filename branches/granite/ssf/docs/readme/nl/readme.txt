@@ -1,18 +1,18 @@
-﻿Novell Vibe 3.3
+﻿Novell Vibe 3.4
 
 1.0  Aan de slag
 
      De volledige systeemvereisten en gedetailleerde instructies voor de
      installatie van de software voor de Novell Vibe-beheerder vindt u in de
-     "Vibe 3.3 Installatiehandleiding." Instructies voor het instellen van de
-     Vibe-website, sitebeheer en -onderhoud vindt u in de "Vibe 3.3
+     "Vibe 3.4 Installatiehandleiding." Instructies voor het instellen van de
+     Vibe-website, sitebeheer en -onderhoud vindt u in de "Vibe 3.4
      Beheerdershandleiding."
 
      Wanneer uw Vibe-site is geïnstalleerd, kunnen Vibe-gebruikers instructies
-     vinden in de "Gebruikershandleiding van Vibe 3.3" en de "Vibe 3.3
-     Geavanceerde gebruikershandleiding". (Voor talen waarin de "Vibe 3.3
+     vinden in de "Gebruikershandleiding van Vibe 3.4" en de "Vibe 3.4
+     Geavanceerde gebruikershandleiding". (Voor talen waarin de "Vibe 3.4
      Gebruikershandleiding" niet verkrijgbaar is, kunt u gebruikmaken van de
-     "Vibe 3.3 Aan de slag".)
+     "Vibe 3.4 Aan de slag".)
 
      U kunt de online help van Vibe weergeven wanneer u bent aangemeld bij uw
      Vibe-site
@@ -20,18 +20,18 @@
 
 2.0  Bekende problemen
 
-     Raadpleeg het volledige leesmij-bestand van Novell Vibe 3.3 op de website
-     met Novell Vibe 3.3-documentatie
-     (http://www.novell.com/documentation/vibe33) voor een bijgewerkte lijst met
+     Raadpleeg het volledige leesmij-bestand van Novell Vibe 3.4 op de website
+     met Novell Vibe 3.4-documentatie
+     (http://www.novell.com/documentation/vibe34) voor een bijgewerkte lijst met
      bekende problemen voor deze release.
 
 
 3.0  Documentatie
 
-     Alle Novell Vibe 3.3-documentatie is beschikbaar op de website met Novell
-     Vibe 3.3-documentatie (http://www.novell.com/documentation/vibe33):
+     Alle Novell Vibe 3.4-documentatie is beschikbaar op de website met Novell
+     Vibe 3.4-documentatie (http://www.novell.com/documentation/vibe34):
 
-     -  Volledig leesmij-bestand voor Vibe 3.3
+     -  Volledig leesmij-bestand voor Vibe 3.4
 
      -  "Installatiehandleiding"
 
@@ -45,7 +45,11 @@
 
      -  "Aan de slag met Vibe"
 
-     -  "Aan de slag met Vibe Desktop"
+     -  "Aan de slag met Vibe Desktop voor Windows"
+
+     -  "Aan de slag met Vibe Desktop voor Mac"
+
+     -  "Veelgestelde vragen over Vibe Desktop"
 
      -  "Aan de slag met de Vibe-invoegtoepassing"
 
@@ -100,7 +104,7 @@
      gevallen waarin u er niet in slaagt de benodigde exportvergunningen te
      verkrijgen.
 
-     Copyright © 2008-2012 Novell, Inc. Alle rechten voorbehouden. Niets uit deze
+     Copyright © 2008-2013 Novell, Inc. Alle rechten voorbehouden. Niets uit deze
      uitgave mag worden verveelvoudigd, gefotokopieerd, opgeslagen in een
      geautomatiseerd gegevensbestand of verzonden zonder de uitdrukkelijke
      schriftelijke goedkeuring van de uitgever.

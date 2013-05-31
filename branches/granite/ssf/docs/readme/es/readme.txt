@@ -1,19 +1,19 @@
-﻿Novell Vibe 3.3
+﻿Novell Vibe 3.4
 
 1.0  Inicio
 
      Los administradores de Novell Vibe encontrarán los requisitos del sistema e
      instrucciones detalladas para la instalación del software en la "Guía de
-     instalación de Vibe 3.3." En la "Vibe 3.3 Administration Guide" (Guía de
+     instalación de Vibe 3.4." En la "Vibe 3.4 Administration Guide" (Guía de
      administración de Vibe OnPrem 3) se proporcionan instrucciones para
      configurar el sitio y para realizar las tareas de administración y
      mantenimiento habituales. 
 
      Después de instalar el sitio de Vibe, los usuarios del programa podrán
-     obtener información en la "Guía del usuario de Vibe 3.3" y en la "Vibe 3.3
+     obtener información en la "Guía del usuario de Vibe 3.4" y en la "Vibe 3.4
      Advanced User Guide" (Guía del usuario avanzado de Novell Vibe OnPrem 3).
-     (Hay disponible una guía de "Inicio rápido de Vibe 3.3" en los idiomas para
-     los que no hay disponible una "Guía del usuario de Vibe 3.3").
+     (Hay disponible una guía de "Inicio rápido de Vibe 3.4" en los idiomas para
+     los que no hay disponible una "Guía del usuario de Vibe 3.4").
 
      Se puede mostrar la ayuda en línea de Vibe después de entrar al sitio de
      Vibe.
@@ -22,22 +22,22 @@
 2.0  Problemas conocidos
 
      Para obtener una lista actualizada de problemas conocidos de esta versión,
-     consulte el archivo Readme (Léame) completo de Novell Vibe 3.3 en el sitio
-     Web de documentación de Novell Vibe 3.3
-     (http://www.novell.com/documentation/vibe33).
+     consulte el archivo Readme (Léame) completo de Novell Vibe 3.4 en el sitio
+     Web de documentación de Novell Vibe 3.4
+     (http://www.novell.com/documentation/vibe34).
 
 
 3.0  Documentación
 
-     Toda la documentación de Novell Vibe 3.3 está disponible en el sitio Web de
-     documentación de Novell Vibe 3.3
-     (http://www.novell.com/documentation/vibe33):
+     Toda la documentación de Novell Vibe 3.4 está disponible en el sitio Web de
+     documentación de Novell Vibe 3.4
+     (http://www.novell.com/documentation/vibe34):
 
-     -  Archivo Readme (Léame) completo de Vibe 3.3
+     -  Archivo Readme (Léame) completo de Vibe 3.4
 
      -  "Guía de instalación"
 
-     -  "Administration Guide" (Guía de administración)
+     -  "Guía de administración"
 
      -  "Guía del usuario"
 
@@ -47,7 +47,11 @@
 
      -  "Inicio rápido de Vibe"
 
-     -  "Inicio rápido de Vibe Desktop"
+     -  "Inicio rápido de Vibe Desktop para Windows"
+
+     -  "Inicio rápido de Vibe Desktop para Mac"
+
+     -  "Preguntas más frecuentes sobre Vibe Desktop"
 
      -  "Inicio rápido de Vibe Add-In"
 
@@ -103,7 +107,7 @@
      posibilidad de que usted no pueda obtener los permisos de exportación
      necesarios.
 
-     Copyright © 2008-2012 Novell, Inc. Reservados todos los derechos. Ninguna
+     Copyright © 2008-2013 Novell, Inc. Reservados todos los derechos. Ninguna
      parte de esta publicación puede ser reproducida, fotocopiada, almacenada en
      un sistema de recuperación o transmitida sin la expresa autorización por
      escrito del editor.

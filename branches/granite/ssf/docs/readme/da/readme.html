@@ -9,15 +9,16 @@
 <meta http-equiv="Content-Language" content="da" />
 <meta name="Content-Date" content="Mon, 19 Jan 2010 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Friday, May 18, 2012" />
-<meta name="Copyright" content="Copyright Novell, Inc. 2010" />
+<meta name="Generation-Date" content="Tuesday, May 28, 2013" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2013" />
 
 <style type="text/css">
 body { 
-		margin-left: .2in;
+		margin-left: 18px;
+		margin-right: 18px;
 		padding:0;
 		font-family:geneva, arial, helvetica, sans-serif;
-		font-size: 75%;
+		font-size: 12px;
 		font-weight: normal;
 		color: #000000;
 		background-color: #ffffff;
@@ -109,14 +110,14 @@ body {
 	div.figure p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
 	
 /* tables */
-	table {border-collapse:collapse; margin-bottom:18px;}
+	table {border-collapse:collapse; margin:16px 0 16px 0;}
 	div.table p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
 	div.table p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
 
 	table tr.headerrow th {padding: 6px 4px 5px 0px;}
-	table tr td {padding: 0px 4px 0px 0px; }
-	table tr td:first-child {margin-top: 7px;}
-	table tr td:last-child {margin-bottom: 6px;}
+	table tr td p:first-child {margin-top: 6px;}
+	table tr td p:last-child {margin-bottom: 4px;}
+	table tr td {padding: 0px 4px 0px 0px; margin:0; }
 	
 	table tr.headerrow th p.para {font-weight: bold; margin:1px 0px 0px 0px;}
 	table.allseps, table.rowseps, table.topbot {border-spacing: 0px; border-top:1px solid #606060; border-bottom:1px solid #606060;}
@@ -166,6 +167,7 @@ body {
 	span.emphasis  {font-style: italic}
 	span.strongemphasis,span.listif {font-weight: bold; font-style: italic}
 	em.msgtext {font-weight: bold; font-style: italic}
+	span.checkcell {font-weight: bold; font-size: 150%;}
 
 /* superscript and subscript */	
 	span.subscript,span.superscript {font-size: 80%;}
@@ -177,42 +179,57 @@ body {
 	div.toc div.toc2 {font-weight: normal; margin: 8px 10px 5px 25px}
 	div.toc div.toc3 {font-weight: normal; margin: 5px 10px 2px 50px}
 	div.toc div.toc4 {font-weight: normal; margin: 0px 10px 2px 75px}
+
+/* banners and logos */
+	div.banner { background-image : url(images/banner_bkgd.png); background-repeat: repeat-x;
+		height : 40px; line-height : 40px; margin-top: 30px;
+	}
+	div.banner_logo_netiq { background-image : url(images/banner_logo_netiq.png); background-repeat: no-repeat;
+		position: relative; float: right; top: 5px; width : 98px; height : 30px; line-height : 30px;
+	}
 	
+/* collapsible sections */
+.expanded .collapsible { display: block; }
+.collapsed .collapsible {	display: none; }
+.exp_title { cursor: pointer; }
+.exp_title span { float:left; width:16px; height:15px; margin-right : 3px; margin-top : 2px; }
+.expanded .exp_title span {background-image : url(expanded.png); background-repeat: no-repeat;}
+.collapsed .exp_title span {background-image : url(collapsed.png); background-repeat: no-repeat;}
 </style>
 
-<title>Novell Vibe 3.3</title>
+<title>Novell Vibe 3.4</title>
 </head>
 <body>
 
 <div class="chapter singlefile" id="readme">
 
-<h1 class="title">Novell Vibe 3.3</h1>
+<h1 class="title">Novell Vibe 3.4</h1>
 
 <div class="sect1 singlefile" id="bbfxu6q">
 
 <h2 class="title"><span class="number">1.0</span> Introduktion</h2>
 
-<p class="para">Der findes komplette systemkrav og detaljerede instruktioner til installation af softwaren til Novell Vibe-administratoren i <span class="citetitle">Vibe 3.3 Installation Guide (Vibe OnPrem 3 Installationsvejledning).</span> Du finder oplysninger om konfiguration af Vibe-websted og instruktioner i løbende administration og vedligeholdelse af webstedet i <span class="citetitle">Vibe 3.3 Administration Guide (Vibe OnPrem 3 Administrationsvejledning).</span></p>
-<p class="para">Når Vibe-webstedet er konfigureret, kan Vibe-brugere finde instruktioner i <span class="citetitle">Vibe 3.3 User Guide</span> (Vibe 3.3 Brugervejledning) og <span class="citetitle">Vibe OnPrem 3 Advanced User Guide</span> (Vibe OnPrem 3 Avanceret brugervejledning). (Der findes en <span class="citetitle">Vibe 3.3 Quick Start (Vibe 3.3 Hurtig start)</span> på sprog, som <span class="citetitle">Vibe OnPrem 3 User Guide (Vibe OnPrem 3 Brugervejledning)</span> ikke er tilgængelig på).</p>
-<p class="para">Du kan åbne Vibe-onlinehjælp, når du logger på Vibe-webstedet.</p>
+<p class="para">Der findes komplette systemkrav og detaljerede instruktioner til installation af softwaren til Novell Vibe-administratoren i <span class="citetitle">Vibe 3.4 Installation Guide (Vibe OnPrem 3 Installationsvejledning).</span> Du finder oplysninger om konfiguration af Vibe-websted og instruktioner i løbende administration og vedligeholdelse af webstedet i <span class="citetitle">Vibe 3.4 Administration Guide (Vibe OnPrem 3 Administrationsvejledning).</span></p>
+<p class="para">Når Vibe-webstedet er konfigureret, kan Vibe-brugere finde instruktioner i <span class="citetitle">Vibe 3.4 User Guide</span> (Vibe 3.4 Brugervejledning) og <span class="citetitle">Vibe OnPrem 3 Advanced User Guide</span> (Vibe OnPrem 3 Avanceret brugervejledning). (Der findes en <span class="citetitle">Vibe 3.4 Quick Start (Vibe 3.4 Hurtig start)</span> på sprog, som <span class="citetitle">Vibe OnPrem 3 User Guide (Vibe OnPrem 3 Brugervejledning)</span> ikke er tilgængelig på).</p>
+<p class="para">Du kan få vist Vibe-onlinehjælp, når du logger på Vibe-webstedet.</p>
 </div>
 
 <div class="sect1 singlefile" id="bbfxvuf">
 
 <h2 class="title"><span class="number">2.0</span> Kendte problemer</h2>
 
-<p class="para">Du kan få en opdateret oversigt over kendte problemer i denne udgave i den komplette readme-fil til Novell Vibe 3.3. Filen ligger på <a href="http://www.novell.com/documentation/vibe33" class="ulink">Novell-webstedet med dokumentation til Vibe 3.3</a>.</p>
+<p class="para">Du kan få en opdateret oversigt over kendte problemer i denne udgave i den komplette readme-fil til Novell Vibe 3.4. Filen ligger på <a href="http://www.novell.com/documentation/vibe34" class="ulink">Novell-webstedet med dokumentation til Vibe 3.4</a>.</p>
 </div>
 
 <div class="sect1 singlefile" id="product_info">
 
 <h2 class="title"><span class="number">3.0</span> Dokumentation</h2>
 
-<p class="para">Hele Novell Vibe 3.3-dokumentationen findes på <a href="http://www.novell.com/documentation/vibe33" class="ulink">Novell-webstedet med dokumentation til Vibe 3.3</a>:</p>
+<p class="para">Hele Novell Vibe 3.4-dokumentationen findes på <a href="http://www.novell.com/documentation/vibe34" class="ulink">Novell-webstedet med dokumentation til Vibe 3.4</a>:</p>
 <div class="itemizedlist">
 <ul class="listbullet">
 <li class="listitem">
-<p class="listitem">Komplet Vigtigt-fil til Vibe 3.3</p></li>
+<p class="listitem">Komplet Vigtigt-fil til Vibe 3.4</p></li>
 <li class="listitem">
 <p class="listitem">
           <span class="citetitle">Installationsvejledning</span>
@@ -239,7 +256,15 @@ body {
         </p></li>
 <li class="listitem">
 <p class="listitem">
-          <span class="citetitle">Introduktion til Vibe Desktop</span>
+          <span class="citetitle">Introduktion til Vibe Desktop for Windows</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Introduktion til Vibe Desktop for Mac</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Vibe Desktop Ofte stillede spørgsmål</span>
         </p></li>
 <li class="listitem">
 <p class="listitem">
@@ -276,7 +301,7 @@ body {
 <p class="para">Novell, Inc. fremsætter ingen erklæringer og giver ingen garantier vedrørende indholdet i eller brugen af denne dokumentation og fraskriver sig udtrykkeligt alle udtrykkelige eller underforstående garantier for salgbarhed eller egnethed til et bestemt formål. Novell, Inc. forbeholder sig endvidere retten til at revidere denne udgivelse og til at foretage ændringer i indholdet på ethvert tidspunkt uden at være forpligtet til at meddele disse revisioner eller ændringer til nogen person eller enhed.</p>
 <p class="para">Novell, Inc. fremsætter ingen erklæringer og giver ingen garantier vedrørende nogen software og fraskriver sig udtrykkeligt alle udtrykkelige eller underforstående garantier for salgbarhed eller egnethed til et bestemt formål. Novell, Inc. forbeholder sig endvidere retten til at foretage ændringer i alle dele af Novell-softwaren på ethvert tidspunkt uden at være forpligtet til at meddele disse ændringer til nogen person eller enhed.</p>
 <p class="para">Alle produkter eller tekniske oplysninger, der er omhandlet i denne aftale, kan være underlagt amerikanske eksportbegrænsninger og handelslovgivningen i andre lande. Du erklærer, at du vil overholde alle bestemmelser om eksportbegrænsninger og indhente de krævede tilladelser eller bemyndigelser til at eksportere, reeksportere eller importere produkter. Du erklærer, at du ikke vil eksportere eller reeksportere til parter, der i øjeblikket er anført på amerikanske eksportforbudslister, lande omfattet af embargo eller terroristlande, jf. de amerikanske eksportlove. Du accepterer, at du ikke vil anvende produkter til forbudte formål inden for atomvåben, missilvåben eller kemiske og biologiske våben. Se websiden <a href="http://www.novell.com/info/exports/" class="ulink">Novell International Trade Services</a> for at få flere oplysninger om eksport af Novell-software.  Novell påtager sig intet ansvar, hvis du ikke indhenter de nødvendige eksportgodkendelser.</p>
-<p class="para">Copyright © 2008-2012 Novell, Inc. Alle rettigheder forbeholdes. Ingen dele af denne udgivelse må reproduceres, fotokopieres, gemmes i et registreringssystem eller videregives uden udgivers udtrykkelige skriftlige tilladelse.</p>
+<p class="para">Copyright © 2008-2013 Novell, Inc. Alle rettigheder forbeholdes. Ingen dele af denne udgivelse må reproduceres, fotokopieres, gemmes i et registreringssystem eller videregives uden udgivers udtrykkelige skriftlige tilladelse.</p>
 <p class="para">Oplysninger om Novell-varemærker findes på listen <a href="http://www.novell.com/company/legal/trademarks/tmlist.html" class="ulink">Novell Trademark and Service Mark</a>.</p>
 <p class="para">Alle tredjepartsvaremærker ejes af deres respektive ejere.</p>
 </div>

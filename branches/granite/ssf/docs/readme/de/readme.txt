@@ -1,17 +1,17 @@
-﻿Novell Vibe 3.3
+﻿Novell Vibe 3.4
 
 1.0  Einführung
 
      Umfassende Systemanforderungen und detaillierte Anweisungen zur Installation
      der Software für den Novell Vibe-Administrator finden Sie im "Vibe
-     3.3-Installationshandbuch." Anweisungen zum Einrichten der Vibe-Site sowie
+     3.4-Installationshandbuch." Anweisungen zum Einrichten der Vibe-Site sowie
      zur fortlaufenden Verwaltung und Wartung der Site finden Sie im "Vibe
-     3.3-Verwaltungshandbuch."
+     3.4-Verwaltungshandbuch."
 
      Nach der Einrichtung der Vibe-Site erhalten die Vibe-Benutzer Anweisungen im
-     "Vibe 3.3-Benutzerhandbuch" und im "Erweiterten Benutzerhandbuch zu Vibe
-     3.3". (Ein "Vibe 3.3-Schnellstart" ist in Sprachen verfügbar, in denen das
-     "Vibe 3.3-Benutzerhandbuch" nicht verfügbar ist.)
+     "Vibe 3.4-Benutzerhandbuch" und im "Erweiterten Benutzerhandbuch zu Vibe
+     3.4". (Ein "Vibe 3.4-Schnellstart" ist in Sprachen verfügbar, in denen das
+     "Vibe 3.4-Benutzerhandbuch" nicht verfügbar ist.)
 
      Sie können die Vibe-Onlinehilfe anzeigen, indem Sie sich auf Ihrer Vibe-Site
      anmelden.
@@ -20,21 +20,21 @@
 2.0  Bekannte Probleme
 
      Eine aktuelle Liste mit bekannten Problemen für diese Version finden Sie in
-     der umfassenden Novell Vibe 3.3-Produkt-Readme auf der Novell Vibe
-     3.3-Dokumentations-Website (http://www.novell.com/documentation/vibe33).
+     der umfassenden Novell Vibe 3.4-Produkt-Readme auf der Novell Vibe
+     3.4-Dokumentations-Website (http://www.novell.com/documentation/vibe34).
 
 
 3.0  Dokumentation
 
-     Die gesamte Novell Vibe 3.3-Dokumentation ist auf der Novell Vibe
-     3.3-Dokumentations-Website (http://www.novell.com/documentation/vibe33)
+     Die gesamte Novell Vibe 3.4-Dokumentation ist auf der Novell Vibe
+     3.4-Dokumentations-Website (http://www.novell.com/documentation/vibe34)
      verfügbar unter:
 
-     -  Umfassende Vibe 3.3-Produkt-Readme
+     -  Umfassende Vibe 3.4-Produkt-Readme
 
      -  "Installationshandbuch"
 
-     -  "Verwaltungshandbuch"
+     -  "Administrationshandbuch"
 
      -  "Benutzerhandbuch"
 
@@ -44,7 +44,11 @@
 
      -  "Vibe-Kurzanleitung"
 
-     -  "Vibe Desktop-Kurzanleitung"
+     -  " Vibe Desktop für Windows – Kurzanleitung "
+
+     -  " Vibe Desktop für Mac – Kurzanleitung "
+
+     -  "Häufig gestellte Fragen zu Vibe Desktop"
 
      -  "Vibe-Add-in-Kurzanleitung"
 
@@ -98,7 +102,7 @@
      (http://www.novell.com/info/exports/). Novell übernimmt keine Verantwortung
      für das Nichteinholen notwendiger Exportgenehmigungen.
 
-     Copyright © 2008–2012 Novell, Inc. Alle Rechte vorbehalten. Ohne
+     Copyright © 2008–2013 Novell, Inc. Alle Rechte vorbehalten. Ohne
      ausdrückliche, schriftliche Genehmigung des Herausgebers darf kein Teil
      dieser Veröffentlichung reproduziert, fotokopiert, übertragen oder in einem
      Speichersystem verarbeitet werden.

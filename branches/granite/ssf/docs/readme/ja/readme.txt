@@ -1,31 +1,31 @@
-﻿Novell Vibe 3.3
+﻿Novell Vibe 3.4
 
 1.0  はじめに
 
      Novell Vibe管理者向けの全体的なシステム要件およびソフトウェアの詳細なインストール手順は、『"Vibe
-     3.3インストールガイド』に記載されています。" Vibeサイトのセットアップおよび継続するサイト管理および保守の手順は、『"Vibe
-     3.3管理ガイド"』に記載されています。
+     3.4インストールガイド』に記載されています。" Vibeサイトのセットアップおよび継続するサイト管理および保守の手順は、『"Vibe
+     3.4管理ガイド"』に記載されています。
 
-     Vibeサイトの設定が終了したら、Vibeユーザは『"Vibe 3.3ユーザガイド"』および『"Vibe
-     3.3上級ユーザガイド"』に記載されている指示を参照できます(『"Vibe 3.3ユーザガイド"』は一部の言語版しかありませんが、『"Vibe
-     3.3クイックスタート"』は各種言語で提供されています)。
+     Vibeサイトの設定が終了したら、Vibeユーザは『"Vibe 3.4ユーザガイド"』および『"Vibe
+     3.4上級ユーザガイド"』に記載されている指示を参照できます(『"Vibe 3.4クイックスタート"』は、『"Vibe
+     3.4ユーザガイド"』よりも多くの言語で提供されています)。
 
      Vibeサイトにログインすると、Vibeのオンラインヘルプを表示できます。
 
 
 2.0  既知の問題
 
-     このリリースの既知の問題の最新リストについては、Novell Vibe 3.3マニュアルWebサイトから入手できる
-      (http://www.novell.com/documentation/vibe33)Novell Vibe
-     3.3製品Readme全体を参照してください。
+     このリリースの既知の問題の最新リストについては、Novell Vibe 3.4マニュアルWebサイト
+     (http://www.novell.com/documentation/vibe34)から入手できるNovell Vibe
+     3.4製品Readme全体を参照してください。
 
 
 3.0  マニュアル
 
-     すべてのNovell Vibe 3.3マニュアルは、Novell Vibe 3.3マニュアルWebサイト
-     (http://www.novell.com/documentation/vibe33)から入手できます。
+     すべてのNovell Vibe 3.4マニュアルは、Novell Vibe 3.4マニュアルWebサイト
+     (http://www.novell.com/documentation/vibe34)から入手できます。
 
-     -  Vibe 3.3製品Readme全体
+     -  Vibe 3.4製品Readme全体
 
      -  "インストールガイド"
 
@@ -37,11 +37,15 @@
 
      -  "開発者ガイド"
 
-     -  "Vibe Quick Start"
+     -  "Vibeクイックスタート"
 
-     -  "Vibe Desktop Quick Start"
+     -  "Vibe Desktop for Windowsクイックスタート"
 
-     -  "Vibe Add-In Quick Start"
+     -  "Vibe Desktop for Macクイックスタート"
+
+     -  "Vibe Desktop FAQ"
+
+     -  "Vibe Add-Inクイックスタート"
 
      Novell Vibe製品マニュアルに加えて、その他のリソースからもVibeに関する情報が得られます。
 
@@ -78,7 +82,7 @@
      (http://www.novell.com/info/exports/)のWebページをご参照ください。弊社は、お客様が必要な輸出承認を取得しなかった
      ことに対し如何なる責任も負わないものとします。
 
-     Copyright © 2008-2012 Novell, Inc. All rights reserved.
+     Copyright © 2008-2013 Novell, Inc. All rights reserved.
      本ドキュメントの一部または全体を無断で複写転載することは、その形態を問わず禁じます。
 
      Novellの商標については、商標とサービスマークの一覧

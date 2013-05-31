@@ -1,18 +1,17 @@
-﻿Novell Vibe 3.3
+﻿Novell Vibe 3.4
 
 1.0  Első lépések
 
      A rendszerkövetelmények teljes körű ismertetését és a részletes
      szoftvertelepítési útmutatást a Novell Vibe rendszergazdája számára a "Vibe
-     3.3 telepítési kézikönyv tartalmazza." A Vibe webhely beállításával,
+     3.4 telepítési kézikönyv tartalmazza." A Vibe webhely beállításával,
      valamint a folyamatos webhely-adminisztrációval és -karbantartással
-     kapcsolatos útmutatók a "Vibe 3.3 adminisztrátori kézikönyvben" találhatók.
+     kapcsolatos útmutatók a "Vibe 3.4 adminisztrátori kézikönyvben" találhatók.
 
-     A Vibe webhely telepítése után a Vibe felhasználói a "Vibe 3.3 felhasználói
-     kézikönyv" és a "Vibe 3.3 haladó felhasználói kézikönyv" tartalmában
-     találhatnak útmutatást. (A "Vibe 3.3 Gyorskalauz" több nyelven is elérhető
-     abban az esetben, ha a "Vibe 3.3 felhasználói kézikönyv" nem áll
-     rendelkezésre.)
+     A Vibe webhely telepítése után a Vibe felhasználói a "Vibe 3.4 felhasználói
+     kézikönyv" és a "Vibe 3.4 haladó felhasználói kézikönyv" tartalmában
+     találhatnak útmutatást. ("Vibe 3.4 Gyorskalauz" azokon a nyelveken jár a
+     rendszerhez, amelyeken a "Vibe 3.4 felhasználói kézikönyv" nem érhető el.)
 
      A Vibe webhelyre való bejelentkezés után megjelenítheti a Vibe rendszer
      online súgóját.
@@ -21,17 +20,17 @@
 2.0  Ismert problémák
 
      Az ehhez a kiadáshoz kapcsolódó ismert problémák naprakész listáját
-     megtalálja a Novell Vibe 3.3 termék teljes Readme ismertetőjében, amely a
-     Novell Vibe 3.3 dokumentációs webhelyén
-     (http://www.novell.com/documentation/vibe33) található.
+     megtalálja a Novell Vibe 3.4 termék teljes Readme ismertetőjében, amely a
+     Novell Vibe 3.4 dokumentációs webhelyén
+     (http://www.novell.com/documentation/vibe34) található.
 
 
 3.0  Dokumentáció
 
-     A Novell Vibe 3.3 termék összes dokumentációja elérhető a Novell Vibe 3.3
-     dokumentációs webhelyén (http://www.novell.com/documentation/vibe33):
+     A Novell Vibe 3.4 termék összes dokumentációja elérhető a Novell Vibe 3.4
+     dokumentációs webhelyén (http://www.novell.com/documentation/vibe34):
 
-     -  A Vibe 3.3 termék teljes Readme ismertetője
+     -  A Vibe 3.4 termék teljes Readme ismertetője
 
      -  "Telepítési kézikönyv"
 
@@ -45,7 +44,11 @@
 
      -  "Vibe gyorskalauz"
 
-     -  "Vibe Desktop gyorskalauz"
+     -  "Vibe Desktop for Windows – bevezetés"
+
+     -  "Vibe Desktop for Mac – bevezetés"
+
+     -  "Vibe Desktop – gyakori kérdések"
 
      -  "Vibe beépülő modul gyorskalauz"
 
@@ -67,52 +70,51 @@
      projekt) webhelye tartalmaz.
 
 
-4.0  Szerzői jogi megjegyzések
+4.0  Jogi nyilatkozat
 
-     A Novell, Inc. nem vállal felelősséget a jelen dokumentáció tartalmára
-     vonatkozóan, illetve a dokumentáció használatából eredő esetleges károkért.
-     Különös tekintettel nem vállal sem közvetlen, sem közvetett felelősséget a
-     dokumentáció kereskedelmi vagy bármilyen más célra történő
-     felhasználhatóságával kapcsolatban. A Novell, Inc. fenntartja továbbá a
-     jogot a jelen kiadvány bármikor történő felülvizsgálatára és tartalmi
-     megváltoztatására anélkül, hogy a felülvizsgálatot vagy a változtatást
-     bármely természetes vagy jogi személynek előzetesen bejelentené.
+     A Novell, Inc. nem vállal szavatosságot, jótállást, valamint semmilyen más
+     garanciát és felelősséget a jelen dokumentáció tartalmára és
+     felhasználására, különös tekintettel a forgalomképességre és a vélt
+     rendeltetésre vonatkozó törvényi és külön garanciális felelősségekre. A
+     Novell, Inc. fenntartja továbbá a jogot, hogy a jelen kiadványt bármikor
+     felülvizsgálja és módosítsa bárki és bármilyen szervezet előzetes
+     értesítésének kötelezettsége nélkül.
 
-     A Novell, Inc. nem vállal jótállást és felelősséget semmilyen szoftverrel
-     kapcsolatban. Különös tekintettel nem vállal sem közvetlen, sem közvetett
-     jótállást a szoftverek kereskedelmi használatával vagy bármilyen egyéb célra
-     való felhasználhatóságával kapcsolatban. A Novell, Inc. fenntartja továbbá a
-     Novell szoftverek részben vagy egészben, bármikor történő megváltoztatásának
-     jogát anélkül, hogy a változtatást bármely természetes vagy jogi személynek
-     előzetesen bejelentené.
+     A Novell, Inc. nem vállal szavatosságot, jótállást, sem felelősséget
+     semmilyen szoftverrel kapcsolatban, különös tekintettel a forgalomképességre
+     és a vélt rendeltetésre vonatkozó törvényi és külön garanciális
+     felelősségekre. A Novell, Inc. fenntartja a jogot, hogy bármikor módosítsa a
+     Novell-szoftverek egyes részeit, illetve akár a teljes szoftvereket anélkül,
+     hogy az ilyen módosításokat előzetesen be kellene jelentenie bárki vagy
+     bármely szervezet felé.
 
-     A jelen Szerződésben foglalt termékekre vagy technikai információkra az
-     Amerikai Egyesült Államok exportálási szabályozásai és más országok
-     kereskedelmi törvényei vonatkozhatnak. Ön elfogadja, hogy megfelel ezeknek
-     az exportálási szabályozásoknak, és beszerzi a szükséges licenceket vagy
-     minősítéseket a termékek exportálásához, újbóli exportálásához vagy
-     importálásához. Elfogadja azt is, hogy a termékeket nem exportálja vagy nem
-     szállítja vissza az Amerikai Egyesült Államok aktuális exportálási tilalmi
-     listáján szereplő jogi személyeknek, illetve embargóval sújtott vagy
-     terrorizmussal vádolható országokba az Egyesült Államok exportálási
-     törvényeinek megfelelően. Elfogadja továbbá, hogy a termékeket nem használja
-     fel tiltott nukleáris, rakétaműködtetési vagy vegyi és biológiai
-     fegyverkezési céllal. A Novell-szoftverek exportálásáról további információt
+     A jelen Szerződésben foglalt termékekre és műszaki információkra az Amerikai
+     Egyesült Államok exportálási szabályozásai és más országok kereskedelmi
+     törvényei vonatkozhatnak. A Szerződés elfogadásával tanúsítja, hogy megfelel
+     ezeknek az exportálási szabályozásoknak, és beszerzi a szükséges
+     engedélyeket vagy minősítéseket a termékek exportálásához,
+     továbbexportálásához vagy importálásához. Tanúsítja továbbá, hogy a
+     termékeket – az Egyesült Államok exportálási törvényeivel összhangban – nem
+     exportálja (tovább) az Amerikai Egyesült Államok mindenkori exportálási
+     tilalmi listáján szereplő szervezeteknek, sem embargóval sújtott vagy
+     terrorizmussal vádolható országokba. A fentiek mellett tanúsítja, hogy a
+     termékeket nem használja fel tiltott nukleáris, rakétatechnológiai, illetve
+     vegyi vagy biológiai fegyverkezési célra. A Novell-szoftverek exportálásáról
      a Novell nemzetközi értékesítéssel foglalkozó International Trade Services
-     weblapján (http://www.novell.com/info/exports/) talál. A Novell nem vállal
-     felelősséget, ha Ön elmulasztja beszerezni a szükséges exportálási
-     engedélyeket.
+     weblapján (http://www.novell.com/info/exports/) talál további információt. A
+     Novell nem vállal felelősséget az exportáláshoz szükséges engedélyek
+     beszerzésének elmulasztásáért.
 
-     Copyright © 2008–2012 Novell, Inc. Minden jog fenntartva. A kiadó előzetes
+     Copyright © 2008–2013 Novell, Inc. Minden jog fenntartva. A kiadó előzetes
      írásbeli hozzájárulása nélkül a kiadvány sem részben, sem egészében nem
      reprodukálható, nem fénymásolható, nem tárolható dokumentum-visszakereső
      rendszerben, és nem továbbítható.
 
-     A Novell védjegyeit a Novell-védjegyeket és -szolgáltatásvédjegyeket
+     A Novell védjegyeit a Novell védjegyeit és -szolgáltatási védjegyeit
      felsoroló listán
      (http://www.novell.com/company/legal/trademarks/tmlist.html) tekintheti meg.
 
-     Minden harmadik félhez tartozó védjegy az adott tulajdonos védjegye.
+     Az egyéb védjegyek jogtulajdonosaik védjegyei.
 
 
 
