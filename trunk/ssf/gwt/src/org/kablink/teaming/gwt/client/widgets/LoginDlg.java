@@ -296,6 +296,7 @@ public class LoginDlg extends DlgBox
 				int y = ( ( Window.getClientHeight() - offsetHeight ) / 3 );
 				
 				setPopupPosition( x, y );
+				setGlassStyleName( "loginDlgBox_Glass" );
 			}
 		} );
 	}
