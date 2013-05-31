@@ -9,15 +9,16 @@
 <meta http-equiv="Content-Language" content="cs" />
 <meta name="Content-Date" content="Mon, 19 Jan 2010 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Friday, May 18, 2012" />
-<meta name="Copyright" content="Copyright Novell, Inc. 2010" />
+<meta name="Generation-Date" content="Tuesday, May 28, 2013" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2013" />
 
 <style type="text/css">
 body { 
-		margin-left: .2in;
+		margin-left: 18px;
+		margin-right: 18px;
 		padding:0;
 		font-family:geneva, arial, helvetica, sans-serif;
-		font-size: 75%;
+		font-size: 12px;
 		font-weight: normal;
 		color: #000000;
 		background-color: #ffffff;
@@ -109,14 +110,14 @@ body {
 	div.figure p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
 	
 /* tables */
-	table {border-collapse:collapse; margin-bottom:18px;}
+	table {border-collapse:collapse; margin:16px 0 16px 0;}
 	div.table p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
 	div.table p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
 
 	table tr.headerrow th {padding: 6px 4px 5px 0px;}
-	table tr td {padding: 0px 4px 0px 0px; }
-	table tr td:first-child {margin-top: 7px;}
-	table tr td:last-child {margin-bottom: 6px;}
+	table tr td p:first-child {margin-top: 6px;}
+	table tr td p:last-child {margin-bottom: 4px;}
+	table tr td {padding: 0px 4px 0px 0px; margin:0; }
 	
 	table tr.headerrow th p.para {font-weight: bold; margin:1px 0px 0px 0px;}
 	table.allseps, table.rowseps, table.topbot {border-spacing: 0px; border-top:1px solid #606060; border-bottom:1px solid #606060;}
@@ -166,6 +167,7 @@ body {
 	span.emphasis  {font-style: italic}
 	span.strongemphasis,span.listif {font-weight: bold; font-style: italic}
 	em.msgtext {font-weight: bold; font-style: italic}
+	span.checkcell {font-weight: bold; font-size: 150%;}
 
 /* superscript and subscript */	
 	span.subscript,span.superscript {font-size: 80%;}
@@ -177,23 +179,38 @@ body {
 	div.toc div.toc2 {font-weight: normal; margin: 8px 10px 5px 25px}
 	div.toc div.toc3 {font-weight: normal; margin: 5px 10px 2px 50px}
 	div.toc div.toc4 {font-weight: normal; margin: 0px 10px 2px 75px}
+
+/* banners and logos */
+	div.banner { background-image : url(images/banner_bkgd.png); background-repeat: repeat-x;
+		height : 40px; line-height : 40px; margin-top: 30px;
+	}
+	div.banner_logo_netiq { background-image : url(images/banner_logo_netiq.png); background-repeat: no-repeat;
+		position: relative; float: right; top: 5px; width : 98px; height : 30px; line-height : 30px;
+	}
 	
+/* collapsible sections */
+.expanded .collapsible { display: block; }
+.collapsed .collapsible {	display: none; }
+.exp_title { cursor: pointer; }
+.exp_title span { float:left; width:16px; height:15px; margin-right : 3px; margin-top : 2px; }
+.expanded .exp_title span {background-image : url(expanded.png); background-repeat: no-repeat;}
+.collapsed .exp_title span {background-image : url(collapsed.png); background-repeat: no-repeat;}
 </style>
 
-<title>Novell Vibe 3.3</title>
+<title>Novell Vibe 3.4</title>
 </head>
 <body>
 
 <div class="chapter singlefile" id="readme">
 
-<h1 class="title">Novell Vibe 3.3</h1>
+<h1 class="title">Novell Vibe 3.4</h1>
 
 <div class="sect1 singlefile" id="bbfxu6q">
 
 <h2 class="title"><span class="number">1.0</span> Začínáme</h2>
 
-<p class="para">Kompletní systémové požadavky a podrobné informace o instalaci určené administrátorům portálu Novell Vibe jsou uvedeny v příručce <span class="citetitle">Vibe 3.3 Installation Guide.</span>Nastavení portálu Vibe stejně jako popis jeho administrace a správy je popsáno v příručce <span class="citetitle">Vibe 3.3 Administration Guide</span>.</p>
-<p class="para">Po nastavení portálu Vibe mohou jeho uživatelé získat informace v příručkách <span class="citetitle">Vibe 3.3 Uživatelská příručka </span> a <span class="citetitle">Vibe 3.3 Pokročilá uživatelská příručka</span>.{Příručka <span class="citetitle">Vibe 3.3 Stručný úvod</span> je dostupná v jazykových verzích, kde není dostupná <span class="citetitle">Vibe 3.3 Uživatelská příručka</span>.}</p>
+<p class="para">Úplné požadavky na systém a podrobné pokyny k instalaci určené administrátorům portálu Novell Vibe jsou uvedeny v příručce <span class="citetitle">Vibe 3.4 Installation Guide.</span>Nastavení portálu Vibe stejně jako popis jeho správy a údržby je popsáno v příručce <span class="citetitle">Vibe 3.4 Administration Guide</span>.</p>
+<p class="para">Po nastavení portálu Vibe naleznou uživatelé pokyny v příručkách <span class="citetitle">Uživatelská příručka produktu Vibe 3.4</span> a <span class="citetitle">Vibe 3.4 Advanced User Guide</span>. (Pro jazykové verze, pro které není k dispozici <span class="citetitle">Uživatelská příručka produktu Vibe 3.4</span>, je k dispozici <span class="citetitle">Stručná úvodní příručka řešení Vibe 3.4</span>.)</p>
 <p class="para">Po přihlášení do portálu Vibe je možné zobrazit online nápovědu.</p>
 </div>
 
@@ -201,18 +218,18 @@ body {
 
 <h2 class="title"><span class="number">2.0</span> Známé problémy</h2>
 
-<p class="para">Aktuální seznam známých problémů této verze najdete úplném popisu Novell Vibe 3.3. product Read me umístěném na <a href="http://www.novell.com/documentation/vibe33" class="ulink">Novell Vibe 3.3 Documentation Web site</a>.</p>
+<p class="para">Aktuální seznam známých problémů v této verzi najdete v úplném popisu produktu Novell Vibe 3.4. Readme, který je umístěn na <a href="http://www.novell.com/documentation/vibe34" class="ulink">webu s dokumentací k produktu Novell Vibe 3.4</a>.</p>
 </div>
 
 <div class="sect1 singlefile" id="product_info">
 
 <h2 class="title"><span class="number">3.0</span> Dokumentace</h2>
 
-<p class="para">Všechna Novell Vibe 3.3 dokumentace je dostupná na <a href="http://www.novell.com/documentation/vibe33" class="ulink">Novell Vibe 3.3 Documentation Web site</a>.</p>
+<p class="para">Veškerá dokumentace produktu Novell Vibe 3.4 je dostupná na <a href="http://www.novell.com/documentation/vibe34" class="ulink">webu s dokumentací produktu Novell Vibe 3.4</a>.</p>
 <div class="itemizedlist">
 <ul class="listbullet">
 <li class="listitem">
-<p class="listitem"> Plná verze Vibe 3.3. product Readme</p></li>
+<p class="listitem">Úplný soubor readme produktu Vibe 3.4</p></li>
 <li class="listitem">
 <p class="listitem">
           <span class="citetitle">Instalation guide</span>
@@ -239,7 +256,15 @@ body {
         </p></li>
 <li class="listitem">
 <p class="listitem">
-          <span class="citetitle">Vibe Desktop Stručný úvod</span>
+          <span class="citetitle">Vibe Desktop pro systém Windows – stručný úvod</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Vibe Desktop pro počítače Mac – stručný úvod</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Nejčastější dotazyk produktu Vibe Desktop</span>
         </p></li>
 <li class="listitem">
 <p class="listitem">
@@ -251,22 +276,22 @@ body {
 <ul class="listbullet">
 <li class="listitem">
 <p class="listitem">
-          <a href="http://www.novell.com/support" class="ulink">Novell Support and Knowledgebase</a>
+          <a href="http://www.novell.com/support" class="ulink">Web technické podpory a znalostní databáze společnosti Novell</a>
         </p></li>
 <li class="listitem">
 <p class="listitem">
-          <a href="http://forums.novell.com/forumdisplay.php?f=989" class="ulink">Novell Support Forum</a>
+          <a href="http://forums.novell.com/forumdisplay.php?f=989" class="ulink">Fórum technické podpory společnosti Novell</a>
         </p></li>
 <li class="listitem">
 <p class="listitem">
-          <a href="http://www.novell.com/communities/coolsolutions/vibe" class="ulink">Novell Cool Solutions</a>
+          <a href="http://www.novell.com/communities/coolsolutions/vibe" class="ulink">Web Novell Cool Solutions</a>
         </p></li>
 <li class="listitem">
 <p class="listitem">
-          <a href="http://www.novell.com/products/vibe/resource-library/" class="ulink">Novell Resource Library</a>
+          <a href="http://www.novell.com/products/vibe/resource-library/" class="ulink">Web Novell Resource Library</a>
         </p></li></ul></div>
 
-<p class="para">Pro další informace o Vibe navštivte stránky <a href="http://www.kablink.org" class="ulink">Kablink Open Collaboration Project</a>.</p>
+<p class="para">Pro další informace o Vibe navštivte stránky projektu <a href="http://www.kablink.org" class="ulink">Kablink Open Collaboration</a>.</p>
 </div>
 
 <div class="sect1 singlefile" id="legal_notices">
@@ -275,8 +300,8 @@ body {
 
 <p class="para">Společnost Novell, Inc. neposkytuje žádné záruky vztahující se k obsahu nebo používání této dokumentace a zvláště neuznává žádné další výslovně uvedené nebo předpokládané záruky vztahující se k obchodovatelnosti nebo vhodnosti pro určitý účel. Dále si společnost Novell, Inc. vyhrazuje právo revidovat tuto publikaci a kdykoli provádět změny jejího obsahu bez povinnosti informovat jakékoli osoby nebo organizační jednotky o takových revizích nebo změnách.</p>
 <p class="para">Společnost Novell, Inc. také nepřijímá žádné námitky nebo záruční nároky týkající se jakéhokoliv softwaru a zvláště odmítá výslovně uvedené nebo předpokládané záruky prodejnosti nebo způsobilosti pro jakýkoli specifický účel. Dále si společnost Novell, Inc. vyhrazuje právo kdykoli provádět změny jakékoli jednotlivé části nebo všech částí softwaru společnosti Novell bez povinnosti informovat jakékoli osoby nebo organizační jednotky o takovýchto revizích nebo změnách.</p>
-<p class="para">Jakýkoli produkt nebo technické informace poskytované v rámci této smlouvy mohou podléhat kontrole vývozu z USA a obchodním předpisům jiných zemí. Souhlasíte, že budete dodržovat všechny směrnice týkající se kontroly vývozu. Souhlasíte s tím, že si obstaráte požadované licence nebo klasifikace pro vývoz, opětovný vývoz anebo dovoz dodaného produktu. Souhlasíte s tím, že produkt nebudete vyvážet ani opětovně vyvážet subjektům na aktuálním seznamu omezení vývozu z USA, do jakýchkoliv zemí, na které je uvalené embargo, a do teroristických zemí, které jsou určené v předpisech pro vývoz z USA. Souhlasíte s tím, že dodaný produkt nebudete používat v aplikacích pro zakázané jaderné zbraně, řízené střely a chemicko-biologické zbraně.  Další informace o vývozu softwaru společnosti Novell naleznete na webové stránce <a href="http://www.novell.com/info/exports/" class="ulink">Novell International Trade Services</a>. Společnost Novell nenese odpovědnost za zanedbání vaší povinnosti obstarat si veškeré nezbytné povolení pro export.</p>
-<p class="para">Copyright © 2008–2012 Novell, Inc. Všechna práva vyhrazena. Žádná část této publikace nesmí být rozmnožována, kopírována, umístěna v systému vyhledávání nebo rozšiřována bez výslovného písemného souhlasu vydavatele.</p>
+<p class="para">Jakýkoli produkt nebo technické informace poskytované v rámci této smlouvy mohou podléhat kontrole vývozu z USA a obchodním předpisům jiných zemí. Souhlasíte, že budete dodržovat všechny směrnice týkající se kontroly vývozu. Souhlasíte s tím, že si obstaráte požadované licence nebo klasifikace pro vývoz, opětovný vývoz anebo dovoz dodaného produktu. Souhlasíte s tím, že produkt nebudete vyvážet ani opětovně vyvážet subjektům na aktuálním seznamu omezení vývozu z USA, do jakýchkoliv zemí, na které je uvalené embargo, a do teroristických zemí, které jsou určené v předpisech pro vývoz z USA. Souhlasíte s tím, že dodaný produkt nebudete používat v aplikacích pro zakázané jaderné zbraně, řízené střely a chemické a biologické zbraně.  Další informace o vývozu softwaru společnosti Novell naleznete na webové stránce <a href="http://www.novell.com/info/exports/" class="ulink">Novell International Trade Services</a>. Společnost Novell nenese odpovědnost za zanedbání vaší povinnosti obstarat si veškerá nezbytná povolení pro export.</p>
+<p class="para">Copyright © 2008–2013 Novell, Inc. Všechna práva vyhrazena. Žádná část této publikace nesmí být rozmnožována, kopírována, umístěna v systému vyhledávání nebo rozšiřována bez výslovného písemného souhlasu vydavatele.</p>
 <p class="para">Ochranné známky společnosti Novell jsou uvedeny v <a href="http://www.novell.com/company/legal/trademarks/tmlist.html" class="ulink">seznamu ochranných známek a známek služeb společnosti Novell</a>.</p>
 <p class="para">Všechny ochranné známky nezávislých výrobců jsou majetkem příslušných vlastníků.</p>
 </div>

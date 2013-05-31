@@ -1,33 +1,35 @@
-﻿Novell Vibe 3.3
+﻿Novell Vibe 3.4
 
 1.0  Začínáme
 
-     Kompletní systémové požadavky a podrobné informace o instalaci určené
-     administrátorům portálu Novell Vibe jsou uvedeny v příručce "Vibe 3.3
-     Installation Guide."Nastavení portálu Vibe stejně jako popis jeho
-     administrace a správy je popsáno v příručce "Vibe 3.3 Administration Guide".
+     Úplné požadavky na systém a podrobné pokyny k instalaci určené
+     administrátorům portálu Novell Vibe jsou uvedeny v příručce "Vibe 3.4
+     Installation Guide."Nastavení portálu Vibe stejně jako popis jeho správy a
+     údržby je popsáno v příručce "Vibe 3.4 Administration Guide".
 
-     Po nastavení portálu Vibe mohou jeho uživatelé získat informace v příručkách
-     "Vibe 3.3 Uživatelská příručka " a "Vibe 3.3 Pokročilá uživatelská
-     příručka".{Příručka "Vibe 3.3 Stručný úvod" je dostupná v jazykových
-     verzích, kde není dostupná "Vibe 3.3 Uživatelská příručka".}
+     Po nastavení portálu Vibe naleznou uživatelé pokyny v příručkách
+     "Uživatelská příručka produktu Vibe 3.4" a "Vibe 3.4 Advanced User Guide".
+     (Pro jazykové verze, pro které není k dispozici "Uživatelská příručka
+     produktu Vibe 3.4", je k dispozici "Stručná úvodní příručka řešení Vibe
+     3.4".)
 
      Po přihlášení do portálu Vibe je možné zobrazit online nápovědu.
 
 
 2.0  Známé problémy
 
-     Aktuální seznam známých problémů této verze najdete úplném popisu Novell
-     Vibe 3.3. product Read me umístěném na Novell Vibe 3.3 Documentation Web
-     site (http://www.novell.com/documentation/vibe33).
+     Aktuální seznam známých problémů v této verzi najdete v úplném popisu
+     produktu Novell Vibe 3.4. Readme, který je umístěn na webu s dokumentací
+     k produktu Novell Vibe 3.4 (http://www.novell.com/documentation/vibe34).
 
 
 3.0  Dokumentace
 
-     Všechna Novell Vibe 3.3 dokumentace je dostupná na Novell Vibe 3.3
-     Documentation Web site (http://www.novell.com/documentation/vibe33).
+     Veškerá dokumentace produktu Novell Vibe 3.4 je dostupná na webu
+     s dokumentací produktu Novell Vibe 3.4
+     (http://www.novell.com/documentation/vibe34).
 
-     -  Plná verze Vibe 3.3. product Readme
+     -  Úplný soubor readme produktu Vibe 3.4
 
      -  "Instalation guide"
 
@@ -41,25 +43,31 @@
 
      -  "Vibe Stručný úvod"
 
-     -  "Vibe Desktop Stručný úvod"
+     -  "Vibe Desktop pro systém Windows – stručný úvod"
+
+     -  "Vibe Desktop pro počítače Mac – stručný úvod"
+
+     -  "Nejčastější dotazyk produktu Vibe Desktop"
 
      -  "Vibe Add-In Stručný úvod"
 
      K doplnění produktové dokumentace Novell Vibe slouží následující zdroje
      obsahující další informace o portálu Vibe.
 
-     -  Novell Support and Knowledgebase (http://www.novell.com/support)
+     -  Web technické podpory a znalostní databáze společnosti Novell
+        (http://www.novell.com/support)
 
-     -  Novell Support Forum (http://forums.novell.com/forumdisplay.php?f=989)
+     -  Fórum technické podpory společnosti Novell
+        (http://forums.novell.com/forumdisplay.php?f=989)
 
-     -  Novell Cool Solutions
+     -  Web Novell Cool Solutions
         (http://www.novell.com/communities/coolsolutions/vibe)
 
-     -  Novell Resource Library
+     -  Web Novell Resource Library
         (http://www.novell.com/products/vibe/resource-library/)
 
-     Pro další informace o Vibe navštivte stránky Kablink Open Collaboration
-     Project (http://www.kablink.org).
+     Pro další informace o Vibe navštivte stránky projektu Kablink Open
+     Collaboration (http://www.kablink.org).
 
 
 4.0  Právní upozornění
@@ -89,14 +97,14 @@
      na aktuálním seznamu omezení vývozu z USA, do jakýchkoliv zemí, na které je
      uvalené embargo, a do teroristických zemí, které jsou určené v předpisech
      pro vývoz z USA. Souhlasíte s tím, že dodaný produkt nebudete používat
-     v aplikacích pro zakázané jaderné zbraně, řízené střely a
-     chemicko-biologické zbraně. Další informace o vývozu softwaru společnosti
-     Novell naleznete na webové stránce Novell International Trade Services
+     v aplikacích pro zakázané jaderné zbraně, řízené střely a chemické a
+     biologické zbraně. Další informace o vývozu softwaru společnosti Novell
+     naleznete na webové stránce Novell International Trade Services
      (http://www.novell.com/info/exports/). Společnost Novell nenese odpovědnost
-     za zanedbání vaší povinnosti obstarat si veškeré nezbytné povolení pro
+     za zanedbání vaší povinnosti obstarat si veškerá nezbytná povolení pro
      export.
 
-     Copyright © 2008–2012 Novell, Inc. Všechna práva vyhrazena. Žádná část této
+     Copyright © 2008–2013 Novell, Inc. Všechna práva vyhrazena. Žádná část této
      publikace nesmí být rozmnožována, kopírována, umístěna v systému vyhledávání
      nebo rozšiřována bez výslovného písemného souhlasu vydavatele.
 

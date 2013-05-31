@@ -1,30 +1,30 @@
-﻿Novell Vibe 3.3
+﻿Novell Vibe 3.4
 
 1.0  入門
 
-     針對 Novell Vibe 管理員的完整系統要求及詳細的軟體安裝指示會在"《Vibe 3.3 Installation Guide》"(Vibe
-     3.3 安裝指南) 中提供。Vibe 站台設定以及後續的站台管理與維護指示可在"《Vibe 3.3 Administration
-     Guide》"(Vibe 3.3 管理指南) 中找到。
+     針對 Novell Vibe 管理員的完整系統要求及詳細的軟體安裝指示會在"《Vibe 3.4 Installation Guide》"(Vibe
+     3.4 安裝指南) 中提供。Vibe 站台設定以及後續的站台管理與維護指示可在"《Vibe 3.4 Administration
+     Guide》"(Vibe 3.4 管理指南) 中找到。
 
-     Vibe 站台設定完成後，Vibe 使用者便可從"《Vibe 3.3 使用者指南》"和"《Vibe 3.3 Advanced User
-     Guide》"(Vibe 3.3 進階使用者指南) 中獲取指示。(如果某些語言的"《Vibe 3.3 使用者指南》"未提供，可以使用該語言的"《Vibe
-     3.3 快速入門》"。)
+     Vibe 站台設定完成後，Vibe 使用者便可從"《Vibe 3.4 使用者指南》"和"《Vibe 3.4 Advanced User
+     Guide》"(Vibe 3.3 進階使用者指南) 中獲取指示。(如果某些語言的"《Vibe 3.4
+     使用者指南》"未提供，使用者可以參閱該語言的"《Vibe 3.4 快速入門》"。)
 
      您可以在登入 Vibe 站台時顯示 Vibe 線上說明。
 
 
 2.0  已知問題
 
-     有關本版本已知問題的最新清單，請參閱 Novell Vibe 3.3 文件網站
-     (http://www.novell.com/documentation/vibe33)上的完整 Novell Vibe 3.3 產品讀我檔案。
+     有關本版本已知問題的最新清單，請參閱 Novell Vibe 3.4 文件網站上的完整
+      (http://www.novell.com/documentation/vibe34)Novell Vibe 3.4 產品讀我檔案。
 
 
 3.0  文件
 
-     所有 Novell Vibe 3.3 文件均會在 Novell Vibe 3.3 文件網站
-     (http://www.novell.com/documentation/vibe33)上提供︰
+     所有 Novell Vibe 3.4 文件均會在 Novell Vibe 3.4 文件網站
+     (http://www.novell.com/documentation/vibe34)上提供︰
 
-     -  完整的 Vibe 3.3 產品讀我檔案
+     -  完整的 Vibe 3.4 產品讀我檔案
 
      -  "安裝指南"
 
@@ -38,7 +38,11 @@
 
      -  "Vibe 快速入門"
 
-     -  "Vibe Desktop 快速入門"
+     -  "Vibe Desktop for Windows 快速入門"
+
+     -  "Vibe Desktop for Mac 快速入門"
+
+     -  "Vibe Desktop 常見問答集"
 
      -  "Vibe Add-In 快速入門"
 
@@ -72,7 +76,7 @@
      (http://www.novell.com/info/exports/)，以取得有關出口 Novell 軟體的詳細資訊。Novell
      無需承擔您無法取得任何必要的出口核准之責任。
 
-     版權所有 © 2008 - 2012 Novell, Inc.
+     版權所有 © 2008 - 2013 Novell, Inc.
      保留所有權利。未獲得出版者的書面同意前，不得對本出版品之任何部分進行重製、複印、儲存於檢閱系統或傳輸的動作。
 
      如需 Novell 商標之相關資訊，請參閱 Novell 商標和服務標誌清單

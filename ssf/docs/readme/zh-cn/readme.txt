@@ -1,28 +1,28 @@
-﻿Novell Vibe 3.3
+﻿Novell Vibe 3.4
 
-1.0  快速入门
+1.0  入门
 
-     完整系统要求和详细软件安装指导可在《"Vibe 3.3 安装指南》中找到，供 Novell Vibe 管理员参考。" Vibe
-     站点设置及正在进行的站点管理和维护指导可在《"Vibe 3.3 管理指南"》中找到。
+     《Vibe 3.4 安装指南》中提供了完整的系统要求和详细的软件安装指导，可供 Novell Vibe 管理员参考。""《Vibe 3.4
+     管理指南》中提供了有关 Vibe 站点设置及后续站点管理和维护的指导。""
 
-     Vibe 站点设置完成后，Vibe 用户可在《"Vibe 3.3 用户指南"》和《"Vibe 3.3 高级用户指南"》中获得指导。（《"Vibe 3.3
-     快速入门"》以《"Vibe 3.3 用户指南"》不具备的其他语言提供。）
+     Vibe 站点设置完成后，Vibe 用户将可从《Vibe 3.4 用户指南》和《Vibe 3.4
+     高级用户指南》中获得指导。""""（有些语言未提供《Vibe 3.4 用户指南》，用户可以参考《Vibe 3.4 快速入门》。）""""
 
      登录 Vibe 站点时可以显示 Vibe 联机帮助。
 
 
 2.0  已知问题
 
-     有关此版本已知问题的最新列表，请参见位于 Novell Vibe 3.3 文档网站上的完整
-      (http://www.novell.com/documentation/vibe33)Novell Vibe 3.3 产品自述。
+     有关此版本最新的已知问题列表，请参见 Novell Vibe 3.4 文档网站
+     (http://www.novell.com/documentation/vibe34)上完整的 Novell Vibe 3.4 产品自述。
 
 
 3.0  文档
 
-     所有 Novell Vibe 3.3 文档都可在 Novell Vibe 3.3 文档网站
-     (http://www.novell.com/documentation/vibe33)上找到：
+     Novell Vibe 3.4 文档网站 (http://www.novell.com/documentation/vibe34)上提供了所有
+     Novell Vibe 3.4 文档：
 
-     -  完整 Vibe 3.3 产品自述
+     -  完整 Vibe 3.4 产品自述
 
      -  "安装指南"
 
@@ -32,13 +32,17 @@
 
      -  "高级用户指南"
 
-     -  《"开发人员指南"》
+     -  "开发人员指南"
 
-     -  《"Vibe 快速入门"》
+     -  "Vibe 快速入门"
 
-     -  《"Vibe Desktop 快速入门"》
+     -  "Vibe Desktop for Windows 快速入门"
 
-     -  《"Vibe Add-In 快速入门"》
+     -  "Vibe Desktop for Mac 快速入门"
+
+     -  "Vibe Desktop 常见问题"
+
+     -  "Vibe Add-In 快速入门"
 
      除了 Novell Vibe 产品文档外，其他资源也提供有关 Vibe 的信息。
 
@@ -68,7 +72,7 @@
      国际贸易服务网页 (http://www.novell.com/info/exports/)。如果您未能获得任何必要的出口许可，Novell
      对此不负任何责任。
 
-     版权所有 © 2008-2012 Novell, Inc.
+     版权所有 © 2008-2013 Novell, Inc.
      保留所有权利。未经出版商的明确书面许可，不得复制、影印、传送此出版物的任何部分或将其储存在检索系统上。
 
      有关 Novell 商标，请参见 Novell 商标和服务标记列表

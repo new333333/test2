@@ -9,15 +9,16 @@
 <meta http-equiv="Content-Language" content="zh-cn" />
 <meta name="Content-Date" content="Mon, 19 Jan 2010 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Friday, May 18, 2012" />
-<meta name="Copyright" content="Copyright Novell, Inc. 2010" />
+<meta name="Generation-Date" content="Tuesday, May 28, 2013" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2013" />
 
 <style type="text/css">
 body { 
-		margin-left: .2in;
+		margin-left: 18px;
+		margin-right: 18px;
 		padding:0;
 		font-family:geneva, arial, helvetica, sans-serif;
-		font-size: 75%;
+		font-size: 12px;
 		font-weight: normal;
 		color: #000000;
 		background-color: #ffffff;
@@ -109,14 +110,14 @@ body {
 	div.figure p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
 	
 /* tables */
-	table {border-collapse:collapse; margin-bottom:18px;}
+	table {border-collapse:collapse; margin:16px 0 16px 0;}
 	div.table p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
 	div.table p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
 
 	table tr.headerrow th {padding: 6px 4px 5px 0px;}
-	table tr td {padding: 0px 4px 0px 0px; }
-	table tr td:first-child {margin-top: 7px;}
-	table tr td:last-child {margin-bottom: 6px;}
+	table tr td p:first-child {margin-top: 6px;}
+	table tr td p:last-child {margin-bottom: 4px;}
+	table tr td {padding: 0px 4px 0px 0px; margin:0; }
 	
 	table tr.headerrow th p.para {font-weight: bold; margin:1px 0px 0px 0px;}
 	table.allseps, table.rowseps, table.topbot {border-spacing: 0px; border-top:1px solid #606060; border-bottom:1px solid #606060;}
@@ -166,6 +167,7 @@ body {
 	span.emphasis  {font-style: italic}
 	span.strongemphasis,span.listif {font-weight: bold; font-style: italic}
 	em.msgtext {font-weight: bold; font-style: italic}
+	span.checkcell {font-weight: bold; font-size: 150%;}
 
 /* superscript and subscript */	
 	span.subscript,span.superscript {font-size: 80%;}
@@ -177,23 +179,38 @@ body {
 	div.toc div.toc2 {font-weight: normal; margin: 8px 10px 5px 25px}
 	div.toc div.toc3 {font-weight: normal; margin: 5px 10px 2px 50px}
 	div.toc div.toc4 {font-weight: normal; margin: 0px 10px 2px 75px}
+
+/* banners and logos */
+	div.banner { background-image : url(images/banner_bkgd.png); background-repeat: repeat-x;
+		height : 40px; line-height : 40px; margin-top: 30px;
+	}
+	div.banner_logo_netiq { background-image : url(images/banner_logo_netiq.png); background-repeat: no-repeat;
+		position: relative; float: right; top: 5px; width : 98px; height : 30px; line-height : 30px;
+	}
 	
+/* collapsible sections */
+.expanded .collapsible { display: block; }
+.collapsed .collapsible {	display: none; }
+.exp_title { cursor: pointer; }
+.exp_title span { float:left; width:16px; height:15px; margin-right : 3px; margin-top : 2px; }
+.expanded .exp_title span {background-image : url(expanded.png); background-repeat: no-repeat;}
+.collapsed .exp_title span {background-image : url(collapsed.png); background-repeat: no-repeat;}
 </style>
 
-<title>Novell Vibe 3.3</title>
+<title>Novell Vibe 3.4</title>
 </head>
 <body>
 
 <div class="chapter singlefile" id="readme">
 
-<h1 class="title">Novell Vibe 3.3</h1>
+<h1 class="title">Novell Vibe 3.4</h1>
 
 <div class="sect1 singlefile" id="bbfxu6q">
 
-<h2 class="title"><span class="number">1.0</span> 快速入门</h2>
+<h2 class="title"><span class="number">1.0</span> 入门</h2>
 
-<p class="para">完整系统要求和详细软件安装指导可在《<span class="citetitle">Vibe 3.3 安装指南》中找到，供 Novell Vibe 管理员参考。</span> Vibe 站点设置及正在进行的站点管理和维护指导可在《<span class="citetitle">Vibe 3.3 管理指南</span>》中找到。</p>
-<p class="para">Vibe 站点设置完成后，Vibe 用户可在《<span class="citetitle">Vibe 3.3 用户指南</span>》和《<span class="citetitle">Vibe 3.3 高级用户指南</span>》中获得指导。（《<span class="citetitle">Vibe 3.3 快速入门</span>》以《<span class="citetitle">Vibe 3.3 用户指南</span>》不具备的其他语言提供。）</p>
+<p class="para">《Vibe 3.4 安装指南》中提供了完整的系统要求和详细的软件安装指导，可供 Novell Vibe 管理员参考。<span class="citetitle"></span>《Vibe 3.4 管理指南》中提供了有关 Vibe 站点设置及后续站点管理和维护的指导。<span class="citetitle"></span></p>
+<p class="para">Vibe 站点设置完成后，Vibe 用户将可从《Vibe 3.4 用户指南》和《Vibe 3.4 高级用户指南》中获得指导。<span class="citetitle"></span><span class="citetitle"></span>（有些语言未提供《Vibe 3.4 用户指南》，用户可以参考《Vibe 3.4 快速入门》。）<span class="citetitle"></span><span class="citetitle"></span></p>
 <p class="para">登录 Vibe 站点时可以显示 Vibe 联机帮助。</p>
 </div>
 
@@ -201,18 +218,18 @@ body {
 
 <h2 class="title"><span class="number">2.0</span> 已知问题</h2>
 
-<p class="para">有关此版本已知问题的最新列表，请参见位于 Novell Vibe 3.3 文档网站<a href="http://www.novell.com/documentation/vibe33" class="ulink">上的完整 </a>Novell Vibe 3.3 产品自述。</p>
+<p class="para">有关此版本最新的已知问题列表，请参见 <a href="http://www.novell.com/documentation/vibe34" class="ulink">Novell Vibe 3.4 文档网站</a>上完整的 Novell Vibe 3.4 产品自述。</p>
 </div>
 
 <div class="sect1 singlefile" id="product_info">
 
 <h2 class="title"><span class="number">3.0</span> 文档</h2>
 
-<p class="para">所有 Novell Vibe 3.3 文档都可在 <a href="http://www.novell.com/documentation/vibe33" class="ulink">Novell Vibe 3.3 文档网站</a>上找到：</p>
+<p class="para"><a href="http://www.novell.com/documentation/vibe34" class="ulink">Novell Vibe 3.4 文档网站</a>上提供了所有 Novell Vibe 3.4 文档：</p>
 <div class="itemizedlist">
 <ul class="listbullet">
 <li class="listitem">
-<p class="listitem">完整 Vibe 3.3 产品自述</p></li>
+<p class="listitem">完整 Vibe 3.4 产品自述</p></li>
 <li class="listitem">
 <p class="listitem">
           <span class="citetitle">安装指南</span>
@@ -230,13 +247,29 @@ body {
           <span class="citetitle">高级用户指南</span>
         </p></li>
 <li class="listitem">
-<p class="listitem">《<span class="citetitle">开发人员指南</span>》</p></li>
+<p class="listitem">
+          <span class="citetitle">开发人员指南</span>
+        </p></li>
 <li class="listitem">
-<p class="listitem">《<span class="citetitle">Vibe 快速入门</span>》</p></li>
+<p class="listitem">
+          <span class="citetitle">Vibe 快速入门</span>
+        </p></li>
 <li class="listitem">
-<p class="listitem">《<span class="citetitle">Vibe Desktop 快速入门</span>》</p></li>
+<p class="listitem">
+          <span class="citetitle">Vibe Desktop for Windows 快速入门</span>
+        </p></li>
 <li class="listitem">
-<p class="listitem">《<span class="citetitle">Vibe Add-In 快速入门</span>》</p></li></ul></div>
+<p class="listitem">
+          <span class="citetitle">Vibe Desktop for Mac 快速入门</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Vibe Desktop 常见问题</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Vibe Add-In 快速入门</span>
+        </p></li></ul></div>
 
 <p class="para">除了 Novell Vibe 产品文档外，其他资源也提供有关 Vibe 的信息。</p>
 <div class="itemizedlist">
@@ -268,7 +301,7 @@ body {
 <p class="para">Novell, Inc. 对于本文档的内容或使用不做任何陈述或保证，特别是对用于任何特定目的的适销性或适用性不做任何明示或暗示的保证。另外，Novell, Inc. 保留随时修订本出版物和更改其内容的权利，并且没有义务将这些修订或更改通知任何个人或实体。</p>
 <p class="para">另外，Novell, Inc. 对任何软件不做任何声明或保证，特别是对用于任何特定目的的适销性或适用性不做任何明示或暗示的保证。另外，Novell, Inc. 保留随时更改 Novell 软件全部或部分内容的权利，并且没有义务将这些更改通知任何个人或实体。</p>
 <p class="para">依据本协议提供的任何产品或技术信息都将受到美国出口控制和其他国家/地区的贸易法律的约束。您已经同意遵守所有的出口控制法规，并同意在出口、再出口或进口可交付产品之前取得任何必要的许可证或分类证书。您同意不出口或再出口至当前美国出口排除列表上所列的实体，或者美国出口法律中规定的任何被禁运的国家/地区或支持恐怖主义的国家/地区。您同意不将可交付产品用于禁止的核武器、导弹或生物化学武器的最终用途。有关出口 Novell 软件的详细信息，请参见 <a href="http://www.novell.com/info/exports/" class="ulink">Novell 国际贸易服务网页</a>。如果您未能获得任何必要的出口许可，Novell 对此不负任何责任。</p>
-<p class="para">版权所有 © 2008-2012 Novell, Inc. 保留所有权利。未经出版商的明确书面许可，不得复制、影印、传送此出版物的任何部分或将其储存在检索系统上。</p>
+<p class="para">版权所有 © 2008-2013 Novell, Inc. 保留所有权利。未经出版商的明确书面许可，不得复制、影印、传送此出版物的任何部分或将其储存在检索系统上。</p>
 <p class="para">有关 Novell 商标，请参见 <a href="http://www.novell.com/company/legal/trademarks/tmlist.html" class="ulink">Novell 商标和服务标记列表</a>。</p>
 <p class="para">所有第三方商标均是其各自所有者的财产。</p>
 </div>

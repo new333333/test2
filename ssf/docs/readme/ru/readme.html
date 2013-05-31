@@ -9,15 +9,16 @@
 <meta http-equiv="Content-Language" content="ru" />
 <meta name="Content-Date" content="Mon, 19 Jan 2010 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Friday, May 18, 2012" />
-<meta name="Copyright" content="Авторские права Novell, Inc. 2010" />
+<meta name="Generation-Date" content="Tuesday, May 28, 2013" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2013" />
 
 <style type="text/css">
 body { 
-		margin-left: .2in;
+		margin-left: 18px;
+		margin-right: 18px;
 		padding:0;
 		font-family:geneva, arial, helvetica, sans-serif;
-		font-size: 75%;
+		font-size: 12px;
 		font-weight: normal;
 		color: #000000;
 		background-color: #ffffff;
@@ -109,14 +110,14 @@ body {
 	div.figure p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
 	
 /* tables */
-	table {border-collapse:collapse; margin-bottom:18px;}
+	table {border-collapse:collapse; margin:16px 0 16px 0;}
 	div.table p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
 	div.table p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
 
 	table tr.headerrow th {padding: 6px 4px 5px 0px;}
-	table tr td {padding: 0px 4px 0px 0px; }
-	table tr td:first-child {margin-top: 7px;}
-	table tr td:last-child {margin-bottom: 6px;}
+	table tr td p:first-child {margin-top: 6px;}
+	table tr td p:last-child {margin-bottom: 4px;}
+	table tr td {padding: 0px 4px 0px 0px; margin:0; }
 	
 	table tr.headerrow th p.para {font-weight: bold; margin:1px 0px 0px 0px;}
 	table.allseps, table.rowseps, table.topbot {border-spacing: 0px; border-top:1px solid #606060; border-bottom:1px solid #606060;}
@@ -166,6 +167,7 @@ body {
 	span.emphasis  {font-style: italic}
 	span.strongemphasis,span.listif {font-weight: bold; font-style: italic}
 	em.msgtext {font-weight: bold; font-style: italic}
+	span.checkcell {font-weight: bold; font-size: 150%;}
 
 /* superscript and subscript */	
 	span.subscript,span.superscript {font-size: 80%;}
@@ -177,23 +179,38 @@ body {
 	div.toc div.toc2 {font-weight: normal; margin: 8px 10px 5px 25px}
 	div.toc div.toc3 {font-weight: normal; margin: 5px 10px 2px 50px}
 	div.toc div.toc4 {font-weight: normal; margin: 0px 10px 2px 75px}
+
+/* banners and logos */
+	div.banner { background-image : url(images/banner_bkgd.png); background-repeat: repeat-x;
+		height : 40px; line-height : 40px; margin-top: 30px;
+	}
+	div.banner_logo_netiq { background-image : url(images/banner_logo_netiq.png); background-repeat: no-repeat;
+		position: relative; float: right; top: 5px; width : 98px; height : 30px; line-height : 30px;
+	}
 	
+/* collapsible sections */
+.expanded .collapsible { display: block; }
+.collapsed .collapsible {	display: none; }
+.exp_title { cursor: pointer; }
+.exp_title span { float:left; width:16px; height:15px; margin-right : 3px; margin-top : 2px; }
+.expanded .exp_title span {background-image : url(expanded.png); background-repeat: no-repeat;}
+.collapsed .exp_title span {background-image : url(collapsed.png); background-repeat: no-repeat;}
 </style>
 
-<title>Novell Vibe 3.3</title>
+<title>Novell Vibe 3.4</title>
 </head>
 <body>
 
 <div class="chapter singlefile" id="readme">
 
-<h1 class="title">Novell Vibe 3.3</h1>
+<h1 class="title">Novell Vibe 3.4</h1>
 
 <div class="sect1 singlefile" id="bbfxu6q">
 
-<h2 class="title"><span class="number">1.0</span> Начало работы</h2>
+<h2 class="title"><span class="number">1.0</span> Приступая к работе</h2>
 
-<p class="para">Полный перечень требований к системе и подробные инструкции по установке программного обеспечения для администратора Novell Vibe см. в <span class="citetitle">Руководстве по установке Vibe 3.3.</span> Настройка сайта Vibe, а также инструкции по последующему администрированию и обслуживанию сайта описаны в <span class="citetitle">Руководстве по администрированию Vibe 3.3</span>.</p>
-<p class="para">После настройки сайта Vibe пользователи Vibe могут найти необходимые инструкции в <span class="citetitle">Руководстве пользователя Vibe 3.3</span> и <span class="citetitle">Руководстве для опытных пользователей Vibe 3.3</span>. (Если для какого-то языка отсутствует <span class="citetitle">Руководство пользователя Vibe 3.3</span>, то для него предоставляется <span class="citetitle">Краткое справочное руководство по Vibe 3.3</span>.)</p>
+<p class="para">Полный перечень требований к системе и подробные инструкции по установке программного обеспечения для администратора Novell Vibe см. в <span class="citetitle">Руководстве по установке Vibe 3.4.</span> Настройка сайта Vibe, а также инструкции по последующему администрированию и обслуживанию сайта описаны в <span class="citetitle">Руководстве по администрированию Vibe 3.4</span>.</p>
+<p class="para">После настройки сайта Vibe пользователи Vibe могут найти необходимые инструкции в <span class="citetitle">Руководстве пользователя Vibe 3.4</span> и <span class="citetitle">Руководстве для опытных пользователей Vibe 3.4</span>. (Если для какого-то языка <span class="citetitle">Руководство пользователя Vibe 3.4</span> отсутствует, для него предоставляется <span class="citetitle">Краткое руководство по Vibe 3.4</span>.)</p>
 <p class="para">После регистрации на сайте Vibe можно просматривать электронную справку Vibe.</p>
 </div>
 
@@ -201,18 +218,18 @@ body {
 
 <h2 class="title"><span class="number">2.0</span> Известные проблемы</h2>
 
-<p class="para">Текущий список известных неполадок этой версии содержится в полном файле Readme продукта Novell Vibe 3.3, расположенном на <a href="http://www.novell.com/documentation/vibe33" class="ulink">веб-сайте документации Vibe 3.3</a>.</p>
+<p class="para">Текущий список известных неполадок этой версии содержится в полном файле Readme продукта Novell Vibe 3.4, расположенном на <a href="http://www.novell.com/documentation/vibe34" class="ulink">веб-сайте документации Vibe 3.4</a>.</p>
 </div>
 
 <div class="sect1 singlefile" id="product_info">
 
 <h2 class="title"><span class="number">3.0</span> Документация</h2>
 
-<p class="para">Вся документация Novell Vibe 3.3 доступна на <a href="http://www.novell.com/documentation/vibe33" class="ulink">веб-сайте документации Novell Vibe 3.3</a>.</p>
+<p class="para">Вся документация Novell Vibe 3.4 доступна на <a href="http://www.novell.com/documentation/vibe34" class="ulink">веб-сайте документации Novell Vibe 3.4</a>.</p>
 <div class="itemizedlist">
 <ul class="listbullet">
 <li class="listitem">
-<p class="listitem">Полный файл Readme продукта Vibe 3.3</p></li>
+<p class="listitem">Полный файл Readme продукта Vibe 3.4</p></li>
 <li class="listitem">
 <p class="listitem">
           <span class="citetitle">Руководство по установке</span>
@@ -239,7 +256,15 @@ body {
         </p></li>
 <li class="listitem">
 <p class="listitem">
-          <span class="citetitle">Краткое руководство по Vibe Desktop</span>
+          <span class="citetitle">Краткое руководство по Vibe Desktop for Windows</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Краткое руководство по Vibe Desktop for Mac</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Часто задаваемые вопросы о Vibe Desktop</span>
         </p></li>
 <li class="listitem">
 <p class="listitem">
@@ -275,8 +300,8 @@ body {
 
 <p class="para">Компания Novell, Inc. не дает никаких гарантий или обещаний относительно содержания или возможностей использования данной документации, особо оговаривая отказ от любых явных или подразумеваемых гарантий назначения или пригодности для любой конкретной цели. Кроме того, компания Novell оставляет за собой право в любое время пересматривать данную публикацию и изменять ее содержимое, не беря на себя обязательств по уведомлению каких-либо юридических и физических лиц об изменениях.</p>
 <p class="para">Компания Novell также не дает никаких гарантий и обещаний относительно любого программного обеспечения, особо оговаривая отказ от любых явных или подразумеваемых гарантий пригодности для продажи и иной цели. Кроме того, Novell, Inc. оставляет за собой право в любое время изменять программные продукты Novell частично или целиком, не беря на себя обязательств по уведомлению каких-либо юридических и физических лиц об этих изменениях.</p>
-<p class="para">На любые продукты и техническую информацию, предоставляемые по этому Соглашению, могут распространяться правила экспортного контроля США и положения торгового права, принятые в других странах. Вы обязуетесь соблюдать все правила экспортного контроля и получать любые необходимые лицензии или разрешения для выполнения операций экспорта, реэкспорта и импорта поставляемых товаров. Вы обязуетесь не экспортировать и не реэкспортировать товары лицам, находящимся в запретных списках США на экспорт, и в страны, в отношении которых действует эмбарго или которые определены в экспортных законах США как террористические. Вы обязуетесь не использовать поставляемые продукты для применения в запрещенном производстве и использовании ядерного, ракетного, химического и биологического оружия. Дополнительные сведения об экспорте программного обеспечения Novell см. на <a href="http://www.novell.com/info/exports/" class="ulink">веб-странице Novell International Trade Services</a>. Компания Novell не несет ответственности, если вы не сможете получить необходимое разрешение на экспорт.</p>
-<p class="para">Copyright © 2008-2012 Novell, Inc. Все права защищены. Никакая часть настоящего документа не может быть воспроизведена, фотокопирована, сохранена в какой-либо поисковой системе или передана без явного письменного согласия издателя.</p>
+<p class="para">На любые продукты и техническую информацию, предоставляемые по этому Соглашению, могут распространяться правила экспортного контроля США и положения торгового права, принятые в других странах. Вы обязуетесь соблюдать все правила экспортного контроля и получать любые необходимые лицензии или разрешения для выполнения операций экспорта, реэкспорта и импорта поставляемых товаров. Вы обязуетесь не экспортировать и не реэкспортировать товары лицам, находящимся в запретных списках США на экспорт, и в страны, в отношении которых действует эмбарго или которые определены в экспортных законах США как террористические. Вы обязуетесь не использовать поставляемые товары в связи с запрещенным производством и использованием ядерного, ракетного, химического и биологического оружия. Дополнительные сведения об экспорте программного обеспечения Novell см. на <a href="http://www.novell.com/info/exports/" class="ulink">веб-странице Novell International Trade Services</a>. Компания Novell не несет ответственности, если вы не сможете получить необходимое разрешение на экспорт.</p>
+<p class="para">© Novell Inc., 2008-2013. Все права защищены. Никакая часть настоящего документа не может быть воспроизведена, фотокопирована, сохранена в какой-либо поисковой системе или передана без явного письменного согласия издателя.</p>
 <p class="para">Товарные знаки компании Novell см. в <a href="http://www.novell.com/company/legal/trademarks/tmlist.html" class="ulink">списке товарных знаков и знаков обслуживания компании Novell</a>.</p>
 <p class="para">Все торговые марки независимых производителей являются собственностью их владельцев.</p>
 </div>

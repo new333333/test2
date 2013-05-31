@@ -9,15 +9,16 @@
 <meta http-equiv="Content-Language" content="hu" />
 <meta name="Content-Date" content="Mon, 19 Jan 2010 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Friday, May 18, 2012" />
-<meta name="Copyright" content="Copyright Novell, Inc. 2010" />
+<meta name="Generation-Date" content="Tuesday, May 28, 2013" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2013" />
 
 <style type="text/css">
 body { 
-		margin-left: .2in;
+		margin-left: 18px;
+		margin-right: 18px;
 		padding:0;
 		font-family:geneva, arial, helvetica, sans-serif;
-		font-size: 75%;
+		font-size: 12px;
 		font-weight: normal;
 		color: #000000;
 		background-color: #ffffff;
@@ -109,14 +110,14 @@ body {
 	div.figure p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
 	
 /* tables */
-	table {border-collapse:collapse; margin-bottom:18px;}
+	table {border-collapse:collapse; margin:16px 0 16px 0;}
 	div.table p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
 	div.table p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
 
 	table tr.headerrow th {padding: 6px 4px 5px 0px;}
-	table tr td {padding: 0px 4px 0px 0px; }
-	table tr td:first-child {margin-top: 7px;}
-	table tr td:last-child {margin-bottom: 6px;}
+	table tr td p:first-child {margin-top: 6px;}
+	table tr td p:last-child {margin-bottom: 4px;}
+	table tr td {padding: 0px 4px 0px 0px; margin:0; }
 	
 	table tr.headerrow th p.para {font-weight: bold; margin:1px 0px 0px 0px;}
 	table.allseps, table.rowseps, table.topbot {border-spacing: 0px; border-top:1px solid #606060; border-bottom:1px solid #606060;}
@@ -166,6 +167,7 @@ body {
 	span.emphasis  {font-style: italic}
 	span.strongemphasis,span.listif {font-weight: bold; font-style: italic}
 	em.msgtext {font-weight: bold; font-style: italic}
+	span.checkcell {font-weight: bold; font-size: 150%;}
 
 /* superscript and subscript */	
 	span.subscript,span.superscript {font-size: 80%;}
@@ -177,23 +179,38 @@ body {
 	div.toc div.toc2 {font-weight: normal; margin: 8px 10px 5px 25px}
 	div.toc div.toc3 {font-weight: normal; margin: 5px 10px 2px 50px}
 	div.toc div.toc4 {font-weight: normal; margin: 0px 10px 2px 75px}
+
+/* banners and logos */
+	div.banner { background-image : url(images/banner_bkgd.png); background-repeat: repeat-x;
+		height : 40px; line-height : 40px; margin-top: 30px;
+	}
+	div.banner_logo_netiq { background-image : url(images/banner_logo_netiq.png); background-repeat: no-repeat;
+		position: relative; float: right; top: 5px; width : 98px; height : 30px; line-height : 30px;
+	}
 	
+/* collapsible sections */
+.expanded .collapsible { display: block; }
+.collapsed .collapsible {	display: none; }
+.exp_title { cursor: pointer; }
+.exp_title span { float:left; width:16px; height:15px; margin-right : 3px; margin-top : 2px; }
+.expanded .exp_title span {background-image : url(expanded.png); background-repeat: no-repeat;}
+.collapsed .exp_title span {background-image : url(collapsed.png); background-repeat: no-repeat;}
 </style>
 
-<title>Novell Vibe 3.3</title>
+<title>Novell Vibe 3.4</title>
 </head>
 <body>
 
 <div class="chapter singlefile" id="readme">
 
-<h1 class="title">Novell Vibe 3.3</h1>
+<h1 class="title">Novell Vibe 3.4</h1>
 
 <div class="sect1 singlefile" id="bbfxu6q">
 
 <h2 class="title"><span class="number">1.0</span> Első lépések</h2>
 
-<p class="para">A rendszerkövetelmények teljes körű ismertetését és a részletes szoftvertelepítési útmutatást a Novell Vibe rendszergazdája számára a <span class="citetitle">Vibe 3.3 telepítési kézikönyv tartalmazza.</span> A Vibe webhely beállításával, valamint a folyamatos webhely-adminisztrációval és -karbantartással kapcsolatos útmutatók a <span class="citetitle">Vibe 3.3 adminisztrátori kézikönyvben</span> találhatók.</p>
-<p class="para">A Vibe webhely telepítése után a Vibe felhasználói a <span class="citetitle">Vibe 3.3 felhasználói kézikönyv</span> és a <span class="citetitle">Vibe 3.3 haladó felhasználói kézikönyv</span> tartalmában találhatnak útmutatást. (A <span class="citetitle">Vibe 3.3 Gyorskalauz</span> több nyelven is elérhető abban az esetben, ha a <span class="citetitle">Vibe 3.3 felhasználói kézikönyv</span> nem áll rendelkezésre.)</p>
+<p class="para">A rendszerkövetelmények teljes körű ismertetését és a részletes szoftvertelepítési útmutatást a Novell Vibe rendszergazdája számára a <span class="citetitle">Vibe 3.4 telepítési kézikönyv tartalmazza.</span> A Vibe webhely beállításával, valamint a folyamatos webhely-adminisztrációval és -karbantartással kapcsolatos útmutatók a <span class="citetitle">Vibe 3.4 adminisztrátori kézikönyvben</span> találhatók.</p>
+<p class="para">A Vibe webhely telepítése után a Vibe felhasználói a <span class="citetitle">Vibe 3.4 felhasználói kézikönyv</span> és a <span class="citetitle">Vibe 3.4 haladó felhasználói kézikönyv</span> tartalmában találhatnak útmutatást. (<span class="citetitle">Vibe 3.4 Gyorskalauz</span> azokon a nyelveken jár a rendszerhez, amelyeken a <span class="citetitle">Vibe 3.4 felhasználói kézikönyv</span> nem érhető el.)</p>
 <p class="para">A Vibe webhelyre való bejelentkezés után megjelenítheti a Vibe rendszer online súgóját.</p>
 </div>
 
@@ -201,18 +218,18 @@ body {
 
 <h2 class="title"><span class="number">2.0</span> Ismert problémák</h2>
 
-<p class="para">Az ehhez a kiadáshoz kapcsolódó ismert problémák naprakész listáját megtalálja a Novell Vibe 3.3 termék teljes Readme ismertetőjében, amely a <a href="http://www.novell.com/documentation/vibe33" class="ulink">Novell Vibe 3.3 dokumentációs webhelyén</a> található.</p>
+<p class="para">Az ehhez a kiadáshoz kapcsolódó ismert problémák naprakész listáját megtalálja a Novell Vibe 3.4 termék teljes Readme ismertetőjében, amely a <a href="http://www.novell.com/documentation/vibe34" class="ulink">Novell Vibe 3.4 dokumentációs webhelyén</a> található.</p>
 </div>
 
 <div class="sect1 singlefile" id="product_info">
 
 <h2 class="title"><span class="number">3.0</span> Dokumentáció</h2>
 
-<p class="para">A Novell Vibe 3.3 termék összes dokumentációja elérhető a <a href="http://www.novell.com/documentation/vibe33" class="ulink">Novell Vibe 3.3 dokumentációs webhelyén</a>:</p>
+<p class="para">A Novell Vibe 3.4 termék összes dokumentációja elérhető a <a href="http://www.novell.com/documentation/vibe34" class="ulink">Novell Vibe 3.4 dokumentációs webhelyén</a>:</p>
 <div class="itemizedlist">
 <ul class="listbullet">
 <li class="listitem">
-<p class="listitem">A Vibe 3.3 termék teljes Readme ismertetője</p></li>
+<p class="listitem">A Vibe 3.4 termék teljes Readme ismertetője</p></li>
 <li class="listitem">
 <p class="listitem">
           <span class="citetitle">Telepítési kézikönyv</span>
@@ -239,7 +256,15 @@ body {
         </p></li>
 <li class="listitem">
 <p class="listitem">
-          <span class="citetitle">Vibe Desktop gyorskalauz</span>
+          <span class="citetitle">Vibe Desktop for Windows – bevezetés</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Vibe Desktop for Mac – bevezetés</span>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="citetitle">Vibe Desktop – gyakori kérdések</span>
         </p></li>
 <li class="listitem">
 <p class="listitem">
@@ -271,14 +296,14 @@ body {
 
 <div class="sect1 singlefile" id="legal_notices">
 
-<h2 class="title"><span class="number">4.0</span> Szerzői jogi megjegyzések</h2>
+<h2 class="title"><span class="number">4.0</span> Jogi nyilatkozat</h2>
 
-<p class="para">A Novell, Inc. nem vállal felelősséget a jelen dokumentáció tartalmára vonatkozóan, illetve a dokumentáció használatából eredő esetleges károkért. Különös tekintettel nem vállal sem közvetlen, sem közvetett felelősséget a dokumentáció kereskedelmi vagy bármilyen más célra történő felhasználhatóságával kapcsolatban. A Novell, Inc. fenntartja továbbá a jogot a jelen kiadvány bármikor történő felülvizsgálatára és tartalmi megváltoztatására anélkül, hogy a felülvizsgálatot vagy a változtatást bármely természetes vagy jogi személynek előzetesen bejelentené.</p>
-<p class="para">A Novell, Inc. nem vállal jótállást és felelősséget semmilyen szoftverrel kapcsolatban. Különös tekintettel nem vállal sem közvetlen, sem közvetett jótállást a szoftverek kereskedelmi használatával vagy bármilyen egyéb célra való felhasználhatóságával kapcsolatban. A Novell, Inc. fenntartja továbbá a Novell szoftverek részben vagy egészben, bármikor történő megváltoztatásának jogát anélkül, hogy a változtatást bármely természetes vagy jogi személynek előzetesen bejelentené.</p>
-<p class="para">A jelen Szerződésben foglalt termékekre vagy technikai információkra az Amerikai Egyesült Államok exportálási szabályozásai és más országok kereskedelmi törvényei vonatkozhatnak. Ön elfogadja, hogy megfelel ezeknek az exportálási szabályozásoknak, és beszerzi a szükséges licenceket vagy minősítéseket a termékek exportálásához, újbóli exportálásához vagy importálásához. Elfogadja azt is, hogy a termékeket nem exportálja vagy nem szállítja vissza az Amerikai Egyesült Államok aktuális exportálási tilalmi listáján szereplő jogi személyeknek, illetve embargóval sújtott vagy terrorizmussal vádolható országokba az Egyesült Államok exportálási törvényeinek megfelelően. Elfogadja továbbá, hogy a termékeket nem használja fel tiltott nukleáris, rakétaműködtetési vagy vegyi és biológiai fegyverkezési céllal. A Novell-szoftverek exportálásáról további információt a Novell nemzetközi értékesítéssel foglalkozó <a href="http://www.novell.com/info/exports/" class="ulink">International Trade Services weblapján</a> talál. A Novell nem vállal felelősséget, ha Ön elmulasztja beszerezni a szükséges exportálási engedélyeket.</p>
-<p class="para">Copyright © 2008–2012 Novell, Inc. Minden jog fenntartva. A kiadó előzetes írásbeli hozzájárulása nélkül a kiadvány sem részben, sem egészében nem reprodukálható, nem fénymásolható, nem tárolható dokumentum-visszakereső rendszerben, és nem továbbítható.</p>
-<p class="para">A Novell védjegyeit a <a href="http://www.novell.com/company/legal/trademarks/tmlist.html" class="ulink">Novell-védjegyeket és -szolgáltatásvédjegyeket felsoroló listán</a> tekintheti meg.</p>
-<p class="para">Minden harmadik félhez tartozó védjegy az adott tulajdonos védjegye.</p>
+<p class="para">A Novell, Inc. nem vállal szavatosságot, jótállást, valamint semmilyen más garanciát és felelősséget a jelen dokumentáció tartalmára és felhasználására, különös tekintettel a forgalomképességre és a vélt rendeltetésre vonatkozó törvényi és külön garanciális felelősségekre. A Novell, Inc. fenntartja továbbá a jogot, hogy a jelen kiadványt bármikor felülvizsgálja és módosítsa bárki és bármilyen szervezet előzetes értesítésének kötelezettsége nélkül.</p>
+<p class="para">A Novell, Inc. nem vállal szavatosságot, jótállást, sem felelősséget semmilyen szoftverrel kapcsolatban, különös tekintettel a forgalomképességre és a vélt rendeltetésre vonatkozó törvényi és külön garanciális felelősségekre. A Novell, Inc. fenntartja a jogot, hogy bármikor módosítsa a Novell-szoftverek egyes részeit, illetve akár a teljes szoftvereket anélkül, hogy az ilyen módosításokat előzetesen be kellene jelentenie bárki vagy bármely szervezet felé.</p>
+<p class="para">A jelen Szerződésben foglalt termékekre és műszaki információkra az Amerikai Egyesült Államok exportálási szabályozásai és más országok kereskedelmi törvényei vonatkozhatnak. A Szerződés elfogadásával tanúsítja, hogy megfelel ezeknek az exportálási szabályozásoknak, és beszerzi a szükséges engedélyeket vagy minősítéseket a termékek exportálásához, továbbexportálásához vagy importálásához. Tanúsítja továbbá, hogy a termékeket – az Egyesült Államok exportálási törvényeivel összhangban – nem exportálja (tovább) az Amerikai Egyesült Államok mindenkori exportálási tilalmi listáján szereplő szervezeteknek, sem embargóval sújtott vagy terrorizmussal vádolható országokba. A fentiek mellett tanúsítja, hogy a termékeket nem használja fel tiltott nukleáris, rakétatechnológiai, illetve vegyi vagy biológiai fegyverkezési célra. A Novell-szoftverek exportálásáról a Novell nemzetközi értékesítéssel foglalkozó <a href="http://www.novell.com/info/exports/" class="ulink">International Trade Services weblapján</a> talál további információt. A Novell nem vállal felelősséget az exportáláshoz szükséges engedélyek beszerzésének elmulasztásáért.</p>
+<p class="para">Copyright © 2008–2013 Novell, Inc. Minden jog fenntartva. A kiadó előzetes írásbeli hozzájárulása nélkül a kiadvány sem részben, sem egészében nem reprodukálható, nem fénymásolható, nem tárolható dokumentum-visszakereső rendszerben, és nem továbbítható.</p>
+<p class="para">A Novell védjegyeit a <a href="http://www.novell.com/company/legal/trademarks/tmlist.html" class="ulink">Novell védjegyeit és -szolgáltatási védjegyeit felsoroló listán</a> tekintheti meg.</p>
+<p class="para">Az egyéb védjegyek jogtulajdonosaik védjegyei.</p>
 </div>
 
 </div>
