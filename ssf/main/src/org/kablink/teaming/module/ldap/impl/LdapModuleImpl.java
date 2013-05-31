@@ -1913,7 +1913,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		LdapDirType dirType;
 		
 		dirType = getLdapDirType( ldapConfig.getLdapGuidAttribute() );
-		if ( dirType != LdapDirType.AD && dirType != LdapDirType.EDIR )
+//!!!		if ( dirType != LdapDirType.AD && dirType != LdapDirType.EDIR )
+		if ( dirType != LdapDirType.EDIR )
 			return false;
 
     	expired = false;
