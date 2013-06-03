@@ -96,6 +96,7 @@ public enum ApiErrorCode {
 	TITLE_EXISTS, // The title already exists
 	BAD_INPUT, // Bad input (catch-all category)
 	NOT_SUPPORTED, // Not supported (catch-all category)
+	ILLEGAL_STATE, // A request has been made at an illegal or inappropriate time 
 	
 	// General server errors
 	SERVER_CONFIG_ERROR, // Server configuration error
