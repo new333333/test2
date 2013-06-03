@@ -92,6 +92,7 @@ public interface LicenseManager {
 	 * @return
 	 */
 	public boolean isAuthorizedByLicense(String featureName);
+	public boolean isAuthorizedByLicense(String featureName, boolean ignoreExpiration);
 	
 	/**
 	 * See what type of license this is (kablink, vibe, filr, or iprint)
