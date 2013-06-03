@@ -371,6 +371,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			logger.error("Error deleting the entry's cache directory [" +
 					cacheFileStoreImage.getAbsolutePath(entityPath) + "]", e);
 		}
+		//Finally, delete the entity directory
+		RepositoryUtil.delete(RepositoryUtil.getDefaultRepositoryName(), binder, entry, "");
 		
 		if(!updateMetadata) {
 			// Since there was no in-line transaction for updating metadata,
