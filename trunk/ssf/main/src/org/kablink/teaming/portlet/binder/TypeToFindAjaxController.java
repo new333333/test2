@@ -56,6 +56,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
@@ -297,6 +298,9 @@ public class TypeToFindAjaxController extends SAbstractController {
 				model.put(WebKeys.ENTRIES, searchEntries);
 				model.put(WebKeys.SEARCH_TOTAL_HITS, searchHits);
 			} else if (findType.equals(WebKeys.FIND_TYPE_USER)) {
+	    	    if (!user.isSuper()) {
+	     		   options.put(ObjectKeys.SEARCH_FILTER_AND, SearchUtils.buildExcludeFilter(org.kablink.util.search.Constants.HIDDEN_FROM_FIND_USER_FIELD, "true"));
+	     	    }
 				Map entries = getProfileModule().getUsers(options);
 				
 				int page = 0;

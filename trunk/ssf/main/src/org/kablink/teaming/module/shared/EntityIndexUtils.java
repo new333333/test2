@@ -339,6 +339,20 @@ public class EntityIndexUtils {
 		doc.add(sortPath);
     }
 
+    public static void addHiddenSearchField(Document doc, DefinableEntity entry, boolean hidden) {
+    	if (hidden) {
+	      	Field eField = FieldFactory.createFieldStoredNotAnalyzed(HIDDEN_FROM_SEARCH_FIELD, "true");
+	       	doc.add(eField);
+    	}
+    }
+
+    public static void addHiddenFindUserField(Document doc, DefinableEntity entry, boolean hidden) {
+    	if (hidden) {
+	      	Field eField = FieldFactory.createFieldStoredNotAnalyzed(HIDDEN_FROM_FIND_USER_FIELD, "true");
+	       	doc.add(eField);
+    	}
+    }
+
     public static void addCreation(Document doc, HistoryStamp stamp, boolean fieldsOnly) {
     	if (stamp == null) return;
     	Date creationDate = stamp.getDate();

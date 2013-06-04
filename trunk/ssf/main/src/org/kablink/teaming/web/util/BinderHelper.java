@@ -3812,6 +3812,8 @@ public class BinderHelper {
 		if (tabData.containsKey(WebKeys.SEARCH_FORM_QUICKSEARCH)) options.put(WebKeys.SEARCH_FORM_QUICKSEARCH, tabData.get(WebKeys.SEARCH_FORM_QUICKSEARCH));
 		if (tabData.containsKey(ObjectKeys.SEARCH_CASE_SENSITIVE)) options.put(ObjectKeys.SEARCH_CASE_SENSITIVE, tabData.get(ObjectKeys.SEARCH_CASE_SENSITIVE));
 		if (tabData.containsKey(ObjectKeys.SEARCH_PRE_DELETED)) options.put(ObjectKeys.SEARCH_PRE_DELETED, tabData.get(ObjectKeys.SEARCH_PRE_DELETED));
+		if (tabData.containsKey(ObjectKeys.SEARCH_HIDDEN)) options.put(ObjectKeys.SEARCH_HIDDEN, tabData.get(ObjectKeys.SEARCH_HIDDEN));
+		if (tabData.containsKey(ObjectKeys.SEARCH_FIND_USER_HIDDEN)) options.put(ObjectKeys.SEARCH_FIND_USER_HIDDEN, tabData.get(ObjectKeys.SEARCH_FIND_USER_HIDDEN));
 		if (tabData.containsKey(Tabs.PAGE)) options.put(Tabs.PAGE, tabData.get(Tabs.PAGE));
 		if (tabData.containsKey(ObjectKeys.SEARCH_SORT_BY)) options.put(ObjectKeys.SEARCH_SORT_BY, tabData.get(ObjectKeys.SEARCH_SORT_BY));
 		if (tabData.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) options.put(ObjectKeys.SEARCH_SORT_DESCEND, tabData.get(ObjectKeys.SEARCH_SORT_DESCEND));

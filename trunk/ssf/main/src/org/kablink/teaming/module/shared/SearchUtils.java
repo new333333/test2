@@ -379,6 +379,18 @@ public class SearchUtils {
     		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     		child.setText((String) options.get(ObjectKeys.SEARCH_ANCESTRY));
     	}
+    	if (options.containsKey(ObjectKeys.SEARCH_HIDDEN)) {
+    		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
+    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, org.kablink.util.search.Constants.HIDDEN_FROM_SEARCH_FIELD);
+    		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
+    		child.setText((String) options.get(ObjectKeys.SEARCH_HIDDEN));
+    	}
+    	if (options.containsKey(ObjectKeys.SEARCH_FIND_USER_HIDDEN)) {
+    		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
+    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, org.kablink.util.search.Constants.HIDDEN_FROM_FIND_USER_FIELD);
+    		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
+    		child.setText((String) options.get(ObjectKeys.SEARCH_FIND_USER_HIDDEN));
+    	}
 
     	//See if there are event days (modification is also an event)
     	if (options.containsKey(ObjectKeys.SEARCH_EVENT_DAYS)) {

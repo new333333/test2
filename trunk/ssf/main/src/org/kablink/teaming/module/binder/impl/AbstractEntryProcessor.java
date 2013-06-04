@@ -1720,6 +1720,22 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
             Field libraryField = FieldFactory.createFieldStoredNotAnalyzed(Constants.IS_LIBRARY_FIELD, Boolean.toString(true));
             indexDoc.add(libraryField);
         }
+        
+        if (entry instanceof User) {
+        	//See if this is a hidden user
+        	if (ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(((User) entry).getInternalId()) ||
+        			ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(((User) entry).getInternalId()) ||
+        			ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(((User) entry).getInternalId()) ||
+        			ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(((User) entry).getInternalId())) {
+        		//This is a special user, so mark it hidden to normal searches
+        		EntityIndexUtils.addHiddenSearchField(indexDoc, entry, true);
+        		
+        		if (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(((User) entry).getInternalId())) {
+            		//This is a special user that should not appear in "Find User"
+            		EntityIndexUtils.addHiddenFindUserField(indexDoc, entry, true);
+        		}
+        	}
+        }
 
         // Add the events - special indexing for calendar view
         EntityIndexUtils.addEvents(indexDoc, entry, fieldsOnly);
