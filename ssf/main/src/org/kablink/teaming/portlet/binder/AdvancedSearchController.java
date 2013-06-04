@@ -62,6 +62,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
@@ -97,6 +98,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 	@SuppressWarnings("unchecked")
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		User user = RequestContextHolder.getRequestContext().getUser();
 		//ajax requests
 		if (op.equals(WebKeys.OPERATION_FIND_ENTRY_ATTRIBUTES_WIDGET)) {
 			// TODO: move to TypeToFind...
@@ -152,9 +154,14 @@ public class AdvancedSearchController extends AbstractBinderController {
 		}
 		*/
 
-       if (op.equals(WebKeys.SEARCH_RESULTS)) {
+        if (op.equals(WebKeys.SEARCH_RESULTS)) {
+    	    Map options = new HashMap();
+    	    //Regular searches should not show hidden users
+    	    if (!user.isSuper()) {
+    		   options.put(ObjectKeys.SEARCH_FILTER_AND, SearchUtils.buildExcludeFilter(org.kablink.util.search.Constants.HIDDEN_FROM_SEARCH_FIELD, "true"));
+    	    }
     	    try {
-    		   BinderHelper.prepareSearchResultData(this, request, tabs, model, null );
+    		   BinderHelper.prepareSearchResultData(this, request, tabs, model, options );
 	        } catch(SearchWildCardException e) {
 	    		model.put(WebKeys.SEARCH_ERROR, e.getMessage());
 	    	}

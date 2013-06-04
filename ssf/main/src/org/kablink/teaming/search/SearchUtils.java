@@ -1523,6 +1523,22 @@ public class SearchUtils {
         return searchFilter;
     }
 	
+    public static Document buildExcludeFilter(String name, String value) {
+        Document searchFilter;
+        Element rootElement, orElement;
+        Element field;
+        Element child;
+
+        searchFilter = DocumentHelper.createDocument();
+        rootElement = searchFilter.addElement( Constants.NOT_ELEMENT );
+
+        field = rootElement.addElement( Constants.FIELD_ELEMENT );
+        field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, name );
+        child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
+        child.setText( value );
+        return searchFilter;
+    }
+	
 	/**
 	 * Returns an Integer based value from an options Map.  If a value
 	 * for key isn't found, defInt is returned.

@@ -301,6 +301,8 @@ public class Constants {
     public static final String IS_LDAP_CONTAINER_FIELD = "_isLdapContainer";
     public static final String IS_GROUP_FROM_LDAP_FIELD = "_isGroupFromLdap";
     public static final String CONTENT_INDEXED_FIELD = "_contentIndexed";
+    public static final String HIDDEN_FROM_SEARCH_FIELD = "_hiddenSearch";
+    public static final String HIDDEN_FROM_FIND_USER_FIELD = "_hiddenFindUser";
 
 	/**
 	 * Constructor method.
