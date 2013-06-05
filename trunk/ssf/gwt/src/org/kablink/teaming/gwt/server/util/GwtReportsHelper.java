@@ -174,6 +174,19 @@ public class GwtReportsHelper {
 			case ERROR:     reportType = ReportModule.EMAIL_REPORT_TYPE_ERRORS;  break;
 			case RECEIVED:  reportType = ReportModule.EMAIL_REPORT_TYPE_RECEIVE; break;
 			}
+			Date originalEndDate = null;
+			if (null != end) {
+				GregorianCalendar cal = new GregorianCalendar();
+				cal.setTime(end);
+				
+				// Remember the original end date supplied by the user.
+				originalEndDate = cal.getTime();
+				
+				// Add 1 day to the end date.
+				cal.add(Calendar.DATE, 1);
+				end = cal.getTime();
+			}
+
 			List<Map<String, Object>> reportList = bs.getReportModule().generateEmailReport(begin, end, reportType);
 
 			// Did we get any items back?
