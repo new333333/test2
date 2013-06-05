@@ -41,6 +41,7 @@ import java.util.Set;
 
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.FileAttachment;
@@ -184,7 +185,7 @@ public interface ReportModule {
 	public List<Map<String, Object>> generateAccessReportByUser(final Long userId, final Date startDate, final Date endDate, final String reportType);
 	public List<Map<String, Object>> generateEmailReport(final Date startDate, final Date endDate, final String reportType);
 	public List<Map<String, Object>> generateXssReport(final List binderIds, final Date startDate, final Date endDate, final String reportType);
-
+	
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
 	public List<User> getUsersActivity(DefinableEntity entity, AuditTrail.AuditType type, Date startDate, Date endDate);
 	public List<Map<String,Object>> getEntriesViewed(Long ownerId, Date startDate, Date endDate, Integer returnCount);
@@ -196,4 +197,5 @@ public interface ReportModule {
 	public List<Long> getDeletedFolderEntryIds(long[] folderIds, String family, Date startDate, Date endDate);
 	public List<Long> getRestoredFolderEntryIds(long[] folderIds, String family, Date startDate, Date endDate);
 	public List<Long> getMovedFolderEntryIds(Date startDate, Date endDate);
+	public List<ChangeLog> getDeletedEntryLogs(Set<Long> entryIds);
 }
