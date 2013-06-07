@@ -3170,4 +3170,21 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return 0;
 	}
 	
+	@Override
+	public void correctLastModTime(FileAttachment fa, Date correctLastModTime) {
+		// Corret the data
+		if(fa.getModification() != null)
+			fa.getModification().setDate(correctLastModTime);
+		VersionAttachment hv = fa.getHighestVersion();
+		if(hv != null) {
+			if(hv.getModification() != null)
+				hv.getModification().setDate(correctLastModTime);
+		}
+		// Trigger db transaction
+		getTransactionTemplate().execute(new TransactionCallback<Object>() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		return null;
+        	}
+        });	
+	}
 }
