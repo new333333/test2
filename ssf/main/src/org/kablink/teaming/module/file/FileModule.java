@@ -550,4 +550,12 @@ public interface FileModule {
 	 */
 	public int checkQuotaAndFileSizeLimit(Long userId, Binder binder, long fileSize, String fileName);
 
+	/**
+	 * Special purpose method used to correct the last mod time associated with the last modification to the file.
+	 * This is an in-place replacement of the last mod time, and application should normally not use this method.
+	 *
+	 * @param fa
+	 * @param correctLastModTime
+	 */
+	public void correctLastModTime(FileAttachment fa, Date correctLastModTime);
 }	

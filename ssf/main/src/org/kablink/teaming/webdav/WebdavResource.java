@@ -156,4 +156,9 @@ public abstract class WebdavResource extends AbstractAllModulesInjected implemen
 	protected CoreDao getCoreDao() {
 		return (CoreDao) SpringContextUtil.getBean("coreDao");
 	}
+	
+	public static void main(String[] args) {
+		java.util.Date now = new Date();
+		System.out.println(now.toString());
+	}
 }
