@@ -726,39 +726,42 @@ public class TaskHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static void processTaskCompletion(Entry task, InputDataAccessor inputData, Map entryData) {
-		// Validate the completed value in the input data...
-		String c = inputData.getSingleValue(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
-		if (null == c) {
-			String s = inputData.getSingleValue(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
-			if ((null != s) && s.equals(STATUS_COMPLETED)) {
-				c = COMPLETED_100;
+		Binder parentBinder = task.getParentBinder();
+		if (BinderHelper.isBinderTask(null, parentBinder)) {
+			// Validate the completed value in the input data...
+			String c = inputData.getSingleValue(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
+			if (null == c) {
+				String s = inputData.getSingleValue(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
+				if ((null != s) && s.equals(STATUS_COMPLETED)) {
+					c = COMPLETED_100;
+				}
 			}
-		}
-		String cV = validateCompleted(c);
-		if (null != cV) {
-			c = cV;
-		}
-		
-		// ...and use that to update the completion date, as necessary.
-		processTaskCompletionDate(task, c);
-
-		// Does the entry data contain a completed value?
-		Object o = entryData.get(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
-		boolean asString  = false;
-		boolean asStringA = false;
-		if (null != o) {
-			// Yes!  Validate it...
-			if      (o instanceof String)   {c = ((String)   o);    asString  = true;}
-			else if (o instanceof String[]) {c = ((String[]) o)[0]; asStringA = true;}
-			else                             c = null;
-			cV = validateCompleted(c);
-		
-			// ...and if it needs to be changed...
+			String cV = validateCompleted(c);
 			if (null != cV) {
-				// ...store the new value.
-				if      (asString)  o = cV;
-				else if (asStringA) o = new String[]{cV};
-				entryData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, o);
+				c = cV;
+			}
+			
+			// ...and use that to update the completion date, as necessary.
+			processTaskCompletionDate(task, c);
+	
+			// Does the entry data contain a completed value?
+			Object o = entryData.get(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
+			boolean asString  = false;
+			boolean asStringA = false;
+			if (null != o) {
+				// Yes!  Validate it...
+				if      (o instanceof String)   {c = ((String)   o);    asString  = true;}
+				else if (o instanceof String[]) {c = ((String[]) o)[0]; asStringA = true;}
+				else                             c = null;
+				cV = validateCompleted(c);
+			
+				// ...and if it needs to be changed...
+				if (null != cV) {
+					// ...store the new value.
+					if      (asString)  o = cV;
+					else if (asStringA) o = new String[]{cV};
+					entryData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, o);
+				}
 			}
 		}
 	}

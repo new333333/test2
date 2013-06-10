@@ -1648,7 +1648,10 @@ public class BinderHelper {
 		if (isTask) {
 			// Yes!  Does the user have a view definition selected for
 			// it?
-			Definition def = getFolderDefinitionFromView(bs, binder);
+			Definition def = null;
+			if (bs != null) {
+				def = getFolderDefinitionFromView(bs, binder);
+			}
 			if (null == def) {
 				// No!  Just use it's default view.
 				def = binder.getDefaultViewDef();
