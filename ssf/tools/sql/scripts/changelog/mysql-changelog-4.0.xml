@@ -677,11 +677,5 @@ update SS_Principals set foreignName=LOWER(foreignName);
             </column>
         </addColumn>
     </changeSet>
-
-        <changeSet author="peter" context="schema" failOnError="true" id="80">
-        <addColumn tableName="SS_ShareItem">
-			<column name="right_creatorRenameEntries" type="BIT"/>
-        </addColumn>
-    </changeSet>
     
 </databaseChangeLog>
