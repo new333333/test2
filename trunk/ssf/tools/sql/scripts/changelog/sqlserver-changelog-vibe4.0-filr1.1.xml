@@ -170,4 +170,11 @@
             </column>
         </addColumn>
 	</changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="7">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_creatorRenameEntries" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>
