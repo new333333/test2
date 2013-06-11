@@ -528,7 +528,7 @@ public class BrowserSniffer {
 		String[] mobileDevices = userAgents.split(",");
 		for (int i = 0; i < mobileDevices.length; i++) {
 			if (mobileDevices[i].equals("")) continue;
-			if (agent.indexOf(mobileDevices[i]) != -1) {
+			if (agent.indexOf(mobileDevices[i].toLowerCase()) != -1) {
 				return true;
 			}
 		}
