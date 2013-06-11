@@ -202,6 +202,9 @@ public class ModifyEntryController extends SAbstractController {
 		        										ObjectKeys.USER_PROPERTY_EXTERNAL_USER,
 		        										"false" );
 		        	}
+	        		// Re-index the user so the "external user" info is found in the index
+		        	Principal p = getProfileModule().getEntry(entryId);
+	        		getProfileModule().indexEntry( p );
 				}
 				
 				//See if there was a request to reorder the graphic files
