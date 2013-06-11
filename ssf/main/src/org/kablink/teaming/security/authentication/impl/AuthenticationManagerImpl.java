@@ -428,8 +428,15 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			// Yes
 			try
 			{
+				boolean logErrors = false;
+				
+				// We only want to log errors when the client is the browser.  Otherwise, we
+				// generate too many errors in the log.
+				if ( authenticatorName != null && authenticatorName.equalsIgnoreCase( "web" ) )
+					logErrors = true;
+				
 				// Does this user have a home directory attribute in ldap?
-				homeDirInfo = ldapModule.readHomeDirInfoFromDirectory( user.getName(), userName );
+				homeDirInfo = ldapModule.readHomeDirInfoFromDirectory( user.getName(), userName, logErrors );
 				if ( homeDirInfo != null )
 				{
 					// Yes

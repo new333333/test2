@@ -440,7 +440,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Read the "ndsHomeDirectory" attribute from eDir.  If the "ndsHomeDirectory" attribute does not exist
 	 * or does not contain a value, read the "homeDirectory" attribute.
 	 */
-	private Object readHomeDirectoryAttributeFromEdir( LdapContext ldapContext, String userDn )
+	private Object readHomeDirectoryAttributeFromEdir(
+		LdapContext ldapContext,
+		String userDn,
+		boolean logErrors )
 	{
 		Object value = null;
 		
@@ -496,7 +499,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		catch ( Exception ex )
 		{
-			logger.error( "Error reading ndsHomeDirectory attribute for user: " + userDn + " " + ex.toString() );
+			if ( logErrors || logger.isDebugEnabled() )
+				logger.error( "Error reading ndsHomeDirectory attribute for user: " + userDn + " " + ex.toString() );
 		}
 		
 		return value;
@@ -509,7 +513,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private HomeDirInfo readHomeDirInfoFromLdap(
 		LdapContext ldapContext,
 		LdapDirType dirType,
-		String userDn )
+		String userDn,
+		boolean logErrors )
 	{
 		HomeDirInfo homeDirInfo = null;
 		
@@ -520,7 +525,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				Object value;
 				
 				// Read the "ndsHomeDirectory" attribute
-				value = readHomeDirectoryAttributeFromEdir( ldapContext, userDn );
+				value = readHomeDirectoryAttributeFromEdir( ldapContext, userDn, logErrors );
 				
 				// Does the "ndsHomeDirectory" attribute have a value?
 				if ( value != null && value instanceof byte[] )
@@ -554,7 +559,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						volumeDn = strBuffer.toString();
 						if ( volumeDn != null && volumeDn.length() > 0 )
 						{
-							readVolumeAndServerInfoFromLdap( ldapContext, dirType, volumeDn, homeDirInfo );
+							readVolumeAndServerInfoFromLdap( ldapContext, dirType, volumeDn, homeDirInfo, logErrors );
 						}
 					}
 					
@@ -602,7 +607,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			catch ( Exception ex )
 			{
-				logger.error( "Error reading ndsHomeDirectory attribute for user: " + userDn + " " + ex.toString() );
+				if ( logErrors || logger.isDebugEnabled() )
+					logger.error( "Error reading ndsHomeDirectory attribute for user: " + userDn + " " + ex.toString() );
 			}
 		}
 		else if ( dirType == LdapDirType.AD )
@@ -710,12 +716,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 			    else
 			    {
-			    	logger.error( "\t\t\tCould not parse the home directory unc" );
+			    	if ( logErrors || logger.isDebugEnabled() )
+			    		logger.error( "\t\t\tCould not parse the home directory unc" );
 			    }
 			}
 			catch ( Exception ex )
 			{
-				logger.error( "Error reading homeDrive and homeDirectory attributes from the user: " + userDn + " " + ex.toString() );
+				if ( logErrors || logger.isDebugEnabled() )
+					logger.error( "Error reading homeDrive and homeDirectory attributes from the user: " + userDn + " " + ex.toString() );
 			}
 		}
 		
@@ -730,7 +738,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		LdapContext ldapContext,
 		LdapDirType dirType,
 		String serverDn,
-		HomeDirInfo homeDirInfo )
+		HomeDirInfo homeDirInfo,
+		boolean logErrors )
 	{
 		String serverAddr = null;
 		
@@ -801,7 +810,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 										}
 										catch ( NumberFormatException ex )
 										{
-											logger.info( "error parsing address type from network address attribute" );
+											if ( logErrors || logger.isDebugEnabled() )
+												logger.error( "error parsing address type from network address attribute" );
 										}
 									}
 								}
@@ -839,7 +849,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			catch ( Exception ex )
 			{
-				logger.error( "Error reading attributes from the server object: " + serverDn + " " + ex.toString() );
+				if ( logErrors || logger.isDebugEnabled() )
+					logger.error( "Error reading attributes from the server object: " + serverDn + " " + ex.toString() );
 			}
 		}
 		
@@ -853,7 +864,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		LdapContext ldapContext,
 		LdapDirType dirType,
 		String volumeDn,
-		HomeDirInfo homeDirInfo )
+		HomeDirInfo homeDirInfo,
+		boolean logErrors )
 	{
 		
 		if ( dirType == LdapDirType.EDIR )
@@ -900,7 +912,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							serverDn = (String) value;
 							if ( serverDn.length() > 0 )
 							{
-								readServerInfoFromLdap( ldapContext, dirType, serverDn, homeDirInfo );
+								readServerInfoFromLdap( ldapContext, dirType, serverDn, homeDirInfo, logErrors );
 							}
 						}
 					}
@@ -908,7 +920,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			catch ( Exception ex )
 			{
-				logger.error( "Error reading attributes from the volume object: " + volumeDn + " " + ex.toString() );
+				if ( logErrors || logger.isDebugEnabled() )
+					logger.error( "Error reading attributes from the volume object: " + volumeDn + " " + ex.toString() );
 			}
 		}
 		
@@ -1690,7 +1703,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @throws NamingException 
 	 */
     @Override
-	public HomeDirInfo readHomeDirInfoFromDirectory( String teamingUserName, String ldapUserName ) throws NamingException 
+	public HomeDirInfo readHomeDirInfoFromDirectory(
+		String teamingUserName,
+		String ldapUserName,
+		boolean logErrors ) throws NamingException 
 	{
 		Workspace zone;
 
@@ -1754,7 +1770,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 					// Get the home directory info for this user
 					dirType = getLdapDirType( config.getLdapGuidAttribute() );
-					homeDirInfo = readHomeDirInfoFromLdap( ctx, dirType, dn );
+					homeDirInfo = readHomeDirInfoFromLdap( ctx, dirType, dn, logErrors );
 				}
 				finally
 				{
@@ -2196,7 +2212,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					// Get the home directory info for this user
 					dirType = getLdapDirType( config.getLdapGuidAttribute() );
-					homeDirInfo = readHomeDirInfoFromLdap( ctx, dirType, dn );
+					homeDirInfo = readHomeDirInfoFromLdap( ctx, dirType, dn, false );
 
 					m_containerCoordinator.clear();
 					// Read the list of all containers from the db.
@@ -3122,8 +3138,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			if ( Utils.checkIfFilr() )
 			{
-				logger.info( "In ContainerCoordinator.wrapUp()" );
-				
 				// Delete obsolete containers.
 				if ( deleteObsoleteContainers )
 					deleteObsoleteContainers();
@@ -3423,7 +3437,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						LdapDirType dirType;
 						
 						dirType = getLdapDirType( m_ldapConfig.getLdapGuidAttribute() );
-						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, dirType, dn );
+						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, dirType, dn, true );
 						ldap_existing_homeDirInfo.put( (Long)row[PRINCIPAL_ID], homeDirInfo );
 					}
 				}
@@ -3479,7 +3493,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						LdapDirType dirType;
 						
 						dirType = getLdapDirType( m_ldapConfig.getLdapGuidAttribute() );
-						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, dirType, dn );
+						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, dirType, dn, true );
 						ldap_new_homeDirInfo.put( ssName.toLowerCase(), homeDirInfo );
 					}
 				}
