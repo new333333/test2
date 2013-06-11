@@ -246,7 +246,7 @@ public class NetFolderHelper
 			 path == null || path.length() == 0 )
 		{
 			// No
-			m_logger.error( "In NetFolderHelper.createHomeDirNetFolder(), invalid server information" );
+			m_logger.debug( "In NetFolderHelper.createHomeDirNetFolder(), invalid server information" );
 			return;
 		}
 		
