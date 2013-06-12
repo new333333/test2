@@ -144,6 +144,25 @@ function ss_clearStatusMobile(textareaId) {
 	}
 }
 
+function ss_showDiv(divName) {
+	var divObj = document.getElementById(divName);
+	if (divObj == null) return;
+    if (typeof divObj.style.display == 'undefined' || divObj.style.display == '' || divObj.style.display != 'inline') {
+    	divObj.style.display = "block";
+    }
+    divObj.style.visibility = "visible";
+}
+
+function ss_hideDiv(divName) {
+	var divObj = document.getElementById(divName);
+	if (divObj != null) {
+		if (typeof divObj.style.display == "undefined" || divObj.style.display != "none") {
+			divObj.style.visibility = "hidden";
+			divObj.style.display = "none";
+		}
+    }
+}
+
 var ss_activeMenu = null;
 function ss_showMenu(divId) {
 	if (ss_activeMenu != null) {
