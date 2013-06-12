@@ -451,7 +451,28 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             shareItems.add(shareItem2);
             notifyRecipient = false;
         } else if (type.equals(ShareRecipient.EXTERNAL_USER)) {
-            User user = getProfileModule().findOrAddExternalUser(share.getRecipient().getEmailAddress());
+            ShareRecipient recipient = share.getRecipient();
+            User user = null;
+            if (recipient.getId()!=null) {
+                user = _getUser(recipient.getId());
+                if (user.getIdentityInfo().isInternal()) {
+                    throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The user with id " + recipient.getId() + " is not an external user.");
+                }
+            }
+            if (recipient.getEmailAddress()!=null) {
+                if (user!=null) {
+                    if (!recipient.getEmailAddress().equals(user.getEmailAddress())) {
+                        throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The email address of user with id " +
+                                recipient.getId() + " (" + user.getEmailAddress() + ") does not match the supplied email address: "
+                                + recipient.getEmailAddress());
+                    }
+                } else {
+                    user = getProfileModule().findOrAddExternalUser(share.getRecipient().getEmailAddress());
+                }
+            }
+            if (user==null) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No valid external user could be found.");
+            }
             shareItem.setRecipientId(user.getId());
             isExternal = true;
         }
@@ -749,11 +770,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.email' can be supplied with 'recipient.type'=='external_user'.");
             }
         } else if (type.equals(ShareRecipient.EXTERNAL_USER)){
-            if (recipient.getId()!=null) {
-                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.id' cannot be supplied with 'recipient.type'=='external_user'.");
-            }
-            if (recipient.getEmailAddress()==null) {
-                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.email' must be supplied with 'recipient.type'=='external_user'.");
+            if (recipient.getId()==null || recipient.getEmailAddress()==null) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.id' or 'recipient.email' must be supplied with 'recipient.type'=='external_user'.");
             }
         } else {
             if (recipient.getId()==null) {
