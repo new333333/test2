@@ -371,6 +371,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
 		int maxEntries = PortletRequestUtils.getIntParameter(request, "maxEntries", 10);
 		int pageNumber = PortletRequestUtils.getIntParameter(request, "pageNumber", 0);
+		String searchContextBinderId = PortletRequestUtils.getStringParameter(request, ObjectKeys.SEARCH_CONTEXT_BINDER_ID, "");
 		
 		while (searchText.endsWith("*")) {
 			searchText = searchText.substring(0, searchText.length() - 1); 
@@ -379,6 +380,9 @@ public class TypeToFindAjaxController extends SAbstractController {
 		Set<Definition> entries = new HashSet();
 		if (WebHelper.isUserLoggedIn(request)) {
 			Collection<Long> ids = TreeHelper.getSelectedIds(request.getParameterMap());
+			if (!searchContextBinderId.equals("")) {
+				ids.add(Long.valueOf(searchContextBinderId));
+			}
 			for (Long id:ids) {
 				try {
 					entries.addAll(getDefinitionModule().getDefinitions(id, Boolean.TRUE, Definition.FOLDER_ENTRY));
