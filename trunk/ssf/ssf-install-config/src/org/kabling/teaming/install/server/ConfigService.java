@@ -2425,7 +2425,7 @@ public final class ConfigService
        reconfigure(restartServer,true);
 	}
 
-	private static void saveFilrConfigLocally()
+	public static void saveFilrConfigLocally()
 	{
 		executeCommand("sudo python /opt/novell/base_config/zipVAConfig.py", true);
 	}
