@@ -63,10 +63,6 @@ function ss_insertYouTube() {
     var url = document.getElementById('youTubeUrl').value;
     var width = document.getElementById('width').value;
     var height = document.getElementById('height').value;
-    if (!url.indexOf("http://www.youtube.com/") == 0) {
-    	alert(self.opener.ss_invalidYouTubeUrl)
-    	return false;
-    }
 
 	tinyMCEPopup.execCommand("mceBeginUndoLevel");
 
