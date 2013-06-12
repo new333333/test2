@@ -462,7 +462,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 getSharingModule().modifyShareItem(item, existing.getId());
             } else {
                 getSharingModule().addShareItem(item);
-                notifyRecipient = true;
             }
         }
         if (notifyRecipient) {
