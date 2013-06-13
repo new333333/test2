@@ -517,20 +517,14 @@ public class ExportHelper {
 		String fileName = filename8BitSingleByteOnly(attachment, SPropsUtil
 				.getBoolean("export.filename.8bitsinglebyte.only", true));
 
-		Set fileVersions = attachment.getFileVersions();
-		Iterator<VersionAttachment> versionIter = fileVersions.iterator();
-
 		String fileExt = EntityIndexUtils.getFileExtension(attachment
 				.getFileItem().getName());
 
 		// latest version
-
-		VersionAttachment vAttach = versionIter.next();
-
 		InputStream fileStream = null;
+
 		try {
-			fileStream = fileModule.readFile(binder, entity,
-					vAttach);
+			fileStream = fileModule.readFile(binder, entity, attachment);
 
 			// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 			zipOut.putNextEntry(new ZipEntry(pathName + "/" + fileName));
@@ -568,53 +562,57 @@ public class ExportHelper {
 		}
 
 		// older versions, from highest to lowest
-
-		for (int i = 1; i < fileVersions.size(); i++) {
-			vAttach = versionIter.next();
-
-			int versionNum = fileVersions.size() - i;
-
-			fileStream = null;
-			try {
-				fileStream = fileModule.readFile(binder, entity,
-						vAttach);
-
-				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
-				zipOut.putNextEntry(new ZipEntry(pathName + "/"
-						+ fileName + ".versions" + "/" + versionNum
-						+ "." + fileExt));
-				FileUtil.copy(fileStream, zipOut);
-				zipOut.closeEntry();
-
-				Integer count = (Integer)reportMap.get(files);
-				reportMap.put(files, ++count);
-			} catch (Exception e) {
-				if (fileStream == null) {
-					//The file must not exist, so just skip it. This really isn't an error condition.
-				} else {
-					logger.error(e);
-					String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
-							", entryId=" + entity.getId().toString() + ", " + fileName;
-					logger.error(eMsg);
-					Integer c = (Integer)reportMap.get(errors);
-					reportMap.put(errors, ++c);
-					((List)reportMap.get(errorList)).add(eMsg);
+		Set fileVersions = attachment.getFileVersions();
+		if (!fileVersions.isEmpty()) {
+			Iterator<VersionAttachment> versionIter = fileVersions.iterator();
+			VersionAttachment vAttach = versionIter.next();		//Skip the latest file - it was already output above
+			for (int i = 1; i < fileVersions.size(); i++) {
+				vAttach = versionIter.next();
+	
+				int versionNum = fileVersions.size() - i;
+	
+				fileStream = null;
+				try {
+					fileStream = fileModule.readFile(binder, entity,
+							vAttach);
 	
 					// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 					zipOut.putNextEntry(new ZipEntry(pathName + "/"
 							+ fileName + ".versions" + "/" + versionNum
-							+ "." + fileExt + ".error_message.txt"));
-					zipOut.write(NLT.get("export.error.attachment",
-							"Error processing this attachment").getBytes());
+							+ "." + fileExt));
+					FileUtil.copy(fileStream, zipOut);
 					zipOut.closeEntry();
+	
+					Integer count = (Integer)reportMap.get(files);
+					reportMap.put(files, ++count);
+				} catch (Exception e) {
+					if (fileStream == null) {
+						//The file must not exist, so just skip it. This really isn't an error condition.
+					} else {
+						logger.error(e);
+						String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
+								", entryId=" + entity.getId().toString() + ", " + fileName;
+						logger.error(eMsg);
+						Integer c = (Integer)reportMap.get(errors);
+						reportMap.put(errors, ++c);
+						((List)reportMap.get(errorList)).add(eMsg);
+		
+						// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+						zipOut.putNextEntry(new ZipEntry(pathName + "/"
+								+ fileName + ".versions" + "/" + versionNum
+								+ "." + fileExt + ".error_message.txt"));
+						zipOut.write(NLT.get("export.error.attachment",
+								"Error processing this attachment").getBytes());
+						zipOut.closeEntry();
+					}
 				}
-			}
-			finally {
-				try {
-					if(fileStream != null)
-						fileStream.close();
+				finally {
+					try {
+						if(fileStream != null)
+							fileStream.close();
+					}
+					catch(IOException ignore) {}
 				}
-				catch(IOException ignore) {}
 			}
 		}
 
