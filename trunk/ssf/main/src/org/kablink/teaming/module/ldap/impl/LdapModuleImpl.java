@@ -995,7 +995,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// Go through the list of users/groups found by the search.  If the
 						// user/group already exists in Vibe then add them to the list we
 						// will return.
-						while ( searchCtx.hasMore() )
+						while ( hasMore( searchCtx ) )
 						{
 							Binding binding;
 							Attributes lAttrs = null;
@@ -1338,7 +1338,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					// Search for users using the base dn and filter criteria.
 					ctxSearch = ldapContext.search( searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), searchCtrls );
-					while ( ctxSearch.hasMore() )
+					while ( hasMore( ctxSearch ) )
 					{
 						String userName;
 						String fixedUpUserName;
@@ -1488,7 +1488,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					// Search for groups using the base dn and filter criteria.
 					ctxSearch = ldapContext.search( searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), searchCtrls );
-					while ( ctxSearch.hasMore() )
+					while ( hasMore( ctxSearch ) )
 					{
 						String groupName;
 						String fullDN;
@@ -1752,7 +1752,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					
 					ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
-					if ( !ctxSearch.hasMore() ) 
+					if ( !hasMore( ctxSearch ) ) 
 					{
 						continue;
 					}
@@ -1855,7 +1855,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					
 					ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
-					if (!ctxSearch.hasMore() )
+					if (!hasMore( ctxSearch ) )
 					{
 						continue;
 					}
@@ -1987,7 +1987,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 				
 				ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
-				if (!ctxSearch.hasMore() )
+				if (!hasMore( ctxSearch ) )
 				{
 					continue;
 				}
@@ -2179,7 +2179,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						search = "(&"+search+filter+")";
 					}
 					NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), search, sch);
-					if (!ctxSearch.hasMore()) {
+					if (!hasMore( ctxSearch )) {
 						continue;
 					}
 					Binding bd = (Binding)ctxSearch.next();
@@ -2586,7 +2586,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						ctxSearch = ldapContext.search( baseDn, filter, searchControls );
 						
 						// Count the number of users/groups the search found
-						while ( ctxSearch.hasMore() )
+						while ( hasMore( ctxSearch ) )
 						{
 							ctxSearch.next();
 
@@ -3687,6 +3687,30 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 	}// end UserCoordinator
 	
+	/**
+	 * 
+	 */
+	private boolean hasMore( NamingEnumeration namingEnumeration )
+	{
+		boolean hasMore = false;
+
+		if ( namingEnumeration == null )
+			return false;
+		
+		try
+		{
+			// NamingEnumeration.hasMore() will throw an exception if needed only after all valid
+			// objects have been returned as a result of walking through the enumeration.
+			hasMore = namingEnumeration.hasMore();
+		}
+		catch( Exception ex )
+		{
+			logger.error( "namingEnumeration.hasMore() threw exception: " + ex.toString() );
+		}
+	
+		return hasMore;
+	}
+	
 	protected void syncUsers(Binder zone, LdapContext ctx, LdapConnectionConfig config, UserCoordinator userCoordinator) 
 		throws NamingException {
 		String ssName;
@@ -3734,54 +3758,63 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	
 				logger.info( "\tSearching for users in base dn: " + searchInfo.getBaseDn() );
 				
-				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), filter, sch);
-				while (ctxSearch.hasMore()) {
-					String	userName;
-					String	fixedUpUserName;
-					Attributes lAttrs = null;
-					
-					Binding bd = (Binding)ctxSearch.next();
-					userName = bd.getNameInNamespace();
-					
-					// Fixup the  by replacing all "/" with "\/".
-					fixedUpUserName = fixupName( userName );
-					fixedUpUserName = fixedUpUserName.trim();
+				try
+				{
+					NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), filter, sch);
 
-					// Read the necessary attributes for this user from the ldap directory.
-					lAttrs = ctx.getAttributes( fixedUpUserName, attributesToRead );
-					
-					Attribute id=null;
-					id = lAttrs.get(userIdAttribute);
-					if (id == null) continue;
-
-					//map ldap id to sitescapeName
-					ssName = idToName((String)id.get());
-					if (ssName == null) continue;
-
-					// Is the name of this user a name that is used for a Teaming system user account?
-					// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
-					// "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
-					if ( MiscUtil.isSystemUserAccount( ssName ) )
+					while ( hasMore( ctxSearch ) )
 					{
-						// Yes, skip this user.  System user accounts cannot be sync'd from ldap.
-						continue;
-					}
-					
-					String relativeName = userName.trim();
-					String dn;
-					if (bd.isRelative() && !"".equals(ctx.getNameInNamespace())) {
-						dn = relativeName + "," + ctx.getNameInNamespace().trim();
-					} else {
-						dn = relativeName;
-					}
-					
-					//!!! How do we want to determine if a user is a duplicate?
-					if (userCoordinator.isDuplicate(dn)) {
-						logger.error( NLT.get( "errorcode.ldap.userAlreadyProcessed", new Object[] {ssName, dn} ) );
-						continue;
-					}
-					
-					userCoordinator.record( dn, ssName, lAttrs, ldapGuidAttribute );
+						String	userName;
+						String	fixedUpUserName;
+						Attributes lAttrs = null;
+						
+						Binding bd = (Binding)ctxSearch.next();
+						userName = bd.getNameInNamespace();
+						
+						// Fixup the  by replacing all "/" with "\/".
+						fixedUpUserName = fixupName( userName );
+						fixedUpUserName = fixedUpUserName.trim();
+	
+						// Read the necessary attributes for this user from the ldap directory.
+						lAttrs = ctx.getAttributes( fixedUpUserName, attributesToRead );
+						
+						Attribute id=null;
+						id = lAttrs.get(userIdAttribute);
+						if (id == null) continue;
+	
+						//map ldap id to sitescapeName
+						ssName = idToName((String)id.get());
+						if (ssName == null) continue;
+	
+						// Is the name of this user a name that is used for a Teaming system user account?
+						// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
+						// "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
+						if ( MiscUtil.isSystemUserAccount( ssName ) )
+						{
+							// Yes, skip this user.  System user accounts cannot be sync'd from ldap.
+							continue;
+						}
+						
+						String relativeName = userName.trim();
+						String dn;
+						if (bd.isRelative() && !"".equals(ctx.getNameInNamespace())) {
+							dn = relativeName + "," + ctx.getNameInNamespace().trim();
+						} else {
+							dn = relativeName;
+						}
+						
+						//!!! How do we want to determine if a user is a duplicate?
+						if (userCoordinator.isDuplicate(dn)) {
+							logger.error( NLT.get( "errorcode.ldap.userAlreadyProcessed", new Object[] {ssName, dn} ) );
+							continue;
+						}
+						
+						userCoordinator.record( dn, ssName, lAttrs, ldapGuidAttribute );
+					}// end while
+				}
+				catch ( Exception ex )
+				{
+					logger.error( "ctx.search() threw exception: " + ex.toString() );
 				}
 			}
 			else
@@ -4219,7 +4252,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch);
 
-				while (ctxSearch.hasMore()) {
+				while ( hasMore( ctxSearch ) ) {
 					String groupName;
 					String fixedUpGroupName;
 					String teamingName;
@@ -4364,6 +4397,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			env.put(Context.SECURITY_PRINCIPAL, user);
 			env.put(Context.SECURITY_CREDENTIALS, pwd);		
 			env.put(Context.SECURITY_AUTHENTICATION, getLdapProperty(zone.getName(), Context.SECURITY_AUTHENTICATION));
+			env.put( Context.REFERRAL, "follow" );
 		} 
 		String url = config.getUrl();
 		/*
