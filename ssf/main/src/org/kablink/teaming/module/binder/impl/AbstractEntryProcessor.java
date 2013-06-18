@@ -148,6 +148,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
+        List allUploadItems = new ArrayList(fileUploadItems);
         entryDataErrors = (EntryDataErrors) entryDataAll.get(ObjectKeys.DEFINITION_ERRORS);
         if (entryDataErrors.getProblems().size() > 0) {
         	//An error occurred processing the entry Data
@@ -271,7 +272,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	}
         	throw new WriteEntryDataException(entryDataErrors);
         } finally {
-           	cleanupFiles(fileUploadItems);       	
+           	cleanupFiles(allUploadItems);
             SimpleProfiler.stop("addEntry");
         }
     }
