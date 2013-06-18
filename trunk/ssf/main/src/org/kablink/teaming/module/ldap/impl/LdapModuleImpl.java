@@ -3758,64 +3758,57 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	
 				logger.info( "\tSearching for users in base dn: " + searchInfo.getBaseDn() );
 				
-				try
-				{
-					NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), filter, sch);
+				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), filter, sch);
 
-					while ( hasMore( ctxSearch ) )
-					{
-						String	userName;
-						String	fixedUpUserName;
-						Attributes lAttrs = null;
-						
-						Binding bd = (Binding)ctxSearch.next();
-						userName = bd.getNameInNamespace();
-						
-						// Fixup the  by replacing all "/" with "\/".
-						fixedUpUserName = fixupName( userName );
-						fixedUpUserName = fixedUpUserName.trim();
-	
-						// Read the necessary attributes for this user from the ldap directory.
-						lAttrs = ctx.getAttributes( fixedUpUserName, attributesToRead );
-						
-						Attribute id=null;
-						id = lAttrs.get(userIdAttribute);
-						if (id == null) continue;
-	
-						//map ldap id to sitescapeName
-						ssName = idToName((String)id.get());
-						if (ssName == null) continue;
-	
-						// Is the name of this user a name that is used for a Teaming system user account?
-						// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
-						// "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
-						if ( MiscUtil.isSystemUserAccount( ssName ) )
-						{
-							// Yes, skip this user.  System user accounts cannot be sync'd from ldap.
-							continue;
-						}
-						
-						String relativeName = userName.trim();
-						String dn;
-						if (bd.isRelative() && !"".equals(ctx.getNameInNamespace())) {
-							dn = relativeName + "," + ctx.getNameInNamespace().trim();
-						} else {
-							dn = relativeName;
-						}
-						
-						//!!! How do we want to determine if a user is a duplicate?
-						if (userCoordinator.isDuplicate(dn)) {
-							logger.error( NLT.get( "errorcode.ldap.userAlreadyProcessed", new Object[] {ssName, dn} ) );
-							continue;
-						}
-						
-						userCoordinator.record( dn, ssName, lAttrs, ldapGuidAttribute );
-					}// end while
-				}
-				catch ( Exception ex )
+				while ( hasMore( ctxSearch ) )
 				{
-					logger.error( "ctx.search() threw exception: " + ex.toString() );
-				}
+					String	userName;
+					String	fixedUpUserName;
+					Attributes lAttrs = null;
+					
+					Binding bd = (Binding)ctxSearch.next();
+					userName = bd.getNameInNamespace();
+					
+					// Fixup the  by replacing all "/" with "\/".
+					fixedUpUserName = fixupName( userName );
+					fixedUpUserName = fixedUpUserName.trim();
+
+					// Read the necessary attributes for this user from the ldap directory.
+					lAttrs = ctx.getAttributes( fixedUpUserName, attributesToRead );
+					
+					Attribute id=null;
+					id = lAttrs.get(userIdAttribute);
+					if (id == null) continue;
+
+					//map ldap id to sitescapeName
+					ssName = idToName((String)id.get());
+					if (ssName == null) continue;
+
+					// Is the name of this user a name that is used for a Teaming system user account?
+					// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
+					// "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
+					if ( MiscUtil.isSystemUserAccount( ssName ) )
+					{
+						// Yes, skip this user.  System user accounts cannot be sync'd from ldap.
+						continue;
+					}
+					
+					String relativeName = userName.trim();
+					String dn;
+					if (bd.isRelative() && !"".equals(ctx.getNameInNamespace())) {
+						dn = relativeName + "," + ctx.getNameInNamespace().trim();
+					} else {
+						dn = relativeName;
+					}
+					
+					//!!! How do we want to determine if a user is a duplicate?
+					if (userCoordinator.isDuplicate(dn)) {
+						logger.error( NLT.get( "errorcode.ldap.userAlreadyProcessed", new Object[] {ssName, dn} ) );
+						continue;
+					}
+					
+					userCoordinator.record( dn, ssName, lAttrs, ldapGuidAttribute );
+				}// end while
 			}
 			else
 				logger.warn( "In syncUsers(), a user filter was not specified.  This can result in existing users being disabled or deleted." );
