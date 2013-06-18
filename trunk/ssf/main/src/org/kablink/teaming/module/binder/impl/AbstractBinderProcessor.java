@@ -269,6 +269,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
+        List allUploadItems = new ArrayList(fileUploadItems);
         EntryDataErrors entryDataErrors = (EntryDataErrors) entryDataAll.get(ObjectKeys.DEFINITION_ERRORS);
         if (entryDataErrors.getProblems().size() > 0) {
         	//An error occurred processing the entry Data
@@ -349,7 +350,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    	}
     	}
     	finally {
-	        cleanupFiles(fileUploadItems);
+	        cleanupFiles(allUploadItems);
     	}
     }
     //inside write transaction    
@@ -766,6 +767,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
+        List allUploadItems = new ArrayList(fileUploadItems);
 	    EntryDataErrors entryDataErrors = (EntryDataErrors) entryDataAll.get(ObjectKeys.DEFINITION_ERRORS);
         if (entryDataErrors.getProblems().size() > 0) {
         	//An error occurred processing the entry Data
@@ -838,7 +840,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    		return;
 	    	}
 	    } finally {
-		    cleanupFiles(fileUploadItems);
+		    cleanupFiles(allUploadItems);
 	    }
 	}
     //no transaction    
