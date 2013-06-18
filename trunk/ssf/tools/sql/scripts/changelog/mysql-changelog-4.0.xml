@@ -678,4 +678,156 @@ update SS_Principals set foreignName=LOWER(foreignName);
         </addColumn>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="80">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Attachments" columnName="fileName" newDataType="VARCHAR(255)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="81">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_ChangeLogs" columnName="userName" newDataType="VARCHAR(82)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="82">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_FolderEntries" columnName="title" newDataType="VARCHAR(255)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="83">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_FolderEntries" columnName="normalTitle" newDataType="VARCHAR(255)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="84">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Forums" columnName="resourcePath" newDataType="VARCHAR(1024)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="85">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Forums" columnName="name" newDataType="VARCHAR(128)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="86">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Forums" columnName="pathName" newDataType="VARCHAR(1024)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="87">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Forums" columnName="title" newDataType="VARCHAR(255)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="88">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Forums" columnName="normalTitle" newDataType="VARCHAR(255)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="89">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Forums" columnName="searchTitle" newDataType="VARCHAR(255)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="90">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_LibraryEntries" columnName="name" newDataType="VARCHAR(255)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="91">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Principals" columnName="name" newDataType="VARCHAR(128)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="92">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Principals" columnName="foreignName" newDataType="VARCHAR(255)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="93">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Principals" columnName="title" newDataType="VARCHAR(255)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="94">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Principals" columnName="normalTitle" newDataType="VARCHAR(255)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="95">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Principals" columnName="firstName" newDataType="VARCHAR(64)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="96">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Principals" columnName="lastName" newDataType="VARCHAR(64)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="97">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Principals" columnName="middleName" newDataType="VARCHAR(64)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="98">
+        <comment>Change collation to utf8_bin</comment>
+        <modifyDataType tableName="SS_Principals" columnName="samAccountName" newDataType="VARCHAR(128)"/>
+        <modifySql dbms="mysql">
+            <append value=" collate utf8_bin"/>
+        </modifySql>
+    </changeSet>
+        
 </databaseChangeLog>
