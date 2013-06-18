@@ -152,6 +152,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems, ctx);
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileData = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
+        List allUploadItems = new ArrayList(fileData);
 	FolderEntry newEntry = null;
         try {
          	final FolderEntry entry = addReply_create(def, ctx);
@@ -190,7 +191,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         	}
         	throw ex;
     	} finally {
-        	cleanupFiles(fileData);
+        	cleanupFiles(allUploadItems);
     		
     	}
     }
