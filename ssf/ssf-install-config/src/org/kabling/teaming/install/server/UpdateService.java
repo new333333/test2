@@ -1,13 +1,6 @@
 package org.kabling.teaming.install.server;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Random;
@@ -22,46 +15,61 @@ import org.kabling.teaming.install.shared.*;
 public final class UpdateService
 {
 	static Logger logger = Logger.getLogger("org.kabling.teaming.install.server.UpdateService");
+	private static final String VA_CONFIG_ZIP_LOC = "/vastorage/conf/vaconfig.zip";
 
 	private UpdateService()
 	{
 	}
 
+	/**
+	 * Update the filr appliance. The parameters will initially come as false during upgrade. We will validate the pre-requisites and return
+	 * the xml if they are not met.
+	 * 
+	 * @param dataDriveNotFoundContinue
+	 *            - true if we want to ignore the warning and continue to update
+	 * @param hostNameNotValidContinue
+	 *            - true if want to ignore the warning and continue to update
+	 * @return
+	 */
 	public static UpdateStatus updateFilrSystem(boolean dataDriveNotFoundContinue, boolean hostNameNotValidContinue)
 	{
 		ZipInputStream zipStream;
 		UpdateStatus updateStatus = new UpdateStatus();
-		// First, extract to temp directory
+
+		// First, extract the zip to the temp directory
+		// We are doing this as we need to compare the contents of the zip with the data on the new appliance
+
+		// Create a temporary directory to extract the zip
 		File tempDir = createTempDir();
 
 		try
 		{
-			zipStream = new ZipInputStream(new FileInputStream("/vastorage/conf/vaconfig.zip"));
+			zipStream = new ZipInputStream(new FileInputStream(VA_CONFIG_ZIP_LOC));
 			ZipEntry entry = null;
 
 			{
-				// Extract the zip file into a temporary location
+				// Extract each zip file into a temporary location
 				while ((entry = zipStream.getNextEntry()) != null)
 				{
 					String entryName = entry.getName();
 					String filePath = tempDir.getAbsolutePath() + File.separator + entryName;
 
-					// If it is a file we know, we can save it to the file system
-					if (filePath != null)
-					{
-						String parent = new File(filePath).getParent();
-						new File(parent).mkdirs();
-						FileOutputStream outStream = new FileOutputStream(filePath);
+					String parent = new File(filePath).getParent();
 
-						byte[] buf = new byte[4096];
-						int bytesRead = 0;
-						while ((bytesRead = zipStream.read(buf)) != -1)
-						{
-							outStream.write(buf, 0, bytesRead);
-						}
-						outStream.close();
-						zipStream.closeEntry();
+                    //create the parent directory for the file
+					new File(parent).mkdirs();
+
+
+					FileOutputStream outStream = new FileOutputStream(filePath);
+
+					byte[] buf = new byte[4096];
+					int bytesRead = 0;
+					while ((bytesRead = zipStream.read(buf)) != -1)
+					{
+						outStream.write(buf, 0, bytesRead);
 					}
+					outStream.close();
+					zipStream.closeEntry();
 				}
 				zipStream.close();
 			}
@@ -75,7 +83,7 @@ public final class UpdateService
 				{
 					if (isVAReleaseMatch(tempDir.getAbsolutePath() + File.separator + "etc/Novell-VA-release"))
 					{
-                        updateStatus.setValidDataDrive(true);
+						updateStatus.setValidDataDrive(true);
 						validDataDriveFound = true;
 					}
 				}
@@ -85,7 +93,7 @@ public final class UpdateService
 				{
 					if (isHostNameMatch(tempDir.getAbsolutePath() + File.separator + "etc/sysconfig/novell/NvlVAinit"))
 					{
-                        updateStatus.setValidHostName(true);
+						updateStatus.setValidHostName(true);
 						validHostNameFound = true;
 					}
 				}
@@ -99,6 +107,9 @@ public final class UpdateService
 					return updateStatus;
 				}
 			}
+
+            //Requirements met - we can copy files now
+            //Override license only if required
 
 			// Do we need to override license?
 			boolean overrideLicense = isNeedToOverwriteLicense(tempDir.getAbsolutePath() + File.separator + "filrinstall/license-key.xml");
@@ -154,7 +165,8 @@ public final class UpdateService
 				return updateStatus;
 			}
 
-			ConfigService.reconfigure(false,false);
+            //Do a reconfigure before copying the rest of the files as it touches a lot of files
+			ConfigService.reconfigure(false, false);
 
 			// Copy files (we have already copied installer.xml and mysql-liquibase.properties)
 			extractZipContent(overrideLicense);
@@ -189,35 +201,29 @@ public final class UpdateService
 				return updateStatus;
 			}
 
-			// If clustering is currently enabled, we need to start the memcached service
+
 			InstallerConfig config = ConfigService.getConfiguration();
-            logger.debug("Clustering enabled during upgrade "+config.getClustered().isEnabled());
+			logger.debug("Clustering enabled during upgrade " + config.getClustered().isEnabled());
+
+            // If clustering is currently enabled, we need to start the memcached service
 			if (config != null && config.getClustered().isEnabled())
 			{
-                // If memcache is enabled, enable port 11211
-                if (config.getClustered().getCachingProvider().equals("memcached"))
-                {
-                    ConfigService.openFireWallPort(new String[] { "11211", "4446" });
-                }
+				// If memcache is enabled, enable port 11211
+				if (config.getClustered().getCachingProvider().equals("memcached"))
+				{
+					ConfigService.openFireWallPort(new String[] { "11211", "4446" });
+				}
 
-                //Update memcached properties file
-                ConfigService.updateMemcachedFile();
+				// Update memcached properties file
+				ConfigService.updateMemcachedFile();
 
-                // Restart the firewall after the changes
-                ConfigService.executeCommand("sudo SuSEfirewall2 stop", true);
-                ConfigService.executeCommand("sudo SuSEfirewall2 start", true);
+				ApplianceService.restartFirewall();
 
-                logger.debug("Starting memcached service");
-				ConfigService.executeCommand("chkconfig memcached on", true);
-				ConfigService.executeCommand("rcmemcached start", true);
-
-
+                ApplianceService.enableAndStartMemcache();
 			}
 
-
-
-            // Delete temp files
-            deleteTempDir(tempDir.getAbsolutePath());
+			// Delete temp files
+			deleteTempDir(tempDir.getAbsolutePath());
 
 			ConfigService.startFilrServer();
 
@@ -237,6 +243,8 @@ public final class UpdateService
 			updateStatus.setMessage(e.getMessage());
 			deleteTempDir(tempDir.getAbsolutePath());
 		}
+
+        //Delete temp files
 		deleteTempDir(tempDir.getAbsolutePath());
 		return updateStatus;
 	}
@@ -326,6 +334,7 @@ public final class UpdateService
 
 		LicenseInformation newLicenseInfo = ConfigService.getLicenseInformation(newFilePath);
 
+        //If we the new appliance still has the trial license, we will overwrite
 		if (newLicenseInfo.getDatesEffective().equals("trial"))
 		{
 			logger.debug("Need to overwrite license false");
@@ -336,10 +345,18 @@ public final class UpdateService
 		return true;
 	}
 
+    /**
+     * Create temporary directory
+     * @return
+     */
 	public static File createTempDir()
 	{
+        //Get the temporary directory
 		final String baseTempPath = System.getProperty("java.io.tmpdir");
 		File tempDir = null;
+
+        //Now we will create a random directory
+        //The loop is just for precaution if the random directory already exists on the system
 		for (int i = 0; i < 100; i++)
 		{
 			Random rand = new Random();
@@ -374,6 +391,7 @@ public final class UpdateService
 				continue;
 			}
 
+            //If we don't have to overwrite the license file, just continue instead of copying
 			if (entryName.endsWith("license-key.xml") && !overwriteLicenseKey)
 				continue;
 			String filePath = "/" + entryName;
@@ -403,7 +421,7 @@ public final class UpdateService
 		ZipFile zipFile = null;
 		try
 		{
-			zipFile = new ZipFile("/vastorage/conf/vaconfig.zip");
+			zipFile = new ZipFile(VA_CONFIG_ZIP_LOC);
 			final Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
 			while (entries.hasMoreElements())

@@ -347,6 +347,7 @@ public class ClusteringPage extends ConfigPageDlgBox implements ClickHandler, Ch
 	@Override
 	public boolean editSuccessful(Object obj)
 	{
+        //Clustering is the only xml section that needs update
 		List<LeftNavItemType> sectionsToUpdate = new ArrayList<LeftNavItemType>();
 		sectionsToUpdate.add(LeftNavItemType.CLUSTERING);
 		
