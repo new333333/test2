@@ -143,7 +143,9 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		this.comment = si.comment;
 		this.daysToExpire = si.daysToExpire;
 		this.startDate = new Date(si.startDate.getTime());
-		this.endDate = new Date(si.endDate.getTime());
+        if (si.endDate!=null) {
+		    this.endDate = new Date(si.endDate.getTime());
+        }
 		this.recipientType = si.recipientType;
 		this.recipientId = si.recipientId;
 		this.rightSet = (RightSet) si.rightSet.clone();
@@ -352,7 +354,7 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		
 		private String titleCode;
 		private WorkAreaOperation[] workAreaOperations;
-		
+
 		private Role(String titleCode, WorkAreaOperation[] workAreaOperations) {
 			this.titleCode = titleCode;
 			this.workAreaOperations = workAreaOperations;

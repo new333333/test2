@@ -54,6 +54,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
@@ -71,6 +72,7 @@ import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -199,8 +201,16 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Principal entry = getProfileModule().getEntry(userId);
 
         if(!(entry instanceof org.kablink.teaming.domain.User))
-            throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
+            throw new NoUserByTheIdException(userId);
         return (org.kablink.teaming.domain.User) entry;
+    }
+
+    protected org.kablink.teaming.domain.Group _getGroup(long groupId) {
+        Principal entry = getProfileModule().getEntry(groupId);
+
+        if(!(entry instanceof org.kablink.teaming.domain.Group))
+            throw new NoGroupByTheIdException(groupId);
+        return (org.kablink.teaming.domain.Group) entry;
     }
 
     protected SearchResultList<SearchableObject> searchForLibraryEntities(String keyword, Criterion searchContext,
@@ -424,21 +434,65 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected Share shareEntity(org.kablink.teaming.domain.DefinableEntity entity, Share share, boolean notifyRecipient) {
         share.setSharedEntity(new EntityId(entity.getId(), entity.getEntityType().name(), null));
-        ShareItem item = toShareItem(share);
-        ShareItem existing = findExistingShare(getLoggedInUserId(), entity.getEntityIdentifier(), item.getRecipientId(), item.getRecipientType());
-        if (existing!=null) {
-            getSharingModule().modifyShareItem(item, existing.getId());
-        } else {
-            getSharingModule().addShareItem(item);
+        ShareItem shareItem = toShareItem(share);
+        List<ShareItem> shareItems = new ArrayList<ShareItem>(2);
+        shareItems.add(shareItem);
+
+        boolean isExternal = false;
+
+        String type = share.getRecipient().getType();
+        if (type.equals(ShareRecipient.PUBLIC)) {
+            shareItem.setIsPartOfPublicShare(true);
+            shareItem.setRecipientType(ShareItem.RecipientType.user);
+            shareItem.setRecipientId(Utils.getGuestId(this));
+            ShareItem shareItem2 = new ShareItem(shareItem);
+            shareItem2.setRecipientType(ShareItem.RecipientType.group);
+            shareItem2.setRecipientId(Utils.getAllUsersGroupId());
+            shareItems.add(shareItem2);
+            notifyRecipient = false;
+        } else if (type.equals(ShareRecipient.EXTERNAL_USER)) {
+            ShareRecipient recipient = share.getRecipient();
+            User user = null;
+            if (recipient.getId()!=null && recipient.getId()>0) {
+                user = _getUser(recipient.getId());
+                if (user.getIdentityInfo().isInternal()) {
+                    throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The user with id " + recipient.getId() + " is not an external user.");
+                }
+            }
+            if (recipient.getEmailAddress()!=null) {
+                if (user!=null) {
+                    if (!recipient.getEmailAddress().equals(user.getEmailAddress())) {
+                        throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The email address of user with id " +
+                                recipient.getId() + " (" + user.getEmailAddress() + ") does not match the supplied email address: "
+                                + recipient.getEmailAddress());
+                    }
+                } else {
+                    user = getProfileModule().findOrAddExternalUser(share.getRecipient().getEmailAddress());
+                }
+            }
+            if (user==null) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No valid external user could be found.");
+            }
+            shareItem.setRecipientId(user.getId());
+            isExternal = true;
+        }
+
+        for (ShareItem item : shareItems) {
+            ShareItem existing = findExistingShare(getLoggedInUserId(), entity.getEntityIdentifier(), item.getRecipientId(), item.getRecipientType());
+            if (existing!=null) {
+                getSharingModule().modifyShareItem(item, existing.getId());
+            } else {
+                getSharingModule().addShareItem(item);
+            }
         }
         if (notifyRecipient) {
             try {
-                EmailHelper.sendEmailToRecipient(this, item, false, getLoggedInUser());
+                EmailHelper.sendEmailToRecipient(this, shareItem, isExternal, getLoggedInUser());
             } catch (Exception e) {
                 logger.warn("Failed to send share notification email", e);
             }
         }
-        return ResourceUtil.buildShare(item);
+        return ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem));
     }
 
     protected ShareItem findExistingShare(Long sharer, EntityIdentifier sharedEntity, Long recipientId, ShareItem.RecipientType recipientType) {
@@ -460,19 +514,57 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     }
 
     protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, boolean includeExpired) {
-        return getShareItems(spec, null, includeExpired);
+        return getShareItems(spec, null, includeExpired, false);
     }
 
     protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired) {
+        return getShareItems(spec, excludedSharer, includeExpired, false);
+    }
+
+    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired, boolean includeAllPublic) {
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
         List<ShareItem> filteredItems = new ArrayList<ShareItem>(shareItems.size());
+        boolean publicIncluded = false;
         for (ShareItem item : shareItems) {
             if ((!item.isExpired() || includeExpired) && item.isLatest() &&
                     (excludedSharer==null || !excludedSharer.equals(item.getSharerId()))) {
-                filteredItems.add(item);
+                if (!includeAllPublic && item.getIsPartOfPublicShare()) {
+                    if (!publicIncluded) {
+                        filteredItems.add(item);
+                        publicIncluded = true;
+                    }
+                } else {
+                    filteredItems.add(item);
+                }
             }
         }
         return filteredItems;
+    }
+
+    protected ShareRecipient buildShareRecipient(ShareItem shareItem) {
+        Long id = shareItem.getRecipientId();
+        String type = null;
+        String email = null;
+        if (shareItem.getIsPartOfPublicShare()) {
+            type = ShareRecipient.PUBLIC;
+            id = null;
+        } else {
+            ShareItem.RecipientType recipientType = shareItem.getRecipientType();
+            if (recipientType == ShareItem.RecipientType.user) {
+                User user = _getUser(id);
+                if (user.getIdentityInfo().isInternal()) {
+                    type = ShareRecipient.INTERNAL_USER;
+                } else {
+                    type = ShareRecipient.EXTERNAL_USER;
+                    email = user.getEmailAddress();
+                }
+            } else if (recipientType == ShareItem.RecipientType.group) {
+                type = ShareRecipient.GROUP;
+            } else if (recipientType == ShareItem.RecipientType.team) {
+                type = ShareRecipient.TEAM;
+            }
+        }
+        return new ShareRecipient(id, type, email);
     }
 
     protected void populateTimestamps(Map options, DefinableEntity entry)
@@ -657,15 +749,37 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (sharedEntity.getType()==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'shared_entity.type' value.");
         }
-        EntityId recipient = share.getRecipient();
+        ShareRecipient recipient = share.getRecipient();
         if (recipient==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'recipient' value.");
         }
-        if (recipient.getId()==null) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'recipient.id' value.");
-        }
-        if (recipient.getType()==null) {
+        String type = recipient.getType();
+        if (type ==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'recipient.type' value.");
+        }
+        if (!type.equals(ShareRecipient.EXTERNAL_USER) && !type.equals(ShareRecipient.INTERNAL_USER) &&
+                !type.equals(ShareRecipient.EXTERNAL_USER) && !type.equals(ShareRecipient.GROUP) &&
+                !type.equals(ShareRecipient.PUBLIC) && !type.equals(ShareRecipient.TEAM)) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.type' value must be one of the following: user, external_user, group, team, public.");
+        }
+        if (type.equals(ShareRecipient.PUBLIC)) {
+            if (recipient.getId()!=null) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.id' cannot be supplied with 'recipient.type'=='public'.");
+            }
+            if (recipient.getEmailAddress()!=null) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.email' can be supplied with 'recipient.type'=='external_user'.");
+            }
+        } else if (type.equals(ShareRecipient.EXTERNAL_USER)){
+            if (recipient.getId()==null && recipient.getEmailAddress()==null) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.id' or 'recipient.email' must be supplied with 'recipient.type'=='external_user'.");
+            }
+        } else {
+            if (recipient.getId()==null) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'recipient.id' value.");
+            }
+            if (recipient.getEmailAddress()!=null) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.email' can be supplied with 'recipient.type'=='external_user'.");
+            }
         }
         Access access = share.getAccess();
         if (access==null) {
@@ -682,11 +796,22 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The shared_entity.type value must be one of the following: folder, workspace, folderEntry");
         }
         EntityIdentifier entity = new EntityIdentifier(sharedEntity.getId(), entityType);
-        ShareItem.RecipientType recType;
-        try {
-            recType = ShareItem.RecipientType.valueOf(recipient.getType());
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The recipient.type value must be one of the following: user, group, team");
+        ShareItem.RecipientType recType = null;
+        if (type.equals(ShareRecipient.TEAM)) {
+            recType = ShareItem.RecipientType.team;
+        } else if (type.equals(ShareRecipient.INTERNAL_USER)) {
+            recType = ShareItem.RecipientType.user;
+        } else if (type.equals(ShareRecipient.EXTERNAL_USER)) {
+            recType = ShareItem.RecipientType.user;
+            // Temporarily set the recipient ID.  Can't be null in the ShareItem constructor.
+            if (recipient.getId()==null) {
+                recipient.setId(0L);
+            }
+        } else if (type.equals(ShareRecipient.GROUP)) {
+            recType = ShareItem.RecipientType.group;
+        } else if (type.equals(ShareRecipient.PUBLIC)) {
+            recType = ShareItem.RecipientType.group;
+            recipient.setId(Utils.getAllUsersGroupId());
         }
         ShareItem.Role role;
         try {
@@ -723,6 +848,9 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         ShareItem shareItem = new ShareItem(getLoggedInUserId(), entity, share.getComment(), share.getEndDate(), recType, recipient.getId(), rights);
         if (share.getDaysToExpire()!=null) {
             shareItem.setDaysToExpire(share.getDaysToExpire());
+        }
+        if (type.equals(ShareRecipient.PUBLIC)) {
+            shareItem.setIsPartOfPublicShare(true);
         }
         return shareItem;
     }

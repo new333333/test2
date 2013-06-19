@@ -153,6 +153,9 @@ public interface ProfileModule {
 	 * @return created user object
 	 */
 	public User addUserFromPortal(IdentityInfo identityInfo, String userName, String password, Map updates, Map options);
+
+    public User findOrAddExternalUser(String emailAddress);
+
 	/**
 	 * Check access to a binder, throwing an exception if access is denied
 	 * @param user
