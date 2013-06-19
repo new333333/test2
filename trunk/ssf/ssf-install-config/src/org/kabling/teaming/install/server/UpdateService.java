@@ -219,7 +219,7 @@ public final class UpdateService
 
 				ApplianceService.restartFirewall();
 
-                ApplianceService.enableAndStartMemcache();
+                ApplianceService.enableAndStartMemcache(true);
 			}
 
 			// Delete temp files
