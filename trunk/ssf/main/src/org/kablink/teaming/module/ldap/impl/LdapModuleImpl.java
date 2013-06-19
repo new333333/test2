@@ -62,6 +62,7 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 
@@ -4168,12 +4169,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		//ssname=> forum info
 		String [] sample = new String[0];
 		//ldap dn => forum info
+		boolean workingWithAD = false;
+		String ldapGuidAttribute;
+		
+		// Get the name of the ldap attribute we will use to get a guid from the ldap directory.
+		ldapGuidAttribute = config.getLdapGuidAttribute();
+		
+		if ( getLdapDirType( ldapGuidAttribute ) == LdapDirType.AD )
+			workingWithAD = true;
 
 		logger.info( "Starting to sync groups, syncGroups()" );
 
 		for(LdapConnectionConfig.SearchInfo searchInfo : config.getGroupSearches()) {
 			if(Validator.isNotNull(searchInfo.getFilterWithoutCRLF())) {
-				String ldapGuidAttribute;
 				String[] attributesToRead;
 				String[] attributeNames;
 				List memberAttributes;
@@ -4181,15 +4189,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				logger.info( "\tSearching for groups in base dn: " + searchInfo.getBaseDn() );
 				
-				// Get the name of the ldap attribute we will use to get a guid from the ldap directory.
-				ldapGuidAttribute = config.getLdapGuidAttribute();
-				
 				// Get the mapping of attributes for a group.
 				Map groupAttributes = (Map) getZoneMap(zone.getName()).get(GROUP_ATTRIBUTES);
 				groupCoordinator.setAttributes(groupAttributes);
 				
 				Set la = new HashSet(groupAttributes.keySet());
-				la.addAll((List) getZoneMap(zone.getName()).get(MEMBER_ATTRIBUTES));
+				if ( workingWithAD == false )
+					la.addAll((List) getZoneMap(zone.getName()).get(MEMBER_ATTRIBUTES));
 				
 				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
 				SearchControls sch = new SearchControls(scope, 0, 0, (String [])la.toArray(sample), false, false);
@@ -4209,7 +4215,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					if ( attributeNames != null )
 						len += attributeNames.length;
 					
-					if ( memberAttributes != null )
+					if ( workingWithAD == false && memberAttributes != null )
 						len += memberAttributes.size();
 					
 					index = 0;
@@ -4220,17 +4226,20 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						++index;
 					}
 					
-					for (i = 0; i < memberAttributes.size(); ++i)
+					if ( workingWithAD == false )
 					{
-						attributesToRead[index] = (String)memberAttributes.get( i );
-						++index;
+						for (i = 0; i < memberAttributes.size(); ++i)
+						{
+							attributesToRead[index] = (String)memberAttributes.get( i );
+							++index;
+						}
 					}
 					
 					attributesToRead[index] = ldapGuidAttribute;
 					++index;
 					
 					// Is the ldap directory AD?
-					if ( getLdapDirType( ldapGuidAttribute ) == LdapDirType.AD )
+					if ( workingWithAD )
 					{
 						// Yes
 						// Add "objectSid" to the list of ldap attributes to read.
@@ -4286,40 +4295,211 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 					//doing this one at a time is going to be slow for lots of groups
 					//not sure why it was changed for v2
-					if(groupCoordinator.record(dn, teamingName, lAttrs, ldapGuidAttribute ) && syncMembership ) { 
+					if ( groupCoordinator.record( dn, teamingName, lAttrs, ldapGuidAttribute ) && syncMembership )
+					{ 
 						//Get map indexed by id
 						Object[] gRow = groupCoordinator.getGroup(dn);
 						if (gRow == null) continue; //not created
 						Long groupId = (Long)gRow[PRINCIPAL_ID];
 						if (groupId == null) continue; // never got created
-						Attribute att = null;
-						for (i=0; i<memberAttributes.size(); i++) {
-							att = lAttrs.get((String)memberAttributes.get(i));
-							if(att != null && att.get() != null && att.size() != 0) {
-								break;
+						
+						if ( workingWithAD == false )
+						{
+							Attribute att = null;
+							for (i=0; i<memberAttributes.size(); i++) {
+								att = lAttrs.get((String)memberAttributes.get(i));
+								if(att != null && att.get() != null && att.size() != 0) {
+									break;
+								}
+								att = null;
 							}
-							att = null;
-						}
-						Enumeration members = null;
-						if(att != null) {
-							members = att.getAll();
-						} else {
-							NamingEnumeration<NameClassPair> e = ctx.list( fixedUpGroupName );
-	
-							LinkedList membersList = new LinkedList();
-							while(e.hasMore()) {
-								NameClassPair pair = e.next();
-								membersList.add(pair.getNameInNamespace());
+							Enumeration members = null;
+							if(att != null) {
+								members = att.getAll();
+							} else {
+								NamingEnumeration<NameClassPair> e = ctx.list( fixedUpGroupName );
+		
+								LinkedList membersList = new LinkedList();
+								while(e.hasMore()) {
+									NameClassPair pair = e.next();
+									membersList.add(pair.getNameInNamespace());
+								}
+								members = Collections.enumeration(membersList);
 							}
-							members = Collections.enumeration(membersList);
+							if(members != null) {
+								groupCoordinator.syncMembership(groupId, members);
+							}
 						}
-						if(members != null) {
-							groupCoordinator.syncMembership(groupId, members);
+						else
+						{
+							Enumeration members;
+							
+							members = getGroupMembershipFromAD( teamingName, zone, config, searchInfo );
+							if ( members != null )
+								groupCoordinator.syncMembership( groupId, members );
 						}
 					}
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Read the group membership for the given group in AD
+	 */
+	private Enumeration getGroupMembershipFromAD(
+		String groupName,
+		Binder zone,
+		LdapConnectionConfig ldapConfig,
+		LdapConnectionConfig.SearchInfo searchInfo )
+	{
+		LdapContext ctx = null;
+		Hashtable listOfMembers;
+
+		if ( groupName == null || zone == null || ldapConfig == null || searchInfo == null )
+			return null;
+
+		listOfMembers = new Hashtable();
+		
+		try
+		{
+			int scope;
+			SearchControls searchCtls;
+			String search;
+			String filter;
+			NamingEnumeration ctxSearch;
+			
+			ctx = getGroupContext( zone.getId(), ldapConfig );
+
+			if ( searchInfo.isSearchSubtree() )
+				scope = SearchControls.SUBTREE_SCOPE;
+			else
+				scope = SearchControls.ONELEVEL_SCOPE;
+			
+			searchCtls = new SearchControls();
+			searchCtls.setSearchScope( scope );
+			search = "(" + ldapConfig.getUserIdAttribute() + "=" + groupName + ")";
+			filter = searchInfo.getFilterWithoutCRLF();
+			if ( Validator.isNull( filter ) == false )
+			{
+				search = "(&"+search+filter+")";
+			}
+
+			// Active Directory has a hard-coded limit of 5,000 for the number of values it will
+			// return when requesting a multi-valued attribute.
+			// We will issue ldap reads to get the membership in groups of 500
+			int step = 500;
+			int start = 0;
+			int finish = step-1;
+			boolean finished = false;
+			String range;
+
+			// Loop until we have retrieved all of the group membership
+			while ( finished == false )
+			{          
+                NamingEnumeration answer;
+
+                // Specify the range of values to retrieve from the member attribute
+				range = start + "-" + finish;
+				String returnedAtts[] = {"member;Range=" + range};
+				searchCtls.setReturningAttributes( returnedAtts );
+          
+                // Get the next n members of the group
+				answer = ctx.search( searchInfo.getBaseDn(), search, searchCtls );
+
+				// There should only be 1 result returned.
+				if ( hasMore( answer ) )
+				{
+					SearchResult next;
+                    Attributes attrs;
+                    
+                    next = (SearchResult)answer.next();
+
+                    attrs = next.getAttributes();
+                    if ( attrs != null )
+                    {
+                    	NamingEnumeration ne;
+
+                    	// There should only be 1 attribute returned.
+                    	ne = attrs.getAll();
+                		if ( hasMore( ne ) )
+                		{
+                			Attribute attr;
+                			NamingEnumeration listOfAttrValues;
+                			String id;
+                			
+                			attr = (Attribute)ne.next();
+
+                            // check if we are finished
+                			id = attr.getID();
+                			if ( id == null || id.endsWith( "*" ) )
+                			{
+                				finished = true;
+                			}
+                			else
+                			{
+                				int dash;
+                				
+                				// An example of the id is "member;range=0-29"
+                				// Find the '-'
+                				dash = id.indexOf( '-' );
+                				if ( dash > 0 && dash+1 < id.length() )
+                				{
+                					String tmp;
+                					int index;
+                					
+                					tmp = id.substring( dash+1 );
+                					
+                					// Get the index of the last value returned.
+                					index = Integer.valueOf( tmp );
+                					
+                					start = index + 1;
+                				}
+                				else
+                					finished = true;
+                			}
+
+                			// Iterate through the values of the member attribute.
+                			listOfAttrValues = attr.getAll();
+                			while ( hasMore( listOfAttrValues ) )
+                			{
+                				Object obj;
+                				
+                				obj = listOfAttrValues.next();
+                				
+                				if ( obj != null && obj instanceof String )
+                				{
+                					String memberDN;
+                					
+                					memberDN = (String) obj;
+                					listOfMembers.put( memberDN, memberDN );
+                				}
+                            }
+                		}
+
+                		finish = start + step - 1;
+                    }
+				}
+			}
+		}
+		catch ( Exception ex )
+		{
+			logger.error( "In getGroupMembershipFromAD(), exception: " + ex.toString() );
+		}
+		finally
+		{
+			try
+			{
+				if ( ctx != null )
+					ctx.close();
+			}
+			catch ( Exception ex )
+			{
+				logger.error( "in getGroupMembershipFromAD(), ctx.close() threw an exception: " + ex.toString() );
+			}
+		}
+		
+		return listOfMembers.keys();
 	}
 	
 	protected void doLog(String caption, Map<String, Map> names) {
