@@ -107,6 +107,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             SharedBinderBrief.class,
             SharedFileProperties.class,
             SharedFolderEntryBrief.class,
+            ShareRecipient.class,
             StringIdLinkPair.class,
             Tag.class,
             TeamBrief.class,
