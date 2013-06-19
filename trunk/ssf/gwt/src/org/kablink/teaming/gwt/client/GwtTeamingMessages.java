@@ -390,6 +390,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetBranding();
 	String rpcFailure_GetChangeLogsHtml();
 	String rpcFailure_GetCreditsHtml();
+	String rpcFailure_GetDatabasePruneDlgConfiguration();
 	String rpcFailure_GetDataQuotaExceededHtml();
 	String rpcFailure_GetDataQuotaHighwaterExceededHtml();
 	String rpcFailure_GetDefaultActivityStream();
@@ -646,6 +647,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MainPage();
 	String codeSplitFailure_ManageCommentsComposite();
 	String codeSplitFailure_ManageCommentsDlg();
+	String codeSplitFailure_ManageDatabasePruneDlg();
 	String codeSplitFailure_ManageGroupsDlg();
 	String codeSplitFailure_ManageNetFoldersDlg();
 	String codeSplitFailure_ManageNetFolderServersDlg();
@@ -1614,6 +1616,17 @@ public interface GwtTeamingMessages extends Messages
 	String fileSyncApp_OnSaveUnknownException( String desc );
 	String fileSyncAppUseGlobalSettings();
 	String fileSyncAppUseUserSettings();
+	
+	// Strings used in the Manage Database Logs dialog
+	String databasePruneDlgHeader();
+	String databasePruneDlgHeader2();
+	String databasePruneDlgRemoveAuditTrailEntries();
+	String databasePruneDlgRemoveChangeLogEntries();
+	String databasePruneDlgAgeUnits();
+	String databasePruneDlgCautionAuditTrail();
+	String databasePruneDlgCautionChangeLog();
+	String databasePruneDlgCautionIrrevocable();
+	String databasePruneDlg_OnSaveUnknownException( String desc );
 	
 	// Strings used in the Configure User File Sync App dialog
 	String configureUserFileSyncAppDlgErrorHeader();

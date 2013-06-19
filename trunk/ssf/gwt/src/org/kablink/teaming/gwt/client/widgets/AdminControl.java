@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureShareSettingsDlgEvent
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeJitsZoneConfigDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeManageDatabasePruneDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
@@ -60,6 +61,7 @@ import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtConstants;
+import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -70,6 +72,7 @@ import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDatabasePruneConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
@@ -88,6 +91,7 @@ import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.Config
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserMobileAppsDlg.ConfigureUserMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 import org.kablink.teaming.gwt.client.widgets.JitsZoneConfigDlg.JitsZoneConfigDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ManageDatabasePruneDlg.ManageDatabasePruneDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFolderRootsDlg.ManageNetFolderRootsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFoldersDlg.ManageNetFoldersDlgClient;
@@ -141,6 +145,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeConfigureUserAccessDlgEvent.Handler,
 		InvokeEditNetFolderDlgEvent.Handler,
 		InvokeJitsZoneConfigDlgEvent.Handler,
+		InvokeManageDatabasePruneDlgEvent.Handler,
 		InvokeManageNetFoldersDlgEvent.Handler,
 		InvokeManageNetFolderRootsDlgEvent.Handler,
 		InvokeManageGroupsDlgEvent.Handler,
@@ -166,6 +171,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ConfigureMobileAppsDlg m_configureMobileAppsDlg = null;
 	private ConfigureUserMobileAppsDlg m_configureUserMobileAppsDlg = null;
 	private ConfigureUserFileSyncAppDlg m_configureUserFileSyncAppDlg = null;
+	private ManageDatabasePruneDlg m_manageDatabasePruneDlg = null;
 	private ManageGroupsDlg m_manageGroupsDlg = null;
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
@@ -194,6 +200,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
 		TeamingEvents.INVOKE_EDIT_NET_FOLDER_DLG,
 		TeamingEvents.INVOKE_JITS_ZONE_CONFIG_DLG,
+		TeamingEvents.INVOKE_MANAGE_DATABASE_PRUNE_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
@@ -839,7 +846,13 @@ public class AdminControl extends TeamingPopupPanel
 			event = new ManageSharesSelectedEntriesEvent();
 			GwtTeaming.fireEvent( event );
 		}
-		
+				
+		else if ( adminAction.getActionType() == AdminAction.MANAGE_DATABASE_PRUNE )
+		{
+			// Fire the event to invoke the "Manage database prune" dialog.
+			InvokeManageDatabasePruneDlgEvent.fireOne();
+		}
+
 		else if ( adminAction.getActionType() == AdminAction.ADD_USER )
 		{
 			// Fire the event to invoke the "Manage users" dialog.
@@ -2102,6 +2115,113 @@ public class AdminControl extends TeamingPopupPanel
 		}
 	}
 	
+	/**
+	 * Handles InvokeManageDatabasePruneDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeManageDatabasePruneDlgEvent.Handler.onInvokeManageDatabasePruneDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeManageDatabasePruneDlg( InvokeManageDatabasePruneDlgEvent event )
+	{
+		AsyncCallback<VibeRpcResponse> rpcReadCallback;
+		
+		// Create a callback that will be called when we get the Database Prune configuration.
+		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetDatabasePruneDlgConfiguration() );
+			}
+	
+			/**
+			 * We successfully retrieved the Database Prune configuration.  Now invoke the "Database Prune" dialog.
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				int x;
+				int y;
+				final GwtDatabasePruneConfiguration databasePruneConfiguration;
+
+
+				databasePruneConfiguration = (GwtDatabasePruneConfiguration) response.getResponseData();
+				
+				// Get the position of the content control.
+				x = m_contentControlX;
+				y = m_contentControlY;
+				
+				// Have we already created a "Manage Database Prune" dialog?
+				if ( m_manageDatabasePruneDlg == null )
+				{
+					int width;
+					int height;
+					
+					// No, create one.
+					height = m_dlgHeight;
+					width = m_dlgWidth;
+					ManageDatabasePruneDlg.createAsync(
+							true, 
+							false,
+							x, 
+							y,
+							width,
+							height,
+							new ManageDatabasePruneDlgClient()
+					{			
+						@Override
+						public void onUnavailable()
+						{
+							// Nothing to do.  Error handled in asynchronous provider.
+						}
+						
+						@Override
+						public void onSuccess( final ManageDatabasePruneDlg cfsaDlg )
+						{
+							ScheduledCommand cmd;
+							
+							cmd = new ScheduledCommand()
+							{
+								@Override
+								public void execute() 
+								{
+									m_manageDatabasePruneDlg = cfsaDlg;
+									
+									m_manageDatabasePruneDlg.init( databasePruneConfiguration );
+									m_manageDatabasePruneDlg.show();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					} );
+				}
+				else
+				{
+					m_manageDatabasePruneDlg.init( databasePruneConfiguration );
+					m_manageDatabasePruneDlg.setPopupPosition( x, y );
+					m_manageDatabasePruneDlg.show();
+				}
+			}
+		};
+
+		// Issue an ajax request to get the Database Prune configuration.  When we get the Database Prune configuration
+		// we will invoke the "Manage database prune" dialog.
+		{
+			GetDatabasePruneConfigurationCmd cmd;
+			
+			// Issue an ajax request to get the Database Prune configuration from the db.
+			cmd = new GetDatabasePruneConfigurationCmd();
+			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
+		}
+	}
+		
 	/**
 	 * Handles InvokeManageNetFoldersDlgEvent received by this class.
 	 * 

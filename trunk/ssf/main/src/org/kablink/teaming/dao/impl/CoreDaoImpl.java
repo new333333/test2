@@ -74,9 +74,11 @@ import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AnyOwner;
 import org.kablink.teaming.domain.Attachment;
+import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.BinderState;
+import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.CustomAttributeListElement;
 import org.kablink.teaming.domain.Dashboard;
@@ -3034,6 +3036,29 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
 	}
 	
+	public List getAuditTrailEntries(final Long zoneId, final Date purgeBeforeDate) {
+		long begin = System.nanoTime();
+		try {
+			List results = (List) getHibernateTemplate().execute(
+		    	new HibernateCallback() {
+		    		public Object doInHibernate(Session session) throws HibernateException {
+                        return session.createCriteria(AuditTrail.class)
+							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+							.add(Restrictions.isNotNull("startDate"))
+							.add(Restrictions.lt("startDate", purgeBeforeDate))
+							.setCacheable(false)
+	                    	.addOrder(Order.asc("startDate"))
+	                    	.list();
+		    		}
+		    	}
+		   	);
+			return results;
+		}
+		finally {
+    		end(begin, "getAuditTrailEntries()");
+		}
+	}
+
 	@Override
 	public int purgeAuditTrail(final Long zoneId, final Date purgeBeforeDate) {
 		long begin = System.nanoTime();
@@ -3054,6 +3079,29 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		}
 		finally {
     		end(begin, "purgeAuditTrail()");
+		}
+	}
+	
+	public List getChangeLogEntries(final Long zoneId, final Date purgeBeforeDate) {
+		long begin = System.nanoTime();
+		try {
+			List results = (List) getHibernateTemplate().execute(
+		    	new HibernateCallback() {
+		    		public Object doInHibernate(Session session) throws HibernateException {
+                        return session.createCriteria(ChangeLog.class)
+							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+							.add(Restrictions.isNotNull("operationDate"))
+							.add(Restrictions.lt("operationDate", purgeBeforeDate))
+							.setCacheable(false)
+	                    	.addOrder(Order.asc("operationDate"))
+	                    	.list();
+		    		}
+		    	}
+		   	);
+			return results;
+		}
+		finally {
+    		end(begin, "getChangeLogEntries()");
 		}
 	}
 	

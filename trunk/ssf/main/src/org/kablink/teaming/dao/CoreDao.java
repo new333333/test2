@@ -263,8 +263,10 @@ public interface CoreDao {
 	
 	public List<OpenIDProvider> findOpenIDProviders(Long zoneId);
 	
+	public List getAuditTrailEntries(final Long zoneId, final Date purgeBeforeDate);
 	public int purgeAuditTrail(Long zoneId, Date purgeBeforeDate);
 	
+	public List getChangeLogEntries(final Long zoneId, final Date purgeBeforeDate);
 	public int purgeChangeLogs(Long zoneId, Date purgeBeforeDate);
 
 	public boolean contains(Object obj);

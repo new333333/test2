@@ -74,6 +74,7 @@ import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
+import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
 import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
 import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
@@ -1306,6 +1307,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case GET_DATABASE_PRUNE_CONFIGURATION:
+		{
+			GwtDatabasePruneConfiguration databasePruneConfiguration; 
+
+			databasePruneConfiguration = GwtServerHelper.getDatabasePruneConfiguration( this );
+			response = new VibeRpcResponse( databasePruneConfiguration );
+			return response;
+		}
+		
 
 		case GET_FILE_SYNC_APP_CONFIGURATION:
 		{
@@ -2752,6 +2762,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			sjzcCmd = ((SaveJitsZoneConfigCmd) cmd);
 			result = GwtServerHelper.saveJitsZoneConfig( this, sjzcCmd.getJitsZoneConfig() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
+		case SAVE_DATABASE_PRUNE_CONFIGURATION:
+		{
+			SaveDatabasePruneConfigurationCmd sdpcCmd;
+			Boolean result;
+			
+			sdpcCmd = ((SaveDatabasePruneConfigurationCmd) cmd);
+			result = GwtServerHelper.executeDatabasePruneCommand( this, sdpcCmd.getDatabasePruneConfiguration() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
