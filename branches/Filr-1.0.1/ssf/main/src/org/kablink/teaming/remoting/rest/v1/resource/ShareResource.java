@@ -19,6 +19,7 @@ import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.file.FileIndexData;
@@ -32,6 +33,7 @@ import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.web.util.EmailHelper;
+import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,12 +53,51 @@ import java.util.*;
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class ShareResource extends AbstractResource {
+    @POST
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    public NotifyWarning [] noopPostShare(@FormParam("id") List<Long> ids,
+                              @FormParam("notify") @DefaultValue("false") boolean notifyRecipient) {
+        if (notifyRecipient && ids!=null) {
+            User loggedInUser = getLoggedInUser();
+            List<NotifyWarning> failures = new ArrayList<NotifyWarning>();
+            for (Long id : ids) {
+                try {
+                    ShareItem shareItem = _getShareItem(id);
+                    if (shareItem.getSharerId().equals(loggedInUser.getId())) {
+                        if (shareItem.getIsPartOfPublicShare()) {
+                            failures.add(new NotifyWarning(id, ApiErrorCode.NOT_SUPPORTED.name(),
+                                    "Cannot notify recipients of public shares"));
+                        } else {
+                            try {
+                                EmailHelper.sendEmailToRecipient(this, shareItem, false, loggedInUser);
+                            } catch (Exception e) {
+                                logger.warn("Failed to send share notification email", e);
+                                failures.add(new NotifyWarning(id, ApiErrorCode.SERVER_ERROR.name(),
+                                        "Failed to send the notification email: " + e.getMessage()));
+                            }
+                        }
+                    } else {
+                        logger.warn("Notify share recipients warning: share with id " + id +
+                                " was shared by someone other than the current user (" + loggedInUser.getId() + ").");
+                        failures.add(new NotifyWarning(id, ApiErrorCode.SHAREITEM_NOT_FOUND.name(),
+                                "Share does not exist."));
+                    }
+                } catch (NoShareItemByTheIdException e) {
+                    logger.warn("Notify share recipients warning: no share with id " + id, e);
+                    failures.add(new NotifyWarning(id, ApiErrorCode.SHAREITEM_NOT_FOUND.name(),
+                            "Share does not exist."));
+                }
+            }
+            return failures.toArray(new NotifyWarning[failures.size()]);
+        }
+        return new NotifyWarning[0];
+    }
 
     @GET
     @Path("/{id}")
     public Share getShare(@PathParam("id") Long id) {
         ShareItem share = _getShareItem(id);
-        return ResourceUtil.buildShare(share);
+        return ResourceUtil.buildShare(share, buildShareRecipient(share));
     }
 
     @POST
@@ -65,13 +106,27 @@ public class ShareResource extends AbstractResource {
     public Share updateShare(@PathParam("id") Long id,
                              @QueryParam("notify") @DefaultValue("false") boolean notifyRecipient,
                              Share share) {
-        ShareItem origItem = _getShareItem(id);
+        List<ShareItem> origItems;
+        ShareItem item = _getShareItem(id);
+        if (item.getIsPartOfPublicShare()) {
+            origItems = getAllPublicShareParts(item);
+            notifyRecipient = false;
+        } else {
+            origItems = new ArrayList<ShareItem>(1);
+            origItems.add(item);
+        }
         // You can't change the shared entity or the recipient via this API.  Perhaps I should fail if the client supplies
         // these values and they don't match?
-        share.setSharedEntity(new EntityId(origItem.getSharedEntityIdentifier().getEntityId(), origItem.getSharedEntityIdentifier().getEntityType().name(), null));
-        share.setRecipient(new EntityId(origItem.getRecipientId(), origItem.getRecipientType().name(), null));
-        ShareItem shareItem = toShareItem(share);
-        getSharingModule().modifyShareItem(shareItem, id);
+        share.setSharedEntity(new EntityId(item.getSharedEntityIdentifier().getEntityId(), item.getSharedEntityIdentifier().getEntityType().name(), null));
+        share.setRecipient(buildShareRecipient(item));
+        ShareItem newShareItem = toShareItem(share);
+        ShareItem shareItem = null;
+        for (ShareItem origItem : origItems) {
+            shareItem = new ShareItem(newShareItem);
+            shareItem.setRecipientType(origItem.getRecipientType());
+            shareItem.setRecipientId(origItem.getRecipientId());
+            getSharingModule().modifyShareItem(shareItem, origItem.getId());
+        }
         if (notifyRecipient) {
             try {
                 EmailHelper.sendEmailToRecipient(this, shareItem, false, getLoggedInUser());
@@ -79,15 +134,24 @@ public class ShareResource extends AbstractResource {
                 logger.warn("Failed to send share notification email", e);
             }
         }
-        return ResourceUtil.buildShare(shareItem);
+        return ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem));
     }
 
     @DELETE
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public void deleteShare(@PathParam("id") Long id) {
-        _getShareItem(id);
-        getSharingModule().deleteShareItem(id);
+        List<ShareItem> origItems;
+        ShareItem item = _getShareItem(id);
+        if (item.getIsPartOfPublicShare()) {
+            origItems = getAllPublicShareParts(item);
+        } else {
+            origItems = new ArrayList<ShareItem>(1);
+            origItems.add(item);
+        }
+        for (ShareItem origItem : origItems) {
+            getSharingModule().deleteShareItem(origItem.getId());
+        }
     }
 
     @GET
@@ -98,7 +162,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<ShareItem> shareItems = getShareItems(spec, true);
         for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem));
+            results.append(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
         }
         return results;
     }
@@ -234,7 +298,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<ShareItem> shareItems = getShareItems(spec, userId, false);
         for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem));
+            results.append(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
         }
         return results;
     }
@@ -479,9 +543,9 @@ public class ShareResource extends AbstractResource {
                     if (showToUser(entry, topId, showHidden, showUnhidden)) {
                         SharedFolderEntryBrief binderBrief = resultMap.get(entry.getId());
                         if (binderBrief!=null) {
-                            binderBrief.addShare(ResourceUtil.buildShare(shareItem));
+                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
                         } else {
-                            binderBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, entry);
+                            binderBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, buildShareRecipient(shareItem), entry);
                             binderBrief.setParentBinder(new ParentBinder(topId, topHref));
                             resultMap.put(entry.getId(), binderBrief);
                         }
@@ -509,9 +573,9 @@ public class ShareResource extends AbstractResource {
                     if (showBinderToUser(binder, onlyLibrary, topId, showHidden, showUnhidden)) {
                         SharedBinderBrief binderBrief = resultMap.get(binder.getId());
                         if (binderBrief!=null) {
-                            binderBrief.addShare(ResourceUtil.buildShare(shareItem));
+                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
                         } else {
-                            binderBrief = ResourceUtil.buildSharedBinderBrief(shareItem, binder);
+                            binderBrief = ResourceUtil.buildSharedBinderBrief(shareItem, buildShareRecipient(shareItem), binder);
                             if (topId!=null) {
                                 binderBrief.setParentBinder(new ParentBinder(topId, topHref));
                             }
@@ -541,9 +605,9 @@ public class ShareResource extends AbstractResource {
                             if (attachment instanceof FileAttachment) {
                                 SharedFileProperties fileProps = resultMap.get(attachment.getId());
                                 if (fileProps!=null) {
-                                    fileProps.addShare(ResourceUtil.buildShare(shareItem));
+                                    fileProps.addShare(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
                                 } else {
-                                    fileProps = ResourceUtil.buildSharedFileProperties(shareItem, (FileAttachment) attachment);
+                                    fileProps = ResourceUtil.buildSharedFileProperties(shareItem, buildShareRecipient(shareItem), (FileAttachment) attachment);
                                     fileProps.setBinder(new ParentBinder(topId, topHref));
                                     resultMap.put(attachment.getId(), fileProps);
                                 }
@@ -690,6 +754,24 @@ public class ShareResource extends AbstractResource {
             results = new SearchResultList<SearchableObject>();
         }
         return results;
+    }
+
+    private List<ShareItem> getAllPublicShareParts(ShareItem item) {
+        ShareItemSelectSpec spec = new ShareItemSelectSpec();
+        spec.setSharerId(item.getSharerId());
+        spec.setLatest(true);
+        spec.setSharedEntityIdentifier(item.getSharedEntityIdentifier());
+        List<ShareItem> allShareItems = getShareItems(spec, null, false, true);
+        List<ShareItem> filteredShareItems = new ArrayList<ShareItem>(2);
+        for (ShareItem shareItem : allShareItems) {
+            if (shareItem.getIsPartOfPublicShare()) {
+                filteredShareItems.add(shareItem);
+            }
+        }
+        if (filteredShareItems.size()==0) {
+            throw new IllegalStateException("Could not find public shares corresponding to share with id: " + item.getId());
+        }
+        return filteredShareItems;
     }
 
     private ShareItem _getShareItem(Long id) {

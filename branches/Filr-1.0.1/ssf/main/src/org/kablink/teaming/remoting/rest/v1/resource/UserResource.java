@@ -115,7 +115,13 @@ public class UserResource extends AbstractPrincipalResource {
             nextParams.put("email", email);
         }
         if (keyword!=null) {
-            criterion.add(Restrictions.like(Constants.TITLE_FIELD, SearchUtils.modifyQuickFilter(keyword)));
+            Junction or = Restrictions.disjunction();
+            keyword = SearchUtils.modifyQuickFilter(keyword);
+            or.add(Restrictions.like(Constants.TITLE_FIELD, keyword));
+            or.add(Restrictions.like(Constants.EMAIL_FIELD, keyword));
+            or.add(Restrictions.like(Constants.EMAIL_DOMAIN_FIELD, keyword));
+            or.add(Restrictions.like(Constants.LOGINNAME_FIELD, keyword));
+            criterion.add(or);
             nextParams.put("keyword", keyword);
         }
 
