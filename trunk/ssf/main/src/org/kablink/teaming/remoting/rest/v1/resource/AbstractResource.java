@@ -453,7 +453,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         } else if (type.equals(ShareRecipient.EXTERNAL_USER)) {
             ShareRecipient recipient = share.getRecipient();
             User user = null;
-            if (recipient.getId()!=null) {
+            if (recipient.getId()!=null && recipient.getId()>0) {
                 user = _getUser(recipient.getId());
                 if (user.getIdentityInfo().isInternal()) {
                     throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The user with id " + recipient.getId() + " is not an external user.");
@@ -770,7 +770,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.email' can be supplied with 'recipient.type'=='external_user'.");
             }
         } else if (type.equals(ShareRecipient.EXTERNAL_USER)){
-            if (recipient.getId()==null || recipient.getEmailAddress()==null) {
+            if (recipient.getId()==null && recipient.getEmailAddress()==null) {
                 throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.id' or 'recipient.email' must be supplied with 'recipient.type'=='external_user'.");
             }
         } else {
@@ -803,8 +803,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             recType = ShareItem.RecipientType.user;
         } else if (type.equals(ShareRecipient.EXTERNAL_USER)) {
             recType = ShareItem.RecipientType.user;
-            // Temporarily set the recipient ID to the logged in user.  Can't be null in the ShareItem constructor.
-            recipient.setId(getLoggedInUserId());
+            // Temporarily set the recipient ID.  Can't be null in the ShareItem constructor.
+            if (recipient.getId()==null) {
+                recipient.setId(0L);
+            }
         } else if (type.equals(ShareRecipient.GROUP)) {
             recType = ShareItem.RecipientType.group;
         } else if (type.equals(ShareRecipient.PUBLIC)) {

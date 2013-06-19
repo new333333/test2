@@ -225,11 +225,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         spec.setSharedEntityIdentifier(new EntityIdentifier(id, EntityIdentifier.EntityType.folderEntry));
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<ShareItem> shareItems = getShareItems(spec, true);
-        boolean publicShare = false;
         for (ShareItem shareItem : shareItems) {
-            if (shareItem.getIsPartOfPublicShare()) {
-
-            }
             results.append(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
         }
         return results;
