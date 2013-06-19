@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -63,7 +63,6 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.StatusTicket;
-
 
 /**
  * <code>FolderModule</code> provides folder-related operations that the caller
@@ -749,4 +748,43 @@ public interface FolderModule {
      * <code>false</code> otherwise.
      */
     public boolean enqueueFullSynchronize(Long netFolderId);
+
+	/**
+	 * Create a cloud folder from the given data.
+	 * 
+	 * @param templateId
+	 * @param parentBinderId
+	 * @param name
+	 * @param rootName
+	 * @param path
+	 * 
+	 * @return
+	 * 
+	 * @throws AccessControlException
+	 * @throws WriteFilesException
+	 * @throws WriteEntryDataException
+	 */
+    public Folder createCloudFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    
+	/**
+	 * Delete the given cloud folder.
+	 * 
+	 * @param folderId
+	 * @param deleteSource
+	 */
+	public void deleteCloudFolder(Long folderId, boolean deleteSource);
+	
+	/**
+	 * Modifies a cloud folder.
+	 * 
+	 * @param folderId
+	 * @param cloudFolderName
+	 * @param rootName
+	 * @param path
+	 * 
+	 * @throws AccessControlException
+	 * @throws WriteFilesException
+	 * @throws WriteEntryDataException
+	 */
+	public void modifyCloudFolder(Long folderId, String cloudFolderName, String rootName, String path) throws AccessControlException, WriteFilesException, WriteEntryDataException;
 }

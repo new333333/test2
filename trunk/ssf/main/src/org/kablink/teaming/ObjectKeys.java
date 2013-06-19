@@ -116,6 +116,8 @@ public interface ObjectKeys {
 	public static final String DEFAULT_FOLDER_FILR_ROOT_CONFIG="402883b90d0de1f3010d0df5582b0032";
 	public static final String DEFAULT_FOLDER_FILR_HOME_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0040";
 	public static final String DEFAULT_FOLDER_FILR_NET_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0048";
+	public static final String DEFAULT_FOLDER_FILR_ROOT_CLOUD_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0050";
+	public static final String DEFAULT_FOLDER_FILR_CLOUD_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0058";
 	
 	//reserved internalIds for binders
 	public static final String PROFILE_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0005";

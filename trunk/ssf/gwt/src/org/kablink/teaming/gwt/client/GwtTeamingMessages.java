@@ -595,6 +595,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ChangePasswordDlg();
 	String codeSplitFailure_ChildBindersWidget();
 	String codeSplitFailure_ClipboardDlg();
+	String codeSplitFailure_CloudFolderAuthenticationDlg();
 	String codeSplitFailure_CollectionView();
 	String codeSplitFailure_ConfigureAdhocFoldersDlg();
 	String codeSplitFailure_ConfigureFileSyncAppDlg();
@@ -1751,6 +1752,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Event_Duration(String days);
 	String vibeDataTable_Event_Start();
 	String vibeDataTable_GuestbookInternalErrorOverrideMissing();
+	String vibeDataTable_InternalError_NestedCloudFolderAuthentication();
 	String vibeDataTable_InternalError_UnexpectedRowCount(int rowsRequested, int rowsRead);
 	String vibeDataTable_InternalError_UnsupportedStructuredToolbar();
 	String vibeDataTable_MemberCount(String count);
@@ -1832,6 +1834,9 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the "Unread entries" dialog
 	String unreadEntriesDlgHeader();
+	
+	// Strings used in the CloudFolderAuthenticationDlg.
+	String cloudFolderAuthenticationDlgHeader();
 	
 	// Strings used in the CopyMoveEntriesDlg in copy mode.
 	String copyEntriesDlgCaption1_Entries();
