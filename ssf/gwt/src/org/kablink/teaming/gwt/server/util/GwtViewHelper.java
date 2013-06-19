@@ -3786,11 +3786,12 @@ public class GwtViewHelper {
 	 * @param start
 	 * @param length
 	 * @param quickFilter
+	 * @param authenticationGuid
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter) throws GwtTeamingException {
+	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter, String authenticationGuid) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderRows()");
 		try {
 			// Is this a binder the user can view?
@@ -3966,7 +3967,20 @@ public class GwtViewHelper {
 						options.put(ObjectKeys.SEARCH_SORT_DESCEND,           sortDescend           );
 						options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      fdd.getFolderSortBy() );
 						options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, sortDescend           );
-						searchResults = bs.getFolderModule().getEntries(folderId, options);
+						
+//!						...this needs to be implemented...
+						// ...need to account for the authenticationGuid...
+						
+						try {
+							searchResults = bs.getFolderModule().getEntries(folderId, options);
+						}
+						catch (Exception e) {
+//!							...this needs to be implemented...
+							// ...need to special case the exception...
+							// ...thrown when a Cloud Folder...
+							// ...requires authentication.
+							throw e;
+						}
 					}
 					
 					finally {

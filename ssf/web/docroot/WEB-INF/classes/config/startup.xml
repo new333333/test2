@@ -59,6 +59,8 @@
 	<templateFile>config/templates/_folder_filr_root.xml</templateFile>
 	<templateFile>config/templates/_folder_filr_home_folder.xml</templateFile>
 	<templateFile>config/templates/_folder_filr_netfolder.xml</templateFile>
+	<templateFile>config/templates/_folder_filr_root_common_services.xml</templateFile>
+	<templateFile>config/templates/_folder_filr_common_services_folder.xml</templateFile>
 	<templateFile>config/templates/_workspace.xml</templateFile>
 	<templateFile>config/templates/_workspace_team.xml</templateFile>
 	<templateFile>config/templates/_workspace_user.xml</templateFile>

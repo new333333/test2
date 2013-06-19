@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,7 +38,6 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
  * This class holds the response data for the 'get folder rows' RPC
  * command.
@@ -46,10 +45,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private int				m_startOffset;		//
-	private int				m_totalRows;		//
-	private List<FolderRow> m_folderRows;		//
-	private List<Long>		m_contributorIds;	//
+	private int				m_startOffset;			//
+	private int				m_totalRows;			//
+	private List<FolderRow> m_folderRows;			//
+	private List<Long>		m_contributorIds;		//
+	private String			m_authenticationGuid;	// Use when a Cloud Folder...
+	private String			m_authenticationUrl;	// ...requires authentication.
 	
 	/**
 	 * Constructor method.
@@ -57,6 +58,7 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public FolderRowsRpcResponseData() {
+		// Initialize the super class.
 		super();
 	}
 	
@@ -69,8 +71,10 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * @param contributorIds
 	 */
 	public FolderRowsRpcResponseData(List<FolderRow> folderRows, int startOffset, int totalRows, List<Long> contributorIds) {
+		// Initialize this object...
 		this();
 		
+		// ...and store the parameters.
 		setFolderRows(    folderRows    );
 		setStartOffset(   startOffset   );
 		setTotalRows(     totalRows     );
@@ -78,24 +82,43 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 	}
 	
 	/**
+	 * Constructor method.
+	 *
+	 * @param authenticationUrl
+	 * @param authenticationGuid
+	 */
+	public FolderRowsRpcResponseData(String authenticationUrl, String authenticationGuid) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameters.
+		setAuthenticationUrl( authenticationUrl );
+		setAuthenticationGuid(authenticationGuid);
+	}
+	
+	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public int             getStartOffset()    {return m_startOffset;   }
-	public int             getTotalRows()      {return m_totalRows;     }
-	public List<FolderRow> getFolderRows()     {return m_folderRows;    }
-	public List<Long>      getContributorIds() {return m_contributorIds;}
+	public int             getStartOffset()        {return m_startOffset;       }
+	public int             getTotalRows()          {return m_totalRows;         }
+	public List<FolderRow> getFolderRows()         {return m_folderRows;        }
+	public List<Long>      getContributorIds()     {return m_contributorIds;    }
+	public String          getAuthenticationGuid() {return m_authenticationGuid;}
+	public String          getAuthenticationUrl()  {return m_authenticationUrl; }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setStartOffset(   int             startOffset)    {m_startOffset    = startOffset;   }
-	public void setTotalRows(     int             totalRows)      {m_totalRows      = totalRows;     }
-	public void setFolderRows(    List<FolderRow> folderRows)     {m_folderRows     = folderRows;    }
-	public void setContributorIds(List<Long>      contributorIds) {m_contributorIds = contributorIds;}
+	public void setStartOffset(       int             startOffset)        {m_startOffset        = startOffset;       }
+	public void setTotalRows(         int             totalRows)          {m_totalRows          = totalRows;         }
+	public void setFolderRows(        List<FolderRow> folderRows)         {m_folderRows         = folderRows;        }
+	public void setContributorIds(    List<Long>      contributorIds)     {m_contributorIds     = contributorIds;    }
+	public void setAuthenticationGuid(String          authenticationGuid) {m_authenticationGuid = authenticationGuid;}
+	public void setAuthenticationUrl( String          authenticationUrl)  {m_authenticationUrl  = authenticationUrl; }
 
 	/**
 	 * Returns a count of the folder rows being tracked.
@@ -104,5 +127,16 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 */
 	public int getFolderRowCount() {
 		return ((null == m_folderRows) ? 0 : m_folderRows.size());
+	}
+
+	/**
+	 * Returns true if the querying the folder's rows requires
+	 * authentication and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean requiresAuthentication() {
+		return ((null != m_authenticationGuid) && (0 < m_authenticationGuid.length()) &&
+				(null != m_authenticationUrl)  && (0 < m_authenticationUrl.length()));
 	}
 }
