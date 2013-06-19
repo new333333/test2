@@ -32,11 +32,17 @@
  */
 package org.kablink.teaming.module.admin.impl;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,7 +59,9 @@ import javax.mail.internet.InternetAddress;
 
 import org.apache.velocity.VelocityContext;
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 
 import org.kablink.teaming.ConfigurationException;
@@ -65,6 +73,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.domain.Application;
+import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
@@ -133,6 +142,7 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.FileStore;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.RuntimeStatistics;
@@ -140,6 +150,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -3054,7 +3065,49 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 
     @Override
 	public ScheduleInfo getLogTablePurgeSchedule() {
-    	return getLogTablePurgeObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
+    	ScheduleInfo info =  getLogTablePurgeObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Date now = new Date();
+		int offsetHour = user.getTimeZone().getOffset(now.getTime()) / (60 * 60 * 1000);
+		String hours = SPropsUtil.getString("log.table.purge.schedule.hours", "0");
+		String minutes = SPropsUtil.getString("log.table.purge.schedule.minutes", "40");
+		try {
+			int iHours = Integer.valueOf(hours);
+			iHours -= offsetHour;
+			hours = String.valueOf((iHours + 24) % 24);
+		} catch(Exception e) {
+			//This must be trying to set "*" or some other fancy value, so just leave "hours" as it was
+		}
+		info.getSchedule().setDaily(true);
+		info.getSchedule().setHours(hours);
+		info.getSchedule().setMinutes(minutes);
+    	return info;
+    }
+    
+    public void purgeLogTablesImmediate() {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+  		Date now = new Date();
+  		
+  		if (zoneConfig.getAuditTrailKeepDays() > 0) {
+  			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getAuditTrailKeepDays()*1000*60*60*24);
+  			List<AuditTrail> entriesToBeDeleted = getCoreDao().getAuditTrailEntries(zoneId, purgeBeforeDate);
+  			if (writeAuditTrailLogFile(entriesToBeDeleted)) {
+  				//The entries to be purged were safely logged to disk, so we can delete them from the database
+		  		int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
+		  		logger.info("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
+  			}
+  		}
+  		
+  		if (zoneConfig.getChangeLogsKeepDays() > 0) {
+  			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getChangeLogsKeepDays()*1000*60*60*24);
+  			List<ChangeLog> entriesToBeDeleted = getCoreDao().getChangeLogEntries(zoneId, purgeBeforeDate);
+  			if (writeChangeLogLogFile(entriesToBeDeleted)) {
+  				//The entries to be purged were safely logged to disk, so we can delete them from the database
+		  		int changeLogPurgeCount = getCoreDao().purgeChangeLogs(zoneId, purgeBeforeDate);
+		  		logger.info("Purged " + changeLogPurgeCount + " records from the SS_ChangeLog table");
+  			}
+  		}
     }
     
     @Override
@@ -3083,4 +3136,142 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     protected String getLogTablePurgeProperty(String zoneName, String name) {
 		return SZoneConfig.getString(zoneName, "logTablePurgeConfiguration/property[@name='" + name + "']");
 	}
+
+    //Routine to append AuditTrail entries to a log file before they get deleted
+    public boolean writeAuditTrailLogFile(List<AuditTrail> entriesToBeDeleted) {
+    	if (!SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.auditTrail", false)) {
+    		//We are not saving the deleted records
+    		return true;
+    	}
+    	if (entriesToBeDeleted.isEmpty()) return true;
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+	    User user = RequestContextHolder.getRequestContext().getUser();
+		Calendar now = new GregorianCalendar();
+		String month = String.valueOf(now.MONTH);
+		String year = String.valueOf(now.YEAR);
+
+    	FileStore logFileStore = new FileStore(SPropsUtil.getString("data.databaselogs.dir"), "");
+		File logDir = new File(logFileStore.getRootPath() + File.separator + Utils.getZoneKey());
+		if (!logDir.exists() && !logDir.mkdirs()) {
+			logger.error("Cannot create " + logDir.getAbsolutePath());
+			return false;
+		}
+    	FileWriter fw = null;
+	    String filename= logDir + File.separator + "AuditTrailPruning-" + month + "-" + year + ".log";
+    	try {
+    	    fw = new FileWriter(filename, true); 		//the true will append the new data
+    	    
+			Document doc = DocumentHelper.createDocument();
+			Element root = doc.addElement(ObjectKeys.AUDIT_TRAIL_HEADER);
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, 
+	        		DateFormat.SHORT, user.getLocale());
+			for (AuditTrail auditTrail : entriesToBeDeleted) {
+				Element entry = root.addElement(ObjectKeys.AUDIT_TRAIL_ENTRY);
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ZONE_ID, String.valueOf(zoneId));
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ID, auditTrail.getId());
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_TRANSACTION_TYPE, auditTrail.getAuditType().name());
+				if (auditTrail.getStartDate() != null) {
+					entry.addAttribute(ObjectKeys.AUDIT_TRAIL_START_DATE, df.format(auditTrail.getStartDate()));
+				}
+				if (auditTrail.getEndDate() != null) {
+					entry.addAttribute(ObjectKeys.AUDIT_TRAIL_END_DATE, df.format(auditTrail.getEndDate()));
+				}
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_START_BY, String.valueOf(auditTrail.getStartBy()));
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_END_BY, String.valueOf(auditTrail.getEndBy()));
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ENTITY_ID, String.valueOf(auditTrail.getEntityId()));
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ENTITY_TYPE, auditTrail.getEntityType());
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_OWNING_BINDER_ID, String.valueOf(auditTrail.getOwningBinderId()));
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_FILE_ID, auditTrail.getFileId());
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_DELETED_FOLDER_ENTRY_FAMILY, auditTrail.getDeletedFolderEntryFamily());
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_APPLICATION_ID, String.valueOf(auditTrail.getApplicationId()));
+				if (auditTrail.getDescription() != null) {
+					Element description = entry.addElement(ObjectKeys.AUDIT_TRAIL_DESCRIPTION);
+					description.setText(auditTrail.getDescription());
+				}
+				fw.write(entry.asXML() + "\n");
+				root.remove(entry);
+			}
+			fw.close();
+			fw = null;
+    	} catch(Exception e) {
+    	    logger.error("Could not append to AuditTrail log file: " + e.getMessage());
+    	    return false;
+    	} finally {
+    		if (fw != null) {
+    			try {
+					fw.close();
+				} catch (IOException e) {
+					logger.error("Failed to close file " + filename + " - " + e.getMessage());
+					return false;
+				}
+    		}
+    	}
+    	return true;
+    }
+
+    //Routine to append ChangeLog entries to a log file before they get deleted
+    public boolean writeChangeLogLogFile(List<ChangeLog> entriesToBeDeleted) {
+    	if (!SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.changeLog", false)) {
+    		//We are not saving the deleted records
+    		return true;
+    	}
+    	if (entriesToBeDeleted.isEmpty()) return true;
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		Calendar now = new GregorianCalendar();
+		String month = String.valueOf(now.MONTH);
+		String year = String.valueOf(now.YEAR);
+    	FileStore logFileStore = new FileStore(SPropsUtil.getString("data.databaselogs.dir"), "");
+		File logDir = new File(logFileStore.getRootPath() + File.separator + Utils.getZoneKey());
+		if (!logDir.exists() && !logDir.mkdirs()) {
+			logger.error("Cannot create " + logDir.getAbsolutePath());
+			return false;
+		}
+    	FileWriter fw = null;
+	    String filename= logDir + File.separator + "ChangeLogPruning-" + month + "-" + year + ".log";
+    	try {
+    	    fw = new FileWriter(filename, true); 		//the true will append the new data
+    	    
+	    	User user = RequestContextHolder.getRequestContext().getUser();
+			Document doc = DocumentHelper.createDocument();
+			Element root = doc.addElement(ObjectKeys.CHANGE_LOG_HEADER);
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, 
+	        		DateFormat.SHORT, user.getLocale());
+			for (ChangeLog changeLog : entriesToBeDeleted) {
+				Element entry = root.addElement(ObjectKeys.CHANGE_LOG_ENTRY);
+				entry.addAttribute(ObjectKeys.CHANGE_LOG_ZONE_ID, String.valueOf(zoneId));
+				entry.addAttribute(ObjectKeys.CHANGE_LOG_ID, changeLog.getId());
+				entry.addAttribute(ObjectKeys.CHANGE_LOG_OPERATION, changeLog.getOperation());
+				entry.addAttribute(ObjectKeys.CHANGE_LOG_ENTITY_ID, String.valueOf(changeLog.getEntityId()));
+				entry.addAttribute(ObjectKeys.CHANGE_LOG_ENTITY_TYPE, changeLog.getEntityType());
+				if (changeLog.getOperationDate() != null) {
+					entry.addAttribute(ObjectKeys.CHANGE_LOG_OPERATION_DATE, df.format(changeLog.getOperationDate()));
+				}
+				entry.addAttribute(ObjectKeys.CHANGE_LOG_DOC_NUMBER, changeLog.getDocNumber());
+				entry.addAttribute(ObjectKeys.CHANGE_LOG_USER_ID, String.valueOf(changeLog.getUserId()));
+				entry.addAttribute(ObjectKeys.CHANGE_LOG_USER_NAME, changeLog.getUserName());
+				if (changeLog.getDocument() != null) {
+	    			String xmlStr = XmlFileUtil.writeString(changeLog.getDocument(), OutputFormat.createCompactFormat());
+	    			Element xmlStrEle = entry.addElement(ObjectKeys.CHANGE_LOG_XML_STR);
+	    			xmlStrEle.setText(xmlStr);
+				}
+				fw.write(entry.asXML() + "\n");
+				root.remove(entry);
+			}
+			fw.close();
+			fw = null;
+    	} catch(Exception e) {
+    	    logger.error("Could not append to ChangeLog log file: " + e.getMessage());
+    	    return false;
+    	} finally {
+    		if (fw != null) {
+    			try {
+					fw.close();
+				} catch (IOException e) {
+					logger.error("Failed to close file " + filename + " - " + e.getMessage());
+					return false;
+				}
+    		}
+    	}
+    	return true;
+    }
 }

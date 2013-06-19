@@ -64,23 +64,23 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
   		
   		//This has been turned off until Filr V1.1
   		if (zoneConfig.getAuditTrailKeepDays() > 0) {
-  			//Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getAuditTrailKeepDays()*1000*60*60*24);
-  			//List entriesToBeDeleted = getCoreDao().getAuditTrailEntries(zoneId, purgeBeforeDate);
-  			//if (adminModule.writeAuditTrailLogFile(entriesToBeDeleted)) {
+  			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getAuditTrailKeepDays()*1000*60*60*24);
+  			List entriesToBeDeleted = getCoreDao().getAuditTrailEntries(zoneId, purgeBeforeDate);
+  			if (adminModule.writeAuditTrailLogFile(entriesToBeDeleted)) {
   				//The entries to be purged were safely logged to disk, so we can delete them from the database
-		  		//int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
-		  		//logger.info("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
-  			//}
+		  		int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
+		  		logger.info("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
+  			}
   		}
   		
   		if (zoneConfig.getChangeLogsKeepDays() > 0) {
-  			//Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getChangeLogsKeepDays()*1000*60*60*24);
-  			//List entriesToBeDeleted = getCoreDao().getChangeLogEntries(zoneId, purgeBeforeDate);
-  			//if (adminModule.writeChangeLogLogFile(entriesToBeDeleted)) {
+  			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getChangeLogsKeepDays()*1000*60*60*24);
+  			List entriesToBeDeleted = getCoreDao().getChangeLogEntries(zoneId, purgeBeforeDate);
+  			if (adminModule.writeChangeLogLogFile(entriesToBeDeleted)) {
   				//The entries to be purged were safely logged to disk, so we can delete them from the database
-  				//int changeLogsPurgeCount = getCoreDao().purgeChangeLogs(zoneId, purgeBeforeDate);
-  				//logger.info("Purged " + changeLogsPurgeCount + " records from the SS_ChangeLogs table");
-  			//}
+  				int changeLogsPurgeCount = getCoreDao().purgeChangeLogs(zoneId, purgeBeforeDate);
+  				logger.info("Purged " + changeLogsPurgeCount + " records from the SS_ChangeLogs table");
+  			}
   		}
 	}
 

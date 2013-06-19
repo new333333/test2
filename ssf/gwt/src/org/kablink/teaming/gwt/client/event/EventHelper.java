@@ -97,6 +97,7 @@ public class EventHelper {
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
 		case INVOKE_IMPORT_PROFILES_DLG:			reply = new InvokeImportProfilesDlgEvent();		  break;
 		case INVOKE_JITS_ZONE_CONFIG_DLG:			reply = new InvokeJitsZoneConfigDlgEvent();	  	  break;
+		case INVOKE_MANAGE_DATABASE_PRUNE_DLG:		reply = new InvokeManageDatabasePruneDlgEvent();  break;
 		case INVOKE_MANAGE_NET_FOLDERS_DLG:			reply = new InvokeManageNetFoldersDlgEvent();	  break;
 		case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	reply = new InvokeManageNetFolderRootsDlgEvent(); break;
 		case INVOKE_MANAGE_GROUPS_DLG:				reply = new InvokeManageGroupsDlgEvent();		  break;
@@ -1097,6 +1098,15 @@ public class EventHelper {
 					registrationHandler = InvokeJitsZoneConfigDlgEvent.registerEvent(
 																					eventBus,
 																					((InvokeJitsZoneConfigDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case INVOKE_MANAGE_DATABASE_PRUNE_DLG:
+				// An InvokeManageDatabasePruneDlgEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeManageDatabasePruneDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeManageDatabasePruneDlgEvent.registerEvent( eventBus, ((InvokeManageDatabasePruneDlgEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2528,6 +2538,7 @@ public class EventHelper {
 			case INVOKE_IMPORT_ICAL_URL:            	       hasHandler = (eventHandler instanceof InvokeImportIcalUrlEvent.Handler);                    break;
 			case INVOKE_IMPORT_PROFILES_DLG:				   hasHandler = (eventHandler instanceof InvokeImportProfilesDlgEvent.Handler);		           break;
 			case INVOKE_JITS_ZONE_CONFIG_DLG:			       hasHandler = (eventHandler instanceof InvokeJitsZoneConfigDlgEvent.Handler); 	           break;
+			case INVOKE_MANAGE_DATABASE_PRUNE_DLG:			   hasHandler = (eventHandler instanceof InvokeManageDatabasePruneDlgEvent.Handler); 	       break;
 			case INVOKE_MANAGE_NET_FOLDERS_DLG:			       hasHandler = (eventHandler instanceof InvokeManageNetFoldersDlgEvent.Handler); 	           break;
 			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	       hasHandler = (eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler);          break;
 			case INVOKE_MANAGE_GROUPS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		           break;

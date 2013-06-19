@@ -138,6 +138,7 @@ import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
+import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
@@ -2976,6 +2977,20 @@ public class GwtServerHelper {
 
 				adminAction = new GwtAdminAction();
 				adminAction.init( title, "", AdminAction.JITS_ZONE_CONFIG );
+				
+				// Add this action to the "management" category
+				managementCategory.addAdminOption( adminAction );
+			}
+
+			// Does the user have rights to "manage database pruning"? 
+			if ( (Utils.checkIfVibe() || Utils.checkIfFilrAndVibe() || Utils.checkIfKablink()) && 
+					adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_database_prune" );
+
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, "", AdminAction.MANAGE_DATABASE_PRUNE );
 				
 				// Add this action to the "management" category
 				managementCategory.addAdminOption( adminAction );
@@ -5907,6 +5922,26 @@ public class GwtServerHelper {
 		return gwtJitsZoneConfig;
 	}
 	
+	/**
+	 * Return a GwtDatabasePruneConfig object that holds the jits zone config data.
+	 * 
+	 * @return
+	 */
+	public static GwtDatabasePruneConfiguration getDatabasePruneConfiguration( AllModulesInjected allModules )
+	{
+		GwtDatabasePruneConfiguration gwtDatabasePruneConfig;
+		ZoneConfig zoneConfig;
+		ZoneModule zoneModule;
+		
+		zoneModule = allModules.getZoneModule();
+		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+		
+		gwtDatabasePruneConfig = new GwtDatabasePruneConfiguration();
+		gwtDatabasePruneConfig.setAuditTrailPruneAgeDays(zoneConfig.getAuditTrailKeepDays());
+		gwtDatabasePruneConfig.setChangeLogPruneAgeDays(zoneConfig.getChangeLogsKeepDays());
+		
+		return gwtDatabasePruneConfig;
+	}
 
 	/*
 	 * Parses a JSON data string and if valid, returns a JSONObject.
@@ -9335,6 +9370,7 @@ public class GwtServerHelper {
 		case GET_CLIPBOARD_USERS_FROM_LIST:
 		case GET_COLLECTION_POINT_DATA:
 		case GET_COLUMN_WIDTHS:
+		case GET_DATABASE_PRUNE_CONFIGURATION:
 		case GET_DATE_STR:
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		case GET_DEFAULT_FOLDER_DEFINITION_ID:
@@ -10087,6 +10123,19 @@ public class GwtServerHelper {
 
 		return Boolean.TRUE;
 	}
+	
+	/**
+	 * Execute the database prune command
+	 */
+	public static Boolean executeDatabasePruneCommand(
+		AllModulesInjected allModules,
+		GwtDatabasePruneConfiguration gwtDatabasePruneConfig ) throws GwtTeamingException
+	{
+		allModules.getAdminModule().setLogTableKeepDays(gwtDatabasePruneConfig.getAuditTrailPruneAgeDays(),
+				gwtDatabasePruneConfig.getChangeLogPruneAgeDays());
+		allModules.getAdminModule().purgeLogTablesImmediate();
+		return Boolean.TRUE;
+	}	
 	
 	/**
 	 * Stores the values from a ManageUsersState object in the session cache.

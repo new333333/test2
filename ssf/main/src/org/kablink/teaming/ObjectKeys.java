@@ -943,4 +943,38 @@ public interface ObjectKeys {
     // Must match values in GWT client's TagInfo class
     public final static String	HIDDEN_SHARED_BY_TAG	= "sharedByHidden";
     public final static String	HIDDEN_SHARED_WITH_TAG	= "sharedWithHidden";
+    
+    //AuditTrail log file XML fields
+    public final static String AUDIT_TRAIL_HEADER = "AuditTrail";
+    public final static String AUDIT_TRAIL_ENTRY = "AuditTrailEntry";
+    public final static String AUDIT_TRAIL_ZONE_ID = "zoneId";
+    public final static String AUDIT_TRAIL_ID = "id";
+    public final static String AUDIT_TRAIL_START_DATE = "startDate";
+    public final static String AUDIT_TRAIL_END_DATE = "endDate";
+    public final static String AUDIT_TRAIL_START_BY = "startBy";
+    public final static String AUDIT_TRAIL_END_BY = "endBy";
+    public final static String AUDIT_TRAIL_ENTITY_ID = "entityId";
+    public final static String AUDIT_TRAIL_ENTITY_TYPE = "entityType";
+    public final static String AUDIT_TRAIL_OWNING_BINDER_ID = "owningBinderId";
+    public final static String AUDIT_TRAIL_DESCRIPTION = "description";
+    public final static String AUDIT_TRAIL_TRANSACTION_TYPE = "transactionType";
+    public final static String AUDIT_TRAIL_FILE_ID = "fileId";
+    public final static String AUDIT_TRAIL_APPLICATION_ID = "applicationId";
+    public final static String AUDIT_TRAIL_DELETED_FOLDER_ENTRY_FAMILY = "deletedFolderEntryFamily";
+
+    //ChangeLog log file XML fields
+    public final static String CHANGE_LOG_HEADER = "ChangeLog";
+    public final static String CHANGE_LOG_ENTRY = "ChangeLogEntry";
+    public final static String CHANGE_LOG_ZONE_ID = "zoneId";
+    public final static String CHANGE_LOG_ID = "id";
+    public final static String CHANGE_LOG_OPERATION = "operation";
+    public final static String CHANGE_LOG_USER_NAME = "userName";
+    public final static String CHANGE_LOG_USER_ID = "userId";
+    public final static String CHANGE_LOG_OPERATION_DATE = "operationDate";
+    public final static String CHANGE_LOG_XML_STR = "xmlStr";
+    public final static String CHANGE_LOG_ENTITY_ID = "entityId";
+    public final static String CHANGE_LOG_ENTITY_TYPE = "entityType";
+    public final static String CHANGE_LOG_OWNING_BINDER_ID = "owningBinderId";
+    public final static String CHANGE_LOG_VERSION = "version";
+    public final static String CHANGE_LOG_DOC_NUMBER = "docNumber";
 }
