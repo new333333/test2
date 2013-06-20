@@ -4399,6 +4399,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{          
                 NamingEnumeration answer;
 
+                finished = true;
+                
                 // Specify the range of values to retrieve from the member attribute
 				range = start + "-" + finish;
 				String returnedAtts[] = {"member;Range=" + range};
@@ -4432,11 +4434,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
                             // check if we are finished
                 			id = attr.getID();
-                			if ( id == null || id.endsWith( "*" ) )
-                			{
-                				finished = true;
-                			}
-                			else
+                			if ( id != null && id.endsWith( "*" ) == false )
                 			{
                 				int dash;
                 				
@@ -4454,9 +4452,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
                 					index = Integer.valueOf( tmp );
                 					
                 					start = index + 1;
+                            		finish = start + step - 1;
+                            		finished = false;
                 				}
-                				else
-                					finished = true;
                 			}
 
                 			// Iterate through the values of the member attribute.
@@ -4476,8 +4474,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
                 				}
                             }
                 		}
-
-                		finish = start + step - 1;
                     }
 				}
 			}
