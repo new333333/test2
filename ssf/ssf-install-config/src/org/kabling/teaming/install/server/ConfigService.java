@@ -706,10 +706,6 @@ public final class ConfigService
 				config.setHostName(hsaElement.getAttribute("ha.service.hostname"));
 				config.setTitle(hsaElement.getAttribute("ha.service.title"));
 				config.setRmiPort(getIntegerValue(hsaElement.getAttribute("ha.service.rmi.port")));
-
-				config.setServerLogin(hsaElement.getAttribute("lucene.server.login"));
-				config.setServerPassword(hsaElement.getAttribute("lucene.server.password"));
-
 			}
 		}
 		return lucene;
@@ -1383,16 +1379,6 @@ public final class ConfigService
 				node.setAttribute("ha.service.title", searchNode.getTitle());
 				node.setAttribute("ha.service.hostname", searchNode.getHostName());
 				node.setAttribute("ha.service.rmi.port", String.valueOf(searchNode.getRmiPort()));
-
-				if (!searchNode.getServerLogin().isEmpty())
-				{
-					node.setAttribute("lucene.server.login", searchNode.getServerLogin());
-				}
-
-				if (!searchNode.getServerPassword().isEmpty())
-				{
-					node.setAttribute("lucene.server.password", searchNode.getServerPassword());
-				}
 
 				resourceElement.appendChild(node);
 			}
