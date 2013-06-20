@@ -1200,7 +1200,11 @@ public class EntryMenuPanel extends ToolPanelBase
 						if (GwtClientHelper.hasString(folderTargetIdS))
 						     folderTargetId = Long.parseLong(folderTargetIdS);
 						else folderTargetId = folderId;
-						event = new InvokeAddNewFolderEvent(folderTargetId, Long.parseLong(folderTemplateId));
+						boolean allowCloudFolder =
+							(GwtClientHelper.isCloudFoldersEnabled() &&
+							 m_binderInfo.isBinderCollection()       &&
+							 m_binderInfo.getCollectionType().isMyFiles());
+						event = new InvokeAddNewFolderEvent(folderTargetId, Long.parseLong(folderTemplateId), allowCloudFolder);
 						break;
 						
 					case SET_FOLDER_SORT:

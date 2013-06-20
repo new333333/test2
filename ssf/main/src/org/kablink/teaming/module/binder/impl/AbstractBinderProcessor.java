@@ -2523,6 +2523,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	EntityIndexUtils.addBinderHasResourceDriver(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsTopFolder(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderResourceDriverName( indexDoc, (Binder) entity, fieldsOnly );
+        	EntityIndexUtils.addBinderCloudFolderRoot( indexDoc, (Binder) entity, fieldsOnly );
         }
  
         // Add data fields driven by the entry's definition object. 
@@ -2819,7 +2820,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		entity.setModification(new HistoryStamp(user, date.getTime()));
 	}
 	
-    public void updateParentModTime(final Binder parentBinder, Map options) {
+    @Override
+	public void updateParentModTime(final Binder parentBinder, Map options) {
 		if(parentBinder != null && 
 				parentBinder.getInternalId() == null &&
 				!(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))) {
@@ -2829,5 +2831,4 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			indexBinder(parentBinder, false);
 		}
 	}
-
 }

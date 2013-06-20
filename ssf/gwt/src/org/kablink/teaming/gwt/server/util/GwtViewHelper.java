@@ -158,6 +158,7 @@ import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.CloudFolderType;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
@@ -246,6 +247,7 @@ import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.SearchTreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.CloudFolderHelper;
 import org.kablink.teaming.web.util.DashboardHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
@@ -539,32 +541,71 @@ public class GwtViewHelper {
 	 * @param binderId
 	 * @param folderTemplateId
 	 * @param folderName
+	 * @param cft
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static CreateFolderRpcResponseData addNewFolder(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long folderTemplateId, String folderName) throws GwtTeamingException {
+	public static CreateFolderRpcResponseData addNewFolder(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long folderTemplateId, String folderName, CloudFolderType cft) throws GwtTeamingException {
 		try {
 			// Allocate a response we can return.
 			CreateFolderRpcResponseData reply = new CreateFolderRpcResponseData(new ArrayList<ErrorInfo>());
 
 			try {
-				// Can we create the new folder?
-				final BinderModule bm = bs.getBinderModule();
-				final Long newId = bs.getTemplateModule().addBinder(folderTemplateId, binderId, folderName, null).getId();
-				if (bm.getBinder(newId) != null) {
-					
-					reply.setFolderId(newId);
-					reply.setFolderName(folderName);
-					
-					RunWithTemplate.runWith(new RunWithCallback() {
-						@Override
-						public Object runWith() {
-							bm.setTeamMembershipInherited(newId, true);			
-							return null;
+				// Are we to create a Cloud folder?
+				if (null == cft) {
+					// No!  Can we create the new folder?
+					final BinderModule bm = bs.getBinderModule();
+					final Long newId = bs.getTemplateModule().addBinder(folderTemplateId, binderId, folderName, null).getId();
+					if ((null != newId) && (null != bm.getBinder(newId))) {
+						reply.setFolderId(  newId     );
+						reply.setFolderName(folderName);
+						
+						RunWithTemplate.runWith(new RunWithCallback() {
+							@Override
+							public Object runWith() {
+								bm.setTeamMembershipInherited(newId, true);			
+								return null;
+							}
+						}, new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION}, null);
+					}
+				}
+				
+				else {
+					// Yes, we're to create a Cloud folder!  Synthesize
+					// a unique name for its Cloud Folder root...
+					User                 owner    = GwtServerHelper.getCurrentUser();
+					Long                 ownerId  = owner.getId();
+					String               rootName = (cft.name() + "." + ownerId);
+					int                  tries    = 0;
+					ResourceDriverConfig cfRoot;
+					while (true) {
+						String thisTry = ((0 == tries) ? rootName : (rootName + "." + (tries++)));
+						cfRoot = CloudFolderHelper.findCloudFolderRootByName(bs, thisTry);
+						if (null == cfRoot) {
+							rootName = thisTry;
+							break;
 						}
-					}, new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION}, null);
+					}
+					
+					// ...create its Cloud Folder root...					
+					Set<Long> memberIds = new HashSet<Long>();
+					memberIds.add(ownerId);
+					String uncPath = GwtCloudFolderHelper.getBaseUNCPathForService(cft);
+					CloudFolderHelper.createCloudFolderRoot(
+						bs,
+						rootName,
+						uncPath,
+						memberIds);
+					
+					// ...and if we can create the Cloud Folder itself...
+					Binder cfBinder = CloudFolderHelper.createCloudFolder(bs, owner, folderName, rootName, uncPath, binderId);
+					if (null != cfBinder) {
+						// ...return it's ID and name.
+						reply.setFolderId(  cfBinder.getId());
+						reply.setFolderName(folderName      );
+					}
 				}
 			}
 

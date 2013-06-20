@@ -60,6 +60,7 @@
 		allowShowPeople:					'${allowShowPeople}',
 		baseVibeUrl:						'<ssf:escapeJavaScript><ssf:url></ssf:url></ssf:escapeJavaScript>',
 		canSeeOtherUsers:					'<ssf:escapeJavaScript>${canSeeOtherUsers}</ssf:escapeJavaScript>',
+		cloudFoldersEnabled:				'${cloudFoldersEnabled}',
 		contentCss:							'<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>',
 		currentUserWorkspaceId:				'${ssUser.workspaceId}',
 		debugUI:							'${vibeUIDebug}',

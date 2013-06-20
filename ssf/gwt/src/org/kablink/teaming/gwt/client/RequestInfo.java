@@ -131,6 +131,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return true if Cloud Folders are enabled and false otherwise. 
+	 * 
+	 * @return
+	 */
+	public final native boolean isCloudFoldersEnabled()
+	/*-{
+		return this.getBFromS( this.cloudFoldersEnabled );
+	}-*/;
+	
+	/**
 	 * Return whether the UI should perform extra debug checking
 	 * on landing pages.
 	 * 

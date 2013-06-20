@@ -2807,7 +2807,10 @@ public class GwtMainPage extends ResizeComposite
 						@Override
 						public void execute()
 						{
-							showAddNewFolderDlgNow( event.getBinderId(), event.getFolderTemplateId() );
+							showAddNewFolderDlgNow(
+								event.getBinderId(),
+								event.getFolderTemplateId(),
+								event.isAllowCloudFolder() );
 						}// end execute()
 					} );
 				}// end onSuccess()
@@ -2818,7 +2821,10 @@ public class GwtMainPage extends ResizeComposite
 		{
 			// Yes, we've instantiated a add new file dialog already!
 			// Simply show it.
-			showAddNewFolderDlgNow( event.getBinderId(), event.getFolderTemplateId() );
+			showAddNewFolderDlgNow(
+				event.getBinderId(),
+				event.getFolderTemplateId(),
+				event.isAllowCloudFolder() );
 		}
 	}// end onInvokeAddNewFolder()
 	
@@ -4003,9 +4009,9 @@ public class GwtMainPage extends ResizeComposite
 	/*
 	 * Synchronously shows the add new file dialog.
 	 */
-	private void showAddNewFolderDlgNow(Long binderId, Long folderTemplateId)
+	private void showAddNewFolderDlgNow(Long binderId, Long folderTemplateId, boolean allowCloudFolder)
 	{
-		AddNewFolderDlg.initAndShow( m_addNewFolderDlg, binderId, folderTemplateId );
+		AddNewFolderDlg.initAndShow( m_addNewFolderDlg, binderId, folderTemplateId, allowCloudFolder );
 	}// end showAddNewFolderDlgNow()
 	
 	/**

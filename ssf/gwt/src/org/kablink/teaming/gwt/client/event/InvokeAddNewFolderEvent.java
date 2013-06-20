@@ -46,9 +46,10 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  */
 public class InvokeAddNewFolderEvent extends VibeEventBase<InvokeAddNewFolderEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
-    
-    public Long	m_binderId;			// The ID of the binder to create the new folder in.
-    public Long	m_folderTemplateId;	// The ID of the folder template to use to create the folder.
+
+    public boolean	m_allowCloudFolder;	//
+    public Long		m_binderId;			// The ID of the binder to create the new folder in.
+    public Long		m_folderTemplateId;	// The ID of the folder template to use to create the folder.
 
 	/**
 	 * Handler interface for this event.
@@ -70,14 +71,27 @@ public class InvokeAddNewFolderEvent extends VibeEventBase<InvokeAddNewFolderEve
 	 * 
 	 * @param binderId
 	 * @param folderTemplateId
+	 * @param allowCloudFolder
 	 */
-	public InvokeAddNewFolderEvent(Long binderId, Long folderTemplateId) {
+	public InvokeAddNewFolderEvent(Long binderId, Long folderTemplateId, boolean allowCloudFolder) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
+		setAllowCloudFolder(allowCloudFolder);
 		setBinderId(        binderId        );
 		setFolderTemplateId(folderTemplateId);
+	}
+
+	/**
+	 * Class constructor.
+	 * 
+	 * @param binderId
+	 * @param folderTemplateId
+	 */
+	public InvokeAddNewFolderEvent(Long binderId, Long folderTemplateId) {
+		// Initialize this object.
+		this(binderId, folderTemplateId, false);
 	}
 
 	/**
@@ -142,14 +156,16 @@ public class InvokeAddNewFolderEvent extends VibeEventBase<InvokeAddNewFolderEve
 	 * 
 	 * @return
 	 */
-	public Long getBinderId()         {return m_binderId;        }
-	public Long getFolderTemplateId() {return m_folderTemplateId;}
+	public boolean isAllowCloudFolder()  {return m_allowCloudFolder;}
+	public Long    getBinderId()         {return m_binderId;        }
+	public Long    getFolderTemplateId() {return m_folderTemplateId;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBinderId(        Long binderId)         {m_binderId         = binderId;        }
-	public void setFolderTemplateId(Long folderTemplateId) {m_folderTemplateId = folderTemplateId;}
+	public void setAllowCloudFolder(boolean allowCloudFolder) {m_allowCloudFolder = allowCloudFolder;}
+	public void setBinderId(        Long    binderId)         {m_binderId         = binderId;        }
+	public void setFolderTemplateId(Long    folderTemplateId) {m_folderTemplateId = folderTemplateId;}
 }
