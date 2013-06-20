@@ -58,6 +58,8 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.shared.AccessUtils;
+import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
@@ -68,6 +70,7 @@ import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
@@ -91,6 +94,15 @@ import java.net.URLEncoder;
 import java.util.*;
 
 public abstract class AbstractResource extends AbstractAllModulesInjected {
+
+    private static Set<WorkAreaOperation> ignoredOperations = new HashSet<WorkAreaOperation>() {
+        {
+            add(WorkAreaOperation.BINDER_ADMINISTRATION);
+            add(WorkAreaOperation.ADD_COMMUNITY_TAGS);
+            add(WorkAreaOperation.GENERATE_REPORTS);
+            add(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
+        }
+    };
 
     @javax.ws.rs.core.Context
     ServletContext context;
@@ -1420,13 +1432,13 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         AccessControlManager accessControlManager = getAccessControlManager();
         User loggedInUser = getLoggedInUser();
 
-        ShareItem.Role foundRole = null;
+        ShareItem.Role foundRole = ShareItem.Role.NONE;
         ShareItem.Role [] roles = new ShareItem.Role[] {ShareItem.Role.EDITOR, ShareItem.Role.VIEWER};
         for (ShareItem.Role role : roles) {
             WorkAreaOperation[] rights = role.getWorkAreaOperations();
             boolean match = true;
             for (WorkAreaOperation operation : rights) {
-                if (!accessControlManager.testOperation(loggedInUser, entry, operation)) {
+                if (!ignoredOperations.contains(operation) && !testOperation(loggedInUser, entry, operation)) {
                     match = false;
                     break;
                 }
@@ -1438,25 +1450,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
 
         Access access = new Access();
-        SharingPermission sharing = new SharingPermission();
-        access.setSharing(sharing);
-        if (foundRole!=null) {
-            access.setRole(foundRole.name());
-            if (accessControlManager.testOperation(loggedInUser, entry, WorkAreaOperation.ALLOW_SHARING_FORWARD)) {
-                sharing.setInternal(accessControlManager.testOperation(loggedInUser, entry, WorkAreaOperation.ALLOW_SHARING_INTERNAL));
-                sharing.setExternal(accessControlManager.testOperation(loggedInUser, entry, WorkAreaOperation.ALLOW_SHARING_EXTERNAL));
-                sharing.setPublic(accessControlManager.testOperation(loggedInUser, entry, WorkAreaOperation.ALLOW_SHARING_PUBLIC));
-            } else {
-                sharing.setInternal(false);
-                sharing.setExternal(false);
-                sharing.setPublic(false);
-            }
-        } else {
-            access.setRole(ShareItem.Role.NONE.name());
-            sharing.setInternal(false);
-            sharing.setExternal(false);
-            sharing.setPublic(false);
-        }
+        access.setRole(foundRole.name());
+        access.setSharing(getSharingPermission(entry, foundRole));
 
         return access;
     }
@@ -1465,13 +1460,14 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         AccessControlManager accessControlManager = getAccessControlManager();
         User loggedInUser = getLoggedInUser();
 
-        ShareItem.Role foundRole = null;
+        ShareItem.Role foundRole = ShareItem.Role.NONE;
         ShareItem.Role [] roles = new ShareItem.Role[] {ShareItem.Role.CONTRIBUTOR, ShareItem.Role.EDITOR, ShareItem.Role.VIEWER};
         for (ShareItem.Role role : roles) {
             WorkAreaOperation[] rights = role.getWorkAreaOperations();
             boolean match = true;
             for (WorkAreaOperation operation : rights) {
-                if (!accessControlManager.testOperation(loggedInUser, binder, operation)) {
+                if (!ignoredOperations.contains(operation) &&
+                        !accessControlManager.testOperation(loggedInUser, binder, operation)) {
                     match = false;
                     break;
                 }
@@ -1483,27 +1479,39 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
 
         Access access = new Access();
+        access.setRole(foundRole.name());
+        access.setSharing(getSharingPermission(binder, foundRole));
+
+        return access;
+    }
+
+    private SharingPermission getSharingPermission(org.kablink.teaming.domain.DefinableEntity entity, ShareItem.Role role) {
         SharingPermission sharing = new SharingPermission();
-        access.setSharing(sharing);
-        if (foundRole!=null) {
-            access.setRole(foundRole.name());
-            if (accessControlManager.testOperation(loggedInUser, binder, WorkAreaOperation.ALLOW_SHARING_FORWARD)) {
-                sharing.setInternal(accessControlManager.testOperation(loggedInUser, binder, WorkAreaOperation.ALLOW_SHARING_INTERNAL));
-                sharing.setExternal(accessControlManager.testOperation(loggedInUser, binder, WorkAreaOperation.ALLOW_SHARING_EXTERNAL));
-                sharing.setPublic(accessControlManager.testOperation(loggedInUser, binder, WorkAreaOperation.ALLOW_SHARING_PUBLIC));
+        if (role != ShareItem.Role.NONE) {
+            SharingModule sharingModule = getSharingModule();
+            if (sharingModule.testShareEntityForward(entity)) {
+                sharing.setInternal(sharingModule.testAddShareEntityInternal(entity));
+                sharing.setExternal(sharingModule.testAddShareEntityExternal(entity));
+                sharing.setPublic(sharingModule.testAddShareEntityPublic(entity));
             } else {
                 sharing.setInternal(false);
                 sharing.setExternal(false);
                 sharing.setPublic(false);
             }
         } else {
-            access.setRole(ShareItem.Role.NONE.name());
             sharing.setInternal(false);
             sharing.setExternal(false);
             sharing.setPublic(false);
         }
-
-        return access;
+        return sharing;
     }
 
+    private boolean testOperation(User user, FolderEntry entry, WorkAreaOperation operation) {
+        try {
+            AccessUtils.operationCheck(user, entry, operation);
+            return true;
+        } catch (AccessControlException e) {
+            return false;
+        }
+    }
 }
