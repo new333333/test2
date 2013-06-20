@@ -818,6 +818,19 @@ public class GwtClientHelper {
 	}
 	
 	/**
+	 * Returns true if Cloud Folders are enabled and false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isCloudFoldersEnabled() {
+		RequestInfo ri = getRequestInfo();
+		if (null == ri) {
+			return false;
+		}
+		return ri.isCloudFoldersEnabled();
+	}
+	
+	/**
 	 * Returns true if the control key is currently pressed and false
 	 * otherwise.
 	 * 

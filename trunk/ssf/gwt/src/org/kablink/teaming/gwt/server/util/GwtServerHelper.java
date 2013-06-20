@@ -306,6 +306,7 @@ import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
+import org.kablink.teaming.web.util.CloudFolderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -4023,14 +4024,15 @@ public class GwtServerHelper {
 	public static BinderInfo getBinderInfo(HttpServletRequest request, AllModulesInjected bs, Binder binder) {
 		// Allocate a BinderInfo and store the core binder information.
 		BinderInfo reply = new BinderInfo();
-		                                    reply.setBinderId(     binder.getId()                                 );
-		                                    reply.setBinderTitle(  binder.getTitle()                              );
-		                                    reply.setFolderHome(   binder.isHomeDir()                             );
-		                                    reply.setLibrary(      binder.isLibrary()                             );
-		                                    reply.setEntityType(   getBinderEntityType(                   binder ));
-		                                    reply.setBinderType(   getBinderType(                         binder ));
-		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderTypeFromViewDef(bs, ((Folder) binder)));
-		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(getWorkspaceType(                      binder ));
+		                                    reply.setBinderId(       binder.getId()                                 );
+		                                    reply.setBinderTitle(    binder.getTitle()                              );
+		                                    reply.setFolderHome(     binder.isHomeDir()                             );
+		                                    reply.setLibrary(        binder.isLibrary()                             );
+		                                    reply.setEntityType(     getBinderEntityType(                   binder ));
+		                                    reply.setBinderType(     getBinderType(                         binder ));
+		                                    reply.setCloudFolderRoot(CloudFolderHelper.getCloudFolderRoot(  binder ));
+		if      (reply.isBinderFolder())    reply.setFolderType(     getFolderTypeFromViewDef(bs, ((Folder) binder)));
+		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(  getWorkspaceType(                      binder ));
 		try
 		{
 			Binder binderParent = binder.getParentBinder();
@@ -9700,12 +9702,16 @@ public class GwtServerHelper {
 				try {
 					// ...purging each entity...
 					if (entityId.isBinder()) {
-						Long binderId = entityId.getEntityId();
-						if (BinderHelper.isBinderHomeFolder(bm.getBinder(binderId))) {
+						Long   binderId = entityId.getEntityId();
+						Binder binder   = bm.getBinder(binderId);
+						if (BinderHelper.isBinderHomeFolder(binder)) {
 							// ...except Home folders which cannot...
 							// ...be purged...
 							String entryTitle = getEntityTitle(bs, entityId);
 							reply.addError(NLT.get("purgeEntryError.AccssControlException", new String[]{entryTitle}));
+						}
+						else if (CloudFolderHelper.isCloudFolder(binder)) {
+							CloudFolderHelper.deleteCloudFolder(bs, ((Folder) binder), deleteMirroredSource);
 						}
 						else {
 							bm.deleteBinder(binderId, deleteMirroredSource, null);
@@ -9713,7 +9719,7 @@ public class GwtServerHelper {
 					}
 					
 					else {
-						fm.deleteEntry(entityId.getBinderId(), entityId.getEntityId()                            );
+						fm.deleteEntry(entityId.getBinderId(), entityId.getEntityId());
 					}
 				}
 				

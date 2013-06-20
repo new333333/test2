@@ -335,6 +335,7 @@ public interface ObjectKeys {
     public static final String BINDER_PROPERTY_TASK_ID = "taskId";
     public static final String BINDER_PROPERTY_TASK_MODIFIED = "taskModified";
     public static final String BINDER_PROPERTY_TASK_EXPAND_GRAPHS = "taskExpandGraphs";
+    public static final String BINDER_PROPERTY_CLOUD_FOLDER_ROOT = "cloudFolderRoot";
     
     // Global properties
     public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "defaultLocale";

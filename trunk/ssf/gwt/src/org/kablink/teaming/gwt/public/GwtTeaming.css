@@ -4083,11 +4083,13 @@ td.datePickerMonth {
 .vibe-aboutBox {z-index: 1001;}
 
 /* Start:  Add new folder dialog styles. */
-	.vibe-addNewFolderDlg_Label     {}
-	.vibe-addNewFolderDlg_NameInput {width: 250px;}
-	.vibe-addNewFolderDlg_NameLabel {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
-	.vibe-addNewFolderDlg_NamePanel {}
-	.vibe-addNewFolderDlg_Panel     {padding: 10px;}
+	.vibe-addNewFolderDlg_Grid       {}
+	.vibe-addNewFolderDlg_Label      {}
+	.vibe-addNewFolderDlg_NameInput  {width: 250px;}
+	.vibe-addNewFolderDlg_NameLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-addNewFolderDlg_Panel      {padding: 10px;}
+	.vibe-addNewFolderDlg_TypeLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-addNewFolderDlg_TypeSelect {width: 250px;}
 /* End:  Add new folder dialog styles. */
 
 /* Start:  Calendar settings dialog styles. */

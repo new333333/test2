@@ -34,6 +34,7 @@ package org.kablink.teaming.web.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,6 +55,7 @@ import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.resourcedriver.RDException;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -61,15 +63,15 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 
 /**
- * Helper class dealing with cloud folders.
+ * Helper class dealing with Cloud Folders.
  * 
  * @author drfoster@novell.com
  */
 public class CloudFolderHelper {
 	protected static Log m_logger = LogFactory.getLog(CloudFolderHelper.class);
 
-	// Until this is all working and we decide to ship it, cloud
-	// folders default to being turned off.
+	// Until this is all working and we decide to ship it, Cloud
+	// Folders default to being turned off.
 	public static final boolean CLOUD_FOLDERS_ENABLED = SPropsUtil.getBoolean("cloud.folders.enabled", false);
 
 	/*
@@ -81,7 +83,7 @@ public class CloudFolderHelper {
 	}
 
 	/**
-	 * Create a cloud folder from the given data.
+	 * Create a Cloud Folder from the given data.
 	 * 
 	 * @param bs
 	 * @param owner
@@ -105,7 +107,7 @@ public class CloudFolderHelper {
 			throws
 				WriteFilesException,
 				WriteEntryDataException {
-		// Find the template binder for cloud folders.
+		// Find the template binder for Cloud Folders.
 		Long templateId = null;
 		List<TemplateBinder> listOfTemplateBinders = bs.getTemplateModule().getTemplates(true);
 		if (MiscUtil.hasItems(listOfTemplateBinders)) {
@@ -118,8 +120,10 @@ public class CloudFolderHelper {
 			}
 		}
 
+		// Did we find the template?
 		Binder binder;
-		if (null != templateId) {			
+		if (null != templateId) {
+			// Yes!  Can we create the Cloud Folder?
 			binder = bs.getFolderModule().createCloudFolder(
 				templateId,
 				parentBinderId,
@@ -127,18 +131,41 @@ public class CloudFolderHelper {
 				owner,
 				rootName,
 				uncPath);
+			
+			if (null != binder) {
+				// Yes!  Store its Cloud Folder root name in its
+				// properties...
+				Long binderId = binder.getId();
+				bs.getBinderModule().setProperty(
+					binderId,
+					ObjectKeys.BINDER_PROPERTY_CLOUD_FOLDER_ROOT,
+					rootName);
+				
+				// ...turn on JITS on it...
+				saveJitsSettings(
+					bs,
+					binderId,
+					true,
+					getDefaultJitsAclMaxAge(),
+					getDefaultJitsResultsMaxAge());
+				
+				// ...and set it to NOT inherit rights from it's parent.
+				bs.getAdminModule().setWorkAreaFunctionMembershipInherited(
+					binder,
+					false);	// false -> Don't inherit.			
+			}
 		}
 		
 		else {
 			binder = null;
-			m_logger.error("CloudFolderHelper.createCloudFolder():  Could not find the template binder for a cloud folder");
+			m_logger.error("CloudFolderHelper.createCloudFolder():  Could not find the template binder for a Cloud Folder");
 		}
 		
 		return binder;
 	}
 
 	/**
-	 * Create a cloud folder root from the given data.
+	 * Create a Cloud Folder root from the given data.
 	 * 
 	 * @param bs
 	 * @param name
@@ -157,7 +184,7 @@ public class CloudFolderHelper {
 		Set<Long>			memberIds)
 			throws
 				RDException {
-		// Does a cloud folder root already exist with the give name?
+		// Does a Cloud Folder root already exist with the give name?
 		if (null != findCloudFolderRootByName(bs, name)) {
 			// Yes!  Do not allow this.
 			throw
@@ -186,18 +213,32 @@ public class CloudFolderHelper {
 	}
 
 	/**
-	 * Delete the given cloud folder.
+	 * Delete the given Cloud Folder.
 	 * 
 	 * @param bs
 	 * @param id
+	 * @param rootName
 	 * @param deleteSource
 	 */
-	public static void deleteCloudFolder(AllModulesInjected bs, Long id, boolean deleteSource) {
+	public static void deleteCloudFolder(AllModulesInjected bs, Long id, String rootName, boolean deleteSource) {
 		bs.getFolderModule().deleteCloudFolder(id, deleteSource);
+		bs.getResourceDriverModule().deleteResourceDriver(rootName);
 	}
 
 	/**
-	 * Finds a cloud folder root with the give ID.
+	 * Delete the given Cloud Folder.
+	 * 
+	 * @param bs
+	 * @param folder
+	 * @param deleteSource
+	 */
+	public static void deleteCloudFolder(AllModulesInjected bs, Folder folder, boolean deleteSource) {
+		// Always use the initial form of the method.
+		deleteCloudFolder(bs, folder.getId(), getCloudFolderRoot(folder), deleteSource);
+	}
+
+	/**
+	 * Finds a Cloud Folder root with the give ID.
 	 * 
 	 * @param bs
 	 * @param id
@@ -219,13 +260,13 @@ public class CloudFolderHelper {
 			}
 		}
 		
-		// If we get here we did not find a cloud folder root with the
+		// If we get here we did not find a Cloud Folder root with the
 		// given ID.
 		return null;
 	}
 
 	/**
-	 * Finds a cloud folder root with the give server UNC.
+	 * Finds a Cloud Folder root with the give server UNC.
 	 * 
 	 * @param bs
 	 * @param serverUNC
@@ -247,13 +288,13 @@ public class CloudFolderHelper {
 			}
 		}
 		
-		// If we get here we did not find a cloud folder root with the
+		// If we get here we did not find a Cloud Folder root with the
 		// given UNC.
 		return null;
 	}
 	
 	/**
-	 * Finds a cloud folder root with the given name.
+	 * Finds a Cloud Folder root with the given name.
 	 * 
 	 * @param bs
 	 * @param name
@@ -275,14 +316,14 @@ public class CloudFolderHelper {
 			}
 		}
 		
-		// If we get here we did not find a cloud folder root with the
+		// If we get here we did not find a Cloud Folder root with the
 		// given name.
 		return null;
 	}
 	
 	/**
-	 * Return all the cloud folders that are associated with the given
-	 * cloud folder server.
+	 * Return all the Cloud Folders that are associated with the given
+	 * Cloud Folder server.
 	 * 
 	 * @param bs
 	 * @param rootName
@@ -291,7 +332,7 @@ public class CloudFolderHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Long> getAllCloudFolders(AllModulesInjected bs, String rootName) {
-		// Add the criteria for finding all top-level cloud folders.
+		// Add the criteria for finding all top-level Cloud Folders.
 		FilterControls filterCtrls = new FilterControls();
 		filterCtrls.add(ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE);
 		if (MiscUtil.hasString(rootName)) {
@@ -299,11 +340,11 @@ public class CloudFolderHelper {
 		}
 		filterCtrls.add(ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.FALSE);
 
-		// Get the list of cloud folders for the given criteria.
+		// Get the list of Cloud Folders for the given criteria.
 		List<Long> listOfCloudFolderIds = new ArrayList<Long>();
 		List<Folder> results = getCoreDao().loadObjects(Folder.class, filterCtrls, RequestContextHolder.getRequestContext().getZone().getId());
 		if (MiscUtil.hasItems(results)) {
-			// We only want to return top-level cloud folders.
+			// We only want to return top-level Cloud Folders.
 			for (Folder nextFolder:  results) {
 				if (nextFolder.isTop() && (!(nextFolder.isDeleted()))) {
 					listOfCloudFolderIds.add(nextFolder.getId());
@@ -314,15 +355,58 @@ public class CloudFolderHelper {
 		return listOfCloudFolderIds;
 	}
 	
+	/**
+	 * If a binder is a Cloud Folder, returns the name of its Cloud
+	 * Folder root.  Otherwise, returns null.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static String getCloudFolderRoot(Binder binder) {
+		boolean isCloudFolder = ((null != binder) && (binder instanceof Folder) && binder.isAclExternallyControlled());
+		String reply = null;
+		if (isCloudFolder) {
+			String cfRoot = ((String) binder.getProperty(ObjectKeys.BINDER_PROPERTY_CLOUD_FOLDER_ROOT));
+			if (MiscUtil.hasString(cfRoot)) {
+				reply = cfRoot;
+			}
+		}
+		return reply;
+	}
+	
 	/*
 	 * Returns a CoreDao object. 
 	 */
 	private static CoreDao getCoreDao() {
 		return ((CoreDao) SpringContextUtil.getBean("coreDao"));
 	}
+
+	/*
+	 */
+	private static long getDefaultJitsAclMaxAge() {
+		return SPropsUtil.getLong("nf.jits.acl.max.age", 60000L);
+	}
+	
+	/*
+	 */
+	private static long getDefaultJitsResultsMaxAge() {
+		return SPropsUtil.getLong("nf.jits.max.age", 30000L);
+	}
 	
 	/**
-	 * Modifies a cloud folder.
+	 * Returns true if a binder is a Cloud Folder and false otherwise.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static boolean isCloudFolder(Binder binder) {
+		return MiscUtil.hasString(getCloudFolderRoot(binder));
+	}
+	
+	/**
+	 * Modifies a Cloud Folder.
 	 * 
 	 * @param bs
 	 * @param id
@@ -344,7 +428,7 @@ public class CloudFolderHelper {
 				AccessControlException,
 				WriteFilesException,
 				WriteEntryDataException {
-		// Modify the binder with the cloud folder information.
+		// Modify the binder with the Cloud Folder information.
 		bs.getFolderModule().modifyCloudFolder(
 			id,
 			name,
@@ -353,17 +437,17 @@ public class CloudFolderHelper {
 	}
 
 	/**
-	 * Modifies a cloud folder root.
+	 * Modifies a Cloud Folder root.
 	 * 
 	 * @param bs
 	 * @param rootName
 	 * @param uncPath
-	 * @param listOfPrincipals
+	 * @param memberIds
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static ResourceDriverConfig modifyCloudFolderRoot(AllModulesInjected bs, String rootName, String uncPath, Set<Long> listOfPrincipals) {
+	public static ResourceDriverConfig modifyCloudFolderRoot(AllModulesInjected bs, String rootName, String uncPath, Set<Long> memberIds) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE);
 
@@ -372,18 +456,37 @@ public class CloudFolderHelper {
 		// deleted if the external disk was off line
 		options.put(ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE);
 
-		// Modify the resource driver
+		// Modify the resource driver...
 		ResourceDriverConfig rdConfig = ResourceDriverManagerUtil.getResourceDriverManager().getDriverConfig(rootName);
 		rdConfig = bs.getResourceDriverModule().modifyResourceDriver(
 			rootName,
 			DriverType.common_services, 
 			uncPath,
-			listOfPrincipals,
+			memberIds,
 			options);
 
-		// Is the configuration complete?
-		rdConfig = ResourceDriverManagerUtil.getResourceDriverManager().getDriverConfig(rootName);
-
+		// ...and return it.
 		return rdConfig;
+	}
+	
+	/*
+	 * Save the JITS settings for the given binder.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void saveJitsSettings(AllModulesInjected	bs, Long binderId, boolean jitsEnabled, long aclMaxAge, long resultsMaxAge) {
+		if (null != binderId) {
+			Map formData   = new HashMap();
+			formData.put(ObjectKeys.FIELD_BINDER_JITS_ENABLED,         Boolean.toString(jitsEnabled)  );
+			formData.put(ObjectKeys.FIELD_BINDER_JITS_ACL_MAX_AGE,     String.valueOf(  aclMaxAge)    );
+			formData.put(ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE, String.valueOf(  resultsMaxAge));
+			MapInputData mid = new MapInputData(formData);
+
+			try {
+				bs.getBinderModule().modifyBinder(binderId, mid, new HashMap(), new HashSet(), null);
+			}
+			catch (Exception ex) {
+				m_logger.error("CloudFolderHelper.saveJitsSettings():  Call to modifyBinder() failed. " + ex.toString());
+			}
+		}
 	}
 }

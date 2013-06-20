@@ -1469,6 +1469,12 @@ public class GwtUIHelper {
 		// Put out the ID of the top Vibe workspace.
 		String topWSId = getTopWSIdSafely(bs);
 		model.put("topWSId", topWSId);
+		
+		// Put out the flag indicating whether cloud folders are
+		// enabled.
+		model.put(
+			WebKeys.CLOUD_FOLDERS_ENABLED,
+			(Utils.checkIfFilr() && CloudFolderHelper.CLOUD_FOLDERS_ENABLED));
 
 		// Is the request to activate an activity stream? 
 		String	showWhatsNewS        = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");

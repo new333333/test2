@@ -91,6 +91,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.CloudFolderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.StringUtil;
@@ -1469,5 +1470,17 @@ public class EntityIndexUtils {
     		path = FieldFactory.createFieldStoredNotAnalyzed( RESOURCE_DRIVER_NAME_FIELD, binder.getResourceDriverName() );
     		doc.add( path );
     	}
+    }
+    
+    /**
+     * If a binder is a Cloud Folder, adds the name if it Cloud Folder
+     * root to the index.
+     */
+    public static void addBinderCloudFolderRoot(Document doc, Binder binder, boolean fieldsOnly) {
+		String cfRoot = CloudFolderHelper.getCloudFolderRoot(binder);
+		if (MiscUtil.hasString(cfRoot)) {
+			Field path = FieldFactory.createFieldStoredNotAnalyzed(RESOURCE_DRIVER_NAME_FIELD, cfRoot);
+			doc.add(path);
+		}
     }
 }

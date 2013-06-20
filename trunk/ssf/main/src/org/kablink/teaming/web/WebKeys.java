@@ -105,6 +105,7 @@ public class WebKeys {
     public static final String IS_FORM_LOGIN_ALLOWED = "isFormLoginAllowed";
     public static final String JSP_NAME = "jspName";
     public static final String CONFIG_STRING = "configStr";
+    public static final String CLOUD_FOLDERS_ENABLED = "cloudFoldersEnabled";
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";

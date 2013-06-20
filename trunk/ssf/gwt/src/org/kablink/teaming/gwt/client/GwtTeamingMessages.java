@@ -975,6 +975,12 @@ public interface GwtTeamingMessages extends Messages
 	String addNewFolderDlgError_NoName();
 	String addNewFolderDlgHeader();
 	String addNewFolderDlgName();
+	String addNewFolderDlgType();
+	String addNewFolderDlg_Type_BoxDotNet();
+	String addNewFolderDlg_Type_DropBox();
+	String addNewFolderDlg_Type_GoogleDrive();
+	String addNewFolderDlg_Type_PersonalStorage();
+	String addNewFolderDlg_Type_SkyDrive();
 
 	// Strings used by the 'Calendar Settings' dialog.
 	String calendarSettingsDlg_Day_Sunday();
