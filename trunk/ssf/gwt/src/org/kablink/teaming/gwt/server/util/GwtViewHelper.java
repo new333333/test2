@@ -562,13 +562,16 @@ public class GwtViewHelper {
 						reply.setFolderId(  newId     );
 						reply.setFolderName(folderName);
 						
-						RunWithTemplate.runWith(new RunWithCallback() {
-							@Override
-							public Object runWith() {
-								bm.setTeamMembershipInherited(newId, true);			
-								return null;
-							}
-						}, new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION}, null);
+						RunWithTemplate.runWith(
+							new RunWithCallback() {
+								@Override
+								public Object runWith() {
+									bm.setTeamMembershipInherited(newId, true);			
+									return null;
+								}
+							},
+							new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION},
+							null);
 					}
 				}
 				
@@ -581,7 +584,8 @@ public class GwtViewHelper {
 					int                  tries    = 0;
 					ResourceDriverConfig cfRoot;
 					while (true) {
-						String thisTry = ((0 == tries) ? rootName : (rootName + "." + (tries++)));
+						String thisTry = ((0 == tries) ? rootName : (rootName + "." + tries));
+						tries += 1;
 						cfRoot = CloudFolderHelper.findCloudFolderRootByName(bs, thisTry);
 						if (null == cfRoot) {
 							rootName = thisTry;

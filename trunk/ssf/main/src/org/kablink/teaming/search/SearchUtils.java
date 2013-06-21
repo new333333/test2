@@ -840,11 +840,18 @@ public class SearchUtils {
 	                conj.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
 	                disj.add(conj);
 	
-	                // ...or configured mirrored File Home Folders.
+	                // ...or configured mirrored File Home Folders...
 	                conj = conjunction();
 	                conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
 	                conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
 	                conj.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
+	                disj.add(conj);
+	                
+	                // ...or configured mirrored File Cloud Folders...
+	                conj = conjunction();
+	                conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+	                conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+	                conj.add(in(Constants.IS_CLOUD_FOLDER_FIELD,     new String[]{Constants.TRUE}));
 	                disj.add(conj);
 	            }
 	            if (hasMFContainerId) {
@@ -1525,7 +1532,7 @@ public class SearchUtils {
 	
     public static Document buildExcludeFilter(String name, String value) {
         Document searchFilter;
-        Element rootElement, orElement;
+        Element rootElement;
         Element field;
         Element child;
 
