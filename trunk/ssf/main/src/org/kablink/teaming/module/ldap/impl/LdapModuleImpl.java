@@ -32,6 +32,7 @@
  */
 
 package org.kablink.teaming.module.ldap.impl;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,8 +64,11 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
+import javax.naming.ldap.PagedResultsControl;
+import javax.naming.ldap.PagedResultsResponseControl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -618,7 +622,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			Attributes attrs;
 			Attribute attrib;
 
-			logger.debug( "\t\tin readHomeDirInfo() for user: " + userDn );
+			logger.debug( "\t\tin readHomeDirInfoFromLdap() for user: " + userDn );
 			
 			attributeNames = new String[3];
 			attributeNames[0] = HOME_DRIVE_ATTRIBUTE;
@@ -1421,7 +1425,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							if ( usersToUpdate.size() > 99 )
 							{
 								logger.info( "about to call updateUsers()" );
-								updateUsers( ldapContext, zoneId, usersToUpdate, null, modifiedUsersSyncResults );
+								updateUsers( zoneId, usersToUpdate, null, modifiedUsersSyncResults );
 								logger.info( "back from updateUsers()" );
 								
 								usersToUpdate.clear();
@@ -1438,7 +1442,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		// Update the users with the guid from the ldap directory.
 		logger.info( "about to call updateUsers()" );
-		updateUsers( ldapContext, zoneId, usersToUpdate, null, modifiedUsersSyncResults );
+		updateUsers( zoneId, usersToUpdate, null, modifiedUsersSyncResults );
 		logger.info( "back from updateUsers()" );
 		
     }// end syncGuidAttributeForAllUsers()
@@ -3221,7 +3225,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		private LdapSyncResults	m_ldapSyncResults;	// Store the results of the sync here.
 
-		private LdapContext m_ldapCtx;
 		private LdapConnectionConfig m_ldapConfig;
 		
 		public UserCoordinator(
@@ -3435,10 +3438,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					if ( Utils.checkIfFilr() )
 					{
 						HomeDirInfo homeDirInfo;
-						LdapDirType dirType;
 						
-						dirType = getLdapDirType( m_ldapConfig.getLdapGuidAttribute() );
-						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, dirType, dn, true );
+						homeDirInfo = readHomeDirInfoFromDirectory( dn, dn, true );
 						ldap_existing_homeDirInfo.put( (Long)row[PRINCIPAL_ID], homeDirInfo );
 					}
 				}
@@ -3491,10 +3492,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					if ( Utils.checkIfFilr() )
 					{
 						HomeDirInfo homeDirInfo;
-						LdapDirType dirType;
 						
-						dirType = getLdapDirType( m_ldapConfig.getLdapGuidAttribute() );
-						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, dirType, dn, true );
+						homeDirInfo = readHomeDirInfoFromDirectory( ssName, ssName, true );
 						ldap_new_homeDirInfo.put( ssName.toLowerCase(), homeDirInfo );
 					}
 				}
@@ -3514,7 +3513,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					syncResults = m_ldapSyncResults.getModifiedUsers();
 				}
-				updateUsers( m_ldapCtx, zoneId, ldap_existing, ldap_existing_homeDirInfo, syncResults );
+				updateUsers( zoneId, ldap_existing, ldap_existing_homeDirInfo, syncResults );
 				ldap_existing.clear();
 				ldap_existing_homeDirInfo.clear();
 			}
@@ -3551,14 +3550,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			m_ldapConfig = config;
 		}
 		
-		/**
-		 * 
-		 */
-		public void setLdapContext( LdapContext ldapCtx )
-		{
-			m_ldapCtx = ldapCtx;
-		}
-		
 		public Map wrapUp( boolean doCleanup )
 		{
 			if (!ldap_existing.isEmpty()) {
@@ -3571,7 +3562,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					syncResults = m_ldapSyncResults.getModifiedUsers();
 				}
-				updateUsers( m_ldapCtx, zoneId, ldap_existing, ldap_existing_homeDirInfo, syncResults );
+				updateUsers( zoneId, ldap_existing, ldap_existing_homeDirInfo, syncResults );
 			}
 			
 			if (!ldap_new.isEmpty()) {
@@ -3675,7 +3666,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							syncResults = m_ldapSyncResults.getModifiedUsers();
 						}
 						
-						updateUsers( m_ldapCtx, zoneId, users, null, syncResults );
+						updateUsers( zoneId, users, null, syncResults );
 						
 						// Disable the users no longer found in ldap that once existed in ldap.
 						disableUsers( users );
@@ -3711,12 +3702,36 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	
 		return hasMore;
 	}
-	
+
+	/**
+	 * 
+	 */
+	private byte[] parseControls( Control[] controls ) throws NamingException
+	{
+		byte[] cookie = null;
+
+		if ( controls != null )
+		{
+			for (int i = 0; i < controls.length; i++)
+			{
+				if ( controls[i] instanceof PagedResultsResponseControl )
+				{
+					PagedResultsResponseControl prrc = (PagedResultsResponseControl) controls[i];
+
+					cookie = prrc.getCookie();
+				}
+			}
+		}
+
+		return (cookie == null) ? new byte[0] : cookie;
+	}
+
 	protected void syncUsers(Binder zone, LdapContext ctx, LdapConnectionConfig config, UserCoordinator userCoordinator) 
-		throws NamingException {
+		throws NamingException
+	{
 		String ssName;
-		String [] sample = new String[0];
 		String[] attributesToRead;
+		int pageSize = 500;
 
 		logger.info( "Starting to sync users, syncUsers()" );
 
@@ -3729,19 +3744,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 
 		// Get the mapping of ldap attributes to Teaming field names
-		Map userAttributes = config.getMappings();
+		Map attributeMappings = config.getMappings();
 
-		userCoordinator.setAttributes(userAttributes);
-		userCoordinator.setLdapContext( ctx );
+		userCoordinator.setAttributes(attributeMappings);
 		userCoordinator.setLdapConfig( config );
 
 		// Get a list of the names of the attributes we want to read from the ldap directory for each user.
 		attributesToRead = getAttributeNamesToRead( userCoordinator.userAttributeNames, config );
 
-		Set la = new HashSet(userAttributes.keySet());
 		String userIdAttribute = config.getUserIdAttribute();
-		if (Validator.isNull(userIdAttribute)) userIdAttribute = config.getUserIdAttribute();
-		la.add(userIdAttribute);
 
 		for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) {
 			String filter;
@@ -3750,66 +3761,110 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			if ( Validator.isNotNull( filter ) )
 			{
 				String ldapGuidAttribute;
+				byte[] cookie = null;
 
 				// Get the ldap attribute name that we will use for a guid.
 				ldapGuidAttribute = config.getLdapGuidAttribute();
 				
 				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
-				SearchControls sch = new SearchControls(scope, 0, 0, (String [])la.toArray(sample), false, false);
+				SearchControls sch = new SearchControls(
+													scope,
+													0,
+													0,
+													attributesToRead,
+													false,
+													false);
 	
 				logger.info( "\tSearching for users in base dn: " + searchInfo.getBaseDn() );
 				
-				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), filter, sch);
-
-				while ( hasMore( ctxSearch ) )
+				// Request the paged results control
+				try
 				{
-					String	userName;
-					String	fixedUpUserName;
-					Attributes lAttrs = null;
-					
-					Binding bd = (Binding)ctxSearch.next();
-					userName = bd.getNameInNamespace();
-					
-					// Fixup the  by replacing all "/" with "\/".
-					fixedUpUserName = fixupName( userName );
-					fixedUpUserName = fixedUpUserName.trim();
+					Control[] ctls = new Control[]{ new PagedResultsControl( pageSize, true ) };
+					ctx.setRequestControls( ctls );
+				}
+				catch ( IOException ex )
+				{
+					logger.error( "Call to new PagedResultsControl() threw an exception: " + ex.toString() );
+				}
 
-					// Read the necessary attributes for this user from the ldap directory.
-					lAttrs = ctx.getAttributes( fixedUpUserName, attributesToRead );
+				do
+				{
+					NamingEnumeration results;
+
+					// Issue an ldap search for users in the given base dn.
+					results = ctx.search( searchInfo.getBaseDn(), filter, sch );
 					
-					Attribute id=null;
-					id = lAttrs.get(userIdAttribute);
-					if (id == null) continue;
-
-					//map ldap id to sitescapeName
-					ssName = idToName((String)id.get());
-					if (ssName == null) continue;
-
-					// Is the name of this user a name that is used for a Teaming system user account?
-					// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
-					// "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
-					if ( MiscUtil.isSystemUserAccount( ssName ) )
+					// loop through the results in each page
+					while ( hasMore( results ) )
 					{
-						// Yes, skip this user.  System user accounts cannot be sync'd from ldap.
-						continue;
+						String	userName;
+						String	fixedUpUserName;
+						Attributes lAttrs = null;
+						SearchResult sr;
+						
+						sr = (SearchResult)results.next();
+						userName = sr.getNameInNamespace();
+						
+						// Fixup the  by replacing all "/" with "\/".
+						fixedUpUserName = fixupName( userName );
+						fixedUpUserName = fixedUpUserName.trim();
+
+						// Read the necessary attributes for this user from the ldap directory.
+						lAttrs = sr.getAttributes();
+						
+						Attribute id=null;
+						id = lAttrs.get(userIdAttribute);
+						if (id == null) continue;
+
+						//map ldap id to sitescapeName
+						ssName = idToName((String)id.get());
+						if (ssName == null) continue;
+
+						// Is the name of this user a name that is used for a Teaming system user account?
+						// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
+						// "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
+						if ( MiscUtil.isSystemUserAccount( ssName ) )
+						{
+							// Yes, skip this user.  System user accounts cannot be sync'd from ldap.
+							continue;
+						}
+						
+						String relativeName = userName.trim();
+						String dn;
+						if (sr.isRelative() && !"".equals(ctx.getNameInNamespace())) {
+							dn = relativeName + "," + ctx.getNameInNamespace().trim();
+						} else {
+							dn = relativeName;
+						}
+						
+						//!!! How do we want to determine if a user is a duplicate?
+						if (userCoordinator.isDuplicate(dn)) {
+							logger.error( NLT.get( "errorcode.ldap.userAlreadyProcessed", new Object[] {ssName, dn} ) );
+							continue;
+						}
+						
+						userCoordinator.record( dn, ssName, lAttrs, ldapGuidAttribute );
 					}
-					
-					String relativeName = userName.trim();
-					String dn;
-					if (bd.isRelative() && !"".equals(ctx.getNameInNamespace())) {
-						dn = relativeName + "," + ctx.getNameInNamespace().trim();
-					} else {
-						dn = relativeName;
+	     
+					// examine the response controls
+					cookie = parseControls( ctx.getResponseControls() );
+
+					try
+					{
+						// pass the cookie back to the server for the next page
+						PagedResultsControl prCtrl;
+						
+						prCtrl = new PagedResultsControl( pageSize, cookie, Control.CRITICAL );
+						ctx.setRequestControls( new Control[]{ prCtrl } );
 					}
-					
-					//!!! How do we want to determine if a user is a duplicate?
-					if (userCoordinator.isDuplicate(dn)) {
-						logger.error( NLT.get( "errorcode.ldap.userAlreadyProcessed", new Object[] {ssName, dn} ) );
-						continue;
+					catch ( IOException ex )
+					{
+						cookie = null;
+						logger.error( "Call to PagedResultsControl() threw an exception: " + ex.toString() );
 					}
-					
-					userCoordinator.record( dn, ssName, lAttrs, ldapGuidAttribute );
-				}// end while
+
+				} while ( (cookie != null) && (cookie.length != 0) );
 			}
 			else
 				logger.warn( "In syncUsers(), a user filter was not specified.  This can result in existing users being disabled or deleted." );
@@ -5152,7 +5207,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @param users - Map indexed by user id, value is map of updates for a user
 	 */
 	protected void updateUsers(
-		LdapContext ldapCtx,
 		Long zoneId,
 		final Map users,
     	Map<Long, HomeDirInfo> homeDirInfoMap,
