@@ -3731,7 +3731,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	{
 		String ssName;
 		String[] attributesToRead;
-		int pageSize = 500;
+		int pageSize = 1500;
 
 		logger.info( "Starting to sync users, syncUsers()" );
 
