@@ -34,7 +34,6 @@ package org.kablink.teaming.fi.connection.auth;
 
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.fi.FIException;
-import org.kablink.teaming.fi.AuthException;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 
 /**
