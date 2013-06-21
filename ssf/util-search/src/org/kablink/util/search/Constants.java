@@ -294,6 +294,7 @@ public class Constants {
 	public static final String GENERAL_TEXT_FIELD = "_generalText"; // This field contains textual representation of all field values except for title and description fields.
 	public static final String IDENTITY_INTERNAL_FIELD = "_iInternal";
 	public static final String IS_HOME_DIR_FIELD = "_isHomeDir";
+	public static final String IS_CLOUD_FOLDER_FIELD = "_isCloud";
 	public static final String IS_MYFILES_DIR_FIELD = "_isMyFilesDir";
     public static final String RESOURCE_DRIVER_NAME_FIELD = "_resourceDriverName";
     public static final String CLOUD_FOLDER_ROOT_FIELD = "_cloudFolderRoot";

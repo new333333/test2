@@ -1421,14 +1421,20 @@ public class EntityIndexUtils {
 	        				{
 		        				// Is everything configured?
 		        				rootPath = rdConfig.getRootPath();
-		        				proxyName = rdConfig.getAccountName();
-		        				proxyPwd = rdConfig.getPassword();
-		        				if ( rootPath != null && rootPath.length() > 0 &&
-		        					 proxyName != null && proxyName.length() > 0 &&
-		        					 proxyPwd != null && proxyPwd.length() > 0 )
-		        				{
-		        					// Yes
-		        					hasResourceDriver = true;
+		        				if ( rootPath != null && rootPath.length() > 0 ) {
+			        				proxyName = rdConfig.getAccountName();
+			        				proxyPwd = rdConfig.getPassword();
+		        					if (proxyName != null && proxyName.length() > 0 &&
+		        					    proxyPwd != null && proxyPwd.length() > 0 )
+			        				{
+			        					// Yes
+			        					hasResourceDriver = true;
+			        				}
+		        					else if ( CloudFolderHelper.isCloudFolder( binder ) )
+		        					{
+			        					// Yes
+			        					hasResourceDriver = true;
+		        					}
 		        				}
 	        				}
     					}
@@ -1473,14 +1479,19 @@ public class EntityIndexUtils {
     }
     
     /**
-     * If a binder is a Cloud Folder, adds the name if it Cloud Folder
-     * root to the index.
+     * Adds whether a binder is a Cloud Folder to the index.  If a
+     * binder is a Cloud Folder, adds the name if it Cloud Folder root
+     * to the index.
      */
-    public static void addBinderCloudFolderRoot(Document doc, Binder binder, boolean fieldsOnly) {
+    public static void addBinderCloudFolderInfo(Document doc, Binder binder, boolean fieldsOnly) {
 		String cfRoot = CloudFolderHelper.getCloudFolderRoot(binder);
-		if (MiscUtil.hasString(cfRoot)) {
+		boolean isCloudFolder = MiscUtil.hasString(cfRoot);
+		if (isCloudFolder) {
 			Field path = FieldFactory.createFieldStoredNotAnalyzed(RESOURCE_DRIVER_NAME_FIELD, cfRoot);
 			doc.add(path);
 		}
+		
+		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_CLOUD_FOLDER_FIELD, (isCloudFolder ? Constants.TRUE : Constants.FALSE));
+		doc.add(path);
     }
 }
