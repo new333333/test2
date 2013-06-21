@@ -30,8 +30,9 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.fi;
+package org.kablink.teaming.fi.connection.auth;
 
+import org.kablink.teaming.fi.FIException;
 import org.kablink.util.api.ApiErrorCode;
 
 /**
@@ -42,7 +43,7 @@ public class AuthException extends FIException {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String ERROR_CODE = "fi.error.unauthorized";
+	private static final String ERROR_CODE = "fi.error.auth";
 
 	private String url;
 	private String uuid;
