@@ -34,7 +34,7 @@ package org.kablink.teaming.fi.connection.auth;
 
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.fi.FIException;
-import org.kablink.teaming.fi.UnauthorizedException;
+import org.kablink.teaming.fi.AuthException;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 
 /**
@@ -75,8 +75,8 @@ public interface AuthResourceDriver extends AclResourceDriver {
 	 * 
 	 * @param authInfo
 	 * @return
-	 * @throws UnauthorizedException
+	 * @throws AuthException
 	 * @throws UncheckedIOException
 	 */
-	public AuthInfo validateAuthInfo(AuthInfo authInfo) throws UnauthorizedException, UncheckedIOException;
+	public AuthInfo validateAuthInfo(AuthInfo authInfo) throws AuthException, UncheckedIOException;
 }

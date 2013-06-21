@@ -38,7 +38,7 @@ import org.kablink.util.api.ApiErrorCode;
  * @author jong
  *
  */
-public class UnauthorizedException extends FIException {
+public class AuthException extends FIException {
 
 	private static final long serialVersionUID = 1L;
 
@@ -47,7 +47,7 @@ public class UnauthorizedException extends FIException {
 	private String url;
 	private String uuid;
 	
-	public UnauthorizedException(String resourcePath, String operationName) {
+	public AuthException(String resourcePath, String operationName) {
 		super(ERROR_CODE, new Object[] {operationName, resourcePath});
 	}
 	
