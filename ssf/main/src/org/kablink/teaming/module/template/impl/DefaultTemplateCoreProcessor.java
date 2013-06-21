@@ -92,8 +92,7 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 		return false;
 	}
     public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
-   		//nothing to do    	    	
-    	return new IndexErrors();
+    	return indexBinder(binder, includeEntries, deleteIndex, tags, false);
     }
     public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
    		//nothing to do    	    	
