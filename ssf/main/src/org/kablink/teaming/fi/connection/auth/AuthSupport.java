@@ -34,13 +34,12 @@ package org.kablink.teaming.fi.connection.auth;
 
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.fi.FIException;
-import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 
 /**
  * @author jong
  *
  */
-public interface AuthSupport extends AclResourceDriver {
+public interface AuthSupport {
 
 	/**
 	 * Returns authentication information resulted from the authentication handshake 
