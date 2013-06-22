@@ -58,7 +58,7 @@ public interface AuthSupport {
 	 * Validates the authentication information if specified, and take appropriate action based on the state.
 	 * Specifically, it will do the following:
 	 * <p>
-	 * 1. If the specified <code>authInfo</code> is <code>null</code>, it will throw <code>UnauthorizedException</code>
+	 * 1. If the specified <code>authInfo</code> is <code>null</code>, it will throw <code>AuthException</code>
 	 * with appropriate information needed to begin a new authentication handshake.
 	 * <br>
 	 * 2. If the specified <code>authInfo</code> is valid and current, it will create a new <code>AuthInfo</code>
@@ -69,12 +69,12 @@ public interface AuthSupport {
 	 * containing updated information.
 	 * <br>
 	 * 4. If the specified <code>authInfo</code> is invalid and it is not possible to refresh the token, it will throw
-	 * <code>UnauthorizedException</code> with appropriate information needed to begin a new authentication handshake.
+	 * <code>AuthException</code> with appropriate information needed to begin a new authentication handshake.
 	 * 
 	 * @param authInfo
 	 * @return
 	 * @throws AuthException
 	 * @throws UncheckedIOException
 	 */
-	public AuthInfo validateAuthInfo(AuthInfo authInfo) throws AuthException, UncheckedIOException;
+	//public AuthInfo validateAuthInfo(AuthInfo authInfo) throws AuthException, UncheckedIOException;
 }
