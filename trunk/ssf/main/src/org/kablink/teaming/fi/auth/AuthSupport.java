@@ -34,6 +34,7 @@ package org.kablink.teaming.fi.auth;
 
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.fi.FIException;
+import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 
 /**
  * @author jong
@@ -77,4 +78,29 @@ public interface AuthSupport {
 	 * @throws UncheckedIOException
 	 */
 	//public AuthInfo validateAuthInfo(AuthInfo authInfo) throws AuthException, UncheckedIOException;
+	
+	/**
+	 * Opens a session using the auth info. Optionally it performs management task on the auth info.
+	 * Here's the details of how this method behaves:
+	 * <p>
+	 * 1. If the specified <code>authInfo</code> is <code>null</code>, it will throw <code>AuthException</code>
+	 * with appropriate information needed to begin a new authentication handshake.
+	 * <br>
+	 * 2. If the specified <code>authInfo</code> is valid and current, it will return a new session.
+	 * <br>
+	 * 3. If the specified <code>authInfo</code> has expired and it is possible to refresh the token without
+	 * starting a new authentication handshake, it will refresh the token and update the <code>authInfo</code>
+	 * object with the new information, and return a new session. 
+	 * <br>
+	 * 4. If the specified <code>authInfo</code> is invalid and it is not possible to refresh the token, it will
+	 * throw <code>AuthException</code> with appropriate information needed to begin a new authentication handshake.
+	 * 
+	 * @param authInfo
+	 * @return
+	 * @throws AuthException
+	 * @throws FIException
+	 * @throws UncheckedIOException
+	 */
+	public AclResourceSession openSessionWithAuth(AuthInfo authInfo) throws AuthException, FIException, UncheckedIOException;
+
 }
