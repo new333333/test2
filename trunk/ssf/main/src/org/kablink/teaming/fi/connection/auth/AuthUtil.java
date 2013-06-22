@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -32,20 +32,18 @@
  */
 package org.kablink.teaming.fi.connection.auth;
 
-import org.kablink.teaming.fi.connection.acl.AclResourceSession;
-
-/**
- * @author jong
- *
- */
-public interface AuthResourceSession extends AclResourceSession{
-
-	/**
-	 * Return the Auth resource driver that allocated this session. 
-	 * Convenience method.
-	 * 
-	 * @return
-	 */
-	public AuthResourceDriver getAuthResourceDriver();
-
+public class AuthUtil {
+	private static final ThreadLocal<String> perThread = new ThreadLocal<String>();
+	
+	public static void setUuid(String uuid) {
+		perThread.set(uuid);
+	}
+	
+	public static String getUuid() {
+		return perThread.get();
+	}
+	
+	public static void clearUuid() {
+		perThread.set(null);
+	}
 }
