@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -30,20 +30,51 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.fi.connection.auth;
+package org.kablink.teaming.fi.auth;
 
-public class AuthUtil {
-	private static final ThreadLocal<String> perThread = new ThreadLocal<String>();
+import org.kablink.teaming.fi.FIException;
+import org.kablink.util.api.ApiErrorCode;
+
+/**
+ * @author jong
+ *
+ */
+public class AuthException extends FIException {
+
+	private static final long serialVersionUID = 1L;
+
+	private static final String ERROR_CODE = "fi.error.auth";
+
+	private String url;
+	private String uuid;
 	
-	public static void setUuid(String uuid) {
-		perThread.set(uuid);
+	public AuthException(String resourcePath, String operationName) {
+		super(ERROR_CODE, new Object[] {operationName, resourcePath});
 	}
 	
-	public static String getUuid() {
-		return perThread.get();
+	public String getUrl() {
+		return url;
 	}
-	
-	public static void clearUuid() {
-		perThread.set(null);
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
+
+    public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public int getHttpStatusCode() {
+    	return 401; // Unauthorized
+    }
+
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.UNAUTHENTICATED_ACCESS;
+	}
+
 }
