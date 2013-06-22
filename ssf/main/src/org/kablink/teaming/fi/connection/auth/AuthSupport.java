@@ -40,7 +40,7 @@ import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
  * @author jong
  *
  */
-public interface AuthResourceDriver extends AclResourceDriver {
+public interface AuthSupport extends AclResourceDriver {
 
 	/**
 	 * Returns authentication information resulted from the authentication handshake 
