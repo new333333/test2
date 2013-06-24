@@ -1281,12 +1281,13 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             ids = new Long[] {getMyFilesFolderParent().getId()};
         } else if (SearchUtils.useHomeAsMyFiles(this)) {
             List<Long> homeFolderIds = SearchUtils.getHomeFolderIds(this, getLoggedInUser());
-            try {
-                for (Long id : homeFolderIds) {
+            for (Long id : homeFolderIds) {
+            	try {
                     Folder folder = getFolderModule().getFolder(id);
                     getFolderModule().jitSynchronize(folder);
-                }
-            } catch (Exception e) {
+            	}
+            	catch (Exception e) {
+            	}
             }
             ids = homeFolderIds.toArray(new Long[homeFolderIds.size()]);
         } else {

@@ -125,12 +125,13 @@ public class MyFilesResource extends ContainerResource
 		
 		if(SearchUtils.useHomeAsMyFiles(this)) {
             List<Long> homeFolderIds = SearchUtils.getHomeFolderIds(this, RequestContextHolder.getRequestContext().getUser());
-            try {
-                for (Long id : homeFolderIds) {
-                    Folder folder = getFolderModule().getFolder(id);
-                    getFolderModule().jitSynchronize(folder);
-                }
-            } catch (Exception e) {}
+            for (Long id : homeFolderIds) {
+            	try {
+	                Folder folder = getFolderModule().getFolder(id);
+	                getFolderModule().jitSynchronize(folder);
+            	}
+            	catch(Exception e) {}
+            }
 		}
 		
 		// Get folders
