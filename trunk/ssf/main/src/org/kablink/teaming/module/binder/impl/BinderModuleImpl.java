@@ -1413,6 +1413,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if(binder != null)
 			parentBinder = binder.getParentBinder();
 		
+		//Guard against deleting the whole mirrored source by accident
+		if (binder.isAclExternallyControlled() && 
+				parentBinder != null && parentBinder.isAclExternallyControlled() &&
+				parentBinder.getResourceDriverName().equals(binder.getResourceDriverName())) {
+			
+			//This is a sub-folder of a net folder. Check that it has a proper resource path
+			if (binder.getResourcePath() == null || binder.getResourcePath().equals("") || 
+					binder.getResourcePath().equals("/")) {
+				//Don't allow deleting of this source because it looks like the configuration wasn't properly completed.
+				deleteMirroredSource = false;
+			}
+		}
+		
 		deleteBinderPhase1(binderId, deleteMirroredSource, options, createDbLogForTopBinderOnly);
 		if (!phase1Only) {
 			deleteBinderPhase2();
