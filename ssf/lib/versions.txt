@@ -102,6 +102,7 @@ Liquibase Hibernate integration 2.0.0
 Liquibase MS SQL Server Extensions 1.2.0
 Liquibase Oracle Extensions 1.2.0
 Log4j 1.2.15 (from spring distribution)
+Log4j Extras 1.1 (http://logging.apache.org/log4j/companions/extras)
 log4jdbc4 1.2 (https://code.google.com/p/log4jdbc)
 Lucene 3.4.0
 Lucene contrib analyzers 3.4.0 (previous Lucene snowball library is removed because it is contained in this new library)
