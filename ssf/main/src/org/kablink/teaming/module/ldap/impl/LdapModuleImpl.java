@@ -1704,6 +1704,64 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     
     
 	/**
+	 * Read the "defaultNamingContext" attribute from the rootDSE object in AD.
+	 */
+	private String readDomainName( LdapConnectionConfig config )
+	{
+        String domainName = null;
+		LdapContext ctx = null;
+
+		try
+		{
+			Workspace zone;
+	        SearchControls controls;
+	        NamingEnumeration answer;
+	        String base;
+	        String filter;
+
+			zone = RequestContextHolder.getRequestContext().getZone();
+
+	        ctx = getUserContext( zone.getId(), config );
+	
+	        base = "";
+	        filter = "(objectclass=*)";
+	        controls = new SearchControls();
+	        controls.setSearchScope( SearchControls.OBJECT_SCOPE );
+	        answer = ctx.search( base, filter, controls );
+	
+	        if ( hasMore( answer ) )
+	        {
+	        	SearchResult sr;
+	        	Attributes attrs;
+	        	
+	        	sr = (SearchResult) answer.next();
+	        	attrs = sr.getAttributes();
+	        	domainName = (String) attrs.get( "defaultNamingContext" ).get();
+	        }
+		}
+		catch ( Exception ex )
+		{
+			logger.error( "readDomainName() caught exception: " + ex.toString() );
+		}
+		finally
+		{
+	        if ( ctx != null )
+			{
+				try
+				{
+					ctx.close();
+				}
+				catch ( NamingException ex )
+				{
+					// Nothing to do
+				}
+			}
+		}
+		
+		return domainName;
+	}
+	
+	/**
 	 * Read the "home directory" attribute from the directory for the given user.
 	 * @throws NamingException 
 	 */
@@ -2166,7 +2224,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			String dn=null;
 			Map userAttributes = config.getMappings();
 			String [] userAttributeNames = 	(String[])(userAttributes.keySet().toArray(sample));
-	
+			String domainName;
+
+			domainName = readDomainName( config );
+			
 			for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) 
 			{
 				HomeDirInfo homeDirInfo = null;
@@ -2205,6 +2266,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 					// Make sure the name gets updated.
 					mods.put( ObjectKeys.FIELD_PRINCIPAL_NAME, ldapUserName );
+					
+					mods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
 				}
 				finally
 				{
@@ -3305,7 +3368,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			String dn,
 			String ssName,
 			Attributes lAttrs,
-			String ldapGuidAttribute ) throws NamingException
+			String ldapGuidAttribute,
+			String domainName ) throws NamingException
 		{
 			boolean foundLdapGuid = false;
 			Object[] row = null; 
@@ -3393,6 +3457,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 					// Make sure the user's name gets updated.
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_NAME, ssName );
+					
+					// Update the domain name
+					userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
 
 					// Did we find the ldap user in Teaming by their ldap guid?
 					if ( foundLdapGuid )
@@ -3470,6 +3537,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME, ssName);
 					userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 					userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
+					userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
 					
 					// Get the default time zone.
 					timeZone = getDefaultTimeZone();
@@ -3731,6 +3799,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	{
 		String ssName;
 		String[] attributesToRead;
+		String ldapGuidAttribute;
+		String domainName = null;
 		int pageSize = 1500;
 
 		logger.info( "Starting to sync users, syncUsers()" );
@@ -3754,18 +3824,24 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		String userIdAttribute = config.getUserIdAttribute();
 
+		// Get the ldap attribute name that we will use for a guid.
+		ldapGuidAttribute = config.getLdapGuidAttribute();
+		
+		// Are we working with AD?
+		if ( getLdapDirType( ldapGuidAttribute ) == LdapDirType.AD )
+		{
+			// Yes
+			domainName = readDomainName( config );
+		}
+		
 		for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) {
 			String filter;
 
 			filter = searchInfo.getFilterWithoutCRLF();
 			if ( Validator.isNotNull( filter ) )
 			{
-				String ldapGuidAttribute;
 				byte[] cookie = null;
 
-				// Get the ldap attribute name that we will use for a guid.
-				ldapGuidAttribute = config.getLdapGuidAttribute();
-				
 				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
 				SearchControls sch = new SearchControls(
 													scope,
@@ -3844,7 +3920,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							continue;
 						}
 						
-						userCoordinator.record( dn, ssName, lAttrs, ldapGuidAttribute );
+						userCoordinator.record( dn, ssName, lAttrs, ldapGuidAttribute, domainName );
 					}
 	     
 					// examine the response controls

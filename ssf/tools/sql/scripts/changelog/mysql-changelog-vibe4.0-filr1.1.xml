@@ -177,4 +177,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jay" context="schema" failOnError="true" id="8">
+        <comment>Domain name if the user was provisioned from AD</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="domainName" type="VARCHAR(255)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>
