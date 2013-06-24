@@ -723,6 +723,7 @@ public interface ObjectKeys {
     public static final String FIELD_PRINCIPAL_SAM_ACCOUNT_NAME = "samAccountName";
     public static final String FIELD_PRINCIPAL_TYPE="type";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
+    public static final String FIELD_PRINCIPAL_DOMAIN_NAME = "domainName";
     public static final String FIELD_GROUP_DYNAMIC = "dynamic";
     public static final String FIELD_GROUP_LDAP_QUERY = "ldapQuery";
     public static final String FIELD_GROUP_PRINCIPAL_MEMBERS="members";
