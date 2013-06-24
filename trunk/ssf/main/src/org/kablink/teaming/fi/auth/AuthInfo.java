@@ -88,13 +88,11 @@ public class AuthInfo {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("|")
-		.append(accessToken)
-		.append("|")
+		sb.append(accessToken)
+		.append(",")
 		.append(accessKey)
-		.append("|")
-		.append((refreshToken==null)?"":refreshToken)
-		.append("|");
+		.append(",")
+		.append((refreshToken==null)?"":refreshToken);
 		return sb.toString();
 	}
 }
