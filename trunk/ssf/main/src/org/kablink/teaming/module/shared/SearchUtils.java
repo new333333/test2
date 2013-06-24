@@ -66,6 +66,7 @@ import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
+import org.kablink.teaming.fi.auth.AuthException;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.util.LanguageTaster;
@@ -627,7 +628,7 @@ public class SearchUtils {
 			int offset, 
 			int size, 
 			Binder parentBinder)
-					throws LuceneException {
+					throws LuceneException, AuthException {
 		
 		try {
 			if(parentBinder.isMirrored() && parentBinder instanceof Folder) {			
@@ -647,7 +648,12 @@ public class SearchUtils {
 				}
 			}	
 		}
-		catch(Exception ignore) {}
+		catch(AuthException e) {
+			throw e; // Propagate this up
+		}
+		catch(Exception ignore) {
+			// Ignore all other exceptions
+		}
 		
 		return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
 	}

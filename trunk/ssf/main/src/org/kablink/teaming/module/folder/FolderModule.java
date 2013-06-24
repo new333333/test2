@@ -56,6 +56,7 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.fi.FIException;
+import org.kablink.teaming.fi.auth.AuthException;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -699,7 +700,7 @@ public interface FolderModule {
 	
 	public Long getZoneEntryId(Long entryId, String zoneUUID);
 	
-    public boolean jitSynchronize(Folder folder);
+    public boolean jitSynchronize(Folder folder) throws AuthException;
 
     public Date getLastFullSyncCompletionTime(Long folderId);
     /**
