@@ -286,9 +286,18 @@ public class CloudFolderHelper {
 	 * @param rootName
 	 * @param deleteSource
 	 */
-	public static void deleteCloudFolder(AllModulesInjected bs, Long id, String rootName, boolean deleteSource) {
+	public static void deleteCloudFolder(final AllModulesInjected bs, final Long id, final String rootName, final boolean deleteSource) {
 		bs.getFolderModule().deleteCloudFolder(id, deleteSource);
-		bs.getResourceDriverModule().deleteResourceDriver(rootName);
+		
+		RunasTemplate.runasAdmin(
+			new RunasCallback() {
+				@Override
+				public Object doAs() {
+					bs.getResourceDriverModule().deleteResourceDriver(rootName);
+					return null;
+				}
+			},
+			RequestContextHolder.getRequestContext().getZoneName());
 	}
 
 	/**
