@@ -47,10 +47,10 @@ public class GwtCloudFolderHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtCloudFolderHelper.class);
 
 	// UNC paths used for the various cloud folder services supported.
-	private final static String BOXDOTNET_UNC	= "//boxdotnet";
-	private final static String DROPBOX_UNC		= "//dropbox";
-	private final static String GOOGLEDRIVE_UNC	= "//googledrive";
-	private final static String SKYDRIVE_UNC	= "//skydrive";
+	private final static String BOXDOTNET_UNC	= "\\\\boxdotnet";
+	private final static String DROPBOX_UNC		= "\\\\dropbox";
+	private final static String GOOGLEDRIVE_UNC	= "\\\\googledrive";
+	private final static String SKYDRIVE_UNC	= "\\\\skydrive";
 	
 	/*
 	 * Class constructor that prevents this class from being
