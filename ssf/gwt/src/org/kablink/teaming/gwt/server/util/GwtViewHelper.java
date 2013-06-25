@@ -111,6 +111,7 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.fi.auth.AuthException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
@@ -4005,30 +4006,42 @@ public class GwtViewHelper {
 				else if (isProfilesRootWS) searchResults = getUserEntries(      bs, request, binder, quickFilter, options                            );
 				else if (isCollection)     searchResults = getCollectionEntries(bs, request, binder, quickFilter, options, collectionType, shareItems);
 				else {
+					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
+					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);
+					options.put(ObjectKeys.SEARCH_SORT_DESCEND,           sortDescend           );
+					options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      fdd.getFolderSortBy() );
+					options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, sortDescend           );
+
+					// If we have an authentication GUID for the
+					// folder...
+					boolean hasAuthenticationGuid = MiscUtil.hasString(authenticationGuid);
+					if (hasAuthenticationGuid) {
+						// ...store it so it can be utilized.
+						org.kablink.teaming.fi.auth.AuthUtil.setUuid(authenticationGuid);
+					}
+					
+					// Issue the search.
 					SimpleProfiler.start("GwtViewHelper.getFolderRows(Basic Folder Search)");
 					try {
-						options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
-						options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);
-						options.put(ObjectKeys.SEARCH_SORT_DESCEND,           sortDescend           );
-						options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      fdd.getFolderSortBy() );
-						options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, sortDescend           );
-						
-//!						...this needs to be implemented...
-						// ...need to account for the authenticationGuid...
-						
-						try {
-							searchResults = bs.getFolderModule().getEntries(folderId, options);
-						}
-						catch (Exception e) {
-//!							...this needs to be implemented...
-							// ...need to special case the exception...
-							// ...thrown when a Cloud Folder...
-							// ...requires authentication.
-							throw e;
-						}
+						searchResults = bs.getFolderModule().getEntries(folderId, options);
+					}
+					
+					catch (AuthException ae) {
+						// This folder requires authentication!  Return
+						// an appropriate response.
+						FolderRowsRpcResponseData reply = new FolderRowsRpcResponseData();
+						reply.setAuthenticationGuid(ae.getUuid());
+						reply.setAuthenticationUrl( ae.getUrl() );
+						return reply;
 					}
 					
 					finally {
+						// If we stored an authentication GUID for the
+						// search...
+						if (hasAuthenticationGuid) {
+							// ...remove it.
+							org.kablink.teaming.fi.auth.AuthUtil.clearUuid();
+						}
 						SimpleProfiler.stop("GwtViewHelper.getFolderRows(Basic Folder Search)");
 					}
 				}
