@@ -757,7 +757,6 @@ public interface FolderModule {
 	 * @param parentBinderId
 	 * @param name
 	 * @param rootName
-	 * @param path
 	 * 
 	 * @return
 	 * 
@@ -765,7 +764,7 @@ public interface FolderModule {
 	 * @throws WriteFilesException
 	 * @throws WriteEntryDataException
 	 */
-    public Folder createCloudFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    public Folder createCloudFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName) throws AccessControlException, WriteFilesException, WriteEntryDataException;
     
 	/**
 	 * Delete the given cloud folder.
@@ -781,11 +780,10 @@ public interface FolderModule {
 	 * @param folderId
 	 * @param cloudFolderName
 	 * @param rootName
-	 * @param path
 	 * 
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 * @throws WriteEntryDataException
 	 */
-	public void modifyCloudFolder(Long folderId, String cloudFolderName, String rootName, String path) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+	public void modifyCloudFolder(Long folderId, String cloudFolderName, String rootName) throws AccessControlException, WriteFilesException, WriteEntryDataException;
 }

@@ -605,7 +605,7 @@ public class GwtViewHelper {
 						memberIds);
 					
 					// ...and if we can create the Cloud Folder itself...
-					Binder cfBinder = CloudFolderHelper.createCloudFolder(bs, owner, folderName, rootName, uncPath, binderId);
+					Binder cfBinder = CloudFolderHelper.createCloudFolder(bs, owner, folderName, rootName, binderId);
 					if (null != cfBinder) {
 						// ...return it's ID and name.
 						reply.setFolderId(  cfBinder.getId());

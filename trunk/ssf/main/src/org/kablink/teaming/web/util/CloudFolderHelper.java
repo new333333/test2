@@ -124,7 +124,6 @@ public class CloudFolderHelper {
 	 * @param owner
 	 * @param name
 	 * @param rootName
-	 * @param uncPath
 	 * @param parentBinderId
 	 * 
 	 * @return
@@ -137,7 +136,6 @@ public class CloudFolderHelper {
 		User				owner,
 		String				name,
 		String				rootName,
-		String				uncPath,
 		Long				parentBinderId)
 			throws
 				WriteFilesException,
@@ -164,8 +162,7 @@ public class CloudFolderHelper {
 				parentBinderId,
 				name,
 				owner,
-				rootName,
-				uncPath);
+				rootName);
 			
 			if (null != binder) {
 				// Yes!  Store its Cloud Folder root name in its
@@ -487,7 +484,6 @@ public class CloudFolderHelper {
 	 * @param id
 	 * @param name
 	 * @param rootName
-	 * @param uncPath
 	 * 
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
@@ -497,18 +493,13 @@ public class CloudFolderHelper {
 		AllModulesInjected	bs,
 		Long				id,
 		String				name,
-		String				rootName,
-		String				uncPath)
+		String				rootName)
 			throws
 				AccessControlException,
 				WriteFilesException,
 				WriteEntryDataException {
 		// Modify the binder with the Cloud Folder information.
-		bs.getFolderModule().modifyCloudFolder(
-			id,
-			name,
-			rootName,
-			uncPath);
+		bs.getFolderModule().modifyCloudFolder(id, name, rootName);
 	}
 
 	/**
