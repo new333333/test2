@@ -139,7 +139,7 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	
 	@Override
 	public Folder createCloudFolder(Long templateId, Long parentBinderId,
-			String name, User owner, String rootName, String path) throws AccessControlException, WriteFilesException, WriteEntryDataException {
+			String name, User owner, String rootName) throws AccessControlException, WriteFilesException, WriteEntryDataException {
 		// Open source stub.  See PlusFolderModule for full
 		// implementation.
 		return null;
@@ -152,7 +152,7 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	}
 
 	@Override
-	public void modifyCloudFolder(Long folderId, String netFolderName, String rootName, String path)
+	public void modifyCloudFolder(Long folderId, String netFolderName, String rootName)
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
 		// Open source stub.  See PlusFolderModule for full
 		// implementation.
