@@ -4026,13 +4026,22 @@ public class GwtViewHelper {
 						searchResults = bs.getFolderModule().getEntries(folderId, options);
 					}
 					
-					catch (AuthException ae) {
-						// This folder requires authentication!  Return
-						// an appropriate response.
-						FolderRowsRpcResponseData reply = new FolderRowsRpcResponseData();
-						reply.setAuthenticationGuid(ae.getUuid());
-						reply.setAuthenticationUrl( ae.getUrl() );
-						return reply;
+					catch (Exception e) {
+						// Did we catch an authentication exception?
+						if (e instanceof AuthException) {
+							// Yes!  This folder requires
+							// authentication!  Return an appropriate
+							// response.
+							FolderRowsRpcResponseData reply = new FolderRowsRpcResponseData();
+							AuthException ae = ((AuthException) e);
+							reply.setAuthenticationGuid(ae.getUuid());
+							reply.setAuthenticationUrl( ae.getUrl() );
+							return reply;
+						}
+						
+						// We caught something other than an
+						// authentication exception.  Propagate it.
+						throw e;
 					}
 					
 					finally {
