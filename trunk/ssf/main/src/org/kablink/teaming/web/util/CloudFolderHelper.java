@@ -56,6 +56,8 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -74,6 +76,39 @@ public class CloudFolderHelper {
 	// Folders default to being turned off.
 	public static final boolean CLOUD_FOLDERS_ENABLED = SPropsUtil.getBoolean("cloud.folders.enabled", false);
 
+	/*
+	 * Inner class that encapsulates the results of creating a Cloud
+	 * Folder root.
+	 */
+	private static class CreateCFRootResult {
+		private ResourceDriverConfig	m_rdConfig;		//
+		private RDException				m_rdException;	//
+		
+		/**
+		 * Constructor method.
+		 */
+		public CreateCFRootResult() {
+			// Initialize the super class.
+			super();
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public ResourceDriverConfig getResourceDriverConfig() {return m_rdConfig;   }
+		public RDException          getRDException()          {return m_rdException;}
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setResourceDriverConfig(ResourceDriverConfig rdConfig)    {m_rdConfig    = rdConfig;   }
+		public void setRDException(         RDException          rdException) {m_rdException = rdException;}
+	}
+	
 	/*
 	 * Class constructor that prevents this class from being
 	 * instantiated.
@@ -176,40 +211,71 @@ public class CloudFolderHelper {
 	 * 
 	 * @throws RDException
 	 */
+	public static ResourceDriverConfig createCloudFolderRoot(final AllModulesInjected bs, final String name, final String uncPath, final Set<Long> memberIds) throws RDException {
+		// As admin, create the Cloud Folder root.
+		CreateCFRootResult reply = ((CreateCFRootResult) RunasTemplate.runasAdmin(
+			new RunasCallback() {
+				@Override
+				public Object doAs() {
+					CreateCFRootResult reply = createCloudFolderRootImpl(bs, name, uncPath, memberIds);
+					RDException rdException = reply.getRDException();
+					if (null != rdException) {
+						throw rdException;
+					}
+					return reply;
+				}
+			},
+			RequestContextHolder.getRequestContext().getZoneName()));
+
+		// Did we catch an exception during the create?
+		RDException rdException = reply.getRDException();
+		if (null != rdException) {
+			// Yes!  Propagate it.
+			throw rdException;
+		}
+		
+		// Return the ResourceDriverConfig we created.
+		return reply.getResourceDriverConfig();
+	}
+
+	/*
+	 * Create a Cloud Folder root from the given data.
+	 */
 	@SuppressWarnings("unchecked")
-	public static ResourceDriverConfig createCloudFolderRoot(
-		AllModulesInjected	bs,
-		String				name,
-		String				uncPath,
-		Set<Long>			memberIds)
-			throws
-				RDException {
+	private static CreateCFRootResult createCloudFolderRootImpl(AllModulesInjected bs, String name, String uncPath, Set<Long> memberIds) {
+		CreateCFRootResult reply = new CreateCFRootResult();
+		
 		// Does a Cloud Folder root already exist with the give name?
 		if (null != findCloudFolderRootByName(bs, name)) {
 			// Yes!  Do not allow this.
-			throw
+			reply.setRDException(
 				new RDException(
 					NLT.get(RDException.DUPLICATE_RESOURCE_DRIVER_NAME, new String[] {name}),
-					name);
+					name));
+		}
+		
+		else {
+			// No, a Cloud Folder root doesn't exist with the give
+			// name!
+			Map options = new HashMap();
+			options.put(ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE);
+			
+			// Always prevent the top level folder from being deleted.
+			// This is forced so that the folder could not accidentally
+			// be deleted if the external disk was off line.
+			options.put(ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE);
+	
+			// Add this resource driver.
+			reply.setResourceDriverConfig(
+				bs.getResourceDriverModule().addResourceDriver(
+					name,
+					DriverType.common_services, 
+					uncPath,
+					memberIds,
+					options));
 		}
 
-		Map options = new HashMap();
-		options.put(ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE);
-		
-		// Always prevent the top level folder from being deleted.
-		// This is forced so that the folder could not accidentally be
-		// deleted if the external disk was off line.
-		options.put(ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE);
-
-		// Add this resource driver.
-		ResourceDriverConfig rdConfig = bs.getResourceDriverModule().addResourceDriver(
-			name,
-			DriverType.common_services, 
-			uncPath,
-			memberIds,
-			options);
-
-		return rdConfig;
+		return reply;
 	}
 
 	/**

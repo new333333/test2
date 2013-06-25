@@ -174,15 +174,10 @@ public class GwtReportsHelper {
 			case ERROR:     reportType = ReportModule.EMAIL_REPORT_TYPE_ERRORS;  break;
 			case RECEIVED:  reportType = ReportModule.EMAIL_REPORT_TYPE_RECEIVE; break;
 			}
-			Date originalEndDate = null;
 			if (null != end) {
+				// Add 1 day to the end date.
 				GregorianCalendar cal = new GregorianCalendar();
 				cal.setTime(end);
-				
-				// Remember the original end date supplied by the user.
-				originalEndDate = cal.getTime();
-				
-				// Add 1 day to the end date.
 				cal.add(Calendar.DATE, 1);
 				end = cal.getTime();
 			}
@@ -721,12 +716,12 @@ public class GwtReportsHelper {
 				@Override
 				public void close() {}  // FileCopyUtils will try to close this too soon
 			};
-			File logDirectory = new File(SpringContextUtil.getServletContext().getRealPath("/WEB-INF/logs"));
-			for (String logFile : logDirectory.list(
+			File logDirectory = new File(SpringContextUtil.getServletContext().getRealPath("/../../logs"));
+			for (String logFile:  logDirectory.list(
 					new FilenameFilter() {
 						@Override
 						public boolean accept(File file, String filename) {
-							return filename.startsWith("ssf.log");
+							return filename.startsWith("appserver.log");
 						}
 					})) {
 				zipOut.putNextEntry(new ZipEntry(logFile));

@@ -16,7 +16,11 @@
   <property name="inheritTeamMembers">false</property>
   <workAreaFunctionMembership>
     <property name="functionName">__role.binderAdmin</property>
-    <property name="members"></property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.allowAccessNetFolder</property>
+    <property name="members">-1</property>
   </workAreaFunctionMembership>
   <workAreaFunctionMembership>
     <property name="functionName">__role.viewBinderTitle</property>
