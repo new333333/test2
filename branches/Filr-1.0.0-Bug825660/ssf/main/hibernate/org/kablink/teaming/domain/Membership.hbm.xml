@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false"
+>
+
+    <class
+        name="org.kablink.teaming.domain.Membership"
+        table="SS_PrincipalMembership"
+        dynamic-update="true"
+        dynamic-insert="false"
+        select-before-update="false"
+        optimistic-lock="dirty"
+    >
+        <!--<cache usage="read-write"/>-->
+
+	<composite-id>
+	<key-property name="userId" column="userId" type="java.lang.Long"/>
+	<key-property name="groupId" column="groupId" type="java.lang.Long"/>
+	</composite-id>
+
+	</class>
+     <query name="find-Membership"><![CDATA[
+            from org.kablink.teaming.domain.Membership m where m.userId=:userId
+        ]]></query>
+	
+	</hibernate-mapping>

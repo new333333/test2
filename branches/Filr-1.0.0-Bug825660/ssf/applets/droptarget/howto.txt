@@ -1,0 +1,6 @@
+# This command signs the jar in place.
+jarsigner -keystore kablink.keystore -storepass password target.jar selfsigned
+
+
+# This command writes signed jar to different name.
+jarsigner -keystore kablink.keystore -storepass password -signedjar target.jar source.jar selfsigned

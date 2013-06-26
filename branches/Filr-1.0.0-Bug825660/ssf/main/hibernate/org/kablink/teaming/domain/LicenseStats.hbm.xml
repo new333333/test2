@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_LicenseStats" name="org.kablink.teaming.domain.LicenseStats">
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <property name="zoneId" not-null="true" index="snapshot_lstats"/>
+    <property name="snapshotDate" index="snapshot_lstats"/>
+    <property name="internalUserCount"/>
+    <property name="externalUserCount"/>
+    <property name="openIdUserCount"/>
+    <property name="otherExtUserCount"/>
+    <property name="guestAccessEnabled"/>
+    <property name="activeUserCount"/>
+ 	<property name="checksum"/>
+  </class>
+</hibernate-mapping>

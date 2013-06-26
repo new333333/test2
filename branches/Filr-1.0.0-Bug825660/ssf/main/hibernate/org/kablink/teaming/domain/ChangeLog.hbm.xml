@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_ChangeLogs" name="org.kablink.teaming.domain.ChangeLog">
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <property name="zoneId" index="operationDate_clog"/>
+    <property name="docNumber" length="512"/>
+    <property name="userName" length="82"/>
+    <property name="userId"/>
+    <property name="operationDate" type="timestamp" index="operationDate_clog"/>
+    <property name="operation" length="32"/>
+    <property name="version"/>
+    <property name="xmlStrDeprecated" column="xmlString" length="100000000" type="org.springframework.orm.hibernate3.support.ClobStringType"/>   
+    <property name="xmlStr" column="xmlBytes" length="20000000" type="org.kablink.teaming.spring.orm.hibernate3.support.CompressedBlobStringType"/>
+   	<property name="entityType" length="16" index="entityOwner_clog"/>
+	<property name="entityId" index="entityOwner_clog"/>
+    <property name="owningBinderId" index="owningBinder_clog"/>
+ 	<property name="owningBinderKey" length="255" />
+ 
+  </class>
+</hibernate-mapping>
