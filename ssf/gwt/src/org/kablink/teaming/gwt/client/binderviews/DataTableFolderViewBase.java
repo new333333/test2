@@ -850,6 +850,16 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
+	 * Initializes the data table as being empty.
+	 */
+	private void displayEmptyDataTable(final AbstractCellTable<FolderRow> vdt) {
+		List<FolderRow> folderRows = new ArrayList<FolderRow>();
+		vdt.setRowData( 0, folderRows);
+		vdt.setRowCount(0            );
+		postProcessRowDataAsync(folderRows);
+	}
+	
+	/*
 	 * Asynchronously sets the size of the data table based on its
 	 * position in the view.
 	 */
@@ -2412,10 +2422,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				}
 
 				// ...and display a now items message.
-				List<FolderRow> folderRows = new ArrayList<FolderRow>();
-				vdt.setRowData( 0, folderRows);
-				vdt.setRowCount(0            );
-				postProcessRowDataAsync(folderRows);
+				displayEmptyDataTable(vdt);
 			}
 			
 			@Override
@@ -2434,10 +2441,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					// Yes!  Are we currently processing an authentication request?
 					if (hasAuthenticationGuid) {
 						// Yes!  That should never happen.  Not sure
-						// how we should handle this.
+						// how we should handle this.  Tell the user
+						// about the problem...
 						GwtClientHelper.deferredAlert(
 							m_messages.vibeDataTable_InternalError_NestedCloudFolderAuthentication());
 						
+						// ...and display an empty data table.
+						displayEmptyDataTable(vdt);
 						return;
 					}
 					

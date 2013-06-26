@@ -393,7 +393,7 @@
 
 /* Start:  Cloud Folder authentication dialog styles. */
 	.vibe-cloudFolderAuthenticationDlgBox .popupContent {background-color: white !important;}
-	.vibe-cloudFolderAuthenticationDlg_IFrame           {padding: 6px !important; visibility: visible !important;}
+	.vibe-cloudFolderAuthenticationDlg_Message          {padding: 10px; white-space: normal;}
 	.vibe-cloudFolderAuthenticationDlg_Panel            {width: 500px; height: 280px;}
 /* End:  Cloud Folder authentication dialog styles. */
 
