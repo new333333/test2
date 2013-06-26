@@ -711,6 +711,8 @@ public class NetFolderHelper
 
 			filterCtrls.add( ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE );
 			
+			filterCtrls.addIsNull( "topFolder" );
+			
 			// Are we looking for a net folder that is associated with a specific net folder root?
 			if ( rootName != null && rootName.length() > 0 )
 			{
@@ -721,8 +723,21 @@ public class NetFolderHelper
 			// Are we including "home directory" net folders?
 			if ( includeHomeDirNetFolders == false )
 			{
+				Binder parentBinder;
+				
 				// No
 				filterCtrls.add( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, false );
+				
+				// Get the binder where all non home dir net folders live.
+				parentBinder = getCoreDao().loadReservedBinder(
+														ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
+														zoneId );
+				if ( parentBinder != null )
+				{
+					filterCtrls.add(
+								ObjectKeys.FIELD_ENTITY_PARENTBINDER,
+								parentBinder );
+				}
 			}
 		}
 
