@@ -1112,13 +1112,28 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 							new String[] {binder.getPathName(), driver.getTitle()});
 				}
 				else {
-	    			ResourceSession session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.DELETE, binder.getParentBinder()).setPath(binder.getResourcePath());
-	    			try {
-	    				session.delete();
-	    			}
-	    			finally {
-	    				session.close();
-	    			}	
+					//Guard against deleting the whole mirrored source by accident
+					boolean okToDeleteSource = true;
+					if (binder.isAclExternallyControlled() && 
+							binder.getParentBinder() != null && binder.getParentBinder().isAclExternallyControlled() &&
+							binder.getParentBinder().getResourceDriverName().equals(binder.getResourceDriverName())) {
+						
+						//This is a sub-folder of a net folder. Check that it has a proper resource path
+						if (binder.getResourcePath() == null || binder.getResourcePath().equals("") || 
+								binder.getResourcePath().equals("/")) {
+							//Don't allow deleting of this source because it looks like the configuration wasn't properly completed.
+							okToDeleteSource = false;
+						}
+					}
+					if (okToDeleteSource) {
+		    			ResourceSession session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.DELETE, binder.getParentBinder()).setPath(binder.getResourcePath());
+		    			try {
+		    				session.delete();
+		    			}
+		    			finally {
+		    				session.close();
+		    			}	
+					}
 				}
     		}
     		catch(NotSupportedException e) {
