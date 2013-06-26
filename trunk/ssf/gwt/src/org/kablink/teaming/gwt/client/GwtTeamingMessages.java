@@ -1843,6 +1843,7 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the CloudFolderAuthenticationDlg.
 	String cloudFolderAuthenticationDlgHeader();
+	String cloudFolderAuthenticationDlgMessage();
 	
 	// Strings used in the CopyMoveEntriesDlg in copy mode.
 	String copyEntriesDlgCaption1_Entries();

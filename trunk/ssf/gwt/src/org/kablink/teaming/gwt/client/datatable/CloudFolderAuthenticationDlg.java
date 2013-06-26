@@ -45,12 +45,10 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.NamedFrame;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -94,7 +92,7 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 	 */
 	private CloudFolderAuthenticationDlg() {
 		// Initialize the superclass...
-		super(false, true, DlgButtonMode.Close, false);
+		super(false, true, DlgButtonMode.Ok, false);
 		
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
@@ -192,13 +190,12 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -208,19 +205,22 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 		// Clear the current contents of the dialog...
 		m_fp.clear();
 		
-		// ...create an IFRAME to run the authentication UI...
-		String frameName = ("ss_iframe_cloud_folder_authentication");
-		NamedFrame iFrame = new NamedFrame(frameName);
-		iFrame.addStyleName("vibe-cloudFolderAuthenticationDlg_IFrame");
-		iFrame.removeStyleName("gwt-Frame");
-		Element ife = iFrame.getElement();
-		ife.setId(frameName);
-		ife.setAttribute("frameborder", "0"   );
-		ife.setAttribute("scrolling",   "auto");
-		ife.setAttribute("height",      "80%" );
-		ife.setAttribute("width",       "96%" );
-		iFrame.setUrl(m_authenticationUrl);
-		m_fp.add(iFrame);
+		// ...add a label telling the user what's going on...
+		Label l = new Label(m_messages.cloudFolderAuthenticationDlgMessage());
+		l.addStyleName("vibe-cloudFolderAuthenticationDlg_Message");
+		m_fp.add(l);
+
+		// ...initiate the authentication...
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				GwtClientHelper.jsLaunchUrlInWindow(
+					m_authenticationUrl,
+					"ss_cloud_folder_authentication",
+					768,
+					1024);
+			}
+		});
 
 		// ...and show the dialog.
 		center();
@@ -253,13 +253,12 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 	 * authentication dialog.
 	 */
 	private static void runDlgAsync(final CloudFolderAuthenticationDlg cfaDlg, final String authenticationUrl, final CloudFolderAuthenticationCallback authenticationCallback) {
-		ScheduledCommand doRun = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				cfaDlg.runDlgNow(authenticationUrl, authenticationCallback);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		});
 	}
 	
 	/*
