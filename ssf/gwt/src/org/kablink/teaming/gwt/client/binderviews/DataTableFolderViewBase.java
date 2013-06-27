@@ -136,6 +136,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.CloudFolderAuthentication;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
@@ -2437,7 +2438,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Does querying the folder's rows require the user
 				// to authenticate?
 				FolderRowsRpcResponseData responseData = ((FolderRowsRpcResponseData) response.getResponseData());
-				if (responseData.requiresAuthentication()) {
+				if (responseData.requiresCloudFolderAuthentication()) {
 					// Yes!  Are we currently processing an authentication request?
 					if (hasAuthenticationGuid) {
 						// Yes!  That should never happen.  Not sure
@@ -2453,8 +2454,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					
 					// Run the authentication dialog.
 					runCloudFolderAuthenticationDlgAsync(
-						responseData.getAuthenticationUrl(),
-						responseData.getAuthenticationGuid(),
+						responseData.getCloudFolderAuthentication(),
 						vdt,
 						folderId,
 						range);
@@ -3224,13 +3224,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Asynchronously runs the Cloud Folder authentication dialog.
 	 */
-	private void runCloudFolderAuthenticationDlgAsync(final String authenticationUrl, final String authenticationGuid, final AbstractCellTable<FolderRow> vdt, final Long folderId, final Range range) {
+	private void runCloudFolderAuthenticationDlgAsync(final CloudFolderAuthentication cfAuthentication, final AbstractCellTable<FolderRow> vdt, final Long folderId, final Range range) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				runCloudFolderAuthenticationDlgNow(
-					authenticationUrl,
-					authenticationGuid,
+					cfAuthentication,
 					vdt,
 					folderId,
 					range);
@@ -3241,7 +3240,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Synchronously runs the Cloud Folder authentication dialog.
 	 */
-	private void runCloudFolderAuthenticationDlgNow(final String authenticationUrl, final String authenticationGuid, final AbstractCellTable<FolderRow> vdt, final Long folderId, final Range range) {
+	private void runCloudFolderAuthenticationDlgNow(final CloudFolderAuthentication cfAuthentication, final AbstractCellTable<FolderRow> vdt, final Long folderId, final Range range) {
 		// Have we instantiated a Cloud Folder authentication dialog
 		// yet?
 		if (null == m_cfaDlg) {
@@ -3261,8 +3260,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						@Override
 						public void execute() {
 							showCloudFolderAuthenticationDlgNow(
-								authenticationUrl,
-								authenticationGuid,
+								cfAuthentication,
 								vdt,
 								folderId,
 								range);
@@ -3276,8 +3274,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes, we've instantiated a Cloud Folder authentication
 			// dialog already!  Simply show it.
 			showCloudFolderAuthenticationDlgNow(
-				authenticationUrl,
-				authenticationGuid,
+				cfAuthentication,
 				vdt,
 				folderId,
 				range);
@@ -3394,10 +3391,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Synchronously shows the Cloud Folder authentication dialog.
 	 */
-	private void showCloudFolderAuthenticationDlgNow(final String authenticationUrl, final String authenticationGuid, final AbstractCellTable<FolderRow> vdt, final Long folderId, final Range range) {
+	private void showCloudFolderAuthenticationDlgNow(final CloudFolderAuthentication cfAuthentication, final AbstractCellTable<FolderRow> vdt, final Long folderId, final Range range) {
 		CloudFolderAuthenticationDlg.initAndShow(
 			m_cfaDlg,
-			authenticationUrl,
+			cfAuthentication,
 			new CloudFolderAuthenticationCallback() {
 				@Override
 				public void dialogReady() {
@@ -3412,7 +3409,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 								vdt,
 								folderId,
 								range,
-								authenticationGuid);
+								cfAuthentication.getAuthenticationGuid());
 						}
 					});
 				}

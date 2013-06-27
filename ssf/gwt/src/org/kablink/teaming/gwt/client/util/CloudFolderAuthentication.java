@@ -30,72 +30,65 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.server.util;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+package org.kablink.teaming.gwt.client.util;
 
 import org.kablink.teaming.gwt.client.util.CloudFolderType;
-import org.kablink.teaming.web.util.MiscUtil;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Helper methods for the GWT UI server code that services requests
- * dealing with common services based folders.
- *
+ * Class used to encapsulate information about a Cloud Folder
+ * authentication request.
+ *  
  * @author drfoster@novell.com
  */
-public class GwtCloudFolderHelper {
-	protected static Log m_logger = LogFactory.getLog(GwtCloudFolderHelper.class);
+public class CloudFolderAuthentication implements IsSerializable {
+	private CloudFolderType	m_cft;		//
+	private String			m_authenticationGuid;	// Use when a Cloud Folder...
+	private String			m_authenticationUrl;	// ...requires authentication.
 
-	// UNC paths used for the various cloud folder services supported.
-	private final static String BOXDOTNET_UNC	= "\\\\boxdotnet";
-	private final static String DROPBOX_UNC		= "\\\\dropbox";
-	private final static String GOOGLEDRIVE_UNC	= "\\\\googledrive";
-	private final static String SKYDRIVE_UNC	= "\\\\skydrive";
-	
-	/*
-	 * Class constructor that prevents this class from being
-	 * instantiated.
+	/**
+	 * Constructor method.
+	 * 
+	 * Zero parameter constructor required for GWT serialization.
 	 */
-	private GwtCloudFolderHelper() {
-		// Nothing to do.
+	public CloudFolderAuthentication() {
+		// Initialize the super class.
+		super();
 	}
 
 	/**
-	 * Maps a CloudFolderType to its appropriate base UNC path.
+	 * Constructor method.
 	 * 
 	 * @param cft
+	 * @param authenticationUrl
+	 * @param authenticationGuid
+	 */
+	public CloudFolderAuthentication(CloudFolderType cft, String authenticationUrl, String authenticationGuid) {
+		// Initialize this object...
+		this();
+		
+		// ..and store the parameters.
+		setCloudFolderType(   cft               );
+		setAuthenticationUrl( authenticationUrl );
+		setAuthenticationGuid(authenticationGuid);
+	}
+	
+	/**
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public static String getBaseUNCPathForService(CloudFolderType cft) {
-		String reply;
-		switch (cft) {
-		case BOXDOTNET:    reply = BOXDOTNET_UNC;   break;
-		case DROPBOX:      reply = DROPBOX_UNC;     break;
-		case GOOGLEDRIVE:  reply = GOOGLEDRIVE_UNC; break;
-		case SKYDRIVE:     reply = SKYDRIVE_UNC;    break;
-		default:           reply = null;            break;
-		}
-		return reply;
-	}
+	public CloudFolderType getCloudFolderType()    {return m_cft;               }
+	public String          getAuthenticationGuid() {return m_authenticationGuid;}
+	public String          getAuthenticationUrl()  {return m_authenticationUrl; }
 
 	/**
-	 * Returns the CloudFolderType implied by a Cloud Folder's root name.
+	 * Set'er methods.
 	 * 
-	 * @param cfRoot
-	 * 
-	 * @return
+	 * @param
 	 */
-	public static CloudFolderType getCloudFolderTypeFromRoot(String cfRoot) {
-		if (MiscUtil.hasString(cfRoot)) {
-			for (CloudFolderType cft:  CloudFolderType.values()) {
-				if (0 == cfRoot.indexOf(cft.name() + ".")) {
-					return cft;
-				}
-			}
-			return CloudFolderType.OTHER;
-		}
-		return CloudFolderType.NOT_A_CLOUD_FOLDER;
-	}
+	public void setCloudFolderType(   CloudFolderType cft)                {m_cft                = cft;               }
+	public void setAuthenticationGuid(String          authenticationGuid) {m_authenticationGuid = authenticationGuid;}
+	public void setAuthenticationUrl( String          authenticationUrl)  {m_authenticationUrl  = authenticationUrl; }
 }

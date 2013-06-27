@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.util.CloudFolderAuthentication;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -59,10 +60,10 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 //@SuppressWarnings("unused")
 public class CloudFolderAuthenticationDlg extends DlgBox {
+	private CloudFolderAuthentication			m_cfAuthentication;			// Information about the Cloud Folder authentication.
 	private CloudFolderAuthenticationCallback	m_authenticationCallback;	// Callback to tell the callee when the dialog is ready.
 	private GwtTeamingMessages					m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private String								m_authenticationUrl;		// URL to use for the dialog's IFRAME.
 	private VibeFlowPanel						m_fp;						// The panel that holds the dialog's contents.
 
 	// Number of milliseconds AFTER the dialog is ready before issuing
@@ -215,7 +216,7 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 			@Override
 			public void execute() {
 				GwtClientHelper.jsLaunchUrlInWindow(
-					m_authenticationUrl,
+					m_cfAuthentication.getAuthenticationUrl(),
 					"ss_cloud_folder_authentication",
 					768,
 					1024);
@@ -252,11 +253,11 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 	 * Asynchronously runs the given instance of the Cloud Folder
 	 * authentication dialog.
 	 */
-	private static void runDlgAsync(final CloudFolderAuthenticationDlg cfaDlg, final String authenticationUrl, final CloudFolderAuthenticationCallback authenticationCallback) {
+	private static void runDlgAsync(final CloudFolderAuthenticationDlg cfaDlg, final CloudFolderAuthentication cfAuthentication, final CloudFolderAuthenticationCallback authenticationCallback) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				cfaDlg.runDlgNow(authenticationUrl, authenticationCallback);
+				cfaDlg.runDlgNow(cfAuthentication, authenticationCallback);
 			}
 		});
 	}
@@ -265,9 +266,9 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 	 * Synchronously runs the given instance of the Cloud Folder
 	 * authentication dialog.
 	 */
-	private void runDlgNow(String authenticationUrl, CloudFolderAuthenticationCallback authenticationCallback) {
+	private void runDlgNow(CloudFolderAuthentication cfAuthentication, CloudFolderAuthenticationCallback authenticationCallback) {
 		// Store the parameters...
-		m_authenticationUrl      = authenticationUrl;
+		m_cfAuthentication       = cfAuthentication;
 		m_authenticationCallback = authenticationCallback;
 		
 		// ...and start populating the dialog.
@@ -312,7 +313,7 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 			
 			// initAndShow parameters,
 			final CloudFolderAuthenticationDlg		cfaDlg,
-			final String							authenticationUrl,
+			final CloudFolderAuthentication			cfAuthentication,
 			final CloudFolderAuthenticationCallback	authenticationCallback) {
 		GWT.runAsync(CloudFolderAuthenticationDlg.class, new RunAsyncCallback() {
 			@Override
@@ -336,7 +337,7 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(cfaDlg, authenticationUrl, authenticationCallback);
+					runDlgAsync(cfaDlg, cfAuthentication, authenticationCallback);
 				}
 			}
 		});
@@ -356,10 +357,10 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 	 * Initializes and shows the Cloud Folder authentication dialog.
 	 * 
 	 * @param cfaDlg
-	 * @param authenticationUrl
+	 * @param cfAuthentication
 	 * @param authenticationCallback
 	 */
-	public static void initAndShow(CloudFolderAuthenticationDlg cfaDlg, String authenticationUrl, CloudFolderAuthenticationCallback authenticationCallback) {
-		doAsyncOperation(null, cfaDlg, authenticationUrl, authenticationCallback);
+	public static void initAndShow(CloudFolderAuthenticationDlg cfaDlg, CloudFolderAuthentication cfAuthentication, CloudFolderAuthenticationCallback authenticationCallback) {
+		doAsyncOperation(null, cfaDlg, cfAuthentication, authenticationCallback);
 	}
 }

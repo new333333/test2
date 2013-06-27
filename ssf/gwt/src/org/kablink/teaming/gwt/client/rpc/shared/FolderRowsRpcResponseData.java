@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
+import org.kablink.teaming.gwt.client.util.CloudFolderAuthentication;
+import org.kablink.teaming.gwt.client.util.CloudFolderType;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -45,13 +47,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private int				m_startOffset;			//
-	private int				m_totalRows;			//
-	private List<FolderRow> m_folderRows;			//
-	private List<Long>		m_contributorIds;		//
-	private String			m_authenticationGuid;	// Use when a Cloud Folder...
-	private String			m_authenticationUrl;	// ...requires authentication.
-	
+	private CloudFolderAuthentication	m_cfAuthentication;	//
+	private int							m_startOffset;		//
+	private int							m_totalRows;		//
+	private List<FolderRow> 			m_folderRows;		//
+	private List<Long>					m_contributorIds;	//
+
 	/**
 	 * Constructor method.
 	 * 
@@ -83,17 +84,31 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 	
 	/**
 	 * Constructor method.
-	 *
-	 * @param authenticationUrl
-	 * @param authenticationGuid
+	 * 
+	 * @param cfAuthentication
 	 */
-	public FolderRowsRpcResponseData(String authenticationUrl, String authenticationGuid) {
+	public FolderRowsRpcResponseData(CloudFolderAuthentication cfAuthentication) {
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameters.
-		setAuthenticationUrl( authenticationUrl );
-		setAuthenticationGuid(authenticationGuid);
+		// ...and store the parameter.
+		setCloudFolderAuthentication(cfAuthentication);
+	}
+	
+	/**
+	 * Constructor method.
+	 *
+	 * @param cft
+	 * @param authenticationUrl
+	 * @param authenticationGuid
+	 */
+	public FolderRowsRpcResponseData(CloudFolderType cft, String authenticationUrl, String authenticationGuid) {
+		// Initialize this object.
+		this(
+			new CloudFolderAuthentication(
+				cft,
+				authenticationUrl,
+				authenticationGuid));
 	}
 	
 	/**
@@ -101,24 +116,22 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * 
 	 * @return
 	 */
-	public int             getStartOffset()        {return m_startOffset;       }
-	public int             getTotalRows()          {return m_totalRows;         }
-	public List<FolderRow> getFolderRows()         {return m_folderRows;        }
-	public List<Long>      getContributorIds()     {return m_contributorIds;    }
-	public String          getAuthenticationGuid() {return m_authenticationGuid;}
-	public String          getAuthenticationUrl()  {return m_authenticationUrl; }
+	public CloudFolderAuthentication getCloudFolderAuthentication() {return m_cfAuthentication;}
+	public int                       getStartOffset()               {return m_startOffset;     }
+	public int                       getTotalRows()                 {return m_totalRows;       }
+	public List<FolderRow>           getFolderRows()                {return m_folderRows;      }
+	public List<Long>                getContributorIds()            {return m_contributorIds;  }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setStartOffset(       int             startOffset)        {m_startOffset        = startOffset;       }
-	public void setTotalRows(         int             totalRows)          {m_totalRows          = totalRows;         }
-	public void setFolderRows(        List<FolderRow> folderRows)         {m_folderRows         = folderRows;        }
-	public void setContributorIds(    List<Long>      contributorIds)     {m_contributorIds     = contributorIds;    }
-	public void setAuthenticationGuid(String          authenticationGuid) {m_authenticationGuid = authenticationGuid;}
-	public void setAuthenticationUrl( String          authenticationUrl)  {m_authenticationUrl  = authenticationUrl; }
+	public void setCloudFolderAuthentication(CloudFolderAuthentication cfAuthentication) {m_cfAuthentication = cfAuthentication;}
+	public void setStartOffset(              int                       startOffset)      {m_startOffset      = startOffset;     }
+	public void setTotalRows(                int                       totalRows)        {m_totalRows        = totalRows;       }
+	public void setFolderRows(               List<FolderRow>           folderRows)       {m_folderRows       = folderRows;      }
+	public void setContributorIds(           List<Long>                contributorIds)   {m_contributorIds   = contributorIds;  }
 
 	/**
 	 * Returns a count of the folder rows being tracked.
@@ -131,12 +144,11 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 
 	/**
 	 * Returns true if the querying the folder's rows requires
-	 * authentication and false otherwise.
+	 * Cloud Folder authentication and false otherwise.
 	 * 
 	 * @return
 	 */
-	public boolean requiresAuthentication() {
-		return ((null != m_authenticationGuid) && (0 < m_authenticationGuid.length()) &&
-				(null != m_authenticationUrl)  && (0 < m_authenticationUrl.length()));
+	public boolean requiresCloudFolderAuthentication() {
+		return (null != m_cfAuthentication);
 	}
 }
