@@ -159,6 +159,7 @@ import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.CloudFolderAuthentication;
 import org.kablink.teaming.gwt.client.util.CloudFolderType;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
@@ -2722,13 +2723,13 @@ public class GwtViewHelper {
 				crit.addOrder(new Order(sortBy,                 sortAscend));
 				
 				// ...and issue the query and return the entries.
-				Binder nfBinder = SearchUtils.getNetFoldersRootBinder();
 				Map netFolderResults = bs.getBinderModule().searchFolderOneLevelWithInferredAccess(
-						crit,
-						Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
-						GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
-						GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
-						nfBinder);
+					crit,
+					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+					SearchUtils.getNetFoldersRootBinder());
+				
 				// Remove any results where the current user does not
 				// have AllowNetFolderAccess rights
 				SearchUtils.removeNetFoldersWithNoRootAccess(netFolderResults);
@@ -4032,10 +4033,13 @@ public class GwtViewHelper {
 							// Yes!  This folder requires
 							// authentication!  Return an appropriate
 							// response.
-							FolderRowsRpcResponseData reply = new FolderRowsRpcResponseData();
 							AuthException ae = ((AuthException) e);
-							reply.setAuthenticationGuid(ae.getUuid());
-							reply.setAuthenticationUrl( ae.getUrl() );
+							CloudFolderAuthentication cfAuth = new CloudFolderAuthentication(
+								GwtCloudFolderHelper.getCloudFolderTypeFromRoot(
+									folderInfo.getCloudFolderRoot()),
+								ae.getUrl(),
+								ae.getUuid());
+							FolderRowsRpcResponseData reply = new FolderRowsRpcResponseData(cfAuth);
 							return reply;
 						}
 						
