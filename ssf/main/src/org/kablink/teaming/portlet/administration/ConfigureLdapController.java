@@ -108,6 +108,9 @@ public class ConfigureLdapController extends  SAbstractController {
 						String principal = cNode.selectSingleNode("principal").getText();
 						String credentials = cNode.selectSingleNode("credentials").getText();
 						String url = cNode.selectSingleNode("url").getText();
+						// If the protocol is uppercase, users can't log in.  See bug 823936.
+						if ( url != null )
+							url = url.toLowerCase();
 						String userIdAttribute = cNode.selectSingleNode("userIdAttribute").getText();
 						String[] mappings = StringUtil.split(cNode.selectSingleNode("mappings").getText(), "\n");
 						LinkedList<LdapConnectionConfig.SearchInfo> userQueries = new LinkedList<LdapConnectionConfig.SearchInfo>();
