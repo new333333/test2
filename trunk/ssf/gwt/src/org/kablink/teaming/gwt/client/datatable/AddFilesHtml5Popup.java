@@ -46,6 +46,8 @@ import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.AbortFileUploadCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.GetHtml5SpecsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.Html5SpecsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UploadFileBlobCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsCmd;
@@ -128,10 +130,12 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private BinderInfo						m_folderInfo;				// The folder the add files is running against.
 	private Button							m_browseButton;				// Button that fronts the default browser 'Browse' button.
 	private Button							m_closeButton;				// Button next to the Browse to close the popup.
+	private byte[]							m_blobCache;				//
 	private DropPanel						m_dndPanel;					// The drag and drop panel that holds the popup's content.
 	private FlexTable						m_pbPanel;					// Panel that will hold the progress bars.
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
+	private Html5SpecsRpcResponseData		m_html5Specs;				// Holds the specifications about how to perform and HTML5 file upload.
 	private Image							m_busyImage;				// Image holding a spinner that's show while an upload is happening.
 	private Image							m_closeX;					// The 'X' in the upper right corner of the upload popup.
 	private InlineLabel						m_hintLabel;				// The label inside the hint box.
@@ -241,7 +245,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 
 		// ...and tell the server that we've aborted the upload so
 		// ...it can clean up anything it has hanging around.
-		final AbortFileUploadCmd cmd = new AbortFileUploadCmd(m_folderInfo);
+		final AbortFileUploadCmd cmd = new AbortFileUploadCmd(m_folderInfo, m_fileBlob);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -379,8 +383,8 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			}
 			boolean hasTail = GwtClientHelper.hasString(traceTail);
 			dump = ("AddFilesHtml5Popup." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
-			String data = m_fileBlob.getBlobData();
-			dump += ("\n\nData Read:  " + ((null == data) ? 0 : data.length()) + (m_fileBlob.isBlobBase64Encoded() ? " base64 encoded" : "") + " bytes."); 
+			byte[] data = m_fileBlob.getBlobData();
+			dump += ("\n\nData Read:  " + ((null == data) ? 0 : data.length) + (m_fileBlob.isBlobBase64Encoded() ? " base64 encoded" : "") + " bytes."); 
 			Window.alert(dump);
 		}
 	}
@@ -420,10 +424,9 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	/*
 	 * Returns the MD5 hash key for the given string.
 	 */
-	private String getMD5Hash(String text) {
-		byte[]		bs = text.getBytes();
+	private String getMD5Hash(byte[] bytes) {
 		MD5Digest	sd = new MD5Digest();
-		sd.update(bs, 0, bs.length);
+		sd.update(bytes, 0, bytes.length);
 		byte[] result = new byte[sd.getDigestSize()];
 		sd.doFinal(result, 0);
 		return byteArrayToHexString(result);
@@ -540,6 +543,44 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	private boolean isFirefoxFolder(File file) {
 		return ((0 == file.getSize()) && (!(GwtClientHelper.hasString(file.getType()))) && GwtClientHelper.jsIsFirefox());
+	}
+	
+	/*
+	 * Asynchronously loads the HTML5 upload specifications and
+	 * populates the popup.
+	 */
+	private void loadPart1Async() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart1Now();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the HTML5 upload specifications and
+	 * populates the popup.
+	 */
+	private void loadPart1Now() {
+		GwtClientHelper.executeCommand(
+				new GetHtml5SpecsCmd(),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetHtml5Specs());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Store the HTML5 upload specifications and complete
+				// the population of the popup.
+				m_html5Specs = ((Html5SpecsRpcResponseData) response.getResponseData());
+				populatePopupAsync();
+			}
+		});
 	}
 	
 	/**
@@ -813,18 +854,19 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private void processBlobNow() {
 		// Extract the data for the blob we just read...
 		final boolean lastBlob = ((m_fileBlob.getBlobStart() + m_fileBlob.getBlobSize()) >= m_fileBlob.getFileSize());
-		String blobData;
+		byte[] blobData;
 		if (DEFAULT_READ_TYPE.equals(ReadType.ARRAY_BUFFER)) {
 			ArrayBuffer buffer = m_reader.getArrayBufferResult();
-			Int8Array array = Int8ArrayNative.create(buffer);
-			blobData = toBase64(array);
-			m_fileBlob.setBlobBase64Encoded(true);
+			Int8Array   array  = Int8ArrayNative.create(buffer);
+			if (m_fileBlob.isBlobBase64Encoded())
+			     blobData = toBase64(array).getBytes();
+			else blobData = toBytes( array);
 		}
 		else {
-			blobData = m_reader.getStringResult();
-			if (m_fileBlob.isBlobBase64Encoded()) {
-				blobData = FileUtils.base64encode(blobData);
-			}
+			String blobString = m_reader.getStringResult();
+			if (m_fileBlob.isBlobBase64Encoded())
+			     blobData = FileUtils.base64encode(blobString).getBytes();
+			else blobData = blobString.getBytes();
 		}
 		m_fileBlob.setBlobData(              blobData );
 		m_fileBlob.setBlobMD5Hash(getMD5Hash(blobData));
@@ -999,7 +1041,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private void runPopupNow(BinderInfo fi) {
 		// Store the parameter and start populating the popup.
 		m_folderInfo = fi;
-		populatePopupAsync();
+		loadPart1Async();
 	}
 
 	/*
@@ -1101,6 +1143,21 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 }
 	
 	/*
+	 * Manually converts an Int8Array to a byte[].
+	 */
+	private byte[] toBytes(Int8Array array) {
+		int al = array.length();
+		byte[] reply;
+		if ((null != m_blobCache) && (m_blobCache.length == al))
+		     reply = m_blobCache;
+		else reply = new byte[al];
+		for (int i = 0; i < al; i += 1) {
+			reply[i] = array.get(i);
+		}
+		return reply;
+	}
+	
+	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */
 	private void unregisterEvents() {
@@ -1160,9 +1217,41 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			File file = getCurrentFile();
 			m_hintLabel.setText(m_messages.addFilesHtml5PopupBusy(file.getName(), ++m_readThis, m_readTotal));
 			try {
+				// ...determine the appropriate blob size...
+				long fileSize = file.getSize();
+				long blobSize;
+				if (m_html5Specs.isFixed()) {
+					blobSize = m_html5Specs.getFixedBlobSize();
+				}
+				else {
+					blobSize = (fileSize / m_html5Specs.getVariableBlobsPerFile());
+					blobSize = Math.max(blobSize, m_html5Specs.getVariableMinBlobSize());
+					if (0 < m_html5Specs.getVariableMaxBlobSize()) {
+						blobSize = Math.min(blobSize, m_html5Specs.getVariableMaxBlobSize());
+					}
+				}
+				if (TRACE_BLOBS) {
+					GwtClientHelper.debugAlert("BlobSize: " + blobSize + ", Encoded: " + m_html5Specs.isEncode());
+				}
+				
+				// ...add a blob cache used to hold the bytes read from
+				// ...an ArrayBuffer...
+				m_blobCache = new byte[(int) blobSize];
+				
 				// ...and upload it by blobs.
-				m_fileBlob = new FileBlob(file.getName(), getFileUTC(file), getFileUTCMS(file), file.getSize(), new Date().getTime());
-				readNextBlobNow(file.slice(m_fileBlob.getBlobStart(), m_fileBlob.getBlobSize()));
+				m_fileBlob = new FileBlob(
+					file.getName(),
+					getFileUTC(  file),
+					getFileUTCMS(file),
+					fileSize,
+					new Date().getTime(),
+					m_html5Specs.isEncode(),
+					blobSize);
+				
+				readNextBlobNow(
+					file.slice(
+						m_fileBlob.getBlobStart(),
+						m_fileBlob.getBlobSize()));
 			}
 			
 			catch (Throwable t) {

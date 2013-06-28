@@ -164,6 +164,7 @@ import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
 import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
+import org.kablink.teaming.gwt.server.util.GwtHtml5Helper;
 import org.kablink.teaming.gwt.server.util.GwtLogHelper;
 import org.kablink.teaming.gwt.server.util.GwtNetFolderHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
@@ -244,7 +245,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case ABORT_FILE_UPLOAD:
 		{
 			AbortFileUploadCmd afuCmd = ((AbortFileUploadCmd) cmd);
-			BooleanRpcResponseData result = GwtViewHelper.abortFileUpload( this, getRequest( ri ), afuCmd.getFolderInfo() );
+			BooleanRpcResponseData result = GwtHtml5Helper.abortFileUpload( this, getRequest( ri ), afuCmd.getFolderInfo(), afuCmd.getFileBlob() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1529,6 +1530,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = getHorizontalTree( ri, ghtCmd.getBinderId(), ghtCmd.getTreeMode() );
 			responseData = new GetHorizontalTreeRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_HTML5_SPECS:
+		{
+			@SuppressWarnings( "unused" )
+			GetHtml5SpecsCmd gcwCmd = ((GetHtml5SpecsCmd) cmd);
+			Html5SpecsRpcResponseData result = GwtHtml5Helper.getHtml5UploadSpecs( this, getRequest( ri ) );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
@@ -3269,7 +3279,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case UPLOAD_FILE_BLOB:
 		{
 			UploadFileBlobCmd ufbCmd = ((UploadFileBlobCmd) cmd);
-			StringRpcResponseData result = GwtViewHelper.uploadFileBlob( this, getRequest( ri ), ufbCmd.getFolderInfo(), ufbCmd.getFileBlob(), ufbCmd.isLastBlob() );
+			StringRpcResponseData result = GwtHtml5Helper.uploadFileBlob( this, getRequest( ri ), ufbCmd.getFolderInfo(), ufbCmd.getFileBlob(), ufbCmd.isLastBlob() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3335,7 +3345,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case VALIDATE_UPLOADS:
 		{
 			ValidateUploadsCmd veaCmd  = ((ValidateUploadsCmd) cmd);
-			ValidateUploadsRpcResponseData responseData = GwtViewHelper.validateUploads( this, getRequest( ri ), veaCmd.getFolderInfo(), veaCmd.getUploads() );
+			ValidateUploadsRpcResponseData responseData = GwtHtml5Helper.validateUploads( this, getRequest( ri ), veaCmd.getFolderInfo(), veaCmd.getUploads() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

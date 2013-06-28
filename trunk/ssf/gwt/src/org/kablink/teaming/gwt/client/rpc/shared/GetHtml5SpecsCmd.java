@@ -30,45 +30,23 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
-
-import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 /**
  * This class holds all of the information necessary to execute the
- * 'abort file upload' command.
+ * 'get HTML5 specs' command.
  * 
  * @author drfoster@novell.com
  */
-public class AbortFileUploadCmd extends VibeRpcCmd {
-	private BinderInfo	m_folderInfo;	//
-	private FileBlob	m_fileBlob;		//
-	
+public class GetHtml5SpecsCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public AbortFileUploadCmd() {
+	public GetHtml5SpecsCmd() {
 		// Initialize the super class.
 		super();
-	}
-	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param folderInfo
-	 * @param fileBlob
-	 */
-	public AbortFileUploadCmd(BinderInfo folderInfo, FileBlob fileBlob) {
-		// Initialize this object...
-		this();
-		
-		// ...and store the parameters.
-		setFolderInfo(folderInfo);
-		setFileBlob(  fileBlob  );
 	}
 	
 	/**
@@ -76,16 +54,12 @@ public class AbortFileUploadCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public BinderInfo getFolderInfo() {return m_folderInfo;}
-	public FileBlob   getFileBlob()   {return m_fileBlob;  }
-
+	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
-	public void setFileBlob(  FileBlob   fileBlob)   {m_fileBlob   = fileBlob;  }
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -96,6 +70,6 @@ public class AbortFileUploadCmd extends VibeRpcCmd {
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.ABORT_FILE_UPLOAD.ordinal();
+		return VibeRpcCmdType.GET_HTML5_SPECS.ordinal();
 	}
 }

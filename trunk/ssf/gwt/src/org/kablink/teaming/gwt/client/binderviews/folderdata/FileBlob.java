@@ -46,9 +46,9 @@ public class FileBlob implements IsSerializable {
 	
 	// The following pertain to blobs from the file as they're uploaded.
 	private boolean	m_blobBase64Encoded;	//
+	private byte[]	m_blobData;				//
 	private long	m_blobSize;				//
 	private long	m_blobStart;			//
-	private String	m_blobData;				//
 	private String	m_blobMD5Hash;			//
 	
 	// The following pertain to the file itself.
@@ -57,16 +57,6 @@ public class FileBlob implements IsSerializable {
 	private String	m_fileName;				//
 	private String	m_fileUTC;				//
 
-	// The following controls whether file blobs sent to the server
-	// are base64 encoded.  Note that when the files are read
-	// using an ArrayBuffer, they are ALWAYS base64 encoded regardless
-	// of this setting.
-	private final static boolean BASE64_ENCODE_BLOBS	= true;
-	
-	// The following defines the size a blob read and sent to the
-	// server in any one upload cycle.
-	private final static long FILE_BLOB_SIZE	= 16384l;	//
-	
 	/**
 	 * Constructor method.
 	 * 
@@ -86,21 +76,21 @@ public class FileBlob implements IsSerializable {
 	 * @param fileUTCMS
 	 * @param fileSize
 	 * @param uploadId
+	 * @param base64Encode
+	 * @param blobSize
 	 */
-	public FileBlob(String fileName, String fileUTC, Long fileUTCMS, long fileSize, Long uploadId) {
+	public FileBlob(String fileName, String fileUTC, Long fileUTCMS, long fileSize, Long uploadId, boolean base64Encode, long blobSize) {
 		// Initialize this object...
 		this();
 
-		// ...store the parameters...
-		setUploadId( uploadId );
-		setFileName( fileName );
-		setFileUTC(  fileUTC  );
-		setFileUTCMS(fileUTCMS);
-		setFileSize( fileSize );
-		
-		// ...and initialize everything else.
-		setBlobBase64Encoded(BASE64_ENCODE_BLOBS);
-		setBlobSize(         FILE_BLOB_SIZE     );
+		// ...and store the parameters.
+		setUploadId(         uploadId    );
+		setFileName(         fileName    );
+		setFileUTC(          fileUTC     );
+		setFileUTCMS(        fileUTCMS   );
+		setFileSize(         fileSize    );
+		setBlobBase64Encoded(base64Encode);
+		setBlobSize(         blobSize    );
 	}
 
 	/**
@@ -111,9 +101,9 @@ public class FileBlob implements IsSerializable {
 	public Long getUploadId() {return m_uploadId;}
 	
 	public boolean isBlobBase64Encoded() {return m_blobBase64Encoded;}
+	public byte[]  getBlobData()         {return m_blobData;         }
 	public long    getBlobSize()         {return m_blobSize;         }
 	public long    getBlobStart()        {return m_blobStart;        }
-	public String  getBlobData()         {return m_blobData;         }
 	public String  getBlobMD5Hash()      {return m_blobMD5Hash;      }
 	
 	public long   getFileSize()  {return m_fileSize; }
@@ -129,9 +119,9 @@ public class FileBlob implements IsSerializable {
 	public void setUploadId(Long uploadId) {m_uploadId = uploadId;}
 	
 	public void setBlobBase64Encoded(boolean blobBase64Encoded) {m_blobBase64Encoded = blobBase64Encoded;}
+	public void setBlobData(         byte[]  blobData)          {m_blobData          = blobData;         }
 	public void setBlobSize(         long    blobSize)          {m_blobSize          = blobSize;         }
 	public void setBlobStart(        long    blobStart)         {m_blobStart         = blobStart;        }
-	public void setBlobData(         String  blobData)          {m_blobData          = blobData;         }
 	public void setBlobMD5Hash(      String  blobMD5Hash)       {m_blobMD5Hash       = blobMD5Hash;      }
 	
 	public void setFileSize(         long    fileSize)          {m_fileSize          = fileSize;         }

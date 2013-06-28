@@ -380,6 +380,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFolderSortSetting();
 	String rpcFailure_GetFolderToolbarItems();
 	String rpcFailure_GetFooterToolbarItems();
+	String rpcFailure_GetHtml5Specs();
 	String rpcFailure_GetJitsZoneConfig();
 	String rpcFailure_GetLandingPageData();
 	String rpcFailure_GetListOfAttachments();
