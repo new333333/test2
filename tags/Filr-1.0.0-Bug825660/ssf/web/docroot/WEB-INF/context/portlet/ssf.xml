@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../../dtd/spring-beans.dtd">
+<beans>
+
+	<!-- Controllers -->
+
+	<bean id="viewController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ViewController" />
+	<bean id="closeWindowController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.CloseWindowController" />
+	<bean id="reloadOpenerController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ReloadOpenerController" />
+	<bean id="reloadPreviousPageController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ReloadPreviousPageController" />
+	<bean id="reloadBinderController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ReloadBinderController" />
+	<bean id="viewBinderInParentController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ViewBinderInParentController" />
+	<bean id="editController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.EditController" />
+	<bean id="appletResponseController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AppletResponseController" />
+
+	<bean id="folderAddEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AddEntryController" />
+	<bean id="folderAddFolderController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AddFolderController" />
+	<bean id="profileAddEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.profile.AddEntryController" />
+
+	<bean id="filterController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.FilterController" />
+	<bean id="accessControlController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.AccessControlController" />
+	<bean id="configureController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ConfigureController" >
+			<property name="smtpService"><ref bean="smtpService"/></property>
+	</bean>
+	<bean id="definitionController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.definitionBuilder.ViewController" />
+	<bean id="binderModifyController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ModifyBinderController" />
+	<bean id="dashboardModifyController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ModifyDashboardController" />
+	<bean id="advancedSearchController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.AdvancedSearchController" />	
+	<bean id="entryVersionController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.EntryVersionController" />
+	<bean id="entryWorkflowHistoryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.EntryWorkflowHistoryController" />
+	<bean id="viewSuccessController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ViewSuccessController" />
+
+	<bean id="profileModifyEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.profile.ModifyEntryController" />
+	<bean id="folderModifyEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ModifyEntryController" />
+	<bean id="addAttachmentEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AddAttachmentController" />
+	<bean id="modifyFileController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ModifyFileController" />
+
+	<bean id="profileViewEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.profile.ViewEntryController" />
+	<bean id="folderViewEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ViewEntryController" />
+	<bean id="binderViewPermalinkController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ViewPermalinkController" />
+
+	<bean id="listProfilesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.profile.ListProfilesController" />
+	<bean id="listFolderController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ListFolderController" />
+	<bean id="listWSController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.workspaceTree.WorkspaceTreeController" />
+
+	<bean id="updatePresenceController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.presence.UpdatePresenceController" />
+	<bean id="emailConfigController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.EmailConfigController" />
+	<bean id="sendEmailController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.SendMailController" />
+	<bean id="meetingController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.MeetingController" />	
+	<bean id="teamController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.TeamController" />	
+	<bean id="sendEntryEmailController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.SendEntryMailController" />
+		
+	<bean id="siteAdministrationController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ViewController" />
+	<bean id="importDefinitionController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ImportDefinitionController" />
+	<bean id="importProfilesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ImportProfilesController" />
+	<bean id="importTemplatesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureConfigurationController" />
+	<bean id="loginReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LoginReportController" />
+	<bean id="licenseReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LicenseReportController" />
+	<bean id="manageLicenseController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageLicenseController" />
+	<bean id="manageBinderQuotaController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ManageBinderQuotaController" />
+	<bean id="manageVersionControlsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ManageVersionControlsController" />
+	<bean id="manageFolderEntryTypesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ManageFolderEntryTypesController" />
+	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ActivityReportController" />
+	<bean id="activityReportByUserController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ActivityReportByUserController" />
+	<bean id="userAccessReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.UserAccessReportController" />
+	<bean id="emailReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.EmailReportController" />
+	<bean id="xssReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.XssReportController" />
+	<bean id="quotaReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.QuotaReportController" />
+	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.WorkflowReportController" />
+	<bean id="creditsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.CreditsController" />
+	<bean id="clipboardController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ClipboardController" />
+	<bean id="manageDefinitionsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageDefinitionsController" />
+    <bean id="extensionsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ExtensionsController" />
+    <bean id="customExtensionController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.CustomExtensionController" />
+    <bean id="binderReportsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ReportsController" />
+    <bean id="entryAclReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.EntryAclReportController" />
+
+	<bean id="folderAjaxController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AjaxController" />
+	<bean id="dashboardAjaxController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.DashboardAjaxController" />
+	<bean id="typeToFindAjaxController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.TypeToFindAjaxController" />
+	<bean id="mobileAjaxController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.MobileAjaxController" />
+	<bean id="relevanceAjaxController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.RelevanceAjaxController" />
+	
+	<bean id="mirroredFolderSynchronizationController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.MirroredFolderSynchronizationController" />
+
+	<bean id="adminViewChangeLogController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ViewChangeLogController" />
+	<bean id="adminExportImportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ExportImportController" />
+	<bean id="adminConfigureLdapController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureLdapController" />
+	<bean id="adminConfigureMobileAccessController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureMobileAccessController" />
+	<bean id="adminConfigureHomePageController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureHomePageController" />
+	<bean id="adminConfigureUserAccessController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureUserAccessController" />
+	<bean id="adminConfigureRolesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureRolesController" />
+	<bean id="adminConfigurePostingJobController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigurePostingJobController" />
+	<bean id="adminConfigureFileVersionAgingJobController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureFileVersionAgingJobController" />
+	<bean id="adminConfigureSearchIndexController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchIndexController" />
+	<bean id="adminConfigureSearchNodesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchNodesController" />
+	<bean id="adminConfigureScheduleController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureScheduleController" />
+	<bean id="adminConsoleHomePageController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.AdminConsoleHomePageController" />
+	<bean id="adminLogFileController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LogFileController" />
+	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageGroupsController" />
+	<bean id="adminManageQuotasController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageQuotasController" />
+	<bean id="adminManageFileUploadLimitsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageFileUploadLimitsController" />
+	<bean id="adminManageResourceDriverController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageResourceDriverController" />
+	<bean id="adminManageUserAccountsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageUserAccountsController" />
+	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationsController" />
+	<bean id="adminManageApplicationGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationGroupsController" />
+	<bean id="adminManageZonesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageZonesController" />
+	<bean id="adminConfigureConfigurationController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureConfigurationController" />
+	<bean id="definitionBuilderXmlController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.definitionBuilder.ViewDefinitionXmlController" />
+
+	<bean id="playTutorialController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.PlayTutorialController" />
+
+	<bean id="loginController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.LoginController" />
+	
+	<bean id="manageRuntimeStatisticsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageRuntimeStatisticsController" />
+
+	<bean id="executeJspController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ExecuteJspController" />
+	
+ 	<!-- Handlers -->
+
+	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
+			<property name="portletModeParameterMap">
+			<map>
+				<entry key="view">
+					<map>
+						<entry key="build_filter"><ref bean="filterController"/></entry>
+						<entry key="close_window"><ref bean="closeWindowController"/></entry>
+						<entry key="applet_response"><ref bean="appletResponseController"/></entry>
+						<entry key="configure_access_control"><ref bean="accessControlController"/></entry>
+						<entry key="configure_definitions"><ref bean="configureController"/></entry>
+						<entry key="definition_builder"><ref bean="definitionController"/></entry>
+						<entry key="viewDefinitionXml"><ref bean="definitionBuilderXmlController"/></entry>
+						<entry key="modify_binder"><ref bean="binderModifyController"/></entry>
+						<entry key="modify_dashboard"><ref bean="dashboardModifyController"/></entry>
+						<entry key="reload_opener"><ref bean="reloadOpenerController"/></entry>
+						<entry key="view_binder_in_parent"><ref bean="viewBinderInParentController"/></entry>
+						<entry key="reload_opener_parent"><ref bean="reloadOpenerController"/></entry>
+						<entry key="reload_previous_page"><ref bean="reloadPreviousPageController"/></entry>
+						<entry key="reload_binder"><ref bean="reloadBinderController"/></entry>
+						<entry key="advanced_search"><ref bean="advancedSearchController"/></entry>
+						<entry key="clipboard"><ref bean="clipboardController"/></entry>
+												
+						<entry key="add_folder_entry"><ref bean="folderAddEntryController"/></entry>
+						<entry key="add_folder_reply"><ref bean="folderAddEntryController"/></entry>
+						
+						<entry key="add_folder_attachment"><ref bean="folderAddEntryController"/></entry>
+						
+						<entry key="add_profile_entry"><ref bean="profileAddEntryController"/></entry>
+						<entry key="add_binder"><ref bean="folderAddFolderController"/></entry>
+						<entry key="modify_folder_entry"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="add_entry_attachment"><ref bean="addAttachmentEntryController"/></entry>
+						<entry key="lock_folder_entry"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="unlock_folder_entry"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="start_workflow"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="stop_workflow"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="modify_profile_entry"><ref bean="profileModifyEntryController"/></entry>
+						<entry key="modify_file"><ref bean="modifyFileController"/></entry>
+						<entry key="view_folder_entry"><ref bean="folderViewEntryController"/></entry>
+						<entry key="view_permalink"><ref bean="binderViewPermalinkController"/></entry>
+						<entry key="view_profile_entry"><ref bean="profileViewEntryController"/></entry>
+						<entry key="view_folder_listing"><ref bean="listFolderController"/></entry>
+						<entry key="view_profile_listing"><ref bean="listProfilesController"/></entry>
+						<entry key="view_ws_listing"><ref bean="listWSController"/></entry>
+						<entry key="config_email"><ref bean="emailConfigController"/></entry>
+						<entry key="send_email"><ref bean="sendEmailController"/></entry>
+						<entry key="add_meeting"><ref bean="meetingController"/></entry>					
+						<entry key="add_team_member"><ref bean="teamController"/></entry>					
+						<entry key="send_entry_email"><ref bean="sendEntryEmailController"/></entry>
+						<entry key="view_editable_history"><ref bean="entryVersionController"/></entry>
+						<entry key="view_workflow_history"><ref bean="entryWorkflowHistoryController"/></entry>						
+						<entry key="view_credits"><ref bean="creditsController"/></entry>
+						<entry key="schedule_synchronization"><ref bean="mirroredFolderSynchronizationController"/></entry>
+						<entry key="play_tutorial"><ref bean="playTutorialController"/></entry>
+						<entry key="custom"><ref bean="customExtensionController"/></entry>
+						<entry key="binder_reports"><ref bean="binderReportsController"/></entry>
+						<entry key="view_entry_acl_report"><ref bean="entryAclReportController"/></entry>
+						<entry key="view_success"><ref bean="viewSuccessController"/></entry>
+
+						<entry key="execute_jsp"><ref bean="executeJspController"/></entry>
+
+						<!-- Keys starting with "__" can handle the user not being logged in -->
+						<entry key="__view_presence"><ref bean="updatePresenceController"/></entry>
+						<entry key="__ajax_request"><ref bean="folderAjaxController"/></entry>
+						<entry key="__ajax_dashboard"><ref bean="dashboardAjaxController"/></entry>
+						<entry key="__ajax_find"><ref bean="typeToFindAjaxController"/></entry>
+						<entry key="__ajax_mobile"><ref bean="mobileAjaxController"/></entry>
+						<entry key="__ajax_relevance"><ref bean="relevanceAjaxController"/></entry>
+						<entry key="__login"><ref bean="loginController"/></entry>
+
+						<entry key="site_administration"><ref bean="siteAdministrationController"/></entry>
+						<entry key="import_definition"><ref bean="importDefinitionController"/></entry>
+						<entry key="import_profiles"><ref bean="importProfilesController"/></entry>
+						<entry key="import_templates"><ref bean="importTemplatesController"/></entry>
+						<entry key="login_report"><ref bean="loginReportController"/></entry>
+						<entry key="license_report"><ref bean="licenseReportController"/></entry>
+						<entry key="manage_license"><ref bean="manageLicenseController"/></entry>
+						<entry key="activity_report"><ref bean="activityReportController"/></entry>
+						<entry key="activity_report_by_user"><ref bean="activityReportByUserController"/></entry>
+						<entry key="quota_report"><ref bean="quotaReportController"/></entry>
+						<entry key="quota_exceeded_report"><ref bean="quotaReportController"/></entry>
+						<entry key="quota_highwater_exceeded_report"><ref bean="quotaReportController"/></entry>
+						<entry key="user_access_report"><ref bean="userAccessReportController"/></entry>
+						<entry key="email_report"><ref bean="emailReportController"/></entry>
+						<entry key="xss_report"><ref bean="xssReportController"/></entry>
+						<entry key="view_change_log"><ref bean="adminViewChangeLogController"/></entry>
+						<entry key="export_import"><ref bean="adminExportImportController"/></entry>
+						<entry key="manage_binder_quota"><ref bean="manageBinderQuotaController"/></entry>
+						<entry key="manage_version_controls"><ref bean="manageVersionControlsController"/></entry>
+						<entry key="manage_folder_entry_types"><ref bean="manageFolderEntryTypesController"/></entry>
+						<entry key="workflow_report"><ref bean="workflowReportController"/></entry>
+						<entry key="configure_ldap"><ref bean="adminConfigureLdapController"/></entry>
+						<entry key="configure_roles"><ref bean="adminConfigureRolesController"/></entry>
+						<entry key="configure_posting_job"><ref bean="adminConfigurePostingJobController"/></entry>
+						<entry key="configure_file_version_aging_job"><ref bean="adminConfigureFileVersionAgingJobController"/></entry>
+						<entry key="configure_index"><ref bean="adminConfigureSearchIndexController"/></entry>
+						<entry key="configure_search_nodes"><ref bean="adminConfigureSearchNodesController"/></entry>
+						<entry key="configure_mobile_access"><ref bean="adminConfigureMobileAccessController"/></entry>
+						<entry key="configure_home_page"><ref bean="adminConfigureHomePageController"/></entry>
+						<entry key="configure_user_access"><ref bean="adminConfigureUserAccessController"/></entry>
+						<entry key="configure_schedule"><ref bean="adminConfigureScheduleController"/></entry>
+						<entry key="get_log_files"><ref bean="adminLogFileController"/></entry>
+						<entry key="manage_groups"><ref bean="adminManageGroupsController"/></entry>
+						<entry key="manage_quotas"><ref bean="adminManageQuotasController"/></entry>
+						<entry key="manage_file_upload_limits"><ref bean="adminManageFileUploadLimitsController"/></entry>
+						<entry key="manage_resource_drivers"><ref bean="adminManageResourceDriverController"/></entry>
+						<entry key="manage_user_accounts"><ref bean="adminManageUserAccountsController"/></entry>
+						<entry key="manage_applications"><ref bean="adminManageApplicationsController"/></entry>
+						<entry key="manage_application_groups"><ref bean="adminManageApplicationGroupsController"/></entry>
+						<entry key="manage_zones"><ref bean="adminManageZonesController"/></entry>
+						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
+						<entry key="manage_definitions"><ref bean="manageDefinitionsController"/></entry>
+						<entry key="manage_extensions"><ref bean="extensionsController"/></entry>
+						<entry key="manage_runtime_statistics"><ref bean="manageRuntimeStatisticsController"/></entry>
+						<entry key="view_admin_console_home_page"><ref bean="adminConsoleHomePageController"/></entry>
+
+					</map>
+				</entry>
+				<entry key="edit">
+					<map>
+					</map>
+				</entry>
+				<entry key="help">
+					<map>
+					</map>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="portletModeHandlerMapping" parent="portletModeHandlerMappingTemplate">
+		<property name="portletModeMap">
+			<map>
+				<entry key="view"><ref bean="viewController"/></entry>
+				<entry key="edit"><ref bean="editController"/></entry>
+<!--				<entry key="help"><ref bean="forumHelpController"/></entry> -->
+			</map>
+		</property>
+	</bean>
+
+	<bean id="defaultExceptionHandler" parent="portletDefaultExceptionHandlerTemplate"/>
+
+</beans>

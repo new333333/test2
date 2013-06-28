@@ -1,0 +1,104 @@
+/* */
+
+/* ########################################################################################################### */
+
+
+/* Start:  CellTable styles for Novell Vibe */
+.cellTableWidget {}
+
+.cellTableLoading {}
+
+.cellTableFooter {
+	border-top: 2px solid #6f7277;
+	padding: 3px 15px;
+	text-align: left;
+	color: #4b4a4a;
+	text-shadow: #ddf 1px 1px 0;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+@sprite .cellTableHeader {
+	gwt-image: 'headerBackground';
+	background-repeat: repeat-x;
+	background-position: bottom;
+	/* border-right: 1px solid #d2d5d1; */
+	border-top: 1px solid #d2d5d1;
+	border-bottom: 1px solid #b8b8b8;
+	padding: 2px 8px;
+	text-align: left;
+	color: #666666;
+	font-size: 12px;
+	overflow: hidden;
+	white-space: nowrap;
+	font-weight: normal;
+	text-shadow: 0px 0px 0 #DDDDFF;
+	height: 22px;
+}
+
+.cellTableCell {
+	padding: 3px 8px;
+	border: 0px;
+}
+
+.cellTableFirstColumnFooter {}
+.cellTableFirstColumnHeader {border-left: 1px solid #d2d5d1;}
+.cellTableLastColumnFooter {}
+.cellTableLastColumnHeader {}
+
+.cellTableSortableHeader {
+	cursor: pointer;
+	font-weight : normal;
+}
+
+.cellTableSortableHeader:hover {
+	color: #135c8f;
+	background-color: blue;
+}
+
+.cellTableSortedHeaderAscending {	font-weight: bold; color: #000;}
+.cellTableSortedHeaderDescending {font-weight: bold;  color: #000;}
+
+.cellTableEvenRow {background: #ffffff;}
+.cellTableEvenRowCell {	
+	border-right: 0px;
+	border-bottom: 1px solid #d2d5d1;
+	font-size: 0.95em;
+}
+
+.cellTableOddRow {background: #ffffff;}
+.cellTableOddRowCell {
+	border-right: 0px;
+	border-bottom: 1px solid #d2d5d1;
+	font-size: 0.95em;
+}
+
+.cellTableHoveredRow {background: #f6f6f6;}
+.cellTableHoveredRowCell {
+	border: 0px;
+	border-bottom: 1px solid #d2d5d1;
+}
+
+.cellTableKeyboardSelectedRow {background: #f6f6f6;}
+.cellTableKeyboardSelectedRowCell {
+	border: 0px;
+	border-bottom: 1px solid #d2d5d1;
+}
+
+.cellTableSelectedRow {
+	background: #cce9ee;
+	height: auto;
+	overflow: auto;
+}
+.cellTableSelectedRowCell {
+	color: #000;
+	border: 0px;
+	border-bottom: 1px solid #c4c4c4;
+}
+
+.cellTableKeyboardSelectedCell {}
+
+.cellTableFirstColumn {border-left: 1px solid #d2d5d1;}
+.cellTableLastColumn {border-right: 1px solid #d2d5d1;}
+
+/* End: */

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="15" internalId="402883b90d0de1f3010d0df5582c0007">
+  <attribute name="templateTitle" type="string">__template_external_user_workspace</attribute>
+  <attribute name="templateDescription" type="description">__template_external_user_workspace_description</attribute>
+  <attribute name="title" type="string">__template_external_user_workspace</attribute>
+  <attribute name="description" type="description"></attribute>
+  <attribute name="iconName" type="string">/icons/workspace_user.png</attribute>
+  <attribute name="name" type="string">_workspace_external_user</attribute>
+  <property name="library">false</property>
+  <property name="mirrored">false</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">false</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.participant</property>
+    <property name="members">-1 -2</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.visitor</property>
+    <property name="members">-1 -2</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.binderAdmin</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.teamMember</property>
+    <property name="members">-1 -2</property>
+  </workAreaFunctionMembership>
+  <definition name="_externalUserWorkspace" internalId="402883b90cc53079010cc539bf26000e" databaseId="402883b90cc53079010cc539bf26000e"/>
+  <dashboard>
+    <property name="nextComponentId">10</property>
+    <property name="showComponents">true</property>
+    <property name="version">1</property>
+    <property name="title"/>
+    <property name="includeBinderTitle">false</property>
+  </dashboard>
+</template>

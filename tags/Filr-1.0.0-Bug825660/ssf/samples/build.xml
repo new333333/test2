@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<project name="samples" basedir="." default="compile">
+	<target name="clean">
+		<ant dir="extendedws" target="clean" />
+		<ant dir="extension/VideoEntry" target="clean" />
+		<!--<ant dir="portal/jsr168" target="clean" />
+		<ant dir="portlet" target="clean" />-->
+		<ant dir="remoteapp" target="clean" />
+		<ant dir="wsclient" target="clean" />
+		<ant dir="backgroundjob" target="clean" />
+		<ant dir="module-event-listeners" target="clean" />
+		<ant dir="extendedcontroller" target="clean" />
+	</target>
+
+	<target name="compile">
+		<ant dir="extendedws" target="compile" />
+		<!--<ant dir="portal/jsr168" target="compile" />
+		<ant dir="portlet" target="compile" />-->
+		<ant dir="remoteapp" target="compile" />
+		<ant dir="wsclient" target="compile" />
+		<ant dir="backgroundjob" target="compile" />
+		<ant dir="module-event-listeners" target="compile" />
+		<ant dir="extendedcontroller" target="compile" />
+	</target>
+	
+	<target name="build">
+		<ant dir="extendedws" target="build" />
+		<ant dir="extension/VideoEntry" target="build" />
+		<!--<ant dir="portal/jsr168" target="build" />
+		<ant dir="portlet" target="build" />-->
+		<ant dir="remoteapp" target="build" />
+		<ant dir="wsclient" target="build" />
+		<ant dir="backgroundjob" target="build" />
+		<ant dir="module-event-listeners" target="build" />
+		<ant dir="extendedcontroller" target="build" />
+	</target>
+</project>
