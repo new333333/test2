@@ -1,52 +1,49 @@
 /*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
 	Available via Academic Free License >= 2.1 OR the modified BSD license.
 	see: http://dojotoolkit.org/license for details
 */
 
-//>>built
-define("dojo/dnd/Mover",["../_base/array","../_base/declare","../_base/lang","../sniff","../_base/window","../dom","../dom-geometry","../dom-style","../Evented","../on","../touch","./common","./autoscroll"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,on,_a,_b,_c){
-return _2("dojo.dnd.Mover",[_9],{constructor:function(_d,e,_e){
-this.node=_6.byId(_d);
+
+if(!dojo._hasResource["dojo.dnd.Mover"]){
+dojo._hasResource["dojo.dnd.Mover"]=true;
+dojo.provide("dojo.dnd.Mover");
+dojo.require("dojo.dnd.common");
+dojo.require("dojo.dnd.autoscroll");
+dojo.declare("dojo.dnd.Mover",null,{constructor:function(_1,e,_2){
+this.node=dojo.byId(_1);
 this.marginBox={l:e.pageX,t:e.pageY};
 this.mouseButton=e.button;
-var h=(this.host=_e),d=_d.ownerDocument;
-function _f(e){
-e.preventDefault();
-e.stopPropagation();
-};
-this.events=[on(d,_a.move,_3.hitch(this,"onFirstMove")),on(d,_a.move,_3.hitch(this,"onMouseMove")),on(d,_a.release,_3.hitch(this,"onMouseUp")),on(d,"dragstart",_f),on(d.body,"selectstart",_f)];
-_c.autoScrollStart(d);
+var h=this.host=_2,d=_1.ownerDocument,_3=dojo.connect(d,"onmousemove",this,"onFirstMove");
+this.events=[dojo.connect(d,"onmousemove",this,"onMouseMove"),dojo.connect(d,"onmouseup",this,"onMouseUp"),dojo.connect(d,"ondragstart",dojo.stopEvent),dojo.connect(d.body,"onselectstart",dojo.stopEvent),_3];
 if(h&&h.onMoveStart){
 h.onMoveStart(this);
 }
 },onMouseMove:function(e){
-_c.autoScroll(e);
+dojo.dnd.autoScroll(e);
 var m=this.marginBox;
-this.host.onMove(this,{l:m.l+e.pageX,t:m.t+e.pageY},e);
-e.preventDefault();
-e.stopPropagation();
+this.host.onMove(this,{l:m.l+e.pageX,t:m.t+e.pageY});
+dojo.stopEvent(e);
 },onMouseUp:function(e){
-if(_4("webkit")&&_4("mac")&&this.mouseButton==2?e.button==0:this.mouseButton==e.button){
+if(dojo.isWebKit&&dojo.isMac&&this.mouseButton==2?e.button==0:this.mouseButton==e.button){
 this.destroy();
 }
-e.preventDefault();
-e.stopPropagation();
-},onFirstMove:function(e){
+dojo.stopEvent(e);
+},onFirstMove:function(){
 var s=this.node.style,l,t,h=this.host;
 switch(s.position){
 case "relative":
 case "absolute":
-l=Math.round(parseFloat(s.left))||0;
-t=Math.round(parseFloat(s.top))||0;
+l=Math.round(parseFloat(s.left));
+t=Math.round(parseFloat(s.top));
 break;
 default:
 s.position="absolute";
-var m=_7.getMarginBox(this.node);
-var b=_5.doc.body;
-var bs=_8.getComputedStyle(b);
-var bm=_7.getMarginBox(b,bs);
-var bc=_7.getContentBox(b,bs);
+var m=dojo.marginBox(this.node);
+var b=dojo.doc.body;
+var bs=dojo.getComputedStyle(b);
+var bm=dojo._getMarginBox(b,bs);
+var bc=dojo._getContentBox(b,bs);
 l=m.l-(bc.l-bm.l);
 t=m.t-(bc.t-bm.t);
 break;
@@ -54,17 +51,15 @@ break;
 this.marginBox.l=l-this.marginBox.l;
 this.marginBox.t=t-this.marginBox.t;
 if(h&&h.onFirstMove){
-h.onFirstMove(this,e);
+h.onFirstMove(this);
 }
-this.events.shift().remove();
+dojo.disconnect(this.events.pop());
 },destroy:function(){
-_1.forEach(this.events,function(_10){
-_10.remove();
-});
+dojo.forEach(this.events,dojo.disconnect);
 var h=this.host;
 if(h&&h.onMoveStop){
 h.onMoveStop(this);
 }
 this.events=this.node=this.host=null;
 }});
-});
+}

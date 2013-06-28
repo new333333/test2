@@ -40,7 +40,6 @@
   <c:set var="textFormat" value="${ssDefinitionEntry.description.format}"/>
 </c:if>
 <div class="entry-content">
- <ssf:editable entity="${ssDefinitionEntry}" element="description" >
  <c:if test="${textFormat == '2'}">
 	<ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" mobile="true"
      ><ssf:textFormat formatAction="textToHtml">${ssDefinitionEntry.description.text}</ssf:textFormat></ssf:markup>
@@ -52,7 +51,6 @@
    </span>
  </c:if>
  <div class="ss_clear"></div>
- </ssf:editable>
  <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
    <div align="right">
      <a href='<ssf:url adapter="true" portletName="ss_mobile" 

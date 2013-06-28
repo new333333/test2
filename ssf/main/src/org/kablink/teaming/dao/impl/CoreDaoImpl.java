@@ -74,11 +74,9 @@ import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AnyOwner;
 import org.kablink.teaming.domain.Attachment;
-import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.BinderState;
-import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.CustomAttributeListElement;
 import org.kablink.teaming.domain.Dashboard;
@@ -121,7 +119,6 @@ import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
-import org.kablink.teaming.domain.BinderState.FullSyncStatus;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.SimpleName.SimpleNamePK;
 import org.kablink.teaming.util.Constants;
@@ -676,27 +673,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}
     	finally {
     		end(begin, "load(Class,Long)");
-    	}	        
-    }
-    
-    @Override
-	public Object loadLocked(Class clazz, String id) {
-		long begin = System.nanoTime();
-		try {
-			return getHibernateTemplate().get(clazz, id, LockMode.PESSIMISTIC_WRITE);
-    	}
-    	finally {
-    		end(begin, "loadLocked(Class,String)");
-    	}	        
-    }
-    @Override
-	public Object loadLocked(Class clazz, Long id) {
-		long begin = System.nanoTime();
-		try {
-			return getHibernateTemplate().get(clazz, id, LockMode.PESSIMISTIC_WRITE);         
-    	}
-    	finally {
-    		end(begin, "loadLocked(Class,Long)");
     	}	        
     }
 	/**
@@ -2305,32 +2281,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 		
 	}
-	
-	@Override
-	public boolean subscriptionExistsOnEntity(final EntityIdentifier entityId) {
-		long begin = System.nanoTime();
-		try {
-			Subscription subscription = (Subscription)getHibernateTemplate().execute(
-		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-		                 	return session.createCriteria(Subscription.class)
-	                 		.add(Expression.eq("id.entityId", entityId.getEntityId()))
-	       					.add(Expression.eq("id.entityType", entityId.getEntityType().getValue()))
-	       					.setMaxResults(1)
-	       					.setCacheable(true)
-		                 	.uniqueResult();
-		                }
-		            }
-		        );
-			return subscription != null;
-    	}
-    	finally {
-    		end(begin, "subscriptionExistsOnEntity(EntityIdentifier)");
-    	}	        
-		
-	}
-	
 	private List loadObjects(final ObjectControls objs, FilterControls filter, Long zoneId, final boolean cacheable) {
 	   	final FilterControls myFilter = filter==null?new FilterControls():filter;
 		if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
@@ -3036,29 +2986,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
 	}
 	
-	public List getAuditTrailEntries(final Long zoneId, final Date purgeBeforeDate) {
-		long begin = System.nanoTime();
-		try {
-			List results = (List) getHibernateTemplate().execute(
-		    	new HibernateCallback() {
-		    		public Object doInHibernate(Session session) throws HibernateException {
-                        return session.createCriteria(AuditTrail.class)
-							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-							.add(Restrictions.isNotNull("startDate"))
-							.add(Restrictions.lt("startDate", purgeBeforeDate))
-							.setCacheable(false)
-	                    	.addOrder(Order.asc("startDate"))
-	                    	.list();
-		    		}
-		    	}
-		   	);
-			return results;
-		}
-		finally {
-    		end(begin, "getAuditTrailEntries()");
-		}
-	}
-
 	@Override
 	public int purgeAuditTrail(final Long zoneId, final Date purgeBeforeDate) {
 		long begin = System.nanoTime();
@@ -3079,29 +3006,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		}
 		finally {
     		end(begin, "purgeAuditTrail()");
-		}
-	}
-	
-	public List getChangeLogEntries(final Long zoneId, final Date purgeBeforeDate) {
-		long begin = System.nanoTime();
-		try {
-			List results = (List) getHibernateTemplate().execute(
-		    	new HibernateCallback() {
-		    		public Object doInHibernate(Session session) throws HibernateException {
-                        return session.createCriteria(ChangeLog.class)
-							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-							.add(Restrictions.isNotNull("operationDate"))
-							.add(Restrictions.lt("operationDate", purgeBeforeDate))
-							.setCacheable(false)
-	                    	.addOrder(Order.asc("operationDate"))
-	                    	.list();
-		    		}
-		    	}
-		   	);
-			return results;
-		}
-		finally {
-    		end(begin, "getChangeLogEntries()");
 		}
 	}
 	
@@ -3126,6 +3030,29 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		finally {
     		end(begin, "purgeChangeLogs()");
 		}
+	}
+
+	@Override
+	public BinderState loadBinderState(Long binderId) {
+		long begin = System.nanoTime();
+		try {
+			BinderState bs =(BinderState)getHibernateTemplate().get(BinderState.class, binderId);
+	   		if (bs == null) {
+	   			bs = new BinderState(binderId);
+	   			//quick write
+	   			try {
+	   				bs = (BinderState)this.saveNewSession(bs);
+	   			} catch (Exception ex) {
+	   				//contension?
+	   				bs =(BinderState)getHibernateTemplate().get(BinderState.class, binderId);
+	   			}
+	   		}
+	   		return bs;
+    	}
+    	finally {
+    		end(begin, "loadBinderState(Long)");
+    	}	        
+
 	}
 
 	@Override
@@ -3167,30 +3094,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "purgeShares");
     	}	         
 
-	}
-
-	@Override
-	public Long peekFullSyncTask() {
-		long begin = System.nanoTime();
-		try {
-			return getHibernateTemplate().execute(
-		            new HibernateCallback<Long>() {
-		                @Override
-						public Long doInHibernate(Session session) throws HibernateException {
-		                	return (Long) session.createCriteria(BinderState.class)
-		                			.setProjection(Projections.property("binderId"))
-		                			.add(Restrictions.eq("fullSyncStats.statusStr", FullSyncStatus.ready.name()))
-		                			.addOrder(Order.asc("fullSyncStats.statusDate"))
-		                			.setMaxResults(1)
-                					.setCacheable(false)
-                					.uniqueResult();
-		                }
-		            }
-		        );
-    	}
-    	finally {
-    		end(begin, "peekFullSyncTask()");
-    	}	        
 	}
 
  }

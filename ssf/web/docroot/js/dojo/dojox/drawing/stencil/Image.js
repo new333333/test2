@@ -1,6 +1,14 @@
-//>>built
-define("dojox/drawing/stencil/Image",["dojo","../util/oo","./_Base","../manager/_registry"],function(_1,oo,_2,_3){
-var _4=oo.declare(_2,function(_5){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.drawing.stencil.Image"]){
+dojo._hasResource["dojox.drawing.stencil.Image"]=true;
+dojo.provide("dojox.drawing.stencil.Image");
+dojox.drawing.stencil.Image=dojox.drawing.util.oo.declare(dojox.drawing.stencil._Base,function(_1){
 },{type:"dojox.drawing.stencil.Image",anchorType:"group",baseRender:true,dataToPoints:function(o){
 o=o||this.data;
 this.points=[{x:o.x,y:o.y},{x:o.x+o.width,y:o.y},{x:o.x+o.width,y:o.y+o.height},{x:o.x,y:o.y+o.height}];
@@ -15,13 +23,13 @@ return this.data;
 this.remove(this.hit);
 this.hit=this.container.createRect(this.data).setStroke(this.style.current).setFill(this.style.current.fill);
 this._setNodeAtts(this.hit);
-},_create:function(_6,d,_7){
-this.remove(this[_6]);
+},_create:function(_2,d,_3){
+this.remove(this[_2]);
 var s=this.container.getParent();
-this[_6]=s.createImage(d);
-this.container.add(this[_6]);
-this._setNodeAtts(this[_6]);
-},render:function(_8){
+this[_2]=s.createImage(d);
+this.container.add(this[_2]);
+this._setNodeAtts(this[_2]);
+},render:function(_4){
 if(this.data.width=="auto"||isNaN(this.data.width)){
 this.getImageSize(true);
 console.warn("Image size not provided. Acquiring...");
@@ -30,27 +38,25 @@ return;
 this.onBeforeRender(this);
 this.renderHit&&this._createHilite();
 this._create("shape",this.data,this.style.current);
-},getImageSize:function(_9){
+},getImageSize:function(_5){
 if(this._gettingSize){
 return;
 }
 this._gettingSize=true;
-var _a=_1.create("img",{src:this.data.src},_1.body());
-var _b=_1.connect(_a,"error",this,function(){
-_1.disconnect(c);
-_1.disconnect(_b);
+var _6=dojo.create("img",{src:this.data.src},dojo.body());
+var _7=dojo.connect(_6,"error",this,function(){
+dojo.disconnect(c);
+dojo.disconnect(_7);
 console.error("Error loading image:",this.data.src);
 console.warn("Error image:",this.data);
 });
-var c=_1.connect(_a,"load",this,function(){
-var _c=_1.marginBox(_a);
-this.setData({x:this.data.x,y:this.data.y,src:this.data.src,width:_c.w,height:_c.h});
-_1.disconnect(c);
-_1.destroy(_a);
-_9&&this.render(true);
+var c=dojo.connect(_6,"load",this,function(){
+var _8=dojo.marginBox(_6);
+this.setData({x:this.data.x,y:this.data.y,src:this.data.src,width:_8.w,height:_8.h});
+dojo.disconnect(c);
+dojo.destroy(_6);
+_5&&this.render(true);
 });
 }});
-_1.setObject("dojox.drawing.stencil.Image",_4);
-_3.register({name:"dojox.drawing.stencil.Image"},"stencil");
-return _4;
-});
+dojox.drawing.register({name:"dojox.drawing.stencil.Image"},"stencil");
+}

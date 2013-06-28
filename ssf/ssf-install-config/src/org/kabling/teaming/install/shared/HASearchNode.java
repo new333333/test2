@@ -11,6 +11,8 @@ public class HASearchNode implements Serializable
 	private String title;
 	private String hostName;
 	private int rmiPort;
+	private String serverPassword;
+	private String serverLogin;
 
 	public HASearchNode()
 	{
@@ -57,6 +59,26 @@ public class HASearchNode implements Serializable
 	}
 
 	
+	public String getServerPassword()
+	{
+		return serverPassword;
+	}
+
+	public void setServerPassword(String serverPassword)
+	{
+		this.serverPassword = serverPassword;
+	}
+
+	public String getServerLogin()
+	{
+		return serverLogin;
+	}
+
+	public void setServerLogin(String serverLogin)
+	{
+		this.serverLogin = serverLogin;
+	}
+
 	@Override
 	public String toString()
 	{

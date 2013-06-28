@@ -53,9 +53,6 @@ import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.ActionMenuColumn;
 import org.kablink.teaming.gwt.client.datatable.ApplyColumnWidths;
 import org.kablink.teaming.gwt.client.datatable.AssignmentColumn;
-import org.kablink.teaming.gwt.client.datatable.CloudFolderAuthenticationDlg;
-import org.kablink.teaming.gwt.client.datatable.CloudFolderAuthenticationDlg.CloudFolderAuthenticationCallback;
-import org.kablink.teaming.gwt.client.datatable.CloudFolderAuthenticationDlg.CloudFolderAuthenticationDlgClient;
 import org.kablink.teaming.gwt.client.datatable.CommentsColumn;
 import org.kablink.teaming.gwt.client.datatable.CustomColumn;
 import org.kablink.teaming.gwt.client.datatable.DescriptionHtmlColumn;
@@ -118,12 +115,8 @@ import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewPinnedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
-import org.kablink.teaming.gwt.client.event.ZipAndDownloadFolderEvent;
-import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
-import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetEntityRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyFilesContainerInfoCmd;
@@ -136,12 +129,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.CloudFolderAuthentication;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
-import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntryPinInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -239,26 +230,23 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		UnlockSelectedEntriesEvent.Handler,
 		ViewPinnedEntriesEvent.Handler,
 		ViewSelectedEntryEvent.Handler,
-		ViewWhoHasAccessEvent.Handler,
-		ZipAndDownloadFolderEvent.Handler,
-		ZipAndDownloadSelectedFilesEvent.Handler
+		ViewWhoHasAccessEvent.Handler
 {
-	private boolean							m_fixedLayout;				//
-	private CloudFolderAuthenticationDlg	m_cfaDlg;					//
-	private Column<FolderRow, Boolean>		m_selectColumn;				//
-	private ColumnWidth						m_actionMenuColumnWidth;	//
-	private ColumnWidth						m_100PctColumnWidth;		//
-	private ColumnWidth						m_defaultColumnWidth;		//
-	private List<FolderColumn>				m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
-	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private List<Long>						m_contributorIds;			//
-	private Map<String, ColumnWidth>		m_defaultColumnWidths;		// Map of column names -> Default ColumnWidth objects.
-	private Map<String, ColumnWidth>		m_columnWidths;				// Map of column names -> Current ColumnWidth objects.
-	private SizeColumnsDlg					m_sizeColumnsDlg;			//
-	private String							m_folderStyles;				// Specific style(s) for the for the folders that extend this.
-	private String							m_quickFilter;				// Any quick filter that's active.
-	private VibeDataGrid<FolderRow>			m_dataTable;				// The actual data table holding the view's information.
-	private VibeSimplePager 				m_dataTablePager;			// Pager widgets at the bottom of the data table.
+	private boolean						m_fixedLayout;				//
+	private Column<FolderRow, Boolean>	m_selectColumn;				//
+	private ColumnWidth					m_actionMenuColumnWidth;	//
+	private ColumnWidth					m_100PctColumnWidth;		//
+	private ColumnWidth					m_defaultColumnWidth;		//
+	private List<FolderColumn>			m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
+	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private List<Long>					m_contributorIds;			//
+	private Map<String, ColumnWidth>	m_defaultColumnWidths;		// Map of column names -> Default ColumnWidth objects.
+	private Map<String, ColumnWidth>	m_columnWidths;				// Map of column names -> Current ColumnWidth objects.
+	private SizeColumnsDlg				m_sizeColumnsDlg;			//
+	private String						m_folderStyles;				// Specific style(s) for the for the folders that extend this.
+	private String						m_quickFilter;				// Any quick filter that's active.
+	private VibeDataGrid<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
+	private VibeSimplePager 			m_dataTablePager;			// Pager widgets at the bottom of the data table.
 	
 	protected GwtTeamingDataTableImageBundle	m_images;		//
 	protected GwtTeamingFilrImageBundle			m_filrImages;	//
@@ -324,8 +312,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.VIEW_PINNED_ENTRIES,
 		TeamingEvents.VIEW_SELECTED_ENTRY,
 		TeamingEvents.VIEW_WHO_HAS_ACCESS,
-		TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER,
-		TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES,
 	};
 	
 	/*
@@ -356,7 +342,78 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		 */
 		@Override
 		protected void onRangeChanged(HasData<FolderRow> display) {
-			onRangeChangedImpl(m_vdt, getFolderId(), display.getVisibleRange(), null);
+			final Long folderId = getFolderId();
+			final Range range = display.getVisibleRange();
+			final int rowsRequested = range.getLength();
+			GwtClientHelper.executeCommand(
+					new GetFolderRowsCmd(
+						getFolderInfo(),
+						m_folderColumnsList,
+						range.getStart(),
+						rowsRequested,
+						m_quickFilter),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetFolderRows(),
+						folderId);
+					
+					// If we have an entry menu...
+					EntryMenuPanel emp = getEntryMenuPanel();
+					if (null != emp) {
+						// ...tell it to update the state of its items that
+						// ...require entries be available.
+						EntryMenuPanel.setEntriesAvailable(emp, false);
+					}
+
+					// ...and display a now items message.
+					List<FolderRow> folderRows = new ArrayList<FolderRow>();
+					m_vdt.setRowData( 0, folderRows);
+					m_vdt.setRowCount(0            );
+					postProcessRowDataAsync(folderRows);
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Did we read more rows than we asked for?
+					FolderRowsRpcResponseData responseData = ((FolderRowsRpcResponseData) response.getResponseData());
+					m_contributorIds = responseData.getContributorIds();
+					List<FolderRow> folderRows = responseData.getFolderRows();
+					int rowsRead = folderRows.size();
+					if (rowsRead > rowsRequested) {
+						// Yes!  This should only happen with pinned
+						// entries.  Assert that's the case...
+						GwtClientHelper.debugAssert(
+							isPinning(),
+							m_messages.vibeDataTable_InternalError_UnexpectedRowCount(
+								rowsRequested,
+								rowsRead));
+						
+						// ...and use the entries read as the new page
+						// ...size.
+						m_vdt.setPageSize(rowsRead);
+					}
+					
+					// Apply the rows we read.
+					m_vdt.setRowData( responseData.getStartOffset(), folderRows);
+					m_vdt.setRowCount(responseData.getTotalRows()              );
+					
+					// If we have an entry menu...
+					EntryMenuPanel emp = getEntryMenuPanel();
+					if (null != emp) {
+						// ...tell it to update the state of its items that
+						// ...require entries be available.
+						EntryMenuPanel.setEntriesAvailable(emp, (0 < rowsRead));
+					}
+
+					// Allow the view's that extend this do what ever
+					// they need to do once a collection of rows has
+					// been rendered.
+					postProcessRowDataAsync(folderRows);
+				}
+			});
 		}
 	}
 
@@ -602,7 +659,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				}
 				else {
 					reply = new EntryPinInfo(
-						fr.isPinned(),
+						fr.getPinned(),
 						getFolderId(),
 						fr.getEntityId().getEntityId());
 				}
@@ -851,16 +908,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
-	 * Initializes the data table as being empty.
-	 */
-	private void displayEmptyDataTable(final AbstractCellTable<FolderRow> vdt) {
-		List<FolderRow> folderRows = new ArrayList<FolderRow>();
-		vdt.setRowData( 0, folderRows);
-		vdt.setRowCount(0            );
-		postProcessRowDataAsync(folderRows);
-	}
-	
-	/*
 	 * Asynchronously sets the size of the data table based on its
 	 * position in the view.
 	 */
@@ -919,7 +966,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Is this row an entry that matches the requested
 				// pinned state?
 				EntityId rowEID = fr.getEntityId();
-				if (rowEID.isEntry() && (fr.isPinned() == pinned)) {
+				if (rowEID.isEntry() && (fr.getPinned() == pinned)) {
 					// Yes!  Add its entity ID to the List<EntityId>.
 					reply.add(rowEID);
 				}
@@ -1013,7 +1060,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		String			reply;
 		if (fr.isBinder()) {
 			// Yes!  Is this the user's home folder?
-			if (fr.isHomeDir()) {
+			BinderInfo bi = fr.getBinderInfo();
+			if ((null != bi) && bi.isFolderHome()) {
 				// Yes!
 				switch (bis) {
 				default:
@@ -1108,7 +1156,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	public List<EntityId> getSelectedEntityIds() {
 		// Are there any selected rows in the table?
-		List<EntityId>  reply = new ArrayList<EntityId>();
+		List<EntityId>   reply = new ArrayList<EntityId>();
 		List<FolderRow> rows  = m_dataTable.getVisibleItems();
 		if (null != rows) {
 			// Yes!  Scan them
@@ -1352,11 +1400,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// show an entry title?
 			else if (FolderColumn.isColumnTitle(cName)) {
 				// Yes!  Create a EntryTitleColumn for it.
-				column = new EntryTitleColumn<FolderRow>(fc, getFolderDisplayData().getFileLinkAction()) {
+				column = new EntryTitleColumn<FolderRow>(fc) {
 					@Override
 					public EntryTitleInfo getValue(FolderRow fr) {
 						EntryTitleInfo reply = fr.getColumnValueAsEntryTitle(fc);
-						if ((null != reply) && showEntryTitleIcon()) {
+						if (null != reply) {
 							// Create the rows's Image widget...
 							Image rowImg = new Image();
 							rowImg.getElement().setAttribute("align", "absmiddle");
@@ -2385,121 +2433,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		}
 	}
 
-	/*
-	 * Called to read and process a block of rows.
-	 */
-	private void onRangeChangedImpl(final AbstractCellTable<FolderRow> vdt, final Long folderId, final Range range, final String authenticationGuid) {
-		final int     rowsRequested         = range.getLength();
-		final boolean hasAuthenticationGuid = GwtClientHelper.hasString(authenticationGuid);
-		GwtClientHelper.executeCommand(
-				new GetFolderRowsCmd(
-					getFolderInfo(),
-					m_folderColumnsList,
-					range.getStart(),
-					rowsRequested,
-					m_quickFilter,
-					authenticationGuid),
-				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				// If we have a Cloud Folder authentication dialog
-				// visible...
-				if (hasAuthenticationGuid) {
-					// ...hide it.
-					m_cfaDlg.hide();
-				}
-				
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetFolderRows(),
-					folderId);
-				
-				// If we have an entry menu...
-				EntryMenuPanel emp = getEntryMenuPanel();
-				if (null != emp) {
-					// ...tell it to update the state of its items that
-					// ...require entries be available.
-					EntryMenuPanel.setEntriesAvailable(emp, false);
-				}
-
-				// ...and display a now items message.
-				displayEmptyDataTable(vdt);
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// If we have a Cloud Folder authentication dialog
-				// visible...
-				if (hasAuthenticationGuid) {
-					// ...hide it.
-					m_cfaDlg.hide();
-				}
-				
-				// Does querying the folder's rows require the user
-				// to authenticate?
-				FolderRowsRpcResponseData responseData = ((FolderRowsRpcResponseData) response.getResponseData());
-				if (responseData.requiresCloudFolderAuthentication()) {
-					// Yes!  Are we currently processing an authentication request?
-					if (hasAuthenticationGuid) {
-						// Yes!  That should never happen.  Not sure
-						// how we should handle this.  Tell the user
-						// about the problem...
-						GwtClientHelper.deferredAlert(
-							m_messages.vibeDataTable_InternalError_NestedCloudFolderAuthentication());
-						
-						// ...and display an empty data table.
-						displayEmptyDataTable(vdt);
-						return;
-					}
-					
-					// Run the authentication dialog.
-					runCloudFolderAuthenticationDlgAsync(
-						responseData.getCloudFolderAuthentication(),
-						vdt,
-						folderId,
-						range);
-				}
-				
-				else {
-					// Did we read more rows than we asked for?
-					m_contributorIds = responseData.getContributorIds();
-					List<FolderRow> folderRows = responseData.getFolderRows();
-					int rowsRead = folderRows.size();
-					if (rowsRead > rowsRequested) {
-						// Yes!  This should only happen with pinned
-						// entries.  Assert that's the case...
-						GwtClientHelper.debugAssert(
-							isPinning(),
-							m_messages.vibeDataTable_InternalError_UnexpectedRowCount(
-								rowsRequested,
-								rowsRead));
-						
-						// ...and use the entries read as the new page
-						// ...size.
-						vdt.setPageSize(rowsRead);
-					}
-					
-					// Apply the rows we read.
-					vdt.setRowData( responseData.getStartOffset(), folderRows);
-					vdt.setRowCount(responseData.getTotalRows()              );
-					
-					// If we have an entry menu...
-					EntryMenuPanel emp = getEntryMenuPanel();
-					if (null != emp) {
-						// ...tell it to update the state of its items that
-						// ...require entries be available.
-						EntryMenuPanel.setEntriesAvailable(emp, (0 < rowsRead));
-					}
-
-					// Allow the view's that extend this do what ever
-					// they need to do once a collection of rows has
-					// been rendered.
-					postProcessRowDataAsync(folderRows);
-				}
-			}
-		});
-	}
-	
 	/**
 	 * Handles SharedViewFilterEvent's received by this class.
 	 * 
@@ -2555,118 +2488,62 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			if (!(GwtClientHelper.hasItems(seList))) {
 				seList = getSelectedEntityIds();
 			}
-			
-			
 			final List<EntityId>	selectedEntities = seList;
-			GwtClientHelper.executeCommand(
-					new GetEntityRightsCmd(selectedEntities),
-					new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable caught) {
-					GwtClientHelper.handleGwtRPCFailure(
-						caught,
-						GwtTeaming.getMessages().rpcFailure_GetEntityRights());
-				}
-
-				@Override
-				public void onSuccess(VibeRpcResponse response) {
-					EntityRightsRpcResponseData responseData = ((EntityRightsRpcResponseData) response.getResponseData());
-					onShareSelectedEntriesAsync(selectedEntities, responseData.getEntityRightsMap());
-				}
-			});
-		}
-	}
-
-	/*
-	 * Asynchronously processes the share request on the selected
-	 * entries, given the current user's rights to them.
-	 */
-	private void onShareSelectedEntriesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onShareSelectedEntriesNow(selectedEntities, entityRightsMap);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously processes the share request on the selected
-	 * entries, given the current user's rights to them.
-	 */
-	private void onShareSelectedEntriesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap) {
-		final List<FolderRow> invalidRows = validateSelectedRows_Sharing(entityRightsMap);
-		if (!(GwtClientHelper.hasItems(invalidRows))) {
-			// Yes!  Invoke the share.
-			shareSelectedEntitiesAsync(selectedEntities);
-		}
-		
-		else {
-			// No, they don't have rights to share everything!  What
-			// type of share failures are we dealing with?
-			int totalShareFailures = invalidRows.size();
-			int nfShareFailures    = BinderViewsHelper.getNetFolderShareFailureCount(selectedEntities, entityRightsMap);
-			int otherShareFailures = (totalShareFailures - nfShareFailures);
-			if (0 > otherShareFailures) {
-				otherShareFailures = 0;
-			}
-			boolean hasNFShareFailures    = (0 < nfShareFailures   );
-			boolean hasOtherShareFailures = (0 < otherShareFailures);
-			
-			// Can they share any of them?
-			if (selectedEntities.size() == totalShareFailures) {
-				// No!  Tell them about the problem and bail.
-				String shareAlert;
-				if      (hasNFShareFailures && hasOtherShareFailures) shareAlert = m_messages.vibeDataTable_Warning_ShareNoRightsAndNetFolders();
-				else if (hasNFShareFailures)                          shareAlert = m_messages.vibeDataTable_Warning_ShareNetFolders();
-				else                                                  shareAlert = m_messages.vibeDataTable_Warning_ShareNoRights();
-				GwtClientHelper.deferredAlert(shareAlert);
-				return;
+			final List<FolderRow>	invalidRows      = validateSelectedRows_Sharing();
+			if (!(GwtClientHelper.hasItems(invalidRows))) {
+				// Yes!  Invoke the share.
+				shareSelectedEntitiesAsync(selectedEntities);
 			}
 			
-			// Is the user sure they want to share the selections
-			// they have rights to share?
-			final String confirmPrompt;
-			if      (hasNFShareFailures && hasOtherShareFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNoRightsAndNetFolders();
-			else if (hasNFShareFailures)                          confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNetFolders();
-			else                                                  confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNoRights();
-			ConfirmDlg.createAsync(new ConfirmDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
+			else {
+				// No, they don't have rights to share everything!  Can
+				// they share any of them?
+				if (selectedEntities.size() == invalidRows.size()) {
+					// No!  Tell them about the problem and bail.
+					GwtClientHelper.deferredAlert(m_messages.vibeDataTable_Warning_ShareNoRights());
+					return;
 				}
 				
-				@Override
-				public void onSuccess(ConfirmDlg cDlg) {
-					ConfirmDlg.initAndShow(
-						cDlg,
-						new ConfirmCallback() {
-							@Override
-							public void dialogReady() {
-								// Ignored.  We don't really care when the
-								// dialog is ready.
-							}
+				// Is the user sure they want to share the selections
+				// they have rights to share?
+				ConfirmDlg.createAsync(new ConfirmDlgClient() {
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess(ConfirmDlg cDlg) {
+						ConfirmDlg.initAndShow(
+							cDlg,
+							new ConfirmCallback() {
+								@Override
+								public void dialogReady() {
+									// Ignored.  We don't really care when the
+									// dialog is ready.
+								}
 
-							@Override
-							public void accepted() {
-								// Yes, they're sure!  Remove the
-								// selection from the entries they
-								// don't have rights to share and
-								// perform the share on the rest.
-								removeRowEntities(         selectedEntities, invalidRows);
-								deselectRows(                                invalidRows);
-								shareSelectedEntitiesAsync(selectedEntities             );
-							}
+								@Override
+								public void accepted() {
+									// Yes, they're sure!  Remove the
+									// selection from the entries they
+									// don't have rights to share and
+									// perform the share on the rest.
+									removeRowEntities(         selectedEntities, invalidRows);
+									deselectRows(                                invalidRows);
+									shareSelectedEntitiesAsync(selectedEntities             );
+								}
 
-							@Override
-							public void rejected() {
-								// No, they're not sure!
-							}
-						},
-						confirmPrompt);
-				}
-			});
+								@Override
+								public void rejected() {
+									// No, they're not sure!
+								}
+							},
+							m_messages.vibeDataTable_Confirm_CantShareSomeSelections());
+					}
+				});
+			}
 		}
 	}
 	
@@ -2945,54 +2822,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles ZipAndDownloadSelectedFilesEvent's received by this class.
-	 * 
-	 * Implements the ZipAndDownloadSelectedFilesEvent.Handler.onZipAndDownloadSelectedFiles() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onZipAndDownloadSelectedFiles(ZipAndDownloadSelectedFilesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the zip and download.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getSelectedEntityIds();
-			}
-			BinderViewsHelper.zipAndDownloadFiles(
-				getDownloadPanel().getDownloadForm(),
-				selectedEntityIds,
-				event.isRecursive());
-		}
-	}
-	
-	/**
-	 * Handles ZipAndDownloadFolderEvent's received by this class.
-	 * 
-	 * Implements the ZipAndDownloadFolderEvent.Handler.onZipAndDownloadFolder() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onZipAndDownloadFolder(ZipAndDownloadFolderEvent event) {
-		// Is the event targeted to this folder?
-		Long dlFolderId    = event.getFolderId();
-		Long eventFolderId = event.getHandleByFolderId();
-		if (null == eventFolderId) {
-			eventFolderId = dlFolderId;
-		}
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the zip and download.
-			BinderViewsHelper.zipAndDownloadFolder(
-				getDownloadPanel().getDownloadForm(),
-				dlFolderId,
-				event.isRecursive());
-		}
-	}
-	
-	/**
 	 * Completes populating the data table view specific content.
 	 */
 	final public void populateContent() {
@@ -3220,67 +3049,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			}
 		});
 	}
-
-	/*
-	 * Asynchronously runs the Cloud Folder authentication dialog.
-	 */
-	private void runCloudFolderAuthenticationDlgAsync(final CloudFolderAuthentication cfAuthentication, final AbstractCellTable<FolderRow> vdt, final Long folderId, final Range range) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				runCloudFolderAuthenticationDlgNow(
-					cfAuthentication,
-					vdt,
-					folderId,
-					range);
-			}
-		});
-	}
 	
-	/*
-	 * Synchronously runs the Cloud Folder authentication dialog.
-	 */
-	private void runCloudFolderAuthenticationDlgNow(final CloudFolderAuthentication cfAuthentication, final AbstractCellTable<FolderRow> vdt, final Long folderId, final Range range) {
-		// Have we instantiated a Cloud Folder authentication dialog
-		// yet?
-		if (null == m_cfaDlg) {
-			// No!  Instantiate one now.
-			CloudFolderAuthenticationDlg.createAsync(new CloudFolderAuthenticationDlgClient() {			
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(final CloudFolderAuthenticationDlg cfaDlg) {
-					// ...and show it.
-					m_cfaDlg = cfaDlg;
-					GwtClientHelper.deferCommand(new ScheduledCommand() {
-						@Override
-						public void execute() {
-							showCloudFolderAuthenticationDlgNow(
-								cfAuthentication,
-								vdt,
-								folderId,
-								range);
-						}
-					});
-				}
-			});
-		}
-		
-		else {
-			// Yes, we've instantiated a Cloud Folder authentication
-			// dialog already!  Simply show it.
-			showCloudFolderAuthenticationDlgNow(
-				cfAuthentication,
-				vdt,
-				folderId,
-				range);
-		}
-	}
-
 	/*
 	 * Sets the style on a column in the data table based on the
 	 * column's name.
@@ -3389,45 +3158,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/*
-	 * Synchronously shows the Cloud Folder authentication dialog.
-	 */
-	private void showCloudFolderAuthenticationDlgNow(final CloudFolderAuthentication cfAuthentication, final AbstractCellTable<FolderRow> vdt, final Long folderId, final Range range) {
-		CloudFolderAuthenticationDlg.initAndShow(
-			m_cfaDlg,
-			cfAuthentication,
-			new CloudFolderAuthenticationCallback() {
-				@Override
-				public void dialogReady() {
-					// With the authentication dialog running, we now
-					// need to reissue the request for the folder's
-					// rows, this time with the GUID from the
-					// authentication request. 
-					GwtClientHelper.deferCommand(new ScheduledCommand() {
-						@Override
-						public void execute() {
-							onRangeChangedImpl(
-								vdt,
-								folderId,
-								range,
-								cfAuthentication.getAuthenticationGuid());
-						}
-					});
-				}
-			});
-	}
-
-	/**
-	 * Allows the view's that extend this to decide whether or not they
-	 * want an entry icon on their title cell.
-	 * 
-	 * @return
-	 */
-	protected boolean showEntryTitleIcon() {
-		// By default, we show entry title icons.
-		return true;
-	}
-	
-	/*
 	 * Synchronously shows the column sizing dialog.
 	 */
 	private void showSizeColumnsDlgNow() {
@@ -3514,7 +3244,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Returns a List<FolderRow> of the selected rows that the user
 	 * can't share.
 	 */
-	private List<FolderRow> validateSelectedRows_Sharing(final Map<String, EntityRights> entityRightsMap) {
+	private List<FolderRow> validateSelectedRows_Sharing() {
 		// Are there any selected rows in the table?
 		List<FolderRow> reply = new ArrayList<FolderRow>();
 		List<FolderRow> rows  = m_dataTable.getVisibleItems();
@@ -3525,8 +3255,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Is this row selected?
 				if (fsm.isSelected(row)) {
 					// Yes!  Is it sharable?
-					EntityRights er = entityRightsMap.get(EntityRights.getEntityRightsKey(row.getEntityId()));
-					if ((null == er) || (!(er.isCanShare()))) {
+					if (!(row.getCanShare())) {
 						// No!  Track it as invalid.
 						reply.add(row);
 					}

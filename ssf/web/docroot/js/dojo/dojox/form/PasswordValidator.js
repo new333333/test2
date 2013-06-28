@@ -1,29 +1,40 @@
-//>>built
-define("dojox/form/PasswordValidator",["dojo/_base/array","dojo/_base/lang","dojo/dom-attr","dojo/i18n","dojo/query","dojo/keys","dijit/form/_FormValueWidget","dijit/form/ValidationTextBox","dojo/text!./resources/PasswordValidator.html","dojo/i18n!./nls/PasswordValidator","dojo/_base/declare"],function(_1,_2,_3,_4,_5,_6,_7,_8,_9,_a,_b){
-var _c=_b("dojox.form._ChildTextBox",_8,{containerWidget:null,type:"password",reset:function(){
-_8.prototype._setValueAttr.call(this,"",true);
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.form.PasswordValidator"]){
+dojo._hasResource["dojox.form.PasswordValidator"]=true;
+dojo.provide("dojox.form.PasswordValidator");
+dojo.require("dijit.form._FormWidget");
+dojo.require("dijit.form.ValidationTextBox");
+dojo.requireLocalization("dojox.form","PasswordValidator",null,"ROOT,ar,ca,cs,da,de,el,es,fi,fr,he,hu,it,ja,ko,nb,nl,pl,pt,pt-pt,ru,sk,sl,sv,th,tr,zh,zh-tw");
+dojo.declare("dojox.form._ChildTextBox",dijit.form.ValidationTextBox,{containerWidget:null,type:"password",reset:function(){
+dijit.form.ValidationTextBox.prototype._setValueAttr.call(this,"",true);
 this._hasBeenBlurred=false;
 },postCreate:function(){
 this.inherited(arguments);
 if(!this.name){
-_3.remove(this.focusNode,"name");
+dojo.removeAttr(this.focusNode,"name");
 }
 this.connect(this.focusNode,"onkeypress","_onChildKeyPress");
 },_onChildKeyPress:function(e){
-if(e&&e.keyCode==_6.ENTER){
+if(e&&e.keyCode==dojo.keys.ENTER){
 this._setBlurValue();
 }
 }});
-var _d=_b("dojox.form._OldPWBox",_c,{_isPWValid:false,_setValueAttr:function(_e,_f){
-if(_e===""){
-_e=_d.superclass.attr.call(this,"value");
+dojo.declare("dojox.form._OldPWBox",dojox.form._ChildTextBox,{_isPWValid:false,_setValueAttr:function(_1,_2){
+if(_1===""){
+_1=dojox.form._OldPWBox.superclass.attr.call(this,"value");
 }
-if(_f!==null){
-this._isPWValid=this.containerWidget.pwCheck(_e);
+if(_2!==null){
+this._isPWValid=this.containerWidget.pwCheck(_1);
 }
 this.inherited(arguments);
-this.containerWidget._childValueAttr(this.containerWidget._inputWidgets[1].get("value"));
-},isValid:function(_10){
+this.containerWidget._childValueAttr(this.containerWidget._inputWidgets[1].attr("value"));
+},isValid:function(_3){
 return this.inherited("isValid",arguments)&&this._isPWValid;
 },_update:function(e){
 if(this._hasBeenBlurred){
@@ -36,75 +47,73 @@ return this.inherited(arguments);
 }
 return "";
 },_setBlurValue:function(){
-var _11=_8.prototype._getValueAttr.call(this);
-this._setValueAttr(_11,(this.isValid?this.isValid():true));
+var _4=dijit.form.ValidationTextBox.prototype._getValueAttr.call(this);
+this._setValueAttr(_4,(this.isValid?this.isValid():true));
 }});
-var _12=_b("dojox.form._NewPWBox",_c,{required:true,onChange:function(){
+dojo.declare("dojox.form._NewPWBox",dojox.form._ChildTextBox,{required:true,onChange:function(){
 this.containerWidget._inputWidgets[2].validate(false);
 this.inherited(arguments);
 }});
-var _13=_b("dojox.form._VerifyPWBox",_c,{isValid:function(_14){
-return this.inherited("isValid",arguments)&&(this.get("value")==this.containerWidget._inputWidgets[1].get("value"));
+dojo.declare("dojox.form._VerifyPWBox",dojox.form._ChildTextBox,{isValid:function(_5){
+return this.inherited("isValid",arguments)&&(this.attr("value")==this.containerWidget._inputWidgets[1].attr("value"));
 }});
-return _b("dojox.form.PasswordValidator",_7,{required:true,_inputWidgets:null,oldName:"",templateString:_9,_hasBeenBlurred:false,isValid:function(_15){
-return _1.every(this._inputWidgets,function(i){
+dojo.declare("dojox.form.PasswordValidator",dijit.form._FormValueWidget,{required:true,_inputWidgets:null,oldName:"",templateString:dojo.cache("dojox.form","resources/PasswordValidator.html","<div dojoAttachPoint=\"containerNode\">\n\t<input type=\"hidden\" name=\"${name}\" value=\"\" dojoAttachPoint=\"focusNode\" />\n</div>\n"),_hasBeenBlurred:false,isValid:function(_6){
+return dojo.every(this._inputWidgets,function(i){
 if(i&&i._setStateClass){
 i._setStateClass();
 }
 return (!i||i.isValid());
 });
-},validate:function(_16){
-return _1.every(_1.map(this._inputWidgets,function(i){
+},validate:function(_7){
+return dojo.every(dojo.map(this._inputWidgets,function(i){
 if(i&&i.validate){
 i._hasBeenBlurred=(i._hasBeenBlurred||this._hasBeenBlurred);
 return i.validate();
 }
 return true;
-},this),function(_17){
-return _17;
-});
+},this),"return item;");
 },reset:function(){
 this._hasBeenBlurred=false;
-_1.forEach(this._inputWidgets,function(i){
+dojo.forEach(this._inputWidgets,function(i){
 if(i&&i.reset){
 i.reset();
 }
 },this);
 },_createSubWidgets:function(){
-var _18=this._inputWidgets,msg=_4.getLocalization("dojox.form","PasswordValidator",this.lang);
-_1.forEach(_18,function(i,idx){
+var _8=this._inputWidgets,_9=dojo.i18n.getLocalization("dojox.form","PasswordValidator",this.lang);
+dojo.forEach(_8,function(i,_a){
 if(i){
 var p={containerWidget:this},c;
-if(idx===0){
+if(_a===0){
 p.name=this.oldName;
-p.invalidMessage=msg.badPasswordMessage;
-c=_d;
+p.invalidMessage=_9.badPasswordMessage;
+c=dojox.form._OldPWBox;
 }else{
-if(idx===1){
+if(_a===1){
 p.required=this.required;
-c=_12;
+c=dojox.form._NewPWBox;
 }else{
-if(idx===2){
-p.invalidMessage=msg.nomatchMessage;
-c=_13;
+if(_a===2){
+p.invalidMessage=_9.nomatchMessage;
+c=dojox.form._VerifyPWBox;
 }
 }
 }
-_18[idx]=new c(p,i);
+_8[_a]=new c(p,i);
 }
 },this);
-},pwCheck:function(_19){
+},pwCheck:function(_b){
 return false;
 },postCreate:function(){
 this.inherited(arguments);
-var _1a=this._inputWidgets=[];
-_1.forEach(["old","new","verify"],function(i){
-_1a.push(_5("input[pwType="+i+"]",this.containerNode)[0]);
+var _c=this._inputWidgets=[];
+dojo.forEach(["old","new","verify"],function(i){
+_c.push(dojo.query("input[pwType="+i+"]",this.containerNode)[0]);
 },this);
-if(!_1a[1]||!_1a[2]){
+if(!_c[1]||!_c[2]){
 throw new Error("Need at least pwType=\"new\" and pwType=\"verify\"");
 }
-if(this.oldName&&!_1a[0]){
+if(this.oldName&&!_c[0]){
 throw new Error("Need to specify pwType=\"old\" if using oldName");
 }
 this.containerNode=this.domNode;
@@ -112,32 +121,32 @@ this._createSubWidgets();
 this.connect(this._inputWidgets[1],"_setValueAttr","_childValueAttr");
 this.connect(this._inputWidgets[2],"_setValueAttr","_childValueAttr");
 },_childValueAttr:function(v){
-this.set("value",this.isValid()?v:"");
-},_setDisabledAttr:function(_1b){
+this.attr("value",this.isValid()?v:"");
+},_setDisabledAttr:function(_d){
 this.inherited(arguments);
-_1.forEach(this._inputWidgets,function(i){
-if(i&&i.set){
-i.set("disabled",_1b);
+dojo.forEach(this._inputWidgets,function(i){
+if(i&&i.attr){
+i.attr("disabled",_d);
 }
 });
-},_setRequiredAttribute:function(_1c){
-this.required=_1c;
-_3.set(this.focusNode,"required",_1c);
-this.focusNode.setAttribute("aria-required",_1c);
+},_setRequiredAttribute:function(_e){
+this.required=_e;
+dojo.attr(this.focusNode,"required",_e);
+dijit.setWaiState(this.focusNode,"required",_e);
 this._refreshState();
-_1.forEach(this._inputWidgets,function(i){
-if(i&&i.set){
-i.set("required",_1c);
+dojo.forEach(this._inputWidgets,function(i){
+if(i&&i.attr){
+i.attr("required",_e);
 }
 });
 },_setValueAttr:function(v){
 this.inherited(arguments);
-_3.set(this.focusNode,"value",v);
+dojo.attr(this.focusNode,"value",v);
 },_getValueAttr:function(){
-return this.value||"";
+return this.inherited(arguments)||"";
 },focus:function(){
 var f=false;
-_1.forEach(this._inputWidgets,function(i){
+dojo.forEach(this._inputWidgets,function(i){
 if(i&&!i.isValid()&&!f){
 i.focus();
 f=true;
@@ -147,5 +156,4 @@ if(!f){
 this._inputWidgets[1].focus();
 }
 }});
-});
-require({cache:{"url:dojox/form/resources/PasswordValidator.html":"<div dojoAttachPoint=\"containerNode\">\n\t<input type=\"hidden\" name=\"${name}\" value=\"\" dojoAttachPoint=\"focusNode\" />\n</div>"}});
+}

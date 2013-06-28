@@ -434,28 +434,13 @@ public class ShareWithPublicInfoDlg extends DlgBox
 		// Update the header with info about the item.
 		updateHeader( entityId );
 		
-		// Are we dealing with a folder?
-		if ( entityId.isBinder() )
-		{
-			// Yes, hide the controls dealing with the url to download the entity.
-			m_instructions2.setVisible( false );
-			m_downloadFilePermalinkTextBox.setVisible( false );
-		}
-		else
-		{
-			m_instructions2.setVisible( true );
-			m_downloadFilePermalinkTextBox.setVisible( true );
-		}
-		
 		cmd = new Scheduler.ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
 				getViewEntryPermalink( entityId );
-				
-				if ( entityId.isBinder() == false )
-					getDownloadFilePermalink( entityId );
+				getDownloadFilePermalink( entityId );
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );

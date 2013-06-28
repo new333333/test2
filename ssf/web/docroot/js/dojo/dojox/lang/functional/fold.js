@@ -1,14 +1,24 @@
-//>>built
-define("dojox/lang/functional/fold",["dojo/_base/lang","dojo/_base/array","dojo/_base/kernel","./lambda"],function(_1,_2,_3,df){
-var _4={};
-_1.mixin(df,{foldl:function(a,f,z,o){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.lang.functional.fold"]){
+dojo._hasResource["dojox.lang.functional.fold"]=true;
+dojo.provide("dojox.lang.functional.fold");
+dojo.require("dojox.lang.functional.lambda");
+(function(){
+var d=dojo,df=dojox.lang.functional,_1={};
+d.mixin(df,{foldl:function(a,f,z,o){
 if(typeof a=="string"){
 a=a.split("");
 }
-o=o||_3.global;
+o=o||d.global;
 f=df.lambda(f);
 var i,n;
-if(_1.isArray(a)){
+if(d.isArray(a)){
 for(i=0,n=a.length;i<n;z=f.call(o,z,a[i],i,a),++i){
 }
 }else{
@@ -17,7 +27,7 @@ for(i=0;a.hasNext();z=f.call(o,z,a.next(),i++,a)){
 }
 }else{
 for(i in a){
-if(!(i in _4)){
+if(!(i in _1)){
 z=f.call(o,z,a[i],i,a);
 }
 }
@@ -28,10 +38,10 @@ return z;
 if(typeof a=="string"){
 a=a.split("");
 }
-o=o||_3.global;
+o=o||d.global;
 f=df.lambda(f);
 var z,i,n;
-if(_1.isArray(a)){
+if(d.isArray(a)){
 z=a[0];
 for(i=1,n=a.length;i<n;z=f.call(o,z,a[i],i,a),++i){
 }
@@ -43,12 +53,12 @@ for(i=1;a.hasNext();z=f.call(o,z,a.next(),i++,a)){
 }
 }
 }else{
-var _5=true;
+var _2=true;
 for(i in a){
-if(!(i in _4)){
-if(_5){
+if(!(i in _1)){
+if(_2){
 z=a[i];
-_5=false;
+_2=false;
 }else{
 z=f.call(o,z,a[i],i,a);
 }
@@ -61,7 +71,7 @@ return z;
 if(typeof a=="string"){
 a=a.split("");
 }
-o=o||_3.global;
+o=o||d.global;
 f=df.lambda(f);
 for(var i=a.length;i>0;--i,z=f.call(o,z,a[i],i,a)){
 }
@@ -70,7 +80,7 @@ return z;
 if(typeof a=="string"){
 a=a.split("");
 }
-o=o||_3.global;
+o=o||d.global;
 f=df.lambda(f);
 var n=a.length,z=a[n-1],i=n-1;
 for(;i>0;--i,z=f.call(o,z,a[i],i,a)){
@@ -81,7 +91,7 @@ return arguments.length<3?df.foldl1(a,f):df.foldl(a,f,z);
 },reduceRight:function(a,f,z){
 return arguments.length<3?df.foldr1(a,f):df.foldr(a,f,z);
 },unfold:function(pr,f,g,z,o){
-o=o||_3.global;
+o=o||d.global;
 f=df.lambda(f);
 g=df.lambda(g);
 pr=df.lambda(pr);
@@ -90,4 +100,5 @@ for(;!pr.call(o,z);t.push(f.call(o,z)),z=g.call(o,z)){
 }
 return t;
 }});
-});
+})();
+}

@@ -64,7 +64,6 @@ public enum AdminAction implements IsSerializable
 	LDAP_CONFIG( "LDAP configuration" ),
 	MANAGE_APPLICATIONS( "Manage applications" ),
 	MANAGE_APPLICATION_GROUPS( "Manage application groups" ),
-	MANAGE_DATABASE_PRUNE( "Manage database prune" ),
 	MANAGE_EXTENSIONS( "Manage extensions" ),
 	MANAGE_GROUPS( "Manage groups" ),
 	MANAGE_LICENSE( "Manage license" ),

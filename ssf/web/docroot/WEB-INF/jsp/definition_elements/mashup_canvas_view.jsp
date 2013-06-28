@@ -70,7 +70,7 @@
 </script>
 
 <div 
-<c:if test="${empty ss_mashupBGColor}">class="ss_mashup_canvas_view"</c:if>
+<c:if test="${empty ss_mashupBGColor}">class="ss_mashup_canvas_view</c:if>
 >
   <c:if test="${ssConfigJspStyle != 'mobile'}">
 	<div id="ss_mashup_canvas_print" style="position: absolute; right: 7px; top: 7px;">

@@ -81,8 +81,7 @@ public class ConfigureLdapController extends  SAbstractController {
 				
 				schedule.getScheduleInfo().setSchedule(ScheduleHelper.getSchedule(request, null));
 				schedule.getScheduleInfo().setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
-				schedule.setUserDelete( PortletRequestUtils.getBooleanParameter( request, "notInLdap", false ) );
-				
+				schedule.setUserDelete(PortletRequestUtils.getBooleanParameter(request, "userDelete", false));
 				schedule.setUserWorkspaceDelete(PortletRequestUtils.getBooleanParameter(request, "userWorkspaceDelete", false));
 				schedule.setGroupDelete(PortletRequestUtils.getBooleanParameter(request, "groupDelete", false));
 				schedule.setUserRegister(PortletRequestUtils.getBooleanParameter(request, "userRegister", false));

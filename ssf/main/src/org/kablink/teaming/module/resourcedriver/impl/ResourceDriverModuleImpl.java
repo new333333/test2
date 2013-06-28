@@ -499,13 +499,13 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	 * If a net folder has a sync schedule enabled, that net folder will not be synchronized.
 	 */
 	@SuppressWarnings("rawtypes")
-	private boolean doEnqueueSynchronize(
+	private boolean doSynchronize(
 		ResourceDriverConfig rdConfig,
-		boolean excludeFoldersWithSchedule
-		)
+		boolean excludeFoldersWithSchedule,
+		StatusTicket statusTicket )
 	{
 		FolderModule folderModule;
-		List<Long> listOfNetFolderIds;
+		List<Map> searchEntries;
 		
 		if ( rdConfig == null )
 			return false;
@@ -513,36 +513,47 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		folderModule = getFolderModule();
 
 		// Find all of the net folders that reference this net folder server.
-		listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
+		searchEntries = NetFolderHelper.getAllNetFolders(
 													getBinderModule(),
 													getWorkspaceModule(),
 													rdConfig.getName(),
 													true );
 
-		if ( listOfNetFolderIds != null )
+		if ( searchEntries != null )
 		{
-			for ( Long binderId:  listOfNetFolderIds )
+			for ( Map entryMap:  searchEntries )
 			{
-				ScheduleInfo scheduleInfo;
+				Long binderId = null;
+				Object value;
 				
-				// Does this net folder have a sync schedule that is enabled?
-				scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( binderId );
-				if ( excludeFoldersWithSchedule == false || scheduleInfo == null || scheduleInfo.isEnabled() == false )
+				value = entryMap.get( Constants.DOCID_FIELD );
+				if ( value != null && value instanceof String )
+					binderId = new Long( (String) value );
+				
+				if ( binderId != null )
 				{
-					try {
-						// No, sync this net folder ... only if system shutdown is not in progress
-						if(!ContextListenerPostSpring.isShutdownInProgress()) {
-							folderModule.enqueueFullSynchronize( binderId );
+					Long zoneId;
+					ScheduleInfo scheduleInfo;
+					
+					// Does this net folder have a sync schedule that is enabled?
+					scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( binderId );
+					if ( excludeFoldersWithSchedule == false || scheduleInfo == null || scheduleInfo.isEnabled() == false )
+					{
+						try {
+							// No, sync this net folder ... only if system shutdown is not in progress
+							if(!ContextListenerPostSpring.isShutdownInProgress()) {
+								folderModule.fullSynchronize( binderId, statusTicket );
+							}
+							else {
+								// System shutting down. Abort the remaining work and return.
+								logger.info("System shutting down. Skipping full sync of net folder '" + binderId + "' and the rest.");
+								break;
+							}
 						}
-						else {
-							// System shutting down. Abort the remaining work and return.
-							logger.info("System shutting down. Skipping full sync of net folder '" + binderId + "' and the rest.");
-							break;
+						catch(Exception e) {
+							logger.error("Error during synchronization of net folder '" + binderId + "'", e);
+							continue; // Continue to the next net folder to sync.
 						}
-					}
-					catch(Exception e) {
-						logger.error("Error during synchronization of net folder '" + binderId + "'", e);
-						continue; // Continue to the next net folder to sync.
 					}
 				}
 			}
@@ -556,17 +567,17 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	 * If a net folder has a sync schedule enabled, that net folder will not be synchronized.
 	 */
 	@Override
-	public boolean enqueueSynchronize(
+	public boolean synchronize(
 		String netFolderServerName,
-		boolean excludeFoldersWithSchedule // Should we exclude net folders that have a schedule defined.
-		) throws FIException, UncheckedIOException, ConfigurationException
+		boolean excludeFoldersWithSchedule, // Should we exclude net folders that have a schedule defined.
+		StatusTicket statusTicket ) throws FIException, UncheckedIOException, ConfigurationException
 	{
 		ResourceDriverConfig rdConfig;
 
 		rdConfig = getResourceDriverManager().getDriverConfig( netFolderServerName );
 		if ( rdConfig != null )
 		{
-			return enqueueSynchronize( rdConfig.getId(), excludeFoldersWithSchedule );
+			return synchronize( rdConfig.getId(), excludeFoldersWithSchedule, statusTicket );
 		}
 		
 		return false;
@@ -577,44 +588,53 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	 * If a net folder has a sync schedule enabled, that net folder will not be synchronized.
 	 */
 	@Override
-	public boolean enqueueSynchronize(
+	public boolean synchronize(
 		Long netFolderServerId,
-		boolean excludeFoldersWithSchedule // Should we exclude net folders that have a schedule defined.
-		) throws FIException, UncheckedIOException, ConfigurationException
+		boolean excludeFoldersWithSchedule, // Should we exclude net folders that have a schedule defined.
+		StatusTicket statusTicket ) throws FIException, UncheckedIOException, ConfigurationException
 	{
-		ResourceDriverConfig rdConfig = null;
-		String rootPath;
-		String proxyName;
-		String proxyPwd;
-		
 		try
 		{
-			rdConfig = (ResourceDriverConfig) getCoreDao().load( ResourceDriverConfig.class, netFolderServerId );
+			ResourceDriverConfig rdConfig = null;
+			String rootPath;
+			String proxyName;
+			String proxyPwd;
+			
+			try
+			{
+				rdConfig = (ResourceDriverConfig) getCoreDao().load( ResourceDriverConfig.class, netFolderServerId );
+			}
+			catch ( Exception e )
+			{
+				logger.warn( e.toString() );
+				return false;
+			}
+			
+			if ( rdConfig == null )
+				return false;
+			
+			// Is everything configured?
+			rootPath = rdConfig.getRootPath();
+			proxyName = rdConfig.getAccountName();
+			proxyPwd = rdConfig.getPassword();
+			if ( rootPath != null && rootPath.length() > 0 &&
+				 proxyName != null && proxyName.length() > 0 &&
+				 proxyPwd != null && proxyPwd.length() > 0 )
+			{
+				// Yes
+				return doSynchronize( rdConfig, excludeFoldersWithSchedule, statusTicket );
+			}
+			else
+			{
+				logger.warn( "Did not start synchronization of net folder server, " + rdConfig.getName() + ", because it is not configured completely." );
+				return false;
+			}
 		}
-		catch ( Exception e )
+		finally
 		{
-			logger.warn( e.toString() );
-			return false;
-		}
-		
-		if ( rdConfig == null )
-			return false;
-		
-		// Is everything configured?
-		rootPath = rdConfig.getRootPath();
-		proxyName = rdConfig.getAccountName();
-		proxyPwd = rdConfig.getPassword();
-		if ( rootPath != null && rootPath.length() > 0 &&
-			 proxyName != null && proxyName.length() > 0 &&
-			 proxyPwd != null && proxyPwd.length() > 0 )
-		{
-			// Yes
-			return doEnqueueSynchronize( rdConfig, excludeFoldersWithSchedule );
-		}
-		else
-		{
-			logger.warn( "Did not start synchronization of net folder server, " + rdConfig.getName() + ", because it is not configured completely." );
-			return false;
+			// It is important to call this at the end of the processing no matter how it went.
+			if( statusTicket != null )
+				statusTicket.done();
 		}
 	}
 }

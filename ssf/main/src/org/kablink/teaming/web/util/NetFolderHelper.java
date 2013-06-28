@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.web.util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -43,17 +42,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.dao.util.FilterControls;
+import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
-import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.jobs.MirroredFolderSynchronization;
 import org.kablink.teaming.jobs.NetFolderServerSynchronization;
@@ -65,6 +64,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.resourcedriver.RDException;
@@ -83,6 +83,11 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Criterion;
+import org.kablink.util.search.Order;
+import org.kablink.util.search.Restrictions;
 
 /**
  * Helper class dealing with net folders and net folder roots
@@ -246,7 +251,7 @@ public class NetFolderHelper
 			 path == null || path.length() == 0 )
 		{
 			// No
-			m_logger.debug( "In NetFolderHelper.createHomeDirNetFolder(), invalid server information" );
+			m_logger.error( "In NetFolderHelper.createHomeDirNetFolder(), invalid server information" );
 			return;
 		}
 		
@@ -266,7 +271,6 @@ public class NetFolderHelper
 		rdConfig = findNetFolderRootByUNC( adminModule, resourceDriverModule, serverUNC );
 		if ( rdConfig == null )
 		{
-			// No, create one
 			rdConfig = NetFolderHelper.createHomeDirNetFolderServer(
 																profileModule,
 																adminModule,
@@ -296,7 +300,6 @@ public class NetFolderHelper
 			{
 				String folderName;
 	
-				// No, create one.
 				folderName = NLT.get( "netfolder.default.homedir.name" );
 				m_logger.info( "About to create a net folder called: " + folderName + ", for the users home directory for user: " + user.getName() );
 				
@@ -329,27 +332,8 @@ public class NetFolderHelper
 			}
 			else
 			{
-				String currentServerUNC = null;
-				
-				// A home dir net folder already exists for this user.
-				
-				// Get the server unc path that is currently being used by the user's home dir net folder.
-				{
-					ResourceDriver driver;
-					
-					driver = netFolderBinder.getResourceDriver();
-					if ( driver != null )
-					{
-						ResourceDriverConfig currentRdConfig;
-						
-						currentRdConfig = driver.getConfig();
-						if ( currentRdConfig != null )
-							currentServerUNC = currentRdConfig.getRootPath();
-					}
-				}
-						
 				// Did any information about the home directory change?
-				if ( serverUNC.equalsIgnoreCase( currentServerUNC ) == false ||
+				if ( serverUNC.equalsIgnoreCase( rdConfig.getRootPath() ) == false ||
 					 homeDirInfo.getPath().equalsIgnoreCase( netFolderBinder.getResourcePath() ) == false )
 				{
 					Set deleteAtts;
@@ -385,9 +369,23 @@ public class NetFolderHelper
 						final Long binderId;
 						
 						binderId = netFolderBinder.getId();
+						
+						asyncManager.execute( new RunAsyncCallback()
+						{
+							@Override
+							public Object doAsynchronously() throws Exception 
+							{
+								m_logger.info( "About to sync home directory net folder: " + binderId );
+								folderModule.fullSynchronize( binderId, null );
+						    	return null;
+							}
 
-						m_logger.info( "About to sync home directory net folder: " + binderId );
-						folderModule.enqueueFullSynchronize( binderId );
+							@Override
+							public String toString()
+							{
+								return "folderModule.synchronize()";
+							}
+						}, RunAsyncManager.TaskType.FULL_SYNC);
 					}
 					catch ( Exception e )
 					{
@@ -665,14 +663,6 @@ public class NetFolderHelper
 	/**
 	 * 
 	 */
-	private static CoreDao getCoreDao()
-	{
-		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
-	}
-	
-	/**
-	 * 
-	 */
 	public static long getDefaultJitsAclMaxAge()
 	{
 		return SPropsUtil.getLong( "nf.jits.acl.max.age", 60000L );
@@ -690,72 +680,85 @@ public class NetFolderHelper
 	 * Return all the net folders that are associated with the given net folder server
 	 */
 	@SuppressWarnings({ "unchecked" })
-	public static List<Long> getAllNetFolders(
+	public static List<Map> getAllNetFolders(
 		BinderModule binderModule,
 		WorkspaceModule workspaceModule,
 		String rootName,
 		boolean includeHomeDirNetFolders )
 	{
-		List<Folder> results;
-		List<Long> listOfNetFolderIds;
-		Workspace zone;
-		Long zoneId;
-		FilterControls filterCtrls;
+		Criteria criteria;
+		Criterion criterion;
+		Long topWSId;
+		int start;
+		int maxHits;
+		boolean sortAscend;
+		String  sortBy;
+		List<Map> searchEntries;
+		Map searchResults;
 		
-		zone = RequestContextHolder.getRequestContext().getZone();
-		zoneId = zone.getId();
-		
-		// Add the criteria for finding all top-level net folders.
+		// Can we access the ID of the top workspace?
+		try
 		{
-			filterCtrls = new FilterControls();
-
-			filterCtrls.add( ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE );
-			
-			filterCtrls.addIsNull( "topFolder" );
-			
-			// Are we looking for a net folder that is associated with a specific net folder root?
-			if ( rootName != null && rootName.length() > 0 )
-			{
-				// Yes
-				filterCtrls.add( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rootName );
-			}
-	
-			// Are we including "home directory" net folders?
-			if ( includeHomeDirNetFolders == false )
-			{
-				Binder parentBinder;
-				
-				// No
-				filterCtrls.add( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, false );
-				
-				// Get the binder where all non home dir net folders live.
-				parentBinder = getCoreDao().loadReservedBinder(
-														ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
-														zoneId );
-				if ( parentBinder != null )
-				{
-					filterCtrls.add(
-								ObjectKeys.FIELD_ENTITY_PARENTBINDER,
-								parentBinder );
-				}
-			}
+			topWSId = workspaceModule.getTopWorkspaceId();
+		}
+		catch ( Exception e )
+		{
+			topWSId = null;
+		}
+		if ( topWSId == null )
+		{
+			// No!  Then we can't search for net folders.  Bail.
+			return null;
 		}
 
-		listOfNetFolderIds = new ArrayList<Long>();
+		criteria = new Criteria();
+
+		start = 0;
+		maxHits = ObjectKeys.SEARCH_MAX_HITS_LIMIT;
+
+		// Add the criteria for top level net folders that have been configured.
+		criterion = Restrictions.in( Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_BINDER} );
+		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.ENTRY_ANCESTRY, new String[]{String.valueOf( topWSId )} );
+		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.FAMILY_FIELD, new String[]{Definition.FAMILY_FILE} );
+		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.TRUE} );
+		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.IS_TOP_FOLDER_FIELD, new String[]{Constants.TRUE} );
+		criteria.add( criterion );
 		
-		// Get the list of net folders for the given criteria.
-		results = getCoreDao().loadObjects( Folder.class, filterCtrls, zoneId );
-		if ( results != null )
+		// Are we looking for a net folder that is associated with a specific net folder root?
+		if ( rootName != null && rootName.length() > 0 )
 		{
-			// We only want to return top-level net folders.
-			for ( Folder nextFolder: results )
-			{
-				if ( nextFolder.isTop() && nextFolder.isDeleted() == false )
-					listOfNetFolderIds.add( nextFolder.getId() );
-			}
+			// Yes
+			criterion = Restrictions.in( Constants.RESOURCE_DRIVER_NAME_FIELD, new String[]{rootName} );
+			criteria.add( criterion );
 		}
 
-		return listOfNetFolderIds;
+		// Are we including "home directory" net folders?
+		if ( includeHomeDirNetFolders == false )
+		{
+			// No
+			criterion = Restrictions.in( Constants.IS_HOME_DIR_FIELD, new String[]{Constants.FALSE} );
+			criteria.add( criterion );
+		}
+
+		// Add in the sort information...
+		sortAscend = false;
+		sortBy = Constants.SORT_TITLE_FIELD;
+		criteria.addOrder( new Order( Constants.ENTITY_FIELD, sortAscend ) );
+		criteria.addOrder( new Order( sortBy, sortAscend ) );
+
+		searchResults = binderModule.executeSearchQuery(
+													criteria,
+													Constants.SEARCH_MODE_NORMAL,
+													start,
+													maxHits );
+		searchEntries = ((List<Map>) searchResults.get( ObjectKeys.SEARCH_ENTRIES ) );
+		//totalRecords = ((Integer) searchResults.get( ObjectKeys.SEARCH_COUNT_TOTAL ) ).intValue();
+		
+		return searchEntries;
 	}
 	
 	/**
@@ -953,21 +956,31 @@ public class NetFolderHelper
 		// We only need to re-index if the configuration completeness changed.
 		if ( reIndexNeeded )
 		{
-			List<Long> listOfNetFolderIds;
+			List<Map> searchEntries;
 
 			// Find all of the net folders that reference this net folder server.
-			listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
+			searchEntries = NetFolderHelper.getAllNetFolders(
 														binderModule,
 														workspaceModule,
 														rdConfig.getName(),
 														true );
 
-			if ( listOfNetFolderIds != null )
+			if ( searchEntries != null )
 			{
-				for ( Long binderId:  listOfNetFolderIds )
+				for ( Map entryMap:  searchEntries )
 				{
-					// Index this binder.
-					binderModule.indexBinder( binderId, false );
+					Long binderId = null;
+					Object value;
+					
+					value = entryMap.get( Constants.DOCID_FIELD );
+					if ( value != null && value instanceof String )
+						binderId = new Long( (String) value );
+					
+					if ( binderId != null )
+					{
+						// Index this binder.
+						binderModule.indexBinder( binderId, false );
+					}
 				}
 			}
 		}

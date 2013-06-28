@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -91,7 +91,6 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.kablink.teaming.web.util.CloudFolderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.StringUtil;
@@ -338,20 +337,6 @@ public class EntityIndexUtils {
     	String fileName = fAtts.iterator().next().getFileItem().getName();
 		Field sortPath = FieldFactory.createFieldNotStoredNotAnalyzed(SORT_ENTITY_PATH, parent.getPathName().toLowerCase() + "/" + fileName.toLowerCase());
 		doc.add(sortPath);
-    }
-
-    public static void addHiddenSearchField(Document doc, DefinableEntity entry, boolean hidden) {
-    	if (hidden) {
-	      	Field eField = FieldFactory.createFieldStoredNotAnalyzed(HIDDEN_FROM_SEARCH_FIELD, "true");
-	       	doc.add(eField);
-    	}
-    }
-
-    public static void addHiddenFindUserField(Document doc, DefinableEntity entry, boolean hidden) {
-    	if (hidden) {
-	      	Field eField = FieldFactory.createFieldStoredNotAnalyzed(HIDDEN_FROM_FIND_USER_FIELD, "true");
-	       	doc.add(eField);
-    	}
     }
 
     public static void addCreation(Document doc, HistoryStamp stamp, boolean fieldsOnly) {
@@ -1231,14 +1216,6 @@ public class EntityIndexUtils {
     }
     //Used to index info about a file with its owner
 	public static void addAttachedFileIds(Document doc, DefinableEntity entry, boolean fieldsOnly) {
-		// Can we determine a primary file attachment for this entry?
-		FileAttachment pfa = MiscUtil.getPrimaryFileAttachment(entry);
-		if (null != pfa) {
-			// Yes!  Add it to the index.
-        	Field primaryFileIDField = FieldFactory.createFieldStoredNotAnalyzed(PRIMARY_FILE_ID_FIELD, pfa.getId());
-        	doc.add(primaryFileIDField); 
-		}
-		
 		Collection<FileAttachment> atts = entry.getFileAttachments();
         for (FileAttachment fa : atts) {
         	Field fileIDField = FieldFactory.createFieldStoredNotAnalyzed(FILE_ID_FIELD, fa.getId());
@@ -1421,20 +1398,14 @@ public class EntityIndexUtils {
 	        				{
 		        				// Is everything configured?
 		        				rootPath = rdConfig.getRootPath();
-		        				if ( rootPath != null && rootPath.length() > 0 ) {
-			        				proxyName = rdConfig.getAccountName();
-			        				proxyPwd = rdConfig.getPassword();
-		        					if (proxyName != null && proxyName.length() > 0 &&
-		        					    proxyPwd != null && proxyPwd.length() > 0 )
-			        				{
-			        					// Yes
-			        					hasResourceDriver = true;
-			        				}
-		        					else if ( CloudFolderHelper.isCloudFolder( binder ) )
-		        					{
-			        					// Yes
-			        					hasResourceDriver = true;
-		        					}
+		        				proxyName = rdConfig.getAccountName();
+		        				proxyPwd = rdConfig.getPassword();
+		        				if ( rootPath != null && rootPath.length() > 0 &&
+		        					 proxyName != null && proxyName.length() > 0 &&
+		        					 proxyPwd != null && proxyPwd.length() > 0 )
+		        				{
+		        					// Yes
+		        					hasResourceDriver = true;
 		        				}
 	        				}
     					}
@@ -1477,21 +1448,5 @@ public class EntityIndexUtils {
     		doc.add( path );
     	}
     }
-    
-    /**
-     * Adds whether a binder is a Cloud Folder to the index.  If a
-     * binder is a Cloud Folder, adds the name if it Cloud Folder root
-     * to the index.
-     */
-    public static void addBinderCloudFolderInfo(Document doc, Binder binder, boolean fieldsOnly) {
-		String cfRoot = CloudFolderHelper.getCloudFolderRoot(binder);
-		boolean isCloudFolder = MiscUtil.hasString(cfRoot);
-		if (isCloudFolder) {
-			Field path = FieldFactory.createFieldStoredNotAnalyzed(RESOURCE_DRIVER_NAME_FIELD, cfRoot);
-			doc.add(path);
-		}
-		
-		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_CLOUD_FOLDER_FIELD, (isCloudFolder ? Constants.TRUE : Constants.FALSE));
-		doc.add(path);
-    }
+
 }

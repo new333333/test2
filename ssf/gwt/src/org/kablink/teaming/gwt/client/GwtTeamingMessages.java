@@ -365,7 +365,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetEmailNotificationInfo();
 	String rpcFailure_GetEntityActionToolbarItems();
 	String rpcFailure_GetEntityPermalink();
-	String rpcFailure_GetEntityRights();
 	String rpcFailure_GetEntryComments();
 	String rpcFailure_GetEntryTypes();
 	String rpcFailure_getExecuteJspUrl();
@@ -380,7 +379,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFolderSortSetting();
 	String rpcFailure_GetFolderToolbarItems();
 	String rpcFailure_GetFooterToolbarItems();
-	String rpcFailure_GetHtml5Specs();
 	String rpcFailure_GetJitsZoneConfig();
 	String rpcFailure_GetLandingPageData();
 	String rpcFailure_GetListOfAttachments();
@@ -391,7 +389,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetBranding();
 	String rpcFailure_GetChangeLogsHtml();
 	String rpcFailure_GetCreditsHtml();
-	String rpcFailure_GetDatabasePruneDlgConfiguration();
 	String rpcFailure_GetDataQuotaExceededHtml();
 	String rpcFailure_GetDataQuotaHighwaterExceededHtml();
 	String rpcFailure_GetDefaultActivityStream();
@@ -477,7 +474,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetWhoHasAccess();
 	String rpcFailure_GetWorkspaceContributorIds();
 	String rpcFailure_GetXssHtml();
-	String rpcFailure_GetZipDownloadUrl();
 	String rpcFailure_GetZoneShareRights();
 	String rpcFailure_HideShares();
 	String rpcFailure_ImportIcalByUrl();
@@ -596,7 +592,6 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ChangePasswordDlg();
 	String codeSplitFailure_ChildBindersWidget();
 	String codeSplitFailure_ClipboardDlg();
-	String codeSplitFailure_CloudFolderAuthenticationDlg();
 	String codeSplitFailure_CollectionView();
 	String codeSplitFailure_ConfigureAdhocFoldersDlg();
 	String codeSplitFailure_ConfigureFileSyncAppDlg();
@@ -613,7 +608,6 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_DesktopAppDownloadDlg();
 	String codeSplitFailure_DiscussionFolderView();
 	String codeSplitFailure_DiscussionWSView();
-	String codeSplitFailure_DownloadPanel();
 	String codeSplitFailure_EditBrandingDlg();
 	String codeSplitFailure_EditNetFolderRightsDlg();
 	String codeSplitFailure_EditShareNoteDlg();
@@ -649,7 +643,6 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MainPage();
 	String codeSplitFailure_ManageCommentsComposite();
 	String codeSplitFailure_ManageCommentsDlg();
-	String codeSplitFailure_ManageDatabasePruneDlg();
 	String codeSplitFailure_ManageGroupsDlg();
 	String codeSplitFailure_ManageNetFoldersDlg();
 	String codeSplitFailure_ManageNetFolderServersDlg();
@@ -815,11 +808,6 @@ public interface GwtTeamingMessages extends Messages
 	String numEntriesPerPageCannotBeBlank();
 	String numEntriesPerPageInvalidNum();
 	String numEntriesPerPageLabel();
-	String fileLinkActionLabel();
-	String fileLinkActionOption_Download();
-	String fileLinkActionOption_ViewDetails();
-	String fileLinkActionOption_ViewHtmlElseDetails();
-	String fileLinkActionOption_ViewHtmlElseDownload();
 	String personalPreferencesDlgHeader();
 	String showEntriesAsAnOverlay();
 	String showEntriesInNewPage();
@@ -976,12 +964,6 @@ public interface GwtTeamingMessages extends Messages
 	String addNewFolderDlgError_NoName();
 	String addNewFolderDlgHeader();
 	String addNewFolderDlgName();
-	String addNewFolderDlgType();
-	String addNewFolderDlg_Type_BoxDotNet();
-	String addNewFolderDlg_Type_DropBox();
-	String addNewFolderDlg_Type_GoogleDrive();
-	String addNewFolderDlg_Type_PersonalStorage();
-	String addNewFolderDlg_Type_SkyDrive();
 
 	// Strings used by the 'Calendar Settings' dialog.
 	String calendarSettingsDlg_Day_Sunday();
@@ -1498,7 +1480,6 @@ public interface GwtTeamingMessages extends Messages
 	String taskAltMoveLeft();
 	String taskAltMoveRight();
 	String taskAltMoveUp();
-	String taskAltParentWithDurationError();;
 	String taskAltPurge();
 	String taskAltTaskActions();
 	String taskAltTaskClosed();
@@ -1625,17 +1606,6 @@ public interface GwtTeamingMessages extends Messages
 	String fileSyncAppUseGlobalSettings();
 	String fileSyncAppUseUserSettings();
 	
-	// Strings used in the Manage Database Logs dialog
-	String databasePruneDlgHeader();
-	String databasePruneDlgHeader2();
-	String databasePruneDlgRemoveAuditTrailEntries();
-	String databasePruneDlgRemoveChangeLogEntries();
-	String databasePruneDlgAgeUnits();
-	String databasePruneDlgCautionAuditTrail();
-	String databasePruneDlgCautionChangeLog();
-	String databasePruneDlgCautionIrrevocable();
-	String databasePruneDlg_OnSaveUnknownException( String desc );
-	
 	// Strings used in the Configure User File Sync App dialog
 	String configureUserFileSyncAppDlgErrorHeader();
 	String configureUserFileSyncAppDlgHeader( String numUsers );
@@ -1706,8 +1676,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeEntryMenu_SharedView_NonHiddenFilter();
 	String vibeEntryMenu_SharedView_Warning_NoShares();
 	String vibeEntryMenu_Warning_FoldersIgnored();
-	String vibeEntryMenu_Warning_OnlyFolders_Entries();
-	String vibeEntryMenu_Warning_OnlyFolders_Files();
+	String vibeEntryMenu_Warning_OnlyFolders();
 		
 	// Strings used in the Folder Columns dialog
 	String folderColumnsDlgColumn();
@@ -1747,9 +1716,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_UnpinEntry();
 	String vibeDataTable_Alt_View();
 	String vibeDataTable_ColumnResizer();
-	String vibeDataTable_Confirm_CantShareNetFolders();
-	String vibeDataTable_Confirm_CantShareNoRights();
-	String vibeDataTable_Confirm_CantShareNoRightsAndNetFolders();
+	String vibeDataTable_Confirm_CantShareSomeSelections();
 	String vibeDataTable_Download();
 	String vibeDataTable_Error_MirroredDriverNotConfigured();
 	String vibeDataTable_Empty();
@@ -1759,7 +1726,6 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Event_Duration(String days);
 	String vibeDataTable_Event_Start();
 	String vibeDataTable_GuestbookInternalErrorOverrideMissing();
-	String vibeDataTable_InternalError_NestedCloudFolderAuthentication();
 	String vibeDataTable_InternalError_UnexpectedRowCount(int rowsRequested, int rowsRead);
 	String vibeDataTable_InternalError_UnsupportedStructuredToolbar();
 	String vibeDataTable_MemberCount(String count);
@@ -1776,9 +1742,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_View();
 	String vibeDataTable_ViewTrash();
 	String vibeDataTable_Warning_NoEntryActions();
-	String vibeDataTable_Warning_ShareNetFolders();
 	String vibeDataTable_Warning_ShareNoRights();
-	String vibeDataTable_Warning_ShareNoRightsAndNetFolders();
 	String vibeDataTable_WhatsNew();
 	
 	// Strings used by the Vibe simple pager widget.
@@ -1842,10 +1806,6 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the "Unread entries" dialog
 	String unreadEntriesDlgHeader();
 	
-	// Strings used in the CloudFolderAuthenticationDlg.
-	String cloudFolderAuthenticationDlgHeader();
-	String cloudFolderAuthenticationDlgMessage();
-	
 	// Strings used in the CopyMoveEntriesDlg in copy mode.
 	String copyEntriesDlgCaption1_Entries();
 	String copyEntriesDlgCaption1_Entry();
@@ -1903,9 +1863,6 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used by the unlock selected entries facility.
 	String unlockEntriesError();
-
-	// Strings used by the zip and download selected files facility.
-	String zipDownloadUrlError();
 	
 	// Strings used by ChangeEntryTypesDlg.
 	String changeEntryTypesDlgCurrent();
@@ -2169,9 +2126,6 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_NameRequired();
 	String modifyNetFolderServerDlg_NotFullyConfigured();
 	String modifyNetFolderServerDlg_PrivilegedPrincipalsHint();
-	String modifyNetFolderServerDlg_ProxyNameHint1();
-	String modifyNetFolderServerDlg_ProxyNameHint2();
-	String modifyNetFolderServerDlg_ProxyNameHint3();
 	String modifyNetFolderServerDlg_ProxyNameLabel();
 	String modifyNetFolderServerDlg_ProxyPwdLabel();
 	String modifyNetFolderServerDlg_ServerAlreadyExists();

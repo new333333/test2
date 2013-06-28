@@ -145,7 +145,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <br/>
 <c:if test="${ssWorkArea.workAreaType != 'zone'}">
 <form name="${renderResponse.namespace}changeOwnerForm" id="${renderResponse.namespace}changeOwnerForm" 
-  class="ss_form" method="post" style="display:inline;" >
+  class="ss_form" method="post" style="display:inline;" action="" >
 <c:if test="${ssWorkArea.workAreaType == 'folder'}">
   <span><ssf:nlt tag="access.folderOwner"/></span>
 </c:if>

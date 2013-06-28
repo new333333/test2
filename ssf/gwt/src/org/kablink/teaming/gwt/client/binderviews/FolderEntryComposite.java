@@ -58,7 +58,6 @@ import org.kablink.teaming.gwt.client.event.ShowViewPermalinksEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -89,7 +88,6 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -121,8 +119,7 @@ public class FolderEntryComposite extends ResizeComposite
 		ShareSelectedEntriesEvent.Handler,
 		ShowViewPermalinksEvent.Handler,
 		SubscribeSelectedEntriesEvent.Handler,
-		UnlockSelectedEntriesEvent.Handler,
-		ZipAndDownloadSelectedFilesEvent.Handler
+		UnlockSelectedEntriesEvent.Handler
 {
 	private boolean							m_commentsVisible;			//
 	private boolean							m_compositeReady;			// Set true once the composite and all its components are ready.
@@ -133,7 +130,6 @@ public class FolderEntryComposite extends ResizeComposite
 	private FolderEntryHeader				m_headerArea;				//
 	private FolderEntryMenu					m_menuArea;					//
 	private FooterPanel						m_footerPanel;				// Footer at the bottom of the view with the permalink, ...
-	private FormPanel						m_downloadForm;				//
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private Image							m_commentsSliderImg;		//
@@ -184,7 +180,6 @@ public class FolderEntryComposite extends ResizeComposite
 		TeamingEvents.SHOW_VIEW_PERMALINKS,
 		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
 		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
-		TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES,
 	};
 	/*
 	 * Constructor method.
@@ -214,9 +209,6 @@ public class FolderEntryComposite extends ResizeComposite
 		m_contentPanel = new VibeFlowPanel();
 		m_contentPanel.addStyleName("vibe-feComposite-contentPanel");
 		m_rootPanel.add(m_contentPanel);
-		m_downloadForm = new FormPanel();
-		m_downloadForm.setMethod(FormPanel.METHOD_POST);
-		m_contentPanel.add(m_downloadForm);
 		initWidget(m_rootPanel);
 
 		// ...and continue building the composite.
@@ -1348,48 +1340,6 @@ public class FolderEntryComposite extends ResizeComposite
 	private void onUnlockSelectedEntriesNow(List<EntityId> unlockedEntities) {
 		BinderViewsHelper.unlockEntries(
 			unlockedEntities,
-			new FolderEntryActionCompleteEvent(
-				m_vfei.getEntityId(),
-				false));
-	}
-	
-	/**
-	 * Handles ZipAndDownloadSelectedFilesEvent's received by this class.
-	 * 
-	 * Implements the ZipAndDownloadSelectedFilesEvent.Handler.onZipAndDownloadSelectedFiles() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onZipAndDownloadSelectedFiles(ZipAndDownloadSelectedFilesEvent event) {
-		// Is the event targeted to this entry?
-		List<EntityId> zipAndDownloadEntities = event.getSelectedEntities();
-		if (isCompositeEntry(zipAndDownloadEntities)) {
-			// Yes!  Run the zip and download on it.
-			onZipAndDownloadSelectedFilesAsync(zipAndDownloadEntities);
-		}
-	}
-	
-	/*
-	 * Asynchronously handles zipping and downloading the file.
-	 */
-	private void onZipAndDownloadSelectedFilesAsync(final List<EntityId> zipAndDownloadEntities) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onZipAndDownloadSelectedFilesNow(zipAndDownloadEntities);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously handles zipping and downloading the file.
-	 */
-	private void onZipAndDownloadSelectedFilesNow(List<EntityId> zipAndDownloadEntities) {
-		BinderViewsHelper.zipAndDownloadFiles(
-			m_downloadForm,
-			zipAndDownloadEntities,
-			true,
 			new FolderEntryActionCompleteEvent(
 				m_vfei.getEntityId(),
 				false));

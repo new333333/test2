@@ -1,43 +1,50 @@
-//>>built
-define("dojox/widget/FilePicker",["dijit","dojo","dojox","dojo/i18n!dojox/widget/nls/FilePicker","dojo/require!dojox/widget/RollingList,dojo/i18n"],function(_1,_2,_3){
-_2.provide("dojox.widget.FilePicker");
-_2.require("dojox.widget.RollingList");
-_2.require("dojo.i18n");
-_2.requireLocalization("dojox.widget","FilePicker");
-_2.declare("dojox.widget._FileInfoPane",[_3.widget._RollingListPane],{templateString:"",templateString:_2.cache("dojox.widget","FilePicker/_FileInfoPane.html","<div class=\"dojoxFileInfoPane\">\n\t<table>\n\t\t<tbody>\n\t\t\t<tr>\n\t\t\t\t<td class=\"dojoxFileInfoLabel dojoxFileInfoNameLabel\">${_messages.name}</td>\n\t\t\t\t<td class=\"dojoxFileInfoName\" dojoAttachPoint=\"nameNode\"></td>\n\t\t\t</tr>\n\t\t\t<tr>\n\t\t\t\t<td class=\"dojoxFileInfoLabel dojoxFileInfoPathLabel\">${_messages.path}</td>\n\t\t\t\t<td class=\"dojoxFileInfoPath\" dojoAttachPoint=\"pathNode\"></td>\n\t\t\t</tr>\n\t\t\t<tr>\n\t\t\t\t<td class=\"dojoxFileInfoLabel dojoxFileInfoSizeLabel\">${_messages.size}</td>\n\t\t\t\t<td class=\"dojoxFileInfoSize\" dojoAttachPoint=\"sizeNode\"></td>\n\t\t\t</tr>\n\t\t</tbody>\n\t</table>\n\t<div dojoAttachPoint=\"containerNode\" style=\"display:none;\"></div>\n</div>"),postMixInProperties:function(){
-this._messages=_2.i18n.getLocalization("dojox.widget","FilePicker",this.lang);
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.widget.FilePicker"]){
+dojo._hasResource["dojox.widget.FilePicker"]=true;
+dojo.provide("dojox.widget.FilePicker");
+dojo.require("dojox.widget.RollingList");
+dojo.require("dojo.i18n");
+dojo.requireLocalization("dojox.widget","FilePicker",null,"ROOT,ar,ca,cs,da,de,el,es,fi,fr,he,hu,it,ja,ko,nb,nl,pl,pt,pt-pt,ru,sk,sl,sv,th,tr,zh,zh-tw");
+dojo.declare("dojox.widget._FileInfoPane",[dojox.widget._RollingListPane],{templateString:"",templateString:dojo.cache("dojox.widget","FilePicker/_FileInfoPane.html","<div class=\"dojoxFileInfoPane\">\n\t<table>\n\t\t<tbody>\n\t\t\t<tr>\n\t\t\t\t<td class=\"dojoxFileInfoLabel dojoxFileInfoNameLabel\">${_messages.name}</td>\n\t\t\t\t<td class=\"dojoxFileInfoName\" dojoAttachPoint=\"nameNode\"></td>\n\t\t\t</tr>\n\t\t\t<tr>\n\t\t\t\t<td class=\"dojoxFileInfoLabel dojoxFileInfoPathLabel\">${_messages.path}</td>\n\t\t\t\t<td class=\"dojoxFileInfoPath\" dojoAttachPoint=\"pathNode\"></td>\n\t\t\t</tr>\n\t\t\t<tr>\n\t\t\t\t<td class=\"dojoxFileInfoLabel dojoxFileInfoSizeLabel\">${_messages.size}</td>\n\t\t\t\t<td class=\"dojoxFileInfoSize\" dojoAttachPoint=\"sizeNode\"></td>\n\t\t\t</tr>\n\t\t</tbody>\n\t</table>\n\t<div dojoAttachPoint=\"containerNode\" style=\"display:none;\"></div>\n</div>\n"),postMixInProperties:function(){
+this._messages=dojo.i18n.getLocalization("dojox.widget","FilePicker",this.lang);
 this.inherited(arguments);
 },onItems:function(){
-var _4=this.store,_5=this.items[0];
-if(!_5){
+var _1=this.store,_2=this.items[0];
+if(!_2){
 this._onError("Load",new Error("No item defined"));
 }else{
-this.nameNode.innerHTML=_4.getLabel(_5);
-this.pathNode.innerHTML=_4.getIdentity(_5);
-this.sizeNode.innerHTML=_4.getValue(_5,"size");
+this.nameNode.innerHTML=_1.getLabel(_2);
+this.pathNode.innerHTML=_1.getIdentity(_2);
+this.sizeNode.innerHTML=_1.getValue(_2,"size");
 this.parentWidget.scrollIntoView(this);
 this.inherited(arguments);
 }
 }});
-_2.declare("dojox.widget.FilePicker",_3.widget.RollingList,{className:"dojoxFilePicker",pathSeparator:"",topDir:"",parentAttr:"parentDir",pathAttr:"path",preloadItems:50,selectDirectories:true,selectFiles:true,_itemsMatch:function(_6,_7){
-if(!_6&&!_7){
+dojo.declare("dojox.widget.FilePicker",dojox.widget.RollingList,{className:"dojoxFilePicker",pathSeparator:"",topDir:"",parentAttr:"parentDir",pathAttr:"path",preloadItems:50,selectDirectories:true,selectFiles:true,_itemsMatch:function(_3,_4){
+if(!_3&&!_4){
 return true;
 }else{
-if(!_6||!_7){
+if(!_3||!_4){
 return false;
 }else{
-if(_6==_7){
+if(_3==_4){
 return true;
 }else{
 if(this._isIdentity){
-var _8=[this.store.getIdentity(_6),this.store.getIdentity(_7)];
-_2.forEach(_8,function(i,_9){
+var _5=[this.store.getIdentity(_3),this.store.getIdentity(_4)];
+dojo.forEach(_5,function(i,_6){
 if(i.lastIndexOf(this.pathSeparator)==(i.length-1)){
-_8[_9]=i.substring(0,i.length-1);
+_5[_6]=i.substring(0,i.length-1);
 }else{
 }
 },this);
-return (_8[0]==_8[1]);
+return (_5[0]==_5[1]);
 }
 }
 }
@@ -48,23 +55,23 @@ if(this._started){
 return;
 }
 this.inherited(arguments);
-var _a,_b=this.getChildren()[0];
-var _c=_2.hitch(this,function(){
-if(_a){
-this.disconnect(_a);
+var _7,_8=this.getChildren()[0];
+var _9=dojo.hitch(this,function(){
+if(_7){
+this.disconnect(_7);
 }
-delete _a;
-var _d=_b.items[0];
-if(_d){
-var _e=this.store;
-var _f=_e.getValue(_d,this.parentAttr);
-var _10=_e.getValue(_d,this.pathAttr);
-this.pathSeparator=this.pathSeparator||_e.pathSeparator;
+delete _7;
+var _a=_8.items[0];
+if(_a){
+var _b=this.store;
+var _c=_b.getValue(_a,this.parentAttr);
+var _d=_b.getValue(_a,this.pathAttr);
+this.pathSeparator=this.pathSeparator||_b.pathSeparator;
 if(!this.pathSeparator){
-this.pathSeparator=_10.substring(_f.length,_f.length+1);
+this.pathSeparator=_d.substring(_c.length,_c.length+1);
 }
 if(!this.topDir){
-this.topDir=_f;
+this.topDir=_c;
 if(this.topDir.lastIndexOf(this.pathSeparator)!=(this.topDir.length-1)){
 this.topDir+=this.pathSeparator;
 }
@@ -72,57 +79,57 @@ this.topDir+=this.pathSeparator;
 }
 });
 if(!this.pathSeparator||!this.topDir){
-if(!_b.items){
-_a=this.connect(_b,"onItems",_c);
+if(!_8.items){
+_7=this.connect(_8,"onItems",_9);
 }else{
-_c();
+_9();
 }
 }
-},getChildItems:function(_11){
-var ret=this.inherited(arguments);
-if(!ret&&this.store.getValue(_11,"directory")){
-ret=[];
+},getChildItems:function(_e){
+var _f=this.inherited(arguments);
+if(!_f&&this.store.getValue(_e,"directory")){
+_f=[];
 }
-return ret;
-},getMenuItemForItem:function(_12,_13,_14){
-var _15={iconClass:"dojoxDirectoryItemIcon"};
-if(!this.store.getValue(_12,"directory")){
-_15.iconClass="dojoxFileItemIcon";
-var l=this.store.getLabel(_12),idx=l.lastIndexOf(".");
+return _f;
+},getMenuItemForItem:function(_10,_11,_12){
+var _13={iconClass:"dojoxDirectoryItemIcon"};
+if(!this.store.getValue(_10,"directory")){
+_13.iconClass="dojoxFileItemIcon";
+var l=this.store.getLabel(_10),idx=l.lastIndexOf(".");
 if(idx>=0){
-_15.iconClass+=" dojoxFileItemIcon_"+l.substring(idx+1);
+_13.iconClass+=" dojoxFileItemIcon_"+l.substring(idx+1);
 }
 if(!this.selectFiles){
-_15.disabled=true;
+_13.disabled=true;
 }
 }
-var ret=new _1.MenuItem(_15);
+var ret=new dijit.MenuItem(_13);
 return ret;
-},getPaneForItem:function(_16,_17,_18){
+},getPaneForItem:function(_14,_15,_16){
 var ret=null;
-if(!_16||(this.store.isItem(_16)&&this.store.getValue(_16,"directory"))){
-ret=new _3.widget._RollingListGroupPane({});
+if(!_14||(this.store.isItem(_14)&&this.store.getValue(_14,"directory"))){
+ret=new dojox.widget._RollingListGroupPane({});
 }else{
-if(this.store.isItem(_16)&&!this.store.getValue(_16,"directory")){
-ret=new _3.widget._FileInfoPane({});
+if(this.store.isItem(_14)&&!this.store.getValue(_14,"directory")){
+ret=new dojox.widget._FileInfoPane({});
 }
 }
 return ret;
-},_setPathValueAttr:function(_19,_1a,_1b){
-if(!_19){
-this.set("value",null);
+},_setPathValueAttr:function(_17,_18,_19){
+if(!_17){
+this.attr("value",null);
 return;
 }
-if(_19.lastIndexOf(this.pathSeparator)==(_19.length-1)){
-_19=_19.substring(0,_19.length-1);
+if(_17.lastIndexOf(this.pathSeparator)==(_17.length-1)){
+_17=_17.substring(0,_17.length-1);
 }
-this.store.fetchItemByIdentity({identity:_19,onItem:function(v){
-if(_1a){
+this.store.fetchItemByIdentity({identity:_17,onItem:function(v){
+if(_18){
 this._lastExecutedValue=v;
 }
-this.set("value",v);
-if(_1b){
-_1b();
+this.attr("value",v);
+if(_19){
+_19();
 }
 },scope:this});
 },_getPathValueAttr:function(val){
@@ -134,20 +141,20 @@ return this.store.getValue(val,this.pathAttr);
 }else{
 return "";
 }
-},_setValue:function(_1c){
+},_setValue:function(_1a){
 delete this._setInProgress;
-var _1d=this.store;
-if(_1c&&_1d.isItem(_1c)){
-var _1e=this.store.getValue(_1c,"directory");
-if((_1e&&!this.selectDirectories)||(!_1e&&!this.selectFiles)){
+var _1b=this.store;
+if(_1a&&_1b.isItem(_1a)){
+var _1c=this.store.getValue(_1a,"directory");
+if((_1c&&!this.selectDirectories)||(!_1c&&!this.selectFiles)){
 return;
 }
 }else{
-_1c=null;
+_1a=null;
 }
-if(!this._itemsMatch(this.value,_1c)){
-this.value=_1c;
-this._onChange(_1c);
+if(!this._itemsMatch(this.value,_1a)){
+this.value=_1a;
+this._onChange(_1a);
 }
 }});
-});
+}

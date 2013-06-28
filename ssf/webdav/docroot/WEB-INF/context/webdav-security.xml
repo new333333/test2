@@ -22,7 +22,7 @@
 	
 	<bean id="digestProcessingFilterEntryPoint"
 		class="org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint">
-		<property name="realmName" value="Novell"/>
+		<property name="realmName" value="Vibe"/>
 		<property name="key" value="U2l0ZVNjYXBl"/>
 	</bean>
 

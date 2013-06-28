@@ -1,28 +1,37 @@
-//>>built
-define("dojox/analytics/plugins/window",["dojo/_base/lang","../_base","dojo/ready","dojo/_base/config","dojo/aspect"],function(_1,_2,_3,_4,_5){
-return (_2.plugins.window=new (function(){
-this.addData=_1.hitch(_2,"addData","window");
-this.windowConnects=_4["windowConnects"]||["open","onerror"];
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.analytics.plugins.window"]){
+dojo._hasResource["dojox.analytics.plugins.window"]=true;
+dojo.require("dojox.analytics._base");
+dojo.provide("dojox.analytics.plugins.window");
+dojox.analytics.plugins.window=new (function(){
+this.addData=dojo.hitch(dojox.analytics,"addData","window");
+this.windowConnects=dojo.config["windowConnects"]||["open","onerror"];
 for(var i=0;i<this.windowConnects.length;i++){
-_5.after(window,this.windowConnects[i],_1.hitch(this,"addData",this.windowConnects[i]),true);
+dojo.connect(window,this.windowConnects[i],dojo.hitch(this,"addData",this.windowConnects[i]));
 }
-_3(_1.hitch(this,function(){
-var _6={};
+dojo.addOnLoad(dojo.hitch(this,function(){
+var _1={};
 for(var i in window){
-if(typeof window[i]=="object"||typeof window[i]=="function"){
+if(dojo.isObject(window[i])){
 switch(i){
 case "location":
 case "console":
-_6[i]=window[i];
+_1[i]=window[i];
 break;
 default:
 break;
 }
 }else{
-_6[i]=window[i];
+_1[i]=window[i];
 }
 }
-this.addData(_6);
+this.addData(_1);
 }));
-})());
-});
+})();
+}

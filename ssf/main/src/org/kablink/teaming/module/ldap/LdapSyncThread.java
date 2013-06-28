@@ -33,9 +33,6 @@
 
 package org.kablink.teaming.module.ldap;
 
-import java.net.UnknownHostException;
-
-import javax.naming.CommunicationException;
 import javax.naming.NamingException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
@@ -47,7 +44,6 @@ import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncResults.SyncStatus;
-import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.util.WebHelper;
 
 /**
@@ -200,30 +196,16 @@ public class LdapSyncThread
 		{
 			LdapConnectionConfig	ldapConfig;
 			NamingException			ne;
-			String					errorDesc = null;
+			String					errorDesc;
 			
 			// Get the ldap connection configuration that had the problem.
 			ldapConfig = ldapSyncEx.getLdapConfig();
 
 			ne = ldapSyncEx.getNamingException();
-			if ( ne instanceof CommunicationException )
-			{
-				if ( ne.getCause() != null && ne.getCause() instanceof UnknownHostException )
-				{
-					UnknownHostException uhEx;
-					
-					uhEx = (UnknownHostException) ne.getCause();
-					errorDesc = NLT.get( "errorcode.ldap.unknown.host", new Object[] { uhEx.getMessage() } );
-				}
-			}
-			
-			if ( errorDesc == null )
-			{
-				if (ne.getCause() != null)
-					errorDesc = ne.getCause().getLocalizedMessage() != null ? ne.getCause().getLocalizedMessage() : ne.getCause().getMessage();
-				else
-					errorDesc = ne.getLocalizedMessage() != null ? ne.getLocalizedMessage() : ne.getMessage();
-			}
+			if (ne.getCause() != null)
+				errorDesc = ne.getCause().getLocalizedMessage() != null ? ne.getCause().getLocalizedMessage() : ne.getCause().getMessage();
+			else
+				errorDesc = ne.getLocalizedMessage() != null ? ne.getLocalizedMessage() : ne.getMessage();
 			
 			syncResults.error( errorDesc, ldapConfig.getId() );
 		}

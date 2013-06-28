@@ -92,7 +92,7 @@
 			accessibility_focus : true,
 			entities :  "39,#39,34,quot,38,amp,60,lt,62,gt",
 			gecko_spellcheck : true,
-			plugins : "pdw,table,preelementfix,ss_addimage,preview,paste,ss_wikilink,ss_youtube", 
+			plugins : "compat2x,pdw,table,preelementfix,ss_addimage,preview,paste,ss_wikilink,ss_youtube", 
 			theme_advanced_toolbar_location : "top",
 			theme_advanced_toolbar_align : "left", 
 			theme_advanced_statusbar_location : "bottom", 
@@ -328,7 +328,7 @@
     
     <!-- This form is used for logging out. -->
     <!-- The value of the action attribute will be filled in at runtime. -->
-	<form name="logoutForm" id="logoutForm" method="post" >
+	<form name="logoutForm" id="logoutForm" method="post" action="" >
 	</form> 
 	
 	<!--  This form is used for logging in. -->

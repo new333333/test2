@@ -38,6 +38,7 @@ package org.kablink.teaming;
  * @author Jong Kim
  */
 public interface ObjectKeys {
+	
     //Default name for the product
 	public static final String PRODUCT_NAME_DEFAULT="Kablink";
 	public static final String PRODUCT_TITLE_DEFAULT="Kablink";
@@ -116,8 +117,6 @@ public interface ObjectKeys {
 	public static final String DEFAULT_FOLDER_FILR_ROOT_CONFIG="402883b90d0de1f3010d0df5582b0032";
 	public static final String DEFAULT_FOLDER_FILR_HOME_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0040";
 	public static final String DEFAULT_FOLDER_FILR_NET_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0048";
-	public static final String DEFAULT_FOLDER_FILR_ROOT_CLOUD_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0050";
-	public static final String DEFAULT_FOLDER_FILR_CLOUD_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0058";
 	
 	//reserved internalIds for binders
 	public static final String PROFILE_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0005";
@@ -335,7 +334,6 @@ public interface ObjectKeys {
     public static final String BINDER_PROPERTY_TASK_ID = "taskId";
     public static final String BINDER_PROPERTY_TASK_MODIFIED = "taskModified";
     public static final String BINDER_PROPERTY_TASK_EXPAND_GRAPHS = "taskExpandGraphs";
-    public static final String BINDER_PROPERTY_CLOUD_FOLDER_ROOT = "cloudFolderRoot";
     
     // Global properties
     public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "defaultLocale";
@@ -483,7 +481,6 @@ public interface ObjectKeys {
     public static final String SEARCH_CRITERIA_OR = "searchCriteriaOr";
     public static final String SEARCH_DASHBOARD_CURRENT_BINDER_ID = "searchDashboardBinderId";
     public static final String PAGE_ENTRIES_PER_PAGE = "entriesPerPage";
-    public static final String FILE_LINK_ACTION = "fileLinkAction";
     public static final String SEARCH_PAGE_ENTRIES_PER_PAGE = "entriesPerSearchPage";
     public static final String SEARCH_YEAR_MONTH = "yearMonth";
     public static final String SEARCH_EVENT_DAYS = "eventDays";
@@ -492,8 +489,6 @@ public interface ObjectKeys {
     public static final String SEARCH_ANCESTRY = "ancestry";
     public static final String SEARCH_TITLE = "searchTitle";
     public static final String SEARCH_PRE_DELETED = "__preDeleted";
-    public static final String SEARCH_HIDDEN = "__searchHidden";
-    public static final String SEARCH_FIND_USER_HIDDEN = "__searchFindUserHidden";
     public static final String SEARCH_LASTACTIVITY_DATE_START = "lastActivityDateStart";
     public static final String SEARCH_LASTACTIVITY_DATE_END = "lastActivityDateEnd";
     public static final String SEARCH_CREATION_DATE_START = "creationDateStart";
@@ -646,8 +641,6 @@ public interface ObjectKeys {
     public static final String INPUT_OPTION_REQUIRED_TITLE="org.kablink.teaming.options.required.title";
     public static final String INPUT_OPTION_OWNER_ID="org.kablink.teaming.options.entity.owner.id";
     public static final String INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE="org.kablink.teaming.options.skip.parent.modtime.update";
-    public static final String INPUT_OPTION_SKIP_DB_LOG="org.kablink.teaming.options.skip_db_log";
-    public static final String INPUT_OPTION_SKIP_NOTIFY_STATUS="org.kablink.teaming.options.skip_notify_status";
     
  	//Reserved data field names
     public static final String FIELD_ID="id";
@@ -689,7 +682,7 @@ public interface ObjectKeys {
 	public static final String FIELD_BINDER_INHERITDEFINITIONS = "definitionsInherited"; 
 	public static final String FIELD_BINDER_RESOURCE_DRIVER_NAME = "resourceDriverName";
 	public static final String FIELD_BINDER_RESOURCE_PATH = "resourcePath"; 
-	public static final String FIELD_BINDER_IS_HOME_DIR = "homeDir";
+	public static final String FIELD_IS_HOME_DIR = "homeDir";
 	public static final String FIELD_WS_SEARCHTITLE="searchTitle";
 
     public static final String FIELD_USER_FIRSTNAME="firstName";
@@ -723,7 +716,6 @@ public interface ObjectKeys {
     public static final String FIELD_PRINCIPAL_SAM_ACCOUNT_NAME = "samAccountName";
     public static final String FIELD_PRINCIPAL_TYPE="type";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
-    public static final String FIELD_PRINCIPAL_DOMAIN_NAME = "domainName";
     public static final String FIELD_GROUP_DYNAMIC = "dynamic";
     public static final String FIELD_GROUP_LDAP_QUERY = "ldapQuery";
     public static final String FIELD_GROUP_PRINCIPAL_MEMBERS="members";
@@ -947,38 +939,4 @@ public interface ObjectKeys {
     // Must match values in GWT client's TagInfo class
     public final static String	HIDDEN_SHARED_BY_TAG	= "sharedByHidden";
     public final static String	HIDDEN_SHARED_WITH_TAG	= "sharedWithHidden";
-    
-    //AuditTrail log file XML fields
-    public final static String AUDIT_TRAIL_HEADER = "AuditTrail";
-    public final static String AUDIT_TRAIL_ENTRY = "AuditTrailEntry";
-    public final static String AUDIT_TRAIL_ZONE_ID = "zoneId";
-    public final static String AUDIT_TRAIL_ID = "id";
-    public final static String AUDIT_TRAIL_START_DATE = "startDate";
-    public final static String AUDIT_TRAIL_END_DATE = "endDate";
-    public final static String AUDIT_TRAIL_START_BY = "startBy";
-    public final static String AUDIT_TRAIL_END_BY = "endBy";
-    public final static String AUDIT_TRAIL_ENTITY_ID = "entityId";
-    public final static String AUDIT_TRAIL_ENTITY_TYPE = "entityType";
-    public final static String AUDIT_TRAIL_OWNING_BINDER_ID = "owningBinderId";
-    public final static String AUDIT_TRAIL_DESCRIPTION = "description";
-    public final static String AUDIT_TRAIL_TRANSACTION_TYPE = "transactionType";
-    public final static String AUDIT_TRAIL_FILE_ID = "fileId";
-    public final static String AUDIT_TRAIL_APPLICATION_ID = "applicationId";
-    public final static String AUDIT_TRAIL_DELETED_FOLDER_ENTRY_FAMILY = "deletedFolderEntryFamily";
-
-    //ChangeLog log file XML fields
-    public final static String CHANGE_LOG_HEADER = "ChangeLog";
-    public final static String CHANGE_LOG_ENTRY = "ChangeLogEntry";
-    public final static String CHANGE_LOG_ZONE_ID = "zoneId";
-    public final static String CHANGE_LOG_ID = "id";
-    public final static String CHANGE_LOG_OPERATION = "operation";
-    public final static String CHANGE_LOG_USER_NAME = "userName";
-    public final static String CHANGE_LOG_USER_ID = "userId";
-    public final static String CHANGE_LOG_OPERATION_DATE = "operationDate";
-    public final static String CHANGE_LOG_XML_STR = "xmlStr";
-    public final static String CHANGE_LOG_ENTITY_ID = "entityId";
-    public final static String CHANGE_LOG_ENTITY_TYPE = "entityType";
-    public final static String CHANGE_LOG_OWNING_BINDER_ID = "owningBinderId";
-    public final static String CHANGE_LOG_VERSION = "version";
-    public final static String CHANGE_LOG_DOC_NUMBER = "docNumber";
 }

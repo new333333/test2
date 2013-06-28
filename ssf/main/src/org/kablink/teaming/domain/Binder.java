@@ -115,7 +115,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean jitsEnabled; // Applicable only to mirrored folders
     protected Long jitsMaxAge; // in milliseconds
     protected Long jitsAclMaxAge; // in milliseconds
-    protected Boolean fullSyncDirOnly; // Applicable only to mirrored folders
     
     
     public Binder() {
@@ -154,7 +153,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 jitsEnabled = source.jitsEnabled;
 		 jitsMaxAge = source.jitsMaxAge;
 		 jitsAclMaxAge = source.jitsAclMaxAge;
-		 fullSyncDirOnly = source.fullSyncDirOnly;
      }
     /**
      * Return the zone id
@@ -824,16 +822,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		this.jitsAclMaxAge = Long.valueOf(jitsAclMaxAge);
 	}
     
-	public boolean isFullSyncDirOnly() {
-		if(fullSyncDirOnly == null)
-			return SPropsUtil.getBoolean("nf.full.sync.dir.only", false);
-		else
-			return fullSyncDirOnly.booleanValue();
-	}
-	public void setFullSyncDirOnly(boolean fullSyncDirOnly) {
-		this.fullSyncDirOnly = fullSyncDirOnly;
-	}
-	
     /**
      * Get the xml document that holds the landing page properties such as the background color,
      * background image, etc. 

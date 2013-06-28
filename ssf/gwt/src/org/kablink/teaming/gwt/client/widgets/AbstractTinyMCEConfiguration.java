@@ -64,7 +64,7 @@ public abstract class AbstractTinyMCEConfiguration
 	private boolean accessibilityFocus = true;
 	private String entities = "39,#39,34,quot,38,amp,60,lt,62,gt";
 	private boolean gecko_spellcheck = true;
-	private String[] plugins = new String[] {"pdw", "table", "preelementfix", "ss_addimage", "preview", "paste", "ss_wikilink", "ss_youtube"};
+	private String[] plugins = new String[] {"compat2x", "pdw", "table", "preelementfix", "ss_addimage", "preview", "paste", "ss_wikilink", "ss_youtube"};
 	private String themeAdvancedToolbarLocation = "top";
 	private String themeAdvancedToolbarAlign = "left";
 	private String themeAdvancedStatusbarLocation = "bottom";

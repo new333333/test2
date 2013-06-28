@@ -18,7 +18,7 @@
 .tundra .dijitBorderContainer-dijitBorderContainer {
 	
 	border: none;
-	padding: 0;
+	padding: 0px;
 }
 .tundra .dijitSplitterH,
 .tundra .dijitGutterH {

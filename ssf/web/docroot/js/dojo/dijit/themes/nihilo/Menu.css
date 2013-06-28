@@ -2,8 +2,8 @@
 .nihilo .dijitMenu,
 .nihilo .dijitMenuBar {
 	border: 1px solid #d3d3d3;
-	margin: 0;
-	padding: 0;
+	margin: 0px;
+	padding: 0px;
 	background-color: #fff;
 }
 .nihilo .dijitBorderContainer .dijitMenuBar {
@@ -11,7 +11,7 @@
 }
 .nihilo .dijitMenuItem {
 	font-family: sans-serif;
-	margin: 0;
+	margin: 0px;
 	color: #243C5F;
 }
 .nihilo .dijitMenuBar .dijitMenuItem {
@@ -24,7 +24,6 @@
 	padding:1px;
 }
 .nihilo .dijitMenuPassive .dijitMenuItemHover,
-.nihilo .dijitComboBoxMenu .dijitMenuItemHover,
 .nihilo .dijitMenuItemSelected {
 	background-color: #ffe284; 
 	color: #243C5F;
@@ -51,17 +50,13 @@
 .nihilo .dijitMenuSeparatorBottom {
 	border-top: 1px solid #d3d3d3;
 }
-.nihilo .dijitCheckedMenuItem .dijitMenuItemIcon  {
+.nihilo .dijitCheckedMenuItemIconChar {
+	display: none;
+}
+.nihilo .dijitCheckedMenuItemIcon {
 	background-image: url('images/spriteCheckbox.gif');
 	background-position: -80px;
 }
-.nihilo .dijitCheckedMenuItemChecked .dijitMenuItemIcon {
-	background-position: -64px;
-}
-.nihilo .dijitRadioMenuItem .dijitMenuItemIcon {
-	background-image: url('images/spriteRadio.gif');
-	background-position: -80px;
-}
-.nihilo .dijitRadioMenuItemChecked .dijitMenuItemIcon {
+.nihilo .dijitCheckedMenuItemChecked .dijitCheckedMenuItemIcon {
 	background-position: -64px;
 }

@@ -1,84 +1,91 @@
-//>>built
-define("dojox/lang/typed",["dijit","dojo","dojox","dojo/require!dojox/json/schema"],function(_1,_2,_3){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.lang.typed"]){
+dojo._hasResource["dojox.lang.typed"]=true;
 (function(){
-var _4,_5=typeof _2!="undefined";
-if(_5){
-_2.provide("dojox.lang.typed");
-_2.require("dojox.json.schema");
-_4=_3.json.schema;
+var _1,_2=typeof dojo!="undefined";
+if(_2){
+dojo.provide("dojox.lang.typed");
+dojo.require("dojox.json.schema");
+_1=dojox.json.schema;
 }else{
 if(typeof JSONSchema=="undefined"){
 throw new Error("Dojo or JSON Schema library must be present");
 }
-_4=JSONSchema;
+_1=JSONSchema;
 }
-function _6(_7,_8){
-var _9=function(){
-var _a=_8();
-if(_a&&_a.parameters){
-var _b=_a.parameters;
-for(var j=0;j<_b.length;j++){
-arguments[j]=_c(arguments[j],_b[j],j.toString());
+function _3(_4,_5){
+var _6=function(){
+var _7=_5();
+if(_7&&_7.parameters){
+var _8=_7.parameters;
+for(var j=0;j<_8.length;j++){
+arguments[j]=_9(arguments[j],_8[j],j.toString());
 }
-if(_a.additionalParameters){
+if(_7.additionalParameters){
 for(;j<arguments.length;j++){
-arguments[j]=_c(arguments[j],_a.additionalParameters,j.toString());
+arguments[j]=_9(arguments[j],_7.additionalParameters,j.toString());
 }
 }
 }
-var _d=_7.apply(this,arguments);
-if(_a.returns){
-_c(_d,_a.returns);
+var _a=_4.apply(this,arguments);
+if(_7.returns){
+_9(_a,_7.returns);
+}
+return _a;
+};
+_6.__typedFunction__=true;
+for(var i in _4){
+_6[i]=_4[i];
+}
+return _6;
+};
+function _b(_c){
+return function(){
+return _c;
+};
+};
+function _9(_d,_e,_f){
+if(typeof _d=="function"&&_e&&!_d.__typedFunction__){
+_d=_3(_d,_b(_e));
+}
+var _10=_1._validate(_d,_e,_f);
+if(!_10.valid){
+var _11="";
+var _12=_10.errors;
+for(var i=0;i<_12.length;i++){
+_11+=_12[i].property+" "+_12[i].message+"\n";
+}
+throw new TypeError(_11);
 }
 return _d;
 };
-_9.__typedFunction__=true;
-for(var i in _7){
-_9[i]=_7[i];
+var _13=_1.__defineGetter__;
+var _14=function(_15){
+if(_15.__typedClass__){
+return _15;
 }
-return _9;
-};
-function _e(_f){
-return function(){
-return _f;
-};
-};
-function _c(_10,_11,_12){
-if(typeof _10=="function"&&_11&&!_10.__typedFunction__){
-_10=_6(_10,_e(_11));
-}
-var _13=_4._validate(_10,_11,_12);
-if(!_13.valid){
-var _14="";
-var _15=_13.errors;
-for(var i=0;i<_15.length;i++){
-_14+=_15[i].property+" "+_15[i].message+"\n";
-}
-throw new TypeError(_14);
-}
-return _10;
-};
-var _16=_4.__defineGetter__;
-var _17=function(_18){
-if(_18.__typedClass__){
-return _18;
-}
-var _19=function(){
-var i,_1a,_1b=_19.properties;
-var _1c=_19.methods;
-_18.apply(this,arguments);
+var _16=function(){
+var i,_17,_18=_16.properties;
+var _19=_16.methods;
+_15.apply(this,arguments);
 this.__props__={};
-for(i in _1c){
-_1a=this[i];
-if(_1a){
-if(!_1a.__typedFunction__){
-var _1d=this;
-while(!_1d.hasOwnProperty(i)&&_1d.__proto__){
-_1d=_1d.__proto__;
+for(i in _19){
+_17=this[i];
+if(_17){
+if(!_17.__typedFunction__){
+var _1a=this;
+while(!_1a.hasOwnProperty(i)&&_1a.__proto__){
+_1a=_1a.__proto__;
 }
 (function(i){
-_1d[i]=_6(_1a,function(){
-return _1c[i];
+_1a[i]=_3(_17,function(){
+return _19[i];
 });
 })(i);
 }
@@ -90,50 +97,50 @@ throw new TypeError("The method "+i+" is defined but not implemented");
 })(i);
 }
 }
-if(_16){
-var _1e=this;
-for(i in _1b){
-_1a=this[i];
+if(_13){
+var _1b=this;
+for(i in _18){
+_17=this[i];
 if(this.hasOwnProperty(i)){
-this.__props__[i]=_1a;
+this.__props__[i]=_17;
 }
 (function(i){
-delete _1e[i];
-_1e.__defineGetter__(i,function(){
+delete _1b[i];
+_1b.__defineGetter__(i,function(){
 return i in this.__props__?this.__props__[i]:this.__proto__[i];
 });
-_1e.__defineSetter__(i,function(_1f){
-_c(_1f,_1b[i],i);
-return this.__props__[i]=_1f;
+_1b.__defineSetter__(i,function(_1c){
+_9(_1c,_18[i],i);
+return this.__props__[i]=_1c;
 });
 })(i);
 }
 }
-_c(this,_19);
+_9(this,_16);
 };
-_19.prototype=_18.prototype;
-for(var i in _18){
-_19[i]=_18[i];
+_16.prototype=_15.prototype;
+for(var i in _15){
+_16[i]=_15[i];
 }
-if(_18.prototype.declaredClass&&_5){
-_2.setObject(_18.prototype.declaredClass,_19);
+if(_15.prototype.declaredClass&&_2){
+dojo.setObject(_15.prototype.declaredClass,_16);
 }
-_19.__typedClass__=true;
-return _19;
+_16.__typedClass__=true;
+return _16;
 };
-if(_5){
-_3.lang.typed=_17;
-if(_2.config.typeCheckAllClasses){
-var _20=_2.declare;
-_2.declare=function(_21){
-var _22=_20.apply(this,arguments);
-_22=_17(_22);
-return _22;
+if(_2){
+dojox.lang.typed=_14;
+if(dojo.config.typeCheckAllClasses){
+var _1d=dojo.declare;
+dojo.declare=function(_1e){
+var _1f=_1d.apply(this,arguments);
+_1f=_14(_1f);
+return _1f;
 };
-_2.mixin(_2.declare,_20);
+dojo.mixin(dojo.declare,_1d);
 }
 }else{
-typed=_17;
+typed=_14;
 }
 })();
-});
+}

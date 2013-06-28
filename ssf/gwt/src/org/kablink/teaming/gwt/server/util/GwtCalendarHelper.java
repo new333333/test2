@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -441,7 +441,7 @@ public class GwtCalendarHelper {
 	 */
 	private static void dumpAppointmentList(List<Appointment> appointments) {		
 		// If debug logging is disabled...
-		if (!(GwtLogHelper.isDebugEnabled(m_logger))) {
+		if (!(m_logger.isDebugEnabled())) {
 			// ...bail.
 			return;
 		}
@@ -449,12 +449,12 @@ public class GwtCalendarHelper {
 		// If there are no appointments in the list...
 		if (appointments.isEmpty()) {
 			// ...log that fact and bail.
-			GwtLogHelper.debug(m_logger, "GwtCalendarHelper.dumpAppointmentList( EMPTY )");
+			m_logger.debug("GwtCalendarHelper.dumpAppointmentList( EMPTY )");
 			return;
 		}
 
 		// Dump the appointments.
-		GwtLogHelper.debug(m_logger, "GwtCalendarHelper.dumpAppointmentList( START: " + String.valueOf(appointments.size()) + " )");
+		m_logger.debug("GwtCalendarHelper.dumpAppointmentList( START: " + String.valueOf(appointments.size()) + " )");
 		for (Appointment a:  appointments) {
 			CalendarAppointment ca = ((CalendarAppointment) a);
 			StringBuffer buf = new StringBuffer("");
@@ -475,9 +475,9 @@ public class GwtCalendarHelper {
 			buf.append(GwtEventHelper.buildDumpString("\n\t\tCanPurge",       ca.canPurge()                    ));
 			buf.append(GwtEventHelper.buildDumpString("\n\t\tCanTrash",       ca.canTrash()                    ));
 			buf.append(GwtEventHelper.buildDumpString("\n\t\tSeen",           ca.isSeen()                      ));
-			GwtLogHelper.debug(m_logger, "GwtCalendarHelper.dumpAssignmentList()" + buf.toString());
+			m_logger.debug("GwtCalendarHelper.dumpAssignmentList()" + buf.toString());
 		}
-		GwtLogHelper.debug(m_logger, "GwtCalendarHelper.dumpAssignmentList( END )");
+		m_logger.debug("GwtCalendarHelper.dumpAssignmentList( END )");
 	}
 
 	/*
@@ -840,8 +840,8 @@ public class GwtCalendarHelper {
 			// remaining fixups on each as necessary.
 			fixupAppointments(bs, reply.getAppointments());
 			
-			if (GwtLogHelper.isDebugEnabled(m_logger)) {
-				GwtLogHelper.debug(m_logger, "GwtCalendarHelper.getCalendarAppointments( Read ArrayList<Appointment> for binder ): " + String.valueOf(folderId));
+			if (m_logger.isDebugEnabled()) {
+				m_logger.debug("GwtCalendarHelper.getCalendarAppointments( Read ArrayList<Appointment> for binder ): " + String.valueOf(folderId));
 				dumpAppointmentList(reply.getAppointments());
 			}
 
@@ -854,10 +854,10 @@ public class GwtCalendarHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtCalendarHelper.getCalendarAppointments( SOURCE EXCEPTION ):  ", e);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtCalendarHelper.getCalendarAppointments( SOURCE EXCEPTION ):  ", e);
 			}
-			throw GwtLogHelper.getGwtClientException(e);
+			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
 
@@ -992,10 +992,10 @@ public class GwtCalendarHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtCalendarHelper.getCalendarDisplayData( SOURCE EXCEPTION ):  ", e);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtCalendarHelper.getCalendarDisplayData( SOURCE EXCEPTION ):  ", e);
 			}
-			throw GwtLogHelper.getGwtClientException(e);
+			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
 	
@@ -1026,10 +1026,10 @@ public class GwtCalendarHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtCalendarHelper.getCalendarDisplayDate( SOURCE EXCEPTION ):  ", e);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtCalendarHelper.getCalendarDisplayDate( SOURCE EXCEPTION ):  ", e);
 			}
-			throw GwtLogHelper.getGwtClientException(e);
+			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
 	
@@ -1091,10 +1091,10 @@ public class GwtCalendarHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtCalendarHelper.getCalendarNextPreviousPeroid( SOURCE EXCEPTION ):  ", e);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtCalendarHelper.getCalendarNextPreviousPeroid( SOURCE EXCEPTION ):  ", e);
 			}
-			throw GwtLogHelper.getGwtClientException(e);
+			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
 	
@@ -1299,10 +1299,10 @@ public class GwtCalendarHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtCalendarHelper.saveCalendarDayView( SOURCE EXCEPTION ):  ", e);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtCalendarHelper.saveCalendarDayView( SOURCE EXCEPTION ):  ", e);
 			}
-			throw GwtLogHelper.getGwtClientException(e);
+			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
 	
@@ -1341,10 +1341,10 @@ public class GwtCalendarHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtCalendarHelper.saveCalendarHours( SOURCE EXCEPTION ):  ", e);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtCalendarHelper.saveCalendarHours( SOURCE EXCEPTION ):  ", e);
 			}
-			throw GwtLogHelper.getGwtClientException(e);
+			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
 
@@ -1384,10 +1384,10 @@ public class GwtCalendarHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtCalendarHelper.saveCalendarSettings( SOURCE EXCEPTION ):  ", e);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtCalendarHelper.saveCalendarSettings( SOURCE EXCEPTION ):  ", e);
 			}
-			throw GwtLogHelper.getGwtClientException(e);
+			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
 	
@@ -1434,10 +1434,10 @@ public class GwtCalendarHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtCalendarHelper.saveCalendarShow( SOURCE EXCEPTION ):  ", e);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtCalendarHelper.saveCalendarShow( SOURCE EXCEPTION ):  ", e);
 			}
-			throw GwtLogHelper.getGwtClientException(e);
+			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
 
@@ -1564,10 +1564,10 @@ public class GwtCalendarHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtCalendarHelper.updateCalendarEvent( SOURCE EXCEPTION ):  ", e);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtCalendarHelper.updateCalendarEvent( SOURCE EXCEPTION ):  ", e);
 			}
-			throw GwtLogHelper.getGwtClientException(e);
+			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
 }

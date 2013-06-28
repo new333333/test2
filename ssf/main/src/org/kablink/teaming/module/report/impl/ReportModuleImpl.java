@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -540,30 +539,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		}
 		return list;
 	}
-
-	public List<ChangeLog> getDeletedEntryLogs(Set<Long> entryIds) {
-		if (entryIds == null || entryIds.isEmpty()) return new ArrayList<ChangeLog>();
-		
-		final Long[] eIds = new Long[entryIds.size()];
-		Iterator iEntryIds = entryIds.iterator();
-		int i = 0;
-		while (iEntryIds.hasNext()) {
-			eIds[i++] = new Long((Long)iEntryIds.next());
-		}
-
-		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(ChangeLog.class)
-				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.name()));
-				crit.add(Restrictions.in("entityId", eIds));
-				crit.addOrder(Order.asc("operationDate"));
-				return crit.list();
-			}});
-		return ids;
-	}
-
-
+	
 	public LicenseStats getLicenseHighWaterMark(final Calendar startDate, final Calendar endDate)
 	{
 		List marks = (List) getHibernateTemplate().execute(new HibernateCallback() {

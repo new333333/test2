@@ -1,14 +1,21 @@
-//>>built
-define("dojox/widget/Iterator",["dijit","dojo","dojox","dojo/require!dijit/Declaration"],function(_1,_2,_3){
-_2.provide("dojox.widget.Iterator");
-_2.require("dijit.Declaration");
-_2.experimental("dojox.widget.Iterator");
-_2.declare("dojox.widget.Iterator",[_1.Declaration],{constructor:(function(){
-var _4=0;
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.widget.Iterator"]){
+dojo._hasResource["dojox.widget.Iterator"]=true;
+dojo.provide("dojox.widget.Iterator");
+dojo.require("dijit.Declaration");
+dojo.experimental("dojox.widget.Iterator");
+dojo.declare("dojox.widget.Iterator",[dijit.Declaration],{constructor:(function(){
+var _1=0;
 return function(){
 this.attrs=[];
 this.children=[];
-this.widgetClass="dojox.widget.Iterator._classes._"+(_4++);
+this.widgetClass="dojox.widget.Iterator._classes._"+(_1++);
 };
 })(),start:0,fetchMax:1000,query:{name:"*"},attrs:[],defaultValue:"",widgetCtor:null,dataValues:[],data:null,store:null,_srcIndex:0,_srcParent:null,_setSrcIndex:function(s){
 this._srcIndex=0;
@@ -21,11 +28,11 @@ ts=ts.previousSibling;
 },postscript:function(p,s){
 this._setSrcIndex(s);
 this.inherited("postscript",arguments);
-var wc=this.widgetCtor=_2.getObject(this.widgetClass);
-this.attrs=_2.map(wc.prototype.templateString.match(/\$\{([^\s\:\}]+)(?:\:([^\s\:\}]+))?\}/g),function(s){
+var wc=this.widgetCtor=dojo.getObject(this.widgetClass);
+this.attrs=dojo.map(wc.prototype.templateString.match(/\$\{([^\s\:\}]+)(?:\:([^\s\:\}]+))?\}/g),function(s){
 return s.slice(2,-1);
 });
-_2.forEach(this.attrs,function(m){
+dojo.forEach(this.attrs,function(m){
 wc.prototype[m]="";
 });
 this.update();
@@ -33,7 +40,7 @@ this.update();
 if(this.children.length){
 this._setSrcIndex(this.children[0].domNode);
 }
-_2.forEach(this.children,"item.destroy();");
+dojo.forEach(this.children,"item.destroy();");
 this.children=[];
 },update:function(){
 if(this.store){
@@ -41,36 +48,36 @@ this.fetch();
 }else{
 this.onDataAvailable(this.data||this.dataValues);
 }
-},_addItem:function(_5,_6){
-if(_2.isString(_5)){
-_5={value:_5};
+},_addItem:function(_2,_3){
+if(dojo.isString(_2)){
+_2={value:_2};
 }
-var _7=new this.widgetCtor(_5);
-this.children.push(_7);
-_2.place(_7.domNode,this._srcParent,this._srcIndex+_6);
-},getAttrValuesObj:function(_8){
-var _9={};
-if(_2.isString(_8)){
-_2.forEach(this.attrs,function(_a){
-_9[_a]=(_a=="value")?_8:this.defaultValue;
+var _4=new this.widgetCtor(_2);
+this.children.push(_4);
+dojo.place(_4.domNode,this._srcParent,this._srcIndex+_3);
+},getAttrValuesObj:function(_5){
+var _6={};
+if(dojo.isString(_5)){
+dojo.forEach(this.attrs,function(_7){
+_6[_7]=(_7=="value")?_5:this.defaultValue;
 },this);
 }else{
-_2.forEach(this.attrs,function(_b){
+dojo.forEach(this.attrs,function(_8){
 if(this.store){
-_9[_b]=this.store.getValue(_8,_b)||this.defaultValue;
+_6[_8]=this.store.getValue(_5,_8)||this.defaultValue;
 }else{
-_9[_b]=_8[_b]||this.defaultValue;
+_6[_8]=_5[_8]||this.defaultValue;
 }
 },this);
 }
-return _9;
-},onDataAvailable:function(_c){
+return _6;
+},onDataAvailable:function(_9){
 this.clear();
-_2.forEach(_c,function(_d,_e){
-this._addItem(this.getAttrValuesObj(_d),_e);
+dojo.forEach(_9,function(_a,_b){
+this._addItem(this.getAttrValuesObj(_a),_b);
 },this);
-},fetch:function(_f,_10,end){
-this.store.fetch({query:_f||this.query,start:_10||this.start,count:end||this.fetchMax,onComplete:_2.hitch(this,"onDataAvailable")});
+},fetch:function(_c,_d,_e){
+this.store.fetch({query:_c||this.query,start:_d||this.start,count:_e||this.fetchMax,onComplete:dojo.hitch(this,"onDataAvailable")});
 }});
-_3.widget.Iterator._classes={};
-});
+dojox.widget.Iterator._classes={};
+}

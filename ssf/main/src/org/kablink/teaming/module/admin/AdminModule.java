@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
@@ -452,11 +451,6 @@ public interface AdminModule {
 	public OpenIDConfig getOpenIDConfig();
 	
 	public void setOpenIDConfig(OpenIDConfig openIDConfig);
-	
-	public void purgeLogTablesImmediate();
-	
-	public boolean writeAuditTrailLogFile(List<AuditTrail> entriesToBeDeleted);
-	public boolean writeChangeLogLogFile(List<ChangeLog> entriesToBeDeleted);
 	
     public ScheduleInfo getLogTablePurgeSchedule();
     

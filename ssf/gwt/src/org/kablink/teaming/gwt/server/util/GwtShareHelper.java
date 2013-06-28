@@ -41,12 +41,15 @@ import java.util.SortedSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
@@ -59,6 +62,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
@@ -88,6 +92,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -1321,8 +1326,60 @@ public class GwtShareHelper
 			// Does the external user have a Vibe account?
 			if ( id == null )
 			{
-                User user = ami.getProfileModule().findOrAddExternalUser(gwtShareItem.getRecipientName());
-                id = user.getId();
+				final String recipientName;
+				final ProfileModule profileModule;
+
+				// Maybe
+				profileModule = ami.getProfileModule();
+				
+				recipientName = gwtShareItem.getRecipientName();
+				
+				try
+				{
+					User user;
+
+					// Does a Vibe account exist with the given name?
+					user = profileModule.getUser( recipientName );
+					if ( user != null )
+					{
+						id = user.getId();
+					}
+				}
+				catch ( Exception ex )
+				{
+					RunasCallback callback;
+					
+					// If we get here a Vibe account does not exist for the given external user.
+					// Create one.
+					callback = new RunasCallback()
+					{
+						@Override
+						public Object doAs() 
+						{
+							HashMap updates;
+							User user;
+
+							updates = new HashMap();
+							updates.put( ObjectKeys.FIELD_USER_EMAIL, recipientName );
+							updates.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, recipientName );
+							updates.put( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE, ExtProvState.initial );
+							// Do NOT set the "fromOpenid" bit on initially. We will set it when the user actually
+							// logs in and binds a valid OpenID account with the email address specified during sharing.
+			 				user = profileModule.addUserFromPortal(
+			 													new IdentityInfo(false, false, false, false),
+			 													recipientName,
+			 													null,
+			 													updates,
+			 													null );
+			 				
+			 				return user.getId();
+						}
+					}; 
+
+					id = (Long) RunasTemplate.runasAdmin(
+														callback,
+														RequestContextHolder.getRequestContext().getZoneName() );
+				}
 			}
 		}
 		

@@ -212,13 +212,6 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 		// atleast one search node
 		if (configTypeListBox.getSelectedIndex() == 2)
 		{
-			// Make sure the server name and server password is not empty
-			if ( !luceneUserNameTextBox.isValid() || !luceneUserPasswordTextBox.isValid() )
-			{
-				setErrorMessage(RBUNDLE.allFieldsRequired());
-				return false;
-			}
-			
 			if (haPanel.getAvailableNodes() == null || haPanel.getAvailableNodes().size() == 0)
 			{
 				setErrorMessage(RBUNDLE.noAvailabilityNodesExists());
@@ -254,11 +247,7 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 			lucene.setServerPassword(luceneUserPasswordTextBox.getText());
 		}
 		else
-		{
 			lucene.setLocation(HIGH_AVAILABILITY);
-			lucene.setServerLogin( luceneUserNameTextBox.getText() );
-			lucene.setServerPassword( luceneUserPasswordTextBox.getText() );
-		}
 
 		lucene.setIndexHostName(hostAddrTextBox.getText());
 		lucene.setRmiPort(rmiPortSpinner.getValueAsInt());
@@ -307,7 +296,6 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 			else
 			{
 				configTypeListBox.setSelectedIndex(2);
-				luceneUserNameTextBox.setText(lucene.getServerLogin());
 				showUIForHighAvailabilityMode();
 			}
 		}
@@ -403,11 +391,11 @@ public class LucenePage extends ConfigPageDlgBox implements ClickHandler, Change
 		hostTable.getWidget(rmiPortRow, 0).setVisible(false);
 		hostTable.getWidget(rmiPortRow, 1).setVisible(false);
 		
-		hostTable.getWidget(luceneServerNameRow, 0).setVisible( true );
-		hostTable.getWidget(luceneServerNameRow, 1).setVisible( true );
+		hostTable.getWidget(luceneServerNameRow, 0).setVisible(false);
+		hostTable.getWidget(luceneServerNameRow, 1).setVisible(false);
 		
-		hostTable.getWidget(luceneServerPasswordRow, 0).setVisible( true );
-		hostTable.getWidget(luceneServerPasswordRow, 1).setVisible( true );
+		hostTable.getWidget(luceneServerPasswordRow, 0).setVisible(false);
+		hostTable.getWidget(luceneServerPasswordRow, 1).setVisible(false);
 		
 		haPanel.setVisible(true);
 		haPanel.updateUI(config);

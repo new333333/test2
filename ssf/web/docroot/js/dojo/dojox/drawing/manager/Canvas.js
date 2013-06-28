@@ -1,21 +1,30 @@
-//>>built
-define("dojox/drawing/manager/Canvas",["dojo","../util/oo","dojox/gfx"],function(_1,oo,_2){
-return oo.declare(function(_3){
-_1.mixin(this,_3);
-var _4=_1.contentBox(this.srcRefNode);
-this.height=this.parentHeight=_3.height||_4.h;
-this.width=this.parentWidth=_3.width||_4.w;
-this.domNode=_1.create("div",{id:"canvasNode"},this.srcRefNode);
-_1.style(this.domNode,{width:this.width,height:"auto"});
-_1.setSelectable(this.domNode,false);
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.drawing.manager.Canvas"]){
+dojo._hasResource["dojox.drawing.manager.Canvas"]=true;
+dojo.provide("dojox.drawing.manager.Canvas");
+(function(){
+dojox.drawing.manager.Canvas=dojox.drawing.util.oo.declare(function(_1){
+dojo.mixin(this,_1);
+var _2=dojo.contentBox(this.srcRefNode);
+this.height=this.parentHeight=_2.h;
+this.width=this.parentWidth=_2.w;
+this.domNode=dojo.create("div",{id:"canvasNode"},this.srcRefNode);
+dojo.style(this.domNode,{width:this.width,height:"auto"});
+dojo.setSelectable(this.domNode,false);
 this.id=this.id||this.util.uid("surface");
-this.gfxSurface=_2.createSurface(this.domNode,this.width,this.height);
+this.gfxSurface=dojox.gfx.createSurface(this.domNode,this.width,this.height);
 this.gfxSurface.whenLoaded(this,function(){
-setTimeout(_1.hitch(this,function(){
+setTimeout(dojo.hitch(this,function(){
 this.surfaceReady=true;
-if(_1.isIE){
+if(dojo.isIE){
 }else{
-if(_2.renderer=="silverlight"){
+if(dojox.gfx.renderer=="silverlight"){
 this.id=this.domNode.firstChild.id;
 }else{
 }
@@ -24,55 +33,55 @@ this.underlay=this.gfxSurface.createGroup();
 this.surface=this.gfxSurface.createGroup();
 this.overlay=this.gfxSurface.createGroup();
 this.surface.setTransform({dx:0,dy:0,xx:1,yy:1});
-this.gfxSurface.getDimensions=_1.hitch(this.gfxSurface,"getDimensions");
-if(_3.callback){
-_3.callback(this.domNode);
+this.gfxSurface.getDimensions=dojo.hitch(this.gfxSurface,"getDimensions");
+if(_1.callback){
+_1.callback(this.domNode);
 }
 }),500);
 });
 this._mouseHandle=this.mouse.register(this);
-},{zoom:1,useScrollbars:true,baseClass:"drawingCanvas",resize:function(_5,_6){
-this.parentWidth=_5;
-this.parentHeight=_6;
-this.setDimensions(_5,_6);
-},setDimensions:function(_7,_8,_9,_a){
+},{zoom:1,useScrollbars:true,baseClass:"drawingCanvas",resize:function(_3,_4){
+this.parentWidth=_3;
+this.parentHeight=_4;
+this.setDimensions(_3,_4);
+},setDimensions:function(_5,_6,_7,_8){
 var sw=this.getScrollWidth();
-this.width=Math.max(_7,this.parentWidth);
-this.height=Math.max(_8,this.parentHeight);
+this.width=Math.max(_5,this.parentWidth);
+this.height=Math.max(_6,this.parentHeight);
 if(this.height>this.parentHeight){
 this.width-=sw;
 }
 if(this.width>this.parentWidth){
 this.height-=sw;
 }
-this.mouse.resize(this.width,this.height);
 this.gfxSurface.setDimensions(this.width,this.height);
-this.domNode.parentNode.scrollTop=_a||0;
-this.domNode.parentNode.scrollLeft=_9||0;
+this.domNode.parentNode.scrollTop=_8||0;
+this.domNode.parentNode.scrollLeft=_7||0;
 if(this.useScrollbars){
-_1.style(this.domNode.parentNode,{overflowY:this.height>this.parentHeight?"scroll":"hidden",overflowX:this.width>this.parentWidth?"scroll":"hidden"});
+dojo.style(this.domNode.parentNode,{overflowY:this.height>this.parentHeight?"scroll":"hidden",overflowX:this.width>this.parentWidth?"scroll":"hidden"});
 }else{
-_1.style(this.domNode.parentNode,{overflowY:"hidden",overflowX:"hidden"});
+dojo.style(this.domNode.parentNode,{overflowY:"hidden",overflowX:"hidden"});
 }
-},setZoom:function(_b){
-this.zoom=_b;
-this.surface.setTransform({xx:_b,yy:_b});
-this.setDimensions(this.width*_b,this.height*_b);
+},setZoom:function(_9){
+this.zoom=_9;
+this.surface.setTransform({xx:_9,yy:_9});
+this.setDimensions(this.width*_9,this.height*_9);
 },onScroll:function(){
 },getScrollOffset:function(){
 return {top:this.domNode.parentNode.scrollTop,left:this.domNode.parentNode.scrollLeft};
 },getScrollWidth:function(){
-var p=_1.create("div");
-p.innerHTML="<div style=\"width:50px;height:50px;overflow:hidden;position:absolute;top:0;left:-1000px;\"><div style=\"height:100px;\"></div>";
-var _c=p.firstChild;
-_1.body().appendChild(_c);
-var _d=_1.contentBox(_c).h;
-_1.style(_c,"overflow","scroll");
-var _e=_d-_1.contentBox(_c).h;
-_1.destroy(_c);
+var p=dojo.create("div");
+p.innerHTML="<div style=\"width:50px;height:50px;overflow:hidden;position:absolute;top:0px;left:-1000px;\"><div style=\"height:100px;\"></div>";
+var _a=p.firstChild;
+dojo.body().appendChild(_a);
+var _b=dojo.contentBox(_a).h;
+dojo.style(_a,"overflow","scroll");
+var _c=_b-dojo.contentBox(_a).h;
+dojo.destroy(_a);
 this.getScrollWidth=function(){
-return _e;
+return _c;
 };
-return _e;
+return _c;
 }});
-});
+})();
+}

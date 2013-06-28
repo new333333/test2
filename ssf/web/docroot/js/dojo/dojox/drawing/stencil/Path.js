@@ -1,83 +1,86 @@
-//>>built
-define("dojox/drawing/stencil/Path",["dojo","dojo/_base/array","../util/oo","./_Base","../manager/_registry"],function(_1,_2,oo,_3,_4){
-var _5=oo.declare(_3,function(_6){
-},{type:"dojox.drawing.stencil.Path",closePath:true,baseRender:true,closeRadius:10,closeColor:{r:255,g:255,b:0,a:0.5},_create:function(_7,_8){
-this.remove(this[_7]);
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.drawing.stencil.Path"]){
+dojo._hasResource["dojox.drawing.stencil.Path"]=true;
+dojo.provide("dojox.drawing.stencil.Path");
+dojox.drawing.stencil.Path=dojox.drawing.util.oo.declare(dojox.drawing.stencil._Base,function(_1){
+dojo.disconnect(this._postRenderCon);
+},{type:"dojox.drawing.stencil.Path",closePath:true,baseRender:true,closeRadius:10,closeColor:{r:255,g:255,b:0,a:0.5},_create:function(_2,_3){
+this.remove(this[_2]);
 if(!this.points.length){
 return;
 }
 if(dojox.gfx.renderer=="svg"){
-var _9=[];
-_2.forEach(this.points,function(o,i){
-if(!o.skip){
+var _4=[];
+dojo.forEach(this.points,function(o,i){
 if(i==0){
-_9.push("M "+o.x+" "+o.y);
+_4.push("M "+o.x+" "+o.y);
 }else{
-var _a=(o.t||"")+" ";
+var _5=(o.t||"")+" ";
 if(o.x===undefined){
-_9.push(_a);
+_4.push(_5);
 }else{
-_9.push(_a+o.x+" "+o.y);
-}
+_4.push(_5+o.x+" "+o.y);
 }
 }
 },this);
 if(this.closePath){
-_9.push("Z");
+_4.push("Z");
 }
-this.stringPath=_9.join(" ");
-this[_7]=this.container.createPath(_9.join(" ")).setStroke(_8);
-this.closePath&&this[_7].setFill(_8.fill);
+this.stringPath=_4.join(" ");
+this[_2]=this.container.createPath(_4.join(" ")).setStroke(_3);
+this.closePath&&this[_2].setFill(_3.fill);
 }else{
-this[_7]=this.container.createPath({}).setStroke(_8);
-this.closePath&&this[_7].setFill(_8.fill);
-_2.forEach(this.points,function(o,i){
-if(!o.skip){
+this[_2]=this.container.createPath({}).setStroke(_3);
+this.closePath&&this[_2].setFill(_3.fill);
+dojo.forEach(this.points,function(o,i){
 if(i==0||o.t=="M"){
-this[_7].moveTo(o.x,o.y);
+this[_2].moveTo(o.x,o.y);
 }else{
 if(o.t=="Z"){
-this.closePath&&this[_7].closePath();
+this.closePath&&this[_2].closePath();
 }else{
-this[_7].lineTo(o.x,o.y);
-}
+this[_2].lineTo(o.x,o.y);
 }
 }
 },this);
-this.closePath&&this[_7].closePath();
+this.closePath&&this[_2].closePath();
 }
-this._setNodeAtts(this[_7]);
+this._setNodeAtts(this[_2]);
 },render:function(){
 this.onBeforeRender(this);
 this.renderHit&&this._create("hit",this.style.currentHit);
 this._create("shape",this.style.current);
-},getBounds:function(_b){
-var _c=10000,_d=10000,_e=0,_f=0;
-_2.forEach(this.points,function(p){
+},getBounds:function(_6){
+var _7=10000,_8=10000,_9=0,_a=0;
+dojo.forEach(this.points,function(p){
 if(p.x!==undefined&&!isNaN(p.x)){
-_c=Math.min(_c,p.x);
-_d=Math.min(_d,p.y);
-_e=Math.max(_e,p.x);
-_f=Math.max(_f,p.y);
+_7=Math.min(_7,p.x);
+_8=Math.min(_8,p.y);
+_9=Math.max(_9,p.x);
+_a=Math.max(_a,p.y);
 }
 });
-return {x1:_c,y1:_d,x2:_e,y2:_f,x:_c,y:_d,w:_e-_c,h:_f-_d};
-},checkClosePoint:function(_10,_11,_12){
-var _13=this.util.distance(_10.x,_10.y,_11.x,_11.y);
+return {x1:_7,y1:_8,x2:_9,y2:_a,x:_7,y:_8,w:_9-_7,h:_a-_8};
+},checkClosePoint:function(_b,_c,_d){
+var _e=this.util.distance(_b.x,_b.y,_c.x,_c.y);
 if(this.points.length>1){
-if(_13<this.closeRadius&&!this.closeGuide&&!_12){
-var c={cx:_10.x,cy:_10.y,rx:this.closeRadius,ry:this.closeRadius};
+if(_e<this.closeRadius&&!this.closeGuide&&!_d){
+var c={cx:_b.x,cy:_b.y,rx:this.closeRadius,ry:this.closeRadius};
 this.closeGuide=this.container.createEllipse(c).setFill(this.closeColor);
 }else{
-if(_12||_13>this.closeRadius&&this.closeGuide){
+if(_d||_e>this.closeRadius&&this.closeGuide){
 this.remove(this.closeGuide);
 this.closeGuide=null;
 }
 }
 }
-return _13<this.closeRadius;
+return _e<this.closeRadius;
 }});
-_1.setObject("dojox.drawing.stencil.Path",_5);
-_4.register({name:"dojox.drawing.stencil.Path"},"stencil");
-return _5;
-});
+dojox.drawing.register({name:"dojox.drawing.stencil.Path"},"stencil");
+}

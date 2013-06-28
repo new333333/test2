@@ -83,6 +83,11 @@ public class Statistics implements Serializable {
 		}
 	}
 	
+	public void updateStatistics(String entryDefinitionId, Document entryDefinitionDoc, Map<String, CustomAttribute> customAttributesOld, Map<String, CustomAttribute> customAttributes) {
+		deleteStatistics(entryDefinitionId, entryDefinitionDoc, customAttributesOld);
+		addStatistics(entryDefinitionId, entryDefinitionDoc, customAttributes);
+	}
+
 	public void deleteStatistics(String entryDefinitionId, Document entryDefinitionDoc, Map<String, CustomAttribute> customAttributes) {
 		Iterator<Map.Entry<String, CustomAttribute>> it= customAttributes.entrySet().iterator();
 		while (it.hasNext()) {

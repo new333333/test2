@@ -1,9 +1,18 @@
-//>>built
-define("dijit/ToolbarSeparator",["dojo/_base/declare","dojo/dom","./_Widget","./_TemplatedMixin"],function(_1,_2,_3,_4){
-return _1("dijit.ToolbarSeparator",[_3,_4],{templateString:"<div class=\"dijitToolbarSeparator dijitInline\" role=\"presentation\"></div>",buildRendering:function(){
-this.inherited(arguments);
-_2.setSelectable(this.domNode,false);
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dijit.ToolbarSeparator"]){
+dojo._hasResource["dijit.ToolbarSeparator"]=true;
+dojo.provide("dijit.ToolbarSeparator");
+dojo.require("dijit._Widget");
+dojo.require("dijit._Templated");
+dojo.declare("dijit.ToolbarSeparator",[dijit._Widget,dijit._Templated],{templateString:"<div class=\"dijitToolbarSeparator dijitInline\"></div>",postCreate:function(){
+dojo.setSelectable(this.domNode,false);
 },isFocusable:function(){
 return false;
 }});
-});
+}

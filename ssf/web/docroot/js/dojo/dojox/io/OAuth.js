@@ -1,122 +1,130 @@
-//>>built
-define("dojox/io/OAuth",["dojo/_base/kernel","dojo/_base/lang","dojo/_base/array","dojo/_base/xhr","dojo/dom","dojox/encoding/digests/SHA1"],function(_1,_2,_3,_4,_5,_6){
-_1.getObject("io.OAuth",true,dojox);
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.io.OAuth"]){
+dojo._hasResource["dojox.io.OAuth"]=true;
+dojo.provide("dojox.io.OAuth");
+dojo.require("dojox.encoding.digests.SHA1");
 dojox.io.OAuth=new (function(){
-var _7=this.encode=function(s){
-if(!(""+s).length){
+var _1=this.encode=function(s){
+if(!s){
 return "";
 }
 return encodeURIComponent(s).replace(/\!/g,"%21").replace(/\*/g,"%2A").replace(/\'/g,"%27").replace(/\(/g,"%28").replace(/\)/g,"%29");
 };
-var _8=this.decode=function(_9){
-var a=[],_a=_9.split("&");
-for(var i=0,l=_a.length;i<l;i++){
-var _b=_a[i];
-if(_a[i]==""){
+var _2=this.decode=function(_3){
+var a=[],_4=_3.split("&");
+for(var i=0,l=_4.length;i<l;i++){
+var _5=_4[i];
+if(_4[i]==""){
 continue;
 }
-if(_a[i].indexOf("=")>-1){
-var _c=_a[i].split("=");
-a.push([decodeURIComponent(_c[0]),decodeURIComponent(_c[1])]);
+if(_4[i].indexOf("=")>-1){
+var _6=_4[i].split("=");
+a.push([decodeURIComponent(_6[0]),decodeURIComponent(_6[1])]);
 }else{
-a.push([decodeURIComponent(_a[i]),null]);
+a.push([decodeURIComponent(_4[i]),null]);
 }
 }
 return a;
 };
-function _d(_e){
-var _f=["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],_10=/^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,_11=_10.exec(_e),map={},i=_f.length;
+function _7(_8){
+var _9=["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],_a=/^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,_b=_a.exec(_8),_c={},i=_9.length;
 while(i--){
-map[_f[i]]=_11[i]||"";
+_c[_9[i]]=_b[i]||"";
 }
-var p=map.protocol.toLowerCase(),a=map.authority.toLowerCase(),b=(p=="http"&&map.port==80)||(p=="https"&&map.port==443);
+var p=_c.protocol.toLowerCase(),a=_c.authority.toLowerCase(),b=(p=="http"&&_c.port==80)||(p=="https"&&_c.port==443);
 if(b){
 if(a.lastIndexOf(":")>-1){
 a=a.substring(0,a.lastIndexOf(":"));
 }
 }
-var _12=map.path||"/";
-map.url=p+"://"+a+_12;
-return map;
+var _d=_c.path||"/";
+_c.url=p+"://"+a+_d;
+return _c;
 };
-var tab="0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-function _13(_14){
-var s="",tl=tab.length;
-for(var i=0;i<_14;i++){
-s+=tab.charAt(Math.floor(Math.random()*tl));
+var _e="0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+function _f(_10){
+var s="",tl=_e.length;
+for(var i=0;i<_10;i++){
+s+=_e.charAt(Math.floor(Math.random()*tl));
 }
 return s;
 };
-function _15(){
+function _11(){
 return Math.floor(new Date().valueOf()/1000)-2;
 };
-function _16(_17,key,_18){
-if(_18&&_18!="PLAINTEXT"&&_18!="HMAC-SHA1"){
+function _12(_13,key,_14){
+if(_14&&_14!="PLAINTEXT"&&_14!="HMAC-SHA1"){
 throw new Error("dojox.io.OAuth: the only supported signature encodings are PLAINTEXT and HMAC-SHA1.");
 }
-if(_18=="PLAINTEXT"){
+if(_14=="PLAINTEXT"){
 return key;
 }else{
-return _6._hmac(_17,key);
+return dojox.encoding.digests.SHA1._hmac(_13,key);
 }
 };
-function key(_19){
-return _7(_19.consumer.secret)+"&"+(_19.token&&_19.token.secret?_7(_19.token.secret):"");
+function key(_15){
+return _1(_15.consumer.secret)+"&"+(_15.token&&_15.token.secret?_1(_15.token.secret):"");
 };
-function _1a(_1b,oaa){
-var o={oauth_consumer_key:oaa.consumer.key,oauth_nonce:_13(16),oauth_signature_method:oaa.sig_method||"HMAC-SHA1",oauth_timestamp:_15(),oauth_version:"1.0"};
+function _16(_17,oaa){
+var o={oauth_consumer_key:oaa.consumer.key,oauth_nonce:_f(16),oauth_signature_method:oaa.sig_method||"HMAC-SHA1",oauth_timestamp:_11(),oauth_version:"1.0"};
 if(oaa.token){
 o.oauth_token=oaa.token.key;
 }
-_1b.content=_1.mixin(_1b.content||{},o);
+_17.content=dojo.mixin(_17.content||{},o);
 };
-function _1c(_1d){
-var _1e=[{}],_1f;
-if(_1d.form){
-if(!_1d.content){
-_1d.content={};
+function _18(_19){
+var _1a=[{}],_1b;
+if(_19.form){
+if(!_19.content){
+_19.content={};
 }
-var _20=_1.byId(_1d.form);
-var _21=_20.getAttributeNode("action");
-_1d.url=_1d.url||(_21?_21.value:null);
-_1f=_1.formToObject(_20);
-delete _1d.form;
+var _1c=dojo.byId(_19.form);
+var _1d=_1c.getAttributeNode("action");
+_19.url=_19.url||(_1d?_1d.value:null);
+_1b=dojo.formToObject(_1c);
+delete _19.form;
 }
-if(_1f){
-_1e.push(_1f);
+if(_1b){
+_1a.push(_1b);
 }
-if(_1d.content){
-_1e.push(_1d.content);
+if(_19.content){
+_1a.push(_19.content);
 }
-var map=_d(_1d.url);
+var map=_7(_19.url);
 if(map.query){
-var tmp=_1.queryToObject(map.query);
+var tmp=dojo.queryToObject(map.query);
 for(var p in tmp){
 tmp[p]=encodeURIComponent(tmp[p]);
 }
-_1e.push(tmp);
+_1a.push(tmp);
 }
-_1d._url=map.url;
+_19._url=map.url;
 var a=[];
-for(var i=0,l=_1e.length;i<l;i++){
-var _22=_1e[i];
-for(var p in _22){
-if(_1.isArray(_22[p])){
-for(var j=0,jl=_22.length;j<jl;j++){
-a.push([p,_22[j]]);
+for(var i=0,l=_1a.length;i<l;i++){
+var _1e=_1a[i];
+for(var p in _1e){
+if(dojo.isArray(_1e[p])){
+for(var j=0,jl=_1e.length;j<jl;j++){
+a.push([p,_1e[j]]);
 }
 }else{
-a.push([p,_22[p]]);
+a.push([p,_1e[p]]);
 }
 }
 }
-_1d._parameters=a;
-return _1d;
+_19._parameters=a;
+return _19;
 };
-function _23(_24,_25,oaa){
-_1a(_25,oaa);
-_1c(_25);
-var a=_25._parameters;
+function _1f(_20,_21,oaa){
+_16(_21,oaa);
+_18(_21);
+var a=_21._parameters;
 a.sort(function(a,b){
 if(a[0]>b[0]){
 return 1;
@@ -132,36 +140,35 @@ return -1;
 }
 return 0;
 });
-var s=_1.map(a,function(_26){
-return _7(_26[0])+"="+_7((""+_26[1]).length?_26[1]:"");
+var s=dojo.map(a,function(_22){
+return _1(_22[0])+"="+_1(_22[1]||"");
 }).join("&");
-var _27=_24.toUpperCase()+"&"+_7(_25._url)+"&"+_7(s);
-return _27;
+var _23=_20.toUpperCase()+"&"+_1(_21._url)+"&"+_1(s);
+return _23;
 };
-function _28(_29,_2a,oaa){
-var k=key(oaa),_2b=_23(_29,_2a,oaa),s=_16(_2b,k,oaa.sig_method||"HMAC-SHA1");
-_2a.content["oauth_signature"]=s;
-return _2a;
+function _24(_25,_26,oaa){
+var k=key(oaa),_27=_1f(_25,_26,oaa),s=_12(_27,k,oaa.sig_method||"HMAC-SHA1");
+_26.content["oauth_signature"]=s;
+return _26;
 };
-this.sign=function(_2c,_2d,oaa){
-return _28(_2c,_2d,oaa);
+this.sign=function(_28,_29,oaa){
+return _24(_28,_29,oaa);
 };
-this.xhr=function(_2e,_2f,oaa,_30){
-_28(_2e,_2f,oaa);
-return _4(_2e,_2f,_30);
+this.xhr=function(_2a,_2b,oaa,_2c){
+_24(_2a,_2b,oaa);
+return dojo.xhr(_2a,_2b,_2c);
 };
-this.xhrGet=function(_31,oaa){
-return this.xhr("GET",_31,oaa);
+this.xhrGet=function(_2d,oaa){
+return this.xhr("GET",_2d,oaa);
 };
-this.xhrPost=this.xhrRawPost=function(_32,oaa){
-return this.xhr("POST",_32,oaa,true);
+this.xhrPost=this.xhrRawPost=function(_2e,oaa){
+return this.xhr("POST",_2e,oaa,true);
 };
-this.xhrPut=this.xhrRawPut=function(_33,oaa){
-return this.xhr("PUT",_33,oaa,true);
+this.xhrPut=this.xhrRawPut=function(_2f,oaa){
+return this.xhr("PUT",_2f,oaa,true);
 };
-this.xhrDelete=function(_34,oaa){
-return this.xhr("DELETE",_34,oaa);
+this.xhrDelete=function(_30,oaa){
+return this.xhr("DELETE",_30,oaa);
 };
 })();
-return dojox.io.OAuth;
-});
+}

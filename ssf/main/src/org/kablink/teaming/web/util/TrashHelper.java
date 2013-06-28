@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -59,8 +59,6 @@ import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.LibraryEntry;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
@@ -76,7 +74,6 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.util.TrashTraverser;
 import org.kablink.teaming.web.util.TrashTraverser.TraverseCallback;
 import org.kablink.teaming.web.util.TrashTraverser.TraversalMode;
@@ -1239,36 +1236,29 @@ public class TrashHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static Map getTrashEntries(AllModulesInjected bs, Map<String, Object> model, Binder binder, Map options) {
-		SimpleProfiler.start("GwtTrashHelper.getTrashEntries()");
-		try {
-			// Construct the search Criteria...
-			Criteria crit = new Criteria();
-			crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_BINDER}))
-			    .add(in(Constants.ENTRY_ANCESTRY, new String[] {String.valueOf(binder.getId())}));
-	
-			// ...if sorting is enabled...
-			boolean sortDisabled = GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_NONE, false);
-			if (!sortDisabled) {
-				// ...add in the sort information...
-				boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
-				String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
-				crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
-				crit.addOrder(new Order(sortBy,                 sortAscend));
-			}
-			
-			// ...and issue the query and return the entries.
-			return
-				bs.getBinderModule().executeSearchQuery(
-					crit,
-					Constants.SEARCH_MODE_NORMAL,
-					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
-					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
-					true);	// true -> Search deleted entries.
+		// Construct the search Criteria...
+		Criteria crit = new Criteria();
+		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_BINDER}))
+		    .add(in(Constants.ENTRY_ANCESTRY, new String[] {String.valueOf(binder.getId())}));
+
+		// ...if sorting is enabled...
+		boolean sortDisabled = GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_NONE, false);
+		if (!sortDisabled) {
+			// ...add in the sort information...
+			boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
+			String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
+			crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
+			crit.addOrder(new Order(sortBy,                 sortAscend));
 		}
 		
-		finally {
-			SimpleProfiler.stop("GwtTrashHelper.getTrashEntries()");
-		}
+		// ...and issue the query and return the entries.
+		return
+			bs.getBinderModule().executeSearchQuery(
+				crit,
+				Constants.SEARCH_MODE_NORMAL,
+				GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+				GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+				true);	// true -> Search deleted entries.
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -1472,7 +1462,7 @@ public class TrashHelper {
 		TrashPurgedBinderTracker purgedBinders = new TrashPurgedBinderTracker();
 		
 		// Scan the TrashEntry's.
-		logger.debug("TrashHelper.purgeSelectedEntries()");
+		logger.debug("TrashHelper.purgeEntries()");
 		logger.debug("...checking ACLs...");
 		for (int i = 0; i < count; i += 1) {
 			// Is this trashEntry a FolderEntry?
@@ -1499,23 +1489,14 @@ public class TrashHelper {
 				}
 				catch (Exception e) {
 					// Something choked trying to do the ACL check.
-					// Has the entry disappeared out from under us?
-					if (e instanceof NoFolderEntryByTheIdException) {
-						// Yes!  Simply skip it.
-						trashEntries[i] = null;
-					}
-					
-					else {
-						// No, something besides the entry disappearing
-						// has happened!  Track the error.
-						logger.debug(".........check failed!");
-						if (e instanceof AccessControlException) reply.setACLViolation(trashEntry.m_docId);
-						else                                     reply.setException(e, trashEntry.m_docId);
-					}
+					// Track the error.
+					logger.debug(".........check failed!");
+					if (e instanceof AccessControlException) reply.setACLViolation(trashEntry.m_docId);
+					else                                     reply.setException(e, trashEntry.m_docId);
 				}
 			}
 					
-			// No, it's not an entry!  Is it a binder?
+			// No, it's not a binder!  Is it an entry?
 			else if (trashEntry.isBinder()) {
 				try {
 					// Yes!  Is it predeleted?
@@ -1530,25 +1511,15 @@ public class TrashHelper {
 						}
 					}
 					else {
-						// No, it isn't predeleted!  Simply skip it.
 						trashEntries[i] = null;
 					}
 				}
 				catch (Exception e) {
 					// Something choked trying to do the ACL check.
-					// Has the binder disappeared out from under us?
-					if (e instanceof NoBinderByTheIdException) {
-						// Yes!  Simply skip it.
-						trashEntries[i] = null;
-					}
-					
-					else {
-						// No, something besides the binder
-						// disappearing has happened!  Track the error.
-						logger.debug(".........check failed!");
-						if (e instanceof AccessControlException) reply.setACLViolation(trashEntry.m_docId);
-						else                                     reply.setException(e, trashEntry.m_docId);
-					}
+					// Track the error.
+					logger.debug(".........check failed!");
+					if (e instanceof AccessControlException) reply.setACLViolation(trashEntry.m_docId);
+					else                                     reply.setException(e, trashEntry.m_docId);
 				}
 			}
 			
@@ -1557,10 +1528,7 @@ public class TrashHelper {
 				// ...quit processing items.
 				break;
 			}
-			
-			if (null == trashEntries[i])
-			     logger.debug(".........entity skipped.  It's not predeleted or it has dissapeared.");
-			else logger.debug(".........entity is purgable.");
+			logger.debug(".........entity is purgable.");
 		}
 
 		// Did we detect any ACL violations?

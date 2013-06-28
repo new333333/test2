@@ -1,38 +1,50 @@
-//>>built
-define("dojox/editor/plugins/InsertEntity",["dojo","dijit","dojox","dijit/_editor/_Plugin","dijit/TooltipDialog","dijit/form/DropDownButton","dojo/_base/connect","dojo/_base/declare","dojo/i18n","dojox/html/entities","dojox/editor/plugins/EntityPalette","dojo/i18n!dojox/editor/plugins/nls/InsertEntity"],function(_1,_2,_3,_4){
-var _5=_1.declare("dojox.editor.plugins.InsertEntity",_4,{iconClassPrefix:"dijitAdditionalEditorIcon",_initButton:function(){
-this.dropDown=new _3.editor.plugins.EntityPalette({showCode:this.showCode,showEntityName:this.showEntityName});
-this.connect(this.dropDown,"onChange",function(_6){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.editor.plugins.InsertEntity"]){
+dojo._hasResource["dojox.editor.plugins.InsertEntity"]=true;
+dojo.provide("dojox.editor.plugins.InsertEntity");
+dojo.require("dijit._editor._Plugin");
+dojo.require("dijit.form.Button");
+dojo.require("dijit.TooltipDialog");
+dojo.require("dojox.editor.plugins.EntityPalette");
+dojo.require("dojox.html.entities");
+dojo.require("dojo.i18n");
+dojo.requireLocalization("dojox.editor.plugins","InsertEntity",null,"ROOT");
+dojo.declare("dojox.editor.plugins.InsertEntity",dijit._editor._Plugin,{iconClassPrefix:"dijitAdditionalEditorIcon",_initButton:function(){
+this.dropDown=new dojox.editor.plugins.EntityPalette({showCode:this.showCode,showEntityName:this.showEntityName});
+this.connect(this.dropDown,"onChange",function(_1){
 this.button.closeDropDown();
 this.editor.focus();
-this.editor.execCommand("inserthtml",_6);
+this.editor.execCommand("inserthtml",_1);
 });
-var _7=_1.i18n.getLocalization("dojox.editor.plugins","InsertEntity");
-this.button=new _2.form.DropDownButton({label:_7["insertEntity"],showLabel:false,iconClass:this.iconClassPrefix+" "+this.iconClassPrefix+"InsertEntity",tabIndex:"-1",dropDown:this.dropDown});
-},updateState:function(){
-this.button.set("disabled",this.get("disabled"));
-},setEditor:function(_8){
-this.editor=_8;
+var _2=dojo.i18n.getLocalization("dojox.editor.plugins","InsertEntity");
+this.button=new dijit.form.DropDownButton({label:_2["insertEntity"],showLabel:false,iconClass:this.iconClassPrefix+" "+this.iconClassPrefix+"InsertEntity",tabIndex:"-1",dropDown:this.dropDown});
+},setEditor:function(_3){
+this.editor=_3;
 this._initButton();
-this.editor.addKeyHandler("s",true,true,_1.hitch(this,function(){
+this.editor.addKeyHandler("s",true,true,dojo.hitch(this,function(){
 this.button.openDropDown();
 this.dropDown.focus();
 }));
-_8.contentPreFilters.push(this._preFilterEntities);
-_8.contentPostFilters.push(this._postFilterEntities);
+_3.contentPreFilters.push(this._preFilterEntities);
+_3.contentPostFilters.push(this._postFilterEntities);
 },_preFilterEntities:function(s){
-return _3.html.entities.decode(s,_3.html.entities.latin);
+return dojox.html.entities.decode(s,dojox.html.entities.latin);
 },_postFilterEntities:function(s){
-return _3.html.entities.encode(s,_3.html.entities.latin);
+return dojox.html.entities.encode(s,dojox.html.entities.latin);
 }});
-_1.subscribe(_2._scopeName+".Editor.getPlugin",null,function(o){
+dojo.subscribe(dijit._scopeName+".Editor.getPlugin",null,function(o){
 if(o.plugin){
 return;
 }
-var _9=o.args.name?o.args.name.toLowerCase():"";
-if(_9==="insertentity"){
-o.plugin=new _5({showCode:("showCode" in o.args)?o.args.showCode:false,showEntityName:("showEntityName" in o.args)?o.args.showEntityName:false});
+var _4=o.args.name?o.args.name.toLowerCase():"";
+if(_4==="insertentity"){
+o.plugin=new dojox.editor.plugins.InsertEntity({showCode:("showCode" in o.args)?o.args.showCode:false,showEntityName:("showEntityName" in o.args)?o.args.showEntityName:false});
 }
 });
-return _5;
-});
+}

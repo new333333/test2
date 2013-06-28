@@ -1,21 +1,34 @@
-//>>built
-define("dijit/_editor/plugins/NewPage",["dojo/_base/declare","dojo/i18n","dojo/_base/lang","../_Plugin","../../form/Button","dojo/i18n!../nls/commands"],function(_1,_2,_3,_4,_5){
-var _6=_1("dijit._editor.plugins.NewPage",_4,{content:"<br>",_initButton:function(){
-var _7=_2.getLocalization("dijit._editor","commands"),_8=this.editor;
-this.button=new _5({label:_7["newPage"],ownerDocument:_8.ownerDocument,dir:_8.dir,lang:_8.lang,showLabel:false,iconClass:this.iconClassPrefix+" "+this.iconClassPrefix+"NewPage",tabIndex:"-1",onClick:_3.hitch(this,"_newPage")});
-},setEditor:function(_9){
-this.editor=_9;
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dijit._editor.plugins.NewPage"]){
+dojo._hasResource["dijit._editor.plugins.NewPage"]=true;
+dojo.provide("dijit._editor.plugins.NewPage");
+dojo.require("dijit._editor._Plugin");
+dojo.require("dijit.form.Button");
+dojo.require("dojo.i18n");
+dojo.requireLocalization("dijit._editor","commands",null,"ROOT,ar,ca,cs,da,de,el,es,fi,fr,he,hu,it,ja,ko,nb,nl,pl,pt,pt-pt,ru,sk,sl,sv,th,tr,zh,zh-tw");
+dojo.declare("dijit._editor.plugins.NewPage",dijit._editor._Plugin,{content:"<br>",_initButton:function(){
+var _1=dojo.i18n.getLocalization("dijit._editor","commands");
+this.button=new dijit.form.Button({label:_1["newPage"],showLabel:false,iconClass:this.iconClassPrefix+" "+this.iconClassPrefix+"NewPage",tabIndex:"-1",onClick:dojo.hitch(this,"_newPage")});
+},setEditor:function(_2){
+this.editor=_2;
 this._initButton();
-},updateState:function(){
-this.button.set("disabled",this.get("disabled"));
 },_newPage:function(){
-this.editor.beginEditing();
-this.editor.set("value",this.content);
-this.editor.endEditing();
+this.editor.attr("value",this.content);
 this.editor.focus();
 }});
-_4.registry["newPage"]=_4.registry["newpage"]=function(_a){
-return new _6({content:("content" in _a)?_a.content:"<br>"});
-};
-return _6;
+dojo.subscribe(dijit._scopeName+".Editor.getPlugin",null,function(o){
+if(o.plugin){
+return;
+}
+var _3=o.args.name.toLowerCase();
+if(_3==="newpage"){
+o.plugin=new dijit._editor.plugins.NewPage({content:("content" in o.args)?o.args.content:"<br>"});
+}
 });
+}

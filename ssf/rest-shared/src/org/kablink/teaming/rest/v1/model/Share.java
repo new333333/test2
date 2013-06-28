@@ -33,7 +33,7 @@ public class Share extends BaseRestObject {
     protected Date startDate;
     protected Integer daysToExpire;
     protected Date endDate;
-    private ShareRecipient recipient;
+    private EntityId recipient;
     private EntityId sharedEntity;
     private String role;
     private Boolean canShare;
@@ -90,11 +90,11 @@ public class Share extends BaseRestObject {
         this.id = id;
     }
 
-    public ShareRecipient getRecipient() {
+    public EntityId getRecipient() {
         return recipient;
     }
 
-    public void setRecipient(ShareRecipient recipient) {
+    public void setRecipient(EntityId recipient) {
         this.recipient = recipient;
     }
 

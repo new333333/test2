@@ -1,66 +1,67 @@
-//>>built
-define("dojox/drawing/manager/Mouse",["dojo","../util/oo","../defaults"],function(_1,oo,_2){
-return oo.declare(function(_3){
-this.util=_3.util;
-this.keys=_3.keys;
-this.id=_3.id||this.util.uid("mouse");
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.drawing.manager.Mouse"]){
+dojo._hasResource["dojox.drawing.manager.Mouse"]=true;
+dojo.provide("dojox.drawing.manager.Mouse");
+dojox.drawing.manager.Mouse=dojox.drawing.util.oo.declare(function(_1){
+this.util=_1.util;
+this.keys=_1.keys;
+this.id=_1.id||this.util.uid("mouse");
 this.currentNodeId="";
 this.registered={};
-},{doublClickSpeed:400,_lastx:0,_lasty:0,__reg:0,_downOnCanvas:false,init:function(_4){
-this.container=_4;
+},{doublClickSpeed:400,_lastx:0,_lasty:0,__reg:0,_downOnCanvas:false,init:function(_2){
+this.container=_2;
 this.setCanvas();
 var c;
-var _5=false;
-_1.connect(this.container,"rightclick",this,function(_6){
+var _3=false;
+dojo.connect(this.container,"rightclick",this,function(_4){
 console.warn("RIGHTCLICK");
 });
-_1.connect(document.body,"mousedown",this,function(_7){
+dojo.connect(document.body,"mousedown",this,function(_5){
 });
-_1.connect(this.container,"mousedown",this,function(_8){
-this.down(_8);
-if(_8.button!=_1.mouseButtons.RIGHT){
-_5=true;
-c=_1.connect(document,"mousemove",this,"drag");
+dojo.connect(this.container,"mousedown",this,function(_6){
+this.down(_6);
+_3=true;
+c=dojo.connect(document,"mousemove",this,"drag");
+});
+dojo.connect(document,"mouseup",this,function(_7){
+dojo.disconnect(c);
+_3=false;
+this.up(_7);
+});
+dojo.connect(document,"mousemove",this,function(_8){
+if(!_3){
+this.move(_8);
 }
 });
-_1.connect(document,"mouseup",this,function(_9){
-_1.disconnect(c);
-_5=false;
-this.up(_9);
-});
-_1.connect(document,"mousemove",this,function(_a){
-if(!_5){
-this.move(_a);
-}
-});
-_1.connect(this.keys,"onEsc",this,function(_b){
+dojo.connect(this.keys,"onEsc",this,function(_9){
 this._dragged=false;
 });
 },setCanvas:function(){
-var _c=_1.position(this.container.parentNode);
-this.origin=_1.clone(_c);
+var _a=dojo.coords(this.container.parentNode);
+this.origin=dojo.clone(_a);
 },scrollOffset:function(){
 return {top:this.container.parentNode.scrollTop,left:this.container.parentNode.scrollLeft};
-},resize:function(_d,_e){
-if(this.origin){
-this.origin.w=_d;
-this.origin.h=_e;
+},register:function(_b){
+var _c=_b.id||"reg_"+(this.__reg++);
+if(!this.registered[_c]){
+this.registered[_c]=_b;
 }
-},register:function(_f){
-var _10=_f.id||"reg_"+(this.__reg++);
-if(!this.registered[_10]){
-this.registered[_10]=_f;
-}
-return _10;
-},unregister:function(_11){
-if(!this.registered[_11]){
+return _c;
+},unregister:function(_d){
+if(!this.registered[_d]){
 return;
 }
-delete this.registered[_11];
-},_broadcastEvent:function(_12,obj){
+delete this.registered[_d];
+},_broadcastEvent:function(_e,_f){
 for(var nm in this.registered){
-if(this.registered[nm][_12]){
-this.registered[nm][_12](obj);
+if(this.registered[nm][_e]){
+this.registered[nm][_e](_f);
 }
 }
 },onDown:function(obj){
@@ -73,18 +74,10 @@ nm="onStencilDrag";
 this._broadcastEvent(nm,obj);
 },onMove:function(obj){
 this._broadcastEvent("onMove",obj);
-},overName:function(obj,evt){
-var nm=obj.id.split(".");
-evt=evt.charAt(0).toUpperCase()+evt.substring(1);
-if(nm[0]=="dojox"&&(_2.clickable||!_2.clickMode)){
-return "onStencil"+evt;
-}else{
-return "on"+evt;
-}
 },onOver:function(obj){
-this._broadcastEvent(this.overName(obj,"over"),obj);
+this._broadcastEvent("onOver",obj);
 },onOut:function(obj){
-this._broadcastEvent(this.overName(obj,"out"),obj);
+this._broadcastEvent("onOut",obj);
 },onUp:function(obj){
 var nm=this.eventName("up");
 if(nm=="onStencilUp"){
@@ -109,53 +102,49 @@ this._broadcastEvent(dnm,obj);
 }
 }
 this._lastClickTime=this._clickTime;
-},zoom:1,setZoom:function(_13){
-this.zoom=1/_13;
-},setEventMode:function(_14){
-this.mode=_14?"on"+_14.charAt(0).toUpperCase()+_14.substring(1):"";
-},eventName:function(_15){
-_15=_15.charAt(0).toUpperCase()+_15.substring(1);
+},zoom:1,setZoom:function(_10){
+this.zoom=1/_10;
+},setEventMode:function(_11){
+this.mode=_11?"on"+_11.charAt(0).toUpperCase()+_11.substring(1):"";
+},eventName:function(_12){
+_12=_12.charAt(0).toUpperCase()+_12.substring(1);
 if(this.mode){
 if(this.mode=="onPathEdit"){
-return "on"+_15;
+return "on"+_12;
 }
 if(this.mode=="onUI"){
 }
-return this.mode+_15;
+return this.mode+_12;
 }else{
-if(!_2.clickable&&_2.clickMode){
-return "on"+_15;
-}
 var dt=!this.drawingType||this.drawingType=="surface"||this.drawingType=="canvas"?"":this.drawingType;
 var t=!dt?"":dt.charAt(0).toUpperCase()+dt.substring(1);
-return "on"+t+_15;
+return "on"+t+_12;
 }
 },up:function(evt){
 this.onUp(this.create(evt));
 },down:function(evt){
+evt.preventDefault();
+dojo.stopEvent(evt);
 this._downOnCanvas=true;
 var sc=this.scrollOffset();
 var dim=this._getXY(evt);
 this._lastpagex=dim.x;
 this._lastpagey=dim.y;
 var o=this.origin;
-var x=dim.x-o.x+sc.left;
-var y=dim.y-o.y+sc.top;
-var _16=x>=0&&y>=0&&x<=o.w&&y<=o.h;
+var x=dim.x-o.x;
+var y=dim.y-o.y;
 x*=this.zoom;
 y*=this.zoom;
+x+=sc.left*this.zoom;
+y+=sc.top*this.zoom;
+var _13=x>=0&&y>=0&&x<=o.w&&y<=o.h;
 o.startx=x;
 o.starty=y;
 this._lastx=x;
 this._lasty=y;
 this.drawingType=this.util.attr(evt,"drawingType")||"";
 var id=this._getId(evt);
-if(evt.button==_1.mouseButtons.RIGHT&&this.id=="mse"){
-}else{
-evt.preventDefault();
-_1.stopEvent(evt);
-}
-this.onDown({mid:this.id,x:x,y:y,pageX:dim.x,pageY:dim.y,withinCanvas:_16,id:id});
+this.onDown({mid:this.id,x:x,y:y,pageX:dim.x,pageY:dim.y,withinCanvas:_13,id:id});
 },over:function(obj){
 this.onOver(obj);
 },out:function(obj){
@@ -165,46 +154,42 @@ var obj=this.create(evt);
 if(this.id=="MUI"){
 }
 if(obj.id!=this.currentNodeId){
-var _17={};
+var _14={};
 for(var nm in obj){
-_17[nm]=obj[nm];
+_14[nm]=obj[nm];
 }
-_17.id=this.currentNodeId;
-this.currentNodeId&&this.out(_17);
+_14.id=this.currentNodeId;
+this.currentNodeId&&this.out(_14);
 obj.id&&this.over(obj);
 this.currentNodeId=obj.id;
 }
 this.onMove(obj);
 },drag:function(evt){
 this.onDrag(this.create(evt,true));
-},create:function(evt,_18){
+},create:function(evt,_15){
 var sc=this.scrollOffset();
 var dim=this._getXY(evt);
-var _19=dim.x;
-var _1a=dim.y;
+var _16=dim.x;
+var _17=dim.y;
+var x=dim.x-this.origin.x;
+var y=dim.y-this.origin.y;
 var o=this.origin;
-var x=dim.x-o.x+sc.left;
-var y=dim.y-o.y+sc.top;
-var _1b=x>=0&&y>=0&&x<=o.w&&y<=o.h;
+x+=sc.left;
+y+=sc.top;
 x*=this.zoom;
 y*=this.zoom;
-var id=_1b?this._getId(evt,_18):"";
-var ret={mid:this.id,x:x,y:y,pageX:dim.x,pageY:dim.y,page:{x:dim.x,y:dim.y},orgX:o.x,orgY:o.y,last:{x:this._lastx,y:this._lasty},start:{x:this.origin.startx,y:this.origin.starty},move:{x:_19-this._lastpagex,y:_1a-this._lastpagey},scroll:sc,id:id,withinCanvas:_1b};
+var _18=x>=0&&y>=0&&x<=o.w&&y<=o.h;
+var id=_18?this._getId(evt,_15):"";
+var ret={mid:this.id,x:x,y:y,pageX:dim.x,pageY:dim.y,page:{x:dim.x,y:dim.y},orgX:o.x,orgY:o.y,last:{x:this._lastx,y:this._lasty},start:{x:this.origin.startx,y:this.origin.starty},move:{x:_16-this._lastpagex,y:_17-this._lastpagey},scroll:sc,id:id,withinCanvas:_18};
 this._lastx=x;
 this._lasty=y;
-this._lastpagex=_19;
-this._lastpagey=_1a;
-_1.stopEvent(evt);
+this._lastpagex=_16;
+this._lastpagey=_17;
+dojo.stopEvent(evt);
 return ret;
-},_getId:function(evt,_1c){
-return this.util.attr(evt,"id",null,_1c);
+},_getId:function(evt,_19){
+return this.util.attr(evt,"id",null,_19);
 },_getXY:function(evt){
 return {x:evt.pageX,y:evt.pageY};
-},setCursor:function(_1d,_1e){
-if(!_1e){
-_1.style(this.container,"cursor",_1d);
-}else{
-_1.style(_1e,"cursor",_1d);
-}
 }});
-});
+}

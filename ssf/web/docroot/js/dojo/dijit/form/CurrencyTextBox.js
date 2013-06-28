@@ -1,15 +1,25 @@
-//>>built
-define("dijit/form/CurrencyTextBox",["dojo/currency","dojo/_base/declare","dojo/_base/lang","./NumberTextBox"],function(_1,_2,_3,_4){
-return _2("dijit.form.CurrencyTextBox",_4,{currency:"",baseClass:"dijitTextBox dijitCurrencyTextBox",_formatter:_1.format,_parser:_1.parse,_regExpGenerator:_1.regexp,parse:function(_5,_6){
-var v=this.inherited(arguments);
-if(isNaN(v)&&/\d+/.test(_5)){
-v=_3.hitch(_3.delegate(this,{_parser:_4.prototype._parser}),"inherited")(arguments);
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dijit.form.CurrencyTextBox"]){
+dojo._hasResource["dijit.form.CurrencyTextBox"]=true;
+dojo.provide("dijit.form.CurrencyTextBox");
+dojo.require("dojo.currency");
+dojo.require("dijit.form.NumberTextBox");
+dojo.declare("dijit.form.CurrencyTextBox",dijit.form.NumberTextBox,{currency:"",regExpGen:function(_1){
+return "("+(this._focused?this.inherited(arguments,[dojo.mixin({},_1,this.editOptions)])+"|":"")+dojo.currency.regexp(_1)+")";
+},_formatter:dojo.currency.format,parse:function(_2,_3){
+var v=dojo.currency.parse(_2,_3);
+if(isNaN(v)&&/\d+/.test(_2)){
+return this.inherited(arguments,[_2,dojo.mixin({},_3,this.editOptions)]);
 }
 return v;
-},_setConstraintsAttr:function(_7){
-if(!_7.currency&&this.currency){
-_7.currency=this.currency;
-}
-this.inherited(arguments,[_1._mixInDefaults(_3.mixin(_7,{exponent:false}))]);
+},postMixInProperties:function(){
+this.constraints=dojo.currency._mixInDefaults(dojo.mixin(this.constraints,{currency:this.currency,exponent:false}));
+this.inherited(arguments);
 }});
-});
+}

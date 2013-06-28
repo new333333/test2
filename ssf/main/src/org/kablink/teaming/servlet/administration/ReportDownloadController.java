@@ -50,12 +50,9 @@ import javax.activation.FileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.dom4j.Element;
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
@@ -323,7 +320,6 @@ public class ReportDownloadController extends  SAbstractController {
 		HashMap<String,Definition> definitionMap = new HashMap<String, Definition>();
 		HashMap<Long,Binder> binderMap = new HashMap<Long, Binder>();
 		HashMap<Long,FolderEntry> entryMap = new HashMap<Long, FolderEntry>();
-		HashMap<Long,String> deletedEntryTitles = new HashMap<Long,String>();
         User requestor = RequestContextHolder.getRequestContext().getUser();
         DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM, requestor.getLocale());
         dateFormat.setTimeZone(requestor.getTimeZone());
@@ -370,40 +366,9 @@ public class ReportDownloadController extends  SAbstractController {
 			}
 		}
 		if(entryIds.size() > 0) {
-			HashSet<Long> deletedEntryIds = new HashSet<Long>();
-			deletedEntryIds.addAll(entryIds);
 			SortedSet<FolderEntry> entries = getFolderModule().getEntries(entryIds);
 			for(FolderEntry fe : entries) {
 				entryMap.put(fe.getId(), fe);
-				deletedEntryIds.remove(fe.getId());
-			}
-			//Now get the titles of any deleted entry
-			if (deletedEntryIds.size() > 0) {
-				while (!deletedEntryIds.isEmpty()) {
-					HashSet<Long> nextDeletedEntryIds = new HashSet<Long>();
-					int i = 0;
-					for (Long id : deletedEntryIds) {
-						nextDeletedEntryIds.add(id);
-						i++;
-						if (i >= 1000) break;
-					}
-					deletedEntryIds.removeAll(nextDeletedEntryIds);
-					List<ChangeLog> cLogs = getReportModule().getDeletedEntryLogs(nextDeletedEntryIds);
-					for (ChangeLog cLog : cLogs) {
-						try {
-							Long entityId = cLog.getEntityId();
-							Element root = cLog.getEntityRoot();
-							Element titleEle = (Element)root.selectSingleNode("//attribute[@name='title']");
-							String title = "";
-							if (titleEle != null) title = titleEle.getText();
-							if (!deletedEntryTitles.containsKey(entityId) || !title.equals("")) {
-								deletedEntryTitles.put(entityId, title);
-							}
-						} catch(Exception e) {
-							e.getMessage();
-						}
-					}
-				}
 			}
 		}
 		if(definitionIds.size() > 0) {
@@ -465,11 +430,7 @@ public class ReportDownloadController extends  SAbstractController {
 					row.get(ReportModule.ENTITY).equals("folderEntry")) {
 				entry = entryMap.get(row.get(ReportModule.ENTRY_ID));
 				try {
-					if (entry != null) {
-						row.put(ReportModule.ENTRY_TITLE, entry.getTitle());
-					} else if (deletedEntryTitles.containsKey(row.get(ReportModule.ENTRY_ID))) {
-						row.put(ReportModule.ENTRY_TITLE, deletedEntryTitles.get(row.get(ReportModule.ENTRY_ID)));
-					}
+					if (entry != null) row.put(ReportModule.ENTRY_TITLE, entry.getTitle());
 				} catch(Exception e) {}
 			}
 			for(int i = 0; i < columns.length; i++) {

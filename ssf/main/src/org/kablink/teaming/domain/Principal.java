@@ -75,7 +75,6 @@ public abstract class Principal extends Entry implements IPrincipal {
     protected String ldapGuid="";
     protected String objectSid;
     protected String samAccountName;
-    protected String domainName;
     protected List memberOf;//initialized by hiberate access=field
     protected Long workspaceId;
     protected List iMemberOf;
@@ -306,15 +305,6 @@ public abstract class Principal extends Entry implements IPrincipal {
 		if(samAccountName != null)
 			samAccountName = samAccountName.toLowerCase();
 		this.samAccountName = samAccountName;
-	}
-	
-	public String getDomainName()
-	{
-		return domainName;
-	}
-	public void setDomainName( String domainName )
-	{
-		this.domainName = domainName;
 	}
 	
 	/**

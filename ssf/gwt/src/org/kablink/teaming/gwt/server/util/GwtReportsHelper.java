@@ -174,14 +174,6 @@ public class GwtReportsHelper {
 			case ERROR:     reportType = ReportModule.EMAIL_REPORT_TYPE_ERRORS;  break;
 			case RECEIVED:  reportType = ReportModule.EMAIL_REPORT_TYPE_RECEIVE; break;
 			}
-			if (null != end) {
-				// Add 1 day to the end date.
-				GregorianCalendar cal = new GregorianCalendar();
-				cal.setTime(end);
-				cal.add(Calendar.DATE, 1);
-				end = cal.getTime();
-			}
-
 			List<Map<String, Object>> reportList = bs.getReportModule().generateEmailReport(begin, end, reportType);
 
 			// Did we get any items back?
@@ -213,10 +205,10 @@ public class GwtReportsHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.createEmailReport( SOURCE EXCEPTION ):  ", ex);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtReportsHelper.createEmailReport( SOURCE EXCEPTION ):  ", ex);
 			}
-			throw GwtLogHelper.getGwtClientException(ex);
+			throw GwtServerHelper.getGwtTeamingException(ex);
 		}		
 	}
 	
@@ -415,10 +407,10 @@ public class GwtReportsHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.createLicenseReport( SOURCE EXCEPTION ):  ", ex);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtReportsHelper.createLicenseReport( SOURCE EXCEPTION ):  ", ex);
 			}
-			throw GwtLogHelper.getGwtClientException(ex);
+			throw GwtServerHelper.getGwtTeamingException(ex);
 		}		
 	}
 	
@@ -481,10 +473,10 @@ public class GwtReportsHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.createLoginReport( SOURCE EXCEPTION ):  ", ex);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtReportsHelper.createLoginReport( SOURCE EXCEPTION ):  ", ex);
 			}
-			throw GwtLogHelper.getGwtClientException(ex);
+			throw GwtServerHelper.getGwtTeamingException(ex);
 		}		
 	}
 	
@@ -533,10 +525,10 @@ public class GwtReportsHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.createUserAccessReport( SOURCE EXCEPTION ):  ", ex);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtReportsHelper.createUserAccessReport( SOURCE EXCEPTION ):  ", ex);
 			}
-			throw GwtLogHelper.getGwtClientException(ex);
+			throw GwtServerHelper.getGwtTeamingException(ex);
 		}		
 	}
 	
@@ -595,10 +587,10 @@ public class GwtReportsHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.createUserActivityReport( SOURCE EXCEPTION ):  ", ex);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtReportsHelper.createUserActivityReport( SOURCE EXCEPTION ):  ", ex);
 			}
-			throw GwtLogHelper.getGwtClientException(ex);
+			throw GwtServerHelper.getGwtTeamingException(ex);
 		}		
 	}
 	
@@ -674,10 +666,10 @@ public class GwtReportsHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.getReportsInfo( SOURCE EXCEPTION ):  ", ex);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtReportsHelper.getReportsInfo( SOURCE EXCEPTION ):  ", ex);
 			}
-			throw GwtLogHelper.getGwtClientException(ex);
+			throw GwtServerHelper.getGwtTeamingException(ex);
 		}		
 	}
 
@@ -716,12 +708,12 @@ public class GwtReportsHelper {
 				@Override
 				public void close() {}  // FileCopyUtils will try to close this too soon
 			};
-			File logDirectory = new File(SpringContextUtil.getServletContext().getRealPath("/../../logs"));
-			for (String logFile:  logDirectory.list(
+			File logDirectory = new File(SpringContextUtil.getServletContext().getRealPath("/WEB-INF/logs"));
+			for (String logFile : logDirectory.list(
 					new FilenameFilter() {
 						@Override
 						public boolean accept(File file, String filename) {
-							return filename.startsWith("appserver.log");
+							return filename.startsWith("ssf.log");
 						}
 					})) {
 				zipOut.putNextEntry(new ZipEntry(logFile));
@@ -740,10 +732,10 @@ public class GwtReportsHelper {
 		catch (Exception ex) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
-			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.getSystemErrorLogUrl( SOURCE EXCEPTION ):  ", ex);
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtReportsHelper.getSystemErrorLogUrl( SOURCE EXCEPTION ):  ", ex);
 			}
-			throw GwtLogHelper.getGwtClientException(ex);
+			throw GwtServerHelper.getGwtTeamingException(ex);
 		}
 		
 		finally {

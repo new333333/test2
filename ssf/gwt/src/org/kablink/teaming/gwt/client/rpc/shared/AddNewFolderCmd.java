@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,9 +30,8 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.CloudFolderType;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
 /**
  * This class holds all of the information necessary to execute the
@@ -41,10 +40,9 @@ import org.kablink.teaming.gwt.client.util.CloudFolderType;
  * @author drfoster@novell.com
  */
 public class AddNewFolderCmd extends VibeRpcCmd {
-	private CloudFolderType	m_cft;				// null -> Not a cloud folder.
-	private Long			m_binderId;			//
-	private Long			m_folderTemplateId;	//
-	private String			m_folderName;		//
+	private Long	m_binderId;			//
+	private Long	m_folderTemplateId;	//
+	private String	m_folderName;		//
 	
 	/**
 	 * Constructor method.
@@ -63,9 +61,8 @@ public class AddNewFolderCmd extends VibeRpcCmd {
 	 * @param binderId
 	 * @param folderTemplateId
 	 * @param folderName
-	 * @param cft
 	 */
-	public AddNewFolderCmd(Long binderId, Long folderTemplateId, String folderName, CloudFolderType cft) {
+	public AddNewFolderCmd(Long binderId, Long folderTemplateId, String folderName) {
 		// Initialize this object...
 		this();
 		
@@ -73,19 +70,6 @@ public class AddNewFolderCmd extends VibeRpcCmd {
 		setBinderId(        binderId        );
 		setFolderTemplateId(folderTemplateId);
 		setFolderName(      folderName      );
-		setCloudFolderType( cft             );
-	}
-	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param binderId
-	 * @param folderTemplateId
-	 * @param folderName
-	 */
-	public AddNewFolderCmd(Long binderId, Long folderTemplateId, String folderName) {
-		// Initialize this object...
-		this(binderId, folderTemplateId, folderName, null);
 	}
 	
 	/**
@@ -93,20 +77,18 @@ public class AddNewFolderCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public CloudFolderType getCloudFolderType()  {return m_cft;             }
-	public Long            getBinderId()         {return m_binderId;        }
-	public Long            getFolderTemplateId() {return m_folderTemplateId;}
-	public String          getFolderName()       {return m_folderName;      }
+	public Long   getBinderId()       {return m_binderId;        }
+	public Long getFolderTemplateId() {return m_folderTemplateId;}
+	public String getFolderName()     {return m_folderName;      }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setCloudFolderType( CloudFolderType cft)              {m_cft              = cft;             }
-	public void setBinderId(        Long            binderId)         {m_binderId         = binderId;        }
-	public void setFolderTemplateId(Long            folderTemplateId) {m_folderTemplateId = folderTemplateId;}
-	public void setFolderName(      String          folderName)       {m_folderName       = folderName;      }
+	public void setBinderId(        Long   binderId)       {m_binderId         = binderId;        }
+	public void setFolderTemplateId(Long folderTemplateId) {m_folderTemplateId = folderTemplateId;}
+	public void setFolderName(      String folderName)     {m_folderName       = folderName;      }
 	
 	/**
 	 * Returns the command's enumeration value.

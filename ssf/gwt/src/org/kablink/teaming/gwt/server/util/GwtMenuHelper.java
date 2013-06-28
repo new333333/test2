@@ -59,7 +59,6 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SimpleName;
@@ -190,7 +189,6 @@ public class GwtMenuHelper {
 	private final static String WHATS_NEW				= "whatsnew";
 	private final static String WHO_HAS_ACCESS			= "whohasaccess";
 	private final static String WORKFLOW_HISTORY_REPORT	= "workflowHistoryReport";
-	private final static String ZIP_AND_DOWNLOAD		= "zipAndDownload";
 	
 	// Controls whether WebDAV information shows up in footers.
 	// DRF (20130225):  Bug 805858:  Disabled these as a per a
@@ -261,17 +259,17 @@ public class GwtMenuHelper {
 			if (EntityIdentifier.EntityType.profiles != binder.getEntityType()) {
 				// Yes!  Add the various binder based
 				// ToolbarItem's.
-				miscTBI.addNestedItem(constructClipboardItem()                           );
-				miscTBI.addNestedItem(constructSendEmailToItem(    request, binder      ));
+				miscTBI.addNestedItem(constructClipboardItem()                     );
+				miscTBI.addNestedItem(constructSendEmailToItem(    request, binder));
 				if (GwtShareHelper.isEntitySharable(bs, binder)) {
-					miscTBI.addNestedItem(constructShareBinderItem(request, binder, null));
+					miscTBI.addNestedItem(constructShareBinderItem(request, binder));
 				}
-				miscTBI.addNestedItem(constructMobileUiItem(       request, binder      ));
+				miscTBI.addNestedItem(constructMobileUiItem(       request, binder));
 				if (!isFilr) {
-					miscTBI.addNestedItems(constructTrackBinderItem(bs,     binder      ));
+					miscTBI.addNestedItems(constructTrackBinderItem(bs,     binder));
 				}
 				if (isBinderTrashEnabled(binder)) {
-					miscTBI.addNestedItem(constructTrashItem(      request, binder      ));
+					miscTBI.addNestedItem(constructTrashItem(      request, binder));
 				}
 			}
 		}
@@ -771,17 +769,15 @@ public class GwtMenuHelper {
 		markTBIEvent(manageUserTBI, TeamingEvents.INVOKE_USER_PROPERTIES_DLG);
 		entryToolbar.addNestedItem(manageUserTBI);
 		
-		// Are we dealing with an internal user in filr mode?
-		User			user   = ((User) bs.getProfileModule().getEntry(userId));
-		IdentityInfo	userII = user.getIdentityInfo();
-		if (userII.isInternal() && Utils.checkIfFilr()) {
+		// Are we re in filr mode?
+		if (Utils.checkIfFilr()) {
 			try {
 				// Yes!  Can we determine the user's current adHoc folder
 				// access?
 				UserPropertiesRpcResponseData	upData = GwtViewHelper.getUserProperties(bs, request, userId);
 				AccountInfo						ai     = upData.getAccountInfo();
 				
-				// Add a separator after the user properties item...
+				// Yes! Add a separator after the user properties item...
 				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
 
 				// ...and if they have adHoc folders...
@@ -866,16 +862,6 @@ public class GwtMenuHelper {
 			tbi = new ToolbarItem("1_moveSelected");
 			markTBITitle(tbi, "toolbar.move");
 			markTBIEvent(tbi, TeamingEvents.MOVE_SELECTED_ENTRIES);
-			moreTBI.addNestedItem(tbi);
-		}
-		
-		// ...for My Files, Shared by/with Me lists and file folders...
-		if (isEntryContainer && (isMyFilesCollection || isSharedCollection || GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder)))) {
-			// ...allow the user to zip and download the selected
-			// ...files...
-			tbi = new ToolbarItem("1_zipAndDownloadSelected");
-			markTBITitle(tbi, "toolbar.zipAndDownload");
-			markTBIEvent(tbi, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
 			moreTBI.addNestedItem(tbi);
 		}
 		
@@ -1164,9 +1150,8 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem to rename a folder.
 	 */
 	private static void constructEntryRenameFolder(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
-		// Does the user have rights to rename this folder?  Note that
-		// even with rights, they can't rename a 'Home' folder.
-		if (bs.getBinderModule().testAccess(folder, BinderOperation.modifyBinder) && (!(BinderHelper.isBinderHomeFolder(folder)))) {
+		// Does the user have rights to rename this folder?
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.modifyBinder)) {
 			// Yes!  Add a Rename ToolbarItem.
 			ToolbarItem renameTBI = new ToolbarItem(RENAME);
 			markTBITitle(renameTBI, "toolbar.menu.rename_folder"      );
@@ -1521,33 +1506,6 @@ public class GwtMenuHelper {
 	}
 	
 	/*
-	 * Constructs a ToolbarItem for zipping and downloading a file.
-	 */
-	private static void constructEntryZipAndDownload(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
-		if (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true)) {
-			ToolbarItem zipAndDownloadTBI = new ToolbarItem("1_zipAndDownload"              );
-			markTBITitle(   zipAndDownloadTBI, "toolbar.zipAndDownload"                     );
-			markTBIEvent(   zipAndDownloadTBI, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
-			markTBIEntryIds(zipAndDownloadTBI, fe                                           );
-			entryToolbar.addNestedItem(zipAndDownloadTBI);
-		}
-	}
-	
-	/*
-	 * Constructs a ToolbarItem for zipping and downloading a folder.
-	 */
-	private static void constructEntryZipAndDownload(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
-		if (bs.getBinderModule().testAccess(folder, BinderOperation.readEntries) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder))) {
-			ToolbarItem zipAndDownloadTBI = new ToolbarItem("1_zipAndDownload");
-			markTBITitle(         zipAndDownloadTBI, "toolbar.menu.zipAndDownloadFolder"  );
-			markTBIEvent(         zipAndDownloadTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER);
-			markTBIRecursive(     zipAndDownloadTBI, true                                 );
-			markTBISelectedBinder(zipAndDownloadTBI, folder                               );
-			entryToolbar.addNestedItem(zipAndDownloadTBI);
-		}
-	}
-	
-	/*
 	 * Constructs a ToolbarItem for folders.
 	 */
 	@SuppressWarnings("unused")
@@ -1604,9 +1562,8 @@ public class GwtMenuHelper {
 			}
 
 			// Does the user have rights to add a new workspace to this
-			// binder?  (Note we don't support adding workspaces
-			// anywhere in Filr.)
-			if ((!isFilr) && isWorkspace && bm.testAccess(binder, BinderOperation.addWorkspace)) {
+			// binder?
+			if (isWorkspace && bm.testAccess(binder, BinderOperation.addWorkspace)) {
 				// Yes!  Add a ToolbarItem for it.
 				addMenuCreated   =
 				adminMenuCreated = true;
@@ -1668,22 +1625,6 @@ public class GwtMenuHelper {
 					
 					configTBI.addNestedItem(actionTBI);
 				}
-			}
-			
-			// Is this a folder whose entries can be read by the user?
-			if (isFolder && bm.testAccess(binder, BinderOperation.readEntries) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, binder))) {
-				// Yes!  Add a ToolbarItem for for zipping and
-				// downloading its files.
-				adminMenuCreated  =
-				configMenuCreated = true;
-				
-				actionTBI = new ToolbarItem(ZIP_AND_DOWNLOAD);
-				markTBITitle(         actionTBI, "toolbar.menu.zipAndDownloadFolder"  );
-				markTBIEvent(         actionTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER);
-				markTBIRecursive(     actionTBI, true                                 );
-				markTBISelectedBinder(actionTBI, binder                               );
-				
-				configTBI.addNestedItem(actionTBI);
 			}
 		}
 		
@@ -2273,14 +2214,11 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem to run the share binder dialog.
 	 */
-	private static ToolbarItem constructShareBinderItem(HttpServletRequest request, Binder binder, String specificTitleKey) {
-		if (!(MiscUtil.hasString(specificTitleKey))) {
-			specificTitleKey = GwtUIHelper.buildRelevanceKey(binder, "relevance.shareThis");
-		}
+	private static ToolbarItem constructShareBinderItem(HttpServletRequest request, Binder binder) {
 		ToolbarItem     shareTBI = new ToolbarItem(SHARE);
-		markTBITitle(   shareTBI, specificTitleKey                 );
-		markTBIEvent(   shareTBI, TeamingEvents.INVOKE_SHARE_BINDER);
-		markTBIBinderId(shareTBI, binder.getId()                   );
+		markTBITitle(   shareTBI, GwtUIHelper.buildRelevanceKey(binder, "relevance.shareThis"));
+		markTBIEvent(   shareTBI, TeamingEvents.INVOKE_SHARE_BINDER                           );
+		markTBIBinderId(shareTBI, binder.getId()                                              );
 		return shareTBI;
 	}
 	
@@ -2387,7 +2325,7 @@ public class GwtMenuHelper {
 	 */
 	private static void dumpString(String dumpThis) {
 		// Simply dump the string.
-		GwtLogHelper.debug(m_logger, dumpThis);
+		m_logger.debug(dumpThis);
 	}
 	
 	private static void dumpString(String dumpStart, String dumpThis) {
@@ -2428,7 +2366,7 @@ public class GwtMenuHelper {
 	 */
 	private static void dumpToolbarItems(List<ToolbarItem> tbiList, String dumpStart) {
 		// If debug logging is enabled...
-		if (GwtLogHelper.isDebugEnabled(m_logger)) {
+		if (m_logger.isDebugEnabled()) {
 			// ...scan the toolbar items...
 			for (ToolbarItem tbi:  tbiList) {
 				// ...dumping the contents of each.
@@ -2637,33 +2575,28 @@ public class GwtMenuHelper {
 				// administration console's manage users dialog!
 				String eidType = entityId.getEntityType();
 				if (eidType.equals(EntityType.folderEntry.name())) {
-					FolderEntry fe       = bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
-					boolean     sharable = GwtShareHelper.isEntitySharable(bs, fe);
-					if (sharable) {
-						constructEntryShareItem(actionToolbar, bs, request);
-					}
+					FolderEntry fe= bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
 					
-					constructEntryZipAndDownload(  actionToolbar, bs, request, fe                    );					
+					if (GwtShareHelper.isEntitySharable(bs, fe)) {
+						constructEntryShareItem(       actionToolbar, bs, request);
+						constructEntryManageSharesItem(actionToolbar, bs         );
+					}
 					constructEntryDetailsItem(     actionToolbar, bs, request, "toolbar.details.view");
 					constructEntryViewHtmlItem(    actionToolbar, bs, request, fe                    );
 					constructEntryViewWhoHasAccess(actionToolbar, bs, request                        );
 					constructEntryRenameFile(      actionToolbar, bs, request, fe                    );
 					constructEntrySubscribeItem(   actionToolbar, bs, request, true                  );
-					
-					if (sharable) {
-						constructEntryManageSharesItem(actionToolbar, bs);
-					}
 				}
 				
 				else if (eidType.equals(EntityType.folder.name())) {
-					Long    folderId = entityId.getEntityId();
-					Folder  folder   = bs.getFolderModule().getFolder(folderId);
-					boolean sharable = GwtShareHelper.isEntitySharable(bs, folder);
-					if (sharable) {
-						actionToolbar.addNestedItem(constructShareBinderItem(request, folder, "toolbar.shareSelected"));
-					}
+					Long	folderId = entityId.getEntityId();
+					Folder	folder   = bs.getFolderModule().getFolder(folderId);
 					
-					constructEntryZipAndDownload(actionToolbar, bs, request, folder);
+					boolean addShare = GwtShareHelper.isEntitySharable(bs, folder);
+					if (addShare) {
+						actionToolbar.addNestedItem(constructShareBinderItem(request, folder));
+						constructEntryManageSharesItem(actionToolbar, bs);
+					}
 					if (!(Utils.checkIfFilr())) {
 						boolean isFavorite = false;
 						List<FavoriteInfo> favorites = GwtServerHelper.getFavorites(bs);
@@ -2679,17 +2612,13 @@ public class GwtMenuHelper {
 					constructEntryViewWhoHasAccess(actionToolbar, bs, request         );
 					constructEntryRenameFolder(    actionToolbar, bs, request, folder );
 					constructEntrySubscribeItem(   actionToolbar, bs, request, true   );
-					
-					if (sharable) {
-						constructEntryManageSharesItem(actionToolbar, bs);
-					}
 				}
 			}
 			
 			// If we get here, reply refers to the 
 			// GetToolbarItemsRpcResponseData containing the
 			// ToolbarItem's for the entity.  Return it.
-			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getEntityToolbarItems():");
+			m_logger.debug("GwtMenuHelper.getEntityToolbarItems():");
 			dumpToolbarItems(toolbarItems, "...");
 			return reply;
 		}
@@ -2900,7 +2829,7 @@ public class GwtMenuHelper {
 			// If we get here, reply refers to the
 			// GetFolderToolbarItemsRpcResponseData containing the
 			// ToolbarItem's for the folder.  Return it.
-			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getFolderToolbarItems():");
+			m_logger.debug("GwtMenuHelper.getFolderToolbarItems():");
 			dumpToolbarItems(configureToolbarItems, "...");
 			dumpToolbarItems(toolbarItems,          "...");
 			return reply;
@@ -2955,7 +2884,7 @@ public class GwtMenuHelper {
 
 			// If we get here, reply refers to the List<ToolbarItem>
 			// for the footer toolbar.  Return it.
-			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getFooterToolbarItems():");
+			m_logger.debug("GwtMenuHelper.getFooterToolbarItems():");
 			dumpToolbarItems(reply, "...");
 			return reply;
 		}
@@ -2975,7 +2904,7 @@ public class GwtMenuHelper {
 		        InetAddress addr = InetAddress.getLocalHost();
 		        hostname = addr.getHostName();
 		    } catch (UnknownHostException e) {
-				GwtLogHelper.debug(m_logger, "GwtMenuHelper.getHostName( UnknownHostException ):  Using localhost");
+				m_logger.debug("GwtMenuHelper.getHostName( UnknownHostException ):  Using localhost");
 				hostname = "localhost";
 		    }
 		}
@@ -3046,11 +2975,10 @@ public class GwtMenuHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtMenuHelper.getSignGuestbookUrl( SOURCE EXCEPTION ):  ");
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtMenuHelper.getSignGuestbookUrl( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
 	
@@ -3166,7 +3094,7 @@ public class GwtMenuHelper {
 			
 			// If we get here, reply refers to the List<ToolbarItem> of
 			// the ToolbarItem's for the binder.  Return it.
-			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getToolbarItems():");
+			m_logger.debug("GwtMenuHelper.getToolbarItems():");
 			dumpToolbarItems(reply, "...");
 			return reply;
 		}
@@ -3314,16 +3242,6 @@ public class GwtMenuHelper {
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 			
-			// Is this a file entry?
-			if (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true)) {
-				// Yes!  Allow the user to zip and download it.
-				actionTBI = new ToolbarItem(ZIP_AND_DOWNLOAD                            );
-				markTBITitle(   actionTBI, "toolbar.zipAndDownload"                     );
-				markTBIEvent(   actionTBI, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
-				markTBIEntryIds(actionTBI, fe                                           );
-				dropdownTBI.addNestedItem(actionTBI);
-			}
-			
 			// Can the user purge this entry?
 			if (fm.testAccess(fe, FolderOperation.deleteEntry)) {
 				// Yes!  Add a purge toolbar item for it.
@@ -3383,7 +3301,7 @@ public class GwtMenuHelper {
 				markTBIEntryIds(actionTBI, fe                                      );
 				dropdownTBI.addNestedItem(actionTBI);
 			}
-			
+
 			boolean needSeparator = dropdownTBI.hasNestedToolbarItems();
 
 			// Are we in Filr mode?
@@ -3753,13 +3671,6 @@ public class GwtMenuHelper {
 	private static void markTBIPopup(ToolbarItem tbi) {
 		// Always use the initial form of the method.
 		markTBIPopup(tbi, null, null);
-	}
-	
-	/*
-	 * Marks a ToolbarItem with a recursive flag.
-	 */
-	private static void markTBIRecursive(ToolbarItem tbi, boolean recursive) {
-		tbi.addQualifier("recursive", String.valueOf(recursive));
 	}
 	
 	/*

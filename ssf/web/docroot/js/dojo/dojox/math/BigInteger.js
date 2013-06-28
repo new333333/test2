@@ -1,11 +1,19 @@
-//>>built
-define("dojox/math/BigInteger",["dojo","dojox"],function(_1,_2){
-_1.getObject("math.BigInteger",true,_2);
-_1.experimental("dojox.math.BigInteger");
-var _3;
-var _4=244837814094590;
-var _5=((_4&16777215)==15715070);
-function _6(a,b,c){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.math.BigInteger"]){
+dojo._hasResource["dojox.math.BigInteger"]=true;
+dojo.provide("dojox.math.BigInteger");
+dojo.experimental("dojox.math.BigInteger");
+(function(){
+var _1;
+var _2=244837814094590;
+var _3=((_2&16777215)==15715070);
+function _4(a,b,c){
 if(a!=null){
 if("number"==typeof a){
 this._fromNumber(a,b,c);
@@ -18,10 +26,10 @@ this._fromString(a,b);
 }
 }
 };
-function _7(){
-return new _6(null);
+function _5(){
+return new _4(null);
 };
-function _8(i,x,w,j,c,n){
+function _6(i,x,w,j,c,n){
 while(--n>=0){
 var v=x*this[i++]+w[j]+c;
 c=Math.floor(v/67108864);
@@ -29,7 +37,7 @@ w[j++]=v&67108863;
 }
 return c;
 };
-function _9(i,x,w,j,c,n){
+function _7(i,x,w,j,c,n){
 var xl=x&32767,xh=x>>15;
 while(--n>=0){
 var l=this[i]&32767;
@@ -41,7 +49,7 @@ w[j++]=l&1073741823;
 }
 return c;
 };
-function _a(i,x,w,j,c,n){
+function _8(i,x,w,j,c,n){
 var xl=x&16383,xh=x>>14;
 while(--n>=0){
 var l=this[i]&16383;
@@ -53,49 +61,49 @@ w[j++]=l&268435455;
 }
 return c;
 };
-if(_5&&(navigator.appName=="Microsoft Internet Explorer")){
-_6.prototype.am=_9;
-_3=30;
+if(_3&&(navigator.appName=="Microsoft Internet Explorer")){
+_4.prototype.am=_7;
+_1=30;
 }else{
-if(_5&&(navigator.appName!="Netscape")){
-_6.prototype.am=_8;
-_3=26;
+if(_3&&(navigator.appName!="Netscape")){
+_4.prototype.am=_6;
+_1=26;
 }else{
-_6.prototype.am=_a;
-_3=28;
+_4.prototype.am=_8;
+_1=28;
 }
 }
-var _b=52;
-var _c="0123456789abcdefghijklmnopqrstuvwxyz";
-var _d=[];
+var _9=52;
+var _a="0123456789abcdefghijklmnopqrstuvwxyz";
+var _b=[];
 var rr,vv;
 rr="0".charCodeAt(0);
 for(vv=0;vv<=9;++vv){
-_d[rr++]=vv;
+_b[rr++]=vv;
 }
 rr="a".charCodeAt(0);
 for(vv=10;vv<36;++vv){
-_d[rr++]=vv;
+_b[rr++]=vv;
 }
 rr="A".charCodeAt(0);
 for(vv=10;vv<36;++vv){
-_d[rr++]=vv;
+_b[rr++]=vv;
 }
-function _e(n){
-return _c.charAt(n);
+function _c(n){
+return _a.charAt(n);
 };
-function _f(s,i){
-var c=_d[s.charCodeAt(i)];
+function _d(s,i){
+var c=_b[s.charCodeAt(i)];
 return (c==null)?-1:c;
 };
-function _10(r){
+function _e(r){
 for(var i=this.t-1;i>=0;--i){
 r[i]=this[i];
 }
 r.t=this.t;
 r.s=this.s;
 };
-function _11(x){
+function _f(x){
 this.t=1;
 this.s=(x<0)?-1:0;
 if(x>0){
@@ -109,11 +117,11 @@ this.t=0;
 }
 };
 function nbv(i){
-var r=_7();
+var r=_5();
 r._fromInt(i);
 return r;
 };
-function _12(s,b){
+function _10(s,b){
 var k;
 if(b==16){
 k=4;
@@ -133,7 +141,7 @@ k=5;
 if(b==4){
 k=2;
 }else{
-this._fromRadix(s,b);
+this.fromRadix(s,b);
 return;
 }
 }
@@ -145,7 +153,7 @@ this.t=0;
 this.s=0;
 var i=s.length,mi=false,sh=0;
 while(--i>=0){
-var x=(k==8)?s[i]&255:_f(s,i);
+var x=(k==8)?s[i]&255:_d(s,i);
 if(x<0){
 if(s.charAt(i)=="-"){
 mi=true;
@@ -176,16 +184,16 @@ this[this.t-1]|=((1<<(this._DB-sh))-1)<<sh;
 }
 this._clamp();
 if(mi){
-_6.ZERO._subTo(this,this);
+_4.ZERO._subTo(this,this);
 }
 };
-function _13(){
+function _11(){
 var c=this.s&this._DM;
 while(this.t>0&&this[this.t-1]==c){
 --this.t;
 }
 };
-function _14(b){
+function _12(b){
 if(this.s<0){
 return "-"+this.negate().toString(b);
 }
@@ -216,7 +224,7 @@ var p=this._DB-(i*this._DB)%k;
 if(i-->0){
 if(p<this._DB&&(d=this[i]>>p)>0){
 m=true;
-r=_e(d);
+r=_c(d);
 }
 while(i>=0){
 if(p<k){
@@ -233,21 +241,21 @@ if(d>0){
 m=true;
 }
 if(m){
-r+=_e(d);
+r+=_c(d);
 }
 }
 }
 return m?r:"0";
 };
-function _15(){
-var r=_7();
-_6.ZERO._subTo(this,r);
+function _13(){
+var r=_5();
+_4.ZERO._subTo(this,r);
 return r;
 };
-function _16(){
+function _14(){
 return (this.s<0)?this.negate():this;
 };
-function _17(a){
+function _15(a){
 var r=this.s-a.s;
 if(r){
 return r;
@@ -264,7 +272,7 @@ return r;
 }
 return 0;
 };
-function _18(x){
+function _16(x){
 var r=1,t;
 if((t=x>>>16)){
 x=t;
@@ -288,13 +296,13 @@ r+=1;
 }
 return r;
 };
-function _19(){
+function _17(){
 if(this.t<=0){
 return 0;
 }
-return this._DB*(this.t-1)+_18(this[this.t-1]^(this.s&this._DM));
+return this._DB*(this.t-1)+_16(this[this.t-1]^(this.s&this._DM));
 };
-function _1a(n,r){
+function _18(n,r){
 var i;
 for(i=this.t-1;i>=0;--i){
 r[i+n]=this[i];
@@ -305,14 +313,14 @@ r[i]=0;
 r.t=this.t+n;
 r.s=this.s;
 };
-function _1b(n,r){
+function _19(n,r){
 for(var i=n;i<this.t;++i){
 r[i-n]=this[i];
 }
 r.t=Math.max(this.t-n,0);
 r.s=this.s;
 };
-function _1c(n,r){
+function _1a(n,r){
 var bs=n%this._DB;
 var cbs=this._DB-bs;
 var bm=(1<<cbs)-1;
@@ -329,7 +337,7 @@ r.t=this.t+ds+1;
 r.s=this.s;
 r._clamp();
 };
-function _1d(n,r){
+function _1b(n,r){
 r.s=this.s;
 var ds=Math.floor(n/this._DB);
 if(ds>=this.t){
@@ -350,7 +358,7 @@ r[this.t-ds-1]|=(this.s&bm)<<cbs;
 r.t=this.t-ds;
 r._clamp();
 };
-function _1e(a,r){
+function _1c(a,r){
 var i=0,c=0,m=Math.min(a.t,this.t);
 while(i<m){
 c+=this[i]-a[i];
@@ -385,7 +393,7 @@ r[i++]=c;
 r.t=i;
 r._clamp();
 };
-function _1f(a,r){
+function _1d(a,r){
 var x=this.abs(),y=a.abs();
 var i=x.t;
 r.t=i+y.t;
@@ -398,10 +406,10 @@ r[i+x.t]=x.am(0,y[i],r,i,0,x.t);
 r.s=0;
 r._clamp();
 if(this.s!=a.s){
-_6.ZERO._subTo(r,r);
+_4.ZERO._subTo(r,r);
 }
 };
-function _20(r){
+function _1e(r){
 var x=this.abs();
 var i=r.t=2*x.t;
 while(--i>=0){
@@ -420,7 +428,7 @@ r[r.t-1]+=x.am(i,x[i],r,2*i,0,1);
 r.s=0;
 r._clamp();
 };
-function _21(m,q,r){
+function _1f(m,q,r){
 var pm=m.abs();
 if(pm.t<=0){
 return;
@@ -436,10 +444,10 @@ this._copyTo(r);
 return;
 }
 if(r==null){
-r=_7();
+r=_5();
 }
-var y=_7(),ts=this.s,ms=m.s;
-var nsh=this._DB-_18(pm[pm.t-1]);
+var y=_5(),ts=this.s,ms=m.s;
+var nsh=this._DB-_16(pm[pm.t-1]);
 if(nsh>0){
 pm._lShiftTo(nsh,y);
 pt._lShiftTo(nsh,r);
@@ -454,13 +462,13 @@ return;
 }
 var yt=y0*(1<<this._F1)+((ys>1)?y[ys-2]>>this._F2:0);
 var d1=this._FV/yt,d2=(1<<this._F1)/yt,e=1<<this._F2;
-var i=r.t,j=i-ys,t=(q==null)?_7():q;
+var i=r.t,j=i-ys,t=(q==null)?_5():q;
 y._dlShiftTo(j,t);
 if(r.compareTo(t)>=0){
 r[r.t++]=1;
 r._subTo(t,r);
 }
-_6.ONE._dlShiftTo(ys,t);
+_4.ONE._dlShiftTo(ys,t);
 t._subTo(y,y);
 while(y.t<ys){
 y[y.t++]=0;
@@ -478,7 +486,7 @@ r._subTo(t,r);
 if(q!=null){
 r._drShiftTo(ys,q);
 if(ts!=ms){
-_6.ZERO._subTo(q,q);
+_4.ZERO._subTo(q,q);
 }
 }
 r.t=ys;
@@ -487,43 +495,43 @@ if(nsh>0){
 r._rShiftTo(nsh,r);
 }
 if(ts<0){
-_6.ZERO._subTo(r,r);
+_4.ZERO._subTo(r,r);
 }
 };
-function _22(a){
-var r=_7();
+function _20(a){
+var r=_5();
 this.abs()._divRemTo(a,null,r);
-if(this.s<0&&r.compareTo(_6.ZERO)>0){
+if(this.s<0&&r.compareTo(_4.ZERO)>0){
 a._subTo(r,r);
 }
 return r;
 };
-function _23(m){
+function _21(m){
 this.m=m;
 };
-function _24(x){
+function _22(x){
 if(x.s<0||x.compareTo(this.m)>=0){
 return x.mod(this.m);
 }else{
 return x;
 }
 };
-function _25(x){
+function _23(x){
 return x;
 };
-function _26(x){
+function _24(x){
 x._divRemTo(this.m,null,x);
 };
-function _27(x,y,r){
+function _25(x,y,r){
 x._multiplyTo(y,r);
 this.reduce(r);
 };
-function _28(x,r){
+function _26(x,r){
 x._squareTo(r);
 this.reduce(r);
 };
-_1.extend(_23,{convert:_24,revert:_25,reduce:_26,mulTo:_27,sqrTo:_28});
-function _29(){
+dojo.extend(_21,{convert:_22,revert:_23,reduce:_24,mulTo:_25,sqrTo:_26});
+function _27(){
 if(this.t<1){
 return 0;
 }
@@ -538,7 +546,7 @@ y=(y*(2-(((x&65535)*y)&65535)))&65535;
 y=(y*(2-x*y%this._DV))%this._DV;
 return (y>0)?this._DV-y:-y;
 };
-function _2a(m){
+function _28(m){
 this.m=m;
 this.mp=m._invDigit();
 this.mpl=this.mp&32767;
@@ -546,22 +554,22 @@ this.mph=this.mp>>15;
 this.um=(1<<(m._DB-15))-1;
 this.mt2=2*m.t;
 };
-function _2b(x){
-var r=_7();
+function _29(x){
+var r=_5();
 x.abs()._dlShiftTo(this.m.t,r);
 r._divRemTo(this.m,null,r);
-if(x.s<0&&r.compareTo(_6.ZERO)>0){
+if(x.s<0&&r.compareTo(_4.ZERO)>0){
 this.m._subTo(r,r);
 }
 return r;
 };
-function _2c(x){
-var r=_7();
+function _2a(x){
+var r=_5();
 x._copyTo(r);
 this.reduce(r);
 return r;
 };
-function _2d(x){
+function _2b(x){
 while(x.t<=this.mt2){
 x[x.t++]=0;
 }
@@ -581,23 +589,23 @@ if(x.compareTo(this.m)>=0){
 x._subTo(this.m,x);
 }
 };
-function _2e(x,r){
+function _2c(x,r){
 x._squareTo(r);
 this.reduce(r);
 };
-function _2f(x,y,r){
+function _2d(x,y,r){
 x._multiplyTo(y,r);
 this.reduce(r);
 };
-_1.extend(_2a,{convert:_2b,revert:_2c,reduce:_2d,mulTo:_2f,sqrTo:_2e});
-function _30(){
+dojo.extend(_28,{convert:_29,revert:_2a,reduce:_2b,mulTo:_2d,sqrTo:_2c});
+function _2e(){
 return ((this.t>0)?(this[0]&1):this.s)==0;
 };
-function _31(e,z){
+function _2f(e,z){
 if(e>4294967295||e<1){
-return _6.ONE;
+return _4.ONE;
 }
-var r=_7(),r2=_7(),g=z.convert(this),i=_18(e)-1;
+var r=_5(),r2=_5(),g=z.convert(this),i=_16(e)-1;
 g._copyTo(r);
 while(--i>=0){
 z.sqrTo(r,r2);
@@ -611,17 +619,17 @@ r2=t;
 }
 return z.revert(r);
 };
-function _32(e,m){
+function _30(e,m){
 var z;
 if(e<256||m._isEven()){
-z=new _23(m);
+z=new _21(m);
 }else{
-z=new _2a(m);
+z=new _28(m);
 }
 return this._exp(e,z);
 };
-_1.extend(_6,{_DB:_3,_DM:(1<<_3)-1,_DV:1<<_3,_FV:Math.pow(2,_b),_F1:_b-_3,_F2:2*_3-_b,_copyTo:_10,_fromInt:_11,_fromString:_12,_clamp:_13,_dlShiftTo:_1a,_drShiftTo:_1b,_lShiftTo:_1c,_rShiftTo:_1d,_subTo:_1e,_multiplyTo:_1f,_squareTo:_20,_divRemTo:_21,_invDigit:_29,_isEven:_30,_exp:_31,toString:_14,negate:_15,abs:_16,compareTo:_17,bitLength:_19,mod:_22,modPowInt:_32});
-_1._mixin(_6,{ZERO:nbv(0),ONE:nbv(1),_nbi:_7,_nbv:nbv,_nbits:_18,_Montgomery:_2a});
-_2.math.BigInteger=_6;
-return _2.math.BigInteger;
-});
+dojo.extend(_4,{_DB:_1,_DM:(1<<_1)-1,_DV:1<<_1,_FV:Math.pow(2,_9),_F1:_9-_1,_F2:2*_1-_9,_copyTo:_e,_fromInt:_f,_fromString:_10,_clamp:_11,_dlShiftTo:_18,_drShiftTo:_19,_lShiftTo:_1a,_rShiftTo:_1b,_subTo:_1c,_multiplyTo:_1d,_squareTo:_1e,_divRemTo:_1f,_invDigit:_27,_isEven:_2e,_exp:_2f,toString:_12,negate:_13,abs:_14,compareTo:_15,bitLength:_17,mod:_20,modPowInt:_30});
+dojo._mixin(_4,{ZERO:nbv(0),ONE:nbv(1),_nbi:_5,_nbv:nbv,_nbits:_16,_Montgomery:_28});
+dojox.math.BigInteger=_4;
+})();
+}

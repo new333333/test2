@@ -140,7 +140,6 @@ import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
-import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlUsage;
 import org.kablink.teaming.gwt.client.widgets.AddNewFolderDlg;
 import org.kablink.teaming.gwt.client.widgets.AddNewFolderDlg.AddNewFolderDlgClient;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
@@ -561,7 +560,7 @@ public class GwtMainPage extends ResizeComposite
 		list.add( ActionMenuItem.MARK_UNREAD );
 		
 		actionsMenu = new ActionsPopupMenu( true, true, list.toArray( new ActionMenuItem[list.size()] ) );
-		ActivityStreamCtrl.createAsync( ActivityStreamCtrlUsage.STANDALONE, actionsMenu, new ActivityStreamCtrlClient()
+		ActivityStreamCtrl.createAsync( actionsMenu, new ActivityStreamCtrlClient()
 		{			
 			@Override
 			public void onUnavailable()
@@ -2807,10 +2806,7 @@ public class GwtMainPage extends ResizeComposite
 						@Override
 						public void execute()
 						{
-							showAddNewFolderDlgNow(
-								event.getBinderId(),
-								event.getFolderTemplateId(),
-								event.isAllowCloudFolder() );
+							showAddNewFolderDlgNow( event.getBinderId(), event.getFolderTemplateId() );
 						}// end execute()
 					} );
 				}// end onSuccess()
@@ -2821,10 +2817,7 @@ public class GwtMainPage extends ResizeComposite
 		{
 			// Yes, we've instantiated a add new file dialog already!
 			// Simply show it.
-			showAddNewFolderDlgNow(
-				event.getBinderId(),
-				event.getFolderTemplateId(),
-				event.isAllowCloudFolder() );
+			showAddNewFolderDlgNow( event.getBinderId(), event.getFolderTemplateId() );
 		}
 	}// end onInvokeAddNewFolder()
 	
@@ -4009,9 +4002,9 @@ public class GwtMainPage extends ResizeComposite
 	/*
 	 * Synchronously shows the add new file dialog.
 	 */
-	private void showAddNewFolderDlgNow(Long binderId, Long folderTemplateId, boolean allowCloudFolder)
+	private void showAddNewFolderDlgNow(Long binderId, Long folderTemplateId)
 	{
-		AddNewFolderDlg.initAndShow( m_addNewFolderDlg, binderId, folderTemplateId, allowCloudFolder );
+		AddNewFolderDlg.initAndShow( m_addNewFolderDlg, binderId, folderTemplateId );
 	}// end showAddNewFolderDlgNow()
 	
 	/**

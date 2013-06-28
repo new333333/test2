@@ -1,16 +1,27 @@
-//>>built
-define("dojox/data/WikipediaStore",["dojo/_base/kernel","dojo/_base/lang","dojo/_base/declare","dojo/io/script","dojo/io-query","dojox/rpc/Service","dojox/data/ServiceStore"],function(_1,_2,_3,_4,_5,_6,_7){
-_1.experimental("dojox.data.WikipediaStore");
-return _3("dojox.data.WikipediaStore",_7,{constructor:function(_8){
-if(_8&&_8.service){
-this.service=_8.service;
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.data.WikipediaStore"]){
+dojo._hasResource["dojox.data.WikipediaStore"]=true;
+dojo.provide("dojox.data.WikipediaStore");
+dojo.require("dojo.io.script");
+dojo.require("dojox.rpc.Service");
+dojo.require("dojox.data.ServiceStore");
+dojo.experimental("dojox.data.WikipediaStore");
+dojo.declare("dojox.data.WikipediaStore",dojox.data.ServiceStore,{constructor:function(_1){
+if(_1&&_1.service){
+this.service=_1.service;
 }else{
-var _9=new _6(require.toUrl("dojox/rpc/SMDLibrary/wikipedia.smd"));
-this.service=_9.query;
+var _2=new dojox.rpc.Service(dojo.moduleUrl("dojox.rpc.SMDLibrary","wikipedia.smd"));
+this.service=_2.query;
 }
 this.idAttribute=this.labelAttribute="title";
-},fetch:function(_a){
-var rq=_2.mixin({},_a.query);
+},fetch:function(_3){
+var rq=dojo.mixin({},_3.query);
 if(rq&&(!rq.action||rq.action==="parse")){
 rq.action="parse";
 rq.page=rq.title;
@@ -20,28 +31,28 @@ if(rq.action==="query"){
 rq.list="search";
 rq.srwhat="text";
 rq.srsearch=rq.text;
-if(_a.start){
-rq.sroffset=_a.start-1;
+if(_3.start){
+rq.sroffset=_3.start-1;
 }
-if(_a.count){
-rq.srlimit=_a.count>=500?500:_a.count;
+if(_3.count){
+rq.srlimit=_3.count>=500?500:_3.count;
 }
 delete rq.text;
 }
 }
-_a.query=rq;
+_3.query=rq;
 return this.inherited(arguments);
-},_processResults:function(_b,_c){
-if(_b.parse){
-_b.parse.title=_5.queryToObject(_c.ioArgs.url.split("?")[1]).page;
-_b=[_b.parse];
+},_processResults:function(_4,_5){
+if(_4.parse){
+_4.parse.title=dojo.queryToObject(_5.ioArgs.url.split("?")[1]).page;
+_4=[_4.parse];
 }else{
-if(_b.query&&_b.query.search){
-_b=_b.query.search;
-var _d=this;
-for(var i in _b){
-_b[i]._loadObject=function(_e){
-_d.fetch({query:{action:"parse",title:this.title},onItem:_e});
+if(_4.query&&_4.query.search){
+_4=_4.query.search;
+var _6=this;
+for(var i in _4){
+_4[i]._loadObject=function(_7){
+_6.fetch({query:{action:"parse",title:this.title},onItem:_7});
 delete this._loadObject;
 };
 }
@@ -49,4 +60,4 @@ delete this._loadObject;
 }
 return this.inherited(arguments);
 }});
-});
+}

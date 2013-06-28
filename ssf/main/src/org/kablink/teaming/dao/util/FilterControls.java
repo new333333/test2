@@ -75,19 +75,6 @@ public class FilterControls implements Cloneable {
 		Criterion crit = Restrictions.eq(name, value); 
 		add(crit, pos);
 	}
-
-	/**
-	 * 
-	 * @param name
-	 */
-	public void addIsNull( String name )
-	{
-		Criterion crit;
-		
-		crit = Restrictions.isNull( name );
-		add( crit );
-	}
-	
 	public void appendFilter(String alias, StringBuffer filter) {
 	 	int count = criteria.size();
 	 	if (count > 0) {

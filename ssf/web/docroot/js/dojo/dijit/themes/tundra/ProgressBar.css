@@ -1,5 +1,5 @@
 .tundra .dijitProgressBar {
-	margin:2px 0 2px 0;
+	margin:2px 0px 2px 0px;
 }
 .tundra .dijitProgressBarEmpty {
 	
@@ -11,8 +11,7 @@
 	background:#f0f0f0 url("images/progressBarFull.png") repeat-x center center;
 }
 .tundra .dijitProgressBarFull {
-	border: 0px solid #b8b8b8;
-	border-right-width: 1px;
+	border-right:1px solid #b8b8b8;
 }
 .tundra .dijitProgressBarLabel {
 	

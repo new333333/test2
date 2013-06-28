@@ -1,28 +1,39 @@
 /*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
 	Available via Academic Free License >= 2.1 OR the modified BSD license.
 	see: http://dojotoolkit.org/license for details
 */
 
-//>>built
-define("dojo/data/api/Write",["../../_base/declare","./Read"],function(_1,_2){
-return _1("dojo.data.api.Write",_2,{getFeatures:function(){
+
+if(!dojo._hasResource["dojo.data.api.Write"]){
+dojo._hasResource["dojo.data.api.Write"]=true;
+dojo.provide("dojo.data.api.Write");
+dojo.require("dojo.data.api.Read");
+dojo.declare("dojo.data.api.Write",dojo.data.api.Read,{getFeatures:function(){
 return {"dojo.data.api.Read":true,"dojo.data.api.Write":true};
-},newItem:function(_3,_4){
+},newItem:function(_1,_2){
+var _3;
 throw new Error("Unimplemented API: dojo.data.api.Write.newItem");
-},deleteItem:function(_5){
+return _3;
+},deleteItem:function(_4){
 throw new Error("Unimplemented API: dojo.data.api.Write.deleteItem");
-},setValue:function(_6,_7,_8){
+return false;
+},setValue:function(_5,_6,_7){
 throw new Error("Unimplemented API: dojo.data.api.Write.setValue");
-},setValues:function(_9,_a,_b){
+return false;
+},setValues:function(_8,_9,_a){
 throw new Error("Unimplemented API: dojo.data.api.Write.setValues");
-},unsetAttribute:function(_c,_d){
+return false;
+},unsetAttribute:function(_b,_c){
 throw new Error("Unimplemented API: dojo.data.api.Write.clear");
-},save:function(_e){
+return false;
+},save:function(_d){
 throw new Error("Unimplemented API: dojo.data.api.Write.save");
 },revert:function(){
 throw new Error("Unimplemented API: dojo.data.api.Write.revert");
-},isDirty:function(_f){
+return false;
+},isDirty:function(_e){
 throw new Error("Unimplemented API: dojo.data.api.Write.isDirty");
+return false;
 }});
-});
+}

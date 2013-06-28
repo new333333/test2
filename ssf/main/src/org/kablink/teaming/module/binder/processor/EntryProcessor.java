@@ -82,8 +82,10 @@ public interface EntryProcessor extends BinderProcessor {
   	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags);
     public void moveEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options);
 	public ChangeLog processChangeLog(DefinableEntity entity, String operation);
-	public ChangeLog processChangeLog(DefinableEntity entity, String operation, boolean skipDbLog, boolean skipNotifyStatus);
 	
+	public List<FolderEntry> _addNetFolderEntriesInSync(Folder folder, Definition def, 
+			List<InputDataAccessor> inputDataList, List<Map> fileItemsList, List<Map> optionsList) 
+    	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException;
     public org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
 	(Binder binder, Entry entry, FileAttachment fa, Collection tags, boolean skipFileContentIndexing);
  }

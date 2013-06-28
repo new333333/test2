@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,23 +32,24 @@
  */
 package org.kablink.teaming.gwt.client;
 
+
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
-import org.kablink.teaming.gwt.client.util.FileLinkAction;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+
 /**
- * This class is used to hold Vibe's personal preferences such as Entry
- * Display Style, Editor Configuration, ...
- * 
+ * This class is used to hold Teamin personal preferences such as Entry Display Style, Editor Configuration,
+ * Video Tutorial Panel.
  * @author jwootton
+ *
  */
 public class GwtPersonalPreferences
 	implements IsSerializable, VibeRpcResponseData
 {
 	private String m_displayStyle = null;
+	private boolean m_showTutorialPanel = false;
 	private int m_numEntriesPerPage = 0;
-	private FileLinkAction m_fileLinkAction = FileLinkAction.DOWNLOAD;
 	
 	// m_editorOverridesSupported is not actually a personal preference.  It is a system-wide
 	// setting that lets us know if we should allow the user to define editor overrides.
@@ -83,10 +84,10 @@ public class GwtPersonalPreferences
 	/**
 	 * 
 	 */
-	public FileLinkAction getFileLinkAction()
+	public boolean getShowTutorialPanel()
 	{
-		return m_fileLinkAction;
-	}// end getFileLinkAction()
+		return m_showTutorialPanel;
+	}// end geShowtTutorialPanel()
 	
 	
 	/**
@@ -128,8 +129,8 @@ public class GwtPersonalPreferences
 	/**
 	 * 
 	 */
-	public void setFileLinkAction( FileLinkAction fla )
+	public void setShowTutorialPanel( boolean showTutorialPanel )
 	{
-		m_fileLinkAction = fla;
-	}// end setFileLinkAction()
+		m_showTutorialPanel = showTutorialPanel;
+	}// end setShowTutorialPanel()
 }// end GwtPersonalPreferences

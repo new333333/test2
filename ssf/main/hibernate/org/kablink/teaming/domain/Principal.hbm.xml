@@ -46,7 +46,6 @@
     <property name="ldapGuid" length="128" index="ldapGuid_principal"/>
     <property name="objectSid" length="128" index="objectSid_principal"/>
     <property name="samAccountName" length="128"/>
-    <property name="domainName" length="255" />
 	<property name="theme" length="64"/>
     <properties name="nameKey" unique="true" update="false" insert="false">
       <property name="zoneId" update="false" insert="false"/>
@@ -129,7 +128,6 @@
 		  <property name="digestSeed"/>
 		  <property name="extProvState" access="field" type="short"/>
 		  <property name="extProvSeed"/>
-		  <property name="workspacePreDeleted" access="field"/>
 	    </subclass>
   	</subclass>
   	<subclass dynamic-update="true" name="org.kablink.teaming.domain.ApplicationPrincipal">

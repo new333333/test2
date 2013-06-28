@@ -257,18 +257,6 @@ public class FileRepositorySession implements RepositorySession {
 			logger.error("Error deleting file [" + unversionedFile.getAbsolutePath() + "]");
 			throw new UncheckedIOException(e);
 		}			
-		
-		File parentDir = new File(getEntityDirPath(binder, entry));
-		String[] children = parentDir.list();
-		if(children == null || children.length == 0) {
-			// The parent directory is empty. Let's purge that as well for cleanup.
-			try {
-				FileHelper.delete(parentDir);
-			}
-			catch(IOException e) {
-				logger.warn("Error deleting empty parent directory [" + parentDir.getAbsolutePath() + "]");			
-			}			
-		}
 	}
 
 

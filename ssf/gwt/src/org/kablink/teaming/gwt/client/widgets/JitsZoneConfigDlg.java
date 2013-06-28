@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
@@ -134,7 +135,6 @@ public class JitsZoneConfigDlg extends DlgBox
 			
 			intervalLabel = new Label( messages.jitsZoneConfigDlg_MaxWaitLabel() );
 			intervalLabel.addStyleName( "marginleft3" );
-			intervalLabel.addStyleName( "marginright5px" );
 			hPanel.add( intervalLabel );
 			
 			m_maxWaitTimeTextBox = new TextBox();
@@ -391,7 +391,10 @@ public class JitsZoneConfigDlg extends DlgBox
         // Get the key the user pressed
         keyCode = event.getNativeEvent().getKeyCode();
         
-        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
+        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
+            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
+            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
+            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
         {
         	TextBox txtBox;
         	Object source;

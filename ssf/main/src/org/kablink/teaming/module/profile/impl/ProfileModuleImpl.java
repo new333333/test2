@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -117,8 +117,6 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
-import org.kablink.teaming.runas.RunasCallback;
-import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
@@ -142,11 +140,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/**
- * ?
- * 
- * @author ?
- */
 @SuppressWarnings("unchecked")
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
@@ -1512,7 +1505,7 @@ public void deleteEntry(Long principalId, Map options) {
    //RW transaction
    @Override
 public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
-	   boolean delMirroredFolderSource = (!(Utils.checkIfFilr()));	// Only delete mirrored source by default if not Filr.
+	   boolean delMirroredFolderSource = Boolean.TRUE;
 	   
         Principal entry = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);
         checkAccess(entry, ProfileOperation.deleteEntry);
@@ -1804,52 +1797,6 @@ public Map getUsers() {
 			RequestContextHolder.setRequestContext(oldCtx);				
 		};
 	}
-
-    public User findOrAddExternalUser(final String emailAddress) {
-        User user;
-        try
-        {
-            // Does a Vibe account exist with the given name?
-            user = getUser( emailAddress );
-        }
-        catch ( Exception ex )
-        {
-            RunasCallback callback;
-
-            // If we get here a Vibe account does not exist for the given external user.
-            // Create one.
-            callback = new RunasCallback()
-            {
-                @Override
-                public Object doAs()
-                {
-                    HashMap updates;
-                    User user;
-
-                    updates = new HashMap();
-                    updates.put( ObjectKeys.FIELD_USER_EMAIL, emailAddress );
-                    updates.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, emailAddress );
-                    updates.put( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE, User.ExtProvState.initial );
-                    // Do NOT set the "fromOpenid" bit on initially. We will set it when the user actually
-                    // logs in and binds a valid OpenID account with the email address specified during sharing.
-                    user = addUserFromPortal(
-                            new IdentityInfo(false, false, false, false),
-                            emailAddress,
-                            null,
-                            updates,
-                            null );
-
-                    return user;
-                }
-            };
-
-            user = (User) RunasTemplate.runasAdmin(
-                    callback,
-                    RequestContextHolder.getRequestContext().getZoneName());
-        }
-        return user;
-    }
-
 	protected class SharedSeenMap extends SeenMap {
 		public SharedSeenMap(Long principalId) {
 			super(principalId);
@@ -2488,29 +2435,5 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 		user.setFirstLoginDate(new Date()); // Set it to current date/time.
     }
     
-
-    /**
-     * Returns a User's workspace pre-deleted flag.
-     * 
-     * @param userId
-     */
-    //RO transaction
-    @Override
-    public Boolean getUserWorkspacePreDeleted(Long userId) {
-   		User user = getUser(userId, true);
-		return user.isWorkspacePreDeleted();
-    }
-    
-    /**
-     * Sets a User's workspace pre-deleted flag.
-     * 
-     * @param userId
-     * @param userWorkspacePreDeleted
-     */
-    //RW transaction
-    @Override
-    public void setUserWorkspacePreDeleted(Long userId, boolean userWorkspacePreDeleted) {
-   		User user = getUser(userId, true);
-		user.setWorkspacePreDeleted(userWorkspacePreDeleted);
-    }
 }
+

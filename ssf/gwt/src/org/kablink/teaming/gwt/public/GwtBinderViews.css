@@ -391,12 +391,6 @@
 	.vibe-addFilesHtml5Popup-progressBar-total-label     {padding-right: 5px;}
 /* Start:  Add files via HTML5 styles. */
 
-/* Start:  Cloud Folder authentication dialog styles. */
-	.vibe-cloudFolderAuthenticationDlgBox .popupContent {background-color: white !important;}
-	.vibe-cloudFolderAuthenticationDlg_Message          {padding: 10px; white-space: normal;}
-	.vibe-cloudFolderAuthenticationDlg_Panel            {width: 500px; height: 280px;}
-/* End:  Cloud Folder authentication dialog styles. */
-
 /* Start:  File conflicts dialog styles. */
 	.vibe-fileConflictsDlg                 {}
 	.vibe-fileConflictsDlg-banner          {width: 500px; padding-bottom: 10px; font-size: 1.2em;}
