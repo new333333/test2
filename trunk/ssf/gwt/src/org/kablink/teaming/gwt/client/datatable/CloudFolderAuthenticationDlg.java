@@ -107,6 +107,22 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 			null);												// Create callback data.  Unused. 
 	}
 
+	/*
+	 * Closes the browser window running the Cloud Folder service's
+	 * authentication.
+	 */
+	private static native void closeCloudServiceAuthentication() /*-{
+		// If we're tracking a cloud service authentication window...
+		if (null != $wnd.top.ss_cloudFolderAuthenticationPopup) {
+			// ...close...
+			try {$wnd.top.ss_cloudFolderAuthenticationPopup.close();}
+			catch (e) {}
+			
+			// ...and forget about it.
+			$wnd.top.ss_cloudFolderAuthenticationPopup = null;
+		}
+	}-*/;
+	  
 	/**
 	 * Creates all the controls that make up the dialog.
 	 * 
@@ -152,6 +168,17 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 	}
 
 	/**
+	 * Called to hide the dialog.
+	 * 
+	 * Overrides the DlgBox.hide() method.
+	 */
+	@Override
+	public void hide() {
+		closeCloudServiceAuthentication();
+		super.hide();
+	}
+	
+	/**
 	 * Called when the data table is attached.
 	 * 
 	 * Overrides Widget.onAttach()
@@ -188,6 +215,17 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 	}
 	
 	/*
+	 * Opens a new browser window for the user to authenticate to a
+	 * Cloud Folder service.
+	 */
+	private static native void openCloudServiceAuthentication(String url, String name, int width, int height) /*-{
+		$wnd.top.ss_cloudFolderAuthenticationPopup = $wnd.open(
+			url,
+			name,
+			'directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=' + width + ',height=' + height);
+	}-*/;
+	  
+	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
@@ -215,11 +253,11 @@ public class CloudFolderAuthenticationDlg extends DlgBox {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				GwtClientHelper.jsLaunchUrlInWindow(
+				openCloudServiceAuthentication(
 					m_cfAuthentication.getAuthenticationUrl(),
 					"ss_cloud_folder_authentication",
-					768,
-					1024);
+					1024,
+					768);
 			}
 		});
 
