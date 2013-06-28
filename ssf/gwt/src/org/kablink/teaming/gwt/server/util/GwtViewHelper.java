@@ -32,9 +32,6 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -67,7 +64,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.swing.ImageIcon;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -76,8 +72,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import org.kablink.teaming.BinderQuotaException;
-import org.kablink.teaming.DataQuotaException;
-import org.kablink.teaming.FileSizeLimitException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -114,7 +108,6 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.fi.auth.AuthException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
-import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow.PrincipalInfoId;
@@ -147,7 +140,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.H
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.NetFoldersInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.QuotaInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData;
@@ -209,7 +201,6 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.EmptyInputData;
-import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.sharing.SharingModule;
@@ -242,7 +233,6 @@ import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
@@ -289,7 +279,6 @@ public class GwtViewHelper {
 	public static final String RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME		= "responsible_teams";
 
 	// Attribute names used to store things in the session cache.
-	private static final String CACHED_UPLOAD_FILE				= "uploadFile";
 	private static final String CACHED_VIEW_PINNED_ENTRIES_BASE = "viewPinnedEntries_";
 	private static final String CACHED_VIEW_SHARED_FILES_BASE	= "viewSharedFiles_";
 	
@@ -297,9 +286,6 @@ public class GwtViewHelper {
 	private static final String CACHED_SHARED_VIEW_SHOW_HIDDEN_BASE		= "sharedViewShowHidden_";
 	private static final String CACHED_SHARED_VIEW_SHOW_NON_HIDDEN_BASE	= "sharedViewShowNonHidden_";
 
-	// Used in various file size calculations, ...
-	private final static long MEGABYTES = (1024l * 1024l);
-	
 	// The following control whether profiling information is tracked
 	// per row and/or per column and per user (i.e., author.)
 	private final static boolean PROFILE_PER_ROW	= SPropsUtil.getBoolean("gwt.profile.listview.per.row",    false);
@@ -475,53 +461,6 @@ public class GwtViewHelper {
 	 */
 	private GwtViewHelper() {
 		// Nothing to do.
-	}
-
-	/**
-	 * Aborts any file upload in progress.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderInfo
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static BooleanRpcResponseData abortFileUpload(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
-		try {
-			// Do we have an upload filename cached in the session?
-			HttpSession session = WebHelper.getRequiredSession(request);
-			String fileName = ((String) session.getAttribute(CACHED_UPLOAD_FILE));
-			if (MiscUtil.hasString(fileName)) {
-				// Yes!  Remove it...
-				session.removeAttribute(CACHED_UPLOAD_FILE);
-				try {
-					// ...and if we can access the temporary file for
-					// ...it...
-					File tempFile = TempFileUtil.getTempFileByName(fileName);
-					if (null != tempFile) {
-						// ...delete that.
-						tempFile.delete();
-					}
-				}
-				
-				catch (Throwable t) {
-					// Ignore.
-				}
-			}
-			return new BooleanRpcResponseData(true);
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.abortFileUpload( SOURCE EXCEPTION ):  ");
-		}
 	}
 
 	/*
@@ -1580,25 +1519,6 @@ public class GwtViewHelper {
 		}
 	}
 	
-	/*
-	 * Writes debug information about a file blob to the system log.
-	 */
-	private static void debugTraceBlob(FileBlob fileBlob, String methodName, String traceHead, String traceTail, boolean lastBlob) {
-		if (GwtLogHelper.isDebugEnabled(m_logger)) {
-			String	dump  = (traceHead + ":  '" + fileBlob.getFileName() + "' (fSize:" + fileBlob.getFileSize() + ", bStart:" + fileBlob.getBlobStart() + ", bSize:" + fileBlob.getBlobSize() + ", last:" + lastBlob + ", md5Hash:" + fileBlob.getBlobMD5Hash() + ", uploadId:" + fileBlob.getUploadId() + ")");
-			boolean hasTail = MiscUtil.hasString(traceTail);
-			dump = ("GwtViewHelper." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
-			String data = fileBlob.getBlobData();
-			dump += ("\n\nData Uploaded:  " + ((null == data) ? 0 : data.length()) + (fileBlob.isBlobBase64Encoded() ? " base64 encoded" : "") + " bytes."); 
-			GwtLogHelper.debug(m_logger, dump);
-		}
-	}
-	
-	private static void debugTraceBlob(FileBlob fileBlob, String methodName, String traceHead, boolean lastBlob) {
-		// Always use the initial form of the method.
-		debugTraceBlob(fileBlob, methodName, traceHead, null, lastBlob);
-	}
-
 	/**
 	 * Delete user workspaces.
 	 * 
@@ -8619,343 +8539,6 @@ public class GwtViewHelper {
 		return value;
 	}
 
-	/**
-	 * Uploads a file blob.
-	 * 
-	 * If the blob is the last one for the file, the file entry is
-	 * created.  Otherwise, the blob is cached while we await
-	 * additional blobs for it.
-	 *
-	 * @param bs
-	 * @param request
-	 * @param folderInfo
-	 * @param fileBlob
-	 * @param lastBlob
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static StringRpcResponseData uploadFileBlob(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, FileBlob fileBlob, boolean lastBlob) throws GwtTeamingException {
-		try {
-			// Trace what we read to the log.
-			debugTraceBlob(fileBlob, "uploadFileBlob", "Uploaded", lastBlob);
-
-			// Is this the first blob of a file?
-			HttpSession session = WebHelper.getRequiredSession(request);
-			boolean firstBlob = (0l == fileBlob.getBlobStart());
-			File tempFile;
-			String uploadFName = (CACHED_UPLOAD_FILE + "." + String.valueOf(GwtServerHelper.getCurrentUserId()) + "." + String.valueOf(fileBlob.getUploadId()) + ".");
-			if (firstBlob) {
-				// Yes!  Create a new temporary file for it and store
-				// the file handle in the session cache.  The format of
-				// the prefix used is:  'uploadFile.<userId>.<timestamp>.'
-				tempFile = TempFileUtil.createTempFile(uploadFName);
-				if (!lastBlob) {
-					session.setAttribute(uploadFName, tempFile.getName());
-				}
-			}
-			
-			else {
-				// No, this isn't the first blob of a file!  Access the
-				// temporary file from the handle stored in the session
-				// cache.
-				tempFile = TempFileUtil.getTempFileByName((String) session.getAttribute(uploadFName));
-				if (lastBlob) {
-					session.removeAttribute(uploadFName);
-				}
-			}
-
-			// Does the MD5 hash calculated on the blob we just
-			// received match the MD5 hash that came with it? 
-			StringRpcResponseData	reply   = null;
-			String					md5Hash = MiscUtil.getMD5Hash(fileBlob.getBlobData());
-			if (!(md5Hash.equals(fileBlob.getBlobMD5Hash()))) {
-				// No!  Then the data is corrupt.  Return the error to
-				// the user.
-				reply = new StringRpcResponseData();
-				reply.setStringValue(NLT.get("binder.add.files.html5.upload.corrupt"));
-				try {tempFile.delete();}
-				catch (Throwable t) {/* Ignored. */}
-			}
-			
-			else {
-				FileOutputStream fo = null;
-				try {
-					// Yes!  The MD5 hashes match!  Can we write the
-					// data from this blob to the file?
-					fo = new FileOutputStream(tempFile, (!firstBlob));
-					byte[] blobData = fileBlob.getBlobData().getBytes();
-					if (fileBlob.isBlobBase64Encoded()) {
-						blobData = Base64.decodeBase64(blobData);
-					}
-					fo.write(blobData);
-				}
-				
-				catch (Exception e) {
-					// Return the error to the user...
-					reply = new StringRpcResponseData();
-					reply.setStringValue(NLT.get("binder.add.files.html5.upload.error", new String[]{e.getLocalizedMessage()}));
-					try {tempFile.delete();}
-					catch (Throwable t) {/* Ignored. */}
-					
-					// ...and log it.
-					GwtLogHelper.error(m_logger, "GwtViewHelper.uploadFileBlob( File name:  '" + fileBlob.getFileName() + "', EXCEPTION:1 ):  ", e);
-				}
-				
-				finally {
-					// Ensure we've closed the stream.
-					if (null != fo) {
-						fo.close();
-						fo = null;
-					}
-				}
-			}
-
-			// Did we just successfully write the last blob of the file
-			// to the temporary file we use to cache it while we stream
-			// it to the server?
-			if ((null == reply) && lastBlob) {
-				// Yes!  We need to create the entry for the file in
-				// the target folder.
-				FolderModule	fm     = bs.getFolderModule();
-				ProfileModule	pm     = bs.getProfileModule();
-    	    	Folder			folder = fm.getFolder(folderInfo.getBinderIdAsLong());
-    	    	FileInputStream fi     = new FileInputStream(tempFile);
-    	    	try {
-        	    	// If there's an existing entry...
-    				String	fileName  = fileBlob.getFileName();
-        	    	Date	modDate;
-        	    	Long	fileUTCMS = fileBlob.getFileUTCMS();
-        	    	if (null == fileUTCMS)
-        	    	     modDate = null;
-        	    	else modDate = new Date(fileUTCMS);
-        	    	FolderEntry existingEntry = fm.getLibraryFolderEntryByFileName(folder, fileName);
-    	    		if (null != existingEntry) {
-    	    			// ...we modify it...
-        	    		FolderUtils.modifyLibraryEntry(existingEntry, fileName, fi, null, modDate, null, true, null, null);
-        				pm.setSeen(null, existingEntry);
-        	    	}
-    	    		
-    	    		else {
-    	    			// ...otherwise, we create a new one.
-        	    		FolderEntry fe = FolderUtils.createLibraryEntry(folder, fileName, fi, modDate, null, true);
-        				pm.setSeen(null, fe);
-        	    	}
-    	    	}
-    	    	
-    	    	catch (Exception ex) {
-    	    		String errMsg;
-	    	    	if      (ex instanceof AccessControlException) errMsg = NLT.get("entry.duplicateFileInLibrary2"           );
-	    	    	else if (ex instanceof BinderQuotaException)   errMsg = NLT.get("entry.uploadError.binderQuotaException"  );
-	    	    	else if (ex instanceof DataQuotaException)     errMsg = NLT.get("entry.uploadError.dataQuotaException"    );
-	    	    	else if (ex instanceof FileSizeLimitException) errMsg = NLT.get("entry.uploadError.fileSizeLimitException");
-					else if (ex instanceof WriteFilesException)    errMsg = NLT.get("entry.uploadError.writeFilesException", new String[]{ex.getLocalizedMessage()});
-	    	    	else                                           errMsg = NLT.get("entry.uploadError.unknownError",        new String[]{ex.getLocalizedMessage()});
-    				reply = new StringRpcResponseData();
-    				reply.setStringValue(errMsg);
-    				
-    				// Log the error.
-					GwtLogHelper.error(m_logger, "GwtViewHelper.uploadFileBlob( File name:  '" + fileBlob.getFileName() + "', EXCEPTION:2 ):  ", ex);
-    	    	}
-    	    	
-    	    	finally {
-					// Ensure we've closed the stream.
-    	    		if (null != fi) {
-    	    			fi.close();
-    	    			fi = null;
-    	    		}
-    	    		
-    	    		// ...and delete the temporary file.
-    	    		try {tempFile.delete();}
-    	    		catch (Throwable t) {/* Ignore. */}
-    	    	}
-			}
-
-			// Return an empty string response or the one we
-			// constructed containing any error we encountered during
-			// the upload.
-			return ((null == reply) ? new StringRpcResponseData() : reply);
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.uploadFileBlob( SOURCE EXCEPTION ):  ");
-		}
-	}
-
-	/**
-	 * Validates that the user can upload the files/folders in
-	 * List<UploadInfo> of things pending upload.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderInfo
-	 * @param uploads
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static ValidateUploadsRpcResponseData validateUploads(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<UploadInfo> uploads) throws GwtTeamingException {
-		try {
-			// Allocate validation response we can return.
-			ValidateUploadsRpcResponseData reply = new ValidateUploadsRpcResponseData(new ArrayList<ErrorInfo>());
-
-			// We're we given anything to validate?
-			if (MiscUtil.hasItems(uploads)) {
-				// Yes!  Access the objects we need to perform the
-				// analysis.
-				AdminModule		am                  = bs.getAdminModule();
-				BinderModule	bm                  = bs.getBinderModule();
-				FolderModule	fm                  = bs.getFolderModule();
-				Folder			folder              = fm.getFolder(folderInfo.getBinderIdAsLong());
-				Long			userFileSizeLimit   = am.getUserFileSizeLimit();
-				Long			userFileSizeLimitMB = null;
-				
-				// What do we need to check?
-				boolean	enforceQuotas          = ((!(folder.isMirrored())) && (!(folder.isAclExternallyControlled())));
-				boolean	checkBinderQuotas      = (enforceQuotas && bm.isBinderDiskQuotaEnabled());
-				boolean	checkUserQuotas        = (enforceQuotas && am.isQuotaEnabled());
-				boolean	checkUserFileSizeLimit = ((null != userFileSizeLimit) && (0 < userFileSizeLimit));
-				if (checkUserFileSizeLimit) {
-					userFileSizeLimitMB = (userFileSizeLimit * MEGABYTES);
-				}
-				
-				// Do we need to worry about quotas?
-				if (checkBinderQuotas || checkUserQuotas || checkUserFileSizeLimit) {
-					// Yes!  Scan the UploadInfo's.
-					long totalSize = 0l;
-					for (UploadInfo upload:  uploads) {
-						// Is this upload a file?
-						if (upload.isFile()) {
-							// Yes!  Does its size exceed the user's
-							// file size limit?
-							long size = upload.getSize();
-							if (checkUserFileSizeLimit && (size > userFileSizeLimitMB)) {
-								// Yes!  Add an appropriate error the
-								// reply.
-								reply.addError(NLT.get("validateUploadError.quotaExceeded.file", new String[]{upload.getName(), String.valueOf(userFileSizeLimit)}));
-							}
-							
-							// Add this file's size to the running
-							// total.
-							totalSize += size;
-						}
-					}
-
-					// Will the total size of all the files being
-					// uploaded exceed this binder's remaining quota?
-					if (checkBinderQuotas && (!(bm.isBinderDiskQuotaOk(folder, totalSize)))) {
-						// Yes!  Add an appropriate error the reply.
-						reply.addError(NLT.get("validateUploadError.quotaExceeded.folder", new String[]{String.valueOf(bm.getMinBinderQuotaLeft(folder) / MEGABYTES)}));
-					}
-	
-					// Do we need to check quotas assigned to this user
-					// or their groups?
-					if (checkUserQuotas) {
-						// Yes!  Do we need to check the total upload
-						// size against this user's quota?
-						User user = GwtServerHelper.getCurrentUser();
-						long userQuota = user.getDiskQuota();
-						if (0 == userQuota) {
-							userQuota = user.getMaxGroupsQuota();
-							if (0 == userQuota) {
-								ZoneConfig zc = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-								userQuota = zc.getDiskQuotaUserDefault();
-							}
-						}
-						long userQuotaMB       = (userQuota * MEGABYTES);
-						Long userDiskSpaceUsed = user.getDiskSpaceUsed();
-						if ((0l < userQuota) && (null != userDiskSpaceUsed)) {
-							// Yes!  Does it exceed the user's quota?
-							if ((totalSize + userDiskSpaceUsed) > userQuotaMB) {
-								// Yes!  Add an appropriate error the
-								// reply.
-								reply.addError(NLT.get("validateUploadError.quotaExceeded.user", new String[]{String.valueOf(userQuota)}));
-							}
-						}
-					}
-
-					// If we detected any quota errors...
-					if (reply.hasErrors()) {
-						// ...we'll stop with the analysis and return
-						// ...what we've got.
-						return reply;
-					}
-				}
-
-				// Scan the UploadInfo's again.
-				for (UploadInfo upload:  uploads) {
-					// Is this a file upload?
-					String name = upload.getName();
-					if (upload.isFile()) {
-						// Yes!  Does it contain a valid name?
-						if (Validator.containsPathCharacters(name)) {
-							reply.addError(NLT.get("validateUploadError.invalidName.file", new String[]{name}));
-						}
-					}
-					
-					else {
-						// No, it must be a folder upload!  Does it
-						// contain a valid name?
-						if (!(BinderHelper.isBinderNameLegal(name))) {
-							reply.addError(NLT.get("validateUploadError.invalidName.folder", new String[]{name}));
-						}
-					}
-				}
-				
-				// Scan the UploadInfo's again.
-				for (UploadInfo upload:  uploads) {
-					// Is this upload a file?
-					if (!(upload.isFile())) {
-						// No!  Skip it.
-						continue;
-					}
-					
-					// Does the folder contain an entry with this name?
-					String uploadFName = upload.getName();
-					FolderEntry fe = fm.getLibraryFolderEntryByFileName((Folder) folder, uploadFName);
-					if (null != fe) {
-						// Yes!  Track it as a duplicate.
-						reply.addDuplicate(upload);
-						continue;
-					}
-					
-					// Scan the files attached to the folder.
-					for (FileAttachment fa:  folder.getFileAttachments()) {
-						// Does this attachment's file exist and is it a match?
-						if (fa.getFileExists() && fa.getFileItem().getName().equals(uploadFName)) {
-							// Yes!  Track it as a duplicate.
-							reply.addDuplicate(upload);
-							break;
-						}
-					}
-				}
-			}
-			
-			// If we get here, reply refers to an
-			// ValidateUploadsRpcResponseData containing any errors and
-			// information duplicates that we encountered.  Return it.
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.validateUploads( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
 	/**
 	 * Returns true if a string values contains a quick filter and
 	 * false otherwise.
