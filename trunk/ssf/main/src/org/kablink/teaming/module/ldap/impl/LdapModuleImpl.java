@@ -100,6 +100,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.GetParentBinderPermalinkCmd;
 import org.kablink.teaming.jobs.LdapSynchronization;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -179,11 +180,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private static final String HOME_DRIVE_ATTRIBUTE = "homeDrive";
 	private static final String AD_HOME_DIR_ATTRIBUTE = "homeDirectory";
 	private static final String LOGIN_DISABLED_ATTRIBUTE = "loginDisabled";
-	private static final String USER_ACCOUNT_CONTROL_ATTRIBUTE = "userAccountControl";
+	private static final String AD_USER_ACCOUNT_CONTROL_ATTRIBUTE = "userAccountControl";
 	private static final String PASSWORD_EXPIRATION_TIME_ATTRIBUTE = "passwordExpirationTime";
+	private static final String AD_PASSWORD_LAST_SET_ATTRIBUTE = "pwdLastSet";
+	private static final String AD_MAX_PWD_AGE_ATTRIBUTE = "maxPwdAge";
 
 	private static int ADDR_TYPE_TCP = 9;
 	private static int AD_DISABLED_BIT = 0x02;
+	private static int AD_PASSWORD_NEVER_EXPIRES_BIT = 0x00010000;
 
 	private static Pattern m_pattern_uncPath = Pattern.compile( "^\\\\\\\\(.*?)\\\\(.*?)", Pattern.CASE_INSENSITIVE );
 
@@ -2036,7 +2040,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				NamingEnumeration ctxSearch;
 				Binding bd;
 				String userIdAttributeName[] = { ldapConfig.getUserIdAttribute() };
-				String attributesToRead[] = { PASSWORD_EXPIRATION_TIME_ATTRIBUTE };
 				Attribute attrib;
 
 				scope = (searchInfo.isSearchSubtree() ? SearchControls.SUBTREE_SCOPE : SearchControls.ONELEVEL_SCOPE);
@@ -2057,11 +2060,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				bd = (Binding)ctxSearch.next();
 
-				// Read the "passwordExpirationTime" attribute from the directory.
-				lAttrs = ctx.getAttributes( bd.getNameInNamespace(), attributesToRead );
-				
 				if ( dirType == LdapDirType.EDIR )
 				{
+					String attributesToRead[] = { PASSWORD_EXPIRATION_TIME_ATTRIBUTE };
+
+					// Read the "passwordExpirationTime" attribute from the directory.
+					lAttrs = ctx.getAttributes( bd.getNameInNamespace(), attributesToRead );
+					
 					// Get the value of the "passwordExpirationTime" attribute
 					attrib = lAttrs.get( PASSWORD_EXPIRATION_TIME_ATTRIBUTE );
 					if ( attrib != null )
@@ -2119,6 +2124,41 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						catch ( NamingException ex )
 						{
 							// Nothing to do.
+						}
+					}
+				}
+				else if ( dirType == LdapDirType.AD )
+				{
+					String attributesToRead[] = { AD_USER_ACCOUNT_CONTROL_ATTRIBUTE, AD_PASSWORD_LAST_SET_ATTRIBUTE };
+
+					// Read the "userAccountControl" and "pwdLastSet" attributes from the directory.
+					lAttrs = ctx.getAttributes( bd.getNameInNamespace(), attributesToRead );
+
+					// Is the "password never expires" flag turned on for this user?
+					if ( getPasswordNeverExpires( lAttrs ) == false )
+					{
+						Date pwdLastSetDate;
+						
+						// No
+						// Get the date the password was last set.
+						pwdLastSetDate = getPasswordLastSet( lAttrs );
+						if ( pwdLastSetDate != null )
+						{
+							Integer maxPwdAge;
+							
+							// Read the maximum age of a password.
+							maxPwdAge = getMaxPwdAge( ldapConfig );
+							
+							if ( maxPwdAge != null && maxPwdAge != 0 )
+							{
+								Date now;
+								long sum; 
+								
+								now = new Date();
+								sum = pwdLastSetDate.getTime() + (maxPwdAge * 24 * 60 * 60 * 1000);
+								if ( now.getTime() > sum )
+									expired = true;
+							}
 						}
 					}
 				}
@@ -4796,7 +4836,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					++i;
 					
 					// Add the "userAccountControl" attribute
-					attributeNames[i] = USER_ACCOUNT_CONTROL_ATTRIBUTE;
+					attributeNames[i] = AD_USER_ACCOUNT_CONTROL_ATTRIBUTE;
 					++i;
 				}
 				// Is the ldap directory eDir?
@@ -4915,7 +4955,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Attribute attrib;
 
 		// Get the userAccountControl attribute.
-		attrib = attrs.get( USER_ACCOUNT_CONTROL_ATTRIBUTE );
+		attrib = attrs.get( AD_USER_ACCOUNT_CONTROL_ATTRIBUTE );
 		if ( attrib != null )
 		{
 			try
@@ -4992,6 +5032,204 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		// If we get here, something did not work.
 		return null;
+	}
+
+	/**
+	 * Convert the given Active Directory date to a Java date 
+	 */
+	private static Date convertADDateToJavaDate( String value )
+	{
+		Date javaDate = null;
+		long adTime;
+		long javaTime;
+			
+		if ( value == null || value.length() == 0 )
+			return null;
+		
+		// In Active Directory the value is stored as a large integer that represents
+		// the number of 100 nanosecond intervals since January 1, 1601 (UTC)
+		adTime = Long.parseLong( value );
+		
+		// Active Directory Epoch is January 1, 1601
+		// Java date Epoch is January 1, 1970;
+		// Subtract the Java Epoch
+		javaTime = adTime - 0x19db1ded53e8000L;
+		
+		// Convert from (100 nano-seconds) to milliseconds
+		javaTime /= 10000L;
+		
+		javaDate = new Date( javaTime );
+
+		return javaDate;
+	}
+	
+	/**
+	 * Return the maximum age of a password in Active Directory.
+	 * This value is stored as a large integer that represents the number of 100 nanosecond intervals
+	 * from the time the password was set before the password expires.
+	 */
+	private Integer getMaxPwdAge( LdapConnectionConfig ldapConfig )
+	{
+		Integer maxPwdAge = null;
+		LdapContext ldapCtx = null;
+
+		try
+		{
+			SearchControls sch;
+			String search;
+			String baseDN;
+			String[] attributesToRead = { AD_MAX_PWD_AGE_ATTRIBUTE };
+			NamingEnumeration ctxSearch;
+
+			ldapCtx = getUserContext( RequestContextHolder.getRequestContext().getZone().getId(), ldapConfig );
+			
+			sch = new SearchControls();
+			sch.setSearchScope( SearchControls.OBJECT_SCOPE );
+			sch.setReturningAttributes( attributesToRead );
+
+			search = "(objectClass=domain)";
+			baseDN = readDomainName( ldapConfig );
+			
+			// Get the Domain Root Object
+			ctxSearch = ldapCtx.search( baseDN, search, sch );
+			if ( hasMore( ctxSearch ) )
+			{
+				SearchResult searchResult;
+				Attributes attrs;
+				Attribute attrib;
+				
+				searchResult = (SearchResult)ctxSearch.next();
+	
+				// Read the "maxPwdAge" attribute from the directory.
+				attrs = searchResult.getAttributes();
+				attrib = attrs.get( AD_MAX_PWD_AGE_ATTRIBUTE );
+				if ( attrib != null )
+				{
+					String strValue;
+
+					strValue = (String) attrib.get();
+					if ( strValue != null )
+					{
+						long adTime;
+						long milliSeconds;
+						int days;
+		
+						// This value is stored as a large integer that represents the number of
+						// 100 nanosecond intervals from the time the password was set before the
+						// password expires.
+						adTime = Long.parseLong( strValue );
+						
+						// Convert from (100 nano-seconds) to milliseconds
+						milliSeconds = adTime / 10000L;
+						
+						// Convert milli secons into days
+						days = (int) (milliSeconds / (24 * 60 * 60 * 1000));
+						maxPwdAge = new Integer( days * -1 );
+					}
+				}
+			}
+		}
+		catch ( Exception ex )
+		{
+			logger.error( "getMaxPwdAge() caught an exception: " + ex.toString() );
+		}
+		finally
+		{
+			if ( ldapCtx != null )
+			{
+				try
+				{
+					ldapCtx.close();
+					ldapCtx = null;
+				}
+				catch ( NamingException ex )
+				{
+					// Nothing to do
+				}
+			}
+		}
+		
+		return maxPwdAge;
+	}
+	
+	/**
+	 * Get the date the password was last set in Active Directory
+	 */
+	private Date getPasswordLastSet( Attributes attrs )
+	{
+		Date pwdLastSetDate = null;
+		Attribute attrib;
+		
+		// Get the value of the "pwdLastSet" attribute
+		attrib = attrs.get( AD_PASSWORD_LAST_SET_ATTRIBUTE  );
+		if ( attrib != null )
+		{
+			Object value;
+			
+			try
+			{
+				value = attrib.get();
+				if ( value != null && value instanceof String )
+				{
+					String strValue;
+						
+					strValue = (String) value;
+					pwdLastSetDate = convertADDateToJavaDate( strValue );
+				}
+			}
+			catch ( NamingException ex )
+			{
+				// Nothing to do.
+				logger.error( "getPasswordLastSet() caught an exception: " + ex.toString() );
+			}
+		}
+	
+		return pwdLastSetDate;
+	}
+	
+	/**
+	 * Get whether the "password never expires" attribute is turned on for the user in Active Directory.
+	 */
+	private boolean getPasswordNeverExpires( Attributes attrs )
+	{
+		Attribute attrib;
+
+		// Get the userAccountControl attribute.
+		attrib = attrs.get( AD_USER_ACCOUNT_CONTROL_ATTRIBUTE );
+		if ( attrib != null )
+		{
+			try
+			{
+				Object value;
+				
+				value = attrib.get();
+				if ( value != null && value instanceof String )
+				{
+					String strValue;
+					Long lValue;
+						
+					strValue = (String) value;
+					lValue = Long.valueOf( strValue );
+					
+					// Is the "password never expires" bit set?
+					if ( (lValue & AD_PASSWORD_NEVER_EXPIRES_BIT) > 0 )
+					{
+						// Yes
+						return true;
+					}
+						
+					return false;
+				}
+			}
+			catch ( Exception ex )
+			{
+				// Nothing to do.
+				logger.error( "getPasswordExpires() threw an exception: " + ex.toString() );
+			}
+		}
+
+		// If we get here, something did not work.
+		return false;
 	}
 
 	/**
