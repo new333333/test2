@@ -89,6 +89,7 @@ import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.PostingDef;
+import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
@@ -126,10 +127,12 @@ import org.kablink.teaming.module.mail.EmailUtil;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.mail.MailSentStatus;
 import org.kablink.teaming.module.mail.MimeSharePreparator;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.LuceneWriteSession;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.accesstoken.AccessToken;
@@ -149,6 +152,7 @@ import org.kablink.teaming.util.RuntimeStatistics;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
@@ -3095,7 +3099,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
   			if (writeAuditTrailLogFile(entriesToBeDeleted)) {
   				//The entries to be purged were safely logged to disk, so we can delete them from the database
 		  		int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
-		  		logger.info("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
+		  		logger.debug("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
   			}
   		}
   		
@@ -3105,7 +3109,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
   			if (writeChangeLogLogFile(entriesToBeDeleted)) {
   				//The entries to be purged were safely logged to disk, so we can delete them from the database
 		  		int changeLogPurgeCount = getCoreDao().purgeChangeLogs(zoneId, purgeBeforeDate);
-		  		logger.info("Purged " + changeLogPurgeCount + " records from the SS_ChangeLog table");
+		  		logger.debug("Purged " + changeLogPurgeCount + " records from the SS_ChangeLog table");
   			}
   		}
     }
@@ -3273,5 +3277,30 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     		}
     	}
     	return true;
+    }
+    
+    public void reindexDestructive(Collection<Long> binderIds, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean includeUsersAndGroups) throws AccessControlException {
+    	logger.info("Reindexing started on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
+    	
+    	try {
+	    	Collection<Long> idsIndexed = getBinderModule().indexTree(binderIds, statusTicket, nodeNames, errors);
+			//if people selected and not yet index; index content only, not the whole ws tree
+	    	if(includeUsersAndGroups) {				
+				ProfileBinder pf = getProfileModule().getProfileBinder();
+				if (!idsIndexed.contains(pf.getId())) {
+					errors.add(getBinderModule().indexBinder(pf.getId(), true)); 
+				}
+	    	}
+    	}
+    	catch(Exception e) {
+    		logger.error("Error reindexing binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""), e);
+    	}
+    	finally {
+        	logger.info("Reindexing completed on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
+    	}
+    }
+    
+    protected ProfileModule getProfileModule() {
+    	return (ProfileModule) SpringContextUtil.getBean("profileModule");
     }
 }
