@@ -1092,7 +1092,7 @@ public class GwtClientHelper {
 	 *  @param attachmentUrl
 	 */
 	public static void jsEditInPlace_WebDAV(String attachmentUrl) {
-		GwtClientHelper.jsLaunchUrlInWindow(attachmentUrl, "_blank");
+		jsLaunchUrlInWindow(attachmentUrl, "_blank");
 	}
 	
 	/**
